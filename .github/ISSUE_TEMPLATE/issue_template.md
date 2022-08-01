@@ -1,7 +1,6 @@
 ---
 name: update template
 about: Generic update task, which affect all repositories
-labels: Meta-Issue
 ---
 
 ## Update
@@ -10,24 +9,45 @@ labels: Meta-Issue
 
 ### Kitsunemimi-Repos, which have to be updated
 
-- [ ] libKitsunemimiCommon
-- [ ] libKitsunemimiPersistence
-- [ ] libKitsunemimiNetwork
-- [ ] libKitsunemimiIni
-- [ ] libKitsunemimiJson
-- [ ] libKitsunemimiJinja2
-- [ ] libKitsunemimiConfig
-- [ ] libKitsunemimiArgs
-- [ ] libKitsunemimiOpencl
-- [ ] libKitsunemimiObj
+- [ ] KyoukoMind
+- [ ] AzukiHeart
+- [ ] MisakiGuard
+- [ ] SagiriArchive
+- [ ] IzumiShare
+- [ ] InoriLink
+- [ ] ToriiGateway
+- [ ] TsugumiTester
+- [ ] libKyoukoMind
+- [ ] libAzukiHeart
+- [ ] libMisakiGuard
+- [ ] libSagiriArchive
+- [ ] libIzumiShare
+- [ ] libInoriLink
+- [ ] libToriiGateway
+- [ ] KitsumiAI-Dashboard
+- [ ] KitsumiAI-CLI
+- [ ] libKitsumiAiSdk
+- [ ] libKitsunemimiHanamiMessaging
+- [ ] libKitsunemimiHanamiPolicies
+- [ ] libKitsunemimiHanamiDatabase
+- [ ] libKitsunemimiHanamiEndpoints
+- [ ] libKitsunemimiHanamiCommon
 - [ ] libKitsunemimiSakuraNetwork
 - [ ] libKitsunemimiSakuraLang
-- [ ] libKitsunemimiSakuraMessaging
-- [ ] libKitsunemimiSakuraGui
-- [ ] SakuraTree
-- [ ] libKitsunemimiKyoukoCommon
-- [ ] MiraiControl
-- [ ] MiyuMonitoring
-- [ ] MikoClient
-- [ ] ToriiGateway
-- [ ] KyoukoMind
+- [ ] libKitsunemimiSakuraDatabase
+- [ ] libKitsunemimiSakuraHardware
+- [ ] libKitsunemimiSqlite
+- [ ] libKitsunemimiCpu
+- [ ] libKitsunemimiStorage
+- [ ] libKitsunemimiInterface
+- [ ] libKitsunemimiObj
+- [ ] libKitsunemimiOpencl
+- [ ] libKitsunemimiConfig
+- [ ] libKitsunemimiArgs
+- [ ] libKitsunemimiNetwork
+- [ ] libKitsunemimiJinja2
+- [ ] libKitsunemimiIni
+- [ ] libKitsunemimiJwt
+- [ ] libKitsunemimiCrypto
+- [ ] libKitsunemimiJson
+- [ ] libKitsunemimiCommon
