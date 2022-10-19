@@ -134,7 +134,6 @@ for more details see: https://docs.hanami-ai.com/inner%20workings/1_overview/
         - first Multi-Node-Setup
 
 
-Most of the content of `0.3.0` and `0.4.0` already exist in threorie, but I had not the time to implement it until now. If I could work full-time on the project and not only in my spare time, then I could be much faster then this actual schedule. So if you highly interested in this project and want to push my progress, then feel free to hire me and pay me, so I can work much more for this project.
 
 ## Issue-Overview
 
