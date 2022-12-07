@@ -46,8 +46,8 @@ Test-case:
 | ----------- | ------------------------------------ |
 | time for train-dataset (60000 Images); 1. epoch  | 1.9 s |
 | time for test-dataset (10000 Images)       |  0.1 s |
-| correctness of test-dataset after 1. epoch   |  94.21 % |
-| correctness of test-dataset after 10. epoch   |  96.43 % |
+| accuracy of test-dataset after 1. epoch   |  94.21 % |
+| accuracy of test-dataset after 10. epoch   |  96.43 % |
 
 
 In an older version there was already a state, where up to *98,1%* were correct with a similar speed, but removing the limitation for the input-values to be able to handle much bigger values had its price, but I think this exchange was it worth. Some things are still missing in the implementation and there is still much space for optimization and research, so I think this is not the maximum possible at the moment.
@@ -80,28 +80,37 @@ Because the normalization of input is not necessary, together with the good perf
 
 ## Core-components
 
-for more details see: https://docs.hanami-ai.com/inner%20workings/1_overview/
+for more details see [Documentation inner workings](/inner workings/1_overview/)
 
 - **Kyouko**
     - Content: Core-component, which holds the artificial neuronal networks.
-    - Repository: https://github.com/kitsudaiki/KyoukoMind.git
+    - Repository: [KyoukoMind](https://github.com/kitsudaiki/KyoukoMind.git)
+    - prebuild Docker-Image: `kitsudaiki/kyouko_mind`
 
 - **Misaki**
     - Content: Authentication-service and management of user
-    - Repository: https://github.com/kitsudaiki/MisakiGuard.git
+    - Repository: [MisakiGuard](https://github.com/kitsudaiki/MisakiGuard.git)
+    - prebuild Docker-Image: `kitsudaiki/misaki_guard`
 
 - **Shiori**
     - Content: Storage-component, which holds snapshots, logs and so on
-    - Repository: https://github.com/kitsudaiki/ShioriArchive.git
+    - Repository: [ShioriArchive](https://github.com/kitsudaiki/ShioriArchive.git)
+    - prebuild Docker-Image: `kitsudaiki/shiori_archive`
 
 - **Azuki**
     - Content: Monitoring and energy-optimization
-    - Repository: https://github.com/kitsudaiki/AzukiHeart.git
+    - Repository: [AzukiHeart](https://github.com/kitsudaiki/AzukiHeart.git)
+    - prebuild Docker-Image: `kitsudaiki/azuki_heart`
 
 - **Torii**
     - Content: Proxy for all incoming connections
-    - Repository: https://github.com/kitsudaiki/ToriiGateway.git
+    - Repository: [ToriiGateway](https://github.com/kitsudaiki/ToriiGateway.git)
+    - prebuild Docker-Image: `kitsudaiki/torii_gateway`
 
+- **Dashboard**
+    - Content: Web-Frontend
+    - Repository: [Dashboard](https://github.com/kitsudaiki/Hanami-AI-Dashboard.git)
+    - prebuild Docker-Image: `kitsudaiki/hanami_ai_dashboard`
 
 ## Roadmap
 
@@ -110,7 +119,7 @@ for more details see: https://docs.hanami-ai.com/inner%20workings/1_overview/
         - first prototype with basic feature-set
 
 - **0.2.0**
-    - *expected date*: end Q4 2022
+    - *expected date*: end Q4 2022 / begin Q1 2023
     - *content*: 
         - no new features but only improving the current state with:
             - bugfixes
@@ -119,7 +128,7 @@ for more details see: https://docs.hanami-ai.com/inner%20workings/1_overview/
             - ...
 
 - **0.3.0**
-    - *expected date*: Q2 2023
+    - *expected date*: end Q2 2023
     - *content*: 
         - complete implementation of the core-concept and further evaluation and improvement of the learning-process:
             - allow to use it as spiking-neuronal-network
@@ -132,7 +141,6 @@ for more details see: https://docs.hanami-ai.com/inner%20workings/1_overview/
     - *expected date*: Q4 2023
     - *content*: 
         - first Multi-Node-Setup
-
 
 
 ## Issue-Overview
