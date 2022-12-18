@@ -25,6 +25,8 @@ about: Generic update task, which affect all repositories
 - [ ] libKitsunemimiHanamiPolicies
 - [ ] libKitsunemimiHanamiDatabase
 - [ ] libKitsunemimiHanamiEndpoints
+- [ ] libKitsunemimiHanamiSegmentParser
+- [ ] libKitsunemimiHanamiClusterParser
 - [ ] libKitsunemimiHanamiCommon
 - [ ] libKitsunemimiSakuraNetwork
 - [ ] libKitsunemimiSakuraLang
