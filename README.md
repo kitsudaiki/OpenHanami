@@ -85,32 +85,32 @@ for more details see [Documentation inner workings](/inner workings/1_overview/)
 - **Kyouko**
     - Content: Core-component, which holds the artificial neuronal networks.
     - Repository: [KyoukoMind](https://github.com/kitsudaiki/KyoukoMind.git)
-    - prebuild Docker-Image: `kitsudaiki/kyouko_mind`
+    - prebuild Docker-Image: `kitsudaiki/kyouko_mind:develop`
 
 - **Misaki**
     - Content: Authentication-service and management of user
     - Repository: [MisakiGuard](https://github.com/kitsudaiki/MisakiGuard.git)
-    - prebuild Docker-Image: `kitsudaiki/misaki_guard`
+    - prebuild Docker-Image: `kitsudaiki/misaki_guard:develop`
 
 - **Shiori**
     - Content: Storage-component, which holds snapshots, logs and so on
     - Repository: [ShioriArchive](https://github.com/kitsudaiki/ShioriArchive.git)
-    - prebuild Docker-Image: `kitsudaiki/shiori_archive`
+    - prebuild Docker-Image: `kitsudaiki/shiori_archive:develop`
 
 - **Azuki**
     - Content: Monitoring and energy-optimization
     - Repository: [AzukiHeart](https://github.com/kitsudaiki/AzukiHeart.git)
-    - prebuild Docker-Image: `kitsudaiki/azuki_heart`
+    - prebuild Docker-Image: `kitsudaiki/azuki_heart:develop`
 
 - **Torii**
     - Content: Proxy for all incoming connections
     - Repository: [ToriiGateway](https://github.com/kitsudaiki/ToriiGateway.git)
-    - prebuild Docker-Image: `kitsudaiki/torii_gateway`
+    - prebuild Docker-Image: `kitsudaiki/torii_gateway:develop`
 
 - **Dashboard**
     - Content: Web-Frontend
     - Repository: [Dashboard](https://github.com/kitsudaiki/Hanami-AI-Dashboard.git)
-    - prebuild Docker-Image: `kitsudaiki/hanami_ai_dashboard`
+    - prebuild Docker-Image: `kitsudaiki/hanami_ai_dashboard:develop`
 
 ## Roadmap
 
@@ -145,7 +145,7 @@ for more details see [Documentation inner workings](/inner workings/1_overview/)
 
 ## Issue-Overview
 
-[Hanami-AI-Project](https://github.com/users/kitsudaiki/projects/9/views/2)
+[Hanami-AI-Project](https://github.com/users/kitsudaiki/projects/9/views/4)
 
 ## Author
 
