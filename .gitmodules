@@ -1,0 +1,90 @@
+[submodule "submodules/KyoukoMind"]
+	path = submodules/KyoukoMind
+	url = https://github.com/kitsudaiki/KyoukoMind
+[submodule "submodules/AzukiHeart"]
+	path = submodules/AzukiHeart
+	url = https://github.com/kitsudaiki/AzukiHeart
+[submodule "submodules/MisakiGuard"]
+	path = submodules/MisakiGuard
+	url = https://github.com/kitsudaiki/MisakiGuard
+[submodule "submodules/ShioriArchive"]
+	path = submodules/ShioriArchive
+	url = https://github.com/kitsudaiki/ShioriArchive
+[submodule "submodules/ToriiGateway"]
+	path = submodules/ToriiGateway
+	url = https://github.com/kitsudaiki/ToriiGateway
+[submodule "submodules/libAzukiHeart"]
+	path = submodules/libAzukiHeart
+	url = https://github.com/kitsudaiki/libAzukiHeart
+[submodule "submodules/libMisakiGuard"]
+	path = submodules/libMisakiGuard
+	url = https://github.com/kitsudaiki/libMisakiGuard
+[submodule "submodules/libShioriArchive"]
+	path = submodules/libShioriArchive
+	url = https://github.com/kitsudaiki/libShioriArchive
+[submodule "submodules/Hanami-AI-Dashboard"]
+	path = submodules/Hanami-AI-Dashboard
+	url = https://github.com/kitsudaiki/Hanami-AI-Dashboard
+[submodule "submodules/libHanamiAiSdk"]
+	path = submodules/libHanamiAiSdk
+	url = https://github.com/kitsudaiki/libHanamiAiSdk
+[submodule "submodules/libKitsunemimiHanamiMessages"]
+	path = submodules/libKitsunemimiHanamiMessages
+	url = https://github.com/kitsudaiki/libKitsunemimiHanamiMessages
+[submodule "submodules/libKitsunemimiHanamiNetwork"]
+	path = submodules/libKitsunemimiHanamiNetwork
+	url = https://github.com/kitsudaiki/libKitsunemimiHanamiNetwork
+[submodule "submodules/libKitsunemimiHanamiPolicies"]
+	path = submodules/libKitsunemimiHanamiPolicies
+	url = https://github.com/kitsudaiki/libKitsunemimiHanamiPolicies
+[submodule "submodules/libKitsunemimiHanamiDatabase"]
+	path = submodules/libKitsunemimiHanamiDatabase
+	url = https://github.com/kitsudaiki/libKitsunemimiHanamiDatabase
+[submodule "submodules/libKitsunemimiHanamiSegmentParser"]
+	path = submodules/libKitsunemimiHanamiSegmentParser
+	url = https://github.com/kitsudaiki/libKitsunemimiHanamiSegmentParser
+[submodule "submodules/libKitsunemimiHanamiClusterParser"]
+	path = submodules/libKitsunemimiHanamiClusterParser
+	url = https://github.com/kitsudaiki/libKitsunemimiHanamiClusterParser
+[submodule "submodules/libKitsunemimiHanamiCommon"]
+	path = submodules/libKitsunemimiHanamiCommon
+	url = https://github.com/kitsudaiki/libKitsunemimiHanamiCommon
+[submodule "submodules/libKitsunemimiSakuraNetwork"]
+	path = submodules/libKitsunemimiSakuraNetwork
+	url = https://github.com/kitsudaiki/libKitsunemimiSakuraNetwork
+[submodule "submodules/libKitsunemimiSakuraDatabase"]
+	path = submodules/libKitsunemimiSakuraDatabase
+	url = https://github.com/kitsudaiki/libKitsunemimiSakuraDatabase
+[submodule "submodules/libKitsunemimiSakuraHardware"]
+	path = submodules/libKitsunemimiSakuraHardware
+	url = https://github.com/kitsudaiki/libKitsunemimiSakuraHardware
+[submodule "submodules/libKitsunemimiSqlite"]
+	path = submodules/libKitsunemimiSqlite
+	url = https://github.com/kitsudaiki/libKitsunemimiSqlite
+[submodule "submodules/libKitsunemimiCpu"]
+	path = submodules/libKitsunemimiCpu
+	url = https://github.com/kitsudaiki/libKitsunemimiCpu
+[submodule "submodules/libKitsunemimiConfig"]
+	path = submodules/libKitsunemimiConfig
+	url = https://github.com/kitsudaiki/libKitsunemimiConfig
+[submodule "submodules/libKitsunemimiArgs"]
+	path = submodules/libKitsunemimiArgs
+	url = https://github.com/kitsudaiki/libKitsunemimiArgs
+[submodule "submodules/libKitsunemimiNetwork"]
+	path = submodules/libKitsunemimiNetwork
+	url = https://github.com/kitsudaiki/libKitsunemimiNetwork
+[submodule "submodules/libKitsunemimiIni"]
+	path = submodules/libKitsunemimiIni
+	url = https://github.com/kitsudaiki/libKitsunemimiIni
+[submodule "submodules/libKitsunemimiJwt"]
+	path = submodules/libKitsunemimiJwt
+	url = https://github.com/kitsudaiki/libKitsunemimiJwt
+[submodule "submodules/libKitsunemimiCrypto"]
+	path = submodules/libKitsunemimiCrypto
+	url = https://github.com/kitsudaiki/libKitsunemimiCrypto
+[submodule "submodules/libKitsunemimiJson"]
+	path = submodules/libKitsunemimiJson
+	url = https://github.com/kitsudaiki/libKitsunemimiJson
+[submodule "submodules/libKitsunemimiCommon"]
+	path = submodules/libKitsunemimiCommon
+	url = https://github.com/kitsudaiki/libKitsunemimiCommon
