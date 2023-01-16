@@ -2,18 +2,9 @@
 
 ![Logo](assets/hanami-logo-with-text.png)
 
-
-**This is the meta-repo for the Hanami-AI to handle global issues of the project and release-taggings.**
-
 **IMPORTANT: This project is still an experimental prototype at the moment and NOT ready for productive usage.** 
 
 There is still a huge bunch of known bugs and missing validations, which can break the backend. Even the documentation here is quite basic. Normally I absolutely dislike it to make something public, which has known bugs and other problems, but I simply don't wanted to wait longer for the open-sourcing of this project. Most of it will be fixed until [Version `0.2.0`](/#roadmap). Keep in mind, that this project is created by a single person in his spare time beside a 40h/week job. ;)
-
-## Documentation
-
-All of this page and more in the documentation on: 
-
-https://docs.hanami-ai.com
 
 ## Intro
 
@@ -29,42 +20,19 @@ The actual prototype consists of:
 - Websocket-connection to directly interact with the artificial neuronal networks
 - CI-pipelines, Test-Tool, Docker-build-process and basic helm-chart to deploy the project on Kubernetes
 
-## First benchmark
+## Documentation
 
-Test-case:
+All of this page and more in the documentation on: 
 
-- Dataset: MNIST handwritten letters
-- Hardware: Intel i7-1165G7 and 16GB RAM with 3200MT/s
-- Settings: 
-    - **CPU** with **one processing thread** 
-    - **no batches**, so each of image is processed one after the other
-    - values are pushed directly into the network without normalization between 0 and 1
-    - average of 10 measurements
-
-
-|             |      average result        |
-| ----------- | ------------------------------------ |
-| time for train-dataset (60000 Images); 1. epoch  | 1.9 s |
-| time for test-dataset (10000 Images)       |  0.1 s |
-| accuracy of test-dataset after 1. epoch   |  94.21 % |
-| accuracy of test-dataset after 10. epoch   |  96.43 % |
-
-
-In an older version there was already a state, where up to *98,1%* were correct with a similar speed, but removing the limitation for the input-values to be able to handle much bigger values had its price, but I think this exchange was it worth. Some things are still missing in the implementation and there is still much space for optimization and research, so I think this is not the maximum possible at the moment.
-
-## Possible use-case
-
-Because the normalization of input is not necessary, together with the good performance of training single inputs (based on the benchmark) and the direct interaction remotely over websockets, could make this project useful for processing measurement-data of sensors of different machines, especially for new sensors, where the exact maximum output-values are unknown. So continuous training of the network right from the beginning would be possible, without collecting a bunch of data at first.
-
-## Basics
+https://docs.hanami-ai.com
 
 - Installation-Guide to deploy HanamiAI on a kubernetes for testing:
 
-    https://docs.hanami-ai.com/how%20to/1_installation/
+    https://docs.hanami-ai.com/How_To/1_installation/
 
 - To get a first impression there is a first example-workflow via the dashboard:
 
-    https://docs.hanami-ai.com/how%20to/2_dashboard/
+    https://docs.hanami-ai.com/How_To/2_dashboard/
 
 - For the naming at some points look into the Glossar:
 
@@ -72,7 +40,7 @@ Because the normalization of input is not necessary, together with the good perf
 
 - Even it is quite basic for now, there are also some internal workflow and tasks of the single components described:
 
-    https://docs.hanami-ai.com/inner%20workings/1_overview/
+    https://docs.hanami-ai.com/Inner_Workings/1_overview/
 
 - Many basic dependencies were created in context of this project. Here is an overview of all involved repositories:
 
@@ -80,7 +48,7 @@ Because the normalization of input is not necessary, together with the good perf
 
 ## Core-components
 
-for more details see [Documentation inner workings](/inner workings/1_overview/)
+for more details see [Documentation inner workings](/Inner_Workings/1_overview/)
 
 - **Kyouko**
     - Content: Core-component, which holds the artificial neuronal networks.
@@ -119,7 +87,7 @@ for more details see [Documentation inner workings](/inner workings/1_overview/)
         - first prototype with basic feature-set
 
 - **0.2.0**
-    - *expected date*: end Q4 2022 / begin Q1 2023
+    - *expected date*: Q1 2023
     - *content*: 
         - no new features but only improving the current state with:
             - bugfixes
