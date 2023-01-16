@@ -1,6 +1,6 @@
 # Hanami-AI
 
-![Logo](img/hanami-logo-with-text.png)
+![Logo](assets/hanami-logo-with-text.png)
 
 
 **This is the meta-repo for the Hanami-AI to handle global issues of the project and release-taggings.**
