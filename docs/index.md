@@ -23,7 +23,7 @@
 
 ??? question "Why this logo?"
 
-    The cherry-blossom is related to the project-name `Hanami-AI` and the hexagons represent the base-structure of the network (see [Internal documentation](/inner workings/3_kyouko/#core-segment)). Originally this logo was invented in my old automation tool [SakuraTree](https://github.com/kitsudaiki/SakuraTree), which was created to deploy Hanami-AI on server, before I learned Kubernetes. But the logo was too good in my opinion, so I reused it for this project here, to not waste it.
+    The cherry-blossom is related to the project-name `Hanami-AI` and the hexagons represent the base-structure of the network (see [Internal documentation](/Inner_Workings/3_kyouko/#core-segment)). Originally this logo was invented in my old automation tool [SakuraTree](https://github.com/kitsudaiki/SakuraTree), which was created to deploy Hanami-AI on server, before I learned Kubernetes. But the logo was too good in my opinion, so I reused it for this project here, to not waste it.
 
 ## Intro
 
@@ -77,7 +77,7 @@ Because the normalization of input is not necessary, together with the good perf
 
     Installation-Guide to deploy HanamiAI on a kubernetes
 
-    [:octicons-arrow-right-24: Installation](/how to/1_installation/)
+    [:octicons-arrow-right-24: Installation](/How_To/1_installation/)
 
 
 
@@ -89,7 +89,7 @@ Because the normalization of input is not necessary, together with the good perf
 
     For the naming at some points look into the [Glossar](/other/2_glossar)
 
-    [:octicons-arrow-right-24: Dashboard](/how to/2_dashboard/)
+    [:octicons-arrow-right-24: Dashboard](/How_To/2_dashboard/)
 
 
 -   :material-file-document-multiple-outline:{ .lg .middle } __Inner workings__
@@ -98,7 +98,7 @@ Because the normalization of input is not necessary, together with the good perf
 
     Even it is quite basic for now, there are also some internal workflow and tasks of the single components described.
 
-    [:octicons-arrow-right-24: Docu of inner workings](/inner workings/1_overview/)
+    [:octicons-arrow-right-24: Docu of inner workings](/Inner_Workings/1_overview/)
 
 
 -   :octicons-package-dependencies-24:{ .lg .middle } __Dependencies__
@@ -113,7 +113,7 @@ Because the normalization of input is not necessary, together with the good perf
 
 ## Core-components
 
-for more details see [Documentation inner workings](/inner workings/1_overview/)
+for more details see [Documentation inner workings](/Inner_Workings/1_overview/)
 
 - **Kyouko**
     - Content: Core-component, which holds the artificial neuronal networks.

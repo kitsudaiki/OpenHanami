@@ -6,7 +6,7 @@
 
 !!! warning
 
-    This documentation contains only the plain REST-API-endpoints. The workflow to upload files or interact with the Clusters over the websocket are not part of this documentation. [See instead](/how to/4_websocket_workflow)
+    This documentation contains only the plain REST-API-endpoints. The workflow to upload files or interact with the Clusters over the websocket are not part of this documentation. [See instead](/How_To/4_websocket_workflow)
 
 ## misaki
 

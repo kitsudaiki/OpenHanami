@@ -2,7 +2,7 @@
 
 ## General
 
-The dashboard is one way to interact with Hanami-AI. It is client-only and the files are provided by the [Torii](/inner workings/7_torii/).
+The dashboard is one way to interact with Hanami-AI. It is client-only and the files are provided by the [Torii](/Inner_Workings/7_torii/).
 
 !!! info
     
@@ -27,11 +27,11 @@ The dashboard is one way to interact with Hanami-AI. It is client-only and the f
 
 ![step1](../img/dashboard/step1.png)
 
-Login should quite self-explaining. In case you used the [installation-guide](/how to/1_installation/) you have to use the values of `USER_ID` (NOT the `USER_NAME`) and `PASSWORD` for the login.
+Login should quite self-explaining. In case you used the [installation-guide](/How_To/1_installation/) you have to use the values of `USER_ID` (NOT the `USER_NAME`) and `PASSWORD` for the login.
 
 ![step2](../img/dashboard/step2.png)
 
-The first you look at after the login is the cluster-overview, which is in this case still empty. On the left side there are the different sections. The `Cluster`-section contains interactions with [Kyouko](/inner workings/3_kyouko/), the `Storage`-section the interactions with [Shiori](/inner workings/5_shiori/), `System`-section interactions with [Azuki](/inner workings/4_azuki/) and `Admin`-section everything for [Misaki](/inner workings/6_misaki/).
+The first you look at after the login is the cluster-overview, which is in this case still empty. On the left side there are the different sections. The `Cluster`-section contains interactions with [Kyouko](/Inner_Workings/3_kyouko/), the `Storage`-section the interactions with [Shiori](/Inner_Workings/5_shiori/), `System`-section interactions with [Azuki](/Inner_Workings/4_azuki/) and `Admin`-section everything for [Misaki](/Inner_Workings/6_misaki/).
 
 ### Upload Data-Set
 
@@ -47,7 +47,7 @@ After this a new small window opens. There, in this example the `CSV` (**1**) ha
 
 !!! example
 
-    For this example workflow here, this [Example-file](/how to/learn.csv) was used and uploaded, and looks like this
+    For this example workflow here, this [Example-file](/How_To/learn.csv) was used and uploaded, and looks like this
 
     ```
     input,output
@@ -80,7 +80,7 @@ After this a new small window opens. There, in this example the `CSV` (**1**) ha
 
 !!! example
 
-    Addtional there is this [Example-file](/how to/test.csv) for testing of the trained network.
+    Addtional there is this [Example-file](/How_To/test.csv) for testing of the trained network.
 
     ```
     input,output
@@ -126,7 +126,7 @@ For this you have to switch to the chapter within the `Cluster` section (**1**).
 
 Here you have to give it a name (**1**) and add the template for the segment (**2**). The name `example_segment`, which is used in this example is important, because the name of the segment is used in the `Cluster-Template` in the next step. At the end accept again (**3**).
 
-See basic explanation of the [templates](/inner workings/3_kyouko/#templates)
+See basic explanation of the [templates](/Inner_Workings/3_kyouko/#templates)
 
 !!! example "Example Template"
 
@@ -165,7 +165,7 @@ Same procedure: Go to the `Cluster` chapter (**1**) and add a new `Cluster` (**2
 
 Here you have to give it again a name (**1**) and a `Cluster-Template` (**2**). Within the template the name of the previously uploaded `Segment-Template` (**3**) is used as segment for this example Cluster. At the end accept again to create the cluster (**4**).
 
-See basic explanation of the [templates](/inner workings/3_kyouko/#templates)
+See basic explanation of the [templates](/Inner_Workings/3_kyouko/#templates)
 
 !!! example "Example Template"
 
@@ -230,11 +230,11 @@ After the `Cluster` was trained with some data, now a `Request-Task` can be crea
 
 To see the result of the task after it was finished, you have to switch to the `Request-Result`-chapter (**1**) in the `Storage`-section, because at the end, `Kyouko` send the result to `Shiori` to write this in the database. Here the result is listed with the same name, like the request-task (**2**). Now the result can be downloaded (**4**) as json-formated string in a file or directly shown as graph (**3**) with the help of the d3-library.
 
-Result for the [Train-file](/how to/learn.csv):
+Result for the [Train-file](/How_To/learn.csv):
 
 ![step18_1](../img/dashboard/step18_1.png)
 
-Result for the [Test-file](/how to/test.csv)
+Result for the [Test-file](/How_To/test.csv)
 
 ![step18_2](../img/dashboard/step18_2.png)
 

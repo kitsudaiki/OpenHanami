@@ -18,27 +18,27 @@
 
 - **Kyouko**
     - Content: Core-component, which holds the artificial neuronal networks.
-    - Documentation: [Kyouko-internal](/inner workings/3_kyouko/).
+    - Documentation: [Kyouko-internal](/Inner_Workings/3_kyouko/).
     - Repository: https://github.com/kitsudaiki/KyoukoMind.git
 
 - **Misaki**
     - Content: Authentication-service and management of user
-    - Documentation: [Misaki-internal](/inner workings/6_misaki/).
+    - Documentation: [Misaki-internal](/Inner_Workings/6_misaki/).
     - Repository: https://github.com/kitsudaiki/MisakiGuard.git
 
 - **Shiori**
     - Content: Storage-component, which holds snapshots, logs and so on
-    - Documentation: [Shiori-internal](/inner workings/5_shiori/).
+    - Documentation: [Shiori-internal](/Inner_Workings/5_shiori/).
     - Repository: https://github.com/kitsudaiki/ShioriArchive.git
 
 - **Azuki**
     - Content: Monitoring and energy-optimization
-    - Documentation: [Azuki-internal](/inner workings/4_azuki/).
+    - Documentation: [Azuki-internal](/Inner_Workings/4_azuki/).
     - Repository: https://github.com/kitsudaiki/AzukiHeart.git
 
 - **Torii**
     - Content: Proxy for all incoming connections
-    - Documentation: [Torii-internal](/inner workings/7_torii/).
+    - Documentation: [Torii-internal](/Inner_Workings/7_torii/).
     - Repository: https://github.com/kitsudaiki/ToriiGateway.git
 
 - **Tsugumi**

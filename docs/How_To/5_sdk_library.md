@@ -662,7 +662,7 @@ Compares a `Request-Result` against a `Data-Set` to check, how much of the Data-
 
 ### Switch Cluster to Direct-Mode
 
-see [Initializing Websocket](/how to/5_sdk_library/#init-websocket)
+see [Initializing Websocket](/How_To/5_sdk_library/#init-websocket)
 
 
 ## Request-Result

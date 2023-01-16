@@ -19,7 +19,7 @@ In this process were also 2 attempts in the past to bring this on a GPU with Ope
 
 ## Basic internal structure
 
-This is a short overview of the actual inner workings.
+This is a short overview of the actual Inner_Workings.
 
 ![Workflow-library](../img/Kyouko_base.drawio)
 
@@ -27,7 +27,7 @@ The graphic shows a simple Cluster. Clusters consists of multiple Segment-types:
 
 - **Input-Segments**: The gateway for the data into the network.
 - **Output-Segments**: Post-processing of data and forwarding them to the output.
-- **Core-Segments**: Consists of Bricks (Hexagons in the graphic), which holding the artificial neurons and synapses. Futher infos see [below](/inner workings/3_kyouko/#core-segment).
+- **Core-Segments**: Consists of Bricks (Hexagons in the graphic), which holding the artificial neurons and synapses. Futher infos see [below](/Inner_Workings/3_kyouko/#core-segment).
 
 Segments have a fixed connection between each other and each segment is only processed by one cpu-thread at the same time, but different segments can be processed by different CPU-threads at the same time, as long as they don't depend on each other. Each segment has in input- and output-buffer, to share data with the connected segments. The size of these buffers is fixed. Older versions had flexible buffers, which were too slow. 
 
@@ -49,7 +49,7 @@ Core-Segments are obviously the main-part of the structure.
 
 ![Workflow-library](../img/Kyouko_node_processing.drawio)
 
-Internally it is structured into Bricks. These are again only a name for a logical structuring for a more effective workflow and resource-handling. The named like this, because the are connected to each other like classical LEGO-bricks. Each Brick contains, based on its configuration, up to 2^16-1 artificial neurons. The reason for this limitation is performance and memory-consumption. Based on its [activation-function](/inner workings/3_kyouko/#activation-function) they are only active, when the input is positive. Otherwise they are skipped. In case that the input comes from an Input-Segment, the activation-functions isn't used. Instead the data are used plain. Connected to the neurons are a chain of synapse-sections. These structs, which hold multiple synapses and are bounded to a brick. Which brick is decided random when creating the section, based on a list of possible target-bricks, based on the location. The input coming from the neuron runs through the synapses one after another and becomes weaker by each passed synapse. The synapses, which are passed and triggered, do again trigger the connected neuron within the Brick. The initial settings of new synapses, like the weakening-effect, are set quite random within some restrictions. At the end of the section, it can go to the next section in another Brick. If a signal still exist at the end of all existing synapses of the chain, then new one will be created. If the input-signal disappear because of the weakening-effect before it reaches the end, then the last synapses of the chain are not processed and have NO effect on their connected neurons. 
+Internally it is structured into Bricks. These are again only a name for a logical structuring for a more effective workflow and resource-handling. The named like this, because the are connected to each other like classical LEGO-bricks. Each Brick contains, based on its configuration, up to 2^16-1 artificial neurons. The reason for this limitation is performance and memory-consumption. Based on its [activation-function](/Inner_Workings/3_kyouko/#activation-function) they are only active, when the input is positive. Otherwise they are skipped. In case that the input comes from an Input-Segment, the activation-functions isn't used. Instead the data are used plain. Connected to the neurons are a chain of synapse-sections. These structs, which hold multiple synapses and are bounded to a brick. Which brick is decided random when creating the section, based on a list of possible target-bricks, based on the location. The input coming from the neuron runs through the synapses one after another and becomes weaker by each passed synapse. The synapses, which are passed and triggered, do again trigger the connected neuron within the Brick. The initial settings of new synapses, like the weakening-effect, are set quite random within some restrictions. At the end of the section, it can go to the next section in another Brick. If a signal still exist at the end of all existing synapses of the chain, then new one will be created. If the input-signal disappear because of the weakening-effect before it reaches the end, then the last synapses of the chain are not processed and have NO effect on their connected neurons. 
 
 This chain is only processed, if the input of a neuron is greater then 0. The input coming from the neuron has basically no upper limit. The bigger the input, the bigger the weakening-effect of new created synapses. 
 
