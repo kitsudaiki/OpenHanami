@@ -1,5 +1,10 @@
 # Hanami-AI
 
+![Github workfloat status](https://img.shields.io/github/actions/workflow/status/kitsudaiki/Hanami-AI/build_test.yml?branch=develop&style=flat-square&label=build%20and%20test)
+![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/kitsudaiki/Hanami-AI?label=version&style=flat-square)
+![GitHub](https://img.shields.io/github/license/kitsudaiki/Hanami-AI?style=flat-square)
+![Platform](https://img.shields.io/badge/platform-Linux--x64-lightgrey?style=flat-square)
+
 ![Logo](assets/hanami-logo-with-text.png)
 
 **IMPORTANT: This project is still an experimental prototype at the moment and NOT ready for productive usage.** 
@@ -114,6 +119,30 @@ for more details see [Documentation inner workings](/Inner_Workings/1_overview/)
 ## Issue-Overview
 
 [Hanami-AI-Project](https://github.com/users/kitsudaiki/projects/9/views/4)
+
+## This repository
+
+This repository requires `git-lfs` to be able to check out images and binary objects.
+
+Clone repo with:
+
+```
+git clone --recurse-submodules git@github.com:kitsudaiki/Hanami-AI.git
+```
+
+In case `git-lfs` while cloning and installed afterwards:
+
+```
+git lfs fetch --all
+```
+
+In case the repo was cloned without submodules initially:
+
+```
+git submodule init
+git submodule update --recursive
+```
+
 
 ## Author
 
