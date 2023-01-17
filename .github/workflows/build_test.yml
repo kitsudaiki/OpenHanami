@@ -1,0 +1,27 @@
+name: build-and-test
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: registry.gitlab.com/kitsudaiki/kitsunemimi-ci-docker-images/normal-tests:1.2.0
+    name: build-job
+    steps:
+      - name: "Checkout repository"
+        run: |
+          # use manually clone, because with the "actions/checkout@v3" action the name of the
+          # branch can not be read by the git commands, which is necessary for the build-script
+          git clone https://github.com/kitsudaiki/${GITHUB_REPOSITORY#*/}.git
+          cd ${GITHUB_REPOSITORY#*/}
+          git checkout ${GITHUB_REF#refs/heads/}
+          git submodule init
+          git submodule update --recursive
+      - name: "update package-list"
+        run: apt-get update
+      - name: "install missing packages"
+        run: apt-get install -y libssl-dev libcrypto++-dev libboost1.74-dev uuid-dev  libsqlite3-dev protobuf-compiler protobuf-compiler
+      - name: "Build project"
+        run:  |
+          cd ${GITHUB_REPOSITORY#*/}
+          ./build.sh test
