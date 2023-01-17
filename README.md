@@ -115,6 +115,24 @@ for more details see [Documentation inner workings](/Inner_Workings/1_overview/)
 
 [Hanami-AI-Project](https://github.com/users/kitsudaiki/projects/9/views/4)
 
+## This repository
+
+This repository requires `git-lfs` to be able to check out images and binary objects.
+
+Clone repo with:
+
+`git clone --recurse-submodules git@github.com:kitsudaiki/Hanami-AI.git`
+
+In case `git-lfs` while cloning and installed afterwards:
+
+`git lfs fetch --all`
+
+In case the repo was cloned without submodules initially:
+
+`git submodule init`
+`git submodule update --recursive`
+
+
 ## Author
 
 Tobias Anker
