@@ -88,3 +88,12 @@
 [submodule "submodules/libKitsunemimiCommon"]
 	path = libKitsunemimiCommon
 	url = https://github.com/kitsudaiki/libKitsunemimiCommon
+[submodule "libKitsunemimiOpencl"]
+	path = libKitsunemimiOpencl
+	url = https://github.com/kitsudaiki/libKitsunemimiOpencl
+[submodule "TsugumiTester"]
+	path = TsugumiTester
+	url = https://github.com/kitsudaiki/TsugumiTester.git
+[submodule "Hanami-AI-Dashboard-Dependencies"]
+	path = Hanami-AI-Dashboard-Dependencies
+	url = https://github.com/kitsudaiki/Hanami-AI-Dashboard-Dependencies.git
