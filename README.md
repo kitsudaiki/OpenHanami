@@ -87,34 +87,17 @@ for more details see [Documentation inner workings](/Inner_Workings/1_overview/)
 
 ## Roadmap
 
-- **0.1.0**
-    - *content*: 
-        - first prototype with basic feature-set
+- [ ] improve documentation
+- [ ] Open-API REST-documentation
 
-- **0.2.0**
-    - *expected date*: Q1 2023
-    - *content*: 
-        - no new features but only improving the current state with:
-            - bugfixes
-            - additional validation
-            - more documentation
-            - ...
+- learning-process:
+    - [ ] GPU-support
+    - [ ] allow to use it as spiking-neuronal-network
+    - [ ] remove strict layer-structure, which is still enforced by hard configuration at the moment
+    - [ ] build 3-dimensional networks
+    - [ ] add classical static neuronal networks
 
-- **0.3.0**
-    - *expected date*: end Q2 2023
-    - *content*: 
-        - complete implementation of the core-concept and further evaluation and improvement of the learning-process:
-            - allow to use it as spiking-neuronal-network
-            - remove strict layer-structure, which is still enforced by hard configuration at the moment
-            - build 3-dimensional networks
-        - further evaluation and improving of the core-process
-        - add classical static neuronal networks with GPU-support
-
-- **0.4.0**
-    - *expected date*: Q4 2023
-    - *content*: 
-        - first Multi-Node-Setup
-
+- [ ] Multi-Node-Setups
 
 ## Issue-Overview
 
