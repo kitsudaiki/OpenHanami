@@ -1,0 +1,7 @@
+FROM registry.kitsunemimi.moe:5000/hanami_ai_base:0.1.0
+
+RUN mkdir -p /etc/torii
+COPY result/ToriiGateway /usr/bin/ToriiGateway
+Copy torii_run.sh /
+CMD /torii_run.sh
+

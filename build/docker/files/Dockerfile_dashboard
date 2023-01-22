@@ -1,0 +1,3 @@
+FROM registry.kitsunemimi.moe:5000/hanami_ai_base:0.1.0
+
+COPY Hanami-AI-Dashboard /etc/Hanami-AI-Dashboard

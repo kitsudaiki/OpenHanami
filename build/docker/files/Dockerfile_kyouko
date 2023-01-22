@@ -1,0 +1,6 @@
+FROM registry.kitsunemimi.moe:5000/hanami_ai_base:0.1.0
+
+RUN mkdir -p /etc/kyouko
+COPY result/KyoukoMind /usr/bin/KyoukoMind
+CMD KyoukoMind
+
