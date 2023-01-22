@@ -1,0 +1,24 @@
+apiVersion: v1
+metadata:
+  name: misaki-config
+data:
+  misaki.conf: |
+    [DEFAULT]
+    #debug = True
+    log_path = "/var/log/misaki"
+    address = "/tmp/hanami/misaki.uds"
+    database = "/etc/misaki/misaki_db"
+
+    [misaki]
+    token_key_path = "/etc/misaki/token_key"
+    policies = "/etc/misaki/policies"
+
+    #[azuki]
+    #address = "/tmp/azuki.uds"
+
+    [shiori]
+    address = "/tmp/hanami/shiori.uds"
+
+    [kyouko]
+    address = "/tmp/hanami/kyouko.uds"
+kind: ConfigMap

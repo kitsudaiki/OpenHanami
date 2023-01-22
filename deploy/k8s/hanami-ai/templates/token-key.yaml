@@ -1,0 +1,8 @@
+apiVersion: v1
+metadata:
+  name: token-key
+data:
+  token_key: |
+    asdf
+
+kind: ConfigMap

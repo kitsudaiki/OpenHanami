@@ -1,0 +1,163 @@
+apiVersion: v1
+metadata:
+  name: policies-config
+data:
+  policies: |+
+    [misaki]
+    v1/auth
+    - GET: admin, member
+
+    v1/token
+    - PUT: admin, member
+
+    v1/user
+    - GET: admin
+    - POST: admin
+    - DELETE: admin
+
+    v1/user/project
+    - POST: admin, member
+    - GET: admin, member
+    - DELETE: admin, member
+
+    v1/user/all
+    - GET: admin
+
+    v1/project
+    - GET: admin
+    - POST: admin
+    - DELETE: admin
+
+    v1/project/all
+    - GET: admin
+
+    v1/documentation/api/rest
+    - GET: admin, member
+
+    [shiori]
+    v1/foreward
+    - GET: admin, member
+
+    v1/mnist/data_set
+    - POST: admin, member
+    - PUT: admin, member
+
+    v1/csv/data_set
+    - POST: admin, member
+    - PUT: admin, member
+
+    v1/data_set/check
+    - POST: admin, member
+
+    v1/data_set/progress
+    - GET: admin, member
+
+    v1/data_set
+    - POST: admin, member
+    - PUT: admin, member
+    - GET: admin, member
+    - DELETE: admin, member
+
+    v1/data_set/all
+    - GET: admin, member
+
+    v1/cluster_snapshot
+    - POST: admin, member
+    - PUT: admin, member
+    - GET: admin, member
+    - DELETE: admin, member
+
+    v1/cluster_snapshot/all
+    - GET: admin, member
+
+    v1/request_result
+    - GET: admin, member
+    - DELETE: admin, member
+
+    v1/request_result/all
+    - GET: admin, member
+
+    v1/audit_log
+    - GET: admin, member
+
+    v1/error_log
+    - GET: admin
+
+
+    [azuki]
+    v1/system_info
+    - GET: admin, member
+
+    v1/threading
+    - GET: admin, member
+
+    v1/power_consumption
+    - GET: admin, member
+
+    v1/temperature_production
+    - GET: admin, member
+
+    v1/speed
+    - GET: admin, member
+
+
+    [kyouko]
+    v1/foreward
+    - GET: admin, member
+
+    v1/cluster
+    - POST: admin, member
+    - GET : admin, member
+    - DELETE: admin, member
+
+    v1/cluster/save
+    - POST: admin, member
+
+    v1/cluster/load
+    - POST: admin, member
+
+    v1/cluster/set_mode
+    - PUT: admin, member
+
+    v1/cluster/all
+    - GET : admin, member
+
+    v1/template/upload
+    - POST: admin, member
+
+    v1/template/generate
+    - POST: admin, member
+
+    v1/template
+    - GET : admin, member
+    - DELETE: admin, member
+
+    v1/template/all
+    - GET : admin, member
+
+    v1/task/learn
+    - POST: admin, member
+
+    v1/task/request
+    - POST: admin, member
+
+    v1/task/image/learn
+    - POST: admin, member
+
+    v1/task/image/request
+    - POST: admin, member
+
+    v1/task/table/learn
+    - POST: admin, member
+
+    v1/task/table/request
+    - POST: admin, member
+
+    v1/task
+    - GET : admin, member
+    - DELETE: admin, member
+
+    v1/task/all
+    - GET : admin, member
+
+kind: ConfigMap

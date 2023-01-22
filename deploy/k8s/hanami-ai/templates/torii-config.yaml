@@ -1,0 +1,38 @@
+apiVersion: v1
+metadata:
+  name: torii-config
+data:
+  torii.conf: |
+    [DEFAULT]
+    #debug = True
+    log_path = "/var/log/torii"
+    address = "/tmp/hanami/torii.uds"
+
+    [sakura]
+    enable = True
+    ip = "0.0.0.0"
+    certificate = "/etc/torii/cert.pem"
+    key = "/etc/torii/key.pem"
+    port = 1338
+
+    [http]
+    enable = True
+    ip = "0.0.0.0"
+    certificate = "/etc/torii/cert.pem"
+    key = "/etc/torii/key.pem"
+    dashboard_files = "/etc/torii/Hanami-AI-Dashboard/src"
+    port = 1337
+    enable_dashboard = True
+
+    [misaki]
+    address = "/tmp/hanami/misaki.uds"
+
+    [azuki]
+    address = "/tmp/hanami/azuki.uds"
+
+    [shiori]
+    address = "/tmp/hanami/shiori.uds"
+
+    [kyouko]
+    address = "/tmp/hanami/kyouko.uds"
+kind: ConfigMap
