@@ -15,6 +15,7 @@ SUBDIRS += libKitsunemimiArgs
 SUBDIRS += libKitsunemimiConfig
 SUBDIRS += libKitsunemimiCpu
 SUBDIRS += libKitsunemimiSqlite
+SUBDIRS += libKitsunemimiOpencl
 SUBDIRS += libKitsunemimiSakuraHardware
 SUBDIRS += libKitsunemimiSakuraDatabase
 SUBDIRS += libKitsunemimiSakuraNetwork
@@ -33,6 +34,7 @@ SUBDIRS += ShioriArchive
 SUBDIRS += MisakiGuard
 SUBDIRS += AzukiHeart
 SUBDIRS += KyoukoMind
+SUBDIRS += TsugumiTester
 
 libKitsunemimiNetwork.depends = libKitsunemimiCommon
 libKitsunemimiJson.depends = libKitsunemimiCommon
@@ -43,6 +45,7 @@ libKitsunemimiArgs.depends = libKitsunemimiCommon
 libKitsunemimiConfig.depends = libKitsunemimiIni
 libKitsunemimiCpu.depends = libKitsunemimiCommon
 libKitsunemimiSqlite.depends = libKitsunemimiCommon
+libKitsunemimiOpencl.depends = libKitsunemimiCommon
 libKitsunemimiSakuraHardware.depends = libKitsunemimiCpu
 libKitsunemimiSakuraDatabase.depends = libKitsunemimiSqlite
 libKitsunemimiSakuraNetwork.depends = libKitsunemimiNetwork
@@ -60,7 +63,8 @@ ToriiGateway.depends = libKitsunemimiHanamiNetwork
 ShioriArchive.depends = libKitsunemimiHanamiNetwork libKitsunemimiHanamiDatabase
 MisakiGuard.depends = libKitsunemimiHanamiNetwork libKitsunemimiHanamiDatabase libKitsunemimiHanamiPolicies
 AzukiHeart.depends = libKitsunemimiHanamiNetwork libKitsunemimiHanamiDatabase
-KyoukoMind.depends = libKitsunemimiHanamiNetwork libKitsunemimiHanamiClusterParser libKitsunemimiHanamiSegmentParser libKitsunemimiHanamiDatabase
+KyoukoMind.depends = libKitsunemimiHanamiNetwork libKitsunemimiOpencl libKitsunemimiHanamiClusterParser libKitsunemimiHanamiSegmentParser libKitsunemimiHanamiDatabase libHanamiAiSdk
+TsugumiTester.depends = libKitsunemimiHanamiNetwork ibKitsunemimiHanamiClusterParser libKitsunemimiHanamiSegmentParser libKitsunemimiHanamiDatabase libHanamiAiSdk
 
 
 
