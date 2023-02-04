@@ -15,16 +15,17 @@ mkdir -p $RESULT_DIR
 
 #-----------------------------------------------------------------------------------------------------------------
 
-# create build directory for KyoukoMind and go into this directory
+# create build directory for Hanami-AI and go into this directory
 LIB_HANAMI_DIR="$BUILD_DIR/Hanami-AI"
 mkdir -p $LIB_HANAMI_DIR
 cd $LIB_KITSUNE_HANAMI_DIR
 
-# build KyoukoMind library with qmake
+# build Hanami-AI library with qmake
 /usr/lib/x86_64-linux-gnu/qt5/bin/qmake "$PARENT_DIR/Hanami-AI/Hanami-AI.pro" -spec linux-g++ "CONFIG += optimize_full"
+
+# IMPORTNANT: at the moment it has to be build with only 1 thread, because the parser-generation with bison and flex
+#             has problems in a parallel build-process (see issue #30)
 /usr/bin/make -j1
-# copy build-result and include-files into the result-directory
-# cp "$LIB_HANAMI_DIR/KyoukoMind" "$RESULT_DIR/"
 
 #-----------------------------------------------------------------------------------------------------------------
 
