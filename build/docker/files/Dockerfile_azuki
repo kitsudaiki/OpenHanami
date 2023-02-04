@@ -1,6 +1,6 @@
 FROM registry.kitsunemimi.moe:5000/hanami_ai_base:0.1.0
 
 RUN mkdir -p /etc/azuki
-COPY result/AzukiHeart /usr/bin/AzukiHeart
+COPY Hanami-AI/src/components/AzukiHeart/AzukiHeart /usr/bin/AzukiHeart
 CMD AzukiHeart
 
