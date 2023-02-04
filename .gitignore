@@ -2,4 +2,5 @@ site
 docs/drawio-exporter
 gitIdentityChange.sh
 *.pro.user
-
+*.pb.cc
+*.pb.h
