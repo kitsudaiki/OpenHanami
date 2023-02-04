@@ -1,0 +1,44 @@
+# Changelog
+
+## [0.3.1] - 2022-07-02
+
+### Changed
+- use POST instead of GET requests for token-requests
+- rename 'pw' to 'password' in token-request for better error-messages
+
+
+## [0.3.0] - 2022-06-28
+
+### Added
+- cpp:
+    - snapshot-handling
+    - direct-io
+
+### Changed
+- cpp:
+    - change upload of data from sakura-network to websockets
+
+
+## [0.2.0] - 2022-02-14
+
+### Changed
+- cpp:
+    - process to upload data by using sakura-networking instead of http
+    - changed request of results
+
+
+## [0.1.0] - 2022-01-09
+
+### Added
+- basic version with:
+    - go:
+        - user-handling
+        - request and download rest-api-docu
+
+    - cpp:
+        - user-handing
+        - upload train-data
+        - handling templates
+        - handling clusters
+        - create learn- and requests-tasks
+

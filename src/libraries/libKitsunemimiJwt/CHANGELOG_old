@@ -1,0 +1,38 @@
+# Changelog
+
+## [0.4.1] - 2021-12-30
+
+### Added
+- add getter for token-payload without validation
+
+
+## [0.4.0] - 2021-11-26
+
+### Added
+- additional error-output for validation
+
+
+## [0.3.0] - 2021-11-18
+
+### Added
+- more validation
+- processing of header
+- add timestamps to limit the valid timespan of the token
+
+
+## [0.2.0] - 2021-11-17
+
+### Changed
+- use error-container of libKitsunemimiCommon for error-output
+
+
+## [0.1.1] - 2021-10-27
+
+### Changed
+- updated requirements
+
+
+## [0.1.0] - 2021-10-02
+
+### Added
+- initial version with sign and verify JWT-tokens of type HS256

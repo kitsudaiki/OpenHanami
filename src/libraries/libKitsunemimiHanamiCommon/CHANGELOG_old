@@ -1,0 +1,18 @@
+# Changelog
+
+## [0.2.0] - 2022-06-27
+
+### Added
+- added generic hanami-messages
+
+
+## [0.1.0] - 2022-01-09
+
+### Added
+- basic version with:
+    - init basic configs
+    - init basic arguments
+    - init basic main
+    - enums and structs for messaging
+    - some defines
+    - generation of uuid's
