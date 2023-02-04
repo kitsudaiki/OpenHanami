@@ -9,7 +9,7 @@ PARENT_DIR="$(dirname "$DIR")"
 
 # IMPORTNANT: at the moment it has to be build with only 1 thread, because the parser-generation with bison and flex
 #             has problems in a parallel build-process (see issue #30)
-/usr/bin/make -j1
+/usr/bin/make -j8
 
 #-----------------------------------------------------------------------------------------------------------------
 
