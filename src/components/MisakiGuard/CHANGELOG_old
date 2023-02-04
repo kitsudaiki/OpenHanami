@@ -1,0 +1,32 @@
+# Changelog
+
+## [0.2.0] - 2022-07-02
+
+### Added
+- added salt-value to password-hashing
+
+### Changed
+- use POST instead of GET requests for the auth-endpoint
+- rename 'pw' to 'password' for better error-messages
+
+### Fixed
+- a user can not delete himself anymore to avoid that a user break his own account
+
+
+## [0.1.1] - 2022-02-14
+
+### Added
+- send audit-logs to sagiri
+
+### Changed
+- consider user-scope in database-requests
+
+
+## [0.1.0] - 2022-01-09
+
+### Added
+- handling for users
+- create and validate jwt-token
+- check user-permissions against policies
+- rest-api-docu generation
+

@@ -1,0 +1,8 @@
+# Changelog
+
+## [0.1.0] - 2022-01-09
+
+### Added
+- basic version to define endpoints to map http-requests to blossoms and trees
+- basic parser for custom endpoint-definition-files
+

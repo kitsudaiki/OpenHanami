@@ -1,0 +1,12 @@
+# Changelog
+
+## [0.1.1] - 2022-07-02
+
+### Added
+- function to convert direcly into a json-like item-tree and not only a string
+
+
+## [0.1.0] - 2021-11-19
+
+### Added
+- initial version, which collects topological information and energy consumption of the cpu

@@ -1,0 +1,191 @@
+# Changelog
+
+
+## [0.11.3] - 2021-12-30
+
+### Added
+- new assignment-operator to assign data-items
+
+### Changed
+- changed regex for float-values while parsing
+
+
+## [0.11.2] - 2021-11-26
+
+### Added
+- function to steal item-content to avoid copy
+
+### Fixed
+- solved crashes in some cases of parsing-errors
+
+
+## [0.11.1] - 2021-11-18
+
+### Added
+- memory-leak-tests
+
+### Changed
+- the []-operator only returns a linked json-item and not a copy
+
+### Fixed
+- memory-leak in replace function
+- memory-leak in case of pasrsing an invalid string
+
+
+## [0.11.0] - 2021-11-17
+
+### Changed
+- use error-container of libKitsunemimiCommon for error-output
+
+
+## [0.10.7] - 2021-10-27
+
+### Fixed
+- fixed small performance-issue while parsing
+
+
+## [0.10.7] - 2021-10-02
+
+### Changed
+- updated from c++14 to c++17 (no code-changes)
+
+
+## [0.10.6] - 2021-07-29
+
+### Changed
+- only updated requirements
+
+
+## [0.10.5] - 2020-11-29
+
+### Fixed
+- parser can now handle empty input string for parsing
+
+
+## [0.10.4] - 2020-09-18
+
+### Changed
+- made parser static and thread-save to avoid conflicts
+
+
+## [0.10.3] - 2020-08-23
+
+### Changed
+- update requirements
+
+
+## [0.10.2] - 2020-04-18
+
+### Changed
+- update requirements
+
+
+## [0.10.1] - 2020-03-29
+
+### Changed
+- update requirements
+
+
+## [0.10.0] - 2020-01-17
+
+### Changed
+- parser-method to be consistent to other repos
+
+### Fixed
+- parser allows now empty arrays and maps
+
+
+## [0.9.0] - 2019-12-30
+
+### Added
+- new value-checks
+
+### Changed
+- made some methods const
+
+### Fixed
+- copy-constructor for invalid json-objects
+- build-script
+- string-to-double in parser
+
+
+## [0.8.0] - 2019-11-22
+
+### Changed
+- value-ranges updated to long and double
+- renamed getSize() to size()
+- renamed object to map
+
+### Fixed
+- segmentation-fauld in copy-constructor of json-item
+- memory-leak in parser-interface
+
+
+## [0.7.0] - 2019-11-02
+
+### Changed
+- renamed repo from `libKitsuneJson` to `libKitsunemimiJson`
+
+
+## [0.6.0] - 2019-10-20
+
+### Changed
+- updated for libKitsuneCommon 0.6.0
+- update include-style
+
+
+## [0.5.0] - 2019-09-18
+
+### Added
+- support for bool-values
+- support for null
+
+### Fixed
+- json-ouput was not fully correct
+
+
+## [0.4.1] - 2019-09-15
+
+### Fixed
+- build-script had always used the newest, but not the correct version of libKitsuneCommon
+
+
+## [0.4.0] - 2019-09-15
+
+### Added
+- content for readme-file
+- build-script
+
+### Fixed
+- error-messages of the parser
+- strings in parser
+
+### Changed
+- updated for libKitsuneCommon 0.5.2
+
+
+## [0.3.0] - 2019-08-17
+
+### Changed
+- changed file-names for better readable
+
+
+## [0.2.1] - 2019-08-12
+
+### Changed
+- update getter to return an optional linked item instead of a copy for easier content-updates
+
+
+## [0.2.0] - 2019-08-11
+
+### Added
+- rework interface-class for a more consistent look compared to other kitsune-libraries
+- update for using libKitsuneCommon 0.2.0
+
+
+## [0.1.0] - 2019-08-03
+
+### Added
+- parser for json-formated strings
+- classes for json-object, json-array and json-value
+- print-method to export json-items as string

@@ -1,0 +1,50 @@
+# Changelog
+
+## [0.4.1] - 2022-07-02
+
+### Changed
+- use POST instead of GET requests for token-requests
+
+### Fixed
+- error-codes of requests are not replaced by 500-errors anymore
+
+
+## [0.4.0] - 2022-06-27
+
+### Added
+- getter for internal token-request (will be moved to libMisakaGuard in the near future)
+
+### Changed
+- reworked client-handling for better usability and stability
+- updated error-loggin
+
+
+## [0.3.0] - 2022-02-13
+
+### Added
+- allow multiple servers at the same time
+- add message-forwarding to stream-messages
+- send error-messages to sagiri
+- add generic data-transfer, which are basically request-response-messages
+
+
+## [0.2.0] - 2022-01-09
+
+### Added
+- reconnect-functionality for connections
+- jwt-token validation for incoming messages
+- use endpoint-definitions to map requests to targets
+
+### Changed
+- updated initializing process
+
+### Fixed
+- different fixes to improve stability
+
+
+## [0.1.0] - 2021-09-26
+
+### Added
+- content of the old libKitsunemimiSakuraMessaging-repo
+    -  basic project-specific wrapper for libKitsunemimiSakuraNetwork
+

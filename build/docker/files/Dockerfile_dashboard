@@ -1,3 +1,10 @@
 FROM registry.kitsunemimi.moe:5000/hanami_ai_base:0.1.0
 
-COPY Hanami-AI-Dashboard /etc/Hanami-AI-Dashboard
+COPY Hanami-AI/src/frontend/Hanami-AI-Dashboard /etc/Hanami-AI-Dashboard
+
+# Remove symlinks in order to replace them by the real repos
+RUN rm /etc/Hanami-AI-Dashboard/src/sdk /etc/Hanami-AI-Dashboard/src/libKitsunemimiHanamiMessages /etc/Hanami-AI-Dashboard/src/Hanami-AI-Dashboard-Dependencies
+
+COPY Hanami-AI/src/sdk /etc/Hanami-AI-Dashboard/src/sdk
+COPY Hanami-AI/src/libraries/libKitsunemimiHanamiMessages /etc/Hanami-AI-Dashboard/src/libKitsunemimiHanamiMessages
+COPY Hanami-AI/src/frontend/Hanami-AI-Dashboard-Dependencies /etc/Hanami-AI-Dashboard/src/Hanami-AI-Dashboard-Dependencies
