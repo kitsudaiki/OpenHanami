@@ -9,6 +9,8 @@ docker build -t $REGISTRY/hanami_ai_base:$DOCKER_TAG -f Dockerfile_base .
 git clone https://github.com/kitsudaiki/Hanami-AI.git
 cd /dockerbuilder/Hanami-AI
 git checkout $GIT_TAG
+git submodule init
+git submodule update --recursive
 ./build.sh
 cd /dockerbuilder
 
