@@ -5,7 +5,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: registry.gitlab.com/kitsudaiki/kitsunemimi-ci-docker-images/opencl-tests:1.2.0
+      image: kitsudaiki/ci-build:0.1.0
     name: build-job
     steps:
       - name: "Checkout repository"
@@ -25,3 +25,159 @@ jobs:
         run:  |
           cd ${GITHUB_REPOSITORY#*/}
           ./build.sh test
+      - name: "Copy files"
+        run: |
+          mkdir /build_result
+          cd ${GITHUB_REPOSITORY#*/}
+          # Workaround, because I hadn'd found a way to define a build-target directory when using plain qmake and make
+          # and keeping all files in the directory is horrible slow in the articats
+          find ./src/ -type f -name "*.cpp" -exec rm {} \;
+          find ./src/ -type f -name "*.h" -exec rm {} \;
+          find ./src/ -type f -name "*.o" -exec rm {} \;
+          find ./src/ -type f -name "*.a" -exec rm {} \;
+          cp -r src/* /build_result/
+      - name: Create artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: result
+          path: /build_result
+
+  unit_tests:
+    needs: build
+    runs-on: ubuntu-latest
+    container:
+      image: kitsudaiki/hanami_ai_base:develop
+    name: "Unit-Tests"
+    steps:
+      - name: Get artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: result
+          path: /build_result
+      - name: "Check target-directory"
+        run: ls -l /build_result
+      - name: "Run test: libKitsunemimiCommon"
+        run: |
+          chmod +x /build_result/libraries/libKitsunemimiCommon/tests/unit_tests/unit_tests
+          /build_result/libraries/libKitsunemimiCommon/tests/unit_tests/unit_tests
+      - name: "Run test: libKitsunemimiJson"
+        run: |
+          chmod +x /build_result/libraries/libKitsunemimiJson/tests/unit_tests/unit_tests
+          /build_result/libraries/libKitsunemimiJson/tests/unit_tests/unit_tests
+      - name: "Run test: libKitsunemimiConfig"
+        run: |
+          chmod +x /build_result/libraries/libKitsunemimiConfig/tests/unit_tests/unit_tests
+          /build_result/libraries/libKitsunemimiConfig/tests/unit_tests/unit_tests
+      - name: "Run test: libKitsunemimiArgs"
+        run: |
+          chmod +x /build_result/libraries/libKitsunemimiArgs/tests/unit_tests/unit_tests
+          /build_result/libraries/libKitsunemimiArgs/tests/unit_tests/unit_tests
+      - name: "Run test: libKitsunemimiCrypto"
+        run: |
+          chmod +x /build_result/libraries/libKitsunemimiCrypto/tests/unit_tests/unit_tests
+          /build_result/libraries/libKitsunemimiCrypto/tests/unit_tests/unit_tests
+      - name: "Run test: libKitsunemimiIni"
+        run: |
+          chmod +x /build_result/libraries/libKitsunemimiIni/tests/unit_tests/unit_tests
+          /build_result/libraries/libKitsunemimiIni/tests/unit_tests/unit_tests
+      - name: "Run test: libKitsunemimiJwt"
+        run: |
+          chmod +x /build_result/libraries/libKitsunemimiJwt/tests/unit_tests/unit_tests
+          /build_result/libraries/libKitsunemimiJwt/tests/unit_tests/unit_tests
+      - name: "Run test: libKitsunemimiSqlite"
+        run: |
+          chmod +x /build_result/libraries/libKitsunemimiSqlite/tests/unit_tests/unit_tests
+          /build_result/libraries/libKitsunemimiSqlite/tests/unit_tests/unit_tests
+      - name: "Run test: libKitsunemimiHanamiClusterParser"
+        run: |
+          chmod +x /build_result/libraries/libKitsunemimiHanamiClusterParser/tests/unit_tests/unit_tests
+          /build_result/libraries/libKitsunemimiHanamiClusterParser/tests/unit_tests/unit_tests
+      - name: "Run test: libKitsunemimiHanamiSegmentParser"
+        run: |
+          chmod +x /build_result/libraries/libKitsunemimiHanamiSegmentParser/tests/unit_tests/unit_tests
+          /build_result/libraries/libKitsunemimiHanamiSegmentParser/tests/unit_tests/unit_tests
+      - name: "Run test: libKitsunemimiHanamiPolicies"
+        run: |
+          chmod +x /build_result/libraries/libKitsunemimiHanamiPolicies/tests/unit_tests/unit_tests
+          /build_result/libraries/libKitsunemimiHanamiPolicies/tests/unit_tests/unit_tests
+
+  memory_leak_tests:
+    needs: build
+    runs-on: ubuntu-latest
+    container:
+      image: kitsudaiki/hanami_ai_base:develop
+    name: "Memory-Leak-Tests"
+    steps:
+      - name: Get artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: result
+          path: /build_result
+      - name: "Check target-directory"
+        run: ls -l /build_result
+      - name: "Run test: libKitsunemimiCommon"
+        run: |
+          chmod +x /build_result/libraries/libKitsunemimiCommon/tests/memory_leak_tests/memory_leak_tests
+          /build_result/libraries/libKitsunemimiCommon/tests/memory_leak_tests/memory_leak_tests
+      - name: "Run test: libKitsunemimiJson"
+        run: |
+          chmod +x /build_result/libraries/libKitsunemimiJson/tests/memory_leak_tests/memory_leak_tests
+          /build_result/libraries/libKitsunemimiJson/tests/memory_leak_tests/memory_leak_tests
+      - name: "Run test: libKitsunemimiNetwork"
+        run: |
+          chmod +x /build_result/libraries/libKitsunemimiNetwork/tests/memory_leak_tests/memory_leak_tests
+          /build_result/libraries/libKitsunemimiNetwork/tests/memory_leak_tests/memory_leak_tests
+      - name: "Run test: libKitsunemimiHanamiClusterParser"
+        run: |
+          chmod +x /build_result/libraries/libKitsunemimiHanamiClusterParser/tests/memory_leak_tests/memory_leak_tests
+          /build_result/libraries/libKitsunemimiHanamiClusterParser/tests/memory_leak_tests/memory_leak_tests
+
+
+  functional_tests:
+    needs: build
+    runs-on: ubuntu-latest
+    container:
+      image: kitsudaiki/hanami_ai_base:develop
+    name: "Functional-Tests"
+    steps:
+      - name: Get artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: result
+          path: /build_result
+      - name: "Check target-directory"
+        run: ls -l /build_result
+      - name: "Run test: libKitsunemimiConfig"
+        run: |
+          chmod +x /build_result/libraries/libKitsunemimiConfig/tests/functional_tests/functional_tests
+          /build_result/libraries/libKitsunemimiConfig/tests/functional_tests/functional_tests
+      - name: "Run test: libKitsunemimiNetwork"
+        run: |
+          chmod +x /build_result/libraries/libKitsunemimiNetwork/tests/functional_tests/functional_tests
+          /build_result/libraries/libKitsunemimiNetwork/tests/functional_tests/functional_tests
+      - name: "Run test: libKitsunemimiObj"
+        run: |
+          chmod +x /build_result/libraries/libKitsunemimiObj/tests/functional_tests/functional_tests
+          /build_result/libraries/libKitsunemimiObj/tests/functional_tests/functional_tests
+      - name: "Run test: libKitsunemimiSakuraDatabase"
+        run: |
+          chmod +x /build_result/libraries/libKitsunemimiSakuraDatabase/tests/functional_tests/functional_tests
+          /build_result/libraries/libKitsunemimiSakuraDatabase/tests/functional_tests/functional_tests
+      - name: "Run test: libKitsunemimiSakuraNetwork"
+        run: |
+          chmod +x /build_result/libraries/libKitsunemimiSakuraNetwork/tests/functional_tests/functional_tests
+          /build_result/libraries/libKitsunemimiSakuraNetwork/tests/functional_tests/functional_tests
+      - name: "Run test: libKitsunemimiHanamiNetwork"
+        run: |
+          chmod +x /build_result/libraries/libKitsunemimiHanamiNetwork/tests/functional_tests/functional_tests
+          /build_result/libraries/libKitsunemimiHanamiNetwork/tests/functional_tests/functional_tests
+
+  cleanup:
+    needs: [ unit_tests, memory_leak_tests, functional_tests ]
+    runs-on: ubuntu-latest
+    name: cleanup-job
+    steps:
+      - name: "Delete artifacts"
+        uses: geekyeggo/delete-artifact@v2
+        with:
+          name: result
