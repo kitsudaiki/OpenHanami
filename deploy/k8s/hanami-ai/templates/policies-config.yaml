@@ -135,29 +135,21 @@ data:
     v1/template/all
     - GET : admin, member
 
-    v1/task/learn
-    - POST: admin, member
-
-    v1/task/request
-    - POST: admin, member
-
     v1/task/image/learn
     - POST: admin, member
 
     v1/task/image/request
     - POST: admin, member
 
-    v1/task/table/learn
-    - POST: admin, member
 
-    v1/task/table/request
-    - POST: admin, member
 
     v1/task
+    - POST: admin, member
     - GET : admin, member
     - DELETE: admin, member
 
     v1/task/all
     - GET : admin, member
+
 
 kind: ConfigMap
