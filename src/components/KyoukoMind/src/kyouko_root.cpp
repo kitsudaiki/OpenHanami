@@ -80,10 +80,10 @@ KyoukoRoot::~KyoukoRoot() {}
 bool
 KyoukoRoot::init(Kitsunemimi::ErrorContainer &error)
 {
-    Kitsunemimi::GpuHandler oclHandler;
+    /*Kitsunemimi::GpuHandler oclHandler;
     assert(oclHandler.initDevice(error));
     assert(oclHandler.m_interfaces.size() == 1);
-    gpuInterface = oclHandler.m_interfaces.at(0);
+    gpuInterface = oclHandler.m_interfaces.at(0);*/
 
     validateStructSizes();
 
