@@ -24,6 +24,6 @@ private:
     void create_delete_test();
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // STACK_BUFFER_RESERVE_TEST_H

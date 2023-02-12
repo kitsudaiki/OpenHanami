@@ -59,6 +59,6 @@ private:
     struct sockaddr_in socketAddr;
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // TLS_TCP_SERVER_H

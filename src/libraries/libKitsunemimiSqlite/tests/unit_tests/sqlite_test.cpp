@@ -196,4 +196,4 @@ Sqlite_Test::deleteFile()
     }
 }
 
-} // namespace Kitsunemimi
+}

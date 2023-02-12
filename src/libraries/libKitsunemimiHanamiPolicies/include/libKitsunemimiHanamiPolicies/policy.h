@@ -29,10 +29,11 @@
 #include <libKitsunemimiHanamiCommon/enums.h>
 #include <libKitsunemimiCommon/logger.h>
 
-namespace Kitsunemimi
-{
+namespace Kitsunemimi {
 class DataMap;
-namespace Hanami
+}
+
+namespace Kitsunemimi::Hanami
 {
 class Policy_Test;
 
@@ -69,7 +70,6 @@ private:
     friend Policy_Test;
 };
 
-}
 }
 
 #endif // POLICY_H

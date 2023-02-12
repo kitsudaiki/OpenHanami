@@ -54,6 +54,6 @@ private:
     TableItem getTestTableItem();
 };
 
-}  // namespace Kitsunemimi
+}
 
 #endif // TABLE_ITEM_TEST_H

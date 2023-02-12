@@ -27,9 +27,7 @@
 #include <string>
 #include <uuid/uuid.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 struct kuuid
@@ -61,7 +59,6 @@ generateUuid()
     return result;
 }
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_HANAMI_COMMON_UUID_H

@@ -29,9 +29,7 @@
 
 #include <uuid/uuid.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 /**
@@ -213,5 +211,4 @@ HanamiSqlTable::fillCondition(std::vector<RequestCondition> &conditions,
     return;
 }
 
-} // namespace Hanami
-} // namespace Kitsunemimi
+}

@@ -107,4 +107,4 @@ TcpServer::getPort() const
     return m_port;
 }
 
-} // namespace Kitsunemimi
+}

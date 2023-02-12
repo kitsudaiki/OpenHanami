@@ -29,9 +29,7 @@
 #include <libKitsunemimiCommon/items/data_items.h>
 #include <libKitsunemimiHanamiNetwork/blossom.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 //==================================================================================================
@@ -118,7 +116,6 @@ struct ValueItem
     }
 };
 
-} // namespace Hanami
-} // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_SAKURA_LANG_VALUE_ITEMS_H

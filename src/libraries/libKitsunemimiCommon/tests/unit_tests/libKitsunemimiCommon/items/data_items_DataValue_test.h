@@ -40,6 +40,6 @@ private:
     void setValue_test();
 };
 
-}  // namespace Kitsunemimi
+}
 
 #endif // DATAITEMS_DATAVALUE_TEST_H

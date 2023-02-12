@@ -46,16 +46,12 @@ using Kitsunemimi::DataArray;
 using Kitsunemimi::DataValue;
 using Kitsunemimi::DataMap;
 
-
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 class ClusterParserInterface;
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}
 }
 
 // The parsing context.

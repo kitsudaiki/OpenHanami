@@ -49,4 +49,4 @@ convertToString(std::string &convertedString,
     return creator.create(convertedString, input);
 }
 
-}  // namespace Kitsunemimi
+}

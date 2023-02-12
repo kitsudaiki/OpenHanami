@@ -26,9 +26,7 @@
 
 #include <message_handling/messaging_event.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 Kitsunemimi::Hanami::MessagingEventQueue* MessagingEventQueue::m_instance = nullptr;
@@ -81,5 +79,4 @@ MessagingEventQueue::run()
     }
 }
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}

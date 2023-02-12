@@ -146,6 +146,6 @@ struct State
     }
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // STATE_H

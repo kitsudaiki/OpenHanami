@@ -66,6 +66,6 @@ private:
     bool allocateStorage(const uint64_t numberOfBytes, ErrorContainer &error);
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // BINARY_FILE_DIRECT_H

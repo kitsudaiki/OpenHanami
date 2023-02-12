@@ -35,9 +35,7 @@
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiJson/json_item.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 /**
@@ -171,7 +169,6 @@ sessionCloseCallback(Kitsunemimi::Sakura::Session* session,
     }
 }
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_HANAMI_MESSAGING_CALLBACKS_H

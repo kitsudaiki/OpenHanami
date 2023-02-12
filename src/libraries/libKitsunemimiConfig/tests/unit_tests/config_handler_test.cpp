@@ -424,4 +424,4 @@ ConfigHandler_Test::getTestString()
     return testString;
 }
 
-} // namespace Kitsunemimi
+}

@@ -344,4 +344,4 @@ IniItem::toString()
     return output;
 }
 
-}  // namespace Kitsunemimi
+}

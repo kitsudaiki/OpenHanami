@@ -49,6 +49,6 @@ bool parseString(ObjItem &result,
                  ErrorContainer &error);
 bool convertToString(std::string &convertedString, const ObjItem &input);
 
-}  // namespace Kitsunemimi
+}
 
 #endif // OBJ_ITEM_H

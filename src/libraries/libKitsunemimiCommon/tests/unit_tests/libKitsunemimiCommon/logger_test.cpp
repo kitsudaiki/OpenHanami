@@ -126,4 +126,4 @@ Logger_Test::deleteFile(const std::string filePath)
     }
 }
 
-} // namespace Kitsunemimi
+}

@@ -170,4 +170,4 @@ Tcp_Test::cleanupTestCase()
     delete m_buffer;
 }
 
-} // namespace Kitsunemimi
+}

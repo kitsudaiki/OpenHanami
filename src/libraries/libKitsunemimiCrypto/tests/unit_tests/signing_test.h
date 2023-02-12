@@ -38,6 +38,6 @@ private:
     void create_verify_HMAC_Sha256();
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // SIGNING_TEST_H

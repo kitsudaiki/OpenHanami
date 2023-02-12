@@ -38,9 +38,10 @@ class TaskHandle_State;
 namespace Kitsunemimi {
 class EventQueue;
 class Statemachine;
-namespace Hanami {
-class HanamiMessagingClient;
 }
+
+namespace Kitsunemimi::Hanami {
+class HanamiMessagingClient;
 }
 
 class Cluster

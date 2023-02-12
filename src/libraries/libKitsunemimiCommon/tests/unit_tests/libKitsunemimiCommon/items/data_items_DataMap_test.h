@@ -45,6 +45,6 @@ private:
     DataMap initTestObject();
 };
 
-}  // namespace Kitsunemimi
+}
 
 #endif // DATAITEMS_DATAMAP_TEST_H

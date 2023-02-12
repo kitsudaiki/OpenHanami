@@ -229,4 +229,4 @@ Sqlite::closeDB()
     return false;
 }
 
-} // namespace Kitsunemimi
+}

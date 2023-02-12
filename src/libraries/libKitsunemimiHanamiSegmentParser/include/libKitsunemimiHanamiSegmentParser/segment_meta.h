@@ -31,9 +31,7 @@
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiHanamiCommon/structs.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 enum SegmentType
@@ -87,7 +85,6 @@ parseSegment(SegmentMeta* result,
              const std::string &input,
              ErrorContainer &error);
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_HANAMI_SEGMENT_PARSER_ITEM_H

@@ -60,6 +60,6 @@ private:
     bool initFile(ErrorContainer &error);
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // BINARY_FILE_H

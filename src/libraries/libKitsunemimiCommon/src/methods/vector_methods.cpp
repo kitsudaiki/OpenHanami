@@ -38,4 +38,4 @@ removeEmptyStrings(std::vector<std::string> &inputVector)
                       inputVector.end());
 }
 
-} // namespace Kitsunemimi
+}

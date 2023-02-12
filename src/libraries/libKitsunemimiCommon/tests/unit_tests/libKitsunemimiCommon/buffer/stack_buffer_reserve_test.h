@@ -26,6 +26,6 @@ private:
     void getBuffer_test();
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // STACK_BUFFER_RESERVE_TEST_H

@@ -22,9 +22,7 @@
 
 #include <libKitsunemimiSakuraDatabase/sql_database.h>
 
-namespace Kitsunemimi
-{
-namespace Sakura
+namespace Kitsunemimi::Sakura
 {
 
 /**
@@ -126,5 +124,4 @@ SqlDatabase::execSqlCommand(TableItem* resultTable,
     return m_db.execSqlCommand(resultTable, command, error);
 }
 
-} // namespace Sakura
-} // namespace Kitsunemimi
+}

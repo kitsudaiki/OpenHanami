@@ -854,4 +854,4 @@ TableItem::printHeaderBodyLine(TableItem::TableRow &headerContent,
     return output;
 }
 
-}  // namespace Kitsunemimi
+}

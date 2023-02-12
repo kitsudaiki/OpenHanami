@@ -50,6 +50,6 @@ private:
     static CleanupThread* m_cleanupThread;
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_CLEANUP_THREAD_H

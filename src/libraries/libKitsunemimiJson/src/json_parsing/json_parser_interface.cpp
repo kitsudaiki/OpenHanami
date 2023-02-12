@@ -197,4 +197,4 @@ JsonParserInterface::error(const Kitsunemimi::location& location,
     }
 }
 
-}  // namespace Kitsunemimi
+}

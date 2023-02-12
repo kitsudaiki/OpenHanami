@@ -26,9 +26,7 @@
 #include <stdint.h>
 #include <libKitsunemimiHanamiCommon/enums.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 enum MessageTypes
@@ -61,7 +59,6 @@ struct ResponseHeader
     uint32_t messageSize = 0;
 };
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_HANAMI_MESSAGING_MESSAGE_DEFINITIONS_H

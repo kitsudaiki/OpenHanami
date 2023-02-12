@@ -33,9 +33,7 @@
 #include <handler/reply_handler.h>
 #include <handler/message_blocker_handler.h>
 
-namespace Kitsunemimi
-{
-namespace Sakura
+namespace Kitsunemimi::Sakura
 {
 
 #define PROTOCOL_IDENTIFIER 0x6e79616e
@@ -432,7 +430,6 @@ struct Data_MultiFinish_Message
 
 //==================================================================================================
 
-} // namespace Sakura
-} // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_SAKURA_NETWORK_MESSAGE_DEFINITIONS_H

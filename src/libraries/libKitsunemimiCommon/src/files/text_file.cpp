@@ -265,4 +265,4 @@ replaceContent(const std::string &filePath,
     return writeResult;
 }
 
-} // namespace Kitsunemimi
+}

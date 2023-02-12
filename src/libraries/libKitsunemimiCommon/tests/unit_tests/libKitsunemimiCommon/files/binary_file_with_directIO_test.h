@@ -36,6 +36,6 @@ private:
     void deleteFile();
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // BINARY_FILE_WITH_DIRECTIO_TEST_H

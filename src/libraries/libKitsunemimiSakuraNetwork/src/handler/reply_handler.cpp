@@ -29,9 +29,7 @@
 #include <libKitsunemimiNetwork/abstract_socket.h>
 #include <libKitsunemimiCommon/logger.h>
 
-namespace Kitsunemimi
-{
-namespace Sakura
+namespace Kitsunemimi::Sakura
 {
 
 /**
@@ -250,5 +248,4 @@ ReplyHandler::makeTimerStep()
     spinUnlock();
 }
 
-} // namespace Sakura
-} // namespace Kitsunemimi
+}

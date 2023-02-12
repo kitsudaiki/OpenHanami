@@ -38,6 +38,6 @@ private:
     void encrypt_decrypt_AES_256();
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // SYMMETRIC_ENCRYPTION_TEST_H

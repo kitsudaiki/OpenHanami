@@ -33,6 +33,6 @@ private:
     void allocateBlocks_DataBuffer_test();
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // DATABUFFER_TEST_H

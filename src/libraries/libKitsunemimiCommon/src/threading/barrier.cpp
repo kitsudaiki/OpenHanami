@@ -72,4 +72,4 @@ Barrier::releaseAll()
     m_counter = m_numberOfThreads;
 }
 
-} // namespace Kitsunemimi
+}

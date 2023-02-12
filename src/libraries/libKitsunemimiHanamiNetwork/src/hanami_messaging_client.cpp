@@ -10,9 +10,7 @@
 #include <libKitsunemimiSakuraNetwork/session.h>
 #include <libKitsunemimiSakuraNetwork/session_controller.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 /**
@@ -497,5 +495,4 @@ HanamiMessagingClient::createRequest(Kitsunemimi::Sakura::Session* session,
     return ret;
 }
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}

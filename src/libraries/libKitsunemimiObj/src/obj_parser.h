@@ -43,6 +43,6 @@ private:
                   const std::string &input);
 };
 
-}  // namespace Kitsunemimi
+}
 
 #endif // OBJ_PARSER_H

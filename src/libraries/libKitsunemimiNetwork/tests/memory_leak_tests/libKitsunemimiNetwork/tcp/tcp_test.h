@@ -41,6 +41,6 @@ private:
     TemplateSocket<TcpSocket>* m_socketClientSide = nullptr;
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // TCPSOCKET_TCPSERVER_TEST_H

@@ -59,6 +59,6 @@ protected:
     uint64_t (*m_processMessage)(void*, RingBuffer*, AbstractSocket*);
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_NETWORK_ABSTRACT_SOCKET_H

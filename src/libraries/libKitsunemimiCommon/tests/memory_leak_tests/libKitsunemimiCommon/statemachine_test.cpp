@@ -39,4 +39,4 @@ Statemachine_Test::create_delete_test()
 }
 
 
-} // namespace Kitsunemimi
+}

@@ -34,6 +34,6 @@ private:
     void toLowerCase_test();
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // STRINGMETHODS_TEST_H

@@ -28,10 +28,8 @@
 
 class Cluster;
 
-namespace Kitsunemimi {
-namespace Hanami {
+namespace Kitsunemimi::Hanami {
 class HanamiMessagingClient;
-}
 }
 
 class RestoreCluster_State

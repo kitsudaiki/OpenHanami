@@ -30,9 +30,7 @@
 #include <libKitsunemimiCpu/rapl.h>
 #include <libKitsunemimiCommon/logger.h>
 
-namespace Kitsunemimi
-{
-namespace Sakura
+namespace Kitsunemimi::Sakura
 {
 class Host;
 
@@ -62,7 +60,6 @@ private:
     Rapl m_rapl;
 };
 
-} // namespace Sakura
-} // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_SAKURA_HARDWARE_CPUTHREAD_H

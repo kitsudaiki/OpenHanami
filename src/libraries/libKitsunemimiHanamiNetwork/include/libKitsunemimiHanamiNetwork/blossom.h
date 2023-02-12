@@ -29,9 +29,7 @@
 
 #include <libKitsunemimiHanamiCommon/structs.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 class BlossomItem;
 class SakuraThread;
@@ -170,7 +168,6 @@ private:
     void fillDefaultValues(DataMap &values);
 };
 
-} // namespace Hanami
-} // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_SAKURA_LANG_BLOSSOM_H

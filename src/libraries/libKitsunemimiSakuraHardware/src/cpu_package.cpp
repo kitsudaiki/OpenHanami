@@ -27,9 +27,7 @@
 
 #include <libKitsunemimiCpu/cpu.h>
 
-namespace Kitsunemimi
-{
-namespace Sakura
+namespace Kitsunemimi::Sakura
 {
 
 /**
@@ -176,5 +174,4 @@ CpuPackage::toJson()
     return result;
 }
 
-} // namespace Sakura
-} // namespace Kitsunemimi
+}

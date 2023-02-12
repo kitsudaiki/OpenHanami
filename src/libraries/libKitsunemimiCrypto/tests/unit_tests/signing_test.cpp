@@ -60,4 +60,4 @@ Signing_Test::create_verify_HMAC_Sha256()
     TEST_EQUAL(verify_HMAC_SHA256(testData, resultingHmac, key), false);
 }
 
-} // namespace Kitsunemimi
+}

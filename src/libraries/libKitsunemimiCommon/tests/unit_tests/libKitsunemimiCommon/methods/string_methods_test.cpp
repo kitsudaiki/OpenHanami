@@ -191,4 +191,4 @@ StringMethods_Test::toLowerCase_test()
     TEST_EQUAL(testString, "1234 this is a test-string _ !?");
 }
 
-} // namespace Kitsunemimi
+}

@@ -27,11 +27,11 @@
 #include <libKitsunemimiHanamiCommon/structs.h>
 #include <libKitsunemimiCommon/logger.h>
 
-namespace Kitsunemimi
-{
+namespace Kitsunemimi {
 class JsonItem;
+}
 
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 struct BlossomStatus;
 
@@ -46,7 +46,6 @@ bool getPermission(JsonItem &parsedResult,
                    Kitsunemimi::Hanami::BlossomStatus &status,
                    Kitsunemimi::ErrorContainer &error);
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}
 
 #endif // PERMISSION_H

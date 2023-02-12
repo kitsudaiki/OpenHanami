@@ -41,6 +41,6 @@ private:
     DataArray initTestArray();
 };
 
-}  // namespace Kitsunemimi
+}
 
 #endif // DATAITEMS_DATAARRAY_TEST_H

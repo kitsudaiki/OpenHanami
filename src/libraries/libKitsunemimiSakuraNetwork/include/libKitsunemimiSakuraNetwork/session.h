@@ -38,7 +38,9 @@ namespace Kitsunemimi
 {
 struct DataBuffer;
 class AbstractSocket;
-namespace Sakura
+}
+
+namespace Kitsunemimi::Sakura
 {
 class SessionHandler;
 class SessionController;
@@ -152,7 +154,6 @@ public:
     uint32_t m_messageIdCounter = 0;
 };
 
-} // namespace Sakura
-} // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_SAKURA_NETWORK_SESSION_H

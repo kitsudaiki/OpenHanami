@@ -265,6 +265,6 @@ private:
     void clearDataArray();
 };
 
-}  // namespace Kitsunemimi
+}
 
 #endif // DATAITEMS_H

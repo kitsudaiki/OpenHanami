@@ -30,11 +30,11 @@
 
 #include <libKitsunemimiSakuraNetwork/session.h>
 
-namespace Kitsunemimi
-{
+namespace Kitsunemimi {
 class AbstractServer;
+}
 
-namespace Sakura
+namespace Kitsunemimi::Sakura
 {
 
 class SessionController
@@ -88,7 +88,6 @@ private:
                           ErrorContainer &error);
 };
 
-} // namespace Sakura
-} // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_SAKURA_NETWORK_SESSION_HANDLER_H

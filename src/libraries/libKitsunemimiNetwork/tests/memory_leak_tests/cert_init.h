@@ -64,6 +64,6 @@ void writeTestCerts()
     Kitsunemimi::writeFile("/tmp/key.pem", testKey, error, true);
 }
 
-} // namespace Kitsunemimi
+}
 
 #endif // CERT_INIT_H

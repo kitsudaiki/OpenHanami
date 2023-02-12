@@ -27,9 +27,7 @@
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiConfig/config_handler.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 /**
@@ -96,7 +94,6 @@ initMain(int argc,
     return true;
 }
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_HANAMI_COMMON_GENERIC_MAIN_H

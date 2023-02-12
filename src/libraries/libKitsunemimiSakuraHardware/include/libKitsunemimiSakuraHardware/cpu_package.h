@@ -29,10 +29,11 @@
 
 #include <libKitsunemimiCommon/items/data_items.h>
 
-namespace Kitsunemimi
-{
+namespace Kitsunemimi {
 class DataMap;
-namespace Sakura
+}
+
+namespace Kitsunemimi::Sakura
 {
 class CpuCore;
 
@@ -56,7 +57,6 @@ public:
     std::vector<CpuCore*> cpuCores;
 };
 
-} // namespace Sakura
-} // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_SAKURA_HARDWARE_CPUPACKAGE_H

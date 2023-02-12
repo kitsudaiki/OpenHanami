@@ -25,10 +25,8 @@
 
 #include <common.h>
 
-namespace Kitsunemimi {
-namespace Sakura {
+namespace Kitsunemimi::Sakura {
 class Session;
-}
 }
 
 void streamDataCallback(void* target,

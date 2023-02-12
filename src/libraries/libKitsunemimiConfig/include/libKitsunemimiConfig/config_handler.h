@@ -190,7 +190,7 @@ private:
     std::map<std::string, std::map<std::string, ConfigType>> m_registeredConfigs;
 };
 
-} // namespace Kitsunemimi
+}
 
 
 #endif // CONFIG_HANDLER_H

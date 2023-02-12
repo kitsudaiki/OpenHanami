@@ -1566,4 +1566,4 @@ DataArray::append(DataItem* item)
     array.push_back(item);
 }
 
-}  // namespace Kitsunemimi
+}

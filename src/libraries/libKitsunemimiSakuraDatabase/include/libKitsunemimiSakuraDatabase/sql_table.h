@@ -30,11 +30,11 @@
 #include <libKitsunemimiCommon/items/data_items.h>
 #include <libKitsunemimiCommon/logger.h>
 
-namespace Kitsunemimi
-{
+namespace Kitsunemimi {
 class JsonItem;
+}
 
-namespace Sakura
+namespace Kitsunemimi::Sakura
 {
 class SqlDatabase;
 
@@ -124,7 +124,6 @@ private:
                           TableItem &tableContent);
 };
 
-} // namespace Sakura
-} // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_SAKURA_DATABASE_SQL_TABLE_H

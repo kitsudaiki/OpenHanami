@@ -25,9 +25,7 @@
 
 #include <libKitsunemimiArgs/arg_parser.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 /**
@@ -58,7 +56,6 @@ registerArguments(Kitsunemimi::ArgParser &argparser,
     return true;
 }
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_HANAMI_COMMON_ARGS_H

@@ -374,4 +374,4 @@ Jwt::getTimeSinceEpoch()
     return std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
 }
 
-}  // namespace Kitsunemimi
+}

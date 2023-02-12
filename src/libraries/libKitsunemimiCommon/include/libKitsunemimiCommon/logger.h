@@ -151,6 +151,6 @@ private:
     const std::string getDatetime();
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // LOGGER_H

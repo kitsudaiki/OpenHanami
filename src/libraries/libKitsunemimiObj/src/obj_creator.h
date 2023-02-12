@@ -23,6 +23,6 @@ public:
                 const ObjItem &input);
 };
 
-}  // namespace Kitsunemimi
+}
 
 #endif // OBJ_CREATOR_H

@@ -25,9 +25,7 @@
 
 #include <libKitsunemimiCommon/test_helper/compare_test_helper.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 class Cluster_ParseString_Test
@@ -40,7 +38,6 @@ private:
     void parseString_test();
 };
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}
 
 #endif // CLUSTER_PARSESTRING_TEST_H

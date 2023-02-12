@@ -34,6 +34,6 @@ private:
     void deleteFile();
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // TEXT_FILE_TEST_H

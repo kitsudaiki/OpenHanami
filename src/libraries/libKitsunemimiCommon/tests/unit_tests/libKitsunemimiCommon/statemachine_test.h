@@ -44,6 +44,6 @@ private:
     void isInState_test();
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // STATEMACHINE_TEST_H

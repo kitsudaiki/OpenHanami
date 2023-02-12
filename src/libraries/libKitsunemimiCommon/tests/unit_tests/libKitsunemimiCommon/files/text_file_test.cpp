@@ -214,5 +214,5 @@ TextFile_Test::deleteFile()
     }
 }
 
-} // namespace Kitsunemimi
+}
 

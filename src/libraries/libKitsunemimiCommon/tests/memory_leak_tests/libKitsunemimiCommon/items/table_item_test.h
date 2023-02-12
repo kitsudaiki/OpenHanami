@@ -27,6 +27,6 @@ private:
     void add_delete_row_test();
 };
 
-}  // namespace Kitsunemimi
+}
 
 #endif // TABLE_ITEM_TEST_H

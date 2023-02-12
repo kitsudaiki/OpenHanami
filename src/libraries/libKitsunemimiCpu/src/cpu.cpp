@@ -825,4 +825,4 @@ getPkgTemperature(const uint64_t pkgFileId,
     return (double)temp / 1000.0;
 }
 
-} // namespace Kitsunemimi
+}

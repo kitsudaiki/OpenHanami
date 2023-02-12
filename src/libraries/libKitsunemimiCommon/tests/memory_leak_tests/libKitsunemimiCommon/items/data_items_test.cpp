@@ -133,4 +133,4 @@ DataItems_Test::array_append_remove_test()
     CHECK_MEMORY();
 }
 
-}  // namespace Kitsunemimi
+}

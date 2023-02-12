@@ -3,9 +3,7 @@
 #include <libKitsunemimiSakuraDatabase/sql_table.h>
 #include <libKitsunemimiSakuraDatabase/sql_database.h>
 
-namespace Kitsunemimi
-{
-namespace Sakura
+namespace Kitsunemimi::Sakura
 {
 
 TestTable::TestTable(Kitsunemimi::Sakura::SqlDatabase* db)
@@ -116,5 +114,4 @@ TestTable::deleteUser(const std::string &userID,
     return deleteFromDb(conditions, error);
 }
 
-}
 }

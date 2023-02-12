@@ -87,4 +87,4 @@ State_Test::addChildState_test()
     TEST_EQUAL(childState.parent->id, SOURCE_STATE);
 }
 
-} // namespace Kitsunemimi
+}

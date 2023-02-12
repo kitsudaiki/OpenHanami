@@ -47,10 +47,8 @@ using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 namespace websocket = beast::websocket; // from <boost/beast/websocket.hpp>
 namespace ssl = boost::asio::ssl;       // from <boost/asio/ssl.hpp>
 
-namespace Kitsunemimi {
-namespace Hanami {
+namespace Kitsunemimi::Hanami {
 class HanamiMessagingClient;
-}
 }
 
 class HttpWebsocketThread

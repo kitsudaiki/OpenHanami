@@ -32,10 +32,8 @@ class SpeedMeasuring;
 class PowerMeasuring;
 class TemperatureMeasuring;
 
-namespace Kitsunemimi {
-namespace Sakura {
+namespace Kitsunemimi::Sakura {
 class Host;
-}
 }
 
 class AzukiRoot

@@ -79,6 +79,6 @@ private:
              bool force = false);
 };
 
-}  // namespace Kitsunemimi
+}
 
 #endif // INIITEM_H

@@ -30,6 +30,6 @@ private:
     void getObject_RingBuffer_test();
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // RING_BUFFER_TEST_H

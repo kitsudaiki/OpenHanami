@@ -26,9 +26,7 @@
 #include <libKitsunemimiCommon/logger.h>
 #include <messages_processing/multiblock_data_processing.h>
 
-namespace Kitsunemimi
-{
-namespace Sakura
+namespace Kitsunemimi::Sakura
 {
 
 MultiblockIO::MultiblockIO(Session* session)
@@ -218,5 +216,4 @@ MultiblockIO::removeMultiblockBuffer(const uint64_t multiblockId)
     return false;
 }
 
-} // namespace Sakura
-} // namespace Kitsunemimi
+}

@@ -48,6 +48,6 @@ bool decrypt_AES_256_CBC(std::string &result,
                          const CryptoPP::SecByteBlock &key,
                          Kitsunemimi::ErrorContainer &error);
 
-} // namespace Kitsunemimi
+}
 
 #endif // SYMMETRIC_ENCRYPTION_H

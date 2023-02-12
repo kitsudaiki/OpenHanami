@@ -38,6 +38,6 @@ private:
     void generate_SHA_256_test();
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // HASHES_TEST_H

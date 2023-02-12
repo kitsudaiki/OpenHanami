@@ -27,9 +27,7 @@
 #include <libKitsunemimiCommon/items/data_items.h>
 #include <libKitsunemimiCommon/items/table_item.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 /**
@@ -183,5 +181,4 @@ createError(const BlossomIO &blossomIO,
                        blossomIO.blossomPath);
 }
 
-} // namespace Hanami
-} // namespace Kitsunemimi
+}

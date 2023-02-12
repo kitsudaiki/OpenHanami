@@ -132,4 +132,4 @@ decrypt_AES_256_CBC(std::string &result,
     return true;
 }
 
-} // namespace Kitsunemimi
+}

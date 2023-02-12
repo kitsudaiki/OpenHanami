@@ -29,9 +29,7 @@
     Kitsunemimi::Hanami::PolicyParser::symbol_type policylex (Kitsunemimi::Hanami::PolicyParserInterface& driver)
 YY_DECL;
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 Kitsunemimi::Hanami::PolicyParserInterface* PolicyParserInterface::m_instance = nullptr;
@@ -183,5 +181,4 @@ PolicyParserInterface::error(const Kitsunemimi::Hanami::location& location,
     }
 }
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}

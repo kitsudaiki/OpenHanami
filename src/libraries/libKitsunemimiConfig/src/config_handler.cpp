@@ -903,4 +903,4 @@ ConfigHandler::registerValue(std::string &groupName,
     return true;
 }
 
-} // namespace Kitsunemimi
+}

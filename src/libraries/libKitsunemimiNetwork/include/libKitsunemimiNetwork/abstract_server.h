@@ -46,6 +46,6 @@ protected:
     void (*m_processConnection)(void*, AbstractSocket*);
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_NETWORK_ABSTRACT_SERVER_H

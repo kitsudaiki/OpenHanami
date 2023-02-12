@@ -84,6 +84,6 @@ private:
     uint16_t m_port = 0;
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // TCP_SOCKET_H

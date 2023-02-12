@@ -78,6 +78,6 @@ protected:
     uint32_t m_failedTests = 0;
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // COMPARE_TEST_HELPER_H

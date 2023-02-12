@@ -23,9 +23,7 @@
 #include "message_blocker_handler.h"
 #include <libKitsunemimiSakuraNetwork/session.h>
 
-namespace Kitsunemimi
-{
-namespace Sakura
+namespace Kitsunemimi::Sakura
 {
 
 /**
@@ -226,5 +224,4 @@ MessageBlockerHandler::makeTimerStep()
     spinUnlock();
 }
 
-} // namespace Sakura
-} // namespace Kitsunemimi
+}

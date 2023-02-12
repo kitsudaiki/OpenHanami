@@ -30,6 +30,6 @@ private:
     void reset_StackBuffer_test();
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // STACK_BUFFER_TEST_H

@@ -33,6 +33,6 @@ uint64_t getTotalMemory();
 uint64_t getFreeMemory();
 uint64_t getPageSize();
 
-} // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_CPU_MEMORY_H

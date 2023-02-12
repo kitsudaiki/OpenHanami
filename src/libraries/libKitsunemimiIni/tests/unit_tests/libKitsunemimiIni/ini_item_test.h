@@ -31,6 +31,6 @@ private:
     const std::string getTestString();
 };
 
-}  // namespace Kitsunemimi
+}
 
 #endif // PARSERTEST_H

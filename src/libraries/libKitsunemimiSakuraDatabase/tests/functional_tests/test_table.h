@@ -3,10 +3,9 @@
 
 #include <libKitsunemimiSakuraDatabase/sql_table.h>
 
-namespace Kitsunemimi
+namespace Kitsunemimi::Sakura
 {
-namespace Sakura
-{
+
 class SqlDatabase;
 
 class TestTable :
@@ -39,7 +38,6 @@ public:
     long getNumberOfUsers(ErrorContainer &error);
 };
 
-}
 }
 
 #endif // TESTTABLE_H

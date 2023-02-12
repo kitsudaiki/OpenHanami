@@ -33,6 +33,6 @@ namespace Kitsunemimi
 
 void removeEmptyStrings(std::vector<std::string> &inputVector);
 
-} // namespace Kitsunemimi
+}
 
 #endif // VECTORMETHODS_H

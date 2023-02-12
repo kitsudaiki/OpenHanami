@@ -31,9 +31,7 @@
 #include <items/value_items.h>
 #include <libKitsunemimiHanamiNetwork/blossom.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 class ValueItemMap;
 
@@ -45,7 +43,6 @@ bool checkBlossomValues(const std::map<std::string, FieldDef> &defs,
 bool checkType(DataItem* item,
                const FieldType fieldType);
 
-} // namespace Hanami
-} // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_SAKURA_LANG_RUNTIME_VALIDATION_H

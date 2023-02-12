@@ -362,4 +362,4 @@ Statemachine::getState(const uint32_t stateId)
     return result;
 }
 
-} // namespace Kitsunemimi
+}

@@ -36,8 +36,9 @@ namespace Kitsunemimi
 {
 class DataItem;
 class DataMap;
+}
 
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 class ValueItemMap
@@ -71,7 +72,6 @@ private:
     void clearChildMap();
 };
 
-} // namespace Hanami
-} // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_SAKURA_LANG_VALUE_ITEM_MAP_H

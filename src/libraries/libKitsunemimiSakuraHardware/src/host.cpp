@@ -28,9 +28,7 @@
 #include <libKitsunemimiCpu/cpu.h>
 #include <libKitsunemimiCommon/items/data_items.h>
 
-namespace Kitsunemimi
-{
-namespace Sakura
+namespace Kitsunemimi::Sakura
 {
 
 /**
@@ -238,5 +236,4 @@ Host::initCpuCoresAndThreads(ErrorContainer &error)
     return true;
 }
 
-} // namespace Sakura
-} // namespace Kitsunemimi
+}

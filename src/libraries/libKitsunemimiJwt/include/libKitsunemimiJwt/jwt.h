@@ -71,6 +71,6 @@ private:
     long getTimeSinceEpoch();
 };
 
-}  // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_JWT_H

@@ -36,7 +36,7 @@ namespace Kitsunemimi
 
 class JsonParserInterface;
 
-}  // namespace Kitsunemimi
+}
 }
 
 // The parsing context.

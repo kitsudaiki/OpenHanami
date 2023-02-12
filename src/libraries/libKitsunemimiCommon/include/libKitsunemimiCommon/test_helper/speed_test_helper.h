@@ -100,6 +100,6 @@ private:
     TableItem m_result;
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // SPEED_TEST_HELPER_H

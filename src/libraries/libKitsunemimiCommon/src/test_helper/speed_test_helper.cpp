@@ -84,4 +84,4 @@ SpeedTestHelper::printResult()
     std::cout<<m_result.toString()<<std::endl;
 }
 
-} // namespace Kitsunemimi
+}

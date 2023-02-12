@@ -31,9 +31,7 @@
 
 #include <items/sakura_items.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 struct BlossomIO;
 
@@ -62,7 +60,6 @@ void createError(const BlossomIO &blossomIO,
                  ErrorContainer &error,
                  const std::string &possibleSolution = "");
 
-} // namespace Hanami
-} // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_SAKURA_LANG_ITEM_METHODS_H

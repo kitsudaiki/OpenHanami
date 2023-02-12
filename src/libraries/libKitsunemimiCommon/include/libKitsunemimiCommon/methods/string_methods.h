@@ -54,6 +54,6 @@ void trim(std::string& original,
 void toUpperCase(std::string &original);
 void toLowerCase(std::string &original);
 
-} // namespace Kitsunemimi
+}
 
 #endif // STRINGMETHODS_H

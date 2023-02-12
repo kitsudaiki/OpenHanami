@@ -39,9 +39,7 @@
 
 #include <libKitsunemimiCommon/logger.h>
 
-namespace Kitsunemimi
-{
-namespace Sakura
+namespace Kitsunemimi::Sakura
 {
 
 SessionController* SessionController::m_sessionController = nullptr;
@@ -377,5 +375,4 @@ SessionController::startSession(AbstractSocket* socket,
 
 //==================================================================================================
 
-} // namespace Sakura
-} // namespace Kitsunemimi
+}

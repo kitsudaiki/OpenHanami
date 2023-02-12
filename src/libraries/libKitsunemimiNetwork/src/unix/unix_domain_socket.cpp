@@ -179,4 +179,4 @@ UnixDomainSocket::sendData(int socket,
     return send(socket, bufferPosition, bufferSize, flags);
 }
 
-} // namespace Kitsunemimi
+}

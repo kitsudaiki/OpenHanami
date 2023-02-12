@@ -25,9 +25,7 @@
 #include <libKitsunemimiCommon/items/table_item.h>
 #include <libKitsunemimiCommon/items/data_items.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 /**
@@ -351,5 +349,4 @@ ValueItemMap::clearChildMap()
     m_childMaps.clear();
 }
 
-} // namespace Hanami
-} // namespace Kitsunemimi
+}

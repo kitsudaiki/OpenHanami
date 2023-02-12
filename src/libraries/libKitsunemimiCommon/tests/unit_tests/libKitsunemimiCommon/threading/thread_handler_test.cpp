@@ -74,4 +74,4 @@ void DummyThread::run()
     }
 }
 
-} // namespace Kitsunemimi
+}

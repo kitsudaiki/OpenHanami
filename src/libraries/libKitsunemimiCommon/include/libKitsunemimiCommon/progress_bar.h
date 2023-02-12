@@ -45,6 +45,6 @@ private:
     friend ProgressBar_Test;
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // PROGRESS_BAR_H

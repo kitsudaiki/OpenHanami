@@ -26,10 +26,11 @@
 #include <mutex>
 #include <libKitsunemimiSqlite/sqlite.h>
 
-namespace Kitsunemimi
-{
+namespace Kitsunemimi {
 class Sqlite;
-namespace Sakura
+}
+
+namespace Kitsunemimi::Sakura
 {
 
 class SqlDatabase
@@ -55,7 +56,6 @@ private:
     Kitsunemimi::Sqlite m_db;
 };
 
-} // namespace Sakura
-} // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_SAKURA_DATABASE_SQL_DATABASE_H

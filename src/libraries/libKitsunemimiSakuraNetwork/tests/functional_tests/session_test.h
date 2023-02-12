@@ -32,9 +32,7 @@
 
 #include <libKitsunemimiCommon/test_helper/compare_test_helper.h>
 
-namespace Kitsunemimi
-{
-namespace Sakura
+namespace Kitsunemimi::Sakura
 {
 
 class Session_Test
@@ -68,7 +66,6 @@ private:
     void sendTestMessages(Session *session);
 };
 
-} // namespace Sakura
-} // namespace Kitsunemimi
+}
 
 #endif // SESSION_TEST_H

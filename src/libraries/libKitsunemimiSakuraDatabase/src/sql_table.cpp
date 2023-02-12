@@ -26,9 +26,7 @@
 #include <libKitsunemimiCommon/methods/string_methods.h>
 #include <libKitsunemimiJson/json_item.h>
 
-namespace Kitsunemimi
-{
-namespace Sakura
+namespace Kitsunemimi::Sakura
 {
 
 /**
@@ -629,5 +627,4 @@ SqlTable::processGetResult(JsonItem &result,
     return true;
 }
 
-} // namespace Sakura
-} // namespace Kitsunemimi
+}

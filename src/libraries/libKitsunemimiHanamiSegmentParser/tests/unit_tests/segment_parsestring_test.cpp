@@ -24,9 +24,7 @@
 
 #include <libKitsunemimiHanamiSegmentParser/segment_meta.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 Segment_ParseString_Test::Segment_ParseString_Test()
@@ -298,5 +296,4 @@ Segment_ParseString_Test::parseString_test()
     TEST_EQUAL(ret, false);
 };
 
-}
 }

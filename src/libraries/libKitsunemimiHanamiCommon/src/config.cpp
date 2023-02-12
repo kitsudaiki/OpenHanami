@@ -23,9 +23,7 @@
 #include <libKitsunemimiConfig/config_handler.h>
 #include <libKitsunemimiCommon/logger.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 /**
@@ -67,5 +65,4 @@ registerBasicConnectionConfigs(const std::vector<std::string> &configGroups,
     }
 }
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}

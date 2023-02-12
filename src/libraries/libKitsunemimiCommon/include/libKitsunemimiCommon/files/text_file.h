@@ -51,6 +51,6 @@ replaceContent(const std::string &filePath,
                const std::string &newContent,
                ErrorContainer &error);
 
-} // namespace Kitsunemimi
+}
 
 #endif // TEXT_FILE_H

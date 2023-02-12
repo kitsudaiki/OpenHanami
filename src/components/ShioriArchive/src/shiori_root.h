@@ -23,11 +23,10 @@
 #ifndef SHIORIARCHIVE_SHIORIROOT_H
 #define SHIORIARCHIVE_SHIORIROOT_H
 
-namespace Kitsunemimi {
-namespace Sakura {
+namespace Kitsunemimi::Sakura {
 class SqlDatabase;
 }
-}
+
 class DataSetTable;
 class ClusterSnapshotTable;
 class RequestResultTable;

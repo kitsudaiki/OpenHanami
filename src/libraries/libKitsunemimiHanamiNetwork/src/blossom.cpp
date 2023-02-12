@@ -26,9 +26,7 @@
 #include <libKitsunemimiCommon/logger.h>
 #include <runtime_validation.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 /**
@@ -483,5 +481,4 @@ Blossom::getCompareMap(std::map<std::string, FieldDef::IO_ValueType> &compareMap
     }
 }
 
-} // namespace Hanami
-} // namespace Kitsunemimi
+}

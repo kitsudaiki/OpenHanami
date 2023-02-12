@@ -173,4 +173,4 @@ StackBuffer_Test::reset_StackBuffer_test()
     TEST_EQUAL(isNullptr, false);
 }
 
-} // namespace Kitsunemimi
+}

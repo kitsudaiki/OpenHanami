@@ -36,9 +36,7 @@
 #include <libKitsunemimiHanamiCommon/enums.h>
 #include <libKitsunemimiCommon/files/text_file.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 Kitsunemimi::Hanami::Session_Test* Session_Test::m_instance = nullptr;
@@ -206,5 +204,4 @@ Session_Test::getTestConfig()
     return config;
 }
 
-} // namespace Hanami
-} // namespace Kitsunemimi
+}

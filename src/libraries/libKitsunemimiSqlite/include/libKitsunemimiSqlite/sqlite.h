@@ -49,6 +49,6 @@ private:
     int m_rc = 0;
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // SQLITE_H

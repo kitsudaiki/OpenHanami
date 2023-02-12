@@ -121,6 +121,6 @@ private:
     uint64_t readMSR(const int32_t offset);
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_CPU_RAPL_H

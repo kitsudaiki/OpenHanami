@@ -32,9 +32,7 @@
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiNetwork/abstract_socket.h>
 
-namespace Kitsunemimi
-{
-namespace Sakura
+namespace Kitsunemimi::Sakura
 {
 
 // init static variables
@@ -230,5 +228,4 @@ SessionHandler::sendHeartBeats()
     unlockSessionMap();
 }
 
-} // namespace Sakura
-} // namespace Kitsunemimi
+}

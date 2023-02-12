@@ -25,6 +25,6 @@ private:
     void fill_reset_test();
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // DATABUFFER_TEST_H

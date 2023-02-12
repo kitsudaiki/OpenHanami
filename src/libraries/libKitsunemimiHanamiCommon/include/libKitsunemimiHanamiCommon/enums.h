@@ -25,9 +25,7 @@
 
 #include <stdint.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 enum HttpRequestType
@@ -122,7 +120,6 @@ enum SakuraObjectType
     BLOSSOM_TYPE = 1,
 };
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_HANAMI_COMMON_ENUMS_H

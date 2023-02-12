@@ -75,6 +75,6 @@ private:
     SSL* m_ssl = nullptr;
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // TLS_TCP_SOCKET_H

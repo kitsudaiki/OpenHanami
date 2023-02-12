@@ -351,4 +351,4 @@ setErrorLogCallback(void (*handleError)(const std::string &))
     Logger::m_logger->setErrorLogCallback(handleError);
 }
 
-} // namespace Kitsunemimi
+}

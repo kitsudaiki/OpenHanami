@@ -211,6 +211,6 @@ getObject_RingBuffer(const RingBuffer &ringBuffer)
     return static_cast<const T*>(data);
 }
 
-} // namespace Kitsunemimi
+}
 
 #endif // RING_BUFFER_H

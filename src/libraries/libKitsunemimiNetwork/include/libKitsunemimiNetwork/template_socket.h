@@ -234,6 +234,6 @@ protected:
     }
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_NETWORK_TEMPLATE_SOCKET_H

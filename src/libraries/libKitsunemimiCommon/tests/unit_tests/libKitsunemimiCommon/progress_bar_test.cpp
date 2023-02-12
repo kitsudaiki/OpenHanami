@@ -42,4 +42,4 @@ ProgressBar_Test::progress_test()
     delete progressBar;
 }
 
-} // namespace Kitsunemimi
+}

@@ -82,4 +82,4 @@ TableItem_test::add_delete_row_test()
     CHECK_MEMORY();
 }
 
-}  // namespace Kitsunemimi
+}

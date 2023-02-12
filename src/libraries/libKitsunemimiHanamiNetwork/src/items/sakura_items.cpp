@@ -22,9 +22,7 @@
 
 #include <items/sakura_items.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 //===================================================================
@@ -64,5 +62,4 @@ BlossomItem::copy()
     return newItem;
 }
 
-} // namespace Hanami
-} // namespace Kitsunemimi
+}
