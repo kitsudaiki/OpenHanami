@@ -98,5 +98,5 @@ UnixDomainServer::getServerFd() const
     return serverFd;
 }
 
-} // namespace Kitsunemimi
+}
 

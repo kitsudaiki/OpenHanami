@@ -27,14 +27,15 @@
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiHanamiCommon/structs.h>
 
-namespace Kitsunemimi
-{
+namespace Kitsunemimi {
 class JsonItem;
+}
 
-namespace Sakura {
+namespace Kitsunemimi::Sakura {
 class Session;
 }
-namespace Hanami
+
+namespace Kitsunemimi::Hanami
 {
 struct BlossomStatus;
 
@@ -76,7 +77,6 @@ private:
                           const std::string &errorMessage);
 };
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}
 
 #endif // MESSAGING_EVENT_H

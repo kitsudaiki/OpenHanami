@@ -23,6 +23,6 @@ private:
     void parseString_test();
 };
 
-}  // namespace Kitsunemimi
+}
 
 #endif // JSON_ITEM_PARSESTRING_TEST_H

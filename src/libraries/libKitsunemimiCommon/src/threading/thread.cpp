@@ -343,4 +343,4 @@ Thread::isActive() const
     return m_active;
 }
 
-} // namespace Kitsunemimi
+}

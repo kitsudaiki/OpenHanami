@@ -75,5 +75,5 @@ JsonItem_ParseString_Test::parseString_test()
     CHECK_MEMORY();
 }
 
-}  // namespace Kitsunemimi
+}
 

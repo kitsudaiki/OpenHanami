@@ -175,4 +175,4 @@ RingBuffer_Test::getObject_RingBuffer_test()
     TEST_EQUAL(*returnVal, testValue);
 }
 
-} // namespace Kitsunemimi
+}

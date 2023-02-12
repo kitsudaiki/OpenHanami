@@ -38,12 +38,16 @@ namespace Kitsunemimi
 struct DataBuffer;
 class DataMap;
 struct StackBuffer;
-namespace Sakura {
+}
+
+namespace Kitsunemimi::Sakura
+{
 class Blossom;
 class Session;
 class SessionController;
 }
-namespace Hanami
+
+namespace Kitsunemimi::Hanami
 {
 class Blossom;
 class HanamiMessagingClient;
@@ -164,7 +168,6 @@ private:
     std::map<std::string, std::map<std::string, Hanami::Blossom*>> m_registeredBlossoms;
 };
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_HANAMI_NETWORK_MESSAGING_CONTROLLER_H

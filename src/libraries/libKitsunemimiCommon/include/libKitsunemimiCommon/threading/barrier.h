@@ -52,6 +52,6 @@ private:
     bool m_abort = false;
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // BARRIER_H

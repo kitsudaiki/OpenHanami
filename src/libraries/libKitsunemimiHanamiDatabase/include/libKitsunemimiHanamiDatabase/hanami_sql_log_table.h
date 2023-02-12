@@ -31,15 +31,7 @@
 
 #include <libKitsunemimiSakuraDatabase/sql_table.h>
 
-namespace Kitsunemimi {
-namespace Json {
-class JsonItem;
-}
-}
-
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 class SqlDatabase;
 
@@ -57,7 +49,6 @@ public:
                        ErrorContainer &error);
 };
 
-} // namespace Hanami
-} // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_HANAMI_DATABASE_SQL_LOG_TABLE_H

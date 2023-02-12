@@ -41,6 +41,6 @@ private:
     std::string m_testFilePath = "/tmp/ConfigHandler_Test.ini";
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // CONFIG_HANDLER_TEST_H

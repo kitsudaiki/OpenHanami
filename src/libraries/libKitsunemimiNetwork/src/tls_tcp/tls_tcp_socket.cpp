@@ -262,4 +262,4 @@ TlsTcpSocket::cleanupOpenssl()
     return true;
 }
 
-} // namespace Kitsunemimi
+}

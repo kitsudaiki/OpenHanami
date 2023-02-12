@@ -39,9 +39,7 @@
 #include <../../libKitsunemimiHanamiMessages/protobuffers/shiori_messages.proto3.pb.h>
 #include <../../libKitsunemimiHanamiMessages/message_sub_types.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 /**
@@ -300,5 +298,4 @@ MessagingEvent::sendErrorMessage(const DataMap &context,
     }
 }
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}

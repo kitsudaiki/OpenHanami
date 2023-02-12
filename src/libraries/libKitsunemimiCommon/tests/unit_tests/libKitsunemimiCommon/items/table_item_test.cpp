@@ -431,4 +431,4 @@ TableItem_test::getTestTableItem()
     return testItem;
 }
 
-}  // namespace Kitsunemimi
+}

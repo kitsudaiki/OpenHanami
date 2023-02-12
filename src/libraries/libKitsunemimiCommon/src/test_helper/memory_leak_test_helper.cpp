@@ -96,4 +96,4 @@ MemoryLeakTestHelpter::~MemoryLeakTestHelpter()
     }
 }
 
-} // namespace Kitsunemimi
+}

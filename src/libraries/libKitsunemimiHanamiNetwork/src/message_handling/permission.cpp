@@ -35,10 +35,9 @@
 #include <libKitsunemimiCommon/methods/string_methods.h>
 #include <libKitsunemimiCommon/items/data_items.h>
 
-namespace Kitsunemimi
+namespace Kitsunemimi::Hanami
 {
-namespace Hanami
-{
+
 /**
  * @brief check if a token is valid and parse the token
  *
@@ -157,5 +156,4 @@ getPermission(JsonItem &parsedResult,
     return true;
 }
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}

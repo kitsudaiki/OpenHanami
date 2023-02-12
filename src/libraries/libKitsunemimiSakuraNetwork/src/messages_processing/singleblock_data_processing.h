@@ -35,9 +35,7 @@
 
 #include <libKitsunemimiCommon/logger.h>
 
-namespace Kitsunemimi
-{
-namespace Sakura
+namespace Kitsunemimi::Sakura
 {
 
 /**
@@ -189,7 +187,6 @@ process_SingleBlock_Data_Type(Session* session,
     }
 }
 
-} // namespace Sakura
-} // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_SAKURA_NETWORK_SINGLE_DATA_PROCESSING_H

@@ -38,4 +38,4 @@ VectorMethods_Test::removeEmptyStrings_test()
     TEST_EQUAL(testVector[2], "z");
 }
 
-} // namespace Kitsunemimi
+}

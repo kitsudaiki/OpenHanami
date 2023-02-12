@@ -24,6 +24,6 @@ private:
     void create_delete_test();
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // STATEMACHINE_TEST_H

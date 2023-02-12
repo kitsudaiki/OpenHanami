@@ -124,4 +124,4 @@ Common_Test::base64UrlToBase64_test()
     TEST_EQUAL(input, "ab/4+3==");
 }
 
-} // namespace Kitsunemimi
+}

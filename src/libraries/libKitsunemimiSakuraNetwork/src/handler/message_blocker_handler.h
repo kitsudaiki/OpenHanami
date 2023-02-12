@@ -28,9 +28,7 @@
 
 #include <libKitsunemimiCommon/threading/thread.h>
 
-namespace Kitsunemimi
-{
-namespace Sakura
+namespace Kitsunemimi::Sakura
 {
 class Session;
 
@@ -70,7 +68,6 @@ private:
     void makeTimerStep();
 };
 
-} // namespace Sakura
-} // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_SAKURA_NETWORK_MESSAGE_BLOCKER_HANDLER_H

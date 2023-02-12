@@ -96,4 +96,4 @@ CleanupThread::run()
     }
 }
 
-} // namespace Kitsunemimi
+}

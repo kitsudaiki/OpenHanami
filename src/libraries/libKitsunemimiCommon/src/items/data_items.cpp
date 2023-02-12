@@ -827,15 +827,12 @@ DataMap
         this->m_valueType = other.m_valueType;
 
         // copy content
-        std::map<std::string, DataItem*>::const_iterator it;
-        for(it = otherMap.begin();
-            it != otherMap.end();
-            it++)
+        for(auto const& [name, item] : otherMap)
         {
-            if(it->second != nullptr) {
-                this->map.insert(make_pair(it->first, it->second->copy()));
+            if(item != nullptr) {
+                this->map.insert(make_pair(name, item->copy()));
             } else {
-                this->map.insert(std::make_pair(it->first, nullptr));
+                this->map.insert(std::make_pair(name, nullptr));
             }
         }
     }
@@ -1569,4 +1566,4 @@ DataArray::append(DataItem* item)
     array.push_back(item);
 }
 
-}  // namespace Kitsunemimi
+}

@@ -33,4 +33,4 @@ State_Test::create_delete_test()
     CHECK_MEMORY();
 }
 
-} // namespace Kitsunemimi
+}

@@ -34,9 +34,7 @@
 #include <libKitsunemimiCommon/buffer/data_buffer.h>
 #include <libKitsunemimiCommon/logger.h>
 
-namespace Kitsunemimi
-{
-namespace Sakura
+namespace Kitsunemimi::Sakura
 {
 class Session;
 
@@ -81,7 +79,6 @@ private:
     std::map<uint64_t, MultiblockBuffer> m_incomingBuffer;
 };
 
-} // namespace Sakura
-} // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_SAKURA_NETWORK_MULTIBLOCK_IO_H

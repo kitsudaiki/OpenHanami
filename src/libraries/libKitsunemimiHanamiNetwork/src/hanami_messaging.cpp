@@ -42,9 +42,7 @@
 #include <../../libKitsunemimiHanamiMessages/protobuffers/shiori_messages.proto3.pb.h>
 #include <../../libKitsunemimiHanamiMessages/message_sub_types.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 Kitsunemimi::Sakura::SessionController* HanamiMessaging::m_sessionController = nullptr;
@@ -824,5 +822,4 @@ HanamiMessaging::addEndpoint(const std::string &id,
     return true;
 }
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}

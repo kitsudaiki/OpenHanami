@@ -105,5 +105,5 @@ JsonItem_ParseString_Test::parseString_test()
     TEST_EQUAL(error.toString(), expectedError);
 }
 
-}  // namespace Kitsunemimi
+}
 

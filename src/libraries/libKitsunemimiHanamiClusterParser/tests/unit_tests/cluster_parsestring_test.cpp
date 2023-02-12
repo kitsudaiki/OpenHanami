@@ -24,9 +24,7 @@
 
 #include <libKitsunemimiHanamiClusterParser/cluster_meta.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 Cluster_ParseString_Test::Cluster_ParseString_Test()
@@ -177,5 +175,4 @@ Cluster_ParseString_Test::parseString_test()
     TEST_EQUAL(ret, false);
 };
 
-}
 }

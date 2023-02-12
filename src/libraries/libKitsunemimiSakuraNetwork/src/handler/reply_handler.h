@@ -28,9 +28,7 @@
 
 #include <libKitsunemimiCommon/threading/thread.h>
 
-namespace Kitsunemimi
-{
-namespace Sakura
+namespace Kitsunemimi::Sakura
 {
 class Session;
 
@@ -76,7 +74,6 @@ private:
     bool removeMessageFromList(const uint64_t completeMessageId);
 };
 
-} // namespace Sakura
-} // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_SAKURA_NETWORK_REPLY_HANDLER_H

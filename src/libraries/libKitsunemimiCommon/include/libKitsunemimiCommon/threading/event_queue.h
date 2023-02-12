@@ -43,6 +43,6 @@ private:
     bool m_deleteEventObj = false;
 };
 
-}  // namespace Kitsunemimi
+}
 
 #endif // EVENTQUEUE_H

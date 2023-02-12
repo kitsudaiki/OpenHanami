@@ -61,6 +61,6 @@ private:
     std::string m_socketFile = "";
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // UNIX_DOMAIN_SOCKET_H

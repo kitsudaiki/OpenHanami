@@ -26,10 +26,7 @@
 #include <libKitsunemimiHanamiCommon/enums.h>
 #include <session_test.h>
 
-
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 TestBlossom::TestBlossom(Session_Test* sessionTest)
@@ -55,5 +52,4 @@ TestBlossom::runTask(Hanami::BlossomIO &blossomIO,
     return true;
 }
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}

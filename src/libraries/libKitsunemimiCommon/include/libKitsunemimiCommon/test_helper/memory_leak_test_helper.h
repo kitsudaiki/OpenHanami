@@ -72,6 +72,6 @@ protected:
     uint32_t m_successfulTests = 0;
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // MEMORY_LEAK_TEST_HELPER_H

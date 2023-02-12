@@ -77,4 +77,4 @@ ProgressBar::updateProgress(const float newProgress)
     return result;
 }
 
-} // namespace Kitsunemimi
+}

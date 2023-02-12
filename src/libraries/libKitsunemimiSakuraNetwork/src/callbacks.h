@@ -37,9 +37,7 @@
 #include <messages_processing/multiblock_data_processing.h>
 #include <messages_processing/singleblock_data_processing.h>
 
-namespace Kitsunemimi
-{
-namespace Sakura
+namespace Kitsunemimi::Sakura
 {
 
 /**
@@ -215,7 +213,6 @@ processConnection_Callback(void*,
     socket->startThread();
 }
 
-} // namespace Sakura
-} // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_SAKURA_NETWORK_CALLBACKS_H

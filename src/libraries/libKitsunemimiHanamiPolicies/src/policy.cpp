@@ -25,9 +25,7 @@
 #include <libKitsunemimiCommon/items/data_items.h>
 #include <policy_parsing/policy_parser_interface.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 /**
@@ -151,5 +149,4 @@ Policy::checkRuleList(const std::vector<std::string> &rules,
     return false;
 }
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}

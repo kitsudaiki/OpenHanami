@@ -196,4 +196,4 @@ toLowerCase(std::string &original)
                    [](unsigned char c){ return std::tolower(c); });
 }
 
-} // namespace Kitsunemimi
+}

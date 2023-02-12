@@ -33,15 +33,7 @@
 
 #include <libKitsunemimiHanamiCommon/structs.h>
 
-namespace Kitsunemimi {
-namespace Json {
-class JsonItem;
-}
-}
-
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 class SqlDatabase;
 
@@ -78,7 +70,6 @@ private:
                        const Kitsunemimi::Hanami::UserContext &userContext);
 };
 
-} // namespace Hanami
-} // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_HANAMI_DATABASE_SQL_TABLE_H

@@ -97,6 +97,6 @@ private:
     std::condition_variable m_cv;
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // THREAD_H

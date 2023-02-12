@@ -25,9 +25,7 @@
 #include <libKitsunemimiCommon/items/table_item.h>
 #include <libKitsunemimiCommon/items/data_items.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 /**
@@ -49,23 +47,15 @@ ValueItemMap::~ValueItemMap()
 ValueItemMap::ValueItemMap(const ValueItemMap &other)
 {
     // copy items
-    std::map<std::string, ValueItem>::const_iterator it;
-    for(it = other.m_valueMap.begin();
-        it != other.m_valueMap.end();
-        it++)
-    {
-        ValueItem value = it->second;
-        m_valueMap.insert(std::make_pair(it->first, value));
+    for(auto const& [id, item] : other.m_valueMap) {
+        m_valueMap.insert(std::make_pair(id, item));
     }
 
     // copy child-maps
-    std::map<std::string, ValueItemMap*>::const_iterator itChilds;
-    for(itChilds = other.m_childMaps.begin();
-        itChilds != other.m_childMaps.end();
-        itChilds++)
+    for(auto const& [id, itemMap] : other.m_childMaps)
     {
-        ValueItemMap* newValue = new ValueItemMap(*itChilds->second);
-        m_childMaps.insert(std::make_pair(itChilds->first, newValue));
+        ValueItemMap* newValue = new ValueItemMap(*itemMap);
+        m_childMaps.insert(std::make_pair(id, newValue));
     }
 }
 
@@ -81,25 +71,15 @@ ValueItemMap::operator=(const ValueItemMap &other)
         this->m_valueMap.clear();
 
         // copy items
-        std::map<std::string, ValueItem>::const_iterator it;
-        for(it = other.m_valueMap.begin();
-            it != other.m_valueMap.end();
-            it++)
-        {
-            ValueItem value = it->second;
-            this->m_valueMap.insert(std::make_pair(it->first, value));
+        for(auto const& [id, item] : other.m_valueMap) {;
+            this->m_valueMap.insert(std::make_pair(id, item));
         }
 
         clearChildMap();
 
         // copy child-maps
-        std::map<std::string, ValueItemMap*>::const_iterator itChilds;
-        for(itChilds = other.m_childMaps.begin();
-            itChilds != other.m_childMaps.end();
-            itChilds++)
-        {
-            ValueItemMap* newValue = new ValueItemMap(*itChilds->second);
-            this->m_childMaps.insert(std::make_pair(itChilds->first, newValue));
+        for(auto const& [id, itemMap] : other.m_childMaps) {
+            this->m_childMaps.insert(std::make_pair(id, new ValueItemMap(*itemMap)));
         }
     }
 
@@ -329,12 +309,8 @@ ValueItemMap::toString()
     table.addColumn("value");
 
     // fill table
-    std::map<std::string, ValueItem>::const_iterator it;
-    for(it = m_valueMap.begin();
-        it != m_valueMap.end();
-        it++)
-    {
-        table.addRow(std::vector<std::string>{it->first, it->second.item->toString()});
+    for(auto const& [id, item] : m_valueMap) {
+        table.addRow(std::vector<std::string>{id, item.item->toString()});
     }
 
     return table.toString();
@@ -347,19 +323,15 @@ ValueItemMap::toString()
 void
 ValueItemMap::getValidationMap(std::map<std::string, FieldDef> &validationMap) const
 {
-    std::map<std::string, ValueItem>::const_iterator it;
-    for(it = m_valueMap.begin();
-        it != m_valueMap.end();
-        it++)
+    for(auto const& [id, item] : m_valueMap)
     {
-        ValueItem value = it->second;
         FieldDef::IO_ValueType ioType = FieldDef::INPUT_TYPE;
-        if(value.type == ValueItem::OUTPUT_PAIR_TYPE) {
+        if(item.type == ValueItem::OUTPUT_PAIR_TYPE) {
             ioType = FieldDef::OUTPUT_TYPE;
         }
-        const bool isReq = value.item->getString() == "?";
+        const bool isReq = item.item->getString() == "?";
 
-        validationMap.emplace(it->first, FieldDef(ioType, value.fieldType, isReq, value.comment));
+        validationMap.emplace(id, FieldDef(ioType, item.fieldType, isReq, item.comment));
     }
 }
 
@@ -370,17 +342,11 @@ void
 ValueItemMap::clearChildMap()
 {
     // clear old child map
-    std::map<std::string, ValueItemMap*>::const_iterator itChilds;
-    for(itChilds = m_childMaps.begin();
-        itChilds != m_childMaps.end();
-        itChilds++)
-    {
-        ValueItemMap* oldMap = itChilds->second;
-        delete oldMap;
+    for(auto & [id, itemMap] : m_childMaps) {
+        delete itemMap;
     }
 
     m_childMaps.clear();
 }
 
-} // namespace Hanami
-} // namespace Kitsunemimi
+}

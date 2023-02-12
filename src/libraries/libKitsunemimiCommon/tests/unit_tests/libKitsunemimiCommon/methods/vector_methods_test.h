@@ -24,6 +24,6 @@ private:
     void removeEmptyStrings_test();
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // VECTORMETHODS_TEST_H

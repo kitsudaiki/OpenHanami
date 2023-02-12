@@ -44,6 +44,6 @@ private:
     void base64UrlToBase64_test();
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // COMMON_TEST_H

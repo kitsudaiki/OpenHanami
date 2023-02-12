@@ -29,9 +29,7 @@
     Kitsunemimi::Hanami::SegmentParser::symbol_type segmentlex (Kitsunemimi::Hanami::SegmentParserInterface& driver)
 YY_DECL;
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 Kitsunemimi::Hanami::SegmentParserInterface* SegmentParserInterface::m_instance = nullptr;
@@ -182,5 +180,4 @@ SegmentParserInterface::error(const Kitsunemimi::Hanami::location& location,
     }
 }
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}

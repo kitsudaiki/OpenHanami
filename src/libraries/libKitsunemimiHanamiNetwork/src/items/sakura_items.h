@@ -33,8 +33,9 @@ namespace Kitsunemimi
 class DataItem;
 class DataMap;
 struct DataBuffer;
+}
 
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 //==================================================================================================
@@ -228,7 +229,6 @@ public:
     SakuraItem* childs;
 };
 
-} // namespace Hanami
-} // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_SAKURA_LANG_SAKURA_ITEMS_H

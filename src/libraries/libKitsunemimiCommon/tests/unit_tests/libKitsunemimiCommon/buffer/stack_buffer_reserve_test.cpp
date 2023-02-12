@@ -83,4 +83,4 @@ StackBufferReserve_Test::getBuffer_test()
     delete returnBuffer;
 }
 
-} // namespace Kitsunemimi
+}

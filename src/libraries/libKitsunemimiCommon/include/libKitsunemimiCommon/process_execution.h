@@ -43,6 +43,6 @@ ProcessResult runSyncProcess(std::string command);
 ProcessResult runSyncProcess(const std::string &programm,
                              const std::vector<std::string> &args);
 
-} // namespace Kitsunemimi
+}
 
 #endif // PROCESS_HANDLING_H

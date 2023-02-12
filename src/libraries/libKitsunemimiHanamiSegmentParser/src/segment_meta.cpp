@@ -23,9 +23,7 @@
 #include <libKitsunemimiHanamiSegmentParser/segment_meta.h>
 #include <segment_parsing/segment_parser_interface.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 /**
@@ -53,5 +51,4 @@ parseSegment(SegmentMeta* result,
     return parser->parse(result, input, error);
 }
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}

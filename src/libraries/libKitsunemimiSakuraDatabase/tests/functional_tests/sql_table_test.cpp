@@ -7,9 +7,7 @@
 
 #include <test_table.h>
 
-namespace Kitsunemimi
-{
-namespace Sakura
+namespace Kitsunemimi::Sakura
 {
 
 SqlTable_Test::SqlTable_Test()
@@ -218,5 +216,4 @@ SqlTable_Test::deleteFile()
     }
 }
 
-}
 }

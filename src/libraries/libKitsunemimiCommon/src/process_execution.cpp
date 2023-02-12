@@ -102,4 +102,4 @@ runSyncProcess(const std::string &programm,
     return result;
 }
 
-} // namespace Kitsunemimi
+}

@@ -33,6 +33,6 @@ private:
     void deleteFile();
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // SQLITE_TEST_H

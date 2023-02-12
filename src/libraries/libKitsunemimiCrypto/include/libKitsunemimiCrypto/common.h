@@ -50,6 +50,6 @@ bool decodeBase64(std::string &result,
 bool base64ToBase64Url(std::string &base64);
 bool base64UrlToBase64(std::string &base64Url);
 
-} // namespace Kitsunemimi
+}
 
 #endif // CRYPTO_COMMON_H

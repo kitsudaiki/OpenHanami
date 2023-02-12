@@ -72,6 +72,6 @@ private:
     State* getState(const uint32_t stateId);
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // STATEMACHINE_H

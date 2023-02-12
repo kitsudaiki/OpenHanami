@@ -44,20 +44,17 @@ addFieldDocu_rst(std::string &docu,
                  const std::map<std::string, Hanami::FieldDef>* defMap,
                  const bool isRequest)
 {
-    std::map<std::string, Hanami::FieldDef>::const_iterator it;
-    for(it = defMap->begin();
-        it != defMap->end();
-        it++)
+    for(auto const& [id, fieldDef] : *defMap)
     {
-        const std::string field = it->first;
-        const Hanami::FieldType fieldType = it->second.fieldType;
-        const std::string comment = it->second.comment;
-        const bool isRequired = it->second.isRequired;
-        const DataItem* defaultVal = it->second.defaultVal;
-        const DataItem* matchVal = it->second.match;
-        const std::string regexVal = it->second.regex;
-        const long lowerBorder = it->second.lowerBorder;
-        const long upperBorder = it->second.upperBorder;
+        const std::string field = id;
+        const Hanami::FieldType fieldType = fieldDef.fieldType;
+        const std::string comment = fieldDef.comment;
+        const bool isRequired = fieldDef.isRequired;
+        const DataItem* defaultVal = fieldDef.defaultVal;
+        const DataItem* matchVal = fieldDef.match;
+        const std::string regexVal = fieldDef.regex;
+        const long lowerBorder = fieldDef.lowerBorder;
+        const long upperBorder = fieldDef.upperBorder;
 
         docu.append("\n");
         docu.append("``" + field + "``\n");
@@ -189,41 +186,33 @@ generateEndpointDocu_rst(std::string &docu)
             Hanami::HanamiMessaging::getInstance();
     docu.append("\n");
 
-    std::map<std::string, std::map<Hanami::HttpRequestType, Hanami::EndpointEntry>>::iterator it;
-    for(it = langInterface->endpointRules.begin();
-        it != langInterface->endpointRules.end();
-        it++)
+    for(auto const& [endpoint, httpDef] : langInterface->endpointRules)
     {
-        const std::string endpoint = it->first;
-
         // add endpoint
         docu.append(endpoint);
         docu.append("\n");
         docu.append(std::string(endpoint.size(), '-'));
         docu.append("\n");
 
-        std::map<Hanami::HttpRequestType, Hanami::EndpointEntry>::const_iterator ruleIt;
-        for(ruleIt = it->second.begin();
-            ruleIt != it->second.end();
-            ruleIt++)
+        for(auto const& [type, endpointEntry] : httpDef)
         {
             docu.append("\n");
 
             // add http-type
-            if(ruleIt->first == Hanami::GET_TYPE) {
+            if(type == Hanami::GET_TYPE) {
                 docu.append("GET\n^^^\n\n");
-            } else if(ruleIt->first == Hanami::POST_TYPE) {
+            } else if(type == Hanami::POST_TYPE) {
                 docu.append("POST\n^^^^\n\n");
-            } else if(ruleIt->first == Hanami::DELETE_TYPE) {
+            } else if(type == Hanami::DELETE_TYPE) {
                 docu.append("DELETE\n^^^^^^\n\n");
-            } else if(ruleIt->first == Hanami::PUT_TYPE) {
+            } else if(type == Hanami::PUT_TYPE) {
                 docu.append("PUT\n^^^\n\n");
             }
 
             createBlossomDocu_rst(docu,
                                   langInterface,
-                                  ruleIt->second.group,
-                                  ruleIt->second.name);
+                                  endpointEntry.group,
+                                  endpointEntry.name);
         }
     }
 }

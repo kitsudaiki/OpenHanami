@@ -25,9 +25,7 @@
 #include <items/item_methods.h>
 #include <libKitsunemimiHanamiNetwork/blossom.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 const std::string
@@ -236,5 +234,4 @@ checkType(DataItem* item,
     return false;
 }
 
-} // namespace Hanami
-} // namespace Kitsunemimi
+}

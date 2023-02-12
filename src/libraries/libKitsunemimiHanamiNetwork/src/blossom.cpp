@@ -26,9 +26,7 @@
 #include <libKitsunemimiCommon/logger.h>
 #include <runtime_validation.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 /**
@@ -462,17 +460,14 @@ Blossom::getCompareMap(std::map<std::string, FieldDef::IO_ValueType> &compareMap
                        const ValueItemMap &valueMap)
 {
     // copy items
-    std::map<std::string, ValueItem>::const_iterator it;
-    for(it = valueMap.m_valueMap.begin();
-        it != valueMap.m_valueMap.end();
-        it++)
+    for(auto const& [id, item] : valueMap.m_valueMap)
     {
-        if(it->second.type == ValueItem::INPUT_PAIR_TYPE) {
-            compareMap.emplace(it->first, FieldDef::INPUT_TYPE);
+        if(item.type == ValueItem::INPUT_PAIR_TYPE) {
+            compareMap.emplace(id, FieldDef::INPUT_TYPE);
         }
 
-        if(it->second.type == ValueItem::OUTPUT_PAIR_TYPE) {
-            compareMap.emplace(it->second.item->toString(), FieldDef::OUTPUT_TYPE);
+        if(item.type == ValueItem::OUTPUT_PAIR_TYPE) {
+            compareMap.emplace(item.item->toString(), FieldDef::OUTPUT_TYPE);
         }
     }
 
@@ -486,5 +481,4 @@ Blossom::getCompareMap(std::map<std::string, FieldDef::IO_ValueType> &compareMap
     }
 }
 
-} // namespace Hanami
-} // namespace Kitsunemimi
+}

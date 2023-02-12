@@ -27,9 +27,7 @@
 #include <libKitsunemimiHanamiCommon/defines.h>
 #include <libKitsunemimiCommon/items/data_items.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 struct ResponseMessage
@@ -123,7 +121,6 @@ struct BlossomStatus
     std::string errorMessage = "";
 };
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_HANAMI_COMMON_STRUCTS_H

@@ -50,4 +50,4 @@ CompareTestHelper::~CompareTestHelper()
     }
 }
 
-} // namespace Kitsunemimi
+}

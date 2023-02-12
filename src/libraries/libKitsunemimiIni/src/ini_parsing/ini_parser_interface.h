@@ -60,6 +60,6 @@ private:
     bool m_traceParsing = false;
 };
 
-}  // namespace Kitsunemimi
+}
 
 #endif // INIPARSERINTERFACE_H

@@ -41,15 +41,12 @@
 #include <iostream>
 #include <libKitsunemimiHanamiCommon/enums.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 class PolicyParserInterface;
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}
 }
 
 // The parsing context.

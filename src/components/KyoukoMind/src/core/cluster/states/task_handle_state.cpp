@@ -320,12 +320,8 @@ TaskHandle_State::getTaskState(const std::string &taskUuid)
 void
 TaskHandle_State::getAllProgress(std::map<std::string, TaskProgress> &result)
 {
-    std::map<std::string, Task>::const_iterator it;
-    for(it = m_taskMap.begin();
-        it != m_taskMap.end();
-        it++)
-    {
-        result.emplace(it->second.uuid.toString(), it->second.progress);
+    for(auto const& [name, task] : m_taskMap) {
+        result.emplace(task.uuid.toString(), task.progress);
     }
 }
 

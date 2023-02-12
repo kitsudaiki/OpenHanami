@@ -389,4 +389,4 @@ DataItems_DataValue_Test::setValue_test()
     TEST_EQUAL(defaultValue.content.boolValue, true);
 }
 
-}  // namespace Kitsunemimi
+}

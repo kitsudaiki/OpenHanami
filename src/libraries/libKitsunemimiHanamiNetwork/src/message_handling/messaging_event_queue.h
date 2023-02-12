@@ -25,9 +25,7 @@
 
 #include <libKitsunemimiCommon/threading/thread.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 class MessagingEventQueue
@@ -45,7 +43,6 @@ private:
     static MessagingEventQueue* m_instance;
 };
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}
 
 #endif // MESSAGING_EVENT_QUEUE_H

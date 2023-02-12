@@ -100,6 +100,6 @@ private:
     DataItem* m_content = nullptr;
 };
 
-}  // namespace Kitsunemimi
+}
 
 #endif // JSON_ITEM_H

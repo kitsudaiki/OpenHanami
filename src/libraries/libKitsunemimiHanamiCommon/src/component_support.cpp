@@ -22,9 +22,7 @@
 
 #include <libKitsunemimiHanamiCommon/component_support.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 Kitsunemimi::Hanami::SupportedComponents* SupportedComponents::m_supportedComponents = nullptr;
@@ -49,5 +47,4 @@ SupportedComponents::SupportedComponents()
     support[5] = false;
 }
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}

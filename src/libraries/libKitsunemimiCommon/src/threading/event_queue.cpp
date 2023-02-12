@@ -84,4 +84,4 @@ EventQueue::EventQueue::run()
     }
 }
 
-}  // namespace Kitsunemimi
+}

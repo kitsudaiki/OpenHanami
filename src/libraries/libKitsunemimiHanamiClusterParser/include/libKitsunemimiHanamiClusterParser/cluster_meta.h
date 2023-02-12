@@ -29,9 +29,7 @@
 
 #include <libKitsunemimiCommon/logger.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 struct ClusterConnection
@@ -73,7 +71,6 @@ parseCluster(ClusterMeta* result,
              const std::string &input,
              ErrorContainer &error);
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_HANAMI_CLUSTER_PARSER_ITEM_H

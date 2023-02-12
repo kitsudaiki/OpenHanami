@@ -259,4 +259,4 @@ DataBuffer_Test::allocateBlocks_DataBuffer_test()
     TEST_EQUAL(static_cast<int>(dataByte[1]), 42);
 }
 
-} // namespace Kitsunemimi
+}

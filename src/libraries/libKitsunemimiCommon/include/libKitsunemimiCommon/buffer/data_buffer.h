@@ -399,6 +399,6 @@ getBlock_DataBuffer(DataBuffer &buffer,
     return &dataByte[blockPosition * buffer.blockSize];
 }
 
-} // namespace Kitsunemimi
+}
 
 #endif // DATABUFFER_H

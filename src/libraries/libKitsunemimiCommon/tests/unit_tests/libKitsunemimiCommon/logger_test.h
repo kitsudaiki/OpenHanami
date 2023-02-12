@@ -26,6 +26,6 @@ private:
     void deleteFile(const std::string filePath);
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // LOGGER_TEST_H

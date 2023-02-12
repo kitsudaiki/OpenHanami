@@ -44,4 +44,4 @@ AbstractSocket::setMessageCallback(void* target,
     m_processMessage = processMessage;
 }
 
-} // namespace Kitsunemimi
+}

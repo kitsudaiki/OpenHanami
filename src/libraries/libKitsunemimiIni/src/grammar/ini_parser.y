@@ -37,7 +37,7 @@ using Kitsunemimi::DataMap;
 namespace Kitsunemimi
 {
 class IniParserInterface;
-}  // namespace Kitsunemimi
+}
 }
 
 // The parsing context.

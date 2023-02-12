@@ -23,9 +23,7 @@
 #include <libKitsunemimiHanamiClusterParser/cluster_meta.h>
 #include <cluster_parsing/cluster_parser_interface.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 /**
@@ -52,5 +50,4 @@ parseCluster(ClusterMeta* result,
     return parser->parse(result, input, error);
 }
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}

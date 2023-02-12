@@ -18,11 +18,15 @@ namespace Kitsunemimi
 struct DataBuffer;
 class DataMap;
 struct StackBuffer;
-namespace Sakura {
+}
+
+namespace Kitsunemimi::Sakura
+{
 class Blossom;
 class Session;
 }
-namespace Hanami
+
+namespace Kitsunemimi::Hanami
 {
 class ClientHandler;
 class HanamiMessaging;
@@ -91,7 +95,6 @@ private:
                          ErrorContainer &error);
 };
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}
 
 #endif // HKITSUNEMIMI_HANAMI_NETWORK_ANAMIMESSAGINGCLIENT_H

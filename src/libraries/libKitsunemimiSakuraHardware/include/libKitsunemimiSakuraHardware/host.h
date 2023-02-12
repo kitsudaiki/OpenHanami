@@ -30,10 +30,11 @@
 
 #include <libKitsunemimiCommon/logger.h>
 
-namespace Kitsunemimi
-{
+namespace Kitsunemimi {
 class DataMap;
-namespace Sakura
+}
+
+namespace Kitsunemimi::Sakura
 {
 class CpuPackage;
 
@@ -62,7 +63,6 @@ private:
     bool initCpuCoresAndThreads(ErrorContainer &error);
 };
 
-} // namespace Sakura
-} // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_SAKURA_HARDWARE_HOST_H

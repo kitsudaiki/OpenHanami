@@ -127,6 +127,6 @@ private:
                                        const bool withoutHeader);
 };
 
-}  // namespace Kitsunemimi
+}
 
 #endif // TABLE_ITEM_H

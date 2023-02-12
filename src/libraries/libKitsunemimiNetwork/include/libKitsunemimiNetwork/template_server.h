@@ -202,6 +202,6 @@ protected:
     T m_server;
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_NETWORK_TEMPLATE_SERVER_H

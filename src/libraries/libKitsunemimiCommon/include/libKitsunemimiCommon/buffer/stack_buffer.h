@@ -255,6 +255,6 @@ reset_StackBuffer(StackBuffer &stackBuffer)
     stackBuffer.blocks.clear();
 }
 
-} // namespace Kitsunemimi
+}
 
 #endif // STACK_BUFFER_H

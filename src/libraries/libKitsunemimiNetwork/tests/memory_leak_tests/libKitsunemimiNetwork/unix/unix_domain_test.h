@@ -46,6 +46,6 @@ private:
     TemplateSocket<UnixDomainSocket>* m_socketClientSide = nullptr;
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // UNIX_DOMAIN_TEST_H

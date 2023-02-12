@@ -286,5 +286,5 @@ BinaryFile_withoutDirectIO_Test::deleteFile()
     }
 }
 
-} // namespace Kitsunemimi
+}
 

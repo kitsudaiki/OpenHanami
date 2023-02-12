@@ -25,9 +25,7 @@
 
 #include <libKitsunemimiConfig/config_handler.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 enum Components
@@ -54,7 +52,6 @@ private:
     SupportedComponents();
 };
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_HANAMI_COMMON_COMPONENT_SUPPORT_H

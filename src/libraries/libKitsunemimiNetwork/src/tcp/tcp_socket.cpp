@@ -201,4 +201,4 @@ TcpSocket::getAddress() const
     return m_address;
 }
 
-} // namespace Kitsunemimi
+}

@@ -22,9 +22,7 @@
 
 #include "session_test.h"
 
-namespace Kitsunemimi
-{
-namespace Sakura
+namespace Kitsunemimi::Sakura
 {
 
 Kitsunemimi::Sakura::Session_Test* Session_Test::m_instance = nullptr;
@@ -295,5 +293,4 @@ Session_Test::testSend()
     sleep(2);
 }
 
-} // namespace Sakura
-} // namespace Kitsunemimi
+}

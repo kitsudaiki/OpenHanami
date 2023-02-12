@@ -332,4 +332,4 @@ DataItems_DataMap_Test::initTestObject()
     return object;
 }
 
-}  // namespace Kitsunemimi
+}

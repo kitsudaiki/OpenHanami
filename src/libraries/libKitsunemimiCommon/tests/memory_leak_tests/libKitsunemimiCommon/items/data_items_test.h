@@ -29,6 +29,6 @@ private:
     void array_append_remove_test();
 };
 
-}  // namespace Kitsunemimi
+}
 
 #endif // DATAITEMS_DATAARRAY_TEST_H

@@ -46,9 +46,7 @@ enum statemachineItems {
     STOP_SESSION = 10,
 };
 
-namespace Kitsunemimi
-{
-namespace Sakura
+namespace Kitsunemimi::Sakura
 {
 
 /**
@@ -584,5 +582,4 @@ Session::getRandId()
     return newId;
 }
 
-} // namespace Sakura
-} // namespace Kitsunemimi
+}

@@ -54,6 +54,6 @@ private:
     bool m_traceParsing = false;
 };
 
-}  // namespace Kitsunemimi
+}
 
 #endif // JSON_PARSER_INTERFACE_H

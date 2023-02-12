@@ -24,6 +24,6 @@ private:
     void progress_test();
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // PROGRESSBAR_TEST_H

@@ -263,4 +263,4 @@ DataItems_DataArray_Test::initTestArray()
     return array;
 }
 
-}  // namespace Kitsunemimi
+}

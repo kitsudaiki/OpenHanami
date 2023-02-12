@@ -178,4 +178,4 @@ IniParserInterface::error(const location &location,
     }
 }
 
-}  // namespace Kitsunemimi
+}

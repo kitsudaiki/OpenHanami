@@ -160,6 +160,6 @@ getItemData(ItemBuffer &itembuffer)
     return static_cast<T*>(itembuffer.itemData);
 }
 
-} // namespace Kitsunemimi
+}
 
 #endif // ITEM_BUFFER_H

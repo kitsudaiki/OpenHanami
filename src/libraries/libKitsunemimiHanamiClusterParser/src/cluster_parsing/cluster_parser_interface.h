@@ -28,9 +28,7 @@
 
 #include <libKitsunemimiCommon/logger.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 struct ClusterMeta;
 class location;
@@ -68,7 +66,6 @@ private:
     bool m_traceParsing = false;
 };
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_HANAMI_CLUSTER_PARSER_PARSER_INTERFACE_H

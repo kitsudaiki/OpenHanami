@@ -52,4 +52,4 @@ DataBuffer_Test::fill_reset_test()
     delete testBuffer;
 }
 
-} // namespace Kitsunemimi
+}

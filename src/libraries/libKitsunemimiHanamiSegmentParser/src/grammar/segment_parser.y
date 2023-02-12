@@ -43,15 +43,12 @@
 #include <libKitsunemimiHanamiCommon/structs.h>
 #include <libKitsunemimiHanamiSegmentParser/segment_meta.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 class SegmentParserInterface;
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}
 }
 
 // The parsing context.

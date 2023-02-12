@@ -254,4 +254,4 @@ JsonItem_Test::getTestItem()
     return output;
 }
 
-}  // namespace Kitsunemimi
+}

@@ -37,6 +37,6 @@ private:
 
 };
 
-}  // namespace Kitsunemimi
+}
 
 #endif // JSONITEM_TEST_H

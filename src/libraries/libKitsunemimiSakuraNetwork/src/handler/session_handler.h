@@ -29,10 +29,11 @@
 #include <atomic>
 #include <message_definitions.h>
 
-namespace Kitsunemimi
-{
+namespace Kitsunemimi {
 class AbstractServer;
-namespace Sakura
+}
+
+namespace Kitsunemimi::Sakura
 {
 class Session;
 class ReplyHandler;
@@ -82,7 +83,6 @@ private:
     void (*m_processError)(Session*, const uint8_t, const std::string);
 };
 
-} // namespace Sakura
-} // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_SAKURA_NETWORK_RESSOURCE_HANDLER_H

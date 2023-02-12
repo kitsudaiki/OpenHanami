@@ -293,4 +293,4 @@ ObjParser::parseInt(int &result,
     return std::string(err).size() == 0;
 }
 
-}  // namespace Kitsunemimi
+}

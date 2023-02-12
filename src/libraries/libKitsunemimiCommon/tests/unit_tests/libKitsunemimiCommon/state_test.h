@@ -39,6 +39,6 @@ private:
     void addChildState_test();
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // STATE_TEST_H

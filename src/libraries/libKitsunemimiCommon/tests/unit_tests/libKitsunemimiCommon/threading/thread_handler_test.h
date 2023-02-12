@@ -40,6 +40,6 @@ protected:
     void run();
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // THREADHANDLER_TEST_H

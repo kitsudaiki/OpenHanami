@@ -24,6 +24,6 @@ private:
     void create_delete_test();
 };
 
-} // namespace Kitsunemimi
+}
 
 #endif // RING_BUFFER_TEST_H

@@ -25,9 +25,7 @@
 
 #include <libKitsunemimiCommon/test_helper/compare_test_helper.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 class Policy_Test
@@ -43,7 +41,6 @@ private:
     const std::string getTestString();
 };
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}
 
 #endif // POLICY_TEST_H

@@ -29,9 +29,7 @@
     Kitsunemimi::Hanami::ClusterParser::symbol_type clusterlex (Kitsunemimi::Hanami::ClusterParserInterface& driver)
 YY_DECL;
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 Kitsunemimi::Hanami::ClusterParserInterface* ClusterParserInterface::m_instance = nullptr;
@@ -181,5 +179,4 @@ ClusterParserInterface::error(const Kitsunemimi::Hanami::location& location,
     }
 }
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}

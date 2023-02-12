@@ -41,7 +41,7 @@ bool
 ClusterHandler::addCluster(const std::string uuid, Cluster* newCluster)
 {
     // check if key already exist
-    std::map<std::string, Cluster*>::iterator it;
+    std::map<std::string, Cluster*>::const_iterator it;
     it = m_allCluster.find(uuid);
     if(it != m_allCluster.end()) {
         return false;

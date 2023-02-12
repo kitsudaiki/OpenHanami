@@ -29,9 +29,7 @@
 
 #include <uuid/uuid.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 /**
@@ -106,5 +104,4 @@ HanamiSqlLogTable::getPageFromDb(TableItem &resultTable,
     return getFromDb(resultTable, conditions, error, true, page*100, 100);
 }
 
-} // namespace Hanami
-} // namespace Kitsunemimi
+}

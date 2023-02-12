@@ -84,4 +84,4 @@ generate_SHA_256(std::string &result,
     return true;
 }
 
-} // namespace Kitsunemimi
+}

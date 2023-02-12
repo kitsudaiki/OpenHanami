@@ -27,10 +27,11 @@
 #include <iostream>
 #include <vector>
 
-namespace Kitsunemimi
-{
+namespace Kitsunemimi {
 class DataMap;
-namespace Sakura
+}
+
+namespace Kitsunemimi::Sakura
 {
 class CpuThread;
 
@@ -55,7 +56,6 @@ public:
     std::vector<CpuThread*> cpuThreads;
 };
 
-} // namespace Sakura
-} // namespace Kitsunemimi
+}
 
 #endif // KITSUNEMIMI_SAKURA_HARDWARE_CPUCORE_H

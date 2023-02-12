@@ -39,9 +39,7 @@
 
 #include <libKitsunemimiCommon/logger.h>
 
-namespace Kitsunemimi
-{
-namespace Sakura
+namespace Kitsunemimi::Sakura
 {
 
 SessionController* SessionController::m_sessionController = nullptr;
@@ -237,12 +235,8 @@ SessionController::cloesAllServers()
     SessionHandler* sessionHandler = SessionHandler::m_sessionHandler;
     sessionHandler->lockServerMap();
 
-    std::map<uint32_t, AbstractServer*>::iterator it;
-    for(it = sessionHandler->m_servers.begin();
-        it != sessionHandler->m_servers.end();
-        it++)
-    {
-        it->second->closeServer();
+    for(auto const& [id, server] : sessionHandler->m_servers) {
+        server->closeServer();
     }
 
     sessionHandler->unlockServerMap();
@@ -381,5 +375,4 @@ SessionController::startSession(AbstractSocket* socket,
 
 //==================================================================================================
 
-} // namespace Sakura
-} // namespace Kitsunemimi
+}

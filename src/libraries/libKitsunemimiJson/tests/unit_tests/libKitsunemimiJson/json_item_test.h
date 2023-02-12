@@ -49,6 +49,6 @@ private:
     JsonItem getTestItem();
 };
 
-}  // namespace Kitsunemimi
+}
 
 #endif // JSONITEM_TEST_H

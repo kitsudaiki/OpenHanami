@@ -104,4 +104,4 @@ ObjCreator::create(std::string &convertedString,
     return true;
 }
 
-}  // namespace Kitsunemimi
+}

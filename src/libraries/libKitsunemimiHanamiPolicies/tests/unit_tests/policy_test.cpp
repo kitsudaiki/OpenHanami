@@ -25,9 +25,7 @@
 #include <libKitsunemimiHanamiPolicies/policy.h>
 #include <libKitsunemimiCommon/items/data_items.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 Policy_Test::Policy_Test()
@@ -86,5 +84,4 @@ Policy_Test::getTestString()
     return testString;
 }
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
+}

@@ -29,9 +29,7 @@
 
 #include <uuid/uuid.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 
 /**
@@ -64,5 +62,4 @@ HanamiSqlAdminTable::HanamiSqlAdminTable(Kitsunemimi::Sakura::SqlDatabase* db)
  */
 HanamiSqlAdminTable::~HanamiSqlAdminTable() {}
 
-} // namespace Hanami
-} // namespace Kitsunemimi
+}

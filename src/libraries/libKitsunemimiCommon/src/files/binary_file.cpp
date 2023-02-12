@@ -360,4 +360,4 @@ BinaryFile::closeFile(ErrorContainer &error)
     return true;
 }
 
-} // namespace Kitsunemimi
+}

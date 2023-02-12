@@ -30,9 +30,7 @@
 #include <vector>
 #include <libKitsunemimiHanamiPolicies/policy.h>
 
-namespace Kitsunemimi
-{
-namespace Hanami
+namespace Kitsunemimi::Hanami
 {
 class location;
 
@@ -69,7 +67,6 @@ private:
     bool m_traceParsing = false;
 };
 
-}  // namespace Policy
-}  // namespace Kitsunemimi
+}
 
 #endif // POLICY_PARSER_INTERFACE_H

@@ -3,10 +3,9 @@
 
 #include <libKitsunemimiCommon/test_helper/compare_test_helper.h>
 
-namespace Kitsunemimi
+namespace Kitsunemimi::Sakura
 {
-namespace Sakura
-{
+
 class SqlDatabase;
 class TestTable;
 
@@ -36,7 +35,6 @@ private:
     void getNumberOfRows_test();
 };
 
-}
 }
 
 #endif // SQLTABLE_TEST_H

@@ -32,9 +32,7 @@
 
 #include <libKitsunemimiCommon/test_helper/memory_leak_test_helper.h>
 
-namespace Kitsunemimi
-{
-namespace Sakura
+namespace Kitsunemimi::Sakura
 {
 
 class Session_Test
@@ -64,7 +62,6 @@ private:
 
 };
 
-} // namespace Sakura
-} // namespace Kitsunemimi
+}
 
 #endif // SESSION_TEST_H

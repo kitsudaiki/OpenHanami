@@ -108,4 +108,4 @@ UnixDomain_Test::UnixDomain_Test()
     CHECK_MEMORY();
 }
 
-} // namespace Kitsunemimi
+}
