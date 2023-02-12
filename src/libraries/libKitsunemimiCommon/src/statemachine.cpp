@@ -40,19 +40,15 @@ Statemachine::Statemachine(EventQueue* eventQueue)
  */
 Statemachine::~Statemachine()
 {
-    std::map<uint32_t, State*>::iterator it;
-
     // delete all states
-    for(it = m_allStates.begin(); it != m_allStates.end(); it++)
+    for(auto & [name, state] : m_allStates)
     {
-        State* tempObj = it->second;
-        for(uint64_t i = 0; i < tempObj->events.size(); i++)
-        {
-            Event* event = tempObj->events[i];
+        State* tempObj = state;
+        for(Event* event : tempObj->events) {
             delete event;
         }
         delete tempObj;
-        it->second = nullptr;
+        state = nullptr;
     }
 
     // clear map

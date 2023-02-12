@@ -126,16 +126,12 @@ bool
 MessageBlockerHandler::releaseMessageInList(const uint64_t blockerId,
                                             DataBuffer* data)
 {
-    std::vector<MessageBlocker*>::iterator it;
-    for(it = m_messageList.begin();
-        it != m_messageList.end();
-        it++)
+    for(MessageBlocker* blocker : m_messageList)
     {
-        MessageBlocker* tempItem = *it;
-        if(tempItem->blockerId == blockerId)
+        if(blocker->blockerId == blockerId)
         {
-            tempItem->responseData = data;
-            tempItem->cv.notify_one();
+            blocker->responseData = data;
+            blocker->cv.notify_one();
             return true;
         }
     }
@@ -192,14 +188,10 @@ MessageBlockerHandler::clearList()
     spinLock();
 
     // release all threads
-    std::vector<MessageBlocker*>::iterator it;
-    for(it = m_messageList.begin();
-        it != m_messageList.end();
-        it++)
+    for(MessageBlocker* blocker : m_messageList)
     {
-        MessageBlocker* tempItem = *it;
-        tempItem->cv.notify_one();
-        delete tempItem;
+        blocker->cv.notify_one();
+        delete blocker;
     }
 
     // clear list
@@ -215,21 +207,19 @@ void
 MessageBlockerHandler::makeTimerStep()
 {
     spinLock();
-
-    for(uint64_t i = 0; i < m_messageList.size(); i++)
+    for(MessageBlocker* blocker : m_messageList)
     {
-        MessageBlocker* temp = m_messageList[i];
-        temp->timer -= 1;
+        blocker->timer -= 1;
 
-        if(temp->timer == 0)
+        if(blocker->timer == 0)
         {
-            removeMessageFromList(temp->blockerId);
-            releaseMessageInList(temp->blockerId, nullptr);
+            removeMessageFromList(blocker->blockerId);
+            releaseMessageInList(blocker->blockerId, nullptr);
 
-            const std::string err = "TIMEOUT of request: " + std::to_string(temp->blockerId);
-            temp->session->m_processError(temp->session,
-                                          Session::errorCodes::MESSAGE_TIMEOUT,
-                                          err);
+            const std::string err = "TIMEOUT of request: " + std::to_string(blocker->blockerId);
+            blocker->session->m_processError(blocker->session,
+                                             Session::errorCodes::MESSAGE_TIMEOUT,
+                                             err);
         }
     }
 

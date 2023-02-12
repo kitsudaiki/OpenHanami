@@ -103,53 +103,50 @@ ListTask::runTask(BlossomIO &blossomIO,
     result.addColumn("end");
 
     // build table-content
-    std::map<std::string, TaskProgress>::iterator it;
-    for(it = progressOverview.begin();
-        it != progressOverview.end();
-        it++)
+    for(auto const& [id, progress] : progressOverview)
     {
-        if(it->second.state == QUEUED_TASK_STATE)
+        if(progress.state == QUEUED_TASK_STATE)
         {
             result.addRow(std::vector<std::string>{
-                              it->first,
+                              id,
                               "queued",
-                              std::to_string(it->second.percentageFinished),
-                              serializeTimePoint(it->second.queuedTimeStamp),
+                              std::to_string(progress.percentageFinished),
+                              serializeTimePoint(progress.queuedTimeStamp),
                               "-",
                               "-"
                           });
         }
-        else if(it->second.state == ACTIVE_TASK_STATE)
+        else if(progress.state == ACTIVE_TASK_STATE)
         {
             result.addRow(std::vector<std::string>{
-                              it->first,
+                              id,
                               "active",
-                              std::to_string(it->second.percentageFinished),
-                              serializeTimePoint(it->second.queuedTimeStamp),
-                              serializeTimePoint(it->second.startActiveTimeStamp),
+                              std::to_string(progress.percentageFinished),
+                              serializeTimePoint(progress.queuedTimeStamp),
+                              serializeTimePoint(progress.startActiveTimeStamp),
                               "-"
                           });
         }
-        else if(it->second.state == ABORTED_TASK_STATE)
+        else if(progress.state == ABORTED_TASK_STATE)
         {
             result.addRow(std::vector<std::string>{
-                              it->first,
+                              id,
                               "aborted",
-                              std::to_string(it->second.percentageFinished),
-                              serializeTimePoint(it->second.queuedTimeStamp),
-                              serializeTimePoint(it->second.startActiveTimeStamp),
+                              std::to_string(progress.percentageFinished),
+                              serializeTimePoint(progress.queuedTimeStamp),
+                              serializeTimePoint(progress.startActiveTimeStamp),
                               "-"
                           });
         }
-        else if(it->second.state == FINISHED_TASK_STATE)
+        else if(progress.state == FINISHED_TASK_STATE)
         {
             result.addRow(std::vector<std::string>{
-                              it->first,
+                              id,
                               "finished",
-                              std::to_string(it->second.percentageFinished),
-                              serializeTimePoint(it->second.queuedTimeStamp),
-                              serializeTimePoint(it->second.startActiveTimeStamp),
-                              serializeTimePoint(it->second.endActiveTimeStamp)
+                              std::to_string(progress.percentageFinished),
+                              serializeTimePoint(progress.queuedTimeStamp),
+                              serializeTimePoint(progress.startActiveTimeStamp),
+                              serializeTimePoint(progress.endActiveTimeStamp)
                           });
         }
     }

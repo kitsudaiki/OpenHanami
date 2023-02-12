@@ -71,13 +71,8 @@ JsonItem::JsonItem(DataItem* dataItem,
 JsonItem::JsonItem(std::map<std::string, JsonItem> &value)
 {
     m_content = new DataMap();
-
-    std::map<std::string, JsonItem>::const_iterator it;
-    for(it = value.begin();
-        it != value.end();
-        it++)
-    {
-        insert(it->first, it->second);
+    for(auto const& [id, item] : value) {
+        insert(id, item);
     }
 }
 
@@ -89,13 +84,8 @@ JsonItem::JsonItem(std::map<std::string, JsonItem> &value)
 JsonItem::JsonItem(std::vector<JsonItem> &value)
 {
     m_content = new DataArray();
-
-    std::vector<JsonItem>::const_iterator it;
-    for(it = value.begin();
-        it != value.end();
-        it++)
-    {
-        append(*it);
+    for(const JsonItem &item : value) {
+        append(item);
     }
 }
 

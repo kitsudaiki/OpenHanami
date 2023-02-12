@@ -54,12 +54,8 @@ ThreadHandler::getRegisteredNames()
     std::unique_lock<std::mutex> lock(m_mutex);
 
     std::vector<std::string> result;
-    std::map<std::string, std::map<uint64_t, Thread*>>::const_iterator it;
-    for(it = m_allThreads.begin();
-        it != m_allThreads.end();
-        it++)
-    {
-        result.push_back(it->first);
+    for(auto const& [id, thread] : m_allThreads) {
+        result.push_back(id);
     }
 
     return result;
@@ -84,12 +80,8 @@ ThreadHandler::getThreads(const std::string &threadName)
     if(it != m_allThreads.end())
     {
         // iterate over ids
-        std::map<uint64_t, Thread*>::iterator thread_it;
-        for(thread_it = it->second.begin();
-            thread_it != it->second.end();
-            thread_it++)
-        {
-            result.push_back(thread_it->second);
+        for(auto const& [id, thread] : it->second) {
+            result.push_back(thread);
         }
     }
 

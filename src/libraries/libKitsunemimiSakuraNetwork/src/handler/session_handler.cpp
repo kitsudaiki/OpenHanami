@@ -223,12 +223,8 @@ SessionHandler::sendHeartBeats()
 {
     lockSessionMap();
 
-    std::map<uint32_t, Session*>::iterator it;
-    for(it = m_sessions.begin();
-        it != m_sessions.end();
-        it++)
-    {
-        it->second->sendHeartbeat();
+    for(auto const& [id, session] : m_sessions) {
+        session->sendHeartbeat();
     }
 
     unlockSessionMap();

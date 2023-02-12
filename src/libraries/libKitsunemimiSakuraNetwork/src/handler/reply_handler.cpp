@@ -136,13 +136,10 @@ ReplyHandler::removeAllOfSession(const uint32_t sessionId)
 {
     spinLock();
 
-    std::vector<MessageTime>::iterator it;
-    for(it = m_messageList.begin();
-        it != m_messageList.end();
-        it++)
+    for(MessageTime &messageTime : m_messageList)
     {
-        if((it->completeMessageId & 0xFFFFFFFF) == sessionId) {
-            it->ignoreResult = true;
+        if((messageTime.completeMessageId & 0xFFFFFFFF) == sessionId) {
+            messageTime.ignoreResult = true;
         }
     }
 
@@ -220,29 +217,28 @@ ReplyHandler::makeTimerStep()
 {
     spinLock();
 
-    for(uint64_t i = 0; i < m_messageList.size(); i++)
+    for(MessageTime &messageTime : m_messageList)
     {
-        MessageTime* temp = &m_messageList[i];
-        temp->timer += 1.0f;
+        messageTime.timer += 1.0f;
 
-        if(temp->timer >= m_timeoutValue)
+        if(messageTime.timer >= m_timeoutValue)
         {
             spinUnlock();
-            removeMessage(temp->completeMessageId);
-            if(temp->ignoreResult == false)
+            removeMessage(messageTime.completeMessageId);
+            if(messageTime.ignoreResult == false)
             {
                 const std::string err = "TIMEOUT of message: "
-                                        + std::to_string(temp->completeMessageId)
+                                        + std::to_string(messageTime.completeMessageId)
                                         + " with type: "
-                                        + std::to_string(temp->messageType);
+                                        + std::to_string(messageTime.messageType);
                 // release session for the case,
                 // that the session is actually still in creating state.
                 // If this lock is not release, it blocks for eterity.
-                temp->session->m_initState = -1;
+                messageTime.session->m_initState = -1;
 
-                temp->session->m_processError(temp->session,
-                                              Session::errorCodes::MESSAGE_TIMEOUT,
-                                              err);
+                messageTime.session->m_processError(messageTime.session,
+                                                    Session::errorCodes::MESSAGE_TIMEOUT,
+                                                    err);
             }
 
             spinLock();

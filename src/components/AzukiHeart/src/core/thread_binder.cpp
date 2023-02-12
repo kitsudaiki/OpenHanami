@@ -376,16 +376,13 @@ ThreadBinder::run()
             request.httpType = Kitsunemimi::Hanami::POST_TYPE;
 
             // update thread-binding for all components
-            std::map<std::string,Kitsunemimi:: DataItem*>::const_iterator it;
-            for(it = newMapping.map.begin();
-                it != newMapping.map.end();
-                it++)
+            for(auto const& [name, value] : newMapping.map)
             {
-                const std::vector<std::string> threadNames = it->second->toMap()->getKeys();
-                if(it->first == "azuki") {
+                const std::vector<std::string> threadNames = value->toMap()->getKeys();
+                if(name == "azuki") {
                     changeInternalCoreIds(threadNames, m_controlCoreIds);
                 } else {
-                    changeRemoteCoreIds(it->first, request, threadNames);
+                    changeRemoteCoreIds(name, request, threadNames);
                 }
             }
 
