@@ -72,6 +72,11 @@ GpuInterface::initCopyToDevice(GpuData &data,
     // send input to device
     for(auto& [name, workerBuffer] : data.m_buffer)
     {
+        // skip values
+        if(workerBuffer.isValue) {
+            continue;
+        }
+
         LOG_DEBUG("copy data to device: "
                   + std::to_string(workerBuffer.numberOfBytes)
                   + " Bytes");
@@ -207,9 +212,14 @@ GpuInterface::bindKernelToBuffer(GpuData &data,
               + bufferName
               + "' to argument number "
               + std::to_string(argNumber));
+
     try
     {
-        def->kernel.setArg(argNumber, buffer->clBuffer);
+        if(buffer->isValue) {
+            def->kernel.setArg(argNumber, static_cast<cl_ulong>(buffer->value));
+        } else {
+            def->kernel.setArg(argNumber, buffer->clBuffer);
+        }
     }
     catch(const cl::Error&err)
     {

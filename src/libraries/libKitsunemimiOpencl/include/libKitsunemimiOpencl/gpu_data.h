@@ -57,6 +57,9 @@ public:
                    const uint64_t objectSize,
                    const bool useHostPtr = false,
                    void* data = nullptr);
+    bool addValue(const std::string &name,
+                  const uint64_t value);
+
     bool containsBuffer(const std::string &name);
     void* getBufferData(const std::string &name);
 
@@ -65,6 +68,8 @@ private:
 
     struct WorkerBuffer
     {
+        bool isValue = false;
+        uint64_t value = 0;
         void* data = nullptr;
         uint64_t numberOfBytes = 0;
         uint64_t numberOfObjects = 0;

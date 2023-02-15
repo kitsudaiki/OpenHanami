@@ -45,7 +45,8 @@ SimpleTest::simple_test()
         "__kernel void add(\n"
         "       __global const float* a,\n"
         "       __global const float* b,\n"
-        "       __global float* c\n"
+        "       __global float* c,\n"
+        "       ulong size"
         "       )\n"
         "{\n"
         "    size_t globalId_x = get_global_id(0);\n"
@@ -54,7 +55,8 @@ SimpleTest::simple_test()
         "    size_t globalSize_y = get_global_size(1);\n"
         "    \n"
         "    size_t globalId = get_global_id(0) + get_global_size(0) * get_global_id(1);\n"
-        "    if (globalId < (1 << 20))\n"
+        "    if(get_global_id(0) == 0) { printf(\"################# size: %d\", size); }\n"
+        "    if (globalId < size)\n"
         "    {\n"
         "       c[globalId] = a[globalId] + b[globalId];"
         "    }\n"
@@ -78,6 +80,7 @@ SimpleTest::simple_test()
     data.addBuffer("x", testSize, sizeof(float), false);
     data.addBuffer("y", testSize, sizeof(float), false);
     data.addBuffer("z", testSize, sizeof(float), false);
+    data.addValue("size", testSize);
 
     // convert pointer
     float* a = static_cast<float*>(data.getBufferData("x"));
@@ -96,6 +99,8 @@ SimpleTest::simple_test()
     TEST_EQUAL(ocl->bindKernelToBuffer(data, "add", "x", error), true)
     TEST_EQUAL(ocl->bindKernelToBuffer(data, "add", "y", error), true)
     TEST_EQUAL(ocl->bindKernelToBuffer(data, "add", "z", error), true)
+    TEST_EQUAL(ocl->bindKernelToBuffer(data, "add", "size", error), true)
+    std::cout<<"size outside: "<<testSize<<std::endl;
     //TEST_EQUAL(ocl->setLocalMemory("add", 256*256), true);
     TEST_EQUAL(ocl->run(data, "add", error), true)
     TEST_EQUAL(ocl->copyFromDevice(data, "z", error), true)
