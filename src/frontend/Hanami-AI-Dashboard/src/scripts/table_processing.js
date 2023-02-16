@@ -86,17 +86,24 @@ function Body(bodyContent, selector, colIds, additionalButtons)
             body.append($('<td/>').html(cell));
         }
 
-        // add additional buttons to each row of the table
-        let buttons = "";
-        for(let i = 0; i < additionalButtons.length; i++)
+        if(additionalButtons.length > 0)
         {
-            buttons += '<button class="table_side_button" value="' + rowContent[0] + '" ';
-            buttons += additionalButtons[i];
-        }
-        let input = $(buttons);
+            // add additional buttons to each row of the table
+            let buttons = "";
+            let dropdown = "<div class=\"dropdown\"><button class=\"dropbtn\">Settings</button><div class=\"dropdown-content\" style=\"right:0;\">"
+            for(let i = 0; i < additionalButtons.length; i++)
+            {
+                buttons += '<button class="table_dropdown_button" value="' + rowContent[0] + '" ';
+                buttons += additionalButtons[i];
+            }
+            dropdown += buttons;
+            dropdown += "</div></div>"
 
-        // additional buttons should be aligned at the right side
-        body.append($('<td/ style="text-align: right;">').html(input));
+            // additional buttons should be aligned at the right side
+            body.append($('<td/ style="text-align: right;">').html($(dropdown)));
+        }
+
+
         $(selector).append(body);
     }
 } 

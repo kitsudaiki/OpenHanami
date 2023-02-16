@@ -15,6 +15,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+
+/*=================================================
+Table content
+=================================================*/
+
 table {
     text-align: left;
     color: var(--color-text);
@@ -49,3 +54,53 @@ table tr td {
     word-wrap: break-word;
     overflow-wrap: break-word; 
 }
+
+
+/*=================================================
+Dropdown-Menu
+=================================================*/
+
+ /* Dropdown Button */
+.dropbtn {
+    background-color: var(--color-table);
+    color: black;
+    font-size: var(--text-font-size);
+    font-family: var(--text-font-family);
+    padding: 6px;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+    float:right;
+    position: relative;
+    display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    color: black;
+    background-color: #45494d;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {
+    background-color: #ddd;
+}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.dropdown:hover .dropbtn {
+    background-color: var(--color-highlight)
+} 
