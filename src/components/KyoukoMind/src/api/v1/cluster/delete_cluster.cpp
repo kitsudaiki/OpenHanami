@@ -64,7 +64,7 @@ DeleteCluster::runTask(BlossomIO &blossomIO,
     const std::string clusterUuid = blossomIO.input.get("uuid").getString();
 
     // check if user exist within the table
-    JsonItem getResult;
+    Kitsunemimi::JsonItem getResult;
     if(KyoukoRoot::clustersTable->getCluster(getResult, clusterUuid, userContext, error) == false)
     {
         status.errorMessage = "Cluster with uuid '" + clusterUuid + "' not found.";

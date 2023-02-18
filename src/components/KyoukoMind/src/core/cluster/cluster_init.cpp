@@ -36,6 +36,7 @@
 
 #include <libKitsunemimiConfig/config_handler.h>
 #include <libKitsunemimiCommon/logger.h>
+#include <libKitsunemimiJson/json_item.h>
 
 /**
  * @brief re-initialize the pointer in the header of the cluster after restoring the cluster
@@ -243,7 +244,7 @@ addOutputSegment(Cluster* cluster,
                  const Kitsunemimi::Hanami::SegmentMeta &segmentMeta)
 {
     OutputSegment* newSegment = new OutputSegment();
-    JsonItem placeHolder;
+    Kitsunemimi::JsonItem placeHolder;
 
     if(newSegment->initSegment(name, segmentMeta))
     {

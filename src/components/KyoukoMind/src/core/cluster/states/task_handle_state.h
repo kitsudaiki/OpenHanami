@@ -23,7 +23,11 @@
 #ifndef TASKHANGLESTATE_H
 #define TASKHANGLESTATE_H
 
-#include <common.h>
+#include <mutex>
+#include <deque>
+#include <map>
+#include <algorithm>
+
 #include <core/cluster/task.h>
 
 #include <libKitsunemimiCommon/threading/event.h>

@@ -23,7 +23,8 @@
 #ifndef KYOUKOMIND_PROCESSING_UNIT_HANDLER_H
 #define KYOUKOMIND_PROCESSING_UNIT_HANDLER_H
 
-#include <common.h>
+#include <vector>
+#include <stdint.h>
 
 class CpuProcessingUnit;
 

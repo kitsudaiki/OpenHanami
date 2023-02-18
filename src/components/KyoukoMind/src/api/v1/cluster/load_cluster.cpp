@@ -101,7 +101,7 @@ LoadCluster::runTask(BlossomIO &blossomIO,
     }
 
     // get meta-infos of data-set from shiori
-    JsonItem parsedSnapshotInfo;
+    Kitsunemimi::JsonItem parsedSnapshotInfo;
     if(Shiori::getSnapshotInformation(parsedSnapshotInfo,
                                       snapshotUuid,
                                       userContext.token,

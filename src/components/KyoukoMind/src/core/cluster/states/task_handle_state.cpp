@@ -235,7 +235,7 @@ TaskHandle_State::finishTask()
             float val = 0.0f;
             for(uint64_t i = 0; i < actualTask->resultData->array.size(); i++)
             {
-                DataValue* value = actualTask->resultData->array[i]->toValue();
+                Kitsunemimi::DataValue* value = actualTask->resultData->array[i]->toValue();
                 val = value->getFloat() / numberOfOutputs;
                 value->setValue(val);
             }

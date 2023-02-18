@@ -24,6 +24,8 @@
 #define KYOUKOMIND_CORE_BACKPROPAGATION_H
 
 #include <common.h>
+#include <math.h>
+#include <cmath>
 
 #include <kyouko_root.h>
 #include <core/segments/brick.h>

@@ -25,6 +25,9 @@
 
 #include <common.h>
 
+#include <libKitsunemimiHanamiCommon/uuid.h>
+#include <libKitsunemimiCommon/items/data_items.h>
+
 enum TaskType
 {
     UNDEFINED_TASK = 0,
@@ -63,8 +66,8 @@ struct Task
     std::string projectId = "";
     float* inputData = nullptr;
     float* outputData = nullptr;
-    DataArray* resultData = nullptr;
-    DataMap metaData;
+    Kitsunemimi::DataArray* resultData = nullptr;
+    Kitsunemimi::DataMap metaData;
     uint64_t actualCycle = 0;
     TaskType type = UNDEFINED_TASK;
     TaskProgress progress;

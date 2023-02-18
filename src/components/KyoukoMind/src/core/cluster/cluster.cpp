@@ -330,11 +330,11 @@ Cluster::addImageLearnTask(const std::string &name,
 
     // fill metadata
     newTask.metaData.insert("number_of_cycles",
-                            new DataValue(static_cast<long>(numberOfCycle)));
+                            new Kitsunemimi::DataValue(static_cast<long>(numberOfCycle)));
     newTask.metaData.insert("number_of_inputs_per_cycle",
-                            new DataValue(static_cast<long>(numberOfInputsPerCycle)));
+                            new Kitsunemimi::DataValue(static_cast<long>(numberOfInputsPerCycle)));
     newTask.metaData.insert("number_of_outputs_per_cycle",
-                            new DataValue(static_cast<long>(numberOfOuputsPerCycle)));
+                            new Kitsunemimi::DataValue(static_cast<long>(numberOfOuputsPerCycle)));
 
     // add task to queue
     const std::string uuid = newTask.uuid.toString();
@@ -371,9 +371,9 @@ Cluster::addImageRequestTask(const std::string &name,
     newTask.userId = userId;
     newTask.projectId = projectId;
     newTask.inputData = inputData;
-    newTask.resultData = new DataArray();
+    newTask.resultData = new Kitsunemimi::DataArray();
     for(uint64_t i = 0; i < numberOfCycle; i++) {
-        newTask.resultData->append(new DataValue(0));
+        newTask.resultData->append(new Kitsunemimi::DataValue(0));
     }
     newTask.type = IMAGE_REQUEST_TASK;
     newTask.progress.state = QUEUED_TASK_STATE;
@@ -381,11 +381,11 @@ Cluster::addImageRequestTask(const std::string &name,
 
     // fill metadata
     newTask.metaData.insert("number_of_cycles",
-                            new DataValue(static_cast<long>(numberOfCycle)));
+                            new Kitsunemimi::DataValue(static_cast<long>(numberOfCycle)));
     newTask.metaData.insert("number_of_inputs_per_cycle",
-                            new DataValue(static_cast<long>(numberOfInputsPerCycle)));
+                            new Kitsunemimi::DataValue(static_cast<long>(numberOfInputsPerCycle)));
     newTask.metaData.insert("number_of_outputs_per_cycle",
-                            new DataValue(static_cast<long>(numberOfOuputsPerCycle)));
+                            new Kitsunemimi::DataValue(static_cast<long>(numberOfOuputsPerCycle)));
 
     // add task to queue
     const std::string uuid = newTask.uuid.toString();
@@ -429,11 +429,11 @@ Cluster::addTableLearnTask(const std::string &name,
 
     // fill metadata
     newTask.metaData.insert("number_of_cycles",
-                            new DataValue(static_cast<long>(numberOfCycle)));
+                            new Kitsunemimi::DataValue(static_cast<long>(numberOfCycle)));
     newTask.metaData.insert("number_of_inputs_per_cycle",
-                            new DataValue(static_cast<long>(numberOfInputs)));
+                            new Kitsunemimi::DataValue(static_cast<long>(numberOfInputs)));
     newTask.metaData.insert("number_of_outputs_per_cycle",
-                            new DataValue(static_cast<long>(numberOfOutputs)));
+                            new Kitsunemimi::DataValue(static_cast<long>(numberOfOutputs)));
 
     // add task to queue
     const std::string uuid = newTask.uuid.toString();
@@ -469,9 +469,9 @@ Cluster::addTableRequestTask(const std::string &name,
     newTask.userId = userId;
     newTask.projectId = projectId;
     newTask.inputData = inputData;
-    newTask.resultData = new DataArray();
+    newTask.resultData = new Kitsunemimi::DataArray();
     for(uint64_t i = 0; i < numberOfCycle; i++) {
-        newTask.resultData->append(new DataValue(0.0f));
+        newTask.resultData->append(new Kitsunemimi::DataValue(0.0f));
     }
     newTask.type = TABLE_REQUEST_TASK;
     newTask.progress.state = QUEUED_TASK_STATE;
@@ -479,11 +479,11 @@ Cluster::addTableRequestTask(const std::string &name,
 
     // fill metadata
     newTask.metaData.insert("number_of_cycles",
-                            new DataValue(static_cast<long>(numberOfCycle)));
+                            new Kitsunemimi::DataValue(static_cast<long>(numberOfCycle)));
     newTask.metaData.insert("number_of_inputs_per_cycle",
-                            new DataValue(static_cast<long>(numberOfInputs)));
+                            new Kitsunemimi::DataValue(static_cast<long>(numberOfInputs)));
     newTask.metaData.insert("number_of_outputs_per_cycle",
-                            new DataValue(static_cast<long>(numberOfOutputs)));
+                            new Kitsunemimi::DataValue(static_cast<long>(numberOfOutputs)));
 
     // add tasgetNextTaskk to queue
     const std::string uuid = newTask.uuid.toString();
@@ -519,9 +519,9 @@ Cluster::addClusterSnapshotSaveTask(const std::string &snapshotName,
     newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
 
     // fill metadata
-    newTask.metaData.insert("snapshot_name", new DataValue(snapshotName));
-    newTask.metaData.insert("user_id", new DataValue(userId));
-    newTask.metaData.insert("project_id", new DataValue(projectId));
+    newTask.metaData.insert("snapshot_name", new Kitsunemimi::DataValue(snapshotName));
+    newTask.metaData.insert("user_id", new Kitsunemimi::DataValue(userId));
+    newTask.metaData.insert("project_id", new Kitsunemimi::DataValue(projectId));
 
     // add tasgetNextTaskk to queue
     const std::string uuid = newTask.uuid.toString();
@@ -558,9 +558,9 @@ Cluster::addClusterSnapshotRestoreTask(const std::string &name,
     newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
 
     // fill metadata
-    newTask.metaData.insert("snapshot_info", new DataValue(snapshotInfo));
-    newTask.metaData.insert("user_id", new DataValue(userId));
-    newTask.metaData.insert("project_id", new DataValue(projectId));
+    newTask.metaData.insert("snapshot_info", new Kitsunemimi::DataValue(snapshotInfo));
+    newTask.metaData.insert("user_id", new Kitsunemimi::DataValue(userId));
+    newTask.metaData.insert("project_id", new Kitsunemimi::DataValue(projectId));
 
     // add tasgetNextTaskk to queue
     const std::string uuid = newTask.uuid.toString();

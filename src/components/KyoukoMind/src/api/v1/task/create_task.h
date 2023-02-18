@@ -47,7 +47,7 @@ private:
                    const std::string &dataSetUuid,
                    const Kitsunemimi::Hanami::UserContext &userContext,
                    Cluster* cluster,
-                   JsonItem &dataSetInfo,
+                   Kitsunemimi::JsonItem &dataSetInfo,
                    Kitsunemimi::Hanami::BlossomStatus &status,
                    Kitsunemimi::ErrorContainer &error);
 
@@ -57,7 +57,7 @@ private:
                    const std::string &dataSetUuid,
                    const Kitsunemimi::Hanami::UserContext &userContext,
                    Cluster* cluster,
-                   JsonItem &dataSetInfo,
+                   Kitsunemimi::JsonItem &dataSetInfo,
                    Kitsunemimi::Hanami::BlossomStatus &status,
                    Kitsunemimi::ErrorContainer &error);
 };

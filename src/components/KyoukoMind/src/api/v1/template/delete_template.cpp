@@ -63,7 +63,7 @@ DeleteTemplate::runTask(BlossomIO &blossomIO,
     const Kitsunemimi::Hanami::UserContext userContext(context);
 
     // check if user exist within the table
-    JsonItem getResult;
+    Kitsunemimi::JsonItem getResult;
     if(KyoukoRoot::templateTable->getTemplate(getResult,
                                               templateUuid,
                                               userContext,

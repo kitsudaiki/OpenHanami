@@ -51,7 +51,7 @@ bool
 CycleFinish_State::processEvent()
 {
     Task* actualTask = m_cluster->getActualTask();
-    DataValue* numberOfCyclesVal = actualTask->metaData.get("number_of_cycles")->toValue();
+    Kitsunemimi::DataValue* numberOfCyclesVal = actualTask->metaData.get("number_of_cycles")->toValue();
     const uint64_t numberOfCycles = numberOfCyclesVal->getLong();
 
     // update progress-counter

@@ -95,7 +95,7 @@ CreateCluster::runTask(BlossomIO &blossomIO,
     const Kitsunemimi::Hanami::UserContext userContext(context);
 
     // check if user already exist within the table
-    JsonItem getResult;
+    Kitsunemimi::JsonItem getResult;
     if(KyoukoRoot::clustersTable->getClusterByName(getResult, clusterName, userContext, error))
     {
         status.errorMessage = "Cluster with name '" + clusterName + "' already exist.";
@@ -110,7 +110,7 @@ CreateCluster::runTask(BlossomIO &blossomIO,
     if(base64Template != "")
     {
         // decode base64 formated template to check if valid base64-string
-        DataBuffer convertedTemplate;
+        Kitsunemimi::DataBuffer convertedTemplate;
         if(Kitsunemimi::decodeBase64(convertedTemplate, base64Template) == false)
         {
             status.errorMessage = "Uploaded template is not a valid base64-String.";
@@ -133,7 +133,7 @@ CreateCluster::runTask(BlossomIO &blossomIO,
     }
 
     // convert values
-    JsonItem clusterData;
+    Kitsunemimi::JsonItem clusterData;
     clusterData.insert("name", clusterName);
     clusterData.insert("project_id", userContext.projectId);
     clusterData.insert("owner_id", userContext.userId);
@@ -266,7 +266,7 @@ CreateCluster::getSegmentTemplate(Kitsunemimi::Hanami::SegmentMeta* segmentMeta,
                                   Kitsunemimi::ErrorContainer &error)
 {
     // get segment-template from database
-    JsonItem templateData;
+    Kitsunemimi::JsonItem templateData;
     if(KyoukoRoot::templateTable->getTemplateByName(templateData,
                                                     name,
                                                     userContext,

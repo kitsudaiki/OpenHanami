@@ -123,7 +123,7 @@ CreateTask::runTask(BlossomIO &blossomIO,
     }
 
     // get meta-infos of data-set from shiori
-    JsonItem dataSetInfo;
+    Kitsunemimi::JsonItem dataSetInfo;
     if(Shiori::getDataSetInformation(dataSetInfo, dataSetUuid, userContext.token, error) == false)
     {
         error.addMeesage("Failed to get information from shiori for UUID '" + dataSetUuid + "'");
@@ -197,12 +197,15 @@ CreateTask::imageTask(std::string &taskUuid,
                       const std::string &dataSetUuid,
                       const Kitsunemimi::Hanami::UserContext &userContext,
                       Cluster* cluster,
-                      JsonItem &dataSetInfo,
+                      Kitsunemimi::JsonItem &dataSetInfo,
                       BlossomStatus &status,
                       Kitsunemimi::ErrorContainer &error)
 {
     // get input-data
-    DataBuffer* dataSetBuffer = Shiori::getDatasetData(userContext.token, dataSetUuid, "", error);
+    Kitsunemimi::DataBuffer* dataSetBuffer = Shiori::getDatasetData(userContext.token,
+                                                                    dataSetUuid,
+                                                                    "",
+                                                                    error);
     if(dataSetBuffer == nullptr)
     {
         error.addMeesage("Failed to get data from shiori for dataset with UUID '"
@@ -264,7 +267,7 @@ CreateTask::tableTask(std::string &taskUuid,
                       const std::string &dataSetUuid,
                       const Kitsunemimi::Hanami::UserContext &userContext,
                       Cluster* cluster,
-                      JsonItem &dataSetInfo,
+                      Kitsunemimi::JsonItem &dataSetInfo,
                       BlossomStatus &status,
                       Kitsunemimi::ErrorContainer &error)
 {
@@ -277,10 +280,10 @@ CreateTask::tableTask(std::string &taskUuid,
 
     // get input-data
     const std::string inputColumnName = inSegment->getName();
-    DataBuffer* inputBuffer = Shiori::getDatasetData(userContext.token,
-                                                     dataSetUuid,
-                                                     inputColumnName,
-                                                     error);
+    Kitsunemimi::DataBuffer* inputBuffer = Shiori::getDatasetData(userContext.token,
+                                                                  dataSetUuid,
+                                                                  inputColumnName,
+                                                                  error);
     if(inputBuffer == nullptr)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
@@ -308,10 +311,10 @@ CreateTask::tableTask(std::string &taskUuid,
     {
         // get output-data
         const std::string outputColumnName = outSegment->getName();
-        DataBuffer* outputBuffer = Shiori::getDatasetData(userContext.token,
-                                                          dataSetUuid,
-                                                          outputColumnName,
-                                                          error);
+        Kitsunemimi::DataBuffer* outputBuffer = Shiori::getDatasetData(userContext.token,
+                                                                       dataSetUuid,
+                                                                       outputColumnName,
+                                                                       error);
         if(outputBuffer == nullptr)
         {
             status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;

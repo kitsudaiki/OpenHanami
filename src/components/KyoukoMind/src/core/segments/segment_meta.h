@@ -26,6 +26,7 @@
 #include <common.h>
 
 #include <libKitsunemimiHanamiCommon/structs.h>
+#include <libKitsunemimiHanamiCommon/uuid.h>
 
 enum SegmentTypes
 {
