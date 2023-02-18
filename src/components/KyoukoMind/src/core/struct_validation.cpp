@@ -48,6 +48,7 @@ validateStructSizes()
     assert(sizeof(SegmentSettings) == 256);
     assert(sizeof(Kitsunemimi::Hanami::kuuid) == 40);
     assert(sizeof(Synapse) == 16);
-    assert(sizeof(UpdatePosSection) == 1024);
+    assert(sizeof(UpdatePos) == 8);
+    assert(sizeof(UpdatePosSection) == 512);
     return;
 }

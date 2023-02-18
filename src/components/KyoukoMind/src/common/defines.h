@@ -27,7 +27,7 @@
 
 // network-predefines
 #define SYNAPSES_PER_SYNAPSESECTION 31
-#define NEURONS_PER_NEURONSECTION 62
+#define NEURONS_PER_NEURONSECTION 63
 #define POSSIBLE_NEXT_AXON_STEP 80
 
 // processing

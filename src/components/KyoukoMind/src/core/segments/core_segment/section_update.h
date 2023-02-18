@@ -115,7 +115,6 @@ updateSections(CoreSegment &segment)
             if(sourceUpdatePos->type == 1)
             {
                 sourceUpdatePos->type = 0;
-                sourceUpdatePos->forwardNewId = UNINIT_STATE_32;
                 processUpdatePositon(segment, i, pos);
             }
         }
