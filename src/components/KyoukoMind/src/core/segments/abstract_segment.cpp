@@ -181,7 +181,7 @@ AbstractSegment::createGenericNewHeader(SegmentHeader &header,
     // init settings
     header.settings.count = 1;
     header.settings.bytePos = segmentDataPos;
-    segmentDataPos += sizeof(DynamicSegmentSettings);
+    segmentDataPos += sizeof(SegmentSettings);
 
     // init neighborList
     header.slotList.count = 1;

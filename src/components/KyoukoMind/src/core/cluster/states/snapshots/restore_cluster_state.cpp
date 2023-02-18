@@ -29,7 +29,7 @@
 #include <core/segments/abstract_segment.h>
 #include <core/segments/input_segment/input_segment.h>
 #include <core/segments/output_segment/output_segment.h>
-#include <core/segments/dynamic_segment/dynamic_segment.h>
+#include <core/segments/core_segment/core_segment.h>
 
 #include <libShioriArchive/snapshots.h>
 
@@ -161,7 +161,7 @@ RestoreCluster_State::processEvent()
             }
             case DYNAMIC_SEGMENT:
             {
-                DynamicSegment* newSegment = new DynamicSegment(&u8Data[posCounter], size);
+                CoreSegment* newSegment = new CoreSegment(&u8Data[posCounter], size);
                 newSegment->reinitPointer(size);
                 newSegment->parentCluster = m_cluster;
                 m_cluster->allSegments.push_back(newSegment);

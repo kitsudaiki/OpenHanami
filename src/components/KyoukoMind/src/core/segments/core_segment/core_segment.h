@@ -1,5 +1,5 @@
 /**
- * @file        dynamic_segment.h
+ * @file        core_segment.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -32,13 +32,13 @@ namespace Kitsunemimi {
 class GpuData;
 }
 
-class DynamicSegment
+class CoreSegment
         : public AbstractSegment
 {
 public:
-    DynamicSegment();
-    DynamicSegment(const void* data, const uint64_t dataSize);
-    ~DynamicSegment();
+    CoreSegment();
+    CoreSegment(const void* data, const uint64_t dataSize);
+    ~CoreSegment();
 
     bool initSegment(const std::string &name,
                      const Kitsunemimi::Hanami::SegmentMeta &segmentMeta);
@@ -53,7 +53,7 @@ public:
     Kitsunemimi::GpuData* data = nullptr;
 
 private:
-    DynamicSegmentSettings initSettings(const Kitsunemimi::Hanami::SegmentMeta &segmentMeta);
+    SegmentSettings initSettings(const Kitsunemimi::Hanami::SegmentMeta &segmentMeta);
     SegmentHeader createNewHeader(const uint32_t numberOfBricks,
                                   const uint32_t numberOfNeuronSections,
                                   const uint64_t numberOfSynapseSections,

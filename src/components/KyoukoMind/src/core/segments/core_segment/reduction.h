@@ -29,13 +29,13 @@
 #include <core/segments/brick.h>
 
 #include "objects.h"
-#include "dynamic_segment.h"
+#include "core_segment.h"
 
 /**
  * @brief reduce synapses of a specific section
  */
 inline bool
-reduceSynapses(DynamicSegment &segment,
+reduceSynapses(CoreSegment &segment,
                SynapseSection &section)
 {
     bool foundEnd = false;
@@ -79,10 +79,10 @@ reduceSynapses(DynamicSegment &segment,
  * @brief reduce all synapses within the segment and delete them, if the reach a deletion-border
  */
 inline void
-reduceNeurons(DynamicSegment &segment)
+reduceNeurons(CoreSegment &segment)
 {
     SynapseSection* section = nullptr;
-    DynamicNeuron* sourceNeuron = nullptr;
+    Neuron* sourceNeuron = nullptr;
 
     /*for(uint32_t neuronId = 0;
         neuronId < segment.segmentHeader->neuronSections.count;

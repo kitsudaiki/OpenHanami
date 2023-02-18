@@ -23,7 +23,7 @@
 #include "cluster.h"
 #include <kyouko_root.h>
 
-#include <core/segments/dynamic_segment/dynamic_segment.h>
+#include <core/segments/core_segment/core_segment.h>
 #include <core/segments/input_segment/input_segment.h>
 #include <core/segments/output_segment/output_segment.h>
 #include <core/cluster/cluster_init.h>

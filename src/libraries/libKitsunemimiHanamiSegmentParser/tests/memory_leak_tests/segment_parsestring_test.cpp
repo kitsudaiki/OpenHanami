@@ -40,7 +40,7 @@ void
 Segment_ParseString_Test::parseString_test()
 {
     const std::string input("version: 1\n"
-                            "segment_type: dynamic_segment\n"
+                            "segment_type: core_segment\n"
                             "settings:\n"
                             "    max_synapse_sections: 100000\n"
                             "    synapse_segmentation: 10\n"

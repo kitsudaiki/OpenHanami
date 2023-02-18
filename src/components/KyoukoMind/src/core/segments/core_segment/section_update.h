@@ -29,7 +29,7 @@
 #include <core/segments/brick.h>
 
 #include "objects.h"
-#include "dynamic_segment.h"
+#include "core_segment.h"
 
 /**
  * @brief search for the last entry in a chain of sections to find position where the new has
@@ -52,7 +52,7 @@ getForwardLast(const uint32_t sourceId,
  */
 inline void
 createNewSection(SynapseSection &result,
-                 DynamicSegment &segment,
+                 CoreSegment &segment,
                  const Brick &currentBrick)
 {
     result.active = Kitsunemimi::ItemBuffer::ACTIVE_SECTION;
@@ -70,9 +70,9 @@ createNewSection(SynapseSection &result,
  * @brief process single update-position
  */
 inline void
-processUpdatePositon_Cpu(DynamicSegment &segment,
-                         const uint32_t sectionId,
-                         const uint32_t neuronId)
+processUpdatePositon(CoreSegment &segment,
+                     const uint32_t sectionId,
+                     const uint32_t neuronId)
 {
     NeuronSection* sourceSection = &segment.neuronSections[sectionId];
     Brick* currentBrick = &segment.bricks[sourceSection->brickId];
@@ -84,7 +84,7 @@ processUpdatePositon_Cpu(DynamicSegment &segment,
         return;
     }
 
-    DynamicNeuron* neuron = &sourceSection->neurons[neuronId];
+    Neuron* neuron = &sourceSection->neurons[neuronId];
     if(neuron->targetSectionId == UNINIT_STATE_32) {
         neuron->targetSectionId = newId;
     } else {
@@ -96,7 +96,7 @@ processUpdatePositon_Cpu(DynamicSegment &segment,
  * @brief prcess update-positions in order to create new sections
  */
 inline void
-updateSections(DynamicSegment &segment)
+updateSections(CoreSegment &segment)
 {
     UpdatePosSection* sourceUpdatePosSection = nullptr;
     UpdatePos* sourceUpdatePos = nullptr;
@@ -116,7 +116,7 @@ updateSections(DynamicSegment &segment)
             {
                 sourceUpdatePos->type = 0;
                 sourceUpdatePos->forwardNewId = UNINIT_STATE_32;
-                processUpdatePositon_Cpu(segment, i, pos);
+                processUpdatePositon(segment, i, pos);
             }
         }
     }

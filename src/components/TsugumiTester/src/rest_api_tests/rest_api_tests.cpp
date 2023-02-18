@@ -233,7 +233,7 @@ runRestApiTests()
     }
 
     const std::string segmentTemplate("version: 1\n"
-                                      "segment_type: dynamic_segment\n"
+                                      "segment_type: core_segment\n"
                                       "settings:\n"
                                       "    max_synapse_sections: 100000\n"
                                       "    synapse_segmentation: 7\n"

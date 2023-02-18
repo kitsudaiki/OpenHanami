@@ -22,7 +22,7 @@
 
 #include "cpu_processing_unit.h"
 
-#include <core/segments/dynamic_segment/dynamic_segment.h>
+#include <core/segments/core_segment/core_segment.h>
 #include <core/segments/input_segment/input_segment.h>
 #include <core/segments/output_segment/output_segment.h>
 
@@ -31,10 +31,10 @@
 
 #include <kyouko_root.h>
 
-#include <core/segments/dynamic_segment/backpropagation.h>
-#include <core/segments/dynamic_segment/processing.h>
-#include <core/segments/dynamic_segment/reduction.h>
-#include <core/segments/dynamic_segment/section_update.h>
+#include <core/segments/core_segment/backpropagation.h>
+#include <core/segments/core_segment/processing.h>
+#include <core/segments/core_segment/reduction.h>
+#include <core/segments/core_segment/section_update.h>
 
 #include <core/segments/output_segment/backpropagation.h>
 #include <core/segments/output_segment/processing.h>
@@ -71,16 +71,16 @@ CpuProcessingUnit::learnSegmentForward(AbstractSegment* segment)
     {
         case DYNAMIC_SEGMENT:
         {
-            DynamicSegment* seg = static_cast<DynamicSegment*>(segment);
-            seg->dynamicSegmentSettings->doLearn = 1;
-            seg->dynamicSegmentSettings->doLearn = 1;
-            prcessDynamicSegment(*seg);
-            if(seg->dynamicSegmentSettings->updateSections != 0) {
+            CoreSegment* seg = static_cast<CoreSegment*>(segment);
+            seg->segmentSettings->doLearn = 1;
+            seg->segmentSettings->doLearn = 1;
+            prcessCoreSegment(*seg);
+            if(seg->segmentSettings->updateSections != 0) {
                 updateSections(*seg);
             }
-            seg->dynamicSegmentSettings->updateSections = 0;
+            seg->segmentSettings->updateSections = 0;
 
-            seg->dynamicSegmentSettings->doLearn = 0;
+            seg->segmentSettings->doLearn = 0;
             break;
         }
         case INPUT_SEGMENT:
@@ -115,8 +115,8 @@ CpuProcessingUnit::learnSegmentBackward(AbstractSegment* segment)
     {
         case DYNAMIC_SEGMENT:
         {
-            DynamicSegment* seg = static_cast<DynamicSegment*>(segment);
-            rewightDynamicSegment(*seg);
+            CoreSegment* seg = static_cast<CoreSegment*>(segment);
+            reweightCoreSegment(*seg);
             if(reductionCounter == 100) {
                 //reduceNeurons(*seg);
                 reductionCounter = 0;
@@ -149,8 +149,8 @@ CpuProcessingUnit::processSegment(AbstractSegment* segment)
     {
         case DYNAMIC_SEGMENT:
         {
-            DynamicSegment* seg = static_cast<DynamicSegment*>(segment);
-            prcessDynamicSegment(*seg);
+            CoreSegment* seg = static_cast<CoreSegment*>(segment);
+            prcessCoreSegment(*seg);
             break;
         }
         case INPUT_SEGMENT:

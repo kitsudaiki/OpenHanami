@@ -25,7 +25,7 @@
 #include <core/cluster/task.h>
 #include <core/cluster/cluster.h>
 #include <core/cluster/statemachine_init.h>
-#include <core/segments/dynamic_segment/dynamic_segment.h>
+#include <core/segments/core_segment/core_segment.h>
 
 /**
  * @brief constructor

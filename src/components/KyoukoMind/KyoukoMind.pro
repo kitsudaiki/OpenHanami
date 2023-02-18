@@ -156,12 +156,12 @@ HEADERS += \
     src/core/routing_functions.h \
     src/core/segments/abstract_segment.h \
     src/core/segments/brick.h \
-    src/core/segments/dynamic_segment/backpropagation.h \
-    src/core/segments/dynamic_segment/dynamic_segment.h \
-    src/core/segments/dynamic_segment/objects.h \
-    src/core/segments/dynamic_segment/processing.h \
-    src/core/segments/dynamic_segment/reduction.h \
-    src/core/segments/dynamic_segment/section_update.h \
+    src/core/segments/core_segment/backpropagation.h \
+    src/core/segments/core_segment/core_segment.h \
+    src/core/segments/core_segment/objects.h \
+    src/core/segments/core_segment/processing.h \
+    src/core/segments/core_segment/reduction.h \
+    src/core/segments/core_segment/section_update.h \
     src/core/segments/input_segment/input_segment.h \
     src/core/segments/input_segment/objects.h \
     src/core/segments/input_segment/processing.h \
@@ -209,7 +209,7 @@ SOURCES += \
     src/core/processing/processing_unit_handler.cpp \
     src/core/processing/segment_queue.cpp \
     src/core/segments/abstract_segment.cpp \
-    src/core/segments/dynamic_segment/dynamic_segment.cpp \
+    src/core/segments/core_segment/core_segment.cpp \
     src/core/segments/input_segment/input_segment.cpp \
     src/core/segments/output_segment/output_segment.cpp \
     src/core/struct_validation.cpp \
@@ -220,7 +220,7 @@ SOURCES += \
     src/main.cpp
 
 KYOUKO_PROTO_BUFFER = ../../libraries/libKitsunemimiHanamiMessages/protobuffers/kyouko_messages.proto3
-# GPU_KERNEL = src/core/segments/dynamic_segment/gpu_kernel.cl
+# GPU_KERNEL = src/core/segments/core_segment/gpu_kernel.cl
 
 OTHER_FILES += $$KYOUKO_PROTO_BUFFER # \
                # $$GPU_KERNEL

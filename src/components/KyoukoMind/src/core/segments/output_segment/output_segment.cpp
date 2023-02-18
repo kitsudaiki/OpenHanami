@@ -95,8 +95,8 @@ OutputSegment::reinitPointer(const uint64_t numberOfBytes)
     byteCounter += sizeof(SegmentName);
 
     pos = segmentHeader->settings.bytePos;
-    dynamicSegmentSettings = reinterpret_cast<DynamicSegmentSettings*>(dataPtr + pos);
-    byteCounter += sizeof(DynamicSegmentSettings);
+    segmentSettings = reinterpret_cast<SegmentSettings*>(dataPtr + pos);
+    byteCounter += sizeof(SegmentSettings);
 
     pos = segmentHeader->slotList.bytePos;
     segmentSlots = reinterpret_cast<SegmentSlotList*>(dataPtr + pos);
@@ -184,7 +184,7 @@ OutputSegment::initSegmentPointer(const SegmentHeader &header)
     segmentName = reinterpret_cast<SegmentName*>(dataPtr + pos);
 
     pos = segmentHeader->settings.bytePos;
-    dynamicSegmentSettings = reinterpret_cast<DynamicSegmentSettings*>(dataPtr + pos);
+    segmentSettings = reinterpret_cast<SegmentSettings*>(dataPtr + pos);
 
     pos = segmentHeader->slotList.bytePos;
     segmentSlots = reinterpret_cast<SegmentSlotList*>(dataPtr + pos);

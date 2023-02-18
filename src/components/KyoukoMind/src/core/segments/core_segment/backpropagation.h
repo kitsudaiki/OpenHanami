@@ -27,7 +27,7 @@
 
 #include <kyouko_root.h>
 #include <core/segments/brick.h>
-#include <core/segments/dynamic_segment/dynamic_segment.h>
+#include <core/segments/core_segment/core_segment.h>
 
 #include "objects.h"
 
@@ -38,9 +38,9 @@ inline bool
 backpropagateOutput(const Brick* brick,
                     float* inputTransfers,
                     NeuronSection* neuronSections,
-                    DynamicSegmentSettings* dynamicSegmentSettings)
+                    SegmentSettings* segmentSettings)
 {
-    DynamicNeuron* neuron = nullptr;
+    Neuron* neuron = nullptr;
     NeuronSection* section = nullptr;
     float totalDelta = 0.0f;
 
@@ -61,7 +61,7 @@ backpropagateOutput(const Brick* brick,
         }
     }
 
-    return totalDelta > dynamicSegmentSettings->backpropagationBorder;
+    return totalDelta > segmentSettings->backpropagationBorder;
     //return true;
 }
 
@@ -70,14 +70,14 @@ backpropagateOutput(const Brick* brick,
  */
 inline void
 backpropagateSection(SynapseSection* section,
-                     DynamicNeuron* sourceNeuron,
+                     Neuron* sourceNeuron,
                      float netH,
                      const Brick* brick,
                      NeuronSection* neuronSections,
                      SynapseSection* synapseSections)
 {
     Synapse* synapse = nullptr;
-    DynamicNeuron* targetNeuron = nullptr;
+    Neuron* targetNeuron = nullptr;
     NeuronSection* neuronSection = &neuronSections[section->targetNeuronSectionId];
     float learnValue = 0.2f;
     uint16_t pos = 0;
@@ -122,7 +122,7 @@ backpropagateNeurons(const Brick* brick,
                      UpdatePosSection* updatePosSections,
                      float* outputTransfers)
 {
-    DynamicNeuron* sourceNeuron = nullptr;
+    Neuron* sourceNeuron = nullptr;
     NeuronSection* neuronSection = nullptr;
     UpdatePosSection* updatePosSection = nullptr;
 
@@ -170,14 +170,14 @@ backpropagateNeurons(const Brick* brick,
  * @brief correct weight of synapses within a segment
  */
 void
-rewightDynamicSegment(const DynamicSegment &segment)
+reweightCoreSegment(const CoreSegment &segment)
 {
     Brick* bricks = segment.bricks;
     uint32_t* brickOrder = segment.brickOrder;
     NeuronSection* neuronSections = segment.neuronSections;
     SynapseSection* synapseSections = segment.synapseSections;
     SegmentHeader* segmentHeader = segment.segmentHeader;
-    DynamicSegmentSettings* dynamicSegmentSettings = segment.dynamicSegmentSettings;
+    SegmentSettings* segmentSettings = segment.segmentSettings;
     UpdatePosSection* updatePosSections = segment.updatePosSections;
     float* inputTransfers = segment.inputTransfers;
     float* outputTransfers = segment.outputTransfers;
@@ -193,7 +193,7 @@ rewightDynamicSegment(const DynamicSegment &segment)
             if(backpropagateOutput(brick,
                                    inputTransfers,
                                    neuronSections,
-                                   dynamicSegmentSettings) == false)
+                                   segmentSettings) == false)
             {
                 return;
             }

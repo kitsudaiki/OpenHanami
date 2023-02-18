@@ -94,7 +94,7 @@ YY_DECL;
 // example
 //
 // version: 1
-// segment_type: dynamic_segment
+// segment_type: core_segment
 // settings:
 //     max_synapse_sections: 100000
 //     synapse_segmentation: 10
@@ -121,7 +121,7 @@ startpoint:
 segment_type:
     "segment_type" ":" "identifier" linebreaks
     {
-        if($3 == "dynamic_segment") {
+        if($3 == "core_segment") {
             driver.output->segmentType = DYNAMIC_SEGMENT_TYPE;
         } else {
             driver.error(yyla.location, "unkown segment-type '" + $3 + "'");

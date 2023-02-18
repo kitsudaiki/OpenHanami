@@ -26,7 +26,7 @@
 #include <core/cluster/cluster.h>
 #include <core/segments/brick.h>
 
-#include <core/segments/dynamic_segment/objects.h>
+#include <core/segments/core_segment/objects.h>
 
 /**
  * @brief validate to sized of all structs to ensure, that they have all the defined size of 2^x
@@ -38,14 +38,14 @@ validateStructSizes()
     assert(sizeof(SegmentHeader) == 512);
     assert(sizeof(SegmentName) == 256);
     assert(sizeof(Brick) == 4096);
-    assert(sizeof(DynamicNeuron) == 32);
+    assert(sizeof(Neuron) == 32);
     assert(sizeof(NeuronSection) == 2048);
     assert(sizeof(SegmentSlot) == 64);
     assert(sizeof(SegmentSlotList) == 1024);
 
     assert(sizeof(Cluster::MetaData) == 2048);
     assert(sizeof(Cluster::Settings) == 256);
-    assert(sizeof(DynamicSegmentSettings) == 256);
+    assert(sizeof(SegmentSettings) == 256);
     assert(sizeof(Kitsunemimi::Hanami::kuuid) == 40);
     assert(sizeof(Synapse) == 16);
     assert(sizeof(UpdatePosSection) == 1024);

@@ -28,7 +28,7 @@
 
 //==================================================================================================
 
-struct DynamicNeuron
+struct Neuron
 {
     float input = 0.0f;
     float border = 100.0f;
@@ -37,9 +37,7 @@ struct DynamicNeuron
 
     uint8_t refractionTime = 1;
     uint8_t active = 0;
-    uint8_t padding[2];
-
-    uint32_t id = 0;
+    uint8_t padding[6];
 
     uint32_t targetBorderId = UNINIT_STATE_32;
     uint32_t targetSectionId = UNINIT_STATE_32;
@@ -51,7 +49,7 @@ struct DynamicNeuron
 
 struct NeuronSection
 {
-    DynamicNeuron neurons[NEURONS_PER_NEURONSECTION];
+    Neuron neurons[NEURONS_PER_NEURONSECTION];
     uint32_t numberOfNeurons = 0;
     uint32_t id = 0;
     uint32_t brickId = 0;
@@ -61,7 +59,7 @@ struct NeuronSection
     NeuronSection()
     {
         for(uint32_t i = 0; i < NEURONS_PER_NEURONSECTION; i++) {
-            neurons[i] = DynamicNeuron();
+            neurons[i] = Neuron();
         }
     }
     // total size: 2048 Byte
@@ -132,7 +130,7 @@ struct UpdatePosSection
 
 //==================================================================================================
 
-struct DynamicSegmentSettings
+struct SegmentSettings
 {
     uint64_t maxSynapseSections = 0;
     float synapseDeleteBorder = 1.0f;
