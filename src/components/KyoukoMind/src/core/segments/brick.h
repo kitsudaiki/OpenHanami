@@ -31,9 +31,8 @@ struct Brick
     // common
     uint32_t brickId = UNINIT_STATE_32;
     bool isOutputBrick = false;
-    bool isTransactionBrick = false;
     bool isInputBrick = false;
-    uint8_t padding1[13];
+    uint8_t padding1[14];
     uint32_t neuronSectionPos = UNINIT_STATE_32;
 
     Kitsunemimi::Hanami::Position brickPos;

@@ -352,8 +352,7 @@ DynamicSegment::connectBorderBuffer()
         }
 
         // connect output-bricks with border-buffer
-        if(brick->isOutputBrick
-                || brick->isTransactionBrick)
+        if(brick->isOutputBrick)
         {
             const uint32_t numberOfNeuronSections = getNumberOfNeuronSections(brick->numberOfNeurons);
             for(uint32_t j = 0; j < numberOfNeuronSections; j++)
@@ -705,11 +704,9 @@ DynamicSegment::initTargetBrickList()
     {
         Brick* baseBrick = &bricks[i];
 
-        // ignore output- and transaction-bricks, because they only forward to the border-buffer
+        // ignore output-bricks, because they only forward to the border-buffer
         // and not to other bricks
-        if(baseBrick->isOutputBrick
-                || baseBrick->isTransactionBrick)
-        {
+        if(baseBrick->isOutputBrick) {
             continue;
         }
 
