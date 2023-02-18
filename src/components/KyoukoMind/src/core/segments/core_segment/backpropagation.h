@@ -124,7 +124,6 @@ backpropagateNeurons(const Brick* brick,
 {
     Neuron* sourceNeuron = nullptr;
     NeuronSection* neuronSection = nullptr;
-    UpdatePosSection* updatePosSection = nullptr;
 
     // iterate over all neurons within the brick
     for(uint32_t neuronSectionId = brick->neuronSectionPos;
@@ -132,21 +131,18 @@ backpropagateNeurons(const Brick* brick,
         neuronSectionId++)
     {
         neuronSection = &neuronSections[neuronSectionId];
-        updatePosSection = &updatePosSections[neuronSectionId];
         for(uint32_t neuronId = 0;
             neuronId < neuronSection->numberOfNeurons;
             neuronId++)
         {
             // skip section, if not active
             sourceNeuron = &neuronSection->neurons[neuronId];
-            //UpdatePos* updatePos = &updatePosSection->positions[neuronId];
             if(sourceNeuron->targetSectionId == UNINIT_STATE_32) {
                 continue;
             }
 
-            sourceNeuron->delta = 0.0f;
-
             // set start-values
+            sourceNeuron->delta = 0.0f;
             if(sourceNeuron->active)
             {
                 backpropagateSection(&synapseSections[sourceNeuron->targetSectionId],

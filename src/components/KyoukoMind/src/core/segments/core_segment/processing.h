@@ -181,29 +181,6 @@ processSingleNeuron(const uint32_t neuronId,
 }
 
 /**
- * @brief process content of a neuron
- */
-inline void
-processNeuron(Neuron* neuron,
-              SegmentSettings* segmentSettings)
-{
-    neuron->potential /= segmentSettings->neuronCooldown;
-    neuron->refractionTime = neuron->refractionTime >> 1;
-
-    if(neuron->refractionTime == 0)
-    {
-        neuron->potential = segmentSettings->potentialOverflow * neuron->input;
-        neuron->refractionTime = segmentSettings->refractionTime;
-    }
-
-    // update neuron
-    neuron->potential -= neuron->border;
-    neuron->active = neuron->potential > 0.0f;
-    neuron->input = 0.0f;
-    neuron->potential = log2(neuron->potential + 1.0f);
-}
-
-/**
  * @brief process output brick
  */
 inline void
@@ -296,7 +273,22 @@ processNeuronsOfNormalBrick(const Brick* brick,
             neuronId++)
         {
             neuron = &section->neurons[neuronId];
-            processNeuron(neuron, segmentSettings);
+
+            neuron->potential /= segmentSettings->neuronCooldown;
+            neuron->refractionTime = neuron->refractionTime >> 1;
+
+            if(neuron->refractionTime == 0)
+            {
+                neuron->potential = segmentSettings->potentialOverflow * neuron->input;
+                neuron->refractionTime = segmentSettings->refractionTime;
+            }
+
+            // update neuron
+            neuron->potential -= neuron->border;
+            neuron->active = neuron->potential > 0.0f;
+            neuron->input = 0.0f;
+            neuron->potential = log2(neuron->potential + 1.0f);
+
             processSingleNeuron(neuronId,
                                 neuronSectionId,
                                 neuron,
