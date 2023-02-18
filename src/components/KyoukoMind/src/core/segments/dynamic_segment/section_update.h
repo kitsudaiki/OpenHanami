@@ -32,10 +32,8 @@
 #include "dynamic_segment.h"
 
 /**
- * @brief getForwardLast
- * @param sourceId
- * @param sectionConnections
- * @return
+ * @brief search for the last entry in a chain of sections to find position where the new has
+ *        to be attached
  */
 inline SynapseSection*
 getForwardLast(const uint32_t sourceId,
@@ -50,11 +48,7 @@ getForwardLast(const uint32_t sourceId,
 }
 
 /**
- * @brief add new basic synapse-section to segment
- *
- * @param segment refernce to segment
- *
- * @return position in buffer, where the section was added
+ * @brief initialize new synapse-section
  */
 inline void
 createNewSection(SynapseSection &result,
@@ -73,10 +67,7 @@ createNewSection(SynapseSection &result,
 }
 
 /**
- * @brief processUpdatePositon_Cpu
- * @param segment
- * @param sectionId
- * @param sourceUpdatePos
+ * @brief process single update-position
  */
 inline void
 processUpdatePositon_Cpu(DynamicSegment &segment,
@@ -102,8 +93,7 @@ processUpdatePositon_Cpu(DynamicSegment &segment,
 }
 
 /**
- * @brief updateSections
- * @param segment
+ * @brief prcess update-positions in order to create new sections
  */
 inline void
 updateSections(DynamicSegment &segment)

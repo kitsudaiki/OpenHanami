@@ -33,9 +33,6 @@
 
 /**
  * @brief backpropagate values of an output-brick
- *
- * @param brick brick to process
- * @param segment segment where the brick belongs to
  */
 inline bool
 backpropagateOutput(const Brick* brick,
@@ -70,13 +67,6 @@ backpropagateOutput(const Brick* brick,
 
 /**
  * @brief run backpropagation for a single synapse-section
- *
- * @param section pointer to section to process
- * @param sourceNeuron pointer to the neuron, who triggered the section
- * @param netH neuron-potential
- * @param outH output-multiplicator
- * @param brick brick where the seciton is located
- * @param segment segment where section belongs to
  */
 inline void
 backpropagateSection(SynapseSection* section,
@@ -123,10 +113,7 @@ backpropagateSection(SynapseSection* section,
 }
 
 /**
- * @brief run back-propagation over the hidden neurons
- *
- * @param brick pointer to current brick
- * @param segment pointer to currect segment to process, which contains the brick
+ * @brief run back-propagation over all neurons
  */
 inline void
 backpropagateNeurons(const Brick* brick,
@@ -180,9 +167,7 @@ backpropagateNeurons(const Brick* brick,
 }
 
 /**
- * @brief correct wight of synapses within
- *
- * @param segment segment to process
+ * @brief correct weight of synapses within a segment
  */
 void
 rewightDynamicSegment(const DynamicSegment &segment)

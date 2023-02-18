@@ -33,13 +33,6 @@
 
 /**
  * @brief initialize a new specific synapse
- *
- * @param section current processed synapse-section
- * @param synapse new synapse, which has to be initialized
- * @param bricks array of all bricks
- * @param sourceNeuron source-neuron, who triggered the section
- * @param segmentSettings settings of the section
- * @param remainingWeight weight of which to cut of a part for the new synapse
  */
 inline void
 createNewSynapse(SynapseSection* section,
@@ -81,12 +74,6 @@ createNewSynapse(SynapseSection* section,
 
 /**
  * @brief process synapse-section
- *
- * @param section current processed synapse-section
- * @param segment refernece to the processed segment
- * @param sourceNeuron source-neuron, who triggered the section
- * @param netH wight-value, which comes into the section
- * @param outH multiplicator
  */
 inline void
 synapseProcessing(const uint32_t neuronId,
@@ -159,9 +146,6 @@ synapseProcessing(const uint32_t neuronId,
 
 /**
  * @brief process only a single neuron
- *
- * @param neuron pointer to neuron to process
- * @param segment segment where the neuron belongs to
  */
 inline void
 processSingleNeuron(const uint32_t neuronId,
@@ -197,9 +181,7 @@ processSingleNeuron(const uint32_t neuronId,
 }
 
 /**
- * @brief processNeuron
- * @param neuron
- * @param segment
+ * @brief process content of a neuron
  */
 inline void
 processNeuron(DynamicNeuron* neuron,
@@ -222,10 +204,7 @@ processNeuron(DynamicNeuron* neuron,
 }
 
 /**
- * @brief reset neurons of a output brick
- *
- * @param brick pointer to the brick
- * @param segment segment where the brick belongs to
+ * @brief process output brick
  */
 inline void
 processNeuronsOfOutputBrick(const Brick* brick,
@@ -255,10 +234,7 @@ processNeuronsOfOutputBrick(const Brick* brick,
 }
 
 /**
- * @brief reset neurons of a input brick
- *
- * @param brick pointer to the brick
- * @param segment segment where the brick belongs to
+ * @brief process input brick
  */
 inline void
 processNeuronsOfInputBrick(const Brick* brick,
@@ -297,10 +273,7 @@ processNeuronsOfInputBrick(const Brick* brick,
 }
 
 /**
- * @brief reset neurons of a normal brick
- *
- * @param brick pointer to the brick
- * @param segment segment where the brick belongs to
+ * @brief process normal internal brick
  */
 inline void
 processNeuronsOfNormalBrick(const Brick* brick,
@@ -336,10 +309,7 @@ processNeuronsOfNormalBrick(const Brick* brick,
 }
 
 /**
- * @brief process all neurons within a specific brick and also all synapse-sections,
- *        which are connected to an active neuron
- *
- * @param segment segment to process
+ * @brief process all neurons within a segment
  */
 inline void
 prcessDynamicSegment(DynamicSegment &segment)

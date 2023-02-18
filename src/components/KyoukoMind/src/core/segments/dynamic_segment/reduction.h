@@ -33,11 +33,6 @@
 
 /**
  * @brief reduce synapses of a specific section
- *
- * @param segment segment where the section belongs to
- * @param section section to resuce
- *
- * @return true, if section is empty and can be deleted, else false
  */
 inline bool
 reduceSynapses(DynamicSegment &segment,
@@ -82,8 +77,6 @@ reduceSynapses(DynamicSegment &segment,
 
 /**
  * @brief reduce all synapses within the segment and delete them, if the reach a deletion-border
- *
- * @param segment current segemnt to process
  */
 inline void
 reduceNeurons(DynamicSegment &segment)
