@@ -52,8 +52,8 @@ bool
 TableLearnForward_State::processEvent()
 {
     Task* actualTask = m_cluster->getActualTask();
-    const uint64_t numberOfInputsPerCycle = actualTask->getIntVal("number_of_inputs_per_cycle");
-    const uint64_t numberOfOuputsPerCycle = actualTask->getIntVal("number_of_outputs_per_cycle");
+    const uint64_t numberOfInputsPerCycle = actualTask->numberOfInputsPerCycle;
+    const uint64_t numberOfOuputsPerCycle = actualTask->numberOfOuputsPerCycle;
     uint64_t offset = actualTask->actualCycle;
     if(numberOfInputsPerCycle > numberOfOuputsPerCycle) {
         offset += numberOfInputsPerCycle;

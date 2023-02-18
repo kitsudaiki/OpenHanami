@@ -230,8 +230,7 @@ TaskHandle_State::finishTask()
         // results of tables a aggregated values, so they have to be fixed to its average value
         if(actualTask->type == TABLE_REQUEST_TASK)
         {
-            const long outputC = actualTask->metaData.get("number_of_outputs_per_cycle")->getLong();
-            const float numberOfOutputs = static_cast<float>(outputC);
+            const float numberOfOutputs = static_cast<float>(actualTask->numberOfOuputsPerCycle);
             float val = 0.0f;
             for(uint64_t i = 0; i < actualTask->resultData->array.size(); i++)
             {

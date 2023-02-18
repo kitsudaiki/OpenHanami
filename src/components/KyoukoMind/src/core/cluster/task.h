@@ -60,22 +60,30 @@ struct TaskProgress
 
 struct Task
 {
+    // task-identification
     Kitsunemimi::Hanami::kuuid uuid;
+    TaskType type = UNDEFINED_TASK;
     std::string name = "";
     std::string userId = "";
     std::string projectId = "";
+
+    // data-buffer
     float* inputData = nullptr;
     float* outputData = nullptr;
     Kitsunemimi::DataArray* resultData = nullptr;
-    Kitsunemimi::DataMap metaData;
-    uint64_t actualCycle = 0;
-    TaskType type = UNDEFINED_TASK;
-    TaskProgress progress;
 
-    uint64_t getIntVal(const std::string &name)
-    {
-        return static_cast<uint64_t>(metaData.get(name)->toValue()->getLong());
-    }
+    // learn-request-task meta
+    uint64_t numberOfCycles = 0;
+    uint64_t numberOfInputsPerCycle = 0;
+    uint64_t numberOfOuputsPerCycle = 0;
+
+    // snapshot-meta
+    std::string snapshotName = "";
+    std::string snapshotInfo = "";
+
+    // progress
+    uint64_t actualCycle = 0;
+    TaskProgress progress;
 };
 
 #endif // KYOUKOMIND_TASK_H

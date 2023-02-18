@@ -80,15 +80,11 @@ RestoreCluster_State::processEvent()
     }
 
     // get meta-infos of data-set from shiori
-    const std::string snapshotInfo = actualTask->metaData.get("snapshot_info")->getString();
     Kitsunemimi::JsonItem parsedSnapshotInfo;
-    parsedSnapshotInfo.parse(snapshotInfo, error);
+    parsedSnapshotInfo.parse(actualTask->snapshotInfo, error);
 
     // get other information
-    const std::string snapshotUuid = parsedSnapshotInfo.get("uuid").getString();
     const std::string location = parsedSnapshotInfo.get("location").toString();
-    const std::string userId = actualTask->metaData.get("user_id")->getString();
-    const std::string projectId = actualTask->metaData.get("project_id")->getString();
 
     // get header
     const std::string header = parsedSnapshotInfo.get("header").toString();
