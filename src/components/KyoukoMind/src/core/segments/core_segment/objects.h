@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef KYOUKOMIND_DYNAMIC_SEGMENT_OBJECTS_H
-#define KYOUKOMIND_DYNAMIC_SEGMENT_OBJECTS_H
+#ifndef KYOUKOMIND_CORE_SEGMENT_OBJECTS_H
+#define KYOUKOMIND_CORE_SEGMENT_OBJECTS_H
 
 #include <common.h>
 #include <libKitsunemimiCommon/buffer/item_buffer.h>
@@ -151,4 +151,4 @@ struct SegmentSettings
 };
 
 //==================================================================================================
-#endif // KYOUKOMIND_DYNAMIC_SEGMENT_OBJECTS_H
+#endif // KYOUKOMIND_CORE_SEGMENT_OBJECTS_H

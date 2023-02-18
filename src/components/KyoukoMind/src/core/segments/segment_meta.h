@@ -32,7 +32,7 @@ enum SegmentTypes
     UNDEFINED_SEGMENT = 0,
     INPUT_SEGMENT = 1,
     OUTPUT_SEGMENT = 2,
-    DYNAMIC_SEGMENT = 3,
+    CORE_SEGMENT = 3,
 };
 
 struct SegmentHeaderEntry

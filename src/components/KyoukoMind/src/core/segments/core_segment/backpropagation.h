@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef KYOUKOMIND_DYNAMIC_BACKPROPAGATION_H
-#define KYOUKOMIND_DYNAMIC_BACKPROPAGATION_H
+#ifndef KYOUKOMIND_CORE_BACKPROPAGATION_H
+#define KYOUKOMIND_CORE_BACKPROPAGATION_H
 
 #include <common.h>
 
@@ -119,7 +119,6 @@ inline void
 backpropagateNeurons(const Brick* brick,
                      NeuronSection* neuronSections,
                      SynapseSection* synapseSections,
-                     UpdatePosSection* updatePosSections,
                      float* outputTransfers)
 {
     Neuron* sourceNeuron = nullptr;
@@ -174,7 +173,6 @@ reweightCoreSegment(const CoreSegment &segment)
     SynapseSection* synapseSections = segment.synapseSections;
     SegmentHeader* segmentHeader = segment.segmentHeader;
     SegmentSettings* segmentSettings = segment.segmentSettings;
-    UpdatePosSection* updatePosSections = segment.updatePosSections;
     float* inputTransfers = segment.inputTransfers;
     float* outputTransfers = segment.outputTransfers;
 
@@ -197,9 +195,8 @@ reweightCoreSegment(const CoreSegment &segment)
         backpropagateNeurons(brick,
                              neuronSections,
                              synapseSections,
-                             updatePosSections,
                              outputTransfers);
     }
 }
 
-#endif // KYOUKOMIND_DYNAMIC_BACKPROPAGATION_H
+#endif // KYOUKOMIND_CORE_BACKPROPAGATION_H

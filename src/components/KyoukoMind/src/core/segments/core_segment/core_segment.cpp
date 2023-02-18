@@ -40,7 +40,7 @@
 CoreSegment::CoreSegment()
     : AbstractSegment()
 {
-    m_type = DYNAMIC_SEGMENT;
+    m_type = CORE_SEGMENT;
 }
 
 /**
@@ -52,7 +52,7 @@ CoreSegment::CoreSegment()
 CoreSegment::CoreSegment(const void* data, const uint64_t dataSize)
     : AbstractSegment(data, dataSize)
 {
-    m_type = DYNAMIC_SEGMENT;
+    m_type = CORE_SEGMENT;
 }
 
 /**

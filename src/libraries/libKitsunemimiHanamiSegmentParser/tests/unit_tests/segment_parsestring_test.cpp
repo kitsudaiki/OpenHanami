@@ -67,7 +67,7 @@ Segment_ParseString_Test::parseString_test()
     }
 
     TEST_EQUAL(result.version, 1);
-    TEST_EQUAL(result.segmentType, DYNAMIC_SEGMENT_TYPE);
+    TEST_EQUAL(result.segmentType, CORE_SEGMENT_TYPE);
 
     TEST_EQUAL(result.maxSynapseSections, 100000);
     TEST_EQUAL(result.synapseSegmentation, 10);

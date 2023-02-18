@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef KYOUKOMIND_DYNAMIC_SEGMENTS_H
-#define KYOUKOMIND_DYNAMIC_SEGMENTS_H
+#ifndef KYOUKOMIND_CORE_SEGMENTS_H
+#define KYOUKOMIND_CORE_SEGMENTS_H
 
 #include <common.h>
 
@@ -75,4 +75,4 @@ private:
     bool initSlots(const Kitsunemimi::Hanami::SegmentMeta &segmentMeta);
 };
 
-#endif // KYOUKOMIND_DYNAMIC_SEGMENTS_H
+#endif // KYOUKOMIND_CORE_SEGMENTS_H

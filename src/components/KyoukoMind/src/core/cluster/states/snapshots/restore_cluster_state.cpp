@@ -159,7 +159,7 @@ RestoreCluster_State::processEvent()
                 m_cluster->allSegments.push_back(newSegment);
                 break;
             }
-            case DYNAMIC_SEGMENT:
+            case CORE_SEGMENT:
             {
                 CoreSegment* newSegment = new CoreSegment(&u8Data[posCounter], size);
                 newSegment->reinitPointer(size);

@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef KYOUKOMIND_DYNAMIC_PROCESSING_H
-#define KYOUKOMIND_DYNAMIC_PROCESSING_H
+#ifndef KYOUKOMIND_CORE_PROCESSING_H
+#define KYOUKOMIND_CORE_PROCESSING_H
 
 #include <common.h>
 
@@ -348,4 +348,4 @@ prcessCoreSegment(CoreSegment &segment)
     }
 }
 
-#endif // KYOUKOMIND_DYNAMIC_PROCESSING_H
+#endif // KYOUKOMIND_CORE_PROCESSING_H

@@ -122,7 +122,7 @@ segment_type:
     "segment_type" ":" "identifier" linebreaks
     {
         if($3 == "core_segment") {
-            driver.output->segmentType = DYNAMIC_SEGMENT_TYPE;
+            driver.output->segmentType = CORE_SEGMENT_TYPE;
         } else {
             driver.error(yyla.location, "unkown segment-type '" + $3 + "'");
             return 1;

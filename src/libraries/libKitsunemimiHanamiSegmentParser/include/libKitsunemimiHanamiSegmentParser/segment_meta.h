@@ -37,7 +37,7 @@ namespace Kitsunemimi::Hanami
 enum SegmentType
 {
     UNDEFINED_SEGMENT_TYPE = 0,
-    DYNAMIC_SEGMENT_TYPE = 1,
+    CORE_SEGMENT_TYPE = 1,
 };
 
 enum BrickType

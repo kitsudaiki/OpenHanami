@@ -69,7 +69,7 @@ CpuProcessingUnit::learnSegmentForward(AbstractSegment* segment)
 
     switch(segment->getType())
     {
-        case DYNAMIC_SEGMENT:
+        case CORE_SEGMENT:
         {
             CoreSegment* seg = static_cast<CoreSegment*>(segment);
             seg->segmentSettings->doLearn = 1;
@@ -113,7 +113,7 @@ CpuProcessingUnit::learnSegmentBackward(AbstractSegment* segment)
 
     switch(segment->getType())
     {
-        case DYNAMIC_SEGMENT:
+        case CORE_SEGMENT:
         {
             CoreSegment* seg = static_cast<CoreSegment*>(segment);
             reweightCoreSegment(*seg);
@@ -147,7 +147,7 @@ CpuProcessingUnit::processSegment(AbstractSegment* segment)
 
     switch(segment->getType())
     {
-        case DYNAMIC_SEGMENT:
+        case CORE_SEGMENT:
         {
             CoreSegment* seg = static_cast<CoreSegment*>(segment);
             prcessCoreSegment(*seg);
