@@ -1,5 +1,5 @@
 /**
- * @file        validation.h
+ * @file        struct_validation.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -23,8 +23,33 @@
 #ifndef KYOUKOMIND_STRUCT_VALIDATION_H
 #define KYOUKOMIND_STRUCT_VALIDATION_H
 
-#include <common.h>
+#include <core/segments/abstract_segment.h>
+#include <core/cluster/cluster.h>
+#include <core/segments/brick.h>
+#include <core/segments/core_segment/objects.h>
 
-void validateStructSizes();
+/**
+ * @brief validate to sized of all structs to ensure, that they have all the defined size of 2^x
+ */
+inline void
+validateStructSizes()
+{
+    assert(sizeof(SynapseSection) == 512);
+    assert(sizeof(SegmentHeader) == 512);
+    assert(sizeof(SegmentName) == 256);
+    assert(sizeof(Brick) == 4096);
+    assert(sizeof(Neuron) == 32);
+    assert(sizeof(NeuronSection) == 2048);
+    assert(sizeof(SegmentSlot) == 64);
+    assert(sizeof(SegmentSlotList) == 1024);
+
+    assert(sizeof(Cluster::MetaData) == 2048);
+    assert(sizeof(Cluster::Settings) == 256);
+    assert(sizeof(SegmentSettings) == 256);
+    assert(sizeof(Kitsunemimi::Hanami::kuuid) == 40);
+    assert(sizeof(Synapse) == 16);
+    assert(sizeof(UpdatePos) == 8);
+    assert(sizeof(UpdatePosSection) == 512);
+}
 
 #endif // KYOUKOMIND_STRUCT_VALIDATION_H

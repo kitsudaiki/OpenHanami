@@ -212,7 +212,6 @@ SOURCES += \
     src/core/segments/core_segment/core_segment.cpp \
     src/core/segments/input_segment/input_segment.cpp \
     src/core/segments/output_segment/output_segment.cpp \
-    src/core/struct_validation.cpp \
     src/database/cluster_table.cpp \
     src/database/template_table.cpp \
     src/io/protobuf_messages.cpp \
