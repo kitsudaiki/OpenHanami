@@ -20,30 +20,29 @@
  *      limitations under the License.
  */
 
-#ifndef KYOUKOMIND_DYNAMIC_BACKPROPAGATION_H
-#define KYOUKOMIND_DYNAMIC_BACKPROPAGATION_H
+#ifndef KYOUKOMIND_CORE_BACKPROPAGATION_H
+#define KYOUKOMIND_CORE_BACKPROPAGATION_H
 
 #include <common.h>
+#include <math.h>
+#include <cmath>
 
 #include <kyouko_root.h>
 #include <core/segments/brick.h>
-#include <core/segments/dynamic_segment/dynamic_segment.h>
+#include <core/segments/core_segment/core_segment.h>
 
 #include "objects.h"
 
 /**
  * @brief backpropagate values of an output-brick
- *
- * @param brick brick to process
- * @param segment segment where the brick belongs to
  */
 inline bool
 backpropagateOutput(const Brick* brick,
                     float* inputTransfers,
                     NeuronSection* neuronSections,
-                    DynamicSegmentSettings* dynamicSegmentSettings)
+                    SegmentSettings* segmentSettings)
 {
-    DynamicNeuron* neuron = nullptr;
+    Neuron* neuron = nullptr;
     NeuronSection* section = nullptr;
     float totalDelta = 0.0f;
 
@@ -64,30 +63,23 @@ backpropagateOutput(const Brick* brick,
         }
     }
 
-    return totalDelta > dynamicSegmentSettings->backpropagationBorder;
+    return totalDelta > segmentSettings->backpropagationBorder;
     //return true;
 }
 
 /**
  * @brief run backpropagation for a single synapse-section
- *
- * @param section pointer to section to process
- * @param sourceNeuron pointer to the neuron, who triggered the section
- * @param netH neuron-potential
- * @param outH output-multiplicator
- * @param brick brick where the seciton is located
- * @param segment segment where section belongs to
  */
 inline void
 backpropagateSection(SynapseSection* section,
-                     DynamicNeuron* sourceNeuron,
+                     Neuron* sourceNeuron,
                      float netH,
                      const Brick* brick,
                      NeuronSection* neuronSections,
                      SynapseSection* synapseSections)
 {
     Synapse* synapse = nullptr;
-    DynamicNeuron* targetNeuron = nullptr;
+    Neuron* targetNeuron = nullptr;
     NeuronSection* neuronSection = &neuronSections[section->targetNeuronSectionId];
     float learnValue = 0.2f;
     uint16_t pos = 0;
@@ -123,21 +115,16 @@ backpropagateSection(SynapseSection* section,
 }
 
 /**
- * @brief run back-propagation over the hidden neurons
- *
- * @param brick pointer to current brick
- * @param segment pointer to currect segment to process, which contains the brick
+ * @brief run back-propagation over all neurons
  */
 inline void
 backpropagateNeurons(const Brick* brick,
                      NeuronSection* neuronSections,
                      SynapseSection* synapseSections,
-                     UpdatePosSection* updatePosSections,
                      float* outputTransfers)
 {
-    DynamicNeuron* sourceNeuron = nullptr;
+    Neuron* sourceNeuron = nullptr;
     NeuronSection* neuronSection = nullptr;
-    UpdatePosSection* updatePosSection = nullptr;
 
     // iterate over all neurons within the brick
     for(uint32_t neuronSectionId = brick->neuronSectionPos;
@@ -145,21 +132,18 @@ backpropagateNeurons(const Brick* brick,
         neuronSectionId++)
     {
         neuronSection = &neuronSections[neuronSectionId];
-        updatePosSection = &updatePosSections[neuronSectionId];
         for(uint32_t neuronId = 0;
             neuronId < neuronSection->numberOfNeurons;
             neuronId++)
         {
             // skip section, if not active
             sourceNeuron = &neuronSection->neurons[neuronId];
-            //UpdatePos* updatePos = &updatePosSection->positions[neuronId];
             if(sourceNeuron->targetSectionId == UNINIT_STATE_32) {
                 continue;
             }
 
-            sourceNeuron->delta = 0.0f;
-
             // set start-values
+            sourceNeuron->delta = 0.0f;
             if(sourceNeuron->active)
             {
                 backpropagateSection(&synapseSections[sourceNeuron->targetSectionId],
@@ -180,20 +164,17 @@ backpropagateNeurons(const Brick* brick,
 }
 
 /**
- * @brief correct wight of synapses within
- *
- * @param segment segment to process
+ * @brief correct weight of synapses within a segment
  */
 void
-rewightDynamicSegment(const DynamicSegment &segment)
+reweightCoreSegment(const CoreSegment &segment)
 {
     Brick* bricks = segment.bricks;
     uint32_t* brickOrder = segment.brickOrder;
     NeuronSection* neuronSections = segment.neuronSections;
     SynapseSection* synapseSections = segment.synapseSections;
     SegmentHeader* segmentHeader = segment.segmentHeader;
-    DynamicSegmentSettings* dynamicSegmentSettings = segment.dynamicSegmentSettings;
-    UpdatePosSection* updatePosSections = segment.updatePosSections;
+    SegmentSettings* segmentSettings = segment.segmentSettings;
     float* inputTransfers = segment.inputTransfers;
     float* outputTransfers = segment.outputTransfers;
 
@@ -208,7 +189,7 @@ rewightDynamicSegment(const DynamicSegment &segment)
             if(backpropagateOutput(brick,
                                    inputTransfers,
                                    neuronSections,
-                                   dynamicSegmentSettings) == false)
+                                   segmentSettings) == false)
             {
                 return;
             }
@@ -216,9 +197,8 @@ rewightDynamicSegment(const DynamicSegment &segment)
         backpropagateNeurons(brick,
                              neuronSections,
                              synapseSections,
-                             updatePosSections,
                              outputTransfers);
     }
 }
 
-#endif // KYOUKOMIND_DYNAMIC_BACKPROPAGATION_H
+#endif // KYOUKOMIND_CORE_BACKPROPAGATION_H

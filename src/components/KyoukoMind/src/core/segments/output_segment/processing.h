@@ -24,6 +24,8 @@
 #define KYOUKOMIND_OUTPUT_PROCESSING_H
 
 #include <common.h>
+#include <math.h>
+#include <cmath>
 
 #include <kyouko_root.h>
 #include <core/segments/brick.h>

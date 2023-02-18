@@ -30,6 +30,7 @@
 #include <libKitsunemimiHanamiSegmentParser/segment_meta.h>
 
 #include <libKitsunemimiCrypto/common.h>
+#include <libKitsunemimiCommon/buffer/data_buffer.h>
 
 using namespace Kitsunemimi::Hanami;
 
@@ -92,7 +93,7 @@ UploadTemplate::runTask(BlossomIO &blossomIO,
     const Kitsunemimi::Hanami::UserContext userContext(context);
 
     // check if template with the name already exist within the table
-    JsonItem getResult;
+    Kitsunemimi::JsonItem getResult;
     if(KyoukoRoot::templateTable->getTemplateByName(getResult, name, userContext, error))
     {
         status.errorMessage = "Template with name '" + name + "' already exist.";
@@ -104,7 +105,7 @@ UploadTemplate::runTask(BlossomIO &blossomIO,
     error._possibleSolution.clear();
 
     // decode base64 formated template to check if valid base64-string
-    DataBuffer convertedTemplate;
+    Kitsunemimi::DataBuffer convertedTemplate;
     if(Kitsunemimi::decodeBase64(convertedTemplate, stringContent) == false)
     {
         status.errorMessage = "Uploaded template is not a valid base64-String.";
@@ -127,7 +128,7 @@ UploadTemplate::runTask(BlossomIO &blossomIO,
     }
 
     // convert values
-    JsonItem templateData;
+    Kitsunemimi::JsonItem templateData;
     templateData.insert("name", name);
     templateData.insert("data", stringContent);
     templateData.insert("visibility", "private");

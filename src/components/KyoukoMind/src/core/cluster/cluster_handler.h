@@ -23,7 +23,8 @@
 #ifndef KYOUKOMIND_CLUSTERHANDLER_H
 #define KYOUKOMIND_CLUSTERHANDLER_H
 
-#include <common.h>
+#include <string>
+#include <map>
 
 class Cluster;
 

@@ -20,15 +20,15 @@
  *      limitations under the License.
  */
 
-#ifndef KYOUKOMIND_DYNAMIC_SEGMENT_OBJECTS_H
-#define KYOUKOMIND_DYNAMIC_SEGMENT_OBJECTS_H
+#ifndef KYOUKOMIND_CORE_SEGMENT_OBJECTS_H
+#define KYOUKOMIND_CORE_SEGMENT_OBJECTS_H
 
 #include <common.h>
 #include <libKitsunemimiCommon/buffer/item_buffer.h>
 
 //==================================================================================================
 
-struct DynamicNeuron
+struct Neuron
 {
     float input = 0.0f;
     float border = 100.0f;
@@ -37,9 +37,7 @@ struct DynamicNeuron
 
     uint8_t refractionTime = 1;
     uint8_t active = 0;
-    uint8_t padding[2];
-
-    uint32_t id = 0;
+    uint8_t padding[6];
 
     uint32_t targetBorderId = UNINIT_STATE_32;
     uint32_t targetSectionId = UNINIT_STATE_32;
@@ -51,17 +49,15 @@ struct DynamicNeuron
 
 struct NeuronSection
 {
-    DynamicNeuron neurons[NEURONS_PER_NEURONSECTION];
+    Neuron neurons[NEURONS_PER_NEURONSECTION];
     uint32_t numberOfNeurons = 0;
-    uint32_t id = 0;
     uint32_t brickId = 0;
-    uint32_t backwardNextId = UNINIT_STATE_32;
-    uint8_t padding[48];
+    uint8_t padding[24];
 
     NeuronSection()
     {
         for(uint32_t i = 0; i < NEURONS_PER_NEURONSECTION; i++) {
-            neurons[i] = DynamicNeuron();
+            neurons[i] = Neuron();
         }
     }
     // total size: 2048 Byte
@@ -85,8 +81,8 @@ struct SynapseSection
 {
     uint8_t active = Kitsunemimi::ItemBuffer::ACTIVE_SECTION;
     uint8_t padding[3];
-    uint32_t randomPos = 0;
 
+    uint32_t randomPos = 0;
     uint32_t targetNeuronSectionId = 0;
     uint32_t nextId = UNINIT_STATE_32;
 
@@ -106,10 +102,8 @@ struct SynapseSection
 struct UpdatePos
 {
     uint32_t type = 0;
-    uint32_t forwardNewId = UNINIT_STATE_32;
     uint32_t randomPos = UNINIT_STATE_32;
-    uint32_t targetNeuronSectionId = UNINIT_STATE_32;
-    // total size: 16 Byte
+    // total size: 8 Byte
 };
 
 //==================================================================================================
@@ -118,8 +112,7 @@ struct UpdatePosSection
 {
     UpdatePos positions[NEURONS_PER_NEURONSECTION];
     uint32_t numberOfPositions = 0;
-    uint32_t backwardNewId = UNINIT_STATE_32;
-    uint8_t padding[24];
+    uint8_t padding[4];
 
     UpdatePosSection()
     {
@@ -127,12 +120,12 @@ struct UpdatePosSection
             positions[i] = UpdatePos();
         }
     }
-    // total size: 1024 Byte
+    // total size: 512 Byte
 };
 
 //==================================================================================================
 
-struct DynamicSegmentSettings
+struct SegmentSettings
 {
     uint64_t maxSynapseSections = 0;
     float synapseDeleteBorder = 1.0f;
@@ -153,4 +146,4 @@ struct DynamicSegmentSettings
 };
 
 //==================================================================================================
-#endif // KYOUKOMIND_DYNAMIC_SEGMENT_OBJECTS_H
+#endif // KYOUKOMIND_CORE_SEGMENT_OBJECTS_H

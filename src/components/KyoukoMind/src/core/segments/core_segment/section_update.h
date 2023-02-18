@@ -29,13 +29,11 @@
 #include <core/segments/brick.h>
 
 #include "objects.h"
-#include "dynamic_segment.h"
+#include "core_segment.h"
 
 /**
- * @brief getForwardLast
- * @param sourceId
- * @param sectionConnections
- * @return
+ * @brief search for the last entry in a chain of sections to find position where the new has
+ *        to be attached
  */
 inline SynapseSection*
 getForwardLast(const uint32_t sourceId,
@@ -50,15 +48,11 @@ getForwardLast(const uint32_t sourceId,
 }
 
 /**
- * @brief add new basic synapse-section to segment
- *
- * @param segment refernce to segment
- *
- * @return position in buffer, where the section was added
+ * @brief initialize new synapse-section
  */
 inline void
 createNewSection(SynapseSection &result,
-                 DynamicSegment &segment,
+                 CoreSegment &segment,
                  const Brick &currentBrick)
 {
     result.active = Kitsunemimi::ItemBuffer::ACTIVE_SECTION;
@@ -73,15 +67,12 @@ createNewSection(SynapseSection &result,
 }
 
 /**
- * @brief processUpdatePositon_Cpu
- * @param segment
- * @param sectionId
- * @param sourceUpdatePos
+ * @brief process single update-position
  */
 inline void
-processUpdatePositon_Cpu(DynamicSegment &segment,
-                         const uint32_t sectionId,
-                         const uint32_t neuronId)
+processUpdatePositon(CoreSegment &segment,
+                     const uint32_t sectionId,
+                     const uint32_t neuronId)
 {
     NeuronSection* sourceSection = &segment.neuronSections[sectionId];
     Brick* currentBrick = &segment.bricks[sourceSection->brickId];
@@ -93,7 +84,7 @@ processUpdatePositon_Cpu(DynamicSegment &segment,
         return;
     }
 
-    DynamicNeuron* neuron = &sourceSection->neurons[neuronId];
+    Neuron* neuron = &sourceSection->neurons[neuronId];
     if(neuron->targetSectionId == UNINIT_STATE_32) {
         neuron->targetSectionId = newId;
     } else {
@@ -102,11 +93,10 @@ processUpdatePositon_Cpu(DynamicSegment &segment,
 }
 
 /**
- * @brief updateSections
- * @param segment
+ * @brief prcess update-positions in order to create new sections
  */
 inline void
-updateSections(DynamicSegment &segment)
+updateSections(CoreSegment &segment)
 {
     UpdatePosSection* sourceUpdatePosSection = nullptr;
     UpdatePos* sourceUpdatePos = nullptr;
@@ -125,8 +115,7 @@ updateSections(DynamicSegment &segment)
             if(sourceUpdatePos->type == 1)
             {
                 sourceUpdatePos->type = 0;
-                sourceUpdatePos->forwardNewId = UNINIT_STATE_32;
-                processUpdatePositon_Cpu(segment, i, pos);
+                processUpdatePositon(segment, i, pos);
             }
         }
     }

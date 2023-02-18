@@ -29,7 +29,7 @@
 #include <core/segments/abstract_segment.h>
 #include <core/segments/input_segment/input_segment.h>
 #include <core/segments/output_segment/output_segment.h>
-#include <core/segments/dynamic_segment/dynamic_segment.h>
+#include <core/segments/core_segment/core_segment.h>
 
 #include <libShioriArchive/snapshots.h>
 
@@ -80,19 +80,15 @@ RestoreCluster_State::processEvent()
     }
 
     // get meta-infos of data-set from shiori
-    const std::string snapshotInfo = actualTask->metaData.get("snapshot_info")->getString();
-    JsonItem parsedSnapshotInfo;
-    parsedSnapshotInfo.parse(snapshotInfo, error);
+    Kitsunemimi::JsonItem parsedSnapshotInfo;
+    parsedSnapshotInfo.parse(actualTask->snapshotInfo, error);
 
     // get other information
-    const std::string snapshotUuid = parsedSnapshotInfo.get("uuid").getString();
     const std::string location = parsedSnapshotInfo.get("location").toString();
-    const std::string userId = actualTask->metaData.get("user_id")->getString();
-    const std::string projectId = actualTask->metaData.get("project_id")->getString();
 
     // get header
     const std::string header = parsedSnapshotInfo.get("header").toString();
-    JsonItem parsedHeader;
+    Kitsunemimi::JsonItem parsedHeader;
     if(parsedHeader.parse(header, error) == false)
     {
         m_cluster->goToNextState(FINISH_TASK);
@@ -100,7 +96,7 @@ RestoreCluster_State::processEvent()
     }
 
     // get snapshot-data
-    DataBuffer* snapshotBuffer = Shiori::getSnapshotData(location, error);
+    Kitsunemimi::DataBuffer* snapshotBuffer = Shiori::getSnapshotData(location, error);
     if(snapshotBuffer == nullptr)
     {
         error.addMeesage("failed to get snapshot-data from shiori");
@@ -135,7 +131,7 @@ RestoreCluster_State::processEvent()
     uint64_t posCounter = headerSize;
     for(uint64_t i = 0; i < parsedHeader.get("segments").size(); i++)
     {
-        JsonItem segment = parsedHeader.get("segments").get(i);
+        Kitsunemimi::JsonItem segment = parsedHeader.get("segments").get(i);
         const SegmentTypes type = static_cast<SegmentTypes>(segment.get("type").getInt());
         const uint64_t size = static_cast<uint64_t>(segment.get("size").getLong());
 
@@ -159,9 +155,9 @@ RestoreCluster_State::processEvent()
                 m_cluster->allSegments.push_back(newSegment);
                 break;
             }
-            case DYNAMIC_SEGMENT:
+            case CORE_SEGMENT:
             {
-                DynamicSegment* newSegment = new DynamicSegment(&u8Data[posCounter], size);
+                CoreSegment* newSegment = new CoreSegment(&u8Data[posCounter], size);
                 newSegment->reinitPointer(size);
                 newSegment->parentCluster = m_cluster;
                 m_cluster->allSegments.push_back(newSegment);

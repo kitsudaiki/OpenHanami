@@ -20,14 +20,13 @@
  *      limitations under the License.
  */
 
-#include <common/includes.h>
 #include <libKitsunemimiHanamiCommon/defines.h>
 
 #define UNINTI_POINT_32 0x0FFFFFFF
 
 // network-predefines
 #define SYNAPSES_PER_SYNAPSESECTION 31
-#define NEURONS_PER_NEURONSECTION 62
+#define NEURONS_PER_NEURONSECTION 63
 #define POSSIBLE_NEXT_AXON_STEP 80
 
 // processing

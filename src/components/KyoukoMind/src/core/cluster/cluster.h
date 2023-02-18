@@ -26,6 +26,8 @@
 #include <common.h>
 #include <core/cluster/task.h>
 
+#include <libKitsunemimiCommon/buffer/data_buffer.h>
+
 #include <libKitsunemimiHanamiClusterParser/cluster_meta.h>
 #include <libKitsunemimiHanamiSegmentParser/segment_meta.h>
 

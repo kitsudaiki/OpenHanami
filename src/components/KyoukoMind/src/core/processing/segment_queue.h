@@ -23,7 +23,9 @@
 #ifndef KYOUKOMIND_SEGMENTQUEUE_H
 #define KYOUKOMIND_SEGMENTQUEUE_H
 
-#include <common.h>
+#include <vector>
+#include <deque>
+#include <atomic>
 
 class AbstractSegment;
 

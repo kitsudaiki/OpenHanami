@@ -22,7 +22,7 @@
 
 #include "image_learn_forward_state.h"
 
-#include <core/segments/dynamic_segment/dynamic_segment.h>
+#include <core/segments/core_segment/core_segment.h>
 #include <core/segments/input_segment/input_segment.h>
 #include <core/segments/output_segment/output_segment.h>
 
@@ -52,8 +52,8 @@ bool
 ImageLearnForward_State::processEvent()
 {
     Task* actualTask = m_cluster->getActualTask();
-    const uint64_t numberOfInputsPerCycle = actualTask->getIntVal("number_of_inputs_per_cycle");
-    const uint64_t numberOfOuputsPerCycle = actualTask->getIntVal("number_of_outputs_per_cycle");
+    const uint64_t numberOfInputsPerCycle = actualTask->numberOfInputsPerCycle;
+    const uint64_t numberOfOuputsPerCycle = actualTask->numberOfOuputsPerCycle;
     const uint64_t entriesPerCycle = numberOfInputsPerCycle + numberOfOuputsPerCycle;
     const uint64_t offsetInput = entriesPerCycle * actualTask->actualCycle;
 

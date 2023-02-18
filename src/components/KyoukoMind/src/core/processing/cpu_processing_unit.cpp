@@ -22,7 +22,7 @@
 
 #include "cpu_processing_unit.h"
 
-#include <core/segments/dynamic_segment/dynamic_segment.h>
+#include <core/segments/core_segment/core_segment.h>
 #include <core/segments/input_segment/input_segment.h>
 #include <core/segments/output_segment/output_segment.h>
 
@@ -31,10 +31,10 @@
 
 #include <kyouko_root.h>
 
-#include <core/segments/dynamic_segment/backpropagation.h>
-#include <core/segments/dynamic_segment/processing.h>
-#include <core/segments/dynamic_segment/reduction.h>
-#include <core/segments/dynamic_segment/section_update.h>
+#include <core/segments/core_segment/backpropagation.h>
+#include <core/segments/core_segment/processing.h>
+#include <core/segments/core_segment/reduction.h>
+#include <core/segments/core_segment/section_update.h>
 
 #include <core/segments/output_segment/backpropagation.h>
 #include <core/segments/output_segment/processing.h>
@@ -69,18 +69,18 @@ CpuProcessingUnit::learnSegmentForward(AbstractSegment* segment)
 
     switch(segment->getType())
     {
-        case DYNAMIC_SEGMENT:
+        case CORE_SEGMENT:
         {
-            DynamicSegment* seg = static_cast<DynamicSegment*>(segment);
-            seg->dynamicSegmentSettings->doLearn = 1;
-            seg->dynamicSegmentSettings->doLearn = 1;
-            prcessDynamicSegment(*seg);
-            if(seg->dynamicSegmentSettings->updateSections != 0) {
+            CoreSegment* seg = static_cast<CoreSegment*>(segment);
+            seg->segmentSettings->doLearn = 1;
+            seg->segmentSettings->doLearn = 1;
+            prcessCoreSegment(*seg);
+            if(seg->segmentSettings->updateSections != 0) {
                 updateSections(*seg);
             }
-            seg->dynamicSegmentSettings->updateSections = 0;
+            seg->segmentSettings->updateSections = 0;
 
-            seg->dynamicSegmentSettings->doLearn = 0;
+            seg->segmentSettings->doLearn = 0;
             break;
         }
         case INPUT_SEGMENT:
@@ -113,10 +113,10 @@ CpuProcessingUnit::learnSegmentBackward(AbstractSegment* segment)
 
     switch(segment->getType())
     {
-        case DYNAMIC_SEGMENT:
+        case CORE_SEGMENT:
         {
-            DynamicSegment* seg = static_cast<DynamicSegment*>(segment);
-            rewightDynamicSegment(*seg);
+            CoreSegment* seg = static_cast<CoreSegment*>(segment);
+            reweightCoreSegment(*seg);
             if(reductionCounter == 100) {
                 //reduceNeurons(*seg);
                 reductionCounter = 0;
@@ -147,10 +147,10 @@ CpuProcessingUnit::processSegment(AbstractSegment* segment)
 
     switch(segment->getType())
     {
-        case DYNAMIC_SEGMENT:
+        case CORE_SEGMENT:
         {
-            DynamicSegment* seg = static_cast<DynamicSegment*>(segment);
-            prcessDynamicSegment(*seg);
+            CoreSegment* seg = static_cast<CoreSegment*>(segment);
+            prcessCoreSegment(*seg);
             break;
         }
         case INPUT_SEGMENT:
@@ -171,7 +171,7 @@ CpuProcessingUnit::processSegment(AbstractSegment* segment)
                 {
                     // TODO: check for cluster-state instead of client
                     const uint32_t hightest = getHighestOutput(*seg);
-                    DataValue* value = actualTask->resultData->array[cycle]->toValue();
+                    Kitsunemimi::DataValue* value = actualTask->resultData->array[cycle]->toValue();
                     value->setValue(static_cast<long>(hightest));
                 }
                 else if(actualTask->type == TABLE_REQUEST_TASK)
@@ -179,7 +179,7 @@ CpuProcessingUnit::processSegment(AbstractSegment* segment)
                     float val = 0.0f;
                     for(uint64_t i = 0; i < seg->segmentHeader->outputs.count; i++)
                     {
-                        DataValue* value = actualTask->resultData->array[cycle]->toValue();
+                        Kitsunemimi::DataValue* value = actualTask->resultData->array[cycle]->toValue();
                         val = value->getFloat() + seg->outputs[i].outputWeight;
                         value->setValue(val);
                     }

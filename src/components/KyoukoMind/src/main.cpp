@@ -20,6 +20,8 @@
  *      limitations under the License.
  */
 
+#include <thread>
+
 #include <common.h>
 
 #include <kyouko_root.h>

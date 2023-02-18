@@ -25,7 +25,7 @@
 #include <core/cluster/task.h>
 #include <core/cluster/cluster.h>
 #include <core/cluster/statemachine_init.h>
-#include <core/segments/dynamic_segment/dynamic_segment.h>
+#include <core/segments/core_segment/core_segment.h>
 
 /**
  * @brief constructor
@@ -51,8 +51,7 @@ bool
 CycleFinish_State::processEvent()
 {
     Task* actualTask = m_cluster->getActualTask();
-    DataValue* numberOfCyclesVal = actualTask->metaData.get("number_of_cycles")->toValue();
-    const uint64_t numberOfCycles = numberOfCyclesVal->getLong();
+    const uint64_t numberOfCycles = actualTask->numberOfCycles;
 
     // update progress-counter
     actualTask->actualCycle++;

@@ -24,7 +24,6 @@
 #define KYOUKOMIND_COMMON_H
 
 #include <common/enums.h>
-#include <common/includes.h>
 #include <common/typedefs.h>
 #include <common/defines.h>
 #include <common/structs.h>

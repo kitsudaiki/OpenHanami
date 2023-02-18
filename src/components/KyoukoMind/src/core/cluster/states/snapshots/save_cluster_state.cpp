@@ -91,7 +91,7 @@ SaveCluster_State::processEvent()
         std::string fileUuid = "";
         if(Shiori::runSnapshotInitProcess(fileUuid,
                                           actualTask->uuid.toString(),
-                                          actualTask->metaData.getStringByKey("snapshot_name"),
+                                          actualTask->snapshotName,
                                           actualTask->userId,
                                           actualTask->projectId,
                                           totalSize,

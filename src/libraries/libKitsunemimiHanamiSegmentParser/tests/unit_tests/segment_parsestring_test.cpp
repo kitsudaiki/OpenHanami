@@ -40,7 +40,7 @@ void
 Segment_ParseString_Test::parseString_test()
 {
     std::string input("version: 1\n"
-                      "segment_type: dynamic_segment\n"
+                      "segment_type: core_segment\n"
                       "settings:\n"
                       "    max_synapse_sections: 100000\n"
                       "    synapse_segmentation: 10\n"
@@ -67,7 +67,7 @@ Segment_ParseString_Test::parseString_test()
     }
 
     TEST_EQUAL(result.version, 1);
-    TEST_EQUAL(result.segmentType, DYNAMIC_SEGMENT_TYPE);
+    TEST_EQUAL(result.segmentType, CORE_SEGMENT_TYPE);
 
     TEST_EQUAL(result.maxSynapseSections, 100000);
     TEST_EQUAL(result.synapseSegmentation, 10);
@@ -98,7 +98,7 @@ Segment_ParseString_Test::parseString_test()
 
 
     input = "version: 2\n"  // <-- error
-            "segment_type: dynamic_segment\n"
+            "segment_type: core_segment\n"
             "settings:\n"
             "    max_synapse_sections: 100000\n"
             "    synapse_segmentation: 10\n"
@@ -142,7 +142,7 @@ Segment_ParseString_Test::parseString_test()
     TEST_EQUAL(ret, false);
 
     input = "version: 1\n"
-            "segment_type: dynamic_segment\n"
+            "segment_type: core_segment\n"
             "settings:\n"
             "    max_synapse_sections: 100000\n"  // <-- error
             "    asdf_segmentation: 10\n"
@@ -164,7 +164,7 @@ Segment_ParseString_Test::parseString_test()
     TEST_EQUAL(ret, false);
 
     input = "version: 1\n"
-            "segment_type: dynamic_segment\n"
+            "segment_type: core_segment\n"
             "settings:\n"
             "    max_synapse_sections: 100000\n"
             "    synapse_segmentation: 10\n"
@@ -186,7 +186,7 @@ Segment_ParseString_Test::parseString_test()
     TEST_EQUAL(ret, false);
 
     input = "version: 1\n"
-            "segment_type: dynamic_segment\n"
+            "segment_type: core_segment\n"
             "settings:\n"
             "    max_synapse_sections: 100000\n"
             "    synapse_segmentation: 10\n"
@@ -208,7 +208,7 @@ Segment_ParseString_Test::parseString_test()
     TEST_EQUAL(ret, false);
 
     input = "version: 1\n"
-            "segment_type: dynamic_segment\n"
+            "segment_type: core_segment\n"
             "settings:\n"
             "    max_synapse_sections: 100000\n"
             "    synapse_segmentation: 10\n"
@@ -230,7 +230,7 @@ Segment_ParseString_Test::parseString_test()
     TEST_EQUAL(ret, false);
 
     input = "version: 1\n"
-            "segment_type: dynamic_segment\n"
+            "segment_type: core_segment\n"
             "settings:\n"
             "    max_synapse_sections: 100000\n"
             "    synapse_segmentation: 10\n"
@@ -252,7 +252,7 @@ Segment_ParseString_Test::parseString_test()
     TEST_EQUAL(ret, false);
 
     input = "version: 1\n"
-            "segment_type: dynamic_segment\n"
+            "segment_type: core_segment\n"
             "settings:\n"
             "    max_synapse_sections: 100000\n"
             "    synapse_segmentation: 10\n"
@@ -274,7 +274,7 @@ Segment_ParseString_Test::parseString_test()
     TEST_EQUAL(ret, false);
 
     input = "version: 1\n"
-            "segment_type: dynamic_segment\n"
+            "segment_type: core_segment\n"
             "settings:\n"
             "    max_synapse_sections: 100000\n"
             "    synapse_segmentation: 10\n"

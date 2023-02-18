@@ -34,7 +34,7 @@
 #include <core/segments/brick.h>
 #include <core/segments/segment_meta.h>
 
-#include <core/segments/dynamic_segment/objects.h>
+#include <core/segments/core_segment/objects.h>
 
 class Cluster;
 
@@ -52,7 +52,7 @@ public:
     Kitsunemimi::ItemBuffer segmentData;
 
     SegmentHeader* segmentHeader = nullptr;
-    DynamicSegmentSettings* dynamicSegmentSettings = nullptr;
+    SegmentSettings* segmentSettings = nullptr;
 
     SegmentName* segmentName = nullptr;
     SegmentSlotList* segmentSlots = nullptr;

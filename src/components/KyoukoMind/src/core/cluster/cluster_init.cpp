@@ -23,19 +23,20 @@
 #include "cluster_init.h"
 
 
-#include <core/segments/dynamic_segment/dynamic_segment.h>
+#include <core/segments/core_segment/core_segment.h>
 #include <core/segments/input_segment/input_segment.h>
 #include <core/segments/output_segment/output_segment.h>
 #include <core/cluster/cluster.h>
 
-#include <core/segments/dynamic_segment/objects.h>
-#include <core/segments/dynamic_segment/objects.h>
+#include <core/segments/core_segment/objects.h>
+#include <core/segments/core_segment/objects.h>
 
 #include <core/routing_functions.h>
 #include <core/cluster/cluster_init.h>
 
 #include <libKitsunemimiConfig/config_handler.h>
 #include <libKitsunemimiCommon/logger.h>
+#include <libKitsunemimiJson/json_item.h>
 
 /**
  * @brief re-initialize the pointer in the header of the cluster after restoring the cluster
@@ -243,7 +244,7 @@ addOutputSegment(Cluster* cluster,
                  const Kitsunemimi::Hanami::SegmentMeta &segmentMeta)
 {
     OutputSegment* newSegment = new OutputSegment();
-    JsonItem placeHolder;
+    Kitsunemimi::JsonItem placeHolder;
 
     if(newSegment->initSegment(name, segmentMeta))
     {
@@ -272,7 +273,7 @@ addDynamicSegment(Cluster* cluster,
                   const std::string &name,
                   const Kitsunemimi::Hanami::SegmentMeta &segmentMeta)
 {
-    DynamicSegment* newSegment = new DynamicSegment();
+    CoreSegment* newSegment = new CoreSegment();
     if(newSegment->initSegment(name, segmentMeta))
     {
         cluster->coreSegments.insert(std::make_pair(name, newSegment));

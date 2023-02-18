@@ -23,7 +23,7 @@
 #include "cluster.h"
 #include <kyouko_root.h>
 
-#include <core/segments/dynamic_segment/dynamic_segment.h>
+#include <core/segments/core_segment/core_segment.h>
 #include <core/segments/input_segment/input_segment.h>
 #include <core/segments/output_segment/output_segment.h>
 #include <core/cluster/cluster_init.h>
@@ -304,7 +304,7 @@ Cluster::updateClusterState()
  * @param inputData input-data
  * @param numberOfInputsPerCycle number of inputs per cycle
  * @param numberOfOuputsPerCycle number of outputs per cycle
- * @param numberOfCycle number of cycles
+ * @param numberOfCycles number of cycles
  *
  * @return task-uuid
  */
@@ -315,7 +315,7 @@ Cluster::addImageLearnTask(const std::string &name,
                            float* inputData,
                            const uint64_t numberOfInputsPerCycle,
                            const uint64_t numberOfOuputsPerCycle,
-                           const uint64_t numberOfCycle)
+                           const uint64_t numberOfCycles)
 {
     // create new learn-task
     Task newTask;
@@ -329,12 +329,9 @@ Cluster::addImageLearnTask(const std::string &name,
     newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
 
     // fill metadata
-    newTask.metaData.insert("number_of_cycles",
-                            new DataValue(static_cast<long>(numberOfCycle)));
-    newTask.metaData.insert("number_of_inputs_per_cycle",
-                            new DataValue(static_cast<long>(numberOfInputsPerCycle)));
-    newTask.metaData.insert("number_of_outputs_per_cycle",
-                            new DataValue(static_cast<long>(numberOfOuputsPerCycle)));
+    newTask.numberOfCycles = numberOfCycles;
+    newTask.numberOfInputsPerCycle = numberOfInputsPerCycle;
+    newTask.numberOfOuputsPerCycle = numberOfOuputsPerCycle;
 
     // add task to queue
     const std::string uuid = newTask.uuid.toString();
@@ -351,7 +348,7 @@ Cluster::addImageLearnTask(const std::string &name,
  * @param inputData input-data
  * @param numberOfInputsPerCycle number of inputs per cycle
  * @param numberOfOuputsPerCycle number of outputs per cycle
- * @param numberOfCycle number of cycles
+ * @param numberOfCycles number of cycles
  *
  * @return task-uuid
  */
@@ -362,7 +359,7 @@ Cluster::addImageRequestTask(const std::string &name,
                              float* inputData,
                              const uint64_t numberOfInputsPerCycle,
                              const uint64_t numberOfOuputsPerCycle,
-                             const uint64_t numberOfCycle)
+                             const uint64_t numberOfCycles)
 {
     // create new request-task
     Task newTask;
@@ -371,21 +368,18 @@ Cluster::addImageRequestTask(const std::string &name,
     newTask.userId = userId;
     newTask.projectId = projectId;
     newTask.inputData = inputData;
-    newTask.resultData = new DataArray();
-    for(uint64_t i = 0; i < numberOfCycle; i++) {
-        newTask.resultData->append(new DataValue(0));
+    newTask.resultData = new Kitsunemimi::DataArray();
+    for(uint64_t i = 0; i < numberOfCycles; i++) {
+        newTask.resultData->append(new Kitsunemimi::DataValue(0));
     }
     newTask.type = IMAGE_REQUEST_TASK;
     newTask.progress.state = QUEUED_TASK_STATE;
     newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
 
     // fill metadata
-    newTask.metaData.insert("number_of_cycles",
-                            new DataValue(static_cast<long>(numberOfCycle)));
-    newTask.metaData.insert("number_of_inputs_per_cycle",
-                            new DataValue(static_cast<long>(numberOfInputsPerCycle)));
-    newTask.metaData.insert("number_of_outputs_per_cycle",
-                            new DataValue(static_cast<long>(numberOfOuputsPerCycle)));
+    newTask.numberOfCycles = numberOfCycles;
+    newTask.numberOfInputsPerCycle = numberOfInputsPerCycle;
+    newTask.numberOfOuputsPerCycle = numberOfOuputsPerCycle;
 
     // add task to queue
     const std::string uuid = newTask.uuid.toString();
@@ -401,7 +395,7 @@ Cluster::addImageRequestTask(const std::string &name,
  *
  * @param inputData input-data
  * @param numberOfInputs number of inputs per cycle
- * @param numberOfCycle number of cycles
+ * @param numberOfCycles number of cycles
  *
  * @return task-uuid
  */
@@ -413,7 +407,7 @@ Cluster::addTableLearnTask(const std::string &name,
                            float* outputData,
                            const uint64_t numberOfInputs,
                            const uint64_t numberOfOutputs,
-                           const uint64_t numberOfCycle)
+                           const uint64_t numberOfCycles)
 {
     // create new learn-task
     Task newTask;
@@ -428,12 +422,9 @@ Cluster::addTableLearnTask(const std::string &name,
     newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
 
     // fill metadata
-    newTask.metaData.insert("number_of_cycles",
-                            new DataValue(static_cast<long>(numberOfCycle)));
-    newTask.metaData.insert("number_of_inputs_per_cycle",
-                            new DataValue(static_cast<long>(numberOfInputs)));
-    newTask.metaData.insert("number_of_outputs_per_cycle",
-                            new DataValue(static_cast<long>(numberOfOutputs)));
+    newTask.numberOfCycles = numberOfCycles;
+    newTask.numberOfInputsPerCycle = numberOfInputs;
+    newTask.numberOfOuputsPerCycle = numberOfOutputs;
 
     // add task to queue
     const std::string uuid = newTask.uuid.toString();
@@ -449,7 +440,7 @@ Cluster::addTableLearnTask(const std::string &name,
  *
  * @param inputData input-data
  * @param numberOfInputs number of inputs per cycle
- * @param numberOfCycle number of cycles
+ * @param numberOfCycles number of cycles
  *
  * @return task-uuid
  */
@@ -460,7 +451,7 @@ Cluster::addTableRequestTask(const std::string &name,
                              float* inputData,
                              const uint64_t numberOfInputs,
                              const uint64_t numberOfOutputs,
-                             const uint64_t numberOfCycle)
+                             const uint64_t numberOfCycles)
 {
     // create new request-task
     Task newTask;
@@ -469,21 +460,18 @@ Cluster::addTableRequestTask(const std::string &name,
     newTask.userId = userId;
     newTask.projectId = projectId;
     newTask.inputData = inputData;
-    newTask.resultData = new DataArray();
-    for(uint64_t i = 0; i < numberOfCycle; i++) {
-        newTask.resultData->append(new DataValue(0.0f));
+    newTask.resultData = new Kitsunemimi::DataArray();
+    for(uint64_t i = 0; i < numberOfCycles; i++) {
+        newTask.resultData->append(new Kitsunemimi::DataValue(0.0f));
     }
     newTask.type = TABLE_REQUEST_TASK;
     newTask.progress.state = QUEUED_TASK_STATE;
     newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
 
     // fill metadata
-    newTask.metaData.insert("number_of_cycles",
-                            new DataValue(static_cast<long>(numberOfCycle)));
-    newTask.metaData.insert("number_of_inputs_per_cycle",
-                            new DataValue(static_cast<long>(numberOfInputs)));
-    newTask.metaData.insert("number_of_outputs_per_cycle",
-                            new DataValue(static_cast<long>(numberOfOutputs)));
+    newTask.numberOfCycles = numberOfCycles;
+    newTask.numberOfInputsPerCycle = numberOfInputs;
+    newTask.numberOfOuputsPerCycle = numberOfOutputs;
 
     // add tasgetNextTaskk to queue
     const std::string uuid = newTask.uuid.toString();
@@ -519,9 +507,7 @@ Cluster::addClusterSnapshotSaveTask(const std::string &snapshotName,
     newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
 
     // fill metadata
-    newTask.metaData.insert("snapshot_name", new DataValue(snapshotName));
-    newTask.metaData.insert("user_id", new DataValue(userId));
-    newTask.metaData.insert("project_id", new DataValue(projectId));
+    newTask.snapshotName = snapshotName;
 
     // add tasgetNextTaskk to queue
     const std::string uuid = newTask.uuid.toString();
@@ -558,9 +544,7 @@ Cluster::addClusterSnapshotRestoreTask(const std::string &name,
     newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
 
     // fill metadata
-    newTask.metaData.insert("snapshot_info", new DataValue(snapshotInfo));
-    newTask.metaData.insert("user_id", new DataValue(userId));
-    newTask.metaData.insert("project_id", new DataValue(projectId));
+    newTask.snapshotInfo = snapshotInfo;
 
     // add tasgetNextTaskk to queue
     const std::string uuid = newTask.uuid.toString();
