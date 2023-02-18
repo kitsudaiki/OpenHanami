@@ -130,9 +130,7 @@ OutputSegment::reinitPointer(const uint64_t numberOfBytes)
 bool
 OutputSegment::connectBorderBuffer()
 {
-    for(uint32_t i = 0; i < segmentHeader->outputs.count; i++)
-    {
-        outputs[i] = OutputNeuron();
+    for(uint32_t i = 0; i < segmentHeader->outputs.count; i++) {
         outputs[i].targetBorderId = i;
     }
 
@@ -191,12 +189,21 @@ OutputSegment::initSegmentPointer(const SegmentHeader &header)
 
     pos = segmentHeader->inputTransfers.bytePos;
     inputTransfers = reinterpret_cast<float*>(dataPtr + pos);
+    for(uint32_t i = 0; i < segmentHeader->inputTransfers.count; i++) {
+        inputTransfers[i] = 0.0f;
+    }
 
     pos = segmentHeader->outputTransfers.bytePos;
     outputTransfers = reinterpret_cast<float*>(dataPtr + pos);
+    for(uint32_t i = 0; i < segmentHeader->outputTransfers.count; i++) {
+        outputTransfers[i] = 0.0f;
+    }
 
     pos = segmentHeader->outputs.bytePos;
     outputs = reinterpret_cast<OutputNeuron*>(dataPtr + pos);
+    for(uint32_t i = 0; i < segmentHeader->outputs.count; i++) {
+        outputs[i] = OutputNeuron();
+    }
 }
 
 /**

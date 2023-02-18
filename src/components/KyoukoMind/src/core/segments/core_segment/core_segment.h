@@ -61,7 +61,6 @@ private:
     void initSegmentPointer(const SegmentHeader &header);
     bool connectBorderBuffer();
     void allocateSegment(SegmentHeader &header);
-    void initDefaultValues();
     void initGpu();
 
     void addBricksToSegment(const Kitsunemimi::Hanami::SegmentMeta &segmentMeta);

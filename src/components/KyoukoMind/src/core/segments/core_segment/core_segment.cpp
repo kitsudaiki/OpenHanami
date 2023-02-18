@@ -149,7 +149,7 @@ DynamicSegment::initGpu()
  */
 bool
 CoreSegment::initSegment(const std::string &name,
-                            const Kitsunemimi::Hanami::SegmentMeta &segmentMeta)
+                         const Kitsunemimi::Hanami::SegmentMeta &segmentMeta)
 {
     uint32_t numberOfNeurons = 0;
     uint32_t numberOfNeuronSections = 0;
@@ -181,7 +181,6 @@ CoreSegment::initSegment(const std::string &name,
     // initialize segment itself
     allocateSegment(header);
     initSegmentPointer(header);
-    initDefaultValues();
     segmentSettings[0] = settings;
 
     // init content
@@ -262,7 +261,6 @@ CoreSegment::reinitPointer(const uint64_t numberOfBytes)
 
     // check result
     if(byteCounter != numberOfBytes - 48) {
-        std::cout<<"fail!!!!!!!!!!! byteCounter: "<<byteCounter<<"      numberOfBytes: "<<numberOfBytes<<std::endl;
         return false;
     }
 
@@ -406,9 +404,9 @@ CoreSegment::initSettings(const Kitsunemimi::Hanami::SegmentMeta &segmentMeta)
  */
 SegmentHeader
 CoreSegment::createNewHeader(const uint32_t numberOfBricks,
-                                const uint32_t numberOfNeuronSections,
-                                const uint64_t numberOfSynapseSections,
-                                const uint64_t borderbufferSize)
+                             const uint32_t numberOfNeuronSections,
+                             const uint64_t numberOfSynapseSections,
+                             const uint64_t borderbufferSize)
 {
     SegmentHeader segmentHeader;
     segmentHeader.segmentType = m_type;
@@ -469,21 +467,39 @@ CoreSegment::initSegmentPointer(const SegmentHeader &header)
 
     pos = segmentHeader->inputTransfers.bytePos;
     inputTransfers = reinterpret_cast<float*>(dataPtr + pos);
+    for(uint32_t i = 0; i < segmentHeader->inputTransfers.count; i++) {
+        inputTransfers[i] = 0.0f;
+    }
 
     pos = segmentHeader->outputTransfers.bytePos;
     outputTransfers = reinterpret_cast<float*>(dataPtr + pos);
+    for(uint32_t i = 0; i < segmentHeader->outputTransfers.count; i++) {
+        outputTransfers[i] = 0.0f;
+    }
 
     pos = segmentHeader->bricks.bytePos;
     bricks = reinterpret_cast<Brick*>(dataPtr + pos);
+    for(uint32_t i = 0; i < segmentHeader->bricks.count; i++) {
+        bricks[i] = Brick();
+    }
 
     pos = segmentHeader->brickOrder.bytePos;
     brickOrder = reinterpret_cast<uint32_t*>(dataPtr + pos);
+    for(uint32_t i = 0; i < segmentHeader->bricks.count; i++) {
+        brickOrder[i] = i;
+    }
 
     pos = segmentHeader->neuronSections.bytePos;
     neuronSections = reinterpret_cast<NeuronSection*>(dataPtr + pos);
+    for(uint32_t i = 0; i < segmentHeader->neuronSections.count; i++) {
+        neuronSections[i] = NeuronSection();
+    }
 
     pos = segmentHeader->updatePosSections.bytePos;
     updatePosSections = reinterpret_cast<UpdatePosSection*>(dataPtr + pos);
+    for(uint32_t i = 0; i < segmentHeader->updatePosSections.count; i++) {
+        updatePosSections[i] = UpdatePosSection();
+    }
 
     dataPtr = static_cast<uint8_t*>(segmentData.itemData);
     pos = segmentHeader->synapseSections.bytePos;
@@ -503,37 +519,6 @@ CoreSegment::allocateSegment(SegmentHeader &header)
 }
 
 /**
- * @brief init buffer to avoid undefined values
- */
-void
-CoreSegment::initDefaultValues()
-{
-    // init header and metadata
-    segmentSettings[0] = SegmentSettings();
-
-    // init bricks;
-    for(uint32_t i = 0; i < segmentHeader->bricks.count; i++) {
-        bricks[i] = Brick();
-    }
-
-    // init brick-order
-    for(uint32_t i = 0; i < segmentHeader->bricks.count; i++) {
-        brickOrder[i] = i;
-    }
-
-    // init neurons
-    for(uint32_t i = 0; i < segmentHeader->neuronSections.count; i++) {
-        neuronSections[i] = NeuronSection();
-        neuronSections[i].id = i;
-    }
-
-    // init section-updates
-    for(uint32_t i = 0; i < segmentHeader->updatePosSections.count; i++) {
-        updatePosSections[i] = UpdatePosSection();
-    }
-}
-
-/**
  * @brief create a new brick-object
  *
  * @param brickDef json with all brick-definitions
@@ -543,21 +528,14 @@ CoreSegment::initDefaultValues()
  */
 Brick
 CoreSegment::createNewBrick(const Kitsunemimi::Hanami::BrickMeta &brickMeta,
-                               const uint32_t id)
+                            const uint32_t id)
 {
     Brick newBrick;
 
     // copy metadata
     newBrick.brickId = id;
-    if(brickMeta.type == Kitsunemimi::Hanami::OUTPUT_BRICK_TYPE) {
-        newBrick.isOutputBrick = true;
-    }
-    /*if(brickDef.get("type").getString() == "transaction") {
-        newBrick.isTransactionBrick = true;
-    }*/
-    if(brickMeta.type == Kitsunemimi::Hanami::INPUT_BRICK_TYPE) {
-        newBrick.isInputBrick = true;
-    }
+    newBrick.isOutputBrick = brickMeta.type == Kitsunemimi::Hanami::OUTPUT_BRICK_TYPE;
+    newBrick.isInputBrick = brickMeta.type == Kitsunemimi::Hanami::INPUT_BRICK_TYPE;
 
     // convert other values
     newBrick.brickPos = brickMeta.position;
@@ -616,7 +594,7 @@ CoreSegment::addBricksToSegment(const Kitsunemimi::Hanami::SegmentMeta &segmentM
  */
 void
 CoreSegment::connectBrick(Brick* sourceBrick,
-                             const uint8_t side)
+                          const uint8_t side)
 {
     const Kitsunemimi::Hanami::Position next = getNeighborPos(sourceBrick->brickPos, side);
     // debug-output

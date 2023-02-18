@@ -51,9 +51,8 @@ struct NeuronSection
 {
     Neuron neurons[NEURONS_PER_NEURONSECTION];
     uint32_t numberOfNeurons = 0;
-    uint32_t id = 0;
     uint32_t brickId = 0;
-    uint8_t padding[20];
+    uint8_t padding[24];
 
     NeuronSection()
     {
