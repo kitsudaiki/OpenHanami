@@ -80,10 +80,10 @@ backpropagateSection(SynapseSection* section,
 {
     Synapse* synapse = nullptr;
     Neuron* targetNeuron = nullptr;
-    NeuronSection* targetNeuronSection = &neuronSections[section->targetNeuronSectionId];
+    NeuronSection* targetNeuronSection = &neuronSections[section->connection.targetNeuronSectionId];
     float learnValue = 0.2f;
     uint16_t pos = 0;
-    float counter = section->offset;
+    float counter = section->connection.offset;
 
     // iterate over all synapses in the section
     while(pos < SYNAPSES_PER_SYNAPSESECTION
@@ -103,9 +103,9 @@ backpropagateSection(SynapseSection* section,
         pos++;
     }
 
-    if(section->forwardNextId != UNINIT_STATE_32)
+    if(section->connection.forwardNextId != UNINIT_STATE_32)
     {
-        backpropagateSection(&synapseSections[section->forwardNextId],
+        backpropagateSection(&synapseSections[section->connection.forwardNextId],
                              sourceNeuron,
                              outH,
                              brick,

@@ -73,10 +73,9 @@ CpuProcessingUnit::learnSegmentForward(AbstractSegment* segment)
         {
             CoreSegment* seg = static_cast<CoreSegment*>(segment);
             seg->segmentSettings->doLearn = 1;
-            seg->segmentSettings->doLearn = 1;
             prcessCoreSegment(*seg);
             if(seg->segmentSettings->updateSections != 0) {
-                updateSections(*seg);
+                updateSections(*seg, false);
             }
             seg->segmentSettings->updateSections = 0;
 

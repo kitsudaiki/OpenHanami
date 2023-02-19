@@ -50,21 +50,21 @@ createNewSynapse(SynapseSection* section,
     const float sigNeg = segmentSettings->signNeg;
 
     // set activation-border
-    section->randomPos = (section->randomPos + 1) % NUMBER_OF_RAND_VALUES;
-    synapse->border = maxWeight * (static_cast<float>(randomValues[section->randomPos]) / randMax);
+    section->connection.randomPos = (section->connection.randomPos + 1) % NUMBER_OF_RAND_VALUES;
+    synapse->border = maxWeight * (static_cast<float>(randomValues[section->connection.randomPos]) / randMax);
 
     // set target neuron
-    section->randomPos = (section->randomPos + 1) % NUMBER_OF_RAND_VALUES;
-    synapse->targetNeuronId = static_cast<uint16_t>(randomValues[section->randomPos]
+    section->connection.randomPos = (section->connection.randomPos + 1) % NUMBER_OF_RAND_VALUES;
+    synapse->targetNeuronId = static_cast<uint16_t>(randomValues[section->connection.randomPos]
                               % targetNeuronSection->numberOfNeurons);
 
 
-    section->randomPos = (section->randomPos + 1) % NUMBER_OF_RAND_VALUES;
-    synapse->weight = (static_cast<float>(randomValues[section->randomPos]) / randMax) / 10.0f;
+    section->connection.randomPos = (section->connection.randomPos + 1) % NUMBER_OF_RAND_VALUES;
+    synapse->weight = (static_cast<float>(randomValues[section->connection.randomPos]) / randMax) / 10.0f;
 
     // update weight with sign
-    section->randomPos = (section->randomPos + 1) % NUMBER_OF_RAND_VALUES;
-    signRand = randomValues[section->randomPos] % 1000;
+    section->connection.randomPos = (section->connection.randomPos + 1) % NUMBER_OF_RAND_VALUES;
+    signRand = randomValues[section->connection.randomPos] % 1000;
     synapse->weight *= static_cast<float>(1.0f - (1000.0f * sigNeg > signRand) * 2);
 
 
@@ -88,9 +88,9 @@ synapseProcessing(const uint32_t neuronId,
     uint32_t pos = 0;
     Synapse* synapse = nullptr;
     Neuron* targetNeuron = nullptr;
-    NeuronSection* targetNeuronSection = &neuronSections[section->targetNeuronSectionId];
+    NeuronSection* targetNeuronSection = &neuronSections[section->connection.targetNeuronSectionId];
     uint8_t active = 0;
-    float counter = section->offset;
+    float counter = section->connection.offset;
 
     // iterate over all synapses in the section
     while(pos < SYNAPSES_PER_SYNAPSESECTION
@@ -122,20 +122,20 @@ synapseProcessing(const uint32_t neuronId,
     }
 
     if(outH - counter > 0.01f
-            && section->forwardNextId == UNINIT_STATE_32)
+            && section->connection.forwardNextId == UNINIT_STATE_32)
     {
         UpdatePos* updatePos = &updatePosSections[neuronSectionId].positions[neuronId];
         updatePos->type = 1;
-        updatePos->offset = counter + section->offset;
+        updatePos->offset = counter + section->connection.offset;
         segmentSettings->updateSections = 1;
         return;
     }
 
-    if(section->forwardNextId != UNINIT_STATE_32)
+    if(section->connection.forwardNextId != UNINIT_STATE_32)
     {
         synapseProcessing(neuronId,
                           neuronSectionId,
-                          &synapseSections[section->forwardNextId],
+                          &synapseSections[section->connection.forwardNextId],
                           sourceNeuron,
                           neuronSections,
                           synapseSections,
