@@ -103,9 +103,9 @@ backpropagateSection(SynapseSection* section,
         pos++;
     }
 
-    if(section->nextId != UNINIT_STATE_32)
+    if(section->forwardNextId != UNINIT_STATE_32)
     {
-        backpropagateSection(&synapseSections[section->nextId],
+        backpropagateSection(&synapseSections[section->forwardNextId],
                              sourceNeuron,
                              outH,
                              brick,

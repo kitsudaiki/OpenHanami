@@ -122,7 +122,7 @@ synapseProcessing(const uint32_t neuronId,
     }
 
     if(outH - counter > 0.01f
-            && section->nextId == UNINIT_STATE_32)
+            && section->forwardNextId == UNINIT_STATE_32)
     {
         UpdatePos* updatePos = &updatePosSections[neuronSectionId].positions[neuronId];
         updatePos->type = 1;
@@ -131,11 +131,11 @@ synapseProcessing(const uint32_t neuronId,
         return;
     }
 
-    if(section->nextId != UNINIT_STATE_32)
+    if(section->forwardNextId != UNINIT_STATE_32)
     {
         synapseProcessing(neuronId,
                           neuronSectionId,
-                          &synapseSections[section->nextId],
+                          &synapseSections[section->forwardNextId],
                           sourceNeuron,
                           neuronSections,
                           synapseSections,

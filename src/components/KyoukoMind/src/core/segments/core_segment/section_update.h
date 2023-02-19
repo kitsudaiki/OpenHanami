@@ -33,18 +33,34 @@
 
 /**
  * @brief search for the last entry in a chain of sections to find position where the new has
- *        to be attached
+ *        to be attached in forward direction
  */
 inline SynapseSection*
 getForwardLast(const uint32_t sourceId,
-               SynapseSection* sectionConnections)
+               SynapseSection* section)
 {
-    SynapseSection* connection = &sectionConnections[sourceId];
-    if(connection->nextId == UNINIT_STATE_32) {
+    SynapseSection* connection = &section[sourceId];
+    if(connection->forwardNextId == UNINIT_STATE_32) {
         return connection;
     }
 
-    return getForwardLast(connection->nextId, sectionConnections);
+    return getForwardLast(connection->forwardNextId, section);
+}
+
+/**
+ * @brief search for the last entry in a chain of sections to find position where the new has
+ *        to be attached in backward direction
+ */
+inline SynapseSection*
+getBackwardLast(const uint32_t sourceId,
+                SynapseSection* section)
+{
+    SynapseSection* connection = &section[sourceId];
+    if(connection->backwardNextId == UNINIT_STATE_32) {
+        return connection;
+    }
+
+    return getBackwardLast(connection->backwardNextId, section);
 }
 
 /**
@@ -73,12 +89,13 @@ createNewSection(SynapseSection &result,
  */
 inline void
 processUpdatePositon(CoreSegment &segment,
-                     const uint32_t sectionId,
-                     const uint32_t neuronId,
+                     const uint32_t sourceNeuronSectionId,
+                     const uint32_t sourceNeuronId,
                      const float offset)
 {
-    NeuronSection* sourceSection = &segment.neuronSections[sectionId];
-    Brick* currentBrick = &segment.bricks[sourceSection->brickId];
+    NeuronSection* sourceNeuronSection = &segment.neuronSections[sourceNeuronSectionId];
+    Neuron* sourceNeuron = &sourceNeuronSection->neurons[sourceNeuronId];
+    Brick* currentBrick = &segment.bricks[sourceNeuronSection->brickId];
 
     // create new section and connect it to buffer
     SynapseSection newSection;
@@ -88,12 +105,23 @@ processUpdatePositon(CoreSegment &segment,
         return;
     }
 
-    // connect path to new section
-    Neuron* neuron = &sourceSection->neurons[neuronId];
-    if(neuron->targetSectionId == UNINIT_STATE_32) {
-        neuron->targetSectionId = newId;
+    // set source
+    newSection.sourceNeuronId = sourceNeuronId;
+    newSection.sourceNeuronSectionId = sourceNeuronSectionId;
+
+    // connect path to new section in forward-direction
+    if(sourceNeuron->targetSectionId == UNINIT_STATE_32) {
+        sourceNeuron->targetSectionId = newId;
     } else {
-        getForwardLast(neuron->targetSectionId, segment.synapseSections)->nextId = newId;
+        getForwardLast(sourceNeuron->targetSectionId, segment.synapseSections)->forwardNextId = newId;
+    }
+
+    // connect path to new section in backward-direction
+    NeuronSection* targetSection = &segment.neuronSections[newSection.targetNeuronSectionId];
+    if(targetSection->backwardNextId == UNINIT_STATE_32) {
+        targetSection->backwardNextId = newId;
+    } else {
+        getForwardLast(targetSection->backwardNextId, segment.synapseSections)->backwardNextId = newId;
     }
 }
 
@@ -107,20 +135,23 @@ updateSections(CoreSegment &segment)
     UpdatePos* sourceUpdatePos = nullptr;
 
     // iterate over all neurons and add new synapse-section, if required
-    for(uint32_t i = 0;
-        i < segment.segmentHeader->updatePosSections.count;
-        i++)
+    for(uint32_t sourceSectionId = 0;
+        sourceSectionId < segment.segmentHeader->updatePosSections.count;
+        sourceSectionId++)
     {
-        sourceUpdatePosSection = &segment.updatePosSections[i];
-        for(uint32_t pos = 0;
-            pos < sourceUpdatePosSection->numberOfPositions;
-            pos++)
+        sourceUpdatePosSection = &segment.updatePosSections[sourceSectionId];
+        for(uint32_t sourceId = 0;
+            sourceId < sourceUpdatePosSection->numberOfPositions;
+            sourceId++)
         {
-            sourceUpdatePos = &sourceUpdatePosSection->positions[pos];
+            sourceUpdatePos = &sourceUpdatePosSection->positions[sourceId];
             if(sourceUpdatePos->type == 1)
             {
                 sourceUpdatePos->type = 0;
-                processUpdatePositon(segment, i, pos, sourceUpdatePos->offset);
+                processUpdatePositon(segment,
+                                     sourceSectionId,
+                                     sourceId,
+                                     sourceUpdatePos->offset);
             }
         }
     }

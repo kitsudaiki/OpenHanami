@@ -52,7 +52,8 @@ struct NeuronSection
     Neuron neurons[NEURONS_PER_NEURONSECTION];
     uint32_t numberOfNeurons = 0;
     uint32_t brickId = 0;
-    uint8_t padding[24];
+    uint32_t backwardNextId = UNINIT_STATE_32;
+    uint8_t padding[20];
 
     NeuronSection()
     {
@@ -83,10 +84,14 @@ struct SynapseSection
     uint8_t padding[3];
 
     uint32_t randomPos = 0;
-    uint32_t targetNeuronSectionId = 0;
-    uint32_t nextId = UNINIT_STATE_32;
     float offset = 0.0f;
-    uint8_t padding2[12];
+
+    uint32_t forwardNextId = UNINIT_STATE_32;
+    uint32_t backwardNextId = UNINIT_STATE_32;
+
+    uint32_t targetNeuronSectionId = UNINIT_STATE_32;
+    uint32_t sourceNeuronSectionId = UNINIT_STATE_32;
+    uint32_t sourceNeuronId = UNINIT_STATE_32;
 
     Synapse synapses[SYNAPSES_PER_SYNAPSESECTION];
 
