@@ -165,3 +165,4 @@ struct SegmentSettings
 
 //==================================================================================================
 #endif // KYOUKOMIND_CORE_SEGMENT_OBJECTS_H
+

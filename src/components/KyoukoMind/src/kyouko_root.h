@@ -54,6 +54,7 @@ public:
     static TemplateTable* templateTable;
     static std::string* componentToken;
     static Kitsunemimi::GpuInterface* gpuInterface;
+    static bool useGpu;
 
 private:
     uint32_t m_serverId = 0;

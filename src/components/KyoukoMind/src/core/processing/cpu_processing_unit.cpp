@@ -72,12 +72,21 @@ CpuProcessingUnit::learnSegmentForward(AbstractSegment* segment)
         case CORE_SEGMENT:
         {
             CoreSegment* seg = static_cast<CoreSegment*>(segment);
-            seg->segmentSettings->doLearn = 1;
-            prcessCoreSegment(*seg);
-            if(seg->segmentSettings->updateSections != 0) {
-                updateSections(*seg, false);
+            if(KyoukoRoot::useGpu)
+            {
+                KyoukoRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "inputTransfers", error);
+                KyoukoRoot::gpuInterface->run(*(seg->data), "prcessCoreSegment", error);
+                KyoukoRoot::gpuInterface->copyFromDevice(*(seg->data), "outputTransfers", error);
             }
-            seg->segmentSettings->updateSections = 0;
+            else
+            {
+                seg->segmentSettings->doLearn = 1;
+                prcessCoreSegment(*seg);
+                if(seg->segmentSettings->updateSections != 0) {
+                    updateSections(*seg, false);
+                }
+                seg->segmentSettings->updateSections = 0;
+            }
 
             seg->segmentSettings->doLearn = 0;
             break;
@@ -115,7 +124,27 @@ CpuProcessingUnit::learnSegmentBackward(AbstractSegment* segment)
         case CORE_SEGMENT:
         {
             CoreSegment* seg = static_cast<CoreSegment*>(segment);
-            reweightCoreSegment(*seg);
+
+            if(KyoukoRoot::useGpu)
+            {
+                KyoukoRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "inputTransfers", error);
+                KyoukoRoot::gpuInterface->run(*(seg->data), "reweightCoreSegment", error);
+                KyoukoRoot::gpuInterface->copyFromDevice(*(seg->data), "outputTransfers", error);
+                KyoukoRoot::gpuInterface->copyFromDevice(*(seg->data), "updatePosSections", error);
+                if(updateSections(*seg, true))
+                {
+                    KyoukoRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "updatePosSections", error);
+                    KyoukoRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "neuronSections", error);
+                    KyoukoRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "sectionConnections", error);
+                }
+                std::cout<<"counter: "<<counter<<std::endl;
+                counter++;
+            }
+            else
+            {
+                reweightCoreSegment(*seg);
+            }
+
             if(reductionCounter == 100) {
                 //reduceNeurons(*seg);
                 reductionCounter = 0;
@@ -149,7 +178,17 @@ CpuProcessingUnit::processSegment(AbstractSegment* segment)
         case CORE_SEGMENT:
         {
             CoreSegment* seg = static_cast<CoreSegment*>(segment);
-            prcessCoreSegment(*seg);
+            if(KyoukoRoot::useGpu)
+            {
+                KyoukoRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "inputTransfers", error);
+                KyoukoRoot::gpuInterface->run(*(seg->data), "prcessCoreSegment", error);
+                KyoukoRoot::gpuInterface->copyFromDevice(*(seg->data), "outputTransfers", error);
+            }
+            else
+            {
+                prcessCoreSegment(*seg);
+            }
+
             break;
         }
         case INPUT_SEGMENT:

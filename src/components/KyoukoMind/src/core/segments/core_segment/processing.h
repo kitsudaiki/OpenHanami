@@ -67,7 +67,6 @@ createNewSynapse(SynapseSection* section,
     signRand = randomValues[section->connection.randomPos] % 1000;
     synapse->weight *= static_cast<float>(1.0f - (1000.0f * sigNeg > signRand) * 2);
 
-
     synapse->activeCounter = 1;
 }
 
@@ -75,10 +74,7 @@ createNewSynapse(SynapseSection* section,
  * @brief process synapse-section
  */
 inline void
-synapseProcessing(const uint32_t neuronId,
-                  const uint32_t neuronSectionId,
-                  SynapseSection* section,
-                  const Neuron* sourceNeuron,
+synapseProcessing(SynapseSection* section,
                   NeuronSection* neuronSections,
                   SynapseSection* synapseSections,
                   UpdatePosSection* updatePosSections,
@@ -124,7 +120,8 @@ synapseProcessing(const uint32_t neuronId,
     if(outH - counter > 0.01f
             && section->connection.forwardNextId == UNINIT_STATE_32)
     {
-        UpdatePos* updatePos = &updatePosSections[neuronSectionId].positions[neuronId];
+        UpdatePosSection* updateSection = &updatePosSections[section->connection.sourceNeuronSectionId];
+        UpdatePos* updatePos = &updateSection->positions[section->connection.sourceNeuronId];
         updatePos->type = 1;
         updatePos->offset = counter + section->connection.offset;
         segmentSettings->updateSections = 1;
@@ -133,10 +130,7 @@ synapseProcessing(const uint32_t neuronId,
 
     if(section->connection.forwardNextId != UNINIT_STATE_32)
     {
-        synapseProcessing(neuronId,
-                          neuronSectionId,
-                          &synapseSections[section->connection.forwardNextId],
-                          sourceNeuron,
+        synapseProcessing(&synapseSections[section->connection.forwardNextId],
                           neuronSections,
                           synapseSections,
                           updatePosSections,
@@ -149,8 +143,8 @@ synapseProcessing(const uint32_t neuronId,
  * @brief process only a single neuron
  */
 inline void
-processSingleNeuron(const uint32_t neuronId,
-                    const uint32_t neuronSectionId,
+processSingleNeuron(const uint32_t sourceNeuronId,
+                    const uint32_t sourceNeuronSectionId,
                     Neuron* neuron,
                     NeuronSection* neuronSections,
                     SynapseSection* synapseSections,
@@ -164,17 +158,14 @@ processSingleNeuron(const uint32_t neuronId,
 
     if(neuron->targetSectionId == UNINIT_STATE_32)
     {
-        UpdatePos* updatePos = &updatePosSections[neuronSectionId].positions[neuronId];
+        UpdatePos* updatePos = &updatePosSections[sourceNeuronSectionId].positions[sourceNeuronId];
         updatePos->type = 1;
         updatePos->offset = 0.0f;
         segmentSettings->updateSections = 1;
         return;
     }
 
-    synapseProcessing(neuronId,
-                      neuronSectionId,
-                      &synapseSections[neuron->targetSectionId],
-                      neuron,
+    synapseProcessing(&synapseSections[neuron->targetSectionId],
                       neuronSections,
                       synapseSections,
                       updatePosSections,
@@ -192,19 +183,19 @@ processNeuronsOfOutputBrick(const Brick* brick,
                             SegmentSettings* segmentSettings)
 {
     Neuron* neuron = nullptr;
-    NeuronSection* section = nullptr;
+    NeuronSection* neuronSection = nullptr;
 
     // iterate over all neurons within the brick
     for(uint32_t neuronSectionId = brick->neuronSectionPos;
         neuronSectionId < brick->numberOfNeuronSections + brick->neuronSectionPos;
         neuronSectionId++)
     {
-        section = &neuronSections[neuronSectionId];
+        neuronSection = &neuronSections[neuronSectionId];
         for(uint32_t neuronId = 0;
-            neuronId < section->numberOfNeurons;
+            neuronId < neuronSection->numberOfNeurons;
             neuronId++)
         {
-            neuron = &section->neurons[neuronId];
+            neuron = &neuronSection->neurons[neuronId];
             neuron->potential = segmentSettings->potentialOverflow * neuron->input;
             outputTransfers[neuron->targetBorderId] = neuron->potential;
             neuron->input = 0.0f;
