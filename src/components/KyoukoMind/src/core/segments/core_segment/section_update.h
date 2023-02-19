@@ -53,7 +53,8 @@ getForwardLast(const uint32_t sourceId,
 inline void
 createNewSection(SynapseSection &result,
                  CoreSegment &segment,
-                 const Brick &currentBrick)
+                 const Brick &currentBrick,
+                 const float offset)
 {
     result.active = Kitsunemimi::ItemBuffer::ACTIVE_SECTION;
     result.randomPos = rand() % NUMBER_OF_RAND_VALUES;
@@ -61,6 +62,7 @@ createNewSection(SynapseSection &result,
     const uint32_t randVal = KyoukoRoot::m_randomValues[result.randomPos] % 1000;
     const uint32_t brickId = currentBrick.possibleTargetNeuronBrickIds[randVal];
     result.randomPos = (result.randomPos + 1) % NUMBER_OF_RAND_VALUES;
+    result.offset = offset;
     result.targetNeuronSectionId = segment.bricks[brickId].neuronSectionPos;
     result.targetNeuronSectionId += KyoukoRoot::m_randomValues[result.randomPos]
                                      % segment.bricks[brickId].numberOfNeuronSections;
@@ -72,18 +74,21 @@ createNewSection(SynapseSection &result,
 inline void
 processUpdatePositon(CoreSegment &segment,
                      const uint32_t sectionId,
-                     const uint32_t neuronId)
+                     const uint32_t neuronId,
+                     const float offset)
 {
     NeuronSection* sourceSection = &segment.neuronSections[sectionId];
     Brick* currentBrick = &segment.bricks[sourceSection->brickId];
 
+    // create new section and connect it to buffer
     SynapseSection newSection;
-    createNewSection(newSection, segment, *currentBrick);
+    createNewSection(newSection, segment, *currentBrick, offset);
     const uint64_t newId = segment.segmentData.addNewItem(newSection);
     if(newId == ITEM_BUFFER_UNDEFINE_POS) {
         return;
     }
 
+    // connect path to new section
     Neuron* neuron = &sourceSection->neurons[neuronId];
     if(neuron->targetSectionId == UNINIT_STATE_32) {
         neuron->targetSectionId = newId;
@@ -115,7 +120,7 @@ updateSections(CoreSegment &segment)
             if(sourceUpdatePos->type == 1)
             {
                 sourceUpdatePos->type = 0;
-                processUpdatePositon(segment, i, pos);
+                processUpdatePositon(segment, i, pos, sourceUpdatePos->offset);
             }
         }
     }

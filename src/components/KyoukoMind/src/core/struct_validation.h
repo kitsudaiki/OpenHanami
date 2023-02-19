@@ -34,22 +34,22 @@
 inline void
 validateStructSizes()
 {
-    assert(sizeof(SynapseSection) == 512);
     assert(sizeof(SegmentHeader) == 512);
     assert(sizeof(SegmentName) == 256);
     assert(sizeof(Brick) == 4096);
-    assert(sizeof(Neuron) == 32);
+    assert(sizeof(SynapseSection) == 512);
+    assert(sizeof(Synapse) == 16);
+    assert(sizeof(UpdatePosSection) == 1024);
+    assert(sizeof(UpdatePos) == 16);
     assert(sizeof(NeuronSection) == 2048);
+    assert(sizeof(Neuron) == 32);
+
     assert(sizeof(SegmentSlot) == 64);
     assert(sizeof(SegmentSlotList) == 1024);
-
     assert(sizeof(Cluster::MetaData) == 2048);
     assert(sizeof(Cluster::Settings) == 256);
     assert(sizeof(SegmentSettings) == 256);
     assert(sizeof(Kitsunemimi::Hanami::kuuid) == 40);
-    assert(sizeof(Synapse) == 16);
-    assert(sizeof(UpdatePos) == 8);
-    assert(sizeof(UpdatePosSection) == 512);
 }
 
 #endif // KYOUKOMIND_STRUCT_VALIDATION_H

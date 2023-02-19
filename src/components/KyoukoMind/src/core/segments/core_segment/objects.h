@@ -85,6 +85,8 @@ struct SynapseSection
     uint32_t randomPos = 0;
     uint32_t targetNeuronSectionId = 0;
     uint32_t nextId = UNINIT_STATE_32;
+    float offset = 0.0f;
+    uint8_t padding2[12];
 
     Synapse synapses[SYNAPSES_PER_SYNAPSESECTION];
 
@@ -103,7 +105,9 @@ struct UpdatePos
 {
     uint32_t type = 0;
     uint32_t randomPos = UNINIT_STATE_32;
-    // total size: 8 Byte
+    float offset = 0.0f;
+    uint8_t padding[4];
+    // total size: 16 Byte
 };
 
 //==================================================================================================
@@ -112,7 +116,7 @@ struct UpdatePosSection
 {
     UpdatePos positions[NEURONS_PER_NEURONSECTION];
     uint32_t numberOfPositions = 0;
-    uint8_t padding[4];
+    uint8_t padding[12];
 
     UpdatePosSection()
     {
@@ -120,7 +124,7 @@ struct UpdatePosSection
             positions[i] = UpdatePos();
         }
     }
-    // total size: 512 Byte
+    // total size: 1024 Byte
 };
 
 //==================================================================================================
