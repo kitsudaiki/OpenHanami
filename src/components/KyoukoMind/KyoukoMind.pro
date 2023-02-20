@@ -218,10 +218,10 @@ SOURCES += \
     src/main.cpp
 
 KYOUKO_PROTO_BUFFER = ../../libraries/libKitsunemimiHanamiMessages/protobuffers/kyouko_messages.proto3
-# GPU_KERNEL = src/core/segments/core_segment/gpu_kernel.cl
+GPU_KERNEL = src/core/segments/core_segment/gpu_kernel.cl
 
-OTHER_FILES += $$KYOUKO_PROTO_BUFFER # \
-               # $$GPU_KERNEL
+OTHER_FILES += $$KYOUKO_PROTO_BUFFER \
+               $$GPU_KERNEL
 
 protobuf_decl.name = protobuf headers
 protobuf_decl.name = protobuf headers
@@ -239,18 +239,12 @@ protobuf_impl.commands = $$escape_expand(\n)
 protobuf_impl.variable_out = SOURCES
 QMAKE_EXTRA_COMPILERS += protobuf_impl
 
-# gpu_processing.input = GPU_KERNEL
-# gpu_processing.output = ${QMAKE_FILE_BASE}.h
-# gpu_processing.commands = xxd -i ${QMAKE_FILE_IN} \
-#    | sed 's/_________Hanami_AI_KyoukoMind_src_core_segments_dynamic_segment_//g' \
-#    | sed 's/________KyoukoMind_src_core_segments_dynamic_segment_//g' \
-#    | sed 's/_______KyoukoMind_src_core_segments_dynamic_segment_//g' \
-#    | sed 's/______KyoukoMind_src_core_segments_dynamic_segment_//g' \
-#    | sed 's/_____KyoukoMind_src_core_segments_dynamic_segment_//g' \
-#    | sed 's/____KyoukoMind_src_core_segments_dynamic_segment_//g' \
-#    | sed 's/___KyoukoMind_src_core_segments_dynamic_segment_//g' > ${QMAKE_FILE_BASE}.h
-# gpu_processing.variable_out = HEADERS
-# gpu_processing.CONFIG += target_predeps no_link
+gpu_processing.input = GPU_KERNEL
+gpu_processing.output = ${QMAKE_FILE_BASE}.h
+gpu_processing.commands = xxd -i ${QMAKE_FILE_IN} \
+   | sed -E \'s/unsigned char.*\\\[\\\]/unsigned char gpu_kernel_cl\\\[\\\]/g\' \
+   | sed -E \'s/unsigned int .* =/unsigned int gpu_kernel_cl_len =/g\' > ${QMAKE_FILE_BASE}.h
+gpu_processing.variable_out = HEADERS
+gpu_processing.CONFIG += no_link
 
-# QMAKE_EXTRA_COMPILERS += gpu_processing
-
+QMAKE_EXTRA_COMPILERS += gpu_processing

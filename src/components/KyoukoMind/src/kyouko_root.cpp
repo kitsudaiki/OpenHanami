@@ -60,6 +60,9 @@ TemplateTable* KyoukoRoot::templateTable = nullptr;
 std::string* KyoukoRoot::componentToken = nullptr;
 Kitsunemimi::GpuInterface* KyoukoRoot::gpuInterface = nullptr;
 
+// static flag to switch to experimental gpu-support (see issue #44)
+bool KyoukoRoot::useGpu = false;
+
 /**
  * @brief KyoukoRoot::KyoukoRoot
  */
@@ -80,10 +83,13 @@ KyoukoRoot::~KyoukoRoot() {}
 bool
 KyoukoRoot::init(Kitsunemimi::ErrorContainer &error)
 {
-    /*Kitsunemimi::GpuHandler oclHandler;
-    assert(oclHandler.initDevice(error));
-    assert(oclHandler.m_interfaces.size() == 1);
-    gpuInterface = oclHandler.m_interfaces.at(0);*/
+    if(useGpu)
+    {
+        Kitsunemimi::GpuHandler oclHandler;
+        assert(oclHandler.initDevice(error));
+        assert(oclHandler.m_interfaces.size() == 1);
+        gpuInterface = oclHandler.m_interfaces.at(0);
+    }
 
     validateStructSizes();
 

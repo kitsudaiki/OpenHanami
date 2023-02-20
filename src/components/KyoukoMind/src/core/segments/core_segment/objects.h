@@ -52,7 +52,8 @@ struct NeuronSection
     Neuron neurons[NEURONS_PER_NEURONSECTION];
     uint32_t numberOfNeurons = 0;
     uint32_t brickId = 0;
-    uint8_t padding[24];
+    uint32_t backwardNextId = UNINIT_STATE_32;
+    uint8_t padding[20];
 
     NeuronSection()
     {
@@ -77,14 +78,29 @@ struct Synapse
 
 //==================================================================================================
 
-struct SynapseSection
+struct SectionConnection
 {
     uint8_t active = Kitsunemimi::ItemBuffer::ACTIVE_SECTION;
     uint8_t padding[3];
 
+    float offset = 0.0f;
     uint32_t randomPos = 0;
-    uint32_t targetNeuronSectionId = 0;
-    uint32_t nextId = UNINIT_STATE_32;
+
+    uint32_t forwardNextId = UNINIT_STATE_32;
+    uint32_t backwardNextId = UNINIT_STATE_32;
+
+    uint32_t targetNeuronSectionId = UNINIT_STATE_32;
+    uint32_t sourceNeuronSectionId = UNINIT_STATE_32;
+    uint32_t sourceNeuronId = UNINIT_STATE_32;
+
+    // total size: 32 Byte
+};
+
+//==================================================================================================
+
+struct SynapseSection
+{
+    SectionConnection connection = SectionConnection();
 
     Synapse synapses[SYNAPSES_PER_SYNAPSESECTION];
 
@@ -103,7 +119,9 @@ struct UpdatePos
 {
     uint32_t type = 0;
     uint32_t randomPos = UNINIT_STATE_32;
-    // total size: 8 Byte
+    float offset = 0.0f;
+    uint8_t padding[4];
+    // total size: 16 Byte
 };
 
 //==================================================================================================
@@ -112,7 +130,7 @@ struct UpdatePosSection
 {
     UpdatePos positions[NEURONS_PER_NEURONSECTION];
     uint32_t numberOfPositions = 0;
-    uint8_t padding[4];
+    uint8_t padding[12];
 
     UpdatePosSection()
     {
@@ -120,7 +138,7 @@ struct UpdatePosSection
             positions[i] = UpdatePos();
         }
     }
-    // total size: 512 Byte
+    // total size: 1024 Byte
 };
 
 //==================================================================================================
@@ -147,3 +165,4 @@ struct SegmentSettings
 
 //==================================================================================================
 #endif // KYOUKOMIND_CORE_SEGMENT_OBJECTS_H
+

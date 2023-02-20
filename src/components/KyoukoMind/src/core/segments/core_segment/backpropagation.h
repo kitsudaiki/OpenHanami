@@ -73,20 +73,21 @@ backpropagateOutput(const Brick* brick,
 inline void
 backpropagateSection(SynapseSection* section,
                      Neuron* sourceNeuron,
-                     float netH,
+                     const float outH,
                      const Brick* brick,
                      NeuronSection* neuronSections,
                      SynapseSection* synapseSections)
 {
     Synapse* synapse = nullptr;
     Neuron* targetNeuron = nullptr;
-    NeuronSection* neuronSection = &neuronSections[section->targetNeuronSectionId];
+    NeuronSection* targetNeuronSection = &neuronSections[section->connection.targetNeuronSectionId];
     float learnValue = 0.2f;
     uint16_t pos = 0;
+    float counter = section->connection.offset;
 
     // iterate over all synapses in the section
     while(pos < SYNAPSES_PER_SYNAPSESECTION
-          && netH > 0.0f)
+          && outH > counter)
     {
         // break look, if no more synapses to process
         synapse = &section->synapses[pos];
@@ -94,20 +95,19 @@ backpropagateSection(SynapseSection* section,
         // update weight
         learnValue = static_cast<float>(126 - synapse->activeCounter) * 0.0002f;
         learnValue += 0.05f;
-        targetNeuron = &neuronSection->neurons[synapse->targetNeuronId];
+        targetNeuron = &targetNeuronSection->neurons[synapse->targetNeuronId];
         sourceNeuron->delta += targetNeuron->delta * synapse->weight;
         synapse->weight -= learnValue * targetNeuron->delta;
 
-        netH -= synapse->border;
+        counter += synapse->border;
         pos++;
     }
 
-    if(section->nextId != UNINIT_STATE_32
-            && netH > 0.01f)
+    if(section->connection.forwardNextId != UNINIT_STATE_32)
     {
-        backpropagateSection(&synapseSections[section->nextId],
+        backpropagateSection(&synapseSections[section->connection.forwardNextId],
                              sourceNeuron,
-                             netH,
+                             outH,
                              brick,
                              neuronSections,
                              synapseSections);
