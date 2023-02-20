@@ -279,7 +279,7 @@ createNewSynapse(__global SectionConnection* connection,
  * @brief process synapse-section
  */
 inline void
-synapseProcessingBackbard(__global SynapseSection* section,
+synapseProcessingBackward(__global SynapseSection* section,
                           __global SectionConnection* connection,
                           __global NeuronSection* targetNeuronSection,
                           __global NeuronSection* neuronSections,
@@ -327,19 +327,15 @@ synapseProcessingBackbard(__global SynapseSection* section,
         pos++;
     }
 
-    if(outH - counter > 0.01f
-            && connection->backwardNextId == UNINIT_STATE_32)
-    {
-        __global UpdatePosSection* updateSection = &updatePosSections[connection->sourceNeuronSectionId];
-        __global UpdatePos* updatePos = &updateSection->positions[connection->sourceNeuronId];
-        updatePos->type = 1;
-        updatePos->offset = counter + connection->offset;
-        segmentSettings->updateSections = 1;
-    }
+    const bool needUpdate = outH - counter > 0.01f && connection->forwardNextId == UNINIT_STATE_32;
+    __global UpdatePosSection* updateSection = &updatePosSections[connection->sourceNeuronSectionId];
+    __global UpdatePos* updatePos = &updateSection->positions[connection->sourceNeuronId];
+    updatePos->type = needUpdate;
+    updatePos->offset = counter + connection->offset;
 
     if(connection->backwardNextId != UNINIT_STATE_32)
     {
-        synapseProcessingBackbard(&synapseSections[connection->backwardNextId],
+        synapseProcessingBackward(&synapseSections[connection->backwardNextId],
                                   &sectionConnections[connection->backwardNextId],
                                   targetNeuronSection,
                                   neuronSections,
@@ -348,29 +344,6 @@ synapseProcessingBackbard(__global SynapseSection* section,
                                   updatePosSections,
                                   segmentSettings,
                                   randomValues);
-    }
-}
-
-/**
- * @brief process only a single neuron
- */
-inline void
-processSingleNeuron(const uint sourceNeuronId,
-                    const uint sourceNeuronSectionId,
-                    __global Neuron* neuron,
-                    __global UpdatePosSection* updatePosSections,
-                    __global SegmentSettings* segmentSettings)
-{
-    // handle active-state
-    if(neuron->active != 0)
-    {
-        if(neuron->targetSectionId == UNINIT_STATE_32)
-        {
-            __global UpdatePos* updatePos = &updatePosSections[sourceNeuronSectionId].positions[sourceNeuronId];
-            updatePos->type = 1;
-            updatePos->offset = 0.0f;
-            segmentSettings->updateSections = 1;
-        }
     }
 }
 
@@ -399,7 +372,7 @@ processNeuronsOfOutputBrick(__global const Brick* brick,
 
         if(neuronSection->backwardNextId != UNINIT_STATE_32)
         {
-            synapseProcessingBackbard(&synapseSections[neuronSection->backwardNextId],
+            synapseProcessingBackward(&synapseSections[neuronSection->backwardNextId],
                                       &sectionConnections[neuronSection->backwardNextId],
                                       neuronSection,
                                       neuronSections,
@@ -450,11 +423,11 @@ processNeuronsOfInputBrick(__global const Brick* brick,
             neuron->potential = inputTransfers[neuron->targetBorderId];
             neuron->active = neuron->potential > 0.0f;
 
-            processSingleNeuron(neuronId,
-                                neuronSectionId,
-                                neuron,
-                                updatePosSections,
-                                segmentSettings);
+            // handle active-state
+            const bool needUpdate = neuron->active != 0 && neuron->targetSectionId == UNINIT_STATE_32;
+            __global UpdatePos* updatePos = &updatePosSections[neuronSectionId].positions[neuronId];
+            updatePos->type = needUpdate;
+            updatePos->offset = 0.0f;
         }
     }
 }
@@ -483,7 +456,7 @@ processNeuronsOfNormalBrick(__global const Brick* brick,
 
         if(section->backwardNextId != UNINIT_STATE_32)
         {
-            synapseProcessingBackbard(&synapseSections[section->backwardNextId],
+            synapseProcessingBackward(&synapseSections[section->backwardNextId],
                                       &sectionConnections[section->backwardNextId],
                                       section,
                                       neuronSections,
@@ -515,11 +488,11 @@ processNeuronsOfNormalBrick(__global const Brick* brick,
             neuron->input = 0.0f;
             neuron->potential = log2(neuron->potential + 1.0f);
 
-            processSingleNeuron(neuronId,
-                                neuronSectionId,
-                                neuron,
-                                updatePosSections,
-                                segmentSettings);
+            // handle active-state
+            const bool needUpdate = neuron->active != 0 && neuron->targetSectionId == UNINIT_STATE_32;
+            __global UpdatePos* updatePos = &updatePosSections[neuronSectionId].positions[neuronId];
+            updatePos->type = needUpdate;
+            updatePos->offset = 0.0f;
         }
     }
 }
@@ -540,14 +513,9 @@ prcessCoreSegment(__global Brick* bricks,
                   __global float* outputTransfers,
                   __global const uint* randomValues)
 {
-
-
-    const uint numberOfBricks = segmentHeader->bricks.count;
-    for(uint pos = 0; pos < numberOfBricks; pos++)
+    for(uint pos = 0; pos < segmentHeader->bricks.count; pos++)
     {
-        const uint brickId = brickOrder[pos];
-
-        __global Brick* brick = &bricks[brickId];
+        __global Brick* brick = &bricks[brickOrder[pos]];
         if(brick->isInputBrick)
         {
             processNeuronsOfInputBrick(brick,
@@ -596,14 +564,14 @@ backpropagateOutput(__global const Brick* brick,
     __global NeuronSection* section = NULL;
 
     // iterate over all neurons within the brick
-    for(uint neuronSectionId = brick->neuronSectionPos + get_global_id(0);
+    for(uint neuronSectionId = brick->neuronSectionPos + get_group_id(0);
         neuronSectionId < brick->numberOfNeuronSections + brick->neuronSectionPos;
-        neuronSectionId += get_global_size(0))
+        neuronSectionId += get_num_groups(0))
     {
         section = &neuronSections[neuronSectionId];
-        for(uint neuronId = 0;
+        for(uint neuronId = get_local_id(0);
             neuronId < section->numberOfNeurons;
-            neuronId++)
+            neuronId += get_local_size(0))
         {
             neuron = &section->neurons[neuronId];
             neuron->delta = inputTransfers[neuron->targetBorderId];
@@ -677,14 +645,14 @@ backpropagateNeurons(__global const Brick* brick,
     __global NeuronSection* neuronSection = NULL;
 
     // iterate over all neurons within the brick
-    for(uint neuronSectionId = brick->neuronSectionPos + get_global_id(0);
+    for(uint neuronSectionId = brick->neuronSectionPos + get_group_id(0);
         neuronSectionId < brick->numberOfNeuronSections + brick->neuronSectionPos;
-        neuronSectionId += get_global_size(0))
+        neuronSectionId += get_num_groups(0))
     {
         neuronSection = &neuronSections[neuronSectionId];
-        for(uint neuronId = 0;
+        for(uint neuronId = get_local_id(0);
             neuronId < neuronSection->numberOfNeurons;
-            neuronId++)
+            neuronId += get_local_size(0))
         {
             // skip section, if not active
             sourceNeuron = &neuronSection->neurons[neuronId];
@@ -729,11 +697,9 @@ reweightCoreSegment(__global Brick* bricks,
                     __global float* outputTransfers)
 {
     // run back-propagation over all internal neurons and synapses
-    const uint numberOfBricks = segmentHeader->bricks.count;
-    for(int pos = numberOfBricks - 1; pos >= 0; pos--)
+    for(int pos = segmentHeader->bricks.count - 1; pos >= 0; pos--)
     {
-        const uint brickId = brickOrder[pos];
-        __global Brick* brick = &bricks[brickId];
+        __global Brick* brick = &bricks[brickOrder[pos]];
         if(brick->isOutputBrick)
         {
             backpropagateOutput(brick,
