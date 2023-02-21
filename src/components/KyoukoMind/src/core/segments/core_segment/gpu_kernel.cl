@@ -100,7 +100,7 @@ typedef struct SegmentHeader_struct
 
 //==================================================================================================
 
-typedef struct Brick_struct
+typedef struct BrickHeader_struct
 {
     // common
     uint brickId;
@@ -108,16 +108,11 @@ typedef struct Brick_struct
     bool isInputBrick;
     uchar padding1[14];
     uint neuronSectionPos;
-
-    Position brickPos;
-    uint neighbors[12];
-
-    uint possibleTargetNeuronBrickIds[1000];
     uint numberOfNeurons;
     uint numberOfNeuronSections;
 
-    // total size: 4096 Bytes
-} Brick;
+    // total size: 32 Bytes
+} BrickHeader;
 
 //==================================================================================================
 
@@ -351,7 +346,7 @@ synapseProcessingBackward(__global SynapseSection* section,
  * @brief process output brick
  */
 inline void
-processNeuronsOfOutputBrick(__global const Brick* brick,
+processNeuronsOfOutputBrick(__global const BrickHeader* brick,
                             __global NeuronSection* neuronSections,
                             __global SectionConnection* sectionConnections,
                             __global SynapseSection* synapseSections,
@@ -399,7 +394,7 @@ processNeuronsOfOutputBrick(__global const Brick* brick,
  * @brief process input brick
  */
 inline void
-processNeuronsOfInputBrick(__global const Brick* brick,
+processNeuronsOfInputBrick(__global const BrickHeader* brick,
                            __global NeuronSection* neuronSections,
                            __global float* inputTransfers,
                            __global SynapseSection* synapseSections,
@@ -436,7 +431,7 @@ processNeuronsOfInputBrick(__global const Brick* brick,
  * @brief process normal internal brick
  */
 inline void
-processNeuronsOfNormalBrick(__global const Brick* brick,
+processNeuronsOfNormalBrick(__global const BrickHeader* brick,
                             __global NeuronSection* neuronSections,
                             __global SectionConnection* sectionConnections,
                             __global SynapseSection* synapseSections,
@@ -501,7 +496,7 @@ processNeuronsOfNormalBrick(__global const Brick* brick,
  * @brief process all neurons within a segment
  */
 __kernel inline void
-prcessCoreSegment(__global Brick* bricks,
+prcessCoreSegment(__global BrickHeader* bricks,
                   __global uint* brickOrder,
                   __global NeuronSection* neuronSections,
                   __global SectionConnection* sectionConnections,
@@ -515,7 +510,7 @@ prcessCoreSegment(__global Brick* bricks,
 {
     for(uint pos = 0; pos < segmentHeader->bricks.count; pos++)
     {
-        __global Brick* brick = &bricks[brickOrder[pos]];
+        __global BrickHeader* brick = &bricks[brickOrder[pos]];
         if(brick->isInputBrick)
         {
             processNeuronsOfInputBrick(brick,
@@ -555,7 +550,7 @@ prcessCoreSegment(__global Brick* bricks,
  * @brief backpropagate values of an output-brick
  */
 inline void
-backpropagateOutput(__global const Brick* brick,
+backpropagateOutput(__global const BrickHeader* brick,
                     __global float* inputTransfers,
                     __global NeuronSection* neuronSections,
                     __global SegmentSettings* segmentSettings)
@@ -588,7 +583,7 @@ backpropagateSection(__global SynapseSection* section,
                      __global SectionConnection* connection,
                      __global Neuron* sourceNeuron,
                      const float outH,
-                     __global const Brick* brick,
+                     __global const BrickHeader* brick,
                      __global NeuronSection* neuronSections,
                      __global SectionConnection* sectionConnections,
                      __global SynapseSection* synapseSections)
@@ -635,7 +630,7 @@ backpropagateSection(__global SynapseSection* section,
  * @brief run back-propagation over all neurons
  */
 inline void
-backpropagateNeurons(__global const Brick* brick,
+backpropagateNeurons(__global const BrickHeader* brick,
                      __global NeuronSection* neuronSections,
                      __global SectionConnection* sectionConnections,
                      __global SynapseSection* synapseSections,
@@ -686,7 +681,7 @@ backpropagateNeurons(__global const Brick* brick,
  * @brief correct weight of synapses within a segment
  */
 __kernel void
-reweightCoreSegment(__global Brick* bricks,
+reweightCoreSegment(__global BrickHeader* bricks,
                     __global uint* brickOrder,
                     __global NeuronSection* neuronSections,
                     __global SectionConnection* sectionConnections,
@@ -699,7 +694,7 @@ reweightCoreSegment(__global Brick* bricks,
     // run back-propagation over all internal neurons and synapses
     for(int pos = segmentHeader->bricks.count - 1; pos >= 0; pos--)
     {
-        __global Brick* brick = &bricks[brickOrder[pos]];
+        __global BrickHeader* brick = &bricks[brickOrder[pos]];
         if(brick->isOutputBrick)
         {
             backpropagateOutput(brick,
