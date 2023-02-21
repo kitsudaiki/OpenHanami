@@ -33,22 +33,6 @@
 #define NUMBER_OF_RAND_VALUES 10485760
 #define RAND_MAX 2147483647
 
-typedef struct kuuid_struct
-{
-    char uuid[37];
-    uchar padding[3];
-    // total size: 40 Bytes
-} kuuid;
-
-
-typedef struct Position_struct
-{
-    uint x;
-    uint y;
-    uint z;
-    uint w;
-} Position;
-
 enum SegmentTypes
 {
     UNDEFINED_SEGMENT = 0,
@@ -56,47 +40,6 @@ enum SegmentTypes
     OUTPUT_SEGMENT = 2,
     DYNAMIC_SEGMENT = 3,
 };
-
-typedef struct SegmentHeaderEntry
-{
-    ulong bytePos;
-    ulong count;
-
-    // total size: 16 Byte
-} SegmentHeaderEntry;
-
-typedef struct SegmentHeader_struct
-{
-    uchar objectType;
-    uchar version;
-    uchar segmentType;
-    uchar padding;
-    uint segmentID;
-    ulong staticDataSize;
-    Position position;
-
-    kuuid parentClusterId;
-
-    // synapse-segment
-    SegmentHeaderEntry name;
-    SegmentHeaderEntry settings;
-    SegmentHeaderEntry slotList;
-    SegmentHeaderEntry inputTransfers;
-    SegmentHeaderEntry outputTransfers;
-
-    SegmentHeaderEntry bricks;
-    SegmentHeaderEntry brickOrder;
-    SegmentHeaderEntry neuronSections;
-    SegmentHeaderEntry inputs;
-    SegmentHeaderEntry outputs;
-    SegmentHeaderEntry updatePosSections;
-
-    SegmentHeaderEntry synapseSections;
-
-    uchar padding2[246];
-
-    // total size: 512 Byte
-} SegmentHeader;
 
 //==================================================================================================
 
@@ -502,13 +445,13 @@ prcessCoreSegment(__global BrickHeader* bricks,
                   __global SectionConnection* sectionConnections,
                   __global SynapseSection* synapseSections,
                   __global UpdatePosSection* updatePosSections,
-                  __global SegmentHeader* segmentHeader,
                   __global SegmentSettings* segmentSettings,
                   __global float* inputTransfers,
                   __global float* outputTransfers,
-                  __global const uint* randomValues)
+                  __global const uint* randomValues,
+                  const uint numberOfBricks)
 {
-    for(uint pos = 0; pos < segmentHeader->bricks.count; pos++)
+    for(uint pos = 0; pos < numberOfBricks; pos++)
     {
         __global BrickHeader* brick = &bricks[brickOrder[pos]];
         if(brick->isInputBrick)
@@ -686,13 +629,13 @@ reweightCoreSegment(__global BrickHeader* bricks,
                     __global NeuronSection* neuronSections,
                     __global SectionConnection* sectionConnections,
                     __global SynapseSection* synapseSections,
-                    __global SegmentHeader* segmentHeader,
                     __global SegmentSettings* segmentSettings,
                     __global float* inputTransfers,
-                    __global float* outputTransfers)
+                    __global float* outputTransfers,
+                    const uint numberOfBricks)
 {
     // run back-propagation over all internal neurons and synapses
-    for(int pos = segmentHeader->bricks.count - 1; pos >= 0; pos--)
+    for(int pos = numberOfBricks - 1; pos >= 0; pos--)
     {
         __global BrickHeader* brick = &bricks[brickOrder[pos]];
         if(brick->isOutputBrick)
