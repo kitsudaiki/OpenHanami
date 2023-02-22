@@ -103,11 +103,9 @@ CoreSegment::initGpu()
         error._errorMessages.clear();
     }
 
-    assert(data->addBuffer("bricks",                 segmentHeader->bricks.count,             sizeof(Brick),                  false, bricks                    ));
     assert(data->addBuffer("brickOrder",             segmentHeader->brickOrder.count,         sizeof(uint32_t),               false, brickOrder                ));
     assert(data->addBuffer("neuronSections",         segmentHeader->neuronSections.count,     sizeof(NeuronSection),          false, neuronSections            ));
     assert(data->addBuffer("synapseSections",        segmentHeader->synapseSections.count,    sizeof(SynapseSection),         false, synapseSections           ));
-    assert(data->addBuffer("segmentHeader",          1,                                       sizeof(SegmentHeader),          false, segmentHeader             ));
     assert(data->addBuffer("segmentSettings",        1,                                       sizeof(SegmentSettings),        false, segmentSettings           ));
     assert(data->addBuffer("inputTransfers",         segmentHeader->inputTransfers.count,     sizeof(float),                  false, inputTransfers            ));
     assert(data->addBuffer("outputTransfers",        segmentHeader->outputTransfers.count,    sizeof(float),                  false, outputTransfers           ));
@@ -120,9 +118,17 @@ CoreSegment::initGpu()
         sectionConnections[i] = SectionConnection();
     }
 
+    assert(data->addBuffer("bricks",                 segmentHeader->bricks.count,             sizeof(Brick),                  false));
+    brickHeaders = static_cast<BrickHeader*>(data->getBufferData("bricks"));
+    for(uint32_t i = 0; i < segmentHeader->bricks.count; i++) {
+        brickHeaders[i] = bricks[i].header;
+    }
+
     if(KyoukoRoot::gpuInterface->initCopyToDevice(*data, error) == false) {
         LOG_ERROR(error);
     }
+
+    data->addValue("numberOfBricks", segmentHeader->bricks.count);
 
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "bricks",                 error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "brickOrder",             error));
@@ -130,21 +136,22 @@ CoreSegment::initGpu()
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "sectionConnections",     error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "synapseSections",        error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "updatePosSections",      error));
-    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "segmentHeader",          error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "segmentSettings",        error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "inputTransfers",         error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "outputTransfers",        error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "randomValues",           error));
+    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "numberOfBricks",         error));
 
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "bricks",                 error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "brickOrder",             error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "neuronSections",         error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "sectionConnections",     error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "synapseSections",        error));
-    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "segmentHeader",          error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "segmentSettings",        error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "inputTransfers",         error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "outputTransfers",        error));
+    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "numberOfBricks",         error));
+
 }
 
 /**
@@ -342,16 +349,16 @@ CoreSegment::connectBorderBuffer()
     for(uint32_t i = 0; i < segmentHeader->bricks.count; i++)
     {
         brick = &bricks[i];
-        if(brick->isInputBrick)
+        if(brick->header.isInputBrick)
         {
-            const uint32_t numberOfNeuronSections = getNumberOfNeuronSections(brick->numberOfNeurons);
+            const uint32_t numberOfNeuronSections = getNumberOfNeuronSections(brick->header.numberOfNeurons);
             for(uint32_t j = 0; j < numberOfNeuronSections; j++)
             {
                 if(transferCounter >= segmentHeader->inputTransfers.count) {
                     break;
                 }
 
-                section = &neuronSections[brick->neuronSectionPos + j];
+                section = &neuronSections[brick->header.neuronSectionPos + j];
                 for(uint32_t k = 0; k < section->numberOfNeurons; k++)
                 {
                     section->neurons[k].targetBorderId = transferCounter;
@@ -361,16 +368,16 @@ CoreSegment::connectBorderBuffer()
         }
 
         // connect output-bricks with border-buffer
-        if(brick->isOutputBrick)
+        if(brick->header.isOutputBrick)
         {
-            const uint32_t numberOfNeuronSections = getNumberOfNeuronSections(brick->numberOfNeurons);
+            const uint32_t numberOfNeuronSections = getNumberOfNeuronSections(brick->header.numberOfNeurons);
             for(uint32_t j = 0; j < numberOfNeuronSections; j++)
             {
                 if(transferCounter >= segmentHeader->outputTransfers.count) {
                     break;
                 }
 
-                section = &neuronSections[brick->neuronSectionPos + j];
+                section = &neuronSections[brick->header.neuronSectionPos + j];
                 for(uint32_t k = 0; k < section->numberOfNeurons; k++)
                 {
                     section->neurons[k].targetBorderId = transferCounter;
@@ -544,14 +551,14 @@ CoreSegment::createNewBrick(const Kitsunemimi::Hanami::BrickMeta &brickMeta,
     Brick newBrick;
 
     // copy metadata
-    newBrick.brickId = id;
-    newBrick.isOutputBrick = brickMeta.type == Kitsunemimi::Hanami::OUTPUT_BRICK_TYPE;
-    newBrick.isInputBrick = brickMeta.type == Kitsunemimi::Hanami::INPUT_BRICK_TYPE;
+    newBrick.header.brickId = id;
+    newBrick.header.isOutputBrick = brickMeta.type == Kitsunemimi::Hanami::OUTPUT_BRICK_TYPE;
+    newBrick.header.isInputBrick = brickMeta.type == Kitsunemimi::Hanami::INPUT_BRICK_TYPE;
 
     // convert other values
     newBrick.brickPos = brickMeta.position;
-    newBrick.numberOfNeurons = brickMeta.numberOfNeurons;
-    newBrick.numberOfNeuronSections = getNumberOfNeuronSections(brickMeta.numberOfNeurons);
+    newBrick.header.numberOfNeurons = brickMeta.numberOfNeurons;
+    newBrick.header.numberOfNeuronSections = getNumberOfNeuronSections(brickMeta.numberOfNeurons);
 
     for(uint8_t side = 0; side < 12; side++) {
         newBrick.neighbors[side] = UNINIT_STATE_32;
@@ -576,12 +583,12 @@ CoreSegment::addBricksToSegment(const Kitsunemimi::Hanami::SegmentMeta &segmentM
     for(uint32_t i = 0; i < segmentMeta.bricks.size(); i++)
     {
         Brick newBrick = createNewBrick(segmentMeta.bricks.at(i), i);
-        newBrick.neuronSectionPos = neuronSectionPosCounter;
+        newBrick.header.neuronSectionPos = neuronSectionPosCounter;
 
-        for(uint32_t j = 0; j < newBrick.numberOfNeuronSections; j++)
+        for(uint32_t j = 0; j < newBrick.header.numberOfNeuronSections; j++)
         {
             section = &neuronSections[j + neuronSectionPosCounter];
-            section->brickId = newBrick.brickId;
+            section->brickId = newBrick.header.brickId;
             for(uint32_t k = 0; k < section->numberOfNeurons; k++) {
                 neuronIdCounter++;
             }
@@ -589,9 +596,9 @@ CoreSegment::addBricksToSegment(const Kitsunemimi::Hanami::SegmentMeta &segmentM
 
         // copy new brick to segment
         bricks[neuronBrickIdCounter] = newBrick;
-        assert(neuronBrickIdCounter == newBrick.brickId);
+        assert(neuronBrickIdCounter == newBrick.header.brickId);
         neuronBrickIdCounter++;
-        neuronSectionPosCounter += newBrick.numberOfNeuronSections;
+        neuronSectionPosCounter += newBrick.header.numberOfNeuronSections;
     }
 
     return;
@@ -618,8 +625,8 @@ CoreSegment::connectBrick(Brick* sourceBrick,
             Brick* targetBrick = &bricks[t];
             if(targetBrick->brickPos == next)
             {
-                sourceBrick->neighbors[side] = targetBrick->brickId;
-                targetBrick->neighbors[11 - side] = sourceBrick->brickId;
+                sourceBrick->neighbors[side] = targetBrick->header.brickId;
+                targetBrick->neighbors[11 - side] = sourceBrick->header.brickId;
             }
         }
     }
@@ -654,13 +661,13 @@ CoreSegment::goToNextInitBrick(Brick* currentBrick, uint32_t* maxPathLength)
     // check path-length to not go too far
     (*maxPathLength)--;
     if(*maxPathLength == 0) {
-        return currentBrick->brickId;
+        return currentBrick->header.brickId;
     }
 
     // check based on the chance, if you go to the next, or not
     const float chanceForNext = 0.0f;  // TODO: make hard-coded value configurable
     if(1000.0f * chanceForNext > (rand() % 1000)) {
-        return currentBrick->brickId;
+        return currentBrick->header.brickId;
     }
 
     // get a random possible next brick
@@ -676,7 +683,7 @@ CoreSegment::goToNextInitBrick(Brick* currentBrick, uint32_t* maxPathLength)
     }
 
     // if no further next brick was found, the give back tha actual one as end of the path
-    return currentBrick->brickId;
+    return currentBrick->header.brickId;
 }
 
 /**
@@ -693,7 +700,7 @@ CoreSegment::initTargetBrickList()
 
         // ignore output-bricks, because they only forward to the border-buffer
         // and not to other bricks
-        if(baseBrick->isOutputBrick) {
+        if(baseBrick->header.isOutputBrick) {
             continue;
         }
 
@@ -702,7 +709,7 @@ CoreSegment::initTargetBrickList()
         {
             uint32_t maxPathLength = 2; // TODO: make configurable
             const uint32_t brickId = goToNextInitBrick(baseBrick, &maxPathLength);
-            if(brickId == baseBrick->brickId)
+            if(brickId == baseBrick->header.brickId)
             {
                 LOG_WARNING("brick has no next brick and is a dead-end. Brick-ID: "
                             + std::to_string(brickId));

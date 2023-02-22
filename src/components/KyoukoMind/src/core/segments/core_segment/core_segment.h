@@ -51,6 +51,7 @@ public:
     UpdatePosSection* updatePosSections = nullptr;
 
     SectionConnection* sectionConnections = nullptr;
+    BrickHeader* brickHeaders = nullptr;
 
     Kitsunemimi::GpuData* data = nullptr;
 

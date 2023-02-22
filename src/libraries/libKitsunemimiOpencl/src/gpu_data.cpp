@@ -80,6 +80,36 @@ GpuData::addBuffer(const std::string &name,
 }
 
 /**
+ * @brief register value
+ *
+ * @param name identifier name of the value
+ * @param value value
+ *
+ * @return false, if name already is registered, else true
+ */
+bool
+GpuData::addValue(const std::string &name,
+                  const uint64_t value)
+{
+    // precheck
+    if(containsBuffer(name)) {
+        return false;
+    }
+
+    // prepare worker-buffer
+    WorkerBuffer newBuffer;
+    newBuffer.numberOfBytes = 8;
+    newBuffer.numberOfObjects = 1;
+    newBuffer.useHostPtr = false;
+    newBuffer.isValue = true;
+    newBuffer.value = value;
+
+    m_buffer.insert(std::make_pair(name, newBuffer));
+
+    return true;
+}
+
+/**
  * @brief get worker-buffer
  *
  * @param name name of the buffer

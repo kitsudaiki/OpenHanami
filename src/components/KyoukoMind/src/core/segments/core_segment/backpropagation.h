@@ -47,8 +47,8 @@ backpropagateOutput(const Brick* brick,
     float totalDelta = 0.0f;
 
     // iterate over all neurons within the brick
-    for(uint32_t neuronSectionId = brick->neuronSectionPos;
-        neuronSectionId < brick->numberOfNeuronSections + brick->neuronSectionPos;
+    for(uint32_t neuronSectionId = brick->header.neuronSectionPos;
+        neuronSectionId < brick->header.numberOfNeuronSections + brick->header.neuronSectionPos;
         neuronSectionId++)
     {
         section = &neuronSections[neuronSectionId];
@@ -127,8 +127,8 @@ backpropagateNeurons(const Brick* brick,
     NeuronSection* neuronSection = nullptr;
 
     // iterate over all neurons within the brick
-    for(uint32_t neuronSectionId = brick->neuronSectionPos;
-        neuronSectionId < brick->numberOfNeuronSections + brick->neuronSectionPos;
+    for(uint32_t neuronSectionId = brick->header.neuronSectionPos;
+        neuronSectionId < brick->header.numberOfNeuronSections + brick->header.neuronSectionPos;
         neuronSectionId++)
     {
         neuronSection = &neuronSections[neuronSectionId];
@@ -156,7 +156,7 @@ backpropagateNeurons(const Brick* brick,
                 sourceNeuron->delta *= 1.4427f * pow(0.5f, sourceNeuron->potential);
             }
 
-            if(brick->isInputBrick) {
+            if(brick->header.isInputBrick) {
                 outputTransfers[sourceNeuron->targetBorderId] = sourceNeuron->delta;
             }
         }
@@ -184,7 +184,7 @@ reweightCoreSegment(const CoreSegment &segment)
     {
         const uint32_t brickId = brickOrder[pos];
         Brick* brick = &bricks[brickId];
-        if(brick->isOutputBrick)
+        if(brick->header.isOutputBrick)
         {
             if(backpropagateOutput(brick,
                                    inputTransfers,

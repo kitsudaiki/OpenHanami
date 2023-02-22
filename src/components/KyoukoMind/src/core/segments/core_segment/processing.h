@@ -186,8 +186,8 @@ processNeuronsOfOutputBrick(const Brick* brick,
     NeuronSection* neuronSection = nullptr;
 
     // iterate over all neurons within the brick
-    for(uint32_t neuronSectionId = brick->neuronSectionPos;
-        neuronSectionId < brick->numberOfNeuronSections + brick->neuronSectionPos;
+    for(uint32_t neuronSectionId = brick->header.neuronSectionPos;
+        neuronSectionId < brick->header.numberOfNeuronSections + brick->header.neuronSectionPos;
         neuronSectionId++)
     {
         neuronSection = &neuronSections[neuronSectionId];
@@ -218,8 +218,8 @@ processNeuronsOfInputBrick(const Brick* brick,
     NeuronSection* section = nullptr;
 
     // iterate over all neurons within the brick
-    for(uint32_t neuronSectionId = brick->neuronSectionPos;
-        neuronSectionId < brick->numberOfNeuronSections + brick->neuronSectionPos;
+    for(uint32_t neuronSectionId = brick->header.neuronSectionPos;
+        neuronSectionId < brick->header.numberOfNeuronSections + brick->header.neuronSectionPos;
         neuronSectionId++)
     {
         section = &neuronSections[neuronSectionId];
@@ -256,8 +256,8 @@ processNeuronsOfNormalBrick(const Brick* brick,
     NeuronSection* section = nullptr;
 
     // iterate over all neurons within the brick
-    for(uint32_t neuronSectionId = brick->neuronSectionPos;
-        neuronSectionId < brick->numberOfNeuronSections + brick->neuronSectionPos;
+    for(uint32_t neuronSectionId = brick->header.neuronSectionPos;
+        neuronSectionId < brick->header.numberOfNeuronSections + brick->header.neuronSectionPos;
         neuronSectionId++)
     {
         section = &neuronSections[neuronSectionId];
@@ -314,7 +314,7 @@ prcessCoreSegment(CoreSegment &segment)
     {
         const uint32_t brickId = brickOrder[pos];
         Brick* brick = &bricks[brickId];
-        if(brick->isInputBrick)
+        if(brick->header.isInputBrick)
         {
             processNeuronsOfInputBrick(brick,
                                        neuronSections,
@@ -323,7 +323,7 @@ prcessCoreSegment(CoreSegment &segment)
                                        updatePosSections,
                                        segmentSettings);
         }
-        else if(brick->isOutputBrick)
+        else if(brick->header.isOutputBrick)
         {
             processNeuronsOfOutputBrick(brick,
                                         neuronSections,

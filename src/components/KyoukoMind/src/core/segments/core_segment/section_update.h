@@ -79,9 +79,9 @@ createNewSection(SynapseSection &result,
     const uint32_t brickId = currentBrick.possibleTargetNeuronBrickIds[randVal];
     result.connection.randomPos = (result.connection.randomPos + 1) % NUMBER_OF_RAND_VALUES;
     result.connection.offset = offset;
-    result.connection.targetNeuronSectionId = segment.bricks[brickId].neuronSectionPos;
+    result.connection.targetNeuronSectionId = segment.bricks[brickId].header.neuronSectionPos;
     result.connection.targetNeuronSectionId += KyoukoRoot::m_randomValues[result.connection.randomPos]
-                                               % segment.bricks[brickId].numberOfNeuronSections;
+                                               % segment.bricks[brickId].header.numberOfNeuronSections;
 }
 
 /**

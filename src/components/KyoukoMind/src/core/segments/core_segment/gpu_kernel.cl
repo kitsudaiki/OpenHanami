@@ -33,22 +33,6 @@
 #define NUMBER_OF_RAND_VALUES 10485760
 #define RAND_MAX 2147483647
 
-typedef struct kuuid_struct
-{
-    char uuid[37];
-    uchar padding[3];
-    // total size: 40 Bytes
-} kuuid;
-
-
-typedef struct Position_struct
-{
-    uint x;
-    uint y;
-    uint z;
-    uint w;
-} Position;
-
 enum SegmentTypes
 {
     UNDEFINED_SEGMENT = 0,
@@ -57,50 +41,9 @@ enum SegmentTypes
     DYNAMIC_SEGMENT = 3,
 };
 
-typedef struct SegmentHeaderEntry
-{
-    ulong bytePos;
-    ulong count;
-
-    // total size: 16 Byte
-} SegmentHeaderEntry;
-
-typedef struct SegmentHeader_struct
-{
-    uchar objectType;
-    uchar version;
-    uchar segmentType;
-    uchar padding;
-    uint segmentID;
-    ulong staticDataSize;
-    Position position;
-
-    kuuid parentClusterId;
-
-    // synapse-segment
-    SegmentHeaderEntry name;
-    SegmentHeaderEntry settings;
-    SegmentHeaderEntry slotList;
-    SegmentHeaderEntry inputTransfers;
-    SegmentHeaderEntry outputTransfers;
-
-    SegmentHeaderEntry bricks;
-    SegmentHeaderEntry brickOrder;
-    SegmentHeaderEntry neuronSections;
-    SegmentHeaderEntry inputs;
-    SegmentHeaderEntry outputs;
-    SegmentHeaderEntry updatePosSections;
-
-    SegmentHeaderEntry synapseSections;
-
-    uchar padding2[246];
-
-    // total size: 512 Byte
-} SegmentHeader;
-
 //==================================================================================================
 
-typedef struct Brick_struct
+typedef struct BrickHeader_struct
 {
     // common
     uint brickId;
@@ -108,16 +51,11 @@ typedef struct Brick_struct
     bool isInputBrick;
     uchar padding1[14];
     uint neuronSectionPos;
-
-    Position brickPos;
-    uint neighbors[12];
-
-    uint possibleTargetNeuronBrickIds[1000];
     uint numberOfNeurons;
     uint numberOfNeuronSections;
 
-    // total size: 4096 Bytes
-} Brick;
+    // total size: 32 Bytes
+} BrickHeader;
 
 //==================================================================================================
 
@@ -279,7 +217,7 @@ createNewSynapse(__global SectionConnection* connection,
  * @brief process synapse-section
  */
 inline void
-synapseProcessingBackbard(__global SynapseSection* section,
+synapseProcessingBackward(__global SynapseSection* section,
                           __global SectionConnection* connection,
                           __global NeuronSection* targetNeuronSection,
                           __global NeuronSection* neuronSections,
@@ -327,19 +265,15 @@ synapseProcessingBackbard(__global SynapseSection* section,
         pos++;
     }
 
-    if(outH - counter > 0.01f
-            && connection->backwardNextId == UNINIT_STATE_32)
-    {
-        __global UpdatePosSection* updateSection = &updatePosSections[connection->sourceNeuronSectionId];
-        __global UpdatePos* updatePos = &updateSection->positions[connection->sourceNeuronId];
-        updatePos->type = 1;
-        updatePos->offset = counter + connection->offset;
-        segmentSettings->updateSections = 1;
-    }
+    const bool needUpdate = outH - counter > 0.01f && connection->forwardNextId == UNINIT_STATE_32;
+    __global UpdatePosSection* updateSection = &updatePosSections[connection->sourceNeuronSectionId];
+    __global UpdatePos* updatePos = &updateSection->positions[connection->sourceNeuronId];
+    updatePos->type = needUpdate;
+    updatePos->offset = counter + connection->offset;
 
     if(connection->backwardNextId != UNINIT_STATE_32)
     {
-        synapseProcessingBackbard(&synapseSections[connection->backwardNextId],
+        synapseProcessingBackward(&synapseSections[connection->backwardNextId],
                                   &sectionConnections[connection->backwardNextId],
                                   targetNeuronSection,
                                   neuronSections,
@@ -352,33 +286,10 @@ synapseProcessingBackbard(__global SynapseSection* section,
 }
 
 /**
- * @brief process only a single neuron
- */
-inline void
-processSingleNeuron(const uint sourceNeuronId,
-                    const uint sourceNeuronSectionId,
-                    __global Neuron* neuron,
-                    __global UpdatePosSection* updatePosSections,
-                    __global SegmentSettings* segmentSettings)
-{
-    // handle active-state
-    if(neuron->active != 0)
-    {
-        if(neuron->targetSectionId == UNINIT_STATE_32)
-        {
-            __global UpdatePos* updatePos = &updatePosSections[sourceNeuronSectionId].positions[sourceNeuronId];
-            updatePos->type = 1;
-            updatePos->offset = 0.0f;
-            segmentSettings->updateSections = 1;
-        }
-    }
-}
-
-/**
  * @brief process output brick
  */
 inline void
-processNeuronsOfOutputBrick(__global const Brick* brick,
+processNeuronsOfOutputBrick(__global const BrickHeader* brick,
                             __global NeuronSection* neuronSections,
                             __global SectionConnection* sectionConnections,
                             __global SynapseSection* synapseSections,
@@ -399,7 +310,7 @@ processNeuronsOfOutputBrick(__global const Brick* brick,
 
         if(neuronSection->backwardNextId != UNINIT_STATE_32)
         {
-            synapseProcessingBackbard(&synapseSections[neuronSection->backwardNextId],
+            synapseProcessingBackward(&synapseSections[neuronSection->backwardNextId],
                                       &sectionConnections[neuronSection->backwardNextId],
                                       neuronSection,
                                       neuronSections,
@@ -426,7 +337,7 @@ processNeuronsOfOutputBrick(__global const Brick* brick,
  * @brief process input brick
  */
 inline void
-processNeuronsOfInputBrick(__global const Brick* brick,
+processNeuronsOfInputBrick(__global const BrickHeader* brick,
                            __global NeuronSection* neuronSections,
                            __global float* inputTransfers,
                            __global SynapseSection* synapseSections,
@@ -450,11 +361,11 @@ processNeuronsOfInputBrick(__global const Brick* brick,
             neuron->potential = inputTransfers[neuron->targetBorderId];
             neuron->active = neuron->potential > 0.0f;
 
-            processSingleNeuron(neuronId,
-                                neuronSectionId,
-                                neuron,
-                                updatePosSections,
-                                segmentSettings);
+            // handle active-state
+            const bool needUpdate = neuron->active != 0 && neuron->targetSectionId == UNINIT_STATE_32;
+            __global UpdatePos* updatePos = &updatePosSections[neuronSectionId].positions[neuronId];
+            updatePos->type = needUpdate;
+            updatePos->offset = 0.0f;
         }
     }
 }
@@ -463,7 +374,7 @@ processNeuronsOfInputBrick(__global const Brick* brick,
  * @brief process normal internal brick
  */
 inline void
-processNeuronsOfNormalBrick(__global const Brick* brick,
+processNeuronsOfNormalBrick(__global const BrickHeader* brick,
                             __global NeuronSection* neuronSections,
                             __global SectionConnection* sectionConnections,
                             __global SynapseSection* synapseSections,
@@ -483,7 +394,7 @@ processNeuronsOfNormalBrick(__global const Brick* brick,
 
         if(section->backwardNextId != UNINIT_STATE_32)
         {
-            synapseProcessingBackbard(&synapseSections[section->backwardNextId],
+            synapseProcessingBackward(&synapseSections[section->backwardNextId],
                                       &sectionConnections[section->backwardNextId],
                                       section,
                                       neuronSections,
@@ -515,11 +426,11 @@ processNeuronsOfNormalBrick(__global const Brick* brick,
             neuron->input = 0.0f;
             neuron->potential = log2(neuron->potential + 1.0f);
 
-            processSingleNeuron(neuronId,
-                                neuronSectionId,
-                                neuron,
-                                updatePosSections,
-                                segmentSettings);
+            // handle active-state
+            const bool needUpdate = neuron->active != 0 && neuron->targetSectionId == UNINIT_STATE_32;
+            __global UpdatePos* updatePos = &updatePosSections[neuronSectionId].positions[neuronId];
+            updatePos->type = needUpdate;
+            updatePos->offset = 0.0f;
         }
     }
 }
@@ -528,26 +439,21 @@ processNeuronsOfNormalBrick(__global const Brick* brick,
  * @brief process all neurons within a segment
  */
 __kernel inline void
-prcessCoreSegment(__global Brick* bricks,
+prcessCoreSegment(__global BrickHeader* bricks,
                   __global uint* brickOrder,
                   __global NeuronSection* neuronSections,
                   __global SectionConnection* sectionConnections,
                   __global SynapseSection* synapseSections,
                   __global UpdatePosSection* updatePosSections,
-                  __global SegmentHeader* segmentHeader,
                   __global SegmentSettings* segmentSettings,
                   __global float* inputTransfers,
                   __global float* outputTransfers,
-                  __global const uint* randomValues)
+                  __global const uint* randomValues,
+                  const uint numberOfBricks)
 {
-
-
-    const uint numberOfBricks = segmentHeader->bricks.count;
     for(uint pos = 0; pos < numberOfBricks; pos++)
     {
-        const uint brickId = brickOrder[pos];
-
-        __global Brick* brick = &bricks[brickId];
+        __global BrickHeader* brick = &bricks[brickOrder[pos]];
         if(brick->isInputBrick)
         {
             processNeuronsOfInputBrick(brick,
@@ -587,7 +493,7 @@ prcessCoreSegment(__global Brick* bricks,
  * @brief backpropagate values of an output-brick
  */
 inline void
-backpropagateOutput(__global const Brick* brick,
+backpropagateOutput(__global const BrickHeader* brick,
                     __global float* inputTransfers,
                     __global NeuronSection* neuronSections,
                     __global SegmentSettings* segmentSettings)
@@ -596,14 +502,14 @@ backpropagateOutput(__global const Brick* brick,
     __global NeuronSection* section = NULL;
 
     // iterate over all neurons within the brick
-    for(uint neuronSectionId = brick->neuronSectionPos + get_global_id(0);
+    for(uint neuronSectionId = brick->neuronSectionPos + get_group_id(0);
         neuronSectionId < brick->numberOfNeuronSections + brick->neuronSectionPos;
-        neuronSectionId += get_global_size(0))
+        neuronSectionId += get_num_groups(0))
     {
         section = &neuronSections[neuronSectionId];
-        for(uint neuronId = 0;
+        for(uint neuronId = get_local_id(0);
             neuronId < section->numberOfNeurons;
-            neuronId++)
+            neuronId += get_local_size(0))
         {
             neuron = &section->neurons[neuronId];
             neuron->delta = inputTransfers[neuron->targetBorderId];
@@ -620,7 +526,7 @@ backpropagateSection(__global SynapseSection* section,
                      __global SectionConnection* connection,
                      __global Neuron* sourceNeuron,
                      const float outH,
-                     __global const Brick* brick,
+                     __global const BrickHeader* brick,
                      __global NeuronSection* neuronSections,
                      __global SectionConnection* sectionConnections,
                      __global SynapseSection* synapseSections)
@@ -667,7 +573,7 @@ backpropagateSection(__global SynapseSection* section,
  * @brief run back-propagation over all neurons
  */
 inline void
-backpropagateNeurons(__global const Brick* brick,
+backpropagateNeurons(__global const BrickHeader* brick,
                      __global NeuronSection* neuronSections,
                      __global SectionConnection* sectionConnections,
                      __global SynapseSection* synapseSections,
@@ -677,14 +583,14 @@ backpropagateNeurons(__global const Brick* brick,
     __global NeuronSection* neuronSection = NULL;
 
     // iterate over all neurons within the brick
-    for(uint neuronSectionId = brick->neuronSectionPos + get_global_id(0);
+    for(uint neuronSectionId = brick->neuronSectionPos + get_group_id(0);
         neuronSectionId < brick->numberOfNeuronSections + brick->neuronSectionPos;
-        neuronSectionId += get_global_size(0))
+        neuronSectionId += get_num_groups(0))
     {
         neuronSection = &neuronSections[neuronSectionId];
-        for(uint neuronId = 0;
+        for(uint neuronId = get_local_id(0);
             neuronId < neuronSection->numberOfNeurons;
-            neuronId++)
+            neuronId += get_local_size(0))
         {
             // skip section, if not active
             sourceNeuron = &neuronSection->neurons[neuronId];
@@ -718,22 +624,20 @@ backpropagateNeurons(__global const Brick* brick,
  * @brief correct weight of synapses within a segment
  */
 __kernel void
-reweightCoreSegment(__global Brick* bricks,
+reweightCoreSegment(__global BrickHeader* bricks,
                     __global uint* brickOrder,
                     __global NeuronSection* neuronSections,
                     __global SectionConnection* sectionConnections,
                     __global SynapseSection* synapseSections,
-                    __global SegmentHeader* segmentHeader,
                     __global SegmentSettings* segmentSettings,
                     __global float* inputTransfers,
-                    __global float* outputTransfers)
+                    __global float* outputTransfers,
+                    const uint numberOfBricks)
 {
     // run back-propagation over all internal neurons and synapses
-    const uint numberOfBricks = segmentHeader->bricks.count;
     for(int pos = numberOfBricks - 1; pos >= 0; pos--)
     {
-        const uint brickId = brickOrder[pos];
-        __global Brick* brick = &bricks[brickId];
+        __global BrickHeader* brick = &bricks[brickOrder[pos]];
         if(brick->isOutputBrick)
         {
             backpropagateOutput(brick,
