@@ -1,12 +1,44 @@
 # Changelog
 
-## 0.1.0
+## [Unreleased]
 
-**Release-Date**: 2022-10-18
+### Changed
 
-### Changes:
+- **merged all repositories (source-code, documentation, build, deploy) into this main-repository here**
+- **use now custom syntax for cluster- and segment-templates instead of json**
+- use protobuf-messages to send payload of files
+- changed internal data-structure of the core in order to make GPU-support possible without race-conditions
+- core-internal renamings of structs and functions
+- creating a task doesn't require the explicit selecting of the data-set type. This is now read from the data-set metadata
+- merge endpoints to create learn- and request-tasks for csv- and mnist-files into one endpoint
+- use dropdown-menu instead of single buttons in table-entries within the dashboard
+- use nested namespaces in sakura- and hanami-layer
+- changed a huge amount of map-iterators to c++17 style
 
-**Added**:
+### Added 
+
+- Added experimental GPU-support (per default hard in source-code disbabled at the moment)
+- internal tokens requestable form Misaki
+- API-endpoints and database-table to request logs with page-selector
+- print audit-logs in dashboard
+
+### Fixed
+- fix random breaks of the websocket under high load in the Torii
+- fixed memory-corruption in segment-header of the clusters in Kyouko
+- solved uninitialized warning in item-buffer
+- fixed stupid memory-leak when sending internal messages
+
+
+### Removed
+
+- Removed additional namespaces of the libraries in the common-layer
+- Disabled reduction-process of the neural-networkds for the moment. Will be re-added in 0.3.0
+
+
+
+## [0.1.0] - 2022-10-18
+
+### Added:
 
 - First experimental prototype version with **very basic implementation** of following features:
     - first incomplete implementation of the core-concept of a dynamic network with:
