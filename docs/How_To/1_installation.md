@@ -43,9 +43,9 @@ For the installation on a kubernetes `helm` is used.
 ### Installation
 
 ```
-git clone https://github.com/kitsudaiki/Hanami-AI-K8s.git
+git clone https://github.com/kitsudaiki/Hanami-AI.git
 
-cd Hanami-AI-K8s
+cd Hanami-AI/deploy/k8s
 
 helm install ./hanami-ai/ --generate-name \
     --set user_id=USER_ID  \
