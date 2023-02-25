@@ -50,7 +50,8 @@ public:
     SynapseSection* synapseSections = nullptr;
     UpdatePosSection* updatePosSections = nullptr;
 
-    SectionConnection* sectionConnections = nullptr;
+    SynapseConnection* synapseConnections = nullptr;
+    NeuronConnection* neuronConnections = nullptr;
     BrickHeader* brickHeaders = nullptr;
 
     Kitsunemimi::GpuData* data = nullptr;

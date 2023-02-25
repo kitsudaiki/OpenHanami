@@ -61,7 +61,7 @@ std::string* KyoukoRoot::componentToken = nullptr;
 Kitsunemimi::GpuInterface* KyoukoRoot::gpuInterface = nullptr;
 
 // static flag to switch to experimental gpu-support (see issue #44)
-bool KyoukoRoot::useGpu = false;
+bool KyoukoRoot::useGpu = true;
 
 /**
  * @brief KyoukoRoot::KyoukoRoot

@@ -135,7 +135,8 @@ CpuProcessingUnit::learnSegmentBackward(AbstractSegment* segment)
                 {
                     KyoukoRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "updatePosSections", error);
                     KyoukoRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "neuronSections", error);
-                    KyoukoRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "sectionConnections", error);
+                    KyoukoRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "synapseConnections", error);
+                    KyoukoRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "neuronConnections", error);
                 }
                 std::cout<<"counter: "<<counter<<std::endl;
                 counter++;
