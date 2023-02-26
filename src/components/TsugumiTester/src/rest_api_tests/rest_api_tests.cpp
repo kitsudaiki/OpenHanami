@@ -170,10 +170,10 @@ runImageTest(Kitsunemimi::JsonItem &inputData)
     }
 
     // test cluster load and restore of kyouko and shiori
-    //testThread.addTest(new ClusterSaveTest(true));
-    //testThread.addTest(new ClusterDeleteTest(true));
-    //testThread.addTest(new ClusterCreateTest(true));
-    //testThread.addTest(new ClusterLoadTest(true));
+    testThread.addTest(new ClusterSaveTest(true));
+    testThread.addTest(new ClusterDeleteTest(true));
+    testThread.addTest(new ClusterCreateTest(true));
+    testThread.addTest(new ClusterLoadTest(true));
 
     // test request-tasks of kyouko
     testThread.addTest(new ImageRequestTaskTest(true));
@@ -184,8 +184,8 @@ runImageTest(Kitsunemimi::JsonItem &inputData)
     testThread.addTest(new RequestResultListTest(true));
 
     // test snapshots of shiori
-    //testThread.addTest(new SnapshotGetTest(true));
-    //testThread.addTest(new SnapshotListTest(true));
+    testThread.addTest(new SnapshotGetTest(true));
+    testThread.addTest(new SnapshotListTest(true));
 
     // test direct-io of kyouko
     testThread.addTest(new ClusterSwitchToDirectTest(true));
@@ -197,7 +197,7 @@ runImageTest(Kitsunemimi::JsonItem &inputData)
     testThread.addTest(new UserDeleteTest(false));
     testThread.addTest(new ProjectDeleteTest(true));
     testThread.addTest(new ProjectDeleteTest(false));
-    //testThread.addTest(new SnapshotDeleteTest(true));
+    testThread.addTest(new SnapshotDeleteTest(true));
     testThread.addTest(new ClusterDeleteTest(true));
     testThread.addTest(new ClusterDeleteTest(false));
     testThread.addTest(new TemplateDeleteTest(true));
@@ -236,7 +236,7 @@ runRestApiTests()
                                       "segment_type: core_segment\n"
                                       "settings:\n"
                                       "    max_synapse_sections: 100000\n"
-                                      "    synapse_segmentation: 7\n"
+                                      "    synapse_segmentation: 30\n"
                                       "    sign_neg: 0.5\n"
                                       "        \n"
                                       "bricks:\n"
@@ -244,7 +244,7 @@ runRestApiTests()
                                       "        input: test_input\n"
                                       "        number_of_neurons: 784\n"
                                       "    2,1,1\n"
-                                      "        number_of_neurons: 300\n"
+                                      "        number_of_neurons: 400\n"
                                       "    3,1,1\n"
                                       "        output: test_output\n"
                                       "        number_of_neurons: 10");

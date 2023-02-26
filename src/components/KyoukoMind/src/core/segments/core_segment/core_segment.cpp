@@ -138,17 +138,12 @@ CoreSegment::initGpu()
     assert(data->addBuffer("outputTransfers",        segmentHeader->outputTransfers.count,    sizeof(float),                  false, outputTransfers           ));
     assert(data->addBuffer("updatePosSections",      segmentHeader->updatePosSections.count,  sizeof(UpdatePosSection),       false, updatePosSections         ));
     assert(data->addBuffer("randomValues",           NUMBER_OF_RAND_VALUES,                   sizeof(uint32_t),               false, KyoukoRoot::m_randomValues));
+    assert(data->addBuffer("neuronConnections",      segmentHeader->neuronSections.count,     sizeof(NeuronConnection),       false, neuronConnections));
 
     assert(data->addBuffer("synapseConnections",     segmentHeader->synapseSections.count,    sizeof(SynapseConnection),      false));
     synapseConnections = static_cast<SynapseConnection*>(data->getBufferData("synapseConnections"));
     for(uint32_t i = 0; i < segmentHeader->synapseSections.count; i++) {
         synapseConnections[i] = SynapseConnection();
-    }
-
-    assert(data->addBuffer("neuronConnections",     segmentHeader->neuronSections.count,    sizeof(NeuronConnection),      false));
-    neuronConnections = static_cast<NeuronConnection*>(data->getBufferData("neuronConnections"));
-    for(uint32_t i = 0; i < segmentHeader->neuronSections.count; i++) {
-        neuronConnections[i] = NeuronConnection();
     }
 
     assert(data->addBuffer("bricks",                 segmentHeader->bricks.count,             sizeof(BrickHeader),                  false));
@@ -264,20 +259,10 @@ CoreSegment::initSegment(const std::string &name,
     // TODO: check result
     setName(name);
 
-    /*synapseConnections = new SynapseConnection[segmentHeader->synapseSections.count];
-    for(uint32_t i = 0; i < segmentHeader->synapseSections.count; i++) {
-        synapseConnections[i] = SynapseConnection();
-    }
-
     neuronConnections = new NeuronConnection[segmentHeader->neuronSections.count];
     for(uint32_t i = 0; i < segmentHeader->neuronSections.count; i++) {
         neuronConnections[i] = NeuronConnection();
     }
-
-    brickHeaders = new BrickHeader[segmentHeader->bricks.count];
-    for(uint32_t i = 0; i < segmentHeader->bricks.count; i++) {
-        brickHeaders[i] = bricks[i].header;
-    }*/
 
     if(KyoukoRoot::useGpu) {
         initGpu();
@@ -341,6 +326,11 @@ CoreSegment::reinitPointer(const uint64_t numberOfBytes)
     //pos = segmentHeader->synapseSections.bytePos;
     synapseSections = reinterpret_cast<SynapseSection*>(dataPtr);
     byteCounter += segmentHeader->synapseSections.count * sizeof(SynapseSection);
+
+    neuronConnections = new NeuronConnection[segmentHeader->neuronSections.count];
+    for(uint32_t i = 0; i < segmentHeader->neuronSections.count; i++) {
+        neuronConnections[i] = NeuronConnection();
+    }
 
     if(KyoukoRoot::useGpu) {
         initGpu();
