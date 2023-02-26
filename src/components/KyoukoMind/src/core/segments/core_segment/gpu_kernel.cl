@@ -482,7 +482,7 @@ prcessInput(__global BrickHeader* bricks,
 /**
  * @brief run backpropagation for a single synapse-section
  */
-void
+inline uint
 backpropagateSection(__global SynapseSection* section,
                      __global SynapseConnection* connection,
                      __global Neuron* sourceNeuron,
@@ -517,17 +517,7 @@ backpropagateSection(__global SynapseSection* section,
         pos++;
     }
 
-    if(connection->forwardNextId != UNINIT_STATE_32)
-    {
-        backpropagateSection(&synapseSections[connection->forwardNextId],
-                             &synapseConnections[connection->forwardNextId],
-                             sourceNeuron,
-                             outH,
-                             brick,
-                             neuronSections,
-                             synapseConnections,
-                             synapseSections);
-    }
+    return connection->forwardNextId;
 }
 
 //=========================================================================================================
@@ -566,14 +556,18 @@ reweightCoreSegment(__global BrickHeader* bricks,
                     sourceNeuron->delta = 0.0f;
                     if(sourceNeuron->active)
                     {
-                        backpropagateSection(&synapseSections[sourceNeuron->targetSectionId],
-                                             &synapseConnections[sourceNeuron->targetSectionId],
-                                             sourceNeuron,
-                                             sourceNeuron->potential,
-                                             brick,
-                                             neuronSections,
-                                             synapseConnections,
-                                             synapseSections);
+                        uint nextId = sourceNeuron->targetSectionId;
+                        while(nextId != UNINIT_STATE_32)
+                        {
+                            nextId = backpropagateSection(&synapseSections[nextId],
+                                                          &synapseConnections[nextId],
+                                                          sourceNeuron,
+                                                          sourceNeuron->potential,
+                                                          brick,
+                                                          neuronSections,
+                                                          synapseConnections,
+                                                          synapseSections);
+                        }
 
                         sourceNeuron->delta *= 1.4427f * pow(0.5f, sourceNeuron->potential);
                     }

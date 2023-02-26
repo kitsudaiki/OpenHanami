@@ -131,7 +131,7 @@ CpuProcessingUnit::learnSegmentBackward(AbstractSegment* segment)
             {
                 KyoukoRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "inputTransfers", error);
                 KyoukoRoot::gpuInterface->run(*(seg->data), "reweightOutput", error, seg->numberOfNeuronSections, NEURONS_PER_NEURONSECTION);
-                KyoukoRoot::gpuInterface->run(*(seg->data), "reweightCoreSegment", error, 10, 10);
+                KyoukoRoot::gpuInterface->run(*(seg->data), "reweightCoreSegment", error, seg->numberOfNeuronSections, 64);
                 KyoukoRoot::gpuInterface->copyFromDevice(*(seg->data), "outputTransfers", error);
                 KyoukoRoot::gpuInterface->copyFromDevice(*(seg->data), "updatePosSections", error);
                 if(updateSections(*seg, true))
