@@ -334,25 +334,42 @@ GpuInterface::updateBufferOnDevice(GpuData &data,
  * @param data input-data for the run
  * @param kernelName, name of the kernel, which should be executed
  * @param error reference for error-output
+ * @param numberOfGroups if set, it override the default number of groups of the data-obj
+ * @param numberOfThreadsPerGroup if set, it override the default number of threads per group
+ *                                of the data-obj
  *
  * @return true, if successful, else false
  */
 bool
 GpuInterface::run(GpuData &data,
                   const std::string &kernelName,
-                  ErrorContainer &error)
+                  ErrorContainer &error,
+                  const uint32_t numberOfGroups,
+                  const uint32_t numberOfThreadsPerGroup)
 {
     cl::Event event;
     std::vector<cl::Event> events;
     events.push_back(event);
 
+    cl::NDRange globalRange;
+    cl::NDRange localRange;
+
     // convert ranges
-    const cl::NDRange globalRange = cl::NDRange(data.numberOfWg.x * data.threadsPerWg.x,
-                                                data.numberOfWg.y * data.threadsPerWg.y,
-                                                data.numberOfWg.z * data.threadsPerWg.z);
-    const cl::NDRange localRange = cl::NDRange(data.threadsPerWg.x,
-                                               data.threadsPerWg.y,
-                                               data.threadsPerWg.z);
+    if(numberOfGroups == 0
+            || numberOfThreadsPerGroup == 0)
+    {
+        globalRange = cl::NDRange(data.numberOfWg.x * data.threadsPerWg.x,
+                                  data.numberOfWg.y * data.threadsPerWg.y,
+                                  data.numberOfWg.z * data.threadsPerWg.z);
+        localRange = cl::NDRange(data.threadsPerWg.x,
+                                 data.threadsPerWg.y,
+                                 data.threadsPerWg.z);
+    }
+    else
+    {
+        globalRange = cl::NDRange(numberOfGroups * numberOfThreadsPerGroup, 1, 1);
+        localRange = cl::NDRange(numberOfThreadsPerGroup, 1, 1);
+    }
 
     // get kernel-data
     GpuData::KernelDef* def = data.getKernel(kernelName);
