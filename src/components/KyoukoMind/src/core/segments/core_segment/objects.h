@@ -52,8 +52,7 @@ struct NeuronSection
     Neuron neurons[NEURONS_PER_NEURONSECTION];
     uint32_t numberOfNeurons = 0;
     uint32_t brickId = 0;
-    uint32_t backwardNextId = UNINIT_STATE_32;
-    uint8_t padding[20];
+    uint8_t padding[24];
 
     NeuronSection()
     {
@@ -78,7 +77,7 @@ struct Synapse
 
 //==================================================================================================
 
-struct SectionConnection
+struct SynapseConnection
 {
     uint8_t active = Kitsunemimi::ItemBuffer::ACTIVE_SECTION;
     uint8_t padding[3];
@@ -100,7 +99,7 @@ struct SectionConnection
 
 struct SynapseSection
 {
-    SectionConnection connection = SectionConnection();
+    SynapseConnection connection = SynapseConnection();
 
     Synapse synapses[SYNAPSES_PER_SYNAPSESECTION];
 
@@ -163,6 +162,27 @@ struct SegmentSettings
     // total size: 256 Byte
 };
 
+struct TempObj
+{
+    float values[256][64];
+    // total size: 128 KiByte
+};
+
+//==================================================================================================
+
+struct NeuronConnection
+{
+    uint32_t backwardIds[256];
+
+    NeuronConnection()
+    {
+        for(uint32_t i = 0; i < 256; i++) {
+            backwardIds[i] = UNINIT_STATE_32;
+        }
+    }
+    // total size: 2048 Byte
+};
+
+
 //==================================================================================================
 #endif // KYOUKOMIND_CORE_SEGMENT_OBJECTS_H
-

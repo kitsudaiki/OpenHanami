@@ -48,22 +48,6 @@ getForwardLast(const uint32_t sourceId,
 }
 
 /**
- * @brief search for the last entry in a chain of sections to find position where the new has
- *        to be attached in backward direction
- */
-inline uint32_t
-getBackwardLast(const uint32_t sourceId,
-                SynapseSection* section)
-{
-    const uint32_t nextId = section[sourceId].connection.backwardNextId;
-    if(nextId == UNINIT_STATE_32) {
-        return sourceId;
-    }
-
-    return getBackwardLast(nextId, section);
-}
-
-/**
  * @brief initialize new synapse-section
  */
 inline void
@@ -103,8 +87,39 @@ processUpdatePositon(CoreSegment &segment,
     newSection.connection.sourceNeuronId = sourceNeuronId;
     newSection.connection.sourceNeuronSectionId = sourceNeuronSectionId;
     createNewSection(newSection, segment, *currentBrick, offset);
+    NeuronConnection* targetSectionCon = &segment.neuronConnections[newSection.connection.targetNeuronSectionId];
+    if(targetSectionCon->backwardIds[255] != UNINIT_STATE_32) {
+        return;
+    }
+
     const uint64_t newId = segment.segmentData.addNewItem(newSection);
     if(newId == ITEM_BUFFER_UNDEFINE_POS) {
+        return;
+    }
+
+    if(useGpu) {
+        segment.synapseConnections[newId] = segment.synapseSections[newId].connection;
+    }
+
+    // connect path to new section in backward-direction
+    bool found = false;
+    NeuronSection* targetSection = &segment.neuronSections[newSection.connection.targetNeuronSectionId];
+    for(uint32_t i = 0; i < 256; i++)
+    {
+        if(targetSectionCon->backwardIds[i] == UNINIT_STATE_32)
+        {
+            targetSectionCon->backwardIds[i] = newId;
+            found = true;
+            // std::cout<<"new-id: "<<targetSectionCon->backwardIds[i]<<std::endl;
+            std::cout<<"i: "<<(i+1)<<std::endl;
+            std::cout<<"brickID: "<<targetSection->brickId<<std::endl;
+            std::cout<<"target-section-id: "<<newSection.connection.targetNeuronSectionId<<std::endl;
+            break;
+        }
+    }
+    if(found == false)
+    {
+        segment.segmentData.deleteItem(newId);
         return;
     }
 
@@ -120,32 +135,10 @@ processUpdatePositon(CoreSegment &segment,
 
         if(useGpu)
         {
-            std::cout<<"new id: "<<newId<<std::endl;
-            segment.sectionConnections[id] = segment.synapseSections[id].connection;
-            segment.sectionConnections[newId] = segment.synapseSections[newId].connection;
+            //std::cout<<"new id: "<<newId<<std::endl;
+            segment.synapseConnections[id] = segment.synapseSections[id].connection;
         }
     }
-
-    // connect path to new section in backward-direction
-    NeuronSection* targetSection = &segment.neuronSections[newSection.connection.targetNeuronSectionId];
-    if(targetSection->backwardNextId == UNINIT_STATE_32)
-    {
-        targetSection->backwardNextId = newId;
-    }
-    else
-    {
-        const uint32_t id = getBackwardLast(targetSection->backwardNextId, segment.synapseSections);
-        segment.synapseSections[id].connection.backwardNextId = newId;
-
-        if(useGpu)
-        {
-            std::cout<<"new id: "<<newId<<std::endl;
-            segment.sectionConnections[id] = segment.synapseSections[id].connection;
-            segment.sectionConnections[newId] = segment.synapseSections[newId].connection;
-        }
-    }
-
-
 }
 
 /**

@@ -81,8 +81,8 @@ CoreSegment::initGpu()
 
     // create data-object
     data = new Kitsunemimi::GpuData();
-    data->numberOfWg.x = 10;
-    data->threadsPerWg.x = 10;
+    data->numberOfWg.x = 1;
+    data->threadsPerWg.x = 1;
     const std::string kernelString(reinterpret_cast<const char*>(gpu_kernel_cl),
                                    gpu_kernel_cl_len);
     if(KyoukoRoot::gpuInterface->addKernel(*data,
@@ -103,6 +103,33 @@ CoreSegment::initGpu()
         error._errorMessages.clear();
     }
 
+    if(KyoukoRoot::gpuInterface->addKernel(*data,
+                                           "reweightOutput",
+                                           kernelString,
+                                           error) == false)
+    {
+        LOG_ERROR(error);
+        error._errorMessages.clear();
+    }
+
+    if(KyoukoRoot::gpuInterface->addKernel(*data,
+                                           "prcessInput",
+                                           kernelString,
+                                           error) == false)
+    {
+        LOG_ERROR(error);
+        error._errorMessages.clear();
+    }
+
+    if(KyoukoRoot::gpuInterface->addKernel(*data,
+                                           "prcessOutput",
+                                           kernelString,
+                                           error) == false)
+    {
+        LOG_ERROR(error);
+        error._errorMessages.clear();
+    }
+
     assert(data->addBuffer("brickOrder",             segmentHeader->brickOrder.count,         sizeof(uint32_t),               false, brickOrder                ));
     assert(data->addBuffer("neuronSections",         segmentHeader->neuronSections.count,     sizeof(NeuronSection),          false, neuronSections            ));
     assert(data->addBuffer("synapseSections",        segmentHeader->synapseSections.count,    sizeof(SynapseSection),         false, synapseSections           ));
@@ -111,14 +138,15 @@ CoreSegment::initGpu()
     assert(data->addBuffer("outputTransfers",        segmentHeader->outputTransfers.count,    sizeof(float),                  false, outputTransfers           ));
     assert(data->addBuffer("updatePosSections",      segmentHeader->updatePosSections.count,  sizeof(UpdatePosSection),       false, updatePosSections         ));
     assert(data->addBuffer("randomValues",           NUMBER_OF_RAND_VALUES,                   sizeof(uint32_t),               false, KyoukoRoot::m_randomValues));
+    assert(data->addBuffer("neuronConnections",      segmentHeader->neuronSections.count,     sizeof(NeuronConnection),       false, neuronConnections));
 
-    assert(data->addBuffer("sectionConnections",     segmentHeader->synapseSections.count,    sizeof(SectionConnection),      false));
-    sectionConnections = static_cast<SectionConnection*>(data->getBufferData("sectionConnections"));
+    assert(data->addBuffer("synapseConnections",     segmentHeader->synapseSections.count,    sizeof(SynapseConnection),      false));
+    synapseConnections = static_cast<SynapseConnection*>(data->getBufferData("synapseConnections"));
     for(uint32_t i = 0; i < segmentHeader->synapseSections.count; i++) {
-        sectionConnections[i] = SectionConnection();
+        synapseConnections[i] = SynapseConnection();
     }
 
-    assert(data->addBuffer("bricks",                 segmentHeader->bricks.count,             sizeof(Brick),                  false));
+    assert(data->addBuffer("bricks",                 segmentHeader->bricks.count,             sizeof(BrickHeader),                  false));
     brickHeaders = static_cast<BrickHeader*>(data->getBufferData("bricks"));
     for(uint32_t i = 0; i < segmentHeader->bricks.count; i++) {
         brickHeaders[i] = bricks[i].header;
@@ -132,8 +160,9 @@ CoreSegment::initGpu()
 
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "bricks",                 error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "brickOrder",             error));
+    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "neuronConnections",      error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "neuronSections",         error));
-    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "sectionConnections",     error));
+    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "synapseConnections",     error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "synapseSections",        error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "updatePosSections",      error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "segmentSettings",        error));
@@ -141,17 +170,37 @@ CoreSegment::initGpu()
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "outputTransfers",        error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "randomValues",           error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "numberOfBricks",         error));
+    assert(KyoukoRoot::gpuInterface->setLocalMemory(*data, "prcessCoreSegment", 256*64*4, error));
+
+    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessInput", "bricks",                 error));
+    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessInput", "neuronSections",         error));
+    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessInput", "updatePosSections",      error));
+    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessInput", "inputTransfers",         error));
+
+    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessOutput", "bricks",                 error));
+    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessOutput", "neuronConnections",      error));
+    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessOutput", "neuronSections",         error));
+    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessOutput", "synapseConnections",     error));
+    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessOutput", "synapseSections",        error));
+    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessOutput", "updatePosSections",      error));
+    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessOutput", "segmentSettings",        error));
+    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessOutput", "outputTransfers",        error));
+    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessOutput", "randomValues",           error));
+    assert(KyoukoRoot::gpuInterface->setLocalMemory(*data, "prcessOutput", 256*64*4, error));
+
+    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightOutput", "bricks",                     error));
+    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightOutput", "neuronSections",             error));
+    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightOutput", "inputTransfers",             error));
 
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "bricks",                 error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "brickOrder",             error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "neuronSections",         error));
-    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "sectionConnections",     error));
+    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "synapseConnections",     error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "synapseSections",        error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "segmentSettings",        error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "inputTransfers",         error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "outputTransfers",        error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "numberOfBricks",         error));
-
 }
 
 /**
@@ -166,7 +215,7 @@ CoreSegment::initSegment(const std::string &name,
                          const Kitsunemimi::Hanami::SegmentMeta &segmentMeta)
 {
     uint32_t numberOfNeurons = 0;
-    uint32_t numberOfNeuronSections = 0;
+    numberOfNeuronSections = 0;
     uint32_t totalBorderSize = 0;
     Kitsunemimi::ErrorContainer error;
 
@@ -209,6 +258,11 @@ CoreSegment::initSegment(const std::string &name,
 
     // TODO: check result
     setName(name);
+
+    neuronConnections = new NeuronConnection[segmentHeader->neuronSections.count];
+    for(uint32_t i = 0; i < segmentHeader->neuronSections.count; i++) {
+        neuronConnections[i] = NeuronConnection();
+    }
 
     if(KyoukoRoot::useGpu) {
         initGpu();
@@ -272,6 +326,11 @@ CoreSegment::reinitPointer(const uint64_t numberOfBytes)
     //pos = segmentHeader->synapseSections.bytePos;
     synapseSections = reinterpret_cast<SynapseSection*>(dataPtr);
     byteCounter += segmentHeader->synapseSections.count * sizeof(SynapseSection);
+
+    neuronConnections = new NeuronConnection[segmentHeader->neuronSections.count];
+    for(uint32_t i = 0; i < segmentHeader->neuronSections.count; i++) {
+        neuronConnections[i] = NeuronConnection();
+    }
 
     if(KyoukoRoot::useGpu) {
         initGpu();

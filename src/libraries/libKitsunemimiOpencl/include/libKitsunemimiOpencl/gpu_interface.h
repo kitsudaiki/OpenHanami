@@ -70,7 +70,9 @@ public:
                               const uint64_t offset = 0);
     bool run(GpuData &data,
              const std::string &kernelName,
-             ErrorContainer &error);
+             ErrorContainer &error,
+             const uint32_t numberOfGroups = 0,
+             const uint32_t numberOfThreadsPerGroup = 0);
     bool copyFromDevice(GpuData &data,
                         const std::string &bufferName,
                         ErrorContainer &error);
