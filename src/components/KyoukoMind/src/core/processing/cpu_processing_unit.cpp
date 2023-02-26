@@ -75,7 +75,9 @@ CpuProcessingUnit::learnSegmentForward(AbstractSegment* segment)
             if(KyoukoRoot::useGpu)
             {
                 KyoukoRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "inputTransfers", error);
+                KyoukoRoot::gpuInterface->run(*(seg->data), "prcessInput", error, seg->numberOfNeuronSections, NEURONS_PER_NEURONSECTION);
                 KyoukoRoot::gpuInterface->run(*(seg->data), "prcessCoreSegment", error);
+                KyoukoRoot::gpuInterface->run(*(seg->data), "prcessOutput", error, seg->numberOfNeuronSections, 1);
                 KyoukoRoot::gpuInterface->copyFromDevice(*(seg->data), "outputTransfers", error);
             }
             else
@@ -128,7 +130,8 @@ CpuProcessingUnit::learnSegmentBackward(AbstractSegment* segment)
             if(KyoukoRoot::useGpu)
             {
                 KyoukoRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "inputTransfers", error);
-                KyoukoRoot::gpuInterface->run(*(seg->data), "reweightCoreSegment", error);
+                KyoukoRoot::gpuInterface->run(*(seg->data), "reweightOutput", error, seg->numberOfNeuronSections, NEURONS_PER_NEURONSECTION);
+                KyoukoRoot::gpuInterface->run(*(seg->data), "reweightCoreSegment", error, 10, 10);
                 KyoukoRoot::gpuInterface->copyFromDevice(*(seg->data), "outputTransfers", error);
                 KyoukoRoot::gpuInterface->copyFromDevice(*(seg->data), "updatePosSections", error);
                 if(updateSections(*seg, true))
@@ -182,7 +185,9 @@ CpuProcessingUnit::processSegment(AbstractSegment* segment)
             if(KyoukoRoot::useGpu)
             {
                 KyoukoRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "inputTransfers", error);
+                KyoukoRoot::gpuInterface->run(*(seg->data), "prcessInput", error, seg->numberOfNeuronSections, NEURONS_PER_NEURONSECTION);
                 KyoukoRoot::gpuInterface->run(*(seg->data), "prcessCoreSegment", error);
+                KyoukoRoot::gpuInterface->run(*(seg->data), "prcessOutput", error, seg->numberOfNeuronSections, 1);
                 KyoukoRoot::gpuInterface->copyFromDevice(*(seg->data), "outputTransfers", error);
             }
             else

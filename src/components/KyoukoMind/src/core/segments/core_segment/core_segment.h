@@ -54,6 +54,8 @@ public:
     NeuronConnection* neuronConnections = nullptr;
     BrickHeader* brickHeaders = nullptr;
 
+    uint32_t numberOfNeuronSections = 1;
+
     Kitsunemimi::GpuData* data = nullptr;
 
 private:
