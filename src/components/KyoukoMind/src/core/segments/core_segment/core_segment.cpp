@@ -175,20 +175,7 @@ CoreSegment::initGpu()
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "outputTransfers",        error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "randomValues",           error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "numberOfBricks",         error));
-
-    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightOutput", "bricks",                     error));
-    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightOutput", "neuronSections",             error));
-    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightOutput", "inputTransfers",             error));
-
-    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "bricks",                 error));
-    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "brickOrder",             error));
-    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "neuronSections",         error));
-    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "synapseConnections",     error));
-    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "synapseSections",        error));
-    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "segmentSettings",        error));
-    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "inputTransfers",         error));
-    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "outputTransfers",        error));
-    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "numberOfBricks",         error));
+    assert(KyoukoRoot::gpuInterface->setLocalMemory(*data, "prcessCoreSegment", 256*64*4, error));
 
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessInput", "bricks",                 error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessInput", "neuronSections",         error));
@@ -204,7 +191,21 @@ CoreSegment::initGpu()
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessOutput", "segmentSettings",        error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessOutput", "outputTransfers",        error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessOutput", "randomValues",           error));
+    assert(KyoukoRoot::gpuInterface->setLocalMemory(*data, "prcessOutput", 256*64*4, error));
 
+    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightOutput", "bricks",                     error));
+    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightOutput", "neuronSections",             error));
+    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightOutput", "inputTransfers",             error));
+
+    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "bricks",                 error));
+    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "brickOrder",             error));
+    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "neuronSections",         error));
+    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "synapseConnections",     error));
+    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "synapseSections",        error));
+    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "segmentSettings",        error));
+    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "inputTransfers",         error));
+    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "outputTransfers",        error));
+    assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "numberOfBricks",         error));
 }
 
 /**

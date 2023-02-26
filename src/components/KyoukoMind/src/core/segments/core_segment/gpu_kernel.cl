@@ -178,7 +178,7 @@ typedef struct SegmentSettings
 
 typedef struct NeuronSynapseConnection_struct
 {
-    uint backwardIds[512];
+    uint backwardIds[256];
     // total size: 2048 Byte
 } NeuronConnection;
 
@@ -231,24 +231,23 @@ synapseProcessingBackward(__global SynapseSection* section,
                           __global SynapseConnection* connection,
                           __global NeuronSection* targetNeuronSection,
                           __global NeuronSection* neuronSections,
-                          __global SynapseConnection* synapseConnections,
-                          __global SynapseSection* synapseSections,
                           __global UpdatePosSection* updatePosSections,
                           __global SegmentSettings* segmentSettings,
-                          __global const uint* randomValues)
+                          __global const uint* randomValues,
+                          __local float* localMem)
 {
-    __global Synapse* synapse = NULL;
-    __global Neuron* targetNeuron = NULL;
-    __global Neuron* sourceNeuron = &neuronSections[connection->sourceNeuronSectionId].neurons[connection->sourceNeuronId];
+    __global NeuronSection* sourceNeuronSection = &neuronSections[connection->sourceNeuronSectionId];
+    __global Neuron* sourceNeuron = &sourceNeuronSection->neurons[connection->sourceNeuronId];
+    const float sourcePotential = sourceNeuron->potential;
 
     float counter = connection->offset;
     uint pos = 0;
 
     // iterate over all synapses in the section
     while(pos < SYNAPSES_PER_SYNAPSESECTION
-          && sourceNeuron->potential > counter)
+          && sourcePotential > counter)
     {
-        synapse = &section->synapses[pos];
+        __global Synapse* synapse = &section->synapses[pos];
 
         // create new synapse if necesarry and learning is active
         if(synapse->targetNeuronId == UNINIT_STATE_16)
@@ -257,13 +256,14 @@ synapseProcessingBackward(__global SynapseSection* section,
                              synapse,
                              targetNeuronSection,
                              segmentSettings,
-                             sourceNeuron->potential,
+                             sourcePotential,
                              randomValues);
         }
 
         // update target-neuron
-        targetNeuron = &targetNeuronSection->neurons[synapse->targetNeuronId];
-        targetNeuron->input += synapse->weight;
+        __global Neuron* targetNeuron = &targetNeuronSection->neurons[synapse->targetNeuronId];
+        //targetNeuron->input += synapse->weight;
+        localMem[synapse->targetNeuronId] += synapse->weight;
 
         // update active-counter
         const uchar active = (synapse->weight > 0) == (targetNeuron->potential > targetNeuron->border);
@@ -276,7 +276,7 @@ synapseProcessingBackward(__global SynapseSection* section,
 
     __global UpdatePosSection* updateSection = &updatePosSections[connection->sourceNeuronSectionId];
     __global UpdatePos* updatePos = &updateSection->positions[connection->sourceNeuronId];
-    updatePos->type = sourceNeuron->potential - counter > 0.01f && connection->forwardNextId == UNINIT_STATE_32;
+    updatePos->type = sourcePotential - counter > 0.01f && connection->forwardNextId == UNINIT_STATE_32;
     updatePos->offset = counter + connection->offset;
 }
 
@@ -284,29 +284,36 @@ synapseProcessingBackward(__global SynapseSection* section,
 
 inline void
 prcessNeuronConnection(const uint neuronSectionId,
-                       __global NeuronSection* neuronSection,
+                       __global NeuronSection* targetNeuronSection,
                        __global NeuronConnection* neuronConnections,
                        __global NeuronSection* neuronSections,
                        __global SynapseConnection* synapseConnections,
                        __global SynapseSection* synapseSections,
                        __global UpdatePosSection* updatePosSections,
                        __global SegmentSettings* segmentSettings,
-                       __global const uint* randomValues)
+                       __global const uint* randomValues,
+                       __local float* localMem)
 {
-    for(uint sectionPos = 0; sectionPos < 512; sectionPos++)
+    for(uint sectionPos = get_local_id(0);
+        sectionPos < 256;
+        sectionPos += get_local_size(0))
     {
+        const uint offset = sectionPos * 64;
+        for(uint i = 0; i < 64; i++) {
+            localMem[offset + i] = 0.0f;
+        }
+
         const uint sectionId = neuronConnections[neuronSectionId].backwardIds[sectionPos];
         if(sectionId != UNINIT_STATE_32)
         {
             synapseProcessingBackward(&synapseSections[sectionId],
                                       &synapseConnections[sectionId],
-                                      neuronSection,
+                                      targetNeuronSection,
                                       neuronSections,
-                                      synapseConnections,
-                                      synapseSections,
                                       updatePosSections,
                                       segmentSettings,
-                                      randomValues);
+                                      randomValues,
+                                      &localMem[offset]);
         }
     }
 }
@@ -328,7 +335,8 @@ prcessCoreSegment(__global BrickHeader* bricks,
                   __global float* inputTransfers,
                   __global float* outputTransfers,
                   __global const uint* randomValues,
-                  const uint numberOfBricks)
+                  const uint numberOfBricks,
+                  __local float* localMem)
 {
     for(uint pos = 0; pos < numberOfBricks; pos++)
     {
@@ -336,9 +344,9 @@ prcessCoreSegment(__global BrickHeader* bricks,
         if(brick->isInputBrick == false
                 && brick->isOutputBrick == false)
         {
-            for(uint neuronSectionId = brick->neuronSectionPos + get_global_id(0);
+            for(uint neuronSectionId = brick->neuronSectionPos + get_group_id(0);
                 neuronSectionId < brick->numberOfNeuronSections + brick->neuronSectionPos;
-                neuronSectionId += get_global_size(0))
+                neuronSectionId += get_num_groups(0))
             {
                 __global NeuronSection* neuronSection = &neuronSections[neuronSectionId];
 
@@ -350,13 +358,21 @@ prcessCoreSegment(__global BrickHeader* bricks,
                                        synapseSections,
                                        updatePosSections,
                                        segmentSettings,
-                                       randomValues);
+                                       randomValues,
+                                       localMem);
 
-                for(uint neuronId = 0;
+                barrier(CLK_LOCAL_MEM_FENCE);
+
+                for(uint neuronId = get_local_id(0);
                     neuronId < neuronSection->numberOfNeurons;
-                    neuronId++)
+                    neuronId += get_local_size(0))
                 {
                     __global Neuron* neuron = &neuronSection->neurons[neuronId];
+
+                    neuron->input = 0.0f;
+                    for(uint i = neuronId; i < 64*256; i += 64) {
+                        neuron->input += localMem[i];
+                    }
 
                     neuron->potential /= segmentSettings->neuronCooldown;
                     neuron->refractionTime = neuron->refractionTime >> 1;
@@ -397,7 +413,8 @@ prcessOutput(__global BrickHeader* bricks,
              __global UpdatePosSection* updatePosSections,
              __global SegmentSettings* segmentSettings,
              __global float* outputTransfers,
-             __global const uint* randomValues)
+             __global const uint* randomValues,
+             __local float* localMem)
 {
     __global NeuronSection* neuronSection = &neuronSections[get_group_id(0)];
     __global BrickHeader* brick = &bricks[neuronSection->brickId];
@@ -411,13 +428,21 @@ prcessOutput(__global BrickHeader* bricks,
                                synapseSections,
                                updatePosSections,
                                segmentSettings,
-                               randomValues);
+                               randomValues,
+                               localMem);
 
-        for(uint neuronId = 0;
+        barrier(CLK_LOCAL_MEM_FENCE);
+
+        for(uint neuronId = get_local_id(0);
             neuronId < neuronSection->numberOfNeurons;
-            neuronId++)
+            neuronId += get_local_size(0))
         {
             __global Neuron* neuron = &neuronSection->neurons[neuronId];
+            neuron->input = 0.0f;
+            for(uint i = neuronId; i < 64*256; i += 64) {
+                neuron->input += localMem[i];
+            }
+
             neuron->potential = segmentSettings->potentialOverflow * neuron->input;
             outputTransfers[neuron->targetBorderId] = neuron->potential;
             neuron->input = 0.0f;
@@ -435,20 +460,18 @@ prcessInput(__global BrickHeader* bricks,
 {
     __global NeuronSection* neuronSection = &neuronSections[get_group_id(0)];
     __global BrickHeader* brick = &bricks[neuronSection->brickId];
-    if(brick->isInputBrick)
+    if(brick->isInputBrick
+            && get_local_id(0) < neuronSection->numberOfNeurons)
     {
-        if(get_local_id(0) < neuronSection->numberOfNeurons)
-        {
-            __global Neuron* neuron = &neuronSection->neurons[get_local_id(0)];
-            neuron->potential = inputTransfers[neuron->targetBorderId];
-            neuron->active = neuron->potential > 0.0f;
+        __global Neuron* neuron = &neuronSection->neurons[get_local_id(0)];
+        neuron->potential = inputTransfers[neuron->targetBorderId];
+        neuron->active = neuron->potential > 0.0f;
 
-            // handle active-state
-            const bool needUpdate = neuron->active != 0 && neuron->targetSectionId == UNINIT_STATE_32;
-            __global UpdatePos* updatePos = &updatePosSections[get_group_id(0)].positions[get_local_id(0)];
-            updatePos->type = needUpdate;
-            updatePos->offset = 0.0f;
-        }
+        // handle active-state
+        const bool needUpdate = neuron->active != 0 && neuron->targetSectionId == UNINIT_STATE_32;
+        __global UpdatePos* updatePos = &updatePosSections[get_group_id(0)].positions[get_local_id(0)];
+        updatePos->type = needUpdate;
+        updatePos->offset = 0.0f;
     }
 }
 

@@ -88,7 +88,7 @@ processUpdatePositon(CoreSegment &segment,
     newSection.connection.sourceNeuronSectionId = sourceNeuronSectionId;
     createNewSection(newSection, segment, *currentBrick, offset);
     NeuronConnection* targetSectionCon = &segment.neuronConnections[newSection.connection.targetNeuronSectionId];
-    if(targetSectionCon->backwardIds[511] != UNINIT_STATE_32) {
+    if(targetSectionCon->backwardIds[255] != UNINIT_STATE_32) {
         return;
     }
 
@@ -104,7 +104,7 @@ processUpdatePositon(CoreSegment &segment,
     // connect path to new section in backward-direction
     bool found = false;
     NeuronSection* targetSection = &segment.neuronSections[newSection.connection.targetNeuronSectionId];
-    for(uint32_t i = 0; i < 512; i++)
+    for(uint32_t i = 0; i < 256; i++)
     {
         if(targetSectionCon->backwardIds[i] == UNINIT_STATE_32)
         {

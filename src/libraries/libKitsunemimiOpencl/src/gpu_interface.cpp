@@ -393,6 +393,8 @@ GpuInterface::run(GpuData &data,
             error.addMeesage("GPU-kernel failed with return-value: " + std::to_string(ret));
             return false;
         }
+
+        cl::WaitForEvents(events);
     }
     catch(const cl::Error &err)
     {

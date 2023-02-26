@@ -76,8 +76,8 @@ CpuProcessingUnit::learnSegmentForward(AbstractSegment* segment)
             {
                 KyoukoRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "inputTransfers", error);
                 KyoukoRoot::gpuInterface->run(*(seg->data), "prcessInput", error, seg->numberOfNeuronSections, NEURONS_PER_NEURONSECTION);
-                KyoukoRoot::gpuInterface->run(*(seg->data), "prcessCoreSegment", error);
-                KyoukoRoot::gpuInterface->run(*(seg->data), "prcessOutput", error, seg->numberOfNeuronSections, 1);
+                KyoukoRoot::gpuInterface->run(*(seg->data), "prcessCoreSegment", error, 10, 64);
+                KyoukoRoot::gpuInterface->run(*(seg->data), "prcessOutput", error, seg->numberOfNeuronSections, 64);
                 KyoukoRoot::gpuInterface->copyFromDevice(*(seg->data), "outputTransfers", error);
             }
             else
@@ -186,8 +186,8 @@ CpuProcessingUnit::processSegment(AbstractSegment* segment)
             {
                 KyoukoRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "inputTransfers", error);
                 KyoukoRoot::gpuInterface->run(*(seg->data), "prcessInput", error, seg->numberOfNeuronSections, NEURONS_PER_NEURONSECTION);
-                KyoukoRoot::gpuInterface->run(*(seg->data), "prcessCoreSegment", error);
-                KyoukoRoot::gpuInterface->run(*(seg->data), "prcessOutput", error, seg->numberOfNeuronSections, 1);
+                KyoukoRoot::gpuInterface->run(*(seg->data), "prcessCoreSegment", error, 10, 64);
+                KyoukoRoot::gpuInterface->run(*(seg->data), "prcessOutput", error, seg->numberOfNeuronSections, 64);
                 KyoukoRoot::gpuInterface->copyFromDevice(*(seg->data), "outputTransfers", error);
             }
             else
