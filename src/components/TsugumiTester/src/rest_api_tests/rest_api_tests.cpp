@@ -28,6 +28,9 @@
 
 #include <common/test_thread.h>
 #include <libHanamiAiSdk/template.h>
+#include <libHanamiAiSdk/cluster.h>
+#include <libHanamiAiSdk/user.h>
+#include <libHanamiAiSdk/project.h>
 
 #include <rest_api_tests/misaki/project/project_create_test.h>
 #include <rest_api_tests/misaki/project/project_delete_test.h>
@@ -102,7 +105,7 @@ initClient()
  * @brief delete all templates of the test-user to avoid name-conflics
  */
 void
-deleteTemplate()
+deleteAllTemplate()
 {
     std::string result = "";
     Kitsunemimi::ErrorContainer error;
@@ -120,6 +123,69 @@ deleteTemplate()
 }
 
 /**
+ * @brief delete all templates of the test-user to avoid name-conflics
+ */
+void
+deleteAllClusters()
+{
+    std::string result = "";
+    Kitsunemimi::ErrorContainer error;
+    HanamiAI::listCluster(result, error);
+
+    Kitsunemimi::JsonItem parsedList;
+    parsedList.parse(result, error);
+
+    Kitsunemimi::JsonItem body = parsedList.get("body");
+    for(uint64_t i = 0; i < body.size(); i++)
+    {
+        const std::string uuid = body.get(i).get(0).getString();
+        HanamiAI::deleteCluster(result, uuid, error);
+    }
+}
+
+/**
+ * @brief delete all templates of the test-user to avoid name-conflics
+ */
+void
+deleteAllProjects()
+{
+    std::string result = "";
+    Kitsunemimi::ErrorContainer error;
+    HanamiAI::listProject(result, error);
+
+    Kitsunemimi::JsonItem parsedList;
+    parsedList.parse(result, error);
+
+    Kitsunemimi::JsonItem body = parsedList.get("body");
+    for(uint64_t i = 0; i < body.size(); i++)
+    {
+        const std::string uuid = body.get(i).get(0).getString();
+        HanamiAI::deleteProject(result, uuid, error);
+    }
+}
+
+/**
+ * @brief delete all templates of the test-user to avoid name-conflics
+ */
+void
+deleteAllUsers()
+{
+    std::string result = "";
+    Kitsunemimi::ErrorContainer error;
+    HanamiAI::listUser(result, error);
+
+    Kitsunemimi::JsonItem parsedList;
+    parsedList.parse(result, error);
+
+    Kitsunemimi::JsonItem body = parsedList.get("body");
+    for(uint64_t i = 0; i < body.size(); i++)
+    {
+        const std::string uuid = body.get(i).get(0).getString();
+        HanamiAI::deleteUser(result, uuid, error);
+    }
+}
+
+/**
  * @brief run tests with the usage of MNIST-images
  *
  * @param inputData json-item with names and other predefined values for the tests
@@ -127,7 +193,10 @@ deleteTemplate()
 void
 runImageTest(Kitsunemimi::JsonItem &inputData)
 {
-    deleteTemplate();
+    deleteAllTemplate();
+    deleteAllClusters();
+    deleteAllProjects();
+    deleteAllUsers();
 
     TestThread testThread("test_thread", inputData);
 
