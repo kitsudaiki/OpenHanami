@@ -323,7 +323,7 @@ prcessNeuronConnection(const uint neuronSectionId,
 /**
  * @brief process all neurons within a segment
  */
-__kernel inline void
+__kernel void
 prcessCoreSegment(__global BrickHeader* bricks,
                   __global uint* brickOrder,
                   __global NeuronConnection* neuronConnections,
@@ -335,10 +335,10 @@ prcessCoreSegment(__global BrickHeader* bricks,
                   __global float* inputTransfers,
                   __global float* outputTransfers,
                   __global const uint* randomValues,
-                  const uint numberOfBricks,
+                  const ulong numberOfBricks,
                   __local float* localMem)
 {
-    for(uint pos = 0; pos < numberOfBricks; pos++)
+    for(ulong pos = 0; pos < numberOfBricks; pos++)
     {
         __global BrickHeader* brick = &bricks[brickOrder[pos]];
         if(brick->isInputBrick == false
@@ -404,7 +404,7 @@ prcessCoreSegment(__global BrickHeader* bricks,
 
 //=========================================================================================================
 
-__kernel inline void
+__kernel void
 prcessOutput(__global BrickHeader* bricks,
              __global NeuronConnection* neuronConnections,
              __global NeuronSection* neuronSections,
@@ -452,7 +452,7 @@ prcessOutput(__global BrickHeader* bricks,
 
 //=========================================================================================================
 
-__kernel inline void
+__kernel void
 prcessInput(__global BrickHeader* bricks,
             __global NeuronSection* neuronSections,
             __global UpdatePosSection* updatePosSections,
@@ -534,10 +534,10 @@ reweightCoreSegment(__global BrickHeader* bricks,
                     __global SegmentSettings* segmentSettings,
                     __global float* inputTransfers,
                     __global float* outputTransfers,
-                    const uint numberOfBricks)
+                    const ulong numberOfBricks)
 {
     // run back-propagation over all internal neurons and synapses
-    for(int pos = numberOfBricks - 1; pos >= 0; pos--)
+    for(long pos = numberOfBricks - 1; pos >= 0; pos--)
     {
         __global BrickHeader* brick = &bricks[brickOrder[pos]];
 
