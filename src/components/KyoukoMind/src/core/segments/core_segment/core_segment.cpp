@@ -170,7 +170,7 @@ CoreSegment::initGpu()
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "outputTransfers",        error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "randomValues",           error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "numberOfBricks",         error));
-    assert(KyoukoRoot::gpuInterface->setLocalMemory(*data, "prcessCoreSegment", 256*64*4, error));
+    assert(KyoukoRoot::gpuInterface->setLocalMemory(*data, "prcessCoreSegment", 64*64*4, error));
 
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessInput", "bricks",                 error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessInput", "neuronSections",         error));
@@ -186,7 +186,7 @@ CoreSegment::initGpu()
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessOutput", "segmentSettings",        error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessOutput", "outputTransfers",        error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "prcessOutput", "randomValues",           error));
-    assert(KyoukoRoot::gpuInterface->setLocalMemory(*data, "prcessOutput", 256*64*4, error));
+    assert(KyoukoRoot::gpuInterface->setLocalMemory(*data, "prcessOutput", 64*64*4, error));
 
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightOutput", "bricks",                     error));
     assert(KyoukoRoot::gpuInterface->bindKernelToBuffer(*data, "reweightOutput", "neuronSections",             error));

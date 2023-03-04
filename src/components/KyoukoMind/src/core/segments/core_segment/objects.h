@@ -164,7 +164,7 @@ struct SegmentSettings
 
 struct TempObj
 {
-    float values[256][64];
+    float values[512][64];
     // total size: 128 KiByte
 };
 
@@ -172,11 +172,11 @@ struct TempObj
 
 struct NeuronConnection
 {
-    uint32_t backwardIds[256];
+    uint32_t backwardIds[512];
 
     NeuronConnection()
     {
-        for(uint32_t i = 0; i < 256; i++) {
+        for(uint32_t i = 0; i < 512; i++) {
             backwardIds[i] = UNINIT_STATE_32;
         }
     }
