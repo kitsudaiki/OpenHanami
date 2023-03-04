@@ -87,8 +87,8 @@ processUpdatePositon(CoreSegment &segment,
     newSection.connection.sourceNeuronId = sourceNeuronId;
     newSection.connection.sourceNeuronSectionId = sourceNeuronSectionId;
     createNewSection(newSection, segment, *currentBrick, offset);
-    NeuronConnection* targetSectionCon = &segment.neuronConnections[newSection.connection.targetNeuronSectionId];
-    if(targetSectionCon->backwardIds[255] != UNINIT_STATE_32) {
+    NeuronConnection* targetCon = &segment.neuronConnections[newSection.connection.targetNeuronSectionId];
+    if(targetCon->backwardIds[NEURON_CONNECTIONS-1] != UNINIT_STATE_32) {
         return;
     }
 
@@ -103,17 +103,17 @@ processUpdatePositon(CoreSegment &segment,
 
     // connect path to new section in backward-direction
     bool found = false;
-    NeuronSection* targetSection = &segment.neuronSections[newSection.connection.targetNeuronSectionId];
-    for(uint32_t i = 0; i < 256; i++)
+    //NeuronSection* targetSection = &segment.neuronSections[newSection.connection.targetNeuronSectionId];
+    for(uint32_t i = 0; i < NEURON_CONNECTIONS; i++)
     {
-        if(targetSectionCon->backwardIds[i] == UNINIT_STATE_32)
+        if(targetCon->backwardIds[i] == UNINIT_STATE_32)
         {
-            targetSectionCon->backwardIds[i] = newId;
+            targetCon->backwardIds[i] = newId;
             found = true;
             // std::cout<<"new-id: "<<targetSectionCon->backwardIds[i]<<std::endl;
-            std::cout<<"i: "<<(i+1)<<std::endl;
-            std::cout<<"brickID: "<<targetSection->brickId<<std::endl;
-            std::cout<<"target-section-id: "<<newSection.connection.targetNeuronSectionId<<std::endl;
+            //std::cout<<"i: "<<(i+1)<<std::endl;
+            //std::cout<<"brickID: "<<targetSection->brickId<<std::endl;
+            //std::cout<<"target-section-id: "<<newSection.connection.targetNeuronSectionId<<std::endl;
             break;
         }
     }
