@@ -3,6 +3,6 @@ metadata:
   name: token-key
 data:
   token_key: |
-    asdf
+    {{ .Values.token.pw }}
 
 kind: ConfigMap
