@@ -35,11 +35,6 @@ ClusterTable::ClusterTable(Kitsunemimi::Sakura::SqlDatabase* db)
     : HanamiSqlTable(db)
 {
     m_tableName = "clusters";
-
-    DbHeaderEntry clusterName;
-    clusterName.name = "name";
-    clusterName.maxLength = 256;
-    m_tableHeader.push_back(clusterName);
 }
 
 /**

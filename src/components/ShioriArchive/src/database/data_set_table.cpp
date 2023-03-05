@@ -38,11 +38,6 @@ DataSetTable::DataSetTable(Kitsunemimi::Sakura::SqlDatabase* db)
 {
     m_tableName = "data_set";
 
-    DbHeaderEntry name;
-    name.name = "name";
-    name.maxLength = 256;
-    m_tableHeader.push_back(name);
-
     DbHeaderEntry type;
     type.name = "type";
     type.maxLength = 64;

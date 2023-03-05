@@ -38,11 +38,6 @@ RequestResultTable::RequestResultTable(Kitsunemimi::Sakura::SqlDatabase* db)
 {
     m_tableName = "request_result";
 
-    DbHeaderEntry name;
-    name.name = "name";
-    name.maxLength = 256;
-    m_tableHeader.push_back(name);
-
     DbHeaderEntry data;
     data.name = "data";
     data.hide = true;
