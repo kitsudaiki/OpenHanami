@@ -16,7 +16,7 @@ spec:
     spec:
       initContainers:
       - name: dashboard-container
-        image: kitsudaiki/hanami_ai_dashboard:{{ .Values.docker_tag }}
+        image: kitsudaiki/hanami_ai_dashboard:{{ .Values.docker.tag }}
         imagePullPolicy: Always
         securityContext:
           runAsUser: 0
@@ -26,15 +26,15 @@ spec:
           mountPath: /etc/torii/Hanami-AI-Dashboard
       containers:
       - name: misaki
-        image: kitsudaiki/misaki_guard:{{ .Values.docker_tag }}
+        image: kitsudaiki/misaki_guard:{{ .Values.docker.tag }}
         imagePullPolicy: Always
         env:
         - name: HANAMI_ADMIN_USER_ID
-          value: {{ .Values.user_id }}
+          value: {{ .Values.user.id }}
         - name: HANAMI_ADMIN_USER_NAME
-          value: {{ .Values.user_name }}
+          value: {{ .Values.user.name }}
         - name: HANAMI_ADMIN_PASSWORD
-          value: {{ .Values.user_pw }}
+          value: {{ .Values.user.pw }}
         volumeMounts:
         - name: misaki-config
           mountPath: /etc/misaki/misaki.conf
@@ -48,7 +48,7 @@ spec:
         - name: hanami-sockets-volume
           mountPath: /tmp/hanami
       - name: shiori
-        image: kitsudaiki/shiori_archive:{{ .Values.docker_tag }}
+        image: kitsudaiki/shiori_archive:{{ .Values.docker.tag }}
         imagePullPolicy: Always
         volumeMounts:
         - name: shiori-config
@@ -59,7 +59,7 @@ spec:
         - name: hanami-sockets-volume
           mountPath: /tmp/hanami
       - name: kyouko
-        image: kitsudaiki/kyouko_mind:{{ .Values.docker_tag }}
+        image: kitsudaiki/kyouko_mind:{{ .Values.docker.tag }}
         imagePullPolicy: Always
         volumeMounts:
         - name: kyouko-config
@@ -68,7 +68,7 @@ spec:
         - name: hanami-sockets-volume
           mountPath: /tmp/hanami
       - name: azuki
-        image: kitsudaiki/azuki_heart:{{ .Values.docker_tag }}
+        image: kitsudaiki/azuki_heart:{{ .Values.docker.tag }}
         imagePullPolicy: Always
         securityContext:
           privileged: true
@@ -79,7 +79,7 @@ spec:
         - name: hanami-sockets-volume
           mountPath: /tmp/hanami
       - name: torii
-        image: kitsudaiki/torii_gateway:{{ .Values.docker_tag }}
+        image: kitsudaiki/torii_gateway:{{ .Values.docker.tag }}
         imagePullPolicy: Always
         volumeMounts:
         - name: torii-config

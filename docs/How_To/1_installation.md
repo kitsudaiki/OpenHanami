@@ -48,9 +48,10 @@ git clone https://github.com/kitsudaiki/Hanami-AI.git
 cd Hanami-AI/deploy/k8s
 
 helm install ./hanami-ai/ --generate-name \
-    --set user_id=USER_ID  \
-    --set user_name=USER_NAME  \
-    --set user_pw=PASSWORD
+    --set user.id=USER_ID  \
+    --set user.name=USER_NAME  \
+    --set user.pw=PASSWORD  \
+    --set token.pw=TOKEN_KEY
 ```
 
 The `--set`-flag defining the login-information for the initial admin-user of the instance:
@@ -66,6 +67,10 @@ The `--set`-flag defining the login-information for the initial admin-user of th
 - `PASSWORD`
     - Password for the initial user
     - String, with between `8` and `4096` characters length
+
+- `TOKEN_KEY`
+    - Key for the JWT-Tokens provided by Misaki
+    - String
 
 After a successful installation the `USER_ID` and `PASSWORD` have to be used for login to the system.
 

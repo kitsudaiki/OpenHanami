@@ -12,7 +12,7 @@ data:
     [misaki]
     token_key_path = "/etc/misaki/token_key"
     policies = "/etc/misaki/policies"
-    token_expire_time = 3600
+    token_expire_time = {{ .Values.token.expire_time }}
 
     #[azuki]
     #address = "/tmp/azuki.uds"
