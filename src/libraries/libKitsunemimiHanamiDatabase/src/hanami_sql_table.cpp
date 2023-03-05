@@ -60,6 +60,11 @@ HanamiSqlTable::HanamiSqlTable(Kitsunemimi::Sakura::SqlDatabase* db)
     visibility.name = "visibility";
     visibility.maxLength = 10;
     m_tableHeader.push_back(visibility);
+
+    DbHeaderEntry name;
+    name.name = "name";
+    name.maxLength = 256;
+    m_tableHeader.push_back(name);
 }
 
 /**

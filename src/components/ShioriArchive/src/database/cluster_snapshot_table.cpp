@@ -38,11 +38,6 @@ ClusterSnapshotTable::ClusterSnapshotTable(Kitsunemimi::Sakura::SqlDatabase* db)
 {
     m_tableName = "cluster_snapshot";
 
-    DbHeaderEntry name;
-    name.name = "name";
-    name.maxLength = 256;
-    m_tableHeader.push_back(name);
-
     DbHeaderEntry header;
     header.name = "header";
     header.hide = true;

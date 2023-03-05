@@ -36,11 +36,6 @@ TemplateTable::TemplateTable(Kitsunemimi::Sakura::SqlDatabase* db)
 {
     m_tableName = "templates";
 
-    DbHeaderEntry templateName;
-    templateName.name = "name";
-    templateName.maxLength = 256;
-    m_tableHeader.push_back(templateName);
-
     DbHeaderEntry templateString;
     templateString.name = "data";
     templateString.hide = true;
