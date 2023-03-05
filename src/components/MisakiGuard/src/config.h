@@ -35,8 +35,9 @@ registerConfigs(Kitsunemimi::ErrorContainer &error)
 {
     Kitsunemimi::Hanami::registerBasicConfigs(error);
 
-    REGISTER_STRING_CONFIG("misaki", "token_key_path", error, "", true);
-    REGISTER_STRING_CONFIG("misaki", "policies", error, "", true);
+    REGISTER_STRING_CONFIG("misaki", "token_key_path",    error, "",   true);
+    REGISTER_INT_CONFIG(   "misaki", "token_expire_time", error, 3600, true);
+    REGISTER_STRING_CONFIG("misaki", "policies",          error, "",   true);
 
 }
 
