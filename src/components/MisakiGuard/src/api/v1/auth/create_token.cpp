@@ -27,6 +27,7 @@
 #include <libKitsunemimiCrypto/hashes.h>
 #include <libKitsunemimiJwt/jwt.h>
 #include <libKitsunemimiJson/json_item.h>
+#include <libKitsunemimiConfig/config_handler.h>
 
 #include <libKitsunemimiHanamiCommon/enums.h>
 #include <libKitsunemimiHanamiCommon/defines.h>
@@ -151,9 +152,17 @@ CreateToken::runTask(BlossomIO &blossomIO,
         return false;
     }
 
+    // get expire-time from config
+    bool success = false;
+    const u_int32_t expireTime = GET_INT_CONFIG("misaki", "token_expire_time", success);
+    if(success == false)
+    {
+        error.addMeesage("Could not read 'token_expire_time' from config of misaki.");
+        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+    }
+
     // create token
-    // TODO: make validation-time configurable
-    if(MisakiRoot::jwt->create_HS256_Token(jwtToken, userData, 3600, error) == false)
+    if(MisakiRoot::jwt->create_HS256_Token(jwtToken, userData, expireTime, error) == false)
     {
         error.addMeesage("Failed to create JWT-Token");
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;

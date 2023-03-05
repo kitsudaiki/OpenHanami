@@ -12,6 +12,7 @@ data:
     [misaki]
     token_key_path = "/etc/misaki/token_key"
     policies = "/etc/misaki/policies"
+    token_expire_time = 3600
 
     #[azuki]
     #address = "/tmp/azuki.uds"
