@@ -7,8 +7,7 @@ about: Release check-list
 
 ### Checklist
 
-- [ ] Changelog
-- [ ] Version-tag in pro-files
-- [ ] Update version in documenation
-- [ ] Update version in readme
-- [ ] Add tag
+- [ ] Update Changelog
+- [ ] Test with Tsugumi
+- [ ] Create Docker-Images
+- [ ] Create Release-Tag

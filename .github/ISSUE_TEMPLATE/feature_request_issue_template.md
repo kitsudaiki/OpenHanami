@@ -1,10 +1,8 @@
 ---
 name: feature-request template
 about: Use this template to request new features and enhancements
-labels: Feature, Documentation, Test
+labels: new Feature / improvement, Documentation, Test
 ---
-
-## Feature-request
 
 ### Description
 

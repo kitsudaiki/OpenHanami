@@ -6,9 +6,11 @@ labels: Bug
 
 ## BUG-issue
 
-### What you wanted to do
+### What you wanted to do?
 
-### Description of the bug you run into
+### What was the actual behavior?
+
+### What was the expected behavior?
 
 ### Steps to Reproduce
 
