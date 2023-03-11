@@ -105,6 +105,7 @@ LIBS += -L../../libraries/libKitsunemimiOpencl/src/release -lKitsunemimiOpencl
 INCLUDEPATH += ../../libraries/libKitsunemimiOpencl/include
 
 LIBS += -lcryptopp -lssl -lsqlite3 -luuid -lcrypto -pthread -lprotobuf -lOpenCL
+LIBS +=  -L"/usr/local/cuda-12.1/targets/x86_64-linux/lib" -lcuda -lcudart -lcublas
 
 INCLUDEPATH += $$PWD \
                src
@@ -219,6 +220,16 @@ SOURCES += \
 
 KYOUKO_PROTO_BUFFER = ../../libraries/libKitsunemimiHanamiMessages/protobuffers/kyouko_messages.proto3
 GPU_KERNEL = src/core/segments/core_segment/gpu_kernel.cl
+CUDA_SOURCES = src/core/segments/core_segment/gpu_kernel.cu
+
+OTHER_FILES += \
+    $$CUDA_SOURCES
+
+cudaKernel.input = CUDA_SOURCES
+cudaKernel.output = ${QMAKE_FILE_BASE}.o
+cudaKernel.commands = /usr/local/cuda-12.1/bin/nvcc -O3 -c  -o ${QMAKE_FILE_BASE}.o ${QMAKE_FILE_IN} || nvcc -O3 -c  -o ${QMAKE_FILE_BASE}.o ${QMAKE_FILE_IN}
+cudaKernel.CONFIG += target_predeps
+QMAKE_EXTRA_COMPILERS += cudaKernel
 
 OTHER_FILES += $$KYOUKO_PROTO_BUFFER \
                $$GPU_KERNEL
@@ -248,3 +259,6 @@ gpu_processing.variable_out = HEADERS
 gpu_processing.CONFIG += no_link
 
 QMAKE_EXTRA_COMPILERS += gpu_processing
+
+DISTFILES += \
+    src/core/segments/core_segment/gpu_kernel.cu

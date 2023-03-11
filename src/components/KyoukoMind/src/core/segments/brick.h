@@ -25,21 +25,7 @@
 
 #include <common.h>
 #include <kyouko_root.h>
-
-struct BrickHeader
-{
-    // common
-    uint32_t brickId = UNINIT_STATE_32;
-    bool isOutputBrick = false;
-    bool isInputBrick = false;
-    uint8_t padding1[14];
-    uint32_t neuronSectionPos = UNINIT_STATE_32;
-
-    uint32_t numberOfNeurons = 0;
-    uint32_t numberOfNeuronSections = 0;
-
-    // total size: 32 Bytes
-};
+#include "core_segment/objects.h"
 
 struct Brick
 {

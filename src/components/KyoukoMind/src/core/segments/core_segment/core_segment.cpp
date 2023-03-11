@@ -71,6 +71,59 @@ getNumberOfNeuronSections(const uint32_t numberOfNeurons)
     return numberOfSections;
 }
 
+extern "C"
+void
+copyToDevice_CUDA(PointerHandler* gpuPointer,
+                  SegmentSizes* segmentHeader,
+                  SegmentSettings* segmentSettings,
+                  BrickHeader* brickHeaders,
+                  uint32_t* brickOrder,
+                  NeuronSection* neuronSections,
+                  SynapseSection* synapseSections,
+                  UpdatePosSection* updatePosSections,
+                  SynapseConnection* synapseConnections,
+                  NeuronConnection* neuronConnections,
+                  float* inputTransfers,
+                  float* outputTransfers,
+                  uint32_t* randomValues);
+
+void
+CoreSegment::initCuda()
+{
+    synapseConnections = new SynapseConnection[segmentHeader->synapseSections.count];
+    for(uint32_t i = 0; i < segmentHeader->synapseSections.count; i++) {
+        synapseConnections[i] = SynapseConnection();
+    }
+
+    brickHeaders = new BrickHeader[segmentHeader->bricks.count];
+    for(uint32_t i = 0; i < segmentHeader->bricks.count; i++) {
+        brickHeaders[i] = bricks[i].header;
+    }
+
+    segmentSizes.numberOfBricks = segmentHeader->bricks.count;
+    segmentSizes.numberOfInputTransfers = segmentHeader->inputTransfers.count;
+    segmentSizes.numberOfOutputTransfers = segmentHeader->outputTransfers.count;
+    segmentSizes.numberOfInputs = segmentHeader->inputs.count;
+    segmentSizes.numberOfOutputs = segmentHeader->outputs.count;
+    segmentSizes.numberOfNeuronSections = segmentHeader->neuronSections.count;
+    segmentSizes.numberOfSynapseSections = segmentHeader->synapseSections.count;
+    segmentSizes.numberOfUpdatePosSections = segmentHeader->updatePosSections.count;
+
+    copyToDevice_CUDA(&gpuPointer,
+                      &segmentSizes,
+                      segmentSettings,
+                      brickHeaders,
+                      brickOrder,
+                      neuronSections,
+                      synapseSections,
+                      updatePosSections,
+                      synapseConnections,
+                      neuronConnections,
+                      inputTransfers,
+                      outputTransfers,
+                      KyoukoRoot::m_randomValues);
+}
+
 /**
  * @brief DynamicSegment::initGpu
  */
@@ -268,6 +321,10 @@ CoreSegment::initSegment(const std::string &name,
         initGpu();
     }
 
+    if(KyoukoRoot::useCuda) {
+        initCuda();
+    }
+
     return true;
 }
 
@@ -334,6 +391,10 @@ CoreSegment::reinitPointer(const uint64_t numberOfBytes)
 
     if(KyoukoRoot::useGpu) {
         initGpu();
+    }
+
+    if(KyoukoRoot::useCuda) {
+        initCuda();
     }
 
     // check result

@@ -32,6 +32,23 @@ namespace Kitsunemimi {
 class GpuData;
 }
 
+//==================================================================================================
+
+struct PointerHandler
+{
+    BrickHeader* bricks = nullptr;
+    uint32_t* brickOrder = nullptr;
+    NeuronSection* neuronSections = nullptr;
+    SynapseSection* synapseSections = nullptr;
+    SegmentSettings* segmentSettings = nullptr;
+    float* inputTransfers = nullptr;
+    float* outputTransfers = nullptr;
+    UpdatePosSection* updatePosSections = nullptr;
+    uint32_t* randomValues = nullptr;
+    NeuronConnection* neuronConnections = nullptr;
+    SynapseConnection* synapseConnections = nullptr;
+};
+
 class CoreSegment
         : public AbstractSegment
 {
@@ -53,8 +70,10 @@ public:
     SynapseConnection* synapseConnections = nullptr;
     NeuronConnection* neuronConnections = nullptr;
     BrickHeader* brickHeaders = nullptr;
+    SegmentSizes segmentSizes;
 
     uint32_t numberOfNeuronSections = 1;
+    PointerHandler gpuPointer;
 
     Kitsunemimi::GpuData* data = nullptr;
 
@@ -68,6 +87,7 @@ private:
     bool connectBorderBuffer();
     void allocateSegment(SegmentHeader &header);
     void initGpu();
+    void initCuda();
 
     void addBricksToSegment(const Kitsunemimi::Hanami::SegmentMeta &segmentMeta);
     bool initTargetBrickList();

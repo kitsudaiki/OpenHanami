@@ -23,8 +23,43 @@
 #ifndef KYOUKOMIND_CORE_SEGMENT_OBJECTS_H
 #define KYOUKOMIND_CORE_SEGMENT_OBJECTS_H
 
-#include <common.h>
-#include <libKitsunemimiCommon/buffer/item_buffer.h>
+#include <stdint.h>
+
+// const predefined values
+#define UNINIT_STATE_64 0xFFFFFFFFFFFFFFFF
+#define UNINIT_STATE_32 0xFFFFFFFF
+#define UNINIT_STATE_24 0xFFFFFF
+#define UNINIT_STATE_16 0xFFFF
+#define UNINIT_STATE_8 0xFF
+
+#define UNINTI_POINT_32 0x0FFFFFFF
+
+// network-predefines
+#define SYNAPSES_PER_SYNAPSESECTION 30
+#define NEURONS_PER_NEURONSECTION 63
+#define POSSIBLE_NEXT_AXON_STEP 80
+#define NEURON_CONNECTIONS 512
+
+// processing
+#define NUMBER_OF_PROCESSING_UNITS 1
+#define NUMBER_OF_RAND_VALUES 10485760
+
+//==================================================================================================
+
+struct BrickHeader
+{
+    // common
+    uint32_t brickId = UNINIT_STATE_32;
+    bool isOutputBrick = false;
+    bool isInputBrick = false;
+    uint8_t padding1[14];
+    uint32_t neuronSectionPos = UNINIT_STATE_32;
+
+    uint32_t numberOfNeurons = 0;
+    uint32_t numberOfNeuronSections = 0;
+
+    // total size: 32 Bytes
+};
 
 //==================================================================================================
 
@@ -79,7 +114,7 @@ struct Synapse
 
 struct SynapseConnection
 {
-    uint8_t active = Kitsunemimi::ItemBuffer::ACTIVE_SECTION;
+    uint8_t active = 1;
     uint8_t padding[3];
 
     float offset = 0.0f;
@@ -183,6 +218,20 @@ struct NeuronConnection
     // total size: 2048 Byte
 };
 
-
 //==================================================================================================
+
+struct SegmentSizes
+{
+    // synapse-segment
+    uint32_t numberOfInputTransfers = 0;
+    uint32_t numberOfOutputTransfers = 0;
+    uint32_t numberOfBricks = 0;
+    uint32_t numberOfInputs = 0;
+    uint32_t numberOfOutputs = 0;
+    uint32_t numberOfUpdatePosSections = 0;
+    uint32_t numberOfNeuronSections = 0;
+    uint32_t numberOfSynapseSections = 0;
+    // total size: 32 Byte
+};
+
 #endif // KYOUKOMIND_CORE_SEGMENT_OBJECTS_H

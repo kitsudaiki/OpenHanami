@@ -44,6 +44,36 @@
 #include <libKitsunemimiOpencl/gpu_interface.h>
 #include <libKitsunemimiOpencl/gpu_handler.h>
 
+extern "C"
+void
+processing_CUDA(PointerHandler* gpuPointer,
+                SegmentSizes* segmentHeader,
+                uint32_t* brickOrder,
+                BrickHeader* bricks,
+                float* inputTransfers,
+                float* outputTransfers,
+                const uint32_t numberOfNeuronSections);
+
+extern "C"
+void
+backpropagation_CUDA(PointerHandler* gpuPointer,
+                     SegmentSizes* segmentHeader,
+                     uint32_t* brickOrder,
+                     BrickHeader* bricks,
+                     float* inputTransfers,
+                     float* outputTransfers,
+                     UpdatePosSection* updatePosSections,
+                     const uint32_t numberOfNeuronSections);
+
+extern "C"
+void
+update_CUDA(PointerHandler* gpuPointer,
+            SegmentSizes* segmentHeader,
+            UpdatePosSection* updatePosSections,
+            NeuronSection* neuronSections,
+            SynapseConnection* synapseConnections,
+            NeuronConnection* neuronConnections);
+
 uint32_t counter = 0;
 
 /**
@@ -66,7 +96,8 @@ void
 CpuProcessingUnit::learnSegmentForward(AbstractSegment* segment)
 {
     Kitsunemimi::ErrorContainer error;
-
+    std::chrono::high_resolution_clock::time_point start;
+    std::chrono::high_resolution_clock::time_point end;
     switch(segment->getType())
     {
         case CORE_SEGMENT:
@@ -79,6 +110,16 @@ CpuProcessingUnit::learnSegmentForward(AbstractSegment* segment)
                 KyoukoRoot::gpuInterface->run(*(seg->data), "prcessCoreSegment", error, 10, 64);
                 KyoukoRoot::gpuInterface->run(*(seg->data), "prcessOutput", error, seg->numberOfNeuronSections, 64);
                 KyoukoRoot::gpuInterface->copyFromDevice(*(seg->data), "outputTransfers", error);
+            }
+            else if(KyoukoRoot::useCuda)
+            {
+                processing_CUDA(&seg->gpuPointer,
+                                &seg->segmentSizes,
+                                seg->brickOrder,
+                                seg->brickHeaders,
+                                seg->inputTransfers,
+                                seg->outputTransfers,
+                                seg->numberOfNeuronSections);
             }
             else
             {
@@ -144,6 +185,30 @@ CpuProcessingUnit::learnSegmentBackward(AbstractSegment* segment)
                 std::cout<<"counter: "<<counter<<std::endl;
                 counter++;
             }
+            else if(KyoukoRoot::useCuda)
+            {
+                backpropagation_CUDA(&seg->gpuPointer,
+                                     &seg->segmentSizes,
+                                     seg->brickOrder,
+                                     seg->brickHeaders,
+                                     seg->inputTransfers,
+                                     seg->outputTransfers,
+                                     seg->updatePosSections,
+                                     seg->numberOfNeuronSections);
+
+                if(updateSections(*seg, true))
+                {
+                    update_CUDA(&seg->gpuPointer,
+                                &seg->segmentSizes,
+                                seg->updatePosSections,
+                                seg->neuronSections,
+                                seg->synapseConnections,
+                                seg->neuronConnections);
+                }
+
+                std::cout<<"counter: "<<counter<<std::endl;
+                counter++;
+            }
             else
             {
                 reweightCoreSegment(*seg);
@@ -189,6 +254,16 @@ CpuProcessingUnit::processSegment(AbstractSegment* segment)
                 KyoukoRoot::gpuInterface->run(*(seg->data), "prcessCoreSegment", error, 10, 64);
                 KyoukoRoot::gpuInterface->run(*(seg->data), "prcessOutput", error, seg->numberOfNeuronSections, 64);
                 KyoukoRoot::gpuInterface->copyFromDevice(*(seg->data), "outputTransfers", error);
+            }
+            else if(KyoukoRoot::useCuda)
+            {
+                processing_CUDA(&seg->gpuPointer,
+                                &seg->segmentSizes,
+                                seg->brickOrder,
+                                seg->brickHeaders,
+                                seg->inputTransfers,
+                                seg->outputTransfers,
+                                seg->numberOfNeuronSections);
             }
             else
             {
