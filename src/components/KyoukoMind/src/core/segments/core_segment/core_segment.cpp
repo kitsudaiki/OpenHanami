@@ -74,7 +74,7 @@ getNumberOfNeuronSections(const uint32_t numberOfNeurons)
 extern "C"
 void
 copyToDevice_CUDA(PointerHandler* gpuPointer,
-                  SegmentHeader* segmentHeader,
+                  SegmentSizes* segmentHeader,
                   SegmentSettings* segmentSettings,
                   BrickHeader* brickHeaders,
                   uint32_t* brickOrder,
@@ -100,8 +100,17 @@ CoreSegment::initCuda()
         brickHeaders[i] = bricks[i].header;
     }
 
+    segmentSizes.numberOfBricks = segmentHeader->bricks.count;
+    segmentSizes.numberOfInputTransfers = segmentHeader->inputTransfers.count;
+    segmentSizes.numberOfOutputTransfers = segmentHeader->outputTransfers.count;
+    segmentSizes.numberOfInputs = segmentHeader->inputs.count;
+    segmentSizes.numberOfOutputs = segmentHeader->outputs.count;
+    segmentSizes.numberOfNeuronSections = segmentHeader->neuronSections.count;
+    segmentSizes.numberOfSynapseSections = segmentHeader->synapseSections.count;
+    segmentSizes.numberOfUpdatePosSections = segmentHeader->updatePosSections.count;
+
     copyToDevice_CUDA(&gpuPointer,
-                      segmentHeader,
+                      &segmentSizes,
                       segmentSettings,
                       brickHeaders,
                       brickOrder,

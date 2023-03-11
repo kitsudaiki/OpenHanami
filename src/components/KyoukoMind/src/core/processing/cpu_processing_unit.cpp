@@ -47,7 +47,7 @@
 extern "C"
 void
 processing_CUDA(PointerHandler* gpuPointer,
-                SegmentHeader* segmentHeader,
+                SegmentSizes* segmentHeader,
                 uint32_t* brickOrder,
                 BrickHeader* bricks,
                 float* inputTransfers,
@@ -57,7 +57,7 @@ processing_CUDA(PointerHandler* gpuPointer,
 extern "C"
 void
 backpropagation_CUDA(PointerHandler* gpuPointer,
-                     SegmentHeader* segmentHeader,
+                     SegmentSizes* segmentHeader,
                      uint32_t* brickOrder,
                      BrickHeader* bricks,
                      float* inputTransfers,
@@ -68,7 +68,7 @@ backpropagation_CUDA(PointerHandler* gpuPointer,
 extern "C"
 void
 update_CUDA(PointerHandler* gpuPointer,
-            SegmentHeader* segmentHeader,
+            SegmentSizes* segmentHeader,
             UpdatePosSection* updatePosSections,
             NeuronSection* neuronSections,
             SynapseConnection* synapseConnections,
@@ -114,7 +114,7 @@ CpuProcessingUnit::learnSegmentForward(AbstractSegment* segment)
             else if(KyoukoRoot::useCuda)
             {
                 processing_CUDA(&seg->gpuPointer,
-                                seg->segmentHeader,
+                                &seg->segmentSizes,
                                 seg->brickOrder,
                                 seg->brickHeaders,
                                 seg->inputTransfers,
@@ -188,7 +188,7 @@ CpuProcessingUnit::learnSegmentBackward(AbstractSegment* segment)
             else if(KyoukoRoot::useCuda)
             {
                 backpropagation_CUDA(&seg->gpuPointer,
-                                     seg->segmentHeader,
+                                     &seg->segmentSizes,
                                      seg->brickOrder,
                                      seg->brickHeaders,
                                      seg->inputTransfers,
@@ -199,7 +199,7 @@ CpuProcessingUnit::learnSegmentBackward(AbstractSegment* segment)
                 if(updateSections(*seg, true))
                 {
                     update_CUDA(&seg->gpuPointer,
-                                seg->segmentHeader,
+                                &seg->segmentSizes,
                                 seg->updatePosSections,
                                 seg->neuronSections,
                                 seg->synapseConnections,
@@ -258,7 +258,7 @@ CpuProcessingUnit::processSegment(AbstractSegment* segment)
             else if(KyoukoRoot::useCuda)
             {
                 processing_CUDA(&seg->gpuPointer,
-                                seg->segmentHeader,
+                                &seg->segmentSizes,
                                 seg->brickOrder,
                                 seg->brickHeaders,
                                 seg->inputTransfers,

@@ -1,235 +1,7 @@
 #include <iostream>
 #include <chrono>
 
-#define UUID_STR_LEN	37
-
-// const predefined values
-#define UNINIT_STATE_64 0xFFFFFFFFFFFFFFFF
-#define UNINIT_STATE_32 0xFFFFFFFF
-#define UNINIT_STATE_24 0xFFFFFF
-#define UNINIT_STATE_16 0xFFFF
-#define UNINIT_STATE_8  0xFF
-#define UNINTI_POINT_32 0x0FFFFFFF
-
-// common information
-#define SYNAPSES_PER_SYNAPSESECTION 30
-#define NEURONS_PER_NEURONSECTION 63
-#define NEURON_CONNECTIONS 512
-#define NUMBER_OF_RAND_VALUES 10485760
-#define RAND_MAX 2147483647
-
-enum SegmentTypes
-{
-    UNDEFINED_SEGMENT = 0,
-    INPUT_SEGMENT = 1,
-    OUTPUT_SEGMENT = 2,
-    CORE_SEGMENT = 3,
-};
-
-enum ObjectTypes
-{
-    CLUSTER_OBJECT = 0,
-    SEGMENT_OBJECT = 1,
-};
-
-struct SegmentHeaderEntry
-{
-    uint64_t bytePos = 0;
-    uint64_t count = 0;
-
-    // total size: 16 Byte
-};
-
-struct kuuid
-{
-    char uuid[UUID_STR_LEN];
-    uint8_t padding[3];
-
-    // total size: 40 Bytes
-};
-
-struct Position
-{
-    uint32_t x = UNINTI_POINT_32;
-    uint32_t y = UNINTI_POINT_32;
-    uint32_t z = UNINTI_POINT_32;
-    uint32_t w = UNINTI_POINT_32;
-};
-
-struct SegmentHeader
-{
-    uint8_t objectType = SEGMENT_OBJECT;
-    uint8_t version = 1;
-    uint8_t segmentType = UNDEFINED_SEGMENT;
-    uint8_t padding;
-    uint32_t segmentID = UNINIT_STATE_32;
-    uint64_t staticDataSize = 0;
-    Position position;
-
-    kuuid parentClusterId;
-
-    // synapse-segment
-    SegmentHeaderEntry name;
-    SegmentHeaderEntry settings;
-    SegmentHeaderEntry slotList;
-    SegmentHeaderEntry inputTransfers;
-    SegmentHeaderEntry outputTransfers;
-
-    SegmentHeaderEntry bricks;
-    SegmentHeaderEntry brickOrder;
-    SegmentHeaderEntry neuronSections;
-    SegmentHeaderEntry inputs;
-    SegmentHeaderEntry outputs;
-    SegmentHeaderEntry updatePosSections;
-
-    SegmentHeaderEntry synapseSections;
-
-    uint8_t padding2[246];
-
-    // total size: 512 Byte
-};
-
-//==================================================================================================
-
-typedef struct BrickHeader_struct
-{
-    // common
-    uint brickId;
-    bool isOutputBrick;
-    bool isInputBrick;
-    uint8_t padding1[14];
-    uint neuronSectionPos;
-    uint numberOfNeurons;
-    uint numberOfNeuronSections;
-
-    // total size: 32 Bytes
-} BrickHeader;
-
-//==================================================================================================
-
-typedef struct Neuron_struct
-{
-    float input;
-    float border;
-    float potential;
-    float delta;
-
-    uint8_t refractionTime;
-    uint8_t active;
-    uint8_t padding[6];
-
-    uint targetBorderId;
-    uint targetSectionId;
-
-    // total size: 32 Byte
-} Neuron;
-
-//==================================================================================================
-
-typedef struct NeuronSection_struct
-{
-    Neuron neurons[NEURONS_PER_NEURONSECTION];
-    uint numberOfNeurons;
-    uint brickId;
-    uint backwardNextId;
-    uint8_t padding[20];
-
-    // total size: 2048 Byte
-} NeuronSection;
-
-//==================================================================================================
-
-typedef struct Synapse_struct
-{
-    float weight;
-    float border;
-    ushort targetNeuronId;
-    char activeCounter;
-    uint8_t padding[5];
-    // total size: 16 Byte
-} Synapse;
-
-//==================================================================================================
-
-typedef struct SynapseConnection_struct
-{
-    uint8_t active;
-    uint8_t padding[3];
-
-    float offset;
-    uint randomPos;
-
-    uint forwardNextId;
-    uint backwardNextId;
-
-    uint targetNeuronSectionId;
-    uint sourceNeuronSectionId;
-    uint sourceNeuronId;
-
-    // total size: 32 Byte
-} SynapseConnection;
-
-//==================================================================================================
-
-typedef struct SynapseSection_struct
-{
-    SynapseConnection connection;
-
-    Synapse synapses[SYNAPSES_PER_SYNAPSESECTION];
-    // total size: 512 Byte
-} SynapseSection;
-
-//==================================================================================================
-
-typedef struct UpdatePos_struct
-{
-    uint type;
-    uint randomPos;
-    float offset;
-    uint8_t padding[4];
-    // total size: 16 Byte
-} UpdatePos;
-
-//==================================================================================================
-
-typedef struct UpdatePosSection_struct
-{
-    UpdatePos positions[NEURONS_PER_NEURONSECTION];
-    uint numberOfPositions;
-    uint8_t padding[12];
-    // total size: 1024 Byte
-} UpdatePosSection;
-
-//==================================================================================================
-
-typedef struct SegmentSettings
-{
-    ulong maxSynapseSections;
-    float synapseDeleteBorder;
-    float neuronCooldown;
-    float memorizing;
-    float gliaValue;
-    float signNeg;
-    float potentialOverflow;
-    float synapseSegmentation;
-    float backpropagationBorder;
-    uint8_t refractionTime;
-    uint8_t doLearn;
-    uint8_t updateSections;
-
-    uint8_t padding[213];
-
-    // total size: 256 Byte
-} SegmentSettings;
-
-//==================================================================================================
-
-typedef struct NeuronSynapseConnection_struct
-{
-    uint backwardIds[NEURON_CONNECTIONS];
-    // total size: 2048 Byte
-} NeuronConnection;
-
+#include "objects.h"
 
 //==================================================================================================
 //==================================================================================================
@@ -691,7 +463,7 @@ struct PointerHandler
 extern "C"
 void
 copyToDevice_CUDA(PointerHandler* gpuPointer,
-                  SegmentHeader* segmentHeader,
+                  SegmentSizes* segmentHeader,
                   SegmentSettings* segmentSettings,
                   BrickHeader* brickHeaders,
                   uint32_t* brickOrder,
@@ -704,36 +476,36 @@ copyToDevice_CUDA(PointerHandler* gpuPointer,
                   float* outputTransfers,
                   uint32_t* randomValues)
 {
-    cudaMalloc(&gpuPointer->bricks,             segmentHeader->bricks.count             * sizeof(BrickHeader));
-    cudaMalloc(&gpuPointer->brickOrder,         segmentHeader->brickOrder.count         * sizeof(uint32_t));
-    cudaMalloc(&gpuPointer->neuronSections,     segmentHeader->neuronSections.count     * sizeof(NeuronSection));
-    cudaMalloc(&gpuPointer->synapseSections,    segmentHeader->synapseSections.count    * sizeof(SynapseSection));
-    cudaMalloc(&gpuPointer->segmentSettings,    1                                       * sizeof(SegmentSettings));
-    cudaMalloc(&gpuPointer->inputTransfers,     segmentHeader->inputTransfers.count     * sizeof(float));
-    cudaMalloc(&gpuPointer->outputTransfers,    segmentHeader->outputTransfers.count    * sizeof(float));
-    cudaMalloc(&gpuPointer->updatePosSections,  segmentHeader->updatePosSections.count  * sizeof(UpdatePosSection));
-    cudaMalloc(&gpuPointer->randomValues,       NUMBER_OF_RAND_VALUES                   * sizeof(uint32_t));
-    cudaMalloc(&gpuPointer->neuronConnections,  segmentHeader->neuronSections.count     * sizeof(NeuronConnection));
-    cudaMalloc(&gpuPointer->synapseConnections, segmentHeader->synapseSections.count    * sizeof(SynapseConnection));
+    cudaMalloc(&gpuPointer->bricks,             segmentHeader->numberOfBricks             * sizeof(BrickHeader));
+    cudaMalloc(&gpuPointer->brickOrder,         segmentHeader->numberOfBricks             * sizeof(uint32_t));
+    cudaMalloc(&gpuPointer->neuronSections,     segmentHeader->numberOfNeuronSections     * sizeof(NeuronSection));
+    cudaMalloc(&gpuPointer->synapseSections,    segmentHeader->numberOfSynapseSections    * sizeof(SynapseSection));
+    cudaMalloc(&gpuPointer->segmentSettings,    1                                         * sizeof(SegmentSettings));
+    cudaMalloc(&gpuPointer->inputTransfers,     segmentHeader->numberOfInputTransfers     * sizeof(float));
+    cudaMalloc(&gpuPointer->outputTransfers,    segmentHeader->numberOfOutputTransfers    * sizeof(float));
+    cudaMalloc(&gpuPointer->updatePosSections,  segmentHeader->numberOfUpdatePosSections  * sizeof(UpdatePosSection));
+    cudaMalloc(&gpuPointer->randomValues,       NUMBER_OF_RAND_VALUES                     * sizeof(uint32_t));
+    cudaMalloc(&gpuPointer->neuronConnections,  segmentHeader->numberOfNeuronSections     * sizeof(NeuronConnection));
+    cudaMalloc(&gpuPointer->synapseConnections, segmentHeader->numberOfSynapseSections    * sizeof(SynapseConnection));
 
-    cudaMemcpy(gpuPointer->bricks,             brickHeaders,       segmentHeader->bricks.count            * sizeof(BrickHeader),       cudaMemcpyHostToDevice);
-    cudaMemcpy(gpuPointer->brickOrder,         brickOrder,         segmentHeader->brickOrder.count        * sizeof(uint32_t),          cudaMemcpyHostToDevice);
-    cudaMemcpy(gpuPointer->neuronSections,     neuronSections,     segmentHeader->neuronSections.count    * sizeof(NeuronSection),     cudaMemcpyHostToDevice);
-    cudaMemcpy(gpuPointer->synapseSections,    synapseSections,    segmentHeader->synapseSections.count   * sizeof(SynapseSection),    cudaMemcpyHostToDevice);
-    cudaMemcpy(gpuPointer->segmentSettings,    segmentSettings,    1                                      * sizeof(SegmentSettings),   cudaMemcpyHostToDevice);
-    cudaMemcpy(gpuPointer->inputTransfers,     inputTransfers,     segmentHeader->inputTransfers.count    * sizeof(float),             cudaMemcpyHostToDevice);
-    cudaMemcpy(gpuPointer->outputTransfers,    outputTransfers,    segmentHeader->outputTransfers.count   * sizeof(float),             cudaMemcpyHostToDevice);
-    cudaMemcpy(gpuPointer->updatePosSections,  updatePosSections,  segmentHeader->updatePosSections.count * sizeof(UpdatePosSection),  cudaMemcpyHostToDevice);
-    cudaMemcpy(gpuPointer->randomValues,       randomValues,       NUMBER_OF_RAND_VALUES                  * sizeof(uint32_t),          cudaMemcpyHostToDevice);
-    cudaMemcpy(gpuPointer->neuronConnections,  neuronConnections,  segmentHeader->neuronSections.count    * sizeof(NeuronConnection),  cudaMemcpyHostToDevice);
-    cudaMemcpy(gpuPointer->synapseConnections, synapseConnections, segmentHeader->synapseSections.count   * sizeof(SynapseConnection), cudaMemcpyHostToDevice);
+    cudaMemcpy(gpuPointer->bricks,             brickHeaders,       segmentHeader->numberOfBricks            * sizeof(BrickHeader),       cudaMemcpyHostToDevice);
+    cudaMemcpy(gpuPointer->brickOrder,         brickOrder,         segmentHeader->numberOfBricks            * sizeof(uint32_t),          cudaMemcpyHostToDevice);
+    cudaMemcpy(gpuPointer->neuronSections,     neuronSections,     segmentHeader->numberOfNeuronSections    * sizeof(NeuronSection),     cudaMemcpyHostToDevice);
+    cudaMemcpy(gpuPointer->synapseSections,    synapseSections,    segmentHeader->numberOfSynapseSections   * sizeof(SynapseSection),    cudaMemcpyHostToDevice);
+    cudaMemcpy(gpuPointer->segmentSettings,    segmentSettings,    1                                        * sizeof(SegmentSettings),   cudaMemcpyHostToDevice);
+    cudaMemcpy(gpuPointer->inputTransfers,     inputTransfers,     segmentHeader->numberOfInputTransfers    * sizeof(float),             cudaMemcpyHostToDevice);
+    cudaMemcpy(gpuPointer->outputTransfers,    outputTransfers,    segmentHeader->numberOfOutputTransfers   * sizeof(float),             cudaMemcpyHostToDevice);
+    cudaMemcpy(gpuPointer->updatePosSections,  updatePosSections,  segmentHeader->numberOfUpdatePosSections * sizeof(UpdatePosSection),  cudaMemcpyHostToDevice);
+    cudaMemcpy(gpuPointer->randomValues,       randomValues,       NUMBER_OF_RAND_VALUES                    * sizeof(uint32_t),          cudaMemcpyHostToDevice);
+    cudaMemcpy(gpuPointer->neuronConnections,  neuronConnections,  segmentHeader->numberOfNeuronSections    * sizeof(NeuronConnection),  cudaMemcpyHostToDevice);
+    cudaMemcpy(gpuPointer->synapseConnections, synapseConnections, segmentHeader->numberOfSynapseSections   * sizeof(SynapseConnection), cudaMemcpyHostToDevice);
 }
 
 
 extern "C"
 void
 processing_CUDA(PointerHandler* gpuPointer,
-                SegmentHeader* segmentHeader,
+                SegmentSizes* segmentHeader,
                 uint32_t* brickOrder,
                 BrickHeader* bricks,
                 float* inputTransfers,
@@ -742,7 +514,7 @@ processing_CUDA(PointerHandler* gpuPointer,
 {
     cudaMemcpy(gpuPointer->inputTransfers,
                inputTransfers,
-               segmentHeader->inputTransfers.count * sizeof(float),
+               segmentHeader->numberOfInputTransfers * sizeof(float),
                cudaMemcpyHostToDevice);
 
     prcessInputKernel<<<numberOfNeuronSections, NEURONS_PER_NEURONSECTION>>>(
@@ -751,8 +523,7 @@ processing_CUDA(PointerHandler* gpuPointer,
         gpuPointer->updatePosSections,
         gpuPointer->inputTransfers);
 
-    const uint32_t numberOfBricks = segmentHeader->bricks.count;
-    for(uint32_t pos = 0; pos < numberOfBricks; pos++)
+    for(uint32_t pos = 0; pos < segmentHeader->numberOfBricks; pos++)
     {
         const uint32_t brickId = brickOrder[pos];
         BrickHeader* brick = &bricks[brickId];
@@ -788,14 +559,14 @@ processing_CUDA(PointerHandler* gpuPointer,
     cudaDeviceSynchronize();
     cudaMemcpy(outputTransfers,
                gpuPointer->outputTransfers,
-               segmentHeader->outputTransfers.count * sizeof(float),
+               segmentHeader->numberOfOutputTransfers * sizeof(float),
                cudaMemcpyDeviceToHost);
 }
 
 extern "C"
 void
 backpropagation_CUDA(PointerHandler* gpuPointer,
-                     SegmentHeader* segmentHeader,
+                     SegmentSizes* segmentHeader,
                      uint32_t* brickOrder,
                      BrickHeader* bricks,
                      float* inputTransfers,
@@ -805,7 +576,7 @@ backpropagation_CUDA(PointerHandler* gpuPointer,
 {
     cudaMemcpy(gpuPointer->inputTransfers,
                inputTransfers,
-               segmentHeader->inputTransfers.count * sizeof(float),
+               segmentHeader->numberOfInputTransfers * sizeof(float),
                cudaMemcpyHostToDevice);
 
     reweightOutputKernel<<<numberOfNeuronSections, NEURONS_PER_NEURONSECTION>>> (
@@ -813,8 +584,7 @@ backpropagation_CUDA(PointerHandler* gpuPointer,
         gpuPointer->neuronSections,
         gpuPointer->inputTransfers);
 
-    const uint32_t numberOfBricks = segmentHeader->bricks.count;
-    for(int32_t pos = numberOfBricks - 1; pos >= 0; pos--)
+    for(int32_t pos = segmentHeader->numberOfBricks - 1; pos >= 0; pos--)
     {
         const uint32_t brickId = brickOrder[pos];
         reweightCoreSegmentKernel<<<numberOfNeuronSections, 64>>>(
@@ -831,18 +601,18 @@ backpropagation_CUDA(PointerHandler* gpuPointer,
     cudaDeviceSynchronize();
     cudaMemcpy(outputTransfers,
                gpuPointer->outputTransfers,
-               segmentHeader->outputTransfers.count * sizeof(float),
+               segmentHeader->numberOfOutputTransfers * sizeof(float),
                cudaMemcpyDeviceToHost);
     cudaMemcpy(updatePosSections,
                gpuPointer->updatePosSections,
-               segmentHeader->updatePosSections.count * sizeof(UpdatePosSection),
+               segmentHeader->numberOfUpdatePosSections * sizeof(UpdatePosSection),
                cudaMemcpyDeviceToHost);
 }
 
 extern "C"
 void
 update_CUDA(PointerHandler* gpuPointer,
-            SegmentHeader* segmentHeader,
+            SegmentSizes* segmentHeader,
             UpdatePosSection* updatePosSections,
             NeuronSection* neuronSections,
             SynapseConnection* synapseConnections,
@@ -850,21 +620,21 @@ update_CUDA(PointerHandler* gpuPointer,
 {
     cudaMemcpy(gpuPointer->updatePosSections,
                updatePosSections,
-               segmentHeader->updatePosSections.count * sizeof(UpdatePosSection),
+               segmentHeader->numberOfUpdatePosSections * sizeof(UpdatePosSection),
                cudaMemcpyHostToDevice);
 
     cudaMemcpy(gpuPointer->neuronSections,
                neuronSections,
-               segmentHeader->neuronSections.count * sizeof(NeuronSection),
+               segmentHeader->numberOfNeuronSections * sizeof(NeuronSection),
                cudaMemcpyHostToDevice);
 
     cudaMemcpy(gpuPointer->synapseConnections,
                synapseConnections,
-               segmentHeader->synapseSections.count * sizeof(SynapseConnection),
+               segmentHeader->numberOfSynapseSections * sizeof(SynapseConnection),
                cudaMemcpyHostToDevice);
 
     cudaMemcpy(gpuPointer->neuronConnections,
                neuronConnections,
-               segmentHeader->neuronSections.count * sizeof(NeuronConnection),
+               segmentHeader->numberOfNeuronSections * sizeof(NeuronConnection),
                cudaMemcpyHostToDevice);
 }

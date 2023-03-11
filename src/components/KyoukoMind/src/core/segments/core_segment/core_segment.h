@@ -70,6 +70,7 @@ public:
     SynapseConnection* synapseConnections = nullptr;
     NeuronConnection* neuronConnections = nullptr;
     BrickHeader* brickHeaders = nullptr;
+    SegmentSizes segmentSizes;
 
     uint32_t numberOfNeuronSections = 1;
     PointerHandler gpuPointer;
