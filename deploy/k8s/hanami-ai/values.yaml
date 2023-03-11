@@ -15,7 +15,7 @@ token:
 
 docker:
   tag: "develop"
-
+  registry: "kitsudaiki"
 
 resources: {}
 

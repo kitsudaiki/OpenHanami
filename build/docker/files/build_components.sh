@@ -1,10 +1,10 @@
-REGISTRY=kitsudaiki
-GIT_TAG="style/create-monorepo-by-replacing-submodules"
-DOCKER_TAG="test"
+REGISTRY="kitsudaiki"
+GIT_TAG="develop"
+DOCKER_TAG="develop"
 
 # base
 cd /dockerbuilder
-docker build -t $REGISTRY/hanami_ai_base:$DOCKER_TAG -f Dockerfile_base .
+docker build -t kitsudaiki/hanami_ai_base:develop -f Dockerfile_base .
 
 git clone https://github.com/kitsudaiki/Hanami-AI.git
 cd /dockerbuilder/Hanami-AI

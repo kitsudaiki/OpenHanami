@@ -1,4 +1,4 @@
-FROM registry.kitsunemimi.moe:5000/hanami_ai_base:0.1.0
+FROM kitsudaiki/hanami_ai_base:develop
 
 RUN mkdir -p /etc/torii
 COPY Hanami-AI/src/components/ToriiGateway/ToriiGateway /usr/bin/ToriiGateway

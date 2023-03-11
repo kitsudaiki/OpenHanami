@@ -1,7 +1,10 @@
-REGISTRY=kitsudaiki
+REGISTRY="kitsudaiki"
 TAG=develop
 
-docker push $REGISTRY/hanami_ai_base:$TAG
+# HINT (kitsudaiki): base-image is only pushed for the ci-pipeline,
+#                    so it always has the develop-tag. So this is not a bug.
+docker push $REGISTRY/hanami_ai_base:develop
+
 docker push $REGISTRY/kyouko_mind:$TAG
 docker push $REGISTRY/misaki_guard:$TAG
 docker push $REGISTRY/azuki_heart:$TAG
