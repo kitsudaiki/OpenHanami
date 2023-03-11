@@ -55,6 +55,7 @@ public:
     static std::string* componentToken;
     static Kitsunemimi::GpuInterface* gpuInterface;
     static bool useGpu;
+    static bool useCuda;
 
 private:
     uint32_t m_serverId = 0;

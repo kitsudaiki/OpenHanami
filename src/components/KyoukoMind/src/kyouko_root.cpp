@@ -62,6 +62,7 @@ Kitsunemimi::GpuInterface* KyoukoRoot::gpuInterface = nullptr;
 
 // static flag to switch to experimental gpu-support (see issue #44 and #76)
 bool KyoukoRoot::useGpu = false;
+bool KyoukoRoot::useCuda = false;
 
 /**
  * @brief KyoukoRoot::KyoukoRoot

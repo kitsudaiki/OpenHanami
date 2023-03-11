@@ -20,7 +20,7 @@ jobs:
       - name: "update package-list"
         run: apt-get update
       - name: "install missing packages"
-        run: apt-get install -y libssl-dev libcrypto++-dev libboost1.74-dev uuid-dev  libsqlite3-dev protobuf-compiler protobuf-compiler
+        run: apt-get install -y libssl-dev libcrypto++-dev libboost1.74-dev uuid-dev  libsqlite3-dev protobuf-compiler protobuf-compiler nvidia-cuda-toolkit
       - name: "Build project"
         run:  |
           cd ${GITHUB_REPOSITORY#*/}
