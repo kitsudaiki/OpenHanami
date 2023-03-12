@@ -60,13 +60,6 @@ ToriiGateway::init()
         return false;
     }
 
-    if(initSakuraServer() == false)
-    {
-        error.addMeesage("initializing sakura-server failed");
-        LOG_ERROR(error);
-        return false;
-    }
-
     return true;
 }
 
@@ -105,35 +98,6 @@ ToriiGateway::initHttpServer()
         httpWebsocketThread->startThread();
         m_threads.push_back(httpWebsocketThread);
     }
-
-    return true;
-}
-
-/**
- * @brief initialze sakura server
- *
- * @return true, if successful, else false
- */
-bool
-ToriiGateway::initSakuraServer()
-{
-    bool success = false;
-
-    // check if sakura-server is enabled
-    if(GET_BOOL_CONFIG("sakura", "enable", success) == false) {
-        return true;
-    }
-
-    // get stuff from config
-    const uint16_t port =    GET_INT_CONFIG(    "sakura", "port",        success);
-    const std::string ip =   GET_STRING_CONFIG( "sakura", "ip",          success);
-    const std::string cert = GET_STRING_CONFIG( "sakura", "certificate", success);
-    const std::string key =  GET_STRING_CONFIG( "sakura", "key",         success);
-
-    // create server
-    Kitsunemimi::ErrorContainer error;
-    HanamiMessaging* messaging = HanamiMessaging::getInstance();
-    messaging->addServer(ip, error, port, cert, key);
 
     return true;
 }

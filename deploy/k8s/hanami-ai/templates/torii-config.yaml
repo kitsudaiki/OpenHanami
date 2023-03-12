@@ -8,13 +8,6 @@ data:
     log_path = "/var/log/torii"
     address = "/tmp/hanami/torii.uds"
 
-    [sakura]
-    enable = True
-    ip = "0.0.0.0"
-    certificate = "/etc/torii/cert.pem"
-    key = "/etc/torii/key.pem"
-    port = 1338
-
     [http]
     enable = True
     ip = "0.0.0.0"
