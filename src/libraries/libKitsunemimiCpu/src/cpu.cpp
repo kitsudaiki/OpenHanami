@@ -200,7 +200,7 @@ getNumberOfCpuThreads(uint64_t &result,
                       ErrorContainer &error)
 {
     // get info from requested file
-    const std::string filePath = "/sys/devices/system/cpu/possible";
+    const std::string filePath = "/sys/devices/system/cpu/present";
     const std::string info = getInfo(filePath, error);
     if(info == "")
     {
