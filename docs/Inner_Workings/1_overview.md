@@ -19,31 +19,31 @@
 - **Kyouko**
     - Content: Core-component, which holds the artificial neuronal networks.
     - Documentation: [Kyouko-internal](/Inner_Workings/3_kyouko/).
-    - Repository: https://github.com/kitsudaiki/KyoukoMind.git
+    - Directory: https://github.com/kitsudaiki/Hanami-AI/tree/develop/src/components/KyoukoMind
 
 - **Misaki**
     - Content: Authentication-service and management of user
     - Documentation: [Misaki-internal](/Inner_Workings/6_misaki/).
-    - Repository: https://github.com/kitsudaiki/MisakiGuard.git
+    - Directory: https://github.com/kitsudaiki/Hanami-AI/tree/develop/src/components/MisakiGuard
 
 - **Shiori**
     - Content: Storage-component, which holds snapshots, logs and so on
     - Documentation: [Shiori-internal](/Inner_Workings/5_shiori/).
-    - Repository: https://github.com/kitsudaiki/ShioriArchive.git
+    - Directory: https://github.com/kitsudaiki/Hanami-AI/tree/develop/src/components/ShioriArchive
 
 - **Azuki**
     - Content: Monitoring and energy-optimization
     - Documentation: [Azuki-internal](/Inner_Workings/4_azuki/).
-    - Repository: https://github.com/kitsudaiki/AzukiHeart.git
+    - Directory: https://github.com/kitsudaiki/Hanami-AI/tree/develop/src/components/AzukiHeart
 
 - **Torii**
     - Content: Proxy for all incoming connections
     - Documentation: [Torii-internal](/Inner_Workings/7_torii/).
-    - Repository: https://github.com/kitsudaiki/ToriiGateway.git
+    - Directory: https://github.com/kitsudaiki/Hanami-AI/tree/develop/src/components/ToriiGateway
 
 - **Tsugumi**
     - Content: Test-Tool to test the API-endpoints with the help of the SDK-library
-    - Repository: https://github.com/kitsudaiki/TsugumiTester.git
+    - Directory: https://github.com/kitsudaiki/Hanami-AI/tree/develop/src/components/TsugumiTester
 
 !!! info
 

@@ -6,7 +6,7 @@ For the installation on a kubernetes `helm` is used.
 
 !!! info
 
-    The installation process is also very only basic at the moment. Usage of statefulsets, cert-manager and node-labels coming with version `0.2.0`. Other things later.
+    The installation process is also very only basic at the moment. Usage of statefulsets, cert-manager and node-labels coming in the near future.
 
 ### Requirements
 

@@ -4,21 +4,17 @@
 
 The dashboard is one way to interact with Hanami-AI. It is client-only and the files are provided by the [Torii](/Inner_Workings/7_torii/).
 
-!!! info
-    
-    The color-schema of the dashboard is based on the name of the project. The colors should be related to white and pink cherry-blossoms in the night. That's why there are white and pink on a dark background. 
-
 !!! warning
 
     Only tested on Firefox at the moment.
 
-!!! note "Personal note"
-
-    I also tried my best to follow the 60-30-10 rule, but I think more white is still needed. This is my first web-application, so it may be not the best user-experience and I already know, that there are many points for improvements. But i think for the first try it is not bad. Feel free to give me further tipps for optical improvements.
-
 !!! info
 
     Repository with source-code of the dashboard: https://github.com/kitsudaiki/Hanami-AI-Dashboard
+
+!!! info
+
+    The actual dashboard is only a first prototypical implementation with many minor bugs and problems. There is a rework planned for version 0.4.0.
 
 
 ## Example workflow
@@ -132,7 +128,7 @@ See basic explanation of the [templates](/Inner_Workings/3_kyouko/#templates)
 
     ```
     version: 1
-    segment_type: dynamic_segment
+    segment_type: core_segment
     settings:
         max_synapse_sections: 100000
         synapse_segmentation: 7
@@ -204,10 +200,6 @@ This switch the window to the overview of all Tasks for the `Cluster`. With the 
 
 In the new window you can give it a name (**1**) and say that the cluster should learn data (**2**). (**3**) is deprecated and not necessary anymore. The type of the dataset doesn't have to be explicit specified.
 
-!!! note
-
-    That the type of the data-set has to be set manually is bad usability and will be fixed with version `0.2.0`, when the endpoint of the tasks will be changed.
-
 Then select the data-set in the dropdown menu (**4**) and accept again (**5**).
 
 ![step14](../img/dashboard/step14.png)
@@ -220,7 +212,7 @@ After this a few more of the same task can be created to improve the learn-resul
 
 !!! note
 
-    With version `0.2.0` it will be also possible to define multiple runs to avoid this manually created of multiple tasks. Originally this project was only developed with the SDK-library and Tsugumi as test-tool, where multiple tasks can easily created with a for-loop. So this user-impact only appeared in the Dashboard, which is the reason, why it is at the moment like it is.
+    With version `0.3.0` it will be also possible to define multiple runs to avoid this manually created of multiple tasks. Originally this project was only developed with the SDK-library and Tsugumi as test-tool, where multiple tasks can easily created with a for-loop. So this user-impact only appeared in the Dashboard, which is the reason, why it is at the moment like it is.
 
 ![step16](../img/dashboard/step16_x.png)
 
