@@ -80,7 +80,13 @@ prcessOutputSegment(const OutputSegment &segment)
     {
         neuron = &segment.outputs[outputNeuronId];
         neuron->outputWeight = segment.inputTransfers[neuron->targetBorderId];
-        neuron->outputWeight = 1.0f / (1.0f + exp(-1.0f * neuron->outputWeight));
+
+        // neuron->outputWeight == 0.0f means that there is no signal coming and to a back
+        // propagation would not work anyway. Because of this, it is possible, that there is
+        // in input and also no output desired
+        if(neuron->outputWeight != 0.0f) {
+            neuron->outputWeight = 1.0f / (1.0f + exp(-1.0f * neuron->outputWeight));
+        }
     }
 
     // send output back if a client-connection is set
