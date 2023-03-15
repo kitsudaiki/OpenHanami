@@ -14,7 +14,7 @@ token:
   expire_time: 3600
 
 docker:
-  tag: "develop"
+  tag: "0.2.0"
   registry: "kitsudaiki"
 
 resources: {}

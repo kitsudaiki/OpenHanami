@@ -54,27 +54,27 @@ for more details see [Documentation inner workings](/Inner_Workings/1_overview/)
 
 - **Kyouko**
     - Content: Core-component, which holds the artificial neuronal networks.
-    - prebuild Docker-Image: `kitsudaiki/kyouko_mind:develop`
+    - prebuild Docker-Image: `kitsudaiki/kyouko_mind:0.2.0`
 
 - **Misaki**
     - Content: Authentication-service and management of user
-    - prebuild Docker-Image: `kitsudaiki/misaki_guard:develop`
+    - prebuild Docker-Image: `kitsudaiki/misaki_guard:0.2.0`
 
 - **Shiori**
     - Content: Storage-component, which holds snapshots, logs and so on
-    - prebuild Docker-Image: `kitsudaiki/shiori_archive:develop`
+    - prebuild Docker-Image: `kitsudaiki/shiori_archive:0.2.0`
 
 - **Azuki**
     - Content: Monitoring and energy-optimization
-    - prebuild Docker-Image: `kitsudaiki/azuki_heart:develop`
+    - prebuild Docker-Image: `kitsudaiki/azuki_heart:0.2.0`
 
 - **Torii**
     - Content: Proxy for all incoming connections
-    - prebuild Docker-Image: `kitsudaiki/torii_gateway:develop`
+    - prebuild Docker-Image: `kitsudaiki/torii_gateway:0.2.0`
 
 - **Dashboard**
     - Content: Web-Frontend
-    - prebuild Docker-Image: `kitsudaiki/hanami_ai_dashboard:develop`
+    - prebuild Docker-Image: `kitsudaiki/hanami_ai_dashboard:0.2.0`
 
 ## Roadmap
 
