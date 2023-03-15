@@ -18,6 +18,7 @@ Hanami-AI is an AI-as-a-Service project, based on a concept created by myself. I
 The actual prototype consists of:
 
 - partially implementation of an own concept for an artificial neuronal network. It has no fixed connections between the nodes, but creates connections over time while learning. Additionally it doesn't need a normalization of input-values and this way it can also handle unknown data as input. This should make it flexible and efficient. The current state is extremely experimental.
+- very experimental but working GPU-support with CUDA and OpenCL
 - multi-user- and multi-project-support, so multiple-users can share the same physical host
 - basic energy-optimization supporting the scheduling of threads of all components and changing the cpu-frequency based on workload
 - basic monitoring of cpu-load
@@ -38,10 +39,6 @@ https://docs.hanami-ai.com
 - To get a first impression there is a first example-workflow via the dashboard:
 
     https://docs.hanami-ai.com/How_To/2_dashboard/
-
-- For the naming at some points look into the Glossar:
-
-    https://docs.hanami-ai.com/other/2_glossar/
 
 - Even it is quite basic for now, there are also some internal workflow and tasks of the single components described:
 
@@ -81,17 +78,32 @@ for more details see [Documentation inner workings](/Inner_Workings/1_overview/)
 
 ## Roadmap
 
-- [ ] improve documentation
-- [ ] Open-API REST-documentation
+- **0.1.0**
+    - first prototype with basic feature-set
 
-- learning-process:
-    - [ ] GPU-support
-    - [ ] allow to use it as spiking-neuronal-network
-    - [ ] remove strict layer-structure, which is still enforced by hard configuration at the moment
-    - [ ] build 3-dimensional networks
-    - [ ] add classical static neuronal networks
+- **0.2.0**
+    - merge all involved repositories into the main-repository
+    - internal restructures, primary for the GPU-support
+    - experimental GPU-support wiht CUDA and OpenCL (disabled at the moment)
+    - general minor improvements
 
-- [ ] Multi-Node-Setups
+- **0.3.0**
+    - *desired date*: Q3 2023
+    - *content*: 
+        - complete implementation of the core-concept and further evaluation and improvement of the learning-process:
+            - allow to use it as spiking-neuronal-network
+            - remove strict layer-structure, which is still enforced by hard configuration at the moment
+            - build 3-dimensional networks
+            - re-add the old reduction-process again
+        - further evaluation and improving of the core-process
+        - make GPU-support usable
+
+- **0.4.0**
+    - *desired date*: Q4 2023
+    - *content*: 
+        - first Multi-Node-Setup
+        - rework dashboard
+
 
 ## Issue-Overview
 
@@ -123,14 +135,14 @@ git submodule update --recursive
 
 ## Author
 
-Tobias Anker
+**Tobias Anker**
 
 eMail: tobias.anker@kitsunemimi.moe
 
 ## License
 
-The complete project is under Apache 2 license.
+The complete project is under [Apache 2 license](https://github.com/kitsudaiki/Hanami-AI/blob/develop/LICENSE).
 
 ## Contributing
 
-I'm happy, if you find the project interesting enough to contribute code. In this case, please wait until version `0.2.0`, because there are many API- and Database-breaking changes on the project. Additionally until `0.2.0` I will also provide a Code-Styling-Guide (at least for the C++-backend).
+If you want to contribute things to this project, then I'm really happy about this. Please restrict this for the moment to bug-reports and feature-requests. Use the issue-templates for this. You can also place questions by these issues, if you want some information about parts of the project or if you want to try it out and need some help.

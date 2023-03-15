@@ -1,5 +1,45 @@
 # Dependencies
 
+## Packages
+
+Installed packages under the actual used Ubuntu 22.04
+
+### Build
+
+| apt-package | Purpose |
+| --- | --- |
+| gcc | C-compiler |
+| g++  | C++-compiler |
+| make  | Build-Tool |
+| qt5-qmake  | Qt-specific build-tool, because pro-files are used |
+| bison  | Parser-Generator |
+| flex  | Lexxer for the Parser-Generator |
+| xxd | Transform file with OpenCL-Kernel into a string-variable within a header-file |
+| libssl-dev | ssl-library for TCS-encryption of network-connections |
+| libcrypto++-dev | HMAC, SHA256 and other crypto related operations |
+| libboost1.74-dev | Provides the Beast-library of Boost, which is used for the REST-API within the Torii |
+| uuid-dev  | Generate UUID's within the code |
+| libsqlite3-dev | Library to interact with the SQLite3 databases |
+| protobuf-compiler | Convert protobuf-files into source-code |
+| ocl-icd-opencl-dev | Library for the OpenCL-Code |
+| opencl-headers | Headers for OpenCL |
+| nvidia-cuda-toolkit | Libraries and compiler for the CUDA-Kernel |
+
+
+### Runtime
+
+| apt-package | Purpose |
+| --- | --- |
+| openssl | ssl-library for TCS-encryption of network-connections | 
+| libuuid1  | Generate UUID's within the code | 
+| libcrypto++8  | HMAC, SHA256 and other crypto related operations | 
+| libsqlite3-0  | Library to interact with the SQLite3 databases | 
+| libprotobuf23 | Runtime-library for protobuffers | 
+| libboost1.74 | Provides the Beast-library of Boost, which is used for the REST-API within the Torii |
+| rst2pdf | Used in case of downloading a REST-API-Docu as pdf-file by converting a rst-file into a pdf | 
+| ocl-icd-libopencl1 | Runtime-library for OpenCL | 
+| libcudart11.0 | Runtime-library for CUDA | 
+
 ## Overview
 
 The following diagramm shows the basic relations of the library and tools with each other.
@@ -84,32 +124,6 @@ I know, this is not a valid UML-diagram or something like this. It should old vi
 ??? question "Why the libraries are names `libKitsunemimi...`"
 
     Originally I searched for a name schema for the libraries to differentiation them from other libraries. For this and because my private domain was already `kitsunemimi.moe`, I decided to name my libraries `libKitsunemimi...`, because kitsunemimi are moe. ;) 
-
-## Build-requirements
-
-### C++
-
-**Required build tools**
-
-name | repository | version | task
---- | --- | --- | ---
-g++ | g++ | >= 8.0 | Compiler for the C++ code.
-make | make | >= 4.0 | process the make-file, which is created by qmake to build the programm with g++
-qmake | qt5-qmake | >= 5.0 | This package provides the tool qmake, which is similar to cmake and create the make-file for compilation.
-FLEX | flex | >= 2.6 | Build the lexer-code for all used parser.
-GNU Bison | bison | >= 3.0 | Build the parser-code together with the lexer-code.
-xxd | xxd | >= 1.10 | converts text files into source code files, which is used to complile the OpenCl-kernel file into the source-code.
-
-**Required generic libraries**
-
-name | repository | version | task
---- | --- | --- | ---
-ssl library | libssl-dev | 1.1.x | encryption for tls connections
-crpyto++ | libcrypto++-dev | >= 5.6 | provides encryption-functions like AES
-uuid | uuid-dev | >= 2.34 | generate uuid's
-sqlite3 library | libsqlite3-dev | >= 3.0 | handling of sqlite databases
-opencl-headers  | opencl-headers | 2.x | Header-files for opencl
-ocl-icd-opencl-dev | ocl-icd-opencl-dev | 2.x | libraries for opencl
 
 ## Directories
 

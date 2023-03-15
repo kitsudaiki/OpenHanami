@@ -32,6 +32,7 @@ Hanami-AI is basically an AI-as-a-Service project, based on a concept created by
 The actual prototype consists of:
 
 - partially implementation of an own concept for an artificial neuronal network. It has no fixed connections between the nodes, but creates connections over time while learning. Additionally it doesn't need a normalization of input-values and this way it can also handle unknown data as input. This should make it flexible and efficient. The current state is extremely experimental.
+- very experimental but working GPU-support with CUDA and OpenCL
 - multi-user- and multi-project-support, so multiple-users can share the same physical host
 - basic energy-optimization supporting the scheduling of threads of all components and changing the cpu-frequency based on workload
 - basic monitoring of cpu-load
@@ -117,63 +118,61 @@ for more details see [Documentation inner workings](/Inner_Workings/1_overview/)
 
 - **Kyouko**
     - Content: Core-component, which holds the artificial neuronal networks.
-    - Repository: [KyoukoMind](https://github.com/kitsudaiki/KyoukoMind.git)
-    - prebuild Docker-Image: `kitsudaiki/kyouko_mind`
+    - Repository: [KyoukoMind](https://github.com/kitsudaiki/Hanami-AI/tree/develop/src/components/KyoukoMind)
+    - prebuild Docker-Image: `kitsudaiki/kyouko_mind:develop`
 
 - **Misaki**
     - Content: Authentication-service and management of user
-    - Repository: [MisakiGuard](https://github.com/kitsudaiki/MisakiGuard.git)
-    - prebuild Docker-Image: `kitsudaiki/misaki_guard`
+    - Repository: [MisakiGuard](https://github.com/kitsudaiki/Hanami-AI/tree/develop/src/components/Misaki)
+    - prebuild Docker-Image: `kitsudaiki/misaki_guard:develop`
 
 - **Shiori**
     - Content: Storage-component, which holds snapshots, logs and so on
-    - Repository: [ShioriArchive](https://github.com/kitsudaiki/ShioriArchive.git)
-    - prebuild Docker-Image: `kitsudaiki/shiori_archive`
+    - Repository: [ShioriArchive](https://github.com/kitsudaiki/Hanami-AI/tree/develop/src/components/Shiori)
+    - prebuild Docker-Image: `kitsudaiki/shiori_archive:develop`
 
 - **Azuki**
     - Content: Monitoring and energy-optimization
-    - Repository: [AzukiHeart](https://github.com/kitsudaiki/AzukiHeart.git)
-    - prebuild Docker-Image: `kitsudaiki/azuki_heart`
+    - Repository: [AzukiHeart](https://github.com/kitsudaiki/Hanami-AI/tree/develop/src/components/Azuki)
+    - prebuild Docker-Image: `kitsudaiki/azuki_heart:develop`
 
 - **Torii**
     - Content: Proxy for all incoming connections
-    - Repository: [ToriiGateway](https://github.com/kitsudaiki/ToriiGateway.git)
-    - prebuild Docker-Image: `kitsudaiki/torii_gateway`
+    - Repository: [ToriiGateway](https://github.com/kitsudaiki/Hanami-AI/tree/develop/src/components/Torii)
+    - prebuild Docker-Image: `kitsudaiki/torii_gateway:develop`
 
 - **Dashboard**
     - Content: Web-Frontend
-    - Repository: [Dashboard](https://github.com/kitsudaiki/Hanami-AI-Dashboard.git)
-    - prebuild Docker-Image: `kitsudaiki/hanami_ai_dashboard`
+    - Repository: [Dashboard](https://github.com/kitsudaiki/Hanami-AI/tree/develop/src/frontend/Hanami-AI-Dashboard)
+    - prebuild Docker-Image: `kitsudaiki/hanami_ai_dashboard:develop`
 
 ## Roadmap
 
 - **0.1.0**
-    - *content*: 
-        - first prototype with basic feature-set
+    - first prototype with basic feature-set
 
 - **0.2.0**
-    - *expected date*: end Q4 2022 / begin Q1 2023
-    - *content*: 
-        - no new features but only improving the current state with:
-            - bugfixes
-            - additional validation
-            - more documentation
-            - ...
+    - merge all involved repositories into the main-repository
+    - internal restructures, primary for the GPU-support
+    - experimental GPU-support wiht CUDA and OpenCL (disabled at the moment)
+    - general minor improvements
 
 - **0.3.0**
-    - *expected date*: end Q2 2023
+    - *desired date*: Q3 2023
     - *content*: 
         - complete implementation of the core-concept and further evaluation and improvement of the learning-process:
             - allow to use it as spiking-neuronal-network
             - remove strict layer-structure, which is still enforced by hard configuration at the moment
             - build 3-dimensional networks
+            - re-add the old reduction-process again
         - further evaluation and improving of the core-process
-        - add classical static neuronal networks with GPU-support
+        - make GPU-support usable
 
 - **0.4.0**
-    - *expected date*: Q4 2023
+    - *desired date*: Q4 2023
     - *content*: 
         - first Multi-Node-Setup
+        - rework dashboard
 
 
 ## Issue-Overview
@@ -182,14 +181,10 @@ for more details see [Documentation inner workings](/Inner_Workings/1_overview/)
 
 ## Author
 
-Tobias Anker
+**Tobias Anker**
 
 eMail: tobias.anker@kitsunemimi.moe
 
 ## License
 
-The complete project is under Apache 2 license.
-
-## Contributing
-
-I'm happy, if you find the project interesting enough to contribute code. In this case, please wait until version `0.2.0`, because there are many API- and Database-breaking changes on the project. Additionally until `0.2.0` I will also provide a Code-Styling-Guide (at least for the C++-backend).
+The complete project is under [Apache 2 license](https://github.com/kitsudaiki/Hanami-AI/blob/develop/LICENSE).

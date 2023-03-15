@@ -14,8 +14,8 @@ data:
     policies = "/etc/misaki/policies"
     token_expire_time = {{ .Values.token.expire_time }}
 
-    #[azuki]
-    #address = "/tmp/azuki.uds"
+    [azuki]
+    address = "/tmp/azuki.uds"
 
     [shiori]
     address = "/tmp/hanami/shiori.uds"
