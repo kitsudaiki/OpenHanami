@@ -1,5 +1,5 @@
 REGISTRY="kitsudaiki"
-TAG=develop
+TAG=0.2.0
 
 # HINT (kitsudaiki): base-image is only pushed for the ci-pipeline,
 #                    so it always has the develop-tag. So this is not a bug.
