@@ -9,7 +9,7 @@
 
 # **IMPORTANT: This project is still an experimental prototype at the moment and NOT ready for productive usage.** 
 
-There is still a huge bunch of known bugs and missing validations, which can break the backend. Even the documentation here is quite basic. Normally I absolutely dislike it to make something public, which has known bugs and other problems, but I simply don't wanted to wait longer for the open-sourcing of this project. Most of it will be fixed until [Version `0.2.0`](/#roadmap). Keep in mind, that this project is created by a single person in his spare time beside a 40h/week job. ;)
+There is still a huge bunch of known bugs and missing validations, which can break the backend. Even the documentation here is quite basic. Normally I absolutely dislike it to make something public, which has known bugs and other problems, but I simply don't wanted to wait longer for the open-sourcing of this project. Keep in mind, that this project is created by a single person in his spare time beside a 40h/week job. ;)
 
 ## Intro
 
