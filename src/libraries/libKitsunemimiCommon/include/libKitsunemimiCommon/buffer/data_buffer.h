@@ -299,8 +299,7 @@ addData_DataBuffer(DataBuffer &buffer,
 {
     // precheck
     if(dataSize == 0
-            || data == nullptr
-            || buffer.usedBufferSize + dataSize > buffer.totalBufferSize)
+            || data == nullptr)
     {
         return false;
     }
