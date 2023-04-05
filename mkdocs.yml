@@ -58,7 +58,7 @@ markdown_extensions:
 extra_css:
   - stylesheets/extra.css
 
-copyright: all rights reserved; 2022 Tobias Anker
+copyright: all rights reserved; 2022-2023 Tobias Anker
 
 extra:
   social:
