@@ -38,10 +38,8 @@ HEADERS += \
     ../include/libKitsunemimiHanamiCommon/structs.h \
     ../include/libKitsunemimiHanamiCommon/enums.h \
     ../include/libKitsunemimiHanamiCommon/generic_main.h \
-    ../include/libKitsunemimiHanamiCommon/component_support.h \
     ../include/libKitsunemimiHanamiCommon/functions.h
 
 SOURCES += \
-    component_support.cpp \
     config.cpp
 

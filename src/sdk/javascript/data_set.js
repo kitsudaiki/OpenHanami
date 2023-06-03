@@ -97,7 +97,7 @@ function waitUntilUploadComplete(uuid, token)
         sleep(500);  
         var request = new XMLHttpRequest();
         // `false` makes the request synchronous
-        request.open('GET', '/control/shiori/v1/data_set/progress?uuid=' + uuid, false); 
+        request.open('GET', '/control/v1/data_set/progress?uuid=' + uuid, false); 
         request.setRequestHeader("X-Auth-Token", token);
         request.send(null);
 
@@ -168,7 +168,7 @@ function finishCsvUpload(uuid, inputUuid, token)
     // finish upload
     var request = new XMLHttpRequest();
     // `false` makes the request synchronous
-    request.open('PUT', '/control/shiori/v1/csv/data_set', false);  
+    request.open('PUT', '/control/v1/csv/data_set', false);  
     request.setRequestHeader("X-Auth-Token", token);
     var jsonBody = "{\"uuid\":\"" + uuid 
                    + "\",\"uuid_input_file\":\"" + inputUuid + "\"}";
@@ -243,7 +243,7 @@ function finishMnistUpload(uuid, inputUuid, labelUuid, token)
     // finish upload
     var request = new XMLHttpRequest();
     // `false` makes the request synchronous
-    request.open('PUT', '/control/shiori/v1/mnist/data_set', false);  
+    request.open('PUT', '/control/v1/mnist/data_set', false);  
     request.setRequestHeader("X-Auth-Token", token);
     var jsonBody = "{\"uuid\":\"" + uuid 
                    + "\",\"uuid_input_file\":\"" + inputUuid 
@@ -291,7 +291,7 @@ function uploadCsvFile(jsonContent, inputFile, token)
 
 function createMnistDataSet_request(outputFunc, name, inputFile, labelFile, token)
 {
-    const path = "/control/shiori/v1/mnist/data_set";
+    const path = "/control/v1/mnist/data_set";
     let  reqContent = "{\"name\":\"" + name;
     reqContent += "\",\"input_data_size\":" + inputFile.size 
     reqContent += ",\"label_data_size\":" + labelFile.size + "}";
@@ -300,7 +300,7 @@ function createMnistDataSet_request(outputFunc, name, inputFile, labelFile, toke
 
 function createCsvDataSet_request(outputFunc, name, inputFile, token)
 {
-    const path = "/control/shiori/v1/csv/data_set";
+    const path = "/control/v1/csv/data_set";
     let reqContent = "{name:\"" + name;
     reqContent += "\",input_data_size:" + inputFile.size + "}";
     createObject_request(outputFunc, path, reqContent, token);
@@ -308,12 +308,12 @@ function createCsvDataSet_request(outputFunc, name, inputFile, token)
 
 function listDataSet_request(outputFunc, token)
 {
-    listObjects_request(outputFunc, "/control/shiori/v1/data_set/all", token);
+    listObjects_request(outputFunc, "/control/v1/data_set/all", token);
 }
 
 function deleteDataSet_request(postProcessFunc, dataSetUuid, token)
 {
-    const request = "/control/shiori/v1/data_set?uuid=" + dataSetUuid;
+    const request = "/control/v1/data_set?uuid=" + dataSetUuid;
     deleteObject_request(postProcessFunc, request, token);
 }
 

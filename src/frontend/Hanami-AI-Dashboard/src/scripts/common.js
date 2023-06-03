@@ -217,7 +217,7 @@ function fillUserProjectDropdownList(dropdownDiv, userId="")
 
     // create request
     var listRequestConnection = new XMLHttpRequest();
-    let path = "/control/misaki/v1/user/project";
+    let path = "/control/v1/user/project";
     if(userId !== "") {
         path += "?user_id=" + userId
     }

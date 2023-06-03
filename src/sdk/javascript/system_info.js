@@ -16,13 +16,13 @@
 
 function getSystemInfo_request(outputFunc, token)
 {
-    const request = "/control/azuki/v1/system_info";
+    const request = "/control/v1/system_info";
     getObject_request(outputFunc, request, token);
 }
 
 function getThreadMapping_request(outputFunc, token)
 {
-    const request = "/control/azuki/v1/threading";
+    const request = "/control/v1/threading";
     getObject_request(outputFunc, request, token);
 }
 

@@ -193,7 +193,7 @@ MultiblockIO::writeIntoIncomingBuffer(const uint64_t multiblockId,
 }
 
 /**
- * @brief remove message form the incomind-message-buffer, but without deleting the internal
+ * @brief remove message form the inco-message-buffer, but without deleting the internal
  *        allocated memory.
  *
  * @param multiblockId it of the multiblock-message

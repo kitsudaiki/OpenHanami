@@ -49,7 +49,7 @@ createUser(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/misaki/v1/user";
+    const std::string path = "/control/v1/user";
     const std::string vars = "";
     const std::string jsonBody = "{\"id\":\""
                                  + userId
@@ -88,7 +88,7 @@ getUser(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/misaki/v1/user";
+    const std::string path = "/control/v1/user";
     const std::string vars = "id=" + userId;
 
     if(request->sendGetRequest(result, path, vars, error) == false)
@@ -115,7 +115,7 @@ listUser(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/misaki/v1/user/all";
+    const std::string path = "/control/v1/user/all";
 
     // send request
     if(request->sendGetRequest(result, path, "", error) == false)
@@ -144,7 +144,7 @@ deleteUser(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/misaki/v1/user";
+    const std::string path = "/control/v1/user";
     const std::string vars = "id=" + userId;
 
     // send request
@@ -180,7 +180,7 @@ addProjectToUser(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/misaki/v1/user/project";
+    const std::string path = "/control/v1/user/project";
     const std::string vars = "";
     const std::string jsonBody = "{id:\"" + userId;
                                  + "\",project_id:\"" + projectId
@@ -221,7 +221,7 @@ removeProjectFromUser(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/misaki/v1/user/project";
+    const std::string path = "/control/v1/user/project";
     const std::string vars = "id=" + userId + "&project_id=" + projectId;
 
     // send request
@@ -253,7 +253,7 @@ listProjectsOfUser(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/misaki/v1/user/project";
+    const std::string path = "/control/v1/user/project";
 
     // send request
     if(request->sendGetRequest(result, path, "", error) == false)
@@ -283,7 +283,7 @@ switchProject(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/misaki/v1/user/project";
+    const std::string path = "/control/v1/user/project";
     const std::string vars = "";
     const std::string jsonBody = "{\"project_id\":\"" + projectId + "\"}";
 

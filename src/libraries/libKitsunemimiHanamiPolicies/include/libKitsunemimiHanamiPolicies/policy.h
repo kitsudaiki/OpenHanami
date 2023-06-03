@@ -53,13 +53,12 @@ public:
 
     bool parse(const std::string &input, ErrorContainer &error);
 
-    bool checkUserAgainstPolicy(const std::string &component,
-                                const std::string &endpoint,
+    bool checkUserAgainstPolicy(const std::string &endpoint,
                                 const HttpRequestType type,
                                 const std::string &role);
 
 private:
-    std::map<std::string, std::map<std::string, PolicyEntry>> m_policyRules;
+    std::map<std::string, PolicyEntry> m_policyRules;
 
     bool checkEntry(const PolicyEntry &entry,
                     const HttpRequestType type,

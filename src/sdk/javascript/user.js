@@ -16,7 +16,7 @@
 
 function createUser_request(outputFunc, userId, name, password, isAdmin, token)
 {
-    const path = "/control/misaki/v1/user";
+    const path = "/control/v1/user";
     let reqContent = "{id:\"" + userId;
     reqContent += "\",name:\"" + name;
     reqContent += "\",password:\"" + password;
@@ -26,7 +26,7 @@ function createUser_request(outputFunc, userId, name, password, isAdmin, token)
 
 function addProjectToUser_request(outputFunc, userId, projectId, role, isProjectAdmin, token)
 {
-    const path = "/control/misaki/v1/user/project";
+    const path = "/control/v1/user/project";
     let reqContent = "{id:\"" + userId;
     reqContent += "\",project_id:\"" + projectId;
     reqContent += "\",role:\"" + role;
@@ -36,7 +36,7 @@ function addProjectToUser_request(outputFunc, userId, projectId, role, isProject
 
 function removeProjectFromUser_request(outputFunc, userId, projectId, token)
 {
-    let path = "/control/misaki/v1/user/project";
+    let path = "/control/v1/user/project";
     path += "?project_id=" + projectId;
     path += "&id=" + userId;
     deleteObject_request(outputFunc, path, token);
@@ -44,12 +44,12 @@ function removeProjectFromUser_request(outputFunc, userId, projectId, token)
 
 function listUsers_request(outputFunc, token)
 {
-    listObjects_request(outputFunc, "/control/misaki/v1/user/all", token);
+    listObjects_request(outputFunc, "/control/v1/user/all", token);
 }
 
 function deleteUser_request(postProcessFunc, userId, token)
 {
-    const request = "/control/misaki/v1/user?id=" + userId;
+    const request = "/control/v1/user?id=" + userId;
     deleteObject_request(postProcessFunc, request, token);
 }
 

@@ -42,7 +42,7 @@ getSnapshot(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/shiori/v1/cluster_snapshot";
+    const std::string path = "/control/v1/cluster_snapshot";
     const std::string vars = "uuid=" + snapshotUuid;
 
     // send request
@@ -70,7 +70,7 @@ listSnapshot(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/shiori/v1/cluster_snapshot/all";
+    const std::string path = "/control/v1/cluster_snapshot/all";
 
     // send request
     if(request->sendGetRequest(result, path, "", error) == false)
@@ -99,7 +99,7 @@ deleteSnapshot(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/shiori/v1/cluster_snapshot";
+    const std::string path = "/control/v1/cluster_snapshot";
     const std::string vars = "uuid=" + snapshotUuid;
 
     // send request

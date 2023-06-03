@@ -27,7 +27,7 @@ import (
 )
 
 func CreateUser_Request(user_name string, pw string, is_admin string, groups string) (bool, string) {
-	path := "control/misaka/v1/create_user"
+	path := "control/v1/create_user"
 	vars := ""
 	jsonBody := fmt.Sprintf("{\"user_name\":\"%s\",\"pw\":\"%s\",\"is_admin\":%s,\"groups\":\"%s\"}", 
 	                        user_name, pw, is_admin, groups)
@@ -35,19 +35,19 @@ func CreateUser_Request(user_name string, pw string, is_admin string, groups str
 }
 
 func GetUser_Request(user_name string) (bool, string) {
-	path := "control/misaka/v1/user"
+	path := "control/v1/user"
 	vars := fmt.Sprintf("user_name=%s", user_name)
     return SendGet_Request(path, vars)
 }
 
 func ListUser_Request() (bool, string) {
-	path := fmt.Sprintf("control/misaka/v1/user/all")
+	path := fmt.Sprintf("control/v1/user/all")
 	vars := ""
     return SendGet_Request(path, vars)
 }
 
 func DeleteUser_Request(user_name string) (bool, string) {
-	path := "control/misaka/v1/user"
+	path := "control/v1/user"
 	vars := fmt.Sprintf("user_name=%s", user_name)
     return SendDelete_Request(path, vars)
 }

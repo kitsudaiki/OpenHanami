@@ -109,7 +109,7 @@ function downloadDocumentation_Request()
         return;
     }
     
-    const request = "/control/misaki/v1/documentation/api/rest?type=md";
+    const request = "/control/v1/documentation/api/rest?type=md";
     let requestConnection = new XMLHttpRequest();
     requestConnection.open("GET", request, true);
     requestConnection.setRequestHeader("X-Auth-Token", token);
@@ -178,7 +178,7 @@ function switchProject_request(projectId)
     // create requeset
     var payload = "{\"project_id\":\"" + projectId + "\"}";
     var switchProjectConnection = new XMLHttpRequest();
-    switchProjectConnection.open("PUT", "/control/misaki/v1/token", true);
+    switchProjectConnection.open("PUT", "/control/v1/token", true);
     switchProjectConnection.setRequestHeader("X-Auth-Token", token);
 
     // callback for success

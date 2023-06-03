@@ -59,10 +59,9 @@ Policy_Test::checkUserAgainstPolicy()
     ErrorContainer error;
     policy.parse(testInput, error);
 
-    TEST_EQUAL(policy.checkUserAgainstPolicy("bogus",      "get_status", GET_TYPE, "user1"), false);
-    TEST_EQUAL(policy.checkUserAgainstPolicy("component2", "bogus",      GET_TYPE, "user1"), false);
-    TEST_EQUAL(policy.checkUserAgainstPolicy("component2", "get_status", GET_TYPE, "bogus"), false);
-    TEST_EQUAL(policy.checkUserAgainstPolicy("component2", "get_status", GET_TYPE, "user1"), true);
+    TEST_EQUAL(policy.checkUserAgainstPolicy("bogus",      GET_TYPE, "user1"), false);
+    TEST_EQUAL(policy.checkUserAgainstPolicy("get_status", GET_TYPE, "bogus"), false);
+    TEST_EQUAL(policy.checkUserAgainstPolicy("get_status", GET_TYPE, "user1"), true);
 }
 
 /**
@@ -71,14 +70,12 @@ Policy_Test::checkUserAgainstPolicy()
 const std::string
 Policy_Test::getTestString()
 {
-    const std::string testString = "[component1]\n"
-                                   "test/get_cluster\n"
+    const std::string testString = "test/get_cluster\n"
                                    "- GET: user1\n"
                                    "test/create_cluster \n"
                                    "- GET: user1\n"
                                    "- POST: user2\n"
                                    "\n"
-                                   "[component2]\n"
                                    "get_status \n"
                                    "- GET: user1, user2\n";
     return testString;

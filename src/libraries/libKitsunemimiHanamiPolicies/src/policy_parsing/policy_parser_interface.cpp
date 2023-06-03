@@ -80,7 +80,7 @@ PolicyParserInterface::~PolicyParserInterface()
  * @return resulting object
  */
 bool
-PolicyParserInterface::parse(std::map<std::string, std::map<std::string, PolicyEntry>>* result,
+PolicyParserInterface::parse(std::map<std::string, PolicyEntry>* result,
                              const std::string &inputString,
                              ErrorContainer &error)
 {

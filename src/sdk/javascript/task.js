@@ -16,7 +16,7 @@
 
 function createTask_request(outputFunc, name, type, clusterUuid, datasetUuid, token)
 {
-    let path = "/control/kyouko/v1/task";
+    let path = "/control/v1/task";
 
     // create request-content
     var reqContent = "{\"name\":\"" + name
@@ -29,12 +29,12 @@ function createTask_request(outputFunc, name, type, clusterUuid, datasetUuid, to
 
 function listTasks_request(outputFunc, clusterUuid, token)
 {
-    const path = "/control/kyouko/v1/task/all?cluster_uuid=" + clusterUuid
+    const path = "/control/v1/task/all?cluster_uuid=" + clusterUuid
     listObjects_request(outputFunc, path, token);
 }
 
 function deleteTask_request(outputFunc, taskUuid, clusterUuid, token)
 {
-    const request = "/control/kyouko/v1/task?cluster_uuid=" + clusterUuid + "&uuid=" + taskUuid;
+    const request = "/control/v1/task?cluster_uuid=" + clusterUuid + "&uuid=" + taskUuid;
     deleteObject_request(outputFunc, request, token);
 }

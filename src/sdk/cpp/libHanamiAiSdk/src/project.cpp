@@ -44,7 +44,7 @@ createProject(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/misaki/v1/project";
+    const std::string path = "/control/v1/project";
     const std::string vars = "";
     const std::string jsonBody = "{\"id\":\""
                                  + projectId
@@ -79,7 +79,7 @@ getProject(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/misaki/v1/project";
+    const std::string path = "/control/v1/project";
     const std::string vars = "id=" + projectId;
 
     if(request->sendGetRequest(result, path, vars, error) == false)
@@ -106,7 +106,7 @@ listProject(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/misaki/v1/project/all";
+    const std::string path = "/control/v1/project/all";
 
     // send request
     if(request->sendGetRequest(result, path, "", error) == false)
@@ -135,7 +135,7 @@ deleteProject(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/misaki/v1/project";
+    const std::string path = "/control/v1/project";
     const std::string vars = "id=" + projectId;
 
     // send request

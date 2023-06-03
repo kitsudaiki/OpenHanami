@@ -61,7 +61,6 @@ Policy::parse(const std::string &input,
 /**
  * @brief check if request is allowed by policy
  *
- * @param component name of the requested component
  * @param endpoint requested endpoint of the component
  * @param type http-request-type
  * @param role role which has to be checked
@@ -69,22 +68,15 @@ Policy::parse(const std::string &input,
  * @return true, if check was successfully, else false
  */
 bool
-Policy::checkUserAgainstPolicy(const std::string &component,
-                               const std::string &endpoint,
+Policy::checkUserAgainstPolicy(const std::string &endpoint,
                                const HttpRequestType type,
                                const std::string &role)
 {
-    std::map<std::string, std::map<std::string, PolicyEntry>>::const_iterator component_it;
-    component_it = m_policyRules.find(component);
+    std::map<std::string, PolicyEntry>::const_iterator endpoint_it;
+    endpoint_it = m_policyRules.find(endpoint);
 
-    if(component_it != m_policyRules.end())
-    {
-        std::map<std::string, PolicyEntry>::const_iterator endpoint_it;
-        endpoint_it = component_it->second.find(endpoint);
-
-        if(endpoint_it != component_it->second.end()) {
-            return checkEntry(endpoint_it->second,  type, role);
-        }
+    if(endpoint_it != m_policyRules.end()) {
+        return checkEntry(endpoint_it->second,  type, role);
     }
 
     return false;

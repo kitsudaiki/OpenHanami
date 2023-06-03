@@ -16,19 +16,19 @@
 
 function createSegmentTemplaete_request(outputFunc, name, templateContent, token)
 {
-    const path = "/control/kyouko/v1/template/upload";
+    const path = "/control/v1/template/upload";
     const reqContent = "{\"name\":\"" + name + "\",\"template\":\"" + btoa(templateContent) + "\"}";
     createObject_request(outputFunc, path, reqContent, token);
 }
 
 function listSegmentTemplaetes_request(outputFunc, token)
 {
-    listObjects_request(outputFunc, "/control/kyouko/v1/template/all", token);
+    listObjects_request(outputFunc, "/control/v1/template/all", token);
 }
 
 function deleteSegmentTemplaete_request(postProcessFunc, templateId, token)
 {
-    const request = "/control/kyouko/v1/template?uuid=" + templateId;
+    const request = "/control/v1/template?uuid=" + templateId;
     deleteObject_request(postProcessFunc, request, token);
 }
 

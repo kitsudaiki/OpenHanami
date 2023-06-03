@@ -98,7 +98,7 @@ func requestToken() bool {
     var user = os.Getenv("HANAMI_USER")
 	var pw = os.Getenv("HANAMI_PW")
 
-    path := fmt.Sprintf("control/misaka/v1/token?name=%s&pw=%s", user, pw)
+    path := fmt.Sprintf("control/v1/token?name=%s&pw=%s", user, pw)
 
     success, content := sendGenericRequest("GET", "", path, "")
     if success == false {

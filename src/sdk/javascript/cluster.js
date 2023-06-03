@@ -16,7 +16,7 @@
  
 function createCluster_request(outputFunc, name, templateStr, token)
 {
-    const path = "/control/kyouko/v1/cluster";
+    const path = "/control/v1/cluster";
     let reqContent = "{\"name\":\"" + name;
     reqContent += "\",\"template\":\"" + btoa(templateStr) + "\"}";
     createObject_request(outputFunc, path, reqContent, token);
@@ -24,7 +24,7 @@ function createCluster_request(outputFunc, name, templateStr, token)
 
 function saveCluster_request(outputFunc, name, clusterUuid, token)
 {
-    const path = "/control/kyouko/v1/cluster/save";
+    const path = "/control/v1/cluster/save";
     let reqContent = "{\"name\":\"" + name;
     reqContent += "\",\"cluster_uuid\":" + clusterUuid + "}";
     createObject_request(outputFunc, path, reqContent, token);
@@ -32,7 +32,7 @@ function saveCluster_request(outputFunc, name, clusterUuid, token)
 
 function restoreCluster_request(outputFunc, snapshotUuid, clusterUuid, token)
 {
-    const path = "/control/kyouko/v1/cluster/load";
+    const path = "/control/v1/cluster/load";
     let reqContent = "{\"snapshot_uuid\":\"" + snapshotUuid;
     reqContent += "\",\"cluster_uuid\":" + clusterUuid + "}";
     createObject_request(outputFunc, path, reqContent, token);
@@ -40,12 +40,12 @@ function restoreCluster_request(outputFunc, snapshotUuid, clusterUuid, token)
 
 function listClusters_request(outputFunc, token)
 {
-    listObjects_request(outputFunc, "/control/kyouko/v1/cluster/all", token);
+    listObjects_request(outputFunc, "/control/v1/cluster/all", token);
 }
 
 function deleteCluster_request(postProcessFunc, clusterUuid, token)
 {
-    const request = "/control/kyouko/v1/cluster?uuid=" + clusterUuid;
+    const request = "/control/v1/cluster?uuid=" + clusterUuid;
     deleteObject_request(postProcessFunc, request, token);
 }
 

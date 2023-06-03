@@ -167,10 +167,6 @@ jobs:
         run: |
           chmod +x /build_result/libraries/libKitsunemimiSakuraNetwork/tests/functional_tests/functional_tests
           /build_result/libraries/libKitsunemimiSakuraNetwork/tests/functional_tests/functional_tests
-      - name: "Run test: libKitsunemimiHanamiNetwork"
-        run: |
-          chmod +x /build_result/libraries/libKitsunemimiHanamiNetwork/tests/functional_tests/functional_tests
-          /build_result/libraries/libKitsunemimiHanamiNetwork/tests/functional_tests/functional_tests
 
   cleanup:
     needs: [ unit_tests, memory_leak_tests, functional_tests ]

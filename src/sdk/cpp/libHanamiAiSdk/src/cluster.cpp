@@ -29,7 +29,7 @@ namespace HanamiAI
 {
 
 /**
- * @brief create a new cluster from a template on kyouko
+ * @brief create a new cluster from a template on hanami
  *
  * @param result reference for response-message
  * @param clusterName name of the new cluster
@@ -53,7 +53,7 @@ createCluster(std::string &result,
                               clusterTemplate.size());
 
     // create request
-    const std::string path = "/control/kyouko/v1/cluster";
+    const std::string path = "/control/v1/cluster";
     const std::string vars = "";
     const std::string jsonBody = "{\"name\":\""
                                  + clusterName
@@ -73,7 +73,7 @@ createCluster(std::string &result,
 }
 
 /**
- * @brief get information of a cluster from kyouko
+ * @brief get information of a cluster from hanami
  *
  * @param result reference for response-message
  * @param clusterUuid uuid of the cluster to get
@@ -88,7 +88,7 @@ getCluster(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/kyouko/v1/cluster";
+    const std::string path = "/control/v1/cluster";
     const std::string vars = "uuid=" + clusterUuid;
 
     // send request
@@ -103,7 +103,7 @@ getCluster(std::string &result,
 }
 
 /**
- * @brief list all visible cluster on kyouko
+ * @brief list all visible cluster on hanami
  *
  * @param result reference for response-message
  * @param error reference for error-output
@@ -116,7 +116,7 @@ listCluster(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/kyouko/v1/cluster/all";
+    const std::string path = "/control/v1/cluster/all";
 
     // send request
     if(request->sendGetRequest(result, path, "", error) == false)
@@ -130,7 +130,7 @@ listCluster(std::string &result,
 }
 
 /**
- * @brief delete a cluster with all its tasks from kyouko
+ * @brief delete a cluster with all its tasks from hanami
  *
  * @param result reference for response-message
  * @param clusterUuid uuid of the cluster to delete
@@ -145,7 +145,7 @@ deleteCluster(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/kyouko/v1/cluster";
+    const std::string path = "/control/v1/cluster";
     const std::string vars = "uuid=" + clusterUuid;
 
     // send request
@@ -177,7 +177,7 @@ saveCluster(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/kyouko/v1/cluster/save";
+    const std::string path = "/control/v1/cluster/save";
     const std::string vars = "";
     const std::string jsonBody = "{\"name\":\""
                                  + snapshotName
@@ -214,7 +214,7 @@ restoreCluster(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/kyouko/v1/cluster/load";
+    const std::string path = "/control/v1/cluster/load";
     const std::string vars = "";
     const std::string jsonBody = "{\"snapshot_uuid\":\""
                                  + snapshotUuid
@@ -249,7 +249,7 @@ switchToTaskMode(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/kyouko/v1/cluster/set_mode";
+    const std::string path = "/control/v1/cluster/set_mode";
     const std::string vars = "";
     const std::string jsonBody = "{\"new_state\":\"TASK\""
                                  ",\"uuid\":\""
@@ -289,10 +289,11 @@ switchToDirectMode(std::string &result,
                                           "kyouko",
                                           HanamiRequest::getInstance()->getHost(),
                                           HanamiRequest::getInstance()->getPort(),
+                                          clusterUuid,
                                           error);
     if(ret == false)
     {
-        error.addMeesage("Failed to init websocket to kyouko");
+        error.addMeesage("Failed to init websocket to hanami");
         LOG_ERROR(error);
         delete wsClient;
         return nullptr;
@@ -300,7 +301,7 @@ switchToDirectMode(std::string &result,
 
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/kyouko/v1/cluster/set_mode";
+    const std::string path = "/control/v1/cluster/set_mode";
     const std::string vars = "";
     const std::string jsonBody = "{\"connection_uuid\":\""
                                  + websocketUuid
