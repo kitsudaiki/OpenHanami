@@ -1,6 +1,6 @@
 QT -= qt core gui
 
-TARGET = Kyouko
+TARGET = Hanami
 CONFIG += console
 CONFIG += c++17
 

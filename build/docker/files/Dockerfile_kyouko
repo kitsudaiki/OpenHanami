@@ -1,6 +1,0 @@
-FROM kitsudaiki/hanami_ai_base:develop
-
-RUN mkdir -p /etc/kyouko && apt-get update && apt-get install -y libcudart11.0 libcudart11.0
-COPY Hanami-AI/src/components/KyoukoMind/KyoukoMind /usr/bin/KyoukoMind
-CMD KyoukoMind
-
