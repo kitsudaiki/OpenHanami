@@ -22,14 +22,9 @@
 
 #include "show_template.h"
 
-#include <libKitsunemimiHanamiCommon/uuid.h>
-#include <libKitsunemimiHanamiCommon/enums.h>
-
 #include <libKitsunemimiCrypto/common.h>
 
 #include <hanami_root.h>
-
-using namespace Kitsunemimi::Hanami;
 
 ShowTemplate::ShowTemplate()
     : Blossom("Show a specific template.")
@@ -83,7 +78,7 @@ ShowTemplate::runTask(BlossomIO &blossomIO,
                       BlossomStatus &status,
                       Kitsunemimi::ErrorContainer &error)
 {
-    const Kitsunemimi::Hanami::UserContext userContext(context);
+    const UserContext userContext(context);
     const std::string uuid = blossomIO.input.get("uuid").getString();
     // TODO: check type-field
 
@@ -95,7 +90,7 @@ ShowTemplate::runTask(BlossomIO &blossomIO,
                                               true) == false)
     {
         status.errorMessage = "Tempalte with UUID '" + uuid + "' not found.";
-        status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+        status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;
     }

@@ -27,10 +27,6 @@
 #include <core/cluster/cluster.h>
 #include <callbacks.h>
 
-#include <libKitsunemimiHanamiCommon/enums.h>
-
-using namespace Kitsunemimi::Hanami;
-
 SetClusterMode::SetClusterMode()
     : Blossom("Set mode of the cluster.")
 {
@@ -85,7 +81,7 @@ SetClusterMode::runTask(BlossomIO &blossomIO,
     const std::string clusterUuid = blossomIO.input.get("uuid").getString();
     const std::string connectionUuid = blossomIO.input.get("connection_uuid").getString();
     const std::string newState = blossomIO.input.get("new_state").getString();
-    const Kitsunemimi::Hanami::UserContext userContext(context);
+    const UserContext userContext(context);
 
     // get data from table
     if(HanamiRoot::clustersTable->getCluster(blossomIO.output,
@@ -94,7 +90,7 @@ SetClusterMode::runTask(BlossomIO &blossomIO,
                                              error) == false)
     {
         status.errorMessage = "Cluster with UUID '" + clusterUuid + "' not found.";
-        status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+        status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;
     }
@@ -104,7 +100,7 @@ SetClusterMode::runTask(BlossomIO &blossomIO,
     if(cluster == nullptr)
     {
         status.errorMessage = "Cluster with UUID '" + clusterUuid + "'not found";
-        status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+        status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;
     }
@@ -118,7 +114,7 @@ SetClusterMode::runTask(BlossomIO &blossomIO,
                               + newState
                               + "'";
         // TODO: get exact reason, why it was not successful
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;
     }
@@ -132,7 +128,7 @@ SetClusterMode::runTask(BlossomIO &blossomIO,
         if(client == nullptr)
         {
             status.errorMessage = "Connection with UUID '" + connectionUuid + "'not found";
-            status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+            status.statusCode = NOT_FOUND_RTYPE;
             error.addMeesage(status.errorMessage);
             return false;
         }

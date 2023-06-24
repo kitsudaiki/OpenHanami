@@ -38,18 +38,18 @@ public:
     ~ClusterSnapshotTable();
 
     bool addClusterSnapshot(Kitsunemimi::JsonItem &data,
-                            const Kitsunemimi::Hanami::UserContext &userContext,
+                            const UserContext &userContext,
                             Kitsunemimi::ErrorContainer &error);
     bool getClusterSnapshot(Kitsunemimi::JsonItem &result,
                             const std::string &snapshotUuid,
-                            const Kitsunemimi::Hanami::UserContext &userContext,
+                            const UserContext &userContext,
                             Kitsunemimi::ErrorContainer &error,
                             const bool showHiddenValues);
     bool getAllClusterSnapshot(Kitsunemimi::TableItem &result,
-                               const Kitsunemimi::Hanami::UserContext &userContext,
+                               const UserContext &userContext,
                                Kitsunemimi::ErrorContainer &error);
     bool deleteClusterSnapshot(const std::string &snapshotUuid,
-                               const Kitsunemimi::Hanami::UserContext &userContext,
+                               const UserContext &userContext,
                                Kitsunemimi::ErrorContainer &error);
     bool setUploadFinish(const std::string &uuid,
                          const std::string &fileUuid,

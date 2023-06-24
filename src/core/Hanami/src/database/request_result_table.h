@@ -38,18 +38,18 @@ public:
     ~RequestResultTable();
 
     bool addRequestResult(Kitsunemimi::JsonItem &data,
-                          const Kitsunemimi::Hanami::UserContext &userContext,
+                          const UserContext &userContext,
                           Kitsunemimi::ErrorContainer &error);
     bool getRequestResult(Kitsunemimi::JsonItem &result,
                           const std::string &resultUuid,
-                          const Kitsunemimi::Hanami::UserContext &userContext,
+                          const UserContext &userContext,
                           Kitsunemimi::ErrorContainer &error,
                           const bool showHiddenValues);
     bool getAllRequestResult(Kitsunemimi::TableItem &result,
-                             const Kitsunemimi::Hanami::UserContext &userContext,
+                             const UserContext &userContext,
                              Kitsunemimi::ErrorContainer &error);
     bool deleteRequestResult(const std::string &resultUuid,
-                             const Kitsunemimi::Hanami::UserContext &userContext,
+                             const UserContext &userContext,
                              Kitsunemimi::ErrorContainer &error);
 };
 

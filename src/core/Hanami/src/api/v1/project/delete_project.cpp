@@ -26,11 +26,6 @@
 
 #include <libKitsunemimiJson/json_item.h>
 
-#include <libKitsunemimiHanamiCommon/enums.h>
-#include <libKitsunemimiHanamiCommon/defines.h>
-
-using namespace Kitsunemimi::Hanami;
-
 /**
  * @brief constructor
  */
@@ -66,7 +61,7 @@ DeleteProject::runTask(BlossomIO &blossomIO,
     // check if admin
     if(context.getBoolByKey("is_admin") == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::UNAUTHORIZED_RTYPE;
+        status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
 
@@ -78,7 +73,7 @@ DeleteProject::runTask(BlossomIO &blossomIO,
     if(HanamiRoot::projectsTable->getProject(result, projectId, error) == false)
     {
         status.errorMessage = "Project with id '" + projectId + "' not found.";
-        status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+        status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;
     }
@@ -86,7 +81,7 @@ DeleteProject::runTask(BlossomIO &blossomIO,
     // get data from table
     if(HanamiRoot::projectsTable->deleteProject(projectId, error) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 

@@ -24,10 +24,6 @@
 
 #include <hanami_root.h>
 
-#include <libKitsunemimiHanamiCommon/enums.h>
-
-using namespace Kitsunemimi::Hanami;
-
 ListCluster::ListCluster()
     : Blossom("List all visible clusters.")
 {
@@ -61,13 +57,13 @@ ListCluster::runTask(BlossomIO &blossomIO,
                      BlossomStatus &status,
                      Kitsunemimi::ErrorContainer &error)
 {
-    const Kitsunemimi::Hanami::UserContext userContext(context);
+    const UserContext userContext(context);
 
     // get data from table
     Kitsunemimi::TableItem table;
     if(HanamiRoot::clustersTable->getAllCluster(table, userContext, error) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Failed to get all clusters form database");
         return false;
     }

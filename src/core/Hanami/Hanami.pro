@@ -6,11 +6,6 @@ CONFIG += c++17
 
 INCLUDEPATH += ../../libraries/libKitsunemimiHanamiMessages/protobuffers
 
-LIBS += -L../../libraries/libKitsunemimiHanamiCommon/src -lKitsunemimiHanamiCommon
-LIBS += -L../../libraries/libKitsunemimiHanamiCommon/src/debug -lKitsunemimiHanamiCommon
-LIBS += -L../../libraries/libKitsunemimiHanamiCommon/src/release -lKitsunemimiHanamiCommon
-INCLUDEPATH += ../../libraries/libKitsunemimiHanamiCommon/include
-
 LIBS += -L../../libraries/libKitsunemimiHanamiSegmentParser/src -lKitsunemimiHanamiSegmentParser
 LIBS += -L../../libraries/libKitsunemimiHanamiSegmentParser/src/debug -lKitsunemimiHanamiSegmentParser
 LIBS += -L../../libraries/libKitsunemimiHanamiSegmentParser/src/release -lKitsunemimiHanamiSegmentParser

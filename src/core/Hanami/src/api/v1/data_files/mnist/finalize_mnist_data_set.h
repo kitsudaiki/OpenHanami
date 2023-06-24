@@ -36,7 +36,7 @@ public:
 protected:
     bool runTask(BlossomIO &blossomIO,
                  const Kitsunemimi::DataMap &context,
-                 Kitsunemimi::Hanami::BlossomStatus &status,
+                 BlossomStatus &status,
                  Kitsunemimi::ErrorContainer &error);
 
 private:

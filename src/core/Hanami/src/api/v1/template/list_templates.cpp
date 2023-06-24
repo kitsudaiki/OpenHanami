@@ -22,12 +22,7 @@
 
 #include "list_templates.h"
 
-#include <libKitsunemimiHanamiCommon/uuid.h>
-#include <libKitsunemimiHanamiCommon/enums.h>
-
 #include <hanami_root.h>
-
-using namespace Kitsunemimi::Hanami;
 
 ListTemplates::ListTemplates()
     : Blossom("List all visible templates.")
@@ -62,13 +57,13 @@ ListTemplates::runTask(BlossomIO &blossomIO,
     const std::string type = blossomIO.input.get("template").get("type").getString();
     // TODO: check type-field
 
-    const Kitsunemimi::Hanami::UserContext userContext(context);
+    const UserContext userContext(context);
 
     // get data from table
     Kitsunemimi::TableItem table;
     if(HanamiRoot::templateTable->getAllTemplate(table, userContext, error) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Failed to get all templates from database");
         return false;
     }

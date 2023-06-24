@@ -30,8 +30,6 @@
 #include <core/cluster/cluster.h>
 #include <core/cluster/cluster_handler.h>
 
-#include <libKitsunemimiHanamiCommon/uuid.h>
-
 #include <libKitsunemimiCommon/threading/event.h>
 #include <libKitsunemimiJson/json_item.h>
 
@@ -348,8 +346,8 @@ HttpWebsocketThread::processInitialMessage(const std::string &message,
         return false;
     }
 
-    Hanami::RequestMessage requestMsg;
-    Hanami::ResponseMessage responseMsg;
+    RequestMessage requestMsg;
+    ResponseMessage responseMsg;
 
     requestMsg.id = "v1/foreward";
     requestMsg.httpType = HttpRequestType::GET_TYPE;
@@ -369,7 +367,7 @@ HttpWebsocketThread::processInitialMessage(const std::string &message,
     }
 
     // handle failed authentication
-    if(responseMsg.type == Hanami::UNAUTHORIZED_RTYPE
+    if(responseMsg.type == UNAUTHORIZED_RTYPE
             || responseMsg.success == false)
     {
         error.addMeesage("Permission-check for token over websocket failed");
@@ -446,7 +444,7 @@ HttpWebsocketThread::runWebsocket()
             {
                 const std::string msg(static_cast<const char*>(buffer.data().data()),
                                       buffer.data().size());
-                m_uuid = Hanami::generateUuid().toString();
+                m_uuid = generateUuid().toString();
 
                 LOG_DEBUG("got initial websocket-message: '" + msg + "'");
                 bool success = true;

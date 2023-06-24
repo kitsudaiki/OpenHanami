@@ -26,11 +26,6 @@
 
 #include <libKitsunemimiJson/json_item.h>
 
-#include <libKitsunemimiHanamiCommon/enums.h>
-#include <libKitsunemimiHanamiCommon/defines.h>
-
-using namespace Kitsunemimi::Hanami;
-
 /**
  * @brief constructor
  */
@@ -66,7 +61,7 @@ DeleteUser::runTask(BlossomIO &blossomIO,
     // check if admin
     if(context.getBoolByKey("is_admin") == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::UNAUTHORIZED_RTYPE;
+        status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
 
@@ -79,7 +74,7 @@ DeleteUser::runTask(BlossomIO &blossomIO,
     if(HanamiRoot::usersTable->getUser(result, userId, error, false) == false)
     {
         status.errorMessage = "User with id '" + userId + "' not found.";
-        status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+        status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;
     }
@@ -90,7 +85,7 @@ DeleteUser::runTask(BlossomIO &blossomIO,
         status.errorMessage = "User with id '"
                               + userId
                               + "' tries to delete himself, which is not allowed.";
-        status.statusCode = Kitsunemimi::Hanami::BAD_REQUEST_RTYPE;
+        status.statusCode = BAD_REQUEST_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;
     }
@@ -98,7 +93,7 @@ DeleteUser::runTask(BlossomIO &blossomIO,
     // get data from table
     if(HanamiRoot::usersTable->deleteUser(userId, error) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 

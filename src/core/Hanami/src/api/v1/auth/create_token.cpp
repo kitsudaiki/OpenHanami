@@ -29,11 +29,6 @@
 #include <libKitsunemimiJson/json_item.h>
 #include <libKitsunemimiConfig/config_handler.h>
 
-#include <libKitsunemimiHanamiCommon/enums.h>
-#include <libKitsunemimiHanamiCommon/defines.h>
-
-using namespace Kitsunemimi::Hanami;
-
 /**
  * @brief constructor
  */
@@ -97,7 +92,7 @@ CreateToken::runTask(BlossomIO &blossomIO,
         status.errorMessage = "ACCESS DENIED!\n"
                               "User or password is incorrect.";
         error.addMeesage(status.errorMessage);
-        status.statusCode = Kitsunemimi::Hanami::UNAUTHORIZED_RTYPE;
+        status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
 
@@ -115,7 +110,7 @@ CreateToken::runTask(BlossomIO &blossomIO,
         status.errorMessage = "ACCESS DENIED!\n"
                               "User or password is incorrect.";
         error.addMeesage(status.errorMessage);
-        status.statusCode = Kitsunemimi::Hanami::UNAUTHORIZED_RTYPE;
+        status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
 
@@ -148,7 +143,7 @@ CreateToken::runTask(BlossomIO &blossomIO,
     {
         status.errorMessage = "User with id '" + userId + "' has no project assigned.";
         error.addMeesage(status.errorMessage);
-        status.statusCode = Kitsunemimi::Hanami::UNAUTHORIZED_RTYPE;
+        status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
 
@@ -158,14 +153,14 @@ CreateToken::runTask(BlossomIO &blossomIO,
     if(success == false)
     {
         error.addMeesage("Could not read 'token_expire_time' from config of misaki.");
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
     }
 
     // create token
     if(HanamiRoot::jwt->create_HS256_Token(jwtToken, userData, expireTime, error) == false)
     {
         error.addMeesage("Failed to create JWT-Token");
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 

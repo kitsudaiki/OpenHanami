@@ -30,7 +30,6 @@
 #include <libKitsunemimiHanamiPolicies/policy.h>
 #include <hanami_root.h>
 
-using namespace Kitsunemimi::Hanami;
 using Kitsunemimi::Hanami::HttpRequestType;
 
 /**
@@ -121,7 +120,7 @@ ValidateAccess::runTask(BlossomIO &blossomIO,
     {
         error.addMeesage("Misaki failed to validate JWT-Token");
         status.errorMessage = publicError;
-        status.statusCode = Kitsunemimi::Hanami::UNAUTHORIZED_RTYPE;
+        status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
 
@@ -132,7 +131,7 @@ ValidateAccess::runTask(BlossomIO &blossomIO,
         if(blossomIO.input.contains("http_type") == false)
         {
             error.addMeesage("http_type is missing in token-request");
-            status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+            status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
             return false;
         }
 
@@ -148,7 +147,7 @@ ValidateAccess::runTask(BlossomIO &blossomIO,
                                                         role) == false)
         {
             status.errorMessage = "Access denied by policy";
-            status.statusCode = Kitsunemimi::Hanami::UNAUTHORIZED_RTYPE;
+            status.statusCode = UNAUTHORIZED_RTYPE;
             error.addMeesage(status.errorMessage);
             return false;
         }

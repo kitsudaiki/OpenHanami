@@ -25,12 +25,6 @@
 #include <hanami_root.h>
 #include <database/error_log_table.h>
 
-#include <libKitsunemimiHanamiCommon/defines.h>
-#include <libKitsunemimiHanamiCommon/enums.h>
-#include <libKitsunemimiHanamiCommon/structs.h>
-
-using namespace Kitsunemimi::Hanami;
-
 GetErrorLog::GetErrorLog()
     : Blossom("Get error-log of a user. Only an admin is allowed to request the error-log.")
 {
@@ -82,13 +76,13 @@ GetErrorLog::runTask(BlossomIO &blossomIO,
                      BlossomStatus &status,
                      Kitsunemimi::ErrorContainer &error)
 {
-    const Kitsunemimi::Hanami::UserContext userContext(context);
+    const UserContext userContext(context);
     const uint64_t page = blossomIO.input.get("page").getLong();
 
     // check that the user is an admin
     if(userContext.isAdmin == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::UNAUTHORIZED_RTYPE;
+        status.statusCode = UNAUTHORIZED_RTYPE;
         status.errorMessage = "only an admin is allowed to request error-logs";
         return false;
     }
@@ -99,7 +93,7 @@ GetErrorLog::runTask(BlossomIO &blossomIO,
     Kitsunemimi::TableItem table;
     if(HanamiRoot::errorLogTable->getAllErrorLogEntries(table, userId, page, error) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 

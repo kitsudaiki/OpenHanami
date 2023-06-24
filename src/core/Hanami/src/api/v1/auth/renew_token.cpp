@@ -28,12 +28,6 @@
 #include <libKitsunemimiJwt/jwt.h>
 #include <libKitsunemimiJson/json_item.h>
 
-#include <libKitsunemimiHanamiCommon/enums.h>
-#include <libKitsunemimiHanamiCommon/defines.h>
-#include <libKitsunemimiHanamiCommon/structs.h>
-
-using namespace Kitsunemimi::Hanami;
-
 /**
  * @brief constructor
  */
@@ -82,14 +76,14 @@ RenewToken::runTask(BlossomIO &blossomIO,
                     BlossomStatus &status,
                     Kitsunemimi::ErrorContainer &error)
 {
-    const Kitsunemimi::Hanami::UserContext userContext(context);
+    const UserContext userContext(context);
     const std::string projectId = blossomIO.input.get("project_id").getString();
 
     // get data from table
     Kitsunemimi::JsonItem userData;
     if(HanamiRoot::usersTable->getUser(userData, userContext.userId, error, false) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
@@ -115,7 +109,7 @@ RenewToken::runTask(BlossomIO &blossomIO,
                               + projectId
                               + "'.";
         error.addMeesage(status.errorMessage);
-        status.statusCode = Kitsunemimi::Hanami::UNAUTHORIZED_RTYPE;
+        status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
 
@@ -125,7 +119,7 @@ RenewToken::runTask(BlossomIO &blossomIO,
     if(HanamiRoot::jwt->create_HS256_Token(jwtToken, userData, 3600, error) == false)
     {
         error.addMeesage("Failed to create JWT-Token");
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 

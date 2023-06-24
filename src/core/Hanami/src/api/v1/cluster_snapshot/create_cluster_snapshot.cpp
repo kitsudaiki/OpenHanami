@@ -26,15 +26,10 @@
 #include <database/cluster_snapshot_table.h>
 #include <core/temp_file_handler.h>
 
-#include <libKitsunemimiHanamiCommon/uuid.h>
-#include <libKitsunemimiHanamiCommon/defines.h>
-
 #include <libKitsunemimiCrypto/common.h>
 #include <libKitsunemimiConfig/config_handler.h>
 #include <libKitsunemimiJson/json_item.h>
 #include <libKitsunemimiCommon/files/binary_file.h>
-
-using namespace Kitsunemimi::Hanami;
 
 CreateClusterSnapshot::CreateClusterSnapshot()
     : Blossom("Init new snapshot of a cluster.")
@@ -120,7 +115,7 @@ CreateClusterSnapshot::runTask(BlossomIO &blossomIO,
 
     // snapshots are created by another internal process, which gives the id's not in the context
     // object, but as normal values
-    Kitsunemimi::Hanami::UserContext userContext;
+    UserContext userContext;
     userContext.userId = userId;
     userContext.projectId = projectId;
 
@@ -129,16 +124,16 @@ CreateClusterSnapshot::runTask(BlossomIO &blossomIO,
     std::string targetFilePath = GET_STRING_CONFIG("storage", "cluster_snapshot_location", success);
     if(success == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("snapshot-location to store cluster-snapshot is missing in the config");
         return false;
     }
 
     // init temp-file for input-data
-    const std::string tempFileUuid = Kitsunemimi::Hanami::generateUuid().toString();
+    const std::string tempFileUuid = generateUuid().toString();
     if(HanamiRoot::tempFileHandler->initNewFile(tempFileUuid, inputDataSize) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Failed to initialize temporary file for new input-data.");
         return false;
     }    
@@ -168,7 +163,7 @@ CreateClusterSnapshot::runTask(BlossomIO &blossomIO,
                                                             userContext,
                                                             error) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 

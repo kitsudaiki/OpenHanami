@@ -25,7 +25,6 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-#include <libKitsunemimiHanamiCommon/structs.h>
 #include <libKitsunemimiHanamiClusterParser/cluster_meta.h>
 #include <libKitsunemimiHanamiSegmentParser/segment_meta.h>
 
@@ -44,25 +43,25 @@ public:
 protected:
     bool runTask(BlossomIO &blossomIO,
                  const Kitsunemimi::DataMap &context,
-                 Kitsunemimi::Hanami::BlossomStatus &status,
+                 BlossomStatus &status,
                  Kitsunemimi::ErrorContainer &error);
 
 private:
     bool initCluster(Cluster* cluster,
                      const std::string &clusterUuid,
                      Kitsunemimi::Hanami::ClusterMeta &clusterDefinition,
-                     const Kitsunemimi::Hanami::UserContext &userContext,
-                     Kitsunemimi::Hanami::BlossomStatus &status,
+                     const UserContext &userContext,
+                     BlossomStatus &status,
                      Kitsunemimi::ErrorContainer &error);
 
     bool getSegmentTemplate(Kitsunemimi::Hanami::SegmentMeta* segmentMeta,
                             const std::string &name,
-                            const Kitsunemimi::Hanami::UserContext &userContext,
+                            const UserContext &userContext,
                             Kitsunemimi::ErrorContainer &error);
 
     bool checkConnections(Kitsunemimi::Hanami::ClusterMeta &clusterTemplate,
                           std::map<std::string, SegmentMeta> &segmentTemplates,
-                          Kitsunemimi::Hanami::BlossomStatus &status,
+                          BlossomStatus &status,
                           Kitsunemimi::ErrorContainer &error);
 };
 

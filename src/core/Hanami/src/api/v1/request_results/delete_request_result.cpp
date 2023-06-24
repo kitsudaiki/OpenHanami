@@ -25,11 +25,6 @@
 #include <hanami_root.h>
 #include <database/request_result_table.h>
 
-#include <libKitsunemimiHanamiCommon/enums.h>
-#include <libKitsunemimiHanamiCommon/defines.h>
-
-using namespace Kitsunemimi;
-
 DeleteRequestResult::DeleteRequestResult()
     : Blossom("Delete a request-result from shiori.")
 {
@@ -54,14 +49,14 @@ DeleteRequestResult::DeleteRequestResult()
 bool
 DeleteRequestResult::runTask(BlossomIO &blossomIO,
                              const Kitsunemimi::DataMap &context,
-                             Hanami::BlossomStatus &status,
-                             ErrorContainer &error)
+                             BlossomStatus &status,
+                             Kitsunemimi::ErrorContainer &error)
 {
     const std::string uuid = blossomIO.input.get("uuid").getString();
-    const Kitsunemimi::Hanami::UserContext userContext(context);
+    const UserContext userContext(context);
 
     // check if request-result exist within the table
-    JsonItem result;
+    Kitsunemimi::JsonItem result;
     if(HanamiRoot::requestResultTable->getRequestResult(result,
                                                         uuid,
                                                         userContext,
@@ -69,7 +64,7 @@ DeleteRequestResult::runTask(BlossomIO &blossomIO,
                                                         false) == false)
     {
         status.errorMessage = "Request-result with UUID '" + uuid + "' not found.";
-        status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+        status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;
     }
@@ -77,7 +72,7 @@ DeleteRequestResult::runTask(BlossomIO &blossomIO,
     // delete entry from db
     if(HanamiRoot::requestResultTable->deleteRequestResult(uuid, userContext, error) == false)
     {
-        status.statusCode = Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 

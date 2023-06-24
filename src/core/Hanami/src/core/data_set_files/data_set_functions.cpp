@@ -6,8 +6,8 @@
 #include <core/data_set_files/table_data_set_file.h>
 #include <database/data_set_table.h>
 
-#include <libKitsunemimiHanamiCommon/enums.h>
-#include <libKitsunemimiHanamiCommon/defines.h>
+
+
 
 #include <libKitsunemimiJson/json_item.h>
 #include <libKitsunemimiCommon/files/binary_file.h>
@@ -49,7 +49,7 @@ getDateSetInfo(Kitsunemimi::JsonItem &result,
                const Kitsunemimi::DataMap &context,
                Kitsunemimi::ErrorContainer &error)
 {
-    const Kitsunemimi::Hanami::UserContext userContext(context);
+    const UserContext userContext(context);
 
     if(HanamiRoot::dataSetTable->getDataSet(result,
                                             dataUuid,

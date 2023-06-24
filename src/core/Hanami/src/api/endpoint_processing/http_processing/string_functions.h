@@ -25,14 +25,11 @@
 
 #include <string>
 #include <regex>
+#include <common/structs.h>
 
-#include <libKitsunemimiHanamiCommon/structs.h>
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiCommon/methods/string_methods.h>
 #include <libKitsunemimiJson/json_item.h>
-
-using Kitsunemimi::Hanami::HttpRequestType;
-using Kitsunemimi::Hanami::HttpResponseTypes;
 
 /**
  * @brief precheck path
@@ -67,7 +64,7 @@ checkPath(const std::string &path)
  */
 inline bool
 parseUri(const std::string &token,
-         Kitsunemimi::Hanami::RequestMessage &request,
+         RequestMessage &request,
          const std::string &uri,
          Kitsunemimi::ErrorContainer &error)
 {

@@ -29,12 +29,8 @@
 #include <core/segments/output_segment/output_segment.h>
 #include <core/data_set_files/data_set_functions.h>
 
-#include <libKitsunemimiHanamiCommon/enums.h>
-
 #include <libKitsunemimiCommon/files/binary_file.h>
 #include <libKitsunemimiCrypto/common.h>
-
-using namespace Kitsunemimi::Hanami;
 
 CreateTask::CreateTask()
     : Blossom("Add new task to the task-queue of a cluster.")
@@ -97,14 +93,14 @@ CreateTask::runTask(BlossomIO &blossomIO,
     const std::string clusterUuid = blossomIO.input.get("cluster_uuid").getString();
     const std::string dataSetUuid = blossomIO.input.get("data_set_uuid").getString();
     const std::string taskType = blossomIO.input.get("type").getString();
-    const Kitsunemimi::Hanami::UserContext userContext(context);
+    const UserContext userContext(context);
 
     // get cluster
     Cluster* cluster = HanamiRoot::m_clusterHandler->getCluster(clusterUuid);
     if(cluster == nullptr)
     {
         status.errorMessage = "Cluster with UUID '" + clusterUuid + "'not found";
-        status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+        status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;
     }
@@ -115,7 +111,7 @@ CreateTask::runTask(BlossomIO &blossomIO,
     {
         error.addMeesage("Failed to get information from shiori for UUID '" + dataSetUuid + "'");
         // TODO: add status-error from response from shiori
-        status.statusCode = Kitsunemimi::Hanami::UNAUTHORIZED_RTYPE;
+        status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
 
@@ -150,7 +146,7 @@ CreateTask::runTask(BlossomIO &blossomIO,
         status.errorMessage = "Invalid dataset-type '"
                               + dataSetInfo.get("type").getString()
                               + "' given for to create new task";
-        status.statusCode = Kitsunemimi::Hanami::BAD_REQUEST_RTYPE;
+        status.statusCode = BAD_REQUEST_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;
     }
@@ -182,7 +178,7 @@ CreateTask::imageTask(std::string &taskUuid,
                       const std::string &name,
                       const std::string &taskType,
                       const std::string &dataSetUuid,
-                      const Kitsunemimi::Hanami::UserContext &userContext,
+                      const UserContext &userContext,
                       Cluster* cluster,
                       Kitsunemimi::JsonItem &dataSetInfo,
                       BlossomStatus &status,
@@ -196,7 +192,7 @@ CreateTask::imageTask(std::string &taskUuid,
         error.addMeesage("Failed to get data of data-set from location '"
                          + dataSetLocation
                          + "'");
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
@@ -249,7 +245,7 @@ CreateTask::tableTask(std::string &taskUuid,
                       const std::string &name,
                       const std::string &taskType,
                       const std::string &dataSetLocation,
-                      const Kitsunemimi::Hanami::UserContext &userContext,
+                      const UserContext &userContext,
                       Cluster* cluster,
                       Kitsunemimi::JsonItem &dataSetInfo,
                       BlossomStatus &status,
@@ -272,7 +268,7 @@ CreateTask::tableTask(std::string &taskUuid,
                          + "' and column with name '"
                          + inputColumnName
                          + "'");
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
@@ -299,7 +295,7 @@ CreateTask::tableTask(std::string &taskUuid,
                              + "' and column with name '"
                              + outputColumnName
                              + "'");
-            status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+            status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
             return false;
         }
 

@@ -25,12 +25,6 @@
 #include <hanami_root.h>
 #include <database/audit_log_table.h>
 
-#include <libKitsunemimiHanamiCommon/defines.h>
-#include <libKitsunemimiHanamiCommon/enums.h>
-#include <libKitsunemimiHanamiCommon/structs.h>
-
-using namespace Kitsunemimi::Hanami;
-
 GetAuditLog::GetAuditLog()
     : Blossom("Get audit-log of a user.")
 {
@@ -83,7 +77,7 @@ GetAuditLog::runTask(BlossomIO &blossomIO,
                      BlossomStatus &status,
                      Kitsunemimi::ErrorContainer &error)
 {
-    const Kitsunemimi::Hanami::UserContext userContext(context);
+    const UserContext userContext(context);
     std::string userId = blossomIO.input.get("user_id").getString();
     const uint64_t page = blossomIO.input.get("page").getLong();
 
@@ -91,7 +85,7 @@ GetAuditLog::runTask(BlossomIO &blossomIO,
     if(userContext.isAdmin == false
             && userId.length() != 0)
     {
-        status.statusCode = Kitsunemimi::Hanami::UNAUTHORIZED_RTYPE;
+        status.statusCode = UNAUTHORIZED_RTYPE;
         status.errorMessage = "'user_id' can only be set by an admin";
         return false;
     }
@@ -105,7 +99,7 @@ GetAuditLog::runTask(BlossomIO &blossomIO,
     Kitsunemimi::TableItem table;
     if(HanamiRoot::auditLogTable->getAllAuditLogEntries(table, userId, page, error) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 

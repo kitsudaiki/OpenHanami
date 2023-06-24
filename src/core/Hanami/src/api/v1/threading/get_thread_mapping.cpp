@@ -22,13 +22,8 @@
 
 #include "get_thread_mapping.h"
 
-#include <libKitsunemimiHanamiCommon/enums.h>
-#include <libKitsunemimiHanamiCommon/uuid.h>
-
 #include <hanami_root.h>
 #include <core/thread_binder.h>
-
-using namespace Kitsunemimi::Hanami;
 
 GetThreadMapping::GetThreadMapping()
     : Blossom("Get Mapping of the all threads of all components "

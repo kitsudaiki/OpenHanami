@@ -26,11 +26,7 @@
 #include <database/cluster_snapshot_table.h>
 #include <core/temp_file_handler.h>
 
-#include <libKitsunemimiHanamiCommon/enums.h>
-
 #include <libKitsunemimiCommon/files/binary_file.h>
-
-using namespace Kitsunemimi::Hanami;
 
 FinalizeClusterSnapshot::FinalizeClusterSnapshot()
     : Blossom("Finish snapshot of a cluster.")
@@ -97,7 +93,7 @@ FinalizeClusterSnapshot::runTask(BlossomIO &blossomIO,
 
     // snapshots are created by another internal process, which gives the id's not in the context
     // object, but as normal values
-    Kitsunemimi::Hanami::UserContext userContext;
+    UserContext userContext;
     userContext.userId = userId;
     userContext.projectId = projectId;
 
@@ -110,7 +106,7 @@ FinalizeClusterSnapshot::runTask(BlossomIO &blossomIO,
                                                             true) == false)
     {
         status.errorMessage = "Snapshot with uuid '" + uuid + "' not found.";
-        status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+        status.statusCode = NOT_FOUND_RTYPE;
         return false;
     }
 
@@ -119,7 +115,7 @@ FinalizeClusterSnapshot::runTask(BlossomIO &blossomIO,
     if(HanamiRoot::tempFileHandler->getData(inputBuffer, inputUuid) == false)
     {
         status.errorMessage = "Input-data with uuid '" + inputUuid + "' not found.";
-        status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+        status.statusCode = NOT_FOUND_RTYPE;
         return false;
     }
 
@@ -127,7 +123,7 @@ FinalizeClusterSnapshot::runTask(BlossomIO &blossomIO,
     const std::string targetLocation = result.get("location").getString();
     if(HanamiRoot::tempFileHandler->moveData(inputUuid, targetLocation, error) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 

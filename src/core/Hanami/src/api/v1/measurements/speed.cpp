@@ -24,8 +24,6 @@
 #include <hanami_root.h>
 #include <core/speed_measuring.h>
 
-using namespace Kitsunemimi::Hanami;
-
 Speed::Speed()
     : Blossom("Request the speed of the CPU")
 {

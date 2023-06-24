@@ -25,8 +25,6 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-#include <libKitsunemimiHanamiCommon/enums.h>
-
 class ValidateAccess
         : public Blossom
 {
@@ -36,7 +34,7 @@ public:
 protected:
     bool runTask(BlossomIO &blossomIO,
                  const Kitsunemimi::DataMap &,
-                 Kitsunemimi::Hanami::BlossomStatus &status,
+                 BlossomStatus &status,
                  Kitsunemimi::ErrorContainer &error);
 };
 

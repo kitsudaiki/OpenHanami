@@ -83,7 +83,7 @@ HanamiSqlTable::~HanamiSqlTable() {}
  */
 bool
 HanamiSqlTable::add(JsonItem &values,
-                    const Kitsunemimi::Hanami::UserContext &userContext,
+                    const UserContext &userContext,
                     ErrorContainer &error)
 {
     // generate new uuid if the is no predefined
@@ -121,7 +121,7 @@ HanamiSqlTable::add(JsonItem &values,
  */
 bool
 HanamiSqlTable::get(JsonItem &result,
-                    const Kitsunemimi::Hanami::UserContext &userContext,
+                    const UserContext &userContext,
                     std::vector<RequestCondition> &conditions,
                     ErrorContainer &error,
                     const bool showHiddenValues)
@@ -142,7 +142,7 @@ HanamiSqlTable::get(JsonItem &result,
  */
 bool
 HanamiSqlTable::update(JsonItem &values,
-                       const Kitsunemimi::Hanami::UserContext &userContext,
+                       const UserContext &userContext,
                        std::vector<RequestCondition> &conditions,
                        ErrorContainer &error)
 {
@@ -163,7 +163,7 @@ HanamiSqlTable::update(JsonItem &values,
  */
 bool
 HanamiSqlTable::getAll(TableItem &result,
-                       const Kitsunemimi::Hanami::UserContext &userContext,
+                       const UserContext &userContext,
                        std::vector<RequestCondition> &conditions,
                        ErrorContainer &error,
                        const bool showHiddenValues)
@@ -183,7 +183,7 @@ HanamiSqlTable::getAll(TableItem &result,
  */
 bool
 HanamiSqlTable::del(std::vector<RequestCondition> &conditions,
-                    const Kitsunemimi::Hanami::UserContext &userContext,
+                    const UserContext &userContext,
                     ErrorContainer &error)
 {
     fillCondition(conditions, userContext);
@@ -198,7 +198,7 @@ HanamiSqlTable::del(std::vector<RequestCondition> &conditions,
  */
 void
 HanamiSqlTable::fillCondition(std::vector<RequestCondition> &conditions,
-                              const Kitsunemimi::Hanami::UserContext &userContext)
+                              const UserContext &userContext)
 {
     if(userContext.isAdmin) {
         return;

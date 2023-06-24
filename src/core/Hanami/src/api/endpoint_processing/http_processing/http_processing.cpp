@@ -132,7 +132,7 @@ processRequest(http::request<http::string_body> &httpRequest,
 bool
 requestToken(http::response<http::dynamic_body> &httpResponse,
              const std::string &target,
-             const Kitsunemimi::Hanami::RequestMessage &hanamiRequest,
+             const RequestMessage &hanamiRequest,
              Kitsunemimi::ErrorContainer &error)
 {
     Kitsunemimi::JsonItem inputValues;
@@ -152,7 +152,7 @@ requestToken(http::response<http::dynamic_body> &httpResponse,
                                         error) == false)
     {
         return genericError_ResponseBuild(httpResponse,
-                                          static_cast<Kitsunemimi::Hanami::HttpResponseTypes>(status.statusCode),
+                                          static_cast<HttpResponseTypes>(status.statusCode),
                                           status.errorMessage);
     }
 
@@ -173,11 +173,11 @@ requestToken(http::response<http::dynamic_body> &httpResponse,
 bool
 checkPermission(Kitsunemimi::JsonItem &tokenData,
                 const std::string &token,
-                const Kitsunemimi::Hanami::RequestMessage &hanamiRequest,
-                Kitsunemimi::Hanami::ResponseMessage &responseMsg,
+                const RequestMessage &hanamiRequest,
+                ResponseMessage &responseMsg,
                 Kitsunemimi::ErrorContainer &error)
 {
-    Kitsunemimi::Hanami::RequestMessage requestMsg;
+    RequestMessage requestMsg;
 
     // collect information from the input
     const std::string endpoint = hanamiRequest.id;
@@ -188,7 +188,7 @@ checkPermission(Kitsunemimi::JsonItem &tokenData,
     {
         error.addMeesage("Misaki failed to validate JWT-Token");
         responseMsg.success = false;
-        responseMsg.type = Kitsunemimi::Hanami::UNAUTHORIZED_RTYPE;
+        responseMsg.type = UNAUTHORIZED_RTYPE;
         responseMsg.responseContent = publicError;
         return false;
     }
@@ -205,7 +205,7 @@ checkPermission(Kitsunemimi::JsonItem &tokenData,
                                                     role) == false)
     {
         responseMsg.success = false;
-        responseMsg.type = Kitsunemimi::Hanami::UNAUTHORIZED_RTYPE;
+        responseMsg.type = UNAUTHORIZED_RTYPE;
         responseMsg.responseContent = "Access denied by policy";
         error.addMeesage(responseMsg.responseContent);
         return false;
@@ -232,12 +232,12 @@ processControlRequest(http::response<http::dynamic_body> &httpResponse,
                       const std::string &uri,
                       const std::string &token,
                       const std::string &inputValues,
-                      const HttpRequestType httpType,
+                      const Kitsunemimi::Hanami::HttpRequestType httpType,
                       Kitsunemimi::ErrorContainer &error)
 {
     std::string target = "";
-    Kitsunemimi::Hanami::RequestMessage hanamiRequest;
-    Kitsunemimi::Hanami::ResponseMessage hanamiResponse;
+    RequestMessage hanamiRequest;
+    ResponseMessage hanamiResponse;
 
     // parse uri
     hanamiRequest.httpType = httpType;
@@ -260,7 +260,7 @@ processControlRequest(http::response<http::dynamic_body> &httpResponse,
     }
 
     // handle failed authentication
-    if(hanamiResponse.type == Kitsunemimi::Hanami::UNAUTHORIZED_RTYPE
+    if(hanamiResponse.type == UNAUTHORIZED_RTYPE
             || hanamiResponse.success == false)
     {
         return genericError_ResponseBuild(httpResponse,
@@ -325,7 +325,7 @@ processControlRequest(http::response<http::dynamic_body> &httpResponse,
                                         error) == false)
     {
         return genericError_ResponseBuild(httpResponse,
-                                          static_cast<Kitsunemimi::Hanami::HttpResponseTypes>(status.statusCode),
+                                          static_cast<HttpResponseTypes>(status.statusCode),
                                           status.errorMessage);
     }
 

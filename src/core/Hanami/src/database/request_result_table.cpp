@@ -60,7 +60,7 @@ RequestResultTable::~RequestResultTable() {}
  */
 bool
 RequestResultTable::addRequestResult(Kitsunemimi::JsonItem &data,
-                                     const Kitsunemimi::Hanami::UserContext &userContext,
+                                     const UserContext &userContext,
                                      Kitsunemimi::ErrorContainer &error)
 {
     if(add(data, userContext, error) == false)
@@ -86,7 +86,7 @@ RequestResultTable::addRequestResult(Kitsunemimi::JsonItem &data,
 bool
 RequestResultTable::getRequestResult(Kitsunemimi::JsonItem &result,
                                      const std::string &resultUuid,
-                                     const Kitsunemimi::Hanami::UserContext &userContext,
+                                     const UserContext &userContext,
                                      Kitsunemimi::ErrorContainer &error,
                                      const bool showHiddenValues)
 {
@@ -118,7 +118,7 @@ RequestResultTable::getRequestResult(Kitsunemimi::JsonItem &result,
  */
 bool
 RequestResultTable::getAllRequestResult(Kitsunemimi::TableItem &result,
-                                        const Kitsunemimi::Hanami::UserContext &userContext,
+                                        const UserContext &userContext,
                                         Kitsunemimi::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
@@ -142,7 +142,7 @@ RequestResultTable::getAllRequestResult(Kitsunemimi::TableItem &result,
  */
 bool
 RequestResultTable::deleteRequestResult(const std::string &resultUuid,
-                                        const Kitsunemimi::Hanami::UserContext &userContext,
+                                        const UserContext &userContext,
                                         Kitsunemimi::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;

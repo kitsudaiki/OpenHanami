@@ -58,7 +58,7 @@ TemplateTable::~TemplateTable() {}
  */
 bool
 TemplateTable::addTemplate(Kitsunemimi::JsonItem &clusterData,
-                           const Kitsunemimi::Hanami::UserContext &userContext,
+                           const UserContext &userContext,
                            Kitsunemimi::ErrorContainer &error)
 {
     if(add(clusterData, userContext, error) == false)
@@ -84,7 +84,7 @@ TemplateTable::addTemplate(Kitsunemimi::JsonItem &clusterData,
 bool
 TemplateTable::getTemplate(Kitsunemimi::JsonItem &result,
                            const std::string &templateUuid,
-                           const Kitsunemimi::Hanami::UserContext &userContext,
+                           const UserContext &userContext,
                            Kitsunemimi::ErrorContainer &error,
                            const bool showHiddenValues)
 {
@@ -117,7 +117,7 @@ TemplateTable::getTemplate(Kitsunemimi::JsonItem &result,
 bool
 TemplateTable::getTemplateByName(Kitsunemimi::JsonItem &result,
                                  const std::string &templateName,
-                                 const Kitsunemimi::Hanami::UserContext &userContext,
+                                 const UserContext &userContext,
                                  Kitsunemimi::ErrorContainer &error,
                                  const bool showHiddenValues)
 {
@@ -145,7 +145,7 @@ TemplateTable::getTemplateByName(Kitsunemimi::JsonItem &result,
  */
 bool
 TemplateTable::getAllTemplate(Kitsunemimi::TableItem &result,
-                              const Kitsunemimi::Hanami::UserContext &userContext,
+                              const UserContext &userContext,
                               Kitsunemimi::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
@@ -169,7 +169,7 @@ TemplateTable::getAllTemplate(Kitsunemimi::TableItem &result,
  */
 bool
 TemplateTable::deleteTemplate(const std::string &templateUuid,
-                              const Kitsunemimi::Hanami::UserContext &userContext,
+                              const UserContext &userContext,
                               Kitsunemimi::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;

@@ -25,10 +25,6 @@
 #include <hanami_root.h>
 #include <database/request_result_table.h>
 
-#include <libKitsunemimiHanamiCommon/enums.h>
-
-using namespace Kitsunemimi::Hanami;
-
 ListRequestResult::ListRequestResult()
     : Blossom("List all visilbe request-results.")
 {
@@ -63,13 +59,13 @@ ListRequestResult::runTask(BlossomIO &blossomIO,
                            BlossomStatus &status,
                            Kitsunemimi::ErrorContainer &error)
 {
-    const Kitsunemimi::Hanami::UserContext userContext(context);
+    const UserContext userContext(context);
 
     // get data from table
     Kitsunemimi::TableItem table;
     if(HanamiRoot::requestResultTable->getAllRequestResult(table, userContext, error) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 

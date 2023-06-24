@@ -70,7 +70,7 @@ ClusterSnapshotTable::~ClusterSnapshotTable() {}
  */
 bool
 ClusterSnapshotTable::addClusterSnapshot(Kitsunemimi::JsonItem &data,
-                                         const Kitsunemimi::Hanami::UserContext &userContext,
+                                         const UserContext &userContext,
                                          Kitsunemimi::ErrorContainer &error)
 {
     if(add(data, userContext, error) == false)
@@ -96,7 +96,7 @@ ClusterSnapshotTable::addClusterSnapshot(Kitsunemimi::JsonItem &data,
 bool
 ClusterSnapshotTable::getClusterSnapshot(Kitsunemimi::JsonItem &result,
                                          const std::string &snapshotUuid,
-                                         const Kitsunemimi::Hanami::UserContext &userContext,
+                                         const UserContext &userContext,
                                          Kitsunemimi::ErrorContainer &error,
                                          const bool showHiddenValues)
 {
@@ -128,7 +128,7 @@ ClusterSnapshotTable::getClusterSnapshot(Kitsunemimi::JsonItem &result,
  */
 bool
 ClusterSnapshotTable::getAllClusterSnapshot(Kitsunemimi::TableItem &result,
-                                            const Kitsunemimi::Hanami::UserContext &userContext,
+                                            const UserContext &userContext,
                                             Kitsunemimi::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
@@ -152,7 +152,7 @@ ClusterSnapshotTable::getAllClusterSnapshot(Kitsunemimi::TableItem &result,
  */
 bool
 ClusterSnapshotTable::deleteClusterSnapshot(const std::string &snapshotUuid,
-                                            const Kitsunemimi::Hanami::UserContext &userContext,
+                                            const UserContext &userContext,
                                             Kitsunemimi::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
@@ -186,7 +186,7 @@ ClusterSnapshotTable::setUploadFinish(const std::string &uuid,
     conditions.emplace_back("uuid", uuid);
     Kitsunemimi::JsonItem result;
 
-    Kitsunemimi::Hanami::UserContext userContext;
+    UserContext userContext;
     userContext.isAdmin = true;
 
     // get snapshot from db

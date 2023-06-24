@@ -24,8 +24,6 @@
 #include <hanami_root.h>
 #include <core/temperature_measuring.h>
 
-using namespace Kitsunemimi::Hanami;
-
 ThermalProduction::ThermalProduction()
     : Blossom("Request the temperature-measurement of the CPU")
 {

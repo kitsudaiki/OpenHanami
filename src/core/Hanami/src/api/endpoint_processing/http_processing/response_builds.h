@@ -26,10 +26,11 @@
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
 #include <boost/beast/version.hpp>
-
 #include <string>
+
+#include <common/enums.h>
+
 #include <libKitsunemimiCommon/logger.h>
-#include <libKitsunemimiHanamiCommon/enums.h>
 
 namespace beast = boost::beast;         // from <boost/beast.hpp>
 namespace http = beast::http;           // from <boost/beast/http.hpp>
@@ -91,7 +92,7 @@ internalError_ResponseBuild(http::response<http::dynamic_body> &httpResp,
  */
 bool
 genericError_ResponseBuild(http::response<http::dynamic_body> &httpResp,
-                           const Kitsunemimi::Hanami::HttpResponseTypes type,
+                           const HttpResponseTypes type,
                            const std::string &errorMessage)
 {
     httpResp.result(static_cast<http::status>(type));

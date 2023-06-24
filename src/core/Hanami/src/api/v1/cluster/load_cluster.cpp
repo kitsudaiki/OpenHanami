@@ -27,8 +27,6 @@
 #include <core/cluster/cluster_handler.h>
 #include <core/cluster/cluster.h>
 
-#include <libKitsunemimiHanamiCommon/enums.h>
-
 LoadCluster::LoadCluster()
     : Blossom("Load a snapshot from shiori into an existing cluster and override the old data.")
 {
@@ -73,14 +71,14 @@ LoadCluster::runTask(BlossomIO &blossomIO,
 {
     const std::string clusterUuid = blossomIO.input.get("cluster_uuid").getString();
     const std::string snapshotUuid = blossomIO.input.get("snapshot_uuid").getString();
-    const Kitsunemimi::Hanami::UserContext userContext(context);
+    const UserContext userContext(context);
 
     // get cluster
     Cluster* cluster = HanamiRoot::m_clusterHandler->getCluster(clusterUuid);
     if(cluster == nullptr)
     {
         status.errorMessage = "Cluster with UUID '" + clusterUuid + "' not found";
-        status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+        status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;
     }
@@ -94,7 +92,7 @@ LoadCluster::runTask(BlossomIO &blossomIO,
                                                             true) == false)
     {
         error.addMeesage("Failed to get information from database for UUID '" + snapshotUuid + "'");
-        status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+        status.statusCode = NOT_FOUND_RTYPE;
         return false;
     }
 

@@ -29,10 +29,6 @@
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiCommon/items/data_items.h>
 
-namespace Kitsunemimi::Hanami {
-struct RequestMessage;
-}
-
 class ThreadBinder
         : public Kitsunemimi::Thread
 {

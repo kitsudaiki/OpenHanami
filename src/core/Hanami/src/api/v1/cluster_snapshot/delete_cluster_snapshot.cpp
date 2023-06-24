@@ -28,11 +28,6 @@
 #include <libKitsunemimiJson/json_item.h>
 #include <libKitsunemimiCommon/methods/file_methods.h>
 
-#include <libKitsunemimiHanamiCommon/enums.h>
-#include <libKitsunemimiHanamiCommon/defines.h>
-
-using namespace Kitsunemimi::Hanami;
-
 DeleteClusterSnapshot::DeleteClusterSnapshot()
     : Blossom("Delete a result-set from shiori.")
 {
@@ -61,7 +56,7 @@ DeleteClusterSnapshot::runTask(BlossomIO &blossomIO,
                                Kitsunemimi::ErrorContainer &error)
 {
     const std::string dataUuid = blossomIO.input.get("uuid").getString();
-    const Kitsunemimi::Hanami::UserContext userContext(context);
+    const UserContext userContext(context);
 
     // get location from database
     Kitsunemimi::JsonItem result;
@@ -71,7 +66,7 @@ DeleteClusterSnapshot::runTask(BlossomIO &blossomIO,
                                                             error,
                                                             true) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
@@ -83,14 +78,14 @@ DeleteClusterSnapshot::runTask(BlossomIO &blossomIO,
                                                                userContext,
                                                                error) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // delete local files
     if(Kitsunemimi::deleteFileOrDir(location, error) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 

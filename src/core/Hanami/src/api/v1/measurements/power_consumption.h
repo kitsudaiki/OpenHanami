@@ -35,7 +35,7 @@ public:
 protected:
     bool runTask(BlossomIO &blossomIO,
                  const Kitsunemimi::DataMap &,
-                 Kitsunemimi::Hanami::BlossomStatus &,
+                 BlossomStatus &,
                  Kitsunemimi::ErrorContainer &);
 };
 

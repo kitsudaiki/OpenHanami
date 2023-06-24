@@ -28,11 +28,6 @@
 #include <libKitsunemimiJson/json_item.h>
 #include <libKitsunemimiCommon/methods/file_methods.h>
 
-#include <libKitsunemimiHanamiCommon/enums.h>
-#include <libKitsunemimiHanamiCommon/defines.h>
-
-using namespace Kitsunemimi;
-
 DeleteDataSet::DeleteDataSet()
     : Blossom("Delete a speific data-set.")
 {
@@ -57,21 +52,21 @@ DeleteDataSet::DeleteDataSet()
 bool
 DeleteDataSet::runTask(BlossomIO &blossomIO,
                        const Kitsunemimi::DataMap &context,
-                       Hanami::BlossomStatus &status,
-                       ErrorContainer &error)
+                       BlossomStatus &status,
+                       Kitsunemimi::ErrorContainer &error)
 {
     const std::string dataUuid = blossomIO.input.get("uuid").getString();
-    const Kitsunemimi::Hanami::UserContext userContext(context);
+    const UserContext userContext(context);
 
     // get location from database
-    JsonItem result;
+    Kitsunemimi::JsonItem result;
     if(HanamiRoot::dataSetTable->getDataSet(result,
                                             dataUuid,
                                             userContext,
                                             error,
                                             true) == false)
     {
-        status.statusCode = Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
@@ -81,14 +76,14 @@ DeleteDataSet::runTask(BlossomIO &blossomIO,
     // delete entry from db
     if(HanamiRoot::dataSetTable->deleteDataSet(dataUuid, userContext, error) == false)
     {
-        status.statusCode = Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // delete local files
     if(Kitsunemimi::deleteFileOrDir(location, error) == false)
     {
-        status.statusCode = Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 

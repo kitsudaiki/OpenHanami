@@ -26,10 +26,6 @@
 
 #include <libKitsunemimiJson/json_item.h>
 
-#include <libKitsunemimiHanamiCommon/enums.h>
-
-using namespace Kitsunemimi::Hanami;
-
 ShowCluster::ShowCluster()
     : Blossom("Show information of a specific cluster.")
 {
@@ -77,7 +73,7 @@ ShowCluster::runTask(BlossomIO &blossomIO,
                      BlossomStatus &status,
                      Kitsunemimi::ErrorContainer &error)
 {
-    const Kitsunemimi::Hanami::UserContext userContext(context);
+    const UserContext userContext(context);
     const std::string clusterUuid = blossomIO.input.get("uuid").getString();
 
     // get data from table
@@ -87,7 +83,7 @@ ShowCluster::runTask(BlossomIO &blossomIO,
                                              error) == false)
     {
         status.errorMessage = "Cluster with UUID '" + clusterUuid + "' not found.";
-        status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+        status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;
     }

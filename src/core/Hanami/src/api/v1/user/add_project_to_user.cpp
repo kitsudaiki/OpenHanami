@@ -23,15 +23,10 @@
 #include "add_project_to_user.h"
 
 #include <hanami_root.h>
-#include <libKitsunemimiHanamiCommon/uuid.h>
-#include <libKitsunemimiHanamiCommon/enums.h>
-#include <libKitsunemimiHanamiCommon/defines.h>
 
 #include <libKitsunemimiCrypto/hashes.h>
 #include <libKitsunemimiCommon/methods/string_methods.h>
 #include <libKitsunemimiJson/json_item.h>
-
-using namespace Kitsunemimi::Hanami;
 
 /**
  * @brief constructor
@@ -109,7 +104,7 @@ AddProjectToUser::runTask(BlossomIO &blossomIO,
     // check if admin
     if(context.getBoolByKey("is_admin") == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::UNAUTHORIZED_RTYPE;
+        status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
 
@@ -124,7 +119,7 @@ AddProjectToUser::runTask(BlossomIO &blossomIO,
     if(HanamiRoot::usersTable->getUser(getResult, userId, error, false) == false)
     {
         status.errorMessage = "User with id '" + userId + "' not found.";
-        status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+        status.statusCode = NOT_FOUND_RTYPE;
         return false;
     }
 
@@ -140,7 +135,7 @@ AddProjectToUser::runTask(BlossomIO &blossomIO,
                                   + userId
                                   + "'.";
             error.addMeesage(status.errorMessage);
-            status.statusCode = Kitsunemimi::Hanami::CONFLICT_RTYPE;
+            status.statusCode = CONFLICT_RTYPE;
             return false;
         }
     }
@@ -158,7 +153,7 @@ AddProjectToUser::runTask(BlossomIO &blossomIO,
                                                     error) == false)
     {
         error.addMeesage("Failed to update projects of user with id '" + userId + "'.");
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
@@ -168,7 +163,7 @@ AddProjectToUser::runTask(BlossomIO &blossomIO,
                                        error,
                                        false) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 

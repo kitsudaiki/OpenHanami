@@ -26,8 +26,6 @@
 #include <core/cluster/cluster.h>
 #include <hanami_root.h>
 
-using namespace Kitsunemimi::Hanami;
-
 DeleteTask::DeleteTask()
     : Blossom("Delete a task or abort a task, if it is actually running.")
 {
@@ -61,7 +59,7 @@ DeleteTask::runTask(BlossomIO &blossomIO,
                     BlossomStatus &status,
                     Kitsunemimi::ErrorContainer &error)
 {
-    const Kitsunemimi::Hanami::UserContext userContext(context);
+    const UserContext userContext(context);
     const std::string taskUuid = blossomIO.input.get("uuid").getString();
     const std::string clusterUuid = blossomIO.input.get("cluster_uuid").getString();
 
@@ -70,7 +68,7 @@ DeleteTask::runTask(BlossomIO &blossomIO,
     if(cluster == nullptr)
     {
         status.errorMessage = "Cluster with UUID '" + clusterUuid + "'not found";
-        status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+        status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;
     }
@@ -80,7 +78,7 @@ DeleteTask::runTask(BlossomIO &blossomIO,
     {
         status.errorMessage = "Task with UUID '" + clusterUuid + "'not found in "
                               "Cluster with UUID '" + clusterUuid;
-        status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+        status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;
     }

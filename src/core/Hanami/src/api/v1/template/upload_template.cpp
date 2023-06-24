@@ -23,14 +23,10 @@
 #include "upload_template.h"
 #include <hanami_root.h>
 
-#include <libKitsunemimiHanamiCommon/uuid.h>
-#include <libKitsunemimiHanamiCommon/enums.h>
 #include <libKitsunemimiHanamiSegmentParser/segment_meta.h>
 
 #include <libKitsunemimiCrypto/common.h>
 #include <libKitsunemimiCommon/buffer/data_buffer.h>
-
-using namespace Kitsunemimi::Hanami;
 
 UploadTemplate::UploadTemplate()
     : Blossom("Upload a new template and store it within the database.")
@@ -88,14 +84,14 @@ UploadTemplate::runTask(BlossomIO &blossomIO,
 {
     const std::string name = blossomIO.input.get("name").getString();
     const std::string stringContent = blossomIO.input.get("template").toString();
-    const Kitsunemimi::Hanami::UserContext userContext(context);
+    const UserContext userContext(context);
 
     // check if template with the name already exist within the table
     Kitsunemimi::JsonItem getResult;
     if(HanamiRoot::templateTable->getTemplateByName(getResult, name, userContext, error))
     {
         status.errorMessage = "Template with name '" + name + "' already exist.";
-        status.statusCode = Kitsunemimi::Hanami::CONFLICT_RTYPE;
+        status.statusCode = CONFLICT_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;
     }
@@ -107,7 +103,7 @@ UploadTemplate::runTask(BlossomIO &blossomIO,
     if(Kitsunemimi::decodeBase64(convertedTemplate, stringContent) == false)
     {
         status.errorMessage = "Uploaded template is not a valid base64-String.";
-        status.statusCode = Kitsunemimi::Hanami::BAD_REQUEST_RTYPE;
+        status.statusCode = BAD_REQUEST_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;
     }
@@ -120,7 +116,7 @@ UploadTemplate::runTask(BlossomIO &blossomIO,
     {
         status.errorMessage = "Uploaded template is not a valid segment-template: \n";
         status.errorMessage += error.toString();
-        status.statusCode = Kitsunemimi::Hanami::BAD_REQUEST_RTYPE;
+        status.statusCode = BAD_REQUEST_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;
     }
@@ -135,7 +131,7 @@ UploadTemplate::runTask(BlossomIO &blossomIO,
     if(HanamiRoot::templateTable->addTemplate(templateData, userContext, error) == false)
     {
         error.addMeesage("Failed to add new template to database");
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
@@ -146,7 +142,7 @@ UploadTemplate::runTask(BlossomIO &blossomIO,
                                                     error) == false)
     {
         error.addMeesage("Failed to get new template from database");
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 

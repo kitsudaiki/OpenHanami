@@ -28,17 +28,10 @@
 #include <core/data_set_files/data_set_file.h>
 #include <core/data_set_files/image_data_set_file.h>
 
-#include <libKitsunemimiHanamiCommon/uuid.h>
-#include <libKitsunemimiHanamiCommon/enums.h>
-#include <libKitsunemimiHanamiCommon/structs.h>
-#include <libKitsunemimiHanamiCommon/defines.h>
-
 #include <libKitsunemimiCrypto/common.h>
 #include <libKitsunemimiJson/json_item.h>
 #include <libKitsunemimiCommon/files/binary_file.h>
 #include <libKitsunemimiCommon/methods/file_methods.h>
-
-using namespace Kitsunemimi::Hanami;
 
 FinalizeMnistDataSet::FinalizeMnistDataSet()
     : Blossom("Finalize uploaded data-set by checking completeness of the "
@@ -89,14 +82,14 @@ FinalizeMnistDataSet::runTask(BlossomIO &blossomIO,
     const std::string uuid = blossomIO.input.get("uuid").getString();
     const std::string inputUuid = blossomIO.input.get("uuid_input_file").getString();
     const std::string labelUuid = blossomIO.input.get("uuid_label_file").getString();
-    const Kitsunemimi::Hanami::UserContext userContext(context);
+    const UserContext userContext(context);
 
     // get location from database
     Kitsunemimi::JsonItem result;
     if(HanamiRoot::dataSetTable->getDataSet(result, uuid, userContext, error, true) == false)
     {
         status.errorMessage = "Data with uuid '" + uuid + "' not found.";
-        status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+        status.statusCode = NOT_FOUND_RTYPE;
         return false;
     }
 
@@ -105,7 +98,7 @@ FinalizeMnistDataSet::runTask(BlossomIO &blossomIO,
     if(HanamiRoot::tempFileHandler->getData(inputBuffer, inputUuid) == false)
     {
         status.errorMessage = "Input-data with uuid '" + inputUuid + "' not found.";
-        status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+        status.statusCode = NOT_FOUND_RTYPE;
         return false;
     }
 
@@ -114,7 +107,7 @@ FinalizeMnistDataSet::runTask(BlossomIO &blossomIO,
     if(HanamiRoot::tempFileHandler->getData(labelBuffer, labelUuid) == false)
     {
         status.errorMessage = "Label-data with uuid '" + inputUuid + "' not found.";
-        status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+        status.statusCode = NOT_FOUND_RTYPE;
         return false;
     }
 
@@ -124,7 +117,7 @@ FinalizeMnistDataSet::runTask(BlossomIO &blossomIO,
                         inputBuffer,
                         labelBuffer) == false)
     {
-        status.statusCode =Kitsunemimi:: Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Failed to convert mnist-data");
         return false;
     }

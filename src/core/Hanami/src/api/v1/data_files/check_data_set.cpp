@@ -34,11 +34,6 @@
 #include <libKitsunemimiCommon/files/binary_file.h>
 #include <libKitsunemimiConfig/config_handler.h>
 
-#include <libKitsunemimiHanamiCommon/enums.h>
-#include <libKitsunemimiHanamiCommon/defines.h>
-
-using namespace Kitsunemimi;
-
 CheckDataSet::CheckDataSet()
     : Blossom("Compare a list of values with a data-set to check correctness.")
 {
@@ -77,16 +72,16 @@ CheckDataSet::CheckDataSet()
 bool
 CheckDataSet::runTask(BlossomIO &blossomIO,
                       const Kitsunemimi::DataMap &context,
-                      Hanami::BlossomStatus &status,
-                      ErrorContainer &error)
+                      BlossomStatus &status,
+                      Kitsunemimi::ErrorContainer &error)
 {
     const std::string resultUuid = blossomIO.input.get("result_uuid").getString();
     const std::string dataUuid = blossomIO.input.get("data_set_uuid").getString();
-    const Kitsunemimi::Hanami::UserContext userContext(context);
+    const UserContext userContext(context);
 
     // get result
     // check if request-result exist within the table
-    JsonItem result;
+    Kitsunemimi::JsonItem result;
     if(HanamiRoot::requestResultTable->getRequestResult(result,
                                                         resultUuid,
                                                         userContext,
@@ -94,7 +89,7 @@ CheckDataSet::runTask(BlossomIO &blossomIO,
                                                         true) == false)
     {
         status.errorMessage = "Request-result with UUID '" + resultUuid + "' not found.";
-        status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+        status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;
     }
@@ -106,7 +101,7 @@ CheckDataSet::runTask(BlossomIO &blossomIO,
                                             error,
                                             true) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
@@ -139,7 +134,7 @@ CheckDataSet::runTask(BlossomIO &blossomIO,
     const float* content = reinterpret_cast<const float*>(&u8Data[dataPos]);
 
     // iterate over all values and check
-    DataArray* compareData = result.get("data").getItemContent()->toArray();
+    Kitsunemimi::DataArray* compareData = result.get("data").getItemContent()->toArray();
     for(uint64_t i = 0; i < compareData->size(); i++)
     {
         const uint64_t actualPos = (i * lineSize) + lineOffset;

@@ -25,17 +25,11 @@
 #include <core/cluster/cluster_handler.h>
 #include <core/cluster/cluster.h>
 
-#include <libKitsunemimiHanamiCommon/uuid.h>
-#include <libKitsunemimiHanamiCommon/enums.h>
-#include <libKitsunemimiHanamiCommon/structs.h>
-
 #include <libKitsunemimiCrypto/common.h>
 #include <libKitsunemimiCommon/buffer/data_buffer.h>
 #include <libKitsunemimiJson/json_item.h>
 
 #include <hanami_root.h>
-
-using namespace Kitsunemimi::Hanami;
 
 CreateCluster::CreateCluster()
     : Blossom("Create new cluster.")
@@ -92,7 +86,7 @@ CreateCluster::runTask(BlossomIO &blossomIO,
 {
     const std::string clusterName = blossomIO.input.get("name").getString();
     const std::string base64Template = blossomIO.input.get("template").getString();
-    const Kitsunemimi::Hanami::UserContext userContext(context);
+    const UserContext userContext(context);
 
     // check if user already exist within the table
     Kitsunemimi::JsonItem getResult;
@@ -100,7 +94,7 @@ CreateCluster::runTask(BlossomIO &blossomIO,
     {
         status.errorMessage = "Cluster with name '" + clusterName + "' already exist.";
         error.addMeesage(status.errorMessage);
-        status.statusCode = Kitsunemimi::Hanami::CONFLICT_RTYPE;
+        status.statusCode = CONFLICT_RTYPE;
         return false;
     }
     error._errorMessages.clear();
@@ -114,7 +108,7 @@ CreateCluster::runTask(BlossomIO &blossomIO,
         if(Kitsunemimi::decodeBase64(convertedTemplate, base64Template) == false)
         {
             status.errorMessage = "Uploaded template is not a valid base64-String.";
-            status.statusCode = Kitsunemimi::Hanami::BAD_REQUEST_RTYPE;
+            status.statusCode = BAD_REQUEST_RTYPE;
             error.addMeesage(status.errorMessage);
             return false;
         }
@@ -126,7 +120,7 @@ CreateCluster::runTask(BlossomIO &blossomIO,
         {
             status.errorMessage = "Uploaded template is not a valid cluster-template: \n";
             status.errorMessage += error.toString();
-            status.statusCode = Kitsunemimi::Hanami::BAD_REQUEST_RTYPE;
+            status.statusCode = BAD_REQUEST_RTYPE;
             error.addMeesage(status.errorMessage);
             return false;
         }
@@ -142,7 +136,7 @@ CreateCluster::runTask(BlossomIO &blossomIO,
     // add new user to table
     if(HanamiRoot::clustersTable->addCluster(clusterData, userContext, error) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Failed to add cluster to database");
         return false;
     }
@@ -154,7 +148,7 @@ CreateCluster::runTask(BlossomIO &blossomIO,
                                                    error) == false)
     {
         error.addMeesage("Failed to get cluster from database by name '" + clusterName + "'");
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
@@ -199,8 +193,8 @@ bool
 CreateCluster::initCluster(Cluster* cluster,
                            const std::string &clusterUuid,
                            Kitsunemimi::Hanami::ClusterMeta &clusterDefinition,
-                           const Kitsunemimi::Hanami::UserContext &userContext,
-                           Kitsunemimi::Hanami::BlossomStatus &status,
+                           const UserContext &userContext,
+                           BlossomStatus &status,
                            Kitsunemimi::ErrorContainer &error)
 {
     // collect all segment-templates, which are required by the cluster-template
@@ -221,7 +215,7 @@ CreateCluster::initCluster(Cluster* cluster,
             status.errorMessage = "Failed to get segment-template with name '"
                                   + segmentCon.type
                                   + "'";
-            status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+            status.statusCode = NOT_FOUND_RTYPE;
             error.addMeesage(status.errorMessage);
             return false;
         }
@@ -242,7 +236,7 @@ CreateCluster::initCluster(Cluster* cluster,
     if(cluster->init(clusterDefinition, segmentTemplates, clusterUuid) == false)
     {
         error.addMeesage("Failed to initialize cluster based on a template");
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
@@ -262,7 +256,7 @@ CreateCluster::initCluster(Cluster* cluster,
 bool
 CreateCluster::getSegmentTemplate(Kitsunemimi::Hanami::SegmentMeta* segmentMeta,
                                   const std::string &name,
-                                  const Kitsunemimi::Hanami::UserContext &userContext,
+                                  const UserContext &userContext,
                                   Kitsunemimi::ErrorContainer &error)
 {
     // get segment-template from database
@@ -309,7 +303,7 @@ CreateCluster::getSegmentTemplate(Kitsunemimi::Hanami::SegmentMeta* segmentMeta,
 bool
 CreateCluster::checkConnections(Kitsunemimi::Hanami::ClusterMeta &clusterTemplate,
                                 std::map<std::string, SegmentMeta> &segmentTemplates,
-                                Kitsunemimi::Hanami::BlossomStatus &status,
+                                BlossomStatus &status,
                                 Kitsunemimi::ErrorContainer &error)
 {
     for(Kitsunemimi::Hanami::SegmentMetaPtr &sourceSegmentPtr : clusterTemplate.segments)
@@ -328,7 +322,7 @@ CreateCluster::checkConnections(Kitsunemimi::Hanami::ClusterMeta &clusterTemplat
                 status.errorMessage = "Segment-template with name '"
                                       + conn.targetSegment
                                       + "' not found.";
-                status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+                status.statusCode = NOT_FOUND_RTYPE;
                 error.addMeesage(status.errorMessage);
                 return false;
             }
@@ -339,7 +333,7 @@ CreateCluster::checkConnections(Kitsunemimi::Hanami::ClusterMeta &clusterTemplat
             {
                 status.errorMessage = "Input- and Output-segments are not allowed to be directly "
                                       "connected with each other.";
-                status.statusCode = Kitsunemimi::Hanami::BAD_REQUEST_RTYPE;
+                status.statusCode = BAD_REQUEST_RTYPE;
                 error.addMeesage(status.errorMessage);
                 return false;
             }
@@ -354,7 +348,7 @@ CreateCluster::checkConnections(Kitsunemimi::Hanami::ClusterMeta &clusterTemplat
                     status.errorMessage = "Segment-template with name '"
                                           + targetSegmentPtr->type
                                           + "' not found.";
-                    status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+                    status.statusCode = NOT_FOUND_RTYPE;
                     error.addMeesage(status.errorMessage);
                     return false;
                 }
@@ -368,7 +362,7 @@ CreateCluster::checkConnections(Kitsunemimi::Hanami::ClusterMeta &clusterTemplat
                                           + "' has no brick with name '"
                                           + conn.targetBrick
                                           + "'";
-                    status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+                    status.statusCode = NOT_FOUND_RTYPE;
                     error.addMeesage(status.errorMessage);
                     return false;
                 }
@@ -395,7 +389,7 @@ CreateCluster::checkConnections(Kitsunemimi::Hanami::ClusterMeta &clusterTemplat
                     status.errorMessage = "Segment-template with name '"
                                           + sourceSegmentPtr.type
                                           + "' not found.";
-                    status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+                    status.statusCode = NOT_FOUND_RTYPE;
                     error.addMeesage(status.errorMessage);
                     return false;
                 }
@@ -409,7 +403,7 @@ CreateCluster::checkConnections(Kitsunemimi::Hanami::ClusterMeta &clusterTemplat
                                           + "' has no brick with name '"
                                           + conn.sourceBrick
                                           + "'";
-                    status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+                    status.statusCode = NOT_FOUND_RTYPE;
                     error.addMeesage(status.errorMessage);
                     return false;
                 }

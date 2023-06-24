@@ -23,15 +23,10 @@
 #include "create_user.h"
 
 #include <hanami_root.h>
-#include <libKitsunemimiHanamiCommon/uuid.h>
-#include <libKitsunemimiHanamiCommon/enums.h>
-#include <libKitsunemimiHanamiCommon/defines.h>
 
 #include <libKitsunemimiCrypto/hashes.h>
 #include <libKitsunemimiCommon/methods/string_methods.h>
 #include <libKitsunemimiJson/json_item.h>
-
-using namespace Kitsunemimi::Hanami;
 
 /**
  * @brief constructor
@@ -107,7 +102,7 @@ CreateUser::runTask(BlossomIO &blossomIO,
     // check if admin
     if(context.getBoolByKey("is_admin") == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::UNAUTHORIZED_RTYPE;
+        status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
 
@@ -119,13 +114,13 @@ CreateUser::runTask(BlossomIO &blossomIO,
     if(HanamiRoot::usersTable->getUser(getResult, newUserId, error, false))
     {
         status.errorMessage = "User with id '" + newUserId + "' already exist.";
-        status.statusCode = Kitsunemimi::Hanami::CONFLICT_RTYPE;
+        status.statusCode = CONFLICT_RTYPE;
         return false;
     }
 
     // genreate hash from password and random salt
     std::string pwHash;
-    const std::string salt = Kitsunemimi::Hanami::generateUuid().toString();
+    const std::string salt = generateUuid().toString();
     const std::string saltedPw = blossomIO.input.get("password").getString() + salt;
     Kitsunemimi::generate_SHA_256(pwHash, saltedPw);
 
@@ -143,7 +138,7 @@ CreateUser::runTask(BlossomIO &blossomIO,
     if(HanamiRoot::usersTable->addUser(userData, error) == false)
     {
         status.errorMessage = error.toString();
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
@@ -153,7 +148,7 @@ CreateUser::runTask(BlossomIO &blossomIO,
                                        error,
                                        false) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 

@@ -26,12 +26,11 @@
 #include <vector>
 #include <string>
 #include <uuid/uuid.h>
+#include <common/structs.h>
 
 #include <libKitsunemimiCommon/logger.h>
 
 #include <libKitsunemimiSakuraDatabase/sql_table.h>
-
-#include <libKitsunemimiHanamiCommon/structs.h>
 
 namespace Kitsunemimi::Hanami
 {
@@ -45,29 +44,29 @@ public:
     virtual ~HanamiSqlTable();
 
     bool add(JsonItem &values,
-             const Kitsunemimi::Hanami::UserContext &userContext,
+             const UserContext &userContext,
              Kitsunemimi::ErrorContainer &error);
     bool get(JsonItem &result,
-             const Kitsunemimi::Hanami::UserContext &userContext,
+             const UserContext &userContext,
              std::vector<RequestCondition> &conditions,
              Kitsunemimi::ErrorContainer &error,
              const bool showHiddenValues = false);
     bool update(JsonItem &values,
-                const Kitsunemimi::Hanami::UserContext &userContext,
+                const UserContext &userContext,
                 std::vector<RequestCondition> &conditions,
                 Kitsunemimi::ErrorContainer &error);
     bool getAll(Kitsunemimi::TableItem &result,
-                const Kitsunemimi::Hanami::UserContext &userContext,
+                const UserContext &userContext,
                 std::vector<RequestCondition> &conditions,
                 Kitsunemimi::ErrorContainer &error,
                 const bool showHiddenValues = false);
     bool del(std::vector<RequestCondition> &conditions,
-             const Kitsunemimi::Hanami::UserContext &userContext,
+             const UserContext &userContext,
              Kitsunemimi::ErrorContainer &error);
 
 private:
     void fillCondition(std::vector<RequestCondition> &conditions,
-                       const Kitsunemimi::Hanami::UserContext &userContext);
+                       const UserContext &userContext);
 };
 
 }

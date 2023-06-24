@@ -29,10 +29,6 @@
 
 #include <libKitsunemimiJson/json_item.h>
 
-#include <libKitsunemimiHanamiCommon/enums.h>
-
-using namespace Kitsunemimi::Hanami;
-
 DeleteCluster::DeleteCluster()
     : Blossom("Delete a cluster.")
 {
@@ -60,7 +56,7 @@ DeleteCluster::runTask(BlossomIO &blossomIO,
                        BlossomStatus &status,
                        Kitsunemimi::ErrorContainer &error)
 {
-    const Kitsunemimi::Hanami::UserContext userContext(context);
+    const UserContext userContext(context);
     const std::string clusterUuid = blossomIO.input.get("uuid").getString();
 
     // check if user exist within the table
@@ -68,7 +64,7 @@ DeleteCluster::runTask(BlossomIO &blossomIO,
     if(HanamiRoot::clustersTable->getCluster(getResult, clusterUuid, userContext, error) == false)
     {
         status.errorMessage = "Cluster with uuid '" + clusterUuid + "' not found.";
-        status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+        status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;
     }
@@ -76,7 +72,7 @@ DeleteCluster::runTask(BlossomIO &blossomIO,
     // remove data from table
     if(HanamiRoot::clustersTable->deleteCluster(clusterUuid, userContext, error) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Failed to delete cluster with UUID '" + clusterUuid + "' from database");
         return false;
     }
@@ -86,7 +82,7 @@ DeleteCluster::runTask(BlossomIO &blossomIO,
     if(HanamiRoot::m_clusterHandler->removeCluster(uuid) == false)
     {
         // should never be false, because the uuid is already defined as unique by the database
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Failed to delete cluster with UUID '"
                          + clusterUuid
                          + "' from cluster-handler");

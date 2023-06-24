@@ -26,11 +26,6 @@
 #include <core/cluster/cluster.h>
 #include <hanami_root.h>
 
-#include <libKitsunemimiHanamiCommon/functions.h>
-#include <libKitsunemimiHanamiCommon/enums.h>
-
-using namespace Kitsunemimi::Hanami;
-
 ListTask::ListTask()
     : Blossom("List all visible tasks of a specific cluster.")
 {
@@ -76,7 +71,7 @@ ListTask::runTask(BlossomIO &blossomIO,
                   BlossomStatus &status,
                   Kitsunemimi::ErrorContainer &error)
 {
-    const Kitsunemimi::Hanami::UserContext userContext(context);
+    const UserContext userContext(context);
     const std::string clusterUuid = blossomIO.input.get("cluster_uuid").getString();
 
     // get cluster
@@ -84,7 +79,7 @@ ListTask::runTask(BlossomIO &blossomIO,
     if(cluster == nullptr)
     {
         status.errorMessage = "Cluster with UUID '" + clusterUuid + "'not found";
-        status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+        status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;
     }

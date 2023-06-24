@@ -27,8 +27,6 @@
 
 #include <libKitsunemimiJson/json_item.h>
 
-using namespace Kitsunemimi::Hanami;
-
 GetDataSet::GetDataSet()
     : Blossom("Get information of a specific data-set.")
 {
@@ -94,7 +92,7 @@ GetDataSet::runTask(BlossomIO &blossomIO,
     const std::string dataUuid = blossomIO.input.get("uuid").getString();
     if(getDateSetInfo(blossomIO.output, dataUuid, context, error) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 

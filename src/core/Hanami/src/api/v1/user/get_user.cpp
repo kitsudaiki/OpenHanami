@@ -26,11 +26,6 @@
 
 #include <libKitsunemimiJson/json_item.h>
 
-#include <libKitsunemimiHanamiCommon/enums.h>
-#include <libKitsunemimiHanamiCommon/defines.h>
-
-using namespace Kitsunemimi::Hanami;
-
 /**
  * @brief constructor
  */
@@ -86,7 +81,7 @@ GetUser::runTask(BlossomIO &blossomIO,
     // check if admin
     if(context.getBoolByKey("is_admin") == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::UNAUTHORIZED_RTYPE;
+        status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
 
@@ -97,7 +92,7 @@ GetUser::runTask(BlossomIO &blossomIO,
     if(HanamiRoot::usersTable->getUser(blossomIO.output, userId, error, false) == false)
     {
         status.errorMessage = "User with id '" + userId + "' not found.";
-        status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+        status.statusCode = NOT_FOUND_RTYPE;
         return false;
     }
 

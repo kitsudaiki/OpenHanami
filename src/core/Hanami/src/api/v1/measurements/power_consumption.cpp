@@ -24,8 +24,6 @@
 #include <hanami_root.h>
 #include <core/power_measuring.h>
 
-using namespace Kitsunemimi::Hanami;
-
 PowerConsumption::PowerConsumption()
     : Blossom("Request the power-measurement of the CPU")
 {

@@ -22,14 +22,9 @@
 
 #include "delete_template.h"
 
-#include <libKitsunemimiHanamiCommon/uuid.h>
-#include <libKitsunemimiHanamiCommon/enums.h>
-
 #include <libKitsunemimiJson/json_item.h>
 
 #include <hanami_root.h>
-
-using namespace Kitsunemimi::Hanami;
 
 DeleteTemplate::DeleteTemplate()
     : Blossom("Delete a template from the database.")
@@ -60,7 +55,7 @@ DeleteTemplate::runTask(BlossomIO &blossomIO,
 {
     // get information from request
     const std::string templateUuid = blossomIO.input.get("uuid").getString();
-    const Kitsunemimi::Hanami::UserContext userContext(context);
+    const UserContext userContext(context);
 
     // check if user exist within the table
     Kitsunemimi::JsonItem getResult;
@@ -70,7 +65,7 @@ DeleteTemplate::runTask(BlossomIO &blossomIO,
                                               error) == false)
     {
         status.errorMessage = "Template with UUID '" + templateUuid + "' not found.";
-        status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+        status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;
     }
@@ -78,7 +73,7 @@ DeleteTemplate::runTask(BlossomIO &blossomIO,
     // remove data from table
     if(HanamiRoot::templateTable->deleteTemplate(templateUuid, userContext, error) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Failed to delete template with UUID '"
                          + templateUuid
                          + "' from database");

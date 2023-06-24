@@ -50,7 +50,7 @@ validateStructSizes()
     assert(sizeof(Cluster::MetaData) == 2048);
     assert(sizeof(Cluster::Settings) == 256);
     assert(sizeof(SegmentSettings) == 256);
-    assert(sizeof(Kitsunemimi::Hanami::kuuid) == 40);
+    assert(sizeof(kuuid) == 40);
 }
 
 #endif // HANAMI_STRUCT_VALIDATION_H

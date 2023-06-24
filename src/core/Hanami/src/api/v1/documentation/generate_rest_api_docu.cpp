@@ -24,9 +24,6 @@
 
 #include <hanami_root.h>
 
-#include <libKitsunemimiHanamiCommon/enums.h>
-#include <libKitsunemimiHanamiCommon/uuid.h>
-
 #include <libKitsunemimiCrypto/common.h>
 #include <libKitsunemimiCommon/methods/string_methods.h>
 #include <libKitsunemimiCommon/methods/file_methods.h>
@@ -34,8 +31,6 @@
 #include <libKitsunemimiCommon/files/binary_file.h>
 #include <libKitsunemimiCommon/process_execution.h>
 #include <libKitsunemimiJson/json_item.h>
-
-using namespace Kitsunemimi::Hanami;
 
 /**
  * @brief constructor
@@ -97,7 +92,7 @@ makeInternalRequest(std::string &completeDocumentation,
 {
     Kitsunemimi::DataMap result;
     Kitsunemimi::ErrorContainer error;
-    Kitsunemimi::Hanami::BlossomStatus status;
+    BlossomStatus status;
     Kitsunemimi::DataMap values;
     values.insert("type", new Kitsunemimi::DataValue(type));
 
@@ -129,7 +124,7 @@ GenerateRestApiDocu::runTask(BlossomIO &blossomIO,
     const std::string token = context.getStringByKey("token");
 
     // create request for remote-calls
-    Kitsunemimi::Hanami::RequestMessage request;
+    RequestMessage request;
     request.id = "v1/documentation/api";
     request.httpType = Kitsunemimi::Hanami::GET_TYPE;
     request.inputValues = "{\"token\":\"" + token + "\",\"type\":\"" + type + "\"}";
@@ -157,7 +152,7 @@ GenerateRestApiDocu::runTask(BlossomIO &blossomIO,
     {
         if(convertRstToPdf(output, completeDocumentation, error) == false)
         {
-            status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+            status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
             error.addMeesage("Failed to convert documentation from 'rst' to 'pdf'");
             return false;
         }
@@ -189,7 +184,7 @@ GenerateRestApiDocu::convertRstToPdf(std::string &pdfOutput,
                                      Kitsunemimi::ErrorContainer &error)
 {
     bool result = false;
-    const std::string uuid = Kitsunemimi::Hanami::generateUuid().toString();
+    const std::string uuid = generateUuid().toString();
     const std::string tempDir = "/tmp/" + uuid;
 
     do

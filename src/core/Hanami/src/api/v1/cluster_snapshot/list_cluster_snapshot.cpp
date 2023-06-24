@@ -25,10 +25,6 @@
 #include <hanami_root.h>
 #include <database/cluster_snapshot_table.h>
 
-#include <libKitsunemimiHanamiCommon/enums.h>
-
-using namespace Kitsunemimi::Hanami;
-
 ListClusterSnapshot::ListClusterSnapshot()
     : Blossom("List snapshots of all visible cluster.")
 {
@@ -63,13 +59,13 @@ ListClusterSnapshot::runTask(BlossomIO &blossomIO,
                              BlossomStatus &status,
                              Kitsunemimi::ErrorContainer &error)
 {
-    const Kitsunemimi::Hanami::UserContext userContext(context);
+    const UserContext userContext(context);
 
     // get data from table
     Kitsunemimi::TableItem table;
     if(HanamiRoot::clusterSnapshotTable->getAllClusterSnapshot(table, userContext, error) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 

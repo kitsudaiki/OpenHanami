@@ -25,10 +25,6 @@
 #include <hanami_root.h>
 #include <database/cluster_snapshot_table.h>
 
-#include <libKitsunemimiHanamiCommon/enums.h>
-
-using namespace Kitsunemimi::Hanami;
-
 GetClusterSnapshot::GetClusterSnapshot()
     : Blossom("Get snapshot of a cluster.")
 {
@@ -75,7 +71,7 @@ GetClusterSnapshot::runTask(BlossomIO &blossomIO,
                             Kitsunemimi::ErrorContainer &error)
 {
     const std::string dataUuid = blossomIO.input.get("uuid").getString();
-    const Kitsunemimi::Hanami::UserContext userContext(context);
+    const UserContext userContext(context);
 
     if(HanamiRoot::clusterSnapshotTable->getClusterSnapshot(blossomIO.output,
                                                             dataUuid,
@@ -83,7 +79,7 @@ GetClusterSnapshot::runTask(BlossomIO &blossomIO,
                                                             error,
                                                             true) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 

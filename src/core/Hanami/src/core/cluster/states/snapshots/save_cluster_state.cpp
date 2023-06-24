@@ -87,7 +87,7 @@ SaveCluster_State::processEvent()
         std::string fileUuid = "";
         // snapshots are created by another internal process, which gives the id's not in the context
         // object, but as normal values
-        Kitsunemimi::Hanami::UserContext userContext;
+        UserContext userContext;
         userContext.userId = actualTask->userId;
         userContext.projectId = actualTask->projectId;
 

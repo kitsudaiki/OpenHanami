@@ -25,10 +25,6 @@
 #include <hanami_root.h>
 #include <database/data_set_table.h>
 
-#include <libKitsunemimiHanamiCommon/enums.h>
-
-using namespace Kitsunemimi::Hanami;
-
 ListDataSet::ListDataSet()
     : Blossom("List all visible data-sets.")
 {
@@ -64,13 +60,13 @@ ListDataSet::runTask(BlossomIO &blossomIO,
                        BlossomStatus &status,
                        Kitsunemimi::ErrorContainer &error)
 {
-    const Kitsunemimi::Hanami::UserContext userContext(context);
+    const UserContext userContext(context);
 
     // get data from table
     Kitsunemimi::TableItem table;
     if(HanamiRoot::dataSetTable->getAllDataSet(table, userContext, error) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 

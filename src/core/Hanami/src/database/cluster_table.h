@@ -37,23 +37,23 @@ public:
     ~ClusterTable();
 
     bool addCluster(Kitsunemimi::JsonItem &clusterData,
-                    const Kitsunemimi::Hanami::UserContext &userContext,
+                    const UserContext &userContext,
                     Kitsunemimi::ErrorContainer &error);
     bool getCluster(Kitsunemimi::JsonItem &result,
                     const std::string &clusterUuid,
-                    const Kitsunemimi::Hanami::UserContext &userContext,
+                    const UserContext &userContext,
                     Kitsunemimi::ErrorContainer &error,
                     const bool showHiddenValues = false);
     bool getClusterByName(Kitsunemimi::JsonItem &result,
                           const std::string &clusterName,
-                          const Kitsunemimi::Hanami::UserContext &userContext,
+                          const UserContext &userContext,
                           Kitsunemimi::ErrorContainer &error,
                           const bool showHiddenValues = false);
     bool getAllCluster(Kitsunemimi::TableItem &result,
-                       const Kitsunemimi::Hanami::UserContext &userContext,
+                       const UserContext &userContext,
                        Kitsunemimi::ErrorContainer &error);
     bool deleteCluster(const std::string &clusterUuid,
-                       const Kitsunemimi::Hanami::UserContext &userContext,
+                       const UserContext &userContext,
                        Kitsunemimi::ErrorContainer &error);
 };
 

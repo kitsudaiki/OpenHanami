@@ -31,7 +31,7 @@
 #include <libKitsunemimiOpencl/gpu_interface.h>
 #include <libKitsunemimiOpencl/gpu_handler.h>
 
-#include <libKitsunemimiHanamiCommon/structs.h>
+
 #include <core/segments/core_segment/processing.h>
 
 /**

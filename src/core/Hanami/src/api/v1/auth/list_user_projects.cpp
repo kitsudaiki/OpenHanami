@@ -29,12 +29,6 @@
 #include <libKitsunemimiJwt/jwt.h>
 #include <libKitsunemimiJson/json_item.h>
 
-#include <libKitsunemimiHanamiCommon/enums.h>
-#include <libKitsunemimiHanamiCommon/defines.h>
-#include <libKitsunemimiHanamiCommon/structs.h>
-
-using namespace Kitsunemimi::Hanami;
-
 /**
  * @brief constructor
  */
@@ -75,14 +69,14 @@ ListUserProjects::runTask(BlossomIO &blossomIO,
                           BlossomStatus &status,
                           Kitsunemimi::ErrorContainer &error)
 {
-    const Kitsunemimi::Hanami::UserContext userContext(context);
+    const UserContext userContext(context);
     std::string userId = blossomIO.input.get("user_id").getString();
 
     // only admin is allowed to request the project-list of other users
     if(userId != ""
             && userContext.isAdmin == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::UNAUTHORIZED_RTYPE;
+        status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
 
@@ -95,7 +89,7 @@ ListUserProjects::runTask(BlossomIO &blossomIO,
     Kitsunemimi::JsonItem userData;
     if(HanamiRoot::usersTable->getUser(userData, userId, error, false) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 

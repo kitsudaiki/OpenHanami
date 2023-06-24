@@ -28,13 +28,8 @@
 #include <core/data_set_files/image_data_set_file.h>
 #include <core/data_set_files/table_data_set_file.h>
 
-#include <libKitsunemimiHanamiCommon/enums.h>
-#include <libKitsunemimiHanamiCommon/defines.h>
-
 #include <libKitsunemimiCrypto/common.h>
 #include <libKitsunemimiJson/json_item.h>
-
-using namespace Kitsunemimi::Hanami;
 
 GetProgressDataSet::GetProgressDataSet()
     : Blossom("Get upload progress of a specific data-set.")
@@ -78,7 +73,7 @@ GetProgressDataSet::runTask(BlossomIO &blossomIO,
                             Kitsunemimi::ErrorContainer &error)
 {
     const std::string dataUuid = blossomIO.input.get("uuid").getString();
-    const Kitsunemimi::Hanami::UserContext userContext(context);
+    const UserContext userContext(context);
 
     Kitsunemimi::JsonItem databaseOutput;
     if(HanamiRoot::dataSetTable->getDataSet(databaseOutput,
@@ -87,7 +82,7 @@ GetProgressDataSet::runTask(BlossomIO &blossomIO,
                                             error,
                                             true) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
@@ -99,7 +94,7 @@ GetProgressDataSet::runTask(BlossomIO &blossomIO,
     Kitsunemimi::JsonItem tempFiles;
     if(tempFiles.parse(tempFilesStr, error) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
     blossomIO.output.insert("temp_files", tempFiles);

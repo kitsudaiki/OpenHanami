@@ -26,17 +26,10 @@
 #include <database/data_set_table.h>
 #include <core/temp_file_handler.h>
 
-#include <libKitsunemimiHanamiCommon/uuid.h>
-#include <libKitsunemimiHanamiCommon/enums.h>
-#include <libKitsunemimiHanamiCommon/structs.h>
-#include <libKitsunemimiHanamiCommon/defines.h>
-
 #include <libKitsunemimiCrypto/common.h>
 #include <libKitsunemimiConfig/config_handler.h>
 #include <libKitsunemimiJson/json_item.h>
 #include <libKitsunemimiCommon/files/binary_file.h>
-
-using namespace Kitsunemimi::Hanami;
 
 CreateMnistDataSet::CreateMnistDataSet()
     : Blossom("Init new mnist-file data-set.")
@@ -107,33 +100,33 @@ CreateMnistDataSet::runTask(BlossomIO &blossomIO,
     const std::string name = blossomIO.input.get("name").getString();
     const long inputDataSize = blossomIO.input.get("input_data_size").getLong();
     const long labelDataSize = blossomIO.input.get("label_data_size").getLong();
-    const std::string uuid = Kitsunemimi::Hanami::generateUuid().toString();
-    const Kitsunemimi::Hanami::UserContext userContext(context);
+    const std::string uuid = generateUuid().toString();
+    const UserContext userContext(context);
 
     // get directory to store data from config
     bool success = false;
     std::string targetFilePath = GET_STRING_CONFIG("storage", "data_set_location", success);
     if(success == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("file-location to store dataset is missing in the config");
         return false;
     }
 
     // init temp-file for input-data
-    const std::string inputUuid = Kitsunemimi::Hanami::generateUuid().toString();
+    const std::string inputUuid = generateUuid().toString();
     if(HanamiRoot::tempFileHandler->initNewFile(inputUuid, inputDataSize) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Failed to initialize temporary file for new input-data.");
         return false;
     }
 
     // init temp-file for label-data
-    const std::string labelUuid = Kitsunemimi::Hanami::generateUuid().toString();
+    const std::string labelUuid = generateUuid().toString();
     if(HanamiRoot::tempFileHandler->initNewFile(labelUuid, labelDataSize) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Failed to initialize temporary file for new label-data.");
         return false;
     }
@@ -162,7 +155,7 @@ CreateMnistDataSet::runTask(BlossomIO &blossomIO,
     // add to database
     if(HanamiRoot::dataSetTable->addDataSet(blossomIO.output, userContext, error) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 

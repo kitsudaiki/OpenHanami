@@ -24,15 +24,9 @@
 
 #include <hanami_root.h>
 
-#include <libKitsunemimiHanamiCommon/uuid.h>
-#include <libKitsunemimiHanamiCommon/enums.h>
-#include <libKitsunemimiHanamiCommon/defines.h>
-
 #include <libKitsunemimiCrypto/hashes.h>
 #include <libKitsunemimiCommon/methods/string_methods.h>
 #include <libKitsunemimiJson/json_item.h>
-
-using namespace Kitsunemimi::Hanami;
 
 /**
  * @brief constructor
@@ -93,7 +87,7 @@ CreateProject::runTask(BlossomIO &blossomIO,
     // check if admin
     if(context.getBoolByKey("is_admin") == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::UNAUTHORIZED_RTYPE;
+        status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
 
@@ -107,7 +101,7 @@ CreateProject::runTask(BlossomIO &blossomIO,
     if(HanamiRoot::projectsTable->getProject(getResult, projectId, error))
     {
         status.errorMessage = "Project with id '" + projectId + "' already exist.";
-        status.statusCode = Kitsunemimi::Hanami::CONFLICT_RTYPE;
+        status.statusCode = CONFLICT_RTYPE;
         return false;
     }
 
@@ -121,7 +115,7 @@ CreateProject::runTask(BlossomIO &blossomIO,
     if(HanamiRoot::projectsTable->addProject(userData, error) == false)
     {
         status.errorMessage = error.toString();
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
@@ -130,7 +124,7 @@ CreateProject::runTask(BlossomIO &blossomIO,
                                                    projectId,
                                                    error) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 

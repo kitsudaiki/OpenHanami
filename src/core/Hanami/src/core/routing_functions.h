@@ -26,7 +26,7 @@
 #include <stdint.h>
 #include <common.h>
 
-#include <libKitsunemimiHanamiCommon/structs.h>
+
 
 /**
  * @brief get neighbor-position for a specific side in the hexagon-grid

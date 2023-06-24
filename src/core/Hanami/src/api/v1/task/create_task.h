@@ -38,7 +38,7 @@ public:
 protected:
     bool runTask(BlossomIO &blossomIO,
                  const Kitsunemimi::DataMap &context,
-                 Kitsunemimi::Hanami::BlossomStatus &status,
+                 BlossomStatus &status,
                  Kitsunemimi::ErrorContainer &error);
 
 private:
@@ -46,20 +46,20 @@ private:
                    const std::string &name,
                    const std::string &taskType,
                    const std::string &dataSetUuid,
-                   const Kitsunemimi::Hanami::UserContext &userContext,
+                   const UserContext &userContext,
                    Cluster* cluster,
                    Kitsunemimi::JsonItem &dataSetInfo,
-                   Kitsunemimi::Hanami::BlossomStatus &status,
+                   BlossomStatus &status,
                    Kitsunemimi::ErrorContainer &error);
 
     bool tableTask(std::string &taskUuid,
                    const std::string &name,
                    const std::string &taskType,
                    const std::string &dataSetLocation,
-                   const Kitsunemimi::Hanami::UserContext &userContext,
+                   const UserContext &userContext,
                    Cluster* cluster,
                    Kitsunemimi::JsonItem &dataSetInfo,
-                   Kitsunemimi::Hanami::BlossomStatus &status,
+                   BlossomStatus &status,
                    Kitsunemimi::ErrorContainer &error);
 };
 

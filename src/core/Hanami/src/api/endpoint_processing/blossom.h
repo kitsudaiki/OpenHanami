@@ -23,11 +23,11 @@
 #ifndef KITSUNEMIMI_SAKURA_LANG_BLOSSOM_H
 #define KITSUNEMIMI_SAKURA_LANG_BLOSSOM_H
 
+#include <common/structs.h>
+
 #include <libKitsunemimiCommon/items/data_items.h>
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiJson/json_item.h>
-
-#include <libKitsunemimiHanamiCommon/structs.h>
 
 class BlossomItem;
 class SakuraThread;
@@ -120,7 +120,7 @@ public:
 protected:
     virtual bool runTask(BlossomIO &blossomIO,
                          const Kitsunemimi::DataMap &context,
-                         Kitsunemimi::Hanami::BlossomStatus &status,
+                         BlossomStatus &status,
                          Kitsunemimi::ErrorContainer &error) = 0;
     bool allowUnmatched = false;
 
@@ -151,7 +151,7 @@ private:
 
     bool growBlossom(BlossomIO &blossomIO,
                      const Kitsunemimi::DataMap* context,
-                     Kitsunemimi::Hanami::BlossomStatus &status,
+                     BlossomStatus &status,
                      Kitsunemimi::ErrorContainer &error);
     bool validateFieldsCompleteness(const Kitsunemimi::DataMap &input,
                                     const std::map<std::string, FieldDef> &validationMap,

@@ -25,11 +25,6 @@
 #include <hanami_root.h>
 #include <database/request_result_table.h>
 
-#include <libKitsunemimiHanamiCommon/enums.h>
-#include <libKitsunemimiHanamiCommon/defines.h>
-
-using namespace Kitsunemimi::Hanami;
-
 GetRequestResult::GetRequestResult()
     : Blossom("Get a specific request-result")
 {
@@ -81,7 +76,7 @@ GetRequestResult::runTask(BlossomIO &blossomIO,
                           Kitsunemimi::ErrorContainer &error)
 {
     const std::string uuid = blossomIO.input.get("uuid").getString();
-    const Kitsunemimi::Hanami::UserContext userContext(context);
+    const UserContext userContext(context);
 
     // check if request-result exist within the table
     if(HanamiRoot::requestResultTable->getRequestResult(blossomIO.output,
@@ -91,7 +86,7 @@ GetRequestResult::runTask(BlossomIO &blossomIO,
                                                         true) == false)
     {
         status.errorMessage = "Request-result with UUID '" + uuid + "' not found.";
-        status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+        status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;
     }

@@ -28,19 +28,12 @@
 #include <core/data_set_files/data_set_file.h>
 #include <core/data_set_files/table_data_set_file.h>
 
-#include <libKitsunemimiHanamiCommon/uuid.h>
-#include <libKitsunemimiHanamiCommon/enums.h>
-#include <libKitsunemimiHanamiCommon/structs.h>
-#include <libKitsunemimiHanamiCommon/defines.h>
-
 #include <libKitsunemimiCrypto/common.h>
 #include <libKitsunemimiJson/json_item.h>
 #include <libKitsunemimiCommon/files/binary_file.h>
 #include <libKitsunemimiCommon/methods/file_methods.h>
 #include <libKitsunemimiCommon/methods/string_methods.h>
 #include <libKitsunemimiCommon/methods/vector_methods.h>
-
-using namespace Kitsunemimi::Hanami;
 
 FinalizeCsvDataSet::FinalizeCsvDataSet()
     : Blossom("Finalize uploaded data-set by checking completeness of the "
@@ -86,14 +79,14 @@ FinalizeCsvDataSet::runTask(BlossomIO &blossomIO,
 {
     const std::string uuid = blossomIO.input.get("uuid").getString();
     const std::string inputUuid = blossomIO.input.get("uuid_input_file").getString();
-    const Kitsunemimi::Hanami::UserContext userContext(context);
+    const UserContext userContext(context);
 
     // get location from database
     Kitsunemimi::JsonItem result;
     if(HanamiRoot::dataSetTable->getDataSet(result, uuid, userContext, error, true) == false)
     {
         status.errorMessage = "Data with uuid '" + uuid + "' not found.";
-        status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+        status.statusCode = NOT_FOUND_RTYPE;
         return false;
     }
 
@@ -102,7 +95,7 @@ FinalizeCsvDataSet::runTask(BlossomIO &blossomIO,
     if(HanamiRoot::tempFileHandler->getData(inputBuffer, inputUuid) == false)
     {
         status.errorMessage = "Input-data with uuid '" + inputUuid + "' not found.";
-        status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+        status.statusCode = NOT_FOUND_RTYPE;
         return false;
     }
 
@@ -111,7 +104,7 @@ FinalizeCsvDataSet::runTask(BlossomIO &blossomIO,
                       result.get("name").getString().c_str(),
                       inputBuffer) == false)
     {
-        status.statusCode = Kitsunemimi:: Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Failed to convert csv-data");
         return false;
     }
