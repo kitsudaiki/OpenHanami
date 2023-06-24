@@ -112,40 +112,6 @@ Because the normalization of input is not necessary, together with the good perf
 
 </div>
 
-## Core-components
-
-for more details see [Documentation inner workings](/Inner_Workings/1_overview/)
-
-- **Kyouko**
-    - Content: Core-component, which holds the artificial neuronal networks.
-    - Repository: [KyoukoMind](https://github.com/kitsudaiki/Hanami-AI/tree/develop/src/components/KyoukoMind)
-    - prebuild Docker-Image: `kitsudaiki/kyouko_mind:develop`
-
-- **Misaki**
-    - Content: Authentication-service and management of user
-    - Repository: [MisakiGuard](https://github.com/kitsudaiki/Hanami-AI/tree/develop/src/components/Misaki)
-    - prebuild Docker-Image: `kitsudaiki/misaki_guard:develop`
-
-- **Shiori**
-    - Content: Storage-component, which holds snapshots, logs and so on
-    - Repository: [ShioriArchive](https://github.com/kitsudaiki/Hanami-AI/tree/develop/src/components/Shiori)
-    - prebuild Docker-Image: `kitsudaiki/shiori_archive:develop`
-
-- **Azuki**
-    - Content: Monitoring and energy-optimization
-    - Repository: [AzukiHeart](https://github.com/kitsudaiki/Hanami-AI/tree/develop/src/components/Azuki)
-    - prebuild Docker-Image: `kitsudaiki/azuki_heart:develop`
-
-- **Torii**
-    - Content: Proxy for all incoming connections
-    - Repository: [ToriiGateway](https://github.com/kitsudaiki/Hanami-AI/tree/develop/src/components/Torii)
-    - prebuild Docker-Image: `kitsudaiki/torii_gateway:develop`
-
-- **Dashboard**
-    - Content: Web-Frontend
-    - Repository: [Dashboard](https://github.com/kitsudaiki/Hanami-AI/tree/develop/src/frontend/Hanami-AI-Dashboard)
-    - prebuild Docker-Image: `kitsudaiki/hanami_ai_dashboard:develop`
-
 ## Roadmap
 
 - **0.1.0**

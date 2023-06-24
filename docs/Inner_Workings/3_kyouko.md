@@ -1,11 +1,4 @@
-# KyoukoMind
-
-!!! info
-
-    Repository: [KyoukoMind](https://github.com/kitsudaiki/KyoukoMind)
-
-
-Kyouko is the core-component of the whole system and manage the artificial neuronal networks.
+# Core
 
 ## Retrospect
 

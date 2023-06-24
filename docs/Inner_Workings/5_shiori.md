@@ -1,13 +1,8 @@
-# ShioriArchive
-
-!!! info
-
-    Repository: [ShioriArchive](https://github.com/kitsudaiki/ShioriArchive)
-
+# Storage
 
 ## Overview
 
-Shiroi is the storage-component of the hole infrastructure and stores the following information:
+The infrastructure and stores the following information:
 
 - `Data-Set`
     - uploaded by the Dashboard or SDK-Library

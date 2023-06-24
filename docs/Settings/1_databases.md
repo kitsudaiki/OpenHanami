@@ -2,9 +2,7 @@
 
 !!! info
 
-    At the moment all components, which are using a database to hold some information, are using `SQLite`.
-
-## **Kyouko**
+    At the moment Hanami is using `SQLite3`.
 
 ### *clusters*
 
@@ -26,8 +24,6 @@
 | visibility | varchar | 10 |   | Visibility of the resource |
 | name | varchar | 256 |   | Readable name of the resource |
 | data | text |  |   |  |
-
-## **Shiori**
 
 ### *cluster_snapshot*
 
@@ -86,8 +82,6 @@
 | context | text | |   | Context-object as json-string with user-information |
 | input_values | text | |   | Input-Values of the request, which produced the error |
 | message | text | |   | Error-message of the error. |
-
-## **Misaki**
 
 ### *users*
 

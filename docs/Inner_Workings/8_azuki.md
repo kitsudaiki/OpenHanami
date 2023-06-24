@@ -1,16 +1,6 @@
-# AzukiHeart
+# Monitoring
 
-!!! bug
-
-    Azuki has actually problems on AMD cpu's
-
-
-!!! info
-
-    Repository: [AzukiHeart](https://github.com/kitsudaiki/AzukiHeart)
-
-
-Azuki has two major tasks to do:
+Their are two major tasks to do:
 
 1. read and observe system-information of CPU 
 

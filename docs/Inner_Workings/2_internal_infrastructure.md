@@ -20,10 +20,6 @@ The Sakura-Layer was initially invented in my side-project [SakuraTree](https://
 
 ### Hanami-Layer
 
-All repositories of this layer were created for the Hanami-AI-project. Same like the Sakura-Layer the content of this layer is all custom functionalities. Some of the libraries in this layer extend the functionalities of the Sakura-Layer, but all here was created in regard of the Hanami-AI-project, which makes the libraries of this layer more project-specific.
-
-### Hanami-AI-Layer
-
 The upper layer contains all executables of the project, like `AzukiHeart` and so on, and their specific libraries like `libAzukiHeart` and so on.
 
 ## **Database**
@@ -42,16 +38,17 @@ This library is only a wrapper for the sqlite-database. It's primary function is
 
 This here is a bit similar to SQLAlchemy, but of course only in an extremly minimal version. It provided `add`, `get`, `update` and `delete` functions, which are internally converted into SQL-queries, which are then send to `libKitsunemimiSqlite`. This makes database-access very easy. Beside this it also provides functions to define the structure of a table, with types and so on, which are also internally converts into SQL when creating a table. 
 
-#### libKitsunemimiHanamiDatabase
-
-At the moment this library provides only a few table-presets for `libKitsunemimiSakuraDatabase`, to makes some table-fields for all tables mandatory. 
-
 !!! info
 
     In the future, which library should also provide and handle version-upgrades of tables.
 
 
 ## **Network**
+
+!!! warning
+
+    This section is deprecated. Because it not clear, how this will continue and because `libKitsunemimiNetwork` and `libKitsunemimiSakuraNetwork` still exist within the repository, it still remains for now here in the documentation.
+
 
 The internal networking between the components is based on an own custom network-stack.
 
@@ -84,7 +81,7 @@ This library handles primary 2 tasks:
 
 #### libKitsunemimiSakuraLang
 
-This was originally the core-library of my automation-tool `SakuraTree`, which is deprecated. In this project here the library is reused in order to provide the base of the API-endpoints. Beside this, it validated the fields of all incoming and outgoing actions. With the help of this library, Misaki is able to generate the REST-API-documentation. 
+This was originally the core-library of my automation-tool `SakuraTree`, which is deprecated. In this project here the library is reused in order to provide the base of the API-endpoints. Beside this, it validated the fields of all incoming and outgoing actions. With the help of this library, Hanami is able to generate the REST-API-documentation. 
 
 !!! note
 
@@ -100,7 +97,7 @@ This library contains only protobuf-definitions for serialization and deserializ
 
 Messages can have 3 different ways through the network-stack.
 
-1. This way are the internal REST-APIs, triggered on side of the sender by `libKitsunemimiHanamiNetwork` and processed by the endpoints defined by `libKitsunemimiSakuraLang`. Each HTTP-message, which is received by the Torii, is internally forwarded over this message-path. Messages this way must contain a valid token, with is validated by Misaki, in case that the message comes from the Torii. Beside this, all fields of the message are validated based on the endpoint. This makes the message quite powerful in validation, but slow. The messages are already quite structured, so the containers of `libKitsunemimiHanamiMessages` are not necessary here.
+1. This way are the internal REST-APIs, triggered on side of the sender by `libKitsunemimiHanamiNetwork` and processed by the endpoints defined by `libKitsunemimiSakuraLang`. Each HTTP-message, which is received by the Torii, is internally forwarded over this message-path. Messages this way must contain a valid token, with is validated by Hanami, in case that the message comes from the Torii. Beside this, all fields of the message are validated based on the endpoint. This makes the message quite powerful in validation, but slow. The messages are already quite structured, so the containers of `libKitsunemimiHanamiMessages` are not necessary here.
 
 2. This path is for internal messages, which don't need internal API-endpoint, but either are bigger messages, or messages which still need a response in order to let the thread on the sender-side block until it receive a response. This layer only takes plain binary, so the message to send has to be serialized by the messages-library.
 

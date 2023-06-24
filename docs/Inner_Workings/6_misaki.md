@@ -1,13 +1,8 @@
-# MisakiGuard
-
-!!! info
-
-    Repository: [MisakiGuard](https://github.com/kitsudaiki/MisakiGuard)
-
+# Authentication
 
 ## Overview
 
-Misaki is the administrative component of the infrastructure with the following tasks:
+Folling tasks:
 
 - manage projects
 - manage user
@@ -26,7 +21,7 @@ Misaki is the administrative component of the infrastructure with the following 
     - can see all resources of all users in all projects
     - can manage (create, delete, ...) users and projects. This is hard defined by the code and can not be changed by the policy-file
     - an Admin-user can not deleted by him/her self, so at least one Admin does every time exist
-    - the initial Admin, after a rollout of a new deployment, is created by Misaki
+    - the initial Admin, after a rollout of a new deployment, is created by Hanami
     - Admins have per default the role `admin` and the project-id `admin`
 - **Project-Admin**: 
     - role is bonded to a specific project

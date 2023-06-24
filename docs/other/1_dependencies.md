@@ -54,15 +54,7 @@ I know, this is not a valid UML-diagram or something like this. It should old vi
 
 ### Components
 
-[KyoukoMind](#kyoukomind)
-
-[AzukiHeart](#azukiheart)
-
-[MisakiGuard](#misakiguard)
-
-[ShioriArchive](#shioriarchive)
-
-[ToriiGateway](#toriigateway)
+[Hanami](#Hanami)
 
 [TsugumiTester](#tsugumitester)
 
@@ -70,25 +62,13 @@ I know, this is not a valid UML-diagram or something like this. It should old vi
 
 ### Libraries
 
-[libAzukiHeart](#libazukiheart)
-
-[libMisakiGuard](#libmisakiguard)
-
-[libShioriArchive](#libshioriarchive)
-
 [libHanamiAiSdk](#libhanamiaisdk)
 
 [libKitsunemimiHanamiClusterParser](#libkitsunemimihanamisegmentparser)
 
 [libKitsunemimiHanamiSegmentParser](#libkitsunemimihanamiclusterparser)
 
-[libKitsunemimiHanamiNetwork](#libkitsunemimihanaminetwork)
-
-[libKitsunemimiHanamiPolicies](#libkitsunemimihanamipolicies)
-
-[libKitsunemimiHanamiDatabase](#libkitsunemimihanamidatabase)
-
-[libKitsunemimiHanamiCommon](#libkitsunemimihanamicommon)
+[libKitsunemimiHanamiPolicies](#libKitsunemimiHanamiPolicies)
 
 [libKitsunemimiSakuraNetwork](#libkitsunemimisakuranetwork)
 
@@ -129,53 +109,9 @@ I know, this is not a valid UML-diagram or something like this. It should old vi
 
 __________
 
-### KyoukoMind
+### Hanami
 
-- **content**: Provides an artificial neural network based on a concept created by myself. Since version 0.4.0 it also has some influences of the commonly used deep-learning concept. 
-Core characteristics:
-    - No fully meshed random connections between nodes at the beginning. All connections are only created while learning new information.
-    - No strict layer structure (layer-like structures are only optional).
-    - No limitation for to the range [0.0, 1.0] for input- and output-values.
-
-- **language**: `C++17`
-
-__________
-
-### AzukiHeart
-
-- **content**: 
-    - Ressource-management for all component in order to reduce the energyconsumption of the system
-    - Monitoring to keep the system stable
-
-- **language**: `C++17`
-__________
-
-### MisakiGuard
-
-- **content**: 
-    - User-management with credentials, roles and policies
-    - Create and validate JWT-Token
-    - Automatic generation of user-specific REST-API-documentations for all components at runtime
-
-- **language**: `C++17`
-
-__________
-
-### ShioriArchive
-
-- **content**: 
-    - Handling for all persisted objects in the backend (train-data, snapshots, etc.)
-    - Central logging
-        - Error-log
-        - Audit-log
-
-- **language**: `C++17`
-
-__________
-
-### ToriiGateway
-
-- **content**: Proxy for networking communication between the components.
+- **content**: Core of the Project
 
 - **language**: `C++17`
 
@@ -186,30 +122,6 @@ __________
 - **content**: 
     - Functional tests for SDK-library, REST-API and CLI-tool
     - Benchmark tests
-
-- **language**: `C++17`
-
-__________
-
-### libAzukiHeart
-
-- **content**: Lib for internal interaction with Azuki
-
-- **language**: `C++17`
-
-__________
-
-### libMisakiGuard
-
-- **content**: Lib for internal interaction with Misaki
-
-- **language**: `C++17`
-
-__________
-
-### libShioriArchive
-
-- **content**: Lib for internal interaction with Shiori
 
 - **language**: `C++17`
 
@@ -247,33 +159,10 @@ __________
 
 __________
 
-### libKitsunemimiHanamiNetwork
-
-- **content**: Additional application-layer of the project related network stack.
-
-- **language**: `C++17`
-
-__________
 
 ### libKitsunemimiHanamiPolicies
 
 - **content**: Parser for custon policy-files.
-
-- **language**: `C++17`
-
-__________
-
-### libKitsunemimiHanamiDatabase
-
-- **content**: Add user and project scroped handling of database-entries
-
-- **language**: `C++17`
-
-__________
-
-### libKitsunemimiHanamiCommon
-
-- **content**: Common library for the Hanami-Layer
 
 - **language**: `C++17`
 
