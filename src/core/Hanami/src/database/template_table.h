@@ -24,7 +24,7 @@
 #define TEMPLATETABLE_H
 
 #include <libKitsunemimiCommon/logger.h>
-#include <libKitsunemimiHanamiDatabase/hanami_sql_table.h>
+#include <database/generic_tables/hanami_sql_table.h>
 
 namespace Kitsunemimi {
 class JsonItem;

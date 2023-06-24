@@ -20,7 +20,7 @@
  *      limitations under the License.
  */
 
-#include <libKitsunemimiHanamiDatabase/hanami_sql_admin_table.h>
+#include "hanami_sql_admin_table.h"
 
 #include <libKitsunemimiSakuraDatabase/sql_database.h>
 

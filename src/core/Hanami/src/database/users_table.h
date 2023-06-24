@@ -24,7 +24,7 @@
 #define MISAKIGUARD_USERS_TABLE_H
 
 #include <libKitsunemimiCommon/logger.h>
-#include <libKitsunemimiHanamiDatabase/hanami_sql_admin_table.h>
+#include <database/generic_tables/hanami_sql_admin_table.h>
 
 namespace Kitsunemimi {
 class JsonItem;

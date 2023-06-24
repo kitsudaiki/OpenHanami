@@ -24,7 +24,7 @@
 #define SHIORIARCHIVE_ERROR_LOG_TABLE_H
 
 #include <libKitsunemimiCommon/logger.h>
-#include <libKitsunemimiHanamiDatabase/hanami_sql_log_table.h>
+#include <database/generic_tables/hanami_sql_log_table.h>
 
 namespace Kitsunemimi {
 class JsonItem;

@@ -4,11 +4,6 @@ TARGET = Hanami
 CONFIG += console
 CONFIG += c++17
 
-LIBS += -L../../libraries/libKitsunemimiHanamiDatabase/src -lKitsunemimiHanamiDatabase
-LIBS += -L../../libraries/libKitsunemimiHanamiDatabase/src/debug -lKitsunemimiHanamiDatabase
-LIBS += -L../../libraries/libKitsunemimiHanamiDatabase/src/release -lKitsunemimiHanamiDatabase
-INCLUDEPATH += ../../libraries/libKitsunemimiHanamiDatabase/include
-
 INCLUDEPATH += ../../libraries/libKitsunemimiHanamiMessages/protobuffers
 
 LIBS += -L../../libraries/libKitsunemimiHanamiCommon/src -lKitsunemimiHanamiCommon
@@ -286,6 +281,9 @@ HEADERS += \
     src/database/cluster_table.h \
     src/database/data_set_table.h \
     src/database/error_log_table.h \
+    src/database/generic_tables/hanami_sql_admin_table.h \
+    src/database/generic_tables/hanami_sql_log_table.h \
+    src/database/generic_tables/hanami_sql_table.h \
     src/database/projects_table.h \
     src/database/request_result_table.h \
     src/database/template_table.h \
@@ -394,6 +392,9 @@ SOURCES += \
     src/database/cluster_table.cpp \
     src/database/data_set_table.cpp \
     src/database/error_log_table.cpp \
+    src/database/generic_tables/hanami_sql_admin_table.cpp \
+    src/database/generic_tables/hanami_sql_log_table.cpp \
+    src/database/generic_tables/hanami_sql_table.cpp \
     src/database/projects_table.cpp \
     src/database/request_result_table.cpp \
     src/database/template_table.cpp \
