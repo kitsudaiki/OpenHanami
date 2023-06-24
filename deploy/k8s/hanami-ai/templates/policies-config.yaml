@@ -3,7 +3,6 @@ metadata:
   name: policies-config
 data:
   policies: |+
-    [misaki]
     v1/auth
     - GET: admin, member
 
@@ -34,7 +33,6 @@ data:
     v1/documentation/api/rest
     - GET: admin, member
 
-    [shiori]
     v1/foreward
     - GET: admin, member
 
@@ -80,11 +78,10 @@ data:
     v1/audit_log
     - GET: admin, member
 
-    v1/error_log
+    v1/error_log         
     - GET: admin
 
 
-    [azuki]
     v1/system_info
     - GET: admin, member
 
@@ -101,7 +98,6 @@ data:
     - GET: admin, member
 
 
-    [kyouko]
     v1/foreward
     - GET: admin, member
 
@@ -150,6 +146,7 @@ data:
 
     v1/task/all
     - GET : admin, member
+
 
 
 kind: ConfigMap

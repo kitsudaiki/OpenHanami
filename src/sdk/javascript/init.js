@@ -16,7 +16,7 @@
  
 function login_request(loginFunc, user, pw)
 {
-    const path = "/control/misaki/v1/token";
+    const path = "/control/v1/token";
     const reqContent = "{\"id\":\"" + user + "\",\"password\":\"" + pw + "\"}";
 
     let loginConnection = new XMLHttpRequest();
@@ -47,7 +47,8 @@ function login_request(loginFunc, user, pw)
 function checkTokenRequest(errorFunc, token)
 {
     // create request
-    const request = "/control/misaki/v1/auth?token=" + token;
+    const request = "/control/v1/auth?token=" + token;
+    console.log("TOKENNNNNNNNNNNNNNNNNNNNNNNNNNN: " + token);
     let authConnection = new XMLHttpRequest();
     authConnection.open("GET", request, true);
     authConnection.setRequestHeader("X-Auth-Token", token);

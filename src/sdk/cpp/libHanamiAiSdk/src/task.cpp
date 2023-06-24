@@ -56,7 +56,7 @@ createTask(std::string &result,
 
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/kyouko/v1/task";
+    const std::string path = "/control/v1/task";
     const std::string vars = "";
     const std::string jsonBody = "{\"name\":\""
                                  + name
@@ -101,7 +101,7 @@ getTask(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/kyouko/v1/task";
+    const std::string path = "/control/v1/task";
     std::string vars = "uuid=" + taskUuid + "&cluster_uuid=" + clusterUuid;
 
     // send request
@@ -120,7 +120,7 @@ getTask(std::string &result,
 }
 
 /**
- * @brief list all visible tasks on kyouko
+ * @brief list all visible tasks on hanami
  *
  * @param result reference for response-message
  * @param clusterUuid uuid of the cluster, which tasks should be listed
@@ -135,7 +135,7 @@ listTask(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/kyouko/v1/task/all?cluster_uuid=" + clusterUuid;
+    const std::string path = "/control/v1/task/all?cluster_uuid=" + clusterUuid;
 
     // send request
     if(request->sendGetRequest(result, path, "", error) == false)
@@ -149,7 +149,7 @@ listTask(std::string &result,
 }
 
 /**
- * @brief delete or abort a task from kyouko
+ * @brief delete or abort a task from hanami
  *
  * @param result reference for response-message
  * @param taskUuid uuid of the task, which should be deleted
@@ -166,7 +166,7 @@ deleteTask(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/kyouko/v1/task";
+    const std::string path = "/control/v1/task";
     const std::string vars = "uuid=" + taskUuid + "&clusterUuid=" + clusterUuid;
 
     // send request

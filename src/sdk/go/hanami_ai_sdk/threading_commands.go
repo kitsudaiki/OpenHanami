@@ -26,7 +26,7 @@ import (
 )
 
 func GetThreadMapping_Request() (bool, string) {
-	path := "control/azuki/v1/threading"
+	path := "control/v1/threading"
 	vars := ""
     return SendGet_Request(path, vars)
 }

@@ -16,18 +16,18 @@
 
 function getPowerData_request(outputFunc, token)
 {
-    let request = "/control/azuki/v1/power_consumption";
+    let request = "/control/v1/power_consumption";
     getObject_request(outputFunc, request, token);
 }
 
 function getTemperatureData_request(outputFunc, token)
 {
-    let request = "/control/azuki/v1/temperature_production";
+    let request = "/control/v1/temperature_production";
     getObject_request(outputFunc, request, token);
 }
 
 function getSpeedData_request(outputFunc, token)
 {
-    let request = "/control/azuki/v1/speed";
+    let request = "/control/v1/speed";
     getObject_request(outputFunc, request, token);
 }

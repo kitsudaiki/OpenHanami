@@ -1,10 +1,8 @@
 # Configs
 
-Each component has its own config-file, which is required for starting the serivce. 
+## **Hanami**
 
-## **Kyouko**
-
-*Default-Path*: `/etc/kyouko/kyouko.conf`
+*Default-Path*: `/etc/hanami/hanami.conf`
 
 **[DEFAULT]**
 
@@ -13,217 +11,21 @@ Each component has its own config-file, which is required for starting the seriv
 | debug | bool | Set to true to enable debug-output |
 | log_path | string | Directory-path, where the log-files should be written to. Directory must already exist. |
 | address | string | Path to the unix-domain-socket file. File doesn't have to exist and will be created when starting the service. |
-| database | string | Path to the sqlite database-file. If there is not already a database-file, it will automatically created and initialized when starting the service. |
 
-**[misaki]**
-
-| Field | Type | Description |
-| --- |  --- |  --- | 
-| address | string | Path to the unix-domain-socket file, where Misaki is listening. |
-
-**[shiori]**
-
-| Field | Type | Description |
-| --- |  --- |  --- | 
-| address | string | Path to the unix-domain-socket file, where Shiori is listening. |
-
-
-!!! example
-
-    ```
-    [DEFAULT]
-    #debug = true
-    log_path = "/var/log/kyouko"
-    address = "/tmp/hanami/kyouko.uds"
-    database = "/etc/kyouko/kyouko_db"
-
-    [misaki]
-    address = "/tmp/hanami/misaki.uds"
-
-    [shiori]
-    address = "/tmp/hanami/shiori.uds"
-    ```
-
-
-## **Shiori**
-
-*Default-Path*: `/etc/shiori/shiori.conf`
-
-**[DEFAULT]**
-
-| Field | Type | Description |
-| --- |  --- |  --- | 
-| debug | bool | Set to true to enable debug-output |
-| log_path | string | Directory-path, where the log-files should be written to. Directory must already exist. |
-| address | string | Path to the unix-domain-socket file. File doesn't have to exist and will be created when starting the service. |
-| database | string | Path to the sqlite database-file. If there is not already a database-file, it will automatically created and initialized when starting the service. |
-
-
-**[shiori]**
+**[storage]**
 
 | Field | Type | Description |
 | --- |  --- |  --- | 
 | data_set_location | string | Path to directory, where the uploaded data-sets should be stored |
 | cluster_snapshot_location | string | Path to directory, where the created snapshots coming from Kyouko should be stored |
 
-**[misaki]**
-
-| Field | Type | Description |
-| --- |  --- |  --- | 
-| address | string | Path to the unix-domain-socket file, where Misaki is listening. |
-
-!!! example
-
-    ```
-    [DEFAULT]
-    #debug = True
-    log_path = "/var/log/shiori"
-    address = "/tmp/hanami/shiori.uds"
-    database = "/etc/shiori/shiori_db"
-
-    [shiori]
-    data_set_location = "/etc/shiori/files"
-    cluster_snapshot_location = "/etc/shiori/files"
-
-    [misaki]
-    address = "/tmp/hanami/misaki.uds"
-    ```
-
-## **Misaki**
-
-*Default-Path*: `/etc/misaki/misaki.conf`
-
-**[DEFAULT]**
-
-| Field | Type | Description |
-| --- |  --- |  --- | 
-| debug | bool | Set to true to enable debug-output |
-| log_path | string | Directory-path, where the log-files should be written to. Directory must already exist. |
-| address | string | Path to the unix-domain-socket file. File doesn't have to exist and will be created when starting the service. |
-| database | string | Path to the sqlite database-file. If there is not already a database-file, it will automatically created and initialized when starting the service. |
-
-**[misaki]**
+**[auth]**
 
 | Field | Type | Description |
 | --- |  --- |  --- | 
 | token_key_path | string | Path to the file with the key for the JWT-Token-Creation and -Validation |
 | policies | string | Path to policy-file |
 | token_expire_time | int | Number of seconds until a new created JWT-token is expired |
-
-**[azuki]**
-
-| Field | Type | Description |
-| --- |  --- |  --- | 
-| address | string | Path to the unix-domain-socket file, where Azuki is listening. |
-
-**[shiori]**
-
-| Field | Type | Description |
-| --- |  --- |  --- | 
-| address | string | Path to the unix-domain-socket file, where Shiori is listening. |
-
-**[kyouko]**
-
-| Field | Type | Description |
-| --- |  --- |  --- | 
-| address | string | Path to the unix-domain-socket file, where Kyouko is listening. |
-
-!!! example
-
-    ```
-    [DEFAULT]
-    #debug = True
-    log_path = "/var/log/misaki"
-    address = "/tmp/hanami/misaki.uds"
-    database = "/etc/misaki/misaki_db"
-
-    [misaki]
-    token_key_path = "/etc/misaki/token_key"
-    policies = "/etc/misaki/policies"
-    token_expire_time = {{ .Values.token.expire_time }}
-
-    [azuki]
-    address = "/tmp/azuki.uds"
-
-    [shiori]
-    address = "/tmp/hanami/shiori.uds"
-
-    [kyouko]
-    address = "/tmp/hanami/kyouko.uds"
-    ```
-
-## **Azuki**
-
-*Default-Path*: `/etc/azuki/azuki.conf`
-
-
-**[DEFAULT]**
-
-| Field | Type | Description |
-| --- |  --- |  --- | 
-| debug | bool | Set to true to enable debug-output |
-| log_path | string | Directory-path, where the log-files should be written to. Directory must already exist. |
-| address | string | Path to the unix-domain-socket file. File doesn't have to exist and will be created when starting the service. |
-| database | string | Path to the sqlite database-file. If there is not already a database-file, it will automatically created and initialized when starting the service. |
-
-**[torii]**
-
-| Field | Type | Description |
-| --- |  --- |  --- | 
-| address | string | Path to the unix-domain-socket file, where Torii is listening. |
-
-**[misaki]**
-
-| Field | Type | Description |
-| --- |  --- |  --- | 
-| address | string | Path to the unix-domain-socket file, where Misaki is listening. |
-
-**[shiori]**
-
-| Field | Type | Description |
-| --- |  --- |  --- | 
-| address | string | Path to the unix-domain-socket file, where Shiori is listening. |
-
-**[kyouko]**
-
-| Field | Type | Description |
-| --- |  --- |  --- | 
-| address | string | Path to the unix-domain-socket file, where Kyouko is listening. |
-
-!!! example
-
-    ```
-    [DEFAULT]
-    #debug = True
-    log_path = "/var/log/azuki"
-    sakura-file-locaion = "/etc/azuki/sakura-files"
-    address = "/tmp/hanami/azuki.uds"
-    database = "/etc/azuki/azuki_db"
-
-    [torii]
-    address = "/tmp/hanami/torii.uds"
-
-    [misaki]
-    address = "/tmp/hanami/misaki.uds"
-
-    [shiori]
-    address = "/tmp/hanami/shiori.uds"
-
-    [kyouko]
-    address = "/tmp/hanami/kyouko.uds"
-    ```
-
-## **Torii**
-
-*Default-Path*: `/etc/torii/torii.conf`
-
-**[DEFAULT]**
-
-| Field | Type | Description |
-| --- |  --- |  --- | 
-| debug | bool | Set to true to enable debug-output |
-| log_path | string | Directory-path, where the log-files should be written to. Directory must already exist. |
-| address | string | Path to the unix-domain-socket file. File doesn't have to exist and will be created when starting the service. |
 
 **[http]**
 
@@ -237,58 +39,35 @@ Each component has its own config-file, which is required for starting the seriv
 | dashboard_files | string | Path to directory, which contains the source-code of the dashboard | 
 | enable_dashboard | bool | True to provide Dashboard |
 
-**[azuki]**
-
-| Field | Type | Description |
-| --- |  --- |  --- | 
-| address | string | Path to the unix-domain-socket file, where Azuki is listening. |
-
-**[misaki]**
-
-| Field | Type | Description |
-| --- |  --- |  --- | 
-| address | string | Path to the unix-domain-socket file, where Misaki is listening. |
-
-**[shiori]**
-
-| Field | Type | Description |
-| --- |  --- |  --- | 
-| address | string | Path to the unix-domain-socket file, where Shiori is listening. |
-
-**[kyouko]**
-
-| Field | Type | Description |
-| --- |  --- |  --- | 
-| address | string | Path to the unix-domain-socket file, where Kyouko is listening. |
-
 !!! example
 
     ```
     [DEFAULT]
-    #debug = True
-    log_path = "/var/log/torii"
-    address = "/tmp/hanami/torii.uds"
+    debug = True
+    log_path = "/var/log"
+    database = "/etc/hanami/hanami_db"
+    socket_path = "/tmp/hanami"
+
+    [storage]
+    data_set_location = "/etc/hanami/train_data"
+    cluster_snapshot_location = "/etc/hanami/cluster_snapshots"
+
+    [auth]
+    policies = "/etc/hanami/policies"
+    token_key_path = "/etc/hanami/token_key"
+    token_expire_time = 3600
 
     [http]
     enable = True
     ip = "0.0.0.0"
     certificate = "/etc/torii/cert.pem"
     key = "/etc/torii/key.pem"
-    dashboard_files = "/etc/torii/Hanami-AI-Dashboard/src"
+    dashboard_files = "/etc/hanami/frontend/Hanami-AI-Dashboard/src"
     port = 1337
     enable_dashboard = True
 
-    [misaki]
-    address = "/tmp/hanami/misaki.uds"
-
     [azuki]
-    address = "/tmp/hanami/azuki.uds"
-
-    [shiori]
-    address = "/tmp/hanami/shiori.uds"
-
-    [kyouko]
-    address = "/tmp/hanami/kyouko.uds"
+    enable = False
     ```
 
 

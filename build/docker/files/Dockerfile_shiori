@@ -1,6 +1,0 @@
-FROM kitsudaiki/hanami_ai_base:develop
-
-RUN mkdir -p /etc/shiori
-COPY Hanami-AI/src/components/ShioriArchive/ShioriArchive /usr/bin/ShioriArchive
-CMD ShioriArchive
-

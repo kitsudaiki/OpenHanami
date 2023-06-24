@@ -265,7 +265,7 @@ HanamiRequest::requestToken(Kitsunemimi::ErrorContainer &error)
     }
 
     // build request-path and body
-    const std::string path = "/control/misaki/v1/token";
+    const std::string path = "/control/v1/token";
     const std::string jsonBody = "{\"id\":\""
                                  + m_userId
                                  + "\",\"password\":\""

@@ -51,6 +51,7 @@ WebsocketClient::~WebsocketClient()
  * @param target name of the target on server-side behind the torii
  * @param host address of the torii
  * @param port port where the server is listen on target-side
+ * @param targetUuid uuid of the target-resource
  * @param error reference for error-output
  *
  * @return true, if successful, else false
@@ -61,6 +62,7 @@ WebsocketClient::initClient(std::string &socketUuid,
                             const std::string &target,
                             const std::string &host,
                             const std::string &port,
+                            const std::string &targetUuid,
                             Kitsunemimi::ErrorContainer &error)
 {
     try
@@ -109,6 +111,8 @@ WebsocketClient::initClient(std::string &socketUuid,
         initialMsg.append(token);
         initialMsg.append("\",\"target\":\"");
         initialMsg.append(target);
+        initialMsg.append("\",\"uuid\":\"");
+        initialMsg.append(targetUuid);
         initialMsg.append("\"}");
 
         // Send the message

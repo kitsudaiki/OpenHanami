@@ -20,13 +20,13 @@ spec:
         imagePullPolicy: Always
         securityContext:
           runAsUser: 0
-        command: ["cp", "-r", "/etc/Hanami-AI-Dashboard", "/etc/torii/"]
+        command: ["cp", "-r", "/etc/Hanami-AI-Dashboard", "/etc/hanami/"]
         volumeMounts:
         - name: dashboard-volume
-          mountPath: /etc/torii/Hanami-AI-Dashboard
+          mountPath: /etc/hanami/Hanami-AI-Dashboard
       containers:
-      - name: misaki
-        image: {{ .Values.docker.registry }}/misaki_guard:{{ .Values.docker.tag }}
+      - name: hanami
+        image: {{ .Values.docker.registry }}/hanami:{{ .Values.docker.tag }}
         imagePullPolicy: Always
         env:
         - name: HANAMI_ADMIN_USER_ID
@@ -36,78 +36,26 @@ spec:
         - name: HANAMI_ADMIN_PASSWORD
           value: {{ .Values.user.pw }}
         volumeMounts:
-        - name: misaki-config
-          mountPath: /etc/misaki/misaki.conf
-          subPath: misaki.conf
+        - name: hanami-config
+          mountPath: /etc/hanami/hanami.conf
+          subPath: hanami.conf
         - name: policies-config
-          mountPath: /etc/misaki/policies
+          mountPath: /etc/hanami/policies
           subPath: policies
         - name: token-key
-          mountPath: /etc/misaki/token_key
+          mountPath: /etc/hanami/token_key
           subPath: token_key
         - name: hanami-sockets-volume
           mountPath: /tmp/hanami
-      - name: shiori
-        image: {{ .Values.docker.registry }}/shiori_archive:{{ .Values.docker.tag }}
-        imagePullPolicy: Always
-        volumeMounts:
-        - name: shiori-config
-          mountPath: /etc/shiori/shiori.conf
-          subPath: shiori.conf
-        - name: files-volume
-          mountPath: /etc/shiori/files
-        - name: hanami-sockets-volume
-          mountPath: /tmp/hanami
-      - name: kyouko
-        image: {{ .Values.docker.registry }}/kyouko_mind:{{ .Values.docker.tag }}
-        imagePullPolicy: Always
-        volumeMounts:
-        - name: kyouko-config
-          mountPath: /etc/kyouko/kyouko.conf
-          subPath: kyouko.conf
-        - name: hanami-sockets-volume
-          mountPath: /tmp/hanami
-      - name: azuki
-        image: {{ .Values.docker.registry }}/azuki_heart:{{ .Values.docker.tag }}
-        imagePullPolicy: Always
-        securityContext:
-          privileged: true
-        volumeMounts:
-        - name: azuki-config
-          mountPath: /etc/azuki/azuki.conf
-          subPath: azuki.conf
-        - name: hanami-sockets-volume
-          mountPath: /tmp/hanami
-      - name: torii
-        image: {{ .Values.docker.registry }}/torii_gateway:{{ .Values.docker.tag }}
-        imagePullPolicy: Always
-        volumeMounts:
-        - name: torii-config
-          mountPath: /etc/torii/torii.conf
-          subPath: torii.conf
-        - name: hanami-sockets-volume
-          mountPath: /tmp/hanami
         - name: dashboard-volume
-          mountPath: /etc/torii/Hanami-AI-Dashboard
+          mountPath: /etc/hanami/Hanami-AI-Dashboard
         ports:
         - containerPort: 1337
-          name: torii-port
+          name: hanami-port
       volumes:
-        - name: misaki-config
+        - name: hanami-config
           configMap:
-            name: misaki-config
-        - name: shiori-config
-          configMap:
-            name: shiori-config
-        - name: kyouko-config
-          configMap:
-            name: kyouko-config
-        - name: azuki-config
-          configMap:
-            name: azuki-config
-        - name: torii-config
-          configMap:
-            name: torii-config
+            name: hanami-config
         - name: policies-config
           configMap:
             name: policies-config

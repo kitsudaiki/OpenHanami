@@ -29,7 +29,7 @@
 #include <libKitsunemimiCommon/items/data_items.h>
 #include <libKitsunemimiCommon/files/binary_file.h>
 
-#include <../../../libraries/libKitsunemimiHanamiMessages/protobuffers/shiori_messages.proto3.pb.h>
+#include <../../../libraries/libKitsunemimiHanamiMessages/protobuffers/hanami_messages.proto3.pb.h>
 
 namespace HanamiAI
 {
@@ -66,7 +66,7 @@ createCsvDataSet(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/shiori/v1/csv/data_set";
+    const std::string path = "/control/v1/csv/data_set";
     const std::string vars = "";
     const std::string jsonBody = "{\"name\":\""    + dataSetName + "\""
                                  ",\"input_data_size\":" + std::to_string(inputDataSize) + "}";
@@ -97,7 +97,7 @@ finalizeCsvDataSet(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/shiori/v1/csv/data_set";
+    const std::string path = "/control/v1/csv/data_set";
     const std::string vars = "";
     const std::string jsonBody = "{\"uuid\":\""    + uuid + "\""
                                  ",\"uuid_input_file\":\"" + inputUuid + "\"}";
@@ -130,7 +130,7 @@ createMnistDataSet(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/shiori/v1/mnist/data_set";
+    const std::string path = "/control/v1/mnist/data_set";
     const std::string vars = "";
     const std::string jsonBody = "{\"name\":\""    + dataSetName + "\""
                                  ",\"input_data_size\":" + std::to_string(inputDataSize) +
@@ -164,7 +164,7 @@ finalizeMnistDataSet(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/shiori/v1/mnist/data_set";
+    const std::string path = "/control/v1/mnist/data_set";
     const std::string vars = "";
     const std::string jsonBody = "{\"uuid\":\""    + uuid + "\""
                                  ",\"uuid_input_file\":\"" + inputUuid + "\""
@@ -342,6 +342,7 @@ uploadCsvData(std::string &result,
                                          "shiori",
                                          HanamiRequest::getInstance()->getHost(),
                                          HanamiRequest::getInstance()->getPort(),
+                                         "",
                                          error);
     if(ret == false)
     {
@@ -422,6 +423,7 @@ uploadMnistData(std::string &result,
                                          "shiori",
                                          HanamiRequest::getInstance()->getHost(),
                                          HanamiRequest::getInstance()->getPort(),
+                                         "",
                                          error);
     if(ret == false)
     {
@@ -482,7 +484,7 @@ checkDataset(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/shiori/v1/data_set/check";
+    const std::string path = "/control/v1/data_set/check";
     const std::string vars = "";
     const std::string jsonBody = "{\"data_set_uuid\":\"" + dataUuid + "\""
                                  ",\"result_uuid\":\"" + resultUuid + "\"}";
@@ -511,7 +513,7 @@ getDataset(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/shiori/v1/data_set";
+    const std::string path = "/control/v1/data_set";
     const std::string vars = "uuid=" + dataUuid;
 
     // send request
@@ -539,7 +541,7 @@ listDatasets(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/shiori/v1/data_set/all";
+    const std::string path = "/control/v1/data_set/all";
 
     // send request
     if(request->sendGetRequest(result, path, "", error) == false)
@@ -568,7 +570,7 @@ deleteDataset(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/shiori/v1/data_set";
+    const std::string path = "/control/v1/data_set";
     const std::string vars = "uuid=" + dataUuid;
 
     // send request
@@ -598,7 +600,7 @@ getDatasetProgress(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/shiori/v1/data_set/progress";
+    const std::string path = "/control/v1/data_set/progress";
     const std::string vars = "uuid=" + dataUuid;
 
     // send request

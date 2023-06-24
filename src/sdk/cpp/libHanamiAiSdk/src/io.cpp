@@ -24,7 +24,7 @@
 
 #include <libHanamiAiSdk/common/websocket_client.h>
 
-#include <../../libKitsunemimiHanamiMessages/protobuffers/kyouko_messages.proto3.pb.h>
+#include <../../libKitsunemimiHanamiMessages/protobuffers/hanami_messages.proto3.pb.h>
 
 namespace HanamiAI
 {

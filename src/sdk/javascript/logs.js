@@ -16,7 +16,7 @@
 
 function listAuditLogs_request(outputFunc, userId, page, token)
 {
-    let request = "/control/shiori/v1/audit_log?";
+    let request = "/control/v1/audit_log?";
     if(userId !== "") {
         request += "user_id=" + userId + "&";
     }
@@ -26,6 +26,6 @@ function listAuditLogs_request(outputFunc, userId, page, token)
  
 function listErrorLogs_request(outputFunc, userId, page, token)
 {
-    const request = "/control/shiori/v1/error_log?user_id=" + userId + "&page=" + page;
+    const request = "/control/v1/error_log?user_id=" + userId + "&page=" + page;
     getObject_request(outputFunc, request, token);
 }

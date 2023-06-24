@@ -28,7 +28,7 @@ import (
 
 func CreateCluster_Request(data string) (bool, string) {
 	jsonBody := fmt.Sprintf("{\"data\":\"%s\"}", data)
-	path := "control/kyouko/v1/cluster"
+	path := "control/v1/cluster"
 	vars := ""
     return SendPost_Request(path, vars, jsonBody)
 }

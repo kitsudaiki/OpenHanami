@@ -1,6 +1,0 @@
-FROM kitsudaiki/hanami_ai_base:develop
-
-RUN mkdir -p /etc/azuki
-COPY Hanami-AI/src/components/AzukiHeart/AzukiHeart /usr/bin/AzukiHeart
-CMD AzukiHeart
-

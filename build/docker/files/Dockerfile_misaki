@@ -1,5 +1,0 @@
-FROM kitsudaiki/hanami_ai_base:develop
-
-RUN mkdir -p /etc/misaki
-COPY Hanami-AI/src/components/MisakiGuard/MisakiGuard /usr/bin/MisakiGuard
-CMD MisakiGuard

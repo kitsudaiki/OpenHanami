@@ -64,7 +64,6 @@ class PolicyParserInterface;
     Kitsunemimi::Hanami::PolicyParser::symbol_type policylex (Kitsunemimi::Hanami::PolicyParserInterface& driver)
 YY_DECL;
 
-std::map<std::string, Kitsunemimi::Hanami::PolicyEntry> tempPolicy;
 Kitsunemimi::Hanami::PolicyEntry tempPolicyEntry;
 std::vector<std::string> tempRules;
 }
@@ -94,27 +93,23 @@ std::vector<std::string> tempRules;
 %start policy_content;
 
 policy_content:
-    policy_content "[" "identifier" "]" component_policy_content
+    policy_content component_policy_content
     {
-        driver.m_result->insert(std::make_pair($3, tempPolicy));
     }
 |
-    "[" "identifier" "]" component_policy_content
+    component_policy_content
     {
-        driver.m_result->clear();
-        driver.m_result->insert(std::make_pair($2, tempPolicy));
     }
 
 component_policy_content:
     component_policy_content endpoint policy_entry
     {
-        tempPolicy.insert(std::make_pair($2, tempPolicyEntry));
+        driver.m_result->insert(std::make_pair($2, tempPolicyEntry));
     }
 |
     endpoint policy_entry
     {
-        tempPolicy.clear();
-        tempPolicy.insert(std::make_pair($1, tempPolicyEntry));
+        driver.m_result->insert(std::make_pair($1, tempPolicyEntry));
     }
 
 policy_entry:

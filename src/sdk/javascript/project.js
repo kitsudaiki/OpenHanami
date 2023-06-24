@@ -16,19 +16,19 @@
  
 function createProject_request(outputFunc, projectId, name, token)
 {
-    const path = "/control/misaki/v1/project";
+    const path = "/control/v1/project";
     const reqContent = "{\"id\":\"" + projectId + "\",\"name\":\"" + name + "\"}";
     createObject_request(outputFunc, path, reqContent, token);
 }
 
 function listProjects_request(outputFunc, token)
 {
-    listObjects_request(outputFunc, "/control/misaki/v1/project/all", token);
+    listObjects_request(outputFunc, "/control/v1/project/all", token);
 }
 
 function deleteProject_request(postProcessFunc, projectId, token)
 {
-    const request = "/control/misaki/v1/project?id=" + projectId;
+    const request = "/control/v1/project?id=" + projectId;
     deleteObject_request(postProcessFunc, request, token);
 }
 

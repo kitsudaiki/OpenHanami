@@ -28,7 +28,7 @@ namespace HanamiAI
 {
 
 /**
- * @brief upload a template to the kyouko
+ * @brief upload a template to the hanami
  *
  * @param result reference for response-message
  * @param templateName name of the new template
@@ -53,7 +53,7 @@ uploadTemplate(std::string &result,
                                       segmentTemplate.size());
 
     // create request
-    const std::string path = "/control/kyouko/v1/template/upload";
+    const std::string path = "/control/v1/template/upload";
     const std::string vars = "";
     const std::string jsonBody = "{\"name\":\""
                                  + templateName
@@ -73,7 +73,7 @@ uploadTemplate(std::string &result,
 }
 
 /**
- * @brief get a specific template from kyouko
+ * @brief get a specific template from hanami
  *
  * @param result reference for response-message
  * @param templateUuid uuid of the template to get
@@ -88,7 +88,7 @@ getTemplate(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/kyouko/v1/template";
+    const std::string path = "/control/v1/template";
     const std::string vars = "uuid=" + templateUuid;
 
     // send request
@@ -103,7 +103,7 @@ getTemplate(std::string &result,
 }
 
 /**
- * @brief list all visible templates on kyouko
+ * @brief list all visible templates on hanami
  *
  * @param result reference for response-message
  * @param error reference for error-output
@@ -116,7 +116,7 @@ listTemplate(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/kyouko/v1/template/all";
+    const std::string path = "/control/v1/template/all";
 
     // send request
     if(request->sendGetRequest(result, path, "", error) == false)
@@ -130,7 +130,7 @@ listTemplate(std::string &result,
 }
 
 /**
- * @brief delete a template form kyouko
+ * @brief delete a template form hanami
  *
  * @param result reference for response-message
  * @param templateUuid uuid of the template to delete
@@ -145,7 +145,7 @@ deleteTemplate(std::string &result,
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/kyouko/v1/template";
+    const std::string path = "/control/v1/template";
     const std::string vars = "uuid=" + templateUuid;
 
     // send request

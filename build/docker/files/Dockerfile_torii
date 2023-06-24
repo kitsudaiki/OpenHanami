@@ -1,7 +1,0 @@
-FROM kitsudaiki/hanami_ai_base:develop
-
-RUN mkdir -p /etc/torii
-COPY Hanami-AI/src/components/ToriiGateway/ToriiGateway /usr/bin/ToriiGateway
-Copy torii_run.sh /
-CMD /torii_run.sh
-

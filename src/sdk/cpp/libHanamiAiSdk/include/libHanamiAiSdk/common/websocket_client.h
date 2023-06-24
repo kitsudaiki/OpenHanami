@@ -56,6 +56,7 @@ public:
                     const std::string &target,
                     const std::string &host,
                     const std::string &port,
+                    const std::string &targetUuid,
                     Kitsunemimi::ErrorContainer &error);
     bool sendMessage(const void* data,
                      const uint64_t dataSize,

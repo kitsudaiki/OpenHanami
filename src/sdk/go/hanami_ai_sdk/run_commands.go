@@ -27,7 +27,7 @@ import (
 )
 
 func RunLearn_Request(number_of_inputs_per_cycle string, number_of_outputs_per_cycle string, number_of_cycles string, cluster_uuid string, inputs string, label string) (bool, string) {
-	path := "control/kyouko/v1/io"
+	path := "control/v1/io"
 	vars := ""
 	jsonBody := fmt.Sprintf("{\"number_of_inputs_per_cycle\":%s, \"number_of_outputs_per_cycle\":%s, \"number_of_cycles\":%s, \"cluster_uuid\":\"%s\", \"inputs\":\"%s\", \"label\":\"%s\"}", 
 	                        number_of_inputs_per_cycle, 
@@ -40,7 +40,7 @@ func RunLearn_Request(number_of_inputs_per_cycle string, number_of_outputs_per_c
 }
 
 func RunAsk_Request(number_of_inputs_per_cycle string, number_of_cycles string, cluster_uuid string, inputs string) (bool, string) {
-	path := "control/kyouko/v1/io"
+	path := "control/v1/io"
 	vars := ""
 	jsonBody := fmt.Sprintf("{\"number_of_inputs_per_cycle\":%s, \"number_of_cycles\":%s, \"cluster_uuid\":\"%s\", \"inputs\":\"%s\"}", 
 	                        number_of_inputs_per_cycle, 

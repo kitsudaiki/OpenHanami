@@ -16,18 +16,18 @@
 
 function getRequestResultData_request(outputFunc, resultUuid, token)
 {
-    const request = "/control/shiori/v1/request_result?uuid=" + resultUuid;
+    const request = "/control/v1/request_result?uuid=" + resultUuid;
     getObject_request(outputFunc, request, token);
 }
 
 function listResults_request(outputFunc, token)
 {
-    listObjects_request(outputFunc, "/control/shiori/v1/request_result/all", token);
+    listObjects_request(outputFunc, "/control/v1/request_result/all", token);
 }
 
 function deleteResult_request(postProcessFunc, resultUuid, token)
 {
-    const request = "/control/shiori/v1/request_result?uuid=" + resultUuid;
+    const request = "/control/v1/request_result?uuid=" + resultUuid;
     deleteObject_request(postProcessFunc, request, token);
 }
 

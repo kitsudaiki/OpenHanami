@@ -27,14 +27,14 @@ import (
 )
 
 func UploadTrainData_Request(name string, dataType string, data string) (bool, string) {
-	path := "control/sagiri/train_data"
+	path := "control/train_data"
 	vars := ""
 	jsonBody := fmt.Sprintf("{\"name\":%s,\"type\":%s,\"data\":%s}", name, dataType, data)
     return SendPost_Request(path, vars, jsonBody)
 }
 
 func GetTrainData_Request(data_uuid string, with_data bool) (bool, string) {
-	path := "control/sagiri/train_data"
+	path := "control/train_data"
 	vars := fmt.Sprintf("uuid=%s", data_uuid)
 	if with_data {
 		vars += "&with_data=true"
@@ -45,7 +45,7 @@ func GetTrainData_Request(data_uuid string, with_data bool) (bool, string) {
 }
 
 func ListTrainData_Request() (bool, string) {
-	path := fmt.Sprintf("control/sagiri/train_datas")
+	path := fmt.Sprintf("control/train_datas")
 	vars := ""
     return SendGet_Request(path, vars)
 }

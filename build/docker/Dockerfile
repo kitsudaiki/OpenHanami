@@ -10,12 +10,8 @@ RUN apt-get install -y apt-transport-https ca-certificates curl software-propert
 RUN mkdir /dockerbuilder
 COPY files/build_components.sh /dockerbuilder 
 COPY files/Dockerfile_base /dockerbuilder
-COPY files/Dockerfile_kyouko /dockerbuilder
-COPY files/Dockerfile_misaki /dockerbuilder
-COPY files/Dockerfile_azuki /dockerbuilder
-COPY files/Dockerfile_shiori /dockerbuilder
-COPY files/Dockerfile_torii /dockerbuilder
-COPY files/torii_run.sh /dockerbuilder
+COPY files/Dockerfile_hanami /dockerbuilder
+COPY files/hanami_run.sh /dockerbuilder
 COPY files/Dockerfile_dashboard /dockerbuilder
 
 WORKDIR /dockerbuilder
