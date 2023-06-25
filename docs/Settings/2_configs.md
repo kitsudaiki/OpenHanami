@@ -71,9 +71,9 @@
     ```
 
 
-## **Tsugumi**
+## **SDK_API_Testing**
 
-*Default-Path*: `/etc/tsugumi/tsugumi.conf`
+*Default-Path*: `/etc/hanami/hanami_testing.conf`
 
 **[DEFAULT]**
 
