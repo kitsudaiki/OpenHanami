@@ -63,7 +63,7 @@ ListClusterSnapshot::runTask(BlossomIO &blossomIO,
 
     // get data from table
     Kitsunemimi::TableItem table;
-    if(HanamiRoot::clusterSnapshotTable->getAllClusterSnapshot(table, userContext, error) == false)
+    if(ClusterSnapshotTable::getInstance()->getAllClusterSnapshot(table, userContext, error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;

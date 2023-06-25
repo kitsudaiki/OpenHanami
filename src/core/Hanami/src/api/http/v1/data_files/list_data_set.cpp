@@ -64,7 +64,7 @@ ListDataSet::runTask(BlossomIO &blossomIO,
 
     // get data from table
     Kitsunemimi::TableItem table;
-    if(HanamiRoot::dataSetTable->getAllDataSet(table, userContext, error) == false)
+    if(DataSetTable::getInstance()->getAllDataSet(table, userContext, error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;

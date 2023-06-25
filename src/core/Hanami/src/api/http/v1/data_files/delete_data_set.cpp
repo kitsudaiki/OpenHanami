@@ -60,11 +60,11 @@ DeleteDataSet::runTask(BlossomIO &blossomIO,
 
     // get location from database
     Kitsunemimi::JsonItem result;
-    if(HanamiRoot::dataSetTable->getDataSet(result,
-                                            dataUuid,
-                                            userContext,
-                                            error,
-                                            true) == false)
+    if(DataSetTable::getInstance()->getDataSet(result,
+                                               dataUuid,
+                                               userContext,
+                                               error,
+                                               true) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
@@ -74,7 +74,7 @@ DeleteDataSet::runTask(BlossomIO &blossomIO,
     const std::string location = result.get("location").getString();
 
     // delete entry from db
-    if(HanamiRoot::dataSetTable->deleteDataSet(dataUuid, userContext, error) == false)
+    if(DataSetTable::getInstance()->deleteDataSet(dataUuid, userContext, error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;

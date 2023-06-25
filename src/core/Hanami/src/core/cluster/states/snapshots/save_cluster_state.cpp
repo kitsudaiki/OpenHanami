@@ -118,9 +118,9 @@ SaveCluster_State::processEvent()
         dbEntry.insert("temp_files", "");
 
         // add to database
-        if(HanamiRoot::clusterSnapshotTable->addClusterSnapshot(dbEntry,
-                                                                userContext,
-                                                                error) == false)
+        if(ClusterSnapshotTable::getInstance()->addClusterSnapshot(dbEntry,
+                                                                   userContext,
+                                                                   error) == false)
         {
             break;
         }

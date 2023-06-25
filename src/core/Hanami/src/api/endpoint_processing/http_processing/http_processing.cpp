@@ -200,9 +200,9 @@ checkPermission(Kitsunemimi::JsonItem &tokenData,
     const std::string role = tokenData.get("role").getString();
 
     // check policy
-    if(HanamiRoot::policies->checkUserAgainstPolicy(endpoint,
-                                                    httpType,
-                                                    role) == false)
+    if(Policy::getInstance()->checkUserAgainstPolicy(endpoint,
+                                                     httpType,
+                                                     role) == false)
     {
         responseMsg.success = false;
         responseMsg.type = UNAUTHORIZED_RTYPE;
@@ -287,12 +287,12 @@ processControlRequest(http::response<http::dynamic_body> &httpResponse,
     }
 
     // write new audit-entry to database
-    if(HanamiRoot::auditLogTable->addAuditLogEntry(getDatetime(),
-                                                   tokenData.get("id").getString(),
-                                                   target,
-                                                   hanamiRequest.id,
-                                                   httpTypeStr,
-                                                   error) == false)
+    if(AuditLogTable::getInstance()->addAuditLogEntry(getDatetime(),
+                                                      tokenData.get("id").getString(),
+                                                      target,
+                                                      hanamiRequest.id,
+                                                      httpTypeStr,
+                                                      error) == false)
     {
         error.addMeesage("ERROR: Failed to write audit-log into database");
         return internalError_ResponseBuild(httpResponse, error);

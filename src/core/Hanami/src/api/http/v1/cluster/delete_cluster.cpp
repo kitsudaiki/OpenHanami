@@ -61,7 +61,7 @@ DeleteCluster::runTask(BlossomIO &blossomIO,
 
     // check if user exist within the table
     Kitsunemimi::JsonItem getResult;
-    if(HanamiRoot::clustersTable->getCluster(getResult, clusterUuid, userContext, error) == false)
+    if(ClusterTable::getInstance()->getCluster(getResult, clusterUuid, userContext, error) == false)
     {
         status.errorMessage = "Cluster with uuid '" + clusterUuid + "' not found.";
         status.statusCode = NOT_FOUND_RTYPE;
@@ -70,7 +70,7 @@ DeleteCluster::runTask(BlossomIO &blossomIO,
     }
 
     // remove data from table
-    if(HanamiRoot::clustersTable->deleteCluster(clusterUuid, userContext, error) == false)
+    if(ClusterTable::getInstance()->deleteCluster(clusterUuid, userContext, error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Failed to delete cluster with UUID '" + clusterUuid + "' from database");
@@ -79,7 +79,7 @@ DeleteCluster::runTask(BlossomIO &blossomIO,
 
     // remove internal data
     const std::string uuid = getResult.get("uuid").getString();
-    if(HanamiRoot::m_clusterHandler->removeCluster(uuid) == false)
+    if(ClusterHandler::getInstance()->removeCluster(uuid) == false)
     {
         // should never be false, because the uuid is already defined as unique by the database
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;

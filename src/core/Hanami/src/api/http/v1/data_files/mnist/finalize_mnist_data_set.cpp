@@ -86,7 +86,7 @@ FinalizeMnistDataSet::runTask(BlossomIO &blossomIO,
 
     // get location from database
     Kitsunemimi::JsonItem result;
-    if(HanamiRoot::dataSetTable->getDataSet(result, uuid, userContext, error, true) == false)
+    if(DataSetTable::getInstance()->getDataSet(result, uuid, userContext, error, true) == false)
     {
         status.errorMessage = "Data with uuid '" + uuid + "' not found.";
         status.statusCode = NOT_FOUND_RTYPE;
@@ -95,7 +95,7 @@ FinalizeMnistDataSet::runTask(BlossomIO &blossomIO,
 
     // read input-data from temp-file
     Kitsunemimi::DataBuffer inputBuffer;
-    if(HanamiRoot::tempFileHandler->getData(inputBuffer, inputUuid) == false)
+    if(TempFileHandler::getInstance()->getData(inputBuffer, inputUuid) == false)
     {
         status.errorMessage = "Input-data with uuid '" + inputUuid + "' not found.";
         status.statusCode = NOT_FOUND_RTYPE;
@@ -104,7 +104,7 @@ FinalizeMnistDataSet::runTask(BlossomIO &blossomIO,
 
     // read label from temp-file
     Kitsunemimi::DataBuffer labelBuffer;
-    if(HanamiRoot::tempFileHandler->getData(labelBuffer, labelUuid) == false)
+    if(TempFileHandler::getInstance()->getData(labelBuffer, labelUuid) == false)
     {
         status.errorMessage = "Label-data with uuid '" + inputUuid + "' not found.";
         status.statusCode = NOT_FOUND_RTYPE;
@@ -123,8 +123,8 @@ FinalizeMnistDataSet::runTask(BlossomIO &blossomIO,
     }
 
     // delete temp-files
-    HanamiRoot::tempFileHandler->removeData(inputUuid);
-    HanamiRoot::tempFileHandler->removeData(labelUuid);
+    TempFileHandler::getInstance()->removeData(inputUuid);
+    TempFileHandler::getInstance()->removeData(labelUuid);
 
     // create output
     blossomIO.output.insert("uuid", uuid);

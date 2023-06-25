@@ -33,7 +33,7 @@
 
 #include <libKitsunemimiJson/json_item.h>
 
-using namespace Kitsunemimi::Hanami;
+SpeedMeasuring* SpeedMeasuring::instance = nullptr;
 
 SpeedMeasuring::SpeedMeasuring()
     : Kitsunemimi::Thread("Azuki_SpeedMeasuring")
@@ -65,13 +65,14 @@ SpeedMeasuring::run()
     {
         uint64_t currentSpeed = 0;
         uint64_t numberOfValues = 0;
+        Kitsunemimi::Sakura::Host* host = Kitsunemimi::Sakura::Host::getInstance();
 
-        for(uint64_t i = 0; i < HanamiRoot::host->cpuPackages.size(); i++)
+        for(uint64_t i = 0; i < host->cpuPackages.size(); i++)
         {
-             for(uint64_t j = 0; j < HanamiRoot::host->getPackage(i)->cpuCores.size(); j++)
+             for(uint64_t j = 0; j < host->getPackage(i)->cpuCores.size(); j++)
              {
                  numberOfValues++;
-                 thread = HanamiRoot::host->getPackage(i)->cpuCores.at(j)->cpuThreads.at(0);
+                 thread = host->getPackage(i)->cpuCores.at(j)->cpuThreads.at(0);
                  currentSpeed += thread->getCurrentThreadSpeed();
              }
         }

@@ -89,7 +89,7 @@ GetUser::runTask(BlossomIO &blossomIO,
     const std::string userId = blossomIO.input.get("id").getString();
 
     // get data from table
-    if(HanamiRoot::usersTable->getUser(blossomIO.output, userId, error, false) == false)
+    if(UsersTable::getInstance()->getUser(blossomIO.output, userId, error, false) == false)
     {
         status.errorMessage = "User with id '" + userId + "' not found.";
         status.statusCode = NOT_FOUND_RTYPE;

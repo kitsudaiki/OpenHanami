@@ -49,7 +49,7 @@ ThermalProduction::runTask(BlossomIO &blossomIO,
                                 BlossomStatus &,
                                 Kitsunemimi::ErrorContainer &)
 {
-    blossomIO.output.insert("temperature", HanamiRoot::temperatureMeasuring->getJson());
+    blossomIO.output.insert("temperature", TemperatureMeasuring::getInstance()->getJson());
 
     return true;
 }

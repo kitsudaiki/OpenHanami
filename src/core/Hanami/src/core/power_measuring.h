@@ -39,7 +39,13 @@ class PowerMeasuring
         : public Kitsunemimi::Thread
 {
 public:
-    PowerMeasuring();
+    static PowerMeasuring* getInstance()
+    {
+        if(instance == nullptr) {
+            instance = new PowerMeasuring();
+        }
+        return instance;
+    }
     ~PowerMeasuring();
 
     Kitsunemimi::DataMap* getJson();
@@ -48,6 +54,9 @@ protected:
     void run();
 
 private:
+    PowerMeasuring();
+    static PowerMeasuring* instance;
+
     ValueContainer* m_valueContainer;
 };
 

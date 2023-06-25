@@ -33,7 +33,14 @@ class ClusterTable
         : public HanamiSqlTable
 {
 public:
-    ClusterTable(Kitsunemimi::Sakura::SqlDatabase* db);
+    static ClusterTable* getInstance()
+    {
+        if(instance == nullptr) {
+            instance = new ClusterTable();
+        }
+        return instance;
+    }
+
     ~ClusterTable();
 
     bool addCluster(Kitsunemimi::JsonItem &clusterData,
@@ -55,6 +62,10 @@ public:
     bool deleteCluster(const std::string &clusterUuid,
                        const UserContext &userContext,
                        Kitsunemimi::ErrorContainer &error);
+
+private:
+    ClusterTable();
+    static ClusterTable* instance;
 };
 
 #endif // HANAMI_CLUSTERTABLE_H

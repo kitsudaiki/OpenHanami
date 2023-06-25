@@ -28,13 +28,15 @@
 
 #include <libKitsunemimiSakuraDatabase/sql_database.h>
 
+AuditLogTable* AuditLogTable::instance = nullptr;
+
 /**
  * @brief constructor
  *
  * @param db pointer to database
  */
-AuditLogTable::AuditLogTable(Kitsunemimi::Sakura::SqlDatabase* db)
-    : HanamiSqlLogTable(db)
+AuditLogTable::AuditLogTable()
+    : HanamiSqlLogTable(Kitsunemimi::Sakura::SqlDatabase::getInstance())
 {
     m_tableName = "audit_log";
 

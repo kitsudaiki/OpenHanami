@@ -26,6 +26,8 @@
 #include <libKitsunemimiCommon/files/binary_file.h>
 #include <libKitsunemimiConfig/config_handler.h>
 
+TempFileHandler* TempFileHandler::instance = nullptr;
+
 /**
  * @brief constructor
  */

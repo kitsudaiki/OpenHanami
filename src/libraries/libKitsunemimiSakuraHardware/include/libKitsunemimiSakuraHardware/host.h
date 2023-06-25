@@ -41,7 +41,14 @@ class CpuPackage;
 class Host
 {
 public:
-    Host();
+    static Host* getInstance()
+    {
+        if(instance == nullptr) {
+            instance = new Host();
+        }
+        return instance;
+    }
+
     ~Host();
 
     bool initHost(ErrorContainer &error);
@@ -59,6 +66,9 @@ public:
     Kitsunemimi::DataMap* toJson() const;
 
 private:
+    Host();
+    static Host* instance;
+
     bool readHostName(ErrorContainer &error);
     bool initCpuCoresAndThreads(ErrorContainer &error);
 };

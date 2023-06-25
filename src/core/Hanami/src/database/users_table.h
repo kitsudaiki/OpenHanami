@@ -33,7 +33,14 @@ class UsersTable
         : public HanamiSqlAdminTable
 {
 public:
-    UsersTable(Kitsunemimi::Sakura::SqlDatabase* db);
+    static UsersTable* getInstance()
+    {
+        if(instance == nullptr) {
+            instance = new UsersTable();
+        }
+        return instance;
+    }
+
     ~UsersTable();
 
     bool initNewAdminUser(Kitsunemimi::ErrorContainer &error);
@@ -53,6 +60,9 @@ public:
                               Kitsunemimi::ErrorContainer &error);
 
 private:
+    UsersTable();
+    static UsersTable* instance;
+
     bool getEnvVar(std::string &content, const std::string &key) const;
 
     bool getAllAdminUser(Kitsunemimi::ErrorContainer &error);

@@ -59,7 +59,7 @@ DeleteTemplate::runTask(BlossomIO &blossomIO,
 
     // check if user exist within the table
     Kitsunemimi::JsonItem getResult;
-    if(HanamiRoot::templateTable->getTemplate(getResult,
+    if(TemplateTable::getInstance()->getTemplate(getResult,
                                               templateUuid,
                                               userContext,
                                               error) == false)
@@ -71,7 +71,7 @@ DeleteTemplate::runTask(BlossomIO &blossomIO,
     }
 
     // remove data from table
-    if(HanamiRoot::templateTable->deleteTemplate(templateUuid, userContext, error) == false)
+    if(TemplateTable::getInstance()->deleteTemplate(templateUuid, userContext, error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Failed to delete template with UUID '"

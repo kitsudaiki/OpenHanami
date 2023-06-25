@@ -28,13 +28,15 @@
 
 #include <libKitsunemimiSakuraDatabase/sql_database.h>
 
+RequestResultTable* RequestResultTable::instance = nullptr;
+
 /**
  * @brief constructor
  *
  * @param db pointer to database
  */
-RequestResultTable::RequestResultTable(Kitsunemimi::Sakura::SqlDatabase* db)
-    : HanamiSqlTable(db)
+RequestResultTable::RequestResultTable()
+    : HanamiSqlTable(Kitsunemimi::Sakura::SqlDatabase::getInstance())
 {
     m_tableName = "request_result";
 

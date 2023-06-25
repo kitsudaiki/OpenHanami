@@ -28,11 +28,13 @@
 
 #include <libKitsunemimiSakuraDatabase/sql_database.h>
 
+TemplateTable* TemplateTable::instance = nullptr;
+
 /**
  * @brief constructor
  */
-TemplateTable::TemplateTable(Kitsunemimi::Sakura::SqlDatabase* db)
-    : HanamiSqlTable(db)
+TemplateTable::TemplateTable()
+    : HanamiSqlTable(Kitsunemimi::Sakura::SqlDatabase::getInstance())
 {
     m_tableName = "templates";
 

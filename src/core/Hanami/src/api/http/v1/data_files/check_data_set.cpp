@@ -82,11 +82,11 @@ CheckDataSet::runTask(BlossomIO &blossomIO,
     // get result
     // check if request-result exist within the table
     Kitsunemimi::JsonItem result;
-    if(HanamiRoot::requestResultTable->getRequestResult(result,
-                                                        resultUuid,
-                                                        userContext,
-                                                        error,
-                                                        true) == false)
+    if(RequestResultTable::getInstance()->getRequestResult(result,
+                                                           resultUuid,
+                                                           userContext,
+                                                           error,
+                                                           true) == false)
     {
         status.errorMessage = "Request-result with UUID '" + resultUuid + "' not found.";
         status.statusCode = NOT_FOUND_RTYPE;
@@ -95,11 +95,11 @@ CheckDataSet::runTask(BlossomIO &blossomIO,
     }
 
     // get data-info from database
-    if(HanamiRoot::dataSetTable->getDataSet(blossomIO.output,
-                                            dataUuid,
-                                            userContext,
-                                            error,
-                                            true) == false)
+    if(DataSetTable::getInstance()->getDataSet(blossomIO.output,
+                                               dataUuid,
+                                               userContext,
+                                               error,
+                                               true) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;

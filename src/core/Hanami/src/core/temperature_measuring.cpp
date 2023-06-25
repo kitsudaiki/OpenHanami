@@ -31,7 +31,7 @@
 
 #include <libKitsunemimiJson/json_item.h>
 
-using namespace Kitsunemimi::Hanami;
+TemperatureMeasuring* TemperatureMeasuring::instance = nullptr;
 
 TemperatureMeasuring::TemperatureMeasuring()
     : Kitsunemimi::Thread("Azuki_TemperatureMeasuring")
@@ -60,7 +60,9 @@ TemperatureMeasuring::run()
     Kitsunemimi::ErrorContainer error;
     while(m_abort == false)
     {
-        const double temperature = HanamiRoot::host->getTotalTemperature(error);
+        Kitsunemimi::Sakura::Host* host = Kitsunemimi::Sakura::Host::getInstance();
+
+        const double temperature = host->getTotalTemperature(error);
         m_valueContainer->addValue(temperature);
 
         sleep(1);

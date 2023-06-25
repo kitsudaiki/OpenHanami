@@ -91,7 +91,7 @@ GetErrorLog::runTask(BlossomIO &blossomIO,
 
     // get data from table
     Kitsunemimi::TableItem table;
-    if(HanamiRoot::errorLogTable->getAllErrorLogEntries(table, userId, page, error) == false)
+    if(ErrorLogTable::getInstance()->getAllErrorLogEntries(table, userId, page, error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;

@@ -28,13 +28,15 @@
 
 #include <libKitsunemimiSakuraDatabase/sql_database.h>
 
+DataSetTable* DataSetTable::instance = nullptr;
+
 /**
  * @brief constructor
  *
  * @param db pointer to database
  */
-DataSetTable::DataSetTable(Kitsunemimi::Sakura::SqlDatabase* db)
-    : HanamiSqlTable(db)
+DataSetTable::DataSetTable()
+    : HanamiSqlTable(Kitsunemimi::Sakura::SqlDatabase::getInstance())
 {
     m_tableName = "data_set";
 

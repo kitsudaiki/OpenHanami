@@ -99,11 +99,11 @@ FinalizeClusterSnapshot::runTask(BlossomIO &blossomIO,
 
     // get location from database
     Kitsunemimi::JsonItem result;
-    if(HanamiRoot::clusterSnapshotTable->getClusterSnapshot(result,
-                                                            uuid,
-                                                            userContext,
-                                                            error,
-                                                            true) == false)
+    if(ClusterSnapshotTable::getInstance()->getClusterSnapshot(result,
+                                                               uuid,
+                                                               userContext,
+                                                               error,
+                                                               true) == false)
     {
         status.errorMessage = "Snapshot with uuid '" + uuid + "' not found.";
         status.statusCode = NOT_FOUND_RTYPE;
@@ -112,7 +112,7 @@ FinalizeClusterSnapshot::runTask(BlossomIO &blossomIO,
 
     // read input-data from temp-file
     Kitsunemimi::DataBuffer inputBuffer;
-    if(HanamiRoot::tempFileHandler->getData(inputBuffer, inputUuid) == false)
+    if(TempFileHandler::getInstance()->getData(inputBuffer, inputUuid) == false)
     {
         status.errorMessage = "Input-data with uuid '" + inputUuid + "' not found.";
         status.statusCode = NOT_FOUND_RTYPE;
@@ -121,7 +121,7 @@ FinalizeClusterSnapshot::runTask(BlossomIO &blossomIO,
 
     // move temp-file to target-location
     const std::string targetLocation = result.get("location").getString();
-    if(HanamiRoot::tempFileHandler->moveData(inputUuid, targetLocation, error) == false)
+    if(TempFileHandler::getInstance()->moveData(inputUuid, targetLocation, error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;

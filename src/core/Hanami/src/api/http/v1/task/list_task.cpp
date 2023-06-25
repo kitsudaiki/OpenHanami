@@ -75,7 +75,7 @@ ListTask::runTask(BlossomIO &blossomIO,
     const std::string clusterUuid = blossomIO.input.get("cluster_uuid").getString();
 
     // get cluster
-    Cluster* cluster = HanamiRoot::m_clusterHandler->getCluster(clusterUuid);
+    Cluster* cluster = ClusterHandler::getInstance()->getCluster(clusterUuid);
     if(cluster == nullptr)
     {
         status.errorMessage = "Cluster with UUID '" + clusterUuid + "'not found";

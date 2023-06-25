@@ -71,7 +71,7 @@ DeleteUser::runTask(BlossomIO &blossomIO,
 
     // check if user exist within the table
     Kitsunemimi::JsonItem result;
-    if(HanamiRoot::usersTable->getUser(result, userId, error, false) == false)
+    if(UsersTable::getInstance()->getUser(result, userId, error, false) == false)
     {
         status.errorMessage = "User with id '" + userId + "' not found.";
         status.statusCode = NOT_FOUND_RTYPE;
@@ -91,7 +91,7 @@ DeleteUser::runTask(BlossomIO &blossomIO,
     }
 
     // get data from table
-    if(HanamiRoot::usersTable->deleteUser(userId, error) == false)
+    if(UsersTable::getInstance()->deleteUser(userId, error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;

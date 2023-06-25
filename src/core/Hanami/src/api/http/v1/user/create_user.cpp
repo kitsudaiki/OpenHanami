@@ -111,7 +111,7 @@ CreateUser::runTask(BlossomIO &blossomIO,
 
     // check if user already exist within the table
     Kitsunemimi::JsonItem getResult;
-    if(HanamiRoot::usersTable->getUser(getResult, newUserId, error, false))
+    if(UsersTable::getInstance()->getUser(getResult, newUserId, error, false))
     {
         status.errorMessage = "User with id '" + newUserId + "' already exist.";
         status.statusCode = CONFLICT_RTYPE;
@@ -135,7 +135,7 @@ CreateUser::runTask(BlossomIO &blossomIO,
     userData.insert("salt", salt);
 
     // add new user to table
-    if(HanamiRoot::usersTable->addUser(userData, error) == false)
+    if(UsersTable::getInstance()->addUser(userData, error) == false)
     {
         status.errorMessage = error.toString();
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -143,10 +143,10 @@ CreateUser::runTask(BlossomIO &blossomIO,
     }
 
     // get new created user from database
-    if(HanamiRoot::usersTable->getUser(blossomIO.output,
-                                       newUserId,
-                                       error,
-                                       false) == false)
+    if(UsersTable::getInstance()->getUser(blossomIO.output,
+                                          newUserId,
+                                          error,
+                                          false) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;

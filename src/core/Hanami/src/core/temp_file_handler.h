@@ -35,7 +35,13 @@ struct DataBuffer;
 class TempFileHandler
 {
 public:
-    TempFileHandler();
+    static TempFileHandler* getInstance()
+    {
+        if(instance == nullptr) {
+            instance = new TempFileHandler();
+        }
+        return instance;
+    }
     ~TempFileHandler();
 
     bool initNewFile(const std::string &id,
@@ -52,6 +58,9 @@ public:
                   Kitsunemimi::ErrorContainer &error);
 
 private:
+    TempFileHandler();
+    static TempFileHandler* instance;
+
     std::map<std::string, Kitsunemimi::BinaryFile*> m_tempFiles;
 };
 

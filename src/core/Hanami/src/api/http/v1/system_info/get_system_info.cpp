@@ -53,7 +53,7 @@ GetSystemInfo::runTask(BlossomIO &blossomIO,
                        Kitsunemimi::ErrorContainer &)
 {
     // creat output
-    blossomIO.output.insert("info", HanamiRoot::host->toJson());
+    blossomIO.output.insert("info", Kitsunemimi::Sakura::Host::getInstance()->toJson());
 
     return true;
 }

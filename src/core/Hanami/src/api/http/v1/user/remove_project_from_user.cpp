@@ -101,7 +101,7 @@ RemoveProjectFromUser::runTask(BlossomIO &blossomIO,
 
     // check if user already exist within the table
     Kitsunemimi::JsonItem getResult;
-    if(HanamiRoot::usersTable->getUser(getResult, userId, error, false) == false)
+    if(UsersTable::getInstance()->getUser(getResult, userId, error, false) == false)
     {
         status.errorMessage = "User with id '" + userId + "' not found.";
         status.statusCode = NOT_FOUND_RTYPE;
@@ -135,9 +135,9 @@ RemoveProjectFromUser::runTask(BlossomIO &blossomIO,
     }
 
     // updated projects of user in database
-    if(HanamiRoot::usersTable->updateProjectsOfUser(userId,
-                                                    parsedProjects.toString(),
-                                                    error) == false)
+    if(UsersTable::getInstance()->updateProjectsOfUser(userId,
+                                                       parsedProjects.toString(),
+                                                       error) == false)
     {
         error.addMeesage("Failed to update projects of user with id '"
                          + userId
@@ -147,10 +147,10 @@ RemoveProjectFromUser::runTask(BlossomIO &blossomIO,
     }
 
     // get new created user from database
-    if(HanamiRoot::usersTable->getUser(blossomIO.output,
-                                       userId,
-                                       error,
-                                       false) == false)
+    if(UsersTable::getInstance()->getUser(blossomIO.output,
+                                          userId,
+                                          error,
+                                          false) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;

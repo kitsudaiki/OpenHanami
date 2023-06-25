@@ -138,13 +138,9 @@ ValidateAccess::runTask(BlossomIO &blossomIO,
         const uint32_t httpTypeValue = blossomIO.input.get("http_type").getInt();
         const HttpRequestType httpType = static_cast<HttpRequestType>(httpTypeValue);
 
-        // process payload to get role of user
-        const std::string role = blossomIO.output.get("role").getString();
-
         // check policy
-        if(HanamiRoot::policies->checkUserAgainstPolicy(endpoint,
-                                                        httpType,
-                                                        role) == false)
+        const std::string role = blossomIO.output.get("role").getString();
+        if(Policy::getInstance()->checkUserAgainstPolicy(endpoint, httpType, role) == false)
         {
             status.errorMessage = "Access denied by policy";
             status.statusCode = UNAUTHORIZED_RTYPE;

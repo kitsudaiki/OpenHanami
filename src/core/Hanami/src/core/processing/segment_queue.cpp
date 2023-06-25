@@ -24,6 +24,8 @@
 
 #include <core/segments/abstract_segment.h>
 
+SegmentQueue* SegmentQueue::instance = nullptr;
+
 /**
  * @brief constructor
  */

@@ -73,11 +73,11 @@ GetClusterSnapshot::runTask(BlossomIO &blossomIO,
     const std::string dataUuid = blossomIO.input.get("uuid").getString();
     const UserContext userContext(context);
 
-    if(HanamiRoot::clusterSnapshotTable->getClusterSnapshot(blossomIO.output,
-                                                            dataUuid,
-                                                            userContext,
-                                                            error,
-                                                            true) == false)
+    if(ClusterSnapshotTable::getInstance()->getClusterSnapshot(blossomIO.output,
+                                                               dataUuid,
+                                                               userContext,
+                                                               error,
+                                                               true) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;

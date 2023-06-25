@@ -29,13 +29,15 @@
 
 #include <libKitsunemimiSakuraDatabase/sql_database.h>
 
+ErrorLogTable* ErrorLogTable::instance = nullptr;
+
 /**
  * @brief constructor
  *
  * @param db pointer to database
  */
-ErrorLogTable::ErrorLogTable(Kitsunemimi::Sakura::SqlDatabase* db)
-    : HanamiSqlLogTable(db)
+ErrorLogTable::ErrorLogTable()
+    : HanamiSqlLogTable(Kitsunemimi::Sakura::SqlDatabase::getInstance())
 {
     m_tableName = "error_log";
 

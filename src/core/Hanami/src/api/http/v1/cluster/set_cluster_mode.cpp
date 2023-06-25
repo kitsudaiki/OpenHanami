@@ -83,10 +83,10 @@ SetClusterMode::runTask(BlossomIO &blossomIO,
     const UserContext userContext(context);
 
     // get data from table
-    if(HanamiRoot::clustersTable->getCluster(blossomIO.output,
-                                             clusterUuid,
-                                             userContext,
-                                             error) == false)
+    if(ClusterTable::getInstance()->getCluster(blossomIO.output,
+                                               clusterUuid,
+                                               userContext,
+                                               error) == false)
     {
         status.errorMessage = "Cluster with UUID '" + clusterUuid + "' not found.";
         status.statusCode = NOT_FOUND_RTYPE;
@@ -95,7 +95,7 @@ SetClusterMode::runTask(BlossomIO &blossomIO,
     }
 
     // get cluster
-    Cluster* cluster = HanamiRoot::m_clusterHandler->getCluster(clusterUuid);
+    Cluster* cluster = ClusterHandler::getInstance()->getCluster(clusterUuid);
     if(cluster == nullptr)
     {
         status.errorMessage = "Cluster with UUID '" + clusterUuid + "'not found";

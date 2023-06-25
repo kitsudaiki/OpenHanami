@@ -31,13 +31,22 @@ class Cluster;
 class ClusterHandler
 {
 public:
-    ClusterHandler();
+    static ClusterHandler* getInstance()
+    {
+        if(instance == nullptr) {
+            instance = new ClusterHandler();
+        }
+        return instance;
+    }
 
     bool addCluster(const std::string uuid, Cluster* newCluster);
     bool removeCluster(const std::string uuid);
     Cluster* getCluster(const std::string uuid);
 
 private:
+    ClusterHandler();
+    static ClusterHandler* instance;
+
     std::map<std::string, Cluster*> m_allCluster;
 };
 

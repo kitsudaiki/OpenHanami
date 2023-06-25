@@ -76,11 +76,11 @@ GetProgressDataSet::runTask(BlossomIO &blossomIO,
     const UserContext userContext(context);
 
     Kitsunemimi::JsonItem databaseOutput;
-    if(HanamiRoot::dataSetTable->getDataSet(databaseOutput,
-                                            dataUuid,
-                                            userContext,
-                                            error,
-                                            true) == false)
+    if(DataSetTable::getInstance()->getDataSet(databaseOutput,
+                                               dataUuid,
+                                               userContext,
+                                               error,
+                                               true) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;

@@ -253,7 +253,7 @@ TaskHandle_State::finishTask()
         userContext.userId = actualTask->userId;
         userContext.projectId =actualTask->projectId;
 
-        if(HanamiRoot::requestResultTable->addRequestResult(resultData, userContext, error) == false)
+        if(RequestResultTable::getInstance()->addRequestResult(resultData, userContext, error) == false)
         {
             LOG_ERROR(error);
             return;

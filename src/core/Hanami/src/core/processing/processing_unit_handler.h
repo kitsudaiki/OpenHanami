@@ -31,12 +31,21 @@ class CpuProcessingUnit;
 class ProcessingUnitHandler
 {
 public:
-    ProcessingUnitHandler();
+    static ProcessingUnitHandler* getInstance()
+    {
+        if(instance == nullptr) {
+            instance = new ProcessingUnitHandler();
+        }
+        return instance;
+    }
     ~ProcessingUnitHandler();
 
     bool initProcessingUnits(const uint16_t numberOfThreads);
 
 private:
+    ProcessingUnitHandler();
+    static ProcessingUnitHandler* instance;
+
     std::vector<CpuProcessingUnit*> m_processingUnits;
 };
 

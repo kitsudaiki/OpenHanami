@@ -34,7 +34,14 @@ class ErrorLogTable
         : public HanamiSqlLogTable
 {
 public:
-    ErrorLogTable(Kitsunemimi::Sakura::SqlDatabase* db);
+    static ErrorLogTable* getInstance()
+    {
+        if(instance == nullptr) {
+            instance = new ErrorLogTable();
+        }
+        return instance;
+    }
+
     ~ErrorLogTable();
 
     bool addErrorLogEntry(const std::string &timestamp,
@@ -48,6 +55,10 @@ public:
                                const std::string &userId,
                                const uint64_t page,
                                Kitsunemimi::ErrorContainer &error);
+
+private:
+    ErrorLogTable();
+    static ErrorLogTable* instance;
 };
 
 #endif // HANAMI_ERROR_LOG_TABLE_H

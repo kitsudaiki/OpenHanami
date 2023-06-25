@@ -49,7 +49,7 @@ PowerConsumption::runTask(BlossomIO &blossomIO,
                           BlossomStatus &,
                           Kitsunemimi::ErrorContainer &)
 {
-    blossomIO.output.insert("power", HanamiRoot::powerMeasuring->getJson());
+    blossomIO.output.insert("power", PowerMeasuring::getInstance()->getJson());
 
     return true;
 }

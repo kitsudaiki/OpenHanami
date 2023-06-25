@@ -104,7 +104,7 @@ CreateCsvDataSet::runTask(BlossomIO &blossomIO,
 
     // init temp-file for input-data
     const std::string inputUuid = generateUuid().toString();
-    if(HanamiRoot::tempFileHandler->initNewFile(inputUuid, inputDataSize) == false)
+    if(TempFileHandler::getInstance()->initNewFile(inputUuid, inputDataSize) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Failed to initialize temporary file for new input-data.");
@@ -131,7 +131,7 @@ CreateCsvDataSet::runTask(BlossomIO &blossomIO,
     blossomIO.output.insert("temp_files", tempFiles);
 
     // add to database
-    if(HanamiRoot::dataSetTable->addDataSet(blossomIO.output, userContext, error) == false)
+    if(DataSetTable::getInstance()->addDataSet(blossomIO.output, userContext, error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;

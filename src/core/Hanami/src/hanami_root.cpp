@@ -25,8 +25,6 @@
 #include <core/struct_validation.h>
 #include <core/cluster/cluster_init.h>
 
-#include <core/processing/cpu_processing_unit.h>
-#include <core/processing/segment_queue.h>
 #include <core/processing/processing_unit_handler.h>
 
 #include <core/cluster/cluster_handler.h>
@@ -36,9 +34,6 @@
 #include <libKitsunemimiCommon/files/text_file.h>
 #include <libKitsunemimiConfig/config_handler.h>
 
-#include <libKitsunemimiSakuraDatabase/sql_database.h>
-#include <libKitsunemimiSakuraHardware/host.h>
-
 #include <libKitsunemimiOpencl/gpu_interface.h>
 #include <libKitsunemimiOpencl/gpu_handler.h>
 #include <api/endpoint_processing/http_server.h>
@@ -46,6 +41,7 @@
 #include <api/endpoint_processing/blossom.h>
 #include <api/endpoint_processing/items/item_methods.h>
 
+#include <libKitsunemimiSakuraDatabase/sql_database.h>
 #include <database/data_set_table.h>
 #include <database/cluster_snapshot_table.h>
 #include <database/request_result_table.h>
@@ -58,35 +54,15 @@
 #include <core/temperature_measuring.h>
 
 // init static variables
-ClusterHandler* HanamiRoot::m_clusterHandler = nullptr;
 uint32_t* HanamiRoot::m_randomValues = nullptr;
-SegmentQueue* HanamiRoot::m_segmentQueue = nullptr;
-ProcessingUnitHandler* HanamiRoot::m_processingUnitHandler = nullptr;
-Kitsunemimi::Sakura::SqlDatabase* HanamiRoot::database = nullptr;
-ClusterTable* HanamiRoot::clustersTable = nullptr;
-TemplateTable* HanamiRoot::templateTable = nullptr;
 Kitsunemimi::GpuInterface* HanamiRoot::gpuInterface = nullptr;
 Kitsunemimi::Jwt* HanamiRoot::jwt = nullptr;
-UsersTable* HanamiRoot::usersTable = nullptr;
-ProjectsTable* HanamiRoot::projectsTable = nullptr;
-Kitsunemimi::Hanami::Policy* HanamiRoot::policies = nullptr;
-TempFileHandler* HanamiRoot::tempFileHandler = nullptr;
-DataSetTable* HanamiRoot::dataSetTable = nullptr;
-ClusterSnapshotTable* HanamiRoot::clusterSnapshotTable = nullptr;
-RequestResultTable* HanamiRoot::requestResultTable = nullptr;
-ErrorLogTable* HanamiRoot::errorLogTable = nullptr;
-AuditLogTable* HanamiRoot::auditLogTable = nullptr;
 HanamiRoot* HanamiRoot::root = nullptr;
 
 // static flag to switch to experimental gpu-support (see issue #44 and #76)
 bool HanamiRoot::useGpu = false;
 bool HanamiRoot::useCuda = false;
 HttpServer* HanamiRoot::httpServer = nullptr;
-ThreadBinder* HanamiRoot::threadBinder = nullptr;
-PowerMeasuring* HanamiRoot::powerMeasuring = nullptr;
-SpeedMeasuring* HanamiRoot::speedMeasuring = nullptr;
-TemperatureMeasuring* HanamiRoot::temperatureMeasuring = nullptr;
-Kitsunemimi::Sakura::Host* HanamiRoot::host = nullptr;
 
 /**
  * @brief KyoukoRoot::KyoukoRoot
@@ -132,9 +108,6 @@ HanamiRoot::init(Kitsunemimi::ErrorContainer &error)
         return false;
     }
 
-    m_clusterHandler = new ClusterHandler();
-    m_segmentQueue = new SegmentQueue();
-
     if(initDatabase(error) == false)
     {
         error.addMeesage("Failed to initialize database");
@@ -161,7 +134,7 @@ HanamiRoot::init(Kitsunemimi::ErrorContainer &error)
     }
 
     // init overview of all resources of the host
-    host = new Kitsunemimi::Sakura::Host();
+    //Kitsunemimi::Sakura::Host* host = Kitsunemimi::Sakura::Host::getInstance();
     //if(host->initHost(error) == false)
     //{
     //    error.addMeesage("Failed read resource-information of the local host");
@@ -196,8 +169,8 @@ HanamiRoot::init(Kitsunemimi::ErrorContainer &error)
 bool
 HanamiRoot::initThreads()
 {
-    m_processingUnitHandler = new ProcessingUnitHandler();
-    if(m_processingUnitHandler->initProcessingUnits(1) == false) {
+    ProcessingUnitHandler* processingUnitHandler = ProcessingUnitHandler::getInstance();
+    if(processingUnitHandler->initProcessingUnits(1) == false) {
         return false;
     }
 
@@ -217,7 +190,7 @@ HanamiRoot::initDatabase(Kitsunemimi::ErrorContainer &error)
     bool success = false;
 
     // read database-path from config
-    database = new Kitsunemimi::Sakura::SqlDatabase();
+    Kitsunemimi::Sakura::SqlDatabase* database = Kitsunemimi::Sakura::SqlDatabase::getInstance();
     const std::string databasePath = GET_STRING_CONFIG("DEFAULT", "database", success);
     LOG_DEBUG("database-path: '" + databasePath + "'");
     if(success == false)
@@ -236,7 +209,7 @@ HanamiRoot::initDatabase(Kitsunemimi::ErrorContainer &error)
     }
 
     // initialize cluster-table
-    clustersTable = new ClusterTable(database);
+    ClusterTable* clustersTable = ClusterTable::getInstance();
     if(clustersTable->initTable(error) == false)
     {
         error.addMeesage("Failed to initialize cluster-table in database.");
@@ -245,7 +218,7 @@ HanamiRoot::initDatabase(Kitsunemimi::ErrorContainer &error)
     }
 
     // initialize template-table
-    templateTable = new TemplateTable(database);
+    TemplateTable* templateTable = TemplateTable::getInstance();
     if(templateTable->initTable(error) == false)
     {
         error.addMeesage("Failed to initialize template-table in database.");
@@ -254,7 +227,7 @@ HanamiRoot::initDatabase(Kitsunemimi::ErrorContainer &error)
     }
 
     // initialize projects-table
-    projectsTable = new ProjectsTable(database);
+    ProjectsTable* projectsTable = ProjectsTable::getInstance();
     if(projectsTable->initTable(error) == false)
     {
         error.addMeesage("Failed to initialize project-table in database.");
@@ -262,7 +235,7 @@ HanamiRoot::initDatabase(Kitsunemimi::ErrorContainer &error)
     }
 
     // initialize users-table
-    usersTable = new UsersTable(database);
+    UsersTable* usersTable = UsersTable::getInstance();
     if(usersTable->initTable(error) == false)
     {
         error.addMeesage("Failed to initialize user-table in database.");
@@ -275,7 +248,7 @@ HanamiRoot::initDatabase(Kitsunemimi::ErrorContainer &error)
     }
 
     // initialize dataset-table
-    dataSetTable = new DataSetTable(database);
+    DataSetTable* dataSetTable = DataSetTable::getInstance();
     if(dataSetTable->initTable(error) == false)
     {
         error.addMeesage("Failed to initialize dataset-table in database.");
@@ -284,7 +257,7 @@ HanamiRoot::initDatabase(Kitsunemimi::ErrorContainer &error)
     }
 
     // initialize request-result-table
-    requestResultTable = new RequestResultTable(database);
+    RequestResultTable* requestResultTable = RequestResultTable::getInstance();
     if(requestResultTable->initTable(error) == false)
     {
         error.addMeesage("Failed to initialize request-result-table in database.");
@@ -293,7 +266,7 @@ HanamiRoot::initDatabase(Kitsunemimi::ErrorContainer &error)
     }
 
     // initialize cluster-snapshot-table
-    clusterSnapshotTable = new ClusterSnapshotTable(database);
+    ClusterSnapshotTable* clusterSnapshotTable = ClusterSnapshotTable::getInstance();
     if(clusterSnapshotTable->initTable(error) == false)
     {
         error.addMeesage("Failed to initialize cluster-snapshot-table in database.");
@@ -302,7 +275,7 @@ HanamiRoot::initDatabase(Kitsunemimi::ErrorContainer &error)
     }
 
     // initialize error-log-table
-    errorLogTable = new ErrorLogTable(database);
+    ErrorLogTable* errorLogTable = ErrorLogTable::getInstance();
     if(errorLogTable->initTable(error) == false)
     {
         error.addMeesage("Failed to initialize error-log-table in database.");
@@ -311,16 +284,13 @@ HanamiRoot::initDatabase(Kitsunemimi::ErrorContainer &error)
     }
 
     // initialize audit-log-table
-    auditLogTable = new AuditLogTable(database);
+    AuditLogTable* auditLogTable = AuditLogTable::getInstance();
     if(auditLogTable->initTable(error) == false)
     {
         error.addMeesage("Failed to initialize audit-log-table in database.");
         LOG_ERROR(error);
         return false;
     }
-
-    // create new tempfile-handler
-    tempFileHandler = new TempFileHandler();
 
     return true;
 }
@@ -392,7 +362,7 @@ HanamiRoot::initPolicies(Kitsunemimi::ErrorContainer &error)
     }
 
     // parse policy-file
-    policies = new Kitsunemimi::Hanami::Policy();
+    Kitsunemimi::Hanami::Policy* policies = Kitsunemimi::Hanami::Policy::getInstance();
     if(policies->parse(policyFileContent, error) == false)
     {
         error.addMeesage("Failed to parser policy-file");

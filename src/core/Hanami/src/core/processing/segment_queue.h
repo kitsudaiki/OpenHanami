@@ -32,7 +32,13 @@ class AbstractSegment;
 class SegmentQueue
 {
 public:
-    SegmentQueue();
+    static SegmentQueue* getInstance()
+    {
+        if(instance == nullptr) {
+            instance = new SegmentQueue();
+        }
+        return instance;
+    }
 
     void addSegmentToQueue(AbstractSegment* newSegment);
     void addSegmentListToQueue(const std::vector<AbstractSegment*> &semgnetList);
@@ -40,6 +46,9 @@ public:
     AbstractSegment* getSegmentFromQueue();
 
 private:
+    SegmentQueue();
+    static SegmentQueue* instance;
+
     std::atomic_flag m_queue_lock = ATOMIC_FLAG_INIT;
     std::deque<AbstractSegment*> m_segmentQueue;
 };
