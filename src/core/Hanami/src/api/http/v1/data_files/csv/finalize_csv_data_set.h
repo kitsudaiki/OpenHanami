@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef SHIORIARCHIVE_CSV_FINALIZE_DATA_SET_H
-#define SHIORIARCHIVE_CSV_FINALIZE_DATA_SET_H
+#ifndef HANAMI_CSV_FINALIZE_DATA_SET_H
+#define HANAMI_CSV_FINALIZE_DATA_SET_H
 
 #include <regex>
 #include <api/endpoint_processing/blossom.h>
@@ -49,4 +49,4 @@ private:
                       const float lastVal);
 };
 
-#endif // SHIORIARCHIVE_CSV_FINALIZE_DATA_SET_H
+#endif // HANAMI_CSV_FINALIZE_DATA_SET_H

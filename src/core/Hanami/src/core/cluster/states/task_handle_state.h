@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef TASKHANGLESTATE_H
-#define TASKHANGLESTATE_H
+#ifndef HANAMI_TASKHANGLESTATE_H
+#define HANAMI_TASKHANGLESTATE_H
 
 #include <mutex>
 #include <deque>
@@ -65,4 +65,4 @@ private:
     void finishTask();
 };
 
-#endif // TASKHANGLESTATE_H
+#endif // HANAMI_TASKHANGLESTATE_H

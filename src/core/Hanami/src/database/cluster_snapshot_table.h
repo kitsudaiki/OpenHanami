@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef SHIORIARCHIVE_CLUSTER_SNAPSHOT_TABLE_H
-#define SHIORIARCHIVE_CLUSTER_SNAPSHOT_TABLE_H
+#ifndef HANAMI_CLUSTER_SNAPSHOT_TABLE_H
+#define HANAMI_CLUSTER_SNAPSHOT_TABLE_H
 
 #include <libKitsunemimiCommon/logger.h>
 #include <database/generic_tables/hanami_sql_table.h>
@@ -31,7 +31,7 @@ class JsonItem;
 }
 
 class ClusterSnapshotTable
-        : public Kitsunemimi::Hanami::HanamiSqlTable
+        : public HanamiSqlTable
 {
 public:
     ClusterSnapshotTable(Kitsunemimi::Sakura::SqlDatabase* db);
@@ -56,4 +56,4 @@ public:
                          Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // SHIORIARCHIVE_CLUSTER_SNAPSHOT_TABLE_H
+#endif // HANAMI_CLUSTER_SNAPSHOT_TABLE_H

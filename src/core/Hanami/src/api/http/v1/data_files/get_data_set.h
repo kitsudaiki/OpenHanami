@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef SHIORIARCHIVE_GET_DATA_SET_H
-#define SHIORIARCHIVE_GET_DATA_SET_H
+#ifndef HANAMI_GET_DATA_SET_H
+#define HANAMI_GET_DATA_SET_H
 
 #include <api/endpoint_processing/blossom.h>
 
@@ -43,4 +43,4 @@ private:
                               Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // SHIORIARCHIVE_GET_DATA_SET_H
+#endif // HANAMI_GET_DATA_SET_H

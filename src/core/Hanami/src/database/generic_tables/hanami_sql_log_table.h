@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef KITSUNEMIMI_HANAMI_DATABASE_SQL_LOG_TABLE_H
-#define KITSUNEMIMI_HANAMI_DATABASE_SQL_LOG_TABLE_H
+#ifndef HANAMI_DATABASE_SQL_LOG_TABLE_H
+#define HANAMI_DATABASE_SQL_LOG_TABLE_H
 
 #include <vector>
 #include <string>
@@ -31,8 +31,6 @@
 
 #include <libKitsunemimiSakuraDatabase/sql_table.h>
 
-namespace Kitsunemimi::Hanami
-{
 class SqlDatabase;
 
 class HanamiSqlLogTable
@@ -42,13 +40,11 @@ public:
     HanamiSqlLogTable(Kitsunemimi::Sakura::SqlDatabase* db);
     virtual ~HanamiSqlLogTable();
 
-    long getNumberOfPages(ErrorContainer &error);
-    bool getPageFromDb(TableItem &resultTable,
+    long getNumberOfPages(Kitsunemimi::ErrorContainer &error);
+    bool getPageFromDb(Kitsunemimi::TableItem &resultTable,
                        const std::string &userId,
                        const uint64_t page,
-                       ErrorContainer &error);
+                       Kitsunemimi::ErrorContainer &error);
 };
 
-}
-
-#endif // KITSUNEMIMI_HANAMI_DATABASE_SQL_LOG_TABLE_H
+#endif // HANAMI_DATABASE_SQL_LOG_TABLE_H

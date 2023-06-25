@@ -29,8 +29,10 @@
 namespace Kitsunemimi {
 class JsonItem;
 }
+
+
 class TemplateTable
-        : public Kitsunemimi::Hanami::HanamiSqlTable
+        : public HanamiSqlTable
 {
 public:
     TemplateTable(Kitsunemimi::Sakura::SqlDatabase* db);

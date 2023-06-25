@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef KITSUNEMIMI_HANAMI_DATABASE_SQL_ADMIN_TABLE_H
-#define KITSUNEMIMI_HANAMI_DATABASE_SQL_ADMIN_TABLE_H
+#ifndef HANAMI_DATABASE_SQL_ADMIN_TABLE_H
+#define HANAMI_DATABASE_SQL_ADMIN_TABLE_H
 
 #include <vector>
 #include <string>
@@ -31,8 +31,6 @@
 
 #include <libKitsunemimiSakuraDatabase/sql_table.h>
 
-namespace Kitsunemimi::Hanami
-{
 class SqlDatabase;
 
 class HanamiSqlAdminTable
@@ -43,6 +41,4 @@ public:
     virtual ~HanamiSqlAdminTable();
 };
 
-}
-
-#endif // KITSUNEMIMI_HANAMI_DATABASE_SQL_ADMIN_TABLE_H
+#endif // HANAMI_DATABASE_SQL_ADMIN_TABLE_H

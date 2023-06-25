@@ -1,5 +1,5 @@
 /**
- * @file        cluster_interface.h
+ * @file        cluster.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_CLUSTER_INTERFACE_H
-#define HANAMI_CLUSTER_INTERFACE_H
+#ifndef HANAMI_CLUSTER_H
+#define HANAMI_CLUSTER_H
 
 #include <common.h>
 #include <core/cluster/task.h>
@@ -166,4 +166,4 @@ private:
     std::mutex m_segmentCounterLock;
 };
 
-#endif // HANAMI_CLUSTER_INTERFACE_H
+#endif // HANAMI_CLUSTER_H

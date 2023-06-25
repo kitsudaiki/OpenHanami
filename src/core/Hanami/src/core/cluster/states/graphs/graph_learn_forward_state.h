@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef GRAPHLEARNFORWARD_STATE_H
-#define GRAPHLEARNFORWARD_STATE_H
+#ifndef HANAMI_GRAPHLEARNFORWARD_STATE_H
+#define HANAMI_GRAPHLEARNFORWARD_STATE_H
 
 #include <libKitsunemimiCommon/threading/event.h>
 
@@ -40,4 +40,4 @@ private:
     Cluster* m_cluster = nullptr;
 };
 
-#endif // GRAPHLEARNFORWARD_STATE_H
+#endif // HANAMI_GRAPHLEARNFORWARD_STATE_H

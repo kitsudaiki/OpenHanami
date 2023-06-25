@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef SAVECLUSTERSTATE_H
-#define SAVECLUSTERSTATE_H
+#ifndef HANAMI_SAVECLUSTERSTATE_H
+#define HANAMI_SAVECLUSTERSTATE_H
 
 #include <libKitsunemimiCommon/threading/event.h>
 #include <libKitsunemimiJson/json_item.h>
@@ -49,4 +49,4 @@ private:
                    Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // SAVECLUSTERSTATE_H
+#endif // HANAMI_SAVECLUSTERSTATE_H

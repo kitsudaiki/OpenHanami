@@ -29,9 +29,6 @@
 
 #include <uuid/uuid.h>
 
-namespace Kitsunemimi::Hanami
-{
-
 /**
  * @brief constructor, which add basic columns to the table
  *
@@ -61,5 +58,3 @@ HanamiSqlAdminTable::HanamiSqlAdminTable(Kitsunemimi::Sakura::SqlDatabase* db)
  * @brief destructor
  */
 HanamiSqlAdminTable::~HanamiSqlAdminTable() {}
-
-}

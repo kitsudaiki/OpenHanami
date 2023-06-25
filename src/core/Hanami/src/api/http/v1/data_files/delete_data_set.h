@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef SHIORIARCHIVE_DELETE_DATA_SET_H
-#define SHIORIARCHIVE_DELETE_DATA_SET_H
+#ifndef HANAMI_DELETE_DATA_SET_H
+#define HANAMI_DELETE_DATA_SET_H
 
 #include <api/endpoint_processing/blossom.h>
 
@@ -39,4 +39,4 @@ protected:
                  Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // SHIORIARCHIVE_DELETE_DATA_SET_H
+#endif // HANAMI_DELETE_DATA_SET_H

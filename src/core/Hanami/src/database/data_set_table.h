@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef SHIORIARCHIVE_DATA_SET_TABLE_H
-#define SHIORIARCHIVE_DATA_SET_TABLE_H
+#ifndef HANAMI_DATA_SET_TABLE_H
+#define HANAMI_DATA_SET_TABLE_H
 
 #include <libKitsunemimiCommon/logger.h>
 #include <database/generic_tables/hanami_sql_table.h>
@@ -31,7 +31,7 @@ class JsonItem;
 }
 
 class DataSetTable
-        : public Kitsunemimi::Hanami::HanamiSqlTable
+        : public HanamiSqlTable
 {
 public:
     DataSetTable(Kitsunemimi::Sakura::SqlDatabase* db);
@@ -57,4 +57,4 @@ public:
                          Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // SHIORIARCHIVE_DATA_SET_TABLE_H
+#endif // HANAMI_DATA_SET_TABLE_H

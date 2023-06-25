@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef SHIORIARCHIVE_CHECKDATASET_H
-#define SHIORIARCHIVE_CHECKDATASET_H
+#ifndef HANAMI_CHECKDATASET_H
+#define HANAMI_CHECKDATASET_H
 
 #include <api/endpoint_processing/blossom.h>
 
@@ -39,4 +39,4 @@ protected:
                  Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // SHIORIARCHIVE_CHECKDATASET_H
+#endif // HANAMI_CHECKDATASET_H

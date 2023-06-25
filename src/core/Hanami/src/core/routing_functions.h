@@ -1,5 +1,5 @@
 /**
- * @file        functions.h
+ * @file        routing_functions.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,13 +20,12 @@
  *      limitations under the License.
  */
 
-#ifndef ROUTING_FUNCTIONS_H
-#define ROUTING_FUNCTIONS_H
+#ifndef HANAMI_ROUTING_FUNCTIONS_H
+#define HANAMI_ROUTING_FUNCTIONS_H
 
 #include <stdint.h>
 #include <common.h>
-
-
+#include <libKitsunemimiHanamiSegmentParser/segment_meta.h>
 
 /**
  * @brief get neighbor-position for a specific side in the hexagon-grid
@@ -299,4 +298,4 @@ getNextSides(const uint8_t side)
     return nextSides;
 }
 
-#endif // ROUTING_FUNCTIONS_H
+#endif // HANAMI_ROUTING_FUNCTIONS_H

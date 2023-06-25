@@ -26,6 +26,7 @@
 #include <common.h>
 #include <hanami_root.h>
 #include "core_segment/objects.h"
+#include <libKitsunemimiHanamiSegmentParser/segment_meta.h>
 
 struct Brick
 {

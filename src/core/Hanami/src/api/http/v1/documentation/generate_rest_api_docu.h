@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef MISAKIGUARD_GENERATERESTAPIDOCU_H
-#define MISAKIGUARD_GENERATERESTAPIDOCU_H
+#ifndef HANAMI_GENERATERESTAPIDOCU_H
+#define HANAMI_GENERATERESTAPIDOCU_H
 
 #include <api/endpoint_processing/blossom.h>
 
@@ -44,4 +44,4 @@ private:
                          Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // MISAKIGUARD_GENERATERESTAPIDOCU_H
+#endif // HANAMI_GENERATERESTAPIDOCU_H

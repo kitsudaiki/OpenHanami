@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef MISAKIGUARD_PROJECTS_TABLE_H
-#define MISAKIGUARD_PROJECTS_TABLE_H
+#ifndef HANAMI_PROJECTS_TABLE_H
+#define HANAMI_PROJECTS_TABLE_H
 
 #include <libKitsunemimiCommon/logger.h>
 #include <database/generic_tables/hanami_sql_admin_table.h>
@@ -32,7 +32,7 @@ class JsonItem;
 }
 }
 class ProjectsTable
-        : public Kitsunemimi::Hanami::HanamiSqlAdminTable
+        : public HanamiSqlAdminTable
 {
 public:
     ProjectsTable(Kitsunemimi::Sakura::SqlDatabase* db);
@@ -50,4 +50,4 @@ public:
                        Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // MISAKIGUARD_PROJECTS_TABLE_H
+#endif // HANAMI_PROJECTS_TABLE_H

@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef AZUKIHEART_THREADBINDER_H
-#define AZUKIHEART_THREADBINDER_H
+#ifndef HANAMI_THREADBINDER_H
+#define HANAMI_THREADBINDER_H
 
 #include <mutex>
 
@@ -57,4 +57,4 @@ private:
     std::vector<uint64_t> m_processingCoreIds;
 };
 
-#endif // AZUKIHEART_THREADBINDER_H
+#endif // HANAMI_THREADBINDER_H

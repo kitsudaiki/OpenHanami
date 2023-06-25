@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef IMAGEIDENTIFY_STATE_H
-#define IMAGEIDENTIFY_STATE_H
+#ifndef HANAMI_IMAGEIDENTIFY_STATE_H
+#define HANAMI_IMAGEIDENTIFY_STATE_H
 
 #include <libKitsunemimiCommon/threading/event.h>
 
@@ -40,4 +40,4 @@ private:
     Cluster* m_cluster = nullptr;
 };
 
-#endif // IMAGEIDENTIFY_STATE_H
+#endif // HANAMI_IMAGEIDENTIFY_STATE_H

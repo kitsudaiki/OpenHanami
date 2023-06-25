@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef IMAGELEARNFORWARD_STATE_H
-#define IMAGELEARNFORWARD_STATE_H
+#ifndef HANAMI_IMAGELEARNFORWARD_STATE_H
+#define HANAMI_IMAGELEARNFORWARD_STATE_H
 
 #include <libKitsunemimiCommon/threading/event.h>
 
@@ -40,4 +40,4 @@ private:
     Cluster* m_cluster = nullptr;
 };
 
-#endif // IMAGELEARNFORWARD_STATE_H
+#endif // HANAMI_IMAGELEARNFORWARD_STATE_H

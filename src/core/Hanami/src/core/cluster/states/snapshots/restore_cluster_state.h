@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef RESTORECLUSTERSTATE_H
-#define RESTORECLUSTERSTATE_H
+#ifndef HANAMI_RESTORECLUSTERSTATE_H
+#define HANAMI_RESTORECLUSTERSTATE_H
 
 #include <libKitsunemimiCommon/threading/event.h>
 #include <libKitsunemimiJson/json_item.h>
@@ -46,4 +46,4 @@ private:
     Kitsunemimi::Hanami::HanamiMessagingClient* m_client = nullptr;
 };
 
-#endif // RESTORECLUSTERSTATE_H
+#endif // HANAMI_RESTORECLUSTERSTATE_H

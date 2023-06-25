@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef MISAKIGUARD_VALIDATE_ACCESS_H
-#define MISAKIGUARD_VALIDATE_ACCESS_H
+#ifndef HANAMI_VALIDATE_ACCESS_H
+#define HANAMI_VALIDATE_ACCESS_H
 
 #include <api/endpoint_processing/blossom.h>
 
@@ -38,4 +38,4 @@ protected:
                  Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // MISAKIGUARD_VALIDATE_ACCESS_H
+#endif // HANAMI_VALIDATE_ACCESS_H

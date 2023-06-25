@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef KITSUNEMIMI_HANAMI_DATABASE_SQL_TABLE_H
-#define KITSUNEMIMI_HANAMI_DATABASE_SQL_TABLE_H
+#ifndef HANAMI_DATABASE_SQL_TABLE_H
+#define HANAMI_DATABASE_SQL_TABLE_H
 
 #include <vector>
 #include <string>
@@ -32,8 +32,6 @@
 
 #include <libKitsunemimiSakuraDatabase/sql_table.h>
 
-namespace Kitsunemimi::Hanami
-{
 class SqlDatabase;
 
 class HanamiSqlTable
@@ -43,15 +41,15 @@ public:
     HanamiSqlTable(Kitsunemimi::Sakura::SqlDatabase* db);
     virtual ~HanamiSqlTable();
 
-    bool add(JsonItem &values,
+    bool add(Kitsunemimi::JsonItem &values,
              const UserContext &userContext,
              Kitsunemimi::ErrorContainer &error);
-    bool get(JsonItem &result,
+    bool get(Kitsunemimi::JsonItem &result,
              const UserContext &userContext,
              std::vector<RequestCondition> &conditions,
              Kitsunemimi::ErrorContainer &error,
              const bool showHiddenValues = false);
-    bool update(JsonItem &values,
+    bool update(Kitsunemimi::JsonItem &values,
                 const UserContext &userContext,
                 std::vector<RequestCondition> &conditions,
                 Kitsunemimi::ErrorContainer &error);
@@ -69,6 +67,4 @@ private:
                        const UserContext &userContext);
 };
 
-}
-
-#endif // KITSUNEMIMI_HANAMI_DATABASE_SQL_TABLE_H
+#endif // HANAMI_DATABASE_SQL_TABLE_H

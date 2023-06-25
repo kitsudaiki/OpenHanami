@@ -1,5 +1,5 @@
 /**
- * @file        image_data_set_file.cpp
+ * @file        data_set_file.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef SHIORIARCHIVE_DATASETFILE_H
-#define SHIORIARCHIVE_DATASETFILE_H
+#ifndef HANAMI_DATASETFILE_H
+#define HANAMI_DATASETFILE_H
 
 #include <libKitsunemimiCommon/logger.h>
 
@@ -116,4 +116,4 @@ protected:
 
 DataSetFile* readDataSetFile(const std::string &filePath);
 
-#endif // SHIORIARCHIVE_DATASETFILE_H
+#endif // HANAMI_DATASETFILE_H

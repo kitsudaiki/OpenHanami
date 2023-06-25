@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef SHIORIARCHIVE_MNIST_FINALIZE_DATA_SET_H
-#define SHIORIARCHIVE_MNIST_FINALIZE_DATA_SET_H
+#ifndef HANAMI_MNIST_FINALIZE_DATA_SET_H
+#define HANAMI_MNIST_FINALIZE_DATA_SET_H
 
 #include <api/endpoint_processing/blossom.h>
 
@@ -46,4 +46,4 @@ private:
                           const Kitsunemimi::DataBuffer &labelBuffer);
 };
 
-#endif // SHIORIARCHIVE_MNIST_FINALIZE_DATA_SET_H
+#endif // HANAMI_MNIST_FINALIZE_DATA_SET_H

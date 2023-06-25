@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef MISAKIGUARD_REMOVE_PROJECT_FROM_USER_H
-#define MISAKIGUARD_REMOVE_PROJECT_FROM_USER_H
+#ifndef HANAMI_REMOVE_PROJECT_FROM_USER_H
+#define HANAMI_REMOVE_PROJECT_FROM_USER_H
 
 #include <api/endpoint_processing/blossom.h>
 
@@ -39,4 +39,4 @@ protected:
                  Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // MISAKIGUARD_REMOVE_PROJECT_FROM_USER_H
+#endif // HANAMI_REMOVE_PROJECT_FROM_USER_H

@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef MISAKIGUARD_LISTUSERS_H
-#define MISAKIGUARD_LISTUSERS_H
+#ifndef HANAMI_LISTUSERS_H
+#define HANAMI_LISTUSERS_H
 
 #include <api/endpoint_processing/blossom.h>
 
@@ -39,4 +39,4 @@ protected:
                  Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // MISAKIGUARD_LISTUSERS_H
+#endif // HANAMI_LISTUSERS_H

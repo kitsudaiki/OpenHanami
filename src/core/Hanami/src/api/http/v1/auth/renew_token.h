@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef MISAKIGUARD_RENEW_TOKEN_H
-#define MISAKIGUARD_RENEW_TOKEN_H
+#ifndef HANAMI_RENEW_TOKEN_H
+#define HANAMI_RENEW_TOKEN_H
 
 #include <api/endpoint_processing/blossom.h>
 
@@ -43,4 +43,4 @@ private:
                        const std::string selectedProjectId);
 };
 
-#endif // MISAKIGUARD_RENEW_TOKEN_H
+#endif // HANAMI_RENEW_TOKEN_H

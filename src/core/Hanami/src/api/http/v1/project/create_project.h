@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef MISAKIGUARD_CREATEPROJECT_H
-#define MISAKIGUARD_CREATEPROJECT_H
+#ifndef HANAMI_CREATEPROJECT_H
+#define HANAMI_CREATEPROJECT_H
 
 #include <api/endpoint_processing/blossom.h>
 
@@ -39,4 +39,4 @@ protected:
                  Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // MISAKIGUARD_CREATEPROJECT_H
+#endif // HANAMI_CREATEPROJECT_H

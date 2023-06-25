@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef CLUSTERTABLE_H
-#define CLUSTERTABLE_H
+#ifndef HANAMI_CLUSTERTABLE_H
+#define HANAMI_CLUSTERTABLE_H
 
 #include <libKitsunemimiCommon/logger.h>
 #include <database/generic_tables/hanami_sql_table.h>
@@ -30,7 +30,7 @@ namespace Kitsunemimi {
 class JsonItem;
 }
 class ClusterTable
-        : public Kitsunemimi::Hanami::HanamiSqlTable
+        : public HanamiSqlTable
 {
 public:
     ClusterTable(Kitsunemimi::Sakura::SqlDatabase* db);
@@ -57,4 +57,4 @@ public:
                        Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // CLUSTERTABLE_H
+#endif // HANAMI_CLUSTERTABLE_H

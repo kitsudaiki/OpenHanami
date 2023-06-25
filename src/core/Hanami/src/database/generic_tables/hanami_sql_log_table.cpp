@@ -29,9 +29,6 @@
 
 #include <uuid/uuid.h>
 
-namespace Kitsunemimi::Hanami
-{
-
 /**
  * @brief constructor, which add basic columns to the table
  *
@@ -59,7 +56,7 @@ HanamiSqlLogTable::~HanamiSqlLogTable() {}
  * @return -1 if request against database failed, else number of rows
  */
 long
-HanamiSqlLogTable::getNumberOfPages(ErrorContainer &error)
+HanamiSqlLogTable::getNumberOfPages(Kitsunemimi::ErrorContainer &error)
 {
     const long numberOfRows = getNumberOfRows(error);
     if(numberOfRows == -1) {
@@ -80,10 +77,10 @@ HanamiSqlLogTable::getNumberOfPages(ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-HanamiSqlLogTable::getPageFromDb(TableItem &resultTable,
+HanamiSqlLogTable::getPageFromDb(Kitsunemimi::TableItem &resultTable,
                                  const std::string &userId,
                                  const uint64_t page,
-                                 ErrorContainer &error)
+                                 Kitsunemimi::ErrorContainer &error)
 {
     // get number of pages of the log-table
     const long numberOfPages = getNumberOfPages(error);
@@ -102,6 +99,4 @@ HanamiSqlLogTable::getPageFromDb(TableItem &resultTable,
     std::vector<RequestCondition> conditions;
     conditions.push_back(RequestCondition("user_id", userId));
     return getFromDb(resultTable, conditions, error, true, page*100, 100);
-}
-
 }

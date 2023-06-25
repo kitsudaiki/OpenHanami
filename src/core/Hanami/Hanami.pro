@@ -225,7 +225,6 @@ HEADERS += \
     src/common/structs.h \
     src/common/typedefs.h \
     src/config.h \
-    src/core/callbacks.h \
     src/core/cluster/cluster.h \
     src/core/cluster/cluster_handler.h \
     src/core/cluster/cluster_init.h \

@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef MISAKIGUARD_DELETEUSER_H
-#define MISAKIGUARD_DELETEUSER_H
+#ifndef HANAMI_DELETEUSER_H
+#define HANAMI_DELETEUSER_H
 
 #include <api/endpoint_processing/blossom.h>
 
@@ -39,4 +39,4 @@ protected:
                  Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // MISAKIGUARD_DELETEUSER_H
+#endif // HANAMI_DELETEUSER_H

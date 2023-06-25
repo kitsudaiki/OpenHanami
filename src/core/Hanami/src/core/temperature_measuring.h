@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef AZUKIHEART_TEMPERATURE_MEASURING_H
-#define AZUKIHEART_TEMPERATURE_MEASURING_H
+#ifndef HANAMI_TEMPERATURE_MEASURING_H
+#define HANAMI_TEMPERATURE_MEASURING_H
 
 #include <mutex>
 
@@ -51,4 +51,4 @@ private:
     ValueContainer* m_valueContainer;
 };
 
-#endif // AZUKIHEART_TEMPERATURE_MEASURING_H
+#endif // HANAMI_TEMPERATURE_MEASURING_H

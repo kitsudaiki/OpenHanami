@@ -1,5 +1,5 @@
 /**
- * @file        cluster_interface.cpp
+ * @file        cluster.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
