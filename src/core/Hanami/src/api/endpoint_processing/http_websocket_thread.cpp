@@ -23,10 +23,10 @@
 #include "http_websocket_thread.h"
 
 #include <hanami_root.h>
-#include <callbacks.h>
+#include <api/websocket/file_upload.h>
+#include <api/websocket/cluster_io.h>
 #include <api/endpoint_processing/http_server.h>
 #include <api/endpoint_processing/http_processing/http_processing.h>
-#include <io/protobuf_messages.h>
 #include <core/cluster/cluster.h>
 #include <core/cluster/cluster_handler.h>
 
@@ -479,8 +479,8 @@ HttpWebsocketThread::runWebsocket()
                 }
                 else if(m_target == "shiori")
                 {
-                    handleProtobufFileUpload(buffer.data().data(),
-                                             buffer.data().size());
+                    recvFileUploadPackage(buffer.data().data(),
+                                          buffer.data().size());
                     m_waitForInput = true;
                 }
             }

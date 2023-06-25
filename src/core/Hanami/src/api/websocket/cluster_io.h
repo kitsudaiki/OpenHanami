@@ -1,5 +1,5 @@
 /**
- * @file        callbacks.h
+ * @file        cluster_io.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,19 +20,18 @@
  *      limitations under the License.
  */
 
-#ifndef CALLBACKS_H
-#define CALLBACKS_H
+#ifndef HANAMI_PROTOBUF_MESSAGES_H
+#define HANAMI_PROTOBUF_MESSAGES_H
 
-#include <common.h>
+#include <core/segments/output_segment/output_segment.h>
 
-namespace Kitsunemimi::Sakura {
-class Session;
-}
+void sendClusterOutputMessage(const OutputSegment &segment);
+void sendClusterNormalEndMessage(Cluster* cluster);
+void sendClusterLearnEndMessage(Cluster* cluster);
 
-void streamDataCallback(const void* data,
-                        const uint64_t dataSize);
-
-bool handleProtobufFileUpload(const void* data,
+bool recvClusterInputMessage(Cluster* cluster,
+                              const void* data,
                               const uint64_t dataSize);
 
-#endif // CALLBACKS_H
+
+#endif // HANAMI_PROTOBUF_MESSAGES_H

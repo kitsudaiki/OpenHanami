@@ -160,63 +160,64 @@ HEADERS += \
     src/api/endpoint_processing/items/value_item_map.h \
     src/api/endpoint_processing/items/value_items.h \
     src/api/endpoint_processing/runtime_validation.h \
-    src/api/v1/auth/create_token.h \
-    src/api/v1/auth/list_user_projects.h \
-    src/api/v1/auth/renew_token.h \
-    src/api/v1/auth/validate_access.h \
-    src/api/v1/blossom_initializing.h \
-    src/api/v1/cluster/create_cluster.h \
-    src/api/v1/cluster/delete_cluster.h \
-    src/api/v1/cluster/list_cluster.h \
-    src/api/v1/cluster/load_cluster.h \
-    src/api/v1/cluster/save_cluster.h \
-    src/api/v1/cluster/set_cluster_mode.h \
-    src/api/v1/cluster/show_cluster.h \
-    src/api/v1/cluster_snapshot/create_cluster_snapshot.h \
-    src/api/v1/cluster_snapshot/delete_cluster_snapshot.h \
-    src/api/v1/cluster_snapshot/finish_cluster_snapshot.h \
-    src/api/v1/cluster_snapshot/get_cluster_snapshot.h \
-    src/api/v1/cluster_snapshot/list_cluster_snapshot.h \
-    src/api/v1/data_files/check_data_set.h \
-    src/api/v1/data_files/csv/create_csv_data_set.h \
-    src/api/v1/data_files/csv/finalize_csv_data_set.h \
-    src/api/v1/data_files/delete_data_set.h \
-    src/api/v1/data_files/get_data_set.h \
-    src/api/v1/data_files/get_progress_data_set.h \
-    src/api/v1/data_files/list_data_set.h \
-    src/api/v1/data_files/mnist/create_mnist_data_set.h \
-    src/api/v1/data_files/mnist/finalize_mnist_data_set.h \
-    src/api/v1/documentation/generate_rest_api_docu.h \
-    src/api/v1/logs/get_audit_log.h \
-    src/api/v1/logs/get_error_log.h \
-    src/api/v1/measurements/power_consumption.h \
-    src/api/v1/measurements/speed.h \
-    src/api/v1/measurements/temperature_production.h \
-    src/api/v1/project/create_project.h \
-    src/api/v1/project/delete_project.h \
-    src/api/v1/project/get_project.h \
-    src/api/v1/project/list_projects.h \
-    src/api/v1/request_results/delete_request_result.h \
-    src/api/v1/request_results/get_request_result.h \
-    src/api/v1/request_results/list_request_result.h \
-    src/api/v1/system_info/get_system_info.h \
-    src/api/v1/task/create_task.h \
-    src/api/v1/task/delete_task.h \
-    src/api/v1/task/list_task.h \
-    src/api/v1/task/show_task.h \
-    src/api/v1/template/delete_template.h \
-    src/api/v1/template/list_templates.h \
-    src/api/v1/template/show_template.h \
-    src/api/v1/template/upload_template.h \
-    src/api/v1/threading/get_thread_mapping.h \
-    src/api/v1/user/add_project_to_user.h \
-    src/api/v1/user/create_user.h \
-    src/api/v1/user/delete_user.h \
-    src/api/v1/user/get_user.h \
-    src/api/v1/user/list_users.h \
-    src/api/v1/user/remove_project_from_user.h \
+    src/api/http/v1/auth/create_token.h \
+    src/api/http/v1/auth/list_user_projects.h \
+    src/api/http/v1/auth/renew_token.h \
+    src/api/http/v1/auth/validate_access.h \
+    src/api/http/v1/blossom_initializing.h \
+    src/api/http/v1/cluster/create_cluster.h \
+    src/api/http/v1/cluster/delete_cluster.h \
+    src/api/http/v1/cluster/list_cluster.h \
+    src/api/http/v1/cluster/load_cluster.h \
+    src/api/http/v1/cluster/save_cluster.h \
+    src/api/http/v1/cluster/set_cluster_mode.h \
+    src/api/http/v1/cluster/show_cluster.h \
+    src/api/http/v1/cluster_snapshot/create_cluster_snapshot.h \
+    src/api/http/v1/cluster_snapshot/delete_cluster_snapshot.h \
+    src/api/http/v1/cluster_snapshot/finish_cluster_snapshot.h \
+    src/api/http/v1/cluster_snapshot/get_cluster_snapshot.h \
+    src/api/http/v1/cluster_snapshot/list_cluster_snapshot.h \
+    src/api/http/v1/data_files/check_data_set.h \
+    src/api/http/v1/data_files/csv/create_csv_data_set.h \
+    src/api/http/v1/data_files/csv/finalize_csv_data_set.h \
+    src/api/http/v1/data_files/delete_data_set.h \
+    src/api/http/v1/data_files/get_data_set.h \
+    src/api/http/v1/data_files/get_progress_data_set.h \
+    src/api/http/v1/data_files/list_data_set.h \
+    src/api/http/v1/data_files/mnist/create_mnist_data_set.h \
+    src/api/http/v1/data_files/mnist/finalize_mnist_data_set.h \
+    src/api/http/v1/documentation/generate_rest_api_docu.h \
+    src/api/http/v1/logs/get_audit_log.h \
+    src/api/http/v1/logs/get_error_log.h \
+    src/api/http/v1/measurements/power_consumption.h \
+    src/api/http/v1/measurements/speed.h \
+    src/api/http/v1/measurements/temperature_production.h \
+    src/api/http/v1/project/create_project.h \
+    src/api/http/v1/project/delete_project.h \
+    src/api/http/v1/project/get_project.h \
+    src/api/http/v1/project/list_projects.h \
+    src/api/http/v1/request_results/delete_request_result.h \
+    src/api/http/v1/request_results/get_request_result.h \
+    src/api/http/v1/request_results/list_request_result.h \
+    src/api/http/v1/system_info/get_system_info.h \
+    src/api/http/v1/task/create_task.h \
+    src/api/http/v1/task/delete_task.h \
+    src/api/http/v1/task/list_task.h \
+    src/api/http/v1/task/show_task.h \
+    src/api/http/v1/template/delete_template.h \
+    src/api/http/v1/template/list_templates.h \
+    src/api/http/v1/template/show_template.h \
+    src/api/http/v1/template/upload_template.h \
+    src/api/http/v1/threading/get_thread_mapping.h \
+    src/api/http/v1/user/add_project_to_user.h \
+    src/api/http/v1/user/create_user.h \
+    src/api/http/v1/user/delete_user.h \
+    src/api/http/v1/user/get_user.h \
+    src/api/http/v1/user/list_users.h \
+    src/api/http/v1/user/remove_project_from_user.h \
+    src/api/websocket/cluster_io.h \
+    src/api/websocket/file_upload.h \
     src/args.h \
-    src/callbacks.h \
     src/common.h \
     src/common/defines.h \
     src/common/enums.h \
@@ -283,8 +284,7 @@ HEADERS += \
     src/database/request_result_table.h \
     src/database/template_table.h \
     src/database/users_table.h \
-    src/hanami_root.h \
-    src/io/protobuf_messages.h
+    src/hanami_root.h
 
 SOURCES += \
     src/api/endpoint_processing/blossom.cpp \
@@ -296,61 +296,62 @@ SOURCES += \
     src/api/endpoint_processing/items/sakura_items.cpp \
     src/api/endpoint_processing/items/value_item_map.cpp \
     src/api/endpoint_processing/runtime_validation.cpp \
-    src/api/v1/auth/create_token.cpp \
-    src/api/v1/auth/list_user_projects.cpp \
-    src/api/v1/auth/renew_token.cpp \
-    src/api/v1/auth/validate_access.cpp \
-    src/api/v1/cluster/create_cluster.cpp \
-    src/api/v1/cluster/delete_cluster.cpp \
-    src/api/v1/cluster/list_cluster.cpp \
-    src/api/v1/cluster/load_cluster.cpp \
-    src/api/v1/cluster/save_cluster.cpp \
-    src/api/v1/cluster/set_cluster_mode.cpp \
-    src/api/v1/cluster/show_cluster.cpp \
-    src/api/v1/cluster_snapshot/create_cluster_snapshot.cpp \
-    src/api/v1/cluster_snapshot/delete_cluster_snapshot.cpp \
-    src/api/v1/cluster_snapshot/finish_cluster_snapshot.cpp \
-    src/api/v1/cluster_snapshot/get_cluster_snapshot.cpp \
-    src/api/v1/cluster_snapshot/list_cluster_snapshot.cpp \
-    src/api/v1/data_files/check_data_set.cpp \
-    src/api/v1/data_files/csv/create_csv_data_set.cpp \
-    src/api/v1/data_files/csv/finalize_csv_data_set.cpp \
-    src/api/v1/data_files/delete_data_set.cpp \
-    src/api/v1/data_files/get_data_set.cpp \
-    src/api/v1/data_files/get_progress_data_set.cpp \
-    src/api/v1/data_files/list_data_set.cpp \
-    src/api/v1/data_files/mnist/create_mnist_data_set.cpp \
-    src/api/v1/data_files/mnist/finalize_mnist_data_set.cpp \
-    src/api/v1/documentation/generate_rest_api_docu.cpp \
-    src/api/v1/logs/get_audit_log.cpp \
-    src/api/v1/logs/get_error_log.cpp \
-    src/api/v1/measurements/power_consumption.cpp \
-    src/api/v1/measurements/speed.cpp \
-    src/api/v1/measurements/temperature_production.cpp \
-    src/api/v1/project/create_project.cpp \
-    src/api/v1/project/delete_project.cpp \
-    src/api/v1/project/get_project.cpp \
-    src/api/v1/project/list_projects.cpp \
-    src/api/v1/request_results/delete_request_result.cpp \
-    src/api/v1/request_results/get_request_result.cpp \
-    src/api/v1/request_results/list_request_result.cpp \
-    src/api/v1/system_info/get_system_info.cpp \
-    src/api/v1/task/create_task.cpp \
-    src/api/v1/task/delete_task.cpp \
-    src/api/v1/task/list_task.cpp \
-    src/api/v1/task/show_task.cpp \
-    src/api/v1/template/delete_template.cpp \
-    src/api/v1/template/list_templates.cpp \
-    src/api/v1/template/show_template.cpp \
-    src/api/v1/template/upload_template.cpp \
-    src/api/v1/threading/get_thread_mapping.cpp \
-    src/api/v1/user/add_project_to_user.cpp \
-    src/api/v1/user/create_user.cpp \
-    src/api/v1/user/delete_user.cpp \
-    src/api/v1/user/get_user.cpp \
-    src/api/v1/user/list_users.cpp \
-    src/api/v1/user/remove_project_from_user.cpp \
-    src/callbacks.cpp \
+    src/api/http/v1/auth/create_token.cpp \
+    src/api/http/v1/auth/list_user_projects.cpp \
+    src/api/http/v1/auth/renew_token.cpp \
+    src/api/http/v1/auth/validate_access.cpp \
+    src/api/http/v1/cluster/create_cluster.cpp \
+    src/api/http/v1/cluster/delete_cluster.cpp \
+    src/api/http/v1/cluster/list_cluster.cpp \
+    src/api/http/v1/cluster/load_cluster.cpp \
+    src/api/http/v1/cluster/save_cluster.cpp \
+    src/api/http/v1/cluster/set_cluster_mode.cpp \
+    src/api/http/v1/cluster/show_cluster.cpp \
+    src/api/http/v1/cluster_snapshot/create_cluster_snapshot.cpp \
+    src/api/http/v1/cluster_snapshot/delete_cluster_snapshot.cpp \
+    src/api/http/v1/cluster_snapshot/finish_cluster_snapshot.cpp \
+    src/api/http/v1/cluster_snapshot/get_cluster_snapshot.cpp \
+    src/api/http/v1/cluster_snapshot/list_cluster_snapshot.cpp \
+    src/api/http/v1/data_files/check_data_set.cpp \
+    src/api/http/v1/data_files/csv/create_csv_data_set.cpp \
+    src/api/http/v1/data_files/csv/finalize_csv_data_set.cpp \
+    src/api/http/v1/data_files/delete_data_set.cpp \
+    src/api/http/v1/data_files/get_data_set.cpp \
+    src/api/http/v1/data_files/get_progress_data_set.cpp \
+    src/api/http/v1/data_files/list_data_set.cpp \
+    src/api/http/v1/data_files/mnist/create_mnist_data_set.cpp \
+    src/api/http/v1/data_files/mnist/finalize_mnist_data_set.cpp \
+    src/api/http/v1/documentation/generate_rest_api_docu.cpp \
+    src/api/http/v1/logs/get_audit_log.cpp \
+    src/api/http/v1/logs/get_error_log.cpp \
+    src/api/http/v1/measurements/power_consumption.cpp \
+    src/api/http/v1/measurements/speed.cpp \
+    src/api/http/v1/measurements/temperature_production.cpp \
+    src/api/http/v1/project/create_project.cpp \
+    src/api/http/v1/project/delete_project.cpp \
+    src/api/http/v1/project/get_project.cpp \
+    src/api/http/v1/project/list_projects.cpp \
+    src/api/http/v1/request_results/delete_request_result.cpp \
+    src/api/http/v1/request_results/get_request_result.cpp \
+    src/api/http/v1/request_results/list_request_result.cpp \
+    src/api/http/v1/system_info/get_system_info.cpp \
+    src/api/http/v1/task/create_task.cpp \
+    src/api/http/v1/task/delete_task.cpp \
+    src/api/http/v1/task/list_task.cpp \
+    src/api/http/v1/task/show_task.cpp \
+    src/api/http/v1/template/delete_template.cpp \
+    src/api/http/v1/template/list_templates.cpp \
+    src/api/http/v1/template/show_template.cpp \
+    src/api/http/v1/template/upload_template.cpp \
+    src/api/http/v1/threading/get_thread_mapping.cpp \
+    src/api/http/v1/user/add_project_to_user.cpp \
+    src/api/http/v1/user/create_user.cpp \
+    src/api/http/v1/user/delete_user.cpp \
+    src/api/http/v1/user/get_user.cpp \
+    src/api/http/v1/user/list_users.cpp \
+    src/api/http/v1/user/remove_project_from_user.cpp \
+    src/api/websocket/cluster_io.cpp \
+    src/api/websocket/file_upload.cpp \
     src/core/cluster/cluster.cpp \
     src/core/cluster/cluster_handler.cpp \
     src/core/cluster/cluster_init.cpp \
@@ -395,5 +396,5 @@ SOURCES += \
     src/database/template_table.cpp \
     src/database/users_table.cpp \
     src/hanami_root.cpp \
-    src/io/protobuf_messages.cpp \
     src/main.cpp
+

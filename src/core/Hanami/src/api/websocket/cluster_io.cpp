@@ -20,7 +20,7 @@
  *      limitations under the License.
  */
 
-#include "protobuf_messages.h"
+#include "cluster_io.h"
 
 #include <core/cluster/cluster.h>
 #include <../../libraries/libKitsunemimiHanamiMessages/protobuffers/hanami_messages.proto3.pb.h>

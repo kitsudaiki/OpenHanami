@@ -30,73 +30,73 @@
 #include <libKitsunemimiCommon/files/text_file.h>
 #include <libKitsunemimiCommon/logger.h>
 
-#include <api/v1/cluster/create_cluster.h>
-#include <api/v1/cluster/show_cluster.h>
-#include <api/v1/cluster/list_cluster.h>
-#include <api/v1/cluster/delete_cluster.h>
-#include <api/v1/cluster/save_cluster.h>
-#include <api/v1/cluster/load_cluster.h>
-#include <api/v1/cluster/set_cluster_mode.h>
+#include <api/http/v1/cluster/create_cluster.h>
+#include <api/http/v1/cluster/show_cluster.h>
+#include <api/http/v1/cluster/list_cluster.h>
+#include <api/http/v1/cluster/delete_cluster.h>
+#include <api/http/v1/cluster/save_cluster.h>
+#include <api/http/v1/cluster/load_cluster.h>
+#include <api/http/v1/cluster/set_cluster_mode.h>
 
-#include <api/v1/template/upload_template.h>
-#include <api/v1/template/delete_template.h>
-#include <api/v1/template/list_templates.h>
-#include <api/v1/template/show_template.h>
+#include <api/http/v1/template/upload_template.h>
+#include <api/http/v1/template/delete_template.h>
+#include <api/http/v1/template/list_templates.h>
+#include <api/http/v1/template/show_template.h>
 
-#include <api/v1/task/create_task.h>
-#include <api/v1/task/show_task.h>
-#include <api/v1/task/list_task.h>
-#include <api/v1/task/delete_task.h>
+#include <api/http/v1/task/create_task.h>
+#include <api/http/v1/task/show_task.h>
+#include <api/http/v1/task/list_task.h>
+#include <api/http/v1/task/delete_task.h>
 
-#include <api/v1/system_info/get_system_info.h>
+#include <api/http/v1/system_info/get_system_info.h>
 
-#include <api/v1/threading/get_thread_mapping.h>
+#include <api/http/v1/threading/get_thread_mapping.h>
 
-#include <api/v1/measurements/power_consumption.h>
-#include <api/v1/measurements/temperature_production.h>
-#include <api/v1/measurements/speed.h>
+#include <api/http/v1/measurements/power_consumption.h>
+#include <api/http/v1/measurements/temperature_production.h>
+#include <api/http/v1/measurements/speed.h>
 
-#include <api/v1/data_files/list_data_set.h>
-#include <api/v1/data_files/get_data_set.h>
-#include <api/v1/data_files/delete_data_set.h>
-#include <api/v1/data_files/check_data_set.h>
-#include <api/v1/data_files/get_progress_data_set.h>
-#include <api/v1/data_files/mnist/create_mnist_data_set.h>
-#include <api/v1/data_files/mnist/finalize_mnist_data_set.h>
-#include <api/v1/data_files/csv/create_csv_data_set.h>
-#include <api/v1/data_files/csv/finalize_csv_data_set.h>
+#include <api/http/v1/data_files/list_data_set.h>
+#include <api/http/v1/data_files/get_data_set.h>
+#include <api/http/v1/data_files/delete_data_set.h>
+#include <api/http/v1/data_files/check_data_set.h>
+#include <api/http/v1/data_files/get_progress_data_set.h>
+#include <api/http/v1/data_files/mnist/create_mnist_data_set.h>
+#include <api/http/v1/data_files/mnist/finalize_mnist_data_set.h>
+#include <api/http/v1/data_files/csv/create_csv_data_set.h>
+#include <api/http/v1/data_files/csv/finalize_csv_data_set.h>
 
-#include <api/v1/cluster_snapshot/create_cluster_snapshot.h>
-#include <api/v1/cluster_snapshot/delete_cluster_snapshot.h>
-#include <api/v1/cluster_snapshot/finish_cluster_snapshot.h>
-#include <api/v1/cluster_snapshot/get_cluster_snapshot.h>
-#include <api/v1/cluster_snapshot/list_cluster_snapshot.h>
+#include <api/http/v1/cluster_snapshot/create_cluster_snapshot.h>
+#include <api/http/v1/cluster_snapshot/delete_cluster_snapshot.h>
+#include <api/http/v1/cluster_snapshot/finish_cluster_snapshot.h>
+#include <api/http/v1/cluster_snapshot/get_cluster_snapshot.h>
+#include <api/http/v1/cluster_snapshot/list_cluster_snapshot.h>
 
-#include <api/v1/request_results/delete_request_result.h>
-#include <api/v1/request_results/get_request_result.h>
-#include <api/v1/request_results/list_request_result.h>
+#include <api/http/v1/request_results/delete_request_result.h>
+#include <api/http/v1/request_results/get_request_result.h>
+#include <api/http/v1/request_results/list_request_result.h>
 
-#include <api/v1/logs/get_audit_log.h>
-#include <api/v1/logs/get_error_log.h>
+#include <api/http/v1/logs/get_audit_log.h>
+#include <api/http/v1/logs/get_error_log.h>
 
-#include <api/v1/user/create_user.h>
-#include <api/v1/user/get_user.h>
-#include <api/v1/user/list_users.h>
-#include <api/v1/user/delete_user.h>
-#include <api/v1/user/add_project_to_user.h>
-#include <api/v1/user/remove_project_from_user.h>
+#include <api/http/v1/user/create_user.h>
+#include <api/http/v1/user/get_user.h>
+#include <api/http/v1/user/list_users.h>
+#include <api/http/v1/user/delete_user.h>
+#include <api/http/v1/user/add_project_to_user.h>
+#include <api/http/v1/user/remove_project_from_user.h>
 
-#include <api/v1/project/create_project.h>
-#include <api/v1/project/get_project.h>
-#include <api/v1/project/list_projects.h>
-#include <api/v1/project/delete_project.h>
+#include <api/http/v1/project/create_project.h>
+#include <api/http/v1/project/get_project.h>
+#include <api/http/v1/project/list_projects.h>
+#include <api/http/v1/project/delete_project.h>
 
-#include  <api/v1/documentation/generate_rest_api_docu.h>
+#include  <api/http/v1/documentation/generate_rest_api_docu.h>
 
-#include <api/v1/auth/create_token.h>
-#include <api/v1/auth/validate_access.h>
-#include <api/v1/auth/list_user_projects.h>
-#include <api/v1/auth/renew_token.h>
+#include <api/http/v1/auth/create_token.h>
+#include <api/http/v1/auth/validate_access.h>
+#include <api/http/v1/auth/list_user_projects.h>
+#include <api/http/v1/auth/renew_token.h>
 
 #include <hanami_root.h>
 

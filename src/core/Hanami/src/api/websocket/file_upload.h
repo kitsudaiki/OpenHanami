@@ -1,5 +1,5 @@
 /**
- * @file        protobuf_messages.h
+ * @file        file_upload.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,18 +20,12 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_PROTOBUF_MESSAGES_H
-#define HANAMI_PROTOBUF_MESSAGES_H
+#ifndef FILE_UPLOAD_H
+#define FILE_UPLOAD_H
 
-#include <core/segments/output_segment/output_segment.h>
+#include <common.h>
 
-void sendClusterOutputMessage(const OutputSegment &segment);
-void sendClusterNormalEndMessage(Cluster* cluster);
-void sendClusterLearnEndMessage(Cluster* cluster);
+bool recvFileUploadPackage(const void* data,
+                           const uint64_t dataSize);
 
-bool recvClusterInputMessage(Cluster* cluster,
-                              const void* data,
-                              const uint64_t dataSize);
-
-
-#endif // HANAMI_PROTOBUF_MESSAGES_H
+#endif // FILE_UPLOAD_H

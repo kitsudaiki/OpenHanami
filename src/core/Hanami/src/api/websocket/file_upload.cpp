@@ -1,5 +1,5 @@
 /**
- * @file        callbacks.cpp
+ * @file        file_upload.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,38 +20,17 @@
  *      limitations under the License.
  */
 
-#include <callbacks.h>
+#include <api/websocket/file_upload.h>
+
 #include <hanami_root.h>
 #include <core/temp_file_handler.h>
 #include <database/data_set_table.h>
 #include <database/template_table.h>
 #include <database/cluster_snapshot_table.h>
-#include <io/protobuf_messages.h>
 
 #include <hanami_messages.proto3.pb.h>
 
 class Cluster;
-
-/**
- * @brief process stream-message
- *
- * @param target target-cluster of the session-endpoint
- * @param data incoming data
- * @param dataSize number of incoming data
- */
-void
-streamDataCallback(const void* data,
-                   const uint64_t dataSize)
-{
-    //Cluster* cluster = static_cast<Cluster*>(target);
-    //recvClusterInputMessage(cluster, data, dataSize);
-
-    /**std::cout<<"#################################################"<<std::endl;
-    std::cout<<"number of values: "<<msg.numberOfValues<<std::endl;
-    std::cout<<"val0: "<<msg.values[0]<<std::endl;
-    std::cout<<"val1: "<<msg.values[1]<<std::endl;
-    std::cout<<"#################################################"<<std::endl;*/
-}
 
 /**
  * @brief handleProtobufFileUpload
@@ -60,7 +39,7 @@ streamDataCallback(const void* data,
  * @return
  */
 bool
-handleProtobufFileUpload(const void* data,
+recvFileUploadPackage(const void* data,
                          const uint64_t dataSize)
 {
     FileUpload_Message msg;

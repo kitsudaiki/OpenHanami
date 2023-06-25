@@ -25,7 +25,6 @@
 #include <hanami_root.h>
 #include <core/cluster/cluster_handler.h>
 #include <core/cluster/cluster.h>
-#include <callbacks.h>
 
 SetClusterMode::SetClusterMode()
     : Blossom("Set mode of the cluster.")

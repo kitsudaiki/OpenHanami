@@ -28,9 +28,9 @@
 #include <args.h>
 #include <config.h>
 #include <core/callbacks.h>
-#include <callbacks.h>
+#include <api/websocket/cluster_io.h>
 
-#include <api/v1/blossom_initializing.h>
+#include <api/http/v1/blossom_initializing.h>
 
 #include <libKitsunemimiArgs/arg_parser.h>
 #include <libKitsunemimiCommon/logger.h>
