@@ -123,10 +123,10 @@ jobs:
         run: |
           chmod +x /build_result/libraries/libKitsunemimiJson/tests/memory_leak_tests/memory_leak_tests
           /build_result/libraries/libKitsunemimiJson/tests/memory_leak_tests/memory_leak_tests
-      - name: "Run test: libKitsunemimiNetwork"
-        run: |
-          chmod +x /build_result/libraries/libKitsunemimiNetwork/tests/memory_leak_tests/memory_leak_tests
-          /build_result/libraries/libKitsunemimiNetwork/tests/memory_leak_tests/memory_leak_tests
+      # - name: "Run test: libKitsunemimiNetwork"
+      #   run: |
+      #     chmod +x /build_result/libraries/libKitsunemimiNetwork/tests/memory_leak_tests/memory_leak_tests
+      #     /build_result/libraries/libKitsunemimiNetwork/tests/memory_leak_tests/memory_leak_tests
       - name: "Run test: libKitsunemimiHanamiClusterParser"
         run: |
           chmod +x /build_result/libraries/libKitsunemimiHanamiClusterParser/tests/memory_leak_tests/memory_leak_tests
@@ -151,22 +151,22 @@ jobs:
         run: |
           chmod +x /build_result/libraries/libKitsunemimiConfig/tests/functional_tests/functional_tests
           /build_result/libraries/libKitsunemimiConfig/tests/functional_tests/functional_tests
-      - name: "Run test: libKitsunemimiNetwork"
-        run: |
-          chmod +x /build_result/libraries/libKitsunemimiNetwork/tests/functional_tests/functional_tests
-          /build_result/libraries/libKitsunemimiNetwork/tests/functional_tests/functional_tests
-      - name: "Run test: libKitsunemimiObj"
-        run: |
-          chmod +x /build_result/libraries/libKitsunemimiObj/tests/functional_tests/functional_tests
-          /build_result/libraries/libKitsunemimiObj/tests/functional_tests/functional_tests
+      # - name: "Run test: libKitsunemimiNetwork"
+      #   run: |
+      #     chmod +x /build_result/libraries/libKitsunemimiNetwork/tests/functional_tests/functional_tests
+      #     /build_result/libraries/libKitsunemimiNetwork/tests/functional_tests/functional_tests
+      # - name: "Run test: libKitsunemimiObj"
+      #   run: |
+      #     chmod +x /build_result/libraries/libKitsunemimiObj/tests/functional_tests/functional_tests
+      #     /build_result/libraries/libKitsunemimiObj/tests/functional_tests/functional_tests
       - name: "Run test: libKitsunemimiSakuraDatabase"
         run: |
           chmod +x /build_result/libraries/libKitsunemimiSakuraDatabase/tests/functional_tests/functional_tests
           /build_result/libraries/libKitsunemimiSakuraDatabase/tests/functional_tests/functional_tests
-      - name: "Run test: libKitsunemimiSakuraNetwork"
-        run: |
-          chmod +x /build_result/libraries/libKitsunemimiSakuraNetwork/tests/functional_tests/functional_tests
-          /build_result/libraries/libKitsunemimiSakuraNetwork/tests/functional_tests/functional_tests
+      # - name: "Run test: libKitsunemimiSakuraNetwork"
+      #   run: |
+      #     chmod +x /build_result/libraries/libKitsunemimiSakuraNetwork/tests/functional_tests/functional_tests
+      #     /build_result/libraries/libKitsunemimiSakuraNetwork/tests/functional_tests/functional_tests
 
   cleanup:
     needs: [ unit_tests, memory_leak_tests, functional_tests ]

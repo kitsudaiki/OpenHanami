@@ -41,16 +41,6 @@ LIBS += -L../../libraries/libKitsunemimiSakuraDatabase/src/debug -lKitsunemimiSa
 LIBS += -L../../libraries/libKitsunemimiSakuraDatabase/src/release -lKitsunemimiSakuraDatabase
 INCLUDEPATH += ../../libraries/libKitsunemimiSakuraDatabase/include
 
-LIBS += -L../../libraries/libKitsunemimiSakuraNetwork/src -lKitsunemimiSakuraNetwork
-LIBS += -L../../libraries/libKitsunemimiSakuraNetwork/src/debug -lKitsunemimiSakuraNetwork
-LIBS += -L../../libraries/libKitsunemimiSakuraNetwork/src/release -lKitsunemimiSakuraNetwork
-INCLUDEPATH += ../../libraries/libKitsunemimiSakuraNetwork/include
-
-LIBS += -L../../libraries/libKitsunemimiNetwork/src -lKitsunemimiNetwork
-LIBS += -L../../libraries/libKitsunemimiNetwork/src/debug -lKitsunemimiNetwork
-LIBS += -L../../libraries/libKitsunemimiNetwork/src/release -lKitsunemimiNetwork
-INCLUDEPATH += ../../libraries/libKitsunemimiNetwork/include
-
 LIBS += -L../../libraries/libKitsunemimiCommon/src -lKitsunemimiCommon
 LIBS += -L../../libraries/libKitsunemimiCommon/src/debug -lKitsunemimiCommon
 LIBS += -L../../libraries/libKitsunemimiCommon/src/release -lKitsunemimiCommon
