@@ -20,40 +20,40 @@
  *      limitations under the License.
  */
 
-#ifndef SHIORIARCHIVE_CLUSTER_SNAPSHOT_TABLE_H
-#define SHIORIARCHIVE_CLUSTER_SNAPSHOT_TABLE_H
+#ifndef HANAMI_CLUSTER_SNAPSHOT_TABLE_H
+#define HANAMI_CLUSTER_SNAPSHOT_TABLE_H
 
 #include <libKitsunemimiCommon/logger.h>
-#include <libKitsunemimiHanamiDatabase/hanami_sql_table.h>
+#include <database/generic_tables/hanami_sql_table.h>
 
 namespace Kitsunemimi {
 class JsonItem;
 }
 
 class ClusterSnapshotTable
-        : public Kitsunemimi::Hanami::HanamiSqlTable
+        : public HanamiSqlTable
 {
 public:
     ClusterSnapshotTable(Kitsunemimi::Sakura::SqlDatabase* db);
     ~ClusterSnapshotTable();
 
     bool addClusterSnapshot(Kitsunemimi::JsonItem &data,
-                            const Kitsunemimi::Hanami::UserContext &userContext,
+                            const UserContext &userContext,
                             Kitsunemimi::ErrorContainer &error);
     bool getClusterSnapshot(Kitsunemimi::JsonItem &result,
                             const std::string &snapshotUuid,
-                            const Kitsunemimi::Hanami::UserContext &userContext,
+                            const UserContext &userContext,
                             Kitsunemimi::ErrorContainer &error,
                             const bool showHiddenValues);
     bool getAllClusterSnapshot(Kitsunemimi::TableItem &result,
-                               const Kitsunemimi::Hanami::UserContext &userContext,
+                               const UserContext &userContext,
                                Kitsunemimi::ErrorContainer &error);
     bool deleteClusterSnapshot(const std::string &snapshotUuid,
-                               const Kitsunemimi::Hanami::UserContext &userContext,
+                               const UserContext &userContext,
                                Kitsunemimi::ErrorContainer &error);
     bool setUploadFinish(const std::string &uuid,
                          const std::string &fileUuid,
                          Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // SHIORIARCHIVE_CLUSTER_SNAPSHOT_TABLE_H
+#endif // HANAMI_CLUSTER_SNAPSHOT_TABLE_H

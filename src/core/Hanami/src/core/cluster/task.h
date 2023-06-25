@@ -25,7 +25,6 @@
 
 #include <common.h>
 
-#include <libKitsunemimiHanamiCommon/uuid.h>
 #include <libKitsunemimiCommon/items/data_items.h>
 
 enum TaskType
@@ -61,7 +60,7 @@ struct TaskProgress
 struct Task
 {
     // task-identification
-    Kitsunemimi::Hanami::kuuid uuid;
+    kuuid uuid;
     TaskType type = UNDEFINED_TASK;
     std::string name = "";
     std::string userId = "";

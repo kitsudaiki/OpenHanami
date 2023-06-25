@@ -26,7 +26,7 @@
 #include <string>
 #include <map>
 #include <vector>
-#include <libKitsunemimiHanamiCommon/enums.h>
+
 #include <libKitsunemimiCommon/logger.h>
 
 namespace Kitsunemimi {
@@ -36,6 +36,16 @@ class DataMap;
 namespace Kitsunemimi::Hanami
 {
 class Policy_Test;
+
+enum HttpRequestType
+{
+    UNKNOWN_HTTP_TYPE = 0,
+    DELETE_TYPE = 1,
+    GET_TYPE = 2,
+    HEAD_TYPE = 3,
+    POST_TYPE = 4,
+    PUT_TYPE = 5,
+};
 
 struct PolicyEntry
 {

@@ -28,20 +28,54 @@
 
 #include <rest_api_tests/rest_api_tests.h>
 
-#include <libKitsunemimiHanamiCommon/generic_main.h>
 #include <libHanamiAiSdk/common/websocket_client.h>
-
-using Kitsunemimi::Hanami::initMain;
 
 int main(int argc, char *argv[])
 {
-    Kitsunemimi::ErrorContainer error;
-    Kitsunemimi::initConsoleLogger(false);
-    if(initMain(argc, argv, "tsugumi", &registerArguments, &registerConfigs, error) == false)
+    Kitsunemimi::ErrorContainer error;   
+    Kitsunemimi::initConsoleLogger(true);
+
+    // create and init argument-parser
+    Kitsunemimi::ArgParser argParser;
+    registerArguments(&argParser, error);
+
+    // parse cli-input
+    if(argParser.parse(argc, argv, error) == false)
     {
         LOG_ERROR(error);
         return 1;
     }
+
+    // init and check config-file
+    std::string configPath = argParser.getStringValue("config");
+    if(configPath == "") {
+        configPath = "/etc/tsugumi/tsugumi.conf";
+    }
+    if(Kitsunemimi::initConfig(configPath, error) == false)
+    {
+        LOG_ERROR(error);
+        return 1;
+    }
+    registerConfigs(error);
+    if(Kitsunemimi::isConfigValid() == false) {
+        return 1;
+    }
+
+    // get config-parameter for logger
+    bool success = false;
+    const bool enableDebug = GET_BOOL_CONFIG("DEFAULT", "debug", success);
+    if(success == false) {
+        return 1;
+    }
+
+    const std::string logPath = GET_STRING_CONFIG("DEFAULT", "log_path", success);
+    if(success == false) {
+        return 1;
+    }
+
+    // init logger
+    Kitsunemimi::initConsoleLogger(enableDebug);
+    Kitsunemimi::initFileLogger(logPath, "tsugumi", enableDebug);
 
     runRestApiTests();
 

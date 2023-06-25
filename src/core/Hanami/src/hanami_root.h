@@ -31,8 +31,6 @@
 
 #include <libKitsunemimiJwt/jwt.h>
 #include <libKitsunemimiHanamiPolicies/policy.h>
-#include <libKitsunemimiHanamiCommon/enums.h>
-#include <libKitsunemimiHanamiCommon/structs.h>
 
 class ClusterHandler;
 class SegmentQueue;
@@ -91,9 +89,9 @@ public:
     // endpoints
     bool mapEndpoint(EndpointEntry &result,
                      const std::string &id,
-                     const HttpRequestType type);
+                     const Kitsunemimi::Hanami::HttpRequestType type);
     bool addEndpoint(const std::string &id,
-                     const HttpRequestType &httpType,
+                     const Kitsunemimi::Hanami::HttpRequestType &httpType,
                      const SakuraObjectType &sakuraType,
                      const std::string &group,
                      const std::string &name);

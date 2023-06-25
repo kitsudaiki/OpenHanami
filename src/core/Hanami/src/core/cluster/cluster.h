@@ -1,5 +1,5 @@
 /**
- * @file        cluster_interface.h
+ * @file        cluster.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_CLUSTER_INTERFACE_H
-#define HANAMI_CLUSTER_INTERFACE_H
+#ifndef HANAMI_CLUSTER_H
+#define HANAMI_CLUSTER_H
 
 #include <common.h>
 #include <core/cluster/task.h>
@@ -63,7 +63,7 @@ public:
         uint8_t padding1[6];
         uint64_t clusterSize = 0;
 
-        Kitsunemimi::Hanami::kuuid uuid;
+        kuuid uuid;
         char name[1024];
 
         uint32_t numberOfInputSegments = 0;
@@ -166,4 +166,4 @@ private:
     std::mutex m_segmentCounterLock;
 };
 
-#endif // HANAMI_CLUSTER_INTERFACE_H
+#endif // HANAMI_CLUSTER_H

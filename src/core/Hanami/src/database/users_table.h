@@ -20,17 +20,17 @@
  *      limitations under the License.
  */
 
-#ifndef MISAKIGUARD_USERS_TABLE_H
-#define MISAKIGUARD_USERS_TABLE_H
+#ifndef HANAMI_USERS_TABLE_H
+#define HANAMI_USERS_TABLE_H
 
 #include <libKitsunemimiCommon/logger.h>
-#include <libKitsunemimiHanamiDatabase/hanami_sql_admin_table.h>
+#include <database/generic_tables/hanami_sql_admin_table.h>
 
 namespace Kitsunemimi {
 class JsonItem;
 }
 class UsersTable
-        : public Kitsunemimi::Hanami::HanamiSqlAdminTable
+        : public HanamiSqlAdminTable
 {
 public:
     UsersTable(Kitsunemimi::Sakura::SqlDatabase* db);
@@ -58,4 +58,4 @@ private:
     bool getAllAdminUser(Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // MISAKIGUARD_USERS_TABLE_H
+#endif // HANAMI_USERS_TABLE_H

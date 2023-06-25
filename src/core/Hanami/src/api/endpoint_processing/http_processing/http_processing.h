@@ -36,11 +36,11 @@
 #include <memory>
 #include <string>
 #include <filesystem>
+#include <common/structs.h>
+#include <common/enums.h>
 
+#include <libKitsunemimiHanamiPolicies/policy.h>
 #include <libKitsunemimiCommon/logger.h>
-
-#include <libKitsunemimiHanamiCommon/enums.h>
-#include <libKitsunemimiHanamiCommon/structs.h>
 
 namespace beast = boost::beast;         // from <boost/beast.hpp>
 namespace http = beast::http;           // from <boost/beast/http.hpp>
@@ -48,9 +48,6 @@ namespace net = boost::asio;            // from <boost/asio.hpp>
 using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 namespace websocket = beast::websocket; // from <boost/beast/websocket.hpp>
 namespace ssl = boost::asio::ssl;       // from <boost/asio/ssl.hpp>
-
-using Kitsunemimi::Hanami::HttpRequestType;
-using Kitsunemimi::Hanami::HttpResponseTypes;
 
 namespace Kitsunemimi {
 class JsonItem;
@@ -62,12 +59,12 @@ bool processRequest(http::request<http::string_body> &httpRequest,
 
 bool requestToken(http::response<http::dynamic_body> &httpResponse,
                   const std::string &target,
-                  const Kitsunemimi::Hanami::RequestMessage &hanamiRequest,
+                  const RequestMessage &hanamiRequest,
                   Kitsunemimi::ErrorContainer &error);
 bool checkPermission(Kitsunemimi::JsonItem &tokenData,
                      const std::string &token,
-                     const Kitsunemimi::Hanami::RequestMessage &hanamiRequest,
-                     Kitsunemimi::Hanami::ResponseMessage &responseMsg,
+                     const RequestMessage &hanamiRequest,
+                     ResponseMessage &responseMsg,
                      Kitsunemimi::ErrorContainer &error);
 bool processControlRequest(http::response<http::dynamic_body> &httpResponse,
                            const std::string &uri,

@@ -1,5 +1,5 @@
 ﻿/**
- * @file        create_reduce.h
+ * @file        reduction.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_CREATE_REDUCE_H
-#define HANAMI_CREATE_REDUCE_H
+#ifndef HANAMI_CORE_REDUCTION_H
+#define HANAMI_CORE_REDUCTION_H
 
 #include <common.h>
 
@@ -105,4 +105,4 @@ reduceNeurons(CoreSegment &segment)
     }*/
 }
 
-#endif // HANAMI_CREATE_REDUCE_H
+#endif // HANAMI_CORE_REDUCTION_H

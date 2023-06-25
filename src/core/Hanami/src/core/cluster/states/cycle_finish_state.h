@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef CYCLEFINISH_STATE_H
-#define CYCLEFINISH_STATE_H
+#ifndef HANAMI_CYCLEFINISH_STATE_H
+#define HANAMI_CYCLEFINISH_STATE_H
 
 #include <libKitsunemimiCommon/threading/event.h>
 
@@ -40,4 +40,4 @@ private:
     Cluster* m_cluster = nullptr;
 };
 
-#endif // CYCLEFINISH_STATE_H
+#endif // HANAMI_CYCLEFINISH_STATE_H

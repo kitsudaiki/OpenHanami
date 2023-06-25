@@ -20,9 +20,27 @@
  *      limitations under the License.
  */
 
-#include <libKitsunemimiHanamiCommon/defines.h>
 
 #define UNINTI_POINT_32 0x0FFFFFFF
+
+// const predefined values
+#define UNINIT_STATE_64 0xFFFFFFFFFFFFFFFF
+#define UNINIT_STATE_32 0xFFFFFFFF
+#define UNINIT_STATE_24 0xFFFFFF
+#define UNINIT_STATE_16 0xFFFF
+#define UNINIT_STATE_8 0xFF
+
+#define UNINTI_POINT_32 0x0FFFFFFF
+
+// regex
+#define UUID_REGEX "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+#define ID_REGEX "[a-zA-Z][a-zA-Z_0-9]*"
+#define ID_EXT_REGEX "[a-zA-Z][a-zA-Z_0-9@]*"
+#define NAME_REGEX "[a-zA-Z][a-zA-Z_0-9 ]*"
+#define INT_VALUE_REGEX "^-?([0-9]+)$"
+#define FLOAT_VALUE_REGEX "^-?([0-9]+)\\.([0-9]+)$"
+#define IPV4_REGEX "\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b"
+
 
 // network-predefines
 #define SYNAPSES_PER_SYNAPSESECTION 30

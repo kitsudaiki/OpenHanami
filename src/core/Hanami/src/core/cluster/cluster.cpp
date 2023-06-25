@@ -1,5 +1,5 @@
 /**
- * @file        cluster_interface.cpp
+ * @file        cluster.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -28,11 +28,10 @@
 #include <core/segments/output_segment/output_segment.h>
 #include <core/cluster/cluster_init.h>
 #include <core/cluster/statemachine_init.h>
-
 #include <core/cluster/states/task_handle_state.h>
 #include <core/processing/segment_queue.h>
 #include <core/segments/output_segment/processing.h>
-#include <io/protobuf_messages.h>
+#include <api/websocket/cluster_io.h>
 
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiCommon/statemachine.h>
@@ -319,7 +318,7 @@ Cluster::addImageLearnTask(const std::string &name,
 {
     // create new learn-task
     Task newTask;
-    newTask.uuid = Kitsunemimi::Hanami::generateUuid();
+    newTask.uuid = generateUuid();
     newTask.name = name;
     newTask.userId = userId;
     newTask.projectId = projectId;
@@ -363,7 +362,7 @@ Cluster::addImageRequestTask(const std::string &name,
 {
     // create new request-task
     Task newTask;
-    newTask.uuid = Kitsunemimi::Hanami::generateUuid();
+    newTask.uuid = generateUuid();
     newTask.name = name;
     newTask.userId = userId;
     newTask.projectId = projectId;
@@ -411,7 +410,7 @@ Cluster::addTableLearnTask(const std::string &name,
 {
     // create new learn-task
     Task newTask;
-    newTask.uuid = Kitsunemimi::Hanami::generateUuid();
+    newTask.uuid = generateUuid();
     newTask.name = name;
     newTask.userId = userId;
     newTask.projectId = projectId;
@@ -455,7 +454,7 @@ Cluster::addTableRequestTask(const std::string &name,
 {
     // create new request-task
     Task newTask;
-    newTask.uuid = Kitsunemimi::Hanami::generateUuid();
+    newTask.uuid = generateUuid();
     newTask.name = name;
     newTask.userId = userId;
     newTask.projectId = projectId;
@@ -498,7 +497,7 @@ Cluster::addClusterSnapshotSaveTask(const std::string &snapshotName,
 {
     // create new request-task
     Task newTask;
-    newTask.uuid = Kitsunemimi::Hanami::generateUuid();
+    newTask.uuid = generateUuid();
     newTask.name = snapshotName;
     newTask.userId = userId;
     newTask.projectId = projectId;
@@ -535,7 +534,7 @@ Cluster::addClusterSnapshotRestoreTask(const std::string &name,
 {
     // create new request-task
     Task newTask;
-    newTask.uuid = Kitsunemimi::Hanami::generateUuid();
+    newTask.uuid = generateUuid();
     newTask.name = name;
     newTask.userId = userId;
     newTask.projectId = projectId;

@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef TABLEINTERPOLATION_STATE_H
-#define TABLEINTERPOLATION_STATE_H
+#ifndef HANAMI_TABLEINTERPOLATION_STATE_H
+#define HANAMI_TABLEINTERPOLATION_STATE_H
 
 #include <libKitsunemimiCommon/threading/event.h>
 
@@ -40,4 +40,4 @@ private:
     Cluster* m_cluster = nullptr;
 };
 
-#endif // TABLEINTERPOLATION_STATE_H
+#endif // HANAMI_TABLEINTERPOLATION_STATE_H

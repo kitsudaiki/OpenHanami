@@ -268,7 +268,7 @@ Blossom::fillDefaultValues(Kitsunemimi::DataMap &values)
 bool
 Blossom::growBlossom(BlossomIO &blossomIO,
                      const Kitsunemimi::DataMap* context,
-                     Kitsunemimi::Hanami::BlossomStatus &status,
+                     BlossomStatus &status,
                      Kitsunemimi::ErrorContainer &error)
 {
     LOG_DEBUG("runTask " + blossomIO.blossomName);

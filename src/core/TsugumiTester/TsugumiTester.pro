@@ -9,11 +9,6 @@ LIBS += -L../../sdk/cpp/libHanamiAiSdk/src/debug -lHanamiAiSdk
 LIBS += -L../../sdk/cpp/libHanamiAiSdk/src/release -lHanamiAiSdk
 INCLUDEPATH += ../../sdk/cpp/libHanamiAiSdk/include
 
-LIBS += -L../../libraries/libKitsunemimiHanamiCommon/src -lKitsunemimiHanamiCommon
-LIBS += -L../../libraries/libKitsunemimiHanamiCommon/src/debug -lKitsunemimiHanamiCommon
-LIBS += -L../../libraries/libKitsunemimiHanamiCommon/src/release -lKitsunemimiHanamiCommon
-INCLUDEPATH += ../../libraries/libKitsunemimiHanamiCommon/include
-
 LIBS += -L../../libraries/libKitsunemimiConfig/src -lKitsunemimiConfig
 LIBS += -L../../libraries/libKitsunemimiConfig/src/debug -lKitsunemimiConfig
 LIBS += -L../../libraries/libKitsunemimiConfig/src/release -lKitsunemimiConfig

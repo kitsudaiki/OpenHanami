@@ -28,7 +28,7 @@
 #include <libKitsunemimiSakuraHardware/cpu_package.h>
 #include <libKitsunemimiSakuraHardware/cpu_thread.h>
 
-#include <libKitsunemimiHanamiCommon/enums.h>
+
 
 #include <libKitsunemimiJwt/jwt.h>
 #include <libKitsunemimiJson/json_item.h>
@@ -184,11 +184,6 @@ ThreadBinder::run()
             //std::cout<<newMapping.toString(true)<<std::endl;
             //std::cout<<"#############################################################"<<std::endl;
             LOG_DEBUG(newMapping.toString(true));
-
-            // create request for thread-binding
-            Kitsunemimi::Hanami::RequestMessage request;
-            request.id = "v1/bind_thread_to_core";
-            request.httpType = Kitsunemimi::Hanami::POST_TYPE;
 
             // update thread-binding for all components
             for(auto const& [name, value] : newMapping.map)

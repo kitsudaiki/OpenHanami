@@ -39,12 +39,16 @@
 #include <map>
 #include <vector>
 #include <iostream>
-#include <libKitsunemimiHanamiCommon/enums.h>
+
+#include <libKitsunemimiHanamiPolicies/policy.h>
 
 namespace Kitsunemimi::Hanami
 {
 
 class PolicyParserInterface;
+
+
+
 
 }
 }
@@ -57,7 +61,6 @@ class PolicyParserInterface;
 %code
 {
 #include <policy_parsing/policy_parser_interface.h>
-#include <libKitsunemimiHanamiPolicies/policy.h>
 
 # undef YY_DECL
 # define YY_DECL \

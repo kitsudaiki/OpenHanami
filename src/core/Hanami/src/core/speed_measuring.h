@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef AZUKIHEART_SPEED_MEASURING_H
-#define AZUKIHEART_SPEED_MEASURING_H
+#ifndef HANAMI_SPEED_MEASURING_H
+#define HANAMI_SPEED_MEASURING_H
 
 #include <mutex>
 
@@ -51,4 +51,4 @@ private:
     ValueContainer* m_valueContainer;
 };
 
-#endif // AZUKIHEART_SPEED_MEASURING_H
+#endif // HANAMI_SPEED_MEASURING_H

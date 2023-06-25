@@ -1,5 +1,5 @@
 /**
- * @file        image_data_set_file.cpp
+ * @file        data_set_file.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *

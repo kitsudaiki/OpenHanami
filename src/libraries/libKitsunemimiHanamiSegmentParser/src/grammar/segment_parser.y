@@ -40,7 +40,7 @@
 #include <iostream>
 #include <map>
 #include <vector>
-#include <libKitsunemimiHanamiCommon/structs.h>
+
 #include <libKitsunemimiHanamiSegmentParser/segment_meta.h>
 
 namespace Kitsunemimi::Hanami

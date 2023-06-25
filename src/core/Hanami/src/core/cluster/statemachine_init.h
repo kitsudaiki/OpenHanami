@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef STATEMACHINE_INIT_H
-#define STATEMACHINE_INIT_H
+#ifndef HANAMI_STATEMACHINE_INIT_H
+#define HANAMI_STATEMACHINE_INIT_H
 
 class TaskHandle_State;
 class CycleFinish_State;
@@ -83,4 +83,4 @@ void initStatemachine(Kitsunemimi::Statemachine &sm,
                       Cluster* cluster,
                       TaskHandle_State* taskState);
 
-#endif // STATEMACHINE_INIT_H
+#endif // HANAMI_STATEMACHINE_INIT_H

@@ -24,7 +24,6 @@
 #define HANAMI_CONFIG_H
 
 #include <libKitsunemimiConfig/config_handler.h>
-#include <libKitsunemimiHanamiCommon/config.h>
 
 /**
  * @brief define all available entries in the config file with default-values
@@ -32,11 +31,16 @@
 inline void
 registerConfigs(Kitsunemimi::ErrorContainer &error)
 {
-    Kitsunemimi::Hanami::registerBasicConfigs(error);
+    // DEFAULT-section
+    REGISTER_BOOL_CONFIG(   "DEFAULT", "debug",    error, false,      false);
+    REGISTER_STRING_CONFIG( "DEFAULT", "log_path", error, "/var/log", false);
+    REGISTER_STRING_CONFIG( "DEFAULT", "database", error, "",         false);
 
+    // storage-section
     REGISTER_STRING_CONFIG( "storage", "data_set_location",         error, "", true );
     REGISTER_STRING_CONFIG( "storage", "cluster_snapshot_location", error, "", true );
 
+    // auth-section
     REGISTER_STRING_CONFIG( "auth", "token_key_path",    error, "",   true );
     REGISTER_INT_CONFIG(    "auth", "token_expire_time", error, 3600, true );
     REGISTER_STRING_CONFIG( "auth", "policies",          error, "",   true );

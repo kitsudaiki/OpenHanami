@@ -20,18 +20,18 @@
  *      limitations under the License.
  */
 
-#ifndef SHIORIARCHIVE_ERROR_LOG_TABLE_H
-#define SHIORIARCHIVE_ERROR_LOG_TABLE_H
+#ifndef HANAMI_ERROR_LOG_TABLE_H
+#define HANAMI_ERROR_LOG_TABLE_H
 
 #include <libKitsunemimiCommon/logger.h>
-#include <libKitsunemimiHanamiDatabase/hanami_sql_log_table.h>
+#include <database/generic_tables/hanami_sql_log_table.h>
 
 namespace Kitsunemimi {
 class JsonItem;
 }
 
 class ErrorLogTable
-        : public Kitsunemimi::Hanami::HanamiSqlLogTable
+        : public HanamiSqlLogTable
 {
 public:
     ErrorLogTable(Kitsunemimi::Sakura::SqlDatabase* db);
@@ -50,4 +50,4 @@ public:
                                Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // SHIORIARCHIVE_ERROR_LOG_TABLE_H
+#endif // HANAMI_ERROR_LOG_TABLE_H

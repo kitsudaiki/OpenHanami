@@ -53,7 +53,7 @@ ClusterTable::~ClusterTable() {}
  */
 bool
 ClusterTable::addCluster(Kitsunemimi::JsonItem &clusterData,
-                         const Kitsunemimi::Hanami::UserContext &userContext,
+                         const UserContext &userContext,
                          Kitsunemimi::ErrorContainer &error)
 {
     if(add(clusterData, userContext, error) == false)
@@ -79,7 +79,7 @@ ClusterTable::addCluster(Kitsunemimi::JsonItem &clusterData,
 bool
 ClusterTable::getCluster(Kitsunemimi::JsonItem &result,
                          const std::string &clusterUuid,
-                         const Kitsunemimi::Hanami::UserContext &userContext,
+                         const UserContext &userContext,
                          Kitsunemimi::ErrorContainer &error,
                          const bool showHiddenValues)
 {
@@ -112,7 +112,7 @@ ClusterTable::getCluster(Kitsunemimi::JsonItem &result,
 bool
 ClusterTable::getClusterByName(Kitsunemimi::JsonItem &result,
                                const std::string &clusterName,
-                               const Kitsunemimi::Hanami::UserContext &userContext,
+                               const UserContext &userContext,
                                Kitsunemimi::ErrorContainer &error,
                                const bool showHiddenValues)
 {
@@ -140,7 +140,7 @@ ClusterTable::getClusterByName(Kitsunemimi::JsonItem &result,
  */
 bool
 ClusterTable::getAllCluster(Kitsunemimi::TableItem &result,
-                            const Kitsunemimi::Hanami::UserContext &userContext,
+                            const UserContext &userContext,
                             Kitsunemimi::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
@@ -164,7 +164,7 @@ ClusterTable::getAllCluster(Kitsunemimi::TableItem &result,
  */
 bool
 ClusterTable::deleteCluster(const std::string &clusterUuid,
-                            const Kitsunemimi::Hanami::UserContext &userContext,
+                            const UserContext &userContext,
                             Kitsunemimi::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;

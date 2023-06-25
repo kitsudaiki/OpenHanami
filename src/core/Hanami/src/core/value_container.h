@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef AZUKIHEART_VALUECONTAINER_H
-#define AZUKIHEART_VALUECONTAINER_H
+#ifndef HANAMI_VALUECONTAINER_H
+#define HANAMI_VALUECONTAINER_H
 
 #include <vector>
 #include <string>
@@ -55,4 +55,4 @@ private:
     Kitsunemimi::DataArray* appendSectionToJson(const uint64_t sectionId);
 };
 
-#endif // AZUKIHEART_VALUECONTAINER_H
+#endif // HANAMI_VALUECONTAINER_H

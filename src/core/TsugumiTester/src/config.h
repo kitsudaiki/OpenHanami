@@ -24,7 +24,6 @@
 #define TSUGUMITESTER_CONFIG_H
 
 #include <libKitsunemimiConfig/config_handler.h>
-#include <libKitsunemimiHanamiCommon/config.h>
 #include <libKitsunemimiCommon/logger.h>
 
 /**
@@ -33,7 +32,10 @@
 void
 registerConfigs(Kitsunemimi::ErrorContainer &error)
 {
-    Kitsunemimi::Hanami::registerBasicConfigs(error);
+    // DEFAULT-section
+    REGISTER_BOOL_CONFIG(   "DEFAULT", "debug",    error, false,      false);
+    REGISTER_STRING_CONFIG( "DEFAULT", "log_path", error, "/var/log", false);
+    REGISTER_STRING_CONFIG( "DEFAULT", "database", error, "",         false);
 
     REGISTER_STRING_CONFIG( "connection", "host",      error, "", true);
     REGISTER_INT_CONFIG(    "connection", "port",      error, 0,  true);

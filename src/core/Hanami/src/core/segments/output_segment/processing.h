@@ -30,7 +30,7 @@
 #include <hanami_root.h>
 #include <core/segments/brick.h>
 #include <core/cluster/cluster.h>
-#include <io/protobuf_messages.h>
+#include <api/websocket/cluster_io.h>
 #include "objects.h"
 #include "output_segment.h"
 

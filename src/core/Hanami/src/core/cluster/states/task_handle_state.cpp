@@ -249,7 +249,7 @@ TaskHandle_State::finishTask()
         resultData.insert("data", actualTask->resultData->copy());
         resultData.insert("visibility", "private");
 
-        Kitsunemimi::Hanami::UserContext userContext;
+        UserContext userContext;
         userContext.userId = actualTask->userId;
         userContext.projectId =actualTask->projectId;
 

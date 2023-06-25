@@ -25,8 +25,7 @@
 
 #include <common.h>
 
-#include <libKitsunemimiHanamiCommon/structs.h>
-#include <libKitsunemimiHanamiCommon/uuid.h>
+#include <libKitsunemimiHanamiSegmentParser/segment_meta.h>
 
 enum SegmentTypes
 {
@@ -54,7 +53,7 @@ struct SegmentHeader
     uint64_t staticDataSize = 0;
     Kitsunemimi::Hanami::Position position;
 
-    Kitsunemimi::Hanami::kuuid parentClusterId;
+    kuuid parentClusterId;
 
     // synapse-segment
     SegmentHeaderEntry name;

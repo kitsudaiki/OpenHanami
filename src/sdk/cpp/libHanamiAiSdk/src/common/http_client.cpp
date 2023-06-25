@@ -22,8 +22,6 @@
 
 #include <common/http_client.h>
 
-#include <libKitsunemimiHanamiCommon/uuid.h>
-
 #include <libKitsunemimiJson/json_item.h>
 
 namespace HanamiAI

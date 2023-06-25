@@ -24,7 +24,6 @@
 #define TSUGUMITESTER_ARGS_H
 
 #include <libKitsunemimiArgs/arg_parser.h>
-#include <libKitsunemimiHanamiCommon/args.h>
 #include <libKitsunemimiCommon/logger.h>
 
 /**
@@ -38,7 +37,17 @@ bool
 registerArguments(Kitsunemimi::ArgParser* argparser,
                   Kitsunemimi::ErrorContainer &error)
 {
-    if(Kitsunemimi::Hanami::registerArguments(*argparser, error) == false) {
+    std::string helpText = "";
+
+    // config-flag
+    helpText = "absolute path to config-file";
+    if(argparser->registerString("config,c", helpText, error) == false) {
+        return false;
+    }
+
+    // debug-flag
+    helpText = "enable debug-mode";
+    if(argparser->registerPlain("debug,d", helpText, error) == false) {
         return false;
     }
 

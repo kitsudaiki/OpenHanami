@@ -70,7 +70,7 @@ DataSetTable::~DataSetTable() {}
  */
 bool
 DataSetTable::addDataSet(Kitsunemimi::JsonItem &data,
-                         const Kitsunemimi::Hanami::UserContext &userContext,
+                         const UserContext &userContext,
                          Kitsunemimi::ErrorContainer &error)
 {
     if(add(data, userContext, error) == false)
@@ -96,7 +96,7 @@ DataSetTable::addDataSet(Kitsunemimi::JsonItem &data,
 bool
 DataSetTable::getDataSet(Kitsunemimi::JsonItem &result,
                          const std::string &datasetUuid,
-                         const Kitsunemimi::Hanami::UserContext &userContext,
+                         const UserContext &userContext,
                          Kitsunemimi::ErrorContainer &error,
                          const bool showHiddenValues)
 {
@@ -128,7 +128,7 @@ DataSetTable::getDataSet(Kitsunemimi::JsonItem &result,
  */
 bool
 DataSetTable::getAllDataSet(Kitsunemimi::TableItem &result,
-                            const Kitsunemimi::Hanami::UserContext &userContext,
+                            const UserContext &userContext,
                             Kitsunemimi::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
@@ -152,7 +152,7 @@ DataSetTable::getAllDataSet(Kitsunemimi::TableItem &result,
  */
 bool
 DataSetTable::deleteDataSet(const std::string &datasetUuid,
-                            const Kitsunemimi::Hanami::UserContext &userContext,
+                            const UserContext &userContext,
                             Kitsunemimi::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
@@ -186,7 +186,7 @@ DataSetTable::setUploadFinish(const std::string &uuid,
     conditions.emplace_back("uuid", uuid);
     Kitsunemimi::JsonItem result;
 
-    Kitsunemimi::Hanami::UserContext userContext;
+    UserContext userContext;
     userContext.isAdmin = true;
 
     // get dataset from db

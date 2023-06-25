@@ -27,17 +27,11 @@
 #include <hanami_root.h>
 #include <args.h>
 #include <config.h>
-#include <core/callbacks.h>
-#include <callbacks.h>
-
-#include <api/v1/blossom_initializing.h>
+#include <api/websocket/cluster_io.h>
+#include <api/http/v1/blossom_initializing.h>
 
 #include <libKitsunemimiArgs/arg_parser.h>
 #include <libKitsunemimiCommon/logger.h>
-
-#include <libKitsunemimiHanamiCommon/generic_main.h>
-
-using Kitsunemimi::Hanami::initMain;
 
 int
 main(int argc, char *argv[])
@@ -45,9 +39,49 @@ main(int argc, char *argv[])
     Kitsunemimi::ErrorContainer error;
     HanamiRoot rootObj;
 
-    if(initMain(argc, argv, "hanami", &registerArguments, &registerConfigs, error) == false) {
+    Kitsunemimi::initConsoleLogger(true);
+
+    // create and init argument-parser
+    Kitsunemimi::ArgParser argParser;
+    registerArguments(&argParser, error);
+
+    // parse cli-input
+    if(argParser.parse(argc, argv, error) == false)
+    {
+        LOG_ERROR(error);
         return 1;
     }
+
+    // init and check config-file
+    std::string configPath = argParser.getStringValue("config");
+    if(configPath == "") {
+        configPath = "/etc/hanami/hanami.conf";
+    }
+    if(Kitsunemimi::initConfig(configPath, error) == false)
+    {
+        LOG_ERROR(error);
+        return 1;
+    }
+    registerConfigs(error);
+    if(Kitsunemimi::isConfigValid() == false) {
+        return 1;
+    }
+
+    // get config-parameter for logger
+    bool success = false;
+    const bool enableDebug = GET_BOOL_CONFIG("DEFAULT", "debug", success);
+    if(success == false) {
+        return 1;
+    }
+
+    const std::string logPath = GET_STRING_CONFIG("DEFAULT", "log_path", success);
+    if(success == false) {
+        return 1;
+    }
+
+    // init logger
+    Kitsunemimi::initConsoleLogger(enableDebug);
+    Kitsunemimi::initFileLogger(logPath, "hanami", enableDebug);
 
     // init blossoms
     if(rootObj.init(error) == false)

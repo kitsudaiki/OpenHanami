@@ -20,37 +20,37 @@
  *      limitations under the License.
  */
 
-#ifndef SHIORIARCHIVE_REQUEST_RESULT_TABLE_H
-#define SHIORIARCHIVE_REQUEST_RESULT_TABLE_H
+#ifndef HANAMI_REQUEST_RESULT_TABLE_H
+#define HANAMI_REQUEST_RESULT_TABLE_H
 
 #include <libKitsunemimiCommon/logger.h>
-#include <libKitsunemimiHanamiDatabase/hanami_sql_table.h>
+#include <database/generic_tables/hanami_sql_table.h>
 
 namespace Kitsunemimi {
 class JsonItem;
 }
 
 class RequestResultTable
-        : public Kitsunemimi::Hanami::HanamiSqlTable
+        : public HanamiSqlTable
 {
 public:
     RequestResultTable(Kitsunemimi::Sakura::SqlDatabase* db);
     ~RequestResultTable();
 
     bool addRequestResult(Kitsunemimi::JsonItem &data,
-                          const Kitsunemimi::Hanami::UserContext &userContext,
+                          const UserContext &userContext,
                           Kitsunemimi::ErrorContainer &error);
     bool getRequestResult(Kitsunemimi::JsonItem &result,
                           const std::string &resultUuid,
-                          const Kitsunemimi::Hanami::UserContext &userContext,
+                          const UserContext &userContext,
                           Kitsunemimi::ErrorContainer &error,
                           const bool showHiddenValues);
     bool getAllRequestResult(Kitsunemimi::TableItem &result,
-                             const Kitsunemimi::Hanami::UserContext &userContext,
+                             const UserContext &userContext,
                              Kitsunemimi::ErrorContainer &error);
     bool deleteRequestResult(const std::string &resultUuid,
-                             const Kitsunemimi::Hanami::UserContext &userContext,
+                             const UserContext &userContext,
                              Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // SHIORIARCHIVE_REQUEST_RESULT_TABLE_H
+#endif // HANAMI_REQUEST_RESULT_TABLE_H

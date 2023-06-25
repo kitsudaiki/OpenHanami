@@ -20,18 +20,14 @@
  *      limitations under the License.
  */
 
-#ifndef AZUKIHEART_THREADBINDER_H
-#define AZUKIHEART_THREADBINDER_H
+#ifndef HANAMI_THREADBINDER_H
+#define HANAMI_THREADBINDER_H
 
 #include <mutex>
 
 #include <libKitsunemimiCommon/threading/thread.h>
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiCommon/items/data_items.h>
-
-namespace Kitsunemimi::Hanami {
-struct RequestMessage;
-}
 
 class ThreadBinder
         : public Kitsunemimi::Thread
@@ -61,4 +57,4 @@ private:
     std::vector<uint64_t> m_processingCoreIds;
 };
 
-#endif // AZUKIHEART_THREADBINDER_H
+#endif // HANAMI_THREADBINDER_H

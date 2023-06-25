@@ -20,36 +20,36 @@
  *      limitations under the License.
  */
 
-#ifndef SHIORIARCHIVE_DATA_SET_TABLE_H
-#define SHIORIARCHIVE_DATA_SET_TABLE_H
+#ifndef HANAMI_DATA_SET_TABLE_H
+#define HANAMI_DATA_SET_TABLE_H
 
 #include <libKitsunemimiCommon/logger.h>
-#include <libKitsunemimiHanamiDatabase/hanami_sql_table.h>
+#include <database/generic_tables/hanami_sql_table.h>
 
 namespace Kitsunemimi {
 class JsonItem;
 }
 
 class DataSetTable
-        : public Kitsunemimi::Hanami::HanamiSqlTable
+        : public HanamiSqlTable
 {
 public:
     DataSetTable(Kitsunemimi::Sakura::SqlDatabase* db);
     ~DataSetTable();
 
     bool addDataSet(Kitsunemimi::JsonItem &data,
-                    const Kitsunemimi::Hanami::UserContext &userContext,
+                    const UserContext &userContext,
                     Kitsunemimi::ErrorContainer &error);
     bool getDataSet(Kitsunemimi::JsonItem &result,
                     const std::string &datasetUuid,
-                    const Kitsunemimi::Hanami::UserContext &userContext,
+                    const UserContext &userContext,
                     Kitsunemimi::ErrorContainer &error,
                     const bool showHiddenValues);
     bool getAllDataSet(Kitsunemimi::TableItem &result,
-                       const Kitsunemimi::Hanami::UserContext &userContext,
+                       const UserContext &userContext,
                        Kitsunemimi::ErrorContainer &error);
     bool deleteDataSet(const std::string &uuid,
-                       const Kitsunemimi::Hanami::UserContext &userContext,
+                       const UserContext &userContext,
                        Kitsunemimi::ErrorContainer &error);
 
     bool setUploadFinish(const std::string &uuid,
@@ -57,4 +57,4 @@ public:
                          Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // SHIORIARCHIVE_DATA_SET_TABLE_H
+#endif // HANAMI_DATA_SET_TABLE_H

@@ -20,11 +20,6 @@ LIBS += -L../../../../libraries/libKitsunemimiCrypto/src/debug -lKitsunemimiCryp
 LIBS += -L../../../../libraries/libKitsunemimiCrypto/src/release -lKitsunemimiCrypto
 INCLUDEPATH += ../../../../libraries/libKitsunemimiCrypto/include
 
-LIBS += -L../../../../libraries/libKitsunemimiHanamiCommon/src -lKitsunemimiHanamiCommon
-LIBS += -L../../../../libraries/libKitsunemimiHanamiCommon/src/debug -lKitsunemimiHanamiCommon
-LIBS += -L../../../../libraries/libKitsunemimiHanamiCommon/src/release -lKitsunemimiHanamiCommon
-INCLUDEPATH += ../../../../libraries/libKitsunemimiHanamiCommon/include
-
 LIBS += -lssl -lcryptopp -lcrypt
 
 INCLUDEPATH += $$PWD \
