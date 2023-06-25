@@ -69,7 +69,7 @@ ListUsers::runTask(BlossomIO &blossomIO,
 
     // get data from table
     Kitsunemimi::TableItem table;
-    if(HanamiRoot::usersTable->getAllUser(table, error) == false)
+    if(UsersTable::getInstance()->getAllUser(table, error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;

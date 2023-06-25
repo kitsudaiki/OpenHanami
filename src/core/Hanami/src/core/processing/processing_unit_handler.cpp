@@ -23,6 +23,8 @@
 #include <core/processing/processing_unit_handler.h>
 #include <core/processing/cpu_processing_unit.h>
 
+ProcessingUnitHandler* ProcessingUnitHandler::instance = nullptr;
+
 /**
  * @brief constructor
  */

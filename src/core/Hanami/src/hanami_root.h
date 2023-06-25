@@ -38,11 +38,6 @@ class ProcessingUnitHandler;
 class WebSocketServer;
 class HttpServer;
 class HttpWebsocketThread;
-class DataSetTable;
-class ClusterSnapshotTable;
-class RequestResultTable;
-class ErrorLogTable;
-class AuditLogTable;
 class TempFileHandler;
 class ThreadBinder;
 class SpeedMeasuring;
@@ -99,33 +94,13 @@ public:
 
     WebSocketServer* websocketServer = nullptr;
 
-    static ClusterHandler* m_clusterHandler;
-    static uint32_t* m_randomValues;
-    static SegmentQueue* m_segmentQueue;
-    static ProcessingUnitHandler* m_processingUnitHandler;
-    static Kitsunemimi::Sakura::SqlDatabase* database;
-    static ClusterTable* clustersTable;
-    static TemplateTable* templateTable;
     static Kitsunemimi::GpuInterface* gpuInterface;
+    static Kitsunemimi::Jwt* jwt;
+    static HttpServer* httpServer;
+    static HanamiRoot* root;
+    static uint32_t* m_randomValues;
     static bool useGpu;
     static bool useCuda;
-    static HttpServer* httpServer;
-    static Kitsunemimi::Jwt* jwt;
-    static UsersTable* usersTable;
-    static ProjectsTable* projectsTable;
-    static Kitsunemimi::Hanami::Policy* policies;
-    static TempFileHandler* tempFileHandler;
-    static DataSetTable* dataSetTable;
-    static ClusterSnapshotTable* clusterSnapshotTable;
-    static RequestResultTable* requestResultTable;
-    static ErrorLogTable* errorLogTable;
-    static AuditLogTable* auditLogTable;
-    static ThreadBinder* threadBinder;
-    static SpeedMeasuring* speedMeasuring;
-    static PowerMeasuring* powerMeasuring;
-    static TemperatureMeasuring* temperatureMeasuring;
-    static Kitsunemimi::Sakura::Host* host;
-    static HanamiRoot* root;
 
     std::map<std::string, std::map<HttpRequestType, EndpointEntry>> endpointRules;
 

@@ -35,7 +35,14 @@ class TemplateTable
         : public HanamiSqlTable
 {
 public:
-    TemplateTable(Kitsunemimi::Sakura::SqlDatabase* db);
+    static TemplateTable* getInstance()
+    {
+        if(instance == nullptr) {
+            instance = new TemplateTable();
+        }
+        return instance;
+    }
+
     ~TemplateTable();
 
     bool addTemplate(Kitsunemimi::JsonItem &clusterData,
@@ -57,6 +64,10 @@ public:
     bool deleteTemplate(const std::string &templateUuid,
                         const UserContext &userContext,
                         Kitsunemimi::ErrorContainer &error);
+
+private:
+    TemplateTable();
+    static TemplateTable* instance;
 };
 
 #endif // TEMPLATETABLE_H

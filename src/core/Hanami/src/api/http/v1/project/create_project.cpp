@@ -98,7 +98,7 @@ CreateProject::runTask(BlossomIO &blossomIO,
 
     // check if user already exist within the table
     Kitsunemimi::JsonItem getResult;
-    if(HanamiRoot::projectsTable->getProject(getResult, projectId, error))
+    if(ProjectsTable::getInstance()->getProject(getResult, projectId, error))
     {
         status.errorMessage = "Project with id '" + projectId + "' already exist.";
         status.statusCode = CONFLICT_RTYPE;
@@ -112,7 +112,7 @@ CreateProject::runTask(BlossomIO &blossomIO,
     userData.insert("creator_id", creatorId);
 
     // add new user to table
-    if(HanamiRoot::projectsTable->addProject(userData, error) == false)
+    if(ProjectsTable::getInstance()->addProject(userData, error) == false)
     {
         status.errorMessage = error.toString();
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -120,9 +120,9 @@ CreateProject::runTask(BlossomIO &blossomIO,
     }
 
     // get new created user from database
-    if(HanamiRoot::projectsTable->getProject(blossomIO.output,
-                                                   projectId,
-                                                   error) == false)
+    if(ProjectsTable::getInstance()->getProject(blossomIO.output,
+                                                projectId,
+                                                error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;

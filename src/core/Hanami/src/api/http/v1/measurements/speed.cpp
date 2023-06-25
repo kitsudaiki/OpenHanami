@@ -49,7 +49,7 @@ Speed::runTask(BlossomIO &blossomIO,
                BlossomStatus &,
                Kitsunemimi::ErrorContainer &)
 {
-    blossomIO.output.insert("current_speed", HanamiRoot::speedMeasuring->getJson());
+    blossomIO.output.insert("current_speed", SpeedMeasuring::getInstance()->getJson());
 
     return true;
 }

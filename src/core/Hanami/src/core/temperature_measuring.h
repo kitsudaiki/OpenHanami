@@ -39,7 +39,13 @@ class TemperatureMeasuring
         : public Kitsunemimi::Thread
 {
 public:
-    TemperatureMeasuring();
+    static TemperatureMeasuring* getInstance()
+    {
+        if(instance == nullptr) {
+            instance = new TemperatureMeasuring();
+        }
+        return instance;
+    }
     ~TemperatureMeasuring();
 
     Kitsunemimi::DataMap* getJson();
@@ -48,6 +54,9 @@ protected:
     void run();
 
 private:
+    TemperatureMeasuring();
+    static TemperatureMeasuring* instance;
+
     ValueContainer* m_valueContainer;
 };
 

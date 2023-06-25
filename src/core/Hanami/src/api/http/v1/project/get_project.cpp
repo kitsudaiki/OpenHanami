@@ -83,7 +83,7 @@ GetProject::runTask(BlossomIO &blossomIO,
     const std::string projectId = blossomIO.input.get("id").getString();
 
     // get data from table
-    if(HanamiRoot::projectsTable->getProject(blossomIO.output, projectId, error) == false)
+    if(ProjectsTable::getInstance()->getProject(blossomIO.output, projectId, error) == false)
     {
         status.errorMessage = "Project with id '" + projectId + "' not found.";
         status.statusCode = NOT_FOUND_RTYPE;

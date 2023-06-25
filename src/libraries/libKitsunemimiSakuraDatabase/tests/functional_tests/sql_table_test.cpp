@@ -43,7 +43,7 @@ void
 SqlTable_Test::initDatabase_test()
 {
     Kitsunemimi::ErrorContainer error;
-    m_db = new SqlDatabase();
+    m_db = SqlDatabase::getInstance();
     TEST_EQUAL(m_db->initDatabase(m_filePath, error), true);
 }
 

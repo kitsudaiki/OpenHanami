@@ -24,6 +24,8 @@
 
 #include <core/cluster/cluster.h>
 
+ClusterHandler* ClusterHandler::instance = nullptr;
+
 /**
  * @brief constructor
  */

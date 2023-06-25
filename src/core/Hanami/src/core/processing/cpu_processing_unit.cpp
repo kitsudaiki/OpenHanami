@@ -321,13 +321,13 @@ CpuProcessingUnit::run()
 
     while(m_abort == false)
     {
-        currentSegment = HanamiRoot::m_segmentQueue->getSegmentFromQueue();
+        currentSegment = SegmentQueue::getInstance()->getSegmentFromQueue();
         if(currentSegment != nullptr)
         {
             // check if segment is ready, else requeue
             if(currentSegment->isReady() == false)
             {
-                HanamiRoot::m_segmentQueue->addSegmentToQueue(currentSegment);
+                SegmentQueue::getInstance()->addSegmentToQueue(currentSegment);
                 continue;
             }
 

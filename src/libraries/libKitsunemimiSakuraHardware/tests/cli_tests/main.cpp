@@ -37,15 +37,15 @@ int main()
     Kitsunemimi::initConsoleLogger(true);
     Kitsunemimi::setErrorLogCallback(&handleErrorCallback);
 
-    Kitsunemimi::Sakura::Host host;
+    Kitsunemimi::Sakura::Host* host = Kitsunemimi::Sakura::Host::getInstance();
     Kitsunemimi::ErrorContainer error;
-    host.initHost(error);
+    host->initHost(error);
 
     std::cout<<"wait for 10 seconds"<<std::endl;
     sleep(10);
     Kitsunemimi::JsonItem json;
     std::string errorMessage = "";
-    const bool success = json.parse(host.toJsonString(), error);
+    const bool success = json.parse(host->toJsonString(), error);
     if(success == false)
     {
         std::cout<<"error: "<<errorMessage<<std::endl;

@@ -70,7 +70,7 @@ DeleteProject::runTask(BlossomIO &blossomIO,
 
     // check if user exist within the table
     Kitsunemimi::JsonItem result;
-    if(HanamiRoot::projectsTable->getProject(result, projectId, error) == false)
+    if(ProjectsTable::getInstance()->getProject(result, projectId, error) == false)
     {
         status.errorMessage = "Project with id '" + projectId + "' not found.";
         status.statusCode = NOT_FOUND_RTYPE;
@@ -79,7 +79,7 @@ DeleteProject::runTask(BlossomIO &blossomIO,
     }
 
     // get data from table
-    if(HanamiRoot::projectsTable->deleteProject(projectId, error) == false)
+    if(ProjectsTable::getInstance()->deleteProject(projectId, error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;

@@ -35,7 +35,14 @@ class ProjectsTable
         : public HanamiSqlAdminTable
 {
 public:
-    ProjectsTable(Kitsunemimi::Sakura::SqlDatabase* db);
+    static ProjectsTable* getInstance()
+    {
+        if(instance == nullptr) {
+            instance = new ProjectsTable();
+        }
+        return instance;
+    }
+
     ~ProjectsTable();
 
     bool addProject(Kitsunemimi::JsonItem &userData,
@@ -48,6 +55,10 @@ public:
                        Kitsunemimi::ErrorContainer &error);
     bool deleteProject(const std::string &projectName,
                        Kitsunemimi::ErrorContainer &error);
+
+private:
+    ProjectsTable();
+    static ProjectsTable* instance;
 };
 
 #endif // HANAMI_PROJECTS_TABLE_H

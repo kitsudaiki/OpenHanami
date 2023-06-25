@@ -88,7 +88,7 @@ UploadTemplate::runTask(BlossomIO &blossomIO,
 
     // check if template with the name already exist within the table
     Kitsunemimi::JsonItem getResult;
-    if(HanamiRoot::templateTable->getTemplateByName(getResult, name, userContext, error))
+    if(TemplateTable::getInstance()->getTemplateByName(getResult, name, userContext, error))
     {
         status.errorMessage = "Template with name '" + name + "' already exist.";
         status.statusCode = CONFLICT_RTYPE;
@@ -128,7 +128,7 @@ UploadTemplate::runTask(BlossomIO &blossomIO,
     templateData.insert("visibility", "private");
 
     // add new user to table
-    if(HanamiRoot::templateTable->addTemplate(templateData, userContext, error) == false)
+    if(TemplateTable::getInstance()->addTemplate(templateData, userContext, error) == false)
     {
         error.addMeesage("Failed to add new template to database");
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -136,10 +136,10 @@ UploadTemplate::runTask(BlossomIO &blossomIO,
     }
 
     // get new created user from database
-    if(HanamiRoot::templateTable->getTemplateByName(blossomIO.output,
-                                                    name,
-                                                    userContext,
-                                                    error) == false)
+    if(TemplateTable::getInstance()->getTemplateByName(blossomIO.output,
+                                                       name,
+                                                       userContext,
+                                                       error) == false)
     {
         error.addMeesage("Failed to get new template from database");
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;

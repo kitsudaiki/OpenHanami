@@ -79,11 +79,11 @@ GetRequestResult::runTask(BlossomIO &blossomIO,
     const UserContext userContext(context);
 
     // check if request-result exist within the table
-    if(HanamiRoot::requestResultTable->getRequestResult(blossomIO.output,
-                                                        uuid,
-                                                        userContext,
-                                                        error,
-                                                        true) == false)
+    if(RequestResultTable::getInstance()->getRequestResult(blossomIO.output,
+                                                           uuid,
+                                                           userContext,
+                                                           error,
+                                                           true) == false)
     {
         status.errorMessage = "Request-result with UUID '" + uuid + "' not found.";
         status.statusCode = NOT_FOUND_RTYPE;

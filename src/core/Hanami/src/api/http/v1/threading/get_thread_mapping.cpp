@@ -51,7 +51,7 @@ GetThreadMapping::runTask(BlossomIO &blossomIO,
                           BlossomStatus &,
                           Kitsunemimi::ErrorContainer &)
 {
-    blossomIO.output.insert("thread_map", HanamiRoot::threadBinder->getMapping());
+    blossomIO.output.insert("thread_map", ThreadBinder::getInstance()->getMapping());
 
     return true;
 }

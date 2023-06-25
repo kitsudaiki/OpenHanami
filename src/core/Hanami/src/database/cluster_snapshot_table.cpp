@@ -28,13 +28,15 @@
 
 #include <libKitsunemimiSakuraDatabase/sql_database.h>
 
+ClusterSnapshotTable* ClusterSnapshotTable::instance = nullptr;
+
 /**
  * @brief constructor
  *
  * @param db pointer to database
  */
-ClusterSnapshotTable::ClusterSnapshotTable(Kitsunemimi::Sakura::SqlDatabase* db)
-    : HanamiSqlTable(db)
+ClusterSnapshotTable::ClusterSnapshotTable()
+    : HanamiSqlTable(Kitsunemimi::Sakura::SqlDatabase::getInstance())
 {
     m_tableName = "cluster_snapshot";
 

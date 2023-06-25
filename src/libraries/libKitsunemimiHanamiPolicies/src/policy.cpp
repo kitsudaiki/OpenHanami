@@ -28,6 +28,8 @@
 namespace Kitsunemimi::Hanami
 {
 
+Policy* Policy::instance = nullptr;
+
 /**
  * @brief Policy::Policy
  */

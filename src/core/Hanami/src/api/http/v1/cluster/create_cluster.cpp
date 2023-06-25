@@ -90,7 +90,7 @@ CreateCluster::runTask(BlossomIO &blossomIO,
 
     // check if user already exist within the table
     Kitsunemimi::JsonItem getResult;
-    if(HanamiRoot::clustersTable->getClusterByName(getResult, clusterName, userContext, error))
+    if(ClusterTable::getInstance()->getClusterByName(getResult, clusterName, userContext, error))
     {
         status.errorMessage = "Cluster with name '" + clusterName + "' already exist.";
         error.addMeesage(status.errorMessage);
@@ -134,7 +134,7 @@ CreateCluster::runTask(BlossomIO &blossomIO,
     clusterData.insert("visibility", "private");
 
     // add new user to table
-    if(HanamiRoot::clustersTable->addCluster(clusterData, userContext, error) == false)
+    if(ClusterTable::getInstance()->addCluster(clusterData, userContext, error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Failed to add cluster to database");
@@ -142,10 +142,10 @@ CreateCluster::runTask(BlossomIO &blossomIO,
     }
 
     // get new created user from database
-    if(HanamiRoot::clustersTable->getClusterByName(blossomIO.output,
-                                                   clusterName,
-                                                   userContext,
-                                                   error) == false)
+    if(ClusterTable::getInstance()->getClusterByName(blossomIO.output,
+                                                     clusterName,
+                                                     userContext,
+                                                     error) == false)
     {
         error.addMeesage("Failed to get cluster from database by name '" + clusterName + "'");
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -162,12 +162,12 @@ CreateCluster::runTask(BlossomIO &blossomIO,
         {
             delete newCluster;
             error.addMeesage("Failed to initialize cluster");
-            HanamiRoot::clustersTable->deleteCluster(uuid, userContext, error);
+            ClusterTable::getInstance()->deleteCluster(uuid, userContext, error);
             return false;
         }
     }
 
-    HanamiRoot::m_clusterHandler->addCluster(uuid, newCluster);
+    ClusterHandler::getInstance()->addCluster(uuid, newCluster);
 
     // remove irrelevant fields
     blossomIO.output.remove("owner_id");
@@ -261,11 +261,11 @@ CreateCluster::getSegmentTemplate(Kitsunemimi::Hanami::SegmentMeta* segmentMeta,
 {
     // get segment-template from database
     Kitsunemimi::JsonItem templateData;
-    if(HanamiRoot::templateTable->getTemplateByName(templateData,
-                                                    name,
-                                                    userContext,
-                                                    error,
-                                                    true) == false)
+    if(TemplateTable::getInstance()->getTemplateByName(templateData,
+                                                       name,
+                                                       userContext,
+                                                       error,
+                                                       true) == false)
     {
         return false;
     }

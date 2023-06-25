@@ -58,7 +58,13 @@ struct PolicyEntry
 class Policy
 {
 public:
-    Policy();
+    static Policy* getInstance()
+    {
+        if(instance == nullptr) {
+            instance = new Policy();
+        }
+        return instance;
+    }
     ~Policy();
 
     bool parse(const std::string &input, ErrorContainer &error);
@@ -68,6 +74,9 @@ public:
                                 const std::string &role);
 
 private:
+    Policy();
+    static Policy* instance;
+
     std::map<std::string, PolicyEntry> m_policyRules;
 
     bool checkEntry(const PolicyEntry &entry,

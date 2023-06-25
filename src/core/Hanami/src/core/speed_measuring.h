@@ -39,7 +39,13 @@ class SpeedMeasuring
         : public Kitsunemimi::Thread
 {
 public:
-    SpeedMeasuring();
+    static SpeedMeasuring* getInstance()
+    {
+        if(instance == nullptr) {
+            instance = new SpeedMeasuring();
+        }
+        return instance;
+    }
     ~SpeedMeasuring();
 
     Kitsunemimi::DataMap* getJson();
@@ -48,6 +54,9 @@ protected:
     void run();
 
 private:
+    SpeedMeasuring();
+    static SpeedMeasuring* instance;
+
     ValueContainer* m_valueContainer;
 };
 

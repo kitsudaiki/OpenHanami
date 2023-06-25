@@ -34,7 +34,14 @@ class DataSetTable
         : public HanamiSqlTable
 {
 public:
-    DataSetTable(Kitsunemimi::Sakura::SqlDatabase* db);
+    static DataSetTable* getInstance()
+    {
+        if(instance == nullptr) {
+            instance = new DataSetTable();
+        }
+        return instance;
+    }
+
     ~DataSetTable();
 
     bool addDataSet(Kitsunemimi::JsonItem &data,
@@ -55,6 +62,10 @@ public:
     bool setUploadFinish(const std::string &uuid,
                          const std::string &fileUuid,
                          Kitsunemimi::ErrorContainer &error);
+
+private:
+    DataSetTable();
+    static DataSetTable* instance;
 };
 
 #endif // HANAMI_DATA_SET_TABLE_H

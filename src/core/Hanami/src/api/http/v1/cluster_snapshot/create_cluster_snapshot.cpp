@@ -131,7 +131,7 @@ CreateClusterSnapshot::runTask(BlossomIO &blossomIO,
 
     // init temp-file for input-data
     const std::string tempFileUuid = generateUuid().toString();
-    if(HanamiRoot::tempFileHandler->initNewFile(tempFileUuid, inputDataSize) == false)
+    if(TempFileHandler::getInstance()->initNewFile(tempFileUuid, inputDataSize) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Failed to initialize temporary file for new input-data.");
@@ -159,9 +159,9 @@ CreateClusterSnapshot::runTask(BlossomIO &blossomIO,
     blossomIO.output.insert("temp_files", tempFiles);
 
     // add to database
-    if(HanamiRoot::clusterSnapshotTable->addClusterSnapshot(blossomIO.output,
-                                                            userContext,
-                                                            error) == false)
+    if(ClusterSnapshotTable::getInstance()->addClusterSnapshot(blossomIO.output,
+                                                               userContext,
+                                                               error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;

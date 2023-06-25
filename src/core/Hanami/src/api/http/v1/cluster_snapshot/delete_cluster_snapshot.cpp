@@ -60,11 +60,11 @@ DeleteClusterSnapshot::runTask(BlossomIO &blossomIO,
 
     // get location from database
     Kitsunemimi::JsonItem result;
-    if(HanamiRoot::clusterSnapshotTable->getClusterSnapshot(result,
-                                                            dataUuid,
-                                                            userContext,
-                                                            error,
-                                                            true) == false)
+    if(ClusterSnapshotTable::getInstance()->getClusterSnapshot(result,
+                                                               dataUuid,
+                                                               userContext,
+                                                               error,
+                                                               true) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
@@ -74,9 +74,9 @@ DeleteClusterSnapshot::runTask(BlossomIO &blossomIO,
     const std::string location = result.get("location").getString();
 
     // delete entry from db
-    if(HanamiRoot::clusterSnapshotTable->deleteClusterSnapshot(dataUuid,
-                                                               userContext,
-                                                               error) == false)
+    if(ClusterSnapshotTable::getInstance()->deleteClusterSnapshot(dataUuid,
+                                                                  userContext,
+                                                                  error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;

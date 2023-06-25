@@ -83,7 +83,7 @@ FinalizeCsvDataSet::runTask(BlossomIO &blossomIO,
 
     // get location from database
     Kitsunemimi::JsonItem result;
-    if(HanamiRoot::dataSetTable->getDataSet(result, uuid, userContext, error, true) == false)
+    if(DataSetTable::getInstance()->getDataSet(result, uuid, userContext, error, true) == false)
     {
         status.errorMessage = "Data with uuid '" + uuid + "' not found.";
         status.statusCode = NOT_FOUND_RTYPE;
@@ -92,7 +92,7 @@ FinalizeCsvDataSet::runTask(BlossomIO &blossomIO,
 
     // read input-data from temp-file
     Kitsunemimi::DataBuffer inputBuffer;
-    if(HanamiRoot::tempFileHandler->getData(inputBuffer, inputUuid) == false)
+    if(TempFileHandler::getInstance()->getData(inputBuffer, inputUuid) == false)
     {
         status.errorMessage = "Input-data with uuid '" + inputUuid + "' not found.";
         status.statusCode = NOT_FOUND_RTYPE;
@@ -110,7 +110,7 @@ FinalizeCsvDataSet::runTask(BlossomIO &blossomIO,
     }
 
     // delete temp-files
-    HanamiRoot::tempFileHandler->removeData(inputUuid);
+    TempFileHandler::getInstance()->removeData(inputUuid);
 
     // create output
     blossomIO.output.insert("uuid", uuid);

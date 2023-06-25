@@ -28,11 +28,13 @@
 
 #include <libKitsunemimiSakuraDatabase/sql_database.h>
 
+ClusterTable* ClusterTable::instance = nullptr;
+
 /**
  * @brief constructor
  */
-ClusterTable::ClusterTable(Kitsunemimi::Sakura::SqlDatabase* db)
-    : HanamiSqlTable(db)
+ClusterTable::ClusterTable()
+    : HanamiSqlTable(Kitsunemimi::Sakura::SqlDatabase::getInstance())
 {
     m_tableName = "clusters";
 }

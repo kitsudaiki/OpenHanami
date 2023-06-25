@@ -25,6 +25,8 @@
 namespace Kitsunemimi::Sakura
 {
 
+SqlDatabase* SqlDatabase::instance = nullptr;
+
 /**
  * @brief constructor
  */

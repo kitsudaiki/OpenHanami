@@ -33,7 +33,13 @@ class ThreadBinder
         : public Kitsunemimi::Thread
 {
 public:
-    ThreadBinder();
+    static ThreadBinder* getInstance()
+    {
+        if(instance == nullptr) {
+            instance = new ThreadBinder();
+        }
+        return instance;
+    }
 
     Kitsunemimi::DataMap* getMapping();
 
@@ -41,6 +47,9 @@ protected:
     void run();
 
 private:
+    ThreadBinder();
+    static ThreadBinder* instance;
+
     const std::string convertCoreIdList(const std::vector<uint64_t> coreIds);
     bool changeInternalCoreIds(const std::vector<std::string> &threadNames,
                                const std::vector<uint64_t> coreIds);

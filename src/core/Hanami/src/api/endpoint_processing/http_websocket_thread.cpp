@@ -379,7 +379,7 @@ HttpWebsocketThread::processInitialMessage(const std::string &message,
     if(m_target == "kyouko")
     {
         const std::string getClusterUuid = content.get("uuid").getString();
-        m_targetCluster = HanamiRoot::m_clusterHandler->getCluster(getClusterUuid);
+        m_targetCluster = ClusterHandler::getInstance()->getCluster(getClusterUuid);
         m_targetCluster->msgClient = this;
         m_clientInit = true;
         return true;

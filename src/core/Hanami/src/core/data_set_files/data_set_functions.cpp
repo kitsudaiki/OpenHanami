@@ -75,11 +75,11 @@ getDateSetInfo(Kitsunemimi::JsonItem &result,
 {
     const UserContext userContext(context);
 
-    if(HanamiRoot::dataSetTable->getDataSet(result,
-                                            dataUuid,
-                                            userContext,
-                                            error,
-                                            true) == false)
+    if(DataSetTable::getInstance()->getDataSet(result,
+                                               dataUuid,
+                                               userContext,
+                                               error,
+                                               true) == false)
     {
         return false;
     }

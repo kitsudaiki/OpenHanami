@@ -31,6 +31,8 @@
 namespace Kitsunemimi::Sakura
 {
 
+Host* Host::instance = nullptr;
+
 /**
  * @brief constructor
  */

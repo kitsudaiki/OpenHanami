@@ -34,7 +34,14 @@ class RequestResultTable
         : public HanamiSqlTable
 {
 public:
-    RequestResultTable(Kitsunemimi::Sakura::SqlDatabase* db);
+    static RequestResultTable* getInstance()
+    {
+        if(instance == nullptr) {
+            instance = new RequestResultTable();
+        }
+        return instance;
+    }
+
     ~RequestResultTable();
 
     bool addRequestResult(Kitsunemimi::JsonItem &data,
@@ -51,6 +58,10 @@ public:
     bool deleteRequestResult(const std::string &resultUuid,
                              const UserContext &userContext,
                              Kitsunemimi::ErrorContainer &error);
+
+private:
+    RequestResultTable();
+    static RequestResultTable* instance;
 };
 
 #endif // HANAMI_REQUEST_RESULT_TABLE_H

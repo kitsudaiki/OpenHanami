@@ -83,11 +83,11 @@ ShowTemplate::runTask(BlossomIO &blossomIO,
     // TODO: check type-field
 
     // get data from table
-    if(HanamiRoot::templateTable->getTemplate(blossomIO.output,
-                                              uuid,
-                                              userContext,
-                                              error,
-                                              true) == false)
+    if(TemplateTable::getInstance()->getTemplate(blossomIO.output,
+                                                 uuid,
+                                                 userContext,
+                                                 error,
+                                                 true) == false)
     {
         status.errorMessage = "Tempalte with UUID '" + uuid + "' not found.";
         status.statusCode = NOT_FOUND_RTYPE;

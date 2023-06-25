@@ -74,7 +74,7 @@ LoadCluster::runTask(BlossomIO &blossomIO,
     const UserContext userContext(context);
 
     // get cluster
-    Cluster* cluster = HanamiRoot::m_clusterHandler->getCluster(clusterUuid);
+    Cluster* cluster = ClusterHandler::getInstance()->getCluster(clusterUuid);
     if(cluster == nullptr)
     {
         status.errorMessage = "Cluster with UUID '" + clusterUuid + "' not found";
@@ -85,11 +85,11 @@ LoadCluster::runTask(BlossomIO &blossomIO,
 
     // get meta-infos of data-set from shiori
     Kitsunemimi::JsonItem parsedSnapshotInfo;
-    if(HanamiRoot::clusterSnapshotTable->getClusterSnapshot(parsedSnapshotInfo,
-                                                            snapshotUuid,
-                                                            userContext,
-                                                            error,
-                                                            true) == false)
+    if(ClusterSnapshotTable::getInstance()->getClusterSnapshot(parsedSnapshotInfo,
+                                                               snapshotUuid,
+                                                               userContext,
+                                                               error,
+                                                               true) == false)
     {
         error.addMeesage("Failed to get information from database for UUID '" + snapshotUuid + "'");
         status.statusCode = NOT_FOUND_RTYPE;

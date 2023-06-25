@@ -57,11 +57,11 @@ DeleteRequestResult::runTask(BlossomIO &blossomIO,
 
     // check if request-result exist within the table
     Kitsunemimi::JsonItem result;
-    if(HanamiRoot::requestResultTable->getRequestResult(result,
-                                                        uuid,
-                                                        userContext,
-                                                        error,
-                                                        false) == false)
+    if(RequestResultTable::getInstance()->getRequestResult(result,
+                                                           uuid,
+                                                           userContext,
+                                                           error,
+                                                           false) == false)
     {
         status.errorMessage = "Request-result with UUID '" + uuid + "' not found.";
         status.statusCode = NOT_FOUND_RTYPE;
@@ -70,7 +70,7 @@ DeleteRequestResult::runTask(BlossomIO &blossomIO,
     }
 
     // delete entry from db
-    if(HanamiRoot::requestResultTable->deleteRequestResult(uuid, userContext, error) == false)
+    if(RequestResultTable::getInstance()->deleteRequestResult(uuid, userContext, error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;

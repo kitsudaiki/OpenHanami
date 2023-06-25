@@ -222,7 +222,7 @@ Cluster::startForwardCycle()
     }
 
     segmentCounter = 0;
-    HanamiRoot::m_segmentQueue->addSegmentListToQueue(allSegments);
+    SegmentQueue::getInstance()->addSegmentListToQueue(allSegments);
 }
 
 /**
@@ -242,7 +242,7 @@ Cluster::startBackwardCycle()
     }
 
     segmentCounter = 0;
-    HanamiRoot::m_segmentQueue->addSegmentListToQueue(allSegments);
+    SegmentQueue::getInstance()->addSegmentListToQueue(allSegments);
 }
 
 /**

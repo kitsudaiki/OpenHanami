@@ -34,7 +34,14 @@ class ClusterSnapshotTable
         : public HanamiSqlTable
 {
 public:
-    ClusterSnapshotTable(Kitsunemimi::Sakura::SqlDatabase* db);
+    static ClusterSnapshotTable* getInstance()
+    {
+        if(instance == nullptr) {
+            instance = new ClusterSnapshotTable();
+        }
+        return instance;
+    }
+
     ~ClusterSnapshotTable();
 
     bool addClusterSnapshot(Kitsunemimi::JsonItem &data,
@@ -54,6 +61,10 @@ public:
     bool setUploadFinish(const std::string &uuid,
                          const std::string &fileUuid,
                          Kitsunemimi::ErrorContainer &error);
+
+private:
+    ClusterSnapshotTable();
+    static ClusterSnapshotTable* instance;
 };
 
 #endif // HANAMI_CLUSTER_SNAPSHOT_TABLE_H

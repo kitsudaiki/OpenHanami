@@ -36,7 +36,14 @@ namespace Kitsunemimi::Sakura
 class SqlDatabase
 {
 public:
-    SqlDatabase();
+    static SqlDatabase* getInstance()
+    {
+        if(instance == nullptr) {
+            instance = new SqlDatabase();
+        }
+        return instance;
+    }
+
     ~SqlDatabase();
 
     bool initDatabase(const std::string &path,
@@ -49,6 +56,9 @@ public:
                         ErrorContainer &error);
 
 private:
+    SqlDatabase();
+    static SqlDatabase* instance;
+
     std::mutex m_lock;
     bool m_isOpen = false;
     std::string m_path = "";

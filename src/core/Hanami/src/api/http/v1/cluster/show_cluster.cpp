@@ -77,10 +77,10 @@ ShowCluster::runTask(BlossomIO &blossomIO,
     const std::string clusterUuid = blossomIO.input.get("uuid").getString();
 
     // get data from table
-    if(HanamiRoot::clustersTable->getCluster(blossomIO.output,
-                                             clusterUuid,
-                                             userContext,
-                                             error) == false)
+    if(ClusterTable::getInstance()->getCluster(blossomIO.output,
+                                               clusterUuid,
+                                               userContext,
+                                               error) == false)
     {
         status.errorMessage = "Cluster with UUID '" + clusterUuid + "' not found.";
         status.statusCode = NOT_FOUND_RTYPE;

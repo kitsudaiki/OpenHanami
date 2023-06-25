@@ -29,11 +29,13 @@
 
 #include <libKitsunemimiSakuraDatabase/sql_database.h>
 
+ProjectsTable* ProjectsTable::instance = nullptr;
+
 /**
  * @brief constructor
  */
-ProjectsTable::ProjectsTable(Kitsunemimi::Sakura::SqlDatabase* db)
-    : HanamiSqlAdminTable(db)
+ProjectsTable::ProjectsTable()
+    : HanamiSqlAdminTable(Kitsunemimi::Sakura::SqlDatabase::getInstance())
 {
     m_tableName = "projects";
 }

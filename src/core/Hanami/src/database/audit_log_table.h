@@ -34,7 +34,14 @@ class AuditLogTable
         : public HanamiSqlLogTable
 {
 public:
-    AuditLogTable(Kitsunemimi::Sakura::SqlDatabase* db);
+    static AuditLogTable* getInstance()
+    {
+        if(instance == nullptr) {
+            instance = new AuditLogTable();
+        }
+        return instance;
+    }
+
     ~AuditLogTable();
 
     bool addAuditLogEntry(const std::string &timestamp,
@@ -47,6 +54,10 @@ public:
                                const std::string &userId,
                                const uint64_t page,
                                Kitsunemimi::ErrorContainer &error);
+
+private:
+    AuditLogTable();
+    static AuditLogTable* instance;
 };
 
 #endif // HANAMI_AUDIT_LOG_TABLE_H

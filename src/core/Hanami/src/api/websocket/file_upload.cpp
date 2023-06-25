@@ -51,10 +51,10 @@ recvFileUploadPackage(const void* data,
         return false;
     }
 
-    if(HanamiRoot::tempFileHandler->addDataToPos(msg.fileuuid(),
-                                                 msg.position(),
-                                                 msg.data().c_str(),
-                                                 msg.data().size()) == false)
+    if(TempFileHandler::getInstance()->addDataToPos(msg.fileuuid(),
+                                                    msg.position(),
+                                                    msg.data().c_str(),
+                                                    msg.data().size()) == false)
     {
         // TODO: error-handling
         std::cout<<"failed to write data"<<std::endl;
@@ -69,9 +69,9 @@ recvFileUploadPackage(const void* data,
 
     if(msg.type() == UploadDataType::DATASET_TYPE)
     {
-        if(HanamiRoot::dataSetTable->setUploadFinish(msg.datasetuuid(),
-                                                     msg.fileuuid(),
-                                                     error) == false)
+        if(DataSetTable::getInstance()->setUploadFinish(msg.datasetuuid(),
+                                                        msg.fileuuid(),
+                                                        error) == false)
         {
             // TODO: error-handling
             return false;
@@ -80,9 +80,9 @@ recvFileUploadPackage(const void* data,
 
     if(msg.type() == UploadDataType::CLUSTER_SNAPSHOT_TYPE)
     {
-        if(HanamiRoot::clusterSnapshotTable->setUploadFinish(msg.datasetuuid(),
-                                                             msg.fileuuid(),
-                                                             error) == false)
+        if(ClusterSnapshotTable::getInstance()->setUploadFinish(msg.datasetuuid(),
+                                                                msg.fileuuid(),
+                                                                error) == false)
         {
             // TODO: error-handling
             return false;

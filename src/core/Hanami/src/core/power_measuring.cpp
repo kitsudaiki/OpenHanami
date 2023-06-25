@@ -31,7 +31,7 @@
 
 #include <libKitsunemimiJson/json_item.h>
 
-using namespace Kitsunemimi::Hanami;
+PowerMeasuring* PowerMeasuring::instance = nullptr;
 
 PowerMeasuring::PowerMeasuring()
     : Kitsunemimi::Thread("Azuki_EnergyMeasuring")
@@ -60,8 +60,9 @@ PowerMeasuring::run()
     while(m_abort == false)
     {
         double power = 0.0;
-        for(uint64_t i = 0; i < HanamiRoot::host->cpuPackages.size(); i++) {
-            power += HanamiRoot::host->getPackage(i)->getTotalPackagePower();
+        Kitsunemimi::Sakura::Host* host = Kitsunemimi::Sakura::Host::getInstance();
+        for(uint64_t i = 0; i < host->cpuPackages.size(); i++) {
+            power += host->getPackage(i)->getTotalPackagePower();
         }
 
         // HINT(kitsudaiki): first tests were made on a notebook. When this notebook came from

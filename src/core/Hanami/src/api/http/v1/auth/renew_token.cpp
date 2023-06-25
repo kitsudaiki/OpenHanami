@@ -81,7 +81,7 @@ RenewToken::runTask(BlossomIO &blossomIO,
 
     // get data from table
     Kitsunemimi::JsonItem userData;
-    if(HanamiRoot::usersTable->getUser(userData, userContext.userId, error, false) == false)
+    if(UsersTable::getInstance()->getUser(userData, userContext.userId, error, false) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
