@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
     // init and check config-file
     std::string configPath = argParser.getStringValue("config");
     if(configPath == "") {
-        configPath = "/etc/tsugumi/tsugumi.conf";
+        configPath = "/etc/hanami/hanami_testing.conf";
     }
     if(Kitsunemimi::initConfig(configPath, error) == false)
     {
@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
 
     // init logger
     Kitsunemimi::initConsoleLogger(enableDebug);
-    Kitsunemimi::initFileLogger(logPath, "tsugumi", enableDebug);
+    Kitsunemimi::initFileLogger(logPath, "hanami_testing", enableDebug);
 
     runRestApiTests();
 

@@ -1,6 +1,6 @@
 QT -= qt core gui
 
-TARGET = TsugumiTester
+TARGET = SDK_API_Testing
 CONFIG += console c++17
 CONFIG -= app_bundle
 

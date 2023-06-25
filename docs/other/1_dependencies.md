@@ -56,9 +56,9 @@ I know, this is not a valid UML-diagram or something like this. It should old vi
 
 [Hanami](#Hanami)
 
-[TsugumiTester](#tsugumitester)
-
 [Hanami-AI-Dashboard](#hanamiai-dashboard)
+
+[SDK_API_Testing](#sdk_api_testing)
 
 ### Libraries
 
@@ -117,21 +117,20 @@ __________
 
 __________
 
-### TsugumiTester
-
-- **content**: 
-    - Functional tests for SDK-library, REST-API and CLI-tool
-    - Benchmark tests
-
-- **language**: `C++17`
-
-__________
-
 ### Hanami-AI-Dashboard
 
 - **content**: Web-Client to directly interact with the KyoukoMind-instance.
 
 - **language**: `JavaScript + HTML + CSS`
+
+__________
+
+### SDK_API_Testing
+
+- **content**: 
+    - Functional tests for SDK-library and REST-API
+
+- **language**: `C++17`
 
 __________
 
