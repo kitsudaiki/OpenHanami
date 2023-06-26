@@ -103,7 +103,7 @@ CpuProcessingUnit::learnSegmentForward(AbstractSegment* segment)
         case CORE_SEGMENT:
         {
             CoreSegment* seg = static_cast<CoreSegment*>(segment);
-            if(HanamiRoot::useGpu)
+            if(HanamiRoot::useOpencl)
             {
                 HanamiRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "inputTransfers", error);
                 HanamiRoot::gpuInterface->run(*(seg->data), "prcessInput", error, seg->numberOfNeuronSections, NEURONS_PER_NEURONSECTION);
@@ -168,7 +168,7 @@ CpuProcessingUnit::learnSegmentBackward(AbstractSegment* segment)
         {
             CoreSegment* seg = static_cast<CoreSegment*>(segment);
 
-            if(HanamiRoot::useGpu)
+            if(HanamiRoot::useOpencl)
             {
                 HanamiRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "inputTransfers", error);
                 HanamiRoot::gpuInterface->run(*(seg->data), "reweightOutput", error, seg->numberOfNeuronSections, NEURONS_PER_NEURONSECTION);
@@ -247,7 +247,7 @@ CpuProcessingUnit::processSegment(AbstractSegment* segment)
         case CORE_SEGMENT:
         {
             CoreSegment* seg = static_cast<CoreSegment*>(segment);
-            if(HanamiRoot::useGpu)
+            if(HanamiRoot::useOpencl)
             {
                 HanamiRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "inputTransfers", error);
                 HanamiRoot::gpuInterface->run(*(seg->data), "prcessInput", error, seg->numberOfNeuronSections, NEURONS_PER_NEURONSECTION);

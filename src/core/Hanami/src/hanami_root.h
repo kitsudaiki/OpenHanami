@@ -99,7 +99,7 @@ public:
     static HttpServer* httpServer;
     static HanamiRoot* root;
     static uint32_t* m_randomValues;
-    static bool useGpu;
+    static bool useOpencl;
     static bool useCuda;
 
     std::map<std::string, std::map<HttpRequestType, EndpointEntry>> endpointRules;
