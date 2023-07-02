@@ -29,13 +29,6 @@
 //==================================================================================================
 //==================================================================================================
 
-__device__ __forceinline__ int
-getBlockId()
-{
-    const int index = blockIdx.x * blockDim.x + threadIdx.x;
-    return index / blockDim.x;
-}
-
 /**
  * @brief initialize a new specific synapse
  */
@@ -141,16 +134,11 @@ prcessNeuronConnection(const uint neuronSectionId,
                        UpdatePosSection* updatePosSections,
                        SegmentSettings* segmentSettings,
                        const uint* randomValues,
-                       float* localMem,
-                       Neuron* localNeurons,
-                       SynapseConnection* localConnections)
+                       float* localMem)
 {
     // reset weight of neurons
-    for(uint neuronId = threadIdx.x;
-        neuronId < targetNeuronSection->numberOfNeurons;
-        neuronId += blockDim.x)
-    {
-        targetNeuronSection->neurons[neuronId].input = 0.0f;
+    if(threadIdx.x < targetNeuronSection->numberOfNeurons) {
+        targetNeuronSection->neurons[threadIdx.x].input = 0.0f;
     }
 
     for(uint sectionPos = threadIdx.x;
@@ -162,9 +150,8 @@ prcessNeuronConnection(const uint neuronSectionId,
         const uint sectionId = neuronConnections[neuronSectionId].backwardIds[sectionPos];
         if(sectionId != UNINIT_STATE_32)
         {
-            localConnections[threadIdx.x] = synapseConnections[sectionId];
             synapseProcessingBackward(&synapseSections[sectionId],
-                                      &localConnections[threadIdx.x],
+                                      &synapseConnections[sectionId],
                                       targetNeuronSection,
                                       neuronSections,
                                       updatePosSections,
@@ -173,23 +160,24 @@ prcessNeuronConnection(const uint neuronSectionId,
                                       &localMem[offset]);
         }
 
-        __syncthreads();
+    }
+    __syncthreads();
 
+    for(uint sectionPos = threadIdx.x;
+        sectionPos < NEURON_CONNECTIONS;
+        sectionPos += blockDim.x)
+    {
         // apply values of the local-memory to the neurons
-        for(uint neuronId = threadIdx.x;
-            neuronId < targetNeuronSection->numberOfNeurons;
-            neuronId += blockDim.x)
+        if(threadIdx.x < targetNeuronSection->numberOfNeurons)
         {
-            localNeurons[threadIdx.x] = targetNeuronSection->neurons[neuronId];
-            Neuron* neuron = &localNeurons[threadIdx.x];
-            for(uint i = neuronId;
+            Neuron* neuron = &targetNeuronSection->neurons[threadIdx.x];
+            for(uint i = threadIdx.x;
                 i < NEURONS_PER_NEURONSECTION * blockDim.x;
                 i += NEURONS_PER_NEURONSECTION)
             {
                 neuron->input += localMem[i];
                 localMem[i] = 0.0f;
             }
-            targetNeuronSection->neurons[neuronId] = localNeurons[threadIdx.x];
         }
     }
 
@@ -228,67 +216,50 @@ prcessCoreSegmentKernel(BrickHeader* bricks,
                         const uint* randomValues,
                         const ulong brickId)
 {
-    __shared__ uint8_t localMem[4096 * 4 + 64 * sizeof(Neuron) + 64 * sizeof(SynapseConnection)];
+    __shared__ uint8_t localMem[4096 * sizeof(float)];
     float* localValues = (float*)&localMem[0];
-    Neuron* localNeurons = (Neuron*)&localMem[16384];
-    SynapseConnection* localConnections = (SynapseConnection*)&localMem[18432];
 
     resetLocalMemory(localValues, blockDim.x * NEURONS_PER_NEURONSECTION);
 
     BrickHeader* brick = &bricks[brickId];
-    if(brick->isInputBrick == false
-            && brick->isOutputBrick == false)
+    const uint32_t neuronSectionId = brick->neuronSectionPos + blockIdx.x;
+    NeuronSection* neuronSection = &neuronSections[neuronSectionId];
+
+    prcessNeuronConnection(neuronSectionId,
+                           neuronSection,
+                           neuronConnections,
+                           neuronSections,
+                           synapseConnections,
+                           synapseSections,
+                           updatePosSections,
+                           segmentSettings,
+                           randomValues,
+                           localValues);
+
+    if(threadIdx.x < neuronSection->numberOfNeurons)
     {
-        for(uint neuronSectionId = brick->neuronSectionPos + getBlockId();
-            neuronSectionId < brick->numberOfNeuronSections + brick->neuronSectionPos;
-            neuronSectionId += gridDim.x)
+        Neuron* neuron = &neuronSection->neurons[threadIdx.x];
+
+        neuron->potential /= segmentSettings->neuronCooldown;
+        neuron->refractionTime = neuron->refractionTime >> 1;
+
+        if(neuron->refractionTime == 0)
         {
-            NeuronSection* neuronSection = &neuronSections[neuronSectionId];
-
-            prcessNeuronConnection(neuronSectionId,
-                                   neuronSection,
-                                   neuronConnections,
-                                   neuronSections,
-                                   synapseConnections,
-                                   synapseSections,
-                                   updatePosSections,
-                                   segmentSettings,
-                                   randomValues,
-                                   localValues,
-                                   localNeurons,
-                                   localConnections);
-
-            for(uint neuronId = threadIdx.x;
-                neuronId < neuronSection->numberOfNeurons;
-                neuronId += blockDim.x)
-            {
-                localNeurons[threadIdx.x] = neuronSection->neurons[neuronId];
-                Neuron* neuron = &localNeurons[threadIdx.x];
-
-                neuron->potential /= segmentSettings->neuronCooldown;
-                neuron->refractionTime = neuron->refractionTime >> 1;
-
-                if(neuron->refractionTime == 0)
-                {
-                    neuron->potential = segmentSettings->potentialOverflow * neuron->input;
-                    neuron->refractionTime = segmentSettings->refractionTime;
-                }
-
-                // update neuron
-                neuron->potential -= neuron->border;
-                neuron->active = neuron->potential > 0.0f;
-                neuron->input = 0.0f;
-                neuron->potential = log2(neuron->potential + 1.0f);
-
-                // handle active-state
-                const bool needUpdate = neuron->active != 0 && neuron->targetSectionId == UNINIT_STATE_32;
-                UpdatePos* updatePos = &updatePosSections[neuronSectionId].positions[neuronId];
-                updatePos->type = needUpdate;
-                updatePos->offset = 0.0f;
-
-                neuronSection->neurons[neuronId] = localNeurons[threadIdx.x];
-            }
+            neuron->potential = segmentSettings->potentialOverflow * neuron->input;
+            neuron->refractionTime = segmentSettings->refractionTime;
         }
+
+        // update neuron
+        neuron->potential -= neuron->border;
+        neuron->active = neuron->potential > 0.0f;
+        neuron->input = 0.0f;
+        neuron->potential = log2(neuron->potential + 1.0f);
+
+        // handle active-state
+        const bool needUpdate = neuron->active != 0 && neuron->targetSectionId == UNINIT_STATE_32;
+        UpdatePos* updatePos = &updatePosSections[neuronSectionId].positions[threadIdx.x];
+        updatePos->type = needUpdate;
+        updatePos->offset = 0.0f;
     }
 }
 
@@ -303,46 +274,36 @@ prcessOutputKernel(BrickHeader* bricks,
                    UpdatePosSection* updatePosSections,
                    SegmentSettings* segmentSettings,
                    float* outputTransfers,
-                   const uint* randomValues)
+                   const uint* randomValues,
+                   const uint32_t brickId)
 {
-    __shared__ uint8_t localMem[4096 * 4 + 64 * sizeof(Neuron) + 64 * sizeof(SynapseConnection)];
+    __shared__ uint8_t localMem[4096 * sizeof(float)];
     float* localValues = (float*)&localMem[0];
-    Neuron* localNeurons = (Neuron*)&localMem[16384];
-    SynapseConnection* localConnections = (SynapseConnection*)&localMem[18432];
 
     resetLocalMemory(localValues, blockDim.x * NEURONS_PER_NEURONSECTION);
 
-    NeuronSection* neuronSection = &neuronSections[getBlockId()];
-    BrickHeader* brick = &bricks[neuronSection->brickId];
-    if(brick->isOutputBrick)
+    BrickHeader* brick = &bricks[brickId];
+    const uint32_t neuronSectionId = brick->neuronSectionPos + blockIdx.x;
+    NeuronSection* neuronSection = &neuronSections[neuronSectionId];
+
+    prcessNeuronConnection(neuronSectionId,
+                           neuronSection,
+                           neuronConnections,
+                           neuronSections,
+                           synapseConnections,
+                           synapseSections,
+                           updatePosSections,
+                           segmentSettings,
+                           randomValues,
+                           localValues);
+
+    if(threadIdx.x < neuronSection->numberOfNeurons)
     {
-        prcessNeuronConnection(getBlockId(),
-                               neuronSection,
-                               neuronConnections,
-                               neuronSections,
-                               synapseConnections,
-                               synapseSections,
-                               updatePosSections,
-                               segmentSettings,
-                               randomValues,
-                               localValues,
-                               localNeurons,
-                               localConnections);
+        Neuron* neuron = &neuronSection->neurons[threadIdx.x];
 
-
-        for(uint neuronId = threadIdx.x;
-            neuronId < neuronSection->numberOfNeurons;
-            neuronId += blockDim.x)
-        {
-            localNeurons[threadIdx.x] = neuronSection->neurons[neuronId];
-            Neuron* neuron = &localNeurons[threadIdx.x];
-
-            neuron->potential = segmentSettings->potentialOverflow * neuron->input;
-            outputTransfers[neuron->targetBorderId] = neuron->potential;
-            neuron->input = 0.0f;
-
-            neuronSection->neurons[neuronId] = localNeurons[threadIdx.x];
-        }
+        neuron->potential = segmentSettings->potentialOverflow * neuron->input;
+        outputTransfers[neuron->targetBorderId] = neuron->potential;
+        neuron->input = 0.0f;
     }
 }
 
@@ -352,26 +313,21 @@ __global__ void
 prcessInputKernel(BrickHeader* bricks,
                   NeuronSection* neuronSections,
                   UpdatePosSection* updatePosSections,
-                  float* inputTransfers)
+                  float* inputTransfers,
+                  const uint32_t brickId)
 {
-    __shared__ Neuron localNeurons[64];
+    BrickHeader* brick = &bricks[brickId];
+    NeuronSection* neuronSection = &neuronSections[brick->neuronSectionPos + blockIdx.x];
 
-    NeuronSection* neuronSection = &neuronSections[getBlockId()];
-    BrickHeader* brick = &bricks[neuronSection->brickId];
-
-    if(brick->isInputBrick
-            && threadIdx.x < neuronSection->numberOfNeurons)
+    if(threadIdx.x < neuronSection->numberOfNeurons)
     {
-        localNeurons[threadIdx.x] = neuronSection->neurons[threadIdx.x];
-        Neuron* neuron = &localNeurons[threadIdx.x];
-
+        Neuron* neuron = &neuronSection->neurons[threadIdx.x];
         neuron->potential = inputTransfers[neuron->targetBorderId];
         neuron->active = neuron->potential > 0.0f;
-        neuronSection->neurons[threadIdx.x] = localNeurons[threadIdx.x];
 
         // handle active-state
         const bool needUpdate = neuron->active != 0 && neuron->targetSectionId == UNINIT_STATE_32;
-        UpdatePos* updatePos = &updatePosSections[getBlockId()].positions[threadIdx.x];
+        UpdatePos* updatePos = &updatePosSections[blockIdx.x].positions[threadIdx.x];
         updatePos->type = needUpdate;
         updatePos->offset = 0.0f;
     }
@@ -436,51 +392,37 @@ reweightCoreSegmentKernel(BrickHeader* bricks,
                           float* outputTransfers,
                           const ulong brickId)
 {
-    __shared__ uint8_t localMem[4096 * 4 + 64 * sizeof(Neuron) + 64 * sizeof(SynapseConnection)];
-    float* localValues = (float*)&localMem[0];
-    Neuron* localNeurons = (Neuron*)&localMem[16384];
-    SynapseConnection* localSections = (SynapseConnection*)&localMem[18432];
-
     BrickHeader* brick = &bricks[brickId];
+    const uint32_t neuronSectionId = brick->neuronSectionPos + blockIdx.x;
+    NeuronSection* neuronSection = &neuronSections[neuronSectionId];
 
-    for(uint neuronSectionId = brick->neuronSectionPos + getBlockId();
-        neuronSectionId < brick->numberOfNeuronSections + brick->neuronSectionPos;
-        neuronSectionId += gridDim.x)
+    if(threadIdx.x < neuronSection->numberOfNeurons)
     {
-        NeuronSection* neuronSection = &neuronSections[neuronSectionId];
-        for(uint neuronId = threadIdx.x;
-            neuronId < neuronSection->numberOfNeurons;
-            neuronId += blockDim.x)
+        Neuron* sourceNeuron = &neuronSection->neurons[threadIdx.x];
+        if(sourceNeuron->targetSectionId != UNINIT_STATE_32)
         {
-            localNeurons[threadIdx.x] = neuronSection->neurons[neuronId];
-            Neuron* sourceNeuron = &localNeurons[threadIdx.x];
-            if(sourceNeuron->targetSectionId != UNINIT_STATE_32)
+            sourceNeuron->delta = 0.0f;
+            if(sourceNeuron->active)
             {
-                sourceNeuron->delta = 0.0f;
-                if(sourceNeuron->active)
+                uint nextId = sourceNeuron->targetSectionId;
+                while(nextId != UNINIT_STATE_32)
                 {
-                    uint nextId = sourceNeuron->targetSectionId;
-                    while(nextId != UNINIT_STATE_32)
-                    {
-                        nextId = backpropagateSection(&synapseSections[nextId],
-                                                      &synapseConnections[nextId],
-                                                      sourceNeuron,
-                                                      sourceNeuron->potential,
-                                                      brick,
-                                                      neuronSections,
-                                                      synapseConnections,
-                                                      synapseSections);
-                    }
-
-                    sourceNeuron->delta *= 1.4427f * pow(0.5f, sourceNeuron->potential);
+                    nextId = backpropagateSection(&synapseSections[nextId],
+                                                  &synapseConnections[nextId],
+                                                  sourceNeuron,
+                                                  sourceNeuron->potential,
+                                                  brick,
+                                                  neuronSections,
+                                                  synapseConnections,
+                                                  synapseSections);
                 }
 
-                if(brick->isInputBrick) {
-                    outputTransfers[sourceNeuron->targetBorderId] = sourceNeuron->delta;
-                }
+                sourceNeuron->delta *= 1.4427f * pow(0.5f, sourceNeuron->potential);
             }
 
-           neuronSection->neurons[neuronId] = localNeurons[threadIdx.x];
+            if(brick->isInputBrick) {
+                outputTransfers[sourceNeuron->targetBorderId] = sourceNeuron->delta;
+            }
         }
     }
 }
@@ -490,19 +432,16 @@ reweightCoreSegmentKernel(BrickHeader* bricks,
 __global__ void
 reweightOutputKernel(BrickHeader* bricks,
                      NeuronSection* neuronSections,
-                     float* inputTransfers)
+                     float* inputTransfers,
+                     const uint32_t brickId)
 {
-    __shared__ Neuron localNeurons[64];
+    BrickHeader* brick = &bricks[brickId];
+    NeuronSection* neuronSection = &neuronSections[brick->neuronSectionPos + blockIdx.x];
 
-    NeuronSection* neuronSection = &neuronSections[getBlockId()];
-    BrickHeader* brick = &bricks[neuronSection->brickId];
-    if(brick->isOutputBrick
-            && threadIdx.x < neuronSection->numberOfNeurons)
+    if(threadIdx.x < neuronSection->numberOfNeurons)
     {
-        localNeurons[threadIdx.x] = neuronSection->neurons[threadIdx.x];
-        localNeurons[threadIdx.x].delta = inputTransfers[localNeurons[threadIdx.x].targetBorderId];
-        inputTransfers[localNeurons[threadIdx.x].targetBorderId] = 0.0f;
-        neuronSection->neurons[threadIdx.x] = localNeurons[threadIdx.x];
+        neuronSection->neurons[threadIdx.x].delta = inputTransfers[neuronSection->neurons[threadIdx.x].targetBorderId];
+        inputTransfers[neuronSection->neurons[threadIdx.x].targetBorderId] = 0.0f;
     }
 }
 
@@ -578,11 +517,20 @@ processing_CUDA(PointerHandler* gpuPointer,
                segmentHeader->numberOfInputTransfers * sizeof(float),
                cudaMemcpyHostToDevice);
 
-    prcessInputKernel<<<numberOfNeuronSections, NEURONS_PER_NEURONSECTION>>>(
-        gpuPointer->bricks,
-        gpuPointer->neuronSections,
-        gpuPointer->updatePosSections,
-        gpuPointer->inputTransfers);
+    for(uint32_t pos = 0; pos < segmentHeader->numberOfBricks; pos++)
+    {
+        const uint32_t brickId = brickOrder[pos];
+        BrickHeader* brick = &bricks[brickId];
+        if(brick->isInputBrick == true)
+        {
+            prcessInputKernel<<<brick->numberOfNeuronSections, NEURONS_PER_NEURONSECTION>>>(
+                gpuPointer->bricks,
+                gpuPointer->neuronSections,
+                gpuPointer->updatePosSections,
+                gpuPointer->inputTransfers,
+                brickId);
+        }
+    }
 
     for(uint32_t pos = 0; pos < segmentHeader->numberOfBricks; pos++)
     {
@@ -591,7 +539,7 @@ processing_CUDA(PointerHandler* gpuPointer,
         if(brick->isInputBrick == false
                 && brick->isOutputBrick == false)
         {
-            prcessCoreSegmentKernel<<<10, 64>>>(
+            prcessCoreSegmentKernel<<<brick->numberOfNeuronSections, 64>>>(
                 gpuPointer->bricks,
                 gpuPointer->neuronConnections,
                 gpuPointer->neuronSections,
@@ -606,16 +554,25 @@ processing_CUDA(PointerHandler* gpuPointer,
         }
     }
 
-    prcessOutputKernel<<<numberOfNeuronSections, 64>>>(
-        gpuPointer->bricks,
-        gpuPointer->neuronConnections,
-        gpuPointer->neuronSections,
-        gpuPointer->synapseConnections,
-        gpuPointer->synapseSections,
-        gpuPointer->updatePosSections,
-        gpuPointer->segmentSettings,
-        gpuPointer->outputTransfers,
-        gpuPointer->randomValues);
+    for(uint32_t pos = 0; pos < segmentHeader->numberOfBricks; pos++)
+    {
+        const uint32_t brickId = brickOrder[pos];
+        BrickHeader* brick = &bricks[brickId];
+        if(brick->isOutputBrick == true)
+        {
+            prcessOutputKernel<<<brick->numberOfNeuronSections, 64>>>(
+                gpuPointer->bricks,
+                gpuPointer->neuronConnections,
+                gpuPointer->neuronSections,
+                gpuPointer->synapseConnections,
+                gpuPointer->synapseSections,
+                gpuPointer->updatePosSections,
+                gpuPointer->segmentSettings,
+                gpuPointer->outputTransfers,
+                gpuPointer->randomValues,
+                brickId);
+        }
+    }
 
     cudaDeviceSynchronize();
     cudaMemcpy(outputTransfers,
@@ -640,15 +597,25 @@ backpropagation_CUDA(PointerHandler* gpuPointer,
                segmentHeader->numberOfInputTransfers * sizeof(float),
                cudaMemcpyHostToDevice);
 
-    reweightOutputKernel<<<numberOfNeuronSections, NEURONS_PER_NEURONSECTION>>> (
-        gpuPointer->bricks,
-        gpuPointer->neuronSections,
-        gpuPointer->inputTransfers);
+    for(uint32_t pos = 0; pos < segmentHeader->numberOfBricks; pos++)
+    {
+        const uint32_t brickId = brickOrder[pos];
+        BrickHeader* brick = &bricks[brickId];
+        if(brick->isOutputBrick == true)
+        {
+            reweightOutputKernel<<<brick->numberOfNeuronSections, NEURONS_PER_NEURONSECTION>>> (
+                gpuPointer->bricks,
+                gpuPointer->neuronSections,
+                gpuPointer->inputTransfers,
+                brickId);
+        }
+    }
 
     for(int32_t pos = segmentHeader->numberOfBricks - 1; pos >= 0; pos--)
     {
         const uint32_t brickId = brickOrder[pos];
-        reweightCoreSegmentKernel<<<numberOfNeuronSections, 64>>>(
+        BrickHeader* brick = &bricks[brickId];
+        reweightCoreSegmentKernel<<<brick->numberOfNeuronSections, 64>>>(
             gpuPointer->bricks,
             gpuPointer->neuronSections,
             gpuPointer->synapseConnections,
