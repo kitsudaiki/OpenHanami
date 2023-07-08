@@ -32,6 +32,7 @@
 
 #include "objects.h"
 #include "core_segment.h"
+#include "section_update.h"
 
 /**
  * @brief initialize a new specific synapse
@@ -74,10 +75,11 @@ createNewSynapse(SynapseSection* section,
  * @brief process synapse-section
  */
 inline void
-synapseProcessing(SynapseSection* section,
+synapseProcessing(CoreSegment &segment,
+                  SynapseSection* section,
                   NeuronSection* neuronSections,
                   SynapseSection* synapseSections,
-                  UpdatePosSection* updatePosSections,
+                  NeuronConnection* neuronConnections,
                   SegmentSettings* segmentSettings,
                   const float outH)
 {
@@ -120,20 +122,20 @@ synapseProcessing(SynapseSection* section,
     if(outH - counter > 0.01f
             && section->connection.forwardNextId == UNINIT_STATE_32)
     {
-        UpdatePosSection* updateSection = &updatePosSections[section->connection.sourceNeuronSectionId];
-        UpdatePos* updatePos = &updateSection->positions[section->connection.sourceNeuronId];
-        updatePos->type = 1;
-        updatePos->offset = counter + section->connection.offset;
-        segmentSettings->updateSections = 1;
+        processUpdatePositon_CPU(segment,
+                                 section->connection.sourceNeuronSectionId,
+                                 section->connection.sourceNeuronId,
+                                 counter + section->connection.offset);
         return;
     }
 
     if(section->connection.forwardNextId != UNINIT_STATE_32)
     {
-        synapseProcessing(&synapseSections[section->connection.forwardNextId],
+        synapseProcessing(segment,
+                          &synapseSections[section->connection.forwardNextId],
                           neuronSections,
                           synapseSections,
-                          updatePosSections,
+                          neuronConnections,
                           segmentSettings,
                           outH);
     }
@@ -143,12 +145,13 @@ synapseProcessing(SynapseSection* section,
  * @brief process only a single neuron
  */
 inline void
-processSingleNeuron(const uint32_t sourceNeuronId,
+processSingleNeuron(CoreSegment &segment,
+                    const uint32_t sourceNeuronId,
                     const uint32_t sourceNeuronSectionId,
                     Neuron* neuron,
                     NeuronSection* neuronSections,
                     SynapseSection* synapseSections,
-                    UpdatePosSection* updatePosSections,
+                    NeuronConnection* neuronConnections,
                     SegmentSettings* segmentSettings)
 {
     // handle active-state
@@ -158,17 +161,19 @@ processSingleNeuron(const uint32_t sourceNeuronId,
 
     if(neuron->targetSectionId == UNINIT_STATE_32)
     {
-        UpdatePos* updatePos = &updatePosSections[sourceNeuronSectionId].positions[sourceNeuronId];
-        updatePos->type = 1;
-        updatePos->offset = 0.0f;
-        segmentSettings->updateSections = 1;
+        processUpdatePositon_CPU(segment,
+                                 sourceNeuronSectionId,
+                                 sourceNeuronId,
+                                 0.0f);
+
         return;
     }
 
-    synapseProcessing(&synapseSections[neuron->targetSectionId],
+    synapseProcessing(segment,
+                      &synapseSections[neuron->targetSectionId],
                       neuronSections,
                       synapseSections,
-                      updatePosSections,
+                      neuronConnections,
                       segmentSettings,
                       neuron->potential);
 }
@@ -207,11 +212,12 @@ processNeuronsOfOutputBrick(const Brick* brick,
  * @brief process input brick
  */
 inline void
-processNeuronsOfInputBrick(const Brick* brick,
+processNeuronsOfInputBrick(CoreSegment &segment,
+                           const Brick* brick,
                            NeuronSection* neuronSections,
                            float* inputTransfers,
                            SynapseSection* synapseSections,
-                           UpdatePosSection* updatePosSections,
+                           NeuronConnection* neuronConnections,
                            SegmentSettings* segmentSettings)
 {
     Neuron* neuron = nullptr;
@@ -231,12 +237,13 @@ processNeuronsOfInputBrick(const Brick* brick,
             neuron->potential = inputTransfers[neuron->targetBorderId];
             neuron->active = neuron->potential > 0.0f;
 
-            processSingleNeuron(neuronId,
+            processSingleNeuron(segment,
+                                neuronId,
                                 neuronSectionId,
                                 neuron,
                                 neuronSections,
                                 synapseSections,
-                                updatePosSections,
+                                neuronConnections,
                                 segmentSettings);
         }
     }
@@ -246,10 +253,11 @@ processNeuronsOfInputBrick(const Brick* brick,
  * @brief process normal internal brick
  */
 inline void
-processNeuronsOfNormalBrick(const Brick* brick,
+processNeuronsOfNormalBrick(CoreSegment &segment,
+                            const Brick* brick,
                             NeuronSection* neuronSections,
                             SynapseSection* synapseSections,
-                            UpdatePosSection* updatePosSections,
+                            NeuronConnection* neuronConnections,
                             SegmentSettings* segmentSettings)
 {
     Neuron* neuron = nullptr;
@@ -282,12 +290,13 @@ processNeuronsOfNormalBrick(const Brick* brick,
             neuron->input = 0.0f;
             neuron->potential = log2(neuron->potential + 1.0f);
 
-            processSingleNeuron(neuronId,
+            processSingleNeuron(segment,
+                                neuronId,
                                 neuronSectionId,
                                 neuron,
                                 neuronSections,
                                 synapseSections,
-                                updatePosSections,
+                                neuronConnections,
                                 segmentSettings);
         }
     }
@@ -303,7 +312,7 @@ prcessCoreSegment(CoreSegment &segment)
     uint32_t* brickOrder = segment.brickOrder;
     NeuronSection* neuronSections = segment.neuronSections;
     SynapseSection* synapseSections = segment.synapseSections;
-    UpdatePosSection* updatePosSections = segment.updatePosSections;
+    NeuronConnection* neuronConnections = segment.neuronConnections;
     SegmentHeader* segmentHeader = segment.segmentHeader;
     SegmentSettings* segmentSettings = segment.segmentSettings;
     float* inputTransfers = segment.inputTransfers;
@@ -316,11 +325,12 @@ prcessCoreSegment(CoreSegment &segment)
         Brick* brick = &bricks[brickId];
         if(brick->header.isInputBrick)
         {
-            processNeuronsOfInputBrick(brick,
+            processNeuronsOfInputBrick(segment,
+                                       brick,
                                        neuronSections,
                                        inputTransfers,
                                        synapseSections,
-                                       updatePosSections,
+                                       neuronConnections,
                                        segmentSettings);
         }
         else if(brick->header.isOutputBrick)
@@ -332,10 +342,11 @@ prcessCoreSegment(CoreSegment &segment)
         }
         else
         {
-            processNeuronsOfNormalBrick(brick,
+            processNeuronsOfNormalBrick(segment,
+                                        brick,
                                         neuronSections,
                                         synapseSections,
-                                        updatePosSections,
+                                        neuronConnections,
                                         segmentSettings);
         }
     }

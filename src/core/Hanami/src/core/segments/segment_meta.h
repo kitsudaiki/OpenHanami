@@ -67,11 +67,10 @@ struct SegmentHeader
     SegmentHeaderEntry neuronSections;
     SegmentHeaderEntry inputs;
     SegmentHeaderEntry outputs;
-    SegmentHeaderEntry updatePosSections;
 
     SegmentHeaderEntry synapseSections;
 
-    uint8_t padding2[246];
+    uint8_t padding2[262];
 
     // total size: 512 Byte
 };

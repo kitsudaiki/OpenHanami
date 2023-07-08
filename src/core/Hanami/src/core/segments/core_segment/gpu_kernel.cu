@@ -73,7 +73,7 @@ synapseProcessingBackward(SynapseSection* section,
                           SynapseConnection* connection,
                           NeuronSection* targetNeuronSection,
                           NeuronSection* neuronSections,
-                          UpdatePosSection* updatePosSections,
+                          NeuronConnection* neuronConnections,
                           SegmentSettings* segmentSettings,
                           const uint* randomValues,
                           float* localMem)
@@ -116,7 +116,7 @@ synapseProcessingBackward(SynapseSection* section,
         pos++;
     }
 
-    UpdatePosSection* updateSection = &updatePosSections[connection->sourceNeuronSectionId];
+    NeuronConnection* updateSection = &neuronConnections[connection->sourceNeuronSectionId];
     UpdatePos* updatePos = &updateSection->positions[connection->sourceNeuronId];
     updatePos->type = sourcePotential - counter > 0.01f && connection->forwardNextId == UNINIT_STATE_32;
     updatePos->offset = counter + connection->offset;
@@ -131,7 +131,6 @@ prcessNeuronConnection(const uint neuronSectionId,
                        NeuronSection* neuronSections,
                        SynapseConnection* synapseConnections,
                        SynapseSection* synapseSections,
-                       UpdatePosSection* updatePosSections,
                        SegmentSettings* segmentSettings,
                        const uint* randomValues,
                        float* localMem)
@@ -154,7 +153,7 @@ prcessNeuronConnection(const uint neuronSectionId,
                                       &synapseConnections[sectionId],
                                       targetNeuronSection,
                                       neuronSections,
-                                      updatePosSections,
+                                      neuronConnections,
                                       segmentSettings,
                                       randomValues,
                                       &localMem[offset]);
@@ -209,7 +208,6 @@ prcessCoreSegmentKernel(BrickHeader* bricks,
                         NeuronSection* neuronSections,
                         SynapseConnection* synapseConnections,
                         SynapseSection* synapseSections,
-                        UpdatePosSection* updatePosSections,
                         SegmentSettings* segmentSettings,
                         float* inputTransfers,
                         float* outputTransfers,
@@ -231,7 +229,6 @@ prcessCoreSegmentKernel(BrickHeader* bricks,
                            neuronSections,
                            synapseConnections,
                            synapseSections,
-                           updatePosSections,
                            segmentSettings,
                            randomValues,
                            localValues);
@@ -257,7 +254,7 @@ prcessCoreSegmentKernel(BrickHeader* bricks,
 
         // handle active-state
         const bool needUpdate = neuron->active != 0 && neuron->targetSectionId == UNINIT_STATE_32;
-        UpdatePos* updatePos = &updatePosSections[neuronSectionId].positions[threadIdx.x];
+        UpdatePos* updatePos = &neuronConnections[neuronSectionId].positions[threadIdx.x];
         updatePos->type = needUpdate;
         updatePos->offset = 0.0f;
     }
@@ -271,7 +268,6 @@ prcessOutputKernel(BrickHeader* bricks,
                    NeuronSection* neuronSections,
                    SynapseConnection* synapseConnections,
                    SynapseSection* synapseSections,
-                   UpdatePosSection* updatePosSections,
                    SegmentSettings* segmentSettings,
                    float* outputTransfers,
                    const uint* randomValues,
@@ -292,7 +288,6 @@ prcessOutputKernel(BrickHeader* bricks,
                            neuronSections,
                            synapseConnections,
                            synapseSections,
-                           updatePosSections,
                            segmentSettings,
                            randomValues,
                            localValues);
@@ -312,7 +307,7 @@ prcessOutputKernel(BrickHeader* bricks,
 __global__ void
 prcessInputKernel(BrickHeader* bricks,
                   NeuronSection* neuronSections,
-                  UpdatePosSection* updatePosSections,
+                  NeuronConnection* neuronConnections,
                   float* inputTransfers,
                   const uint32_t brickId)
 {
@@ -327,7 +322,7 @@ prcessInputKernel(BrickHeader* bricks,
 
         // handle active-state
         const bool needUpdate = neuron->active != 0 && neuron->targetSectionId == UNINIT_STATE_32;
-        UpdatePos* updatePos = &updatePosSections[blockIdx.x].positions[threadIdx.x];
+        UpdatePos* updatePos = &neuronConnections[blockIdx.x].positions[threadIdx.x];
         updatePos->type = needUpdate;
         updatePos->offset = 0.0f;
     }
@@ -454,7 +449,6 @@ struct PointerHandler
     SegmentSettings* segmentSettings = nullptr;
     float* inputTransfers = nullptr;
     float* outputTransfers = nullptr;
-    UpdatePosSection* updatePosSections = nullptr;
     uint32_t* randomValues = nullptr;
     NeuronConnection* neuronConnections = nullptr;
     SynapseConnection* synapseConnections = nullptr;
@@ -469,7 +463,6 @@ copyToDevice_CUDA(PointerHandler* gpuPointer,
                   uint32_t* brickOrder,
                   NeuronSection* neuronSections,
                   SynapseSection* synapseSections,
-                  UpdatePosSection* updatePosSections,
                   SynapseConnection* synapseConnections,
                   NeuronConnection* neuronConnections,
                   float* inputTransfers,
@@ -483,7 +476,6 @@ copyToDevice_CUDA(PointerHandler* gpuPointer,
     cudaMalloc(&gpuPointer->segmentSettings,    1                                         * sizeof(SegmentSettings));
     cudaMalloc(&gpuPointer->inputTransfers,     segmentHeader->numberOfInputTransfers     * sizeof(float));
     cudaMalloc(&gpuPointer->outputTransfers,    segmentHeader->numberOfOutputTransfers    * sizeof(float));
-    cudaMalloc(&gpuPointer->updatePosSections,  segmentHeader->numberOfUpdatePosSections  * sizeof(UpdatePosSection));
     cudaMalloc(&gpuPointer->randomValues,       NUMBER_OF_RAND_VALUES                     * sizeof(uint32_t));
     cudaMalloc(&gpuPointer->neuronConnections,  segmentHeader->numberOfNeuronSections     * sizeof(NeuronConnection));
     cudaMalloc(&gpuPointer->synapseConnections, segmentHeader->numberOfSynapseSections    * sizeof(SynapseConnection));
@@ -495,7 +487,6 @@ copyToDevice_CUDA(PointerHandler* gpuPointer,
     cudaMemcpy(gpuPointer->segmentSettings,    segmentSettings,    1                                        * sizeof(SegmentSettings),   cudaMemcpyHostToDevice);
     cudaMemcpy(gpuPointer->inputTransfers,     inputTransfers,     segmentHeader->numberOfInputTransfers    * sizeof(float),             cudaMemcpyHostToDevice);
     cudaMemcpy(gpuPointer->outputTransfers,    outputTransfers,    segmentHeader->numberOfOutputTransfers   * sizeof(float),             cudaMemcpyHostToDevice);
-    cudaMemcpy(gpuPointer->updatePosSections,  updatePosSections,  segmentHeader->numberOfUpdatePosSections * sizeof(UpdatePosSection),  cudaMemcpyHostToDevice);
     cudaMemcpy(gpuPointer->randomValues,       randomValues,       NUMBER_OF_RAND_VALUES                    * sizeof(uint32_t),          cudaMemcpyHostToDevice);
     cudaMemcpy(gpuPointer->neuronConnections,  neuronConnections,  segmentHeader->numberOfNeuronSections    * sizeof(NeuronConnection),  cudaMemcpyHostToDevice);
     cudaMemcpy(gpuPointer->synapseConnections, synapseConnections, segmentHeader->numberOfSynapseSections   * sizeof(SynapseConnection), cudaMemcpyHostToDevice);
@@ -526,7 +517,7 @@ processing_CUDA(PointerHandler* gpuPointer,
             prcessInputKernel<<<brick->numberOfNeuronSections, NEURONS_PER_NEURONSECTION>>>(
                 gpuPointer->bricks,
                 gpuPointer->neuronSections,
-                gpuPointer->updatePosSections,
+                gpuPointer->neuronConnections,
                 gpuPointer->inputTransfers,
                 brickId);
         }
@@ -545,7 +536,6 @@ processing_CUDA(PointerHandler* gpuPointer,
                 gpuPointer->neuronSections,
                 gpuPointer->synapseConnections,
                 gpuPointer->synapseSections,
-                gpuPointer->updatePosSections,
                 gpuPointer->segmentSettings,
                 gpuPointer->inputTransfers,
                 gpuPointer->outputTransfers,
@@ -566,7 +556,6 @@ processing_CUDA(PointerHandler* gpuPointer,
                 gpuPointer->neuronSections,
                 gpuPointer->synapseConnections,
                 gpuPointer->synapseSections,
-                gpuPointer->updatePosSections,
                 gpuPointer->segmentSettings,
                 gpuPointer->outputTransfers,
                 gpuPointer->randomValues,
@@ -589,7 +578,7 @@ backpropagation_CUDA(PointerHandler* gpuPointer,
                      BrickHeader* bricks,
                      float* inputTransfers,
                      float* outputTransfers,
-                     UpdatePosSection* updatePosSections,
+                     NeuronConnection* neuronConnections,
                      const uint32_t numberOfNeuronSections)
 {
     cudaMemcpy(gpuPointer->inputTransfers,
@@ -631,9 +620,9 @@ backpropagation_CUDA(PointerHandler* gpuPointer,
                gpuPointer->outputTransfers,
                segmentHeader->numberOfOutputTransfers * sizeof(float),
                cudaMemcpyDeviceToHost);
-    cudaMemcpy(updatePosSections,
-               gpuPointer->updatePosSections,
-               segmentHeader->numberOfUpdatePosSections * sizeof(UpdatePosSection),
+    cudaMemcpy(neuronConnections,
+               gpuPointer->neuronConnections,
+               segmentHeader->numberOfNeuronConnections * sizeof(NeuronConnection),
                cudaMemcpyDeviceToHost);
 }
 
@@ -641,16 +630,10 @@ extern "C"
 void
 update_CUDA(PointerHandler* gpuPointer,
             SegmentSizes* segmentHeader,
-            UpdatePosSection* updatePosSections,
             NeuronSection* neuronSections,
             SynapseConnection* synapseConnections,
             NeuronConnection* neuronConnections)
 {
-    cudaMemcpy(gpuPointer->updatePosSections,
-               updatePosSections,
-               segmentHeader->numberOfUpdatePosSections * sizeof(UpdatePosSection),
-               cudaMemcpyHostToDevice);
-
     cudaMemcpy(gpuPointer->neuronSections,
                neuronSections,
                segmentHeader->numberOfNeuronSections * sizeof(NeuronSection),

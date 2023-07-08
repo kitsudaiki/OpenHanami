@@ -100,6 +100,38 @@ struct NeuronSection
 
 //==================================================================================================
 
+struct UpdatePos
+{
+    uint32_t type = 0;
+    uint32_t randomPos = UNINIT_STATE_32;
+    float offset = 0.0f;
+    uint8_t padding[4];
+    // total size: 16 Byte
+};
+
+//==================================================================================================
+
+struct NeuronConnection
+{
+    uint32_t backwardIds[512];
+    UpdatePos positions[NEURONS_PER_NEURONSECTION];
+    uint32_t numberOfPositions = 0;
+    uint8_t padding[12];
+
+    NeuronConnection()
+    {
+        for(uint32_t i = 0; i < 512; i++) {
+            backwardIds[i] = UNINIT_STATE_32;
+        }
+        for(uint32_t i = 0; i < NEURONS_PER_NEURONSECTION; i++) {
+            positions[i] = UpdatePos();
+        }
+    }
+    // total size: 3072 Byte
+};
+
+//==================================================================================================
+
 struct Synapse
 {
     float weight = 0.0f;
@@ -149,34 +181,6 @@ struct SynapseSection
 
 //==================================================================================================
 
-struct UpdatePos
-{
-    uint32_t type = 0;
-    uint32_t randomPos = UNINIT_STATE_32;
-    float offset = 0.0f;
-    uint8_t padding[4];
-    // total size: 16 Byte
-};
-
-//==================================================================================================
-
-struct UpdatePosSection
-{
-    UpdatePos positions[NEURONS_PER_NEURONSECTION];
-    uint32_t numberOfPositions = 0;
-    uint8_t padding[12];
-
-    UpdatePosSection()
-    {
-        for(uint32_t i = 0; i < NEURONS_PER_NEURONSECTION; i++) {
-            positions[i] = UpdatePos();
-        }
-    }
-    // total size: 1024 Byte
-};
-
-//==================================================================================================
-
 struct SegmentSettings
 {
     uint64_t maxSynapseSections = 0;
@@ -197,27 +201,6 @@ struct SegmentSettings
     // total size: 256 Byte
 };
 
-struct TempObj
-{
-    float values[512][64];
-    // total size: 128 KiByte
-};
-
-//==================================================================================================
-
-struct NeuronConnection
-{
-    uint32_t backwardIds[512];
-
-    NeuronConnection()
-    {
-        for(uint32_t i = 0; i < 512; i++) {
-            backwardIds[i] = UNINIT_STATE_32;
-        }
-    }
-    // total size: 2048 Byte
-};
-
 //==================================================================================================
 
 struct SegmentSizes
@@ -228,7 +211,7 @@ struct SegmentSizes
     uint32_t numberOfBricks = 0;
     uint32_t numberOfInputs = 0;
     uint32_t numberOfOutputs = 0;
-    uint32_t numberOfUpdatePosSections = 0;
+    uint32_t numberOfNeuronConnections = 0;
     uint32_t numberOfNeuronSections = 0;
     uint32_t numberOfSynapseSections = 0;
     // total size: 32 Byte

@@ -40,7 +40,7 @@ validateStructSizes()
     assert(sizeof(BrickHeader) == 32);
     assert(sizeof(SynapseSection) == 512);
     assert(sizeof(Synapse) == 16);
-    assert(sizeof(UpdatePosSection) == 1024);
+    assert(sizeof(NeuronConnection) == 3072);
     assert(sizeof(UpdatePos) == 16);
     assert(sizeof(NeuronSection) == 2048);
     assert(sizeof(Neuron) == 32);
