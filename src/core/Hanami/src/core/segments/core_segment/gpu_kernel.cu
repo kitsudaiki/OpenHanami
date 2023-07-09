@@ -24,6 +24,7 @@
 #include <chrono>
 
 #include "objects.h"
+#include "../brick.h"
 
 //==================================================================================================
 //==================================================================================================
@@ -135,11 +136,6 @@ prcessNeuronConnection(const uint neuronSectionId,
                        const uint* randomValues,
                        float* localMem)
 {
-    // reset weight of neurons
-    if(threadIdx.x < targetNeuronSection->numberOfNeurons) {
-        targetNeuronSection->neurons[threadIdx.x].input = 0.0f;
-    }
-
     for(uint sectionPos = threadIdx.x;
         sectionPos < NEURON_CONNECTIONS;
         sectionPos += blockDim.x)
@@ -185,42 +181,24 @@ prcessNeuronConnection(const uint neuronSectionId,
 
 //==================================================================================================
 
-__device__ __forceinline__ void
-resetLocalMemory(float* localMem, const int localSize)
-{
-    // reset local memory
-    for(uint i = threadIdx.x;
-        i < localSize;
-        i += blockDim.x)
-    {
-        localMem[i] = 0.0f;
-    }
-}
-
-//==================================================================================================
-
 /**
  * @brief process all neurons within a segment
  */
 __global__ void
-prcessCoreSegmentKernel(BrickHeader* bricks,
-                        NeuronConnection* neuronConnections,
+prcessCoreSegmentKernel(NeuronConnection* neuronConnections,
                         NeuronSection* neuronSections,
                         SynapseConnection* synapseConnections,
                         SynapseSection* synapseSections,
                         SegmentSettings* segmentSettings,
                         float* inputTransfers,
                         float* outputTransfers,
-                        const uint* randomValues,
-                        const ulong brickId)
+                        const uint32_t* randomValues,
+                        const uint32_t neuronSectionPos)
 {
     __shared__ uint8_t localMem[4096 * sizeof(float)];
     float* localValues = (float*)&localMem[0];
 
-    resetLocalMemory(localValues, blockDim.x * NEURONS_PER_NEURONSECTION);
-
-    BrickHeader* brick = &bricks[brickId];
-    const uint32_t neuronSectionId = brick->neuronSectionPos + blockIdx.x;
+    const uint32_t neuronSectionId = neuronSectionPos + blockIdx.x;
     NeuronSection* neuronSection = &neuronSections[neuronSectionId];
 
     prcessNeuronConnection(neuronSectionId,
@@ -263,25 +241,20 @@ prcessCoreSegmentKernel(BrickHeader* bricks,
 //==================================================================================================
 
 __global__ void
-prcessOutputKernel(BrickHeader* bricks,
-                   NeuronConnection* neuronConnections,
+prcessOutputKernel(NeuronConnection* neuronConnections,
                    NeuronSection* neuronSections,
                    SynapseConnection* synapseConnections,
                    SynapseSection* synapseSections,
                    SegmentSettings* segmentSettings,
                    float* outputTransfers,
                    const uint* randomValues,
-                   const uint32_t brickId)
+                   const uint32_t neuronSectionPos)
 {
     __shared__ uint8_t localMem[4096 * sizeof(float)];
     float* localValues = (float*)&localMem[0];
 
-    resetLocalMemory(localValues, blockDim.x * NEURONS_PER_NEURONSECTION);
-
-    BrickHeader* brick = &bricks[brickId];
-    const uint32_t neuronSectionId = brick->neuronSectionPos + blockIdx.x;
+    const uint32_t neuronSectionId = neuronSectionPos + blockIdx.x;
     NeuronSection* neuronSection = &neuronSections[neuronSectionId];
-
     prcessNeuronConnection(neuronSectionId,
                            neuronSection,
                            neuronConnections,
@@ -305,14 +278,12 @@ prcessOutputKernel(BrickHeader* bricks,
 //==================================================================================================
 
 __global__ void
-prcessInputKernel(BrickHeader* bricks,
-                  NeuronSection* neuronSections,
+prcessInputKernel(NeuronSection* neuronSections,
                   NeuronConnection* neuronConnections,
                   float* inputTransfers,
-                  const uint32_t brickId)
+                  const uint32_t neuronSectionPos)
 {
-    BrickHeader* brick = &bricks[brickId];
-    NeuronSection* neuronSection = &neuronSections[brick->neuronSectionPos + blockIdx.x];
+    NeuronSection* neuronSection = &neuronSections[neuronSectionPos + blockIdx.x];
 
     if(threadIdx.x < neuronSection->numberOfNeurons)
     {
@@ -340,7 +311,6 @@ backpropagateSection(SynapseSection* section,
                      SynapseConnection* connection,
                      Neuron* sourceNeuron,
                      const float outH,
-                     const BrickHeader* brick,
                      NeuronSection* neuronSections,
                      SynapseConnection* synapseConnections,
                      SynapseSection* synapseSections)
@@ -378,17 +348,16 @@ backpropagateSection(SynapseSection* section,
  * @brief correct weight of synapses within a segment
  */
 __global__ void
-reweightCoreSegmentKernel(BrickHeader* bricks,
-                          NeuronSection* neuronSections,
+reweightCoreSegmentKernel(NeuronSection* neuronSections,
                           SynapseConnection* synapseConnections,
                           SynapseSection* synapseSections,
                           SegmentSettings* segmentSettings,
                           float* inputTransfers,
                           float* outputTransfers,
-                          const ulong brickId)
+                          const uint32_t neuronSectionPos,
+                          const bool isInputBrick)
 {
-    BrickHeader* brick = &bricks[brickId];
-    const uint32_t neuronSectionId = brick->neuronSectionPos + blockIdx.x;
+    const uint32_t neuronSectionId = neuronSectionPos + blockIdx.x;
     NeuronSection* neuronSection = &neuronSections[neuronSectionId];
 
     if(threadIdx.x < neuronSection->numberOfNeurons)
@@ -406,7 +375,6 @@ reweightCoreSegmentKernel(BrickHeader* bricks,
                                                   &synapseConnections[nextId],
                                                   sourceNeuron,
                                                   sourceNeuron->potential,
-                                                  brick,
                                                   neuronSections,
                                                   synapseConnections,
                                                   synapseSections);
@@ -415,7 +383,7 @@ reweightCoreSegmentKernel(BrickHeader* bricks,
                 sourceNeuron->delta *= 1.4427f * pow(0.5f, sourceNeuron->potential);
             }
 
-            if(brick->isInputBrick) {
+            if(isInputBrick) {
                 outputTransfers[sourceNeuron->targetBorderId] = sourceNeuron->delta;
             }
         }
@@ -425,13 +393,11 @@ reweightCoreSegmentKernel(BrickHeader* bricks,
 //==================================================================================================
 
 __global__ void
-reweightOutputKernel(BrickHeader* bricks,
-                     NeuronSection* neuronSections,
+reweightOutputKernel(NeuronSection* neuronSections,
                      float* inputTransfers,
-                     const uint32_t brickId)
+                     const uint32_t neuronSectionPos)
 {
-    BrickHeader* brick = &bricks[brickId];
-    NeuronSection* neuronSection = &neuronSections[brick->neuronSectionPos + blockIdx.x];
+    NeuronSection* neuronSection = &neuronSections[neuronSectionPos + blockIdx.x];
 
     if(threadIdx.x < neuronSection->numberOfNeurons)
     {
@@ -442,8 +408,6 @@ reweightOutputKernel(BrickHeader* bricks,
 
 struct PointerHandler
 {
-    BrickHeader* bricks = nullptr;
-    uint32_t* brickOrder = nullptr;
     NeuronSection* neuronSections = nullptr;
     SynapseSection* synapseSections = nullptr;
     SegmentSettings* segmentSettings = nullptr;
@@ -459,8 +423,6 @@ void
 copyToDevice_CUDA(PointerHandler* gpuPointer,
                   SegmentSizes* segmentHeader,
                   SegmentSettings* segmentSettings,
-                  BrickHeader* brickHeaders,
-                  uint32_t* brickOrder,
                   NeuronSection* neuronSections,
                   SynapseSection* synapseSections,
                   SynapseConnection* synapseConnections,
@@ -469,8 +431,6 @@ copyToDevice_CUDA(PointerHandler* gpuPointer,
                   float* outputTransfers,
                   uint32_t* randomValues)
 {
-    cudaMalloc(&gpuPointer->bricks,             segmentHeader->numberOfBricks             * sizeof(BrickHeader));
-    cudaMalloc(&gpuPointer->brickOrder,         segmentHeader->numberOfBricks             * sizeof(uint32_t));
     cudaMalloc(&gpuPointer->neuronSections,     segmentHeader->numberOfNeuronSections     * sizeof(NeuronSection));
     cudaMalloc(&gpuPointer->synapseSections,    segmentHeader->numberOfSynapseSections    * sizeof(SynapseSection));
     cudaMalloc(&gpuPointer->segmentSettings,    1                                         * sizeof(SegmentSettings));
@@ -480,8 +440,6 @@ copyToDevice_CUDA(PointerHandler* gpuPointer,
     cudaMalloc(&gpuPointer->neuronConnections,  segmentHeader->numberOfNeuronSections     * sizeof(NeuronConnection));
     cudaMalloc(&gpuPointer->synapseConnections, segmentHeader->numberOfSynapseSections    * sizeof(SynapseConnection));
 
-    cudaMemcpy(gpuPointer->bricks,             brickHeaders,       segmentHeader->numberOfBricks            * sizeof(BrickHeader),       cudaMemcpyHostToDevice);
-    cudaMemcpy(gpuPointer->brickOrder,         brickOrder,         segmentHeader->numberOfBricks            * sizeof(uint32_t),          cudaMemcpyHostToDevice);
     cudaMemcpy(gpuPointer->neuronSections,     neuronSections,     segmentHeader->numberOfNeuronSections    * sizeof(NeuronSection),     cudaMemcpyHostToDevice);
     cudaMemcpy(gpuPointer->synapseSections,    synapseSections,    segmentHeader->numberOfSynapseSections   * sizeof(SynapseSection),    cudaMemcpyHostToDevice);
     cudaMemcpy(gpuPointer->segmentSettings,    segmentSettings,    1                                        * sizeof(SegmentSettings),   cudaMemcpyHostToDevice);
@@ -498,7 +456,7 @@ void
 processing_CUDA(PointerHandler* gpuPointer,
                 SegmentSizes* segmentHeader,
                 uint32_t* brickOrder,
-                BrickHeader* bricks,
+                Brick* bricks,
                 float* inputTransfers,
                 float* outputTransfers,
                 const uint32_t numberOfNeuronSections)
@@ -510,28 +468,24 @@ processing_CUDA(PointerHandler* gpuPointer,
 
     for(uint32_t pos = 0; pos < segmentHeader->numberOfBricks; pos++)
     {
-        const uint32_t brickId = brickOrder[pos];
-        BrickHeader* brick = &bricks[brickId];
+        Brick* brick = &bricks[pos];
         if(brick->isInputBrick == true)
         {
             prcessInputKernel<<<brick->numberOfNeuronSections, NEURONS_PER_NEURONSECTION>>>(
-                gpuPointer->bricks,
                 gpuPointer->neuronSections,
                 gpuPointer->neuronConnections,
                 gpuPointer->inputTransfers,
-                brickId);
+                brick->neuronSectionPos);
         }
     }
 
     for(uint32_t pos = 0; pos < segmentHeader->numberOfBricks; pos++)
     {
-        const uint32_t brickId = brickOrder[pos];
-        BrickHeader* brick = &bricks[brickId];
+        Brick* brick = &bricks[brickOrder[pos]];
         if(brick->isInputBrick == false
                 && brick->isOutputBrick == false)
         {
             prcessCoreSegmentKernel<<<brick->numberOfNeuronSections, 64>>>(
-                gpuPointer->bricks,
                 gpuPointer->neuronConnections,
                 gpuPointer->neuronSections,
                 gpuPointer->synapseConnections,
@@ -540,18 +494,16 @@ processing_CUDA(PointerHandler* gpuPointer,
                 gpuPointer->inputTransfers,
                 gpuPointer->outputTransfers,
                 gpuPointer->randomValues,
-                brickId);
+                brick->neuronSectionPos);
         }
     }
 
     for(uint32_t pos = 0; pos < segmentHeader->numberOfBricks; pos++)
     {
-        const uint32_t brickId = brickOrder[pos];
-        BrickHeader* brick = &bricks[brickId];
+        Brick* brick = &bricks[pos];
         if(brick->isOutputBrick == true)
         {
             prcessOutputKernel<<<brick->numberOfNeuronSections, 64>>>(
-                gpuPointer->bricks,
                 gpuPointer->neuronConnections,
                 gpuPointer->neuronSections,
                 gpuPointer->synapseConnections,
@@ -559,7 +511,7 @@ processing_CUDA(PointerHandler* gpuPointer,
                 gpuPointer->segmentSettings,
                 gpuPointer->outputTransfers,
                 gpuPointer->randomValues,
-                brickId);
+                brick->neuronSectionPos);
         }
     }
 
@@ -575,7 +527,7 @@ void
 backpropagation_CUDA(PointerHandler* gpuPointer,
                      SegmentSizes* segmentHeader,
                      uint32_t* brickOrder,
-                     BrickHeader* bricks,
+                     Brick* bricks,
                      float* inputTransfers,
                      float* outputTransfers,
                      NeuronConnection* neuronConnections,
@@ -586,33 +538,30 @@ backpropagation_CUDA(PointerHandler* gpuPointer,
                segmentHeader->numberOfInputTransfers * sizeof(float),
                cudaMemcpyHostToDevice);
 
-    for(uint32_t pos = 0; pos < segmentHeader->numberOfBricks; pos++)
+    for(int32_t pos = segmentHeader->numberOfBricks - 1; pos >= 0; pos--)
     {
-        const uint32_t brickId = brickOrder[pos];
-        BrickHeader* brick = &bricks[brickId];
+        Brick* brick = &bricks[pos];
         if(brick->isOutputBrick == true)
         {
             reweightOutputKernel<<<brick->numberOfNeuronSections, NEURONS_PER_NEURONSECTION>>> (
-                gpuPointer->bricks,
                 gpuPointer->neuronSections,
                 gpuPointer->inputTransfers,
-                brickId);
+                brick->neuronSectionPos);
         }
     }
 
     for(int32_t pos = segmentHeader->numberOfBricks - 1; pos >= 0; pos--)
     {
-        const uint32_t brickId = brickOrder[pos];
-        BrickHeader* brick = &bricks[brickId];
+        Brick* brick = &bricks[brickOrder[pos]];
         reweightCoreSegmentKernel<<<brick->numberOfNeuronSections, 64>>>(
-            gpuPointer->bricks,
             gpuPointer->neuronSections,
             gpuPointer->synapseConnections,
             gpuPointer->synapseSections,
             gpuPointer->segmentSettings,
             gpuPointer->inputTransfers,
             gpuPointer->outputTransfers,
-            brickId);
+            brick->neuronSectionPos,
+            brick->isInputBrick);
     }
 
     cudaDeviceSynchronize();

@@ -49,7 +49,7 @@ void
 processing_CUDA(PointerHandler* gpuPointer,
                 SegmentSizes* segmentHeader,
                 uint32_t* brickOrder,
-                BrickHeader* bricks,
+                Brick* bricks,
                 float* inputTransfers,
                 float* outputTransfers,
                 const uint32_t numberOfNeuronSections);
@@ -59,7 +59,7 @@ void
 backpropagation_CUDA(PointerHandler* gpuPointer,
                      SegmentSizes* segmentHeader,
                      uint32_t* brickOrder,
-                     BrickHeader* bricks,
+                     Brick* bricks,
                      float* inputTransfers,
                      float* outputTransfers,
                      NeuronConnection* neuronConnections,
@@ -95,8 +95,7 @@ void
 CpuProcessingUnit::learnSegmentForward(AbstractSegment* segment)
 {
     Kitsunemimi::ErrorContainer error;
-    std::chrono::high_resolution_clock::time_point start;
-    std::chrono::high_resolution_clock::time_point end;
+
     switch(segment->getType())
     {
         case CORE_SEGMENT:
@@ -115,7 +114,7 @@ CpuProcessingUnit::learnSegmentForward(AbstractSegment* segment)
                 processing_CUDA(&seg->gpuPointer,
                                 &seg->segmentSizes,
                                 seg->brickOrder,
-                                seg->brickHeaders,
+                                seg->bricks,
                                 seg->inputTransfers,
                                 seg->outputTransfers,
                                 seg->numberOfNeuronSections);
@@ -185,7 +184,7 @@ CpuProcessingUnit::learnSegmentBackward(AbstractSegment* segment)
                 backpropagation_CUDA(&seg->gpuPointer,
                                      &seg->segmentSizes,
                                      seg->brickOrder,
-                                     seg->brickHeaders,
+                                     seg->bricks,
                                      seg->inputTransfers,
                                      seg->outputTransfers,
                                      seg->neuronConnections,
@@ -254,7 +253,7 @@ CpuProcessingUnit::processSegment(AbstractSegment* segment)
                 processing_CUDA(&seg->gpuPointer,
                                 &seg->segmentSizes,
                                 seg->brickOrder,
-                                seg->brickHeaders,
+                                seg->bricks,
                                 seg->inputTransfers,
                                 seg->outputTransfers,
                                 seg->numberOfNeuronSections);

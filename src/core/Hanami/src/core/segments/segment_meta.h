@@ -51,7 +51,7 @@ struct SegmentHeader
     uint8_t padding;
     uint32_t segmentID = UNINIT_STATE_32;
     uint64_t staticDataSize = 0;
-    Kitsunemimi::Hanami::Position position;
+    Kitsunemimi::Position position;
 
     kuuid parentClusterId;
 

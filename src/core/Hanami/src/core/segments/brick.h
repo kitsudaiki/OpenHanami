@@ -23,17 +23,23 @@
 #ifndef HANAMI_BRICK_H
 #define HANAMI_BRICK_H
 
-#include <common.h>
-#include <hanami_root.h>
 #include "core_segment/objects.h"
-#include <libKitsunemimiHanamiSegmentParser/segment_meta.h>
+
+#include <libKitsunemimiCommon/structs.h>
 
 struct Brick
 {
     // common
-    BrickHeader header = BrickHeader();
+    uint32_t brickId = UNINIT_STATE_32;
+    bool isOutputBrick = false;
+    bool isInputBrick = false;
+    uint8_t padding1[14];
+    uint32_t neuronSectionPos = UNINIT_STATE_32;
 
-    Kitsunemimi::Hanami::Position brickPos;
+    uint32_t numberOfNeurons = 0;
+    uint32_t numberOfNeuronSections = 0;
+
+    Kitsunemimi::Position brickPos;
     uint32_t neighbors[12];
     uint32_t possibleTargetNeuronBrickIds[1000];
 

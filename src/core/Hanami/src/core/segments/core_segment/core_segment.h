@@ -36,16 +36,17 @@ class GpuData;
 
 struct PointerHandler
 {
-    BrickHeader* bricks = nullptr;
-    uint32_t* brickOrder = nullptr;
     NeuronSection* neuronSections = nullptr;
+    NeuronConnection* neuronConnections = nullptr;
+
     SynapseSection* synapseSections = nullptr;
+    SynapseConnection* synapseConnections = nullptr;
+
     SegmentSettings* segmentSettings = nullptr;
+    uint32_t* randomValues = nullptr;
+
     float* inputTransfers = nullptr;
     float* outputTransfers = nullptr;
-    uint32_t* randomValues = nullptr;
-    NeuronConnection* neuronConnections = nullptr;
-    SynapseConnection* synapseConnections = nullptr;
 };
 
 class CoreSegment
@@ -67,7 +68,6 @@ public:
 
     SynapseConnection* synapseConnections = nullptr;
     NeuronConnection* neuronConnections = nullptr;
-    BrickHeader* brickHeaders = nullptr;
     SegmentSizes segmentSizes;
 
     uint32_t numberOfNeuronSections = 1;

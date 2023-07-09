@@ -41,7 +41,6 @@ struct NextSides
     uint8_t sides[5];
 };
 
-
 struct ResponseMessage
 {
     bool success = false;
@@ -73,49 +72,6 @@ struct UserContext
         isAdmin = inputContext.getBoolByKey("is_admin");
         isProjectAdmin = inputContext.getBoolByKey("is_project_admin");
         token = inputContext.getStringByKey("token");
-    }
-};
-
-struct Position
-{
-    uint32_t x = UNINTI_POINT_32;
-    uint32_t y = UNINTI_POINT_32;
-    uint32_t z = UNINTI_POINT_32;
-    uint32_t w = UNINTI_POINT_32;
-
-    Position() {}
-
-    Position(const Position &other)
-    {
-        x = other.x;
-        y = other.y;
-        z = other.z;
-    }
-
-    Position& operator=(const Position &other)
-    {
-        if(this != &other)
-        {
-            x = other.x;
-            y = other.y;
-            z = other.z;
-        }
-
-        return *this;
-    }
-
-    bool operator==(const Position &other)
-    {
-        return(this->x == other.x
-               && this->y == other.y
-               && this->z == other.z);
-    }
-
-    bool isValid() const
-    {
-        return(x != UNINTI_POINT_32
-               && y != UNINTI_POINT_32
-               && z != UNINTI_POINT_32);
     }
 };
 

@@ -35,10 +35,10 @@
  *
  * @return position of the object, which is connected to this side
  */
-inline Kitsunemimi::Hanami::Position
-getNeighborPos(const Kitsunemimi::Hanami::Position sourcePos, const uint8_t side)
+inline Kitsunemimi::Position
+getNeighborPos(const Kitsunemimi::Position sourcePos, const uint8_t side)
 {
-    Kitsunemimi::Hanami::Position result;
+    Kitsunemimi::Position result;
 
     switch(side)
     {

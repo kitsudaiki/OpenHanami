@@ -62,4 +62,5 @@ HEADERS += \
     ../include/libKitsunemimiCommon/test_helper/memory_leak_test_helper.h \
     ../include/libKitsunemimiCommon/threading/cleanup_thread.h \
     ../include/libKitsunemimiCommon/buffer/item_buffer.h \
-    ../include/libKitsunemimiCommon/threading/event_queue.h
+    ../include/libKitsunemimiCommon/threading/event_queue.h \
+    ../include/libKitsunemimiCommon/structs.h
