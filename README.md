@@ -48,34 +48,6 @@ https://docs.hanami-ai.com
 
     https://docs.hanami-ai.com/other/1_dependencies/
 
-## Core-components
-
-for more details see [Documentation inner workings](/Inner_Workings/1_overview/)
-
-- **Kyouko**
-    - Content: Core-component, which holds the artificial neuronal networks.
-    - prebuild Docker-Image: `kitsudaiki/kyouko_mind:develop`
-
-- **Misaki**
-    - Content: Authentication-service and management of user
-    - prebuild Docker-Image: `kitsudaiki/misaki_guard:develop`
-
-- **Shiori**
-    - Content: Storage-component, which holds snapshots, logs and so on
-    - prebuild Docker-Image: `kitsudaiki/shiori_archive:develop`
-
-- **Azuki**
-    - Content: Monitoring and energy-optimization
-    - prebuild Docker-Image: `kitsudaiki/azuki_heart:develop`
-
-- **Torii**
-    - Content: Proxy for all incoming connections
-    - prebuild Docker-Image: `kitsudaiki/torii_gateway:develop`
-
-- **Dashboard**
-    - Content: Web-Frontend
-    - prebuild Docker-Image: `kitsudaiki/hanami_ai_dashboard:develop`
-
 ## Roadmap
 
 - **0.1.0**
