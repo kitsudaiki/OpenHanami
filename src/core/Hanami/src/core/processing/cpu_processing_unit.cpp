@@ -62,14 +62,13 @@ backpropagation_CUDA(PointerHandler* gpuPointer,
                      BrickHeader* bricks,
                      float* inputTransfers,
                      float* outputTransfers,
-                     UpdatePosSection* updatePosSections,
+                     NeuronConnection* neuronConnections,
                      const uint32_t numberOfNeuronSections);
 
 extern "C"
 void
 update_CUDA(PointerHandler* gpuPointer,
             SegmentSizes* segmentHeader,
-            UpdatePosSection* updatePosSections,
             NeuronSection* neuronSections,
             SynapseConnection* synapseConnections,
             NeuronConnection* neuronConnections);
@@ -103,7 +102,7 @@ CpuProcessingUnit::learnSegmentForward(AbstractSegment* segment)
         case CORE_SEGMENT:
         {
             CoreSegment* seg = static_cast<CoreSegment*>(segment);
-            if(HanamiRoot::useGpu)
+            if(HanamiRoot::useOpencl)
             {
                 HanamiRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "inputTransfers", error);
                 HanamiRoot::gpuInterface->run(*(seg->data), "prcessInput", error, seg->numberOfNeuronSections, NEURONS_PER_NEURONSECTION);
@@ -125,10 +124,6 @@ CpuProcessingUnit::learnSegmentForward(AbstractSegment* segment)
             {
                 seg->segmentSettings->doLearn = 1;
                 prcessCoreSegment(*seg);
-                if(seg->segmentSettings->updateSections != 0) {
-                    updateSections(*seg, false);
-                }
-                seg->segmentSettings->updateSections = 0;
             }
 
             seg->segmentSettings->doLearn = 0;
@@ -168,16 +163,16 @@ CpuProcessingUnit::learnSegmentBackward(AbstractSegment* segment)
         {
             CoreSegment* seg = static_cast<CoreSegment*>(segment);
 
-            if(HanamiRoot::useGpu)
+            if(HanamiRoot::useOpencl)
             {
                 HanamiRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "inputTransfers", error);
                 HanamiRoot::gpuInterface->run(*(seg->data), "reweightOutput", error, seg->numberOfNeuronSections, NEURONS_PER_NEURONSECTION);
                 HanamiRoot::gpuInterface->run(*(seg->data), "reweightCoreSegment", error, seg->numberOfNeuronSections, 64);
                 HanamiRoot::gpuInterface->copyFromDevice(*(seg->data), "outputTransfers", error);
-                HanamiRoot::gpuInterface->copyFromDevice(*(seg->data), "updatePosSections", error);
-                if(updateSections(*seg, true))
+                HanamiRoot::gpuInterface->copyFromDevice(*(seg->data), "neuronConnections", error);
+                if(updateSections_GPU(*seg))
                 {
-                    HanamiRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "updatePosSections", error);
+                    HanamiRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "neuronConnections", error);
                     HanamiRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "neuronSections", error);
                     HanamiRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "synapseConnections", error);
                     HanamiRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "neuronConnections", error);
@@ -193,14 +188,13 @@ CpuProcessingUnit::learnSegmentBackward(AbstractSegment* segment)
                                      seg->brickHeaders,
                                      seg->inputTransfers,
                                      seg->outputTransfers,
-                                     seg->updatePosSections,
+                                     seg->neuronConnections,
                                      seg->numberOfNeuronSections);
 
-                if(updateSections(*seg, true))
+                if(updateSections_GPU(*seg))
                 {
                     update_CUDA(&seg->gpuPointer,
                                 &seg->segmentSizes,
-                                seg->updatePosSections,
                                 seg->neuronSections,
                                 seg->synapseConnections,
                                 seg->neuronConnections);
@@ -247,7 +241,7 @@ CpuProcessingUnit::processSegment(AbstractSegment* segment)
         case CORE_SEGMENT:
         {
             CoreSegment* seg = static_cast<CoreSegment*>(segment);
-            if(HanamiRoot::useGpu)
+            if(HanamiRoot::useOpencl)
             {
                 HanamiRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "inputTransfers", error);
                 HanamiRoot::gpuInterface->run(*(seg->data), "prcessInput", error, seg->numberOfNeuronSections, NEURONS_PER_NEURONSECTION);

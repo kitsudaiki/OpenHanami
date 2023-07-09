@@ -72,11 +72,46 @@ createNewSection(SynapseSection &result,
  * @brief process single update-position
  */
 inline void
-processUpdatePositon(CoreSegment &segment,
-                     const uint32_t sourceNeuronSectionId,
-                     const uint32_t sourceNeuronId,
-                     const float offset,
-                     const bool useGpu)
+processUpdatePositon_CPU(CoreSegment &segment,
+                         const uint32_t sourceNeuronSectionId,
+                         const uint32_t sourceNeuronId,
+                         const float offset)
+{
+    NeuronSection* sourceNeuronSection = &segment.neuronSections[sourceNeuronSectionId];
+    Neuron* sourceNeuron = &sourceNeuronSection->neurons[sourceNeuronId];
+    Brick* currentBrick = &segment.bricks[sourceNeuronSection->brickId];
+
+    // create new section and connect it to buffer
+    SynapseSection newSection;
+    newSection.connection.sourceNeuronId = sourceNeuronId;
+    newSection.connection.sourceNeuronSectionId = sourceNeuronSectionId;
+    createNewSection(newSection, segment, *currentBrick, offset);
+
+    const uint64_t newId = segment.segmentData.addNewItem(newSection);
+    if(newId == ITEM_BUFFER_UNDEFINE_POS) {
+        return;
+    }
+
+    // connect path to new section in forward-direction
+    if(sourceNeuron->targetSectionId == UNINIT_STATE_32)
+    {
+        sourceNeuron->targetSectionId = newId;
+    }
+    else
+    {
+        const uint32_t id = getForwardLast(sourceNeuron->targetSectionId, segment.synapseSections);
+        segment.synapseSections[id].connection.forwardNextId = newId;
+    }
+}
+
+/**
+ * @brief process single update-position
+ */
+inline void
+processUpdatePositon_GPU(CoreSegment &segment,
+                         const uint32_t sourceNeuronSectionId,
+                         const uint32_t sourceNeuronId,
+                         const float offset)
 {
     NeuronSection* sourceNeuronSection = &segment.neuronSections[sourceNeuronSectionId];
     Neuron* sourceNeuron = &sourceNeuronSection->neurons[sourceNeuronId];
@@ -97,9 +132,7 @@ processUpdatePositon(CoreSegment &segment,
         return;
     }
 
-    if(useGpu) {
-        segment.synapseConnections[newId] = segment.synapseSections[newId].connection;
-    }
+    segment.synapseConnections[newId] = segment.synapseSections[newId].connection;
 
     // connect path to new section in backward-direction
     bool found = false;
@@ -132,12 +165,7 @@ processUpdatePositon(CoreSegment &segment,
     {
         const uint32_t id = getForwardLast(sourceNeuron->targetSectionId, segment.synapseSections);
         segment.synapseSections[id].connection.forwardNextId = newId;
-
-        if(useGpu)
-        {
-            //std::cout<<"new id: "<<newId<<std::endl;
-            segment.synapseConnections[id] = segment.synapseSections[id].connection;
-        }
+        segment.synapseConnections[id] = segment.synapseSections[id].connection;
     }
 }
 
@@ -145,34 +173,32 @@ processUpdatePositon(CoreSegment &segment,
  * @brief prcess update-positions in order to create new sections
  */
 inline bool
-updateSections(CoreSegment &segment,
-               const bool useGpu)
+updateSections_GPU(CoreSegment &segment)
 {
-    UpdatePosSection* sourceUpdatePosSection = nullptr;
+    NeuronConnection* sourceNeuronConnection = nullptr;
     UpdatePos* sourceUpdatePos = nullptr;
 
     bool found = false;
 
     // iterate over all neurons and add new synapse-section, if required
     for(uint32_t sourceSectionId = 0;
-        sourceSectionId < segment.segmentHeader->updatePosSections.count;
+        sourceSectionId < segment.segmentHeader->neuronSections.count;
         sourceSectionId++)
     {
-        sourceUpdatePosSection = &segment.updatePosSections[sourceSectionId];
+        sourceNeuronConnection = &segment.neuronConnections[sourceSectionId];
         for(uint32_t sourceId = 0;
-            sourceId < sourceUpdatePosSection->numberOfPositions;
+            sourceId < sourceNeuronConnection->numberOfPositions;
             sourceId++)
         {
-            sourceUpdatePos = &sourceUpdatePosSection->positions[sourceId];
+            sourceUpdatePos = &sourceNeuronConnection->positions[sourceId];
             if(sourceUpdatePos->type == 1)
             {
                 found = true;
                 sourceUpdatePos->type = 0;
-                processUpdatePositon(segment,
+                processUpdatePositon_GPU(segment,
                                          sourceSectionId,
                                          sourceId,
-                                         sourceUpdatePos->offset,
-                                         useGpu);
+                                         sourceUpdatePos->offset);
             }
         }
     }

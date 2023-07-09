@@ -60,6 +60,11 @@ CoreSegment::CoreSegment(const void* data, const uint64_t dataSize)
  */
 CoreSegment::~CoreSegment() {}
 
+/**
+ * @brief getNumberOfNeuronSections
+ * @param numberOfNeurons
+ * @return
+ */
 uint32_t
 getNumberOfNeuronSections(const uint32_t numberOfNeurons)
 {
@@ -80,7 +85,6 @@ copyToDevice_CUDA(PointerHandler* gpuPointer,
                   uint32_t* brickOrder,
                   NeuronSection* neuronSections,
                   SynapseSection* synapseSections,
-                  UpdatePosSection* updatePosSections,
                   SynapseConnection* synapseConnections,
                   NeuronConnection* neuronConnections,
                   float* inputTransfers,
@@ -90,16 +94,19 @@ copyToDevice_CUDA(PointerHandler* gpuPointer,
 void
 CoreSegment::initCuda()
 {
+    // init synapse-connections
     synapseConnections = new SynapseConnection[segmentHeader->synapseSections.count];
     for(uint32_t i = 0; i < segmentHeader->synapseSections.count; i++) {
         synapseConnections[i] = SynapseConnection();
     }
 
+    // init brick-header
     brickHeaders = new BrickHeader[segmentHeader->bricks.count];
     for(uint32_t i = 0; i < segmentHeader->bricks.count; i++) {
         brickHeaders[i] = bricks[i].header;
     }
 
+    // init sizes
     segmentSizes.numberOfBricks = segmentHeader->bricks.count;
     segmentSizes.numberOfInputTransfers = segmentHeader->inputTransfers.count;
     segmentSizes.numberOfOutputTransfers = segmentHeader->outputTransfers.count;
@@ -107,7 +114,7 @@ CoreSegment::initCuda()
     segmentSizes.numberOfOutputs = segmentHeader->outputs.count;
     segmentSizes.numberOfNeuronSections = segmentHeader->neuronSections.count;
     segmentSizes.numberOfSynapseSections = segmentHeader->synapseSections.count;
-    segmentSizes.numberOfUpdatePosSections = segmentHeader->updatePosSections.count;
+    segmentSizes.numberOfNeuronConnections = segmentHeader->neuronSections.count;
 
     copyToDevice_CUDA(&gpuPointer,
                       &segmentSizes,
@@ -116,7 +123,6 @@ CoreSegment::initCuda()
                       brickOrder,
                       neuronSections,
                       synapseSections,
-                      updatePosSections,
                       synapseConnections,
                       neuronConnections,
                       inputTransfers,
@@ -128,132 +134,116 @@ CoreSegment::initCuda()
  * @brief DynamicSegment::initGpu
  */
 void
-CoreSegment::initGpu()
+CoreSegment::initOpencl(Kitsunemimi::GpuData &data)
 {
     Kitsunemimi::ErrorContainer error;
 
     // create data-object
-    data = new Kitsunemimi::GpuData();
-    data->numberOfWg.x = 1;
-    data->threadsPerWg.x = 1;
-    const std::string kernelString(reinterpret_cast<const char*>(gpu_kernel_cl),
-                                   gpu_kernel_cl_len);
-    if(HanamiRoot::gpuInterface->addKernel(*data,
-                                           "prcessCoreSegment",
-                                           kernelString,
-                                           error) == false)
+    data.numberOfWg.x = 1;
+    data.threadsPerWg.x = 1;
+    Kitsunemimi::GpuInterface* gpuInterface = HanamiRoot::gpuInterface;
+    const std::string kernelString(reinterpret_cast<const char*>(gpu_kernel_cl), gpu_kernel_cl_len);
+
+    if(gpuInterface->addKernel(data, "prcessCoreSegment", kernelString, error) == false)
     {
         LOG_ERROR(error);
         error._errorMessages.clear();
     }
 
-    if(HanamiRoot::gpuInterface->addKernel(*data,
-                                           "reweightCoreSegment",
-                                           kernelString,
-                                           error) == false)
+    if(gpuInterface->addKernel(data, "reweightCoreSegment", kernelString, error) == false)
     {
         LOG_ERROR(error);
         error._errorMessages.clear();
     }
 
-    if(HanamiRoot::gpuInterface->addKernel(*data,
-                                           "reweightOutput",
-                                           kernelString,
-                                           error) == false)
+    if(gpuInterface->addKernel(data, "reweightOutput", kernelString, error) == false)
     {
         LOG_ERROR(error);
         error._errorMessages.clear();
     }
 
-    if(HanamiRoot::gpuInterface->addKernel(*data,
-                                           "prcessInput",
-                                           kernelString,
-                                           error) == false)
+    if(gpuInterface->addKernel(data, "prcessInput", kernelString, error) == false)
     {
         LOG_ERROR(error);
         error._errorMessages.clear();
     }
 
-    if(HanamiRoot::gpuInterface->addKernel(*data,
-                                           "prcessOutput",
-                                           kernelString,
-                                           error) == false)
+    if(gpuInterface->addKernel(data, "prcessOutput", kernelString, error) == false)
     {
         LOG_ERROR(error);
         error._errorMessages.clear();
     }
 
-    assert(data->addBuffer("brickOrder",             segmentHeader->brickOrder.count,         sizeof(uint32_t),               false, brickOrder                ));
-    assert(data->addBuffer("neuronSections",         segmentHeader->neuronSections.count,     sizeof(NeuronSection),          false, neuronSections            ));
-    assert(data->addBuffer("synapseSections",        segmentHeader->synapseSections.count,    sizeof(SynapseSection),         false, synapseSections           ));
-    assert(data->addBuffer("segmentSettings",        1,                                       sizeof(SegmentSettings),        false, segmentSettings           ));
-    assert(data->addBuffer("inputTransfers",         segmentHeader->inputTransfers.count,     sizeof(float),                  false, inputTransfers            ));
-    assert(data->addBuffer("outputTransfers",        segmentHeader->outputTransfers.count,    sizeof(float),                  false, outputTransfers           ));
-    assert(data->addBuffer("updatePosSections",      segmentHeader->updatePosSections.count,  sizeof(UpdatePosSection),       false, updatePosSections         ));
-    assert(data->addBuffer("randomValues",           NUMBER_OF_RAND_VALUES,                   sizeof(uint32_t),               false, HanamiRoot::m_randomValues));
-    assert(data->addBuffer("neuronConnections",      segmentHeader->neuronSections.count,     sizeof(NeuronConnection),       false, neuronConnections));
+    assert(data.addBuffer("brickOrder",             segmentHeader->brickOrder.count,         sizeof(uint32_t),               false, brickOrder                ));
+    assert(data.addBuffer("neuronSections",         segmentHeader->neuronSections.count,     sizeof(NeuronSection),          false, neuronSections            ));
+    assert(data.addBuffer("synapseSections",        segmentHeader->synapseSections.count,    sizeof(SynapseSection),         false, synapseSections           ));
+    assert(data.addBuffer("segmentSettings",        1,                                       sizeof(SegmentSettings),        false, segmentSettings           ));
+    assert(data.addBuffer("inputTransfers",         segmentHeader->inputTransfers.count,     sizeof(float),                  false, inputTransfers            ));
+    assert(data.addBuffer("outputTransfers",        segmentHeader->outputTransfers.count,    sizeof(float),                  false, outputTransfers           ));
+    assert(data.addBuffer("randomValues",           NUMBER_OF_RAND_VALUES,                   sizeof(uint32_t),               false, HanamiRoot::m_randomValues));
+    assert(data.addBuffer("neuronConnections",      segmentHeader->neuronSections.count,     sizeof(NeuronConnection),       false, neuronConnections));
 
-    assert(data->addBuffer("synapseConnections",     segmentHeader->synapseSections.count,    sizeof(SynapseConnection),      false));
-    synapseConnections = static_cast<SynapseConnection*>(data->getBufferData("synapseConnections"));
+    assert(data.addBuffer("synapseConnections",     segmentHeader->synapseSections.count,    sizeof(SynapseConnection),      false));
+    synapseConnections = static_cast<SynapseConnection*>(data.getBufferData("synapseConnections"));
     for(uint32_t i = 0; i < segmentHeader->synapseSections.count; i++) {
         synapseConnections[i] = SynapseConnection();
     }
 
-    assert(data->addBuffer("bricks",                 segmentHeader->bricks.count,             sizeof(BrickHeader),                  false));
-    brickHeaders = static_cast<BrickHeader*>(data->getBufferData("bricks"));
+    assert(data.addBuffer("bricks",                 segmentHeader->bricks.count,             sizeof(BrickHeader),                  false));
+    brickHeaders = static_cast<BrickHeader*>(data.getBufferData("bricks"));
     for(uint32_t i = 0; i < segmentHeader->bricks.count; i++) {
         brickHeaders[i] = bricks[i].header;
     }
 
-    if(HanamiRoot::gpuInterface->initCopyToDevice(*data, error) == false) {
+    if(gpuInterface->initCopyToDevice(data, error) == false) {
         LOG_ERROR(error);
     }
 
-    data->addValue("numberOfBricks", segmentHeader->bricks.count);
+    data.addValue("numberOfBricks", segmentHeader->bricks.count);
 
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "bricks",                 error));
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "brickOrder",             error));
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "neuronConnections",      error));
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "neuronSections",         error));
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "synapseConnections",     error));
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "synapseSections",        error));
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "updatePosSections",      error));
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "segmentSettings",        error));
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "inputTransfers",         error));
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "outputTransfers",        error));
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "randomValues",           error));
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "prcessCoreSegment", "numberOfBricks",         error));
-    assert(HanamiRoot::gpuInterface->setLocalMemory(*data, "prcessCoreSegment", 64*64*4, error));
+    assert(gpuInterface->bindKernelToBuffer(data, "prcessCoreSegment", "bricks",                 error));
+    assert(gpuInterface->bindKernelToBuffer(data, "prcessCoreSegment", "brickOrder",             error));
+    assert(gpuInterface->bindKernelToBuffer(data, "prcessCoreSegment", "neuronConnections",      error));
+    assert(gpuInterface->bindKernelToBuffer(data, "prcessCoreSegment", "neuronSections",         error));
+    assert(gpuInterface->bindKernelToBuffer(data, "prcessCoreSegment", "synapseConnections",     error));
+    assert(gpuInterface->bindKernelToBuffer(data, "prcessCoreSegment", "synapseSections",        error));
+    assert(gpuInterface->bindKernelToBuffer(data, "prcessCoreSegment", "neuronConnections",      error));
+    assert(gpuInterface->bindKernelToBuffer(data, "prcessCoreSegment", "segmentSettings",        error));
+    assert(gpuInterface->bindKernelToBuffer(data, "prcessCoreSegment", "inputTransfers",         error));
+    assert(gpuInterface->bindKernelToBuffer(data, "prcessCoreSegment", "outputTransfers",        error));
+    assert(gpuInterface->bindKernelToBuffer(data, "prcessCoreSegment", "randomValues",           error));
+    assert(gpuInterface->bindKernelToBuffer(data, "prcessCoreSegment", "numberOfBricks",         error));
+    assert(gpuInterface->setLocalMemory(data, "prcessCoreSegment", 64*64*4, error));
 
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "prcessInput", "bricks",                 error));
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "prcessInput", "neuronSections",         error));
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "prcessInput", "updatePosSections",      error));
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "prcessInput", "inputTransfers",         error));
+    assert(gpuInterface->bindKernelToBuffer(data, "prcessInput", "bricks",                 error));
+    assert(gpuInterface->bindKernelToBuffer(data, "prcessInput", "neuronSections",         error));
+    assert(gpuInterface->bindKernelToBuffer(data, "prcessInput", "neuronConnections",      error));
+    assert(gpuInterface->bindKernelToBuffer(data, "prcessInput", "inputTransfers",         error));
 
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "prcessOutput", "bricks",                 error));
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "prcessOutput", "neuronConnections",      error));
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "prcessOutput", "neuronSections",         error));
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "prcessOutput", "synapseConnections",     error));
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "prcessOutput", "synapseSections",        error));
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "prcessOutput", "updatePosSections",      error));
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "prcessOutput", "segmentSettings",        error));
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "prcessOutput", "outputTransfers",        error));
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "prcessOutput", "randomValues",           error));
-    assert(HanamiRoot::gpuInterface->setLocalMemory(*data, "prcessOutput", 64*64*4, error));
+    assert(gpuInterface->bindKernelToBuffer(data, "prcessOutput", "bricks",                 error));
+    assert(gpuInterface->bindKernelToBuffer(data, "prcessOutput", "neuronConnections",      error));
+    assert(gpuInterface->bindKernelToBuffer(data, "prcessOutput", "neuronSections",         error));
+    assert(gpuInterface->bindKernelToBuffer(data, "prcessOutput", "synapseConnections",     error));
+    assert(gpuInterface->bindKernelToBuffer(data, "prcessOutput", "synapseSections",        error));
+    assert(gpuInterface->bindKernelToBuffer(data, "prcessOutput", "neuronConnections",      error));
+    assert(gpuInterface->bindKernelToBuffer(data, "prcessOutput", "segmentSettings",        error));
+    assert(gpuInterface->bindKernelToBuffer(data, "prcessOutput", "outputTransfers",        error));
+    assert(gpuInterface->bindKernelToBuffer(data, "prcessOutput", "randomValues",           error));
+    assert(gpuInterface->setLocalMemory(data, "prcessOutput", 64*64*4, error));
 
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "reweightOutput", "bricks",                     error));
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "reweightOutput", "neuronSections",             error));
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "reweightOutput", "inputTransfers",             error));
+    assert(gpuInterface->bindKernelToBuffer(data, "reweightOutput", "bricks",                     error));
+    assert(gpuInterface->bindKernelToBuffer(data, "reweightOutput", "neuronSections",             error));
+    assert(gpuInterface->bindKernelToBuffer(data, "reweightOutput", "inputTransfers",             error));
 
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "bricks",                 error));
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "brickOrder",             error));
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "neuronSections",         error));
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "synapseConnections",     error));
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "synapseSections",        error));
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "segmentSettings",        error));
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "inputTransfers",         error));
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "outputTransfers",        error));
-    assert(HanamiRoot::gpuInterface->bindKernelToBuffer(*data, "reweightCoreSegment", "numberOfBricks",         error));
+    assert(gpuInterface->bindKernelToBuffer(data, "reweightCoreSegment", "bricks",                 error));
+    assert(gpuInterface->bindKernelToBuffer(data, "reweightCoreSegment", "brickOrder",             error));
+    assert(gpuInterface->bindKernelToBuffer(data, "reweightCoreSegment", "neuronSections",         error));
+    assert(gpuInterface->bindKernelToBuffer(data, "reweightCoreSegment", "synapseConnections",     error));
+    assert(gpuInterface->bindKernelToBuffer(data, "reweightCoreSegment", "synapseSections",        error));
+    assert(gpuInterface->bindKernelToBuffer(data, "reweightCoreSegment", "segmentSettings",        error));
+    assert(gpuInterface->bindKernelToBuffer(data, "reweightCoreSegment", "inputTransfers",         error));
+    assert(gpuInterface->bindKernelToBuffer(data, "reweightCoreSegment", "outputTransfers",        error));
+    assert(gpuInterface->bindKernelToBuffer(data, "reweightCoreSegment", "numberOfBricks",         error));
 }
 
 /**
@@ -299,6 +289,11 @@ CoreSegment::initSegment(const std::string &name,
     initSegmentPointer(header);
     segmentSettings[0] = settings;
 
+    neuronConnections = new NeuronConnection[segmentHeader->neuronSections.count];
+    for(uint32_t i = 0; i < segmentHeader->neuronSections.count; i++) {
+        neuronConnections[i] = NeuronConnection();
+    }
+
     // init content
     initializeNeurons(segmentMeta);
     addBricksToSegment(segmentMeta);
@@ -312,13 +307,10 @@ CoreSegment::initSegment(const std::string &name,
     // TODO: check result
     setName(name);
 
-    neuronConnections = new NeuronConnection[segmentHeader->neuronSections.count];
-    for(uint32_t i = 0; i < segmentHeader->neuronSections.count; i++) {
-        neuronConnections[i] = NeuronConnection();
-    }
-
-    if(HanamiRoot::useGpu) {
-        initGpu();
+    if(HanamiRoot::useOpencl)
+    {
+        data = new Kitsunemimi::GpuData();
+        initOpencl(*data);
     }
 
     if(HanamiRoot::useCuda) {
@@ -334,7 +326,7 @@ CoreSegment::initSegment(const std::string &name,
  */
 bool
 CoreSegment::reinitPointer(const uint64_t numberOfBytes)
-{
+{    
     // TODO: checks
     uint8_t* dataPtr = static_cast<uint8_t*>(segmentData.staticData);
 
@@ -375,22 +367,21 @@ CoreSegment::reinitPointer(const uint64_t numberOfBytes)
     neuronSections = reinterpret_cast<NeuronSection*>(dataPtr + pos);
     byteCounter += segmentHeader->neuronSections.count * sizeof(NeuronSection);
 
-    pos = segmentHeader->updatePosSections.bytePos;
-    updatePosSections = reinterpret_cast<UpdatePosSection*>(dataPtr + pos);
-    byteCounter += segmentHeader->updatePosSections.count * sizeof(UpdatePosSection);
-
     dataPtr = static_cast<uint8_t*>(segmentData.itemData);
     //pos = segmentHeader->synapseSections.bytePos;
     synapseSections = reinterpret_cast<SynapseSection*>(dataPtr);
     byteCounter += segmentHeader->synapseSections.count * sizeof(SynapseSection);
 
+    // temp-stuff
     neuronConnections = new NeuronConnection[segmentHeader->neuronSections.count];
     for(uint32_t i = 0; i < segmentHeader->neuronSections.count; i++) {
         neuronConnections[i] = NeuronConnection();
     }
 
-    if(HanamiRoot::useGpu) {
-        initGpu();
+    if(HanamiRoot::useOpencl)
+    {
+        data = new Kitsunemimi::GpuData();
+        initOpencl(*data);
     }
 
     if(HanamiRoot::useCuda) {
@@ -425,7 +416,7 @@ CoreSegment::initializeNeurons(const Kitsunemimi::Hanami::SegmentMeta &segmentMe
         {
             const uint32_t sectionId = sectionPositionOffset + sectionCounter;
             NeuronSection* section = &neuronSections[sectionId];
-            UpdatePosSection* updatePosSection = &updatePosSections[sectionId];
+            NeuronConnection* neuronConnection = &neuronConnections[sectionId];
 
             if(neuronsInBrick >= NEURONS_PER_NEURONSECTION)
             {
@@ -433,7 +424,7 @@ CoreSegment::initializeNeurons(const Kitsunemimi::Hanami::SegmentMeta &segmentMe
                     section->neurons[i].border = 0.0f;
                 }
                 section->numberOfNeurons = NEURONS_PER_NEURONSECTION;
-                updatePosSection->numberOfPositions = NEURONS_PER_NEURONSECTION;
+                neuronConnection->numberOfPositions = NEURONS_PER_NEURONSECTION;
                 neuronsInBrick -= NEURONS_PER_NEURONSECTION;
             }
             else
@@ -442,7 +433,7 @@ CoreSegment::initializeNeurons(const Kitsunemimi::Hanami::SegmentMeta &segmentMe
                     section->neurons[i].border = 0.0f;
                 }
                 section->numberOfNeurons = neuronsInBrick;
-                updatePosSection->numberOfPositions = neuronsInBrick;
+                neuronConnection->numberOfPositions = neuronsInBrick;
                 break;
             }
             sectionCounter++;
@@ -565,11 +556,6 @@ CoreSegment::createNewHeader(const uint32_t numberOfBricks,
     segmentHeader.neuronSections.bytePos = segmentDataPos;
     segmentDataPos += numberOfNeuronSections * sizeof(NeuronSection);
 
-    // init section-updates
-    segmentHeader.updatePosSections.count = numberOfNeuronSections;
-    segmentHeader.updatePosSections.bytePos = segmentDataPos;
-    segmentDataPos += numberOfNeuronSections * sizeof(UpdatePosSection);
-
     segmentHeader.staticDataSize = segmentDataPos;
 
     // init synapse sections
@@ -631,12 +617,6 @@ CoreSegment::initSegmentPointer(const SegmentHeader &header)
     neuronSections = reinterpret_cast<NeuronSection*>(dataPtr + pos);
     for(uint32_t i = 0; i < segmentHeader->neuronSections.count; i++) {
         neuronSections[i] = NeuronSection();
-    }
-
-    pos = segmentHeader->updatePosSections.bytePos;
-    updatePosSections = reinterpret_cast<UpdatePosSection*>(dataPtr + pos);
-    for(uint32_t i = 0; i < segmentHeader->updatePosSections.count; i++) {
-        updatePosSections[i] = UpdatePosSection();
     }
 
     dataPtr = static_cast<uint8_t*>(segmentData.itemData);

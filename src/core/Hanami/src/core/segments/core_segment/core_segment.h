@@ -43,7 +43,6 @@ struct PointerHandler
     SegmentSettings* segmentSettings = nullptr;
     float* inputTransfers = nullptr;
     float* outputTransfers = nullptr;
-    UpdatePosSection* updatePosSections = nullptr;
     uint32_t* randomValues = nullptr;
     NeuronConnection* neuronConnections = nullptr;
     SynapseConnection* synapseConnections = nullptr;
@@ -65,7 +64,6 @@ public:
     uint32_t* brickOrder = nullptr;
     NeuronSection* neuronSections = nullptr;
     SynapseSection* synapseSections = nullptr;
-    UpdatePosSection* updatePosSections = nullptr;
 
     SynapseConnection* synapseConnections = nullptr;
     NeuronConnection* neuronConnections = nullptr;
@@ -86,7 +84,7 @@ private:
     void initSegmentPointer(const SegmentHeader &header);
     bool connectBorderBuffer();
     void allocateSegment(SegmentHeader &header);
-    void initGpu();
+    void initOpencl(Kitsunemimi::GpuData &data);
     void initCuda();
 
     void addBricksToSegment(const Kitsunemimi::Hanami::SegmentMeta &segmentMeta);

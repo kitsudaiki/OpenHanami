@@ -60,7 +60,7 @@ Kitsunemimi::Jwt* HanamiRoot::jwt = nullptr;
 HanamiRoot* HanamiRoot::root = nullptr;
 
 // static flag to switch to experimental gpu-support (see issue #44 and #76)
-bool HanamiRoot::useGpu = false;
+bool HanamiRoot::useOpencl = false;
 bool HanamiRoot::useCuda = false;
 HttpServer* HanamiRoot::httpServer = nullptr;
 
@@ -86,7 +86,7 @@ HanamiRoot::init(Kitsunemimi::ErrorContainer &error)
 {
     root = this;
 
-    if(useGpu)
+    if(useOpencl)
     {
         Kitsunemimi::GpuHandler oclHandler;
         assert(oclHandler.initDevice(error));

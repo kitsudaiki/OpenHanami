@@ -145,13 +145,13 @@ typedef struct UpdatePos_struct
 
 //==================================================================================================
 
-typedef struct UpdatePosSection_struct
+typedef struct NeuronConnection_struct
 {
     UpdatePos positions[NEURONS_PER_NEURONSECTION];
     uint numberOfPositions;
     uchar padding[12];
     // total size: 1024 Byte
-} UpdatePosSection;
+} NeuronConnection;
 
 //==================================================================================================
 
@@ -232,7 +232,7 @@ synapseProcessingBackward(__global SynapseSection* section,
                           __global SynapseConnection* connection,
                           __global NeuronSection* targetNeuronSection,
                           __global NeuronSection* neuronSections,
-                          __global UpdatePosSection* updatePosSections,
+                          __global NeuronConnection* neuronConnections,
                           __global SegmentSettings* segmentSettings,
                           __global const uint* randomValues,
                           __local float* localMem)
@@ -275,7 +275,7 @@ synapseProcessingBackward(__global SynapseSection* section,
         pos++;
     }
 
-    __global UpdatePosSection* updateSection = &updatePosSections[connection->sourceNeuronSectionId];
+    __global NeuronConnection* updateSection = &neuronConnections[connection->sourceNeuronSectionId];
     __global UpdatePos* updatePos = &updateSection->positions[connection->sourceNeuronId];
     updatePos->type = sourcePotential - counter > 0.01f && connection->forwardNextId == UNINIT_STATE_32;
     updatePos->offset = counter + connection->offset;
@@ -290,7 +290,7 @@ prcessNeuronConnection(const uint neuronSectionId,
                        __global NeuronSection* neuronSections,
                        __global SynapseConnection* synapseConnections,
                        __global SynapseSection* synapseSections,
-                       __global UpdatePosSection* updatePosSections,
+                       __global NeuronConnection* neuronConnections,
                        __global SegmentSettings* segmentSettings,
                        __global const uint* randomValues,
                        __local float* localMem)
@@ -316,7 +316,7 @@ prcessNeuronConnection(const uint neuronSectionId,
                                       &synapseConnections[sectionId],
                                       targetNeuronSection,
                                       neuronSections,
-                                      updatePosSections,
+                                      neuronConnections,
                                       segmentSettings,
                                       randomValues,
                                       &localMem[offset]);
@@ -369,7 +369,7 @@ prcessCoreSegment(__global BrickHeader* bricks,
                   __global NeuronSection* neuronSections,
                   __global SynapseConnection* synapseConnections,
                   __global SynapseSection* synapseSections,
-                  __global UpdatePosSection* updatePosSections,
+                  __global NeuronConnection* neuronConnections,
                   __global SegmentSettings* segmentSettings,
                   __global float* inputTransfers,
                   __global float* outputTransfers,
@@ -397,7 +397,7 @@ prcessCoreSegment(__global BrickHeader* bricks,
                                        neuronSections,
                                        synapseConnections,
                                        synapseSections,
-                                       updatePosSections,
+                                       neuronConnections,
                                        segmentSettings,
                                        randomValues,
                                        localMem);
@@ -425,7 +425,7 @@ prcessCoreSegment(__global BrickHeader* bricks,
 
                     // handle active-state
                     const bool needUpdate = neuron->active != 0 && neuron->targetSectionId == UNINIT_STATE_32;
-                    __global UpdatePos* updatePos = &updatePosSections[neuronSectionId].positions[neuronId];
+                    __global UpdatePos* updatePos = &neuronConnections[neuronSectionId].positions[neuronId];
                     updatePos->type = needUpdate;
                     updatePos->offset = 0.0f;
                 }
@@ -444,7 +444,7 @@ prcessOutput(__global BrickHeader* bricks,
              __global NeuronSection* neuronSections,
              __global SynapseConnection* synapseConnections,
              __global SynapseSection* synapseSections,
-             __global UpdatePosSection* updatePosSections,
+             __global NeuronConnection* neuronConnections,
              __global SegmentSettings* segmentSettings,
              __global float* outputTransfers,
              __global const uint* randomValues,
@@ -462,7 +462,7 @@ prcessOutput(__global BrickHeader* bricks,
                                neuronSections,
                                synapseConnections,
                                synapseSections,
-                               updatePosSections,
+                               neuronConnections,
                                segmentSettings,
                                randomValues,
                                localMem);
@@ -485,7 +485,7 @@ prcessOutput(__global BrickHeader* bricks,
 __kernel void
 prcessInput(__global BrickHeader* bricks,
             __global NeuronSection* neuronSections,
-            __global UpdatePosSection* updatePosSections,
+            __global NeuronConnection* neuronConnections,
             __global float* inputTransfers)
 {
     __global NeuronSection* neuronSection = &neuronSections[get_group_id(0)];
@@ -499,7 +499,7 @@ prcessInput(__global BrickHeader* bricks,
 
         // handle active-state
         const bool needUpdate = neuron->active != 0 && neuron->targetSectionId == UNINIT_STATE_32;
-        __global UpdatePos* updatePos = &updatePosSections[get_group_id(0)].positions[get_local_id(0)];
+        __global UpdatePos* updatePos = &neuronConnections[get_group_id(0)].positions[get_local_id(0)];
         updatePos->type = needUpdate;
         updatePos->offset = 0.0f;
     }

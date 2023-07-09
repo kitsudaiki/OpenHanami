@@ -4,6 +4,24 @@
 
 ### Breaking-Changes
 
+#### API-breaking / Config-breaking
+
+- Move the entire project from a microservice architecture to a monolithic architecture, to reduce unnecessary complexity and increase performance and reliability of the program. Also it makes the developing process easier and faster, with is necessary in regard of my limited time-resources.
+
+#### Snapshot-Breaking
+
+- List with update-positions in no longer written into the snapshot, because it contains only temporary information, which doesn't have to be saved
+
+### Changed
+
+- In the core-datastructures: Update-positions are merged into the neuron-connections to avoid holding an additional list
+- The cpu-path of the processing of the core-structure doesn't use the update-positions anymore
+
+
+## [0.2.0] - 2023-03-15
+
+### Breaking-Changes
+
 #### API-Breaking
 
 - use now custom syntax for cluster- and segment-templates instead of json
