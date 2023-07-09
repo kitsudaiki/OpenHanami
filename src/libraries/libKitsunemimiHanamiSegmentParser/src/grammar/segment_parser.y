@@ -42,6 +42,7 @@
 #include <vector>
 
 #include <libKitsunemimiHanamiSegmentParser/segment_meta.h>
+#include <libKitsunemimiCommon/structs.h>
 
 namespace Kitsunemimi::Hanami
 {
@@ -85,7 +86,7 @@ YY_DECL;
 %token <double> FLOAT "float"
 
 %type  <std::string> string_ident
-%type  <Kitsunemimi::Hanami::Position> position
+%type  <Kitsunemimi::Position> position
 %type  <Kitsunemimi::Hanami::BrickMeta> brick_settings
 
 %%
@@ -283,7 +284,7 @@ brick_settings:
 position:
     "number" "," "number" "," "number"
     {
-        Kitsunemimi::Hanami::Position pos;
+        Kitsunemimi::Position pos;
         pos.x = $1;
         pos.y = $3;
         pos.z = $5;

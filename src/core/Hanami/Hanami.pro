@@ -101,7 +101,7 @@ OTHER_FILES += \
 
 cudaKernel.input = CUDA_SOURCES
 cudaKernel.output = ${QMAKE_FILE_BASE}.o
-cudaKernel.commands = /usr/local/cuda-12.1/bin/nvcc -O3 -c  -o ${QMAKE_FILE_BASE}.o ${QMAKE_FILE_IN} || nvcc -O3 -c  -o ${QMAKE_FILE_BASE}.o ${QMAKE_FILE_IN}
+cudaKernel.commands = /usr/local/cuda-12.1/bin/nvcc -O3 -c -I$$PWD/../../libraries/libKitsunemimiCommon/include -o ${QMAKE_FILE_BASE}.o ${QMAKE_FILE_IN} || nvcc -O3 -c -I$$PWD/../../libraries/libKitsunemimiCommon/include -o ${QMAKE_FILE_BASE}.o ${QMAKE_FILE_IN}
 cudaKernel.CONFIG += target_predeps
 QMAKE_EXTRA_COMPILERS += cudaKernel
 
