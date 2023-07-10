@@ -309,11 +309,11 @@ prcessInputKernel(NeuronSection* neuronSections,
 __device__ __forceinline__ uint
 backpropagateSection(SynapseSection* section,
                      SynapseConnection* connection,
-                     Neuron* sourceNeuron,
                      const float outH,
                      NeuronSection* neuronSections,
                      SynapseConnection* synapseConnections,
-                     SynapseSection* synapseSections)
+                     SynapseSection* synapseSections,
+                     float* tempVal)
 {
     NeuronSection* targetNeuronSection = &neuronSections[connection->targetNeuronSectionId];
     float learnValue = 0.2f;
@@ -331,7 +331,7 @@ backpropagateSection(SynapseSection* section,
             learnValue = (float)(126 - synapse->activeCounter) * 0.0002f;
             learnValue += 0.05f;
             Neuron* targetNeuron = &targetNeuronSection->neurons[synapse->targetNeuronId];
-            sourceNeuron->delta += targetNeuron->delta * synapse->weight;
+            tempVal[threadIdx.x] += targetNeuron->delta * synapse->weight;
 
             synapse->weight -= learnValue * targetNeuron->delta;
         }
@@ -357,6 +357,8 @@ reweightCoreSegmentKernel(NeuronSection* neuronSections,
                           const uint32_t neuronSectionPos,
                           const bool isInputBrick)
 {
+    __shared__ float tempVal[64];
+
     const uint32_t neuronSectionId = neuronSectionPos + blockIdx.x;
     NeuronSection* neuronSection = &neuronSections[neuronSectionId];
 
@@ -371,20 +373,22 @@ reweightCoreSegmentKernel(NeuronSection* neuronSections,
                 uint nextId = sourceNeuron->targetSectionId;
                 while(nextId != UNINIT_STATE_32)
                 {
+                    tempVal[threadIdx.x] = sourceNeuron->delta;
                     nextId = backpropagateSection(&synapseSections[nextId],
                                                   &synapseConnections[nextId],
-                                                  sourceNeuron,
                                                   sourceNeuron->potential,
                                                   neuronSections,
                                                   synapseConnections,
-                                                  synapseSections);
+                                                  synapseSections,
+                                                  tempVal);
                 }
 
-                sourceNeuron->delta *= 1.4427f * pow(0.5f, sourceNeuron->potential);
+                tempVal[threadIdx.x] *= 1.4427f * pow(0.5f, sourceNeuron->potential);
+                sourceNeuron->delta = tempVal[threadIdx.x];
             }
 
             if(isInputBrick) {
-                outputTransfers[sourceNeuron->targetBorderId] = sourceNeuron->delta;
+                outputTransfers[sourceNeuron->targetBorderId] = tempVal[threadIdx.x];
             }
         }
     }
