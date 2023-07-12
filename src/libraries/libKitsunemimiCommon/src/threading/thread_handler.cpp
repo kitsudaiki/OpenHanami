@@ -54,7 +54,7 @@ ThreadHandler::getRegisteredNames()
     std::unique_lock<std::mutex> lock(m_mutex);
 
     std::vector<std::string> result;
-    for(auto const& [id, thread] : m_allThreads) {
+    for(const auto& [id, thread] : m_allThreads) {
         result.push_back(id);
     }
 
@@ -75,12 +75,11 @@ ThreadHandler::getThreads(const std::string &threadName)
     std::vector<Thread*> result;
 
     // iterate over names
-    std::map<std::string, std::map<uint64_t, Thread*>>::iterator it;
-    it = m_allThreads.find(threadName);
+    const auto it = m_allThreads.find(threadName);
     if(it != m_allThreads.end())
     {
         // iterate over ids
-        for(auto const& [id, thread] : it->second) {
+        for(const auto& [id, thread] : it->second) {
             result.push_back(thread);
         }
     }
@@ -113,8 +112,7 @@ ThreadHandler::registerThread(Thread* thread)
     std::unique_lock<std::mutex> lock(m_mutex);
 
     // if name is already registered then add this to the name
-    std::map<std::string, std::map<uint64_t, Thread*>>::iterator it;
-    it = m_allThreads.find(thread->getThreadName());
+    auto it = m_allThreads.find(thread->getThreadName());
     if(it != m_allThreads.end())
     {
         it->second.insert(std::make_pair(thread->getThreadId(), thread));
@@ -145,13 +143,11 @@ ThreadHandler::unregisterThread(const std::string &threadName,
     bool found = false;
 
     // iterate over names
-    std::map<std::string, std::map<uint64_t, Thread*>>::iterator name_it;
-    name_it = m_allThreads.find(threadName);
+    auto name_it = m_allThreads.find(threadName);
     if(name_it != m_allThreads.end())
     {
         // iterate over ids
-        std::map<uint64_t, Thread*>::iterator id_it;
-        id_it = name_it->second.find(threadId);
+        auto id_it = name_it->second.find(threadId);
         if(id_it != name_it->second.end())
         {
             name_it->second.erase(id_it);

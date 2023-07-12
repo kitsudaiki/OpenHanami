@@ -74,9 +74,7 @@ Policy::checkUserAgainstPolicy(const std::string &endpoint,
                                const HttpRequestType type,
                                const std::string &role)
 {
-    std::map<std::string, PolicyEntry>::const_iterator endpoint_it;
-    endpoint_it = m_policyRules.find(endpoint);
-
+    const auto endpoint_it = m_policyRules.find(endpoint);
     if(endpoint_it != m_policyRules.end()) {
         return checkEntry(endpoint_it->second,  type, role);
     }

@@ -792,11 +792,8 @@ ConfigHandler::registerType(const std::string &groupName,
         return false;
     }
 
-    std::map<std::string, std::map<std::string, ConfigType>>::iterator outerIt;
-
     // add groupName, if not exist
-    outerIt = m_registeredConfigs.find(groupName);
-    if(outerIt == m_registeredConfigs.end())
+    if(m_registeredConfigs.find(groupName) == m_registeredConfigs.end())
     {
         std::map<std::string, ConfigType> newEntry;
         m_registeredConfigs.insert(
@@ -804,7 +801,7 @@ ConfigHandler::registerType(const std::string &groupName,
     }
 
     // add new value
-    outerIt = m_registeredConfigs.find(groupName);
+    auto outerIt = m_registeredConfigs.find(groupName);
     if(outerIt != m_registeredConfigs.end())
     {
         outerIt->second.insert(std::make_pair(itemName, type));
@@ -825,16 +822,11 @@ ConfigHandler::ConfigType
 ConfigHandler::getRegisteredType(const std::string &groupName,
                                  const std::string &itemName)
 {
-    std::map<std::string, std::map<std::string, ConfigType>>::const_iterator outerIt;
-    outerIt = m_registeredConfigs.find(groupName);
-
+    const auto outerIt = m_registeredConfigs.find(groupName);
     if(outerIt != m_registeredConfigs.end())
     {
-        std::map<std::string, ConfigType>::const_iterator innerIt;
-        innerIt = outerIt->second.find(itemName);
-
-        if(innerIt != outerIt->second.end())
-        {
+        const auto innerIt = outerIt->second.find(itemName);
+        if(innerIt != outerIt->second.end()) {
             return innerIt->second;
         }
     }

@@ -205,8 +205,7 @@ TaskHandle_State::getNextTask()
     m_taskQueue.pop_front();
 
     // init the new task
-    std::map<std::string, Task>::iterator it;
-    it = m_taskMap.find(nextUuid);
+    auto it = m_taskMap.find(nextUuid);
     it->second.progress.state = ACTIVE_TASK_STATE;
     it->second.progress.startActiveTimeStamp = std::chrono::system_clock::now();
     actualTask = &it->second;
@@ -264,8 +263,7 @@ TaskHandle_State::finishTask()
     }
 
     // remove task from map and free its data
-    std::map<std::string, Task>::iterator it;
-    it = m_taskMap.find(actualTask->uuid.toString());
+    auto it = m_taskMap.find(actualTask->uuid.toString());
     if(it != m_taskMap.end())
     {
         delete it->second.inputData;
@@ -288,8 +286,7 @@ TaskHandle_State::getProgress(const std::string &taskUuid)
 {
     std::lock_guard<std::mutex> guard(m_task_mutex);
 
-    std::map<std::string, Task>::const_iterator it;
-    it = m_taskMap.find(taskUuid);
+    const auto it = m_taskMap.find(taskUuid);
     if(it != m_taskMap.end()) {
         return it->second.progress;
     }
@@ -310,8 +307,7 @@ TaskHandle_State::getTaskState(const std::string &taskUuid)
 {
     TaskState state = UNDEFINED_TASK_STATE;
 
-    std::map<std::string, Task>::const_iterator it;
-    it = m_taskMap.find(taskUuid);
+    const auto it = m_taskMap.find(taskUuid);
     if(it != m_taskMap.end()) {
         state = it->second.progress.state;
     }
@@ -326,7 +322,7 @@ TaskHandle_State::getTaskState(const std::string &taskUuid)
 void
 TaskHandle_State::getAllProgress(std::map<std::string, TaskProgress> &result)
 {
-    for(auto const& [name, task] : m_taskMap) {
+    for(const auto& [name, task] : m_taskMap) {
         result.emplace(task.uuid.toString(), task.progress);
     }
 }
@@ -346,8 +342,7 @@ TaskHandle_State::removeTask(const std::string &taskUuid)
     TaskState state = UNDEFINED_TASK_STATE;
 
     // check and update map
-    std::map<std::string, Task>::iterator itMap;
-    itMap = m_taskMap.find(taskUuid);
+    auto itMap = m_taskMap.find(taskUuid);
     if(itMap != m_taskMap.end())
     {
         state = itMap->second.progress.state;
@@ -359,8 +354,7 @@ TaskHandle_State::removeTask(const std::string &taskUuid)
             m_taskMap.erase(itMap);
 
             // update queue
-            std::deque<std::string>::const_iterator itQueue;
-            itQueue = std::find(m_taskQueue.begin(), m_taskQueue.end(), taskUuid);
+            const auto itQueue = std::find(m_taskQueue.begin(), m_taskQueue.end(), taskUuid);
             if(itQueue != m_taskQueue.end()) {
                 m_taskQueue.erase(itQueue);
             }

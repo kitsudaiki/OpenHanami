@@ -137,8 +137,7 @@ initNewCluster(Cluster* cluster,
     for(const Kitsunemimi::Hanami::SegmentMetaPtr& segmentPtr : clusterTemplate.segments)
     {
         AbstractSegment* newSegment = nullptr;
-        std::map<std::string, Kitsunemimi::Hanami::SegmentMeta>::const_iterator it;
-        it = segmentTemplates.find(segmentPtr.type);
+        const auto it = segmentTemplates.find(segmentPtr.type);
         if(it != segmentTemplates.end())
         {
             if(segmentPtr.type == "input") {

@@ -418,15 +418,10 @@ bool
 HanamiRoot::doesBlossomExist(const std::string &groupName,
                              const std::string &itemName)
 {
-    std::map<std::string, std::map<std::string, Blossom*>>::const_iterator groupIt;
-    groupIt = m_registeredBlossoms.find(groupName);
-
+    auto groupIt = m_registeredBlossoms.find(groupName);
     if(groupIt != m_registeredBlossoms.end())
     {
-        std::map<std::string, Blossom*>::const_iterator itemIt;
-        itemIt = groupIt->second.find(itemName);
-
-        if(itemIt != groupIt->second.end()) {
+        if(groupIt->second.find(itemName) != groupIt->second.end()) {
             return true;
         }
     }
@@ -454,10 +449,8 @@ HanamiRoot::addBlossom(const std::string &groupName,
         return false;
     }
 
-    std::map<std::string, std::map<std::string, Blossom*>>::iterator groupIt;
-    groupIt = m_registeredBlossoms.find(groupName);
-
     // create internal group-map, if not already exist
+    auto groupIt = m_registeredBlossoms.find(groupName);
     if(groupIt == m_registeredBlossoms.end())
     {
         std::map<std::string, Blossom*> newMap;
@@ -485,15 +478,11 @@ HanamiRoot::getBlossom(const std::string &groupName,
                        const std::string &itemName)
 {
     // search for group
-    std::map<std::string, std::map<std::string, Blossom*>>::const_iterator groupIt;
-    groupIt = m_registeredBlossoms.find(groupName);
-
+    auto groupIt = m_registeredBlossoms.find(groupName);
     if(groupIt != m_registeredBlossoms.end())
     {
         // search for item within group
-        std::map<std::string, Blossom*>::const_iterator itemIt;
-        itemIt = groupIt->second.find(itemName);
-
+        auto itemIt = groupIt->second.find(itemName);
         if(itemIt != groupIt->second.end()) {
             return itemIt->second;
         }
@@ -601,19 +590,16 @@ HanamiRoot::mapEndpoint(EndpointEntry &result,
                         const std::string &id,
                         const HttpRequestType type)
 {
-    std::map<std::string, std::map<HttpRequestType, EndpointEntry>>::const_iterator id_it;
-    id_it = endpointRules.find(id);
-
+    const auto id_it = endpointRules.find(id);
     if(id_it != endpointRules.end())
     {
-        std::map<HttpRequestType, EndpointEntry>::const_iterator type_it;
-        type_it = id_it->second.find(type);
-
-        if(type_it != id_it->second.end())
+        auto type_it = id_it->second.find(type);
+        if(id_it->second.find(type) != id_it->second.end())
         {
             result.type = type_it->second.type;
             result.group = type_it->second.group;
             result.name = type_it->second.name;
+
             return true;
         }
     }
@@ -645,14 +631,11 @@ HanamiRoot::addEndpoint(const std::string &id,
     newEntry.name = name;
 
     // search for id
-    std::map<std::string, std::map<HttpRequestType, EndpointEntry>>::iterator id_it;
-    id_it = endpointRules.find(id);
-    if(id_it != endpointRules.end())
+    auto id_it = endpointRules.find(id);
+    if(endpointRules.find(id) != endpointRules.end())
     {
         // search for http-type
-        std::map<HttpRequestType, EndpointEntry>::iterator type_it;
-        type_it = id_it->second.find(httpType);
-        if(type_it != id_it->second.end()) {
+        if(id_it->second.find(httpType) != id_it->second.end()) {
             return false;
         }
 

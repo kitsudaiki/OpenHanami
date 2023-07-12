@@ -200,8 +200,7 @@ recvClusterInputMessage(Cluster* cluster,
     // fill given data into the target-segment
     if(msg.datatype() == ClusterDataType::INPUT_TYPE)
     {
-        std::map<std::string, InputSegment*>::iterator it;
-        it = cluster->inputSegments.find(msg.segmentname());
+        const auto it = cluster->inputSegments.find(msg.segmentname());
         if(it != cluster->inputSegments.end())
         {
             InputNeuron* inputNeurons = it->second->inputs;
@@ -212,8 +211,7 @@ recvClusterInputMessage(Cluster* cluster,
     }
     if(msg.datatype() == ClusterDataType::SHOULD_TYPE)
     {
-        std::map<std::string, OutputSegment*>::iterator it;
-        it = cluster->outputSegments.find(msg.segmentname());
+        const auto it = cluster->outputSegments.find(msg.segmentname());
         if(it != cluster->outputSegments.end())
         {
             OutputNeuron* outputNeurons = it->second->outputs;

@@ -51,9 +51,9 @@ getFilesInDir(std::vector<std::string> &fileList,
             {
                 bool foundInExceptions = false;
 
-                for(uint64_t i = 0; i < exceptions.size(); i++)
+                for(const std::string& exception : exceptions)
                 {
-                    if(itr->path().filename().string() == exceptions.at(i)) {
+                    if(itr->path().filename().string() == exception) {
                         foundInExceptions = true;
                     }
                 }

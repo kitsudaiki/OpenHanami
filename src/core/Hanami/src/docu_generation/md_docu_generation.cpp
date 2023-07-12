@@ -43,7 +43,7 @@ addFieldDocu_md(std::string &docu,
                 const std::map<std::string, FieldDef>* defMap,
                 const bool isRequest)
 {
-    for(auto const& [id, fieldDef] : *defMap)
+    for(const auto& [id, fieldDef] : *defMap)
     {
         const std::string field = id;
         const FieldType fieldType = fieldDef.fieldType;
@@ -182,7 +182,7 @@ generateEndpointDocu_md(std::string &docu)
 {
     docu.append("\n");
 
-    for(auto const& [endpoint, httpDef] : HanamiRoot::root->endpointRules)
+    for(const auto& [endpoint, httpDef] : HanamiRoot::root->endpointRules)
     {
         // add endpoint
         docu.append("\n");
@@ -190,7 +190,7 @@ generateEndpointDocu_md(std::string &docu)
         docu.append(endpoint);
         docu.append("\n");
 
-        for(auto const& [type, endpointEntry] : httpDef)
+        for(const auto& [type, endpointEntry] : httpDef)
         {
             docu.append("\n");
 

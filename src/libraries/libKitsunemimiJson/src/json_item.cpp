@@ -71,7 +71,7 @@ JsonItem::JsonItem(DataItem* dataItem,
 JsonItem::JsonItem(std::map<std::string, JsonItem> &value)
 {
     m_content = new DataMap();
-    for(auto const& [id, item] : value) {
+    for(const auto& [id, item] : value) {
         insert(id, item);
     }
 }

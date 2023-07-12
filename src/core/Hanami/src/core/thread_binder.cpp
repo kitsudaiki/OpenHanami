@@ -189,7 +189,7 @@ ThreadBinder::run()
             LOG_DEBUG(newMapping.toString(true));
 
             // update thread-binding for all components
-            for(auto const& [name, value] : newMapping.map)
+            for(const auto& [name, value] : newMapping.map)
             {
                 const std::vector<std::string> threadNames = value->toMap()->getKeys();
                 if(name == "azuki") {

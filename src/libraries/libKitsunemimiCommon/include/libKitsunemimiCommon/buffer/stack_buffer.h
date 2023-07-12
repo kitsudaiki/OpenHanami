@@ -66,10 +66,8 @@ struct StackBuffer
     ~StackBuffer()
     {
         // add all buffer within the current stack-buffer to the stack-buffer-reserve
-        std::deque<DataBuffer*>::iterator it;
-        for(it = blocks.begin();
-            it != blocks.end();
-            it++)
+        auto it = blocks.begin();
+        for( ; it != blocks.end(); it++)
         {
             DataBuffer* temp = *it;
             StackBufferReserve::getInstance()->addBuffer(temp);
@@ -235,10 +233,8 @@ inline void
 reset_StackBuffer(StackBuffer &stackBuffer)
 {
     // add all buffer within the current stack-buffer to the stack-buffer-reserve
-    std::deque<DataBuffer*>::iterator it;
-    for(it = stackBuffer.blocks.begin();
-        it != stackBuffer.blocks.end();
-        it++)
+    auto it = stackBuffer.blocks.begin();
+    for( ; it != stackBuffer.blocks.end(); it++)
     {
         DataBuffer* temp = *it;
         temp->usedBufferSize = 0;
