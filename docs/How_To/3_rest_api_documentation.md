@@ -8,12 +8,61 @@
 
     This documentation contains only the plain REST-API-endpoints. The workflow to upload files or interact with the Clusters over the websocket are not part of this documentation. [See instead](/How_To/4_websocket_workflow)
 
-## misaki
+
+## v1/audit_log
+
+### GET
+
+Get audit-log of a user.
+
+**Request-Parameter**
 
 
-### v1/auth
+`page`
 
-#### GET
+**Description:** Page-number starting with 0 to access the logs. A page has up to 100 entries.
+
+| attribute | value |
+| --- | --- |
+| *Type* | Int |
+| *Required* | True |
+| *Lower border of value* | 0 |
+| *Upper border of value* | 1000000000 |
+
+`user_id`
+
+**Description:** ID of the user, whos entries are requested. Only an admin is allowed to set this values. Any other user get only its own log output based on the token-context.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+| *Required* | False |
+| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9@]* |
+| *Minimum string-length* | 4 |
+| *Maximum string-length* | 256 |
+
+**Response-Parameter**
+
+
+`body`
+
+**Description:** Array with all rows of the table, which array arrays too.
+
+| attribute | value |
+| --- | --- |
+| *Type* | Array |
+
+`header`
+
+**Description:** Array with the namings all columns of the table.
+
+| attribute | value |
+| --- | --- |
+| *Type* | Array |
+
+## v1/auth
+
+### GET
 
 Checks if a JWT-access-token of a user is valid or not and optional check if the user is allowed by its roles and the policy to access a specific endpoint.
 
@@ -116,879 +165,9 @@ Checks if a JWT-access-token of a user is valid or not and optional check if the
 | --- | --- |
 | *Type* | String |
 
-### v1/bind_thread_to_core
+## v1/cluster
 
-#### POST
-
-Bind threads of a specific thead-type-name to a specific core.
-
-**Request-Parameter**
-
-
-`core_ids`
-
-**Description:** Core-ids to bind to.
-
-| attribute | value |
-| --- | --- |
-| *Type* | Array |
-| *Required* | True |
-
-`thread_name`
-
-**Description:** Thread-type-name of the threads, which should be bound to the core.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | True |
-| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9\-]* |
-| *Minimum string-length* | 3 |
-| *Maximum string-length* | 256 |
-
-**Response-Parameter**
-
-
-### v1/documentation/api
-
-#### GET
-
-Generate a user-specific documentation for the API of the current component.
-
-**Request-Parameter**
-
-
-`type`
-
-**Description:** Output-type of the document (pdf, rst, md).
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | False |
-| *Default* | pdf |
-
-**Response-Parameter**
-
-
-`documentation`
-
-**Description:** API-documentation as base64 converted string.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-### v1/documentation/api/rest
-
-#### GET
-
-Generate a documentation for the REST-API of all available components.
-
-**Request-Parameter**
-
-
-`type`
-
-**Description:** Output-type of the document (pdf, rst, md).
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | False |
-| *Default* | pdf |
-| *Must match the regex* | ^(pdf|rst|md)$ |
-
-**Response-Parameter**
-
-
-`documentation`
-
-**Description:** REST-API-documentation as base64 converted string.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-### v1/get_thread_mapping
-
-#### GET
-
-Collect all thread-names with its acutal mapped core-id's
-
-**Request-Parameter**
-
-
-**Response-Parameter**
-
-
-`thread_map`
-
-**Description:** Map with all thread-names and its core-id as json-string.
-
-| attribute | value |
-| --- | --- |
-| *Type* | Map |
-
-### v1/project
-
-#### DELETE
-
-Delete a specific user from the database.
-
-**Request-Parameter**
-
-
-`id`
-
-**Description:** ID of the project.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | True |
-| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9]* |
-| *Minimum string-length* | 4 |
-| *Maximum string-length* | 256 |
-
-**Response-Parameter**
-
-
-#### GET
-
-Show information of a specific registered user.
-
-**Request-Parameter**
-
-
-`id`
-
-**Description:** Id of the user.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | True |
-| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9]* |
-| *Minimum string-length* | 4 |
-| *Maximum string-length* | 256 |
-
-**Response-Parameter**
-
-
-`creator_id`
-
-**Description:** Id of the creator of the user.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-`id`
-
-**Description:** ID of the new user.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-`name`
-
-**Description:** Name of the new user.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-#### POST
-
-Register a new project within Misaki.
-
-**Request-Parameter**
-
-
-`id`
-
-**Description:** ID of the new project.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | True |
-| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9]* |
-| *Minimum string-length* | 4 |
-| *Maximum string-length* | 256 |
-
-`name`
-
-**Description:** Name of the new project.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | True |
-| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9 ]* |
-| *Minimum string-length* | 4 |
-| *Maximum string-length* | 256 |
-
-**Response-Parameter**
-
-
-`creator_id`
-
-**Description:** Id of the creator of the project.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-`id`
-
-**Description:** ID of the new project.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-`name`
-
-**Description:** Name of the new project.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-### v1/project/all
-
-#### GET
-
-Get information of all registered user as table.
-
-**Request-Parameter**
-
-
-**Response-Parameter**
-
-
-`body`
-
-**Description:** Array with all rows of the table, which array arrays too.
-
-| attribute | value |
-| --- | --- |
-| *Type* | Array |
-
-`header`
-
-**Description:** Array with the namings all columns of the table.
-
-| attribute | value |
-| --- | --- |
-| *Type* | Array |
-
-### v1/token
-
-#### POST
-
-Create a JWT-access-token for a specific user.
-
-**Request-Parameter**
-
-
-`id`
-
-**Description:** ID of the user.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | True |
-| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9@]* |
-| *Minimum string-length* | 4 |
-| *Maximum string-length* | 256 |
-
-`password`
-
-**Description:** Passphrase of the user, to verify the access.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | True |
-| *Minimum string-length* | 8 |
-| *Maximum string-length* | 4096 |
-
-**Response-Parameter**
-
-
-`id`
-
-**Description:** ID of the user.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-`is_admin`
-
-**Description:** Set this to true to register the new user as admin.
-
-| attribute | value |
-| --- | --- |
-| *Type* | Bool |
-
-`name`
-
-**Description:** Name of the user.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-`token`
-
-**Description:** New JWT-access-token for the user.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-#### PUT
-
-Create a JWT-access-token for a specific user.
-
-**Request-Parameter**
-
-
-`project_id`
-
-**Description:** ID of the project, which has to be used for the new token.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | True |
-| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9]* |
-| *Minimum string-length* | 4 |
-| *Maximum string-length* | 256 |
-
-**Response-Parameter**
-
-
-`id`
-
-**Description:** ID of the user.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-`is_admin`
-
-**Description:** Set this to true to register the new user as admin.
-
-| attribute | value |
-| --- | --- |
-| *Type* | Bool |
-
-`name`
-
-**Description:** Name of the user.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-`token`
-
-**Description:** New JWT-access-token for the user.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-### v1/token/internal
-
-#### POST
-
-Create a JWT-access-token for a internal services, which can not be used from the outside.
-
-**Request-Parameter**
-
-
-`service_name`
-
-**Description:** Name of the service.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | True |
-| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9]* |
-| *Minimum string-length* | 4 |
-| *Maximum string-length* | 256 |
-
-**Response-Parameter**
-
-
-`token`
-
-**Description:** New JWT-access-token for the service.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-### v1/user
-
-#### DELETE
-
-Delete a specific user from the database.
-
-**Request-Parameter**
-
-
-`id`
-
-**Description:** ID of the user.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | True |
-| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9@]* |
-| *Minimum string-length* | 4 |
-| *Maximum string-length* | 256 |
-
-**Response-Parameter**
-
-
-#### GET
-
-Show information of a specific user.
-
-**Request-Parameter**
-
-
-`id`
-
-**Description:** Id of the user.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | True |
-| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9@]* |
-| *Minimum string-length* | 4 |
-| *Maximum string-length* | 256 |
-
-**Response-Parameter**
-
-
-`creator_id`
-
-**Description:** Id of the creator of the user.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-`id`
-
-**Description:** ID of the user.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-`is_admin`
-
-**Description:** Set this to true to register the new user as admin.
-
-| attribute | value |
-| --- | --- |
-| *Type* | Bool |
-
-`name`
-
-**Description:** Name of the user.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-`projects`
-
-**Description:** Json-array with all assigned projects together with role and project-admin-status.
-
-| attribute | value |
-| --- | --- |
-| *Type* | Array |
-
-#### POST
-
-Register a new user within Misaki.
-
-**Request-Parameter**
-
-
-`id`
-
-**Description:** ID of the new user.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | True |
-| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9@]* |
-| *Minimum string-length* | 4 |
-| *Maximum string-length* | 256 |
-
-`is_admin`
-
-**Description:** Set this to 1 to register the new user as admin.
-
-| attribute | value |
-| --- | --- |
-| *Type* | Bool |
-| *Required* | False |
-| *Default* | false |
-
-`name`
-
-**Description:** Name of the new user.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | True |
-| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9 ]* |
-| *Minimum string-length* | 4 |
-| *Maximum string-length* | 256 |
-
-`password`
-
-**Description:** Passphrase of the user.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | True |
-| *Minimum string-length* | 8 |
-| *Maximum string-length* | 4096 |
-
-**Response-Parameter**
-
-
-`creator_id`
-
-**Description:** Id of the creator of the user.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-`id`
-
-**Description:** ID of the new user.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-`is_admin`
-
-**Description:** True, if user is an admin.
-
-| attribute | value |
-| --- | --- |
-| *Type* | Bool |
-
-`name`
-
-**Description:** Name of the new user.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-`projects`
-
-**Description:** Json-array with all assigned projects together with role and project-admin-status.
-
-| attribute | value |
-| --- | --- |
-| *Type* | Array |
-
-### v1/user/all
-
-#### GET
-
-Get information of all registered users.
-
-**Request-Parameter**
-
-
-**Response-Parameter**
-
-
-`body`
-
-**Description:** Array with all rows of the table, which array arrays too.
-
-| attribute | value |
-| --- | --- |
-| *Type* | Array |
-
-`header`
-
-**Description:** Array with the namings all columns of the table.
-
-| attribute | value |
-| --- | --- |
-| *Type* | Array |
-
-### v1/user/project
-
-#### DELETE
-
-Remove a project from a specific user
-
-**Request-Parameter**
-
-
-`id`
-
-**Description:** ID of the user.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | True |
-| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9@]* |
-| *Minimum string-length* | 4 |
-| *Maximum string-length* | 256 |
-
-`project_id`
-
-**Description:** ID of the project, which has to be removed from the user.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | True |
-| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9]* |
-| *Minimum string-length* | 4 |
-| *Maximum string-length* | 256 |
-
-**Response-Parameter**
-
-
-`creator_id`
-
-**Description:** Id of the creator of the user.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-`id`
-
-**Description:** ID of the user.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-`is_admin`
-
-**Description:** True, if user is an admin.
-
-| attribute | value |
-| --- | --- |
-| *Type* | Bool |
-
-`name`
-
-**Description:** Name of the user.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-`projects`
-
-**Description:** Json-array with all assigned projects together with role and project-admin-status.
-
-| attribute | value |
-| --- | --- |
-| *Type* | Array |
-
-#### GET
-
-List all available projects of the user, who made the request.
-
-**Request-Parameter**
-
-
-`user_id`
-
-**Description:** ID of the user.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | False |
-| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9@]* |
-| *Minimum string-length* | 4 |
-| *Maximum string-length* | 256 |
-
-**Response-Parameter**
-
-
-`projects`
-
-**Description:** Json-array with all assigned projects together with role and project-admin-status.
-
-| attribute | value |
-| --- | --- |
-| *Type* | Array |
-
-#### POST
-
-Add a project to a specific user.
-
-**Request-Parameter**
-
-
-`id`
-
-**Description:** ID of the user.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | True |
-| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9@]* |
-| *Minimum string-length* | 4 |
-| *Maximum string-length* | 256 |
-
-`is_project_admin`
-
-**Description:** Set this to true, if the user should be an admin within the assigned project.
-
-| attribute | value |
-| --- | --- |
-| *Type* | Bool |
-| *Required* | False |
-| *Default* | false |
-
-`project_id`
-
-**Description:** ID of the project, which has to be added to the user.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | True |
-| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9]* |
-| *Minimum string-length* | 4 |
-| *Maximum string-length* | 256 |
-
-`role`
-
-**Description:** Role, which has to be assigned to the user within the project
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | True |
-| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9]* |
-| *Minimum string-length* | 4 |
-| *Maximum string-length* | 256 |
-
-**Response-Parameter**
-
-
-`creator_id`
-
-**Description:** Id of the creator of the user.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-`id`
-
-**Description:** ID of the user.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-`is_admin`
-
-**Description:** True, if user is an admin.
-
-| attribute | value |
-| --- | --- |
-| *Type* | Bool |
-
-`name`
-
-**Description:** Name of the user.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-`projects`
-
-**Description:** Json-array with all assigned projects together with role and project-admin-status.
-
-| attribute | value |
-| --- | --- |
-| *Type* | Array |
-
-## kyouko
-
-
-### v1/bind_thread_to_core
-
-#### POST
-
-Bind threads of a specific thead-type-name to a specific core.
-
-**Request-Parameter**
-
-
-`core_ids`
-
-**Description:** Core-ids to bind to.
-
-| attribute | value |
-| --- | --- |
-| *Type* | Array |
-| *Required* | True |
-
-`thread_name`
-
-**Description:** Thread-type-name of the threads, which should be bound to the core.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | True |
-| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9\-]* |
-| *Minimum string-length* | 3 |
-| *Maximum string-length* | 256 |
-
-**Response-Parameter**
-
-
-### v1/cluster
-
-#### DELETE
+### DELETE
 
 Delete a cluster.
 
@@ -1008,7 +187,7 @@ Delete a cluster.
 **Response-Parameter**
 
 
-#### GET
+### GET
 
 Show information of a specific cluster.
 
@@ -1068,7 +247,7 @@ Show information of a specific cluster.
 | --- | --- |
 | *Type* | String |
 
-#### POST
+### POST
 
 Create new cluster.
 
@@ -1139,9 +318,9 @@ Create new cluster.
 | --- | --- |
 | *Type* | String |
 
-### v1/cluster/all
+## v1/cluster/all
 
-#### GET
+### GET
 
 List all visible clusters.
 
@@ -1167,9 +346,9 @@ List all visible clusters.
 | --- | --- |
 | *Type* | Array |
 
-### v1/cluster/load
+## v1/cluster/load
 
-#### POST
+### POST
 
 Load a snapshot from shiori into an existing cluster and override the old data.
 
@@ -1207,9 +386,9 @@ Load a snapshot from shiori into an existing cluster and override the old data.
 | --- | --- |
 | *Type* | String |
 
-### v1/cluster/save
+## v1/cluster/save
 
-#### POST
+### POST
 
 Save a cluster.
 
@@ -1257,9 +436,9 @@ Save a cluster.
 | --- | --- |
 | *Type* | String |
 
-### v1/cluster/set_mode
+## v1/cluster/set_mode
 
-#### PUT
+### PUT
 
 Set mode of the cluster.
 
@@ -1323,545 +502,9 @@ Set mode of the cluster.
 | --- | --- |
 | *Type* | String |
 
-### v1/documentation/api
+## v1/cluster_snapshot
 
-#### GET
-
-Generate a user-specific documentation for the API of the current component.
-
-**Request-Parameter**
-
-
-`type`
-
-**Description:** Output-type of the document (pdf, rst, md).
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | False |
-| *Default* | pdf |
-
-**Response-Parameter**
-
-
-`documentation`
-
-**Description:** API-documentation as base64 converted string.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-### v1/get_thread_mapping
-
-#### GET
-
-Collect all thread-names with its acutal mapped core-id's
-
-**Request-Parameter**
-
-
-**Response-Parameter**
-
-
-`thread_map`
-
-**Description:** Map with all thread-names and its core-id as json-string.
-
-| attribute | value |
-| --- | --- |
-| *Type* | Map |
-
-### v1/task
-
-#### DELETE
-
-Delete a task or abort a task, if it is actually running.
-
-**Request-Parameter**
-
-
-`cluster_uuid`
-
-**Description:** UUID of the cluster, which contains the task in its queue
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | True |
-| *Must match the regex* | [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12} |
-
-`uuid`
-
-**Description:** UUID of the task, which should be deleted
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | True |
-| *Must match the regex* | [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12} |
-
-**Response-Parameter**
-
-
-#### GET
-
-Show information of a specific task.
-
-**Request-Parameter**
-
-
-`cluster_uuid`
-
-**Description:** UUID of the cluster, which should process the request
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | True |
-| *Must match the regex* | [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12} |
-
-`uuid`
-
-**Description:** UUID of the cluster, which should process the request
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | True |
-| *Must match the regex* | [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12} |
-
-**Response-Parameter**
-
-
-`end_timestamp`
-
-**Description:** Timestamp in UTC when the task was finished.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-`percentage_finished`
-
-**Description:** Percentation of the progress between 0.0 and 1.0.
-
-| attribute | value |
-| --- | --- |
-| *Type* | Float |
-
-`queue_timestamp`
-
-**Description:** Timestamp in UTC when the task entered the queued state, which is basicall the timestamp when the task was created
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-`start_timestamp`
-
-**Description:** Timestamp in UTC when the task entered the active state.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-`state`
-
-**Description:** Actual state of the task (queued, active, aborted or finished).
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-#### POST
-
-Add new task to the task-queue of a cluster.
-
-**Request-Parameter**
-
-
-`cluster_uuid`
-
-**Description:** UUID of the cluster, which should process the request
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | True |
-| *Must match the regex* | [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12} |
-
-`data_set_uuid`
-
-**Description:** UUID of the data-set with the input, which coming from shiori.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | True |
-| *Must match the regex* | [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12} |
-
-`name`
-
-**Description:** Name for the new task for better identification.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | True |
-| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9 ]* |
-| *Minimum string-length* | 4 |
-| *Maximum string-length* | 256 |
-
-`type`
-
-**Description:** UUID of the data-set with the input, which coming from shiori.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | True |
-| *Must match the regex* | ^(learn|request)$ |
-
-**Response-Parameter**
-
-
-`name`
-
-**Description:** Name of the new created task.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-`uuid`
-
-**Description:** UUID of the new created task.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-### v1/task/all
-
-#### GET
-
-List all visible tasks of a specific cluster.
-
-**Request-Parameter**
-
-
-`cluster_uuid`
-
-**Description:** UUID of the cluster, whos tasks should be listed
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | True |
-| *Must match the regex* | [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12} |
-
-**Response-Parameter**
-
-
-`body`
-
-**Description:** Array with all rows of the table, which array arrays too.
-
-| attribute | value |
-| --- | --- |
-| *Type* | Array |
-
-`header`
-
-**Description:** Array with the namings all columns of the table.
-
-| attribute | value |
-| --- | --- |
-| *Type* | Array |
-
-### v1/template
-
-#### DELETE
-
-Delete a template from the database.
-
-**Request-Parameter**
-
-
-`uuid`
-
-**Description:** UUID of the template.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | True |
-| *Must match the regex* | [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12} |
-
-**Response-Parameter**
-
-
-#### GET
-
-Show a specific template.
-
-**Request-Parameter**
-
-
-`uuid`
-
-**Description:** UUID of the template.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | True |
-| *Must match the regex* | [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12} |
-
-**Response-Parameter**
-
-
-`name`
-
-**Description:** Name of the template.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-`owner_id`
-
-**Description:** ID of the user, who created the template.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-`project_id`
-
-**Description:** ID of the project, where the template belongs to.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-`template`
-
-**Description:** The template itself.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-`uuid`
-
-**Description:** UUID of the template.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-`visibility`
-
-**Description:** Visibility of the template (private, shared, public).
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-### v1/template/all
-
-#### GET
-
-List all visible templates.
-
-**Request-Parameter**
-
-
-**Response-Parameter**
-
-
-`body`
-
-**Description:** Array with all rows of the table, which array arrays too.
-
-| attribute | value |
-| --- | --- |
-| *Type* | Array |
-
-`header`
-
-**Description:** Array with the namings all columns of the table.
-
-| attribute | value |
-| --- | --- |
-| *Type* | Array |
-
-### v1/template/upload
-
-#### POST
-
-Upload a new template and store it within the database.
-
-**Request-Parameter**
-
-
-`name`
-
-**Description:** Name for the new template.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | True |
-| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9]* |
-| *Minimum string-length* | 4 |
-| *Maximum string-length* | 256 |
-
-`template`
-
-**Description:** New template to upload as base64 string.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | True |
-
-**Response-Parameter**
-
-
-`name`
-
-**Description:** Name of the new uploaded template.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-`owner_id`
-
-**Description:** ID of the user, who created the new template.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-`project_id`
-
-**Description:** ID of the project, where the new template belongs to.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-`uuid`
-
-**Description:** UUID of the new uploaded template.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-`visibility`
-
-**Description:** Visibility of the new created template (private, shared, public).
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-
-## shiori
-
-
-### v1/audit_log
-
-#### GET
-
-Get audit-log of a user.
-
-**Request-Parameter**
-
-
-`page`
-
-**Description:** Page-number starting with 0 to access the logs. A page has up to 100 entries.
-
-| attribute | value |
-| --- | --- |
-| *Type* | Int |
-| *Required* | True |
-| *Lower border of value* | 0 |
-| *Upper border of value* | 1000000000 |
-
-`user_id`
-
-**Description:** ID of the user, whos entries are requested. Only an admin is allowed to set this values. Any other user get only its own log output based on the token-context.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | False |
-| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9@]* |
-| *Minimum string-length* | 4 |
-| *Maximum string-length* | 256 |
-
-**Response-Parameter**
-
-
-`body`
-
-**Description:** Array with all rows of the table, which array arrays too.
-
-| attribute | value |
-| --- | --- |
-| *Type* | Array |
-
-`header`
-
-**Description:** Array with the namings all columns of the table.
-
-| attribute | value |
-| --- | --- |
-| *Type* | Array |
-
-### v1/bind_thread_to_core
-
-#### POST
-
-Bind threads of a specific thead-type-name to a specific core.
-
-**Request-Parameter**
-
-
-`core_ids`
-
-**Description:** Core-ids to bind to.
-
-| attribute | value |
-| --- | --- |
-| *Type* | Array |
-| *Required* | True |
-
-`thread_name`
-
-**Description:** Thread-type-name of the threads, which should be bound to the core.
-
-| attribute | value |
-| --- | --- |
-| *Type* | String |
-| *Required* | True |
-| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9\-]* |
-| *Minimum string-length* | 3 |
-| *Maximum string-length* | 256 |
-
-**Response-Parameter**
-
-
-### v1/cluster_snapshot
-
-#### DELETE
+### DELETE
 
 Delete a result-set from shiori.
 
@@ -1881,7 +524,7 @@ Delete a result-set from shiori.
 **Response-Parameter**
 
 
-#### GET
+### GET
 
 Get snapshot of a cluster.
 
@@ -1933,7 +576,7 @@ Get snapshot of a cluster.
 | --- | --- |
 | *Type* | String |
 
-#### POST
+### POST
 
 Init new snapshot of a cluster.
 
@@ -2033,7 +676,7 @@ Init new snapshot of a cluster.
 | --- | --- |
 | *Type* | String |
 
-#### PUT
+### PUT
 
 Finish snapshot of a cluster.
 
@@ -2092,9 +735,9 @@ Finish snapshot of a cluster.
 | --- | --- |
 | *Type* | String |
 
-### v1/cluster_snapshot/all
+## v1/cluster_snapshot/all
 
-#### GET
+### GET
 
 List snapshots of all visible cluster.
 
@@ -2120,9 +763,9 @@ List snapshots of all visible cluster.
 | --- | --- |
 | *Type* | Array |
 
-### v1/csv/data_set
+## v1/csv/data_set
 
-#### POST
+### POST
 
 Init new csv-file data-set.
 
@@ -2211,7 +854,7 @@ Init new csv-file data-set.
 | --- | --- |
 | *Type* | String |
 
-#### PUT
+### PUT
 
 Finalize uploaded data-set by checking completeness of the uploaded and convert into generic format.
 
@@ -2249,9 +892,9 @@ Finalize uploaded data-set by checking completeness of the uploaded and convert 
 | --- | --- |
 | *Type* | String |
 
-### v1/data_set
+## v1/data_set
 
-#### DELETE
+### DELETE
 
 Delete a speific data-set.
 
@@ -2271,7 +914,7 @@ Delete a speific data-set.
 **Response-Parameter**
 
 
-#### GET
+### GET
 
 Get information of a specific data-set.
 
@@ -2371,9 +1014,9 @@ Get information of a specific data-set.
 | --- | --- |
 | *Type* | String |
 
-### v1/data_set/all
+## v1/data_set/all
 
-#### GET
+### GET
 
 List all visible data-sets.
 
@@ -2399,9 +1042,9 @@ List all visible data-sets.
 | --- | --- |
 | *Type* | Array |
 
-### v1/data_set/check
+## v1/data_set/check
 
-#### POST
+### POST
 
 Compare a list of values with a data-set to check correctness.
 
@@ -2439,9 +1082,9 @@ Compare a list of values with a data-set to check correctness.
 | --- | --- |
 | *Type* | Float |
 
-### v1/data_set/progress
+## v1/data_set/progress
 
-#### GET
+### GET
 
 Get upload progress of a specific data-set.
 
@@ -2485,11 +1128,11 @@ Get upload progress of a specific data-set.
 | --- | --- |
 | *Type* | String |
 
-### v1/documentation/api
+## v1/documentation/api/rest
 
-#### GET
+### GET
 
-Generate a user-specific documentation for the API of the current component.
+Generate a documentation for the REST-API of all available components.
 
 **Request-Parameter**
 
@@ -2503,21 +1146,22 @@ Generate a user-specific documentation for the API of the current component.
 | *Type* | String |
 | *Required* | False |
 | *Default* | pdf |
+| *Must match the regex* | ^(pdf|rst|md)$ |
 
 **Response-Parameter**
 
 
 `documentation`
 
-**Description:** API-documentation as base64 converted string.
+**Description:** REST-API-documentation as base64 converted string.
 
 | attribute | value |
 | --- | --- |
 | *Type* | String |
 
-### v1/error_log
+## v1/error_log
 
-#### GET
+### GET
 
 Get error-log of a user. Only an admin is allowed to request the error-log.
 
@@ -2566,29 +1210,9 @@ Get error-log of a user. Only an admin is allowed to request the error-log.
 | --- | --- |
 | *Type* | Array |
 
-### v1/get_thread_mapping
+## v1/mnist/data_set
 
-#### GET
-
-Collect all thread-names with its acutal mapped core-id's
-
-**Request-Parameter**
-
-
-**Response-Parameter**
-
-
-`thread_map`
-
-**Description:** Map with all thread-names and its core-id as json-string.
-
-| attribute | value |
-| --- | --- |
-| *Type* | Map |
-
-### v1/mnist/data_set
-
-#### POST
+### POST
 
 Init new mnist-file data-set.
 
@@ -2696,7 +1320,7 @@ Init new mnist-file data-set.
 | --- | --- |
 | *Type* | String |
 
-#### PUT
+### PUT
 
 Finalize uploaded data-set by checking completeness of the uploaded and convert into generic format.
 
@@ -2744,9 +1368,185 @@ Finalize uploaded data-set by checking completeness of the uploaded and convert 
 | --- | --- |
 | *Type* | String |
 
-### v1/request_result
+## v1/power_consumption
 
-#### DELETE
+### GET
+
+Request the power-measurement of the CPU
+
+**Request-Parameter**
+
+
+**Response-Parameter**
+
+
+`power`
+
+**Description:** Json-object with power-measurements
+
+| attribute | value |
+| --- | --- |
+| *Type* | Map |
+
+## v1/project
+
+### DELETE
+
+Delete a specific user from the database.
+
+**Request-Parameter**
+
+
+`id`
+
+**Description:** ID of the project.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+| *Required* | True |
+| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9]* |
+| *Minimum string-length* | 4 |
+| *Maximum string-length* | 256 |
+
+**Response-Parameter**
+
+
+### GET
+
+Show information of a specific registered user.
+
+**Request-Parameter**
+
+
+`id`
+
+**Description:** Id of the user.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+| *Required* | True |
+| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9]* |
+| *Minimum string-length* | 4 |
+| *Maximum string-length* | 256 |
+
+**Response-Parameter**
+
+
+`creator_id`
+
+**Description:** Id of the creator of the user.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+`id`
+
+**Description:** ID of the new user.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+`name`
+
+**Description:** Name of the new user.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+### POST
+
+Register a new project within Misaki.
+
+**Request-Parameter**
+
+
+`id`
+
+**Description:** ID of the new project.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+| *Required* | True |
+| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9]* |
+| *Minimum string-length* | 4 |
+| *Maximum string-length* | 256 |
+
+`name`
+
+**Description:** Name of the new project.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+| *Required* | True |
+| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9 ]* |
+| *Minimum string-length* | 4 |
+| *Maximum string-length* | 256 |
+
+**Response-Parameter**
+
+
+`creator_id`
+
+**Description:** Id of the creator of the project.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+`id`
+
+**Description:** ID of the new project.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+`name`
+
+**Description:** Name of the new project.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+## v1/project/all
+
+### GET
+
+Get information of all registered user as table.
+
+**Request-Parameter**
+
+
+**Response-Parameter**
+
+
+`body`
+
+**Description:** Array with all rows of the table, which array arrays too.
+
+| attribute | value |
+| --- | --- |
+| *Type* | Array |
+
+`header`
+
+**Description:** Array with the namings all columns of the table.
+
+| attribute | value |
+| --- | --- |
+| *Type* | Array |
+
+## v1/request_result
+
+### DELETE
 
 Delete a request-result from shiori.
 
@@ -2766,7 +1566,7 @@ Delete a request-result from shiori.
 **Response-Parameter**
 
 
-#### GET
+### GET
 
 Get a specific request-result
 
@@ -2834,9 +1634,9 @@ Get a specific request-result
 | --- | --- |
 | *Type* | String |
 
-### v1/request_result/all
+## v1/request_result/all
 
-#### GET
+### GET
 
 List all visilbe request-results.
 
@@ -2857,6 +1657,1019 @@ List all visilbe request-results.
 `header`
 
 **Description:** Array with the namings all columns of the table.
+
+| attribute | value |
+| --- | --- |
+| *Type* | Array |
+
+## v1/speed
+
+### GET
+
+Request the speed of the CPU
+
+**Request-Parameter**
+
+
+**Response-Parameter**
+
+
+`current_speed`
+
+**Description:** Json-object with current-speed-measurements
+
+| attribute | value |
+| --- | --- |
+| *Type* | Map |
+
+## v1/system_info
+
+### GET
+
+Get all available information of the local system.
+    - Topology of the cpu-resources
+    - Speed of the cpu
+
+**Request-Parameter**
+
+
+**Response-Parameter**
+
+
+`info`
+
+**Description:** All available information of the local system.
+
+| attribute | value |
+| --- | --- |
+| *Type* | Map |
+
+## v1/task
+
+### DELETE
+
+Delete a task or abort a task, if it is actually running.
+
+**Request-Parameter**
+
+
+`cluster_uuid`
+
+**Description:** UUID of the cluster, which contains the task in its queue
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+| *Required* | True |
+| *Must match the regex* | [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12} |
+
+`uuid`
+
+**Description:** UUID of the task, which should be deleted
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+| *Required* | True |
+| *Must match the regex* | [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12} |
+
+**Response-Parameter**
+
+
+### GET
+
+Show information of a specific task.
+
+**Request-Parameter**
+
+
+`cluster_uuid`
+
+**Description:** UUID of the cluster, which should process the request
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+| *Required* | True |
+| *Must match the regex* | [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12} |
+
+`uuid`
+
+**Description:** UUID of the cluster, which should process the request
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+| *Required* | True |
+| *Must match the regex* | [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12} |
+
+**Response-Parameter**
+
+
+`end_timestamp`
+
+**Description:** Timestamp in UTC when the task was finished.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+`percentage_finished`
+
+**Description:** Percentation of the progress between 0.0 and 1.0.
+
+| attribute | value |
+| --- | --- |
+| *Type* | Float |
+
+`queue_timestamp`
+
+**Description:** Timestamp in UTC when the task entered the queued state, which is basicall the timestamp when the task was created
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+`start_timestamp`
+
+**Description:** Timestamp in UTC when the task entered the active state.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+`state`
+
+**Description:** Actual state of the task (queued, active, aborted or finished).
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+### POST
+
+Add new task to the task-queue of a cluster.
+
+**Request-Parameter**
+
+
+`cluster_uuid`
+
+**Description:** UUID of the cluster, which should process the request
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+| *Required* | True |
+| *Must match the regex* | [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12} |
+
+`data_set_uuid`
+
+**Description:** UUID of the data-set with the input, which coming from shiori.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+| *Required* | True |
+| *Must match the regex* | [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12} |
+
+`name`
+
+**Description:** Name for the new task for better identification.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+| *Required* | True |
+| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9 ]* |
+| *Minimum string-length* | 4 |
+| *Maximum string-length* | 256 |
+
+`type`
+
+**Description:** UUID of the data-set with the input, which coming from shiori.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+| *Required* | True |
+| *Must match the regex* | ^(learn|request)$ |
+
+**Response-Parameter**
+
+
+`name`
+
+**Description:** Name of the new created task.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+`uuid`
+
+**Description:** UUID of the new created task.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+## v1/task/all
+
+### GET
+
+List all visible tasks of a specific cluster.
+
+**Request-Parameter**
+
+
+`cluster_uuid`
+
+**Description:** UUID of the cluster, whos tasks should be listed
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+| *Required* | True |
+| *Must match the regex* | [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12} |
+
+**Response-Parameter**
+
+
+`body`
+
+**Description:** Array with all rows of the table, which array arrays too.
+
+| attribute | value |
+| --- | --- |
+| *Type* | Array |
+
+`header`
+
+**Description:** Array with the namings all columns of the table.
+
+| attribute | value |
+| --- | --- |
+| *Type* | Array |
+
+## v1/temperature_production
+
+### GET
+
+Request the temperature-measurement of the CPU
+
+**Request-Parameter**
+
+
+**Response-Parameter**
+
+
+`temperature`
+
+**Description:** Json-object with temperature-measurements
+
+| attribute | value |
+| --- | --- |
+| *Type* | Map |
+
+## v1/template
+
+### DELETE
+
+Delete a template from the database.
+
+**Request-Parameter**
+
+
+`uuid`
+
+**Description:** UUID of the template.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+| *Required* | True |
+| *Must match the regex* | [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12} |
+
+**Response-Parameter**
+
+
+### GET
+
+Show a specific template.
+
+**Request-Parameter**
+
+
+`uuid`
+
+**Description:** UUID of the template.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+| *Required* | True |
+| *Must match the regex* | [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12} |
+
+**Response-Parameter**
+
+
+`name`
+
+**Description:** Name of the template.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+`owner_id`
+
+**Description:** ID of the user, who created the template.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+`project_id`
+
+**Description:** ID of the project, where the template belongs to.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+`template`
+
+**Description:** The template itself.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+`uuid`
+
+**Description:** UUID of the template.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+`visibility`
+
+**Description:** Visibility of the template (private, shared, public).
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+## v1/template/all
+
+### GET
+
+List all visible templates.
+
+**Request-Parameter**
+
+
+**Response-Parameter**
+
+
+`body`
+
+**Description:** Array with all rows of the table, which array arrays too.
+
+| attribute | value |
+| --- | --- |
+| *Type* | Array |
+
+`header`
+
+**Description:** Array with the namings all columns of the table.
+
+| attribute | value |
+| --- | --- |
+| *Type* | Array |
+
+## v1/template/upload
+
+### POST
+
+Upload a new template and store it within the database.
+
+**Request-Parameter**
+
+
+`name`
+
+**Description:** Name for the new template.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+| *Required* | True |
+| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9]* |
+| *Minimum string-length* | 4 |
+| *Maximum string-length* | 256 |
+
+`template`
+
+**Description:** New template to upload as base64 string.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+| *Required* | True |
+
+**Response-Parameter**
+
+
+`name`
+
+**Description:** Name of the new uploaded template.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+`owner_id`
+
+**Description:** ID of the user, who created the new template.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+`project_id`
+
+**Description:** ID of the project, where the new template belongs to.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+`uuid`
+
+**Description:** UUID of the new uploaded template.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+`visibility`
+
+**Description:** Visibility of the new created template (private, shared, public).
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+## v1/threading
+
+### GET
+
+Get Mapping of the all threads of all components to its bound cpu-core
+
+**Request-Parameter**
+
+
+**Response-Parameter**
+
+
+`thread_map`
+
+**Description:** Map with all thread-names and its core-id as json-string.
+
+| attribute | value |
+| --- | --- |
+| *Type* | Map |
+
+## v1/token
+
+### POST
+
+Create a JWT-access-token for a specific user.
+
+**Request-Parameter**
+
+
+`id`
+
+**Description:** ID of the user.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+| *Required* | True |
+| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9@]* |
+| *Minimum string-length* | 4 |
+| *Maximum string-length* | 256 |
+
+`password`
+
+**Description:** Passphrase of the user, to verify the access.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+| *Required* | True |
+| *Minimum string-length* | 8 |
+| *Maximum string-length* | 4096 |
+
+**Response-Parameter**
+
+
+`id`
+
+**Description:** ID of the user.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+`is_admin`
+
+**Description:** Set this to true to register the new user as admin.
+
+| attribute | value |
+| --- | --- |
+| *Type* | Bool |
+
+`name`
+
+**Description:** Name of the user.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+`token`
+
+**Description:** New JWT-access-token for the user.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+### PUT
+
+Create a JWT-access-token for a specific user.
+
+**Request-Parameter**
+
+
+`project_id`
+
+**Description:** ID of the project, which has to be used for the new token.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+| *Required* | True |
+| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9]* |
+| *Minimum string-length* | 4 |
+| *Maximum string-length* | 256 |
+
+**Response-Parameter**
+
+
+`id`
+
+**Description:** ID of the user.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+`is_admin`
+
+**Description:** Set this to true to register the new user as admin.
+
+| attribute | value |
+| --- | --- |
+| *Type* | Bool |
+
+`name`
+
+**Description:** Name of the user.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+`token`
+
+**Description:** New JWT-access-token for the user.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+## v1/user
+
+### DELETE
+
+Delete a specific user from the database.
+
+**Request-Parameter**
+
+
+`id`
+
+**Description:** ID of the user.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+| *Required* | True |
+| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9@]* |
+| *Minimum string-length* | 4 |
+| *Maximum string-length* | 256 |
+
+**Response-Parameter**
+
+
+### GET
+
+Show information of a specific user.
+
+**Request-Parameter**
+
+
+`id`
+
+**Description:** Id of the user.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+| *Required* | True |
+| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9@]* |
+| *Minimum string-length* | 4 |
+| *Maximum string-length* | 256 |
+
+**Response-Parameter**
+
+
+`creator_id`
+
+**Description:** Id of the creator of the user.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+`id`
+
+**Description:** ID of the user.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+`is_admin`
+
+**Description:** Set this to true to register the new user as admin.
+
+| attribute | value |
+| --- | --- |
+| *Type* | Bool |
+
+`name`
+
+**Description:** Name of the user.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+`projects`
+
+**Description:** Json-array with all assigned projects together with role and project-admin-status.
+
+| attribute | value |
+| --- | --- |
+| *Type* | Array |
+
+### POST
+
+Register a new user within Misaki.
+
+**Request-Parameter**
+
+
+`id`
+
+**Description:** ID of the new user.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+| *Required* | True |
+| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9@]* |
+| *Minimum string-length* | 4 |
+| *Maximum string-length* | 256 |
+
+`is_admin`
+
+**Description:** Set this to 1 to register the new user as admin.
+
+| attribute | value |
+| --- | --- |
+| *Type* | Bool |
+| *Required* | False |
+| *Default* | false |
+
+`name`
+
+**Description:** Name of the new user.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+| *Required* | True |
+| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9 ]* |
+| *Minimum string-length* | 4 |
+| *Maximum string-length* | 256 |
+
+`password`
+
+**Description:** Passphrase of the user.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+| *Required* | True |
+| *Minimum string-length* | 8 |
+| *Maximum string-length* | 4096 |
+
+**Response-Parameter**
+
+
+`creator_id`
+
+**Description:** Id of the creator of the user.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+`id`
+
+**Description:** ID of the new user.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+`is_admin`
+
+**Description:** True, if user is an admin.
+
+| attribute | value |
+| --- | --- |
+| *Type* | Bool |
+
+`name`
+
+**Description:** Name of the new user.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+`projects`
+
+**Description:** Json-array with all assigned projects together with role and project-admin-status.
+
+| attribute | value |
+| --- | --- |
+| *Type* | Array |
+
+## v1/user/all
+
+### GET
+
+Get information of all registered users.
+
+**Request-Parameter**
+
+
+**Response-Parameter**
+
+
+`body`
+
+**Description:** Array with all rows of the table, which array arrays too.
+
+| attribute | value |
+| --- | --- |
+| *Type* | Array |
+
+`header`
+
+**Description:** Array with the namings all columns of the table.
+
+| attribute | value |
+| --- | --- |
+| *Type* | Array |
+
+## v1/user/project
+
+### DELETE
+
+Remove a project from a specific user
+
+**Request-Parameter**
+
+
+`id`
+
+**Description:** ID of the user.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+| *Required* | True |
+| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9@]* |
+| *Minimum string-length* | 4 |
+| *Maximum string-length* | 256 |
+
+`project_id`
+
+**Description:** ID of the project, which has to be removed from the user.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+| *Required* | True |
+| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9]* |
+| *Minimum string-length* | 4 |
+| *Maximum string-length* | 256 |
+
+**Response-Parameter**
+
+
+`creator_id`
+
+**Description:** Id of the creator of the user.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+`id`
+
+**Description:** ID of the user.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+`is_admin`
+
+**Description:** True, if user is an admin.
+
+| attribute | value |
+| --- | --- |
+| *Type* | Bool |
+
+`name`
+
+**Description:** Name of the user.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+`projects`
+
+**Description:** Json-array with all assigned projects together with role and project-admin-status.
+
+| attribute | value |
+| --- | --- |
+| *Type* | Array |
+
+### GET
+
+List all available projects of the user, who made the request.
+
+**Request-Parameter**
+
+
+`user_id`
+
+**Description:** ID of the user.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+| *Required* | False |
+| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9@]* |
+| *Minimum string-length* | 4 |
+| *Maximum string-length* | 256 |
+
+**Response-Parameter**
+
+
+`projects`
+
+**Description:** Json-array with all assigned projects together with role and project-admin-status.
+
+| attribute | value |
+| --- | --- |
+| *Type* | Array |
+
+### POST
+
+Add a project to a specific user.
+
+**Request-Parameter**
+
+
+`id`
+
+**Description:** ID of the user.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+| *Required* | True |
+| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9@]* |
+| *Minimum string-length* | 4 |
+| *Maximum string-length* | 256 |
+
+`is_project_admin`
+
+**Description:** Set this to true, if the user should be an admin within the assigned project.
+
+| attribute | value |
+| --- | --- |
+| *Type* | Bool |
+| *Required* | False |
+| *Default* | false |
+
+`project_id`
+
+**Description:** ID of the project, which has to be added to the user.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+| *Required* | True |
+| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9]* |
+| *Minimum string-length* | 4 |
+| *Maximum string-length* | 256 |
+
+`role`
+
+**Description:** Role, which has to be assigned to the user within the project
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+| *Required* | True |
+| *Must match the regex* | [a-zA-Z][a-zA-Z_0-9]* |
+| *Minimum string-length* | 4 |
+| *Maximum string-length* | 256 |
+
+**Response-Parameter**
+
+
+`creator_id`
+
+**Description:** Id of the creator of the user.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+`id`
+
+**Description:** ID of the user.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+`is_admin`
+
+**Description:** True, if user is an admin.
+
+| attribute | value |
+| --- | --- |
+| *Type* | Bool |
+
+`name`
+
+**Description:** Name of the user.
+
+| attribute | value |
+| --- | --- |
+| *Type* | String |
+
+`projects`
+
+**Description:** Json-array with all assigned projects together with role and project-admin-status.
 
 | attribute | value |
 | --- | --- |
