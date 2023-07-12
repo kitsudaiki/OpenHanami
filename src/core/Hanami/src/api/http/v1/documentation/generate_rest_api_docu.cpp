@@ -23,6 +23,8 @@
 #include "generate_rest_api_docu.h"
 
 #include <hanami_root.h>
+#include <docu_generation/md_docu_generation.h>
+#include <docu_generation/rst_docu_generation.h>
 
 #include <libKitsunemimiCrypto/common.h>
 #include <libKitsunemimiCommon/methods/string_methods.h>
@@ -62,54 +64,6 @@ GenerateRestApiDocu::GenerateRestApiDocu()
     //----------------------------------------------------------------------------------------------
 }
 
-bool
-appendDocu(std::string &completeDocumentation,
-           const std::string &componentDocu,
-           Kitsunemimi::ErrorContainer &error)
-{
-    std::string rstDocu;
-    if(Kitsunemimi::decodeBase64(rstDocu, componentDocu) == false)
-    {
-        error.addMeesage("Unable to convert documentation-payload from base64 back to rst");
-        return false;
-    }
-
-    // attach new text to the final document
-    completeDocumentation.append("\n");
-    completeDocumentation.append(rstDocu);
-
-    return true;
-}
-
-/**
- * @brief request endpoint-documentation from misaki itself
- *
- * @param completeDocumentation reference for the final document to attach new content
- */
-bool
-makeInternalRequest(std::string &completeDocumentation,
-                    const std::string &type)
-{
-    Kitsunemimi::DataMap result;
-    Kitsunemimi::ErrorContainer error;
-    BlossomStatus status;
-    Kitsunemimi::DataMap values;
-    values.insert("type", new Kitsunemimi::DataValue(type));
-
-    const bool ret = HanamiRoot::root->triggerBlossom(result,
-                                                      "get_api_documentation",
-                                                      "-",
-                                                      Kitsunemimi::DataMap(),
-                                                      values,
-                                                      status,
-                                                      error);
-    if(ret == false) {
-        return false;
-    }
-
-    return appendDocu(completeDocumentation, result.getStringByKey("documentation"), error);
-}
-
 /**
  * @brief runTask
  */
@@ -135,16 +89,13 @@ GenerateRestApiDocu::runTask(BlossomIO &blossomIO,
     if(type == "pdf"
             || type == "rst")
     {
-        completeDocumentation.append("*****************\n");
-        completeDocumentation.append("API documentation\n");
-        completeDocumentation.append("*****************\n\n");
+        createRstDocumentation(completeDocumentation);
+
     }
     else if(type == "md")
     {
-        completeDocumentation.append("# API documentation\n");
+        createMdDocumentation(completeDocumentation);
     }
-
-    makeInternalRequest(completeDocumentation, type);
 
     std::string output;
 
