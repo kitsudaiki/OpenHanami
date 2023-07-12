@@ -295,32 +295,24 @@ IniItem::toString()
     std::string output = "";
 
     // iterate over all groups
-    const std::map<std::string, DataItem*> completeContent = m_content->toMap()->map;
-    std::map<std::string, DataItem*>::const_iterator itGroup;
-    for(itGroup = completeContent.begin();
-        itGroup != completeContent.end();
-        itGroup++)
+    for(const auto& [name, globalItem] : m_content->toMap()->map)
     {
         // print group-header
         output.append("[");
-        output.append(itGroup->first);
+        output.append(name);
         output.append("]\n");
 
         // iterate over group-content
-        const std::map<std::string, DataItem*> groupContent = itGroup->second->toMap()->map;
-        map<string, DataItem*>::const_iterator itItem;
-        for(itItem = groupContent.begin();
-            itItem != groupContent.end();
-            itItem++)
+        for(const auto& [name, groupItem] : globalItem->toMap()->map)
         {
             // print line of group-content
-            output.append(itItem->first);
+            output.append(name);
             output.append(" = ");
 
-            if(itItem->second->getType() == DataItem::ARRAY_TYPE)
+            if(groupItem->getType() == DataItem::ARRAY_TYPE)
             {
                 // print arrays
-                const std::vector<DataItem*> array = itItem->second->toArray()->array;
+                const std::vector<DataItem*> array = groupItem->toArray()->array;
                 for(uint64_t i = 0; i < array.size(); i++)
                 {
                     if(i != 0) {
@@ -332,7 +324,7 @@ IniItem::toString()
             else
             {
                 // print simple items
-                itItem->second->toString(false, &output);
+                groupItem->toString(false, &output);
             }
 
             output.append("\n");

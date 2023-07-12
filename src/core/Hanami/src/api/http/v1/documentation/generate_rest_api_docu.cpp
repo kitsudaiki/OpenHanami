@@ -159,11 +159,8 @@ GenerateRestApiDocu::convertRstToPdf(std::string &pdfOutput,
         }
 
         // run rst2pdf to convert the rst-document into a pdf-document
-        std::vector<std::string> args;
-        args.reserve(2);
-        args.emplace_back(rstPath);
-        args.emplace_back(pdfPath);
-        Kitsunemimi::ProcessResult ret = Kitsunemimi::runSyncProcess("rst2pdf", args);
+        const std::vector<std::string> args = {rstPath, pdfPath};
+        const Kitsunemimi::ProcessResult ret = Kitsunemimi::runSyncProcess("rst2pdf", args);
         if(ret.success == false)
         {
             error.addMeesage("Failed execute 'rst2pdf' to convert rst-file '"
@@ -181,7 +178,6 @@ GenerateRestApiDocu::convertRstToPdf(std::string &pdfOutput,
         // read pdf-document into a byte-buffer
         Kitsunemimi::DataBuffer pdfContent;
         Kitsunemimi::BinaryFile pdfFile(pdfPath);
-
         if(pdfFile.readCompleteFile(pdfContent, error) == false)
         {
             error.addMeesage("Failed to read pdf-file on path '" + pdfPath + "'");

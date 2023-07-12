@@ -341,8 +341,7 @@ CreateCluster::checkConnections(Kitsunemimi::Hanami::ClusterMeta &clusterTemplat
             if(targetSegmentPtr->type != "output")
             {
                 // get segment-meta-data of the target-segment
-                std::map<std::string, SegmentMeta>::iterator targetSegmentIt;
-                targetSegmentIt = segmentTemplates.find(targetSegmentPtr->type);
+                const auto targetSegmentIt = segmentTemplates.find(targetSegmentPtr->type);
                 if(targetSegmentIt == segmentTemplates.end())
                 {
                     status.errorMessage = "Segment-template with name '"
@@ -354,7 +353,7 @@ CreateCluster::checkConnections(Kitsunemimi::Hanami::ClusterMeta &clusterTemplat
                 }
 
                 // get target-brick of the target-segment
-                BrickMeta* brickMeta = targetSegmentIt->second.getBrick(conn.targetBrick);
+                const BrickMeta* brickMeta = targetSegmentIt->second.getBrick(conn.targetBrick);
                 if(brickMeta == nullptr)
                 {
                     status.errorMessage = "Segment-template with name '"
@@ -382,8 +381,7 @@ CreateCluster::checkConnections(Kitsunemimi::Hanami::ClusterMeta &clusterTemplat
             else
             {
                 // get segment-meta-data of the source-segment
-                std::map<std::string, SegmentMeta>::iterator sourceSegmentIt;
-                sourceSegmentIt = segmentTemplates.find(sourceSegmentPtr.type);
+                const auto sourceSegmentIt = segmentTemplates.find(sourceSegmentPtr.type);
                 if(sourceSegmentIt == segmentTemplates.end())
                 {
                     status.errorMessage = "Segment-template with name '"
@@ -395,7 +393,7 @@ CreateCluster::checkConnections(Kitsunemimi::Hanami::ClusterMeta &clusterTemplat
                 }
 
                 // get source-brick of the source-segment
-                BrickMeta* brickMeta = sourceSegmentIt->second.getBrick(conn.sourceBrick);
+                const BrickMeta* brickMeta = sourceSegmentIt->second.getBrick(conn.sourceBrick);
                 if(brickMeta == nullptr)
                 {
                     status.errorMessage = "Segment-template with name '"

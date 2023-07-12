@@ -63,10 +63,7 @@ struct State
     bool
     addTransition(const uint32_t &key, State* nextState)
     {
-        std::map<uint32_t, State*>::iterator it;
-        it = nextStates.find(key);
-
-        if(it != nextStates.end()) {
+        if(nextStates.find(key) != nextStates.end()) {
             return false;
         }
 
@@ -86,9 +83,7 @@ struct State
     State*
     next(const uint32_t &key)
     {
-        std::map<uint32_t, State*>::iterator it;
-        it = nextStates.find(key);
-
+        auto it = nextStates.find(key);
         if(it != nextStates.end())
         {
             State* tempState = it->second;

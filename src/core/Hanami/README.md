@@ -1,4 +1,4 @@
-# KyoukoMind
+# Hanami
 
 ## Description
 

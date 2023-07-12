@@ -98,7 +98,7 @@ ListTask::runTask(BlossomIO &blossomIO,
     result.addColumn("end");
 
     // build table-content
-    for(auto const& [id, progress] : progressOverview)
+    for(const auto& [id, progress] : progressOverview)
     {
         if(progress.state == QUEUED_TASK_STATE)
         {

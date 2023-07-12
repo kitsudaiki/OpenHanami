@@ -42,42 +42,26 @@ overrideItems(DataMap &original,
 {
     if(type == ONLY_EXISTING)
     {
-        std::map<std::string, Kitsunemimi::DataItem*>::const_iterator overrideIt;
-        for(overrideIt = override.map.begin();
-            overrideIt != override.map.end();
-            overrideIt++)
+        for(const auto& [name, item] : override.map)
         {
-            std::map<std::string, Kitsunemimi::DataItem*>::iterator originalIt;
-            originalIt = original.map.find(overrideIt->first);
-
-            if(originalIt != original.map.end()) {
-                original.insert(overrideIt->first, overrideIt->second->copy(), true);
+            if(original.map.find(name) != original.map.end()) {
+                original.insert(name, item->copy(), true);
             }
         }
     }
     if(type == ONLY_NON_EXISTING)
     {
-        std::map<std::string, Kitsunemimi::DataItem*>::const_iterator overrideIt;
-        for(overrideIt = override.map.begin();
-            overrideIt != override.map.end();
-            overrideIt++)
+        for(const auto& [name, item] : override.map)
         {
-            std::map<std::string, Kitsunemimi::DataItem*>::iterator originalIt;
-            originalIt = original.map.find(overrideIt->first);
-
-            if(originalIt == original.map.end()) {
-                original.insert(overrideIt->first, overrideIt->second->copy(), true);
+            if(original.map.find(name) == original.map.end()) {
+                original.insert(name, item->copy(), true);
             }
         }
     }
     else if(type == ALL)
     {
-        std::map<std::string, Kitsunemimi::DataItem*>::const_iterator overrideIt;
-        for(overrideIt = override.map.begin();
-            overrideIt != override.map.end();
-            overrideIt++)
-        {
-            original.insert(overrideIt->first, overrideIt->second->copy(), true);
+        for(const auto& [name, item] : override.map) {
+            original.insert(name, item->copy(), true);
         }
     }
 }

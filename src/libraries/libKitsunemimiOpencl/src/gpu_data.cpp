@@ -119,8 +119,7 @@ GpuData::addValue(const std::string &name,
 GpuData::WorkerBuffer*
 GpuData::getBuffer(const std::string &name)
 {
-    std::map<std::string, WorkerBuffer>::iterator it;
-    it = m_buffer.find(name);
+    const auto it = m_buffer.find(name);
     if(it != m_buffer.end()) {
         return &it->second;
     }
@@ -138,9 +137,7 @@ GpuData::getBuffer(const std::string &name)
 bool
 GpuData::containsBuffer(const std::string &name)
 {
-    std::map<std::string, WorkerBuffer>::const_iterator it;
-    it = m_buffer.find(name);
-    if(it != m_buffer.end()) {
+    if(m_buffer.find(name) != m_buffer.end()) {
         return true;
     }
 
@@ -157,8 +154,7 @@ GpuData::containsBuffer(const std::string &name)
 void*
 GpuData::getBufferData(const std::string &name)
 {
-    std::map<std::string, WorkerBuffer>::iterator it;
-    it = m_buffer.find(name);
+    const auto it = m_buffer.find(name);
     if(it != m_buffer.end()) {
         return it->second.data;
     }
@@ -176,9 +172,7 @@ GpuData::getBufferData(const std::string &name)
 bool
 GpuData::containsKernel(const std::string &name)
 {
-    std::map<std::string, KernelDef>::const_iterator it;
-    it = m_kernel.find(name);
-    if(it != m_kernel.end()) {
+    if(m_kernel.find(name) != m_kernel.end()) {
         return true;
     }
 
@@ -195,8 +189,7 @@ GpuData::containsKernel(const std::string &name)
 GpuData::KernelDef*
 GpuData::getKernel(const std::string &name)
 {
-    std::map<std::string, KernelDef>::iterator it;
-    it = m_kernel.find(name);
+    const auto it = m_kernel.find(name);
     if(it != m_kernel.end()) {
         return &it->second;
     }
@@ -216,8 +209,7 @@ uint32_t
 GpuData::getArgPosition(KernelDef* kernelDef,
                         const std::string &bufferName)
 {
-    std::map<std::string, uint32_t>::iterator it;
-    it = kernelDef->arguments.find(bufferName);
+    const auto it = kernelDef->arguments.find(bufferName);
     if(it != kernelDef->arguments.end()) {
         return it->second;
     }

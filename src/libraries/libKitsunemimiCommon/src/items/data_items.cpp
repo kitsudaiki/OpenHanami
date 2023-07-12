@@ -788,15 +788,12 @@ DataMap::DataMap(const DataMap &other)
     m_valueType = other.m_valueType;
 
     // copy content
-    std::map<std::string, DataItem*>::iterator it;
-    for(it = otherMap.begin();
-        it != otherMap.end();
-        it++)
+    for(const auto& [name, item] : otherMap)
     {
-        if(it->second != nullptr) {
-            map.insert(std::make_pair(it->first, it->second->copy()));
+        if(item != nullptr) {
+            map.insert(std::make_pair(name, item->copy()));
         } else {
-            map.insert(std::make_pair(it->first, nullptr));
+            map.insert(std::make_pair(name, nullptr));
         }
     }
 }
@@ -827,7 +824,7 @@ DataMap
         this->m_valueType = other.m_valueType;
 
         // copy content
-        for(auto const& [name, item] : otherMap)
+        for(const auto& [name, item] : otherMap)
         {
             if(item != nullptr) {
                 this->map.insert(make_pair(name, item->copy()));
@@ -870,9 +867,7 @@ DataMap::operator[](const uint64_t index) const
 DataItem*
 DataMap::get(const std::string &key) const
 {
-    std::map<std::string, DataItem*>::const_iterator it;
-    it = map.find(key);
-
+    const auto it = map.find(key);
     if(it != map.end()) {
         return it->second;
     }
@@ -893,13 +888,10 @@ DataMap::get(const uint64_t index) const
     }
 
     uint32_t counter = 0;
-    std::map<std::string, DataItem*>::const_iterator it;
-    for(it = map.begin();
-        it != map.end();
-        it++)
+    for(const auto& [name, item] : map)
     {
         if(counter == index) {
-            return it->second;
+            return item;
         }
         counter++;
     }
@@ -927,12 +919,9 @@ const std::vector<std::string>
 DataMap::getKeys() const
 {
     std::vector<std::string> result;
-    std::map<std::string, DataItem*>::const_iterator it;
-    for(it = map.begin();
-        it != map.end();
-        it++)
+    for(const auto& [name, item] : map)
     {
-        result.push_back(it->first);
+        result.push_back(name);
     }
 
     return result;
@@ -947,12 +936,8 @@ const std::vector<DataItem*>
 DataMap::getValues() const
 {
     std::vector<DataItem*> result;
-    std::map<std::string, DataItem*>::const_iterator it;
-    for(it = map.begin();
-        it != map.end();
-        it++)
-    {
-        result.push_back(it->second);
+    for(const auto& [name, item] : map) {
+        result.push_back(item);
     }
 
     return result;
@@ -966,9 +951,7 @@ DataMap::getValues() const
 bool
 DataMap::contains(const std::string &key) const
 {
-    std::map<std::string, DataItem*>::const_iterator it;
-    it = map.find(key);
-    if(it != map.end()) {
+    if(map.find(key) != map.end()) {
         return true;
     }
 
@@ -1067,9 +1050,7 @@ DataMap::getDoubleByKey(const std::string &key) const
 bool
 DataMap::remove(const std::string &key)
 {
-    std::map<std::string, DataItem*>::const_iterator it;
-    it = map.find(key);
-
+    auto it = map.find(key);
     if(it != map.end())
     {
         if(it->second != nullptr) {
@@ -1095,10 +1076,8 @@ DataMap::remove(const uint64_t index)
     }
 
     uint32_t counter = 0;
-    std::map<std::string, DataItem*>::const_iterator it;
-    for(it = map.begin();
-        it != map.end();
-        it++)
+    auto it = map.begin();
+    for( ; it != map.end(); it++)
     {
         if(counter == index)
         {
@@ -1129,14 +1108,10 @@ DataMap::clear()
 void
 DataMap::clearDataMap()
 {
-    std::map<std::string, DataItem*>::iterator it;
-    for(it = map.begin();
-        it != map.end();
-        it++)
+    for(const auto& [name, item] : map)
     {
-        DataItem* tempItem = it->second;
-        if(tempItem != nullptr) {
-            delete tempItem;
+        if(item != nullptr) {
+            delete item;
         }
     }
 
@@ -1152,15 +1127,12 @@ DataItem*
 DataMap::copy() const
 {
     DataMap* tempItem = new DataMap();
-    std::map<std::string, DataItem*>::const_iterator it;
-    for(it = map.begin();
-        it != map.end();
-        it++)
+    for(const auto& [name, item] : map)
     {
-        if(it->second == nullptr) {
-            tempItem->insert(it->first, nullptr);
+        if(item == nullptr) {
+            tempItem->insert(name, nullptr);
         } else {
-            tempItem->insert(it->first, it->second->copy());
+            tempItem->insert(name, item->copy());
         }
     }
 
@@ -1185,10 +1157,7 @@ DataMap::toString(const bool indent,
     bool firstRun = false;
     output->append("{");
 
-    std::map<std::string, DataItem*>::const_iterator it;
-    for(it = map.begin();
-        it != map.end();
-        it++)
+    for(const auto& [name, item] : map)
     {
         if(firstRun) {
             output->append(",");
@@ -1198,7 +1167,7 @@ DataMap::toString(const bool indent,
         // add key
         addIndent(output, indent, level + 1);
         output->append("\"");
-        output->append(it->first);
+        output->append(name);
         output->append("\"");
 
         output->append(":");
@@ -1208,22 +1177,22 @@ DataMap::toString(const bool indent,
         }
 
         // add value
-        if(it->second == nullptr)
+        if(item == nullptr)
         {
             output->append("null");
         }
         else
         {
             // if value is string-item, then set quotes
-            if(it->second->isStringValue()) {
+            if(item->isStringValue()) {
                 output->append("\"");
             }
 
             // convert value of item into stirng
-            it->second->toString(indent, output, level + 1);
+            item->toString(indent, output, level + 1);
 
             // if value is string-item, then set quotes
-            if(it->second->isStringValue()) {
+            if(item->isStringValue()) {
                 output->append("\"");
             }
         }
@@ -1247,8 +1216,7 @@ DataMap::insert(const std::string &key,
                 bool force)
 {
     // check if key already exist
-    std::map<std::string, DataItem*>::iterator it;
-    it = map.find(key);
+    auto it = map.find(key);
     if(it != map.end()
             && force == false)
     {
@@ -1518,8 +1486,8 @@ DataArray::toString(const bool indent,
     output->append("[");
     addIndent(output, indent, level + 1);
 
-    std::vector<DataItem*>::const_iterator it;
-    for(it = array.begin(); it != array.end(); it++)
+    auto it = array.begin();
+    for( ; it != array.end(); it++)
     {
         // separate items of the array with comma
         if(it != array.begin())

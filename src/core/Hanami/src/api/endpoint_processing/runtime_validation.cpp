@@ -73,63 +73,60 @@ checkBlossomValues(const std::map<std::string, FieldDef> &defs,
                    const FieldDef::IO_ValueType ioType,
                    std::string &errorMessage)
 {
-    std::map<std::string, FieldDef>::const_iterator defIt;
-    for(defIt = defs.begin();
-        defIt != defs.end();
-        defIt++)
+    for(const auto& [name, field] : defs)
     {
-        if(defIt->second.ioType != ioType) {
+        if(field.ioType != ioType) {
             continue;
         }
 
-        Kitsunemimi::DataItem* item = values.get(defIt->first);
+        Kitsunemimi::DataItem* item = values.get(name);
 
         if(item != nullptr)
         {
             // check type
-            if(checkType(item, defIt->second.fieldType) == false)
+            if(checkType(item, field.fieldType) == false)
             {
-                errorMessage = createErrorMessage(defIt->first, defIt->second.fieldType);
+                errorMessage = createErrorMessage(name, field.fieldType);
                 return false;
             }
 
             // check regex
-            if(defIt->second.regex.size() > 0)
+            if(field.regex.size() > 0)
             {
-                const std::regex re("^" + defIt->second.regex + "$");
+                const std::regex re("^" + field.regex + "$");
                 if(std::regex_match(item->toValue()->getString(), re) == false)
                 {
                     errorMessage= "Given item '"
-                                  + defIt->first
+                                  + name
                                   + "' doesn't match with regex \"^"
-                                  + defIt->second.regex
+                                  + field.regex
                                   + "$\"";
                     return false;
                 }
             }
 
             // check value border
-            if(defIt->second.upperBorder != 0
-                    || defIt->second.lowerBorder != 0)
+            if(field.upperBorder != 0
+                    || field.lowerBorder != 0)
             {
                 if(item->isIntValue())
                 {
                     const long value = item->toValue()->getLong();
-                    if(value < defIt->second.lowerBorder)
+                    if(value < field.lowerBorder)
                     {
                         errorMessage = "Given item '"
-                                       + defIt->first
+                                       + name
                                        + "' is smaller than "
-                                       + std::to_string(defIt->second.lowerBorder);
+                                       + std::to_string(field.lowerBorder);
                         return false;
                     }
 
-                    if(value > defIt->second.upperBorder)
+                    if(value > field.upperBorder)
                     {
                         errorMessage = "Given item '"
-                                       + defIt->first
+                                       + name
                                        + "' is bigger than "
-                                       + std::to_string(defIt->second.upperBorder);
+                                       + std::to_string(field.upperBorder);
                         return false;
                     }
                 }
@@ -137,22 +134,22 @@ checkBlossomValues(const std::map<std::string, FieldDef> &defs,
                 if(item->isStringValue())
                 {
                     const long length = item->toValue()->getString().size();
-                    if(length < defIt->second.lowerBorder)
+                    if(length < field.lowerBorder)
                     {
                         errorMessage = "Given item '"
-                                       + defIt->first
+                                       + name
                                        + "' is shorter than "
-                                       + std::to_string(defIt->second.lowerBorder)
+                                       + std::to_string(field.lowerBorder)
                                        + " characters";
                         return false;
                     }
 
-                    if(length > defIt->second.upperBorder)
+                    if(length > field.upperBorder)
                     {
                         errorMessage = "Given item '"
-                                       + defIt->first
+                                       + name
                                        + "' is longer than "
-                                       + std::to_string(defIt->second.upperBorder)
+                                       + std::to_string(field.upperBorder)
                                        + " characters";
                         return false;
                     }
@@ -160,14 +157,14 @@ checkBlossomValues(const std::map<std::string, FieldDef> &defs,
             }
 
             // check match
-            if(defIt->second.match != nullptr)
+            if(field.match != nullptr)
             {
-                if(defIt->second.match->toString() != item->toString())
+                if(field.match->toString() != item->toString())
                 {
                     errorMessage = "Item '"
-                                   + defIt->first
+                                   + name
                                    + "' doesn't match the the expected value:\n   ";
-                    errorMessage.append(defIt->second.match->toString());
+                    errorMessage.append(field.match->toString());
                     errorMessage.append("\nbut has value:\n   ");
                     errorMessage.append(item->toString());
                     return false;

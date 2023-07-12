@@ -351,8 +351,7 @@ Statemachine::getState(const uint32_t stateId)
     while(m_state_lock.test_and_set(std::memory_order_acquire)) { asm(""); }
 
     // check and get source-state
-    std::map<uint32_t, State*>::iterator it;
-    it = m_allStates.find(stateId);
+    auto it = m_allStates.find(stateId);
     if(it != m_allStates.end()) {
         result = it->second;
     }

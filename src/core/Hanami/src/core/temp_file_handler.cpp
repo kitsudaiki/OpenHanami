@@ -43,10 +43,8 @@ TempFileHandler::~TempFileHandler()
     const std::string targetFilePath = GET_STRING_CONFIG("storage", "data_set_location", success);
 
     std::vector<std::string> result;
-    std::map<std::string, Kitsunemimi::BinaryFile*>::iterator it;
-    for(it = m_tempFiles.begin();
-        it != m_tempFiles.end();
-        it++)
+    auto it = m_tempFiles.begin();
+    for( ; it != m_tempFiles.end(); it++)
     {
         Kitsunemimi::BinaryFile* ptr = it->second;
         if(ptr->closeFile(error) == false) {
@@ -107,8 +105,7 @@ TempFileHandler::addDataToPos(const std::string &uuid,
 {
     Kitsunemimi::ErrorContainer error;
 
-    std::map<std::string, Kitsunemimi::BinaryFile*>::const_iterator it;
-    it = m_tempFiles.find(uuid);
+    const auto it = m_tempFiles.find(uuid);
     if(it != m_tempFiles.end())
     {
         Kitsunemimi::BinaryFile* ptr = it->second;
@@ -139,8 +136,7 @@ TempFileHandler::getData(Kitsunemimi::DataBuffer &result, const std::string &uui
 {
     Kitsunemimi::ErrorContainer error;
 
-    std::map<std::string, Kitsunemimi::BinaryFile*>::const_iterator it;
-    it = m_tempFiles.find(uuid);
+    const auto it = m_tempFiles.find(uuid);
     if(it != m_tempFiles.end())
     {
         Kitsunemimi::BinaryFile* ptr = it->second;
@@ -164,8 +160,7 @@ TempFileHandler::removeData(const std::string &id)
     Kitsunemimi::ErrorContainer error;
     std::string targetFilePath = GET_STRING_CONFIG("storage", "data_set_location", success);
 
-    std::map<std::string, Kitsunemimi::BinaryFile*>::const_iterator it;
-    it = m_tempFiles.find(id);
+    const auto it = m_tempFiles.find(id);
     if(it != m_tempFiles.end())
     {
         Kitsunemimi::BinaryFile* ptr = it->second;
@@ -199,8 +194,7 @@ TempFileHandler::moveData(const std::string &uuid,
     bool success = false;
     std::string targetFilePath = GET_STRING_CONFIG("storage", "data_set_location", success);
 
-    std::map<std::string, Kitsunemimi::BinaryFile*>::const_iterator it;
-    it = m_tempFiles.find(uuid);
+    const auto it = m_tempFiles.find(uuid);
     if(it != m_tempFiles.end())
     {
         Kitsunemimi::BinaryFile* ptr = it->second;

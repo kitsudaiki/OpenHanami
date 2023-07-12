@@ -43,9 +43,7 @@ bool
 ClusterHandler::addCluster(const std::string uuid, Cluster* newCluster)
 {
     // check if key already exist
-    std::map<std::string, Cluster*>::const_iterator it;
-    it = m_allCluster.find(uuid);
-    if(it != m_allCluster.end()) {
+    if(m_allCluster.find(uuid) != m_allCluster.end()) {
         return false;
     }
 
@@ -64,9 +62,7 @@ ClusterHandler::addCluster(const std::string uuid, Cluster* newCluster)
 bool
 ClusterHandler::removeCluster(const std::string uuid)
 {
-    std::map<std::string, Cluster*>::const_iterator it;
-    it = m_allCluster.find(uuid);
-
+    const auto it = m_allCluster.find(uuid);
     if(it != m_allCluster.end())
     {
         if(it->second != nullptr)
@@ -98,9 +94,7 @@ ClusterHandler::removeCluster(const std::string uuid)
 Cluster*
 ClusterHandler::getCluster(const std::string uuid)
 {
-    std::map<std::string, Cluster*>::const_iterator it;
-    it = m_allCluster.find(uuid);
-
+    const auto it = m_allCluster.find(uuid);
     if(it != m_allCluster.end()) {
         return it->second;
     }

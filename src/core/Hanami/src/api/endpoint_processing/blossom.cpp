@@ -53,9 +53,7 @@ Blossom::registerInputField(const std::string &name,
                             const bool required,
                             const std::string &comment)
 {
-    std::map<std::string, FieldDef>::const_iterator defIt;
-    defIt = m_inputValidationMap.find(name);
-    if(defIt != m_inputValidationMap.end()) {
+    if(m_inputValidationMap.find(name) != m_inputValidationMap.end()) {
         return false;
     }
 
@@ -78,9 +76,7 @@ Blossom::registerOutputField(const std::string &name,
                              const FieldType fieldType,
                              const std::string &comment)
 {
-    std::map<std::string, FieldDef>::const_iterator defIt;
-    defIt = m_outputValidationMap.find(name);
-    if(defIt != m_outputValidationMap.end()) {
+    if(m_outputValidationMap.find(name) != m_outputValidationMap.end()) {
         return false;
     }
 
@@ -101,8 +97,7 @@ bool
 Blossom::addFieldMatch(const std::string &name,
                        Kitsunemimi::DataItem* match)
 {
-    std::map<std::string, FieldDef>::iterator defIt;
-    defIt = m_outputValidationMap.find(name);
+    auto defIt = m_outputValidationMap.find(name);
     if(defIt != m_outputValidationMap.end())
     {
         // delete old entry
@@ -129,8 +124,7 @@ bool
 Blossom::addFieldDefault(const std::string &name,
                          Kitsunemimi::DataItem* defaultValue)
 {
-    std::map<std::string, FieldDef>::iterator defIt;
-    defIt = m_inputValidationMap.find(name);
+    auto defIt = m_inputValidationMap.find(name);
     if(defIt != m_inputValidationMap.end())
     {
         // make sure, that it is not required
@@ -162,8 +156,7 @@ bool
 Blossom::addFieldRegex(const std::string &name,
                        const std::string &regex)
 {
-    std::map<std::string, FieldDef>::iterator defIt;
-    defIt = m_inputValidationMap.find(name);
+    auto defIt = m_inputValidationMap.find(name);
     if(defIt != m_inputValidationMap.end())
     {
         // make sure, that it is a string-type
@@ -193,8 +186,7 @@ Blossom::addFieldBorder(const std::string &name,
                         const long lowerBorder,
                         const long upperBorder)
 {
-    std::map<std::string, FieldDef>::iterator defIt;
-    defIt = m_inputValidationMap.find(name);
+    auto defIt = m_inputValidationMap.find(name);
     if(defIt != m_inputValidationMap.end())
     {
         // make sure, that it is an int- or string-type
@@ -244,13 +236,10 @@ Blossom::getOutputValidationMap() const
 void
 Blossom::fillDefaultValues(Kitsunemimi::DataMap &values)
 {
-    std::map<std::string, FieldDef>::const_iterator defIt;
-    for(defIt = m_inputValidationMap.begin();
-        defIt != m_inputValidationMap.end();
-        defIt++)
+    for(const auto& [name, field] : m_inputValidationMap)
     {
-        if(defIt->second.defaultVal != nullptr) {
-            values.insert(defIt->first, defIt->second.defaultVal->copy(), false);
+        if(field.defaultVal != nullptr) {
+            values.insert(name, field.defaultVal->copy(), false);
         }
     }
 }
@@ -329,18 +318,13 @@ Blossom::validateFieldsCompleteness(const DataMap &input,
     if(allowUnmatched == false)
     {
         // check if all keys in the values of the blossom-item also exist in the required-key-list
-        std::map<std::string, Kitsunemimi::DataItem*>::const_iterator compareIt;
-        for(compareIt = input.map.begin();
-            compareIt != input.map.end();
-            compareIt++)
+        for(const auto& [name, _] : input.map)
         {
-            std::map<std::string, FieldDef>::const_iterator defIt;
-            defIt = validationMap.find(compareIt->first);
-            if(defIt == validationMap.end())
+            if(validationMap.find(name) == validationMap.end())
             {
                 // build error-output
                 errorMessage = "Validation failed, because item '"
-                               + compareIt->first
+                               + name
                                + "' is not in the list of allowed keys";
                 return false;
             }
@@ -348,19 +332,16 @@ Blossom::validateFieldsCompleteness(const DataMap &input,
     }
 
     // check that all keys in the required keys are also in the values of the blossom-item
-    std::map<std::string, FieldDef>::const_iterator defIt;
-    for(defIt = validationMap.begin();
-        defIt != validationMap.end();
-        defIt++)
+    for(const auto& [name, field] : validationMap)
     {
-        if(defIt->second.isRequired == true
-                && defIt->second.ioType == valueType)
+        if(field.isRequired == true
+                && field.ioType == valueType)
         {
             // search for values
-            if(input.contains(defIt->first) == false)
+            if(input.contains(name) == false)
             {
                 errorMessage = "Validation failed, because variable '"
-                               + defIt->first
+                               + name
                                + "' is required, but is not set.";
                 return false;
             }
@@ -391,18 +372,13 @@ Blossom::validateInput(BlossomItem &blossomItem,
     if(allowUnmatched == false)
     {
         // check if all keys in the values of the blossom-item also exist in the required-key-list
-        std::map<std::string, FieldDef::IO_ValueType>::const_iterator compareIt;
-        for(compareIt = compareMap.begin();
-            compareIt != compareMap.end();
-            compareIt++)
+        for(const auto& [name, field] : compareMap)
         {
-            std::map<std::string, FieldDef>::const_iterator defIt;
-            defIt = validationMap.find(compareIt->first);
-            if(defIt == validationMap.end())
+            if(validationMap.find(name) == validationMap.end())
             {
                 // build error-output
                 error.addMeesage("item '"
-                                 + compareIt->first
+                                 + name
                                  + "' is not in the list of allowed keys");
                 createError(blossomItem, filePath, "validator", error);
                 return false;
@@ -411,22 +387,18 @@ Blossom::validateInput(BlossomItem &blossomItem,
     }
 
     // check that all keys in the required keys are also in the values of the blossom-item
-    std::map<std::string, FieldDef>::const_iterator defIt;
-    for(defIt = validationMap.begin();
-        defIt != validationMap.end();
-        defIt++)
+    for(const auto& [name, field] : validationMap)
     {
-        if(defIt->second.isRequired == true)
+        if(field.isRequired == true)
         {
             // search for values
-            std::map<std::string, FieldDef::IO_ValueType>::const_iterator compareIt;
-            compareIt = compareMap.find(defIt->first);
+            auto compareIt = compareMap.find(name);
             if(compareIt != compareMap.end())
             {
-                if(defIt->second.ioType != compareIt->second)
+                if(field.ioType != compareIt->second)
                 {
                     error.addMeesage("item '"
-                                     + defIt->first
+                                     + name
                                      + "' has not the correct input/output type");
                     createError(blossomItem, filePath, "validator", error);
                     return false;
@@ -435,7 +407,7 @@ Blossom::validateInput(BlossomItem &blossomItem,
             else
             {
                 error.addMeesage("item '"
-                                 + defIt->first
+                                 + name
                                  + "' is required, but is not set.");
                 createError(blossomItem, filePath, "validator", error);
                 return false;
@@ -457,7 +429,7 @@ Blossom::getCompareMap(std::map<std::string, FieldDef::IO_ValueType> &compareMap
                        const ValueItemMap &valueMap)
 {
     // copy items
-    for(auto const& [id, item] : valueMap.m_valueMap)
+    for(const auto& [id, item] : valueMap.m_valueMap)
     {
         if(item.type == ValueItem::INPUT_PAIR_TYPE) {
             compareMap.emplace(id, FieldDef::INPUT_TYPE);
@@ -469,11 +441,8 @@ Blossom::getCompareMap(std::map<std::string, FieldDef::IO_ValueType> &compareMap
     }
 
     // copy child-maps
-    std::map<std::string, ValueItemMap*>::const_iterator itChilds;
-    for(itChilds = valueMap.m_childMaps.begin();
-        itChilds != valueMap.m_childMaps.end();
-        itChilds++)
+    for(const auto& [id, _] : valueMap.m_childMaps)
     {
-        compareMap.emplace(itChilds->first, FieldDef::INPUT_TYPE);
+        compareMap.emplace(id, FieldDef::INPUT_TYPE);
     }
 }

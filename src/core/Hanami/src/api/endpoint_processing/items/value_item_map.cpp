@@ -44,12 +44,12 @@ ValueItemMap::~ValueItemMap()
 ValueItemMap::ValueItemMap(const ValueItemMap &other)
 {
     // copy items
-    for(auto const& [id, item] : other.m_valueMap) {
+    for(const auto& [id, item] : other.m_valueMap) {
         m_valueMap.insert(std::make_pair(id, item));
     }
 
     // copy child-maps
-    for(auto const& [id, itemMap] : other.m_childMaps)
+    for(const auto& [id, itemMap] : other.m_childMaps)
     {
         ValueItemMap* newValue = new ValueItemMap(*itemMap);
         m_childMaps.insert(std::make_pair(id, newValue));
@@ -68,14 +68,14 @@ ValueItemMap::operator=(const ValueItemMap &other)
         this->m_valueMap.clear();
 
         // copy items
-        for(auto const& [id, item] : other.m_valueMap) {;
+        for(const auto& [id, item] : other.m_valueMap) {;
             this->m_valueMap.insert(std::make_pair(id, item));
         }
 
         clearChildMap();
 
         // copy child-maps
-        for(auto const& [id, itemMap] : other.m_childMaps) {
+        for(const auto& [id, itemMap] : other.m_childMaps) {
             this->m_childMaps.insert(std::make_pair(id, new ValueItemMap(*itemMap)));
         }
     }
@@ -116,9 +116,7 @@ ValueItemMap::insert(const std::string &key,
                      ValueItem &value,
                      bool force)
 {
-    std::map<std::string, ValueItem>::iterator it;
-    it = m_valueMap.find(key);
-
+    const auto it = m_valueMap.find(key);
     if(it != m_valueMap.end()
             && force == false)
     {
@@ -148,9 +146,7 @@ ValueItemMap::insert(const std::string &key,
                      ValueItemMap* value,
                      bool force)
 {
-    std::map<std::string, ValueItemMap*>::iterator it;
-    it = m_childMaps.find(key);
-
+    const auto it = m_childMaps.find(key);
     if(it != m_childMaps.end()
             && force == false)
     {
@@ -176,17 +172,11 @@ ValueItemMap::insert(const std::string &key,
 bool
 ValueItemMap::contains(const std::string &key)
 {
-    std::map<std::string, ValueItem>::const_iterator it;
-    it = m_valueMap.find(key);
-
-    if(it != m_valueMap.end()) {
+    if(m_valueMap.find(key) != m_valueMap.end()) {
         return true;
     }
 
-    std::map<std::string, ValueItemMap*>::const_iterator childIt;
-    childIt = m_childMaps.find(key);
-
-    if(childIt != m_childMaps.end()) {
+    if(m_childMaps.find(key) != m_childMaps.end()) {
         return true;
     }
 
@@ -203,18 +193,14 @@ ValueItemMap::contains(const std::string &key)
 bool
 ValueItemMap::remove(const std::string &key)
 {
-    std::map<std::string, ValueItem>::const_iterator it;
-    it = m_valueMap.find(key);
-
-    if(it != m_valueMap.end())
+    const auto it = m_valueMap.find(key);
+    if(m_valueMap.find(key) != m_valueMap.end())
     {
         m_valueMap.erase(it);
         return true;
     }
 
-    std::map<std::string, ValueItemMap*>::const_iterator childIt;
-    childIt = m_childMaps.find(key);
-
+    const auto childIt = m_childMaps.find(key);
     if(childIt != m_childMaps.end())
     {
         m_childMaps.erase(childIt);
@@ -234,8 +220,7 @@ ValueItemMap::remove(const std::string &key)
 std::string
 ValueItemMap::getValueAsString(const std::string &key)
 {
-    std::map<std::string, ValueItem>::const_iterator it;
-    it = m_valueMap.find(key);
+    const auto it = m_valueMap.find(key);
     if(it != m_valueMap.end()) {
         return it->second.item->toString();
     }
@@ -253,8 +238,7 @@ ValueItemMap::getValueAsString(const std::string &key)
 Kitsunemimi::DataItem*
 ValueItemMap::get(const std::string &key)
 {
-    std::map<std::string, ValueItem>::const_iterator it;
-    it = m_valueMap.find(key);
+    const auto it = m_valueMap.find(key);
     if(it != m_valueMap.end()) {
         return it->second.item;
     }
@@ -272,8 +256,7 @@ ValueItemMap::get(const std::string &key)
 ValueItem
 ValueItemMap::getValueItem(const std::string &key)
 {
-    std::map<std::string, ValueItem>::const_iterator it;
-    it = m_valueMap.find(key);
+    auto it = m_valueMap.find(key);
     if(it != m_valueMap.end()) {
         return it->second;
     }
@@ -306,7 +289,7 @@ ValueItemMap::toString()
     table.addColumn("value");
 
     // fill table
-    for(auto const& [id, item] : m_valueMap) {
+    for(const auto& [id, item] : m_valueMap) {
         table.addRow(std::vector<std::string>{id, item.item->toString()});
     }
 
@@ -320,7 +303,7 @@ ValueItemMap::toString()
 void
 ValueItemMap::getValidationMap(std::map<std::string, FieldDef> &validationMap) const
 {
-    for(auto const& [id, item] : m_valueMap)
+    for(const auto& [id, item] : m_valueMap)
     {
         FieldDef::IO_ValueType ioType = FieldDef::INPUT_TYPE;
         if(item.type == ValueItem::OUTPUT_PAIR_TYPE) {
