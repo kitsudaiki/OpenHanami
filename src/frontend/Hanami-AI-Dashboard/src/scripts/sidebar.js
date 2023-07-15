@@ -109,7 +109,7 @@ function downloadDocumentation_Request()
         return;
     }
     
-    const request = "/control/v1/documentation/api/rest?type=openapi";
+    const request = "/control/v1/documentation/api/rest";
     let requestConnection = new XMLHttpRequest();
     requestConnection.open("GET", request, true);
     requestConnection.setRequestHeader("X-Auth-Token", token);

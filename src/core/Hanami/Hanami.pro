@@ -273,9 +273,6 @@ HEADERS += \
     src/database/request_result_table.h \
     src/database/template_table.h \
     src/database/users_table.h \
-    src/docu_generation/md_docu_generation.h \
-    src/docu_generation/openapi_docu_generation.h \
-    src/docu_generation/rst_docu_generation.h \
     src/hanami_root.h
 
 SOURCES += \
@@ -387,9 +384,6 @@ SOURCES += \
     src/database/request_result_table.cpp \
     src/database/template_table.cpp \
     src/database/users_table.cpp \
-    src/docu_generation/md_docu_generation.cpp \
-    src/docu_generation/openapi_docu_generation.cpp \
-    src/docu_generation/rst_docu_generation.cpp \
     src/hanami_root.cpp \
     src/main.cpp
 
