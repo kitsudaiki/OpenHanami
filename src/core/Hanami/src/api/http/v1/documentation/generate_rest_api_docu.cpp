@@ -36,7 +36,7 @@
  * @brief constructor
  */
 GenerateRestApiDocu::GenerateRestApiDocu()
-    : Blossom("Generate a documentation for the REST-API of all available components.")
+    : Blossom("Generate a OpenAPI documentation for the REST-API of all available components.")
 {
     //----------------------------------------------------------------------------------------------
     // output
@@ -448,5 +448,5 @@ GenerateRestApiDocu::createOpenApiDocumentation(std::string &docu)
     generateEndpointDocu_openapi(paths);
     result.insert("paths", paths);
 
-    docu = result.toString();
+    docu = result.toString(true);
 }

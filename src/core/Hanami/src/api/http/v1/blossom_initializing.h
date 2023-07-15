@@ -106,7 +106,7 @@
 void
 initClusterBlossoms()
 {
-    const std::string group = "cluster";
+    const std::string group = "Cluster";
 
     assert(HanamiRoot::root->addBlossom(group, "create", new CreateCluster()));
     HanamiRoot::root->addEndpoint("v1/cluster",
@@ -164,7 +164,7 @@ initClusterBlossoms()
 void
 initTemplateBlossoms()
 {
-    const std::string group = "template";
+    const std::string group = "Template";
 
     assert(HanamiRoot::root->addBlossom(group, "upload", new UploadTemplate()));
     HanamiRoot::root->addEndpoint("v1/template/upload",
@@ -201,7 +201,7 @@ initTemplateBlossoms()
 void
 initTaskBlossoms()
 {
-    const std::string group = "task";
+    const std::string group = "Task";
 
     assert(HanamiRoot::root->addBlossom(group, "create", new CreateTask()));
     HanamiRoot::root->addEndpoint("v1/task",
@@ -238,7 +238,7 @@ initTaskBlossoms()
 void
 dataSetBlossoms()
 {
-    const std::string group = "data_set";
+    const std::string group = "Data Set";
 
     assert(HanamiRoot::root->addBlossom(group, "create_mnist", new CreateMnistDataSet()));
     HanamiRoot::root->addEndpoint("v1/mnist/data_set",
@@ -310,7 +310,7 @@ dataSetBlossoms()
 void
 clusterSnapshotBlossoms()
 {
-    const std::string group = "cluster_snapshot";
+    const std::string group = "Snapshot";
 
     assert(HanamiRoot::root->addBlossom(group, "create", new CreateClusterSnapshot()));
     HanamiRoot::root->addEndpoint("v1/cluster_snapshot",
@@ -354,7 +354,7 @@ clusterSnapshotBlossoms()
 void
 resultBlossoms()
 {
-    const std::string group = "request_result";
+    const std::string group = "Request-Result";
 
     assert(HanamiRoot::root->addBlossom(group, "get", new GetRequestResult()));
     HanamiRoot::root->addEndpoint("v1/request_result",
@@ -384,7 +384,7 @@ resultBlossoms()
 void
 logsBlossoms()
 {
-    const std::string group = "logs";
+    const std::string group = "Logs";
 
     assert(HanamiRoot::root->addBlossom(group, "get_audit_log", new GetAuditLog()));
     HanamiRoot::root->addEndpoint("v1/audit_log",
@@ -407,7 +407,7 @@ logsBlossoms()
 void
 tokenBlossomes()
 {
-    const std::string group = "token";
+    const std::string group = "Token";
 
     assert(HanamiRoot::root->addBlossom(group, "create", new CreateToken()));
     HanamiRoot::root->addEndpoint("v1/token",
@@ -437,7 +437,7 @@ tokenBlossomes()
 void
 documentationBlossomes()
 {
-    const std::string group = "documentation";
+    const std::string group = "Documentation";
 
     assert(HanamiRoot::root->addBlossom(group, "generate_rest_api", new GenerateRestApiDocu()));
     HanamiRoot::root->addEndpoint("v1/documentation/api/rest",
@@ -453,66 +453,68 @@ documentationBlossomes()
 void
 userBlossomes()
 {
-    const std::string group = "user";
+    const std::string userGroup = "User";
 
-    assert(HanamiRoot::root->addBlossom(group, "create", new CreateUser()));
+    assert(HanamiRoot::root->addBlossom(userGroup, "create", new CreateUser()));
     HanamiRoot::root->addEndpoint("v1/user",
                                   Kitsunemimi::Hanami::POST_TYPE,
                                   BLOSSOM_TYPE,
-                                  group,
+                                  userGroup,
                                   "create");
 
-    assert(HanamiRoot::root->addBlossom(group, "get", new GetUser()));
+    assert(HanamiRoot::root->addBlossom(userGroup, "get", new GetUser()));
     HanamiRoot::root->addEndpoint("v1/user",
                                   Kitsunemimi::Hanami::GET_TYPE,
                                   BLOSSOM_TYPE,
-                                  group,
+                                  userGroup,
                                   "get");
 
-    assert(HanamiRoot::root->addBlossom(group, "list", new ListUsers()));
+    assert(HanamiRoot::root->addBlossom(userGroup, "list", new ListUsers()));
     HanamiRoot::root->addEndpoint("v1/user/all",
                                   Kitsunemimi::Hanami::GET_TYPE,
                                   BLOSSOM_TYPE,
-                                  group,
+                                  userGroup,
                                   "list");
 
-    assert(HanamiRoot::root->addBlossom(group, "delete", new DeleteUser()));
+    assert(HanamiRoot::root->addBlossom(userGroup, "delete", new DeleteUser()));
     HanamiRoot::root->addEndpoint("v1/user",
                                   Kitsunemimi::Hanami::DELETE_TYPE,
                                   BLOSSOM_TYPE,
-                                  group,
+                                  userGroup,
                                   "delete");
 
-    assert(HanamiRoot::root->addBlossom(group, "add_project", new AddProjectToUser()));
+    const std::string userProjectGroup = "User-Projects";
+
+    assert(HanamiRoot::root->addBlossom(userProjectGroup, "add_project", new AddProjectToUser()));
     HanamiRoot::root->addEndpoint("v1/user/project",
                                   Kitsunemimi::Hanami::POST_TYPE,
                                   BLOSSOM_TYPE,
-                                  group,
+                                  userProjectGroup,
                                   "add_project");
 
-    assert(HanamiRoot::root->addBlossom(group, "remove_project", new RemoveProjectFromUser()));
+    assert(HanamiRoot::root->addBlossom(userProjectGroup, "remove_project", new RemoveProjectFromUser()));
     HanamiRoot::root->addEndpoint("v1/user/project",
                                   Kitsunemimi::Hanami::DELETE_TYPE,
                                   BLOSSOM_TYPE,
-                                  group,
+                                  userProjectGroup,
                                   "remove_project");
 
     // TODO: move ListUserProjects-class in user-directory
-    assert(HanamiRoot::root->addBlossom(group, "list_user_projects", new ListUserProjects()));
+    assert(HanamiRoot::root->addBlossom(userProjectGroup, "list_user_projects", new ListUserProjects()));
     HanamiRoot::root->addEndpoint("v1/user/project",
                                   Kitsunemimi::Hanami::GET_TYPE,
                                   BLOSSOM_TYPE,
-                                  group,
+                                  userProjectGroup,
                                   "list_user_projects");
 }
 
 /**
- * @brief init special endpoints
+ * @brief init project endpoints
  */
 void
 projectBlossomes()
 {
-    const std::string group = "project";
+    const std::string group = "Project";
 
     assert(HanamiRoot::root->addBlossom(group, "create", new CreateProject()));
     HanamiRoot::root->addEndpoint("v1/project",
@@ -544,6 +546,38 @@ projectBlossomes()
 }
 
 /**
+ * @brief init measurement endpoints
+ */
+void
+measuringBlossomes()
+{
+    const std::string group = "Measurements";
+
+    assert(HanamiRoot::root->addBlossom(group, "get_power_consumption", new PowerConsumption()));
+    assert(HanamiRoot::root->addEndpoint("v1/power_consumption",
+                                         Kitsunemimi::Hanami::GET_TYPE,
+                                         BLOSSOM_TYPE,
+                                         group,
+                                         "get_power_consumption"));
+
+    assert(HanamiRoot::root->addBlossom(group, "get_speed", new Speed()));
+    assert(HanamiRoot::root->addEndpoint("v1/speed",
+                                         Kitsunemimi::Hanami::GET_TYPE,
+                                         BLOSSOM_TYPE,
+                                         group,
+                                         "get_speed"));
+
+    assert(HanamiRoot::root->addBlossom(group,
+                                        "get_temperature_production",
+                                        new ThermalProduction()));
+    assert(HanamiRoot::root->addEndpoint("v1/temperature_production",
+                                         Kitsunemimi::Hanami::GET_TYPE,
+                                         BLOSSOM_TYPE,
+                                         group,
+                                         "get_temperature_production"));
+}
+
+/**
  * @brief initBlossoms
  */
 void
@@ -560,43 +594,22 @@ initBlossoms()
     userBlossomes();
     documentationBlossomes();
     tokenBlossomes();
+    measuringBlossomes();
 
-    assert(HanamiRoot::root->addBlossom("system", "get_info", new GetSystemInfo()));
+    assert(HanamiRoot::root->addBlossom("System", "get_info", new GetSystemInfo()));
     assert(HanamiRoot::root->addEndpoint("v1/system_info",
                                          Kitsunemimi::Hanami::GET_TYPE,
                                          BLOSSOM_TYPE,
-                                         "system",
+                                         "System",
                                          "get_info"));
 
-    assert(HanamiRoot::root->addBlossom("threading", "get_mapping", new GetThreadMapping()));
+    assert(HanamiRoot::root->addBlossom("Threading", "get_mapping", new GetThreadMapping()));
     assert(HanamiRoot::root->addEndpoint("v1/threading",
                                          Kitsunemimi::Hanami::GET_TYPE,
                                          BLOSSOM_TYPE,
-                                         "threading",
+                                         "Threading",
                                          "get_mapping"));
 
-    assert(HanamiRoot::root->addBlossom("measurements", "get_power_consumption", new PowerConsumption()));
-    assert(HanamiRoot::root->addEndpoint("v1/power_consumption",
-                                         Kitsunemimi::Hanami::GET_TYPE,
-                                         BLOSSOM_TYPE,
-                                         "measurements",
-                                         "get_power_consumption"));
-
-    assert(HanamiRoot::root->addBlossom("measurements", "get_speed", new Speed()));
-    assert(HanamiRoot::root->addEndpoint("v1/speed",
-                                         Kitsunemimi::Hanami::GET_TYPE,
-                                         BLOSSOM_TYPE,
-                                         "measurements",
-                                         "get_speed"));
-
-    assert(HanamiRoot::root->addBlossom("measurements",
-                                        "get_temperature_production",
-                                        new ThermalProduction()));
-    assert(HanamiRoot::root->addEndpoint("v1/temperature_production",
-                                         Kitsunemimi::Hanami::GET_TYPE,
-                                         BLOSSOM_TYPE,
-                                         "measurements",
-                                         "get_temperature_production"));
 }
 
 #endif // HANAMI_BLOSSOM_INITIALIZING_H
