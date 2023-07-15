@@ -109,7 +109,7 @@ function downloadDocumentation_Request()
         return;
     }
     
-    const request = "/control/v1/documentation/api/rest?type=pdf";
+    const request = "/control/v1/documentation/api/rest?type=openapi";
     let requestConnection = new XMLHttpRequest();
     requestConnection.open("GET", request, true);
     requestConnection.setRequestHeader("X-Auth-Token", token);
@@ -138,7 +138,7 @@ function downloadDocumentation_Request()
             };
         }());
 
-        saveByteArray([decodedDocu], 'rest_api_documentation.pdf');
+        saveByteArray([decodedDocu], 'rest_api_documentation.json');
     };
 
     // callback for fail

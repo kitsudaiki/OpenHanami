@@ -26,9 +26,8 @@
 #include <libKitsunemimiSakuraHardware/host.h>
 
 GetSystemInfo::GetSystemInfo()
-    : Blossom("Get all available information of the local system.\n"
-                                   "    - Topology of the cpu-resources\n"
-                                   "    - Speed of the cpu")
+    : Blossom("Get all available information of the local system, like "
+              "topology of the cpu-resources and speed of the cpu")
 {
     //----------------------------------------------------------------------------------------------
     // output

@@ -13,6 +13,7 @@ theme:
     - content.tabs.link
 
 plugins:
+    - swagger-ui-tag
     - search
     - drawio-exporter:
         # Diagrams are cached to speed up site generation. The default path is

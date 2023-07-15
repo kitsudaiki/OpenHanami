@@ -104,6 +104,12 @@ git submodule init
 git submodule update --recursive
 ```
 
+For the OpenAPI-documentation the swagger-ui plugin for mkdocs is necessary:
+
+```
+pip3 install mkdocs-swagger-ui-tag
+```
+
 
 ## Author
 

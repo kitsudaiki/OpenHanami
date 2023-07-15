@@ -25,6 +25,7 @@
 #include <hanami_root.h>
 #include <docu_generation/md_docu_generation.h>
 #include <docu_generation/rst_docu_generation.h>
+#include <docu_generation/openapi_docu_generation.h>
 
 #include <libKitsunemimiCrypto/common.h>
 #include <libKitsunemimiCommon/methods/string_methods.h>
@@ -47,9 +48,9 @@ GenerateRestApiDocu::GenerateRestApiDocu()
     registerInputField("type",
                        SAKURA_STRING_TYPE,
                        false,
-                       "Output-type of the document (pdf, rst, md).");
-    assert(addFieldDefault("type", new Kitsunemimi::DataValue("pdf")));
-    assert(addFieldRegex("type", "^(pdf|rst|md)$"));
+                       "Output-type of the document (pdf, rst, md, openapi).");
+    assert(addFieldDefault("type", new Kitsunemimi::DataValue("openapi")));
+    assert(addFieldRegex("type", "^(pdf|rst|md|openapi)$"));
 
     //----------------------------------------------------------------------------------------------
     // output
@@ -95,6 +96,10 @@ GenerateRestApiDocu::runTask(BlossomIO &blossomIO,
     else if(type == "md")
     {
         createMdDocumentation(completeDocumentation);
+    }
+    else if(type == "openapi")
+    {
+        createOpenApiDocumentation(completeDocumentation);
     }
 
     std::string output;
