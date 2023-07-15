@@ -93,13 +93,13 @@ Because the normalization of input is not necessary, together with the good perf
     [:octicons-arrow-right-24: Dashboard](/How_To/2_dashboard/)
 
 
--   :material-file-document-multiple-outline:{ .lg .middle } __Inner workings__
+-   :material-file-document-multiple-outline:{ .lg .middle } __OpenAPI Documentation__
 
     ---
 
-    Even it is quite basic for now, there are also some internal workflow and tasks of the single components described.
+    Automatic generated OpenAPI documentation
 
-    [:octicons-arrow-right-24: Docu of inner workings](/Inner_Workings/1_overview/)
+    [:octicons-arrow-right-24: OpenAPI documentation](/How_To/3_rest_api_documentation/)
 
 
 -   :octicons-package-dependencies-24:{ .lg .middle } __Dependencies__
