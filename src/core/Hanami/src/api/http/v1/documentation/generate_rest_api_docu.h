@@ -35,13 +35,18 @@ public:
 protected:
     bool runTask(BlossomIO &blossomIO,
                  const Kitsunemimi::DataMap &context,
-                 BlossomStatus &status,
-                 Kitsunemimi::ErrorContainer &error);
+                 BlossomStatus &,
+                 Kitsunemimi::ErrorContainer &);
 
 private:
-    bool convertRstToPdf(std::string &pdfOutput,
-                         const std::string &rstInput,
-                         Kitsunemimi::ErrorContainer &error);
+    void createOpenApiDocumentation(std::string &docu);
+    void generateEndpointDocu_openapi(Kitsunemimi::JsonItem &result);
+    void createBodyParams_openapi(Kitsunemimi::JsonItem &schema,
+                                  const std::map<std::string, FieldDef>* defMap,
+                                  const bool isRequest);
+    void createQueryParams_openapi(Kitsunemimi::JsonItem &parameters,
+                                   const std::map<std::string, FieldDef>* defMap);
+    void addTokenRequirement(Kitsunemimi::JsonItem &parameters);
 };
 
 #endif // HANAMI_GENERATERESTAPIDOCU_H

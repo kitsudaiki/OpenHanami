@@ -109,10 +109,11 @@ struct FieldDef
 class Blossom
 {
 public:
-    Blossom(const std::string &comment);
+    Blossom(const std::string &comment, const bool requiresToken = true);
     virtual ~Blossom();
 
     const std::string comment;
+    const bool requiresAuthToken;
 
     const std::map<std::string, FieldDef>* getInputValidationMap() const;
     const std::map<std::string, FieldDef>* getOutputValidationMap() const;

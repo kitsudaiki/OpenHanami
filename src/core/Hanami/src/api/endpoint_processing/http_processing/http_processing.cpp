@@ -145,7 +145,7 @@ requestToken(http::response<http::dynamic_body> &httpResponse,
     inputValues.remove("token");
     if(HanamiRoot::root->triggerBlossom(result,
                                         "create",
-                                        "token",
+                                        "Token",
                                         Kitsunemimi::DataMap(),
                                         *inputValues.getItemContent()->toMap(),
                                         status,

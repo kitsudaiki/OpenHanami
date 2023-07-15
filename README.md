@@ -36,13 +36,13 @@ https://docs.hanami-ai.com
 
     https://docs.hanami-ai.com/How_To/1_installation/
 
+- Automatic generated OpenAPI documentation
+
+    https://docs.hanami-ai.com/How_To/3_rest_api_documentation/
+
 - To get a first impression there is a first example-workflow via the dashboard:
 
     https://docs.hanami-ai.com/How_To/2_dashboard/
-
-- Even it is quite basic for now, there are also some internal workflow and tasks of the single components described:
-
-    https://docs.hanami-ai.com/Inner_Workings/1_overview/
 
 - Many basic dependencies were created in context of this project. Here is an overview of all involved repositories:
 
@@ -102,6 +102,12 @@ In case the repo was cloned without submodules initially:
 ```
 git submodule init
 git submodule update --recursive
+```
+
+For the OpenAPI-documentation the swagger-ui plugin for mkdocs is necessary:
+
+```
+pip3 install mkdocs-swagger-ui-tag
 ```
 
 

@@ -33,7 +33,7 @@
  * @brief constructor
  */
 CreateToken::CreateToken()
-    : Blossom("Create a JWT-access-token for a specific user.")
+    : Blossom("Create a JWT-access-token for a specific user.", false)
 {
     //----------------------------------------------------------------------------------------------
     // input

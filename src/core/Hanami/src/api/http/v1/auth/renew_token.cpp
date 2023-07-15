@@ -32,7 +32,7 @@
  * @brief constructor
  */
 RenewToken::RenewToken()
-    : Blossom("Create a JWT-access-token for a specific user.")
+    : Blossom("Renew a JWT-access-token for a specific user.")
 {
     //----------------------------------------------------------------------------------------------
     // input

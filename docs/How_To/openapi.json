@@ -1,0 +1,3368 @@
+{
+    "info": {
+        "title": "API documentation",
+        "version": "unreleased"
+    },
+    "license": {
+        "name": "Apache 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "openapi": "3.0.0",
+    "paths": {
+        "v1/audit_log": {
+            "get": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Page-number starting with 0 to access the logs. A page has up to 100 entries.",
+                        "in": "query",
+                        "name": "page",
+                        "required": true,
+                        "schema": {
+                            "maximum": "1000000000",
+                            "minimum": "0",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "ID of the user, whos entries are requested. Only an admin is allowed to set this values. Any other user get only its own log output based on the token-context.",
+                        "in": "query",
+                        "name": "user_id",
+                        "schema": {
+                            "maxLength": "256",
+                            "minLength": "4",
+                            "pattern": "[a-zA-Z][a-zA-Z_0-9@]*",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "body": {
+                                            "description": "Array with all rows of the table, which array arrays too.",
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        },
+                                        "header": {
+                                            "description": "Array with the namings all columns of the table.",
+                                            "items": {
+                                                "enum": [
+                                                    "timestamp",
+                                                    "user_id",
+                                                    "component",
+                                                    "endpoint",
+                                                    "request_type"
+                                                ],
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Get audit-log of a user.",
+                "tags": [
+                    "Logs"
+                ]
+            }
+        },
+        "v1/auth": {
+            "get": {
+                "parameters": [
+                    {
+                        "description": "Requested component-name of the request. If this is not set, then only the token in itself will be validated.",
+                        "in": "query",
+                        "name": "component",
+                        "schema": {
+                            "maxLength": "256",
+                            "minLength": "4",
+                            "pattern": "[a-zA-Z][a-zA-Z_0-9]*",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Requesed endpoint within the component.",
+                        "in": "query",
+                        "name": "endpoint",
+                        "schema": {
+                            "maxLength": "256",
+                            "minLength": "4",
+                            "pattern": "[a-zA-Z][a-zA-Z_/0-9]*",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Type of the HTTP-request as enum (DELETE = 1, GET = 2, HEAD = 3, POST = 4, PUT = 5).",
+                        "in": "query",
+                        "name": "http_type",
+                        "schema": {
+                            "maximum": "5",
+                            "minimum": "1",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "User specific JWT-access-token.",
+                        "in": "query",
+                        "name": "token",
+                        "required": true,
+                        "schema": {
+                            "pattern": "[a-zA-Z_.\\-0-9]*",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "description": "ID of the user.",
+                                            "type": "string"
+                                        },
+                                        "is_admin": {
+                                            "description": "Show if the user is an admin or not.",
+                                            "type": "boolean"
+                                        },
+                                        "is_project_admin": {
+                                            "description": "True, if the user is admin within the selected project.",
+                                            "type": "boolean"
+                                        },
+                                        "name": {
+                                            "description": "Name of the user.",
+                                            "type": "string"
+                                        },
+                                        "project_id": {
+                                            "description": "Selected project of the user.",
+                                            "type": "string"
+                                        },
+                                        "role": {
+                                            "description": "Role of the user within the project.",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Checks if a JWT-access-token of a user is valid or not and optional check if the user is allowed by its roles and the policy to access a specific endpoint.",
+                "tags": [
+                    "Token"
+                ]
+            }
+        },
+        "v1/cluster": {
+            "delete": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "UUID of the cluster.",
+                        "in": "query",
+                        "name": "uuid",
+                        "required": true,
+                        "schema": {
+                            "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Delete a cluster.",
+                "tags": [
+                    "Cluster"
+                ]
+            },
+            "get": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "uuid of the cluster.",
+                        "in": "query",
+                        "name": "uuid",
+                        "required": true,
+                        "schema": {
+                            "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "name": {
+                                            "description": "Name of the cluster.",
+                                            "type": "string"
+                                        },
+                                        "owner_id": {
+                                            "description": "ID of the user, who created the cluster.",
+                                            "type": "string"
+                                        },
+                                        "project_id": {
+                                            "description": "ID of the project, where the cluster belongs to.",
+                                            "type": "string"
+                                        },
+                                        "uuid": {
+                                            "description": "UUID of the cluster.",
+                                            "type": "string"
+                                        },
+                                        "visibility": {
+                                            "description": "Visibility of the cluster (private, shared, public).",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Show information of a specific cluster.",
+                "tags": [
+                    "Cluster"
+                ]
+            },
+            "post": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "description": "Name for the new cluster.",
+                                        "maxLength": "256",
+                                        "minLength": "4",
+                                        "pattern": "[a-zA-Z][a-zA-Z_0-9 ]*",
+                                        "type": "string"
+                                    },
+                                    "template": {
+                                        "description": "Cluster-template as base64-string.",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "name"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "name": {
+                                            "description": "Name of the new created cluster.",
+                                            "type": "string"
+                                        },
+                                        "owner_id": {
+                                            "description": "ID of the user, who created the new cluster.",
+                                            "type": "string"
+                                        },
+                                        "project_id": {
+                                            "description": "ID of the project, where the new cluster belongs to.",
+                                            "type": "string"
+                                        },
+                                        "uuid": {
+                                            "description": "UUID of the new created cluster.",
+                                            "type": "string"
+                                        },
+                                        "visibility": {
+                                            "description": "Visibility of the new created cluster (private, shared, public).",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Create new cluster.",
+                "tags": [
+                    "Cluster"
+                ]
+            }
+        },
+        "v1/cluster/all": {
+            "get": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "body": {
+                                            "description": "Json-string with all information of all vilible clusters.",
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        },
+                                        "header": {
+                                            "description": "Array with the names all columns of the table.",
+                                            "items": {
+                                                "enum": [
+                                                    "uuid",
+                                                    "project_id",
+                                                    "owner_id",
+                                                    "visibility",
+                                                    "name"
+                                                ],
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "List all visible clusters.",
+                "tags": [
+                    "Cluster"
+                ]
+            }
+        },
+        "v1/cluster/load": {
+            "post": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "cluster_uuid": {
+                                        "description": "UUID of the cluster, where the snapshot should be loaded into.",
+                                        "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                                        "type": "string"
+                                    },
+                                    "snapshot_uuid": {
+                                        "description": "UUID of the snapshot, which should be loaded from shiori into the cluster.",
+                                        "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "cluster_uuid",
+                                    "snapshot_uuid"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "uuid": {
+                                            "description": "UUID of the load-task in the queue of the cluster.",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Load a snapshot from shiori into an existing cluster and override the old data.",
+                "tags": [
+                    "Cluster"
+                ]
+            }
+        },
+        "v1/cluster/save": {
+            "post": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "cluster_uuid": {
+                                        "description": "UUID of the cluster, which should be saved as new snapstho to shiori.",
+                                        "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                                        "type": "string"
+                                    },
+                                    "name": {
+                                        "description": "Name for task, which is place in the task-queue and for the new snapshot.",
+                                        "maxLength": "256",
+                                        "minLength": "4",
+                                        "pattern": "[a-zA-Z][a-zA-Z_0-9 ]*",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "cluster_uuid",
+                                    "name"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "name": {
+                                            "description": "Name of the new created task and of the snapshot, which should be created by the task.",
+                                            "type": "string"
+                                        },
+                                        "uuid": {
+                                            "description": "UUID of the save-task in the queue of the cluster.",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Save a cluster.",
+                "tags": [
+                    "Cluster"
+                ]
+            }
+        },
+        "v1/cluster/set_mode": {
+            "put": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "connection_uuid": {
+                                        "description": "UUID of the connection for input and output.",
+                                        "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                                        "type": "string"
+                                    },
+                                    "new_state": {
+                                        "description": "New desired state for the cluster.",
+                                        "pattern": "^(TASK|DIRECT)$",
+                                        "type": "string"
+                                    },
+                                    "uuid": {
+                                        "description": "UUID of the cluster.",
+                                        "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "new_state",
+                                    "uuid"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "name": {
+                                            "description": "Name of the cluster.",
+                                            "type": "string"
+                                        },
+                                        "new_state": {
+                                            "description": "New desired state for the cluster.",
+                                            "type": "string"
+                                        },
+                                        "uuid": {
+                                            "description": "UUID of the cluster.",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Set mode of the cluster.",
+                "tags": [
+                    "Cluster"
+                ]
+            }
+        },
+        "v1/cluster_snapshot": {
+            "delete": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "UUID of the cluster-snapshot to delete.",
+                        "in": "query",
+                        "name": "uuid",
+                        "required": true,
+                        "schema": {
+                            "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Delete a result-set from shiori.",
+                "tags": [
+                    "Snapshot"
+                ]
+            },
+            "get": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "UUID of the original request-task, which placed the result in shiori.",
+                        "in": "query",
+                        "name": "uuid",
+                        "required": true,
+                        "schema": {
+                            "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "header": {
+                                            "description": "Header-information of the snapshot-file.",
+                                            "type": "object"
+                                        },
+                                        "location": {
+                                            "description": "File path on local storage.",
+                                            "type": "string"
+                                        },
+                                        "name": {
+                                            "description": "Name of the data-set.",
+                                            "type": "string"
+                                        },
+                                        "uuid": {
+                                            "description": "UUID of the data-set.",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Get snapshot of a cluster.",
+                "tags": [
+                    "Snapshot"
+                ]
+            },
+            "post": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "header": {
+                                        "description": "Header of the file with information of the splits.",
+                                        "type": "object"
+                                    },
+                                    "input_data_size": {
+                                        "description": "Total size of the snapshot in number of bytes.",
+                                        "maximum": "10000000000",
+                                        "minimum": "1",
+                                        "type": "integer"
+                                    },
+                                    "name": {
+                                        "description": "Name of the new snapshot.",
+                                        "maxLength": "256",
+                                        "minLength": "4",
+                                        "pattern": "[a-zA-Z][a-zA-Z_0-9 ]*",
+                                        "type": "string"
+                                    },
+                                    "project_id": {
+                                        "description": "ID of the project, where the snapshot belongs to.",
+                                        "maxLength": "256",
+                                        "minLength": "4",
+                                        "pattern": "[a-zA-Z][a-zA-Z_0-9]*",
+                                        "type": "string"
+                                    },
+                                    "user_id": {
+                                        "description": "ID of the user, who owns the snapshot.",
+                                        "maxLength": "256",
+                                        "minLength": "4",
+                                        "pattern": "[a-zA-Z][a-zA-Z_0-9@]*",
+                                        "type": "string"
+                                    },
+                                    "uuid": {
+                                        "description": "UUID of the new snapshot.",
+                                        "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "header",
+                                    "input_data_size",
+                                    "name",
+                                    "project_id",
+                                    "user_id",
+                                    "uuid"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "name": {
+                                            "description": "Name of the new snapshot.",
+                                            "type": "string"
+                                        },
+                                        "uuid": {
+                                            "description": "UUID of the new snapshot.",
+                                            "type": "string"
+                                        },
+                                        "uuid_input_file": {
+                                            "description": "UUID to identify the file for data upload of the snapshot.",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Init new snapshot of a cluster.",
+                "tags": [
+                    "Snapshot"
+                ]
+            },
+            "put": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "project_id": {
+                                        "description": "Name of the new set.",
+                                        "type": "string"
+                                    },
+                                    "user_id": {
+                                        "description": "ID of the user, who belongs to the snapshot.",
+                                        "maxLength": "256",
+                                        "minLength": "4",
+                                        "pattern": "[a-zA-Z][a-zA-Z_0-9]*",
+                                        "type": "string"
+                                    },
+                                    "uuid": {
+                                        "description": "Name of the new set.",
+                                        "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                                        "type": "string"
+                                    },
+                                    "uuid_input_file": {
+                                        "description": "UUID to identify the file for date upload of input-data.",
+                                        "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "project_id",
+                                    "user_id",
+                                    "uuid",
+                                    "uuid_input_file"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "uuid": {
+                                            "description": "UUID of the new set.",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Finish snapshot of a cluster.",
+                "tags": [
+                    "Snapshot"
+                ]
+            }
+        },
+        "v1/cluster_snapshot/all": {
+            "get": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "body": {
+                                            "description": "Array with all rows of the table, which array arrays too.",
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        },
+                                        "header": {
+                                            "description": "Array with the namings all columns of the table.",
+                                            "items": {
+                                                "enum": [
+                                                    "uuid",
+                                                    "project_id",
+                                                    "owner_id",
+                                                    "visibility",
+                                                    "name"
+                                                ],
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "List snapshots of all visible cluster.",
+                "tags": [
+                    "Snapshot"
+                ]
+            }
+        },
+        "v1/csv/data_set": {
+            "post": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "input_data_size": {
+                                        "description": "Total size of the input-data.",
+                                        "maximum": "10000000000",
+                                        "minimum": "1",
+                                        "type": "integer"
+                                    },
+                                    "name": {
+                                        "description": "Name of the new data-set.",
+                                        "maxLength": "256",
+                                        "minLength": "4",
+                                        "pattern": "[a-zA-Z][a-zA-Z_0-9 ]*",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "input_data_size",
+                                    "name"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "name": {
+                                            "description": "Name of the new data-set.",
+                                            "type": "string"
+                                        },
+                                        "owner_id": {
+                                            "description": "ID of the user, who created the data-set.",
+                                            "type": "string"
+                                        },
+                                        "project_id": {
+                                            "description": "ID of the project, where the data-set belongs to.",
+                                            "type": "string"
+                                        },
+                                        "type": {
+                                            "description": "Type of the new set (csv)",
+                                            "type": "string"
+                                        },
+                                        "uuid": {
+                                            "description": "UUID of the new data-set.",
+                                            "type": "string"
+                                        },
+                                        "uuid_input_file": {
+                                            "description": "UUID to identify the file for date upload of input-data.",
+                                            "type": "string"
+                                        },
+                                        "visibility": {
+                                            "description": "Visibility of the data-set (private, shared, public).",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Init new csv-file data-set.",
+                "tags": [
+                    "Data Set"
+                ]
+            },
+            "put": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "uuid": {
+                                        "description": "UUID of the new data-set.",
+                                        "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                                        "type": "string"
+                                    },
+                                    "uuid_input_file": {
+                                        "description": "UUID to identify the file for date upload of input-data.",
+                                        "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "uuid",
+                                    "uuid_input_file"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "uuid": {
+                                            "description": "UUID of the new data-set.",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Finalize uploaded data-set by checking completeness of the uploaded and convert into generic format.",
+                "tags": [
+                    "Data Set"
+                ]
+            }
+        },
+        "v1/data_set": {
+            "delete": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "UUID of the data-set to delete.",
+                        "in": "query",
+                        "name": "uuid",
+                        "required": true,
+                        "schema": {
+                            "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Delete a speific data-set.",
+                "tags": [
+                    "Data Set"
+                ]
+            },
+            "get": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "UUID of the data-set set to delete.",
+                        "in": "query",
+                        "name": "uuid",
+                        "required": true,
+                        "schema": {
+                            "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "inputs": {
+                                            "description": "Number of inputs.",
+                                            "type": "integer"
+                                        },
+                                        "lines": {
+                                            "description": "Number of lines.",
+                                            "type": "integer"
+                                        },
+                                        "location": {
+                                            "description": "Local file-path of the data-set.",
+                                            "type": "string"
+                                        },
+                                        "name": {
+                                            "description": "Name of the data-set.",
+                                            "type": "string"
+                                        },
+                                        "outputs": {
+                                            "description": "Number of outputs.",
+                                            "type": "integer"
+                                        },
+                                        "owner_id": {
+                                            "description": "ID of the user, who created the data-set.",
+                                            "type": "string"
+                                        },
+                                        "project_id": {
+                                            "description": "ID of the project, where the data-set belongs to.",
+                                            "type": "string"
+                                        },
+                                        "type": {
+                                            "description": "Type of the new set (csv or mnist)",
+                                            "type": "string"
+                                        },
+                                        "uuid": {
+                                            "description": "UUID of the data-set.",
+                                            "type": "string"
+                                        },
+                                        "visibility": {
+                                            "description": "Visibility of the data-set (private, shared, public).",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Get information of a specific data-set.",
+                "tags": [
+                    "Data Set"
+                ]
+            }
+        },
+        "v1/data_set/all": {
+            "get": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "body": {
+                                            "description": "Array with all rows of the table, which array arrays too.",
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        },
+                                        "header": {
+                                            "description": "Array with the namings all columns of the table.",
+                                            "items": {
+                                                "enum": [
+                                                    "uuid",
+                                                    "project_id",
+                                                    "owner_id",
+                                                    "visibility",
+                                                    "name",
+                                                    "type"
+                                                ],
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "List all visible data-sets.",
+                "tags": [
+                    "Data Set"
+                ]
+            }
+        },
+        "v1/data_set/check": {
+            "post": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "data_set_uuid": {
+                                        "description": "UUID of the data-set to compare to.",
+                                        "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                                        "type": "string"
+                                    },
+                                    "result_uuid": {
+                                        "description": "UUID of the data-set to compare to.",
+                                        "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "data_set_uuid",
+                                    "result_uuid"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "correctness": {
+                                            "description": "Correctness of the values compared to the data-set.",
+                                            "type": "number"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Compare a list of values with a data-set to check correctness.",
+                "tags": [
+                    "Data Set"
+                ]
+            }
+        },
+        "v1/data_set/progress": {
+            "get": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "UUID of the dataset set to delete.",
+                        "in": "query",
+                        "name": "uuid",
+                        "required": true,
+                        "schema": {
+                            "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "complete": {
+                                            "description": "True, if all temporary files for complete.",
+                                            "type": "boolean"
+                                        },
+                                        "temp_files": {
+                                            "description": "Map with the uuids of the temporary files and it's upload progress",
+                                            "type": "object"
+                                        },
+                                        "uuid": {
+                                            "description": "UUID of the data-set.",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Get upload progress of a specific data-set.",
+                "tags": [
+                    "Data Set"
+                ]
+            }
+        },
+        "v1/documentation/api/rest": {
+            "get": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "documentation": {
+                                            "description": "REST-API-documentation as base64 converted string.",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Generate a OpenAPI documentation for the REST-API of all available components.",
+                "tags": [
+                    "Documentation"
+                ]
+            }
+        },
+        "v1/error_log": {
+            "get": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Page-number starting with 0 to access the logs. A page has up to 100 entries.",
+                        "in": "query",
+                        "name": "page",
+                        "required": true,
+                        "schema": {
+                            "maximum": "1000000000",
+                            "minimum": "0",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "ID of the user, whos entries are requested.",
+                        "in": "query",
+                        "name": "user_id",
+                        "schema": {
+                            "maxLength": "256",
+                            "minLength": "4",
+                            "pattern": "[a-zA-Z][a-zA-Z_0-9@]*",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "body": {
+                                            "description": "Array with all rows of the table, which array arrays too.",
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        },
+                                        "header": {
+                                            "description": "Array with the namings all columns of the table.",
+                                            "items": {
+                                                "enum": [
+                                                    "timestamp",
+                                                    "user_id",
+                                                    "component",
+                                                    "context",
+                                                    "input_values",
+                                                    "message"
+                                                ],
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Get error-log of a user. Only an admin is allowed to request the error-log.",
+                "tags": [
+                    "Logs"
+                ]
+            }
+        },
+        "v1/mnist/data_set": {
+            "post": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "input_data_size": {
+                                        "description": "Total size of the input-data.",
+                                        "maximum": "10000000000",
+                                        "minimum": "1",
+                                        "type": "integer"
+                                    },
+                                    "label_data_size": {
+                                        "description": "Total size of the label-data.",
+                                        "maximum": "10000000000",
+                                        "minimum": "1",
+                                        "type": "integer"
+                                    },
+                                    "name": {
+                                        "description": "Name of the new set.",
+                                        "maxLength": "256",
+                                        "minLength": "4",
+                                        "pattern": "[a-zA-Z][a-zA-Z_0-9 ]*",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "input_data_size",
+                                    "label_data_size",
+                                    "name"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "name": {
+                                            "description": "Name of the new data-set.",
+                                            "type": "string"
+                                        },
+                                        "owner_id": {
+                                            "description": "ID of the user, who created the data-set.",
+                                            "type": "string"
+                                        },
+                                        "project_id": {
+                                            "description": "ID of the project, where the data-set belongs to.",
+                                            "type": "string"
+                                        },
+                                        "type": {
+                                            "description": "Type of the new set (mnist)",
+                                            "type": "string"
+                                        },
+                                        "uuid": {
+                                            "description": "UUID of the new data-set.",
+                                            "type": "string"
+                                        },
+                                        "uuid_input_file": {
+                                            "description": "UUID to identify the file for date upload of input-data.",
+                                            "type": "string"
+                                        },
+                                        "uuid_label_file": {
+                                            "description": "UUID to identify the file for date upload of label-data.",
+                                            "type": "string"
+                                        },
+                                        "visibility": {
+                                            "description": "Visibility of the data-set (private, shared, public).",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Init new mnist-file data-set.",
+                "tags": [
+                    "Data Set"
+                ]
+            },
+            "put": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "uuid": {
+                                        "description": "UUID of the new data-set.",
+                                        "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                                        "type": "string"
+                                    },
+                                    "uuid_input_file": {
+                                        "description": "UUID to identify the file for date upload of input-data.",
+                                        "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                                        "type": "string"
+                                    },
+                                    "uuid_label_file": {
+                                        "description": "UUID to identify the file for date upload of label-data.",
+                                        "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "uuid",
+                                    "uuid_input_file",
+                                    "uuid_label_file"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "uuid": {
+                                            "description": "UUID of the new data-set.",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Finalize uploaded data-set by checking completeness of the uploaded and convert into generic format.",
+                "tags": [
+                    "Data Set"
+                ]
+            }
+        },
+        "v1/power_consumption": {
+            "get": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "power": {
+                                            "description": "Json-object with power-measurements",
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Request the power-measurement of the CPU",
+                "tags": [
+                    "Measurements"
+                ]
+            }
+        },
+        "v1/project": {
+            "delete": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "ID of the project.",
+                        "in": "query",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "maxLength": "256",
+                            "minLength": "4",
+                            "pattern": "[a-zA-Z][a-zA-Z_0-9]*",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Delete a specific user from the database.",
+                "tags": [
+                    "Project"
+                ]
+            },
+            "get": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Id of the user.",
+                        "in": "query",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "maxLength": "256",
+                            "minLength": "4",
+                            "pattern": "[a-zA-Z][a-zA-Z_0-9]*",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "creator_id": {
+                                            "description": "Id of the creator of the user.",
+                                            "type": "string"
+                                        },
+                                        "id": {
+                                            "description": "ID of the new user.",
+                                            "type": "string"
+                                        },
+                                        "name": {
+                                            "description": "Name of the new user.",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Show information of a specific registered user.",
+                "tags": [
+                    "Project"
+                ]
+            },
+            "post": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id": {
+                                        "description": "ID of the new project.",
+                                        "maxLength": "256",
+                                        "minLength": "4",
+                                        "pattern": "[a-zA-Z][a-zA-Z_0-9]*",
+                                        "type": "string"
+                                    },
+                                    "name": {
+                                        "description": "Name of the new project.",
+                                        "maxLength": "256",
+                                        "minLength": "4",
+                                        "pattern": "[a-zA-Z][a-zA-Z_0-9 ]*",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "id",
+                                    "name"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "creator_id": {
+                                            "description": "Id of the creator of the project.",
+                                            "type": "string"
+                                        },
+                                        "id": {
+                                            "description": "ID of the new project.",
+                                            "type": "string"
+                                        },
+                                        "name": {
+                                            "description": "Name of the new project.",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Register a new project within Misaki.",
+                "tags": [
+                    "Project"
+                ]
+            }
+        },
+        "v1/project/all": {
+            "get": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "body": {
+                                            "description": "Array with all rows of the table, which array arrays too.",
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        },
+                                        "header": {
+                                            "description": "Array with the namings all columns of the table.",
+                                            "items": {
+                                                "enum": [
+                                                    "id",
+                                                    "name",
+                                                    "creator_id"
+                                                ],
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Get information of all registered user as table.",
+                "tags": [
+                    "Project"
+                ]
+            }
+        },
+        "v1/request_result": {
+            "delete": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "UUID of the original request-task, which placed the result in shiori.",
+                        "in": "query",
+                        "name": "uuid",
+                        "required": true,
+                        "schema": {
+                            "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Delete a request-result from shiori.",
+                "tags": [
+                    "Request-Result"
+                ]
+            },
+            "get": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "UUID of the original request-task, which placed the result in shiori.",
+                        "in": "query",
+                        "name": "uuid",
+                        "required": true,
+                        "schema": {
+                            "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "description": "Result of the request-task as json-array.",
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        },
+                                        "name": {
+                                            "description": "Name of the request-result.",
+                                            "type": "string"
+                                        },
+                                        "owner_id": {
+                                            "description": "ID of the user, who created the request-result.",
+                                            "type": "string"
+                                        },
+                                        "project_id": {
+                                            "description": "ID of the project, where the request-result belongs to.",
+                                            "type": "string"
+                                        },
+                                        "uuid": {
+                                            "description": "UUID of the request-result.",
+                                            "type": "string"
+                                        },
+                                        "visibility": {
+                                            "description": "Visibility of the request-result (private, shared, public).",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Get a specific request-result",
+                "tags": [
+                    "Request-Result"
+                ]
+            }
+        },
+        "v1/request_result/all": {
+            "get": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "body": {
+                                            "description": "Array with all rows of the table, which array arrays too.",
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        },
+                                        "header": {
+                                            "description": "Array with the namings all columns of the table.",
+                                            "items": {
+                                                "enum": [
+                                                    "uuid",
+                                                    "project_id",
+                                                    "owner_id",
+                                                    "visibility",
+                                                    "name"
+                                                ],
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "List all visilbe request-results.",
+                "tags": [
+                    "Request-Result"
+                ]
+            }
+        },
+        "v1/speed": {
+            "get": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "current_speed": {
+                                            "description": "Json-object with current-speed-measurements",
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Request the speed of the CPU",
+                "tags": [
+                    "Measurements"
+                ]
+            }
+        },
+        "v1/system_info": {
+            "get": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "info": {
+                                            "description": "All available information of the local system.",
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Get all available information of the local system, like topology of the cpu-resources and speed of the cpu",
+                "tags": [
+                    "System"
+                ]
+            }
+        },
+        "v1/task": {
+            "delete": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "UUID of the cluster, which contains the task in its queue",
+                        "in": "query",
+                        "name": "cluster_uuid",
+                        "required": true,
+                        "schema": {
+                            "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "UUID of the task, which should be deleted",
+                        "in": "query",
+                        "name": "uuid",
+                        "required": true,
+                        "schema": {
+                            "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Delete a task or abort a task, if it is actually running.",
+                "tags": [
+                    "Task"
+                ]
+            },
+            "get": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "UUID of the cluster, which should process the request",
+                        "in": "query",
+                        "name": "cluster_uuid",
+                        "required": true,
+                        "schema": {
+                            "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "UUID of the cluster, which should process the request",
+                        "in": "query",
+                        "name": "uuid",
+                        "required": true,
+                        "schema": {
+                            "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "end_timestamp": {
+                                            "description": "Timestamp in UTC when the task was finished.",
+                                            "type": "string"
+                                        },
+                                        "percentage_finished": {
+                                            "description": "Percentation of the progress between 0.0 and 1.0.",
+                                            "type": "number"
+                                        },
+                                        "queue_timestamp": {
+                                            "description": "Timestamp in UTC when the task entered the queued state, which is basicall the timestamp when the task was created",
+                                            "type": "string"
+                                        },
+                                        "start_timestamp": {
+                                            "description": "Timestamp in UTC when the task entered the active state.",
+                                            "type": "string"
+                                        },
+                                        "state": {
+                                            "description": "Actual state of the task (queued, active, aborted or finished).",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Show information of a specific task.",
+                "tags": [
+                    "Task"
+                ]
+            },
+            "post": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "cluster_uuid": {
+                                        "description": "UUID of the cluster, which should process the request",
+                                        "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                                        "type": "string"
+                                    },
+                                    "data_set_uuid": {
+                                        "description": "UUID of the data-set with the input, which coming from shiori.",
+                                        "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                                        "type": "string"
+                                    },
+                                    "name": {
+                                        "description": "Name for the new task for better identification.",
+                                        "maxLength": "256",
+                                        "minLength": "4",
+                                        "pattern": "[a-zA-Z][a-zA-Z_0-9 ]*",
+                                        "type": "string"
+                                    },
+                                    "type": {
+                                        "description": "UUID of the data-set with the input, which coming from shiori.",
+                                        "pattern": "^(learn|request)$",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "cluster_uuid",
+                                    "data_set_uuid",
+                                    "name",
+                                    "type"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "name": {
+                                            "description": "Name of the new created task.",
+                                            "type": "string"
+                                        },
+                                        "uuid": {
+                                            "description": "UUID of the new created task.",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Add new task to the task-queue of a cluster.",
+                "tags": [
+                    "Task"
+                ]
+            }
+        },
+        "v1/task/all": {
+            "get": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "UUID of the cluster, whos tasks should be listed",
+                        "in": "query",
+                        "name": "cluster_uuid",
+                        "required": true,
+                        "schema": {
+                            "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "body": {
+                                            "description": "Array with all rows of the table, which array arrays too.",
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        },
+                                        "header": {
+                                            "description": "Array with the namings all columns of the table.",
+                                            "items": {
+                                                "enum": [
+                                                    "uuid",
+                                                    "state",
+                                                    "percentage",
+                                                    "queued",
+                                                    "start",
+                                                    "end"
+                                                ],
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "List all visible tasks of a specific cluster.",
+                "tags": [
+                    "Task"
+                ]
+            }
+        },
+        "v1/temperature_production": {
+            "get": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "temperature": {
+                                            "description": "Json-object with temperature-measurements",
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Request the temperature-measurement of the CPU",
+                "tags": [
+                    "Measurements"
+                ]
+            }
+        },
+        "v1/template": {
+            "delete": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "UUID of the template.",
+                        "in": "query",
+                        "name": "uuid",
+                        "required": true,
+                        "schema": {
+                            "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Delete a template from the database.",
+                "tags": [
+                    "Template"
+                ]
+            },
+            "get": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "UUID of the template.",
+                        "in": "query",
+                        "name": "uuid",
+                        "required": true,
+                        "schema": {
+                            "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "name": {
+                                            "description": "Name of the template.",
+                                            "type": "string"
+                                        },
+                                        "owner_id": {
+                                            "description": "ID of the user, who created the template.",
+                                            "type": "string"
+                                        },
+                                        "project_id": {
+                                            "description": "ID of the project, where the template belongs to.",
+                                            "type": "string"
+                                        },
+                                        "template": {
+                                            "description": "The template itself.",
+                                            "type": "string"
+                                        },
+                                        "uuid": {
+                                            "description": "UUID of the template.",
+                                            "type": "string"
+                                        },
+                                        "visibility": {
+                                            "description": "Visibility of the template (private, shared, public).",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Show a specific template.",
+                "tags": [
+                    "Template"
+                ]
+            }
+        },
+        "v1/template/all": {
+            "get": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "body": {
+                                            "description": "Array with all rows of the table, which array arrays too.",
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        },
+                                        "header": {
+                                            "description": "Array with the namings all columns of the table.",
+                                            "items": {
+                                                "enum": [
+                                                    "uuid",
+                                                    "name"
+                                                ],
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "List all visible templates.",
+                "tags": [
+                    "Template"
+                ]
+            }
+        },
+        "v1/template/upload": {
+            "post": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "description": "Name for the new template.",
+                                        "maxLength": "256",
+                                        "minLength": "4",
+                                        "pattern": "[a-zA-Z][a-zA-Z_0-9]*",
+                                        "type": "string"
+                                    },
+                                    "template": {
+                                        "description": "New template to upload as base64 string.",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "name",
+                                    "template"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "name": {
+                                            "description": "Name of the new uploaded template.",
+                                            "type": "string"
+                                        },
+                                        "owner_id": {
+                                            "description": "ID of the user, who created the new template.",
+                                            "type": "string"
+                                        },
+                                        "project_id": {
+                                            "description": "ID of the project, where the new template belongs to.",
+                                            "type": "string"
+                                        },
+                                        "uuid": {
+                                            "description": "UUID of the new uploaded template.",
+                                            "type": "string"
+                                        },
+                                        "visibility": {
+                                            "description": "Visibility of the new created template (private, shared, public).",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Upload a new template and store it within the database.",
+                "tags": [
+                    "Template"
+                ]
+            }
+        },
+        "v1/threading": {
+            "get": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "thread_map": {
+                                            "description": "Map with all thread-names and its core-id as json-string.",
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Get Mapping of the all threads of all components to its bound cpu-core",
+                "tags": [
+                    "Threading"
+                ]
+            }
+        },
+        "v1/token": {
+            "post": {
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id": {
+                                        "description": "ID of the user.",
+                                        "maxLength": "256",
+                                        "minLength": "4",
+                                        "pattern": "[a-zA-Z][a-zA-Z_0-9@]*",
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "description": "Passphrase of the user, to verify the access.",
+                                        "maxLength": "4096",
+                                        "minLength": "8",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "id",
+                                    "password"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "description": "ID of the user.",
+                                            "type": "string"
+                                        },
+                                        "is_admin": {
+                                            "description": "Set this to true to register the new user as admin.",
+                                            "type": "boolean"
+                                        },
+                                        "name": {
+                                            "description": "Name of the user.",
+                                            "type": "string"
+                                        },
+                                        "token": {
+                                            "description": "New JWT-access-token for the user.",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Create a JWT-access-token for a specific user.",
+                "tags": [
+                    "Token"
+                ]
+            },
+            "put": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "project_id": {
+                                        "description": "ID of the project, which has to be used for the new token.",
+                                        "maxLength": "256",
+                                        "minLength": "4",
+                                        "pattern": "[a-zA-Z][a-zA-Z_0-9]*",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "project_id"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "description": "ID of the user.",
+                                            "type": "string"
+                                        },
+                                        "is_admin": {
+                                            "description": "Set this to true to register the new user as admin.",
+                                            "type": "boolean"
+                                        },
+                                        "name": {
+                                            "description": "Name of the user.",
+                                            "type": "string"
+                                        },
+                                        "token": {
+                                            "description": "New JWT-access-token for the user.",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Renew a JWT-access-token for a specific user.",
+                "tags": [
+                    "Token"
+                ]
+            }
+        },
+        "v1/user": {
+            "delete": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "ID of the user.",
+                        "in": "query",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "maxLength": "256",
+                            "minLength": "4",
+                            "pattern": "[a-zA-Z][a-zA-Z_0-9@]*",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Delete a specific user from the database.",
+                "tags": [
+                    "User"
+                ]
+            },
+            "get": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Id of the user.",
+                        "in": "query",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "maxLength": "256",
+                            "minLength": "4",
+                            "pattern": "[a-zA-Z][a-zA-Z_0-9@]*",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "creator_id": {
+                                            "description": "Id of the creator of the user.",
+                                            "type": "string"
+                                        },
+                                        "id": {
+                                            "description": "ID of the user.",
+                                            "type": "string"
+                                        },
+                                        "is_admin": {
+                                            "description": "Set this to true to register the new user as admin.",
+                                            "type": "boolean"
+                                        },
+                                        "name": {
+                                            "description": "Name of the user.",
+                                            "type": "string"
+                                        },
+                                        "projects": {
+                                            "description": "Json-array with all assigned projects together with role and project-admin-status.",
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Show information of a specific user.",
+                "tags": [
+                    "User"
+                ]
+            },
+            "post": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id": {
+                                        "description": "ID of the new user.",
+                                        "maxLength": "256",
+                                        "minLength": "4",
+                                        "pattern": "[a-zA-Z][a-zA-Z_0-9@]*",
+                                        "type": "string"
+                                    },
+                                    "is_admin": {
+                                        "default": "false",
+                                        "description": "Set this to 1 to register the new user as admin.",
+                                        "type": "boolean"
+                                    },
+                                    "name": {
+                                        "description": "Name of the new user.",
+                                        "maxLength": "256",
+                                        "minLength": "4",
+                                        "pattern": "[a-zA-Z][a-zA-Z_0-9 ]*",
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "description": "Passphrase of the user.",
+                                        "maxLength": "4096",
+                                        "minLength": "8",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "id",
+                                    "name",
+                                    "password"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "creator_id": {
+                                            "description": "Id of the creator of the user.",
+                                            "type": "string"
+                                        },
+                                        "id": {
+                                            "description": "ID of the new user.",
+                                            "type": "string"
+                                        },
+                                        "is_admin": {
+                                            "description": "True, if user is an admin.",
+                                            "type": "boolean"
+                                        },
+                                        "name": {
+                                            "description": "Name of the new user.",
+                                            "type": "string"
+                                        },
+                                        "projects": {
+                                            "description": "Json-array with all assigned projects together with role and project-admin-status.",
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Register a new user within Misaki.",
+                "tags": [
+                    "User"
+                ]
+            }
+        },
+        "v1/user/all": {
+            "get": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "body": {
+                                            "description": "Array with all rows of the table, which array arrays too.",
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        },
+                                        "header": {
+                                            "description": "Array with the namings all columns of the table.",
+                                            "items": {
+                                                "enum": [
+                                                    "id",
+                                                    "name",
+                                                    "creator_id",
+                                                    "projects",
+                                                    "is_admin"
+                                                ],
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Get information of all registered users.",
+                "tags": [
+                    "User"
+                ]
+            }
+        },
+        "v1/user/project": {
+            "delete": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "ID of the user.",
+                        "in": "query",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "maxLength": "256",
+                            "minLength": "4",
+                            "pattern": "[a-zA-Z][a-zA-Z_0-9@]*",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "ID of the project, which has to be removed from the user.",
+                        "in": "query",
+                        "name": "project_id",
+                        "required": true,
+                        "schema": {
+                            "maxLength": "256",
+                            "minLength": "4",
+                            "pattern": "[a-zA-Z][a-zA-Z_0-9]*",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "creator_id": {
+                                            "description": "Id of the creator of the user.",
+                                            "type": "string"
+                                        },
+                                        "id": {
+                                            "description": "ID of the user.",
+                                            "type": "string"
+                                        },
+                                        "is_admin": {
+                                            "description": "True, if user is an admin.",
+                                            "type": "boolean"
+                                        },
+                                        "name": {
+                                            "description": "Name of the user.",
+                                            "type": "string"
+                                        },
+                                        "projects": {
+                                            "description": "Json-array with all assigned projects together with role and project-admin-status.",
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Remove a project from a specific user",
+                "tags": [
+                    "User-Projects"
+                ]
+            },
+            "get": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "ID of the user.",
+                        "in": "query",
+                        "name": "user_id",
+                        "schema": {
+                            "maxLength": "256",
+                            "minLength": "4",
+                            "pattern": "[a-zA-Z][a-zA-Z_0-9@]*",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "projects": {
+                                            "description": "Json-array with all assigned projects together with role and project-admin-status.",
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "List all available projects of the user, who made the request.",
+                "tags": [
+                    "User-Projects"
+                ]
+            },
+            "post": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id": {
+                                        "description": "ID of the user.",
+                                        "maxLength": "256",
+                                        "minLength": "4",
+                                        "pattern": "[a-zA-Z][a-zA-Z_0-9@]*",
+                                        "type": "string"
+                                    },
+                                    "is_project_admin": {
+                                        "default": "false",
+                                        "description": "Set this to true, if the user should be an admin within the assigned project.",
+                                        "type": "boolean"
+                                    },
+                                    "project_id": {
+                                        "description": "ID of the project, which has to be added to the user.",
+                                        "maxLength": "256",
+                                        "minLength": "4",
+                                        "pattern": "[a-zA-Z][a-zA-Z_0-9]*",
+                                        "type": "string"
+                                    },
+                                    "role": {
+                                        "description": "Role, which has to be assigned to the user within the project",
+                                        "maxLength": "256",
+                                        "minLength": "4",
+                                        "pattern": "[a-zA-Z][a-zA-Z_0-9]*",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "id",
+                                    "project_id",
+                                    "role"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "creator_id": {
+                                            "description": "Id of the creator of the user.",
+                                            "type": "string"
+                                        },
+                                        "id": {
+                                            "description": "ID of the user.",
+                                            "type": "string"
+                                        },
+                                        "is_admin": {
+                                            "description": "True, if user is an admin.",
+                                            "type": "boolean"
+                                        },
+                                        "name": {
+                                            "description": "Name of the user.",
+                                            "type": "string"
+                                        },
+                                        "projects": {
+                                            "description": "Json-array with all assigned projects together with role and project-admin-status.",
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Add a project to a specific user.",
+                "tags": [
+                    "User-Projects"
+                ]
+            }
+        }
+    }
+}

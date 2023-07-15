@@ -29,8 +29,10 @@
 /**
  * @brief constructor
  */
-Blossom::Blossom(const std::string &comment)
-    : comment(comment) {}
+Blossom::Blossom(const std::string &comment, const bool requiresToken)
+    : comment(comment),
+      requiresAuthToken(requiresToken)
+{}
 
 /**
  * @brief destructor

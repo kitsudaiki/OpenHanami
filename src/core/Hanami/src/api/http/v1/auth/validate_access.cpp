@@ -38,7 +38,7 @@ using Kitsunemimi::Hanami::HttpRequestType;
 ValidateAccess::ValidateAccess()
     : Blossom("Checks if a JWT-access-token of a user is valid or not "
               "and optional check if the user is allowed by its roles "
-              "and the policy to access a specific endpoint.")
+              "and the policy to access a specific endpoint.", false)
 {
     //----------------------------------------------------------------------------------------------
     // input
