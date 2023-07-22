@@ -55,6 +55,7 @@ blank [ \t]
 "]"       return Kitsunemimi::JsonParser::make_BRACKCLOSE (jsonloc);
 ","       return Kitsunemimi::JsonParser::make_COMMA (jsonloc);
 ":"       return Kitsunemimi::JsonParser::make_ASSIGN (jsonloc);
+"e+"      return Kitsunemimi::JsonParser::make_EXPONENT (jsonloc);
 
 "true" return Kitsunemimi::JsonParser::make_BOOL_TRUE (jsonloc);
 "false" return Kitsunemimi::JsonParser::make_BOOL_FALSE (jsonloc);
@@ -80,10 +81,6 @@ blank [ \t]
 }
 
 {id}       return Kitsunemimi::JsonParser::make_IDENTIFIER(yytext, jsonloc);
-
-[a-zA-Z_0-9|\-|.]* {
-    return Kitsunemimi::JsonParser::make_STRING_PLN(yytext, jsonloc);
-}
 
 .          driver.error(jsonloc, "invalid character");
 <<EOF>>    return Kitsunemimi::JsonParser::make_END(jsonloc);

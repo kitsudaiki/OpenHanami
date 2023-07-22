@@ -419,7 +419,7 @@ JsonItem_Test::getTestItem()
 {
     std::string input("{\n"
                       "    item: {\n"
-                      "        sub_item: \"test_value\"\n"
+                      "        \"sub_item\": \"test_value\"\n"
                       "    },\n"
                       "    item2: {\n"
                       "        sub_item2: \"something\"\n"
@@ -433,7 +433,7 @@ JsonItem_Test::getTestItem()
                       "        },\n"
                       "        1234,\n"
                       "        {\n"
-                      "            x: -42.000000\n"
+                      "            x: -42.000000e+02\n"
                       "        }\n"
                       "    ]\n"
                       "}");
@@ -441,7 +441,7 @@ JsonItem_Test::getTestItem()
     JsonItem output;
     ErrorContainer error;
     output.parse(input, error);
-
+    //std::cout<<error.toString()<<std::endl;
     assert(output.isValid());
 
     return output;
