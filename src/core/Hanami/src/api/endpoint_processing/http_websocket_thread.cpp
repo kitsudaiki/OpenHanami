@@ -460,10 +460,10 @@ HttpWebsocketThread::runWebsocket()
                 std::string response = "{\"success\":" + std::to_string(success);
                 if(success)
                 {
-                    response.append(",\"uuid\":");
+                    response.append(",\"uuid\":\"");
                     response.append(m_uuid);
                 }
-                response.append("}");
+                response.append("\"}");
 
                 m_webSocket->binary(true);
                 m_webSocket->write(net::buffer(response, response.size()));

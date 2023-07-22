@@ -23,6 +23,7 @@
 {
 #include <string>
 #include <iostream>
+#include <cmath>
 #include <libKitsunemimiCommon/items/data_items.h>
 
 using Kitsunemimi::DataItem;
@@ -63,6 +64,7 @@ YY_DECL;
     BRACKCLOSE  "]"
     COMMA  ","
     ASSIGN  ":"
+    EXPONENT "e+"
     BOOL_TRUE  "true"
     BOOL_FALSE "false"
     NULLVAL "null"
@@ -71,7 +73,6 @@ YY_DECL;
 
 %token <std::string> IDENTIFIER "identifier"
 %token <std::string> STRING "string"
-%token <std::string> STRING_PLN "string_pln"
 %token <long> NUMBER "number"
 %token <double> FLOAT "float"
 
@@ -156,24 +157,6 @@ json_object_content:
         }
     }
 |
-    json_object_content "," "string_pln" ":" json_abstract
-    {
-        if(driver.dryRun == false) {
-            $1->insert(driver.removeQuotes($3), $5);
-        }
-        $$ = $1;
-    }
-|
-    "string_pln" ":" json_abstract
-    {
-        if(driver.dryRun == false) {
-            $$ = new DataMap();
-            $$->insert(driver.removeQuotes($1), $3);
-        } else {
-            $$ = nullptr;
-        }
-    }
-|
     json_object_content "," "string" ":" json_abstract
     {
         if(driver.dryRun == false) {
@@ -227,13 +210,6 @@ json_array_content:
     }
 
 json_value:
-    "string_pln"
-    {
-        if(driver.dryRun == false) {
-            $$ = new DataValue($1);
-        }
-    }
-|
     "identifier"
     {
         if(driver.dryRun == false) {
@@ -248,6 +224,19 @@ json_value:
         if(driver.dryRun == false) {
             $$ = new DataValue($1);
         } else {
+            $$ = nullptr;
+        }
+    }
+|
+    "float" "e+" "number"
+    {
+        if(driver.dryRun == false)
+        {
+            float value = $1;
+            value *= std::pow(10, $3);
+            $$ = new DataValue(value);
+        }
+        else {
             $$ = nullptr;
         }
     }
