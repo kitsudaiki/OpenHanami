@@ -305,7 +305,6 @@ runRestApiTests()
                                       "segment_type: core_segment\n"
                                       "settings:\n"
                                       "    max_synapse_sections: 100000\n"
-                                      "    synapse_segmentation: 30\n"
                                       "    sign_neg: 0.5\n"
                                       "        \n"
                                       "bricks:\n"

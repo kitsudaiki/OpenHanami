@@ -42,17 +42,15 @@ createNewSynapse(SynapseSection* section,
                  Synapse* synapse,
                  const NeuronSection* targetNeuronSection,
                  const SegmentSettings* segmentSettings,
-                 const float outH)
+                 const float remainingW)
 {
     const uint32_t* randomValues = HanamiRoot::m_randomValues;
     const float randMax = static_cast<float>(RAND_MAX);
-    const float maxWeight = outH / static_cast<float>(segmentSettings->synapseSegmentation);
     uint32_t signRand = 0;
     const float sigNeg = segmentSettings->signNeg;
 
     // set activation-border
-    section->connection.randomPos = (section->connection.randomPos + 1) % NUMBER_OF_RAND_VALUES;
-    synapse->border = maxWeight * (static_cast<float>(randomValues[section->connection.randomPos]) / randMax);
+    synapse->border = remainingW;
 
     // set target neuron
     section->connection.randomPos = (section->connection.randomPos + 1) % NUMBER_OF_RAND_VALUES;
@@ -88,11 +86,11 @@ synapseProcessing(CoreSegment &segment,
     Neuron* targetNeuron = nullptr;
     NeuronSection* targetNeuronSection = &neuronSections[section->connection.targetNeuronSectionId];
     uint8_t active = 0;
-    float counter = section->connection.offset;
+    float counter = outH - section->connection.offset;
 
     // iterate over all synapses in the section
     while(pos < SYNAPSES_PER_SYNAPSESECTION
-          && outH > counter)
+          && counter > 0.01f)
     {
         synapse = &section->synapses[pos];
 
@@ -103,7 +101,15 @@ synapseProcessing(CoreSegment &segment,
                              synapse,
                              targetNeuronSection,
                              segmentSettings,
-                             outH);
+                             counter);
+        }
+
+        if(synapse->border > 2.0f * counter
+                && pos < SYNAPSES_PER_SYNAPSESECTION-2)
+        {
+            const float val = synapse->border / 2.0f;
+            section->synapses[pos + 1].border += val;
+            synapse->border -= val;
         }
 
         // update target-neuron
@@ -115,17 +121,17 @@ synapseProcessing(CoreSegment &segment,
         synapse->activeCounter += active * static_cast<uint8_t>(synapse->activeCounter < 126);
 
         // update loop-counter
-        counter += synapse->border;
+        counter -= synapse->border;
         pos++;
     }
 
-    if(outH - counter > 0.01f
+    if(counter > 0.01f
             && section->connection.forwardNextId == UNINIT_STATE_32)
     {
         processUpdatePositon_CPU(segment,
                                  section->connection.sourceNeuronSectionId,
                                  section->connection.sourceNeuronId,
-                                 counter + section->connection.offset);
+                                 (outH - counter) + section->connection.offset);
         return;
     }
 

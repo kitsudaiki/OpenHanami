@@ -65,12 +65,12 @@ bool HanamiRoot::useCuda = false;
 HttpServer* HanamiRoot::httpServer = nullptr;
 
 /**
- * @brief KyoukoRoot::KyoukoRoot
+ * @brief constructor
  */
 HanamiRoot::HanamiRoot() {}
 
 /**
- * @brief KyoukoRoot::~KyoukoRoot
+ * @brief destructor
  */
 HanamiRoot::~HanamiRoot() {}
 
