@@ -355,7 +355,7 @@ JsonItem::setValue(const bool &value)
 bool
 JsonItem::insert(const std::string &key,
                  const JsonItem &value,
-                 bool force)
+                 const bool force)
 {
     if(value.m_content == nullptr
             || key == "")

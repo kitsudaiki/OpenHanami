@@ -225,16 +225,16 @@ TaskHandle_State::finishTask()
     }
 
     // send results to shiori, if some are attached to the task
-    if(actualTask->resultData != nullptr)
+    if(actualTask->resultData.isValid())
     {
         // results of tables a aggregated values, so they have to be fixed to its average value
         if(actualTask->type == TABLE_REQUEST_TASK)
         {
             const float numberOfOutputs = static_cast<float>(actualTask->numberOfOuputsPerCycle);
             float val = 0.0f;
-            for(uint64_t i = 0; i < actualTask->resultData->array.size(); i++)
+            for(uint64_t i = 0; i < actualTask->resultData.getItemContent()->size(); i++)
             {
-                Kitsunemimi::DataValue* value = actualTask->resultData->array[i]->toValue();
+                Kitsunemimi::DataValue* value = actualTask->resultData.get(i).getItemContent()->toValue();
                 val = value->getFloat() / numberOfOutputs;
                 value->setValue(val);
             }
@@ -245,7 +245,7 @@ TaskHandle_State::finishTask()
         Kitsunemimi::JsonItem resultData;
         resultData.insert("uuid", actualTask->uuid.toString());
         resultData.insert("name", actualTask->name);
-        resultData.insert("data", actualTask->resultData->copy());
+        resultData.insert("data", actualTask->resultData);
         resultData.insert("visibility", "private");
 
         UserContext userContext;
@@ -258,7 +258,6 @@ TaskHandle_State::finishTask()
             return;
         }
 
-        delete actualTask->resultData;
         actualTask->resultData = nullptr;
     }
 
@@ -266,7 +265,7 @@ TaskHandle_State::finishTask()
     auto it = m_taskMap.find(actualTask->uuid.toString());
     if(it != m_taskMap.end())
     {
-        delete it->second.inputData;
+        delete[] it->second.inputData;
         it->second.progress.state = FINISHED_TASK_STATE;
         it->second.progress.endActiveTimeStamp = std::chrono::system_clock::now();
     }

@@ -73,7 +73,7 @@ public:
     // getter complete
     DataArray* getHeader() const;
     DataArray* getInnerHeader() const;
-    DataArray* getBody() const;
+    DataArray* getBody(const bool copy = false) const;
     DataMap* stealContent();
     DataArray* getRow(const uint32_t row, const bool copy) const;
 

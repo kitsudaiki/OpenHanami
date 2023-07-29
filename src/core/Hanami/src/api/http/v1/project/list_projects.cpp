@@ -73,8 +73,11 @@ ListProjects::runTask(BlossomIO &blossomIO,
         return false;
     }
 
-    blossomIO.output.insert("header", table.getInnerHeader());
+    // create output
+    Kitsunemimi::DataArray* headerInfo = table.getInnerHeader();
+    blossomIO.output.insert("header", headerInfo);
     blossomIO.output.insert("body", table.getBody());
+    delete headerInfo;
 
     return true;
 }

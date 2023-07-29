@@ -146,9 +146,11 @@ ListTask::runTask(BlossomIO &blossomIO,
         }
     }
 
-    // prepare for output
-    blossomIO.output.insert("header", result.getInnerHeader());
+    // create output
+    Kitsunemimi::DataArray* headerInfo = result.getInnerHeader();
+    blossomIO.output.insert("header", headerInfo);
     blossomIO.output.insert("body", result.getBody());
+    delete headerInfo;
 
     return true;
 }

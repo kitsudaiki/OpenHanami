@@ -75,8 +75,10 @@ ListUsers::runTask(BlossomIO &blossomIO,
         return false;
     }
 
-    blossomIO.output.insert("header", table.getInnerHeader());
+    Kitsunemimi::DataArray* headerInfo = table.getInnerHeader();
+    blossomIO.output.insert("header", headerInfo);
     blossomIO.output.insert("body", table.getBody());
+    delete headerInfo;
 
     return true;
 }

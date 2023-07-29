@@ -125,10 +125,11 @@ CreateUser::runTask(BlossomIO &blossomIO,
     Kitsunemimi::generate_SHA_256(pwHash, saltedPw);
 
     // convert values
+    std::vector<Kitsunemimi::JsonItem> projects;
     Kitsunemimi::JsonItem userData;
     userData.insert("id", newUserId);
     userData.insert("name", blossomIO.input.get("name").getString());
-    userData.insert("projects", new Kitsunemimi::DataArray());
+    userData.insert("projects", Kitsunemimi::JsonItem(projects));
     userData.insert("pw_hash", pwHash);
     userData.insert("is_admin", blossomIO.input.get("is_admin").getBool());
     userData.insert("creator_id", creatorId);

@@ -52,7 +52,7 @@ public:
     bool setValue(const bool &value);
     bool insert(const std::string &key,
                 const JsonItem &value,
-                bool force = false);
+                const bool force = false);
     bool append(const JsonItem &value);
     bool replaceItem(const uint32_t index,
                      const JsonItem &value);
@@ -63,8 +63,8 @@ public:
     DataItem* stealItemContent();
     JsonItem operator[](const std::string key);
     JsonItem operator[](const uint32_t index);
-    JsonItem get(const std::string key, const bool copy=false) const;
-    JsonItem get(const uint32_t index, const bool copy=false) const;
+    JsonItem get(const std::string key, const bool copy = false) const;
+    JsonItem get(const uint32_t index, const bool copy = false) const;
     const std::string getString() const;
     int getInt() const;
     float getFloat() const;

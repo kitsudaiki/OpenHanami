@@ -367,9 +367,8 @@ Cluster::addImageRequestTask(const std::string &name,
     newTask.userId = userId;
     newTask.projectId = projectId;
     newTask.inputData = inputData;
-    newTask.resultData = new Kitsunemimi::DataArray();
     for(uint64_t i = 0; i < numberOfCycles; i++) {
-        newTask.resultData->append(new Kitsunemimi::DataValue(0));
+        newTask.resultData.append(0);
     }
     newTask.type = IMAGE_REQUEST_TASK;
     newTask.progress.state = QUEUED_TASK_STATE;
@@ -459,9 +458,8 @@ Cluster::addTableRequestTask(const std::string &name,
     newTask.userId = userId;
     newTask.projectId = projectId;
     newTask.inputData = inputData;
-    newTask.resultData = new Kitsunemimi::DataArray();
     for(uint64_t i = 0; i < numberOfCycles; i++) {
-        newTask.resultData->append(new Kitsunemimi::DataValue(0.0f));
+        newTask.resultData.append(0.0f);
     }
     newTask.type = TABLE_REQUEST_TASK;
     newTask.progress.state = QUEUED_TASK_STATE;

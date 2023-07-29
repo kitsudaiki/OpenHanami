@@ -27,7 +27,7 @@
 RequestResultDeleteTest::RequestResultDeleteTest(const bool expectSuccess)
           : TestStep(expectSuccess)
 {
-    m_testName = "delete snapshot";
+    m_testName = "delete request-result";
     if(expectSuccess) {
         m_testName += " (success)";
     } else {

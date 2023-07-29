@@ -429,12 +429,18 @@ TableItem::getInnerHeader() const
 /**
  * @brief get table body
  *
+ * @param copy set to true to create a copy (default: false)
+ *
  * @return copy of table-body
  */
 DataArray*
-TableItem::getBody() const
+TableItem::getBody(const bool copy) const
 {
-    return m_body->copy()->toArray();
+    if(copy) {
+        return m_body->copy()->toArray();
+    } else {
+        return m_body->toArray();
+    }
 }
 
 /**
