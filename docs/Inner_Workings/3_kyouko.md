@@ -93,7 +93,6 @@ version: 1
 segment_type: dynamic_segment
 settings:
     max_synapse_sections: 100000
-    synapse_segmentation: 7
     sign_neg: 0.5
         
 bricks:
@@ -118,8 +117,6 @@ The `bricks` defining, which the bricks are ordered within the segment.
 #### Settings
 
 - `max_synapse_sections`: Maximum number of synapse-sections, which are allowed to be allocated in the memory to limit the size and avoid that the whole available memory is filled up, because of a misconfiguration.
-
-- `synapse_segmentation`: Basic value, how hard incoming values of a neuron should be segmented while creating new synapses.
 
 - `sign_neg`: average relation of negative synapses to positive synapses in the network (1.0 = all negative, 0.0 = nothing negative)
 

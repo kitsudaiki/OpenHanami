@@ -430,8 +430,6 @@ Compares a `Request-Result` against a `Data-Set` to check, how much of the Data-
                                             "    ],\n"
                                             "    \"settings\": {\n"
                                             "        \"max_synapse_sections\": 100000,\n"
-                                            "        \"max_synapse_segmentation\": 10.0,\n"
-                                            "        \"potential_overflow\": 1.0,\n"
                                             "        \"sign_neg\": 0.5\n"
                                             "    }\n"
                                             "}\n";

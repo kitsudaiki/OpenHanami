@@ -131,7 +131,6 @@ See basic explanation of the [templates](/Inner_Workings/3_kyouko/#templates)
     segment_type: core_segment
     settings:
         max_synapse_sections: 100000
-        synapse_segmentation: 7
         sign_neg: 0.5
             
     bricks:
