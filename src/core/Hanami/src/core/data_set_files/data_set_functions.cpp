@@ -52,6 +52,7 @@ getDataSetPayload(const std::string &location,
     // get payload
     uint64_t payloadSize = 0;
     float* payload = file->getPayload(payloadSize, columnName);
+    delete file;
     if(payload == nullptr)
     {
         // TODO: error

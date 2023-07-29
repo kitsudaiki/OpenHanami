@@ -240,8 +240,12 @@ Blossom::fillDefaultValues(Kitsunemimi::DataMap &values)
 {
     for(const auto& [name, field] : m_inputValidationMap)
     {
-        if(field.defaultVal != nullptr) {
-            values.insert(name, field.defaultVal->copy(), false);
+        if(field.defaultVal != nullptr)
+        {
+            Kitsunemimi::DataItem* tempItem = field.defaultVal->copy();
+            if(values.insert(name, tempItem, false) == false) {
+                delete tempItem;
+            }
         }
     }
 }

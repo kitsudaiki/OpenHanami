@@ -58,7 +58,10 @@ CoreSegment::CoreSegment(const void* data, const uint64_t dataSize)
 /**
  * @brief destructor
  */
-CoreSegment::~CoreSegment() {}
+CoreSegment::~CoreSegment()
+{
+    delete[] neuronConnections;
+}
 
 /**
  * @brief getNumberOfNeuronSections

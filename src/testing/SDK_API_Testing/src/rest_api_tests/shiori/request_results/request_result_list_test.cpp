@@ -27,7 +27,7 @@
 RequestResultListTest::RequestResultListTest(const bool expectSuccess)
       : TestStep(expectSuccess)
 {
-    m_testName = "list snapshot";
+    m_testName = "list request-results";
     if(expectSuccess) {
         m_testName += " (success)";
     } else {

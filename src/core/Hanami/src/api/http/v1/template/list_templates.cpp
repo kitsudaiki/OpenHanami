@@ -72,8 +72,11 @@ ListTemplates::runTask(BlossomIO &blossomIO,
     table.deleteColumn("owner_id");
     table.deleteColumn("project_id");
 
-    blossomIO.output.insert("header", table.getInnerHeader());
+    // create output
+    Kitsunemimi::DataArray* headerInfo = table.getInnerHeader();
+    blossomIO.output.insert("header", headerInfo);
     blossomIO.output.insert("body", table.getBody());
+    delete headerInfo;
 
     return true;
 }

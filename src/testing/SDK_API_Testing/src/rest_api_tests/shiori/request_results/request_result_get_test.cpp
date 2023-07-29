@@ -28,7 +28,7 @@ RequestResultGetTest::RequestResultGetTest(const bool expectSuccess,
                                            const std::string &uuidOverride)
     : TestStep(expectSuccess)
 {
-    m_testName = "get snapshot";
+    m_testName = "get request-result";
     if(expectSuccess) {
         m_testName += " (success)";
     } else {
