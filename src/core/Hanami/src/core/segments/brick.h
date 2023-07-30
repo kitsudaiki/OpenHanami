@@ -33,7 +33,8 @@ struct Brick
     uint32_t brickId = UNINIT_STATE_32;
     bool isOutputBrick = false;
     bool isInputBrick = false;
-    uint8_t padding1[14];
+    uint8_t padding1[10];
+    uint32_t numberOfPossibleBricks = 0;
     uint32_t neuronSectionPos = UNINIT_STATE_32;
 
     uint32_t numberOfNeurons = 0;
@@ -41,7 +42,38 @@ struct Brick
 
     Kitsunemimi::Position brickPos;
     uint32_t neighbors[12];
-    uint32_t possibleTargetNeuronBrickIds[1000];
+    uint32_t possibleTargetBrickIds[1000];
+
+    Brick()
+    {
+        for(uint32_t i = 0; i < 1000; i++) {
+            possibleTargetBrickIds[i] = UNINIT_STATE_32;
+        }
+    }
+
+    void addPossibleBrick(const uint32_t possibleBrickId)
+    {
+        for(uint32_t i = 0; i < 1000-1; i++)
+        {
+            if(possibleTargetBrickIds[i] == possibleBrickId) {
+                return;
+            }
+            if(possibleTargetBrickIds[i] == UNINIT_STATE_32)
+            {
+                possibleTargetBrickIds[i] = possibleBrickId;
+                numberOfPossibleBricks++;
+            }
+        }
+    }
+
+    uint32_t getPossibleBrick()
+    {
+        const uint32_t result = possibleTargetBrickIds[0];
+        for(uint32_t i = 0; i < numberOfPossibleBricks; i++) {
+            possibleTargetBrickIds[i] = possibleTargetBrickIds[i+1];
+        }
+        return result;
+    }
 
     // total size: 4096 Bytes
 };
