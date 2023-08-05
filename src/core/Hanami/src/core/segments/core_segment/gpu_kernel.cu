@@ -41,7 +41,7 @@ createNewSynapse(SynapseConnection* connection,
                  const float outH,
                  const uint* randomValues)
 {
-    const float maxWeight = outH / (float)(segmentSettings->synapseSegmentation);
+    const float maxWeight = outH / (float)(10.0f);
 
     // set activation-border
     connection->randomPos = (connection->randomPos + 1) % NUMBER_OF_RAND_VALUES;
