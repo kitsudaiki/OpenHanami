@@ -215,6 +215,7 @@ HEADERS += \
     src/common/structs.h \
     src/common/typedefs.h \
     src/config.h \
+    src/core/cluster/add_tasks.h \
     src/core/cluster/cluster.h \
     src/core/cluster/cluster_handler.h \
     src/core/cluster/cluster_init.h \
@@ -341,6 +342,7 @@ SOURCES += \
     src/api/http/v1/user/remove_project_from_user.cpp \
     src/api/websocket/cluster_io.cpp \
     src/api/websocket/file_upload.cpp \
+    src/core/cluster/add_tasks.cpp \
     src/core/cluster/cluster.cpp \
     src/core/cluster/cluster_handler.cpp \
     src/core/cluster/cluster_init.cpp \

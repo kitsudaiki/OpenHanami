@@ -25,6 +25,7 @@
 #include <database/data_set_table.h>
 #include <core/cluster/cluster_handler.h>
 #include <core/cluster/cluster.h>
+#include <core/cluster/add_tasks.h>
 #include <core/segments/input_segment/input_segment.h>
 #include <core/segments/output_segment/output_segment.h>
 #include <core/data_set_files/data_set_functions.h>
@@ -203,23 +204,25 @@ CreateTask::imageTask(std::string &taskUuid,
 
     if(taskType == "learn")
     {
-        taskUuid = cluster->addImageLearnTask(name,
-                                              userContext.userId,
-                                              userContext.projectId,
-                                              floatData,
-                                              numberOfInputs,
-                                              numberOfOutputs,
-                                              numberOfLines);
+        taskUuid = addImageLearnTask(*cluster,
+                                     name,
+                                     userContext.userId,
+                                     userContext.projectId,
+                                     floatData,
+                                     numberOfInputs,
+                                     numberOfOutputs,
+                                     numberOfLines);
     }
     else
     {
-        taskUuid = cluster->addImageRequestTask(name,
-                                                userContext.userId,
-                                                userContext.projectId,
-                                                floatData,
-                                                numberOfInputs,
-                                                numberOfOutputs,
-                                                numberOfLines);
+        taskUuid = addImageRequestTask(*cluster,
+                                       name,
+                                       userContext.userId,
+                                       userContext.projectId,
+                                       floatData,
+                                       numberOfInputs,
+                                       numberOfOutputs,
+                                       numberOfLines);
     }
 
     return true;
@@ -274,13 +277,14 @@ CreateTask::tableTask(std::string &taskUuid,
 
     if(taskType == "request")
     {
-        taskUuid = cluster->addTableRequestTask(name,
-                                                userContext.userId,
-                                                userContext.projectId,
-                                                inputBuffer,
-                                                numberOfInputs,
-                                                numberOfOutputs,
-                                                numberOfLines - numberOfInputs);
+        taskUuid = addTableRequestTask(*cluster,
+                                       name,
+                                       userContext.userId,
+                                       userContext.projectId,
+                                       inputBuffer,
+                                       numberOfInputs,
+                                       numberOfOutputs,
+                                       numberOfLines - numberOfInputs);
 
     }
     else
@@ -301,14 +305,15 @@ CreateTask::tableTask(std::string &taskUuid,
 
         // create task
         const uint64_t numberOfLines = dataSetInfo.get("lines").getLong();
-        taskUuid = cluster->addTableLearnTask(name,
-                                              userContext.userId,
-                                              userContext.projectId,
-                                              inputBuffer,
-                                              outputBuffer,
-                                              numberOfInputs,
-                                              numberOfOutputs,
-                                              numberOfLines - numberOfInputs);
+        taskUuid = addTableLearnTask(*cluster,
+                                     name,
+                                     userContext.userId,
+                                     userContext.projectId,
+                                     inputBuffer,
+                                     outputBuffer,
+                                     numberOfInputs,
+                                     numberOfOutputs,
+                                     numberOfLines - numberOfInputs);
 
         // clear leftover of the buffer
         delete outputBuffer;
