@@ -39,9 +39,8 @@ validateStructSizes()
     assert(sizeof(Brick) == 4096);
     assert(sizeof(SynapseSection) == 512);
     assert(sizeof(Synapse) == 16);
-    assert(sizeof(NeuronConnection) == 3072);
-    assert(sizeof(UpdatePos) == 16);
-    assert(sizeof(NeuronSection) == 2048);
+    assert(sizeof(BrickBlock) == 34816);
+    assert(sizeof(BlockConnection) == 2048);
     assert(sizeof(Neuron) == 32);
 
     assert(sizeof(SegmentSlot) == 64);

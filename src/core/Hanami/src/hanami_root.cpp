@@ -61,7 +61,7 @@ HanamiRoot* HanamiRoot::root = nullptr;
 
 // static flag to switch to experimental gpu-support (see issue #44 and #76)
 bool HanamiRoot::useOpencl = false;
-bool HanamiRoot::useCuda = false;
+bool HanamiRoot::useCuda = true;
 HttpServer* HanamiRoot::httpServer = nullptr;
 
 /**

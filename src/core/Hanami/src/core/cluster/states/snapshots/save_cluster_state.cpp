@@ -73,7 +73,7 @@ SaveCluster_State::processEvent()
             if(i != 0) {
                 headerMessage += ",";
             }
-            const uint64_t segSize = m_cluster->allSegments.at(i)->segmentData.buffer.usedBufferSize;
+            const uint64_t segSize = m_cluster->allSegments.at(i)->segmentData.usedBufferSize;
             headerMessage += "{\"size\":"
                              + std::to_string(segSize)
                              + ",\"type\":"
@@ -195,7 +195,7 @@ SaveCluster_State::writeData(const std::string &filePath,
     // write segments of cluster
     for(uint64_t i = 0; i < m_cluster->allSegments.size(); i++)
     {
-        buffer = &m_cluster->allSegments.at(i)->segmentData.buffer;
+        buffer = &m_cluster->allSegments.at(i)->segmentData;
         if(snapshotFile.writeDataIntoFile(buffer->data,
                                           posCounter,
                                           buffer->usedBufferSize,

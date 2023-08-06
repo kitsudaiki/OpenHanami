@@ -64,11 +64,10 @@ struct SegmentHeader
 
     SegmentHeaderEntry bricks;
     SegmentHeaderEntry brickOrder;
-    SegmentHeaderEntry neuronSections;
+    SegmentHeaderEntry brickBlocks;
+    SegmentHeaderEntry blockConnections;
     SegmentHeaderEntry inputs;
     SegmentHeaderEntry outputs;
-
-    SegmentHeaderEntry synapseSections;
 
     uint8_t padding2[262];
 

@@ -44,6 +44,7 @@
 #include <libKitsunemimiOpencl/gpu_interface.h>
 #include <libKitsunemimiOpencl/gpu_handler.h>
 
+/*
 extern "C"
 void
 processing_CUDA(PointerHandler* gpuPointer,
@@ -72,7 +73,7 @@ update_CUDA(PointerHandler* gpuPointer,
             NeuronSection* neuronSections,
             SynapseConnection* synapseConnections,
             NeuronConnection* neuronConnections);
-
+*/
 uint32_t counter = 0;
 
 /**
@@ -101,7 +102,7 @@ CpuProcessingUnit::learnSegmentForward(AbstractSegment* segment)
         case CORE_SEGMENT:
         {
             CoreSegment* seg = static_cast<CoreSegment*>(segment);
-            if(HanamiRoot::useOpencl)
+            /*if(HanamiRoot::useOpencl)
             {
                 HanamiRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "inputTransfers", error);
                 HanamiRoot::gpuInterface->run(*(seg->data), "prcessInput", error, seg->numberOfNeuronSections, NEURONS_PER_NEURONSECTION);
@@ -123,7 +124,9 @@ CpuProcessingUnit::learnSegmentForward(AbstractSegment* segment)
             {
                 seg->segmentSettings->doLearn = 1;
                 prcessCoreSegment(*seg);
-            }
+            }*/
+            seg->segmentSettings->doLearn = 1;
+            prcessCoreSegment(*seg);
 
             seg->segmentSettings->doLearn = 0;
             break;
@@ -162,7 +165,7 @@ CpuProcessingUnit::learnSegmentBackward(AbstractSegment* segment)
         {
             CoreSegment* seg = static_cast<CoreSegment*>(segment);
 
-            if(HanamiRoot::useOpencl)
+            /*if(HanamiRoot::useOpencl)
             {
                 HanamiRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "inputTransfers", error);
                 HanamiRoot::gpuInterface->run(*(seg->data), "reweightOutput", error, seg->numberOfNeuronSections, NEURONS_PER_NEURONSECTION);
@@ -205,7 +208,11 @@ CpuProcessingUnit::learnSegmentBackward(AbstractSegment* segment)
             else
             {
                 reweightCoreSegment(*seg);
-            }
+            }*/
+
+            reweightCoreSegment(*seg);
+            std::cout<<"counter: "<<counter<<std::endl;
+            counter++;
 
             if(reductionCounter == 100) {
                 //reduceNeurons(*seg);
@@ -240,7 +247,7 @@ CpuProcessingUnit::processSegment(AbstractSegment* segment)
         case CORE_SEGMENT:
         {
             CoreSegment* seg = static_cast<CoreSegment*>(segment);
-            if(HanamiRoot::useOpencl)
+            /*if(HanamiRoot::useOpencl)
             {
                 HanamiRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "inputTransfers", error);
                 HanamiRoot::gpuInterface->run(*(seg->data), "prcessInput", error, seg->numberOfNeuronSections, NEURONS_PER_NEURONSECTION);
@@ -261,7 +268,9 @@ CpuProcessingUnit::processSegment(AbstractSegment* segment)
             else
             {
                 prcessCoreSegment(*seg);
-            }
+            }*/
+
+            prcessCoreSegment(*seg);
 
             break;
         }

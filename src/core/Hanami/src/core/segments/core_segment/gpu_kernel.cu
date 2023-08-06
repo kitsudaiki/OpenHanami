@@ -479,7 +479,7 @@ processing_CUDA(PointerHandler* gpuPointer,
                 gpuPointer->neuronSections,
                 gpuPointer->neuronConnections,
                 gpuPointer->inputTransfers,
-                brick->neuronSectionPos);
+                brick->brickBlockPos);
         }
     }
 
@@ -498,7 +498,7 @@ processing_CUDA(PointerHandler* gpuPointer,
                 gpuPointer->inputTransfers,
                 gpuPointer->outputTransfers,
                 gpuPointer->randomValues,
-                brick->neuronSectionPos);
+                brick->brickBlockPos);
         }
     }
 
@@ -515,7 +515,7 @@ processing_CUDA(PointerHandler* gpuPointer,
                 gpuPointer->segmentSettings,
                 gpuPointer->outputTransfers,
                 gpuPointer->randomValues,
-                brick->neuronSectionPos);
+                brick->brickBlockPos);
         }
     }
 
@@ -550,7 +550,7 @@ backpropagation_CUDA(PointerHandler* gpuPointer,
             reweightOutputKernel<<<brick->numberOfNeuronSections, NEURONS_PER_NEURONSECTION>>> (
                 gpuPointer->neuronSections,
                 gpuPointer->inputTransfers,
-                brick->neuronSectionPos);
+                brick->brickBlockPos);
         }
     }
 
@@ -564,7 +564,7 @@ backpropagation_CUDA(PointerHandler* gpuPointer,
             gpuPointer->segmentSettings,
             gpuPointer->inputTransfers,
             gpuPointer->outputTransfers,
-            brick->neuronSectionPos,
+            brick->brickBlockPos,
             brick->isInputBrick);
     }
 

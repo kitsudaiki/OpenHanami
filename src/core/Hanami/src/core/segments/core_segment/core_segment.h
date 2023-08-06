@@ -36,12 +36,6 @@ class GpuData;
 
 struct PointerHandler
 {
-    NeuronSection* neuronSections = nullptr;
-    NeuronConnection* neuronConnections = nullptr;
-
-    SynapseSection* synapseSections = nullptr;
-    SynapseConnection* synapseConnections = nullptr;
-
     SegmentSettings* segmentSettings = nullptr;
     uint32_t* randomValues = nullptr;
 
@@ -63,14 +57,13 @@ public:
 
     Brick* bricks = nullptr;
     uint32_t* brickOrder = nullptr;
-    NeuronSection* neuronSections = nullptr;
-    SynapseSection* synapseSections = nullptr;
 
-    SynapseConnection* synapseConnections = nullptr;
-    NeuronConnection* neuronConnections = nullptr;
+    BrickBlock* brickBlocks = nullptr;
+    BlockConnection* blockConnections = nullptr;
+
     SegmentSizes segmentSizes;
 
-    uint32_t numberOfNeuronSections = 1;
+    uint32_t numberOfBrickBlocks = 0;
     PointerHandler gpuPointer;
 
     Kitsunemimi::GpuData* data = nullptr;
@@ -78,13 +71,12 @@ public:
 private:
     SegmentSettings initSettings(const Kitsunemimi::Hanami::SegmentMeta &segmentMeta);
     SegmentHeader createNewHeader(const uint32_t numberOfBricks,
-                                  const uint32_t numberOfNeuronSections,
-                                  const uint64_t numberOfSynapseSections,
+                                  const uint32_t numberOfBrickBlocks,
                                   const uint64_t borderbufferSize);
     void initSegmentPointer(const SegmentHeader &header);
     bool connectBorderBuffer();
     void allocateSegment(SegmentHeader &header);
-    void initOpencl(Kitsunemimi::GpuData &data);
+    //void initOpencl(Kitsunemimi::GpuData &data);
     void initCuda();
 
     void addBricksToSegment(const Kitsunemimi::Hanami::SegmentMeta &segmentMeta);

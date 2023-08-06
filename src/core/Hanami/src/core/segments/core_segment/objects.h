@@ -24,6 +24,8 @@
 #define HANAMI_CORE_SEGMENT_OBJECTS_H
 
 #include <stdint.h>
+#include <cstdlib>
+#include <libKitsunemimiCommon/structs.h>
 
 // const predefined values
 #define UNINIT_STATE_64 0xFFFFFFFFFFFFFFFF
@@ -35,7 +37,8 @@
 #define UNINTI_POINT_32 0x0FFFFFFF
 
 // network-predefines
-#define SYNAPSES_PER_SYNAPSESECTION 30
+#define SYNAPSES_PER_SYNAPSESECTION 32
+#define NUMBER_OF_SYNAPSESECTION 64
 #define NEURONS_PER_NEURONSECTION 63
 #define POSSIBLE_NEXT_AXON_STEP 80
 #define NEURON_CONNECTIONS 512
@@ -43,6 +46,27 @@
 // processing
 #define NUMBER_OF_PROCESSING_UNITS 1
 #define NUMBER_OF_RAND_VALUES 10485760
+
+//==================================================================================================
+
+struct Brick
+{
+    // common
+    uint32_t brickId = UNINIT_STATE_32;
+    bool isOutputBrick = false;
+    bool isInputBrick = false;
+    uint8_t padding1[14];
+    uint32_t brickBlockPos = UNINIT_STATE_32;
+
+    uint32_t numberOfNeurons = 0;
+    uint32_t numberOfNeuronSections = 0;
+
+    Kitsunemimi::Position brickPos;
+    uint32_t neighbors[12];
+    uint32_t possibleTargetNeuronBrickIds[1000];
+
+    // total size: 4 KiB
+};
 
 //==================================================================================================
 
@@ -55,62 +79,11 @@ struct Neuron
 
     uint8_t refractionTime = 1;
     uint8_t active = 0;
-    uint8_t padding[6];
+    uint8_t padding[10];
 
     uint32_t targetBorderId = UNINIT_STATE_32;
-    uint32_t targetSectionId = UNINIT_STATE_32;
 
     // total size: 32 Byte
-};
-
-//==================================================================================================
-
-struct NeuronSection
-{
-    Neuron neurons[NEURONS_PER_NEURONSECTION];
-    uint32_t numberOfNeurons = 0;
-    uint32_t brickId = 0;
-    uint8_t padding[24];
-
-    NeuronSection()
-    {
-        for(uint32_t i = 0; i < NEURONS_PER_NEURONSECTION; i++) {
-            neurons[i] = Neuron();
-        }
-    }
-    // total size: 2048 Byte
-};
-
-//==================================================================================================
-
-struct UpdatePos
-{
-    uint32_t type = 0;
-    uint32_t randomPos = UNINIT_STATE_32;
-    float offset = 0.0f;
-    uint8_t padding[4];
-    // total size: 16 Byte
-};
-
-//==================================================================================================
-
-struct NeuronConnection
-{
-    uint32_t backwardIds[512];
-    UpdatePos positions[NEURONS_PER_NEURONSECTION];
-    uint32_t numberOfPositions = 0;
-    uint8_t padding[12];
-
-    NeuronConnection()
-    {
-        for(uint32_t i = 0; i < 512; i++) {
-            backwardIds[i] = UNINIT_STATE_32;
-        }
-        for(uint32_t i = 0; i < NEURONS_PER_NEURONSECTION; i++) {
-            positions[i] = UpdatePos();
-        }
-    }
-    // total size: 3072 Byte
 };
 
 //==================================================================================================
@@ -122,35 +95,14 @@ struct Synapse
     uint16_t targetNeuronId = UNINIT_STATE_16;
     int8_t activeCounter = 0;
     uint8_t padding[5];
+
     // total size: 16 Byte
-};
-
-//==================================================================================================
-
-struct SynapseConnection
-{
-    uint8_t active = 1;
-    uint8_t padding[3];
-
-    float offset = 0.0f;
-    uint32_t randomPos = 0;
-
-    uint32_t forwardNextId = UNINIT_STATE_32;
-    uint32_t backwardNextId = UNINIT_STATE_32;
-
-    uint32_t targetNeuronSectionId = UNINIT_STATE_32;
-    uint32_t sourceNeuronSectionId = UNINIT_STATE_32;
-    uint32_t sourceNeuronId = UNINIT_STATE_32;
-
-    // total size: 32 Byte
 };
 
 //==================================================================================================
 
 struct SynapseSection
 {
-    SynapseConnection connection = SynapseConnection();
-
     Synapse synapses[SYNAPSES_PER_SYNAPSESECTION];
 
     SynapseSection()
@@ -159,7 +111,73 @@ struct SynapseSection
             synapses[i] = Synapse();
         }
     }
-    // total size: 512 Byte
+    // total size: 1 KiB
+};
+
+//==================================================================================================
+
+struct BrickBlock
+{
+    uint64_t triggerMap;
+    uint64_t triggerCompare;
+    uint32_t numberOfNeurons = 0;
+    uint32_t brickId = 0;
+    uint32_t randomPos = 0;
+    uint8_t padding[4];
+
+    Neuron neurons[NEURONS_PER_NEURONSECTION];
+    SynapseSection synapseSesctions[NUMBER_OF_SYNAPSESECTION];
+
+    BrickBlock()
+    {
+        randomPos = rand();
+        for(uint32_t i = 0; i < NEURONS_PER_NEURONSECTION; i++) {
+            neurons[i] = Neuron();
+        }
+        for(uint32_t i = 0; i < NUMBER_OF_SYNAPSESECTION; i++) {
+            synapseSesctions[i] = SynapseSection();
+        }
+    }
+
+    // total size: 34 KiB
+};
+
+//==================================================================================================
+
+struct LocationPtr
+{
+    uint32_t blockId = UNINIT_STATE_32;
+    uint16_t sectionId = UNINIT_STATE_16;
+    bool isNeuron = false;
+    uint8_t padding[1];
+
+    // total size: 8 Byte
+};
+
+//==================================================================================================
+
+struct BlockConnection
+{
+    LocationPtr next[128];
+    LocationPtr origin[64];
+    float offset[64];
+    float input[64];
+
+    BlockConnection()
+    {
+        for(uint32_t i = 0; i < 128; i++) {
+            next[i] = LocationPtr();
+        }
+
+        for(uint32_t i = 0; i < 64; i++)
+        {
+            origin[i] = LocationPtr();
+            offset[i] = 0.0f;
+            input[i] = 0.0f;
+        }
+    }
+
+    // total size: 2 KiB
 };
 
 //==================================================================================================
