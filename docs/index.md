@@ -34,6 +34,7 @@ The actual prototype consists of:
 - partially implementation of an own concept for an artificial neuronal network. It has no fixed connections between the nodes, but creates connections over time while learning. Additionally it doesn't need a normalization of input-values and this way it can also handle unknown data as input. This should make it flexible and efficient. The current state is extremely experimental.
 - very experimental but working GPU-support with CUDA and OpenCL
 - multi-user- and multi-project-support, so multiple-users can share the same physical host
+- able to generate an OpenAPI-documentation from source-code
 - basic energy-optimization supporting the scheduling of threads of all components and changing the cpu-frequency based on workload
 - basic monitoring of cpu-load
 - Webfrontend with client-side rendering and SDK-library
