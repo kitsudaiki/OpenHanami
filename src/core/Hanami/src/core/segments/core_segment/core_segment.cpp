@@ -793,7 +793,7 @@ CoreSegment::initTargetBrickList()
                 LOG_WARNING("brick has no next brick and is a dead-end. Brick-ID: "
                             + std::to_string(brickId));
             }
-            baseBrick->addPossibleBrick(brickId);
+            baseBrick->possibleTargetNeuronBrickIds[counter] = brickId;
         }
     }
 

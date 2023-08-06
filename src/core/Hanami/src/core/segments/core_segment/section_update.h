@@ -53,11 +53,14 @@ getForwardLast(const uint32_t sourceId,
 inline void
 createNewSection(SynapseSection &result,
                  CoreSegment &segment,
-                 const uint32_t brickId,
+                 const Brick &currentBrick,
                  const float offset)
 {
     result.connection.active = Kitsunemimi::ItemBuffer::ACTIVE_SECTION;
     result.connection.randomPos = rand() % NUMBER_OF_RAND_VALUES;
+    result.connection.randomPos = (result.connection.randomPos + 1) % NUMBER_OF_RAND_VALUES;
+    const uint32_t randVal = HanamiRoot::m_randomValues[result.connection.randomPos] % 1000;
+    const uint32_t brickId = currentBrick.possibleTargetNeuronBrickIds[randVal];
     result.connection.randomPos = (result.connection.randomPos + 1) % NUMBER_OF_RAND_VALUES;
     result.connection.offset = offset;
     result.connection.targetNeuronSectionId = segment.bricks[brickId].neuronSectionPos;
@@ -77,16 +80,12 @@ processUpdatePositon_CPU(CoreSegment &segment,
     NeuronSection* sourceNeuronSection = &segment.neuronSections[sourceNeuronSectionId];
     Neuron* sourceNeuron = &sourceNeuronSection->neurons[sourceNeuronId];
     Brick* currentBrick = &segment.bricks[sourceNeuronSection->brickId];
-    const uint32_t brickId = currentBrick->getPossibleBrick();
-    if(brickId == UNINIT_STATE_32) {
-        return;
-    }
 
     // create new section and connect it to buffer
     SynapseSection newSection;
     newSection.connection.sourceNeuronId = sourceNeuronId;
     newSection.connection.sourceNeuronSectionId = sourceNeuronSectionId;
-    createNewSection(newSection, segment, brickId, offset);
+    createNewSection(newSection, segment, *currentBrick, offset);
 
     const uint64_t newId = segment.segmentData.addNewItem(newSection);
     if(newId == ITEM_BUFFER_UNDEFINE_POS) {
@@ -117,16 +116,12 @@ processUpdatePositon_GPU(CoreSegment &segment,
     NeuronSection* sourceNeuronSection = &segment.neuronSections[sourceNeuronSectionId];
     Neuron* sourceNeuron = &sourceNeuronSection->neurons[sourceNeuronId];
     Brick* currentBrick = &segment.bricks[sourceNeuronSection->brickId];
-    const uint32_t brickId = currentBrick->getPossibleBrick();
-    if(brickId == UNINIT_STATE_32) {
-        return;
-    }
 
     // create new section and connect it to buffer
     SynapseSection newSection;
     newSection.connection.sourceNeuronId = sourceNeuronId;
     newSection.connection.sourceNeuronSectionId = sourceNeuronSectionId;
-    createNewSection(newSection, segment, brickId, offset);
+    createNewSection(newSection, segment, *currentBrick, offset);
     NeuronConnection* targetCon = &segment.neuronConnections[newSection.connection.targetNeuronSectionId];
     if(targetCon->backwardIds[NEURON_CONNECTIONS-1] != UNINIT_STATE_32) {
         return;
