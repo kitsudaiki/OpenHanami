@@ -26,7 +26,6 @@
 #include <common.h>
 
 #include <hanami_root.h>
-#include <core/segments/brick.h>
 #include <core/cluster/cluster.h>
 
 #include "objects.h"

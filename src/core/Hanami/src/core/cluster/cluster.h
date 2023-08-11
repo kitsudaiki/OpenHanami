@@ -72,19 +72,19 @@ public:
 
         uint8_t padding2[956];
     };
-    static_assert(sizeof(Cluster::MetaData) == 2048);
+    static_assert(sizeof(MetaData) == 2048);
 
     struct Settings
     {
         float lerningValue = 0.0f;
         uint8_t padding[252];
     };
-    static_assert(sizeof(Cluster::Settings) == 256);
+    static_assert(sizeof(Settings) == 256);
 
     // cluster-data
     Kitsunemimi::DataBuffer clusterData;
-    Cluster::MetaData* networkMetaData = nullptr;
-    Cluster::Settings* networkSettings = nullptr;
+    MetaData* networkMetaData = nullptr;
+    Settings* networkSettings = nullptr;
     std::map<std::string, InputSegment*> inputSegments;
     std::map<std::string, OutputSegment*> outputSegments;
     std::map<std::string, AbstractSegment*> coreSegments;

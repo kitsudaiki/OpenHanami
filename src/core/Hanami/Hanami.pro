@@ -241,7 +241,6 @@ HEADERS += \
     src/core/processing/segment_queue.h \
     src/core/routing_functions.h \
     src/core/segments/abstract_segment.h \
-    src/core/segments/brick.h \
     src/core/segments/core_segment/backpropagation.h \
     src/core/segments/core_segment/core_segment.h \
     src/core/segments/core_segment/objects.h \

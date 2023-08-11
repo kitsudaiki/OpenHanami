@@ -28,7 +28,6 @@
 #include <cmath>
 
 #include <hanami_root.h>
-#include <core/segments/brick.h>
 #include <core/segments/core_segment/core_segment.h>
 
 #include "objects.h"

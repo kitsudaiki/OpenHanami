@@ -23,10 +23,8 @@
 #include "core_segment.h"
 
 #include <core/routing_functions.h>
-#include <core/segments/brick.h>
-#include <gpu_kernel.h>
-
 #include <core/segments/core_segment/section_update.h>
+#include <gpu_kernel.h>
 
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiOpencl/gpu_interface.h>

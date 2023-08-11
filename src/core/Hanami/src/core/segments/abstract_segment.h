@@ -31,9 +31,7 @@
 #include <libKitsunemimiHanamiSegmentParser/segment_meta.h>
 #include <libKitsunemimiHanamiClusterParser/cluster_meta.h>
 
-#include <core/segments/brick.h>
 #include <core/segments/segment_meta.h>
-
 #include <core/segments/core_segment/objects.h>
 
 class Cluster;
