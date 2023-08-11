@@ -25,6 +25,7 @@
 
 #include <stdint.h>
 #include <cstdlib>
+#include <algorithm>
 #include <libKitsunemimiCommon/structs.h>
 
 // const predefined values
@@ -39,7 +40,7 @@
 // network-predefines
 #define SYNAPSES_PER_SYNAPSESECTION 64
 #define NUMBER_OF_SYNAPSESECTION 64
-#define NEURONS_PER_NEURONSECTION 63
+#define NEURONS_PER_NEURONSECTION 62
 #define POSSIBLE_NEXT_AXON_STEP 80
 #define NEURON_CONNECTIONS 512
 
@@ -66,23 +67,6 @@ struct Brick
     uint32_t possibleTargetNeuronBrickIds[1000];
 };
 static_assert(sizeof(Brick) == 4096);
-
-//==================================================================================================
-
-struct Neuron
-{
-    float input = 0.0f;
-    float border = 100.0f;
-    float potential = 0.0f;
-    float delta = 0.0f;
-
-    uint8_t refractionTime = 1;
-    uint8_t active = 0;
-    uint8_t padding[10];
-
-    uint32_t targetBorderId = UNINIT_STATE_32;
-};
-static_assert(sizeof(Neuron) == 32);
 
 //==================================================================================================
 
@@ -117,32 +101,6 @@ static_assert(sizeof(SynapseBlock) == 64*1024);
 
 //==================================================================================================
 
-struct BrickBlock
-{
-    uint64_t triggerMap;
-    uint64_t triggerCompare;
-    uint32_t numberOfNeurons = 0;
-    uint32_t brickId = 0;
-    uint32_t randomPos = 0;
-    uint8_t padding[4];
-
-    Neuron neurons[NEURONS_PER_NEURONSECTION];
-    SynapseBlock synapseBlock;
-
-    BrickBlock()
-    {
-        randomPos = rand();
-        for(uint32_t i = 0; i < NEURONS_PER_NEURONSECTION; i++) {
-            neurons[i] = Neuron();
-        }
-
-        synapseBlock = SynapseBlock();
-    }
-};
-static_assert(sizeof(BrickBlock) == 66*1024);
-
-//==================================================================================================
-
 struct LocationPtr
 {
     uint32_t blockId = UNINIT_STATE_32;
@@ -154,28 +112,81 @@ static_assert(sizeof(LocationPtr) == 8);
 
 //==================================================================================================
 
-struct BlockConnection
+struct Neuron
 {
-    LocationPtr next[64 + NUMBER_OF_SYNAPSESECTION];
-    LocationPtr origin[NUMBER_OF_SYNAPSESECTION];
-    float offset[NUMBER_OF_SYNAPSESECTION];
-    float input[NUMBER_OF_SYNAPSESECTION];
+    float input = 0.0f;
+    float border = 100.0f;
+    float potential = 0.0f;
+    float delta = 0.0f;
 
-    BlockConnection()
+    uint8_t refractionTime = 1;
+    uint8_t active = 0;
+    uint8_t padding[2];
+    LocationPtr target;
+    uint32_t targetBorderId = UNINIT_STATE_32;
+};
+static_assert(sizeof(Neuron) == 32);
+
+//==================================================================================================
+
+struct NeuronBlock
+{
+    uint64_t triggerMap;
+    uint64_t triggerCompare;
+    uint32_t numberOfNeurons = 0;
+    uint32_t brickId = 0;
+    uint32_t randomPos = 0;
+    uint8_t padding[4];
+    uint32_t backwaredBlocks[8];
+
+    Neuron neurons[NEURONS_PER_NEURONSECTION];
+
+    NeuronBlock()
     {
-        for(uint32_t i = 0; i < 64 + NUMBER_OF_SYNAPSESECTION; i++) {
-            next[i] = LocationPtr();
+        randomPos = rand();
+        std::fill_n(backwaredBlocks, 8, UNINIT_STATE_32);
+        std::fill_n(neurons, NEURONS_PER_NEURONSECTION, Neuron());
+    }
+
+    uint32_t addBackwardBlock(const uint32_t id)
+    {
+        for(uint32_t i = 0; i < 8; i++)
+        {
+            if(backwaredBlocks[i] == UNINIT_STATE_32)
+            {
+                backwaredBlocks[i] = id;
+                return i;
+            }
         }
 
+        return UNINIT_STATE_32;
+    }
+
+};
+static_assert(sizeof(NeuronBlock) == 2*1024);
+
+//==================================================================================================
+
+struct SymapseConnection
+{
+    uint8_t padding[4];
+    uint32_t targetNeuronBlock;
+
+    LocationPtr next[NUMBER_OF_SYNAPSESECTION];
+    LocationPtr origin[NUMBER_OF_SYNAPSESECTION];
+    float offset[NUMBER_OF_SYNAPSESECTION];
+
+    SymapseConnection()
+    {
         for(uint32_t i = 0; i < NUMBER_OF_SYNAPSESECTION; i++)
         {
+            next[i] = LocationPtr();
             origin[i] = LocationPtr();
             offset[i] = 0.0f;
-            input[i] = 0.0f;
         }
     }
 };
-static_assert(sizeof(BlockConnection) == 2048);
+static_assert(sizeof(SymapseConnection) == 1288);
 
 //==================================================================================================
 

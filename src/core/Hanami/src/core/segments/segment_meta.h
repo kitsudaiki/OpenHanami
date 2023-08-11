@@ -64,12 +64,13 @@ struct SegmentHeader
 
     SegmentHeaderEntry bricks;
     SegmentHeaderEntry brickOrder;
-    SegmentHeaderEntry brickBlocks;
+    SegmentHeaderEntry neuronBlocks;
     SegmentHeaderEntry blockConnections;
+    SegmentHeaderEntry synapseBlocks;
     SegmentHeaderEntry inputs;
     SegmentHeaderEntry outputs;
 
-    uint8_t padding2[262];
+    uint8_t padding2[246];
 };
 static_assert(sizeof(SegmentHeader) == 512);
 

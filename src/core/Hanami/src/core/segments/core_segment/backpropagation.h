@@ -40,7 +40,7 @@ backpropagateOutput(const CoreSegment &segment,
                     const Brick* brick)
 {
     Neuron* neuron = nullptr;
-    BrickBlock* section = nullptr;
+    NeuronBlock* section = nullptr;
     float totalDelta = 0.0f;
 
     // iterate over all neurons within the brick
@@ -48,7 +48,7 @@ backpropagateOutput(const CoreSegment &segment,
         neuronSectionId < brick->numberOfNeuronSections + brick->brickBlockPos;
         neuronSectionId++)
     {
-        section = &segment.brickBlocks[neuronSectionId];
+        section = &segment.neuronBlocks[neuronSectionId];
         for(uint32_t neuronId = 0;
             neuronId < section->numberOfNeurons;
             neuronId++)
@@ -71,8 +71,8 @@ inline void
 backpropagateSection(const CoreSegment &segment,
                      Synapse* section,
                      Neuron* sourceNeuron,
-                     BrickBlock* block,
-                     BlockConnection* connection,
+                     NeuronBlock* block,
+                     SymapseConnection* connection,
                      LocationPtr* sourceLocation,
                      const float outH)
 {
@@ -105,12 +105,12 @@ backpropagateSection(const CoreSegment &segment,
         pos++;
     }
 
-    LocationPtr* targetLocation = &connection->next[sourceLocation->sectionId + 64];
+    LocationPtr* targetLocation = &connection->next[sourceLocation->sectionId];
     if(targetLocation->sectionId != UNINIT_STATE_16)
     {
-        Synapse* nextSection = block->synapseBlock.synapses[targetLocation->sectionId];
-        BrickBlock* nextBlock = &segment.brickBlocks[targetLocation->blockId];
-        BlockConnection* nextConnection = &segment.blockConnections[targetLocation->blockId];
+        Synapse* nextSection = segment.synapseBlocks[targetLocation->blockId].synapses[targetLocation->sectionId];
+        NeuronBlock* nextBlock = &segment.neuronBlocks[targetLocation->blockId];
+        SymapseConnection* nextConnection = &segment.blockConnections[targetLocation->blockId];
         backpropagateSection(segment,
                              nextSection,
                              sourceNeuron,
@@ -129,15 +129,15 @@ backpropagateNeurons(const CoreSegment &segment,
                      const Brick* brick)
 {
     Neuron* sourceNeuron = nullptr;
-    BrickBlock* block = nullptr;
-    BlockConnection* connection = nullptr;
+    NeuronBlock* block = nullptr;
+    SymapseConnection* connection = nullptr;
 
     // iterate over all neurons within the brick
     for(uint32_t blockId = brick->brickBlockPos;
         blockId < brick->numberOfNeuronSections + brick->brickBlockPos;
         blockId++)
     {
-        block = &segment.brickBlocks[blockId];
+        block = &segment.neuronBlocks[blockId];
         connection = &segment.blockConnections[blockId];
 
         for(uint32_t neuronId = 0;
@@ -146,7 +146,7 @@ backpropagateNeurons(const CoreSegment &segment,
         {
             // skip section, if not active
             sourceNeuron = &block->neurons[neuronId];
-            if(connection->next[neuronId].blockId == UNINIT_STATE_32) {
+            if(sourceNeuron->target.blockId == UNINIT_STATE_32) {
                 continue;
             }
 
@@ -154,14 +154,14 @@ backpropagateNeurons(const CoreSegment &segment,
             sourceNeuron->delta = 0.0f;
             if(sourceNeuron->active)
             {
-                LocationPtr* targetLocation = &segment.blockConnections[blockId].next[neuronId];
+                LocationPtr* targetLocation = &sourceNeuron->target;
                 if(targetLocation->blockId == UNINIT_STATE_32) {
                     return;
                 }
 
-                Synapse* nextSection = segment.brickBlocks->synapseBlock.synapses[targetLocation->sectionId];
-                BrickBlock* nextBlock = &segment.brickBlocks[targetLocation->blockId];
-                BlockConnection* nextConnection = &segment.blockConnections[targetLocation->blockId];
+                Synapse* nextSection = segment.synapseBlocks[targetLocation->blockId].synapses[targetLocation->sectionId];
+                NeuronBlock* nextBlock = &segment.neuronBlocks[targetLocation->blockId];
+                SymapseConnection* nextConnection = &segment.blockConnections[targetLocation->blockId];
                 backpropagateSection(segment,
                                      nextSection,
                                      sourceNeuron,

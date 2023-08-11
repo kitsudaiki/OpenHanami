@@ -333,13 +333,17 @@ CoreSegment::reinitPointer(const uint64_t numberOfBytes)
     brickOrder = reinterpret_cast<uint32_t*>(dataPtr + pos);
     byteCounter += segmentHeader->brickOrder.count * sizeof(uint32_t);
 
-    pos = segmentHeader->brickBlocks.bytePos;
-    brickBlocks = reinterpret_cast<BrickBlock*>(dataPtr + pos);
-    byteCounter += segmentHeader->brickBlocks.count * sizeof(BrickBlock);
+    pos = segmentHeader->neuronBlocks.bytePos;
+    neuronBlocks = reinterpret_cast<NeuronBlock*>(dataPtr + pos);
+    byteCounter += segmentHeader->neuronBlocks.count * sizeof(NeuronBlock);
+
+    pos = segmentHeader->synapseBlocks.bytePos;
+    synapseBlocks = reinterpret_cast<SynapseBlock*>(dataPtr + pos);
+    byteCounter += segmentHeader->synapseBlocks.count * sizeof(SynapseBlock);
 
     pos = segmentHeader->blockConnections.bytePos;
-    blockConnections = reinterpret_cast<BlockConnection*>(dataPtr + pos);
-    byteCounter += segmentHeader->blockConnections.count * sizeof(BlockConnection);
+    blockConnections = reinterpret_cast<SymapseConnection*>(dataPtr + pos);
+    byteCounter += segmentHeader->blockConnections.count * sizeof(SymapseConnection);
 
     /*if(HanamiRoot::useOpencl)
     {
@@ -378,7 +382,7 @@ CoreSegment::initializeNeurons(const Kitsunemimi::Hanami::SegmentMeta &segmentMe
         while(sectionCounter < numberOfNeuronSectionsInBrick)
         {
             const uint32_t blockId = sectionPositionOffset + sectionCounter;
-            BrickBlock* block = &brickBlocks[blockId];
+            NeuronBlock* block = &neuronBlocks[blockId];
 
             if(neuronsInBrick >= NEURONS_PER_NEURONSECTION)
             {
@@ -412,7 +416,7 @@ CoreSegment::initializeNeurons(const Kitsunemimi::Hanami::SegmentMeta &segmentMe
 bool
 CoreSegment::connectBorderBuffer()
 {
-    BrickBlock* block = nullptr;
+    NeuronBlock* block = nullptr;
     Brick* brick = nullptr;
 
     uint64_t transferCounter = 0;
@@ -429,7 +433,7 @@ CoreSegment::connectBorderBuffer()
                     break;
                 }
 
-                block = &brickBlocks[brick->brickBlockPos + j];
+                block = &neuronBlocks[brick->brickBlockPos + j];
                 for(uint32_t k = 0; k < block->numberOfNeurons; k++)
                 {
                     block->neurons[k].targetBorderId = transferCounter;
@@ -448,7 +452,7 @@ CoreSegment::connectBorderBuffer()
                     break;
                 }
 
-                block = &brickBlocks[brick->brickBlockPos + j];
+                block = &neuronBlocks[brick->brickBlockPos + j];
                 for(uint32_t k = 0; k < block->numberOfNeurons; k++)
                 {
                     block->neurons[k].targetBorderId = transferCounter;
@@ -509,15 +513,20 @@ CoreSegment::createNewHeader(const uint32_t numberOfBricks,
     segmentHeader.brickOrder.bytePos = segmentDataPos;
     segmentDataPos += numberOfBricks * sizeof(uint32_t);
 
-    // init brick blocks
-    segmentHeader.brickBlocks.count = numberOfBrickBlocks;
-    segmentHeader.brickBlocks.bytePos = segmentDataPos;
-    segmentDataPos += numberOfBrickBlocks * sizeof(BrickBlock);
+    // init neuron blocks
+    segmentHeader.neuronBlocks.count = numberOfBrickBlocks;
+    segmentHeader.neuronBlocks.bytePos = segmentDataPos;
+    segmentDataPos += numberOfBrickBlocks * sizeof(NeuronBlock);
+
+    // init synapse blocks
+    segmentHeader.synapseBlocks.count = numberOfBrickBlocks;
+    segmentHeader.synapseBlocks.bytePos = segmentDataPos;
+    segmentDataPos += numberOfBrickBlocks * sizeof(SynapseBlock);
 
     // init block connections
     segmentHeader.blockConnections.count = numberOfBrickBlocks;
     segmentHeader.blockConnections.bytePos = segmentDataPos;
-    segmentDataPos += numberOfBrickBlocks * sizeof(BlockConnection);
+    segmentDataPos += numberOfBrickBlocks * sizeof(SymapseConnection);
 
     segmentHeader.staticDataSize = segmentDataPos;
 
@@ -571,16 +580,22 @@ CoreSegment::initSegmentPointer(const SegmentHeader &header)
         brickOrder[i] = i;
     }
 
-    pos = segmentHeader->brickBlocks.bytePos;
-    brickBlocks = reinterpret_cast<BrickBlock*>(dataPtr + pos);
-    for(uint32_t i = 0; i < segmentHeader->brickBlocks.count; i++) {
-        brickBlocks[i] = BrickBlock();
+    pos = segmentHeader->neuronBlocks.bytePos;
+    neuronBlocks = reinterpret_cast<NeuronBlock*>(dataPtr + pos);
+    for(uint32_t i = 0; i < segmentHeader->neuronBlocks.count; i++) {
+        neuronBlocks[i] = NeuronBlock();
+    }
+
+    pos = segmentHeader->synapseBlocks.bytePos;
+    synapseBlocks = reinterpret_cast<SynapseBlock*>(dataPtr + pos);
+    for(uint32_t i = 0; i < segmentHeader->synapseBlocks.count; i++) {
+        synapseBlocks[i] = SynapseBlock();
     }
 
     pos = segmentHeader->blockConnections.bytePos;
-    blockConnections = reinterpret_cast<BlockConnection*>(dataPtr + pos);
+    blockConnections = reinterpret_cast<SymapseConnection*>(dataPtr + pos);
     for(uint32_t i = 0; i < segmentHeader->blockConnections.count; i++) {
-        blockConnections[i] = BlockConnection();
+        blockConnections[i] = SymapseConnection();
     }
 }
 
@@ -636,7 +651,7 @@ CoreSegment::addBricksToSegment(const Kitsunemimi::Hanami::SegmentMeta &segmentM
 {
     uint32_t neuronBrickIdCounter = 0;
     uint32_t neuronSectionPosCounter = 0;
-    BrickBlock* block = nullptr;
+    NeuronBlock* block = nullptr;
     uint32_t neuronIdCounter = 0;
 
     for(uint32_t i = 0; i < segmentMeta.bricks.size(); i++)
@@ -646,7 +661,7 @@ CoreSegment::addBricksToSegment(const Kitsunemimi::Hanami::SegmentMeta &segmentM
 
         for(uint32_t j = 0; j < newBrick.numberOfNeuronSections; j++)
         {
-            block = &brickBlocks[j + neuronSectionPosCounter];
+            block = &neuronBlocks[j + neuronSectionPosCounter];
             block->brickId = newBrick.brickId;
             for(uint32_t k = 0; k < block->numberOfNeurons; k++) {
                 neuronIdCounter++;

@@ -58,8 +58,9 @@ public:
     Brick* bricks = nullptr;
     uint32_t* brickOrder = nullptr;
 
-    BrickBlock* brickBlocks = nullptr;
-    BlockConnection* blockConnections = nullptr;
+    NeuronBlock* neuronBlocks = nullptr;
+    SymapseConnection* blockConnections = nullptr;
+    SynapseBlock* synapseBlocks = nullptr;
 
     SegmentSizes segmentSizes;
 

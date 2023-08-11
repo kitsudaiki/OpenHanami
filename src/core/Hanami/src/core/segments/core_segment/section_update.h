@@ -34,20 +34,31 @@
  */
 inline bool
 processUpdatePositon_CPU(CoreSegment &segment,
-                         LocationPtr* location,
+                         const LocationPtr* location,
+                         LocationPtr* targetLocation,
                          const float offset)
 {
     // get current position
-    BlockConnection* currentConnection = &segment.blockConnections[location->blockId];
-    const uint32_t brickId = segment.brickBlocks[location->blockId].brickId;
-    Brick* currentBrick = &segment.bricks[brickId];
+    SymapseConnection* currentConnection = &segment.blockConnections[location->blockId];
+    uint32_t originBrickId = UNINIT_STATE_32;
+
+    if(location->isNeuron)
+    {
+        originBrickId = segment.neuronBlocks[location->blockId].brickId;
+    }
+    else
+    {
+        const uint32_t originBlockId = currentConnection->origin[location->sectionId].blockId;
+        originBrickId = segment.neuronBlocks[originBlockId].brickId;
+    }
 
     // get target position
     const uint32_t randVal = rand() % 1000;
-    const uint32_t targetBrickId = currentBrick->possibleTargetNeuronBrickIds[randVal];
-    Brick* targetBrick = &segment.bricks[targetBrickId];
+    const Brick* originBrick = &segment.bricks[originBrickId];
+    const uint32_t targetBrickId = originBrick->possibleTargetNeuronBrickIds[randVal];
+    const Brick* targetBrick = &segment.bricks[targetBrickId];
     const uint32_t targetBlockId = targetBrick->brickBlockPos + (rand() % targetBrick->numberOfNeuronSections);
-    BlockConnection* targetConnection = &segment.blockConnections[targetBlockId];
+    SymapseConnection* targetConnection = &segment.blockConnections[targetBlockId];
 
     // search for available section in target-block
     uint16_t targetSectionId = 0;
@@ -62,6 +73,9 @@ processUpdatePositon_CPU(CoreSegment &segment,
         return false;
     }
 
+    targetLocation->blockId = targetBlockId;
+    targetLocation->sectionId = targetSectionId;
+
     // get origin position and next
     if(location->isNeuron)
     {
@@ -71,6 +85,8 @@ processUpdatePositon_CPU(CoreSegment &segment,
 
         currentConnection->next[location->sectionId].blockId = targetBlockId;
         currentConnection->next[location->sectionId].sectionId = targetSectionId;
+
+        currentConnection->targetNeuronBlock = targetBlockId;
     }
     else
     {
@@ -81,8 +97,8 @@ processUpdatePositon_CPU(CoreSegment &segment,
         targetConnection->origin[targetSectionId].sectionId = originSectionId;
         targetConnection->offset[targetSectionId] = offset;
 
-        currentConnection->next[64 + location->sectionId].blockId = targetBlockId;
-        currentConnection->next[64 + location->sectionId].sectionId = targetSectionId;
+        currentConnection->next[location->sectionId].blockId = targetBlockId;
+        currentConnection->next[location->sectionId].sectionId = targetSectionId;
     }
 
     return true;
