@@ -37,7 +37,7 @@
 #define UNINTI_POINT_32 0x0FFFFFFF
 
 // network-predefines
-#define SYNAPSES_PER_SYNAPSESECTION 32
+#define SYNAPSES_PER_SYNAPSESECTION 64
 #define NUMBER_OF_SYNAPSESECTION 64
 #define NEURONS_PER_NEURONSECTION 63
 #define POSSIBLE_NEXT_AXON_STEP 80
@@ -101,17 +101,21 @@ struct Synapse
 
 //==================================================================================================
 
-struct SynapseSection
+struct SynapseBlock
 {
-    Synapse synapses[SYNAPSES_PER_SYNAPSESECTION];
+    Synapse synapses[NUMBER_OF_SYNAPSESECTION][SYNAPSES_PER_SYNAPSESECTION];
 
-    SynapseSection()
+    SynapseBlock()
     {
-        for(uint32_t i = 0; i < SYNAPSES_PER_SYNAPSESECTION; i++) {
-            synapses[i] = Synapse();
+        for(uint32_t i = 0; i < NUMBER_OF_SYNAPSESECTION; i++)
+        {
+            for(uint32_t j = 0; j < SYNAPSES_PER_SYNAPSESECTION; j++)
+            {
+                synapses[i][j] = Synapse();
+            }
         }
     }
-    // total size: 1 KiB
+    // total size: 64 KiB
 };
 
 //==================================================================================================
@@ -126,7 +130,7 @@ struct BrickBlock
     uint8_t padding[4];
 
     Neuron neurons[NEURONS_PER_NEURONSECTION];
-    SynapseSection synapseSesctions[NUMBER_OF_SYNAPSESECTION];
+    SynapseBlock synapseBlock;
 
     BrickBlock()
     {
@@ -134,12 +138,11 @@ struct BrickBlock
         for(uint32_t i = 0; i < NEURONS_PER_NEURONSECTION; i++) {
             neurons[i] = Neuron();
         }
-        for(uint32_t i = 0; i < NUMBER_OF_SYNAPSESECTION; i++) {
-            synapseSesctions[i] = SynapseSection();
-        }
+
+        synapseBlock = SynapseBlock();
     }
 
-    // total size: 34 KiB
+    // total size: 66 KiB
 };
 
 //==================================================================================================
@@ -158,18 +161,18 @@ struct LocationPtr
 
 struct BlockConnection
 {
-    LocationPtr next[128];
-    LocationPtr origin[64];
-    float offset[64];
-    float input[64];
+    LocationPtr next[64 + NUMBER_OF_SYNAPSESECTION];
+    LocationPtr origin[NUMBER_OF_SYNAPSESECTION];
+    float offset[NUMBER_OF_SYNAPSESECTION];
+    float input[NUMBER_OF_SYNAPSESECTION];
 
     BlockConnection()
     {
-        for(uint32_t i = 0; i < 128; i++) {
+        for(uint32_t i = 0; i < 64 + NUMBER_OF_SYNAPSESECTION; i++) {
             next[i] = LocationPtr();
         }
 
-        for(uint32_t i = 0; i < 64; i++)
+        for(uint32_t i = 0; i < NUMBER_OF_SYNAPSESECTION; i++)
         {
             origin[i] = LocationPtr();
             offset[i] = 0.0f;

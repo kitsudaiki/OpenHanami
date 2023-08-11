@@ -36,7 +36,7 @@
  */
 inline bool
 reduceSynapses(CoreSegment &segment,
-               SynapseSection &section)
+               SynapseBlock &section)
 {
     bool foundEnd = false;
 
@@ -81,10 +81,10 @@ reduceSynapses(CoreSegment &segment,
 inline void
 reduceNeurons(CoreSegment &segment)
 {
-    SynapseSection* section = nullptr;
+    /*SynapseSection* section = nullptr;
     Neuron* sourceNeuron = nullptr;
 
-    /*for(uint32_t neuronId = 0;
+    for(uint32_t neuronId = 0;
         neuronId < segment.segmentHeader->neuronSections.count;
         neuronId++)
     {

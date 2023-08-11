@@ -73,7 +73,7 @@ createNewSynapse(BrickBlock* block,
  */
 inline void
 synapseProcessing(CoreSegment &segment,
-                  SynapseSection* section,
+                  Synapse* section,
                   BrickBlock* block,
                   BlockConnection* connection,
                   LocationPtr* sourceLocation,
@@ -89,7 +89,7 @@ synapseProcessing(CoreSegment &segment,
     while(pos < SYNAPSES_PER_SYNAPSESECTION
           && counter > 0.01f)
     {
-        synapse = &section->synapses[pos];
+        synapse = &section[pos];
 
         // create new synapse if necesarry and learning is active
         if(synapse->targetNeuronId == UNINIT_STATE_16) {
@@ -100,10 +100,9 @@ synapseProcessing(CoreSegment &segment,
                 && pos < SYNAPSES_PER_SYNAPSESECTION-2)
         {
             const float val = synapse->border / 2.0f;
-            section->synapses[pos + 1].border += val;
+            section[pos + 1].border += val;
             synapse->border -= val;
         }
-        assert(synapse->targetNeuronId != UNINIT_STATE_16);
 
         // update target-neuron
         targetNeuron = &block->neurons[synapse->targetNeuronId];
@@ -128,7 +127,7 @@ synapseProcessing(CoreSegment &segment,
 
     if(targetLocation->sectionId != UNINIT_STATE_16)
     {
-        SynapseSection* nextSection = &block->synapseSesctions[targetLocation->sectionId];
+        Synapse* nextSection = block->synapseBlock.synapses[targetLocation->sectionId];
         BrickBlock* nextBlock = &segment.brickBlocks[targetLocation->blockId];
         BlockConnection* nextConnection = &segment.blockConnections[targetLocation->blockId];
         synapseProcessing(segment,  nextSection, nextBlock, nextConnection, targetLocation, outH);
@@ -161,7 +160,7 @@ processSingleNeuron(CoreSegment &segment,
         }
     }
 
-    SynapseSection* nextSection = &segment.brickBlocks->synapseSesctions[targetLocation->sectionId];
+    Synapse* nextSection = segment.brickBlocks->synapseBlock.synapses[targetLocation->sectionId];
     BrickBlock* nextBlock = &segment.brickBlocks[targetLocation->blockId];
     BlockConnection* nextConnection = &segment.blockConnections[targetLocation->blockId];
     synapseProcessing(segment,  nextSection, nextBlock, nextConnection, targetLocation, neuron->potential);

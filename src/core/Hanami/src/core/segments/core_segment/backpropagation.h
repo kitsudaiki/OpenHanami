@@ -70,7 +70,7 @@ backpropagateOutput(const CoreSegment &segment,
  */
 inline void
 backpropagateSection(const CoreSegment &segment,
-                     SynapseSection* section,
+                     Synapse* section,
                      Neuron* sourceNeuron,
                      BrickBlock* block,
                      BlockConnection* connection,
@@ -88,7 +88,7 @@ backpropagateSection(const CoreSegment &segment,
           && counter > 0.01f)
     {
         // break look, if no more synapses to process
-        synapse = &section->synapses[pos];
+        synapse = &section[pos];
         if(synapse->targetNeuronId == UNINIT_STATE_16)
         {
             pos++;
@@ -109,7 +109,7 @@ backpropagateSection(const CoreSegment &segment,
     LocationPtr* targetLocation = &connection->next[sourceLocation->sectionId + 64];
     if(targetLocation->sectionId != UNINIT_STATE_16)
     {
-        SynapseSection* nextSection = &block->synapseSesctions[targetLocation->sectionId];
+        Synapse* nextSection = block->synapseBlock.synapses[targetLocation->sectionId];
         BrickBlock* nextBlock = &segment.brickBlocks[targetLocation->blockId];
         BlockConnection* nextConnection = &segment.blockConnections[targetLocation->blockId];
         backpropagateSection(segment,
@@ -160,7 +160,7 @@ backpropagateNeurons(const CoreSegment &segment,
                     return;
                 }
 
-                SynapseSection* nextSection = &segment.brickBlocks->synapseSesctions[targetLocation->sectionId];
+                Synapse* nextSection = segment.brickBlocks->synapseBlock.synapses[targetLocation->sectionId];
                 BrickBlock* nextBlock = &segment.brickBlocks[targetLocation->blockId];
                 BlockConnection* nextConnection = &segment.blockConnections[targetLocation->blockId];
                 backpropagateSection(segment,
