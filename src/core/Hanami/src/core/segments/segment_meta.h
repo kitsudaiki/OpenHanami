@@ -70,9 +70,8 @@ struct SegmentHeader
     SegmentHeaderEntry outputs;
 
     uint8_t padding2[262];
-
-    // total size: 512 Byte
 };
+static_assert(sizeof(SegmentHeader) == 512);
 
 enum SlotDirection
 {
@@ -133,15 +132,14 @@ struct SegmentSlot
 
         return true;
     }
-
-    // total size: 64 Byte
 };
+static_assert(sizeof(SegmentSlot) == 64);
 
 struct SegmentSlotList
 {
     SegmentSlot slots[16];
-    // total size: 1024 Byte
 };
+static_assert(sizeof(SegmentSlotList) == 1024);
 
 struct SegmentName
 {
@@ -183,8 +181,7 @@ struct SegmentName
 
         return true;
     }
-
-    // total size: 256 Byte
 };
+static_assert(sizeof(SegmentName) == 256);
 
 #endif // SEGMENT_META_H

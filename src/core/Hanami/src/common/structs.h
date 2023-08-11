@@ -97,8 +97,7 @@ struct kuuid
     const std::string toString() const {
         return std::string(uuid, UUID_STR_LEN - 1);
     }
-
-    // total size: 40 Bytes
 };
+static_assert(sizeof(kuuid) == 40);
 
 #endif // HANAMI_STRUCTS_H

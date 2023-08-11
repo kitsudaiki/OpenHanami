@@ -257,7 +257,6 @@ HEADERS += \
     src/core/segments/output_segment/processing.h \
     src/core/segments/segment_meta.h \
     src/core/speed_measuring.h \
-    src/core/struct_validation.h \
     src/core/temp_file_handler.h \
     src/core/temperature_measuring.h \
     src/core/thread_binder.h \

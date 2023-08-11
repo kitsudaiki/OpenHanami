@@ -71,17 +71,15 @@ public:
         uint32_t numberOfSegments = 0;
 
         uint8_t padding2[956];
-
-        // total size: 2048 Byte
     };
+    static_assert(sizeof(Cluster::MetaData) == 2048);
 
     struct Settings
     {
         float lerningValue = 0.0f;
-
         uint8_t padding[252];
-        // total size: 256 Byte
     };
+    static_assert(sizeof(Cluster::Settings) == 256);
 
     // cluster-data
     Kitsunemimi::DataBuffer clusterData;

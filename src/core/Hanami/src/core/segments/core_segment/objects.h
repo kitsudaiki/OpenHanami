@@ -64,9 +64,8 @@ struct Brick
     Kitsunemimi::Position brickPos;
     uint32_t neighbors[12];
     uint32_t possibleTargetNeuronBrickIds[1000];
-
-    // total size: 4 KiB
 };
+static_assert(sizeof(Brick) == 4096);
 
 //==================================================================================================
 
@@ -82,9 +81,8 @@ struct Neuron
     uint8_t padding[10];
 
     uint32_t targetBorderId = UNINIT_STATE_32;
-
-    // total size: 32 Byte
 };
+static_assert(sizeof(Neuron) == 32);
 
 //==================================================================================================
 
@@ -95,9 +93,8 @@ struct Synapse
     uint16_t targetNeuronId = UNINIT_STATE_16;
     int8_t activeCounter = 0;
     uint8_t padding[5];
-
-    // total size: 16 Byte
 };
+static_assert(sizeof(Synapse) == 16);
 
 //==================================================================================================
 
@@ -115,8 +112,8 @@ struct SynapseBlock
             }
         }
     }
-    // total size: 64 KiB
 };
+static_assert(sizeof(SynapseBlock) == 64*1024);
 
 //==================================================================================================
 
@@ -141,9 +138,8 @@ struct BrickBlock
 
         synapseBlock = SynapseBlock();
     }
-
-    // total size: 66 KiB
 };
+static_assert(sizeof(BrickBlock) == 66*1024);
 
 //==================================================================================================
 
@@ -153,9 +149,8 @@ struct LocationPtr
     uint16_t sectionId = UNINIT_STATE_16;
     bool isNeuron = false;
     uint8_t padding[1];
-
-    // total size: 8 Byte
 };
+static_assert(sizeof(LocationPtr) == 8);
 
 //==================================================================================================
 
@@ -179,9 +174,8 @@ struct BlockConnection
             input[i] = 0.0f;
         }
     }
-
-    // total size: 2 KiB
 };
+static_assert(sizeof(BlockConnection) == 2048);
 
 //==================================================================================================
 
@@ -201,9 +195,8 @@ struct SegmentSettings
     uint8_t updateSections = 0;
 
     uint8_t padding[213];
-
-    // total size: 256 Byte
 };
+static_assert(sizeof(SegmentSettings) == 256);
 
 //==================================================================================================
 
@@ -218,7 +211,7 @@ struct SegmentSizes
     uint32_t numberOfNeuronConnections = 0;
     uint32_t numberOfNeuronSections = 0;
     uint32_t numberOfSynapseSections = 0;
-    // total size: 32 Byte
 };
+static_assert(sizeof(SegmentSizes) == 32);
 
 #endif // HANAMI_CORE_SEGMENT_OBJECTS_H

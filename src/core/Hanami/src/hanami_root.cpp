@@ -22,7 +22,6 @@
 
 #include <hanami_root.h>
 
-#include <core/struct_validation.h>
 #include <core/cluster/cluster_init.h>
 
 #include <core/processing/processing_unit_handler.h>
@@ -93,8 +92,6 @@ HanamiRoot::init(Kitsunemimi::ErrorContainer &error)
         assert(oclHandler.m_interfaces.size() == 1);
         gpuInterface = oclHandler.m_interfaces.at(0);
     }
-
-    validateStructSizes();
 
     // init predefinde random-values
     m_randomValues = new uint32_t[NUMBER_OF_RAND_VALUES];
