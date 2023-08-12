@@ -31,8 +31,7 @@ AbstractSegment::AbstractSegment() {}
 
 AbstractSegment::AbstractSegment(const void* data, const uint64_t dataSize)
 {
-    Kitsunemimi::reset_DataBuffer(segmentData, Kitsunemimi::calcBytesToBlocks(dataSize));
-    memcpy(segmentData.data, data, dataSize);
+    segmentData.initBuffer(data, dataSize);
 }
 
 /**

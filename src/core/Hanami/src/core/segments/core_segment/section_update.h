@@ -30,75 +30,130 @@
 #include "core_segment.h"
 
 /**
- * @brief process single update-position
+ * @brief checkBackwards
+ * @return
  */
-inline bool
-processUpdatePositon_CPU(CoreSegment &segment,
-                         const LocationPtr* location,
-                         LocationPtr* targetLocation,
-                         const float offset)
+inline uint32_t
+checkBackwards(CoreSegment &segment, const uint32_t nextId)
 {
-    // get current position
-    SymapseConnection* currentConnection = &segment.blockConnections[location->blockId];
-    uint32_t originBrickId = UNINIT_STATE_32;
-
-    if(location->isNeuron)
-    {
-        originBrickId = segment.neuronBlocks[location->blockId].brickId;
-    }
-    else
-    {
-        const uint32_t originBlockId = currentConnection->origin[location->sectionId].blockId;
-        originBrickId = segment.neuronBlocks[originBlockId].brickId;
+    SynapseConnection* nextConnection = &segment.synapseConnections[nextId];
+    if(nextConnection->backwardNextId == UNINIT_STATE_32) {
+        return nextId;
     }
 
-    // get target position
-    const uint32_t randVal = rand() % 1000;
-    const Brick* originBrick = &segment.bricks[originBrickId];
-    const uint32_t targetBrickId = originBrick->possibleTargetNeuronBrickIds[randVal];
-    const Brick* targetBrick = &segment.bricks[targetBrickId];
-    const uint32_t targetBlockId = targetBrick->brickBlockPos + (rand() % targetBrick->numberOfNeuronSections);
-    SymapseConnection* targetConnection = &segment.blockConnections[targetBlockId];
+    return checkBackwards(segment, nextConnection->backwardNextId);
+}
 
-    // search for available section in target-block
+/**
+ * @brief getTargetSectionId
+ * @param targetConnection
+ * @return
+ */
+inline uint32_t
+getTargetSectionId(SynapseConnection* targetConnection)
+{
     uint16_t targetSectionId = 0;
     while(targetSectionId < NUMBER_OF_SYNAPSESECTION)
     {
         if(targetConnection->origin[targetSectionId].blockId == UNINIT_STATE_32) {
-            break;
+            return targetSectionId;
         }
         targetSectionId++;
     }
-    if(targetSectionId == NUMBER_OF_SYNAPSESECTION) {
-        return false;
-    }
 
-    targetLocation->blockId = targetBlockId;
-    targetLocation->sectionId = targetSectionId;
+    return UNINIT_STATE_32;
+}
 
-    // get origin position and next
-    if(location->isNeuron)
+/**
+ * @brief process single update-position
+ */
+inline bool
+processUpdatePositon_CPU(CoreSegment &segment,
+                         const LocationPtr* currentLocation,
+                         LocationPtr* targetLocation,
+                         const float offset)
+{
+    // get current position
+    uint32_t originBrickId = UNINIT_STATE_32;
+
+    if(currentLocation->isNeuron)
     {
-        targetConnection->origin[targetSectionId].blockId = location->blockId;
-        targetConnection->origin[targetSectionId].sectionId = location->sectionId;
-        targetConnection->offset[targetSectionId] = offset;
-
-        currentConnection->next[location->sectionId].blockId = targetBlockId;
-        currentConnection->next[location->sectionId].sectionId = targetSectionId;
-
-        currentConnection->targetNeuronBlock = targetBlockId;
+        NeuronBlock* neuronBlock = &segment.neuronBlocks[currentLocation->blockId];
+        originBrickId = neuronBlock->brickId;
     }
     else
     {
-        const uint32_t originBlockId = currentConnection->origin[location->sectionId].blockId;
-        const uint16_t originSectionId = currentConnection->origin[location->sectionId].blockId;
+        SynapseConnection* currentConnection = &segment.synapseConnections[currentLocation->blockId];
+        const uint32_t originBlockId = currentConnection->origin[currentLocation->sectionId].blockId;
+        originBrickId = segment.neuronBlocks[originBlockId].brickId;
+    }
+
+    // get target objects
+    const Brick* originBrick = &segment.bricks[originBrickId];
+    const uint32_t targetBrickId = originBrick->possibleTargetNeuronBrickIds[rand() % 1000];
+    const Brick* targetBrick = &segment.bricks[targetBrickId];
+    const uint32_t targetNeuronBlockId = targetBrick->brickBlockPos + (rand() % targetBrick->numberOfNeuronSections);
+    NeuronBlock* targetNeuronBlock = &segment.neuronBlocks[targetNeuronBlockId];
+
+    // get or create last available synapse-block
+    uint64_t targetSynapseBlockId = UNINIT_STATE_64;
+    if(targetNeuronBlock->backwardNextId == UNINIT_STATE_32)
+    {
+        SynapseConnection newConnection;
+        targetSynapseBlockId = segment.segmentData.addNewItem(newConnection);
+        if(targetSynapseBlockId == ITEM_BUFFER_UNDEFINE_POS) {
+            return false;
+        }
+    }
+    else
+    {
+        targetSynapseBlockId = checkBackwards(segment, targetNeuronBlock->backwardNextId);
+    }
+
+    // get possible section-id in target-block
+    SynapseConnection* targetConnection = &segment.synapseConnections[targetSynapseBlockId];
+    const uint32_t targetSectionId = getTargetSectionId(targetConnection);
+
+    // in case no empty section is available, then try to create new block
+    if(targetSectionId == NUMBER_OF_SYNAPSESECTION)
+    {
+        SynapseConnection newConnection;
+        const uint64_t targetSynapseBlockId = segment.segmentData.addNewItem(newConnection);
+        if(targetSynapseBlockId == ITEM_BUFFER_UNDEFINE_POS) {
+            return false;
+        }
+        targetConnection = &segment.synapseConnections[targetSynapseBlockId];
+    }
+
+    targetLocation->blockId = targetSynapseBlockId;
+    targetLocation->sectionId = targetSectionId;
+
+    // update connection
+    if(currentLocation->isNeuron)
+    {
+        NeuronBlock* neuronBlock = &segment.neuronBlocks[currentLocation->blockId];
+
+        targetConnection->origin[targetSectionId].blockId = currentLocation->blockId;
+        targetConnection->origin[targetSectionId].sectionId = currentLocation->sectionId;
+        targetConnection->offset[targetSectionId] = offset;
+        targetConnection->targetNeuronBlockId = targetNeuronBlockId;
+
+        neuronBlock->neurons[currentLocation->sectionId].target.blockId = targetSynapseBlockId;
+        neuronBlock->neurons[currentLocation->sectionId].target.sectionId = targetSectionId;
+    }
+    else
+    {
+        SynapseConnection* currentConnection = &segment.synapseConnections[currentLocation->blockId];
+        const uint32_t originBlockId = currentConnection->origin[currentLocation->sectionId].blockId;
+        const uint16_t originSectionId = currentConnection->origin[currentLocation->sectionId].blockId;
 
         targetConnection->origin[targetSectionId].blockId = originBlockId;
         targetConnection->origin[targetSectionId].sectionId = originSectionId;
         targetConnection->offset[targetSectionId] = offset;
+        targetConnection->targetNeuronBlockId = targetNeuronBlockId;
 
-        currentConnection->next[location->sectionId].blockId = targetBlockId;
-        currentConnection->next[location->sectionId].sectionId = targetSectionId;
+        currentConnection->next[currentLocation->sectionId].blockId = targetSynapseBlockId;
+        currentConnection->next[currentLocation->sectionId].sectionId = targetSectionId;
     }
 
     return true;

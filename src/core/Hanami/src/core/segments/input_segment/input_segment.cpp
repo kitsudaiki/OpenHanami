@@ -83,7 +83,7 @@ InputSegment::initSegment(const std::string &name,
 bool
 InputSegment::reinitPointer(const uint64_t numberOfBytes)
 {
-    uint8_t* dataPtr = static_cast<uint8_t*>(segmentData.data);
+    uint8_t* dataPtr = static_cast<uint8_t*>(segmentData.staticData);
 
     uint64_t pos = 0;
     uint64_t byteCounter = 0;
@@ -171,7 +171,7 @@ InputSegment::createNewHeader(const uint32_t numberOfInputs,
 void
 InputSegment::initSegmentPointer(const SegmentHeader &header)
 {
-    uint8_t* dataPtr = static_cast<uint8_t*>(segmentData.data);
+    uint8_t* dataPtr = static_cast<uint8_t*>(segmentData.staticData);
     uint64_t pos = 0;
 
     segmentHeader = reinterpret_cast<SegmentHeader*>(dataPtr + pos);
@@ -213,7 +213,9 @@ InputSegment::initSegmentPointer(const SegmentHeader &header)
 void
 InputSegment::allocateSegment(SegmentHeader &header)
 {
-    Kitsunemimi::reset_DataBuffer(segmentData, Kitsunemimi::calcBytesToBlocks(header.staticDataSize));
+    const uint32_t numberOfBlocks = (header.staticDataSize / 4096) + 1;
+    header.staticDataSize = numberOfBlocks * 4096;
+    segmentData.initBuffer(header.staticDataSize);
 }
 
 /**

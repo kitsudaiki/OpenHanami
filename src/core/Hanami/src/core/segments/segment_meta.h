@@ -65,7 +65,7 @@ struct SegmentHeader
     SegmentHeaderEntry bricks;
     SegmentHeaderEntry brickOrder;
     SegmentHeaderEntry neuronBlocks;
-    SegmentHeaderEntry blockConnections;
+    SegmentHeaderEntry synapseConnections;
     SegmentHeaderEntry synapseBlocks;
     SegmentHeaderEntry inputs;
     SegmentHeaderEntry outputs;

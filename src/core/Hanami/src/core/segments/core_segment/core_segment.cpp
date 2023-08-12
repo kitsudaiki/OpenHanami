@@ -257,6 +257,7 @@ CoreSegment::initSegment(const std::string &name,
     const SegmentSettings settings = initSettings(segmentMeta);
     SegmentHeader header = createNewHeader(segmentMeta.bricks.size(),
                                            numberOfBrickBlocks,
+                                           settings.maxSynapseSections,
                                            totalBorderSize);
 
     // initialize segment itself
@@ -298,7 +299,7 @@ bool
 CoreSegment::reinitPointer(const uint64_t numberOfBytes)
 {    
     // TODO: checks
-    uint8_t* dataPtr = static_cast<uint8_t*>(segmentData.data);
+    uint8_t* dataPtr = static_cast<uint8_t*>(segmentData.staticData);
 
     uint64_t pos = 0;
     uint64_t byteCounter = 0;
@@ -341,9 +342,10 @@ CoreSegment::reinitPointer(const uint64_t numberOfBytes)
     synapseBlocks = reinterpret_cast<SynapseBlock*>(dataPtr + pos);
     byteCounter += segmentHeader->synapseBlocks.count * sizeof(SynapseBlock);
 
-    pos = segmentHeader->blockConnections.bytePos;
-    blockConnections = reinterpret_cast<SymapseConnection*>(dataPtr + pos);
-    byteCounter += segmentHeader->blockConnections.count * sizeof(SymapseConnection);
+    dataPtr = static_cast<uint8_t*>(segmentData.itemData);
+    //pos = segmentHeader->synapseSections.bytePos;
+    synapseConnections = reinterpret_cast<SynapseConnection*>(dataPtr);
+    byteCounter += segmentHeader->synapseConnections.count * sizeof(SynapseConnection);
 
     /*if(HanamiRoot::useOpencl)
     {
@@ -497,6 +499,7 @@ CoreSegment::initSettings(const Kitsunemimi::Hanami::SegmentMeta &segmentMeta)
 SegmentHeader
 CoreSegment::createNewHeader(const uint32_t numberOfBricks,
                              const uint32_t numberOfBrickBlocks,
+                             const uint32_t maxSynapseSections,
                              const uint64_t borderbufferSize)
 {
     SegmentHeader segmentHeader;
@@ -519,16 +522,16 @@ CoreSegment::createNewHeader(const uint32_t numberOfBricks,
     segmentDataPos += numberOfBrickBlocks * sizeof(NeuronBlock);
 
     // init synapse blocks
-    segmentHeader.synapseBlocks.count = numberOfBrickBlocks;
+    segmentHeader.synapseBlocks.count = maxSynapseSections;
     segmentHeader.synapseBlocks.bytePos = segmentDataPos;
-    segmentDataPos += numberOfBrickBlocks * sizeof(SynapseBlock);
-
-    // init block connections
-    segmentHeader.blockConnections.count = numberOfBrickBlocks;
-    segmentHeader.blockConnections.bytePos = segmentDataPos;
-    segmentDataPos += numberOfBrickBlocks * sizeof(SymapseConnection);
+    segmentDataPos += maxSynapseSections * sizeof(SynapseBlock);
 
     segmentHeader.staticDataSize = segmentDataPos;
+
+    // init synapse sections
+    segmentDataPos = 0;
+    segmentHeader.synapseConnections.count = maxSynapseSections;
+    segmentHeader.synapseConnections.bytePos = segmentDataPos;
 
     return segmentHeader;
 }
@@ -541,7 +544,7 @@ CoreSegment::createNewHeader(const uint32_t numberOfBricks,
 void
 CoreSegment::initSegmentPointer(const SegmentHeader &header)
 {
-    uint8_t* dataPtr = static_cast<uint8_t*>(segmentData.data);
+    uint8_t* dataPtr = static_cast<uint8_t*>(segmentData.staticData);
     uint64_t pos = 0;
 
     segmentHeader = reinterpret_cast<SegmentHeader*>(dataPtr + pos);
@@ -592,11 +595,9 @@ CoreSegment::initSegmentPointer(const SegmentHeader &header)
         synapseBlocks[i] = SynapseBlock();
     }
 
-    pos = segmentHeader->blockConnections.bytePos;
-    blockConnections = reinterpret_cast<SymapseConnection*>(dataPtr + pos);
-    for(uint32_t i = 0; i < segmentHeader->blockConnections.count; i++) {
-        blockConnections[i] = SymapseConnection();
-    }
+    dataPtr = static_cast<uint8_t*>(segmentData.itemData);
+    pos = segmentHeader->synapseConnections.bytePos;
+    synapseConnections = reinterpret_cast<SynapseConnection*>(dataPtr + pos);
 }
 
 /**
@@ -607,7 +608,8 @@ CoreSegment::initSegmentPointer(const SegmentHeader &header)
 void
 CoreSegment::allocateSegment(SegmentHeader &header)
 {
-    Kitsunemimi::reset_DataBuffer(segmentData, Kitsunemimi::calcBytesToBlocks(header.staticDataSize));
+    segmentData.initBuffer<SynapseConnection>(header.synapseConnections.count, header.staticDataSize);
+    segmentData.deleteAll();
 }
 
 /**

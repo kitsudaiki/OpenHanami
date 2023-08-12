@@ -40,7 +40,7 @@
 // network-predefines
 #define SYNAPSES_PER_SYNAPSESECTION 64
 #define NUMBER_OF_SYNAPSESECTION 64
-#define NEURONS_PER_NEURONSECTION 62
+#define NEURONS_PER_NEURONSECTION 63
 #define POSSIBLE_NEXT_AXON_STEP 80
 #define NEURON_CONNECTIONS 512
 
@@ -136,47 +136,32 @@ struct NeuronBlock
     uint32_t numberOfNeurons = 0;
     uint32_t brickId = 0;
     uint32_t randomPos = 0;
-    uint8_t padding[4];
-    uint32_t backwaredBlocks[8];
+    uint32_t backwardNextId = UNINIT_STATE_32;
 
     Neuron neurons[NEURONS_PER_NEURONSECTION];
 
     NeuronBlock()
     {
         randomPos = rand();
-        std::fill_n(backwaredBlocks, 8, UNINIT_STATE_32);
         std::fill_n(neurons, NEURONS_PER_NEURONSECTION, Neuron());
     }
-
-    uint32_t addBackwardBlock(const uint32_t id)
-    {
-        for(uint32_t i = 0; i < 8; i++)
-        {
-            if(backwaredBlocks[i] == UNINIT_STATE_32)
-            {
-                backwaredBlocks[i] = id;
-                return i;
-            }
-        }
-
-        return UNINIT_STATE_32;
-    }
-
 };
-static_assert(sizeof(NeuronBlock) == 2*1024);
+static_assert(sizeof(NeuronBlock) == 2048);
 
 //==================================================================================================
 
-struct SymapseConnection
+struct SynapseConnection
 {
-    uint8_t padding[4];
-    uint32_t targetNeuronBlock;
+    uint8_t active = 1;
+    uint8_t padding[3];
+    uint32_t targetNeuronBlockId = UNINIT_STATE_32;
+    uint32_t backwardNextId = UNINIT_STATE_32;
 
     LocationPtr next[NUMBER_OF_SYNAPSESECTION];
     LocationPtr origin[NUMBER_OF_SYNAPSESECTION];
     float offset[NUMBER_OF_SYNAPSESECTION];
 
-    SymapseConnection()
+    SynapseConnection()
     {
         for(uint32_t i = 0; i < NUMBER_OF_SYNAPSESECTION; i++)
         {
@@ -186,7 +171,7 @@ struct SymapseConnection
         }
     }
 };
-static_assert(sizeof(SymapseConnection) == 1288);
+static_assert(sizeof(SynapseConnection) == 1292);
 
 //==================================================================================================
 

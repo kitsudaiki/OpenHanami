@@ -304,7 +304,7 @@ runRestApiTests()
     const std::string segmentTemplate("version: 1\n"
                                       "segment_type: core_segment\n"
                                       "settings:\n"
-                                      "    max_synapse_sections: 100000\n"
+                                      "    max_synapse_sections: 1000\n"
                                       "    sign_neg: 0.5\n"
                                       "        \n"
                                       "bricks:\n"

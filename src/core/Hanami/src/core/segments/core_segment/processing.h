@@ -72,8 +72,7 @@ createNewSynapse(NeuronBlock* block,
 inline void
 synapseProcessing(CoreSegment &segment,
                   Synapse* section,
-                  NeuronBlock* block,
-                  SymapseConnection* connection,
+                  SynapseConnection* connection,
                   LocationPtr* sourceLocation,
                   const float outH)
 {
@@ -82,6 +81,7 @@ synapseProcessing(CoreSegment &segment,
     Neuron* targetNeuron = nullptr;
     uint8_t active = 0;
     float counter = outH - connection->offset[sourceLocation->sectionId];
+    NeuronBlock* neuronBlock = &segment.neuronBlocks[connection->targetNeuronBlockId];
 
     // iterate over all synapses in the section
     while(pos < SYNAPSES_PER_SYNAPSESECTION
@@ -91,7 +91,7 @@ synapseProcessing(CoreSegment &segment,
 
         // create new synapse if necesarry and learning is active
         if(synapse->targetNeuronId == UNINIT_STATE_16) {
-            createNewSynapse(block, synapse, segment.segmentSettings, counter);
+            createNewSynapse(neuronBlock, synapse, segment.segmentSettings, counter);
         }
 
         if(synapse->border > 2.0f * counter
@@ -103,7 +103,7 @@ synapseProcessing(CoreSegment &segment,
         }
 
         // update target-neuron
-        targetNeuron = &block->neurons[synapse->targetNeuronId];
+        targetNeuron = &neuronBlock->neurons[synapse->targetNeuronId];
         targetNeuron->input += synapse->weight;
 
         // update active-counter
@@ -126,9 +126,8 @@ synapseProcessing(CoreSegment &segment,
     if(targetLocation->sectionId != UNINIT_STATE_16)
     {
         Synapse* nextSection = segment.synapseBlocks[targetLocation->blockId].synapses[targetLocation->sectionId];
-        NeuronBlock* nextBlock = &segment.neuronBlocks[targetLocation->blockId];
-        SymapseConnection* nextConnection = &segment.blockConnections[targetLocation->blockId];
-        synapseProcessing(segment,  nextSection, nextBlock, nextConnection, targetLocation, outH);
+        SynapseConnection* nextConnection = &segment.synapseConnections[targetLocation->blockId];
+        synapseProcessing(segment, nextSection, nextConnection, targetLocation, outH);
     }
 }
 
@@ -159,9 +158,8 @@ processSingleNeuron(CoreSegment &segment,
     }
 
     Synapse* nextSection = segment.synapseBlocks[targetLocation->blockId].synapses[targetLocation->sectionId];
-    NeuronBlock* nextBlock = &segment.neuronBlocks[targetLocation->blockId];
-    SymapseConnection* nextConnection = &segment.blockConnections[targetLocation->blockId];
-    synapseProcessing(segment,  nextSection, nextBlock, nextConnection, targetLocation, neuron->potential);
+    SynapseConnection* nextConnection = &segment.synapseConnections[targetLocation->blockId];
+    synapseProcessing(segment, nextSection, nextConnection, targetLocation, neuron->potential);
 }
 
 /**

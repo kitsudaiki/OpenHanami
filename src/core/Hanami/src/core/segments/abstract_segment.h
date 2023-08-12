@@ -47,7 +47,7 @@ public:
     const std::string getName() const;
     bool setName(const std::string &name);
 
-    Kitsunemimi::DataBuffer segmentData;
+    Kitsunemimi::ItemBuffer segmentData;
 
     SegmentHeader* segmentHeader = nullptr;
     SegmentSettings* segmentSettings = nullptr;

@@ -59,7 +59,7 @@ public:
     uint32_t* brickOrder = nullptr;
 
     NeuronBlock* neuronBlocks = nullptr;
-    SymapseConnection* blockConnections = nullptr;
+    SynapseConnection* synapseConnections = nullptr;
     SynapseBlock* synapseBlocks = nullptr;
 
     SegmentSizes segmentSizes;
@@ -73,6 +73,7 @@ private:
     SegmentSettings initSettings(const Kitsunemimi::Hanami::SegmentMeta &segmentMeta);
     SegmentHeader createNewHeader(const uint32_t numberOfBricks,
                                   const uint32_t numberOfBrickBlocks,
+                                  const uint32_t maxSynapseSections,
                                   const uint64_t borderbufferSize);
     void initSegmentPointer(const SegmentHeader &header);
     bool connectBorderBuffer();
