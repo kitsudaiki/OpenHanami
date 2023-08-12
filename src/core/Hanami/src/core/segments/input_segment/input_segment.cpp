@@ -188,21 +188,15 @@ InputSegment::initSegmentPointer(const SegmentHeader &header)
 
     pos = segmentHeader->inputTransfers.bytePos;
     inputTransfers = reinterpret_cast<float*>(dataPtr + pos);
-    for(uint32_t i = 0; i < segmentHeader->inputTransfers.count; i++) {
-        inputTransfers[i] = 0.0f;
-    }
+    std::fill_n(inputTransfers, segmentHeader->inputTransfers.count, 0.0f);
 
     pos = segmentHeader->outputTransfers.bytePos;
     outputTransfers = reinterpret_cast<float*>(dataPtr + pos);
-    for(uint32_t i = 0; i < segmentHeader->outputTransfers.count; i++) {
-        outputTransfers[i] = 0.0f;
-    }
+    std::fill_n(outputTransfers, segmentHeader->outputTransfers.count, 0.0f);
 
     pos = segmentHeader->inputs.bytePos;
     inputs = reinterpret_cast<InputNeuron*>(dataPtr + pos);
-    for(uint32_t i = 0; i < segmentHeader->inputs.count; i++) {
-        inputs[i] = InputNeuron();
-    }
+    std::fill_n(inputs, segmentHeader->inputs.count, InputNeuron());
 }
 
 /**

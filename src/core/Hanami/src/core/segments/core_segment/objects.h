@@ -88,12 +88,8 @@ struct SynapseBlock
 
     SynapseBlock()
     {
-        for(uint32_t i = 0; i < NUMBER_OF_SYNAPSESECTION; i++)
-        {
-            for(uint32_t j = 0; j < SYNAPSES_PER_SYNAPSESECTION; j++)
-            {
-                synapses[i][j] = Synapse();
-            }
+        for(uint32_t i = 0; i < NUMBER_OF_SYNAPSESECTION; i++) {
+            std::fill_n(synapses[i], SYNAPSES_PER_SYNAPSESECTION, Synapse());
         }
     }
 };
@@ -163,12 +159,9 @@ struct SynapseConnection
 
     SynapseConnection()
     {
-        for(uint32_t i = 0; i < NUMBER_OF_SYNAPSESECTION; i++)
-        {
-            next[i] = LocationPtr();
-            origin[i] = LocationPtr();
-            offset[i] = 0.0f;
-        }
+        std::fill_n(next, NUMBER_OF_SYNAPSESECTION, LocationPtr());
+        std::fill_n(origin, NUMBER_OF_SYNAPSESECTION, LocationPtr());
+        std::fill_n(offset, NUMBER_OF_SYNAPSESECTION, 0.0f);
     }
 };
 static_assert(sizeof(SynapseConnection) == 1292);

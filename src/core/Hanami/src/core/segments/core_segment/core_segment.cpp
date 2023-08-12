@@ -297,7 +297,7 @@ CoreSegment::initSegment(const std::string &name,
  */
 bool
 CoreSegment::reinitPointer(const uint64_t numberOfBytes)
-{    
+{
     // TODO: checks
     uint8_t* dataPtr = static_cast<uint8_t*>(segmentData.staticData);
 
@@ -561,21 +561,15 @@ CoreSegment::initSegmentPointer(const SegmentHeader &header)
 
     pos = segmentHeader->inputTransfers.bytePos;
     inputTransfers = reinterpret_cast<float*>(dataPtr + pos);
-    for(uint32_t i = 0; i < segmentHeader->inputTransfers.count; i++) {
-        inputTransfers[i] = 0.0f;
-    }
+    std::fill_n(inputTransfers, segmentHeader->inputTransfers.count, 0.0f);
 
     pos = segmentHeader->outputTransfers.bytePos;
     outputTransfers = reinterpret_cast<float*>(dataPtr + pos);
-    for(uint32_t i = 0; i < segmentHeader->outputTransfers.count; i++) {
-        outputTransfers[i] = 0.0f;
-    }
+    std::fill_n(outputTransfers, segmentHeader->outputTransfers.count, 0.0f);
 
     pos = segmentHeader->bricks.bytePos;
     bricks = reinterpret_cast<Brick*>(dataPtr + pos);
-    for(uint32_t i = 0; i < segmentHeader->bricks.count; i++) {
-        bricks[i] = Brick();
-    }
+    std::fill_n(bricks, segmentHeader->bricks.count, Brick());
 
     pos = segmentHeader->brickOrder.bytePos;
     brickOrder = reinterpret_cast<uint32_t*>(dataPtr + pos);
@@ -585,15 +579,11 @@ CoreSegment::initSegmentPointer(const SegmentHeader &header)
 
     pos = segmentHeader->neuronBlocks.bytePos;
     neuronBlocks = reinterpret_cast<NeuronBlock*>(dataPtr + pos);
-    for(uint32_t i = 0; i < segmentHeader->neuronBlocks.count; i++) {
-        neuronBlocks[i] = NeuronBlock();
-    }
+    std::fill_n(neuronBlocks, segmentHeader->neuronBlocks.count, NeuronBlock());
 
     pos = segmentHeader->synapseBlocks.bytePos;
     synapseBlocks = reinterpret_cast<SynapseBlock*>(dataPtr + pos);
-    for(uint32_t i = 0; i < segmentHeader->synapseBlocks.count; i++) {
-        synapseBlocks[i] = SynapseBlock();
-    }
+    std::fill_n(synapseBlocks, segmentHeader->synapseBlocks.count, SynapseBlock());
 
     dataPtr = static_cast<uint8_t*>(segmentData.itemData);
     pos = segmentHeader->synapseConnections.bytePos;
@@ -636,9 +626,7 @@ CoreSegment::createNewBrick(const Kitsunemimi::Hanami::BrickMeta &brickMeta,
     newBrick.numberOfNeurons = brickMeta.numberOfNeurons;
     newBrick.numberOfNeuronSections = getNumberOfNeuronSections(brickMeta.numberOfNeurons);
 
-    for(uint8_t side = 0; side < 12; side++) {
-        newBrick.neighbors[side] = UNINIT_STATE_32;
-    }
+    std::fill_n(newBrick.neighbors, 12, UNINIT_STATE_32);
 
     return newBrick;
 }
