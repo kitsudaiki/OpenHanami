@@ -230,27 +230,26 @@ CoreSegment::initOpencl(Kitsunemimi::GpuData &data)
  * @return true, if successful, else false
  */
 bool
-CoreSegment::initSegment(const std::string &name,
-                         const Kitsunemimi::Hanami::SegmentMeta &segmentMeta)
+CoreSegment::initSegment(const Kitsunemimi::Hanami::SegmentMeta &segmentMeta)
 {
-    uint32_t numberOfNeurons = 0;
     numberOfBrickBlocks = 0;
-    uint32_t totalBorderSize = 0;
     Kitsunemimi::ErrorContainer error;
+    uint32_t numberOfInputs = 0;
+    uint32_t numberOfOutputs = 0;
 
     // calculate sizes
     uint32_t neuronsInBrick = 0;
     for(uint32_t i = 0; i < segmentMeta.bricks.size(); i++)
     {
-        neuronsInBrick = segmentMeta.bricks.at(i).numberOfNeurons;
-        numberOfNeurons += neuronsInBrick;
-        numberOfBrickBlocks += getNumberOfNeuronSections(neuronsInBrick);
-
-        if(segmentMeta.bricks.at(i).type == Kitsunemimi::Hanami::INPUT_BRICK_TYPE
-                || segmentMeta.bricks.at(i).type == Kitsunemimi::Hanami::OUTPUT_BRICK_TYPE)
-        {
-            totalBorderSize += neuronsInBrick;
+        const BrickMeta brickMeta = segmentMeta.bricks.at(i);
+        neuronsInBrick = brickMeta.numberOfNeurons;
+        if(brickMeta.type == BrickType::INPUT_BRICK_TYPE) {
+            numberOfInputs = brickMeta.numberOfNeurons;;
         }
+        if(brickMeta.type == BrickType::OUTPUT_BRICK_TYPE) {
+            numberOfOutputs = brickMeta.numberOfNeurons;;
+        }
+        numberOfBrickBlocks += getNumberOfNeuronSections(neuronsInBrick);
     }
 
     // create segment metadata
@@ -258,7 +257,8 @@ CoreSegment::initSegment(const std::string &name,
     SegmentHeader header = createNewHeader(segmentMeta.bricks.size(),
                                            numberOfBrickBlocks,
                                            settings.maxSynapseSections,
-                                           totalBorderSize);
+                                           numberOfInputs,
+                                           numberOfOutputs);
 
     // initialize segment itself
     allocateSegment(header);
@@ -270,13 +270,6 @@ CoreSegment::initSegment(const std::string &name,
     addBricksToSegment(segmentMeta);
     connectAllBricks();
     initTargetBrickList();
-
-    // init border
-    initSlots(segmentMeta);
-    connectBorderBuffer();
-
-    // TODO: check result
-    setName(name);
 
     /*if(HanamiRoot::useOpencl)
     {
@@ -314,17 +307,17 @@ CoreSegment::reinitPointer(const uint64_t numberOfBytes)
     segmentSettings = reinterpret_cast<SegmentSettings*>(dataPtr + pos);
     byteCounter += sizeof(SegmentSettings);
 
-    pos = segmentHeader->slotList.bytePos;
-    segmentSlots = reinterpret_cast<SegmentSlotList*>(dataPtr + pos);
-    byteCounter += segmentHeader->slotList.count * sizeof(SegmentSlotList);
+    pos = segmentHeader->inputValues.bytePos;
+    inputValues = reinterpret_cast<float*>(dataPtr + pos);
+    byteCounter += segmentHeader->inputValues.count * sizeof(float);
 
-    pos = segmentHeader->inputTransfers.bytePos;
-    inputTransfers = reinterpret_cast<float*>(dataPtr + pos);
-    byteCounter += segmentHeader->inputTransfers.count * sizeof(float);
+    pos = segmentHeader->outputValues.bytePos;
+    outputValues = reinterpret_cast<float*>(dataPtr + pos);
+    byteCounter += segmentHeader->outputValues.count * sizeof(float);
 
-    pos = segmentHeader->outputTransfers.bytePos;
-    outputTransfers = reinterpret_cast<float*>(dataPtr + pos);
-    byteCounter += segmentHeader->outputTransfers.count * sizeof(float);
+    pos = segmentHeader->expectedValues.bytePos;
+    expectedValues = reinterpret_cast<float*>(dataPtr + pos);
+    byteCounter += segmentHeader->expectedValues.count * sizeof(float);
 
     pos = segmentHeader->bricks.bytePos;
     bricks = reinterpret_cast<Brick*>(dataPtr + pos);
@@ -411,63 +404,6 @@ CoreSegment::initializeNeurons(const Kitsunemimi::Hanami::SegmentMeta &segmentMe
 }
 
 /**
- * @brief init border-buffer
- *
- * @return true, if successful, else false
- */
-bool
-CoreSegment::connectBorderBuffer()
-{
-    NeuronBlock* block = nullptr;
-    Brick* brick = nullptr;
-
-    uint64_t transferCounter = 0;
-
-    for(uint32_t i = 0; i < segmentHeader->bricks.count; i++)
-    {
-        brick = &bricks[i];
-        if(brick->isInputBrick)
-        {
-            const uint32_t numberOfNeuronSections = getNumberOfNeuronSections(brick->numberOfNeurons);
-            for(uint32_t j = 0; j < numberOfNeuronSections; j++)
-            {
-                if(transferCounter >= segmentHeader->inputTransfers.count) {
-                    break;
-                }
-
-                block = &neuronBlocks[brick->brickBlockPos + j];
-                for(uint32_t k = 0; k < block->numberOfNeurons; k++)
-                {
-                    block->neurons[k].targetBorderId = transferCounter;
-                    transferCounter++;
-                }
-            }
-        }
-
-        // connect output-bricks with border-buffer
-        if(brick->isOutputBrick)
-        {
-            const uint32_t numberOfNeuronSections = getNumberOfNeuronSections(brick->numberOfNeurons);
-            for(uint32_t j = 0; j < numberOfNeuronSections; j++)
-            {
-                if(transferCounter >= segmentHeader->outputTransfers.count) {
-                    break;
-                }
-
-                block = &neuronBlocks[brick->brickBlockPos + j];
-                for(uint32_t k = 0; k < block->numberOfNeurons; k++)
-                {
-                    block->neurons[k].targetBorderId = transferCounter;
-                    transferCounter++;
-                }
-            }
-        }
-    }
-
-    return true;
-}
-
-/**
  * @brief init sttings-block for the segment
  *
  * @param parsedContent json-object with the segment-description
@@ -500,11 +436,14 @@ SegmentHeader
 CoreSegment::createNewHeader(const uint32_t numberOfBricks,
                              const uint32_t numberOfBrickBlocks,
                              const uint32_t maxSynapseSections,
-                             const uint64_t borderbufferSize)
+                             const uint64_t numberOfInputs,
+                             const uint64_t numberOfOutputs)
 {
     SegmentHeader segmentHeader;
     segmentHeader.segmentType = m_type;
-    uint32_t segmentDataPos = createGenericNewHeader(segmentHeader, borderbufferSize);
+    uint32_t segmentDataPos = createGenericNewHeader(segmentHeader,
+                                                     numberOfInputs,
+                                                     numberOfOutputs);
 
     // init bricks
     segmentHeader.bricks.count = numberOfBricks;
@@ -556,16 +495,17 @@ CoreSegment::initSegmentPointer(const SegmentHeader &header)
     pos = segmentHeader->settings.bytePos;
     segmentSettings = reinterpret_cast<SegmentSettings*>(dataPtr + pos);
 
-    pos = segmentHeader->slotList.bytePos;
-    segmentSlots = reinterpret_cast<SegmentSlotList*>(dataPtr + pos);
+    pos = segmentHeader->inputValues.bytePos;
+    inputValues = reinterpret_cast<float*>(dataPtr + pos);
+    std::fill_n(inputValues, segmentHeader->inputValues.count, 0.0f);
 
-    pos = segmentHeader->inputTransfers.bytePos;
-    inputTransfers = reinterpret_cast<float*>(dataPtr + pos);
-    std::fill_n(inputTransfers, segmentHeader->inputTransfers.count, 0.0f);
+    pos = segmentHeader->outputValues.bytePos;
+    outputValues = reinterpret_cast<float*>(dataPtr + pos);
+    std::fill_n(outputValues, segmentHeader->outputValues.count, 0.0f);
 
-    pos = segmentHeader->outputTransfers.bytePos;
-    outputTransfers = reinterpret_cast<float*>(dataPtr + pos);
-    std::fill_n(outputTransfers, segmentHeader->outputTransfers.count, 0.0f);
+    pos = segmentHeader->expectedValues.bytePos;
+    expectedValues = reinterpret_cast<float*>(dataPtr + pos);
+    std::fill_n(expectedValues, segmentHeader->expectedValues.count, 0.0f);
 
     pos = segmentHeader->bricks.bytePos;
     bricks = reinterpret_cast<Brick*>(dataPtr + pos);
@@ -781,51 +721,6 @@ CoreSegment::initTargetBrickList()
             baseBrick->possibleTargetNeuronBrickIds[counter] = brickId;
         }
     }
-
-    return true;
-}
-
-/**
- * @brief initialize the border-buffer and neighbor-list of the segment for each side
- *
- * @param segmentTemplate parsend content with the required information
- *
- * @return true, if successful, else false
- */
-bool
-CoreSegment::initSlots(const Kitsunemimi::Hanami::SegmentMeta &segmentMeta)
-{
-    uint64_t posCounter = 0;
-    uint32_t slotCounter = 0;
-
-    for(uint32_t i = 0; i < segmentMeta.bricks.size(); i++)
-    {
-        if(segmentMeta.bricks.at(i).type != Kitsunemimi::Hanami::INPUT_BRICK_TYPE
-                && segmentMeta.bricks.at(i).type != Kitsunemimi::Hanami::OUTPUT_BRICK_TYPE)
-        {
-            continue;
-        }
-
-        const uint32_t numberOfNeurons = segmentMeta.bricks.at(i).numberOfNeurons;
-        SegmentSlot* currentSlot = &segmentSlots->slots[slotCounter];
-        currentSlot->setName(segmentMeta.bricks.at(i).name);
-        currentSlot->numberOfNeurons = numberOfNeurons;
-        currentSlot->inputTransferBufferPos = posCounter;
-        currentSlot->outputTransferBufferPos = posCounter;
-
-        if(segmentMeta.bricks.at(i).type == Kitsunemimi::Hanami::INPUT_BRICK_TYPE) {
-            currentSlot->direction = INPUT_DIRECTION;
-        } else {
-            currentSlot->direction = OUTPUT_DIRECTION;
-        }
-
-        // update total position pointer, because all border-buffers are in the same blog
-        // beside each other
-        posCounter += numberOfNeurons;
-        slotCounter++;
-    }
-
-    assert(posCounter == segmentHeader->inputTransfers.count);
 
     return true;
 }

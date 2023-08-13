@@ -27,7 +27,7 @@
 #include <deque>
 #include <atomic>
 
-class AbstractSegment;
+class CoreSegment;
 
 class SegmentQueue
 {
@@ -40,17 +40,17 @@ public:
         return instance;
     }
 
-    void addSegmentToQueue(AbstractSegment* newSegment);
-    void addSegmentListToQueue(const std::vector<AbstractSegment*> &semgnetList);
+    void addSegmentToQueue(CoreSegment* newSegment);
+    void addSegmentListToQueue(const std::vector<CoreSegment*> &semgnetList);
 
-    AbstractSegment* getSegmentFromQueue();
+    CoreSegment* getSegmentFromQueue();
 
 private:
     SegmentQueue();
     static SegmentQueue* instance;
 
     std::atomic_flag m_queue_lock = ATOMIC_FLAG_INIT;
-    std::deque<AbstractSegment*> m_segmentQueue;
+    std::deque<CoreSegment*> m_segmentQueue;
 };
 
 #endif // HANAMI_SEGMENTQUEUE_H

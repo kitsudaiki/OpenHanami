@@ -28,8 +28,7 @@
 #include <libKitsunemimiCommon/buffer/data_buffer.h>
 #include <libKitsunemimiCommon/buffer/item_buffer.h>
 
-#include <libKitsunemimiHanamiSegmentParser/segment_meta.h>
-#include <libKitsunemimiHanamiClusterParser/cluster_meta.h>
+#include <libKitsunemimiHanamiClusterParser/segment_meta.h>
 
 #include <core/segments/segment_meta.h>
 #include <core/segments/core_segment/objects.h>
@@ -53,30 +52,14 @@ public:
     SegmentSettings* segmentSettings = nullptr;
 
     SegmentName* segmentName = nullptr;
-    SegmentSlotList* segmentSlots = nullptr;
-    float* inputTransfers = nullptr;
-    float* outputTransfers = nullptr;
     Cluster* parentCluster = nullptr;
-
-    virtual bool initSegment(const std::string &name,
-                             const Kitsunemimi::Hanami::SegmentMeta &segmentMeta) = 0;
-    virtual bool reinitPointer(const uint64_t numberOfBytes) = 0;
-    uint8_t getSlotId(const std::string &name);
-
-    bool isReady();
-    void finishSegment();
 
 protected:
     SegmentTypes m_type = UNDEFINED_SEGMENT;
 
     uint32_t createGenericNewHeader(SegmentHeader &header,
-                                    const uint64_t borderbufferSize);
-    bool reinitGenericPointer();
-
-private:
-    virtual void initSegmentPointer(const SegmentHeader &header) = 0;
-    virtual bool connectBorderBuffer() = 0;
-    virtual void allocateSegment(SegmentHeader &header) = 0;
+                                    const uint64_t inputSize,
+                                    const uint64_t outputSize);
 };
 
 //==================================================================================================

@@ -6,11 +6,6 @@ CONFIG += c++17
 
 INCLUDEPATH += ../../libraries/libKitsunemimiHanamiMessages/protobuffers
 
-LIBS += -L../../libraries/libKitsunemimiHanamiSegmentParser/src -lKitsunemimiHanamiSegmentParser
-LIBS += -L../../libraries/libKitsunemimiHanamiSegmentParser/src/debug -lKitsunemimiHanamiSegmentParser
-LIBS += -L../../libraries/libKitsunemimiHanamiSegmentParser/src/release -lKitsunemimiHanamiSegmentParser
-INCLUDEPATH += ../../libraries/libKitsunemimiHanamiSegmentParser/include
-
 LIBS += -L../../libraries/libKitsunemimiHanamiClusterParser/src -lKitsunemimiHanamiClusterParser
 LIBS += -L../../libraries/libKitsunemimiHanamiClusterParser/src/debug -lKitsunemimiHanamiClusterParser
 LIBS += -L../../libraries/libKitsunemimiHanamiClusterParser/src/release -lKitsunemimiHanamiClusterParser
@@ -194,10 +189,6 @@ HEADERS += \
     src/api/http/v1/task/delete_task.h \
     src/api/http/v1/task/list_task.h \
     src/api/http/v1/task/show_task.h \
-    src/api/http/v1/template/delete_template.h \
-    src/api/http/v1/template/list_templates.h \
-    src/api/http/v1/template/show_template.h \
-    src/api/http/v1/template/upload_template.h \
     src/api/http/v1/threading/get_thread_mapping.h \
     src/api/http/v1/user/add_project_to_user.h \
     src/api/http/v1/user/create_user.h \
@@ -247,13 +238,6 @@ HEADERS += \
     src/core/segments/core_segment/processing.h \
     src/core/segments/core_segment/reduction.h \
     src/core/segments/core_segment/section_update.h \
-    src/core/segments/input_segment/input_segment.h \
-    src/core/segments/input_segment/objects.h \
-    src/core/segments/input_segment/processing.h \
-    src/core/segments/output_segment/backpropagation.h \
-    src/core/segments/output_segment/objects.h \
-    src/core/segments/output_segment/output_segment.h \
-    src/core/segments/output_segment/processing.h \
     src/core/segments/segment_meta.h \
     src/core/speed_measuring.h \
     src/core/temp_file_handler.h \
@@ -270,7 +254,6 @@ HEADERS += \
     src/database/generic_tables/hanami_sql_table.h \
     src/database/projects_table.h \
     src/database/request_result_table.h \
-    src/database/template_table.h \
     src/database/users_table.h \
     src/hanami_root.h
 
@@ -327,10 +310,6 @@ SOURCES += \
     src/api/http/v1/task/delete_task.cpp \
     src/api/http/v1/task/list_task.cpp \
     src/api/http/v1/task/show_task.cpp \
-    src/api/http/v1/template/delete_template.cpp \
-    src/api/http/v1/template/list_templates.cpp \
-    src/api/http/v1/template/show_template.cpp \
-    src/api/http/v1/template/upload_template.cpp \
     src/api/http/v1/threading/get_thread_mapping.cpp \
     src/api/http/v1/user/add_project_to_user.cpp \
     src/api/http/v1/user/create_user.cpp \
@@ -365,8 +344,6 @@ SOURCES += \
     src/core/processing/segment_queue.cpp \
     src/core/segments/abstract_segment.cpp \
     src/core/segments/core_segment/core_segment.cpp \
-    src/core/segments/input_segment/input_segment.cpp \
-    src/core/segments/output_segment/output_segment.cpp \
     src/core/speed_measuring.cpp \
     src/core/temp_file_handler.cpp \
     src/core/temperature_measuring.cpp \
@@ -382,7 +359,6 @@ SOURCES += \
     src/database/generic_tables/hanami_sql_table.cpp \
     src/database/projects_table.cpp \
     src/database/request_result_table.cpp \
-    src/database/template_table.cpp \
     src/database/users_table.cpp \
     src/hanami_root.cpp \
     src/main.cpp

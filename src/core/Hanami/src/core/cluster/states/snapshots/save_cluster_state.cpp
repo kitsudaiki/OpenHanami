@@ -28,7 +28,7 @@
 #include <core/cluster/task.h>
 #include <core/cluster/cluster.h>
 #include <core/cluster/statemachine_init.h>
-#include <core/segments/abstract_segment.h>
+#include <core/segments/core_segment/core_segment.h>
 
 #include <libKitsunemimiCrypto/hashes.h>
 #include <libKitsunemimiCommon/files/binary_file.h>
@@ -68,16 +68,16 @@ SaveCluster_State::processEvent()
         // create message to shiori and calculate total size of storage of the cluster
         totalSize = m_cluster->clusterData.usedBufferSize;
         headerMessage = "{\"header\":" + std::to_string(totalSize) + ",\"segments\":[";
-        for(uint64_t i = 0; i < m_cluster->allSegments.size(); i++)
+        for(uint64_t i = 0; i < m_cluster->coreSegments.size(); i++)
         {
             if(i != 0) {
                 headerMessage += ",";
             }
-            const uint64_t segSize = m_cluster->allSegments.at(i)->segmentData.buffer.usedBufferSize;
+            const uint64_t segSize = m_cluster->coreSegments.at(i)->segmentData.buffer.usedBufferSize;
             headerMessage += "{\"size\":"
                              + std::to_string(segSize)
                              + ",\"type\":"
-                             + std::to_string(m_cluster->allSegments.at(i)->getType())
+                             + std::to_string(m_cluster->coreSegments.at(i)->getType())
                              + "}";
             totalSize += segSize;
         }
@@ -193,9 +193,9 @@ SaveCluster_State::writeData(const std::string &filePath,
 
 
     // write segments of cluster
-    for(uint64_t i = 0; i < m_cluster->allSegments.size(); i++)
+    for(uint64_t i = 0; i < m_cluster->coreSegments.size(); i++)
     {
-        buffer = &m_cluster->allSegments.at(i)->segmentData.buffer;
+        buffer = &m_cluster->coreSegments.at(i)->segmentData.buffer;
         if(snapshotFile.writeDataIntoFile(buffer->data,
                                           posCounter,
                                           buffer->usedBufferSize,

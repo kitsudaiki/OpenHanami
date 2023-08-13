@@ -25,30 +25,18 @@
 
 #include <common.h>
 
-#include <libKitsunemimiHanamiClusterParser/cluster_meta.h>
-#include <libKitsunemimiHanamiSegmentParser/segment_meta.h>
+#include <libKitsunemimiHanamiClusterParser/segment_meta.h>
 
-class InputSegment;
-class OutputSegment;
-class AbstractSegment;
-
+class CoreSegment;
 class Cluster;
 
 bool reinitPointer(Cluster* cluster, const std::string &uuid);
 
 bool initNewCluster(Cluster* cluster,
-                    const Kitsunemimi::Hanami::ClusterMeta &clusterTemplate,
-                    const std::map<std::string, Kitsunemimi::Hanami::SegmentMeta> &segmentTemplates,
+                    const Kitsunemimi::Hanami::SegmentMeta &clusterTemplate,
                     const std::string &uuid);
 
-AbstractSegment* addInputSegment(Cluster* cluster,
-                                 const std::string &name,
-                                 const Kitsunemimi::Hanami::SegmentMeta &segmentMeta);
-AbstractSegment* addOutputSegment(Cluster* cluster,
-                                  const std::string &name,
-                                  const Kitsunemimi::Hanami::SegmentMeta &segmentMeta);
-AbstractSegment* addDynamicSegment(Cluster* cluster,
-                                   const std::string &name,
-                                   const Kitsunemimi::Hanami::SegmentMeta &segmentMeta);
+CoreSegment* addDynamicSegment(Cluster* cluster,
+                               const Kitsunemimi::Hanami::SegmentMeta &segmentMeta);
 
 #endif // HANAMI_CLUSTERINIT_H

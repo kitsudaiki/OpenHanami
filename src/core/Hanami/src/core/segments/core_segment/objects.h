@@ -117,9 +117,8 @@ struct Neuron
 
     uint8_t refractionTime = 1;
     uint8_t active = 0;
-    uint8_t padding[2];
+    uint8_t padding[6];
     LocationPtr target;
-    uint32_t targetBorderId = UNINIT_STATE_32;
 };
 static_assert(sizeof(Neuron) == 32);
 
@@ -178,7 +177,7 @@ struct SegmentSettings
     float signNeg = 0.6f;
     float potentialOverflow = 1.0f;
     float synapseSegmentation = 10.0f;
-    float backpropagationBorder = 0.00001f;
+    float backpropagationBorder = 0.01f;
     uint8_t refractionTime = 1;
     uint8_t doLearn = 0;
     uint8_t updateSections = 0;

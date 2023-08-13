@@ -23,8 +23,6 @@
 #include "table_learn_forward_state.h"
 
 #include <core/segments/core_segment/core_segment.h>
-#include <core/segments/input_segment/input_segment.h>
-#include <core/segments/output_segment/output_segment.h>
 
 #include <core/cluster/cluster.h>
 
@@ -62,15 +60,14 @@ TableLearnForward_State::processEvent()
     }
 
     // set input
-    InputNeuron* inputNeurons = m_cluster->inputSegments.begin()->second->inputs;
+    CoreSegment* segment = m_cluster->coreSegments.at(0);
     for(uint64_t i = 0; i < numberOfInputsPerCycle; i++) {
-        inputNeurons[i].weight = actualTask->inputData[(offset - numberOfInputsPerCycle) + i];
+        segment->inputValues[i] = actualTask->inputData[(offset - numberOfInputsPerCycle) + i];
     }
 
     // set exprected output
-    OutputNeuron* outputNeurons = m_cluster->outputSegments.begin()->second->outputs;
     for(uint64_t i = 0; i < numberOfOuputsPerCycle; i++) {
-        outputNeurons[i].shouldValue = actualTask->outputData[(offset - numberOfOuputsPerCycle) + i];
+        segment->expectedValues[i] = actualTask->outputData[(offset - numberOfOuputsPerCycle) + i];
     }
 
     m_cluster->mode = Cluster::LEARN_FORWARD_MODE;

@@ -25,7 +25,7 @@
 
 #include <common.h>
 
-#include <libKitsunemimiHanamiSegmentParser/segment_meta.h>
+#include <libKitsunemimiHanamiClusterParser/segment_meta.h>
 
 enum SegmentTypes
 {
@@ -59,18 +59,17 @@ struct SegmentHeader
     SegmentHeaderEntry name;
     SegmentHeaderEntry settings;
     SegmentHeaderEntry slotList;
-    SegmentHeaderEntry inputTransfers;
-    SegmentHeaderEntry outputTransfers;
+    SegmentHeaderEntry inputValues;
+    SegmentHeaderEntry outputValues;
+    SegmentHeaderEntry expectedValues;
 
     SegmentHeaderEntry bricks;
     SegmentHeaderEntry brickOrder;
     SegmentHeaderEntry neuronBlocks;
     SegmentHeaderEntry synapseConnections;
     SegmentHeaderEntry synapseBlocks;
-    SegmentHeaderEntry inputs;
-    SegmentHeaderEntry outputs;
 
-    uint8_t padding2[246];
+    uint8_t padding2[262];
 };
 static_assert(sizeof(SegmentHeader) == 512);
 
@@ -80,67 +79,6 @@ enum SlotDirection
     INPUT_DIRECTION = 1,
     OUTPUT_DIRECTION = 2,
 };
-
-struct SegmentSlot
-{
-    uint32_t targetSegmentId = UNINIT_STATE_32;
-
-    uint8_t targetSlotId = 0;
-    uint8_t direction = UNDEFINED_DIRECTION;
-
-    bool inUse = false;
-    bool inputReady = false;
-
-    uint32_t numberOfNeurons = 0;
-    uint32_t length = 0;
-    char name[32];
-
-    uint64_t inputTransferBufferPos = UNINIT_STATE_64;
-    uint64_t outputTransferBufferPos = UNINIT_STATE_64;
-
-    /**
-     * @brief get name of the segment
-     *
-     * @return name of the segment
-     */
-    const std::string
-    getName() const
-    {
-        return std::string(name, length);
-    }
-
-    /**
-     * @brief set new name for the segment
-     *
-     * @param newName new name
-     *
-     * @return false, if name is too long or empty, else true
-     */
-    bool
-    setName(const std::string &newName)
-    {
-        if(newName.size() == 0
-                || newName.size() >= 32)
-        {
-            return false;
-        }
-
-        memcpy(name, newName.c_str(), newName.size());
-        name[newName.size()] = '\0';
-        // I know, that the \0 should be enough, but I like string limitations more explicit to
-        // avoid the risk of buffer overflows
-        length = newName.size();
-
-        return true;
-    }
-};
-static_assert(sizeof(SegmentSlot) == 64);
-
-struct SegmentSlotList
-{
-    SegmentSlot slots[16];
-};
-static_assert(sizeof(SegmentSlotList) == 1024);
 
 struct SegmentName
 {

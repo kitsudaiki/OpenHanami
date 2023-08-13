@@ -27,7 +27,6 @@
 #include <libHanamiAiSdk/init.h>
 
 #include <common/test_thread.h>
-#include <libHanamiAiSdk/template.h>
 #include <libHanamiAiSdk/cluster.h>
 #include <libHanamiAiSdk/user.h>
 #include <libHanamiAiSdk/project.h>
@@ -68,11 +67,6 @@
 
 #include <rest_api_tests/kyouko/io/direct_io_test.h>
 
-#include <rest_api_tests/kyouko/template/template_upload_test.h>
-#include <rest_api_tests/kyouko/template/template_delete_test.h>
-#include <rest_api_tests/kyouko/template/template_get_test.h>
-#include <rest_api_tests/kyouko/template/template_list_test.h>
-
 #include <rest_api_tests/kyouko/task/image_learn_task_test.h>
 #include <rest_api_tests/kyouko/task/image_request_task_test.h>
 #include <rest_api_tests/kyouko/task/table_learn_task_test.h>
@@ -99,27 +93,6 @@ initClient()
     }
 
     return true;
-}
-
-/**
- * @brief delete all templates of the test-user to avoid name-conflics
- */
-void
-deleteAllTemplate()
-{
-    std::string result = "";
-    Kitsunemimi::ErrorContainer error;
-    HanamiAI::listTemplate(result, error);
-
-    Kitsunemimi::JsonItem parsedList;
-    parsedList.parse(result, error);
-
-    Kitsunemimi::JsonItem body = parsedList.get("body");
-    for(uint64_t i = 0; i < body.size(); i++)
-    {
-        const std::string uuid = body.get(i).get(0).getString();
-        HanamiAI::deleteTemplate(result, uuid, error);
-    }
 }
 
 /**
@@ -193,7 +166,6 @@ deleteAllUsers()
 void
 runImageTest(Kitsunemimi::JsonItem &inputData)
 {
-    deleteAllTemplate();
     deleteAllClusters();
     deleteAllProjects();
     deleteAllUsers();
@@ -222,11 +194,6 @@ runImageTest(Kitsunemimi::JsonItem &inputData)
     testThread.addTest(new DataSetListTest(true));
     testThread.addTest(new DataSetGetTest(true, "learn"));
     testThread.addTest(new DataSetGetTest(false, "learn", "fail_user"));
-
-    // test templates of kyouko
-    testThread.addTest(new TemplateUploadTest(true));
-    testThread.addTest(new TemplateGetTest(true));
-    testThread.addTest(new TemplateListTest(true));
 
     // test cluster of kyouko
     testThread.addTest(new ClusterCreateTest(true));
@@ -269,8 +236,6 @@ runImageTest(Kitsunemimi::JsonItem &inputData)
     // testThread.addTest(new SnapshotDeleteTest(true));
     testThread.addTest(new ClusterDeleteTest(true));
     testThread.addTest(new ClusterDeleteTest(false));
-    testThread.addTest(new TemplateDeleteTest(true));
-    testThread.addTest(new TemplateDeleteTest(false));
     testThread.addTest(new RequestResultDeleteTest(true));
     testThread.addTest(new RequestResultDeleteTest(false));
     testThread.addTest(new DataSetDeleteTest(true, "request"));
@@ -301,34 +266,21 @@ runRestApiTests()
         return false;
     }
 
-    const std::string segmentTemplate("version: 1\n"
-                                      "segment_type: core_segment\n"
-                                      "settings:\n"
-                                      "    max_synapse_sections: 1000\n"
-                                      "    sign_neg: 0.5\n"
-                                      "        \n"
-                                      "bricks:\n"
-                                      "    1,1,1\n"
-                                      "        input: test_input\n"
-                                      "        number_of_neurons: 784\n"
-                                      "    2,1,1\n"
-                                      "        number_of_neurons: 400\n"
-                                      "    3,1,1\n"
-                                      "        output: test_output\n"
-                                      "        number_of_neurons: 10");
-
     const std::string clusterDefinition("version: 1\n"
-                                        "segments:\n"
-                                        "    input\n"
-                                        "        name: input\n"
-                                        "        out: -> central : test_input\n"
-                                        " \n"
-                                        "    dynamic\n"
-                                        "        name: central\n"
-                                        "        out: test_output -> output\n"
-                                        "\n"
-                                        "    output\n"
-                                        "        name: output\n");
+                                        "segment_type: core_segment\n"
+                                        "settings:\n"
+                                        "    max_synapse_sections: 1000\n"
+                                        "    sign_neg: 0.5\n"
+                                        "        \n"
+                                        "bricks:\n"
+                                        "    1,1,1\n"
+                                        "        input: test_input\n"
+                                        "        number_of_neurons: 784\n"
+                                        "    2,1,1\n"
+                                        "        number_of_neurons: 400\n"
+                                        "    3,1,1\n"
+                                        "        output: test_output\n"
+                                        "        number_of_neurons: 10");
 
     Kitsunemimi::JsonItem inputData;
 
@@ -353,7 +305,6 @@ runRestApiTests()
     inputData.insert("cluster_snapshot_name", "test_snapshot");
     inputData.insert("generic_task_name", "test_task");
     inputData.insert("template_name", "dynamic");
-    inputData.insert("template_segment", segmentTemplate);
     inputData.insert("cluster_definition", clusterDefinition);
     inputData.insert("request_dataset_name", "request_test_dataset");
     inputData.insert("learn_dataset_name", "learn_test_dataset");

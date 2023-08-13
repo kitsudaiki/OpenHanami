@@ -25,13 +25,11 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-#include <libKitsunemimiHanamiClusterParser/cluster_meta.h>
-#include <libKitsunemimiHanamiSegmentParser/segment_meta.h>
+#include <libKitsunemimiHanamiClusterParser/segment_meta.h>
 
 class Cluster;
 
 using Kitsunemimi::Hanami::SegmentMeta;
-using Kitsunemimi::Hanami::SegmentMetaPtr;
 using Kitsunemimi::Hanami::BrickMeta;
 
 class CreateCluster
@@ -45,24 +43,6 @@ protected:
                  const Kitsunemimi::DataMap &context,
                  BlossomStatus &status,
                  Kitsunemimi::ErrorContainer &error);
-
-private:
-    bool initCluster(Cluster* cluster,
-                     const std::string &clusterUuid,
-                     Kitsunemimi::Hanami::ClusterMeta &clusterDefinition,
-                     const UserContext &userContext,
-                     BlossomStatus &status,
-                     Kitsunemimi::ErrorContainer &error);
-
-    bool getSegmentTemplate(Kitsunemimi::Hanami::SegmentMeta* segmentMeta,
-                            const std::string &name,
-                            const UserContext &userContext,
-                            Kitsunemimi::ErrorContainer &error);
-
-    bool checkConnections(Kitsunemimi::Hanami::ClusterMeta &clusterTemplate,
-                          std::map<std::string, SegmentMeta> &segmentTemplates,
-                          BlossomStatus &status,
-                          Kitsunemimi::ErrorContainer &error);
 };
 
 #endif // HANAMI_CREATECLUSTER_H

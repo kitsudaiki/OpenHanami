@@ -75,88 +75,6 @@ AbstractSegment::setName(const std::string &name)
 }
 
 /**
- * @brief AbstractSegment::getSlotId
- * @param name
- * @return
- */
-uint8_t
-AbstractSegment::getSlotId(const std::string &name)
-{
-    for(uint64_t i = 0; i < 16; i++)
-    {
-        if(segmentSlots->slots[i].getName() == name) {
-            return i;
-        }
-    }
-
-    return UNINIT_STATE_8;
-}
-
-/**
- * @brief check if all border-buffer, which are in use, are ready for processing
- *
- * @return true, if all border-buffer are ready, else false
- */
-bool
-AbstractSegment::isReady()
-{
-    for(uint8_t i = 0; i < 16; i++)
-    {
-        if(segmentSlots->slots[i].inUse == true
-                && segmentSlots->slots[i].inputReady == false)
-        {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-/**
- * @brief run finishing step of the segment-processing to share the border-buffer with the
- *        neighbor segments
- */
-void
-AbstractSegment::finishSegment()
-{
-    float* sourceBuffer = nullptr;
-    float* targetBuffer  = nullptr;
-    uint32_t targetId = 0;
-    uint8_t targetSide = 0;
-    uint64_t targetBufferPos = 0;
-    AbstractSegment* targetSegment = nullptr;
-    SegmentSlotList* targetNeighbors = nullptr;
-
-    for(uint8_t i = 0; i < 16; i++)
-    {
-        if(segmentSlots->slots[i].inUse == 1)
-        {
-            // get information of the neighbor
-            sourceBuffer = &outputTransfers[segmentSlots->slots[i].outputTransferBufferPos];
-            targetId = segmentSlots->slots[i].targetSegmentId;
-            targetSide = segmentSlots->slots[i].targetSlotId;
-
-            // copy data to the target buffer and wipe the source buffer
-            targetSegment = parentCluster->allSegments.at(targetId);
-            targetNeighbors = targetSegment->segmentSlots;
-            targetBufferPos = targetNeighbors->slots[targetSide].inputTransferBufferPos;
-            targetBuffer = &targetSegment->inputTransfers[targetBufferPos];
-            memcpy(targetBuffer,
-                   sourceBuffer,
-                   segmentSlots->slots[i].numberOfNeurons * sizeof(float));
-            memset(sourceBuffer,
-                   0,
-                   segmentSlots->slots[i].numberOfNeurons * sizeof(float));
-
-            // mark the target as ready for processing
-            targetSegment->segmentSlots->slots[targetSide].inputReady = true;
-        }
-    }
-
-    parentCluster->updateClusterState();
-}
-
-/**
  * @brief generate header with generic segment-information
  *
  * @param header reference to the header-object to fill
@@ -166,7 +84,8 @@ AbstractSegment::finishSegment()
  */
 uint32_t
 AbstractSegment::createGenericNewHeader(SegmentHeader &header,
-                                        const uint64_t borderbufferSize)
+                                        const uint64_t inputSize,
+                                        const uint64_t outputSize)
 {
     uint32_t segmentDataPos = 0;
 
@@ -183,20 +102,20 @@ AbstractSegment::createGenericNewHeader(SegmentHeader &header,
     header.settings.bytePos = segmentDataPos;
     segmentDataPos += sizeof(SegmentSettings);
 
-    // init neighborList
-    header.slotList.count = 1;
-    header.slotList.bytePos = segmentDataPos;
-    segmentDataPos += sizeof(SegmentSlotList);
-
     // init inputTransfers
-    header.inputTransfers.count = borderbufferSize;
-    header.inputTransfers.bytePos = segmentDataPos;
-    segmentDataPos += borderbufferSize * sizeof(float);
+    header.inputValues.count = inputSize;
+    header.inputValues.bytePos = segmentDataPos;
+    segmentDataPos += inputSize * sizeof(float);
 
     // init outputTransfers
-    header.outputTransfers.count = borderbufferSize;
-    header.outputTransfers.bytePos = segmentDataPos;
-    segmentDataPos += borderbufferSize * sizeof(float);
+    header.outputValues.count = outputSize;
+    header.outputValues.bytePos = segmentDataPos;
+    segmentDataPos += outputSize * sizeof(float);
+
+    // init outputTransfers
+    header.expectedValues.count = outputSize;
+    header.expectedValues.bytePos = segmentDataPos;
+    segmentDataPos += outputSize * sizeof(float);
 
     return segmentDataPos;
 }

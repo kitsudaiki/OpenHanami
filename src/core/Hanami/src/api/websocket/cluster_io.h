@@ -23,9 +23,9 @@
 #ifndef HANAMI_PROTOBUF_MESSAGES_H
 #define HANAMI_PROTOBUF_MESSAGES_H
 
-#include <core/segments/output_segment/output_segment.h>
+#include <core/segments/core_segment/core_segment.h>
 
-void sendClusterOutputMessage(const OutputSegment &segment);
+void sendClusterOutputMessage(const CoreSegment &segment);
 void sendClusterNormalEndMessage(Cluster* cluster);
 void sendClusterLearnEndMessage(Cluster* cluster);
 

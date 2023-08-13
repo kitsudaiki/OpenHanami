@@ -27,8 +27,6 @@
 #include <core/cluster/cluster_init.h>
 #include <core/cluster/statemachine_init.h>
 #include <core/segments/abstract_segment.h>
-#include <core/segments/input_segment/input_segment.h>
-#include <core/segments/output_segment/output_segment.h>
 #include <core/segments/core_segment/core_segment.h>
 
 #include <libKitsunemimiCommon/files/binary_file.h>
@@ -87,16 +85,6 @@ RestoreCluster_State::processEvent()
         return false;
     }
 
-    // clrear all old segments of the cluster, if there are some exist
-    for(uint64_t i = 0; i < m_cluster->allSegments.size(); i++)
-    {
-        AbstractSegment* segment = m_cluster->allSegments.at(i);
-        delete segment;
-    }
-    m_cluster->allSegments.clear();
-    m_cluster->inputSegments.clear();
-    m_cluster->outputSegments.clear();
-
     // copy meta-data of cluster
     const uint64_t headerSize = parsedHeader.get("header").getLong();
     if(Kitsunemimi::reset_DataBuffer(m_cluster->clusterData,
@@ -120,30 +108,12 @@ RestoreCluster_State::processEvent()
 
         switch(type)
         {
-            case INPUT_SEGMENT:
-            {
-                InputSegment* newSegment = new InputSegment(&u8Data[posCounter], size);
-                newSegment->reinitPointer(size);
-                newSegment->parentCluster = m_cluster;
-                m_cluster->inputSegments.insert(std::make_pair(newSegment->getName(), newSegment));
-                m_cluster->allSegments.push_back(newSegment);
-                break;
-            }
-            case OUTPUT_SEGMENT:
-            {
-                OutputSegment* newSegment = new OutputSegment(&u8Data[posCounter], size);
-                newSegment->reinitPointer(size);
-                newSegment->parentCluster = m_cluster;
-                m_cluster->outputSegments.insert(std::make_pair(newSegment->getName(), newSegment));
-                m_cluster->allSegments.push_back(newSegment);
-                break;
-            }
             case CORE_SEGMENT:
             {
                 CoreSegment* newSegment = new CoreSegment(&u8Data[posCounter], size);
                 newSegment->reinitPointer(size);
                 newSegment->parentCluster = m_cluster;
-                m_cluster->allSegments.push_back(newSegment);
+                m_cluster->coreSegments.push_back(newSegment);
                 break;
             }
             case UNDEFINED_SEGMENT:

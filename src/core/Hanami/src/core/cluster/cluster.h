@@ -29,13 +29,9 @@
 
 #include <libKitsunemimiCommon/buffer/data_buffer.h>
 
-#include <libKitsunemimiHanamiClusterParser/cluster_meta.h>
-#include <libKitsunemimiHanamiSegmentParser/segment_meta.h>
+#include <libKitsunemimiHanamiClusterParser/segment_meta.h>
 
-class AbstractSegment;
-class InputSegment;
-class OutputSegment;
-class AbstractSegment;
+class CoreSegment;
 class TaskHandle_State;
 
 namespace Kitsunemimi {
@@ -85,16 +81,12 @@ public:
     Kitsunemimi::DataBuffer clusterData;
     MetaData* networkMetaData = nullptr;
     Settings* networkSettings = nullptr;
-    std::map<std::string, InputSegment*> inputSegments;
-    std::map<std::string, OutputSegment*> outputSegments;
-    std::map<std::string, AbstractSegment*> coreSegments;
-    std::vector<AbstractSegment*> allSegments;
+    std::vector<CoreSegment*> coreSegments;
 
     const std::string getUuid();
     const std::string getName();
     bool setName(const std::string newName);
-    bool init(const Kitsunemimi::Hanami::ClusterMeta &clusterTemplate,
-              const std::map<std::string, Kitsunemimi::Hanami::SegmentMeta> &segmentTemplates,
+    bool init(const Kitsunemimi::Hanami::SegmentMeta &clusterTemplate,
               const std::string &uuid);
     bool connectSlot(const std::string &sourceSegmentName,
                      const std::string &sourceSlotName,

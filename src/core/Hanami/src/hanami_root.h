@@ -25,7 +25,6 @@
 
 #include <common.h>
 #include <database/cluster_table.h>
-#include <database/template_table.h>
 #include <database/users_table.h>
 #include <database/projects_table.h>
 

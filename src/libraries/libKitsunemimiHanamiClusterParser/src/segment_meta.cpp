@@ -20,7 +20,7 @@
  *      limitations under the License.
  */
 
-#include <libKitsunemimiHanamiSegmentParser/segment_meta.h>
+#include <libKitsunemimiHanamiClusterParser/segment_meta.h>
 #include <segment_parsing/segment_parser_interface.h>
 
 namespace Kitsunemimi::Hanami

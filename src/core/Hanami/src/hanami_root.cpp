@@ -214,15 +214,6 @@ HanamiRoot::initDatabase(Kitsunemimi::ErrorContainer &error)
         return false;
     }
 
-    // initialize template-table
-    TemplateTable* templateTable = TemplateTable::getInstance();
-    if(templateTable->initTable(error) == false)
-    {
-        error.addMeesage("Failed to initialize template-table in database.");
-        LOG_ERROR(error);
-        return false;
-    }
-
     // initialize projects-table
     ProjectsTable* projectsTable = ProjectsTable::getInstance();
     if(projectsTable->initTable(error) == false)

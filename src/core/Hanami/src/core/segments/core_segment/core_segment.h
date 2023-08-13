@@ -51,12 +51,15 @@ public:
     CoreSegment(const void* data, const uint64_t dataSize);
     ~CoreSegment();
 
-    bool initSegment(const std::string &name,
-                     const Kitsunemimi::Hanami::SegmentMeta &segmentMeta);
+    bool initSegment(const Kitsunemimi::Hanami::SegmentMeta &segmentMeta);
     bool reinitPointer(const uint64_t numberOfBytes);
 
     Brick* bricks = nullptr;
     uint32_t* brickOrder = nullptr;
+
+    float* inputValues = nullptr;
+    float* outputValues = nullptr;
+    float* expectedValues = nullptr;
 
     NeuronBlock* neuronBlocks = nullptr;
     SynapseConnection* synapseConnections = nullptr;
@@ -74,7 +77,8 @@ private:
     SegmentHeader createNewHeader(const uint32_t numberOfBricks,
                                   const uint32_t numberOfBrickBlocks,
                                   const uint32_t maxSynapseSections,
-                                  const uint64_t borderbufferSize);
+                                  const uint64_t numberOfInputs,
+                                  const uint64_t numberOfOutputs);
     void initSegmentPointer(const SegmentHeader &header);
     bool connectBorderBuffer();
     void allocateSegment(SegmentHeader &header);
@@ -89,7 +93,6 @@ private:
     void connectAllBricks();
     bool initializeNeurons(const Kitsunemimi::Hanami::SegmentMeta &segmentMeta);
     uint32_t goToNextInitBrick(Brick* currentBrick, uint32_t* maxPathLength);
-    bool initSlots(const Kitsunemimi::Hanami::SegmentMeta &segmentMeta);
 };
 
 #endif // HANAMI_CORE_SEGMENTS_H

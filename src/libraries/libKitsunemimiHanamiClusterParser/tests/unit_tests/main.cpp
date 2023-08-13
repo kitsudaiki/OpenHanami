@@ -22,11 +22,11 @@
 
 #include <iostream>
 
-#include <cluster_parsestring_test.h>
+#include <segment_parsestring_test.h>
 #include <libKitsunemimiCommon/logger.h>
 
 int main()
 {
     Kitsunemimi::initConsoleLogger(true);
-    Kitsunemimi::Hanami::Cluster_ParseString_Test();
+    Kitsunemimi::Hanami::Segment_ParseString_Test();
 }

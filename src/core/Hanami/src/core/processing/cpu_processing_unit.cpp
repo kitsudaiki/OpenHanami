@@ -22,24 +22,15 @@
 
 #include "cpu_processing_unit.h"
 
-#include <core/segments/core_segment/core_segment.h>
-#include <core/segments/input_segment/input_segment.h>
-#include <core/segments/output_segment/output_segment.h>
-
-#include <core/cluster/cluster.h>
-#include <core/processing/segment_queue.h>
-
 #include <hanami_root.h>
 
 #include <core/segments/core_segment/backpropagation.h>
 #include <core/segments/core_segment/processing.h>
 #include <core/segments/core_segment/reduction.h>
 #include <core/segments/core_segment/section_update.h>
-
-#include <core/segments/output_segment/backpropagation.h>
-#include <core/segments/output_segment/processing.h>
-
-#include <core/segments/input_segment/processing.h>
+#include <core/segments/core_segment/core_segment.h>
+#include <core/cluster/cluster.h>
+#include <core/processing/segment_queue.h>
 
 #include <libKitsunemimiOpencl/gpu_interface.h>
 #include <libKitsunemimiOpencl/gpu_handler.h>
@@ -131,19 +122,6 @@ CpuProcessingUnit::learnSegmentForward(AbstractSegment* segment)
             seg->segmentSettings->doLearn = 0;
             break;
         }
-        case INPUT_SEGMENT:
-        {
-            InputSegment* seg = static_cast<InputSegment*>(segment);
-            prcessInputSegment(*seg);
-            break;
-        }
-        case OUTPUT_SEGMENT:
-        {
-            OutputSegment* seg = static_cast<OutputSegment*>(segment);
-            prcessOutputSegment(*seg);
-
-            break;
-        }
         default:
             break;
     }
@@ -221,12 +199,6 @@ CpuProcessingUnit::learnSegmentBackward(AbstractSegment* segment)
             reductionCounter++;
             break;
         }
-        case OUTPUT_SEGMENT:
-        {
-            OutputSegment* seg = static_cast<OutputSegment*>(segment);
-            backpropagateOutput(*seg);
-            break;
-        }
         default:
             break;
     }
@@ -272,18 +244,6 @@ CpuProcessingUnit::processSegment(AbstractSegment* segment)
 
             prcessCoreSegment(*seg);
 
-            break;
-        }
-        case INPUT_SEGMENT:
-        {
-            InputSegment* seg = static_cast<InputSegment*>(segment);
-            prcessInputSegment(*seg);
-            break;
-        }
-        case OUTPUT_SEGMENT:
-        {
-            OutputSegment* seg = static_cast<OutputSegment*>(segment);
-            prcessOutputSegment(*seg);
             if(seg->parentCluster->msgClient == nullptr)
             {
                 Task* actualTask = seg->parentCluster->getActualTask();
@@ -298,14 +258,15 @@ CpuProcessingUnit::processSegment(AbstractSegment* segment)
                 else if(actualTask->type == TABLE_REQUEST_TASK)
                 {
                     float val = 0.0f;
-                    for(uint64_t i = 0; i < seg->segmentHeader->outputs.count; i++)
+                    for(uint64_t i = 0; i < seg->segmentHeader->outputValues.count; i++)
                     {
                         Kitsunemimi::DataValue* value = actualTask->resultData.get(cycle).getItemContent()->toValue();
-                        val = value->getFloat() + seg->outputs[i].outputWeight;
+                        val = value->getFloat() + seg->outputValues[i];
                         value->setValue(val);
                     }
                 }
             }
+
             break;
         }
         default:
@@ -319,25 +280,13 @@ CpuProcessingUnit::processSegment(AbstractSegment* segment)
 void
 CpuProcessingUnit::run()
 {
-    AbstractSegment* currentSegment = nullptr;
+    CoreSegment* currentSegment = nullptr;
 
     while(m_abort == false)
     {
         currentSegment = SegmentQueue::getInstance()->getSegmentFromQueue();
         if(currentSegment != nullptr)
         {
-            // check if segment is ready, else requeue
-            if(currentSegment->isReady() == false)
-            {
-                SegmentQueue::getInstance()->addSegmentToQueue(currentSegment);
-                continue;
-            }
-
-            // reset input ready status
-            for(uint8_t side = 0; side < 16; side++) {
-                currentSegment->segmentSlots->slots[side].inputReady = false;
-            }
-
             // handle type of processing
             Cluster* clusterInterface = currentSegment->parentCluster;
             if(clusterInterface->mode == Cluster::LEARN_FORWARD_MODE) {
@@ -347,9 +296,7 @@ CpuProcessingUnit::run()
             } else {
                 processSegment(currentSegment);
             }
-
-            // finish segment by sharing border-buffer and register in cluster
-            currentSegment->finishSegment();
+            clusterInterface->updateClusterState();
         }
         else
         {

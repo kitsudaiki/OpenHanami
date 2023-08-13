@@ -24,8 +24,6 @@
 
 #include <core/cluster/cluster.h>
 #include <../../libraries/libKitsunemimiHanamiMessages/protobuffers/hanami_messages.proto3.pb.h>
-#include <core/segments/input_segment/input_segment.h>
-#include <core/segments/output_segment/output_segment.h>
 
 /**
  * @brief send output of an output-segment as protobuf-message
@@ -33,7 +31,7 @@
  * @param segment segment, which output-data should send
  */
 void
-sendClusterOutputMessage(const OutputSegment &segment)
+sendClusterOutputMessage(const CoreSegment &segment)
 {
     if(segment.parentCluster->msgClient == nullptr) {
         return;
@@ -45,13 +43,13 @@ sendClusterOutputMessage(const OutputSegment &segment)
     msg.set_islast(false);
     msg.set_processtype(ClusterProcessType::REQUEST_TYPE);
     msg.set_datatype(ClusterDataType::OUTPUT_TYPE);
-    msg.set_numberofvalues(segment.segmentHeader->outputs.count);
+    msg.set_numberofvalues(segment.segmentHeader->outputValues.count);
 
     for(uint64_t outputNeuronId = 0;
-        outputNeuronId < segment.segmentHeader->outputs.count;
+        outputNeuronId < segment.segmentHeader->outputValues.count;
         outputNeuronId++)
     {
-        msg.add_values(segment.outputs[outputNeuronId].outputWeight);
+        msg.add_values(segment.outputValues[outputNeuronId]);
     }
 
     // serialize message
@@ -200,24 +198,16 @@ recvClusterInputMessage(Cluster* cluster,
     // fill given data into the target-segment
     if(msg.datatype() == ClusterDataType::INPUT_TYPE)
     {
-        const auto it = cluster->inputSegments.find(msg.segmentname());
-        if(it != cluster->inputSegments.end())
-        {
-            InputNeuron* inputNeurons = it->second->inputs;
-            for(uint64_t i = 0; i < msg.numberofvalues(); i++) {
-                inputNeurons[i].weight = msg.values(i);
-            }
+        const CoreSegment* it = cluster->coreSegments.at(0);
+        for(uint64_t i = 0; i < msg.numberofvalues(); i++) {
+            it->inputValues[i] = msg.values(i);
         }
     }
     if(msg.datatype() == ClusterDataType::SHOULD_TYPE)
     {
-        const auto it = cluster->outputSegments.find(msg.segmentname());
-        if(it != cluster->outputSegments.end())
-        {
-            OutputNeuron* outputNeurons = it->second->outputs;
-            for(uint64_t i = 0; i < msg.numberofvalues(); i++) {
-                outputNeurons[i].shouldValue = msg.values(i);
-            }
+        const CoreSegment* it = cluster->coreSegments.at(0);
+        for(uint64_t i = 0; i < msg.numberofvalues(); i++) {
+            it->expectedValues[i] = msg.values(i);
         }
     }
 

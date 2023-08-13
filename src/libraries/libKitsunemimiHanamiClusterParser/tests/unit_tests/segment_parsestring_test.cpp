@@ -22,7 +22,7 @@
 
 #include "segment_parsestring_test.h"
 
-#include <libKitsunemimiHanamiSegmentParser/segment_meta.h>
+#include <libKitsunemimiHanamiClusterParser/segment_meta.h>
 
 namespace Kitsunemimi::Hanami
 {

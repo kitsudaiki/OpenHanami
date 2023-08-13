@@ -38,7 +38,6 @@ public:
 protected:
     void run();
 
-
 private:
     uint64_t reductionCounter = 0;
 

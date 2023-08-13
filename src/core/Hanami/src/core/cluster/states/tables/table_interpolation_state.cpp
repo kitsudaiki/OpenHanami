@@ -23,8 +23,6 @@
 #include "table_interpolation_state.h"
 
 #include <core/segments/core_segment/core_segment.h>
-#include <core/segments/input_segment/input_segment.h>
-#include <core/segments/output_segment/output_segment.h>
 
 #include <core/cluster/cluster.h>
 
@@ -63,9 +61,9 @@ TableInterpolation_State::processEvent()
     }
 
     // set input
-    InputNeuron* inputNeurons = m_cluster->inputSegments.begin()->second->inputs;
+    CoreSegment* segment = m_cluster->coreSegments.at(0);
     for(uint64_t i = 0; i < numberOfInputsPerCycle; i++) {
-        inputNeurons[i].weight = actualTask->inputData[(offset - numberOfInputsPerCycle) + i];
+        segment->inputValues[i] = actualTask->inputData[(offset - numberOfInputsPerCycle) + i];
     }
 
     m_cluster->mode = Cluster::NORMAL_MODE;

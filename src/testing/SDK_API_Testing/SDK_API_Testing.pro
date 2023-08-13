@@ -60,10 +60,6 @@ SOURCES += src/main.cpp \
     src/rest_api_tests/kyouko/task/image_request_task_test.cpp \
     src/rest_api_tests/kyouko/task/table_learn_task_test.cpp \
     src/rest_api_tests/kyouko/task/table_request_task_test.cpp \
-    src/rest_api_tests/kyouko/template/template_delete_test.cpp \
-    src/rest_api_tests/kyouko/template/template_get_test.cpp \
-    src/rest_api_tests/kyouko/template/template_list_test.cpp \
-    src/rest_api_tests/kyouko/template/template_upload_test.cpp \
     src/rest_api_tests/misaki/project/project_create_test.cpp \
     src/rest_api_tests/misaki/project/project_delete_test.cpp \
     src/rest_api_tests/misaki/project/project_get_test.cpp \
@@ -104,10 +100,6 @@ HEADERS += \
     src/rest_api_tests/kyouko/task/image_request_task_test.h \
     src/rest_api_tests/kyouko/task/table_learn_task_test.h \
     src/rest_api_tests/kyouko/task/table_request_task_test.h \
-    src/rest_api_tests/kyouko/template/template_delete_test.h \
-    src/rest_api_tests/kyouko/template/template_get_test.h \
-    src/rest_api_tests/kyouko/template/template_list_test.h \
-    src/rest_api_tests/kyouko/template/template_upload_test.h \
     src/rest_api_tests/misaki/project/project_create_test.h \
     src/rest_api_tests/misaki/project/project_delete_test.h \
     src/rest_api_tests/misaki/project/project_get_test.h \

@@ -24,13 +24,10 @@
 #include <hanami_root.h>
 
 #include <core/segments/core_segment/core_segment.h>
-#include <core/segments/input_segment/input_segment.h>
-#include <core/segments/output_segment/output_segment.h>
 #include <core/cluster/cluster_init.h>
 #include <core/cluster/statemachine_init.h>
 #include <core/cluster/states/task_handle_state.h>
 #include <core/processing/segment_queue.h>
-#include <core/segments/output_segment/processing.h>
 #include <api/websocket/cluster_io.h>
 
 #include <libKitsunemimiCommon/logger.h>
@@ -58,7 +55,7 @@ Cluster::~Cluster()
     // already deleted in the destructor of the statemachine
     // delete m_taskHandleState;
 
-    for(AbstractSegment* segment : allSegments) {
+    for(CoreSegment* segment : coreSegments) {
         delete segment;
     }
 }
@@ -84,64 +81,10 @@ std::string Cluster::getUuid()
  * @return true, if successful, else false
  */
 bool
-Cluster::init(const Kitsunemimi::Hanami::ClusterMeta &clusterTemplate,
-              const std::map<std::string, Kitsunemimi::Hanami::SegmentMeta> &segmentTemplates,
+Cluster::init(const Kitsunemimi::Hanami::SegmentMeta &clusterTemplate,
               const std::string &uuid)
 {
-    return initNewCluster(this, clusterTemplate, segmentTemplates, uuid);
-}
-
-/**
- * @brief Cluster::connectSlot
- *
- * @param sourceSegment
- * @param sourceSlotName
- * @param targetSegment
- * @param targetSlotName
- *
- * @return
- */
-bool
-Cluster::connectSlot(const std::string &sourceSegmentName,
-                     const std::string &sourceSlotName,
-                     const std::string &targetSegmentName,
-                     const std::string &targetSlotName)
-{
-    const uint64_t sourceSegmentId = getSegmentId(sourceSegmentName);
-    if(sourceSegmentId == UNINIT_STATE_64) {
-        return false;
-    }
-
-    const uint64_t targetSegmentId = getSegmentId(targetSegmentName);
-    if(targetSegmentId == UNINIT_STATE_64) {
-        return false;
-    }
-
-    AbstractSegment* sourceSegment = allSegments.at(sourceSegmentId);
-    AbstractSegment* targetSegment = allSegments.at(targetSegmentId);
-
-    const uint8_t sourceSlotId = sourceSegment->getSlotId(sourceSlotName);
-    if(sourceSlotId == UNINIT_STATE_8) {
-        return false;
-    }
-
-    const uint8_t targetSlotId = targetSegment->getSlotId(targetSlotName);
-    if(targetSlotId == UNINIT_STATE_8) {
-        return false;
-    }
-
-    SegmentSlot* sourceSlot = &sourceSegment->segmentSlots->slots[sourceSlotId];
-    SegmentSlot* targetSlot = &targetSegment->segmentSlots->slots[targetSlotId];
-
-    sourceSlot->inUse = true;
-    sourceSlot->targetSegmentId = targetSegmentId;
-    sourceSlot->targetSlotId = targetSlotId;
-
-    targetSlot->inUse = true;
-    targetSlot->targetSegmentId = sourceSegmentId;
-    targetSlot->targetSlotId = sourceSlotId;
-
-    return true;
+    return initNewCluster(this, clusterTemplate, uuid);
 }
 
 /**
@@ -152,9 +95,9 @@ Cluster::connectSlot(const std::string &sourceSegmentName,
 uint64_t
 Cluster::getSegmentId(const std::string &name)
 {
-    for(uint64_t i = 0; i < allSegments.size(); i++)
+    for(uint64_t i = 0; i < coreSegments.size(); i++)
     {
-        if(allSegments.at(i)->getName() == name) {
+        if(coreSegments.at(i)->getName() == name) {
             return i;
         }
     }
@@ -210,19 +153,8 @@ Cluster::setName(const std::string newName)
 void
 Cluster::startForwardCycle()
 {
-    // set ready-states of all neighbors of all segments
-    for(AbstractSegment* segment : allSegments)
-    {
-        for(uint8_t side = 0; side < 16; side++)
-        {
-            SegmentSlot* neighbor = &segment->segmentSlots->slots[side];
-            // TODO: check possible crash here
-            neighbor->inputReady = neighbor->direction != INPUT_DIRECTION;
-        }
-    }
-
     segmentCounter = 0;
-    SegmentQueue::getInstance()->addSegmentListToQueue(allSegments);
+    SegmentQueue::getInstance()->addSegmentListToQueue(coreSegments);
 }
 
 /**
@@ -231,18 +163,8 @@ Cluster::startForwardCycle()
 void
 Cluster::startBackwardCycle()
 {
-    // set ready-states of all neighbors of all segments
-    for(AbstractSegment* segment : allSegments)
-    {
-        for(uint8_t side = 0; side < 16; side++)
-        {
-            SegmentSlot* neighbor = &segment->segmentSlots->slots[side];
-            neighbor->inputReady = neighbor->direction != OUTPUT_DIRECTION;
-        }
-    }
-
     segmentCounter = 0;
-    SegmentQueue::getInstance()->addSegmentListToQueue(allSegments);
+    SegmentQueue::getInstance()->addSegmentListToQueue(coreSegments);
 }
 
 /**
@@ -275,7 +197,7 @@ Cluster::updateClusterState()
     std::lock_guard<std::mutex> guard(m_segmentCounterLock);
 
     segmentCounter++;
-    if(segmentCounter < allSegments.size()) {
+    if(segmentCounter < coreSegments.size()) {
         return;
     }
 

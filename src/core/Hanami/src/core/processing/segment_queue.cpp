@@ -22,7 +22,7 @@
 
 #include "segment_queue.h"
 
-#include <core/segments/abstract_segment.h>
+#include <core/segments/core_segment/core_segment.h>
 
 SegmentQueue* SegmentQueue::instance = nullptr;
 
@@ -37,7 +37,7 @@ SegmentQueue::SegmentQueue() {}
  * @param newSegment segment to add to queue
  */
 void
-SegmentQueue::addSegmentToQueue(AbstractSegment* newSegment)
+SegmentQueue::addSegmentToQueue(CoreSegment* newSegment)
 {
     while(m_queue_lock.test_and_set(std::memory_order_acquire)) { asm(""); }
 
@@ -51,11 +51,11 @@ SegmentQueue::addSegmentToQueue(AbstractSegment* newSegment)
  * @param semgnetList list with segments to add
  */
 void
-SegmentQueue::addSegmentListToQueue(const std::vector<AbstractSegment*> &semgnetList)
+SegmentQueue::addSegmentListToQueue(const std::vector<CoreSegment*> &semgnetList)
 {
     while(m_queue_lock.test_and_set(std::memory_order_acquire)) { asm(""); }
 
-    for(AbstractSegment* segment : semgnetList) {
+    for(CoreSegment* segment : semgnetList) {
         m_segmentQueue.push_back(segment);
     }
 
@@ -67,10 +67,10 @@ SegmentQueue::addSegmentListToQueue(const std::vector<AbstractSegment*> &semgnet
  *
  * @return nullptr, if queue is empty, else next segment in queue
  */
-AbstractSegment*
+CoreSegment*
 SegmentQueue::getSegmentFromQueue()
 {
-    AbstractSegment* result = nullptr;
+    CoreSegment* result = nullptr;
 
     while(m_queue_lock.test_and_set(std::memory_order_acquire)) { asm(""); }
 

@@ -92,10 +92,6 @@ jobs:
         run: |
           chmod +x /build_result/libraries/libKitsunemimiHanamiClusterParser/tests/unit_tests/unit_tests
           /build_result/libraries/libKitsunemimiHanamiClusterParser/tests/unit_tests/unit_tests
-      - name: "Run test: libKitsunemimiHanamiSegmentParser"
-        run: |
-          chmod +x /build_result/libraries/libKitsunemimiHanamiSegmentParser/tests/unit_tests/unit_tests
-          /build_result/libraries/libKitsunemimiHanamiSegmentParser/tests/unit_tests/unit_tests
       - name: "Run test: libKitsunemimiHanamiPolicies"
         run: |
           chmod +x /build_result/libraries/libKitsunemimiHanamiPolicies/tests/unit_tests/unit_tests

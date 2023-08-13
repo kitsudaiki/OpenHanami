@@ -24,8 +24,6 @@
 
 
 #include <core/segments/core_segment/core_segment.h>
-#include <core/segments/input_segment/input_segment.h>
-#include <core/segments/output_segment/output_segment.h>
 #include <core/cluster/cluster.h>
 
 #include <core/segments/core_segment/objects.h>
@@ -115,8 +113,7 @@ initHeader(Cluster* cluster,
  */
 bool
 initNewCluster(Cluster* cluster,
-               const Kitsunemimi::Hanami::ClusterMeta &clusterTemplate,
-               const std::map<std::string, Kitsunemimi::Hanami::SegmentMeta> &segmentTemplates,
+               const Kitsunemimi::Hanami::SegmentMeta &clusterTemplate,
                const std::string &uuid)
 {
     // meta-data
@@ -132,131 +129,13 @@ initNewCluster(Cluster* cluster,
     //const bool ret = cluster->setName(name);  // TODO: handle return
 
     LOG_INFO("create new cluster with uuid: " + cluster->networkMetaData->uuid.toString());
+    CoreSegment* newSegment = addDynamicSegment(cluster, clusterTemplate);
 
-    // parse and create segments
-    for(const Kitsunemimi::Hanami::SegmentMetaPtr& segmentPtr : clusterTemplate.segments)
-    {
-        AbstractSegment* newSegment = nullptr;
-        const auto it = segmentTemplates.find(segmentPtr.type);
-        if(it != segmentTemplates.end())
-        {
-            if(segmentPtr.type == "input") {
-                newSegment = addInputSegment(cluster, segmentPtr.name, it->second);
-            } else if(segmentPtr.type == "output") {
-                newSegment = addOutputSegment(cluster, segmentPtr.name, it->second);
-            } else {
-                newSegment = addDynamicSegment(cluster, segmentPtr.name, it->second);
-            }
-        }
-        else
-        {
-            // TODO: error-handling
-            std::cout<<"failed to init segment 1"<<std::endl;
-            return false;
-        }
-
-        if(newSegment == nullptr)
-        {
-            // TODO: error-handling
-            std::cout<<"failed to init segment 2"<<std::endl;
-            return false;
-        }
-
-        // update segment information with cluster infos
-        newSegment->segmentHeader->parentClusterId = cluster->networkMetaData->uuid;
-        newSegment->parentCluster = cluster;
-    }
-
-    // connect all segments
-    for(const Kitsunemimi::Hanami::SegmentMetaPtr& sourceSegmentPtr : clusterTemplate.segments)
-    {
-        const std::string sourceSegment = sourceSegmentPtr.name;
-
-        for(const Kitsunemimi::Hanami::ClusterConnection &conn : sourceSegmentPtr.outputs)
-        {
-            std::string targetSlot = conn.targetBrick;
-            if(targetSlot == "x") {
-                targetSlot = "input";
-            }
-            std::string sourceSlot = conn.sourceBrick;
-            if(sourceSlot == "x") {
-                sourceSlot = "output";
-            }
-
-            if(cluster->connectSlot(sourceSegment,
-                                    sourceSlot,
-                                    conn.targetSegment,
-                                    targetSlot) == false)
-            {
-                std::cout<<"Faild to connect segment '"
-                         << sourceSegment
-                         << "' with  segment '"
-                         << conn.targetSegment
-                         << "'"<<std::endl;
-            }
-        }
-    }
+    // update segment information with cluster infos
+    newSegment->segmentHeader->parentClusterId = cluster->networkMetaData->uuid;
+    newSegment->parentCluster = cluster;
 
     return true;
-}
-
-/**
- * @brief add new input-segment to cluster
- *
- * @param cluster pointer to the uninitionalized cluster
- * @param clusterTemplatePart parsed json with the information of the cluster
- *
- * @return true, if successful, else false
- */
-AbstractSegment*
-addInputSegment(Cluster* cluster,
-                const std::string &name,
-                const Kitsunemimi::Hanami::SegmentMeta &segmentMeta)
-{
-    InputSegment* newSegment = new InputSegment();
-
-    if(newSegment->initSegment(name, segmentMeta))
-    {
-        cluster->inputSegments.insert(std::make_pair(name, newSegment));
-        cluster->allSegments.push_back(newSegment);
-    }
-    else
-    {
-        delete newSegment;
-        newSegment = nullptr;
-    }
-
-    return newSegment;
-}
-
-/**
- * @brief add new output-segment to cluster
- *
- * @param cluster pointer to the uninitionalized cluster
- * @param clusterTemplatePart parsed json with the information of the cluster
- *
- * @return true, if successful, else false
- */
-AbstractSegment*
-addOutputSegment(Cluster* cluster,
-                 const std::string &name,
-                 const Kitsunemimi::Hanami::SegmentMeta &segmentMeta)
-{
-    OutputSegment* newSegment = new OutputSegment();
-    Kitsunemimi::JsonItem placeHolder;
-
-    if(newSegment->initSegment(name, segmentMeta))
-    {
-        cluster->outputSegments.insert(std::make_pair(name, newSegment));
-        cluster->allSegments.push_back(newSegment);
-    }
-    else
-    {
-        delete newSegment;
-        newSegment = nullptr;
-    }
-
-    return newSegment;
 }
 
 /**
@@ -267,16 +146,14 @@ addOutputSegment(Cluster* cluster,
  *
  * @return true, if successful, else false
  */
-AbstractSegment*
+CoreSegment*
 addDynamicSegment(Cluster* cluster,
-                  const std::string &name,
                   const Kitsunemimi::Hanami::SegmentMeta &segmentMeta)
 {
     CoreSegment* newSegment = new CoreSegment();
-    if(newSegment->initSegment(name, segmentMeta))
+    if(newSegment->initSegment(segmentMeta))
     {
-        cluster->coreSegments.insert(std::make_pair(name, newSegment));
-        cluster->allSegments.push_back(newSegment);
+        cluster->coreSegments.push_back(newSegment);
     }
     else
     {
