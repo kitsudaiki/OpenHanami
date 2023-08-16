@@ -10,7 +10,7 @@ INCLUDEPATH += ../../libKitsunemimiCommon/include
 INCLUDEPATH += $$PWD \
                $$PWD/../include
 
-FLEXSOURCES = grammar/segment_lexer.l
+FLEXSOURCES = grammar/cluster_lexer.l
 
 OTHER_FILES +=  \
     $$FLEXSOURCES 

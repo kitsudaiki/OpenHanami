@@ -1,5 +1,5 @@
 /**
- * @file       segment_parsestring_test.cpp
+ * @file       cluster_parsestring_test.cpp
  *
  * @author     Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,15 +20,15 @@
  *      limitations under the License.
  */
 
-#include "segment_parsestring_test.h"
+#include "cluster_parsestring_test.h"
 
-#include <libKitsunemimiHanamiClusterParser/segment_meta.h>
+#include <libKitsunemimiHanamiClusterParser/cluster_meta.h>
 
 namespace Kitsunemimi::Hanami
 {
 
-Segment_ParseString_Test::Segment_ParseString_Test()
-    : Kitsunemimi::MemoryLeakTestHelpter("Segment_ParseString_Test")
+Cluster_ParseString_Test::Cluster_ParseString_Test()
+    : Kitsunemimi::MemoryLeakTestHelpter("Cluster_ParseString_Test")
 {
     parseString_test();
 }
@@ -37,13 +37,13 @@ Segment_ParseString_Test::Segment_ParseString_Test()
  * parseString_test
  */
 void
-Segment_ParseString_Test::parseString_test()
+Cluster_ParseString_Test::parseString_test()
 {
     const std::string input("version: 1\n"
-                            "segment_type: core_segment\n"
+                            "cluster_type: core_cluster\n"
                             "settings:\n"
                             "    max_synapse_sections: 100000\n"
-                            "    synapse_segmentation: 10\n"
+                            "    synapse_clusteration: 10\n"
                             "    sign_neg: 0.5\n"
                             "        \n"
                             "bricks:\n"
@@ -59,15 +59,15 @@ Segment_ParseString_Test::parseString_test()
                             "        number_of_neurons: 5");
 
 
-    SegmentMeta result;
+    ClusterMeta result;
     ErrorContainer error;
 
     // the parser-interface is a singleton, which is initialized on the first usage
     // so a unchecked run has to be done, for the initializing
-    parseSegment(&result, input, error);
+    parseCluster(&result, input, error);
 
     REINIT_TEST();
-    parseSegment(&result, input, error);
+    parseCluster(&result, input, error);
     CHECK_MEMORY();
 }
 

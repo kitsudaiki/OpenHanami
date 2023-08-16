@@ -14,15 +14,15 @@ INCLUDEPATH += $$PWD \
                $$PWD/../include
 
 SOURCES += \
-    segment_parsing/segment_parser_interface.cpp \
-    segment_meta.cpp
+    cluster_meta.cpp \
+    cluster_parsing/cluster_parser_interface.cpp
 
 HEADERS += \
-    ../include/libKitsunemimiHanamiClusterParser/segment_meta.h \
-    segment_parsing/segment_parser_interface.h
+    ../include/libKitsunemimiHanamiClusterParser/cluster_meta.h \
+    cluster_parsing/cluster_parser_interface.h
 
-FLEXSOURCES = grammar/segment_lexer.l
-BISONSOURCES = grammar/segment_parser.y
+FLEXSOURCES = grammar/cluster_lexer.l
+BISONSOURCES = grammar/cluster_parser.y
 
 OTHER_FILES +=  \
     $$FLEXSOURCES \
@@ -30,7 +30,7 @@ OTHER_FILES +=  \
 
 # The following code calls the flex-lexer and bison-parser before compiling the
 # cpp-code for automatic generation of the parser-code in each build-step.
-# The resulting source-code-files are stored in the build-directory of the segment-converter.
+# The resulting source-code-files are stored in the build-directory of the cluster-converter.
 flexsource.input = FLEXSOURCES
 flexsource.output = ${QMAKE_FILE_BASE}.cpp
 flexsource.commands = flex --header-file=${QMAKE_FILE_BASE}.h -o ${QMAKE_FILE_BASE}.cpp ${QMAKE_FILE_IN}

@@ -25,13 +25,14 @@
 
 #include <common.h>
 #include <core/cluster/task.h>
+#include <core/processing/objects.h>
 #include <api/endpoint_processing/http_websocket_thread.h>
 
+#include <libKitsunemimiHanamiClusterParser/cluster_meta.h>
+
 #include <libKitsunemimiCommon/buffer/data_buffer.h>
+#include <libKitsunemimiCommon/buffer/item_buffer.h>
 
-#include <libKitsunemimiHanamiClusterParser/segment_meta.h>
-
-class CoreSegment;
 class TaskHandle_State;
 
 namespace Kitsunemimi {
@@ -43,59 +44,31 @@ class Cluster
 {
 public:
     Cluster();
+    Cluster(const void *data, const uint64_t dataSize);
     ~Cluster();
 
-    enum ClusterProcessingMode
-    {
-        NORMAL_MODE = 0,
-        LEARN_FORWARD_MODE = 1,
-        LEARN_BACKWARD_MODE = 2,
-    };
-
-    struct MetaData
-    {
-        uint8_t objectType = CLUSTER_OBJECT;
-        uint8_t version = 1;
-        uint8_t padding1[6];
-        uint64_t clusterSize = 0;
-
-        kuuid uuid;
-        char name[1024];
-
-        uint32_t numberOfInputSegments = 0;
-        uint32_t numberOfOutputSegments = 0;
-        uint32_t numberOfSegments = 0;
-
-        uint8_t padding2[956];
-    };
-    static_assert(sizeof(MetaData) == 2048);
-
-    struct Settings
-    {
-        float lerningValue = 0.0f;
-        uint8_t padding[252];
-    };
-    static_assert(sizeof(Settings) == 256);
-
     // cluster-data
-    Kitsunemimi::DataBuffer clusterData;
-    MetaData* networkMetaData = nullptr;
-    Settings* networkSettings = nullptr;
-    std::vector<CoreSegment*> coreSegments;
+    Kitsunemimi::ItemBuffer clusterData;
+
+    ClusterHeader* clusterHeader = nullptr;
+    SegmentSettings* clusterSettings = nullptr;
+    float* inputValues = nullptr;
+    float* outputValues = nullptr;
+    float* expectedValues = nullptr;
+
+    Brick* bricks = nullptr;
+    uint32_t* brickOrder = nullptr;
+
+    NeuronBlock* neuronBlocks = nullptr;
+    SynapseConnection* synapseConnections = nullptr;
+    SynapseBlock* synapseBlocks = nullptr;
+    uint32_t numberOfBrickBlocks = 0;
 
     const std::string getUuid();
     const std::string getName();
     bool setName(const std::string newName);
-    bool init(const Kitsunemimi::Hanami::SegmentMeta &clusterTemplate,
+    bool init(const Kitsunemimi::Hanami::ClusterMeta &clusterTemplate,
               const std::string &uuid);
-    bool connectSlot(const std::string &sourceSegmentName,
-                     const std::string &sourceSlotName,
-                     const std::string &targetSegmentName,
-                     const std::string &targetSlotName);
-    uint64_t getSegmentId(const std::string &name);
-
-    // task-handling
-    void updateClusterState();
 
     // tasks
     Task* getActualTask() const;
@@ -104,13 +77,14 @@ public:
     bool removeTask(const std::string &taskUuid);
     bool isFinish(const std::string &taskUuid);
     void getAllProgress(std::map<std::string, TaskProgress> &result);
+    void updateClusterState();
 
+    // states
     bool goToNextState(const uint32_t nextStateId);
     void startForwardCycle();
     void startBackwardCycle();
     bool setClusterState(const std::string &newState);
 
-    uint32_t segmentCounter = 0;
     ClusterProcessingMode mode = NORMAL_MODE;
     HttpWebsocketThread* msgClient = nullptr;
 

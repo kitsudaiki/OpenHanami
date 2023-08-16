@@ -22,8 +22,6 @@
 
 #include "graph_learn_forward_state.h"
 
-#include <core/segments/core_segment/core_segment.h>
-
 #include <core/cluster/cluster.h>
 
 /**

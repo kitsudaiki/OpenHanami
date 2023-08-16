@@ -23,7 +23,7 @@
 #include <iostream>
 #include <chrono>
 
-#include "objects.h"
+#include <core/processing/objects.h>
 #include "../brick.h"
 
 //==================================================================================================

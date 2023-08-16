@@ -1,5 +1,5 @@
 /**
- * @file       segment_parsestring_test.h
+ * @file       cluster_parsestring_test.h
  *
  * @author     Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,19 +20,19 @@
  *      limitations under the License.
  */
 
-#ifndef SEGMENT_PARSESTRING_TEST_H
-#define SEGMENT_PARSESTRING_TEST_H
+#ifndef CLUSTER_PARSESTRING_TEST_H
+#define CLUSTER_PARSESTRING_TEST_H
 
 #include <libKitsunemimiCommon/test_helper/compare_test_helper.h>
 
 namespace Kitsunemimi::Hanami
 {
 
-class Segment_ParseString_Test
+class Cluster_ParseString_Test
         : public Kitsunemimi::CompareTestHelper
 {
 public:
-    Segment_ParseString_Test();
+    Cluster_ParseString_Test();
 
 private:
     void parseString_test();
@@ -40,4 +40,4 @@ private:
 
 }
 
-#endif // SEGMENT_PARSESTRING_TEST_H
+#endif // CLUSTER_PARSESTRING_TEST_H

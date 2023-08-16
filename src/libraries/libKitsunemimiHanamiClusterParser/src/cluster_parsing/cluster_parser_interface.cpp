@@ -1,5 +1,5 @@
 /**
- * @file       segment_parser_interface.cpp
+ * @file       cluster_parser_interface.cpp
  *
  * @author     Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,19 +20,19 @@
  *      limitations under the License.
  */
 
-#include <segment_parsing/segment_parser_interface.h>
-#include <segment_parser.h>
+#include <cluster_parsing/cluster_parser_interface.h>
+#include <cluster_parser.h>
 
 #include <libKitsunemimiCommon/methods/string_methods.h>
 
 # define YY_DECL \
-    Kitsunemimi::Hanami::SegmentParser::symbol_type segmentlex (Kitsunemimi::Hanami::SegmentParserInterface& driver)
+    Kitsunemimi::Hanami::ClusterParser::symbol_type clusterlex (Kitsunemimi::Hanami::ClusterParserInterface& driver)
 YY_DECL;
 
 namespace Kitsunemimi::Hanami
 {
 
-Kitsunemimi::Hanami::SegmentParserInterface* SegmentParserInterface::m_instance = nullptr;
+Kitsunemimi::Hanami::ClusterParserInterface* ClusterParserInterface::m_instance = nullptr;
 
 using Kitsunemimi::splitStringByDelimiter;
 
@@ -43,7 +43,7 @@ using Kitsunemimi::splitStringByDelimiter;
  * @param traceParsing If set to true, the scanner prints all triggered rules.
  *                     It is only for better debugging.
  */
-SegmentParserInterface::SegmentParserInterface(const bool traceParsing)
+ClusterParserInterface::ClusterParserInterface(const bool traceParsing)
 {
     m_traceParsing = traceParsing;
 }
@@ -53,11 +53,11 @@ SegmentParserInterface::SegmentParserInterface(const bool traceParsing)
  *
  * @return pointer to the static instance
  */
-SegmentParserInterface*
-SegmentParserInterface::getInstance()
+ClusterParserInterface*
+ClusterParserInterface::getInstance()
 {
     if(m_instance == nullptr) {
-        m_instance = new SegmentParserInterface();
+        m_instance = new ClusterParserInterface();
     }
 
     return m_instance;
@@ -66,7 +66,7 @@ SegmentParserInterface::getInstance()
 /**
  * @brief destructor
  */
-SegmentParserInterface::~SegmentParserInterface() {}
+ClusterParserInterface::~ClusterParserInterface() {}
 
 /**
  * @brief parse string
@@ -77,7 +77,7 @@ SegmentParserInterface::~SegmentParserInterface() {}
  * @return resulting object
  */
 bool
-SegmentParserInterface::parse(SegmentMeta* result,
+ClusterParserInterface::parse(ClusterMeta* result,
                               const std::string &inputString,
                               ErrorContainer &error)
 {
@@ -89,7 +89,7 @@ SegmentParserInterface::parse(SegmentMeta* result,
     m_inputString = inputString;
     m_errorMessage = "";
     int parserResult = 0;
-    Kitsunemimi::Hanami::SegmentParser parser(*this);
+    Kitsunemimi::Hanami::ClusterParser parser(*this);
 
     this->scan_begin(inputString);
     parserResult = parser.parse();
@@ -116,7 +116,7 @@ SegmentParserInterface::parse(SegmentMeta* result,
  * @return cleared string
  */
 const std::string
-SegmentParserInterface::removeQuotes(const std::string &input)
+ClusterParserInterface::removeQuotes(const std::string &input)
 {
     // precheck
     if(input.length() == 0) {
@@ -147,7 +147,7 @@ SegmentParserInterface::removeQuotes(const std::string &input)
  * @param message error-specific message from the parser
  */
 void
-SegmentParserInterface::error(const Kitsunemimi::Hanami::location& location,
+ClusterParserInterface::error(const Kitsunemimi::Hanami::location& location,
                               const std::string& message)
 {
     if(m_errorMessage.size() > 0) {
@@ -163,7 +163,7 @@ SegmentParserInterface::error(const Kitsunemimi::Hanami::location& location,
     splitStringByDelimiter(splittedContent, m_inputString, '\n');
 
     // build error-message
-    m_errorMessage =  "ERROR while parsing segment-definition string \n";
+    m_errorMessage =  "ERROR while parsing cluster-definition string \n";
     m_errorMessage += "parser-message: " + message + " \n";
     m_errorMessage += "line-number: " + std::to_string(linenumber) + " \n";
 

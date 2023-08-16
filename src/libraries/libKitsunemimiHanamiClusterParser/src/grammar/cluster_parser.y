@@ -1,5 +1,5 @@
 /**
- * @file       segment_parser.y
+ * @file       cluster_parser.y
  *
  * @author     Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -26,9 +26,9 @@
 %defines
 %require "3.0.4"
 
-%define parser_class_name {SegmentParser}
+%define parser_class_name {ClusterParser}
 
-%define api.prefix {segment}
+%define api.prefix {cluster}
 %define api.namespace {Kitsunemimi::Hanami}
 %define api.token.constructor
 %define api.value.type variant
@@ -41,40 +41,39 @@
 #include <map>
 #include <vector>
 
-#include <libKitsunemimiHanamiClusterParser/segment_meta.h>
+#include <libKitsunemimiHanamiClusterParser/cluster_meta.h>
 #include <libKitsunemimiCommon/structs.h>
 
 namespace Kitsunemimi::Hanami
 {
 
-class SegmentParserInterface;
+class ClusterParserInterface;
 
 }
 }
 
 // The parsing context.
-%param { Kitsunemimi::Hanami::SegmentParserInterface& driver }
+%param { Kitsunemimi::Hanami::ClusterParserInterface& driver }
 
 %locations
 
 %code
 {
-#include <segment_parsing/segment_parser_interface.h>
+#include <cluster_parsing/cluster_parser_interface.h>
 # undef YY_DECL
 # define YY_DECL \
-    Kitsunemimi::Hanami::SegmentParser::symbol_type segmentlex (Kitsunemimi::Hanami::SegmentParserInterface& driver)
+    Kitsunemimi::Hanami::ClusterParser::symbol_type clusterlex (Kitsunemimi::Hanami::ClusterParserInterface& driver)
 YY_DECL;
 }
 
 // Token
-%define api.token.prefix {Segment_}
+%define api.token.prefix {Cluster_}
 %token
     END  0  "end of file"
     COMMA  ","
     ASSIGN  ":"
     LINEBREAK "linebreak"
     VERSION_1 "version1"
-    SEGMENT_TYPE "segment_type"
     SETTINGS "settings"
     BRICKS "bricks"
 ;
@@ -95,10 +94,9 @@ YY_DECL;
 // example
 //
 // version: 1
-// segment_type: core_segment
 // settings:
 //     max_synapse_sections: 100000
-//     synapse_segmentation: 10
+//     synapse_clusteration: 10
 //     sign_neg: 0.5
 //
 // bricks:
@@ -114,20 +112,9 @@ YY_DECL;
 //         number_of_neurons: 5
 
 startpoint:
-    "version1" linebreaks segment_type "settings" ":" linebreaks settings "bricks" ":" linebreaks bricks
+    "version1" linebreaks "settings" ":" linebreaks settings "bricks" ":" linebreaks bricks
     {
         driver.output->version = 1;
-    }
-
-segment_type:
-    "segment_type" ":" "identifier" linebreaks
-    {
-        if($3 == "core_segment") {
-            driver.output->segmentType = CORE_SEGMENT_TYPE;
-        } else {
-            driver.error(yyla.location, "unkown segment-type '" + $3 + "'");
-            return 1;
-        }
     }
 
 settings:
@@ -146,7 +133,7 @@ settings:
 |
     settings "identifier" ":" "number" linebreaks
     {
-        if($2 == "synapse_segmentation")
+        if($2 == "synapse_clusteration")
         {
             driver.output->synapseSegmentation = $4;
         }
@@ -176,7 +163,7 @@ settings:
 |
     "identifier" ":" "number" linebreaks
     {
-        if($1 == "synapse_segmentation")
+        if($1 == "synapse_clusteration")
         {
             driver.output->synapseSegmentation = $3;
         }
@@ -320,7 +307,7 @@ linebreaks_eno:
     {}
 %%
 
-void Kitsunemimi::Hanami::SegmentParser::error(const Kitsunemimi::Hanami::location& location,
+void Kitsunemimi::Hanami::ClusterParser::error(const Kitsunemimi::Hanami::location& location,
                                                const std::string& message)
 {
     driver.error(location, message);

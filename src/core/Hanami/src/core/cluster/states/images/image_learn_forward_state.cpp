@@ -22,8 +22,6 @@
 
 #include "image_learn_forward_state.h"
 
-#include <core/segments/core_segment/core_segment.h>
-
 #include <core/cluster/cluster.h>
 
 /**
@@ -56,19 +54,18 @@ ImageLearnForward_State::processEvent()
     const uint64_t offsetInput = entriesPerCycle * actualTask->actualCycle;
 
     // set input
-    CoreSegment* segment = m_cluster->coreSegments.at(0);
     for(uint64_t i = 0; i < numberOfInputsPerCycle; i++) {
-        segment->inputValues[i] = actualTask->inputData[offsetInput + i];
+        m_cluster->inputValues[i] = actualTask->inputData[offsetInput + i];
     }
 
     // set exprected output
     for(uint64_t i = 0; i < numberOfOuputsPerCycle; i++)
     {
         const uint64_t numberOfCycles = numberOfInputsPerCycle;
-        segment->expectedValues[i] = actualTask->inputData[offsetInput + numberOfCycles + i];
+        m_cluster->expectedValues[i] = actualTask->inputData[offsetInput + numberOfCycles + i];
     }
 
-    m_cluster->mode = Cluster::LEARN_FORWARD_MODE;
+    m_cluster->mode = ClusterProcessingMode::LEARN_FORWARD_MODE;
     m_cluster->startForwardCycle();
 
     return true;

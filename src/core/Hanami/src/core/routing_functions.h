@@ -25,7 +25,7 @@
 
 #include <stdint.h>
 #include <common.h>
-#include <libKitsunemimiHanamiClusterParser/segment_meta.h>
+#include <libKitsunemimiHanamiClusterParser/cluster_meta.h>
 
 /**
  * @brief get neighbor-position for a specific side in the hexagon-grid

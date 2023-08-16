@@ -1,5 +1,5 @@
 /**
- * @file       segment_meta.h
+ * @file       cluster_meta.h
  *
  * @author     Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -34,12 +34,6 @@
 namespace Kitsunemimi::Hanami
 {
 
-enum SegmentType
-{
-    UNDEFINED_SEGMENT_TYPE = 0,
-    CORE_SEGMENT_TYPE = 1,
-};
-
 enum BrickType
 {
     CENTRAL_BRICK_TYPE = 0,
@@ -55,10 +49,9 @@ struct BrickMeta
     uint64_t numberOfNeurons = 0;
 };
 
-struct SegmentMeta
+struct ClusterMeta
 {
     uint32_t version = 0;
-    SegmentType segmentType = UNDEFINED_SEGMENT_TYPE;
     uint32_t maxSynapseSections = 0;
     float synapseSegmentation = 0;
     float signNeg = 0.0;
@@ -79,9 +72,8 @@ struct SegmentMeta
     }
 };
 
-
 bool
-parseSegment(SegmentMeta* result,
+parseCluster(ClusterMeta* result,
              const std::string &input,
              ErrorContainer &error);
 

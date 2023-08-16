@@ -88,8 +88,8 @@ INCLUDEPATH += $$PWD \
                src
 
 HANAMI_PROTO_BUFFER = ../../libraries/libKitsunemimiHanamiMessages/protobuffers/hanami_messages.proto3
-GPU_KERNEL = src/core/segments/core_segment/gpu_kernel.cl
-CUDA_SOURCES = src/core/segments/core_segment/gpu_kernel.cu
+GPU_KERNEL = src/core/processing/opencl/gpu_kernel.cl
+CUDA_SOURCES = src/core/processing/cuda/gpu_kernel.cu
 
 OTHER_FILES += \
     $$CUDA_SOURCES
@@ -128,9 +128,6 @@ gpu_processing.variable_out = HEADERS
 gpu_processing.CONFIG += no_link
 
 QMAKE_EXTRA_COMPILERS += gpu_processing
-
-DISTFILES += \
-    src/core/segments/core_segment/gpu_kernel.cu
 
 HEADERS += \
     src/api/endpoint_processing/blossom.h \
@@ -227,18 +224,15 @@ HEADERS += \
     src/core/data_set_files/image_data_set_file.h \
     src/core/data_set_files/table_data_set_file.h \
     src/core/power_measuring.h \
+    src/core/processing/cpu/backpropagation.h \
+    src/core/processing/cpu/processing.h \
+    src/core/processing/cpu/reduction.h \
     src/core/processing/cpu_processing_unit.h \
+    src/core/processing/objects.h \
     src/core/processing/processing_unit_handler.h \
+    src/core/processing/section_update.h \
     src/core/processing/segment_queue.h \
     src/core/routing_functions.h \
-    src/core/segments/abstract_segment.h \
-    src/core/segments/core_segment/backpropagation.h \
-    src/core/segments/core_segment/core_segment.h \
-    src/core/segments/core_segment/objects.h \
-    src/core/segments/core_segment/processing.h \
-    src/core/segments/core_segment/reduction.h \
-    src/core/segments/core_segment/section_update.h \
-    src/core/segments/segment_meta.h \
     src/core/speed_measuring.h \
     src/core/temp_file_handler.h \
     src/core/temperature_measuring.h \
@@ -342,8 +336,6 @@ SOURCES += \
     src/core/processing/cpu_processing_unit.cpp \
     src/core/processing/processing_unit_handler.cpp \
     src/core/processing/segment_queue.cpp \
-    src/core/segments/abstract_segment.cpp \
-    src/core/segments/core_segment/core_segment.cpp \
     src/core/speed_measuring.cpp \
     src/core/temp_file_handler.cpp \
     src/core/temperature_measuring.cpp \
@@ -362,4 +354,6 @@ SOURCES += \
     src/database/users_table.cpp \
     src/hanami_root.cpp \
     src/main.cpp
+
+
 

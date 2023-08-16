@@ -1,5 +1,5 @@
 /**
- * @file       segment_meta.cpp
+ * @file       cluster_meta.cpp
  *
  * @author     Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,31 +20,31 @@
  *      limitations under the License.
  */
 
-#include <libKitsunemimiHanamiClusterParser/segment_meta.h>
-#include <segment_parsing/segment_parser_interface.h>
+#include <libKitsunemimiHanamiClusterParser/cluster_meta.h>
+#include <cluster_parsing/cluster_parser_interface.h>
 
 namespace Kitsunemimi::Hanami
 {
 
 /**
- * @brief parse a segment-template string
+ * @brief parse a cluster-template string
  *
  * @param result pointer to the resulting object, which should be filled
- * @param input segment-template string, which should be parsed
+ * @param input cluster-template string, which should be parsed
  * @param error reference for error-message output
  *
  * @return true, if successful, else false
  */
 bool
-parseSegment(SegmentMeta* result,
+parseCluster(ClusterMeta* result,
              const std::string &input,
              ErrorContainer &error)
 {
-    SegmentParserInterface* parser = SegmentParserInterface::getInstance();
+    ClusterParserInterface* parser = ClusterParserInterface::getInstance();
 
     if(input.size() == 0)
     {
-        error.addMeesage("Parsing of segment-template failed, because the input is empty");
+        error.addMeesage("Parsing of cluster-template failed, because the input is empty");
         return false;
     }
 

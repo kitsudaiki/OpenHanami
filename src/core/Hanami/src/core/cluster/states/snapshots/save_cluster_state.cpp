@@ -28,7 +28,6 @@
 #include <core/cluster/task.h>
 #include <core/cluster/cluster.h>
 #include <core/cluster/statemachine_init.h>
-#include <core/segments/core_segment/core_segment.h>
 
 #include <libKitsunemimiCrypto/hashes.h>
 #include <libKitsunemimiCommon/files/binary_file.h>
@@ -66,22 +65,7 @@ SaveCluster_State::processEvent()
         std::string headerMessage = "";
 
         // create message to shiori and calculate total size of storage of the cluster
-        totalSize = m_cluster->clusterData.usedBufferSize;
-        headerMessage = "{\"header\":" + std::to_string(totalSize) + ",\"segments\":[";
-        for(uint64_t i = 0; i < m_cluster->coreSegments.size(); i++)
-        {
-            if(i != 0) {
-                headerMessage += ",";
-            }
-            const uint64_t segSize = m_cluster->coreSegments.at(i)->segmentData.buffer.usedBufferSize;
-            headerMessage += "{\"size\":"
-                             + std::to_string(segSize)
-                             + ",\"type\":"
-                             + std::to_string(m_cluster->coreSegments.at(i)->getType())
-                             + "}";
-            totalSize += segSize;
-        }
-        headerMessage += "]}";
+        totalSize = m_cluster->clusterData.buffer.usedBufferSize;
 
         // send snapshot to shiori
         std::string fileUuid = "";
@@ -175,40 +159,18 @@ SaveCluster_State::writeData(const std::string &filePath,
     // global byte-counter to identifiy the position within the complete snapshot
     uint64_t posCounter = 0;
     Kitsunemimi::DataBuffer* buffer = nullptr;
-
-    // write metadata of cluster
-    buffer = &m_cluster->clusterData;
     if(snapshotFile.writeDataIntoFile(buffer->data,
                                       posCounter,
                                       buffer->usedBufferSize,
                                       error) == false)
     {
-        error.addMeesage("Failed to write metadata of cluster for snapshot into file '"
+        error.addMeesage("Failed to write segment of cluster for snapshot into file '"
                          + filePath
                          + "'");
         return false;
     }
 
     posCounter += buffer->usedBufferSize;
-
-
-    // write segments of cluster
-    for(uint64_t i = 0; i < m_cluster->coreSegments.size(); i++)
-    {
-        buffer = &m_cluster->coreSegments.at(i)->segmentData.buffer;
-        if(snapshotFile.writeDataIntoFile(buffer->data,
-                                          posCounter,
-                                          buffer->usedBufferSize,
-                                          error) == false)
-        {
-            error.addMeesage("Failed to write segment of cluster for snapshot into file '"
-                             + filePath
-                             + "'");
-            return false;
-        }
-
-        posCounter += buffer->usedBufferSize;
-    }
 
     return true;
 }

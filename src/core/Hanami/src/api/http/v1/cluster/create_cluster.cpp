@@ -100,7 +100,7 @@ CreateCluster::runTask(BlossomIO &blossomIO,
     error._errorMessages.clear();
     error._possibleSolution.clear();
 
-    Kitsunemimi::Hanami::SegmentMeta parsedCluster;
+    Kitsunemimi::Hanami::ClusterMeta parsedCluster;
     if(base64Template != "")
     {
         // decode base64 formated template to check if valid base64-string
@@ -113,10 +113,10 @@ CreateCluster::runTask(BlossomIO &blossomIO,
             return false;
         }
 
-        // parse segment-template to validate syntax
+        // parse cluster-template to validate syntax
         const std::string convertedTemplateStr(static_cast<const char*>(convertedTemplate.data),
                                                convertedTemplate.usedBufferSize);
-        if(Kitsunemimi::Hanami::parseSegment(&parsedCluster, convertedTemplateStr, error) == false)
+        if(Kitsunemimi::Hanami::parseCluster(&parsedCluster, convertedTemplateStr, error) == false)
         {
             status.errorMessage = "Uploaded template is not a valid cluster-template: \n";
             status.errorMessage += error.toString();
@@ -158,7 +158,7 @@ CreateCluster::runTask(BlossomIO &blossomIO,
     Cluster* newCluster = new Cluster();
     if(base64Template != "")
     {
-        // generate and initialize the cluster based on the cluster- and segment-templates
+        // generate and initialize the cluster based on the cluster-templates
         if(newCluster->init(parsedCluster, uuid) == false)
         {
             error.addMeesage("Failed to initialize cluster based on a template");

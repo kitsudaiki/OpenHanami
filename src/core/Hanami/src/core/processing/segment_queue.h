@@ -27,30 +27,29 @@
 #include <deque>
 #include <atomic>
 
-class CoreSegment;
+class Cluster;
 
-class SegmentQueue
+class ClusterQueue
 {
 public:
-    static SegmentQueue* getInstance()
+    static ClusterQueue* getInstance()
     {
         if(instance == nullptr) {
-            instance = new SegmentQueue();
+            instance = new ClusterQueue();
         }
         return instance;
     }
 
-    void addSegmentToQueue(CoreSegment* newSegment);
-    void addSegmentListToQueue(const std::vector<CoreSegment*> &semgnetList);
+    void addClusterToQueue(Cluster* newSegment);
 
-    CoreSegment* getSegmentFromQueue();
+    Cluster* getClusterFromQueue();
 
 private:
-    SegmentQueue();
-    static SegmentQueue* instance;
+    ClusterQueue();
+    static ClusterQueue* instance;
 
     std::atomic_flag m_queue_lock = ATOMIC_FLAG_INIT;
-    std::deque<CoreSegment*> m_segmentQueue;
+    std::deque<Cluster*> m_clusterQueue;
 };
 
 #endif // HANAMI_SEGMENTQUEUE_H

@@ -23,7 +23,6 @@
 #include "cluster.h"
 #include <hanami_root.h>
 
-#include <core/segments/core_segment/core_segment.h>
 #include <core/cluster/cluster_init.h>
 #include <core/cluster/statemachine_init.h>
 #include <core/cluster/states/task_handle_state.h>
@@ -46,18 +45,22 @@ Cluster::Cluster()
 }
 
 /**
+ * @brief constructor to create cluster from a snapshot
+ *
+ * @param data pointer to data with snapshot
+ * @param dataSize size of snapshot in number of bytes
+ */
+Cluster::Cluster(const void* data, const uint64_t dataSize)
+{
+    clusterData.initBuffer(data, dataSize);
+}
+
+/**
  * @brief destructor
  */
 Cluster::~Cluster()
 {
     delete stateMachine;
-
-    // already deleted in the destructor of the statemachine
-    // delete m_taskHandleState;
-
-    for(CoreSegment* segment : coreSegments) {
-        delete segment;
-    }
 }
 
 /**
@@ -68,7 +71,7 @@ Cluster::~Cluster()
 const
 std::string Cluster::getUuid()
 {
-    return networkMetaData->uuid.toString();
+    return clusterHeader->uuid.toString();
 }
 
 /**
@@ -81,28 +84,10 @@ std::string Cluster::getUuid()
  * @return true, if successful, else false
  */
 bool
-Cluster::init(const Kitsunemimi::Hanami::SegmentMeta &clusterTemplate,
+Cluster::init(const Kitsunemimi::Hanami::ClusterMeta &clusterTemplate,
               const std::string &uuid)
 {
     return initNewCluster(this, clusterTemplate, uuid);
-}
-
-/**
- * @brief Cluster::getSegment
- * @param name
- * @return
- */
-uint64_t
-Cluster::getSegmentId(const std::string &name)
-{
-    for(uint64_t i = 0; i < coreSegments.size(); i++)
-    {
-        if(coreSegments.at(i)->getName() == name) {
-            return i;
-        }
-    }
-
-    return UNINIT_STATE_64;
 }
 
 /**
@@ -114,11 +99,11 @@ const std::string
 Cluster::getName()
 {
     // precheck
-    if(networkMetaData == nullptr) {
+    if(clusterHeader == nullptr) {
         return std::string("");
     }
 
-    return std::string(networkMetaData->name);
+    return std::string(clusterHeader->name);
 }
 
 /**
@@ -132,7 +117,7 @@ bool
 Cluster::setName(const std::string newName)
 {
     // precheck
-    if(networkMetaData == nullptr
+    if(clusterHeader == nullptr
             || newName.size() > 1023
             || newName.size() == 0)
     {
@@ -141,8 +126,8 @@ Cluster::setName(const std::string newName)
 
     // copy string into char-buffer and set explicit the escape symbol to be absolut sure
     // that it is set to absolut avoid buffer-overflows
-    strncpy(networkMetaData->name, newName.c_str(), newName.size());
-    networkMetaData->name[newName.size()] = '\0';
+    strncpy(clusterHeader->name, newName.c_str(), newName.size());
+    clusterHeader->name[newName.size()] = '\0';
 
     return true;
 }
@@ -153,8 +138,7 @@ Cluster::setName(const std::string newName)
 void
 Cluster::startForwardCycle()
 {
-    segmentCounter = 0;
-    SegmentQueue::getInstance()->addSegmentListToQueue(coreSegments);
+    ClusterQueue::getInstance()->addClusterToQueue(this);
 }
 
 /**
@@ -163,8 +147,7 @@ Cluster::startForwardCycle()
 void
 Cluster::startBackwardCycle()
 {
-    segmentCounter = 0;
-    SegmentQueue::getInstance()->addSegmentListToQueue(coreSegments);
+    ClusterQueue::getInstance()->addClusterToQueue(this);
 }
 
 /**
@@ -196,23 +179,18 @@ Cluster::updateClusterState()
 {
     std::lock_guard<std::mutex> guard(m_segmentCounterLock);
 
-    segmentCounter++;
-    if(segmentCounter < coreSegments.size()) {
-        return;
-    }
-
     // trigger next lerning phase, if already in phase 1
-    if(mode == Cluster::LEARN_FORWARD_MODE)
+    if(mode == ClusterProcessingMode::LEARN_FORWARD_MODE)
     {
-        mode = Cluster::LEARN_BACKWARD_MODE;
+        mode = ClusterProcessingMode::LEARN_BACKWARD_MODE;
         startBackwardCycle();
         return;
     }
 
     // send message, that process was finished
-    if(mode == Cluster::LEARN_BACKWARD_MODE) {
+    if(mode == ClusterProcessingMode::LEARN_BACKWARD_MODE) {
         sendClusterLearnEndMessage(this);
-    } else if(mode == Cluster::NORMAL_MODE) {
+    } else if(mode == ClusterProcessingMode::NORMAL_MODE) {
         sendClusterNormalEndMessage(this);
     }
 

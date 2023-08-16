@@ -1,5 +1,5 @@
 /**
- * @file       segment_parsestring_test.cpp
+ * @file       cluster_parsestring_test.cpp
  *
  * @author     Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,15 +20,15 @@
  *      limitations under the License.
  */
 
-#include "segment_parsestring_test.h"
+#include "cluster_parsestring_test.h"
 
-#include <libKitsunemimiHanamiClusterParser/segment_meta.h>
+#include <libKitsunemimiHanamiClusterParser/cluster_meta.h>
 
 namespace Kitsunemimi::Hanami
 {
 
-Segment_ParseString_Test::Segment_ParseString_Test()
-    : Kitsunemimi::CompareTestHelper("Segment_ParseString_Test")
+Cluster_ParseString_Test::Cluster_ParseString_Test()
+    : Kitsunemimi::CompareTestHelper("Cluster_ParseString_Test")
 {
     parseString_test();
 }
@@ -37,13 +37,13 @@ Segment_ParseString_Test::Segment_ParseString_Test()
  * parseString_test
  */
 void
-Segment_ParseString_Test::parseString_test()
+Cluster_ParseString_Test::parseString_test()
 {
     std::string input("version: 1\n"
-                      "segment_type: core_segment\n"
+                      "cluster_type: core_cluster\n"
                       "settings:\n"
                       "    max_synapse_sections: 100000\n"
-                      "    synapse_segmentation: 10\n"
+                      "    synapse_clusteration: 10\n"
                       "    sign_neg: 0.5\n"
                       "        \n"
                       "bricks:\n"
@@ -58,16 +58,15 @@ Segment_ParseString_Test::parseString_test()
                       "        output: test_output\n"
                       "        number_of_neurons: 5");
 
-    SegmentMeta result;
+    ClusterMeta result;
     ErrorContainer error;
-    bool ret = parseSegment(&result, input, error);
+    bool ret = parseCluster(&result, input, error);
     TEST_EQUAL(ret, true);
     if(ret == false) {
         LOG_ERROR(error);
     }
 
     TEST_EQUAL(result.version, 1);
-    TEST_EQUAL(result.segmentType, CORE_SEGMENT_TYPE);
 
     TEST_EQUAL(result.maxSynapseSections, 100000);
     TEST_EQUAL(result.synapseSegmentation, 10);
@@ -98,10 +97,10 @@ Segment_ParseString_Test::parseString_test()
 
 
     input = "version: 2\n"  // <-- error
-            "segment_type: core_segment\n"
+            "cluster_type: core_cluster\n"
             "settings:\n"
             "    max_synapse_sections: 100000\n"
-            "    synapse_segmentation: 10\n"
+            "    synapse_clusteration: 10\n"
             "    sign_neg: 0.5\n"
             "        \n"
             "bricks:\n"
@@ -116,14 +115,14 @@ Segment_ParseString_Test::parseString_test()
             "        output: test_output\n"
             "        number_of_neurons: 5\n";
 
-    ret = parseSegment(&result, input, error);
+    ret = parseCluster(&result, input, error);
     TEST_EQUAL(ret, false);
 
     input = "version: 1\n"
-            "segment_type: asdf_segment\n"  // <-- error
+            "cluster_type: asdf_cluster\n"  // <-- error
             "settings:\n"
             "    max_synapse_sections: 100000\n"
-            "    synapse_segmentation: 10\n"
+            "    synapse_clusteration: 10\n"
             "    sign_neg: 0.5\n"
             "        \n"
             "bricks:\n"
@@ -138,14 +137,14 @@ Segment_ParseString_Test::parseString_test()
             "        output: test_output\n"
             "        number_of_neurons: 5\n";
 
-    ret = parseSegment(&result, input, error);
+    ret = parseCluster(&result, input, error);
     TEST_EQUAL(ret, false);
 
     input = "version: 1\n"
-            "segment_type: core_segment\n"
+            "cluster_type: core_cluster\n"
             "settings:\n"
             "    max_synapse_sections: 100000\n"  // <-- error
-            "    asdf_segmentation: 10\n"
+            "    asdf_clusteration: 10\n"
             "    sign_neg: 0.5\n"
             "        \n"
             "bricks:\n"
@@ -160,14 +159,14 @@ Segment_ParseString_Test::parseString_test()
             "        output: test_output\n"
             "        number_of_neurons: 5\n";
 
-    ret = parseSegment(&result, input, error);
+    ret = parseCluster(&result, input, error);
     TEST_EQUAL(ret, false);
 
     input = "version: 1\n"
-            "segment_type: core_segment\n"
+            "cluster_type: core_cluster\n"
             "settings:\n"
             "    max_synapse_sections: 100000\n"
-            "    synapse_segmentation: 10\n"
+            "    synapse_clusteration: 10\n"
             "    sign_neg: 123\n"
             "        \n"
             "bricks:\n"
@@ -182,14 +181,14 @@ Segment_ParseString_Test::parseString_test()
             "        output: test_output\n"
             "        number_of_neurons: 5\n";
 
-    ret = parseSegment(&result, input, error);
+    ret = parseCluster(&result, input, error);
     TEST_EQUAL(ret, false);
 
     input = "version: 1\n"
-            "segment_type: core_segment\n"
+            "cluster_type: core_cluster\n"
             "settings:\n"
             "    max_synapse_sections: 100000\n"
-            "    synapse_segmentation: 10\n"
+            "    synapse_clusteration: 10\n"
             "    sign_neg: 0.5\n"
             "        \n"
             "bricks:\n"
@@ -204,14 +203,14 @@ Segment_ParseString_Test::parseString_test()
             "        output: test_output\n"
             "        number_of_neurons: 5\n";
 
-    ret = parseSegment(&result, input, error);
+    ret = parseCluster(&result, input, error);
     TEST_EQUAL(ret, false);
 
     input = "version: 1\n"
-            "segment_type: core_segment\n"
+            "cluster_type: core_cluster\n"
             "settings:\n"
             "    max_synapse_sections: 100000\n"
-            "    synapse_segmentation: 10\n"
+            "    synapse_clusteration: 10\n"
             "    sign_neg: 0.5\n"
             "        \n"
             "asdf:\n"  // <-- error
@@ -226,14 +225,14 @@ Segment_ParseString_Test::parseString_test()
             "        output: test_output\n"
             "        number_of_neurons: 5\n";
 
-    ret = parseSegment(&result, input, error);
+    ret = parseCluster(&result, input, error);
     TEST_EQUAL(ret, false);
 
     input = "version: 1\n"
-            "segment_type: core_segment\n"
+            "cluster_type: core_cluster\n"
             "settings:\n"
             "    max_synapse_sections: 100000\n"
-            "    synapse_segmentation: 10\n"
+            "    synapse_clusteration: 10\n"
             "    sign_neg: 0.5\n"
             "        \n"
             "bricks:\n"
@@ -248,14 +247,14 @@ Segment_ParseString_Test::parseString_test()
             "        output: test_output\n"
             "        number_of_neurons: 5\n";
 
-    ret = parseSegment(&result, input, error);
+    ret = parseCluster(&result, input, error);
     TEST_EQUAL(ret, false);
 
     input = "version: 1\n"
-            "segment_type: core_segment\n"
+            "cluster_type: core_cluster\n"
             "settings:\n"
             "    max_synapse_sections: 100000\n"
-            "    synapse_segmentation: 10\n"
+            "    synapse_clusteration: 10\n"
             "    sign_neg: 0.5\n"
             "        \n"
             "bricks:\n"
@@ -270,14 +269,14 @@ Segment_ParseString_Test::parseString_test()
             "        asdf: test_output\n"  // <-- error
             "        number_of_neurons: 5\n";
 
-    ret = parseSegment(&result, input, error);
+    ret = parseCluster(&result, input, error);
     TEST_EQUAL(ret, false);
 
     input = "version: 1\n"
-            "segment_type: core_segment\n"
+            "cluster_type: core_cluster\n"
             "settings:\n"
             "    max_synapse_sections: 100000\n"
-            "    synapse_segmentation: 10\n"
+            "    synapse_clusteration: 10\n"
             "    sign_neg: 0.5\n"
             "        \n"
             "bricks:\n"
@@ -292,7 +291,7 @@ Segment_ParseString_Test::parseString_test()
             "        output: test_output\n"
             "        number_of_neurons: 5\n";
 
-    ret = parseSegment(&result, input, error);
+    ret = parseCluster(&result, input, error);
     TEST_EQUAL(ret, false);
 };
 

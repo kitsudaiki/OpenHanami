@@ -22,8 +22,6 @@
 
 #include "table_learn_forward_state.h"
 
-#include <core/segments/core_segment/core_segment.h>
-
 #include <core/cluster/cluster.h>
 
 /**
@@ -60,17 +58,16 @@ TableLearnForward_State::processEvent()
     }
 
     // set input
-    CoreSegment* segment = m_cluster->coreSegments.at(0);
     for(uint64_t i = 0; i < numberOfInputsPerCycle; i++) {
-        segment->inputValues[i] = actualTask->inputData[(offset - numberOfInputsPerCycle) + i];
+        m_cluster->inputValues[i] = actualTask->inputData[(offset - numberOfInputsPerCycle) + i];
     }
 
     // set exprected output
     for(uint64_t i = 0; i < numberOfOuputsPerCycle; i++) {
-        segment->expectedValues[i] = actualTask->outputData[(offset - numberOfOuputsPerCycle) + i];
+        m_cluster->expectedValues[i] = actualTask->outputData[(offset - numberOfOuputsPerCycle) + i];
     }
 
-    m_cluster->mode = Cluster::LEARN_FORWARD_MODE;
+    m_cluster->mode = ClusterProcessingMode::LEARN_FORWARD_MODE;
     m_cluster->startForwardCycle();
 
     return true;

@@ -22,8 +22,6 @@
 
 #include "table_interpolation_state.h"
 
-#include <core/segments/core_segment/core_segment.h>
-
 #include <core/cluster/cluster.h>
 
 /**
@@ -61,12 +59,11 @@ TableInterpolation_State::processEvent()
     }
 
     // set input
-    CoreSegment* segment = m_cluster->coreSegments.at(0);
     for(uint64_t i = 0; i < numberOfInputsPerCycle; i++) {
-        segment->inputValues[i] = actualTask->inputData[(offset - numberOfInputsPerCycle) + i];
+        m_cluster->inputValues[i] = actualTask->inputData[(offset - numberOfInputsPerCycle) + i];
     }
 
-    m_cluster->mode = Cluster::NORMAL_MODE;
+    m_cluster->mode = ClusterProcessingMode::NORMAL_MODE;
     m_cluster->startForwardCycle();
 
     return true;

@@ -22,8 +22,6 @@
 
 #include "image_identify_state.h"
 
-#include <core/segments/core_segment/core_segment.h>
-
 #include <core/cluster/cluster.h>
 
 /**
@@ -56,12 +54,11 @@ ImageIdentify_State::processEvent()
     const uint64_t offsetInput = entriesPerCycle * actualTask->actualCycle;
 
     // set input
-    CoreSegment* segment = m_cluster->coreSegments.at(0);
     for(uint64_t i = 0; i < actualTask->numberOfInputsPerCycle; i++) {
-        segment->inputValues[i] = actualTask->inputData[offsetInput + i];
+        m_cluster->inputValues[i] = actualTask->inputData[offsetInput + i];
     }
 
-    m_cluster->mode = Cluster::NORMAL_MODE;
+    m_cluster->mode = ClusterProcessingMode::NORMAL_MODE;
     m_cluster->startForwardCycle();
 
     return true;

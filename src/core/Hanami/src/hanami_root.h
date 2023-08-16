@@ -32,7 +32,7 @@
 #include <libKitsunemimiHanamiPolicies/policy.h>
 
 class ClusterHandler;
-class SegmentQueue;
+class ClusterQueue;
 class ProcessingUnitHandler;
 class WebSocketServer;
 class HttpServer;

@@ -26,6 +26,7 @@
 #include <stdint.h>
 #include <cstdlib>
 #include <algorithm>
+#include <common.h>
 #include <libKitsunemimiCommon/structs.h>
 
 // const predefined values
@@ -47,6 +48,53 @@
 // processing
 #define NUMBER_OF_PROCESSING_UNITS 1
 #define NUMBER_OF_RAND_VALUES 10485760
+
+//==================================================================================================
+
+enum ClusterProcessingMode
+{
+    NORMAL_MODE = 0,
+    LEARN_FORWARD_MODE = 1,
+    LEARN_BACKWARD_MODE = 2,
+};
+
+//==================================================================================================
+
+struct HeaderEntry
+{
+    uint64_t bytePos = 0;
+    uint64_t count = 0;
+};
+static_assert(sizeof(HeaderEntry) == 16);
+
+//==================================================================================================
+
+struct ClusterHeader
+{
+    uint8_t objectType = CLUSTER_OBJECT;
+    uint8_t version = 1;
+    uint8_t padding[6];
+    uint64_t staticDataSize = 0;
+
+    kuuid uuid;
+    char name[1024];
+
+    // synapse-segment
+    HeaderEntry settings;
+    HeaderEntry slotList;
+    HeaderEntry inputValues;
+    HeaderEntry outputValues;
+    HeaderEntry expectedValues;
+
+    HeaderEntry bricks;
+    HeaderEntry brickOrder;
+    HeaderEntry neuronBlocks;
+    HeaderEntry synapseConnections;
+    HeaderEntry synapseBlocks;
+
+    uint8_t padding2[808];
+};
+static_assert(sizeof(ClusterHeader) == 2048);
 
 //==================================================================================================
 
@@ -178,11 +226,13 @@ struct SegmentSettings
     float potentialOverflow = 1.0f;
     float synapseSegmentation = 10.0f;
     float backpropagationBorder = 0.01f;
+    float lerningValue = 0.0f;
+
     uint8_t refractionTime = 1;
     uint8_t doLearn = 0;
     uint8_t updateSections = 0;
 
-    uint8_t padding[213];
+    uint8_t padding[209];
 };
 static_assert(sizeof(SegmentSettings) == 256);
 

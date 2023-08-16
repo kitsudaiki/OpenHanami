@@ -1,5 +1,5 @@
 /**
- * @file       segment_parser_interface.h
+ * @file       cluster_parser_interface.h
  *
  * @author     Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -30,20 +30,20 @@
 
 namespace Kitsunemimi::Hanami
 {
-struct SegmentMeta;
+struct ClusterMeta;
 class location;
 
-class SegmentParserInterface
+class ClusterParserInterface
 {
 
 public:
-    static SegmentParserInterface* getInstance();
-    ~SegmentParserInterface();
+    static ClusterParserInterface* getInstance();
+    ~ClusterParserInterface();
 
     // connection the the scanner and parser
     void scan_begin(const std::string &inputString);
     void scan_end();
-    bool parse(SegmentMeta* result,
+    bool parse(ClusterMeta* result,
                const std::string &inputString,
                ErrorContainer &error);
     const std::string removeQuotes(const std::string &input);
@@ -52,12 +52,12 @@ public:
     void error(const Kitsunemimi::Hanami::location &location,
                const std::string& message);
 
-    SegmentMeta* output = nullptr;
+    ClusterMeta* output = nullptr;
 
 private:
-    SegmentParserInterface(const bool traceParsing = false);
+    ClusterParserInterface(const bool traceParsing = false);
 
-    static SegmentParserInterface* m_instance;
+    static ClusterParserInterface* m_instance;
 
     std::string m_errorMessage = "";
     std::string m_inputString = "";

@@ -25,12 +25,9 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-#include <libKitsunemimiHanamiClusterParser/segment_meta.h>
+#include <libKitsunemimiHanamiClusterParser/cluster_meta.h>
 
 class Cluster;
-
-using Kitsunemimi::Hanami::SegmentMeta;
-using Kitsunemimi::Hanami::BrickMeta;
 
 class CreateCluster
         : public Blossom

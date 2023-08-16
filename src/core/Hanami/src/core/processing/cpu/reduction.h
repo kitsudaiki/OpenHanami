@@ -26,14 +26,14 @@
 #include <common.h>
 
 #include <hanami_root.h>
-#include "objects.h"
-#include "core_segment.h"
+#include <core/processing/objects.h>
+#include <core/cluster/cluster.h>
 
 /**
  * @brief reduce synapses of a specific section
  */
 inline bool
-reduceSynapses(CoreSegment &segment,
+reduceSynapses(Cluster &cluster,
                SynapseBlock &section)
 {
     bool foundEnd = false;
@@ -77,7 +77,7 @@ reduceSynapses(CoreSegment &segment,
  * @brief reduce all synapses within the segment and delete them, if the reach a deletion-border
  */
 inline void
-reduceNeurons(CoreSegment &segment)
+reduceNeurons(Cluster &cluster)
 {
     /*SynapseSection* section = nullptr;
     Neuron* sourceNeuron = nullptr;

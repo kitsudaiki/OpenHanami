@@ -26,30 +26,29 @@
 #include <../../libraries/libKitsunemimiHanamiMessages/protobuffers/hanami_messages.proto3.pb.h>
 
 /**
- * @brief send output of an output-segment as protobuf-message
+ * @brief send output of a cluster as protobuf-message
  *
- * @param segment segment, which output-data should send
+ * @param cluster cluster, which output-data should send
  */
 void
-sendClusterOutputMessage(const CoreSegment &segment)
+sendClusterOutputMessage(Cluster* cluster)
 {
-    if(segment.parentCluster->msgClient == nullptr) {
+    if(cluster->msgClient == nullptr) {
         return;
     }
 
     // build message
     ClusterIO_Message msg;
-    msg.set_segmentname(segment.getName());
     msg.set_islast(false);
     msg.set_processtype(ClusterProcessType::REQUEST_TYPE);
     msg.set_datatype(ClusterDataType::OUTPUT_TYPE);
-    msg.set_numberofvalues(segment.segmentHeader->outputValues.count);
+    msg.set_numberofvalues(cluster->clusterHeader->outputValues.count);
 
     for(uint64_t outputNeuronId = 0;
-        outputNeuronId < segment.segmentHeader->outputValues.count;
+        outputNeuronId < cluster->clusterHeader->outputValues.count;
         outputNeuronId++)
     {
-        msg.add_values(segment.outputValues[outputNeuronId]);
+        msg.add_values(cluster->outputValues[outputNeuronId]);
     }
 
     // serialize message
@@ -63,7 +62,7 @@ sendClusterOutputMessage(const CoreSegment &segment)
     }
 
     // send message
-    HttpWebsocketThread* client = segment.parentCluster->msgClient;
+    HttpWebsocketThread* client = cluster->msgClient;
     Kitsunemimi::ErrorContainer error;
     client->sendData(buffer, size, true);
 }
@@ -198,16 +197,14 @@ recvClusterInputMessage(Cluster* cluster,
     // fill given data into the target-segment
     if(msg.datatype() == ClusterDataType::INPUT_TYPE)
     {
-        const CoreSegment* it = cluster->coreSegments.at(0);
         for(uint64_t i = 0; i < msg.numberofvalues(); i++) {
-            it->inputValues[i] = msg.values(i);
+            cluster->inputValues[i] = msg.values(i);
         }
     }
     if(msg.datatype() == ClusterDataType::SHOULD_TYPE)
     {
-        const CoreSegment* it = cluster->coreSegments.at(0);
         for(uint64_t i = 0; i < msg.numberofvalues(); i++) {
-            it->expectedValues[i] = msg.values(i);
+            cluster->expectedValues[i] = msg.values(i);
         }
     }
 
@@ -216,14 +213,14 @@ recvClusterInputMessage(Cluster* cluster,
         // start request
         if(msg.processtype() == ClusterProcessType::REQUEST_TYPE)
         {
-            cluster->mode = Cluster::NORMAL_MODE;
+            cluster->mode = ClusterProcessingMode::NORMAL_MODE;
             cluster->startForwardCycle();
         }
 
         // start learn
         if(msg.processtype() == ClusterProcessType::LEARN_TYPE)
         {
-            cluster->mode = Cluster::LEARN_FORWARD_MODE;
+            cluster->mode = ClusterProcessingMode::LEARN_FORWARD_MODE;
             cluster->startForwardCycle();
         }
     }

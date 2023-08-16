@@ -10,7 +10,7 @@ INCLUDEPATH += ../../libKitsunemimiCommon/include
 INCLUDEPATH += $$PWD \
                $$PWD/../include
 
-BISONSOURCES = grammar/segment_parser.y
+BISONSOURCES = grammar/cluster_parser.y
 
 OTHER_FILES +=  \
     $$BISONSOURCES

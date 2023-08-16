@@ -22,14 +22,14 @@
 
 #include "segment_queue.h"
 
-#include <core/segments/core_segment/core_segment.h>
+#include <core/cluster/cluster.h>
 
-SegmentQueue* SegmentQueue::instance = nullptr;
+ClusterQueue* ClusterQueue::instance = nullptr;
 
 /**
  * @brief constructor
  */
-SegmentQueue::SegmentQueue() {}
+ClusterQueue::ClusterQueue() {}
 
 /**
  * @brief add segment to queue
@@ -37,28 +37,11 @@ SegmentQueue::SegmentQueue() {}
  * @param newSegment segment to add to queue
  */
 void
-SegmentQueue::addSegmentToQueue(CoreSegment* newSegment)
+ClusterQueue::addClusterToQueue(Cluster* newSegment)
 {
     while(m_queue_lock.test_and_set(std::memory_order_acquire)) { asm(""); }
 
-    m_segmentQueue.push_back(newSegment);
-    m_queue_lock.clear(std::memory_order_release);
-}
-
-/**
- * @brief add a list of segments to the queue
- *
- * @param semgnetList list with segments to add
- */
-void
-SegmentQueue::addSegmentListToQueue(const std::vector<CoreSegment*> &semgnetList)
-{
-    while(m_queue_lock.test_and_set(std::memory_order_acquire)) { asm(""); }
-
-    for(CoreSegment* segment : semgnetList) {
-        m_segmentQueue.push_back(segment);
-    }
-
+    m_clusterQueue.push_back(newSegment);
     m_queue_lock.clear(std::memory_order_release);
 }
 
@@ -67,17 +50,17 @@ SegmentQueue::addSegmentListToQueue(const std::vector<CoreSegment*> &semgnetList
  *
  * @return nullptr, if queue is empty, else next segment in queue
  */
-CoreSegment*
-SegmentQueue::getSegmentFromQueue()
+Cluster*
+ClusterQueue::getClusterFromQueue()
 {
-    CoreSegment* result = nullptr;
+    Cluster* result = nullptr;
 
     while(m_queue_lock.test_and_set(std::memory_order_acquire)) { asm(""); }
 
-    if(m_segmentQueue.size() > 0)
+    if(m_clusterQueue.size() > 0)
     {
-        result = m_segmentQueue.front();
-        m_segmentQueue.pop_front();
+        result = m_clusterQueue.front();
+        m_clusterQueue.pop_front();
     }
 
     m_queue_lock.clear(std::memory_order_release);

@@ -267,7 +267,6 @@ runRestApiTests()
     }
 
     const std::string clusterDefinition("version: 1\n"
-                                        "segment_type: core_segment\n"
                                         "settings:\n"
                                         "    max_synapse_sections: 1000\n"
                                         "    sign_neg: 0.5\n"

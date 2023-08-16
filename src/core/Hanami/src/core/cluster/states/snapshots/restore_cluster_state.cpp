@@ -26,8 +26,6 @@
 #include <core/cluster/cluster.h>
 #include <core/cluster/cluster_init.h>
 #include <core/cluster/statemachine_init.h>
-#include <core/segments/abstract_segment.h>
-#include <core/segments/core_segment/core_segment.h>
 
 #include <libKitsunemimiCommon/files/binary_file.h>
 #include <libKitsunemimiCrypto/hashes.h>
@@ -87,43 +85,9 @@ RestoreCluster_State::processEvent()
 
     // copy meta-data of cluster
     const uint64_t headerSize = parsedHeader.get("header").getLong();
-    if(Kitsunemimi::reset_DataBuffer(m_cluster->clusterData,
-                                     Kitsunemimi::calcBytesToBlocks(headerSize)) == false)
-    {
-        // TODO: handle error
-        m_cluster->goToNextState(FINISH_TASK);
-        return false;
-    }
+
     const uint8_t* u8Data = static_cast<const uint8_t*>(snapshotBuffer.data);
-    memcpy(m_cluster->clusterData.data, &u8Data[0], headerSize);
-    reinitPointer(m_cluster, originalUuid);
 
-    // copy single segments
-    uint64_t posCounter = headerSize;
-    for(uint64_t i = 0; i < parsedHeader.get("segments").size(); i++)
-    {
-        Kitsunemimi::JsonItem segment = parsedHeader.get("segments").get(i);
-        const SegmentTypes type = static_cast<SegmentTypes>(segment.get("type").getInt());
-        const uint64_t size = static_cast<uint64_t>(segment.get("size").getLong());
-
-        switch(type)
-        {
-            case CORE_SEGMENT:
-            {
-                CoreSegment* newSegment = new CoreSegment(&u8Data[posCounter], size);
-                newSegment->reinitPointer(size);
-                newSegment->parentCluster = m_cluster;
-                m_cluster->coreSegments.push_back(newSegment);
-                break;
-            }
-            case UNDEFINED_SEGMENT:
-            {
-                break;
-            }
-        }
-
-        posCounter += size;
-    }
 
     m_cluster->goToNextState(FINISH_TASK);
 

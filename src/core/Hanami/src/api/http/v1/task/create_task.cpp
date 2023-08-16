@@ -27,7 +27,6 @@
 #include <core/cluster/cluster.h>
 #include <core/cluster/add_tasks.h>
 #include <core/data_set_files/data_set_functions.h>
-#include <core/segments/core_segment/core_segment.h>
 
 #include <libKitsunemimiCommon/files/binary_file.h>
 #include <libKitsunemimiCrypto/common.h>
@@ -254,13 +253,13 @@ CreateTask::tableTask(std::string &taskUuid,
                       Kitsunemimi::ErrorContainer &error)
 {
     // init request-task
-    CoreSegment* segment = cluster->coreSegments.at(0);
-    const uint64_t numberOfInputs = segment->segmentHeader->inputValues.count;
-    const uint64_t numberOfOutputs = segment->segmentHeader->outputValues.count;
+    const uint64_t numberOfInputs = cluster->clusterHeader->inputValues.count;
+    const uint64_t numberOfOutputs = cluster->clusterHeader->outputValues.count;
     const uint64_t numberOfLines = dataSetInfo.get("lines").getLong();
 
     // get input-data
-    const std::string inputColumnName = segment->getName();
+    // TODO: fix
+    const std::string inputColumnName = "";
     float* inputBuffer = getDataSetPayload(dataSetLocation, error, inputColumnName);
     if(inputBuffer == nullptr)
     {
@@ -288,7 +287,8 @@ CreateTask::tableTask(std::string &taskUuid,
     else
     {
         // get output-data
-        const std::string outputColumnName = segment->getName();
+        // TODO: fix
+        const std::string outputColumnName = "";
         float* outputBuffer = getDataSetPayload(dataSetLocation, error, outputColumnName);
         if(outputBuffer == nullptr)
         {

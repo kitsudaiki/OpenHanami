@@ -25,18 +25,48 @@
 
 #include <common.h>
 
-#include <libKitsunemimiHanamiClusterParser/segment_meta.h>
+#include <libKitsunemimiHanamiClusterParser/cluster_meta.h>
+#include <core/processing/objects.h>
 
 class CoreSegment;
 class Cluster;
 
+using Kitsunemimi::Hanami::ClusterMeta;
+
 bool reinitPointer(Cluster* cluster, const std::string &uuid);
 
 bool initNewCluster(Cluster* cluster,
-                    const Kitsunemimi::Hanami::SegmentMeta &clusterTemplate,
+                    const Kitsunemimi::Hanami::ClusterMeta &clusterMeta,
                     const std::string &uuid);
 
-CoreSegment* addDynamicSegment(Cluster* cluster,
-                               const Kitsunemimi::Hanami::SegmentMeta &segmentMeta);
+ClusterHeader createNewHeader(const uint32_t numberOfBricks,
+                              const uint32_t numberOfBrickBlocks,
+                              const uint32_t maxSynapseSections,
+                              const uint64_t numberOfInputs,
+                              const uint64_t numberOfOutputs);
+void initSegmentPointer(Cluster* cluster,
+                        const ClusterHeader &header);
+bool connectBorderBuffer(Cluster* cluster);
+void allocateSegment(Cluster* cluster,
+                     ClusterHeader &header);
+//void initOpencl(Kitsunemimi::GpuData &data);
+void initCuda();
+SegmentSettings initSettings(const Kitsunemimi::Hanami::ClusterMeta &clusterMeta);
+
+void addBricksToSegment(Cluster* cluster,
+                        const Kitsunemimi::Hanami::ClusterMeta &clusterMeta);
+bool initTargetBrickList(Cluster* cluster);
+
+Brick createNewBrick(const Kitsunemimi::Hanami::BrickMeta &brickMeta,
+                     const uint32_t id);
+void connectBrick(Cluster* cluster,
+                  Brick *sourceBrick,
+                  const uint8_t side);
+void connectAllBricks(Cluster* cluster);
+bool initializeNeurons(Cluster* cluster,
+                       const Kitsunemimi::Hanami::ClusterMeta &clusterMeta);
+uint32_t goToNextInitBrick(Cluster* cluster,
+                           Brick* currentBrick,
+                           uint32_t* maxPathLength);
 
 #endif // HANAMI_CLUSTERINIT_H

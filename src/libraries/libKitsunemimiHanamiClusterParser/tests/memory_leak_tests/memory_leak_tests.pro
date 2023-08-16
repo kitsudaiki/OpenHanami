@@ -14,8 +14,8 @@ LIBS += -L../../../libKitsunemimiCommon/src/release -lKitsunemimiCommon
 INCLUDEPATH += ../../../libKitsunemimiCommon/include
 
 SOURCES += \
-    main.cpp \
-    segment_parsestring_test.cpp
+    cluster_parsestring_test.cpp \
+    main.cpp
 
 HEADERS += \
-    segment_parsestring_test.h
+    cluster_parsestring_test.h

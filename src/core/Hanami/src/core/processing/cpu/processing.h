@@ -27,13 +27,11 @@
 #include <math.h>
 #include <cmath>
 
-#include <core/cluster/cluster.h>
-#include <api/websocket/cluster_io.h>
-
 #include <hanami_root.h>
-#include "objects.h"
-#include "core_segment.h"
-#include "section_update.h"
+#include <core/cluster/cluster.h>
+#include <core/processing/objects.h>
+#include <core/processing/section_update.h>
+#include <api/websocket/cluster_io.h>
 
 /**
  * @brief get position of the highest output-position
@@ -43,17 +41,17 @@
  * @return position of the highest output.
  */
 inline uint32_t
-getHighestOutput(const CoreSegment &segment)
+getHighestOutput(const Cluster &cluster)
 {
     float hightest = -0.1f;
     uint32_t hightestPos = 0;
     float value = 0.0f;
 
     for(uint32_t outputNeuronId = 0;
-        outputNeuronId < segment.segmentHeader->outputValues.count;
+        outputNeuronId < cluster.clusterHeader->outputValues.count;
         outputNeuronId++)
     {
-        value = segment.outputValues[outputNeuronId];
+        value = cluster.outputValues[outputNeuronId];
         if(value > hightest)
         {
             hightest = value;
@@ -102,7 +100,7 @@ createNewSynapse(NeuronBlock* block,
  * @brief process synapse-section
  */
 inline void
-synapseProcessing(CoreSegment &segment,
+synapseProcessing(Cluster &cluster,
                   Synapse* section,
                   SynapseConnection* connection,
                   LocationPtr* sourceLocation,
@@ -156,14 +154,14 @@ synapseProcessing(CoreSegment &segment,
             && targetLocation->sectionId == UNINIT_STATE_16)
     {
         const float newOffset = (outH - counter) + connection->offset[sourceLocation->sectionId];
-        processUpdatePositon_CPU(segment, sourceLocation, targetLocation, newOffset);
+        processUpdatePositon_CPU(cluster, sourceLocation, targetLocation, newOffset);
     }
 
     if(targetLocation->sectionId != UNINIT_STATE_16)
     {
         Synapse* nextSection = synapseBlocks[targetLocation->blockId].synapses[targetLocation->sectionId];
         SynapseConnection* nextConnection = &synapseConnections[targetLocation->blockId];
-        synapseProcessing(segment,
+        synapseProcessing(cluster,
                           nextSection,
                           nextConnection,
                           targetLocation,
@@ -179,7 +177,7 @@ synapseProcessing(CoreSegment &segment,
  * @brief process only a single neuron
  */
 inline void
-processSingleNeuron(CoreSegment &segment,
+processSingleNeuron(Cluster &cluster,
                     Neuron* neuron,
                     const uint32_t blockId,
                     const uint32_t neuronIdInBlock,
@@ -200,14 +198,14 @@ processSingleNeuron(CoreSegment &segment,
         sourceLocation.blockId = blockId;
         sourceLocation.sectionId = neuronIdInBlock;
         sourceLocation.isNeuron = true;
-        if(processUpdatePositon_CPU(segment, &sourceLocation, targetLocation, 0.0f) == false) {
+        if(processUpdatePositon_CPU(cluster, &sourceLocation, targetLocation, 0.0f) == false) {
             return;
         }
     }
 
     Synapse* nextSection = synapseBlocks[targetLocation->blockId].synapses[targetLocation->sectionId];
     SynapseConnection* nextConnection = &synapseConnections[targetLocation->blockId];
-    synapseProcessing(segment,
+    synapseProcessing(cluster,
                       nextSection,
                       nextConnection,
                       targetLocation,
@@ -222,7 +220,7 @@ processSingleNeuron(CoreSegment &segment,
  * @brief process output brick
  */
 inline void
-processNeuronsOfOutputBrick(CoreSegment &segment,
+processNeuronsOfOutputBrick(Cluster &cluster,
                             const Brick* brick,
                             float* outputValues,
                             NeuronBlock* neuronBlocks,
@@ -253,10 +251,10 @@ processNeuronsOfOutputBrick(CoreSegment &segment,
         }
 
         // send output back if a client-connection is set
-        if(segment.parentCluster->msgClient != nullptr
-                && segment.parentCluster->mode == Cluster::NORMAL_MODE)
+        if(cluster.msgClient != nullptr
+                && cluster.mode == ClusterProcessingMode::NORMAL_MODE)
         {
-             sendClusterOutputMessage(segment);
+             sendClusterOutputMessage(&cluster);
         }
     }
 }
@@ -265,7 +263,7 @@ processNeuronsOfOutputBrick(CoreSegment &segment,
  * @brief process input brick
  */
 inline void
-processNeuronsOfInputBrick(CoreSegment &segment,
+processNeuronsOfInputBrick(Cluster &cluster,
                            const Brick* brick,
                            float* inputValues,
                            NeuronBlock* neuronBlocks,
@@ -291,7 +289,7 @@ processNeuronsOfInputBrick(CoreSegment &segment,
             neuron->potential = inputValues[counter];
             neuron->active = neuron->potential > 0.0f;
 
-            processSingleNeuron(segment,
+            processSingleNeuron(cluster,
                                 neuron,
                                 blockId,
                                 neuronIdInBlock,
@@ -309,7 +307,7 @@ processNeuronsOfInputBrick(CoreSegment &segment,
  * @brief process normal internal brick
  */
 inline void
-processNeuronsOfNormalBrick(CoreSegment &segment,
+processNeuronsOfNormalBrick(Cluster &cluster,
                             const Brick* brick,
                             NeuronBlock* neuronBlocks,
                             SynapseBlock* synapseBlocks,
@@ -346,7 +344,7 @@ processNeuronsOfNormalBrick(CoreSegment &segment,
             neuron->input = 0.0f;
             neuron->potential = log2(neuron->potential + 1.0f);
 
-            processSingleNeuron(segment,
+            processSingleNeuron(cluster,
                                 neuron,
                                 blockId,
                                 neuronIdInBlock,
@@ -362,23 +360,23 @@ processNeuronsOfNormalBrick(CoreSegment &segment,
  * @brief process all neurons within a segment
  */
 inline void
-prcessCoreSegment(CoreSegment &segment)
+prcessCoreSegment(Cluster &cluster)
 {
-    float* inputValues = segment.inputValues;
-    float* outputValues = segment.outputValues;
-    NeuronBlock* neuronBlocks = segment.neuronBlocks;
-    SynapseConnection* synapseConnections = segment.synapseConnections;
-    SynapseBlock* synapseBlocks = segment.synapseBlocks;
-    SegmentSettings* segmentSettings = segment.segmentSettings;
+    float* inputValues = cluster.inputValues;
+    float* outputValues = cluster.outputValues;
+    NeuronBlock* neuronBlocks = cluster.neuronBlocks;
+    SynapseConnection* synapseConnections = cluster.synapseConnections;
+    SynapseBlock* synapseBlocks = cluster.synapseBlocks;
+    SegmentSettings* segmentSettings = cluster.clusterSettings;
 
-    const uint32_t numberOfBricks = segment.segmentHeader->bricks.count;
+    const uint32_t numberOfBricks = cluster.clusterHeader->bricks.count;
     for(uint32_t pos = 0; pos < numberOfBricks; pos++)
     {
-        const uint32_t brickId = segment.brickOrder[pos];
-        Brick* brick = &segment.bricks[brickId];
+        const uint32_t brickId = cluster.brickOrder[pos];
+        Brick* brick = &cluster.bricks[brickId];
         if(brick->isInputBrick)
         {
-            processNeuronsOfInputBrick(segment,
+            processNeuronsOfInputBrick(cluster,
                                        brick,
                                        inputValues,
                                        neuronBlocks,
@@ -388,7 +386,7 @@ prcessCoreSegment(CoreSegment &segment)
         }
         else if(brick->isOutputBrick)
         {
-            processNeuronsOfOutputBrick(segment,
+            processNeuronsOfOutputBrick(cluster,
                                         brick,
                                         outputValues,
                                         neuronBlocks,
@@ -396,7 +394,7 @@ prcessCoreSegment(CoreSegment &segment)
         }
         else
         {
-            processNeuronsOfNormalBrick(segment,
+            processNeuronsOfNormalBrick(cluster,
                                         brick,
                                         neuronBlocks,
                                         synapseBlocks,

@@ -28,15 +28,14 @@
 #include <cmath>
 
 #include <hanami_root.h>
-#include <core/segments/core_segment/core_segment.h>
-
-#include "objects.h"
+#include <core/processing/objects.h>
+#include <core/cluster/cluster.h>
 
 /**
  * @brief backpropagate values of an output-brick
  */
 inline bool
-backpropagateOutput(const CoreSegment &segment,
+backpropagateOutput(const Cluster &cluster,
                     const Brick* brick,
                     NeuronBlock* neuronBlocks,
                     float* expectedValues,
@@ -65,7 +64,7 @@ backpropagateOutput(const CoreSegment &segment,
         }
     }
 
-    return totalDelta > segment.segmentSettings->backpropagationBorder;
+    return totalDelta > cluster.clusterSettings->backpropagationBorder;
     //return true;
 }
 
@@ -73,7 +72,7 @@ backpropagateOutput(const CoreSegment &segment,
  * @brief run backpropagation for a single synapse-section
  */
 inline void
-backpropagateSection(const CoreSegment &segment,
+backpropagateSection(const Cluster &cluster,
                      Synapse* section,
                      Neuron* sourceNeuron,
                      SynapseConnection* connection,
@@ -88,7 +87,7 @@ backpropagateSection(const CoreSegment &segment,
     float learnValue = 0.2f;
     uint16_t pos = 0;
     float counter = outH - connection->offset[sourceLocation->sectionId];
-    NeuronBlock* neuronBlock = &segment.neuronBlocks[connection->targetNeuronBlockId];
+    NeuronBlock* neuronBlock = &neuronBlocks[connection->targetNeuronBlockId];
 
     // iterate over all synapses in the section
     while(pos < SYNAPSES_PER_SYNAPSESECTION
@@ -116,9 +115,9 @@ backpropagateSection(const CoreSegment &segment,
     LocationPtr* targetLocation = &connection->next[sourceLocation->sectionId];
     if(targetLocation->sectionId != UNINIT_STATE_16)
     {
-        Synapse* nextSection = segment.synapseBlocks[targetLocation->blockId].synapses[targetLocation->sectionId];
-        SynapseConnection* nextConnection = &segment.synapseConnections[targetLocation->blockId];
-        backpropagateSection(segment,
+        Synapse* nextSection = synapseBlocks[targetLocation->blockId].synapses[targetLocation->sectionId];
+        SynapseConnection* nextConnection = &synapseConnections[targetLocation->blockId];
+        backpropagateSection(cluster,
                              nextSection,
                              sourceNeuron,
                              nextConnection,
@@ -134,7 +133,7 @@ backpropagateSection(const CoreSegment &segment,
  * @brief run back-propagation over all neurons
  */
 inline void
-backpropagateNeurons(const CoreSegment &segment,
+backpropagateNeurons(const Cluster &cluster,
                      const Brick* brick,
                      NeuronBlock* neuronBlocks,
                      SynapseBlock* synapseBlocks,
@@ -170,7 +169,7 @@ backpropagateNeurons(const CoreSegment &segment,
 
                 Synapse* nextSection = synapseBlocks[targetLocation->blockId].synapses[targetLocation->sectionId];
                 SynapseConnection* nextConnection = &synapseConnections[targetLocation->blockId];
-                backpropagateSection(segment,
+                backpropagateSection(cluster,
                                      nextSection,
                                      sourceNeuron,
                                      nextConnection,
@@ -190,23 +189,23 @@ backpropagateNeurons(const CoreSegment &segment,
  * @brief correct weight of synapses within a segment
  */
 void
-reweightCoreSegment(const CoreSegment &segment)
+reweightCoreSegment(const Cluster &cluster)
 {
-    float* expectedValues = segment.expectedValues;
-    float* outputValues = segment.outputValues;
-    NeuronBlock* neuronBlocks = segment.neuronBlocks;
-    SynapseConnection* synapseConnections = segment.synapseConnections;
-    SynapseBlock* synapseBlocks = segment.synapseBlocks;
+    float* expectedValues = cluster.expectedValues;
+    float* outputValues = cluster.outputValues;
+    NeuronBlock* neuronBlocks = cluster.neuronBlocks;
+    SynapseConnection* synapseConnections = cluster.synapseConnections;
+    SynapseBlock* synapseBlocks = cluster.synapseBlocks;
 
     // run back-propagation over all internal neurons and synapses
-    const uint32_t numberOfBricks = segment.segmentHeader->bricks.count;
+    const uint32_t numberOfBricks = cluster.clusterHeader->bricks.count;
     for(int32_t pos = numberOfBricks - 1; pos >= 0; pos--)
     {
-        const uint32_t brickId = segment.brickOrder[pos];
-        Brick* brick = &segment.bricks[brickId];
+        const uint32_t brickId = cluster.brickOrder[pos];
+        Brick* brick = &cluster.bricks[brickId];
         if(brick->isOutputBrick)
         {
-            if(backpropagateOutput(segment,
+            if(backpropagateOutput(cluster,
                                    brick,
                                    neuronBlocks,
                                    expectedValues,
@@ -215,7 +214,7 @@ reweightCoreSegment(const CoreSegment &segment)
                 return;
             }
         }
-        backpropagateNeurons(segment,
+        backpropagateNeurons(cluster,
                              brick,
                              neuronBlocks,
                              synapseBlocks,
