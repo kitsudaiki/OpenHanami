@@ -40,7 +40,6 @@ void
 Cluster_ParseString_Test::parseString_test()
 {
     std::string input("version: 1\n"
-                      "cluster_type: core_cluster\n"
                       "settings:\n"
                       "    max_synapse_sections: 100000\n"
                       "    synapse_clusteration: 10\n"
@@ -97,7 +96,6 @@ Cluster_ParseString_Test::parseString_test()
 
 
     input = "version: 2\n"  // <-- error
-            "cluster_type: core_cluster\n"
             "settings:\n"
             "    max_synapse_sections: 100000\n"
             "    synapse_clusteration: 10\n"
@@ -119,29 +117,6 @@ Cluster_ParseString_Test::parseString_test()
     TEST_EQUAL(ret, false);
 
     input = "version: 1\n"
-            "cluster_type: asdf_cluster\n"  // <-- error
-            "settings:\n"
-            "    max_synapse_sections: 100000\n"
-            "    synapse_clusteration: 10\n"
-            "    sign_neg: 0.5\n"
-            "        \n"
-            "bricks:\n"
-            "    1,1,1\n"
-            "        input: test_input\n"
-            "        number_of_neurons: 20\n"
-            "         \n "
-            "    2,1,1\n"
-            "        number_of_neurons: 10\n"
-            "          \n"
-            "    3,1,1\n"
-            "        output: test_output\n"
-            "        number_of_neurons: 5\n";
-
-    ret = parseCluster(&result, input, error);
-    TEST_EQUAL(ret, false);
-
-    input = "version: 1\n"
-            "cluster_type: core_cluster\n"
             "settings:\n"
             "    max_synapse_sections: 100000\n"  // <-- error
             "    asdf_clusteration: 10\n"
@@ -163,7 +138,6 @@ Cluster_ParseString_Test::parseString_test()
     TEST_EQUAL(ret, false);
 
     input = "version: 1\n"
-            "cluster_type: core_cluster\n"
             "settings:\n"
             "    max_synapse_sections: 100000\n"
             "    synapse_clusteration: 10\n"
@@ -185,7 +159,6 @@ Cluster_ParseString_Test::parseString_test()
     TEST_EQUAL(ret, false);
 
     input = "version: 1\n"
-            "cluster_type: core_cluster\n"
             "settings:\n"
             "    max_synapse_sections: 100000\n"
             "    synapse_clusteration: 10\n"
@@ -207,7 +180,6 @@ Cluster_ParseString_Test::parseString_test()
     TEST_EQUAL(ret, false);
 
     input = "version: 1\n"
-            "cluster_type: core_cluster\n"
             "settings:\n"
             "    max_synapse_sections: 100000\n"
             "    synapse_clusteration: 10\n"
@@ -229,7 +201,6 @@ Cluster_ParseString_Test::parseString_test()
     TEST_EQUAL(ret, false);
 
     input = "version: 1\n"
-            "cluster_type: core_cluster\n"
             "settings:\n"
             "    max_synapse_sections: 100000\n"
             "    synapse_clusteration: 10\n"
@@ -251,7 +222,6 @@ Cluster_ParseString_Test::parseString_test()
     TEST_EQUAL(ret, false);
 
     input = "version: 1\n"
-            "cluster_type: core_cluster\n"
             "settings:\n"
             "    max_synapse_sections: 100000\n"
             "    synapse_clusteration: 10\n"
@@ -273,7 +243,6 @@ Cluster_ParseString_Test::parseString_test()
     TEST_EQUAL(ret, false);
 
     input = "version: 1\n"
-            "cluster_type: core_cluster\n"
             "settings:\n"
             "    max_synapse_sections: 100000\n"
             "    synapse_clusteration: 10\n"

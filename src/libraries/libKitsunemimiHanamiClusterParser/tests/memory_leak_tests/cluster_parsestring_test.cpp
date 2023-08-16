@@ -40,7 +40,6 @@ void
 Cluster_ParseString_Test::parseString_test()
 {
     const std::string input("version: 1\n"
-                            "cluster_type: core_cluster\n"
                             "settings:\n"
                             "    max_synapse_sections: 100000\n"
                             "    synapse_clusteration: 10\n"
