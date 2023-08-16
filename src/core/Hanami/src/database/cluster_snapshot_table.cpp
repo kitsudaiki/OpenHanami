@@ -40,20 +40,10 @@ ClusterSnapshotTable::ClusterSnapshotTable()
 {
     m_tableName = "cluster_snapshot";
 
-    DbHeaderEntry header;
-    header.name = "header";
-    header.hide = true;
-    m_tableHeader.push_back(header);
-
     DbHeaderEntry location;
     location.name = "location";
     location.hide = true;
     m_tableHeader.push_back(location);  
-
-    DbHeaderEntry tempFiles;
-    tempFiles.name = "temp_files";
-    tempFiles.hide = true;
-    m_tableHeader.push_back(tempFiles);
 }
 
 /**

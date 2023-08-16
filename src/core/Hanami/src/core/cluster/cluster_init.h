@@ -33,7 +33,8 @@ class Cluster;
 
 using Kitsunemimi::Hanami::ClusterMeta;
 
-bool reinitPointer(Cluster* cluster, const std::string &uuid);
+bool reinitPointer(Cluster* cluster,
+                   const uint64_t numberOfBytes);
 
 bool initNewCluster(Cluster* cluster,
                     const Kitsunemimi::Hanami::ClusterMeta &clusterMeta,

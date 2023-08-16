@@ -61,11 +61,7 @@ SaveCluster_State::processEvent()
     do
     {
         Task* actualTask = m_cluster->getActualTask();
-        uint64_t totalSize = 0;
-        std::string headerMessage = "";
-
-        // create message to shiori and calculate total size of storage of the cluster
-        totalSize = m_cluster->clusterData.buffer.usedBufferSize;
+        const uint64_t totalSize = m_cluster->clusterData.buffer.usedBufferSize;
 
         // send snapshot to shiori
         std::string fileUuid = "";
@@ -95,11 +91,9 @@ SaveCluster_State::processEvent()
         dbEntry.insert("uuid", actualTask->uuid.toString());
         dbEntry.insert("name", actualTask->snapshotName);
         dbEntry.insert("location", targetFilePath);
-        dbEntry.insert("header", headerMessage);
         dbEntry.insert("project_id", actualTask->projectId);
         dbEntry.insert("owner_id", actualTask->userId);
         dbEntry.insert("visibility", "private");
-        dbEntry.insert("temp_files", "");
 
         // add to database
         if(ClusterSnapshotTable::getInstance()->addClusterSnapshot(dbEntry,
@@ -157,20 +151,14 @@ SaveCluster_State::writeData(const std::string &filePath,
     }
 
     // global byte-counter to identifiy the position within the complete snapshot
-    uint64_t posCounter = 0;
-    Kitsunemimi::DataBuffer* buffer = nullptr;
-    if(snapshotFile.writeDataIntoFile(buffer->data,
-                                      posCounter,
-                                      buffer->usedBufferSize,
-                                      error) == false)
+    Kitsunemimi::DataBuffer* buffer = &m_cluster->clusterData.buffer;
+    if(snapshotFile.writeDataIntoFile(buffer->data, 0, buffer->usedBufferSize, error) == false)
     {
-        error.addMeesage("Failed to write segment of cluster for snapshot into file '"
+        error.addMeesage("Failed to write cluster for snapshot into file '"
                          + filePath
                          + "'");
         return false;
     }
-
-    posCounter += buffer->usedBufferSize;
 
     return true;
 }

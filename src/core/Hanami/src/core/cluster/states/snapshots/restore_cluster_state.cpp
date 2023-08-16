@@ -83,12 +83,19 @@ RestoreCluster_State::processEvent()
         return false;
     }
 
-    // copy meta-data of cluster
-    const uint64_t headerSize = parsedHeader.get("header").getLong();
-
+    // copy data of cluster
     const uint8_t* u8Data = static_cast<const uint8_t*>(snapshotBuffer.data);
+    m_cluster->clusterData.initBuffer(u8Data, snapshotBuffer.usedBufferSize);
+    if(reinitPointer(m_cluster, snapshotBuffer.usedBufferSize) == false)
+    {
+        error.addMeesage("failed to re-init pointer in cluster");
+        m_cluster->goToNextState(FINISH_TASK);
+        return false;
+    }
 
-
+    strncpy(m_cluster->clusterHeader->uuid.uuid,
+            originalUuid.c_str(),
+            originalUuid.size());
     m_cluster->goToNextState(FINISH_TASK);
 
     return true;
