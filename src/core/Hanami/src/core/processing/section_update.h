@@ -88,14 +88,24 @@ getTargetSectionId(SynapseConnection* targetConnection)
  */
 inline bool
 createNewSection(Cluster &cluster,
-                 const LocationPtr* originLocation,
+                 const LocationPtr &originLocation,
                  const float offset)
 {
-    // get current position
+    bool sourceIsNeuron = false;
     uint32_t originBrickId = UNINIT_STATE_32;
+    LocationPtr currentLocation;
+    LocationPtr firstSynapseLocation = cluster.neuronBlocks[originLocation.blockId].neurons[originLocation.sectionId].target;
 
-    LocationPtr currentLocation = checkForwards(cluster, *originLocation);
-    originBrickId = cluster.neuronBlocks[originLocation->blockId].brickId;
+    if(firstSynapseLocation.blockId == UNINIT_STATE_32)
+    {
+        sourceIsNeuron = true;
+        currentLocation = originLocation;
+    }
+    else
+    {
+        currentLocation = checkForwards(cluster, firstSynapseLocation);
+    }
+    originBrickId = cluster.neuronBlocks[originLocation.blockId].brickId;
 
     // get target objects
     const Brick* originBrick = &cluster.bricks[originBrickId];
@@ -113,6 +123,7 @@ createNewSection(Cluster &cluster,
         if(targetSynapseBlockId == ITEM_BUFFER_UNDEFINE_POS) {
             return false;
         }
+        targetNeuronBlock->backwardNextId = targetSynapseBlockId;
     }
     else
     {
@@ -121,25 +132,23 @@ createNewSection(Cluster &cluster,
 
     // get possible section-id in target-block
     SynapseConnection* targetConnection = &cluster.synapseConnections[targetSynapseBlockId];
-    const uint32_t targetSectionId = getTargetSectionId(targetConnection);
+    uint32_t targetSectionId = getTargetSectionId(targetConnection);
 
     // in case no empty section is available, then try to create new block
-    if(targetSectionId == NUMBER_OF_SYNAPSESECTION)
+    if(targetSectionId == UNINIT_STATE_32)
     {
         SynapseConnection newConnection;
         const uint64_t targetSynapseBlockId = cluster.clusterData.addNewItem(newConnection);
         if(targetSynapseBlockId == ITEM_BUFFER_UNDEFINE_POS) {
             return false;
         }
+        targetConnection->backwardNextId = targetSynapseBlockId;
         targetConnection = &cluster.synapseConnections[targetSynapseBlockId];
+        targetSectionId = 0;
     }
 
-    //targetLocation->blockId = targetSynapseBlockId;
-    //targetLocation->sectionId = targetSectionId;
-
     // update connection
-    if(currentLocation.sectionId == originLocation->sectionId
-            && currentLocation.blockId == originLocation->blockId)
+    if(sourceIsNeuron)
     {
         NeuronBlock* neuronBlock = &cluster.neuronBlocks[currentLocation.blockId];
         neuronBlock->neurons[currentLocation.sectionId].target.blockId = targetSynapseBlockId;
@@ -152,8 +161,8 @@ createNewSection(Cluster &cluster,
         currentConnection->next[currentLocation.sectionId].sectionId = targetSectionId;
     }
 
-    targetConnection->origin[targetSectionId].blockId = originLocation->blockId;
-    targetConnection->origin[targetSectionId].sectionId = originLocation->sectionId;
+    targetConnection->origin[targetSectionId].blockId = originLocation.blockId;
+    targetConnection->origin[targetSectionId].sectionId = originLocation.sectionId;
     targetConnection->offset[targetSectionId] = offset;
     targetConnection->targetNeuronBlockId = targetNeuronBlockId;
 
@@ -189,7 +198,7 @@ updateSections(Cluster &cluster)
                 originLocation.blockId = neuronBlockId;
                 originLocation.sectionId = sourceId;
 
-                createNewSection(cluster, &originLocation, neuron->newOffset);
+                createNewSection(cluster, originLocation, neuron->newOffset);
 
                 neuron->newOffset = 0.0f;
                 neuron->isNew = 0;

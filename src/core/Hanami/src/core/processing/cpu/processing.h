@@ -103,7 +103,7 @@ inline void
 synapseProcessing(Cluster &cluster,
                   Synapse* section,
                   SynapseConnection* connection,
-                  LocationPtr* sourceLocation,
+                  LocationPtr* currentLocation,
                   const float outH,
                   NeuronBlock* neuronBlocks,
                   SynapseBlock* synapseBlocks,
@@ -114,7 +114,7 @@ synapseProcessing(Cluster &cluster,
     Synapse* synapse = nullptr;
     Neuron* targetNeuron = nullptr;
     uint8_t active = 0;
-    float counter = outH - connection->offset[sourceLocation->sectionId];
+    float counter = outH - connection->offset[currentLocation->sectionId];
     NeuronBlock* neuronBlock = &neuronBlocks[connection->targetNeuronBlockId];
 
     // iterate over all synapses in the section
@@ -149,13 +149,13 @@ synapseProcessing(Cluster &cluster,
         pos++;
     }
 
-    LocationPtr* targetLocation = &connection->next[sourceLocation->sectionId];
+    LocationPtr* targetLocation = &connection->next[currentLocation->sectionId];
     if(counter > 0.01f
             && targetLocation->sectionId == UNINIT_STATE_16)
     {
-        const float newOffset = (outH - counter) + connection->offset[sourceLocation->sectionId];
-        createNewSection(cluster, connection->origin, newOffset);
-        targetLocation = &connection->next[sourceLocation->sectionId];
+        const float newOffset = (outH - counter) + connection->offset[currentLocation->sectionId];
+        createNewSection(cluster, connection->origin[currentLocation->sectionId], newOffset);
+        targetLocation = &connection->next[currentLocation->sectionId];
     }
 
     if(targetLocation->sectionId != UNINIT_STATE_16)
@@ -198,7 +198,7 @@ processSingleNeuron(Cluster &cluster,
         LocationPtr sourceLocation;
         sourceLocation.blockId = blockId;
         sourceLocation.sectionId = neuronIdInBlock;
-        if(createNewSection(cluster, &sourceLocation, 0.0f) == false) {
+        if(createNewSection(cluster, sourceLocation, 0.0f) == false) {
             return;
         }
         targetLocation = &neuron->target;
