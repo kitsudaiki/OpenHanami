@@ -149,8 +149,7 @@ struct LocationPtr
 {
     uint32_t blockId = UNINIT_STATE_32;
     uint16_t sectionId = UNINIT_STATE_16;
-    bool isNeuron = false;
-    uint8_t padding[1];
+    uint8_t padding[2];
 };
 static_assert(sizeof(LocationPtr) == 8);
 
@@ -163,9 +162,12 @@ struct Neuron
     float potential = 0.0f;
     float delta = 0.0f;
 
+    float newOffset = 0.0f;
+    uint8_t isNew = 0;
+
     uint8_t refractionTime = 1;
     uint8_t active = 0;
-    uint8_t padding[6];
+    uint8_t padding[1];
     LocationPtr target;
 };
 static_assert(sizeof(Neuron) == 32);

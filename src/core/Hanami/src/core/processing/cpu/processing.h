@@ -154,7 +154,8 @@ synapseProcessing(Cluster &cluster,
             && targetLocation->sectionId == UNINIT_STATE_16)
     {
         const float newOffset = (outH - counter) + connection->offset[sourceLocation->sectionId];
-        processUpdatePositon_CPU(cluster, sourceLocation, targetLocation, newOffset);
+        createNewSection(cluster, connection->origin, newOffset);
+        targetLocation = &connection->next[sourceLocation->sectionId];
     }
 
     if(targetLocation->sectionId != UNINIT_STATE_16)
@@ -197,10 +198,10 @@ processSingleNeuron(Cluster &cluster,
         LocationPtr sourceLocation;
         sourceLocation.blockId = blockId;
         sourceLocation.sectionId = neuronIdInBlock;
-        sourceLocation.isNeuron = true;
-        if(processUpdatePositon_CPU(cluster, &sourceLocation, targetLocation, 0.0f) == false) {
+        if(createNewSection(cluster, &sourceLocation, 0.0f) == false) {
             return;
         }
+        targetLocation = &neuron->target;
     }
 
     Synapse* nextSection = synapseBlocks[targetLocation->blockId].synapses[targetLocation->sectionId];

@@ -35,14 +35,32 @@
  * @return
  */
 inline uint32_t
-checkBackwards(Cluster &cluster, const uint32_t nextId)
+checkBackwards(Cluster &cluster, const uint32_t currentId)
 {
-    SynapseConnection* nextConnection = &cluster.synapseConnections[nextId];
-    if(nextConnection->backwardNextId == UNINIT_STATE_32) {
-        return nextId;
+    SynapseConnection* currentConnection = &cluster.synapseConnections[currentId];
+    if(currentConnection->backwardNextId == UNINIT_STATE_32) {
+        return currentId;
     }
 
-    return checkBackwards(cluster, nextConnection->backwardNextId);
+    return checkBackwards(cluster, currentConnection->backwardNextId);
+}
+
+/**
+ * @brief checkForwards
+ * @param cluster
+ * @param currentLocation
+ * @return
+ */
+inline LocationPtr
+checkForwards(Cluster &cluster, const LocationPtr &currentLocation)
+{
+    SynapseConnection* currentConnection = &cluster.synapseConnections[currentLocation.blockId];
+    LocationPtr nextPtr = currentConnection->next[currentLocation.sectionId];
+    if(nextPtr.blockId == UNINIT_STATE_32) {
+        return currentLocation;
+    }
+
+    return checkForwards(cluster, nextPtr);
 }
 
 /**
@@ -69,25 +87,15 @@ getTargetSectionId(SynapseConnection* targetConnection)
  * @brief process single update-position
  */
 inline bool
-processUpdatePositon_CPU(Cluster &cluster,
-                         const LocationPtr* currentLocation,
-                         LocationPtr* targetLocation,
-                         const float offset)
+createNewSection(Cluster &cluster,
+                 const LocationPtr* originLocation,
+                 const float offset)
 {
     // get current position
     uint32_t originBrickId = UNINIT_STATE_32;
 
-    if(currentLocation->isNeuron)
-    {
-        NeuronBlock* neuronBlock = &cluster.neuronBlocks[currentLocation->blockId];
-        originBrickId = neuronBlock->brickId;
-    }
-    else
-    {
-        SynapseConnection* currentConnection = &cluster.synapseConnections[currentLocation->blockId];
-        const uint32_t originBlockId = currentConnection->origin[currentLocation->sectionId].blockId;
-        originBrickId = cluster.neuronBlocks[originBlockId].brickId;
-    }
+    LocationPtr currentLocation = checkForwards(cluster, *originLocation);
+    originBrickId = cluster.neuronBlocks[originLocation->blockId].brickId;
 
     // get target objects
     const Brick* originBrick = &cluster.bricks[originBrickId];
@@ -126,36 +134,28 @@ processUpdatePositon_CPU(Cluster &cluster,
         targetConnection = &cluster.synapseConnections[targetSynapseBlockId];
     }
 
-    targetLocation->blockId = targetSynapseBlockId;
-    targetLocation->sectionId = targetSectionId;
+    //targetLocation->blockId = targetSynapseBlockId;
+    //targetLocation->sectionId = targetSectionId;
 
     // update connection
-    if(currentLocation->isNeuron)
+    if(currentLocation.sectionId == originLocation->sectionId
+            && currentLocation.blockId == originLocation->blockId)
     {
-        NeuronBlock* neuronBlock = &cluster.neuronBlocks[currentLocation->blockId];
-
-        targetConnection->origin[targetSectionId].blockId = currentLocation->blockId;
-        targetConnection->origin[targetSectionId].sectionId = currentLocation->sectionId;
-        targetConnection->offset[targetSectionId] = offset;
-        targetConnection->targetNeuronBlockId = targetNeuronBlockId;
-
-        neuronBlock->neurons[currentLocation->sectionId].target.blockId = targetSynapseBlockId;
-        neuronBlock->neurons[currentLocation->sectionId].target.sectionId = targetSectionId;
+        NeuronBlock* neuronBlock = &cluster.neuronBlocks[currentLocation.blockId];
+        neuronBlock->neurons[currentLocation.sectionId].target.blockId = targetSynapseBlockId;
+        neuronBlock->neurons[currentLocation.sectionId].target.sectionId = targetSectionId;
     }
     else
     {
-        SynapseConnection* currentConnection = &cluster.synapseConnections[currentLocation->blockId];
-        const uint32_t originBlockId = currentConnection->origin[currentLocation->sectionId].blockId;
-        const uint16_t originSectionId = currentConnection->origin[currentLocation->sectionId].blockId;
-
-        targetConnection->origin[targetSectionId].blockId = originBlockId;
-        targetConnection->origin[targetSectionId].sectionId = originSectionId;
-        targetConnection->offset[targetSectionId] = offset;
-        targetConnection->targetNeuronBlockId = targetNeuronBlockId;
-
-        currentConnection->next[currentLocation->sectionId].blockId = targetSynapseBlockId;
-        currentConnection->next[currentLocation->sectionId].sectionId = targetSectionId;
+        SynapseConnection* currentConnection = &cluster.synapseConnections[currentLocation.blockId];
+        currentConnection->next[currentLocation.sectionId].blockId = targetSynapseBlockId;
+        currentConnection->next[currentLocation.sectionId].sectionId = targetSectionId;
     }
+
+    targetConnection->origin[targetSectionId].blockId = originLocation->blockId;
+    targetConnection->origin[targetSectionId].sectionId = originLocation->sectionId;
+    targetConnection->offset[targetSectionId] = offset;
+    targetConnection->targetNeuronBlockId = targetNeuronBlockId;
 
     return true;
 }
@@ -164,38 +164,40 @@ processUpdatePositon_CPU(Cluster &cluster,
  * @brief prcess update-positions in order to create new sections
  */
 inline bool
-updateSections_GPU(Cluster &cluster)
+updateSections(Cluster &cluster)
 {
-    /*NeuronConnection* sourceNeuronConnection = nullptr;
-    UpdatePos* sourceUpdatePos = nullptr;
+    NeuronBlock* neuronBlock = nullptr;
+    Neuron* neuron = nullptr;
 
     bool found = false;
 
     // iterate over all neurons and add new synapse-section, if required
-    for(uint32_t sourceSectionId = 0;
-        sourceSectionId < segment.segmentHeader->neuronSections.count;
-        sourceSectionId++)
+    for(uint32_t neuronBlockId = 0;
+        neuronBlockId < cluster.clusterHeader->neuronBlocks.count;
+        neuronBlockId++)
     {
-        sourceNeuronConnection = &segment.neuronConnections[sourceSectionId];
+        neuronBlock = &cluster.neuronBlocks[neuronBlockId];
         for(uint32_t sourceId = 0;
-            sourceId < sourceNeuronConnection->numberOfPositions;
+            sourceId < neuronBlock->numberOfNeurons;
             sourceId++)
         {
-            sourceUpdatePos = &sourceNeuronConnection->positions[sourceId];
-            if(sourceUpdatePos->type == 1)
+            neuron = &neuronBlock->neurons[sourceId];
+            if(neuron->isNew)
             {
                 found = true;
-                sourceUpdatePos->type = 0;
-                processUpdatePositon_GPU(segment,
-                                         sourceSectionId,
-                                         sourceId,
-                                         sourceUpdatePos->offset);
+                LocationPtr originLocation;
+                originLocation.blockId = neuronBlockId;
+                originLocation.sectionId = sourceId;
+
+                createNewSection(cluster, &originLocation, neuron->newOffset);
+
+                neuron->newOffset = 0.0f;
+                neuron->isNew = 0;
             }
         }
     }
 
-    return found;*/
-    return false;
+    return found;
 }
 
 #endif // HANAMI_SECTION_UPDATE_H
