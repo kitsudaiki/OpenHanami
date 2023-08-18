@@ -49,6 +49,7 @@ public:
 
     // cluster-data
     Kitsunemimi::ItemBuffer clusterData;
+    PointerHandler gpuPointer;
 
     ClusterHeader* clusterHeader = nullptr;
     SegmentSettings* clusterSettings = nullptr;
@@ -93,6 +94,7 @@ public:
 
 private:
     std::mutex m_segmentCounterLock;
+    void initCuda();
 };
 
 #endif // HANAMI_CLUSTER_H

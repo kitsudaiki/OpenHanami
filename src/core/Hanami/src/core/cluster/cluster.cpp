@@ -33,6 +33,18 @@
 #include <libKitsunemimiCommon/statemachine.h>
 #include <libKitsunemimiCommon/threading/thread.h>
 
+extern "C"
+void
+copyToDevice_CUDA(PointerHandler* gpuPointer,
+                  SegmentSettings* segmentSettings,
+                  NeuronBlock* neuronBlocks,
+                  const uint32_t numberOfNeuronBlocks,
+                  SynapseBlock* synapseBlocks,
+                  const uint32_t numberOfSynapseBlocks,
+                  SynapseConnection* synapseConnections,
+                  const uint32_t numberOfSynapseConnections,
+                  uint32_t* randomValues);
+
 /**
  * @brief constructor
  */
@@ -75,6 +87,23 @@ std::string Cluster::getUuid()
 }
 
 /**
+ * @brief Cluster::initCuda
+ */
+void
+Cluster::initCuda()
+{
+    copyToDevice_CUDA(&gpuPointer,
+                      clusterSettings,
+                      neuronBlocks,
+                      clusterHeader->neuronBlocks.count,
+                      synapseBlocks,
+                      clusterHeader->synapseBlocks.count,
+                      synapseConnections,
+                      clusterHeader->synapseConnections.count,
+                      HanamiRoot::m_randomValues);
+}
+
+/**
  * @brief init the cluster
  *
  * @param parsedContent TODO
@@ -87,7 +116,13 @@ bool
 Cluster::init(const Kitsunemimi::Hanami::ClusterMeta &clusterTemplate,
               const std::string &uuid)
 {
-    return initNewCluster(this, clusterTemplate, uuid);
+    bool ret = initNewCluster(this, clusterTemplate, uuid);
+    if(ret
+            && HanamiRoot::useCuda)
+    {
+        initCuda();
+    }
+    return ret;
 }
 
 /**

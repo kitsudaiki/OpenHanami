@@ -109,9 +109,12 @@ createNewSection(Cluster &cluster,
 
     // get target objects
     const Brick* originBrick = &cluster.bricks[originBrickId];
+    if(originBrick->isOutputBrick) {
+        return false;
+    }
     const uint32_t targetBrickId = originBrick->possibleTargetNeuronBrickIds[rand() % 1000];
     const Brick* targetBrick = &cluster.bricks[targetBrickId];
-    const uint32_t targetNeuronBlockId = targetBrick->brickBlockPos + (rand() % targetBrick->numberOfNeuronSections);
+    const uint32_t targetNeuronBlockId = targetBrick->brickBlockPos + (rand() % targetBrick->numberOfNeuronBlocks);
     NeuronBlock* targetNeuronBlock = &cluster.neuronBlocks[targetNeuronBlockId];
 
     // get or create last available synapse-block

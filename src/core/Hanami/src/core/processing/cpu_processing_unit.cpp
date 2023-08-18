@@ -34,36 +34,39 @@
 #include <libKitsunemimiOpencl/gpu_interface.h>
 #include <libKitsunemimiOpencl/gpu_handler.h>
 
-/*
 extern "C"
 void
 processing_CUDA(PointerHandler* gpuPointer,
-                SegmentSizes* segmentHeader,
                 uint32_t* brickOrder,
                 Brick* bricks,
-                float* inputTransfers,
-                float* outputTransfers,
-                const uint32_t numberOfNeuronSections);
+                float* inputValues,
+                float* outputValues,
+                const uint32_t numberOfBricks,
+                NeuronBlock* neuronBlocks,
+                const uint32_t numberOfNeuronBlocks,
+                SynapseBlock* synapseBlocks,
+                const uint32_t numberOfSynapseBlocks);
 
 extern "C"
 void
 backpropagation_CUDA(PointerHandler* gpuPointer,
-                     SegmentSizes* segmentHeader,
                      uint32_t* brickOrder,
                      Brick* bricks,
-                     float* inputTransfers,
-                     float* outputTransfers,
-                     NeuronConnection* neuronConnections,
-                     const uint32_t numberOfNeuronSections);
+                     float* outputValues,
+                     float* expectedValues,
+                     const uint32_t numberOfBricks,
+                     NeuronBlock* neuronBlocks,
+                     const uint32_t numberOfNeuronBlocks,
+                     SegmentSettings* settings);
 
 extern "C"
 void
 update_CUDA(PointerHandler* gpuPointer,
-            SegmentSizes* segmentHeader,
-            NeuronSection* neuronSections,
+            NeuronBlock* neuronBlocks,
+            const uint32_t numberOfNeuronBlocks,
             SynapseConnection* synapseConnections,
-            NeuronConnection* neuronConnections);
-*/
+            const uint32_t numberOfSynapseConnections);
+
 uint32_t counter = 0;
 
 /**
@@ -87,31 +90,26 @@ CpuProcessingUnit::learnSegmentForward(Cluster* cluster)
 {
     Kitsunemimi::ErrorContainer error;
 
-    /*if(HanamiRoot::useOpencl)
+    cluster->clusterSettings->doLearn = 1;
+    if(HanamiRoot::useCuda)
     {
-        HanamiRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "inputTransfers", error);
-        HanamiRoot::gpuInterface->run(*(seg->data), "prcessInput", error, seg->numberOfNeuronSections, NEURONS_PER_NEURONSECTION);
-        HanamiRoot::gpuInterface->run(*(seg->data), "prcessCoreSegment", error, 10, 64);
-        HanamiRoot::gpuInterface->run(*(seg->data), "prcessOutput", error, seg->numberOfNeuronSections, 64);
-        HanamiRoot::gpuInterface->copyFromDevice(*(seg->data), "outputTransfers", error);
-    }
-    else if(HanamiRoot::useCuda)
-    {
-        processing_CUDA(&seg->gpuPointer,
-                        &seg->segmentSizes,
-                        seg->brickOrder,
-                        seg->bricks,
-                        seg->inputTransfers,
-                        seg->outputTransfers,
-                        seg->numberOfNeuronSections);
+        processing_CUDA(&cluster->gpuPointer,
+                        cluster->brickOrder,
+                        cluster->bricks,
+                        cluster->inputValues,
+                        cluster->outputValues,
+                        cluster->clusterHeader->bricks.count,
+                        cluster->neuronBlocks,
+                        cluster->numberOfBrickBlocks,
+                        cluster->synapseBlocks,
+                        cluster->clusterHeader->synapseBlocks.count);
     }
     else
     {
-        seg->segmentSettings->doLearn = 1;
-        prcessCoreSegment(*seg);
-    }*/
-    cluster->clusterSettings->doLearn = 1;
-    prcessCoreSegment(*cluster);
+        prcessCoreSegment(*cluster);
+    }
+    //prcessCoreSegment(*cluster);
+
     cluster->clusterSettings->doLearn = 0;
 }
 
@@ -125,52 +123,33 @@ CpuProcessingUnit::learnSegmentBackward(Cluster* cluster)
 {
     Kitsunemimi::ErrorContainer error;
 
-    /*if(HanamiRoot::useOpencl)
+    if(HanamiRoot::useCuda)
     {
-        HanamiRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "inputTransfers", error);
-        HanamiRoot::gpuInterface->run(*(seg->data), "reweightOutput", error, seg->numberOfNeuronSections, NEURONS_PER_NEURONSECTION);
-        HanamiRoot::gpuInterface->run(*(seg->data), "reweightCoreSegment", error, seg->numberOfNeuronSections, 64);
-        HanamiRoot::gpuInterface->copyFromDevice(*(seg->data), "outputTransfers", error);
-        HanamiRoot::gpuInterface->copyFromDevice(*(seg->data), "neuronConnections", error);
-        if(updateSections_GPU(*seg))
-        {
-            HanamiRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "neuronConnections", error);
-            HanamiRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "neuronSections", error);
-            HanamiRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "synapseConnections", error);
-            HanamiRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "neuronConnections", error);
-        }
-        std::cout<<"counter: "<<counter<<std::endl;
-        counter++;
-    }
-    else if(HanamiRoot::useCuda)
-    {
-        backpropagation_CUDA(&seg->gpuPointer,
-                             &seg->segmentSizes,
-                             seg->brickOrder,
-                             seg->bricks,
-                             seg->inputTransfers,
-                             seg->outputTransfers,
-                             seg->neuronConnections,
-                             seg->numberOfNeuronSections);
+        backpropagation_CUDA(&cluster->gpuPointer,
+                             cluster->brickOrder,
+                             cluster->bricks,
+                             cluster->outputValues,
+                             cluster->expectedValues,
+                             cluster->clusterHeader->bricks.count,
+                             cluster->neuronBlocks,
+                             cluster->numberOfBrickBlocks,
+                             cluster->clusterSettings);
 
-        if(updateSections_GPU(*seg))
+        if(updateSections(*cluster))
         {
-            update_CUDA(&seg->gpuPointer,
-                        &seg->segmentSizes,
-                        seg->neuronSections,
-                        seg->synapseConnections,
-                        seg->neuronConnections);
+            update_CUDA(&cluster->gpuPointer,
+                        cluster->neuronBlocks,
+                        cluster->numberOfBrickBlocks,
+                        cluster->synapseConnections,
+                        cluster->clusterHeader->synapseConnections.count);
         }
-
-        std::cout<<"counter: "<<counter<<std::endl;
-        counter++;
     }
     else
     {
-        reweightCoreSegment(*seg);
-    }*/
+        reweightCoreSegment(*cluster);
+    }
+    //reweightCoreSegment(*cluster);
 
-    reweightCoreSegment(*cluster);
     std::cout<<"counter: "<<counter<<std::endl;
     counter++;
 
@@ -190,30 +169,23 @@ void
 CpuProcessingUnit::processSegment(Cluster* cluster)
 {
     Kitsunemimi::ErrorContainer error;
-    /*if(HanamiRoot::useOpencl)
+    if(HanamiRoot::useCuda)
     {
-        HanamiRoot::gpuInterface->updateBufferOnDevice(*(seg->data), "inputTransfers", error);
-        HanamiRoot::gpuInterface->run(*(seg->data), "prcessInput", error, seg->numberOfNeuronSections, NEURONS_PER_NEURONSECTION);
-        HanamiRoot::gpuInterface->run(*(seg->data), "prcessCoreSegment", error, 10, 64);
-        HanamiRoot::gpuInterface->run(*(seg->data), "prcessOutput", error, seg->numberOfNeuronSections, 64);
-        HanamiRoot::gpuInterface->copyFromDevice(*(seg->data), "outputTransfers", error);
-    }
-    else if(HanamiRoot::useCuda)
-    {
-        processing_CUDA(&seg->gpuPointer,
-                        &seg->segmentSizes,
-                        seg->brickOrder,
-                        seg->bricks,
-                        seg->inputTransfers,
-                        seg->outputTransfers,
-                        seg->numberOfNeuronSections);
+        processing_CUDA(&cluster->gpuPointer,
+                        cluster->brickOrder,
+                        cluster->bricks,
+                        cluster->inputValues,
+                        cluster->outputValues,
+                        cluster->clusterHeader->bricks.count,
+                        cluster->neuronBlocks,
+                        cluster->numberOfBrickBlocks,
+                        cluster->synapseBlocks,
+                        cluster->clusterHeader->synapseBlocks.count);
     }
     else
     {
-        prcessCoreSegment(*seg);
-    }*/
-
-    prcessCoreSegment(*cluster);
+        prcessCoreSegment(*cluster);
+    }
 
     if(cluster->msgClient == nullptr)
     {

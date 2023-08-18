@@ -421,7 +421,7 @@ createNewBrick(const Kitsunemimi::Hanami::BrickMeta &brickMeta,
     // convert other values
     newBrick.brickPos = brickMeta.position;
     newBrick.numberOfNeurons = brickMeta.numberOfNeurons;
-    newBrick.numberOfNeuronSections = getNumberOfNeuronSections(brickMeta.numberOfNeurons);
+    newBrick.numberOfNeuronBlocks = getNumberOfNeuronSections(brickMeta.numberOfNeurons);
 
     std::fill_n(newBrick.neighbors, 12, UNINIT_STATE_32);
 
@@ -447,7 +447,7 @@ addBricksToSegment(Cluster* cluster,
         Brick newBrick = createNewBrick(clusterMeta.bricks.at(i), i);
         newBrick.brickBlockPos = neuronSectionPosCounter;
 
-        for(uint32_t j = 0; j < newBrick.numberOfNeuronSections; j++)
+        for(uint32_t j = 0; j < newBrick.numberOfNeuronBlocks; j++)
         {
             block = &cluster->neuronBlocks[j + neuronSectionPosCounter];
             block->brickId = newBrick.brickId;
@@ -460,7 +460,7 @@ addBricksToSegment(Cluster* cluster,
         cluster->bricks[neuronBrickIdCounter] = newBrick;
         assert(neuronBrickIdCounter == newBrick.brickId);
         neuronBrickIdCounter++;
-        neuronSectionPosCounter += newBrick.numberOfNeuronSections;
+        neuronSectionPosCounter += newBrick.numberOfNeuronBlocks;
     }
 
     return;

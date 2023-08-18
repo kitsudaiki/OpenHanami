@@ -25,8 +25,10 @@
 
 #include <stdint.h>
 #include <cstdlib>
+#include <string>
 #include <algorithm>
-#include <common.h>
+#include <uuid/uuid.h>
+
 #include <libKitsunemimiCommon/structs.h>
 
 // const predefined values
@@ -60,6 +62,19 @@ enum ClusterProcessingMode
 
 //==================================================================================================
 
+struct kuuid
+{
+    char uuid[UUID_STR_LEN];
+    uint8_t padding[3];
+
+    const std::string toString() const {
+        return std::string(uuid, UUID_STR_LEN - 1);
+    }
+};
+static_assert(sizeof(kuuid) == 40);
+
+//==================================================================================================
+
 struct HeaderEntry
 {
     uint64_t bytePos = 0;
@@ -71,7 +86,7 @@ static_assert(sizeof(HeaderEntry) == 16);
 
 struct ClusterHeader
 {
-    uint8_t objectType = CLUSTER_OBJECT;
+    uint8_t objectType = 0;
     uint8_t version = 1;
     uint8_t padding[6];
     uint64_t staticDataSize = 0;
@@ -108,7 +123,7 @@ struct Brick
     uint32_t brickBlockPos = UNINIT_STATE_32;
 
     uint32_t numberOfNeurons = 0;
-    uint32_t numberOfNeuronSections = 0;
+    uint32_t numberOfNeuronBlocks = 0;
 
     Kitsunemimi::Position brickPos;
     uint32_t neighbors[12];
@@ -240,18 +255,16 @@ static_assert(sizeof(SegmentSettings) == 256);
 
 //==================================================================================================
 
-struct SegmentSizes
+struct PointerHandler
 {
-    // synapse-segment
-    uint32_t numberOfInputTransfers = 0;
-    uint32_t numberOfOutputTransfers = 0;
-    uint32_t numberOfBricks = 0;
-    uint32_t numberOfInputs = 0;
-    uint32_t numberOfOutputs = 0;
-    uint32_t numberOfNeuronConnections = 0;
-    uint32_t numberOfNeuronSections = 0;
-    uint32_t numberOfSynapseSections = 0;
+    NeuronBlock* neuronBlocks = nullptr;
+    SynapseBlock* synapseBlocks = nullptr;
+    SynapseConnection* synapseConnections = nullptr;
+
+    SegmentSettings* segmentSettings = nullptr;
+    uint32_t* randomValues = nullptr;
 };
-static_assert(sizeof(SegmentSizes) == 32);
+
+//==================================================================================================
 
 #endif // HANAMI_CORE_SEGMENT_OBJECTS_H

@@ -82,7 +82,7 @@ LIBS += -L../../sdk/cpp/libHanamiAiSdk/src/release -lHanamiAiSdk
 INCLUDEPATH += ../../sdk/cpp/libHanamiAiSdk/include
 
 LIBS += -lcryptopp -lssl -lsqlite3 -luuid -lcrypto -pthread -lprotobuf -lOpenCL
-LIBS +=  -L"/usr/local/cuda-12.1/targets/x86_64-linux/lib" -lcuda -lcudart -lcublas
+LIBS +=  -L"/usr/local/cuda-12.1/targets/x86_64-linux/lib"  -L"/usr/local/cuda-12.2/targets/x86_64-linux/lib" -lcuda -lcudart -lcublas
 
 INCLUDEPATH += $$PWD \
                src
@@ -96,9 +96,11 @@ OTHER_FILES += \
 
 cudaKernel.input = CUDA_SOURCES
 cudaKernel.output = ${QMAKE_FILE_BASE}.o
-cudaKernel.commands = /usr/local/cuda-12.1/bin/nvcc -O3 -c -I$$PWD/../../libraries/libKitsunemimiCommon/include -o ${QMAKE_FILE_BASE}.o ${QMAKE_FILE_IN} || nvcc -O3 -c -I$$PWD/../../libraries/libKitsunemimiCommon/include -o ${QMAKE_FILE_BASE}.o ${QMAKE_FILE_IN}
+cudaKernel.commands = /usr/local/cuda-12.1/bin/nvcc -O3 -c -I$$PWD/../../libraries/libKitsunemimiCommon/include -o ${QMAKE_FILE_BASE}.o ${QMAKE_FILE_IN} \
+                      || /usr/local/cuda-12.2/bin/nvcc -O3 -c -I$$PWD/../../libraries/libKitsunemimiCommon/include -o ${QMAKE_FILE_BASE}.o ${QMAKE_FILE_IN} \
+                      || nvcc -O3 -c -I$$PWD/../../libraries/libKitsunemimiCommon/include -o ${QMAKE_FILE_BASE}.o ${QMAKE_FILE_IN}
 cudaKernel.CONFIG += target_predeps
-# QMAKE_EXTRA_COMPILERS += cudaKernel
+QMAKE_EXTRA_COMPILERS += cudaKernel
 
 OTHER_FILES += $$HANAMI_PROTO_BUFFER \
                $$GPU_KERNEL

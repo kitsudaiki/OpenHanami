@@ -48,7 +48,7 @@ backpropagateOutput(const Cluster &cluster,
 
     // iterate over all neurons within the brick
     for(uint32_t neuronSectionId = brick->brickBlockPos;
-        neuronSectionId < brick->numberOfNeuronSections + brick->brickBlockPos;
+        neuronSectionId < brick->numberOfNeuronBlocks + brick->brickBlockPos;
         neuronSectionId++)
     {
         block = &neuronBlocks[neuronSectionId];
@@ -58,6 +58,7 @@ backpropagateOutput(const Cluster &cluster,
         {
             neuron = &block->neurons[neuronIdInBlock];
             neuron->delta = outputValues[counter] - expectedValues[counter];
+            //std::cout<<" expectedValues[counter] : "<< expectedValues[counter] <<std::endl;
             neuron->delta *= outputValues[counter] * (1.0f - outputValues[counter]);
             totalDelta += abs(neuron->delta);
             counter++;
@@ -144,7 +145,7 @@ backpropagateNeurons(const Cluster &cluster,
 
     // iterate over all neurons within the brick
     for(uint32_t blockId = brick->brickBlockPos;
-        blockId < brick->numberOfNeuronSections + brick->brickBlockPos;
+        blockId < brick->numberOfNeuronBlocks + brick->brickBlockPos;
         blockId++)
     {
         block = &neuronBlocks[blockId];

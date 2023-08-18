@@ -53,7 +53,7 @@ typedef struct BrickHeader_struct
     uchar padding1[14];
     uint neuronSectionPos;
     uint numberOfNeurons;
-    uint numberOfNeuronSections;
+    uint numberOfNeuronBlocks;
 
     // total size: 32 Bytes
 } BrickHeader;
@@ -386,7 +386,7 @@ prcessCoreSegment(__global BrickHeader* bricks,
                 && brick->isOutputBrick == false)
         {
             for(uint neuronSectionId = brick->neuronSectionPos + get_group_id(0);
-                neuronSectionId < brick->numberOfNeuronSections + brick->neuronSectionPos;
+                neuronSectionId < brick->numberOfNeuronBlocks + brick->neuronSectionPos;
                 neuronSectionId += get_num_groups(0))
             {
                 __global NeuronSection* neuronSection = &neuronSections[neuronSectionId];
@@ -570,7 +570,7 @@ reweightCoreSegment(__global BrickHeader* bricks,
         __global BrickHeader* brick = &bricks[brickOrder[pos]];
 
         for(uint neuronSectionId = brick->neuronSectionPos + get_group_id(0);
-            neuronSectionId < brick->numberOfNeuronSections + brick->neuronSectionPos;
+            neuronSectionId < brick->numberOfNeuronBlocks + brick->neuronSectionPos;
             neuronSectionId += get_num_groups(0))
         {
             __global NeuronSection* neuronSection = &neuronSections[neuronSectionId];

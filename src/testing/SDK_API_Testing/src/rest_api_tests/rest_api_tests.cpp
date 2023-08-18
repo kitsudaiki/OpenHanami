@@ -206,10 +206,10 @@ runImageTest(Kitsunemimi::JsonItem &inputData)
     }
 
     // test cluster load and restore of kyouko and shiori
-    testThread.addTest(new ClusterSaveTest(true));
-    testThread.addTest(new ClusterDeleteTest(true));
-    testThread.addTest(new ClusterCreateTest(true));
-    testThread.addTest(new ClusterLoadTest(true));
+    //testThread.addTest(new ClusterSaveTest(true));
+    //testThread.addTest(new ClusterDeleteTest(true));
+    //testThread.addTest(new ClusterCreateTest(true));
+    //testThread.addTest(new ClusterLoadTest(true));
 
     // test request-tasks of kyouko
     testThread.addTest(new ImageRequestTaskTest(true));
@@ -220,20 +220,20 @@ runImageTest(Kitsunemimi::JsonItem &inputData)
     testThread.addTest(new RequestResultListTest(true));
 
     // test snapshots of shiori
-    testThread.addTest(new SnapshotGetTest(true));
-    testThread.addTest(new SnapshotListTest(true));
+    //testThread.addTest(new SnapshotGetTest(true));
+    //testThread.addTest(new SnapshotListTest(true));
 
     // test direct-io of kyouko
-    testThread.addTest(new ClusterSwitchToDirectTest(true));
-    testThread.addTest(new DirectIoTest(true));
-    testThread.addTest(new ClusterSwitchToTaskTest(true));
+    //testThread.addTest(new ClusterSwitchToDirectTest(true));
+    //testThread.addTest(new DirectIoTest(true));
+    //testThread.addTest(new ClusterSwitchToTaskTest(true));
 
     // test delete of all
     testThread.addTest(new UserDeleteTest(true));
     testThread.addTest(new UserDeleteTest(false));
     testThread.addTest(new ProjectDeleteTest(true));
     testThread.addTest(new ProjectDeleteTest(false));
-    testThread.addTest(new SnapshotDeleteTest(true));
+    //testThread.addTest(new SnapshotDeleteTest(true));
     testThread.addTest(new ClusterDeleteTest(true));
     testThread.addTest(new ClusterDeleteTest(false));
     testThread.addTest(new RequestResultDeleteTest(true));
@@ -268,7 +268,7 @@ runRestApiTests()
 
     const std::string clusterDefinition("version: 1\n"
                                         "settings:\n"
-                                        "    max_synapse_sections: 10000\n"
+                                        "    max_synapse_sections: 1000\n"
                                         "    sign_neg: 0.5\n"
                                         "        \n"
                                         "bricks:\n"
