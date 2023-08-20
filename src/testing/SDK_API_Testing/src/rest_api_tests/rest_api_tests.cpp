@@ -224,9 +224,9 @@ runImageTest(Kitsunemimi::JsonItem &inputData)
     //testThread.addTest(new SnapshotListTest(true));
 
     // test direct-io of kyouko
-    //testThread.addTest(new ClusterSwitchToDirectTest(true));
-    //testThread.addTest(new DirectIoTest(true));
-    //testThread.addTest(new ClusterSwitchToTaskTest(true));
+    testThread.addTest(new ClusterSwitchToDirectTest(true));
+    testThread.addTest(new DirectIoTest(true));
+    testThread.addTest(new ClusterSwitchToTaskTest(true));
 
     // test delete of all
     testThread.addTest(new UserDeleteTest(true));
