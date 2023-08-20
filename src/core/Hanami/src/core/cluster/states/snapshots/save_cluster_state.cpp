@@ -32,6 +32,15 @@
 #include <libKitsunemimiCrypto/hashes.h>
 #include <libKitsunemimiCommon/files/binary_file.h>
 
+
+extern "C"
+void
+copyFromGpu_CUDA(PointerHandler* gpuPointer,
+                 NeuronBlock* neuronBlocks,
+                 const uint32_t numberOfNeuronBlocks,
+                 SynapseBlock* synapseBlocks,
+                 const uint32_t numberOfSynapseBlocks);
+
 /**
  * @brief constructor
  *
@@ -139,6 +148,15 @@ SaveCluster_State::writeData(const std::string &filePath,
                              const uint64_t fileSize,
                              Kitsunemimi::ErrorContainer &error)
 {
+    if(HanamiRoot::useCuda)
+    {
+        copyFromGpu_CUDA(&m_cluster->gpuPointer,
+                         m_cluster->neuronBlocks,
+                         m_cluster->clusterHeader->neuronBlocks.count,
+                         m_cluster->synapseBlocks,
+                         m_cluster->clusterHeader->synapseBlocks.count);
+    }
+
     Kitsunemimi::BinaryFile snapshotFile(filePath);
     if(snapshotFile.allocateStorage(fileSize, error) == false)
     {

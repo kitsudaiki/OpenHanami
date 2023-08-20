@@ -22,6 +22,7 @@
 
 #include "cluster_init.h"
 
+#include <hanami_root.h>
 #include <core/cluster/cluster.h>
 
 #include <core/processing/objects.h>
@@ -111,11 +112,11 @@ initNewCluster(Cluster* cluster,
     {
         data = new Kitsunemimi::GpuData();
         initOpencl(*data);
-    }
+    }*/
 
     if(HanamiRoot::useCuda) {
-        initCuda();
-    }*/
+        cluster->initCuda();
+    }
 
     return true;
 }
@@ -179,11 +180,11 @@ reinitPointer(Cluster* cluster,
     {
         data = new Kitsunemimi::GpuData();
         initOpencl(*data);
-    }
+    }*/
 
     if(HanamiRoot::useCuda) {
-        initCuda();
-    }*/
+        cluster->initCuda();
+    }
 
     // check result
     if(byteCounter != numberOfBytes - 48) {

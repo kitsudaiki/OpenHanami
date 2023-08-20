@@ -51,7 +51,6 @@ bool connectBorderBuffer(Cluster* cluster);
 void allocateSegment(Cluster* cluster,
                      ClusterHeader &header);
 //void initOpencl(Kitsunemimi::GpuData &data);
-void initCuda();
 SegmentSettings initSettings(const Kitsunemimi::Hanami::ClusterMeta &clusterMeta);
 
 void addBricksToSegment(Cluster* cluster,

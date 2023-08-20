@@ -192,9 +192,7 @@ prcessCoreSegmentKernel(NeuronBlock* neuronBlocks,
             neuron->potential -= neuron->border;
             neuron->active = neuron->potential > 0.0f;
             neuron->input = 0.0f;
-            if(isOutputBrick == false) {
-                neuron->potential = log2(neuron->potential + 1.0f);
-            }
+            neuron->potential = log2(neuron->potential + 1.0f);
 
             // handle active-state
             neuron->isNew = neuron->active != 0 && neuron->target.blockId == UNINIT_STATE_32;
@@ -348,10 +346,7 @@ processing_CUDA(PointerHandler* gpuPointer,
                neuronBlocks,
                numberOfNeuronBlocks * sizeof(NeuronBlock),
                cudaMemcpyHostToDevice);
-    /*cudaMemcpy(gpuPointer->synapseBlocks,
-               synapseBlocks,
-               numberOfSynapseBlocks * sizeof(SynapseBlock),
-               cudaMemcpyHostToDevice);*/
+
     for(uint32_t pos = 0; pos < numberOfBricks; pos++)
     {
         Brick* brick = &bricks[brickOrder[pos]];
@@ -374,10 +369,7 @@ processing_CUDA(PointerHandler* gpuPointer,
                gpuPointer->neuronBlocks,
                numberOfNeuronBlocks * sizeof(NeuronBlock),
                cudaMemcpyDeviceToHost);
-    /*cudaMemcpy(synapseBlocks,
-               gpuPointer->synapseBlocks,
-               numberOfSynapseBlocks * sizeof(SynapseBlock),
-               cudaMemcpyDeviceToHost);*/
+
     for(uint32_t pos = 0; pos < numberOfBricks; pos++)
     {
         Brick* brick = &bricks[brickOrder[pos]];
@@ -457,3 +449,22 @@ update_CUDA(PointerHandler* gpuPointer,
                numberOfNeuronBlocks * sizeof(NeuronBlock),
                cudaMemcpyHostToDevice);
 }
+
+extern "C"
+void
+copyFromGpu_CUDA(PointerHandler* gpuPointer,
+                 NeuronBlock* neuronBlocks,
+                 const uint32_t numberOfNeuronBlocks,
+                 SynapseBlock* synapseBlocks,
+                 const uint32_t numberOfSynapseBlocks)
+{
+    cudaMemcpy(neuronBlocks,
+               gpuPointer->neuronBlocks,
+               numberOfNeuronBlocks * sizeof(NeuronBlock),
+               cudaMemcpyDeviceToHost);
+    cudaMemcpy(synapseBlocks,
+               gpuPointer->synapseBlocks,
+               numberOfSynapseBlocks * sizeof(SynapseBlock),
+               cudaMemcpyDeviceToHost);
+}
+

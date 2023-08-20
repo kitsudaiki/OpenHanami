@@ -51,6 +51,8 @@ public:
     Kitsunemimi::ItemBuffer clusterData;
     PointerHandler gpuPointer;
 
+    void initCuda();
+
     ClusterHeader* clusterHeader = nullptr;
     SegmentSettings* clusterSettings = nullptr;
     float* inputValues = nullptr;
@@ -94,7 +96,6 @@ public:
 
 private:
     std::mutex m_segmentCounterLock;
-    void initCuda();
 };
 
 #endif // HANAMI_CLUSTER_H

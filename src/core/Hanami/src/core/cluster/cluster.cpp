@@ -116,13 +116,7 @@ bool
 Cluster::init(const Kitsunemimi::Hanami::ClusterMeta &clusterTemplate,
               const std::string &uuid)
 {
-    bool ret = initNewCluster(this, clusterTemplate, uuid);
-    if(ret
-            && HanamiRoot::useCuda)
-    {
-        initCuda();
-    }
-    return ret;
+    return initNewCluster(this, clusterTemplate, uuid);
 }
 
 /**
