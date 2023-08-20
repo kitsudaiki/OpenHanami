@@ -22,7 +22,6 @@ limitations under the License. -->
         </button>
         <div class="sidebar_drop_content">
             <a id="kyouko_cluster_list" class="sidebar_dropdown_entry" href="#">Cluster</a>
-            <a id="kyouko_segment_template_list" class="sidebar_dropdown_entry" href="#">Segment Templates</a>
         </div>
 
         <button class="sidebar_drop_down"> 
@@ -150,10 +149,6 @@ limitations under the License. -->
     document.getElementById("kyouko_cluster_list").addEventListener("click", function() {
         $("#content_div").load("/subsites/kyouko/cluster.html"); 
     });
-    document.getElementById("kyouko_segment_template_list").addEventListener("click", function() {
-        $("#content_div").load("/subsites/kyouko/segment_template.html"); 
-    });
-
 
     document.getElementById("shiori_dataset_list").addEventListener("click", function() {
         $("#content_div").load("/subsites/shiori/dataset.html"); 
