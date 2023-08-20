@@ -5,7 +5,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: kitsudaiki/ci-build:0.1.1
+      image: kitsudaiki/hanami_ai_builder:0.4.0
     name: build-job
     steps:
       - name: "Checkout repository"
@@ -17,16 +17,6 @@ jobs:
           git checkout ${GITHUB_REF#refs/heads/}
           git submodule init
           git submodule update --recursive
-      - name: "update package-list"
-        run: apt-get update
-      - name: "install missing packages"
-        run: apt-get install -y libssl-dev libcrypto++-dev libboost1.74-dev uuid-dev  libsqlite3-dev protobuf-compiler protobuf-compiler
-      - name: "instal cuda"
-        run:  |
-          wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb
-          dpkg -i cuda-keyring_1.1-1_all.deb
-          apt-get update
-          apt-get install -y cuda
       - name: "Build project"
         run:  |
           cd ${GITHUB_REPOSITORY#*/}
