@@ -31,6 +31,7 @@
 #include <core/cluster/cluster.h>
 #include <core/processing/objects.h>
 #include <core/processing/section_update.h>
+#include <core/processing/cluster_io_functions.h>
 #include <api/websocket/cluster_io.h>
 
 /**
@@ -251,13 +252,6 @@ processNeuronsOfOutputBrick(Cluster &cluster,
             neuron->input = 0.0f;
             counter++;
         }
-
-        // send output back if a client-connection is set
-        if(cluster.msgClient != nullptr
-                && cluster.mode == ClusterProcessingMode::NORMAL_MODE)
-        {
-             sendClusterOutputMessage(&cluster);
-        }
     }
 }
 
@@ -388,11 +382,9 @@ prcessCoreSegment(Cluster &cluster)
         }
         else if(brick->isOutputBrick)
         {
-            processNeuronsOfOutputBrick(cluster,
-                                        brick,
+            processNeuronsOfOutputBrick(brick,
                                         outputValues,
-                                        neuronBlocks,
-                                        segmentSettings);
+                                        neuronBlocks);
         }
         else
         {

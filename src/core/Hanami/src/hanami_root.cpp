@@ -57,11 +57,11 @@ uint32_t* HanamiRoot::m_randomValues = nullptr;
 Kitsunemimi::GpuInterface* HanamiRoot::gpuInterface = nullptr;
 Kitsunemimi::Jwt* HanamiRoot::jwt = nullptr;
 HanamiRoot* HanamiRoot::root = nullptr;
+HttpServer* HanamiRoot::httpServer = nullptr;
 
 // static flag to switch to experimental gpu-support (see issue #44 and #76)
 bool HanamiRoot::useOpencl = false;
 bool HanamiRoot::useCuda = true;
-HttpServer* HanamiRoot::httpServer = nullptr;
 
 /**
  * @brief constructor

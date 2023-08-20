@@ -25,6 +25,7 @@
 #include <cuda_runtime.h>
 
 #include "../objects.h"
+#include "../cluster_io_functions.h"
 
 //==================================================================================================
 //==================================================================================================
@@ -172,30 +173,33 @@ prcessCoreSegmentKernel(NeuronBlock* neuronBlocks,
         synapseBlockId = connection->backwardNextId;
     }
 
-    if(threadIdx.x < currentNeuronBlock->numberOfNeurons)
+    if(isOutputBrick == false)
     {
-        Neuron* neuron = &currentNeuronBlock->neurons[threadIdx.x];
-
-        neuron->potential /= segmentSettings->neuronCooldown;
-        neuron->refractionTime = neuron->refractionTime >> 1;
-
-        if(neuron->refractionTime == 0)
+        if(threadIdx.x < currentNeuronBlock->numberOfNeurons)
         {
-            neuron->potential = segmentSettings->potentialOverflow * neuron->input;
-            neuron->refractionTime = segmentSettings->refractionTime;
-        }
+            Neuron* neuron = &currentNeuronBlock->neurons[threadIdx.x];
 
-        // update neuron
-        neuron->potential -= neuron->border;
-        neuron->active = neuron->potential > 0.0f;
-        neuron->input = 0.0f;
-        if(isOutputBrick == false) {
-            neuron->potential = log2(neuron->potential + 1.0f);
-        }
+            neuron->potential /= segmentSettings->neuronCooldown;
+            neuron->refractionTime = neuron->refractionTime >> 1;
 
-        // handle active-state
-        neuron->isNew = neuron->active != 0 && neuron->target.blockId == UNINIT_STATE_32;
-        neuron->newOffset = 0.0f;
+            if(neuron->refractionTime == 0)
+            {
+                neuron->potential = segmentSettings->potentialOverflow * neuron->input;
+                neuron->refractionTime = segmentSettings->refractionTime;
+            }
+
+            // update neuron
+            neuron->potential -= neuron->border;
+            neuron->active = neuron->potential > 0.0f;
+            neuron->input = 0.0f;
+            if(isOutputBrick == false) {
+                neuron->potential = log2(neuron->potential + 1.0f);
+            }
+
+            // handle active-state
+            neuron->isNew = neuron->active != 0 && neuron->target.blockId == UNINIT_STATE_32;
+            neuron->newOffset = 0.0f;
+        }
     }
 }
 
@@ -254,7 +258,7 @@ reweightCoreSegmentKernel(NeuronBlock* neuronBlocks,
     __shared__ float tempVal[64];
 
     NeuronBlock* currentNeuronBlock = &neuronBlocks[neuronSectionPos + blockIdx.x];
-
+    tempVal[threadIdx.x] = 0.0f;
 
     if(threadIdx.x < currentNeuronBlock->numberOfNeurons)
     {
@@ -317,106 +321,6 @@ copyToDevice_CUDA(PointerHandler* gpuPointer,
     cudaMemcpy(gpuPointer->randomValues,       randomValues,       NUMBER_OF_RAND_VALUES      * sizeof(uint32_t),          cudaMemcpyHostToDevice);
 }
 
-/**
- * @brief process input brick
- */
-inline void
-processNeuronsOfInputBrick(const Brick* brick,
-                           float* inputValues,
-                           NeuronBlock* neuronBlocks)
-{
-    Neuron* neuron = nullptr;
-    NeuronBlock* block = nullptr;
-    uint32_t counter = 0;
-
-    // iterate over all neurons within the brick
-    for(uint32_t blockId = brick->brickBlockPos;
-        blockId < brick->numberOfNeuronBlocks + brick->brickBlockPos;
-        blockId++)
-    {
-        block = &neuronBlocks[blockId];
-        for(uint32_t neuronIdInBlock = 0;
-            neuronIdInBlock < block->numberOfNeurons;
-            neuronIdInBlock++)
-        {
-            neuron = &block->neurons[neuronIdInBlock];
-            neuron->potential = inputValues[counter];
-            neuron->active = neuron->potential > 0.0f;
-            neuron->isNew = neuron->active != 0 && neuron->target.blockId == UNINIT_STATE_32;
-            neuron->newOffset = 0.0f;
-            counter++;
-        }
-    }
-}
-
-inline void
-processNeuronsOfOutputBrick(const Brick* brick,
-                            float* outputValues,
-                            NeuronBlock* neuronBlocks)
-{
-    Neuron* neuron = nullptr;
-    NeuronBlock* block = nullptr;
-    uint32_t counter = 0;
-
-    // iterate over all neurons within the brick
-    for(uint32_t blockId = brick->brickBlockPos;
-        blockId < brick->numberOfNeuronBlocks + brick->brickBlockPos;
-        blockId++)
-    {
-        block = &neuronBlocks[blockId];
-        for(uint32_t neuronIdInBlock = 0;
-            neuronIdInBlock < block->numberOfNeurons;
-            neuronIdInBlock++)
-        {
-            neuron = &block->neurons[neuronIdInBlock];
-            if(neuron->potential != 0.0f) {
-                neuron->potential = 1.0f / (1.0f + exp(-1.0f * neuron->potential));
-            }
-            //std::cout<<"neuron->potential: "<<neuron->potential<<std::endl;
-            outputValues[counter] = neuron->potential;
-            neuron->input = 0.0f;
-            counter++;
-        }
-    }
-}
-
-/**
- * @brief backpropagate values of an output-brick
- */
-inline bool
-backpropagateOutput(const Brick* brick,
-                    NeuronBlock* neuronBlocks,
-                    float* outputValues,
-                    float* expectedValues,
-                    SegmentSettings* settings)
-{
-    Neuron* neuron = nullptr;
-    NeuronBlock* block = nullptr;
-    float totalDelta = 0.0f;
-    uint32_t counter = 0;
-
-    // iterate over all neurons within the brick
-    for(uint32_t neuronSectionId = brick->brickBlockPos;
-        neuronSectionId < brick->numberOfNeuronBlocks + brick->brickBlockPos;
-        neuronSectionId++)
-    {
-        block = &neuronBlocks[neuronSectionId];
-        for(uint32_t neuronIdInBlock = 0;
-            neuronIdInBlock < block->numberOfNeurons;
-            neuronIdInBlock++)
-        {
-            neuron = &block->neurons[neuronIdInBlock];
-            neuron->delta = outputValues[counter] - expectedValues[counter];
-            neuron->delta *= outputValues[counter] * (1.0f - outputValues[counter]);
-            //std::cout<<"out-dalta: "<<neuron->delta<<std::endl;
-            //std::cout<<" expectedValues[counter] : "<< expectedValues[counter] <<std::endl;
-
-            totalDelta += abs(neuron->delta);
-            counter++;
-        }
-    }
-    return totalDelta > settings->backpropagationBorder;
-}
 
 
 extern "C"
@@ -436,7 +340,7 @@ processing_CUDA(PointerHandler* gpuPointer,
     {
         Brick* brick = &bricks[brickOrder[pos]];
         if(brick->isInputBrick) {
-            processNeuronsOfInputBrick(brick, inputValues, neuronBlocks);
+            processNeuronsOfInputBrickBackward(brick, inputValues, neuronBlocks);
         }
     }
 
@@ -444,7 +348,10 @@ processing_CUDA(PointerHandler* gpuPointer,
                neuronBlocks,
                numberOfNeuronBlocks * sizeof(NeuronBlock),
                cudaMemcpyHostToDevice);
-
+    /*cudaMemcpy(gpuPointer->synapseBlocks,
+               synapseBlocks,
+               numberOfSynapseBlocks * sizeof(SynapseBlock),
+               cudaMemcpyHostToDevice);*/
     for(uint32_t pos = 0; pos < numberOfBricks; pos++)
     {
         Brick* brick = &bricks[brickOrder[pos]];
@@ -467,7 +374,10 @@ processing_CUDA(PointerHandler* gpuPointer,
                gpuPointer->neuronBlocks,
                numberOfNeuronBlocks * sizeof(NeuronBlock),
                cudaMemcpyDeviceToHost);
-
+    /*cudaMemcpy(synapseBlocks,
+               gpuPointer->synapseBlocks,
+               numberOfSynapseBlocks * sizeof(SynapseBlock),
+               cudaMemcpyDeviceToHost);*/
     for(uint32_t pos = 0; pos < numberOfBricks; pos++)
     {
         Brick* brick = &bricks[brickOrder[pos]];

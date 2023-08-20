@@ -30,44 +30,7 @@
 #include <hanami_root.h>
 #include <core/processing/objects.h>
 #include <core/cluster/cluster.h>
-
-/**
- * @brief backpropagate values of an output-brick
- */
-inline bool
-backpropagateOutput(const Cluster &cluster,
-                    const Brick* brick,
-                    NeuronBlock* neuronBlocks,
-                    float* expectedValues,
-                    float* outputValues)
-{
-    Neuron* neuron = nullptr;
-    NeuronBlock* block = nullptr;
-    float totalDelta = 0.0f;
-    uint32_t counter = 0;
-
-    // iterate over all neurons within the brick
-    for(uint32_t neuronSectionId = brick->brickBlockPos;
-        neuronSectionId < brick->numberOfNeuronBlocks + brick->brickBlockPos;
-        neuronSectionId++)
-    {
-        block = &neuronBlocks[neuronSectionId];
-        for(uint32_t neuronIdInBlock = 0;
-            neuronIdInBlock < block->numberOfNeurons;
-            neuronIdInBlock++)
-        {
-            neuron = &block->neurons[neuronIdInBlock];
-            neuron->delta = outputValues[counter] - expectedValues[counter];
-            //std::cout<<" expectedValues[counter] : "<< expectedValues[counter] <<std::endl;
-            neuron->delta *= outputValues[counter] * (1.0f - outputValues[counter]);
-            totalDelta += abs(neuron->delta);
-            counter++;
-        }
-    }
-
-    return totalDelta > cluster.clusterSettings->backpropagationBorder;
-    //return true;
-}
+#include <core/processing/cluster_io_functions.h>
 
 /**
  * @brief run backpropagation for a single synapse-section
@@ -206,11 +169,11 @@ reweightCoreSegment(const Cluster &cluster)
         Brick* brick = &cluster.bricks[brickId];
         if(brick->isOutputBrick)
         {
-            if(backpropagateOutput(cluster,
-                                   brick,
+            if(backpropagateOutput(brick,
                                    neuronBlocks,
+                                   outputValues,
                                    expectedValues,
-                                   outputValues) == false)
+                                   cluster.clusterSettings) == false)
             {
                 return;
             }

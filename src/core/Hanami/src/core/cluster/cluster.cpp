@@ -26,7 +26,7 @@
 #include <core/cluster/cluster_init.h>
 #include <core/cluster/statemachine_init.h>
 #include <core/cluster/states/task_handle_state.h>
-#include <core/processing/segment_queue.h>
+#include <core/processing/cluster_queue.h>
 #include <api/websocket/cluster_io.h>
 
 #include <libKitsunemimiCommon/logger.h>

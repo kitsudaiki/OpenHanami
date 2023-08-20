@@ -226,6 +226,8 @@ HEADERS += \
     src/core/data_set_files/image_data_set_file.h \
     src/core/data_set_files/table_data_set_file.h \
     src/core/power_measuring.h \
+    src/core/processing/cluster_queue.h \
+    src/core/processing/cluster_io_functions.h \
     src/core/processing/cpu/backpropagation.h \
     src/core/processing/cpu/processing.h \
     src/core/processing/cpu/reduction.h \
@@ -233,7 +235,6 @@ HEADERS += \
     src/core/processing/objects.h \
     src/core/processing/processing_unit_handler.h \
     src/core/processing/section_update.h \
-    src/core/processing/segment_queue.h \
     src/core/routing_functions.h \
     src/core/speed_measuring.h \
     src/core/temp_file_handler.h \
@@ -335,9 +336,9 @@ SOURCES += \
     src/core/data_set_files/image_data_set_file.cpp \
     src/core/data_set_files/table_data_set_file.cpp \
     src/core/power_measuring.cpp \
+    src/core/processing/cluster_queue.cpp \
     src/core/processing/cpu_processing_unit.cpp \
     src/core/processing/processing_unit_handler.cpp \
-    src/core/processing/segment_queue.cpp \
     src/core/speed_measuring.cpp \
     src/core/temp_file_handler.cpp \
     src/core/temperature_measuring.cpp \

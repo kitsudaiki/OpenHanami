@@ -20,7 +20,7 @@
  *      limitations under the License.
  */
 
-#include "segment_queue.h"
+#include "cluster_queue.h"
 
 #include <core/cluster/cluster.h>
 

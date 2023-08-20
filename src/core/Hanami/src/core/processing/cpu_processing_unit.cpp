@@ -28,7 +28,7 @@
 #include <core/processing/cpu/processing.h>
 #include <core/processing/cpu/reduction.h>
 #include <core/processing/section_update.h>
-#include <core/processing/segment_queue.h>
+#include <core/processing/cluster_queue.h>
 #include <core/cluster/cluster.h>
 
 #include <libKitsunemimiOpencl/gpu_interface.h>
@@ -187,7 +187,11 @@ CpuProcessingUnit::processSegment(Cluster* cluster)
         prcessCoreSegment(*cluster);
     }
 
-    if(cluster->msgClient == nullptr)
+    // send output back if a client-connection is set
+    if(cluster->msgClient != nullptr) {
+         sendClusterOutputMessage(cluster);
+    }
+    else
     {
         Task* actualTask = cluster->getActualTask();
         const uint64_t cycle = actualTask->actualCycle;
