@@ -82,7 +82,15 @@ TempFileHandler::initNewFile(const std::string &id, const uint64_t size)
         LOG_ERROR(error);
         return false;
     }
-    m_tempFiles.insert(std::make_pair(id, tempfile));
+
+    auto ret = m_tempFiles.try_emplace(id, tempfile);
+    if(ret.second == false)
+    {
+        error.addMeesage("ID '" + id + "' already exist in tempfiles");
+        LOG_ERROR(error);
+        delete tempfile;
+        return false;
+    }
 
     return true;
 }

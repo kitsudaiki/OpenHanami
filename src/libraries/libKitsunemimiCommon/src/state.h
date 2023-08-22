@@ -63,13 +63,7 @@ struct State
     bool
     addTransition(const uint32_t &key, State* nextState)
     {
-        if(nextStates.find(key) != nextStates.end()) {
-            return false;
-        }
-
-        nextStates.insert(std::make_pair(key, nextState));
-
-        return true;
+        return nextStates.try_emplace(key, nextState).second;
     }
 
     /**

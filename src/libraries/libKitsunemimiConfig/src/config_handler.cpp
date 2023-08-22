@@ -796,8 +796,7 @@ ConfigHandler::registerType(const std::string &groupName,
     if(m_registeredConfigs.find(groupName) == m_registeredConfigs.end())
     {
         std::map<std::string, ConfigType> newEntry;
-        m_registeredConfigs.insert(
-                    std::pair<std::string, std::map<std::string, ConfigType>>(groupName, newEntry));
+        m_registeredConfigs.try_emplace(groupName, newEntry);
     }
 
     // add new value

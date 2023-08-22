@@ -121,8 +121,8 @@ ThreadHandler::registerThread(Thread* thread)
 
     // if name is not even registered, ass a complete new entry
     std::map<uint64_t, Thread*> newEntry;
-    newEntry.insert(std::make_pair(thread->getThreadId(), thread));
-    m_allThreads.insert(std::make_pair(thread->getThreadName(), newEntry));
+    newEntry.try_emplace(thread->getThreadId(), thread);
+    m_allThreads.try_emplace(thread->getThreadName(), newEntry);
 
     return;
 }

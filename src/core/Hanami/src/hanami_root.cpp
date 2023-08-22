@@ -442,12 +442,12 @@ HanamiRoot::addBlossom(const std::string &groupName,
     if(groupIt == m_registeredBlossoms.end())
     {
         std::map<std::string, Blossom*> newMap;
-        m_registeredBlossoms.insert(std::make_pair(groupName, newMap));
+        m_registeredBlossoms.try_emplace(groupName, newMap);
     }
 
     // add item to group
     groupIt = m_registeredBlossoms.find(groupName);
-    groupIt->second.insert(std::make_pair(itemName, newBlossom));
+    groupIt->second.try_emplace(itemName, newBlossom);
 
     return true;
 }

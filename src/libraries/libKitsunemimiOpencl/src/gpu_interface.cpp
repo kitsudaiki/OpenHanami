@@ -151,7 +151,12 @@ GpuInterface::addKernel(GpuData &data,
     def.kernelCode = kernelCode;
     def.kernel = cl::Kernel(program, kernelName.c_str());
 
-    data.m_kernel.insert(std::make_pair(kernelName, def));
+    auto ret = data.m_kernel.try_emplace(kernelName, def);
+    if(ret.second == false)
+    {
+        error.addMeesage("OpenCL-Kernel with name '" + kernelName + "' already exist");
+        return false;
+    }
 
     return true;
 }
@@ -233,7 +238,12 @@ GpuInterface::bindKernelToBuffer(GpuData &data,
     }
 
     // register on which argument-position the buffer was binded
-    def->arguments.insert(std::make_pair(bufferName, argNumber));
+    auto ret = def->arguments.try_emplace(bufferName, argNumber);
+    if(ret.second == false)
+    {
+        error.addMeesage("OpenCL-Argument with name '" + bufferName + "' is already set.");
+        return false;
+    }
 
     return true;
 }
