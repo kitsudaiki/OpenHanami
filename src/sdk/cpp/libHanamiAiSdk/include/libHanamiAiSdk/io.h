@@ -34,7 +34,7 @@ namespace HanamiAI
 {
 class WebsocketClient;
 
-bool learn(WebsocketClient* wsClient,
+bool train(WebsocketClient* wsClient,
            std::vector<float> &inputValues,
            std::vector<float> &shouldValues,
            Kitsunemimi::ErrorContainer &error);
@@ -44,7 +44,7 @@ float* request(WebsocketClient* wsClient,
                uint64_t &numberOfOutputValues,
                Kitsunemimi::ErrorContainer &error);
 
-bool learn(WebsocketClient* wsClient,
+bool train(WebsocketClient* wsClient,
            float* inputValues,
            const uint64_t numberOfInputValues,
            float* shouldValues,

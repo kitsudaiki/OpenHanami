@@ -719,7 +719,7 @@ see [Initializing Websocket](/How_To/5_sdk_library/#init-websocket)
 
 ## Task
 
-### Create Table-Learn-Task
+### Create Table-Train-Task
 
 === "C++"
 
@@ -731,7 +731,7 @@ see [Initializing Websocket](/How_To/5_sdk_library/#init-websocket)
     const std::string clusterUuid = "d922013a-48d2-11ed-b878-0242ac120002";
     const std::string dataSetUuid = "30cfeb32-48d7-11ed-b878-0242ac120002";
 
-    if(HanamiAI::createTableLearnTask(result, name, clusterUuid, dataSetUuid, error)) {
+    if(HanamiAI::createTableTrainTask(result, name, clusterUuid, dataSetUuid, error)) {
         std::cout<<result<<std::endl;
     } else {
         std::cout<<error.toString()<<std::endl;
@@ -757,7 +757,7 @@ see [Initializing Websocket](/How_To/5_sdk_library/#init-websocket)
     }
     ```
 
-### Create Image-Learn-Task
+### Create Image-Train-Task
 
 === "C++"
 
@@ -769,7 +769,7 @@ see [Initializing Websocket](/How_To/5_sdk_library/#init-websocket)
     const std::string clusterUuid = "d922013a-48d2-11ed-b878-0242ac120002";
     const std::string dataSetUuid = "30cfeb32-48d7-11ed-b878-0242ac120002";
 
-    if(HanamiAI::createImageLearnTask(result, name, clusterUuid, dataSetUuid, error)) {
+    if(HanamiAI::createImageTrainTask(result, name, clusterUuid, dataSetUuid, error)) {
         std::cout<<result<<std::endl;
     } else {
         std::cout<<error.toString()<<std::endl;
@@ -925,7 +925,7 @@ see [Initializing Websocket](/How_To/5_sdk_library/#init-websocket)
     }
     ```
 
-### direct learn
+### direct train
 
 === "C++"
 
@@ -940,7 +940,7 @@ see [Initializing Websocket](/How_To/5_sdk_library/#init-websocket)
 
     HanamiAI::WebsocketClient* client = // see "Init Websocket" above for client-init
 
-    if(HanamiAI::learn(client, inpututValues, expectedOutput, error))
+    if(HanamiAI::train(client, inpututValues, expectedOutput, error))
     {
         // success
     }

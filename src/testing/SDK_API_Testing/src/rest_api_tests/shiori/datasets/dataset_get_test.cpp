@@ -45,8 +45,8 @@ DataSetGetTest::runTest(Kitsunemimi::JsonItem &inputData,
 {
     if(m_uuid == "")
     {
-        if(m_type == "learn") {
-            m_uuid = inputData.get("learn_dataset_uuid").getString();
+        if(m_type == "train") {
+            m_uuid = inputData.get("train_dataset_uuid").getString();
         } else {
             m_uuid = inputData.get("request_dataset_uuid").getString();
         }

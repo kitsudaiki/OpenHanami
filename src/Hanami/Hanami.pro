@@ -217,13 +217,13 @@ HEADERS += \
     src/core/cluster/statemachine_init.h \
     src/core/cluster/states/cycle_finish_state.h \
     src/core/cluster/states/graphs/graph_interpolation_state.h \
-    src/core/cluster/states/graphs/graph_learn_forward_state.h \
+    src/core/cluster/states/graphs/graph_train_forward_state.h \
     src/core/cluster/states/images/image_identify_state.h \
-    src/core/cluster/states/images/image_learn_forward_state.h \
+    src/core/cluster/states/images/image_train_forward_state.h \
     src/core/cluster/states/snapshots/restore_cluster_state.h \
     src/core/cluster/states/snapshots/save_cluster_state.h \
     src/core/cluster/states/tables/table_interpolation_state.h \
-    src/core/cluster/states/tables/table_learn_forward_state.h \
+    src/core/cluster/states/tables/table_train_forward_state.h \
     src/core/cluster/states/task_handle_state.h \
     src/core/cluster/task.h \
     src/core/processing/cluster_queue.h \
@@ -320,13 +320,13 @@ SOURCES += \
     src/core/cluster/statemachine_init.cpp \
     src/core/cluster/states/cycle_finish_state.cpp \
     src/core/cluster/states/graphs/graph_interpolation_state.cpp \
-    src/core/cluster/states/graphs/graph_learn_forward_state.cpp \
+    src/core/cluster/states/graphs/graph_train_forward_state.cpp \
     src/core/cluster/states/images/image_identify_state.cpp \
-    src/core/cluster/states/images/image_learn_forward_state.cpp \
+    src/core/cluster/states/images/image_train_forward_state.cpp \
     src/core/cluster/states/snapshots/restore_cluster_state.cpp \
     src/core/cluster/states/snapshots/save_cluster_state.cpp \
     src/core/cluster/states/tables/table_interpolation_state.cpp \
-    src/core/cluster/states/tables/table_learn_forward_state.cpp \
+    src/core/cluster/states/tables/table_train_forward_state.cpp \
     src/core/cluster/states/task_handle_state.cpp \
     src/core/processing/cluster_queue.cpp \
     src/core/processing/cpu_processing_unit.cpp \

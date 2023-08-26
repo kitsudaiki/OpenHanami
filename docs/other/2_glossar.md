@@ -52,9 +52,9 @@ A `Data-Set` defines a set of train-data or data, which should be used for reque
 
 Tasks an asynchronous operation of the network based on a given `Data-Set`. There are two types:
 
-1. `Learn-Task`
+1. `Train-Task`
 
-For `Learn-Tasks` input-data and desired output must exist in the `Data-Set` in order to update the neuronal network based on the data.
+For `Train-Tasks` input-data and desired output must exist in the `Data-Set` in order to update the neuronal network based on the data.
 
 2. `Request-Task`
 

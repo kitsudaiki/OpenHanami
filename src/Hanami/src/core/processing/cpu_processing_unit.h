@@ -41,8 +41,8 @@ protected:
 private:
     uint64_t reductionCounter = 0;
 
-    void learnSegmentForward(Cluster* cluster);
-    void learnSegmentBackward(Cluster* cluster);
+    void trainSegmentForward(Cluster* cluster);
+    void trainSegmentBackward(Cluster* cluster);
     void processSegment(Cluster* cluster);
 };
 

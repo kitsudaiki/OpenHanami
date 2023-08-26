@@ -1,5 +1,5 @@
 /**
- * @file        table_learn_forward_state.h
+ * @file        train_task_test.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,24 +20,19 @@
  *      limitations under the License.
  */
 
-#ifndef TABLELEARNFORWARD_STATE_H
-#define TABLELEARNFORWARD_STATE_H
+#ifndef TSUGUMITESTER_TRAINTASKTEST_H
+#define TSUGUMITESTER_TRAINTASKTEST_H
 
-#include <libKitsunemimiCommon/threading/event.h>
+#include <common/test_step.h>
 
-class Cluster;
-
-class TableLearnForward_State
-        : public Kitsunemimi::Event
+class ImageTrainTaskTest
+        : public TestStep
 {
 public:
-    TableLearnForward_State(Cluster* cluster);
-    ~TableLearnForward_State();
+    ImageTrainTaskTest(const bool expectSuccess);
 
-    bool processEvent();
-
-private:
-    Cluster* m_cluster = nullptr;
+    bool runTest(Kitsunemimi::JsonItem &inputData,
+                 Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // TABLELEARNFORWARD_STATE_H
+#endif // TSUGUMITESTER_TRAINTASKTEST_H

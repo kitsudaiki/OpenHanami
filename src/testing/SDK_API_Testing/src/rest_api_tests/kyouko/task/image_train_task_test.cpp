@@ -1,5 +1,5 @@
 /**
- * @file        table_learn_task_test.cpp
+ * @file        train_task_test.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,14 +20,23 @@
  *      limitations under the License.
  */
 
-#include "table_learn_task_test.h"
+#include "image_train_task_test.h"
+#include <chrono>
 
 #include <libHanamiAiSdk/task.h>
 
-TableLearnTaskTest::TableLearnTaskTest(const bool expectSuccess)
+typedef std::chrono::milliseconds chronoMilliSec;
+typedef std::chrono::microseconds chronoMicroSec;
+typedef std::chrono::nanoseconds chronoNanoSec;
+typedef std::chrono::seconds chronoSec;
+typedef std::chrono::high_resolution_clock::time_point chronoTimePoint;
+typedef std::chrono::high_resolution_clock chronoClock;
+
+
+ImageTrainTaskTest::ImageTrainTaskTest(const bool expectSuccess)
   : TestStep(expectSuccess)
 {
-    m_testName = "table-learn-task";
+    m_testName = "train-task";
     if(expectSuccess) {
         m_testName += " (success)";
     } else {
@@ -36,16 +45,16 @@ TableLearnTaskTest::TableLearnTaskTest(const bool expectSuccess)
 }
 
 bool
-TableLearnTaskTest::runTest(Kitsunemimi::JsonItem &inputData,
+ImageTrainTaskTest::runTest(Kitsunemimi::JsonItem &inputData,
                             Kitsunemimi::ErrorContainer &error)
 {
     // create new user
     std::string result;
     if(HanamiAI::createTask(result,
                             inputData.get("generic_task_name").getString(),
-                            "learn",
+                            "train",
                             inputData.get("cluster_uuid").getString(),
-                            inputData.get("base_dataset_uuid").getString(),
+                            inputData.get("train_dataset_uuid").getString(),
                             error) != m_expectSuccess)
     {
         return false;
@@ -61,15 +70,20 @@ TableLearnTaskTest::runTest(Kitsunemimi::JsonItem &inputData,
         return false;
     }
 
-    inputData.insert("learn_task_uuid", jsonItem.get("uuid").getString(), true);
+    inputData.insert("train_task_uuid", jsonItem.get("uuid").getString(), true);
+
+    std::chrono::high_resolution_clock::time_point start;
+    std::chrono::high_resolution_clock::time_point end;
+
+    start = std::chrono::system_clock::now();
 
     // wait until task is finished
     do
     {
-        sleep(1);
+        usleep(1000000);
 
         HanamiAI::getTask(result,
-                          inputData.get("learn_task_uuid").getString(),
+                          inputData.get("train_task_uuid").getString(),
                           inputData.get("cluster_uuid").getString(),
                           error);
 
@@ -77,9 +91,15 @@ TableLearnTaskTest::runTest(Kitsunemimi::JsonItem &inputData,
         if(jsonItem.parse(result, error) == false) {
             return false;
         }
-        std::cout<<jsonItem.toString(true)<<std::endl;
+        //std::cout<<jsonItem.toString(true)<<std::endl;
     }
     while(jsonItem.get("state").getString() != "finished");
+    end = std::chrono::system_clock::now();
+    const float time2 = std::chrono::duration_cast<chronoMilliSec>(end - start).count();
+
+    std::cout<<"#######################################################################"<<std::endl;
+    std::cout<<"train_time: "<<time2<<" ms"<<std::endl;
+    std::cout<<"#######################################################################"<<std::endl;
 
     return true;
 }

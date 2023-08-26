@@ -28,7 +28,7 @@
 
 class Cluster;
 
-const std::string addImageLearnTask(Cluster &cluster,
+const std::string addImageTrainTask(Cluster &cluster,
                                     const std::string &name,
                                     const std::string &userId,
                                     const std::string &projectId,
@@ -44,7 +44,7 @@ const std::string addImageRequestTask(Cluster &cluster,
                                       const uint64_t numberOfInputsPerCycle,
                                       const uint64_t numberOfOuputsPerCycle,
                                       const uint64_t numberOfCycle);
-const std::string addTableLearnTask(Cluster &cluster,
+const std::string addTableTrainTask(Cluster &cluster,
                                     const std::string &name,
                                     const std::string &userId,
                                     const std::string &projectId,

@@ -1,5 +1,5 @@
 /**
- * @file        create_image_learn_task.h
+ * @file        create_image_train_task.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_CREATE_IMAGE_LEARNTASK_H
-#define HANAMI_CREATE_IMAGE_LEARNTASK_H
+#ifndef HANAMI_CREATE_IMAGE_TRAINTASK_H
+#define HANAMI_CREATE_IMAGE_TRAINTASK_H
 
 #include <common.h>
 #include <api/endpoint_processing/blossom.h>
@@ -63,4 +63,4 @@ private:
                    Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // HANAMI_CREATE_IMAGE_LEARNTASK_H
+#endif // HANAMI_CREATE_IMAGE_TRAINTASK_H

@@ -40,7 +40,7 @@ bool
 DirectIoTest::runTest(Kitsunemimi::JsonItem &,
                       Kitsunemimi::ErrorContainer &)
 {
-    if(learnTest() == false) {
+    if(trainTest() == false) {
         return false;
     }
 
@@ -52,7 +52,7 @@ DirectIoTest::runTest(Kitsunemimi::JsonItem &,
 }
 
 bool
-DirectIoTest::learnTest()
+DirectIoTest::trainTest()
 {
     Kitsunemimi::ErrorContainer error;
 
@@ -68,7 +68,7 @@ DirectIoTest::learnTest()
     {
         std::cout<<"run: "<<i<<std::endl;
 
-        if(HanamiAI::learn(TestThread::m_wsClient,
+        if(HanamiAI::train(TestThread::m_wsClient,
                            inputValues,
                            784,
                            shouldValues,

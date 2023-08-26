@@ -26,11 +26,11 @@
 class TaskHandle_State;
 class CycleFinish_State;
 class TableInterpolation_State;
-class TableLearnBackward_State;
-class TableLearnForward_State;
+class TableTrainBackward_State;
+class TableTrainForward_State;
 class ImageIdentify_State;
-class ImageLearnBackward_State;
-class ImageLearnForward_State;
+class ImageTrainBackward_State;
+class ImageTrainForward_State;
 class Cluster;
 
 namespace Kitsunemimi {
@@ -41,13 +41,13 @@ class Statemachine;
 enum ClusterStates
 {
     TASK_STATE = 0,
-    LEARN_STATE = 1,
-        IMAGE_LEARN_STATE = 2,
-            IMAGE_LEARN_FORWARD_STATE = 3,
-            IMAGE_LEARN_CYCLE_FINISH_STATE = 5,
-        TABLE_LEARN_STATE = 6,
-            TABLE_LEARN_FORWARD_STATE = 7,
-            TABLE_LEARN_CYCLE_FINISH_STATE = 9,
+    TRAIN_STATE = 1,
+        IMAGE_TRAIN_STATE = 2,
+            IMAGE_TRAIN_FORWARD_STATE = 3,
+            IMAGE_TRAIN_CYCLE_FINISH_STATE = 5,
+        TABLE_TRAIN_STATE = 6,
+            TABLE_TRAIN_FORWARD_STATE = 7,
+            TABLE_TRAIN_CYCLE_FINISH_STATE = 9,
     REQUEST_STATE = 10,
         IMAGE_REQUEST_STATE = 11,
             IMAGE_REQUEST_FORWARD_STATE = 12,
@@ -64,7 +64,7 @@ enum ClusterStates
 
 enum ClusterTransitions
 {
-    LEARN = 100,
+    TRAIN = 100,
     REQUEST = 101,
     SNAPSHOT = 102,
     IMAGE = 103,

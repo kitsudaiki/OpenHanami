@@ -83,11 +83,11 @@ CpuProcessingUnit::~CpuProcessingUnit() {}
  * @param segment segment to process
  */
 void
-CpuProcessingUnit::learnSegmentForward(Cluster* cluster)
+CpuProcessingUnit::trainSegmentForward(Cluster* cluster)
 {
     Kitsunemimi::ErrorContainer error;
 
-    cluster->clusterSettings->doLearn = 1;
+    cluster->clusterSettings->doTrain = 1;
     if(HanamiRoot::useCuda)
     {
         processing_CUDA(&cluster->gpuPointer,
@@ -107,7 +107,7 @@ CpuProcessingUnit::learnSegmentForward(Cluster* cluster)
     }
     //prcessCoreSegment(*cluster);
 
-    cluster->clusterSettings->doLearn = 0;
+    cluster->clusterSettings->doTrain = 0;
 }
 
 /**
@@ -116,7 +116,7 @@ CpuProcessingUnit::learnSegmentForward(Cluster* cluster)
  * @param segment segment to process
  */
 void
-CpuProcessingUnit::learnSegmentBackward(Cluster* cluster)
+CpuProcessingUnit::trainSegmentBackward(Cluster* cluster)
 {
     Kitsunemimi::ErrorContainer error;
 
@@ -226,10 +226,10 @@ CpuProcessingUnit::run()
         if(cluster != nullptr)
         {
             // handle type of processing
-            if(cluster->mode == ClusterProcessingMode::LEARN_FORWARD_MODE) {
-                learnSegmentForward(cluster);
-            } else if(cluster->mode == ClusterProcessingMode::LEARN_BACKWARD_MODE) {
-                learnSegmentBackward(cluster);
+            if(cluster->mode == ClusterProcessingMode::TRAIN_FORWARD_MODE) {
+                trainSegmentForward(cluster);
+            } else if(cluster->mode == ClusterProcessingMode::TRAIN_BACKWARD_MODE) {
+                trainSegmentBackward(cluster);
             } else {
                 processSegment(cluster);
             }
@@ -245,10 +245,10 @@ CpuProcessingUnit::run()
 
 
 /**
- * @brief SingleThreadProcessingStatic::reductionLearning
+ * @brief SingleThreadProcessingStatic::reductionTraining
 
 void
-CpuProcessingUnit::reductionLearning(DynamicSegment* synapseSegment)
+CpuProcessingUnit::reductionTraining(DynamicSegment* synapseSegment)
 {
     const float initError = calculateSegmentError(synapseSegment);
     float error = initError;

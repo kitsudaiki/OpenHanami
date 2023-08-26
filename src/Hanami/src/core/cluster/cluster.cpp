@@ -162,7 +162,7 @@ Cluster::setName(const std::string newName)
 }
 
 /**
- * @brief start a new forward learn-cycle
+ * @brief start a new forward train-cycle
  */
 void
 Cluster::startForwardCycle()
@@ -171,7 +171,7 @@ Cluster::startForwardCycle()
 }
 
 /**
- * @brief start a new backward learn-cycle
+ * @brief start a new backward train-cycle
  */
 void
 Cluster::startBackwardCycle()
@@ -209,16 +209,16 @@ Cluster::updateClusterState()
     std::lock_guard<std::mutex> guard(m_segmentCounterLock);
 
     // trigger next lerning phase, if already in phase 1
-    if(mode == ClusterProcessingMode::LEARN_FORWARD_MODE)
+    if(mode == ClusterProcessingMode::TRAIN_FORWARD_MODE)
     {
-        mode = ClusterProcessingMode::LEARN_BACKWARD_MODE;
+        mode = ClusterProcessingMode::TRAIN_BACKWARD_MODE;
         startBackwardCycle();
         return;
     }
 
     // send message, that process was finished
-    if(mode == ClusterProcessingMode::LEARN_BACKWARD_MODE) {
-        sendClusterLearnEndMessage(this);
+    if(mode == ClusterProcessingMode::TRAIN_BACKWARD_MODE) {
+        sendClusterTrainEndMessage(this);
     } else if(mode == ClusterProcessingMode::NORMAL_MODE) {
         sendClusterNormalEndMessage(this);
     }

@@ -84,7 +84,7 @@ synapseProcessingBackward(Synapse* section,
         {
             Synapse* synapse = &section[pos];
 
-            // create new synapse if necesarry and learning is active
+            // create new synapse if necesarry and training is active
             if(synapse->targetNeuronId == UNINIT_STATE_16) {
                 createNewSynapse(currentNeuronBlock, synapse, segmentSettings, counter, randomValues);
             }
@@ -212,7 +212,7 @@ backpropagateSection(Synapse* section,
                      SynapseConnection* synapseConnections,
                      float* tempVal)
 {
-    float learnValue = 0.2f;
+    float trainValue = 0.2f;
     float counter = outH - connection->offset[threadIdx.x];
 
     // iterate over all synapses in the section
@@ -225,12 +225,12 @@ backpropagateSection(Synapse* section,
                 && synapse->targetNeuronId != UNINIT_STATE_16)
         {
             // update weight
-            learnValue = (float)(126 - synapse->activeCounter) * 0.0002f;
-            learnValue += 0.05f;
+            trainValue = (float)(126 - synapse->activeCounter) * 0.0002f;
+            trainValue += 0.05f;
             Neuron* targetNeuron = &targetNeuronSection->neurons[synapse->targetNeuronId];
             tempVal[threadIdx.x] += targetNeuron->delta * synapse->weight;
 
-            synapse->weight -= learnValue * targetNeuron->delta;
+            synapse->weight -= trainValue * targetNeuron->delta;
         }
 
         counter -= synapse->border;

@@ -29,7 +29,7 @@
 #include <libKitsunemimiCommon/statemachine.h>
 
 /**
- * @brief create a learn-task and add it to the task-queue
+ * @brief create a train-task and add it to the task-queue
  *
  * @param inputData input-data
  * @param numberOfInputsPerCycle number of inputs per cycle
@@ -39,7 +39,7 @@
  * @return task-uuid
  */
 const std::string
-addImageLearnTask(Cluster &cluster,
+addImageTrainTask(Cluster &cluster,
                   const std::string &name,
                   const std::string &userId,
                   const std::string &projectId,
@@ -48,14 +48,14 @@ addImageLearnTask(Cluster &cluster,
                   const uint64_t numberOfOuputsPerCycle,
                   const uint64_t numberOfCycles)
 {
-    // create new learn-task
+    // create new train-task
     Task newTask;
     newTask.uuid = generateUuid();
     newTask.name = name;
     newTask.userId = userId;
     newTask.projectId = projectId;
     newTask.inputData = inputData;
-    newTask.type = IMAGE_LEARN_TASK;
+    newTask.type = IMAGE_TRAIN_TASK;
     newTask.progress.state = QUEUED_TASK_STATE;
     newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
 
@@ -122,7 +122,7 @@ addImageRequestTask(Cluster &cluster,
 }
 
 /**
- * @brief create task to learn table-data and add it to the task-queue
+ * @brief create task to train table-data and add it to the task-queue
  *
  * @param inputData input-data
  * @param numberOfInputs number of inputs per cycle
@@ -131,7 +131,7 @@ addImageRequestTask(Cluster &cluster,
  * @return task-uuid
  */
 const std::string
-addTableLearnTask(Cluster &cluster,
+addTableTrainTask(Cluster &cluster,
                   const std::string &name,
                   const std::string &userId,
                   const std::string &projectId,
@@ -141,7 +141,7 @@ addTableLearnTask(Cluster &cluster,
                   const uint64_t numberOfOutputs,
                   const uint64_t numberOfCycles)
 {
-    // create new learn-task
+    // create new train-task
     Task newTask;
     newTask.uuid = generateUuid();
     newTask.name = name;
@@ -149,7 +149,7 @@ addTableLearnTask(Cluster &cluster,
     newTask.projectId = projectId;
     newTask.inputData = inputData;
     newTask.outputData = outputData;
-    newTask.type = TABLE_LEARN_TASK;
+    newTask.type = TABLE_TRAIN_TASK;
     newTask.progress.state = QUEUED_TASK_STATE;
     newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
 

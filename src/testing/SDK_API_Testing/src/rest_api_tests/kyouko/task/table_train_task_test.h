@@ -1,5 +1,5 @@
 /**
- * @file        table_learn_task_test.h
+ * @file        table_train_task_test.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,19 +20,19 @@
  *      limitations under the License.
  */
 
-#ifndef TSUGUMITESTER_TABLE_LEARNTASKTEST_H
-#define TSUGUMITESTER_TABLE_LEARNTASKTEST_H
+#ifndef TSUGUMITESTER_TABLE_TRAINTASKTEST_H
+#define TSUGUMITESTER_TABLE_TRAINTASKTEST_H
 
 #include <common/test_step.h>
 
-class TableLearnTaskTest
+class TableTrainTaskTest
         : public TestStep
 {
 public:
-    TableLearnTaskTest(const bool expectSuccess);
+    TableTrainTaskTest(const bool expectSuccess);
 
     bool runTest(Kitsunemimi::JsonItem &inputData,
                  Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // TSUGUMITESTER_TABLE_LEARNTASKTEST_H
+#endif // TSUGUMITESTER_TABLE_TRAINTASKTEST_H

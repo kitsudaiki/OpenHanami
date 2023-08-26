@@ -56,10 +56,10 @@ SOURCES += src/main.cpp \
     src/rest_api_tests/kyouko/cluster/cluster_switch_to_direct_test.cpp \
     src/rest_api_tests/kyouko/cluster/cluster_switch_to_task_test.cpp \
     src/rest_api_tests/kyouko/io/direct_io_test.cpp \
-    src/rest_api_tests/kyouko/task/image_learn_task_test.cpp \
     src/rest_api_tests/kyouko/task/image_request_task_test.cpp \
-    src/rest_api_tests/kyouko/task/table_learn_task_test.cpp \
+    src/rest_api_tests/kyouko/task/image_train_task_test.cpp \
     src/rest_api_tests/kyouko/task/table_request_task_test.cpp \
+    src/rest_api_tests/kyouko/task/table_train_task_test.cpp \
     src/rest_api_tests/misaki/project/project_create_test.cpp \
     src/rest_api_tests/misaki/project/project_delete_test.cpp \
     src/rest_api_tests/misaki/project/project_get_test.cpp \
@@ -96,10 +96,10 @@ HEADERS += \
     src/rest_api_tests/kyouko/cluster/cluster_switch_to_direct_test.h \
     src/rest_api_tests/kyouko/cluster/cluster_switch_to_task_test.h \
     src/rest_api_tests/kyouko/io/direct_io_test.h \
-    src/rest_api_tests/kyouko/task/image_learn_task_test.h \
     src/rest_api_tests/kyouko/task/image_request_task_test.h \
-    src/rest_api_tests/kyouko/task/table_learn_task_test.h \
+    src/rest_api_tests/kyouko/task/image_train_task_test.h \
     src/rest_api_tests/kyouko/task/table_request_task_test.h \
+    src/rest_api_tests/kyouko/task/table_train_task_test.h \
     src/rest_api_tests/misaki/project/project_create_test.h \
     src/rest_api_tests/misaki/project/project_delete_test.h \
     src/rest_api_tests/misaki/project/project_get_test.h \

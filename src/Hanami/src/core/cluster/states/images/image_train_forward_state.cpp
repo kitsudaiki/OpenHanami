@@ -1,5 +1,5 @@
 /**
- * @file        image_learn_forward_state.cpp
+ * @file        image_train_forward_state.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,7 +20,7 @@
  *      limitations under the License.
  */
 
-#include "image_learn_forward_state.h"
+#include "image_train_forward_state.h"
 
 #include <core/cluster/cluster.h>
 
@@ -29,7 +29,7 @@
  *
  * @param cluster pointer to the cluster, where the event and the statemachine belongs to
  */
-ImageLearnForward_State::ImageLearnForward_State(Cluster* cluster)
+ImageTrainForward_State::ImageTrainForward_State(Cluster* cluster)
 {
     m_cluster = cluster;
 }
@@ -37,7 +37,7 @@ ImageLearnForward_State::ImageLearnForward_State(Cluster* cluster)
 /**
  * @brief destructor
  */
-ImageLearnForward_State::~ImageLearnForward_State() {}
+ImageTrainForward_State::~ImageTrainForward_State() {}
 
 /**
  * @brief prcess event
@@ -45,7 +45,7 @@ ImageLearnForward_State::~ImageLearnForward_State() {}
  * @return alway true
  */
 bool
-ImageLearnForward_State::processEvent()
+ImageTrainForward_State::processEvent()
 {
     Task* actualTask = m_cluster->getActualTask();
     const uint64_t numberOfInputsPerCycle = actualTask->numberOfInputsPerCycle;
@@ -65,7 +65,7 @@ ImageLearnForward_State::processEvent()
         m_cluster->expectedValues[i] = actualTask->inputData[offsetInput + numberOfCycles + i];
     }
 
-    m_cluster->mode = ClusterProcessingMode::LEARN_FORWARD_MODE;
+    m_cluster->mode = ClusterProcessingMode::TRAIN_FORWARD_MODE;
     m_cluster->startForwardCycle();
 
     return true;

@@ -67,9 +67,9 @@ TaskHandle_State::processEvent()
 
     switch(actualTask->type)
     {
-        case IMAGE_LEARN_TASK:
+        case IMAGE_TRAIN_TASK:
         {
-            if(m_cluster->goToNextState(LEARN)) {
+            if(m_cluster->goToNextState(TRAIN)) {
                 m_cluster->goToNextState(IMAGE);
                 // Azuki::setSpeedToAutomatic(error);
             } else {
@@ -89,9 +89,9 @@ TaskHandle_State::processEvent()
             }
             break;
         }
-        case TABLE_LEARN_TASK:
+        case TABLE_TRAIN_TASK:
         {
-            if(m_cluster->goToNextState(LEARN)) {
+            if(m_cluster->goToNextState(TRAIN)) {
                 m_cluster->goToNextState(TABLE);
                 // Azuki::setSpeedToAutomatic(error);
             } else {

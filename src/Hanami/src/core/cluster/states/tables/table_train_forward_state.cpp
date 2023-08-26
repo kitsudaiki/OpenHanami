@@ -1,5 +1,5 @@
 /**
- * @file        table_learn_forward_state.cpp
+ * @file        table_train_forward_state.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,7 +20,7 @@
  *      limitations under the License.
  */
 
-#include "table_learn_forward_state.h"
+#include "table_train_forward_state.h"
 
 #include <core/cluster/cluster.h>
 
@@ -29,7 +29,7 @@
  *
  * @param cluster pointer to the cluster, where the event and the statemachine belongs to
  */
-TableLearnForward_State::TableLearnForward_State(Cluster* cluster)
+TableTrainForward_State::TableTrainForward_State(Cluster* cluster)
 {
     m_cluster = cluster;
 }
@@ -37,7 +37,7 @@ TableLearnForward_State::TableLearnForward_State(Cluster* cluster)
 /**
  * @brief destructor
  */
-TableLearnForward_State::~TableLearnForward_State() {}
+TableTrainForward_State::~TableTrainForward_State() {}
 
 /**
  * @brief prcess event
@@ -45,7 +45,7 @@ TableLearnForward_State::~TableLearnForward_State() {}
  * @return alway true
  */
 bool
-TableLearnForward_State::processEvent()
+TableTrainForward_State::processEvent()
 {
     Task* actualTask = m_cluster->getActualTask();
     const uint64_t numberOfInputsPerCycle = actualTask->numberOfInputsPerCycle;
@@ -67,7 +67,7 @@ TableLearnForward_State::processEvent()
         m_cluster->expectedValues[i] = actualTask->outputData[(offset - numberOfOuputsPerCycle) + i];
     }
 
-    m_cluster->mode = ClusterProcessingMode::LEARN_FORWARD_MODE;
+    m_cluster->mode = ClusterProcessingMode::TRAIN_FORWARD_MODE;
     m_cluster->startForwardCycle();
 
     return true;

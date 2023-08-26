@@ -1,5 +1,5 @@
 /**
- * @file        image_learn_forward_state.h
+ * @file        image_train_forward_state.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,19 +20,19 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_IMAGELEARNFORWARD_STATE_H
-#define HANAMI_IMAGELEARNFORWARD_STATE_H
+#ifndef HANAMI_IMAGETRAINFORWARD_STATE_H
+#define HANAMI_IMAGETRAINFORWARD_STATE_H
 
 #include <libKitsunemimiCommon/threading/event.h>
 
 class Cluster;
 
-class ImageLearnForward_State
+class ImageTrainForward_State
         : public Kitsunemimi::Event
 {
 public:
-    ImageLearnForward_State(Cluster* cluster);
-    ~ImageLearnForward_State();
+    ImageTrainForward_State(Cluster* cluster);
+    ~ImageTrainForward_State();
 
     bool processEvent();
 
@@ -40,4 +40,4 @@ private:
     Cluster* m_cluster = nullptr;
 };
 
-#endif // HANAMI_IMAGELEARNFORWARD_STATE_H
+#endif // HANAMI_IMAGETRAINFORWARD_STATE_H

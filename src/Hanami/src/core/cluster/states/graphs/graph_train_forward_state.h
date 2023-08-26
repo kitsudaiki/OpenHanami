@@ -1,11 +1,11 @@
 /**
- * @file        learn_task_test.h
+ * @file        graph_train_forward_state.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
  * @copyright   Apache License Version 2.0
  *
- *      Copyright 2022 Tobias Anker
+ *      Copyright 2019 Tobias Anker
  *
  *      Licensed under the Apache License, Version 2.0 (the "License");
  *      you may not use this file except in compliance with the License.
@@ -20,19 +20,24 @@
  *      limitations under the License.
  */
 
-#ifndef TSUGUMITESTER_LEARNTASKTEST_H
-#define TSUGUMITESTER_LEARNTASKTEST_H
+#ifndef HANAMI_GRAPHTRAINFORWARD_STATE_H
+#define HANAMI_GRAPHTRAINFORWARD_STATE_H
 
-#include <common/test_step.h>
+#include <libKitsunemimiCommon/threading/event.h>
 
-class ImageLearnTaskTest
-        : public TestStep
+class Cluster;
+
+class GraphTrainForward_State
+        : public Kitsunemimi::Event
 {
 public:
-    ImageLearnTaskTest(const bool expectSuccess);
+    GraphTrainForward_State(Cluster* cluster);
+    ~GraphTrainForward_State();
 
-    bool runTest(Kitsunemimi::JsonItem &inputData,
-                 Kitsunemimi::ErrorContainer &error);
+    bool processEvent();
+
+private:
+    Cluster* m_cluster = nullptr;
 };
 
-#endif // TSUGUMITESTER_LEARNTASKTEST_H
+#endif // HANAMI_GRAPHTRAINFORWARD_STATE_H

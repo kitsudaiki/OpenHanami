@@ -31,9 +31,9 @@
 enum TaskType
 {
     UNDEFINED_TASK = 0,
-    IMAGE_LEARN_TASK = 1,
+    IMAGE_TRAIN_TASK = 1,
     IMAGE_REQUEST_TASK = 2,
-    TABLE_LEARN_TASK = 3,
+    TABLE_TRAIN_TASK = 3,
     TABLE_REQUEST_TASK = 4,
     CLUSTER_SNAPSHOT_SAVE_TASK = 5,
     CLUSTER_SNAPSHOT_RESTORE_TASK = 6,
@@ -72,7 +72,7 @@ struct Task
     float* outputData = nullptr;
     Kitsunemimi::JsonItem resultData;
 
-    // learn-request-task meta
+    // train-request-task meta
     uint64_t numberOfCycles = 0;
     uint64_t numberOfInputsPerCycle = 0;
     uint64_t numberOfOuputsPerCycle = 0;

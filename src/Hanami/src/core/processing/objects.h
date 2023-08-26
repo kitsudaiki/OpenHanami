@@ -56,8 +56,8 @@
 enum ClusterProcessingMode
 {
     NORMAL_MODE = 0,
-    LEARN_FORWARD_MODE = 1,
-    LEARN_BACKWARD_MODE = 2,
+    TRAIN_FORWARD_MODE = 1,
+    TRAIN_BACKWARD_MODE = 2,
 };
 
 //==================================================================================================
@@ -246,7 +246,7 @@ struct SegmentSettings
     float lerningValue = 0.0f;
 
     uint8_t refractionTime = 1;
-    uint8_t doLearn = 0;
+    uint8_t doTrain = 0;
     uint8_t updateSections = 0;
 
     uint8_t padding[209];

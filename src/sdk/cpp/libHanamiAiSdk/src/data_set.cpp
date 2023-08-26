@@ -240,7 +240,7 @@ sendFile(WebsocketClient* client,
         const uint64_t msgSize = message.ByteSizeLong();
         if(message.SerializeToArray(sendBuffer, msgSize) == false)
         {
-            error.addMeesage("Failed to serialize learn-message");
+            error.addMeesage("Failed to serialize train-message");
             return false;
         }
 

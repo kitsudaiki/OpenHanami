@@ -1,5 +1,5 @@
 /**
- * @file        graph_learn_forward_state.cpp
+ * @file        graph_train_forward_state.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,7 +20,7 @@
  *      limitations under the License.
  */
 
-#include "graph_learn_forward_state.h"
+#include "graph_train_forward_state.h"
 
 #include <core/cluster/cluster.h>
 
@@ -29,7 +29,7 @@
  *
  * @param cluster pointer to the cluster, where the event and the statemachine belongs to
  */
-GraphLearnForward_State::GraphLearnForward_State(Cluster* cluster)
+GraphTrainForward_State::GraphTrainForward_State(Cluster* cluster)
 {
     m_cluster = cluster;
 }
@@ -37,7 +37,7 @@ GraphLearnForward_State::GraphLearnForward_State(Cluster* cluster)
 /**
  * @brief destructor
  */
-GraphLearnForward_State::~GraphLearnForward_State() {}
+GraphTrainForward_State::~GraphTrainForward_State() {}
 
 /**
  * @brief prcess event
@@ -45,7 +45,7 @@ GraphLearnForward_State::~GraphLearnForward_State() {}
  * @return alway true
  */
 bool
-GraphLearnForward_State::processEvent()
+GraphTrainForward_State::processEvent()
 {
     Task* actualTask = m_cluster->getActualTask();
 
@@ -139,7 +139,7 @@ GraphLearnForward_State::processEvent()
         outputNodes[3].shouldValue = 1.0f;
     }
 
-    m_cluster->mode = Cluster::LEARN_FORWARD_MODE;
+    m_cluster->mode = Cluster::TRAIN_FORWARD_MODE;
     m_cluster->startForwardCycle();*/
 
     return true;
