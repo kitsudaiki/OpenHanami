@@ -103,7 +103,7 @@ cudaKernel.CONFIG += target_predeps
 QMAKE_EXTRA_COMPILERS += cudaKernel
 
 OTHER_FILES += $$HANAMI_PROTO_BUFFER \
-               $$GPU_KERNEL
+               $$CUDA_SOURCES
 
 protobuf_decl.name = protobuf headers
 protobuf_decl.name = protobuf headers
@@ -129,7 +129,7 @@ gpu_processing.commands = xxd -i ${QMAKE_FILE_IN} \
 gpu_processing.variable_out = HEADERS
 gpu_processing.CONFIG += no_link
 
-QMAKE_EXTRA_COMPILERS += gpu_processing
+# QMAKE_EXTRA_COMPILERS += gpu_processing
 
 HEADERS += \
     src/api/endpoint_processing/blossom.h \
