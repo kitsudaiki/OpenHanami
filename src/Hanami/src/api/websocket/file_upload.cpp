@@ -25,7 +25,7 @@
 #include <hanami_root.h>
 #include <core/temp_file_handler.h>
 #include <database/data_set_table.h>
-#include <database/cluster_snapshot_table.h>
+#include <database/checkpoint_table.h>
 
 #include <hanami_messages.proto3.pb.h>
 
@@ -77,9 +77,9 @@ recvFileUploadPackage(const void* data,
         }
     }
 
-    if(msg.type() == UploadDataType::CLUSTER_SNAPSHOT_TYPE)
+    if(msg.type() == UploadDataType::CHECKPOINT_TYPE)
     {
-        if(ClusterSnapshotTable::getInstance()->setUploadFinish(msg.datasetuuid(),
+        if(CheckpointTable::getInstance()->setUploadFinish(msg.datasetuuid(),
                                                                 msg.fileuuid(),
                                                                 error) == false)
         {

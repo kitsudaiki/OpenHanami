@@ -1,5 +1,5 @@
 /**
- * @file        list_cluster_snapshot.h
+ * @file        checkpoint.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,23 +20,25 @@
  *      limitations under the License.
  */
 
-#ifndef LIST_CLUSTER_SNAPSHOT_H
-#define LIST_CLUSTER_SNAPSHOT_H
+#ifndef KITSUNEMIMI_HANAMISDK_CHECKPOINT_H
+#define KITSUNEMIMI_HANAMISDK_CHECKPOINT_H
 
-#include <api/endpoint_processing/blossom.h>
+#include <libKitsunemimiCommon/logger.h>
 
-
-class ListClusterSnapshot
-        : public Blossom
+namespace HanamiAI
 {
-public:
-    ListClusterSnapshot();
 
-protected:
-    bool runTask(BlossomIO &blossomIO,
-                 const Kitsunemimi::DataMap &,
-                 BlossomStatus &status,
+bool getCheckpoint(std::string &result,
+                 const std::string &checkpointUuid,
                  Kitsunemimi::ErrorContainer &error);
-};
 
-#endif // LIST_CLUSTER_SNAPSHOT_H
+bool listCheckpoint(std::string &result,
+                  Kitsunemimi::ErrorContainer &error);
+
+bool deleteCheckpoint(std::string &result,
+                    const std::string &checkpointUuid,
+                    Kitsunemimi::ErrorContainer &error);
+
+} // namespace HanamiAI
+
+#endif // KITSUNEMIMI_HANAMISDK_CHECKPOINT_H

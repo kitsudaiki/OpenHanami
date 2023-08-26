@@ -1,5 +1,5 @@
 /**
- * @file        snapshot.cpp
+ * @file        checkpoint.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,35 +20,35 @@
  *      limitations under the License.
  */
 
-#include <libHanamiAiSdk/snapshot.h>
+#include <libHanamiAiSdk/checkpoint.h>
 #include <common/http_client.h>
 
 namespace HanamiAI
 {
 
 /**
- * @brief get information of a snapshot from shiori
+ * @brief get information of a checkpoint from shiori
  *
  * @param result reference for response-message
- * @param snapshotUuid uuid of the snapshot to get
+ * @param checkpointUuid uuid of the checkpoint to get
  * @param error reference for error-output
  *
  * @return true, if successful, else false
  */
 bool
-getSnapshot(std::string &result,
-            const std::string &snapshotUuid,
+getCheckpoint(std::string &result,
+            const std::string &checkpointUuid,
             Kitsunemimi::ErrorContainer &error)
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/v1/cluster_snapshot";
-    const std::string vars = "uuid=" + snapshotUuid;
+    const std::string path = "/control/v1/checkpoint";
+    const std::string vars = "uuid=" + checkpointUuid;
 
     // send request
     if(request->sendGetRequest(result, path, vars, error) == false)
     {
-        error.addMeesage("Failed to get snapshot with UUID '" + snapshotUuid + "'");
+        error.addMeesage("Failed to get checkpoint with UUID '" + checkpointUuid + "'");
         LOG_ERROR(error);
         return false;
     }
@@ -57,7 +57,7 @@ getSnapshot(std::string &result,
 }
 
 /**
- * @brief list all visible snapshot on shiori
+ * @brief list all visible checkpoint on shiori
  *
  * @param result reference for response-message
  * @param error reference for error-output
@@ -65,17 +65,17 @@ getSnapshot(std::string &result,
  * @return true, if successful, else false
  */
 bool
-listSnapshot(std::string &result,
+listCheckpoint(std::string &result,
              Kitsunemimi::ErrorContainer &error)
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/v1/cluster_snapshot/all";
+    const std::string path = "/control/v1/checkpoint/all";
 
     // send request
     if(request->sendGetRequest(result, path, "", error) == false)
     {
-        error.addMeesage("Failed to list snapshots");
+        error.addMeesage("Failed to list checkpoints");
         LOG_ERROR(error);
         return false;
     }
@@ -84,28 +84,28 @@ listSnapshot(std::string &result,
 }
 
 /**
- * @brief delete a snapshot
+ * @brief delete a checkpoint
  *
  * @param result reference for response-message
- * @param snapshotUuid uuid of the snapshot to delete
+ * @param checkpointUuid uuid of the checkpoint to delete
  * @param error reference for error-output
  *
  * @return true, if successful, else false
  */
 bool
-deleteSnapshot(std::string &result,
-               const std::string &snapshotUuid,
+deleteCheckpoint(std::string &result,
+               const std::string &checkpointUuid,
                Kitsunemimi::ErrorContainer &error)
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
-    const std::string path = "/control/v1/cluster_snapshot";
-    const std::string vars = "uuid=" + snapshotUuid;
+    const std::string path = "/control/v1/checkpoint";
+    const std::string vars = "uuid=" + checkpointUuid;
 
     // send request
     if(request->sendDeleteRequest(result, path, vars, error) == false)
     {
-        error.addMeesage("Failed to delete snapshot with UUID '" + snapshotUuid + "'");
+        error.addMeesage("Failed to delete checkpoint with UUID '" + checkpointUuid + "'");
         LOG_ERROR(error);
         return false;
     }

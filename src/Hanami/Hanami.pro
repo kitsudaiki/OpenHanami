@@ -161,11 +161,11 @@ HEADERS += \
     src/api/http/v1/cluster/save_cluster.h \
     src/api/http/v1/cluster/set_cluster_mode.h \
     src/api/http/v1/cluster/show_cluster.h \
-    src/api/http/v1/cluster_snapshot/create_cluster_snapshot.h \
-    src/api/http/v1/cluster_snapshot/delete_cluster_snapshot.h \
-    src/api/http/v1/cluster_snapshot/finish_cluster_snapshot.h \
-    src/api/http/v1/cluster_snapshot/get_cluster_snapshot.h \
-    src/api/http/v1/cluster_snapshot/list_cluster_snapshot.h \
+    src/api/http/v1/checkpoint/create_checkpoint.h \
+    src/api/http/v1/checkpoint/delete_checkpoint.h \
+    src/api/http/v1/checkpoint/finish_checkpoint.h \
+    src/api/http/v1/checkpoint/get_checkpoint.h \
+    src/api/http/v1/checkpoint/list_checkpoint.h \
     src/api/http/v1/data_files/check_data_set.h \
     src/api/http/v1/data_files/csv/create_csv_data_set.h \
     src/api/http/v1/data_files/csv/finalize_csv_data_set.h \
@@ -220,8 +220,8 @@ HEADERS += \
     src/core/cluster/states/graphs/graph_train_forward_state.h \
     src/core/cluster/states/images/image_identify_state.h \
     src/core/cluster/states/images/image_train_forward_state.h \
-    src/core/cluster/states/snapshots/restore_cluster_state.h \
-    src/core/cluster/states/snapshots/save_cluster_state.h \
+    src/core/cluster/states/checkpoints/restore_cluster_state.h \
+    src/core/cluster/states/checkpoints/save_cluster_state.h \
     src/core/cluster/states/tables/table_interpolation_state.h \
     src/core/cluster/states/tables/table_train_forward_state.h \
     src/core/cluster/states/task_handle_state.h \
@@ -239,7 +239,7 @@ HEADERS += \
     src/core/temp_file_handler.h \
     src/core/thread_binder.h \
     src/database/audit_log_table.h \
-    src/database/cluster_snapshot_table.h \
+    src/database/checkpoint_table.h \
     src/database/cluster_table.h \
     src/database/data_set_table.h \
     src/database/error_log_table.h \
@@ -272,11 +272,11 @@ SOURCES += \
     src/api/http/v1/cluster/save_cluster.cpp \
     src/api/http/v1/cluster/set_cluster_mode.cpp \
     src/api/http/v1/cluster/show_cluster.cpp \
-    src/api/http/v1/cluster_snapshot/create_cluster_snapshot.cpp \
-    src/api/http/v1/cluster_snapshot/delete_cluster_snapshot.cpp \
-    src/api/http/v1/cluster_snapshot/finish_cluster_snapshot.cpp \
-    src/api/http/v1/cluster_snapshot/get_cluster_snapshot.cpp \
-    src/api/http/v1/cluster_snapshot/list_cluster_snapshot.cpp \
+    src/api/http/v1/checkpoint/create_checkpoint.cpp \
+    src/api/http/v1/checkpoint/delete_checkpoint.cpp \
+    src/api/http/v1/checkpoint/finish_checkpoint.cpp \
+    src/api/http/v1/checkpoint/get_checkpoint.cpp \
+    src/api/http/v1/checkpoint/list_checkpoint.cpp \
     src/api/http/v1/data_files/check_data_set.cpp \
     src/api/http/v1/data_files/csv/create_csv_data_set.cpp \
     src/api/http/v1/data_files/csv/finalize_csv_data_set.cpp \
@@ -323,8 +323,8 @@ SOURCES += \
     src/core/cluster/states/graphs/graph_train_forward_state.cpp \
     src/core/cluster/states/images/image_identify_state.cpp \
     src/core/cluster/states/images/image_train_forward_state.cpp \
-    src/core/cluster/states/snapshots/restore_cluster_state.cpp \
-    src/core/cluster/states/snapshots/save_cluster_state.cpp \
+    src/core/cluster/states/checkpoints/restore_cluster_state.cpp \
+    src/core/cluster/states/checkpoints/save_cluster_state.cpp \
     src/core/cluster/states/tables/table_interpolation_state.cpp \
     src/core/cluster/states/tables/table_train_forward_state.cpp \
     src/core/cluster/states/task_handle_state.cpp \
@@ -334,7 +334,7 @@ SOURCES += \
     src/core/temp_file_handler.cpp \
     src/core/thread_binder.cpp \
     src/database/audit_log_table.cpp \
-    src/database/cluster_snapshot_table.cpp \
+    src/database/checkpoint_table.cpp \
     src/database/cluster_table.cpp \
     src/database/data_set_table.cpp \
     src/database/error_log_table.cpp \

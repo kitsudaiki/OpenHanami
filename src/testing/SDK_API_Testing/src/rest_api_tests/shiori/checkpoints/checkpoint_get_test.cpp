@@ -1,5 +1,5 @@
 /**
- * @file        snapshot_delete_test.cpp
+ * @file        checkpoint_get_test.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,30 +20,34 @@
  *      limitations under the License.
  */
 
-#include "snapshot_delete_test.h"
+#include "checkpoint_get_test.h"
 
-#include <libHanamiAiSdk/snapshot.h>
+#include <libHanamiAiSdk/checkpoint.h>
 
-SnapshotDeleteTest::SnapshotDeleteTest(const bool expectSuccess)
-          : TestStep(expectSuccess)
+CheckpointGetTest::CheckpointGetTest(const bool expectSuccess,
+                                 const std::string &uuidOverride)
+    : TestStep(expectSuccess)
 {
-    m_testName = "delete snapshot";
+    m_testName = "get checkpoint";
     if(expectSuccess) {
         m_testName += " (success)";
     } else {
         m_testName += " (fail)";
     }
+    m_uuid = uuidOverride;
 }
 
 bool
-SnapshotDeleteTest::runTest(Kitsunemimi::JsonItem &inputData,
-                            Kitsunemimi::ErrorContainer &error)
+CheckpointGetTest::runTest(Kitsunemimi::JsonItem &inputData,
+                         Kitsunemimi::ErrorContainer &error)
 {
-    const std::string uuid = inputData.get("cluster_snapshot_uuid").getString();
+    if(m_uuid == "") {
+        m_uuid = inputData.get("checkpoint_uuid").getString();
+    }
 
-    // delete user by name
+    // get user by name
     std::string result;
-    if(HanamiAI::deleteSnapshot(result, uuid, error) != m_expectSuccess) {
+    if(HanamiAI::getCheckpoint(result, m_uuid, error) != m_expectSuccess) {
         return false;
     }
 

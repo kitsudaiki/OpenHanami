@@ -23,7 +23,7 @@
 #include "save_cluster_state.h"
 
 #include <config.h>
-#include <database/cluster_snapshot_table.h>
+#include <database/checkpoint_table.h>
 #include <hanami_root.h>
 #include <core/cluster/task.h>
 #include <core/cluster/cluster.h>
@@ -72,9 +72,9 @@ SaveCluster_State::processEvent()
         Task* actualTask = m_cluster->getActualTask();
         const uint64_t totalSize = m_cluster->clusterData.buffer.usedBufferSize;
 
-        // send snapshot to shiori
+        // send checkpoint to shiori
         std::string fileUuid = "";
-        // snapshots are created by another internal process, which gives the id's not in the context
+        // checkpoints are created by another internal process, which gives the id's not in the context
         // object, but as normal values
         UserContext userContext;
         userContext.userId = actualTask->userId;
@@ -82,10 +82,10 @@ SaveCluster_State::processEvent()
 
         // get directory to store data from config
         bool success = false;
-        std::string targetFilePath = GET_STRING_CONFIG("storage", "cluster_snapshot_location", success);
+        std::string targetFilePath = GET_STRING_CONFIG("storage", "checkpoint_location", success);
         if(success == false)
         {
-            error.addMeesage("snapshot-location to store cluster-snapshot is missing in the config");
+            error.addMeesage("checkpoint-location to store checkpoint is missing in the config");
             break;
         }
 
@@ -93,19 +93,19 @@ SaveCluster_State::processEvent()
         if(targetFilePath.at(targetFilePath.size() - 1) != '/') {
             targetFilePath.append("/");
         }
-        targetFilePath.append(actualTask->uuid.toString() + "_snapshot_" + actualTask->userId);
+        targetFilePath.append(actualTask->uuid.toString() + "_checkpoint_" + actualTask->userId);
 
         // register in database
         Kitsunemimi::JsonItem dbEntry;
         dbEntry.insert("uuid", actualTask->uuid.toString());
-        dbEntry.insert("name", actualTask->snapshotName);
+        dbEntry.insert("name", actualTask->checkpointName);
         dbEntry.insert("location", targetFilePath);
         dbEntry.insert("project_id", actualTask->projectId);
         dbEntry.insert("owner_id", actualTask->userId);
         dbEntry.insert("visibility", "private");
 
         // add to database
-        if(ClusterSnapshotTable::getInstance()->addClusterSnapshot(dbEntry,
+        if(CheckpointTable::getInstance()->addCheckpoint(dbEntry,
                                                                    userContext,
                                                                    error) == false)
         {
@@ -126,7 +126,7 @@ SaveCluster_State::processEvent()
 
     if(result == false)
     {
-        error.addMeesage("Failed to create snapshot of cluster with UUID '"
+        error.addMeesage("Failed to create checkpoint of cluster with UUID '"
                          + m_cluster->getUuid()
                          + "'");
         // TODO: cleanup in error-case
@@ -137,7 +137,7 @@ SaveCluster_State::processEvent()
 }
 
 /**
- * @brief send all data of the snapshot to shiori
+ * @brief send all data of the checkpoint to shiori
  *
  * @param error reference for error-output
  *
@@ -157,22 +157,22 @@ SaveCluster_State::writeData(const std::string &filePath,
                          m_cluster->clusterHeader->synapseBlocks.count);
     }
 
-    Kitsunemimi::BinaryFile snapshotFile(filePath);
-    if(snapshotFile.allocateStorage(fileSize, error) == false)
+    Kitsunemimi::BinaryFile checkpointFile(filePath);
+    if(checkpointFile.allocateStorage(fileSize, error) == false)
     {
         error.addMeesage("Failed to allocate '"
                          + std::to_string(fileSize)
-                         + "' bytes for snapshotfile at path '"
+                         + "' bytes for checkpointfile at path '"
                          + filePath
                          + "'");
         return false;
     }
 
-    // global byte-counter to identifiy the position within the complete snapshot
+    // global byte-counter to identifiy the position within the complete checkpoint
     Kitsunemimi::DataBuffer* buffer = &m_cluster->clusterData.buffer;
-    if(snapshotFile.writeDataIntoFile(buffer->data, 0, buffer->usedBufferSize, error) == false)
+    if(checkpointFile.writeDataIntoFile(buffer->data, 0, buffer->usedBufferSize, error) == false)
     {
-        error.addMeesage("Failed to write cluster for snapshot into file '"
+        error.addMeesage("Failed to write cluster for checkpoint into file '"
                          + filePath
                          + "'");
         return false;

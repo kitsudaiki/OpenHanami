@@ -1,5 +1,5 @@
 ﻿/**
- * @file        create_cluster_snapshot.cpp
+ * @file        create_checkpoint.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,10 +20,10 @@
  *      limitations under the License.
  */
 
-#include "create_cluster_snapshot.h"
+#include "create_checkpoint.h"
 
 #include <hanami_root.h>
-#include <database/cluster_snapshot_table.h>
+#include <database/checkpoint_table.h>
 #include <core/temp_file_handler.h>
 
 #include <libKitsunemimiCrypto/common.h>
@@ -31,40 +31,40 @@
 #include <libKitsunemimiJson/json_item.h>
 #include <libKitsunemimiCommon/files/binary_file.h>
 
-CreateClusterSnapshot::CreateClusterSnapshot()
-    : Blossom("Init new snapshot of a cluster.")
+CreateCheckpoint::CreateCheckpoint()
+    : Blossom("Init new checkpoint of a cluster.")
 {
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------
 
-    // HINT(kitsudaiki): Snapshots are created internally asynchrous by the cluster and get the same
-    //                   uuid as the task, where the snapshot was created. Because of this the uuid
+    // HINT(kitsudaiki): Checkpoints are created internally asynchrous by the cluster and get the same
+    //                   uuid as the task, where the checkpoint was created. Because of this the uuid
     //                   has to be predefined.
     registerInputField("uuid",
                        SAKURA_STRING_TYPE,
                        true,
-                       "UUID of the new snapshot.");
+                       "UUID of the new checkpoint.");
     assert(addFieldRegex("uuid", UUID_REGEX));
 
     registerInputField("name",
                        SAKURA_STRING_TYPE,
                        true,
-                       "Name of the new snapshot.");
+                       "Name of the new checkpoint.");
     assert(addFieldBorder("name", 4, 256));
     assert(addFieldRegex("name", NAME_REGEX));
 
     registerInputField("user_id",
                        SAKURA_STRING_TYPE,
                        true,
-                       "ID of the user, who owns the snapshot.");
+                       "ID of the user, who owns the checkpoint.");
     assert(addFieldBorder("user_id", 4, 256));
     assert(addFieldRegex("user_id", ID_EXT_REGEX));
 
     registerInputField("project_id",
                        SAKURA_STRING_TYPE,
                        true,
-                       "ID of the project, where the snapshot belongs to.");
+                       "ID of the project, where the checkpoint belongs to.");
     assert(addFieldBorder("project_id", 4, 256));
     assert(addFieldRegex("project_id", ID_REGEX));
 
@@ -76,7 +76,7 @@ CreateClusterSnapshot::CreateClusterSnapshot()
     registerInputField("input_data_size",
                        SAKURA_INT_TYPE,
                        true,
-                       "Total size of the snapshot in number of bytes.");
+                       "Total size of the checkpoint in number of bytes.");
     assert(addFieldBorder("input_data_size", 1, 10000000000));
 
     //----------------------------------------------------------------------------------------------
@@ -85,13 +85,13 @@ CreateClusterSnapshot::CreateClusterSnapshot()
 
     registerOutputField("uuid",
                         SAKURA_STRING_TYPE,
-                        "UUID of the new snapshot.");
+                        "UUID of the new checkpoint.");
     registerOutputField("name",
                         SAKURA_STRING_TYPE,
-                        "Name of the new snapshot.");
+                        "Name of the new checkpoint.");
     registerOutputField("uuid_input_file",
                         SAKURA_STRING_TYPE,
-                        "UUID to identify the file for data upload of the snapshot.");
+                        "UUID to identify the file for data upload of the checkpoint.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -102,7 +102,7 @@ CreateClusterSnapshot::CreateClusterSnapshot()
  * @brief runTask
  */
 bool
-CreateClusterSnapshot::runTask(BlossomIO &blossomIO,
+CreateCheckpoint::runTask(BlossomIO &blossomIO,
                                const Kitsunemimi::DataMap &,
                                BlossomStatus &status,
                                Kitsunemimi::ErrorContainer &error)
@@ -113,7 +113,7 @@ CreateClusterSnapshot::runTask(BlossomIO &blossomIO,
     const std::string projectId = blossomIO.input.get("project_id").getString();
     const long inputDataSize = blossomIO.input.get("input_data_size").getLong();
 
-    // snapshots are created by another internal process, which gives the id's not in the context
+    // checkpoints are created by another internal process, which gives the id's not in the context
     // object, but as normal values
     UserContext userContext;
     userContext.userId = userId;
@@ -121,11 +121,11 @@ CreateClusterSnapshot::runTask(BlossomIO &blossomIO,
 
     // get directory to store data from config
     bool success = false;
-    std::string targetFilePath = GET_STRING_CONFIG("storage", "cluster_snapshot_location", success);
+    std::string targetFilePath = GET_STRING_CONFIG("storage", "checkpoint_location", success);
     if(success == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMeesage("snapshot-location to store cluster-snapshot is missing in the config");
+        error.addMeesage("checkpoint-location to store checkpoint is missing in the config");
         return false;
     }
 
@@ -142,7 +142,7 @@ CreateClusterSnapshot::runTask(BlossomIO &blossomIO,
     if(targetFilePath.at(targetFilePath.size() - 1) != '/') {
         targetFilePath.append("/");
     }
-    targetFilePath.append(uuid + "_snapshot_" + userId);
+    targetFilePath.append(uuid + "_checkpoint_" + userId);
 
     // register in database
     blossomIO.output.insert("uuid", uuid);
@@ -159,7 +159,7 @@ CreateClusterSnapshot::runTask(BlossomIO &blossomIO,
     blossomIO.output.insert("temp_files", tempFiles);
 
     // add to database
-    if(ClusterSnapshotTable::getInstance()->addClusterSnapshot(blossomIO.output,
+    if(CheckpointTable::getInstance()->addCheckpoint(blossomIO.output,
                                                                userContext,
                                                                error) == false)
     {

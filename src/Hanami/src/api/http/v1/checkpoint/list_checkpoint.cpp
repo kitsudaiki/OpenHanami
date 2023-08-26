@@ -1,5 +1,5 @@
 /**
- * @file        list_cluster_snapshot.cpp
+ * @file        list_checkpoint.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,13 +20,13 @@
  *      limitations under the License.
  */
 
-#include "list_cluster_snapshot.h"
+#include "list_checkpoint.h"
 
 #include <hanami_root.h>
-#include <database/cluster_snapshot_table.h>
+#include <database/checkpoint_table.h>
 
-ListClusterSnapshot::ListClusterSnapshot()
-    : Blossom("List snapshots of all visible cluster.")
+ListCheckpoint::ListCheckpoint()
+    : Blossom("List checkpoints of all visible cluster.")
 {
     //----------------------------------------------------------------------------------------------
     // output
@@ -54,7 +54,7 @@ ListClusterSnapshot::ListClusterSnapshot()
  * @brief runTask
  */
 bool
-ListClusterSnapshot::runTask(BlossomIO &blossomIO,
+ListCheckpoint::runTask(BlossomIO &blossomIO,
                              const Kitsunemimi::DataMap &context,
                              BlossomStatus &status,
                              Kitsunemimi::ErrorContainer &error)
@@ -63,7 +63,7 @@ ListClusterSnapshot::runTask(BlossomIO &blossomIO,
 
     // get data from table
     Kitsunemimi::TableItem table;
-    if(ClusterSnapshotTable::getInstance()->getAllClusterSnapshot(table, userContext, error) == false)
+    if(CheckpointTable::getInstance()->getAllCheckpoint(table, userContext, error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;

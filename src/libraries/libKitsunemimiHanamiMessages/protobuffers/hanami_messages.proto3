@@ -40,7 +40,7 @@ message ClusterIO_Message {
 enum UploadDataType 
 {
     DATASET_TYPE = 0;
-    CLUSTER_SNAPSHOT_TYPE = 1;
+    CHECKPOINT_TYPE = 1;
 }
 
 
@@ -76,7 +76,7 @@ message AuditLog_Message
     string type = 4;
 }
 
-message ClusterSnapshotPull_Message
+message CheckpointPull_Message
 {
     string location = 1;
 }

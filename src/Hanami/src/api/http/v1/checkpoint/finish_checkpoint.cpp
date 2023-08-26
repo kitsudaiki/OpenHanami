@@ -1,5 +1,5 @@
 /**
- * @file        finish_cluster_snapshot.cpp
+ * @file        finish_checkpoint.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,16 +20,16 @@
  *      limitations under the License.
  */
 
-#include "finish_cluster_snapshot.h"
+#include "finish_checkpoint.h"
 
 #include <hanami_root.h>
-#include <database/cluster_snapshot_table.h>
+#include <database/checkpoint_table.h>
 #include <core/temp_file_handler.h>
 
 #include <libKitsunemimiCommon/files/binary_file.h>
 
-FinalizeClusterSnapshot::FinalizeClusterSnapshot()
-    : Blossom("Finish snapshot of a cluster.")
+FinalizeCheckpoint::FinalizeCheckpoint()
+    : Blossom("Finish checkpoint of a cluster.")
 {
     //----------------------------------------------------------------------------------------------
     // input
@@ -45,7 +45,7 @@ FinalizeClusterSnapshot::FinalizeClusterSnapshot()
     registerInputField("user_id",
                        SAKURA_STRING_TYPE,
                        true,
-                       "ID of the user, who belongs to the snapshot.");
+                       "ID of the user, who belongs to the checkpoint.");
     assert(addFieldBorder("user_id", 4, 256));
     assert(addFieldRegex("user_id", "[a-zA-Z][a-zA-Z_0-9]*"));
 
@@ -81,7 +81,7 @@ FinalizeClusterSnapshot::FinalizeClusterSnapshot()
  * @brief runTask
  */
 bool
-FinalizeClusterSnapshot::runTask(BlossomIO &blossomIO,
+FinalizeCheckpoint::runTask(BlossomIO &blossomIO,
                                  const Kitsunemimi::DataMap &,
                                  BlossomStatus &status,
                                  Kitsunemimi::ErrorContainer &error)
@@ -91,7 +91,7 @@ FinalizeClusterSnapshot::runTask(BlossomIO &blossomIO,
     const std::string userId = blossomIO.input.get("id").getString();
     const std::string projectId = blossomIO.input.get("project_id").getString();
 
-    // snapshots are created by another internal process, which gives the id's not in the context
+    // checkpoints are created by another internal process, which gives the id's not in the context
     // object, but as normal values
     UserContext userContext;
     userContext.userId = userId;
@@ -99,13 +99,13 @@ FinalizeClusterSnapshot::runTask(BlossomIO &blossomIO,
 
     // get location from database
     Kitsunemimi::JsonItem result;
-    if(ClusterSnapshotTable::getInstance()->getClusterSnapshot(result,
+    if(CheckpointTable::getInstance()->getCheckpoint(result,
                                                                uuid,
                                                                userContext,
                                                                error,
                                                                true) == false)
     {
-        status.errorMessage = "Snapshot with uuid '" + uuid + "' not found.";
+        status.errorMessage = "Checkpoint with uuid '" + uuid + "' not found.";
         status.statusCode = NOT_FOUND_RTYPE;
         return false;
     }

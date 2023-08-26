@@ -60,9 +60,9 @@ For `Train-Tasks` input-data and desired output must exist in the `Data-Set` in 
 
 In `Request-Tasks` only the input-data are provided for the network in order to generate a output of the previouly trained network. The output is stored in `Shiori` as `Request-Result`.
 
-### **Cluster-Snapshot** or **Snapshot**
+### **Cluster-Checkpoint** or **Checkpoint**
 
-`Cluster-Snapshots` are the serializied version of a `Cluster`. The Cluster will be converted into one single blob and send to `Shiori`, where it is written to disc and registered in the database. At the moment only `Cluster-Snapshots`, so at some points in the current implementation it is named als `Snapshot`, which is the same for now. In later versions, there should also exist `Segment-Snapshots`, which are the serialized version of a single segment.
+`Cluster-Checkpoints` are the serializied version of a `Cluster`. The Cluster will be converted into one single blob and send to `Shiori`, where it is written to disc and registered in the database. At the moment only `Cluster-Checkpoints`, so at some points in the current implementation it is named als `Checkpoint`, which is the same for now. In later versions, there should also exist `Segment-Checkpoints`, which are the serialized version of a single segment.
 
 ### **Segment-Template** or **Template**
 

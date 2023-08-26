@@ -48,9 +48,9 @@
 #include <rest_api_tests/shiori/datasets/dataset_list_test.h>
 #include <rest_api_tests/shiori/datasets/dataset_check_test.h>
 
-#include <rest_api_tests/shiori/snapshots/snapshot_delete_test.h>
-#include <rest_api_tests/shiori/snapshots/snapshot_get_test.h>
-#include <rest_api_tests/shiori/snapshots/snapshot_list_test.h>
+#include <rest_api_tests/shiori/checkpoints/checkpoint_delete_test.h>
+#include <rest_api_tests/shiori/checkpoints/checkpoint_get_test.h>
+#include <rest_api_tests/shiori/checkpoints/checkpoint_list_test.h>
 
 #include <rest_api_tests/shiori/request_results/request_result_get_test.h>
 #include <rest_api_tests/shiori/request_results/request_result_list_test.h>
@@ -219,9 +219,9 @@ runImageTest(Kitsunemimi::JsonItem &inputData)
     testThread.addTest(new RequestResultGetTest(true));
     testThread.addTest(new RequestResultListTest(true));
 
-    // test snapshots of shiori
-    testThread.addTest(new SnapshotGetTest(true));
-    testThread.addTest(new SnapshotListTest(true));
+    // test checkpoints of shiori
+    testThread.addTest(new CheckpointGetTest(true));
+    testThread.addTest(new CheckpointListTest(true));
 
     // test direct-io of kyouko
     testThread.addTest(new ClusterSwitchToDirectTest(true));
@@ -233,7 +233,7 @@ runImageTest(Kitsunemimi::JsonItem &inputData)
     testThread.addTest(new UserDeleteTest(false));
     testThread.addTest(new ProjectDeleteTest(true));
     testThread.addTest(new ProjectDeleteTest(false));
-    testThread.addTest(new SnapshotDeleteTest(true));
+    testThread.addTest(new CheckpointDeleteTest(true));
     testThread.addTest(new ClusterDeleteTest(true));
     testThread.addTest(new ClusterDeleteTest(false));
     testThread.addTest(new RequestResultDeleteTest(true));
@@ -301,7 +301,7 @@ runRestApiTests()
 
     // add predefined names for the coming test-resources
     inputData.insert("cluster_name", "test_cluster");
-    inputData.insert("cluster_snapshot_name", "test_snapshot");
+    inputData.insert("checkpoint_name", "test_checkpoint");
     inputData.insert("generic_task_name", "test_task");
     inputData.insert("template_name", "dynamic");
     inputData.insert("cluster_definition", clusterDefinition);

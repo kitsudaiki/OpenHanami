@@ -57,10 +57,10 @@ Cluster::Cluster()
 }
 
 /**
- * @brief constructor to create cluster from a snapshot
+ * @brief constructor to create cluster from a checkpoint
  *
- * @param data pointer to data with snapshot
- * @param dataSize size of snapshot in number of bytes
+ * @param data pointer to data with checkpoint
+ * @param dataSize size of checkpoint in number of bytes
  */
 Cluster::Cluster(const void* data, const uint64_t dataSize)
 {

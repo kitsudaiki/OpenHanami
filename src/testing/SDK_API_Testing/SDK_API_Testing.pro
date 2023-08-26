@@ -78,9 +78,9 @@ SOURCES += src/main.cpp \
     src/rest_api_tests/shiori/request_results/request_result_delete_test.cpp \
     src/rest_api_tests/shiori/request_results/request_result_get_test.cpp \
     src/rest_api_tests/shiori/request_results/request_result_list_test.cpp \
-    src/rest_api_tests/shiori/snapshots/snapshot_delete_test.cpp \
-    src/rest_api_tests/shiori/snapshots/snapshot_get_test.cpp \
-    src/rest_api_tests/shiori/snapshots/snapshot_list_test.cpp
+    src/rest_api_tests/shiori/checkpoints/checkpoint_delete_test.cpp \
+    src/rest_api_tests/shiori/checkpoints/checkpoint_get_test.cpp \
+    src/rest_api_tests/shiori/checkpoints/checkpoint_list_test.cpp
 
 HEADERS += \
     src/args.h \
@@ -118,6 +118,6 @@ HEADERS += \
     src/rest_api_tests/shiori/request_results/request_result_delete_test.h \
     src/rest_api_tests/shiori/request_results/request_result_get_test.h \
     src/rest_api_tests/shiori/request_results/request_result_list_test.h \
-    src/rest_api_tests/shiori/snapshots/snapshot_delete_test.h \
-    src/rest_api_tests/shiori/snapshots/snapshot_get_test.h \
-    src/rest_api_tests/shiori/snapshots/snapshot_list_test.h
+    src/rest_api_tests/shiori/checkpoints/checkpoint_delete_test.h \
+    src/rest_api_tests/shiori/checkpoints/checkpoint_get_test.h \
+    src/rest_api_tests/shiori/checkpoints/checkpoint_list_test.h

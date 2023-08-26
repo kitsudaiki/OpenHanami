@@ -111,9 +111,9 @@ TaskHandle_State::processEvent()
             }
             break;
         }
-        case CLUSTER_SNAPSHOT_SAVE_TASK:
+        case CLUSTER_CHECKPOINT_SAVE_TASK:
         {
-            if(m_cluster->goToNextState(SNAPSHOT)) {
+            if(m_cluster->goToNextState(CHECKPOINT)) {
                 if(m_cluster->goToNextState(CLUSTER)) {
                     m_cluster->goToNextState(SAVE);
                     // Azuki::setSpeedToAutomatic(error);
@@ -127,9 +127,9 @@ TaskHandle_State::processEvent()
             }
             break;
         }
-        case CLUSTER_SNAPSHOT_RESTORE_TASK:
+        case CLUSTER_CHECKPOINT_RESTORE_TASK:
         {
-            if(m_cluster->goToNextState(SNAPSHOT)) {
+            if(m_cluster->goToNextState(CHECKPOINT)) {
                 if(m_cluster->goToNextState(CLUSTER)) {
                     m_cluster->goToNextState(RESTORE);
                     // Azuki::setSpeedToAutomatic(error);

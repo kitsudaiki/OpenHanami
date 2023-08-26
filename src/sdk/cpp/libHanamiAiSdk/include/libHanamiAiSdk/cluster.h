@@ -48,12 +48,12 @@ bool deleteCluster(std::string &result,
 
 bool saveCluster(std::string &result,
                  const std::string &clusterUuid,
-                 const std::string &snapshotName,
+                 const std::string &checkpointName,
                  Kitsunemimi::ErrorContainer &error);
 
 bool restoreCluster(std::string &result,
                     const std::string &clusterUuid,
-                    const std::string &snapshotUuid,
+                    const std::string &checkpointUuid,
                     Kitsunemimi::ErrorContainer &error);
 
 bool switchToTaskMode(std::string &result,

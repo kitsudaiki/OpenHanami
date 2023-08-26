@@ -24,7 +24,7 @@ The graphic shows a simple Cluster. Clusters consists of multiple Segment-types:
 
 Segments have a fixed connection between each other and each segment is only processed by one cpu-thread at the same time, but different segments can be processed by different CPU-threads at the same time, as long as they don't depend on each other. Each segment has in input- and output-buffer, to share data with the connected segments. The size of these buffers is fixed. Older versions had flexible buffers, which were too slow. 
 
-Even a segment consists of multiple different data-types (arrays of different types, configurations, etc.), each segment is in memory only one single binary-object, which can simply be written from the memory to the disc, without serialization. When reading a snapshot of a segment into the memory again, only the pointers within the structure have to be re-initialized.
+Even a segment consists of multiple different data-types (arrays of different types, configurations, etc.), each segment is in memory only one single binary-object, which can simply be written from the memory to the disc, without serialization. When reading a checkpoint of a segment into the memory again, only the pointers within the structure have to be re-initialized.
 
 !!! warning
 

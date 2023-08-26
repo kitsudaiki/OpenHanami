@@ -28,8 +28,8 @@
 #include <core/cluster/states/tables/table_train_forward_state.h>
 #include <core/cluster/states/images/image_identify_state.h>
 #include <core/cluster/states/images/image_train_forward_state.h>
-#include <core/cluster/states/snapshots/save_cluster_state.h>
-#include <core/cluster/states/snapshots/restore_cluster_state.h>
+#include <core/cluster/states/checkpoints/save_cluster_state.h>
+#include <core/cluster/states/checkpoints/restore_cluster_state.h>
 
 #include <core/cluster/cluster.h>
 
@@ -58,10 +58,10 @@ initStates(Kitsunemimi::Statemachine &sm)
     sm.createNewState(TABLE_REQUEST_STATE,              "Table-request state");
     sm.createNewState(TABLE_REQUEST_FORWARD_STATE,      "Table-request state: forward-propagation");
     sm.createNewState(TABLE_REQUEST_CYCLE_FINISH_STATE, "Table-request state: finish-cycle");
-    sm.createNewState(SNAPSHOT_STATE,                   "Snapshot state");
-    sm.createNewState(CLUSTER_SNAPSHOT_STATE,           "Cluster-snapshot state");
-    sm.createNewState(CLUSTER_SNAPSHOT_SAVE_STATE,      "Cluster-snapshot state: save");
-    sm.createNewState(CLUSTER_SNAPSHOT_RESTORE_STATE,   "Cluster-snapshot state: restore");
+    sm.createNewState(CHECKPOINT_STATE,                   "Checkpoint state");
+    sm.createNewState(CLUSTER_CHECKPOINT_STATE,           "Cluster-checkpoint state");
+    sm.createNewState(CLUSTER_CHECKPOINT_SAVE_STATE,      "Cluster-checkpoint state: save");
+    sm.createNewState(CLUSTER_CHECKPOINT_RESTORE_STATE,   "Cluster-checkpoint state: restore");
     sm.createNewState(DIRECT_STATE,                     "Direct mode");
 }
 
@@ -86,8 +86,8 @@ initEvents(Kitsunemimi::Statemachine &sm,
     sm.addEventToState(TABLE_TRAIN_CYCLE_FINISH_STATE,   new CycleFinish_State(cluster));
     sm.addEventToState(IMAGE_REQUEST_CYCLE_FINISH_STATE, new CycleFinish_State(cluster));
     sm.addEventToState(TABLE_REQUEST_CYCLE_FINISH_STATE, new CycleFinish_State(cluster));
-    sm.addEventToState(CLUSTER_SNAPSHOT_SAVE_STATE,      new SaveCluster_State(cluster));
-    sm.addEventToState(CLUSTER_SNAPSHOT_RESTORE_STATE,   new RestoreCluster_State(cluster));
+    sm.addEventToState(CLUSTER_CHECKPOINT_SAVE_STATE,      new SaveCluster_State(cluster));
+    sm.addEventToState(CLUSTER_CHECKPOINT_RESTORE_STATE,   new RestoreCluster_State(cluster));
 }
 
 /**
@@ -118,10 +118,10 @@ initChildStates(Kitsunemimi::Statemachine &sm)
     sm.addChildState(TABLE_REQUEST_STATE, TABLE_REQUEST_FORWARD_STATE);
     sm.addChildState(TABLE_REQUEST_STATE, TABLE_REQUEST_CYCLE_FINISH_STATE);
 
-    // child states snapshot
-    sm.addChildState(SNAPSHOT_STATE,         CLUSTER_SNAPSHOT_STATE);
-    sm.addChildState(CLUSTER_SNAPSHOT_STATE, CLUSTER_SNAPSHOT_SAVE_STATE);
-    sm.addChildState(CLUSTER_SNAPSHOT_STATE, CLUSTER_SNAPSHOT_RESTORE_STATE);
+    // child states checkpoint
+    sm.addChildState(CHECKPOINT_STATE,         CLUSTER_CHECKPOINT_STATE);
+    sm.addChildState(CLUSTER_CHECKPOINT_STATE, CLUSTER_CHECKPOINT_SAVE_STATE);
+    sm.addChildState(CLUSTER_CHECKPOINT_STATE, CLUSTER_CHECKPOINT_RESTORE_STATE);
 }
 
 /**
@@ -156,11 +156,11 @@ initTransitions(Kitsunemimi::Statemachine &sm)
     sm.addTransition(REQUEST_STATE, IMAGE,   IMAGE_REQUEST_STATE);
     sm.addTransition(REQUEST_STATE, TABLE,   TABLE_REQUEST_STATE);
 
-    // transitions snapshot init
-    sm.addTransition(TASK_STATE,             SNAPSHOT, SNAPSHOT_STATE);
-    sm.addTransition(SNAPSHOT_STATE,         CLUSTER,  CLUSTER_SNAPSHOT_STATE);
-    sm.addTransition(CLUSTER_SNAPSHOT_STATE, SAVE,     CLUSTER_SNAPSHOT_SAVE_STATE);
-    sm.addTransition(CLUSTER_SNAPSHOT_STATE, RESTORE,  CLUSTER_SNAPSHOT_RESTORE_STATE);
+    // transitions checkpoint init
+    sm.addTransition(TASK_STATE,             CHECKPOINT, CHECKPOINT_STATE);
+    sm.addTransition(CHECKPOINT_STATE,         CLUSTER,  CLUSTER_CHECKPOINT_STATE);
+    sm.addTransition(CLUSTER_CHECKPOINT_STATE, SAVE,     CLUSTER_CHECKPOINT_SAVE_STATE);
+    sm.addTransition(CLUSTER_CHECKPOINT_STATE, RESTORE,  CLUSTER_CHECKPOINT_RESTORE_STATE);
 
     // trainsition train-internal
     sm.addTransition(IMAGE_TRAIN_FORWARD_STATE,      NEXT, IMAGE_TRAIN_CYCLE_FINISH_STATE );
@@ -177,9 +177,9 @@ initTransitions(Kitsunemimi::Statemachine &sm)
     // transition finish back to task-state
     sm.addTransition(TRAIN_STATE,                    FINISH_TASK, TASK_STATE);
     sm.addTransition(REQUEST_STATE,                  FINISH_TASK, TASK_STATE);
-    sm.addTransition(SNAPSHOT_STATE,                 FINISH_TASK, TASK_STATE);
-    sm.addTransition(CLUSTER_SNAPSHOT_SAVE_STATE,    FINISH_TASK, TASK_STATE);
-    sm.addTransition(CLUSTER_SNAPSHOT_RESTORE_STATE, FINISH_TASK, TASK_STATE);
+    sm.addTransition(CHECKPOINT_STATE,                 FINISH_TASK, TASK_STATE);
+    sm.addTransition(CLUSTER_CHECKPOINT_SAVE_STATE,    FINISH_TASK, TASK_STATE);
+    sm.addTransition(CLUSTER_CHECKPOINT_RESTORE_STATE, FINISH_TASK, TASK_STATE);
 
     // special transition to tigger the task-state again
     sm.addTransition(TASK_STATE, PROCESS_TASK, TASK_STATE);

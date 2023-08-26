@@ -602,7 +602,7 @@ Compares a `Request-Result` against a `Data-Set` to check, how much of the Data-
     ```
 
 
-### Create Snapshot of Cluster
+### Create Checkpoint of Cluster
 
 === "C++"
 
@@ -612,16 +612,16 @@ Compares a `Request-Result` against a `Data-Set` to check, how much of the Data-
     std::string result;
     Kitsunemimi::ErrorContainer error;
     const std::string clusterUuid = "d922013a-48d2-11ed-b878-0242ac120002";
-    const std::string snapshotName = "test-snapshot";
+    const std::string checkpointName = "test-checkpoint";
 
-    if(HanamiAI::saveCluster(result, clusterUuid, snapshotName, error)) {
+    if(HanamiAI::saveCluster(result, clusterUuid, checkpointName, error)) {
         std::cout<<result<<std::endl;
     } else {
         std::cout<<error.toString()<<std::endl;
     }
     ```
 
-### Restore Snapshot of Cluster
+### Restore Checkpoint of Cluster
 
 === "C++"
 
@@ -631,9 +631,9 @@ Compares a `Request-Result` against a `Data-Set` to check, how much of the Data-
     std::string result;
     Kitsunemimi::ErrorContainer error;
     const std::string clusterUuid = "d922013a-48d2-11ed-b878-0242ac120002";
-    const std::string snapshotUuid = "30cfeb32-48d7-11ed-b878-0242ac120002";
+    const std::string checkpointUuid = "30cfeb32-48d7-11ed-b878-0242ac120002";
 
-    if(HanamiAI::restoreCluster(result, clusterUuid, snapshotUuid, error)) {
+    if(HanamiAI::restoreCluster(result, clusterUuid, checkpointUuid, error)) {
         std::cout<<result<<std::endl;
     } else {
         std::cout<<error.toString()<<std::endl;
@@ -850,55 +850,55 @@ see [Initializing Websocket](/How_To/5_sdk_library/#init-websocket)
     ```
 
 
-## Cluster-Snapshot
+## Cluster-Checkpoint
 
-### Get Cluster-Snapshot
+### Get Cluster-Checkpoint
 
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/snapshot.h>
+    #include <libHanamiAiSdk/checkpoint.h>
 
     std::string result;
     Kitsunemimi::ErrorContainer error;
-    const std::string snapshotUuid = "30cfeb32-48d7-11ed-b878-0242ac120002";
+    const std::string checkpointUuid = "30cfeb32-48d7-11ed-b878-0242ac120002";
 
-    if(HanamiAI::getSnapshot(result, snapshotUuid, error)) {
+    if(HanamiAI::getCheckpoint(result, checkpointUuid, error)) {
         std::cout<<result<<std::endl;
     } else {
         std::cout<<error.toString()<<std::endl;
     }
     ```
 
-### List Cluster-Snapshots
+### List Cluster-Checkpoints
 
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/snapshot.h>
+    #include <libHanamiAiSdk/checkpoint.h>
 
     std::string result;
     Kitsunemimi::ErrorContainer error;
 
-    if(HanamiAI::listSnapshot(result, error)) {
+    if(HanamiAI::listCheckpoint(result, error)) {
         std::cout<<result<<std::endl;
     } else {
         std::cout<<error.toString()<<std::endl;
     }
     ```
 
-### Delete Cluster-Snapshot
+### Delete Cluster-Checkpoint
 
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/snapshot.h>
+    #include <libHanamiAiSdk/checkpoint.h>
 
     std::string result;
     Kitsunemimi::ErrorContainer error;
-    const std::string snapshotUuid = "30cfeb32-48d7-11ed-b878-0242ac120002";
+    const std::string checkpointUuid = "30cfeb32-48d7-11ed-b878-0242ac120002";
 
-    if(HanamiAI::deleteSnapshot(result, snapshotUuid, error) == false) {
+    if(HanamiAI::deleteCheckpoint(result, checkpointUuid, error) == false) {
         std::cout<<error.toString()<<std::endl;
     }
     ```

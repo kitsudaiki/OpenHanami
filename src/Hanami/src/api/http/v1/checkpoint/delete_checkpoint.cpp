@@ -1,5 +1,5 @@
 /**
- * @file        delete_cluster_snapshot.cpp
+ * @file        delete_checkpoint.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,15 +20,15 @@
  *      limitations under the License.
  */
 
-#include "delete_cluster_snapshot.h"
+#include "delete_checkpoint.h"
 
 #include <hanami_root.h>
-#include <database/cluster_snapshot_table.h>
+#include <database/checkpoint_table.h>
 
 #include <libKitsunemimiJson/json_item.h>
 #include <libKitsunemimiCommon/methods/file_methods.h>
 
-DeleteClusterSnapshot::DeleteClusterSnapshot()
+DeleteCheckpoint::DeleteCheckpoint()
     : Blossom("Delete a result-set from shiori.")
 {
     //----------------------------------------------------------------------------------------------
@@ -38,7 +38,7 @@ DeleteClusterSnapshot::DeleteClusterSnapshot()
     registerInputField("uuid",
                        SAKURA_STRING_TYPE,
                        true,
-                       "UUID of the cluster-snapshot to delete.");
+                       "UUID of the checkpoint to delete.");
     assert(addFieldRegex("uuid", UUID_REGEX));
 
     //----------------------------------------------------------------------------------------------
@@ -50,7 +50,7 @@ DeleteClusterSnapshot::DeleteClusterSnapshot()
  * @brief runTask
  */
 bool
-DeleteClusterSnapshot::runTask(BlossomIO &blossomIO,
+DeleteCheckpoint::runTask(BlossomIO &blossomIO,
                                const Kitsunemimi::DataMap &context,
                                BlossomStatus &status,
                                Kitsunemimi::ErrorContainer &error)
@@ -60,7 +60,7 @@ DeleteClusterSnapshot::runTask(BlossomIO &blossomIO,
 
     // get location from database
     Kitsunemimi::JsonItem result;
-    if(ClusterSnapshotTable::getInstance()->getClusterSnapshot(result,
+    if(CheckpointTable::getInstance()->getCheckpoint(result,
                                                                dataUuid,
                                                                userContext,
                                                                error,
@@ -74,7 +74,7 @@ DeleteClusterSnapshot::runTask(BlossomIO &blossomIO,
     const std::string location = result.get("location").getString();
 
     // delete entry from db
-    if(ClusterSnapshotTable::getInstance()->deleteClusterSnapshot(dataUuid,
+    if(CheckpointTable::getInstance()->deleteCheckpoint(dataUuid,
                                                                   userContext,
                                                                   error) == false)
     {

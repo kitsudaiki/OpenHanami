@@ -58,14 +58,14 @@ RestoreCluster_State::processEvent()
     const std::string originalUuid = m_cluster->getUuid();
 
     // get meta-infos of data-set from shiori
-    Kitsunemimi::JsonItem parsedSnapshotInfo;
-    parsedSnapshotInfo.parse(actualTask->snapshotInfo, error);
+    Kitsunemimi::JsonItem parsedCheckpointInfo;
+    parsedCheckpointInfo.parse(actualTask->checkpointInfo, error);
 
     // get other information
-    const std::string location = parsedSnapshotInfo.get("location").toString();
+    const std::string location = parsedCheckpointInfo.get("location").toString();
 
     // get header
-    const std::string header = parsedSnapshotInfo.get("header").toString();
+    const std::string header = parsedCheckpointInfo.get("header").toString();
     Kitsunemimi::JsonItem parsedHeader;
     if(parsedHeader.parse(header, error) == false)
     {
@@ -73,20 +73,20 @@ RestoreCluster_State::processEvent()
         return false;
     }
 
-    // get snapshot-data
-    Kitsunemimi::BinaryFile snapshotFile(location);
-    Kitsunemimi::DataBuffer snapshotBuffer;
-    if(snapshotFile.readCompleteFile(snapshotBuffer, error) == false)
+    // get checkpoint-data
+    Kitsunemimi::BinaryFile checkpointFile(location);
+    Kitsunemimi::DataBuffer checkpointBuffer;
+    if(checkpointFile.readCompleteFile(checkpointBuffer, error) == false)
     {
-        error.addMeesage("failed to load snapshot-data");
+        error.addMeesage("failed to load checkpoint-data");
         m_cluster->goToNextState(FINISH_TASK);
         return false;
     }
 
     // copy data of cluster
-    const uint8_t* u8Data = static_cast<const uint8_t*>(snapshotBuffer.data);
-    m_cluster->clusterData.initBuffer(u8Data, snapshotBuffer.usedBufferSize);
-    if(reinitPointer(m_cluster, snapshotBuffer.usedBufferSize) == false)
+    const uint8_t* u8Data = static_cast<const uint8_t*>(checkpointBuffer.data);
+    m_cluster->clusterData.initBuffer(u8Data, checkpointBuffer.usedBufferSize);
+    if(reinitPointer(m_cluster, checkpointBuffer.usedBufferSize) == false)
     {
         error.addMeesage("failed to re-init pointer in cluster");
         m_cluster->goToNextState(FINISH_TASK);

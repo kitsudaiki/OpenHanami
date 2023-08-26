@@ -1,5 +1,5 @@
 /**
- * @file        delete_cluster_snapshot.h
+ * @file        list_checkpoint.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,23 +20,23 @@
  *      limitations under the License.
  */
 
-#ifndef DELETE_CLUSTER_SNAPSHOT_H
-#define DELETE_CLUSTER_SNAPSHOT_H
+#ifndef LIST_CLUSTER_CHECKPOINT_H
+#define LIST_CLUSTER_CHECKPOINT_H
 
 #include <api/endpoint_processing/blossom.h>
 
 
-class DeleteClusterSnapshot
+class ListCheckpoint
         : public Blossom
 {
 public:
-    DeleteClusterSnapshot();
+    ListCheckpoint();
 
 protected:
     bool runTask(BlossomIO &blossomIO,
-                 const Kitsunemimi::DataMap &context,
+                 const Kitsunemimi::DataMap &,
                  BlossomStatus &status,
                  Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // DELETE_CLUSTER_SNAPSHOT_H
+#endif // LIST_CLUSTER_CHECKPOINT_H

@@ -1,5 +1,5 @@
 /**
- * @file        cluster_snapshot_table.cpp
+ * @file        checkpoint_table.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,7 +20,7 @@
  *      limitations under the License.
  */
 
-#include <database/cluster_snapshot_table.h>
+#include <database/checkpoint_table.h>
 
 #include <libKitsunemimiCommon/items/table_item.h>
 #include <libKitsunemimiCommon/methods/string_methods.h>
@@ -28,17 +28,17 @@
 
 #include <libKitsunemimiSakuraDatabase/sql_database.h>
 
-ClusterSnapshotTable* ClusterSnapshotTable::instance = nullptr;
+CheckpointTable* CheckpointTable::instance = nullptr;
 
 /**
  * @brief constructor
  *
  * @param db pointer to database
  */
-ClusterSnapshotTable::ClusterSnapshotTable()
+CheckpointTable::CheckpointTable()
     : HanamiSqlTable(Kitsunemimi::Sakura::SqlDatabase::getInstance())
 {
-    m_tableName = "cluster_snapshot";
+    m_tableName = "checkpoint";
 
     DbHeaderEntry location;
     location.name = "location";
@@ -49,10 +49,10 @@ ClusterSnapshotTable::ClusterSnapshotTable()
 /**
  * @brief destructor
  */
-ClusterSnapshotTable::~ClusterSnapshotTable() {}
+CheckpointTable::~CheckpointTable() {}
 
 /**
- * @brief add new metadata of a snapshot into the database
+ * @brief add new metadata of a checkpoint into the database
  *
  * @param userData json-item with all information of the data to add to database
  * @param userContext context-object with all user specific information
@@ -61,13 +61,13 @@ ClusterSnapshotTable::~ClusterSnapshotTable() {}
  * @return true, if successful, else false
  */
 bool
-ClusterSnapshotTable::addClusterSnapshot(Kitsunemimi::JsonItem &data,
+CheckpointTable::addCheckpoint(Kitsunemimi::JsonItem &data,
                                          const UserContext &userContext,
                                          Kitsunemimi::ErrorContainer &error)
 {
     if(add(data, userContext, error) == false)
     {
-        error.addMeesage("Failed to add snapshot to database");
+        error.addMeesage("Failed to add checkpoint to database");
         return false;
     }
 
@@ -75,10 +75,10 @@ ClusterSnapshotTable::addClusterSnapshot(Kitsunemimi::JsonItem &data,
 }
 
 /**
- * @brief get a metadata-entry for a specific snapshot from the database
+ * @brief get a metadata-entry for a specific checkpoint from the database
  *
  * @param result reference for the result-output
- * @param snapshotUuid uuid of the data
+ * @param checkpointUuid uuid of the data
  * @param userContext context-object with all user specific information
  * @param error reference for error-output
  * @param showHiddenValues set to true to also show as hidden marked fields
@@ -86,21 +86,21 @@ ClusterSnapshotTable::addClusterSnapshot(Kitsunemimi::JsonItem &data,
  * @return true, if successful, else false
  */
 bool
-ClusterSnapshotTable::getClusterSnapshot(Kitsunemimi::JsonItem &result,
-                                         const std::string &snapshotUuid,
+CheckpointTable::getCheckpoint(Kitsunemimi::JsonItem &result,
+                                         const std::string &checkpointUuid,
                                          const UserContext &userContext,
                                          Kitsunemimi::ErrorContainer &error,
                                          const bool showHiddenValues)
 {
     // get user from db
     std::vector<RequestCondition> conditions;
-    conditions.emplace_back("uuid", snapshotUuid);
+    conditions.emplace_back("uuid", checkpointUuid);
 
     // get dataset from db
     if(get(result, userContext, conditions, error, showHiddenValues) == false)
     {
-        error.addMeesage("Failed to get snapshot with UUID '"
-                         + snapshotUuid
+        error.addMeesage("Failed to get checkpoint with UUID '"
+                         + checkpointUuid
                          + "' from database");
         LOG_ERROR(error);
         return false;
@@ -110,7 +110,7 @@ ClusterSnapshotTable::getClusterSnapshot(Kitsunemimi::JsonItem &result,
 }
 
 /**
- * @brief get metadata of all snapshots from the database
+ * @brief get metadata of all checkpoints from the database
  *
  * @param result reference for the result-output
  * @param userContext context-object with all user specific information
@@ -119,14 +119,14 @@ ClusterSnapshotTable::getClusterSnapshot(Kitsunemimi::JsonItem &result,
  * @return true, if successful, else false
  */
 bool
-ClusterSnapshotTable::getAllClusterSnapshot(Kitsunemimi::TableItem &result,
+CheckpointTable::getAllCheckpoint(Kitsunemimi::TableItem &result,
                                             const UserContext &userContext,
                                             Kitsunemimi::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
     if(getAll(result, userContext, conditions, error) == false)
     {
-        error.addMeesage("Failed to get all snapshots from database");
+        error.addMeesage("Failed to get all checkpoints from database");
         return false;
     }
 
@@ -134,25 +134,25 @@ ClusterSnapshotTable::getAllClusterSnapshot(Kitsunemimi::TableItem &result,
 }
 
 /**
- * @brief delete metadata of a snapshot from the database
+ * @brief delete metadata of a checkpoint from the database
  *
- * @param snapshotUuid uuid of the data
+ * @param checkpointUuid uuid of the data
  * @param userContext context-object with all user specific information
  * @param error reference for error-output
  *
  * @return true, if successful, else false
  */
 bool
-ClusterSnapshotTable::deleteClusterSnapshot(const std::string &snapshotUuid,
+CheckpointTable::deleteCheckpoint(const std::string &checkpointUuid,
                                             const UserContext &userContext,
                                             Kitsunemimi::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
-    conditions.emplace_back("uuid", snapshotUuid);
+    conditions.emplace_back("uuid", checkpointUuid);
     if(del(conditions, userContext, error) == false)
     {
-        error.addMeesage("Failed to delete snapshot with UUID '"
-                         + snapshotUuid
+        error.addMeesage("Failed to delete checkpoint with UUID '"
+                         + checkpointUuid
                          + "' from database");
         return false;
     }
@@ -161,16 +161,16 @@ ClusterSnapshotTable::deleteClusterSnapshot(const std::string &snapshotUuid,
 }
 
 /**
- * @brief update snapshot in database to fully uploaded
+ * @brief update checkpoint in database to fully uploaded
  *
- * @param uuid uuid of the snapshot
+ * @param uuid uuid of the checkpoint
  * @param fileUuid uuid of the temporary file
  * @param error reference for error-output
  *
  * @return true, if successful, else false
  */
 bool
-ClusterSnapshotTable::setUploadFinish(const std::string &uuid,
+CheckpointTable::setUploadFinish(const std::string &uuid,
                                       const std::string &fileUuid,
                                       Kitsunemimi::ErrorContainer &error)
 {
@@ -181,10 +181,10 @@ ClusterSnapshotTable::setUploadFinish(const std::string &uuid,
     UserContext userContext;
     userContext.isAdmin = true;
 
-    // get snapshot from db
+    // get checkpoint from db
     if(get(result, userContext, conditions, error, true) == false)
     {
-        error.addMeesage("Failed to get snapshot with UUID '" + uuid + "' from database");
+        error.addMeesage("Failed to get checkpoint with UUID '" + uuid + "' from database");
         LOG_ERROR(error);
         return false;
     }
@@ -202,7 +202,7 @@ ClusterSnapshotTable::setUploadFinish(const std::string &uuid,
     Kitsunemimi::JsonItem tempFiles;
     if(tempFiles.parse(tempFilesStr, error) == false)
     {
-        error.addMeesage("Failed to parse temp_files entry of snapshot with UUID '"
+        error.addMeesage("Failed to parse temp_files entry of checkpoint with UUID '"
                          + uuid
                          + "' from database");
         LOG_ERROR(error);
@@ -215,7 +215,7 @@ ClusterSnapshotTable::setUploadFinish(const std::string &uuid,
     newValues.insert("temp_files", Kitsunemimi::JsonItem(tempFiles.toString()));
     if(update(newValues, userContext, conditions, error) == false)
     {
-        error.addMeesage("Failed to update entry of snapshot with UUID '" + uuid + "' in database");
+        error.addMeesage("Failed to update entry of checkpoint with UUID '" + uuid + "' in database");
         LOG_ERROR(error);
         return false;
     }

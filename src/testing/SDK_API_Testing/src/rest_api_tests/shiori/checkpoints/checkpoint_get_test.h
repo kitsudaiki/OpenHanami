@@ -1,5 +1,5 @@
 /**
- * @file        get_cluster_snapshot.h
+ * @file        checkpoint_get_test.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,23 +20,23 @@
  *      limitations under the License.
  */
 
-#ifndef FINISH_CLUSTER_SNAPSHOT_H
-#define FINISH_CLUSTER_SNAPSHOT_H
+#ifndef TSUGUMITESTER_CHECKPOINTGETTEST_H
+#define TSUGUMITESTER_CHECKPOINTGETTEST_H
 
-#include <api/endpoint_processing/blossom.h>
+#include <common/test_step.h>
 
-
-class FinalizeClusterSnapshot
-        : public Blossom
+class CheckpointGetTest
+        : public TestStep
 {
 public:
-    FinalizeClusterSnapshot();
+    CheckpointGetTest(const bool expectSuccess,
+                    const std::string &uuidOverride = "");
 
-protected:
-    bool runTask(BlossomIO &blossomIO,
-                 const Kitsunemimi::DataMap &,
-                 BlossomStatus &status,
+    bool runTest(Kitsunemimi::JsonItem &inputData,
                  Kitsunemimi::ErrorContainer &error);
+
+private:
+    std::string m_uuid = "";
 };
 
-#endif // FINISH_CLUSTER_SNAPSHOT_H
+#endif // TSUGUMITESTER_CHECKPOINTGETTEST_H

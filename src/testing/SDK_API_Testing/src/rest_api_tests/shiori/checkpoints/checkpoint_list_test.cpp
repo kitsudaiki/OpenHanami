@@ -1,5 +1,5 @@
 /**
- * @file        snapshot_list_test.cpp
+ * @file        checkpoint_list_test.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,14 +20,14 @@
  *      limitations under the License.
  */
 
-#include "snapshot_list_test.h"
+#include "checkpoint_list_test.h"
 
-#include <libHanamiAiSdk/snapshot.h>
+#include <libHanamiAiSdk/checkpoint.h>
 
-SnapshotListTest::SnapshotListTest(const bool expectSuccess)
+CheckpointListTest::CheckpointListTest(const bool expectSuccess)
       : TestStep(expectSuccess)
 {
-    m_testName = "list snapshot";
+    m_testName = "list checkpoint";
     if(expectSuccess) {
         m_testName += " (success)";
     } else {
@@ -36,12 +36,12 @@ SnapshotListTest::SnapshotListTest(const bool expectSuccess)
 }
 
 bool
-SnapshotListTest::runTest(Kitsunemimi::JsonItem &inputData,
+CheckpointListTest::runTest(Kitsunemimi::JsonItem &inputData,
                           Kitsunemimi::ErrorContainer &error)
 {
     // list all data
     std::string result;
-    if(HanamiAI::listSnapshot(result, error) != m_expectSuccess) {
+    if(HanamiAI::listCheckpoint(result, error) != m_expectSuccess) {
         return false;
     }
 
@@ -55,7 +55,7 @@ SnapshotListTest::runTest(Kitsunemimi::JsonItem &inputData,
         return false;
     }
 
-    inputData.insert("number_of_snapshotss", static_cast<long>(jsonItem.size()), true);
+    inputData.insert("number_of_checkpointss", static_cast<long>(jsonItem.size()), true);
 
     return true;
 }

@@ -35,8 +35,8 @@ enum TaskType
     IMAGE_REQUEST_TASK = 2,
     TABLE_TRAIN_TASK = 3,
     TABLE_REQUEST_TASK = 4,
-    CLUSTER_SNAPSHOT_SAVE_TASK = 5,
-    CLUSTER_SNAPSHOT_RESTORE_TASK = 6,
+    CLUSTER_CHECKPOINT_SAVE_TASK = 5,
+    CLUSTER_CHECKPOINT_RESTORE_TASK = 6,
 };
 
 enum TaskState
@@ -77,9 +77,9 @@ struct Task
     uint64_t numberOfInputsPerCycle = 0;
     uint64_t numberOfOuputsPerCycle = 0;
 
-    // snapshot-meta
-    std::string snapshotName = "";
-    std::string snapshotInfo = "";
+    // checkpoint-meta
+    std::string checkpointName = "";
+    std::string checkpointInfo = "";
 
     // progress
     uint64_t actualCycle = 0;

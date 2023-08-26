@@ -44,7 +44,7 @@ ClusterLoadTest::runTest(Kitsunemimi::JsonItem &inputData,
     std::string result;
     if(HanamiAI::restoreCluster(result,
                                 inputData.get("cluster_uuid").getString(),
-                                inputData.get("cluster_snapshot_uuid").getString(),
+                                inputData.get("checkpoint_uuid").getString(),
                                 error) != m_expectSuccess)
     {
         return false;

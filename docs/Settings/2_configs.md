@@ -17,7 +17,7 @@
 | Field | Type | Description |
 | --- |  --- |  --- | 
 | data_set_location | string | Path to directory, where the uploaded data-sets should be stored |
-| cluster_snapshot_location | string | Path to directory, where the created snapshots coming from Kyouko should be stored |
+| checkpoint_location | string | Path to directory, where the created checkpoints coming from Kyouko should be stored |
 
 **[auth]**
 
@@ -50,7 +50,7 @@
 
     [storage]
     data_set_location = "/etc/hanami/train_data"
-    cluster_snapshot_location = "/etc/hanami/cluster_snapshots"
+    checkpoint_location = "/etc/hanami/checkpoints"
 
     [auth]
     policies = "/etc/hanami/policies"

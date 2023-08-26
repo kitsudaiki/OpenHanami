@@ -36,7 +36,7 @@ SaveCluster::SaveCluster()
     registerInputField("name",
                        SAKURA_STRING_TYPE,
                        true,
-                       "Name for task, which is place in the task-queue and for the new snapshot.");
+                       "Name for task, which is place in the task-queue and for the new checkpoint.");
     assert(addFieldBorder("name", 4, 256));
     assert(addFieldRegex("name", NAME_REGEX));
 
@@ -55,7 +55,7 @@ SaveCluster::SaveCluster()
                         "UUID of the save-task in the queue of the cluster.");
     registerOutputField("name",
                         SAKURA_STRING_TYPE,
-                        "Name of the new created task and of the snapshot, "
+                        "Name of the new created task and of the checkpoint, "
                         "which should be created by the task.");
 
     //----------------------------------------------------------------------------------------------
@@ -87,7 +87,7 @@ SaveCluster::runTask(BlossomIO &blossomIO,
     }
 
     // init request-task
-    const std::string taskUuid = addClusterSnapshotSaveTask(*cluster,
+    const std::string taskUuid = addCheckpointSaveTask(*cluster,
                                                             name,
                                                             userContext.userId,
                                                             userContext.projectId);

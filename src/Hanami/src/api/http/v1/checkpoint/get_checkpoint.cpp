@@ -1,5 +1,5 @@
 /**
- * @file        get_cluster_snapshot.cpp
+ * @file        get_checkpoint.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,13 +20,13 @@
  *      limitations under the License.
  */
 
-#include "get_cluster_snapshot.h"
+#include "get_checkpoint.h"
 
 #include <hanami_root.h>
-#include <database/cluster_snapshot_table.h>
+#include <database/checkpoint_table.h>
 
-GetClusterSnapshot::GetClusterSnapshot()
-    : Blossom("Get snapshot of a cluster.")
+GetCheckpoint::GetCheckpoint()
+    : Blossom("Get checkpoint of a cluster.")
 {
     //----------------------------------------------------------------------------------------------
     // input
@@ -54,7 +54,7 @@ GetClusterSnapshot::GetClusterSnapshot()
                         "File path on local storage.");
     registerOutputField("header",
                         SAKURA_MAP_TYPE,
-                        "Header-information of the snapshot-file.");
+                        "Header-information of the checkpoint-file.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -65,7 +65,7 @@ GetClusterSnapshot::GetClusterSnapshot()
  * @brief runTask
  */
 bool
-GetClusterSnapshot::runTask(BlossomIO &blossomIO,
+GetCheckpoint::runTask(BlossomIO &blossomIO,
                             const Kitsunemimi::DataMap &context,
                             BlossomStatus &status,
                             Kitsunemimi::ErrorContainer &error)
@@ -73,7 +73,7 @@ GetClusterSnapshot::runTask(BlossomIO &blossomIO,
     const std::string dataUuid = blossomIO.input.get("uuid").getString();
     const UserContext userContext(context);
 
-    if(ClusterSnapshotTable::getInstance()->getClusterSnapshot(blossomIO.output,
+    if(CheckpointTable::getInstance()->getCheckpoint(blossomIO.output,
                                                                dataUuid,
                                                                userContext,
                                                                error,

@@ -1,5 +1,5 @@
 /**
- * @file        snapshot_delete_test.h
+ * @file        checkpoint_delete_test.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,19 +20,19 @@
  *      limitations under the License.
  */
 
-#ifndef TSUGUMITESTER_SNAPSHOTDELETETEST_H
-#define TSUGUMITESTER_SNAPSHOTDELETETEST_H
+#ifndef TSUGUMITESTER_CHECKPOINTDELETETEST_H
+#define TSUGUMITESTER_CHECKPOINTDELETETEST_H
 
 #include <common/test_step.h>
 
-class SnapshotDeleteTest
+class CheckpointDeleteTest
         : public TestStep
 {
 public:
-    SnapshotDeleteTest(const bool expectSuccess);
+    CheckpointDeleteTest(const bool expectSuccess);
 
     bool runTest(Kitsunemimi::JsonItem &inputData,
                  Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // TSUGUMITESTER_SNAPSHOTDELETETEST_H
+#endif // TSUGUMITESTER_CHECKPOINTDELETETEST_H

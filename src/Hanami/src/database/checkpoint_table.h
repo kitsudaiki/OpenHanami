@@ -1,5 +1,5 @@
 /**
- * @file        cluster_snapshot_table.h
+ * @file        checkpoint_table.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_CLUSTER_SNAPSHOT_TABLE_H
-#define HANAMI_CLUSTER_SNAPSHOT_TABLE_H
+#ifndef HANAMI_CLUSTER_CHECKPOINT_TABLE_H
+#define HANAMI_CLUSTER_CHECKPOINT_TABLE_H
 
 #include <libKitsunemimiCommon/logger.h>
 #include <database/generic_tables/hanami_sql_table.h>
@@ -30,32 +30,32 @@ namespace Kitsunemimi {
 class JsonItem;
 }
 
-class ClusterSnapshotTable
+class CheckpointTable
         : public HanamiSqlTable
 {
 public:
-    static ClusterSnapshotTable* getInstance()
+    static CheckpointTable* getInstance()
     {
         if(instance == nullptr) {
-            instance = new ClusterSnapshotTable();
+            instance = new CheckpointTable();
         }
         return instance;
     }
 
-    ~ClusterSnapshotTable();
+    ~CheckpointTable();
 
-    bool addClusterSnapshot(Kitsunemimi::JsonItem &data,
+    bool addCheckpoint(Kitsunemimi::JsonItem &data,
                             const UserContext &userContext,
                             Kitsunemimi::ErrorContainer &error);
-    bool getClusterSnapshot(Kitsunemimi::JsonItem &result,
-                            const std::string &snapshotUuid,
+    bool getCheckpoint(Kitsunemimi::JsonItem &result,
+                            const std::string &checkpointUuid,
                             const UserContext &userContext,
                             Kitsunemimi::ErrorContainer &error,
                             const bool showHiddenValues);
-    bool getAllClusterSnapshot(Kitsunemimi::TableItem &result,
+    bool getAllCheckpoint(Kitsunemimi::TableItem &result,
                                const UserContext &userContext,
                                Kitsunemimi::ErrorContainer &error);
-    bool deleteClusterSnapshot(const std::string &snapshotUuid,
+    bool deleteCheckpoint(const std::string &checkpointUuid,
                                const UserContext &userContext,
                                Kitsunemimi::ErrorContainer &error);
     bool setUploadFinish(const std::string &uuid,
@@ -63,8 +63,8 @@ public:
                          Kitsunemimi::ErrorContainer &error);
 
 private:
-    ClusterSnapshotTable();
-    static ClusterSnapshotTable* instance;
+    CheckpointTable();
+    static CheckpointTable* instance;
 };
 
-#endif // HANAMI_CLUSTER_SNAPSHOT_TABLE_H
+#endif // HANAMI_CLUSTER_CHECKPOINT_TABLE_H

@@ -1,5 +1,5 @@
 /**
- * @file        create_cluster_snapshot.h
+ * @file        create_checkpoint.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,17 +20,17 @@
  *      limitations under the License.
  */
 
-#ifndef CREATE_CLUSTER_SNAPSHOT_H
-#define CREATE_CLUSTER_SNAPSHOT_H
+#ifndef CREATE_CLUSTER_CHECKPOINT_H
+#define CREATE_CLUSTER_CHECKPOINT_H
 
 #include <api/endpoint_processing/blossom.h>
 
 
-class CreateClusterSnapshot
+class CreateCheckpoint
         : public Blossom
 {
 public:
-    CreateClusterSnapshot();
+    CreateCheckpoint();
 
 protected:
     bool runTask(BlossomIO &blossomIO,
@@ -39,4 +39,4 @@ protected:
                  Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // CREATE_CLUSTER_SNAPSHOT_H
+#endif // CREATE_CLUSTER_CHECKPOINT_H

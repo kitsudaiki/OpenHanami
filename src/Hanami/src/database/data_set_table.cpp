@@ -79,7 +79,7 @@ DataSetTable::addDataSet(Kitsunemimi::JsonItem &data,
 {
     if(add(data, userContext, error) == false)
     {
-        error.addMeesage("Failed to add snapshot to database");
+        error.addMeesage("Failed to add checkpoint to database");
         return false;
     }
 

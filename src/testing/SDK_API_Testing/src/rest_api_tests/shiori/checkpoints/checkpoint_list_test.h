@@ -1,5 +1,5 @@
 /**
- * @file        snapshot_get_test.h
+ * @file        checkpoint_list_test.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,23 +20,19 @@
  *      limitations under the License.
  */
 
-#ifndef TSUGUMITESTER_SNAPSHOTGETTEST_H
-#define TSUGUMITESTER_SNAPSHOTGETTEST_H
+#ifndef TSUGUMITESTER_CHECKPOINTLISTTEST_H
+#define TSUGUMITESTER_CHECKPOINTLISTTEST_H
 
 #include <common/test_step.h>
 
-class SnapshotGetTest
+class CheckpointListTest
         : public TestStep
 {
 public:
-    SnapshotGetTest(const bool expectSuccess,
-                    const std::string &uuidOverride = "");
+    CheckpointListTest(const bool expectSuccess);
 
     bool runTest(Kitsunemimi::JsonItem &inputData,
                  Kitsunemimi::ErrorContainer &error);
-
-private:
-    std::string m_uuid = "";
 };
 
-#endif // TSUGUMITESTER_SNAPSHOTGETTEST_H
+#endif // TSUGUMITESTER_CHECKPOINTLISTTEST_H

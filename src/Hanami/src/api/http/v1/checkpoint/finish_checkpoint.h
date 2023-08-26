@@ -1,5 +1,5 @@
 /**
- * @file        snapshot_list_test.h
+ * @file        get_checkpoint.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,19 +20,23 @@
  *      limitations under the License.
  */
 
-#ifndef TSUGUMITESTER_SNAPSHOTLISTTEST_H
-#define TSUGUMITESTER_SNAPSHOTLISTTEST_H
+#ifndef FINISH_CLUSTER_CHECKPOINT_H
+#define FINISH_CLUSTER_CHECKPOINT_H
 
-#include <common/test_step.h>
+#include <api/endpoint_processing/blossom.h>
 
-class SnapshotListTest
-        : public TestStep
+
+class FinalizeCheckpoint
+        : public Blossom
 {
 public:
-    SnapshotListTest(const bool expectSuccess);
+    FinalizeCheckpoint();
 
-    bool runTest(Kitsunemimi::JsonItem &inputData,
+protected:
+    bool runTask(BlossomIO &blossomIO,
+                 const Kitsunemimi::DataMap &,
+                 BlossomStatus &status,
                  Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // TSUGUMITESTER_SNAPSHOTLISTTEST_H
+#endif // FINISH_CLUSTER_CHECKPOINT_H
