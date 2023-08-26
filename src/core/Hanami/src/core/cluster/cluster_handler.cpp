@@ -42,14 +42,7 @@ ClusterHandler::ClusterHandler() {}
 bool
 ClusterHandler::addCluster(const std::string uuid, Cluster* newCluster)
 {
-    // check if key already exist
-    if(m_allCluster.find(uuid) != m_allCluster.end()) {
-        return false;
-    }
-
-    m_allCluster.insert(std::make_pair(uuid, newCluster));
-
-    return true;
+    return m_allCluster.try_emplace(uuid, newCluster).second;
 }
 
 /**

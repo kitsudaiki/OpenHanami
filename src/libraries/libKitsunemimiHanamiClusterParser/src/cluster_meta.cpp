@@ -27,9 +27,10 @@ namespace Kitsunemimi::Hanami
 {
 
 /**
- * @brief convert a cluster-formated string into a cluster-object-tree
+ * @brief parse a cluster-template string
  *
- * @param input cluster-formated string, which should be parsed
+ * @param result pointer to the resulting object, which should be filled
+ * @param input cluster-template string, which should be parsed
  * @param error reference for error-message output
  *
  * @return true, if successful, else false
@@ -43,7 +44,7 @@ parseCluster(ClusterMeta* result,
 
     if(input.size() == 0)
     {
-        // TODO: error-message
+        error.addMeesage("Parsing of cluster-template failed, because the input is empty");
         return false;
     }
 

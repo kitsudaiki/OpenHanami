@@ -74,7 +74,7 @@ GpuData::addBuffer(const std::string &name,
         newBuffer.allowBufferDeleteAfterClose = false;
     }
 
-    m_buffer.insert(std::make_pair(name, newBuffer));
+    m_buffer.try_emplace(name, newBuffer);
 
     return true;
 }
@@ -91,11 +91,6 @@ bool
 GpuData::addValue(const std::string &name,
                   const uint64_t value)
 {
-    // precheck
-    if(containsBuffer(name)) {
-        return false;
-    }
-
     // prepare worker-buffer
     WorkerBuffer newBuffer;
     newBuffer.numberOfBytes = 8;
@@ -104,9 +99,7 @@ GpuData::addValue(const std::string &name,
     newBuffer.isValue = true;
     newBuffer.value = value;
 
-    m_buffer.insert(std::make_pair(name, newBuffer));
-
-    return true;
+    return m_buffer.try_emplace(name, newBuffer).second;
 }
 
 /**

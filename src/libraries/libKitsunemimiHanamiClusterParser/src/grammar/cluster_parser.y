@@ -20,6 +20,7 @@
  *      limitations under the License.
  */
 
+
 %skeleton "lalr1.cc"
 
 %defines
@@ -37,14 +38,11 @@
 {
 #include <string>
 #include <iostream>
+#include <map>
 #include <vector>
-#include <libKitsunemimiCommon/items/data_items.h>
-#include <libKitsunemimiHanamiClusterParser/cluster_meta.h>
 
-using Kitsunemimi::DataItem;
-using Kitsunemimi::DataArray;
-using Kitsunemimi::DataValue;
-using Kitsunemimi::DataMap;
+#include <libKitsunemimiHanamiClusterParser/cluster_meta.h>
+#include <libKitsunemimiCommon/structs.h>
 
 namespace Kitsunemimi::Hanami
 {
@@ -74,26 +72,21 @@ YY_DECL;
     END  0  "end of file"
     COMMA  ","
     ASSIGN  ":"
-    ARROW  "->"
     LINEBREAK "linebreak"
     VERSION_1 "version1"
-    OUT "out"
-    NAME "name"
-    SEGMENTS "segments"
+    SETTINGS "settings"
+    BRICKS "bricks"
 ;
-
 
 %token <std::string> IDENTIFIER "identifier"
 %token <std::string> STRING "string"
-%token <std::string> STRING_PLN "string_pln"
+%token <std::string> STRING_PLN "string"
 %token <long> NUMBER "number"
 %token <double> FLOAT "float"
 
 %type  <std::string> string_ident
-%type  <std::vector<Kitsunemimi::Hanami::SegmentMetaPtr>> segments
-%type  <Kitsunemimi::Hanami::SegmentMetaPtr> segment
-%type  <std::vector<Kitsunemimi::Hanami::ClusterConnection>> outputs
-%type  <Kitsunemimi::Hanami::ClusterConnection> output
+%type  <Kitsunemimi::Position> position
+%type  <Kitsunemimi::Hanami::BrickMeta> brick_settings
 
 %%
 %start startpoint;
@@ -101,110 +94,188 @@ YY_DECL;
 // example
 //
 // version: 1
-// segments:
-//     input
-//         name: input
-//         out: -> central : test_input
+// settings:
+//     max_synapse_sections: 100000
+//     synapse_clusteration: 10
+//     sign_neg: 0.5
 //
-//     example_segment
-//         name: central
-//         out:  test_output -> output
+// bricks:
+//     1,1,1
+//         input: test_input
+//         number_of_neurons: 20
 //
-//     output
-//         name: output
-//         combine: 2
+//     2,1,1
+//         number_of_neurons": 10
+//
+//     3,1,1
+//         output: test_output
+//         number_of_neurons: 5
 
 startpoint:
-    "version1" linebreaks "segments" ":" linebreaks segments
+    "version1" linebreaks "settings" ":" linebreaks settings "bricks" ":" linebreaks bricks
     {
         driver.output->version = 1;
-        driver.output->segments = $6;
     }
 
-segments:
-    segments segment
+settings:
+    settings "identifier" ":" "float" linebreaks
     {
-        $$ = $1;
-        $$.push_back($2);
+        if($2 == "sign_neg")
+        {
+            driver.output->signNeg = $4;
+        }
+        else
+        {
+            driver.error(yyla.location, "unkown settings-field '" + $2 + "'");
+            return 1;
+        }
     }
 |
-    segment
+    settings "identifier" ":" "number" linebreaks
     {
-        std::vector<SegmentMetaPtr> outputs;
-        outputs.push_back($1);
-        $$ = outputs;
+        if($2 == "synapse_clusteration")
+        {
+            driver.output->synapseSegmentation = $4;
+        }
+        else if($2 == "max_synapse_sections")
+        {
+            driver.output->maxSynapseSections = $4;
+        }
+        else
+        {
+            driver.error(yyla.location, "unkown settings-field '" + $2 + "'");
+            return 1;
+        }
+    }
+|
+    "identifier" ":" "float" linebreaks
+    {
+        if($1 == "sign_neg")
+        {
+            driver.output->signNeg = $3;
+        }
+        else
+        {
+            driver.error(yyla.location, "unkown settings-field '" + $1 + "'");
+            return 1;
+        }
+    }
+|
+    "identifier" ":" "number" linebreaks
+    {
+        if($1 == "synapse_clusteration")
+        {
+            driver.output->synapseSegmentation = $3;
+        }
+        else if($1 == "max_synapse_sections")
+        {
+            driver.output->maxSynapseSections = $3;
+        }
+        else
+        {
+            driver.error(yyla.location, "unkown settings-field '" + $1 + "'");
+            return 1;
+        }
     }
 
-segment:
-    string_ident linebreaks "name" ":" string_ident linebreaks_eno outputs
+bricks:
+    bricks position linebreaks brick_settings
     {
-        if($1 == "output")
+        $4.position = $2;
+        driver.output->bricks.push_back($4);
+    }
+|
+    position linebreaks brick_settings
+    {
+        $3.position = $1;
+        driver.output->bricks.push_back($3);
+    }
+
+brick_settings:
+    brick_settings "identifier" ":" "identifier" linebreaks_eno
+    {
+        if($2 == "input")
         {
-            driver.error(yyla.location, "Output-segments are not allowed to have any outputs.");
+            $1.type = INPUT_BRICK_TYPE;
+            $1.name = $4;
+        }
+        else if($2 == "output")
+        {
+            $1.type = OUTPUT_BRICK_TYPE;
+            $1.name = $4;
+        }
+        else
+        {
+            driver.error(yyla.location, "unkown brick-field '" + $2 + "'");
             return 1;
         }
 
-        SegmentMetaPtr segment;
-        segment.type = $1;
-        segment.name = $5;
-        segment.outputs = $7;
-        $$ = segment;
+        $$ = $1;
     }
 |
-    string_ident linebreaks "name" ":" string_ident linebreaks_eno
+    brick_settings "identifier" ":" "number" linebreaks_eno
     {
+        if($2 == "number_of_neurons")
+        {
+            $1.numberOfNeurons = $4;
+        }
+        else
+        {
+            driver.error(yyla.location, "unkown brick-field '" + $2 + "'");
+            return 1;
+        }
+
+        $$ = $1;
+    }
+|
+    "identifier" ":" "identifier" linebreaks
+    {
+        Kitsunemimi::Hanami::BrickMeta brickMeta;
+
         if($1 == "input")
         {
-            driver.error(yyla.location, "Input-segments must have at least one output.");
+            brickMeta.type = INPUT_BRICK_TYPE;
+            brickMeta.name = $3;
+        }
+        else if($1 == "output")
+        {
+            brickMeta.type = OUTPUT_BRICK_TYPE;
+            brickMeta.name = $3;
+        }
+        else
+        {
+            driver.error(yyla.location, "unkown brick-field '" + $1 + "'");
             return 1;
         }
 
-        SegmentMetaPtr segment;
-        segment.type = $1;
-        segment.name = $5;
-        $$ = segment;
+        $$ = brickMeta;
+    }
+|
+    "identifier" ":" "number" linebreaks
+    {
+        Kitsunemimi::Hanami::BrickMeta brickMeta;
+
+        if($1 == "number_of_neurons")
+        {
+            brickMeta.numberOfNeurons = $3;
+        }
+        else
+        {
+            driver.error(yyla.location, "unkown brick-field '" + $1 + "'");
+            return 1;
+        }
+
+        $$ = brickMeta;
     }
 
-outputs:
-    outputs output
+position:
+    "number" "," "number" "," "number"
     {
-        $$ = $1;
-        $$.push_back($2);
-    }
-|
-    output
-    {
-        std::vector<ClusterConnection> outputs;
-        outputs.push_back($1);
-        $$ = outputs;
-    }
-
-output:
-    "out" ":" "->" string_ident ":" string_ident linebreaks_eno
-    {
-        ClusterConnection connection;
-        connection.sourceBrick = "x";
-        connection.targetSegment = $4;
-        connection.targetBrick = $6;
-        $$ = connection;
-    }
-|
-    "out" ":" string_ident "->" string_ident linebreaks_eno
-    {
-        ClusterConnection connection;
-        connection.sourceBrick = $3;
-        connection.targetSegment = $5;
-        connection.targetBrick = "x";
-        $$ = connection;
-    }
-|
-    "out" ":" string_ident "->" string_ident ":" string_ident linebreaks_eno
-    {
-        ClusterConnection connection;
-        connection.sourceBrick = $3;
-        connection.targetSegment = $5;
-        connection.targetBrick = $7;
-        $$ = connection;
+        Kitsunemimi::Position pos;
+        pos.x = $1;
+        pos.y = $3;
+        pos.z = $5;
+        $$ = pos;
     }
 
 string_ident:
@@ -234,7 +305,6 @@ linebreaks_eno:
 |
     "end of file"
     {}
-
 %%
 
 void Kitsunemimi::Hanami::ClusterParser::error(const Kitsunemimi::Hanami::location& location,

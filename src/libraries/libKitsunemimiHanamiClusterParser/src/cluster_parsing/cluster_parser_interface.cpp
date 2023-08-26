@@ -91,10 +91,11 @@ ClusterParserInterface::parse(ClusterMeta* result,
     int parserResult = 0;
     Kitsunemimi::Hanami::ClusterParser parser(*this);
 
-    // parse
     this->scan_begin(inputString);
     parserResult = parser.parse();
     this->scan_end();
+
+    output = nullptr;
 
     // handle negative result
     if(parserResult != 0

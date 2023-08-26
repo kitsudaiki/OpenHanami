@@ -26,10 +26,6 @@
 #include <core/cluster/cluster.h>
 #include <core/cluster/cluster_init.h>
 #include <core/cluster/statemachine_init.h>
-#include <core/segments/abstract_segment.h>
-#include <core/segments/input_segment/input_segment.h>
-#include <core/segments/output_segment/output_segment.h>
-#include <core/segments/core_segment/core_segment.h>
 
 #include <libKitsunemimiCommon/files/binary_file.h>
 #include <libKitsunemimiCrypto/hashes.h>
@@ -87,74 +83,19 @@ RestoreCluster_State::processEvent()
         return false;
     }
 
-    // clrear all old segments of the cluster, if there are some exist
-    for(uint64_t i = 0; i < m_cluster->allSegments.size(); i++)
+    // copy data of cluster
+    const uint8_t* u8Data = static_cast<const uint8_t*>(snapshotBuffer.data);
+    m_cluster->clusterData.initBuffer(u8Data, snapshotBuffer.usedBufferSize);
+    if(reinitPointer(m_cluster, snapshotBuffer.usedBufferSize) == false)
     {
-        AbstractSegment* segment = m_cluster->allSegments.at(i);
-        delete segment;
-    }
-    m_cluster->allSegments.clear();
-    m_cluster->inputSegments.clear();
-    m_cluster->outputSegments.clear();
-
-    // copy meta-data of cluster
-    const uint64_t headerSize = parsedHeader.get("header").getLong();
-    if(Kitsunemimi::reset_DataBuffer(m_cluster->clusterData,
-                                     Kitsunemimi::calcBytesToBlocks(headerSize)) == false)
-    {
-        // TODO: handle error
+        error.addMeesage("failed to re-init pointer in cluster");
         m_cluster->goToNextState(FINISH_TASK);
         return false;
     }
-    const uint8_t* u8Data = static_cast<const uint8_t*>(snapshotBuffer.data);
-    memcpy(m_cluster->clusterData.data, &u8Data[0], headerSize);
-    reinitPointer(m_cluster, originalUuid);
 
-    // copy single segments
-    uint64_t posCounter = headerSize;
-    for(uint64_t i = 0; i < parsedHeader.get("segments").size(); i++)
-    {
-        Kitsunemimi::JsonItem segment = parsedHeader.get("segments").get(i);
-        const SegmentTypes type = static_cast<SegmentTypes>(segment.get("type").getInt());
-        const uint64_t size = static_cast<uint64_t>(segment.get("size").getLong());
-
-        switch(type)
-        {
-            case INPUT_SEGMENT:
-            {
-                InputSegment* newSegment = new InputSegment(&u8Data[posCounter], size);
-                newSegment->reinitPointer(size);
-                newSegment->parentCluster = m_cluster;
-                m_cluster->inputSegments.insert(std::make_pair(newSegment->getName(), newSegment));
-                m_cluster->allSegments.push_back(newSegment);
-                break;
-            }
-            case OUTPUT_SEGMENT:
-            {
-                OutputSegment* newSegment = new OutputSegment(&u8Data[posCounter], size);
-                newSegment->reinitPointer(size);
-                newSegment->parentCluster = m_cluster;
-                m_cluster->outputSegments.insert(std::make_pair(newSegment->getName(), newSegment));
-                m_cluster->allSegments.push_back(newSegment);
-                break;
-            }
-            case CORE_SEGMENT:
-            {
-                CoreSegment* newSegment = new CoreSegment(&u8Data[posCounter], size);
-                newSegment->reinitPointer(size);
-                newSegment->parentCluster = m_cluster;
-                m_cluster->allSegments.push_back(newSegment);
-                break;
-            }
-            case UNDEFINED_SEGMENT:
-            {
-                break;
-            }
-        }
-
-        posCounter += size;
-    }
-
+    strncpy(m_cluster->clusterHeader->uuid.uuid,
+            originalUuid.c_str(),
+            originalUuid.size());
     m_cluster->goToNextState(FINISH_TASK);
 
     return true;

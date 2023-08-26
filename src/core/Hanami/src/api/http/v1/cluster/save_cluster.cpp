@@ -24,6 +24,7 @@
 #include <hanami_root.h>
 #include <core/cluster/cluster_handler.h>
 #include <core/cluster/cluster.h>
+#include <core/cluster/add_tasks.h>
 
 SaveCluster::SaveCluster()
     : Blossom("Save a cluster.")
@@ -86,9 +87,10 @@ SaveCluster::runTask(BlossomIO &blossomIO,
     }
 
     // init request-task
-    const std::string taskUuid = cluster->addClusterSnapshotSaveTask(name,
-                                                                     userContext.userId,
-                                                                     userContext.projectId);
+    const std::string taskUuid = addClusterSnapshotSaveTask(*cluster,
+                                                            name,
+                                                            userContext.userId,
+                                                            userContext.projectId);
     blossomIO.output.insert("uuid", taskUuid);
     blossomIO.output.insert("name", name);
 

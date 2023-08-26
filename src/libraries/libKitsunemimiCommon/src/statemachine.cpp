@@ -67,20 +67,23 @@ bool
 Statemachine::createNewState(const uint32_t stateId,
                              const std::string &stateName)
 {
-    // check if state already exist
-    State* newState = getState(stateId);
-    if(newState != nullptr) {
-        return false;
-    }
+    while(m_state_lock.test_and_set(std::memory_order_acquire)) { asm(""); }
 
     // add new state
-    newState = new State(stateId, stateName);
-    m_allStates.insert(std::make_pair(stateId, newState));
+    State* newState = new State(stateId, stateName);
+    auto ret = m_allStates.try_emplace(stateId, newState);
+    if(ret.second == false)
+    {
+        delete newState;
+        m_state_lock.clear(std::memory_order_release);
+        return false;
+    }
 
     // first created state is set as current stat to init the statemachine
     if(m_currentState == nullptr) {
         m_currentState = newState;
     }
+    m_state_lock.clear(std::memory_order_release);
 
     return true;
 }

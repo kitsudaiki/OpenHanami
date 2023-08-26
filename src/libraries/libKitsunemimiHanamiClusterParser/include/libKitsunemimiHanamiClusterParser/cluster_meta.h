@@ -20,49 +20,55 @@
  *      limitations under the License.
  */
 
-#ifndef KITSUNEMIMI_HANAMI_CLUSTER_PARSER_ITEM_H
-#define KITSUNEMIMI_HANAMI_CLUSTER_PARSER_ITEM_H
+#ifndef KITSUNEMIMI_HANAMI_SEGMENT_PARSER_ITEM_H
+#define KITSUNEMIMI_HANAMI_SEGMENT_PARSER_ITEM_H
 
 #include <string>
 #include <vector>
 #include <map>
+#include <any>
 
 #include <libKitsunemimiCommon/logger.h>
+#include <libKitsunemimiCommon/structs.h>
 
 namespace Kitsunemimi::Hanami
 {
 
-struct ClusterConnection
+enum BrickType
 {
-    std::string sourceBrick = "";
-    std::string targetSegment = "";
-    std::string targetBrick = "";
+    CENTRAL_BRICK_TYPE = 0,
+    INPUT_BRICK_TYPE = 1,
+    OUTPUT_BRICK_TYPE = 2,
 };
 
-struct SegmentMetaPtr
+struct BrickMeta
 {
+    Position position;
     std::string name = "";
-    std::string type = "";
-    std::vector<ClusterConnection> outputs;
+    BrickType type = CENTRAL_BRICK_TYPE;
+    uint64_t numberOfNeurons = 0;
 };
 
 struct ClusterMeta
 {
     uint32_t version = 0;
-    std::vector<SegmentMetaPtr> segments;
+    uint32_t maxSynapseSections = 0;
+    float synapseSegmentation = 0;
+    float signNeg = 0.0;
+    std::vector<BrickMeta> bricks;
 
-    SegmentMetaPtr*
-    getSegmentMetaPtr(const std::string &name)
+    BrickMeta*
+    getBrick(const std::string &name)
     {
-        SegmentMetaPtr* tempConnection = nullptr;
-        for(uint64_t i = 0; i < segments.size(); i++)
+        BrickMeta* tempBrick = nullptr;
+        for(uint64_t i = 0; i < bricks.size(); i++)
         {
-            tempConnection = &segments[i];
-            if(tempConnection->name == name) {
-                return tempConnection;
+            tempBrick = &bricks[i];
+            if(tempBrick->name == name) {
+                return tempBrick;
             }
         }
-        return tempConnection;
+        return tempBrick;
     }
 };
 
@@ -73,4 +79,4 @@ parseCluster(ClusterMeta* result,
 
 }
 
-#endif // KITSUNEMIMI_HANAMI_CLUSTER_PARSER_ITEM_H
+#endif // KITSUNEMIMI_HANAMI_SEGMENT_PARSER_ITEM_H

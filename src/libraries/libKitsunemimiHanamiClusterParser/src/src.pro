@@ -14,8 +14,8 @@ INCLUDEPATH += $$PWD \
                $$PWD/../include
 
 SOURCES += \
-    cluster_parsing/cluster_parser_interface.cpp \
-    cluster_meta.cpp
+    cluster_meta.cpp \
+    cluster_parsing/cluster_parser_interface.cpp
 
 HEADERS += \
     ../include/libKitsunemimiHanamiClusterParser/cluster_meta.h \

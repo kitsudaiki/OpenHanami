@@ -25,7 +25,6 @@
 #include <hanami_root.h>
 #include <core/temp_file_handler.h>
 #include <database/data_set_table.h>
-#include <database/template_table.h>
 #include <database/cluster_snapshot_table.h>
 
 #include <hanami_messages.proto3.pb.h>

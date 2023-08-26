@@ -89,16 +89,4 @@ struct BlossomStatus
     std::string errorMessage = "";
 };
 
-struct kuuid
-{
-    char uuid[UUID_STR_LEN];
-    uint8_t padding[3];
-
-    const std::string toString() const {
-        return std::string(uuid, UUID_STR_LEN - 1);
-    }
-
-    // total size: 40 Bytes
-};
-
 #endif // HANAMI_STRUCTS_H

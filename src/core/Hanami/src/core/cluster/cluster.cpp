@@ -23,29 +23,48 @@
 #include "cluster.h"
 #include <hanami_root.h>
 
-#include <core/segments/core_segment/core_segment.h>
-#include <core/segments/input_segment/input_segment.h>
-#include <core/segments/output_segment/output_segment.h>
 #include <core/cluster/cluster_init.h>
 #include <core/cluster/statemachine_init.h>
 #include <core/cluster/states/task_handle_state.h>
-#include <core/processing/segment_queue.h>
-#include <core/segments/output_segment/processing.h>
+#include <core/processing/cluster_queue.h>
 #include <api/websocket/cluster_io.h>
 
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiCommon/statemachine.h>
 #include <libKitsunemimiCommon/threading/thread.h>
 
+extern "C"
+void
+copyToDevice_CUDA(PointerHandler* gpuPointer,
+                  SegmentSettings* segmentSettings,
+                  NeuronBlock* neuronBlocks,
+                  const uint32_t numberOfNeuronBlocks,
+                  SynapseBlock* synapseBlocks,
+                  const uint32_t numberOfSynapseBlocks,
+                  SynapseConnection* synapseConnections,
+                  const uint32_t numberOfSynapseConnections,
+                  uint32_t* randomValues);
+
 /**
  * @brief constructor
  */
 Cluster::Cluster()
 {
-    m_stateMachine = new Kitsunemimi::Statemachine();
-    m_taskHandleState = new TaskHandle_State(this);
+    stateMachine = new Kitsunemimi::Statemachine();
+    taskHandleState = new TaskHandle_State(this);
 
-    initStatemachine(*m_stateMachine, this, m_taskHandleState);
+    initStatemachine(*stateMachine, this, taskHandleState);
+}
+
+/**
+ * @brief constructor to create cluster from a snapshot
+ *
+ * @param data pointer to data with snapshot
+ * @param dataSize size of snapshot in number of bytes
+ */
+Cluster::Cluster(const void* data, const uint64_t dataSize)
+{
+    clusterData.initBuffer(data, dataSize);
 }
 
 /**
@@ -53,14 +72,7 @@ Cluster::Cluster()
  */
 Cluster::~Cluster()
 {
-    delete m_stateMachine;
-
-    // already deleted in the destructor of the statemachine
-    // delete m_taskHandleState;
-
-    for(AbstractSegment* segment : allSegments) {
-        delete segment;
-    }
+    delete stateMachine;
 }
 
 /**
@@ -71,7 +83,24 @@ Cluster::~Cluster()
 const
 std::string Cluster::getUuid()
 {
-    return networkMetaData->uuid.toString();
+    return clusterHeader->uuid.toString();
+}
+
+/**
+ * @brief Cluster::initCuda
+ */
+void
+Cluster::initCuda()
+{
+    copyToDevice_CUDA(&gpuPointer,
+                      clusterSettings,
+                      neuronBlocks,
+                      clusterHeader->neuronBlocks.count,
+                      synapseBlocks,
+                      clusterHeader->synapseBlocks.count,
+                      synapseConnections,
+                      clusterHeader->synapseConnections.count,
+                      HanamiRoot::m_randomValues);
 }
 
 /**
@@ -85,81 +114,9 @@ std::string Cluster::getUuid()
  */
 bool
 Cluster::init(const Kitsunemimi::Hanami::ClusterMeta &clusterTemplate,
-              const std::map<std::string, Kitsunemimi::Hanami::SegmentMeta> &segmentTemplates,
               const std::string &uuid)
 {
-    return initNewCluster(this, clusterTemplate, segmentTemplates, uuid);
-}
-
-/**
- * @brief Cluster::connectSlot
- *
- * @param sourceSegment
- * @param sourceSlotName
- * @param targetSegment
- * @param targetSlotName
- *
- * @return
- */
-bool
-Cluster::connectSlot(const std::string &sourceSegmentName,
-                     const std::string &sourceSlotName,
-                     const std::string &targetSegmentName,
-                     const std::string &targetSlotName)
-{
-    const uint64_t sourceSegmentId = getSegmentId(sourceSegmentName);
-    if(sourceSegmentId == UNINIT_STATE_64) {
-        return false;
-    }
-
-    const uint64_t targetSegmentId = getSegmentId(targetSegmentName);
-    if(targetSegmentId == UNINIT_STATE_64) {
-        return false;
-    }
-
-    AbstractSegment* sourceSegment = allSegments.at(sourceSegmentId);
-    AbstractSegment* targetSegment = allSegments.at(targetSegmentId);
-
-    const uint8_t sourceSlotId = sourceSegment->getSlotId(sourceSlotName);
-    if(sourceSlotId == UNINIT_STATE_8) {
-        return false;
-    }
-
-    const uint8_t targetSlotId = targetSegment->getSlotId(targetSlotName);
-    if(targetSlotId == UNINIT_STATE_8) {
-        return false;
-    }
-
-    SegmentSlot* sourceSlot = &sourceSegment->segmentSlots->slots[sourceSlotId];
-    SegmentSlot* targetSlot = &targetSegment->segmentSlots->slots[targetSlotId];
-
-    sourceSlot->inUse = true;
-    sourceSlot->targetSegmentId = targetSegmentId;
-    sourceSlot->targetSlotId = targetSlotId;
-
-    targetSlot->inUse = true;
-    targetSlot->targetSegmentId = sourceSegmentId;
-    targetSlot->targetSlotId = sourceSlotId;
-
-    return true;
-}
-
-/**
- * @brief Cluster::getSegment
- * @param name
- * @return
- */
-uint64_t
-Cluster::getSegmentId(const std::string &name)
-{
-    for(uint64_t i = 0; i < allSegments.size(); i++)
-    {
-        if(allSegments.at(i)->getName() == name) {
-            return i;
-        }
-    }
-
-    return UNINIT_STATE_64;
+    return initNewCluster(this, clusterTemplate, uuid);
 }
 
 /**
@@ -171,11 +128,11 @@ const std::string
 Cluster::getName()
 {
     // precheck
-    if(networkMetaData == nullptr) {
+    if(clusterHeader == nullptr) {
         return std::string("");
     }
 
-    return std::string(networkMetaData->name);
+    return std::string(clusterHeader->name);
 }
 
 /**
@@ -189,7 +146,7 @@ bool
 Cluster::setName(const std::string newName)
 {
     // precheck
-    if(networkMetaData == nullptr
+    if(clusterHeader == nullptr
             || newName.size() > 1023
             || newName.size() == 0)
     {
@@ -198,8 +155,8 @@ Cluster::setName(const std::string newName)
 
     // copy string into char-buffer and set explicit the escape symbol to be absolut sure
     // that it is set to absolut avoid buffer-overflows
-    strncpy(networkMetaData->name, newName.c_str(), newName.size());
-    networkMetaData->name[newName.size()] = '\0';
+    strncpy(clusterHeader->name, newName.c_str(), newName.size());
+    clusterHeader->name[newName.size()] = '\0';
 
     return true;
 }
@@ -210,19 +167,7 @@ Cluster::setName(const std::string newName)
 void
 Cluster::startForwardCycle()
 {
-    // set ready-states of all neighbors of all segments
-    for(AbstractSegment* segment : allSegments)
-    {
-        for(uint8_t side = 0; side < 16; side++)
-        {
-            SegmentSlot* neighbor = &segment->segmentSlots->slots[side];
-            // TODO: check possible crash here
-            neighbor->inputReady = neighbor->direction != INPUT_DIRECTION;
-        }
-    }
-
-    segmentCounter = 0;
-    SegmentQueue::getInstance()->addSegmentListToQueue(allSegments);
+    ClusterQueue::getInstance()->addClusterToQueue(this);
 }
 
 /**
@@ -231,18 +176,7 @@ Cluster::startForwardCycle()
 void
 Cluster::startBackwardCycle()
 {
-    // set ready-states of all neighbors of all segments
-    for(AbstractSegment* segment : allSegments)
-    {
-        for(uint8_t side = 0; side < 16; side++)
-        {
-            SegmentSlot* neighbor = &segment->segmentSlots->slots[side];
-            neighbor->inputReady = neighbor->direction != OUTPUT_DIRECTION;
-        }
-    }
-
-    segmentCounter = 0;
-    SegmentQueue::getInstance()->addSegmentListToQueue(allSegments);
+    ClusterQueue::getInstance()->addClusterToQueue(this);
 }
 
 /**
@@ -274,283 +208,24 @@ Cluster::updateClusterState()
 {
     std::lock_guard<std::mutex> guard(m_segmentCounterLock);
 
-    segmentCounter++;
-    if(segmentCounter < allSegments.size()) {
-        return;
-    }
-
     // trigger next lerning phase, if already in phase 1
-    if(mode == Cluster::LEARN_FORWARD_MODE)
+    if(mode == ClusterProcessingMode::LEARN_FORWARD_MODE)
     {
-        mode = Cluster::LEARN_BACKWARD_MODE;
+        mode = ClusterProcessingMode::LEARN_BACKWARD_MODE;
         startBackwardCycle();
         return;
     }
 
     // send message, that process was finished
-    if(mode == Cluster::LEARN_BACKWARD_MODE) {
+    if(mode == ClusterProcessingMode::LEARN_BACKWARD_MODE) {
         sendClusterLearnEndMessage(this);
-    } else if(mode == Cluster::NORMAL_MODE) {
+    } else if(mode == ClusterProcessingMode::NORMAL_MODE) {
         sendClusterNormalEndMessage(this);
     }
 
     goToNextState(NEXT);
 }
 
-/**
- * @brief create a learn-task and add it to the task-queue
- *
- * @param inputData input-data
- * @param numberOfInputsPerCycle number of inputs per cycle
- * @param numberOfOuputsPerCycle number of outputs per cycle
- * @param numberOfCycles number of cycles
- *
- * @return task-uuid
- */
-const std::string
-Cluster::addImageLearnTask(const std::string &name,
-                           const std::string &userId,
-                           const std::string &projectId,
-                           float* inputData,
-                           const uint64_t numberOfInputsPerCycle,
-                           const uint64_t numberOfOuputsPerCycle,
-                           const uint64_t numberOfCycles)
-{
-    // create new learn-task
-    Task newTask;
-    newTask.uuid = generateUuid();
-    newTask.name = name;
-    newTask.userId = userId;
-    newTask.projectId = projectId;
-    newTask.inputData = inputData;
-    newTask.type = IMAGE_LEARN_TASK;
-    newTask.progress.state = QUEUED_TASK_STATE;
-    newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
-
-    // fill metadata
-    newTask.numberOfCycles = numberOfCycles;
-    newTask.numberOfInputsPerCycle = numberOfInputsPerCycle;
-    newTask.numberOfOuputsPerCycle = numberOfOuputsPerCycle;
-
-    // add task to queue
-    const std::string uuid = newTask.uuid.toString();
-    m_taskHandleState->addTask(uuid, newTask);
-
-    m_stateMachine->goToNextState(PROCESS_TASK);
-
-    return uuid;
-}
-
-/**
- * @brief create a request-task and add it to the task-queue
- *
- * @param inputData input-data
- * @param numberOfInputsPerCycle number of inputs per cycle
- * @param numberOfOuputsPerCycle number of outputs per cycle
- * @param numberOfCycles number of cycles
- *
- * @return task-uuid
- */
-const std::string
-Cluster::addImageRequestTask(const std::string &name,
-                             const std::string &userId,
-                             const std::string &projectId,
-                             float* inputData,
-                             const uint64_t numberOfInputsPerCycle,
-                             const uint64_t numberOfOuputsPerCycle,
-                             const uint64_t numberOfCycles)
-{
-    // create new request-task
-    Task newTask;
-    newTask.uuid = generateUuid();
-    newTask.name = name;
-    newTask.userId = userId;
-    newTask.projectId = projectId;
-    newTask.inputData = inputData;
-    for(uint64_t i = 0; i < numberOfCycles; i++) {
-        newTask.resultData.append(0);
-    }
-    newTask.type = IMAGE_REQUEST_TASK;
-    newTask.progress.state = QUEUED_TASK_STATE;
-    newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
-
-    // fill metadata
-    newTask.numberOfCycles = numberOfCycles;
-    newTask.numberOfInputsPerCycle = numberOfInputsPerCycle;
-    newTask.numberOfOuputsPerCycle = numberOfOuputsPerCycle;
-
-    // add task to queue
-    const std::string uuid = newTask.uuid.toString();
-    m_taskHandleState->addTask(uuid, newTask);
-
-    m_stateMachine->goToNextState(PROCESS_TASK);
-
-    return uuid;
-}
-
-/**
- * @brief create task to learn table-data and add it to the task-queue
- *
- * @param inputData input-data
- * @param numberOfInputs number of inputs per cycle
- * @param numberOfCycles number of cycles
- *
- * @return task-uuid
- */
-const std::string
-Cluster::addTableLearnTask(const std::string &name,
-                           const std::string &userId,
-                           const std::string &projectId,
-                           float* inputData,
-                           float* outputData,
-                           const uint64_t numberOfInputs,
-                           const uint64_t numberOfOutputs,
-                           const uint64_t numberOfCycles)
-{
-    // create new learn-task
-    Task newTask;
-    newTask.uuid = generateUuid();
-    newTask.name = name;
-    newTask.userId = userId;
-    newTask.projectId = projectId;
-    newTask.inputData = inputData;
-    newTask.outputData = outputData;
-    newTask.type = TABLE_LEARN_TASK;
-    newTask.progress.state = QUEUED_TASK_STATE;
-    newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
-
-    // fill metadata
-    newTask.numberOfCycles = numberOfCycles;
-    newTask.numberOfInputsPerCycle = numberOfInputs;
-    newTask.numberOfOuputsPerCycle = numberOfOutputs;
-
-    // add task to queue
-    const std::string uuid = newTask.uuid.toString();
-    m_taskHandleState->addTask(uuid, newTask);
-
-    m_stateMachine->goToNextState(PROCESS_TASK);
-
-    return uuid;
-}
-
-/**
- * @brief create task to request table-data and add it to the task-queue
- *
- * @param inputData input-data
- * @param numberOfInputs number of inputs per cycle
- * @param numberOfCycles number of cycles
- *
- * @return task-uuid
- */
-const std::string
-Cluster::addTableRequestTask(const std::string &name,
-                             const std::string &userId,
-                             const std::string &projectId,
-                             float* inputData,
-                             const uint64_t numberOfInputs,
-                             const uint64_t numberOfOutputs,
-                             const uint64_t numberOfCycles)
-{
-    // create new request-task
-    Task newTask;
-    newTask.uuid = generateUuid();
-    newTask.name = name;
-    newTask.userId = userId;
-    newTask.projectId = projectId;
-    newTask.inputData = inputData;
-    for(uint64_t i = 0; i < numberOfCycles; i++) {
-        newTask.resultData.append(0.0f);
-    }
-    newTask.type = TABLE_REQUEST_TASK;
-    newTask.progress.state = QUEUED_TASK_STATE;
-    newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
-
-    // fill metadata
-    newTask.numberOfCycles = numberOfCycles;
-    newTask.numberOfInputsPerCycle = numberOfInputs;
-    newTask.numberOfOuputsPerCycle = numberOfOutputs;
-
-    // add tasgetNextTaskk to queue
-    const std::string uuid = newTask.uuid.toString();
-    m_taskHandleState->addTask(uuid, newTask);
-
-    m_stateMachine->goToNextState(PROCESS_TASK);
-
-    return uuid;
-}
-
-/**
- * @brief create task to create a snapshot from a cluster and add it to the task-queue
- *
- * @param snapshotName name for the snapshot
- * @param userId uuid of the user, where the snapshot belongs to
- * @param projectId uuid of the project, where the snapshot belongs to
- *
- * @return task-uuid
- */
-const std::string
-Cluster::addClusterSnapshotSaveTask(const std::string &snapshotName,
-                                    const std::string &userId,
-                                    const std::string &projectId)
-{
-    // create new request-task
-    Task newTask;
-    newTask.uuid = generateUuid();
-    newTask.name = snapshotName;
-    newTask.userId = userId;
-    newTask.projectId = projectId;
-    newTask.type = CLUSTER_SNAPSHOT_SAVE_TASK;
-    newTask.progress.state = QUEUED_TASK_STATE;
-    newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
-
-    // fill metadata
-    newTask.snapshotName = snapshotName;
-
-    // add tasgetNextTaskk to queue
-    const std::string uuid = newTask.uuid.toString();
-    m_taskHandleState->addTask(uuid, newTask);
-
-    m_stateMachine->goToNextState(PROCESS_TASK);
-
-    return uuid;
-}
-
-/**
- * @brief create task to restore a cluster from a snapshot and add it to the task-queue
- *
- * @param snapshotUuid uuid of the snapshot
- * @param userId uuid of the user, where the snapshot belongs to
- * @param projectId uuid of the project, where the snapshot belongs to
- *
- * @return task-uuid
- */
-const std::string
-Cluster::addClusterSnapshotRestoreTask(const std::string &name,
-                                       const std::string &snapshotInfo,
-                                       const std::string &userId,
-                                       const std::string &projectId)
-{
-    // create new request-task
-    Task newTask;
-    newTask.uuid = generateUuid();
-    newTask.name = name;
-    newTask.userId = userId;
-    newTask.projectId = projectId;
-    newTask.type = CLUSTER_SNAPSHOT_RESTORE_TASK;
-    newTask.progress.state = QUEUED_TASK_STATE;
-    newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
-
-    // fill metadata
-    newTask.snapshotInfo = snapshotInfo;
-
-    // add tasgetNextTaskk to queue
-    const std::string uuid = newTask.uuid.toString();
-    m_taskHandleState->addTask(uuid, newTask);
-
-    m_stateMachine->goToNextState(PROCESS_TASK);
-
-    return uuid;
-}
 
 /**
  * @brief get actual task
@@ -560,7 +235,7 @@ Cluster::addClusterSnapshotRestoreTask(const std::string &name,
 Task*
 Cluster::getActualTask() const
 {
-    return m_taskHandleState->getActualTask();
+    return taskHandleState->getActualTask();
 }
 
 /**
@@ -571,7 +246,7 @@ Cluster::getActualTask() const
 uint64_t
 Cluster::getActualTaskCycle() const
 {
-    return m_taskHandleState->getActualTask()->actualCycle;
+    return taskHandleState->getActualTask()->actualCycle;
 }
 
 /**
@@ -584,7 +259,7 @@ Cluster::getActualTaskCycle() const
 const TaskProgress
 Cluster::getProgress(const std::string &taskUuid)
 {
-    return m_taskHandleState->getProgress(taskUuid);
+    return taskHandleState->getProgress(taskUuid);
 }
 
 /**
@@ -597,7 +272,7 @@ Cluster::getProgress(const std::string &taskUuid)
 bool
 Cluster::removeTask(const std::string &taskUuid)
 {
-    return m_taskHandleState->removeTask(taskUuid);
+    return taskHandleState->removeTask(taskUuid);
 }
 
 /**
@@ -610,7 +285,7 @@ Cluster::removeTask(const std::string &taskUuid)
 bool
 Cluster::isFinish(const std::string &taskUuid)
 {
-    return m_taskHandleState->isFinish(taskUuid);
+    return taskHandleState->isFinish(taskUuid);
 }
 
 /**
@@ -620,7 +295,7 @@ Cluster::isFinish(const std::string &taskUuid)
 void
 Cluster::getAllProgress(std::map<std::string, TaskProgress> &result)
 {
-    return m_taskHandleState->getAllProgress(result);
+    return taskHandleState->getAllProgress(result);
 }
 
 /**
@@ -633,5 +308,5 @@ Cluster::getAllProgress(std::map<std::string, TaskProgress> &result)
 bool
 Cluster::goToNextState(const uint32_t nextStateId)
 {
-    return m_stateMachine->goToNextState(nextStateId);
+    return stateMachine->goToNextState(nextStateId);
 }

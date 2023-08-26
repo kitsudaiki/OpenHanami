@@ -45,14 +45,14 @@ ValueItemMap::ValueItemMap(const ValueItemMap &other)
 {
     // copy items
     for(const auto& [id, item] : other.m_valueMap) {
-        m_valueMap.insert(std::make_pair(id, item));
+        m_valueMap.try_emplace(id, item);
     }
 
     // copy child-maps
     for(const auto& [id, itemMap] : other.m_childMaps)
     {
         ValueItemMap* newValue = new ValueItemMap(*itemMap);
-        m_childMaps.insert(std::make_pair(id, newValue));
+        m_childMaps.try_emplace(id, newValue);
     }
 }
 
@@ -69,14 +69,14 @@ ValueItemMap::operator=(const ValueItemMap &other)
 
         // copy items
         for(const auto& [id, item] : other.m_valueMap) {;
-            this->m_valueMap.insert(std::make_pair(id, item));
+            this->m_valueMap.try_emplace(id, item);
         }
 
         clearChildMap();
 
         // copy child-maps
         for(const auto& [id, itemMap] : other.m_childMaps) {
-            this->m_childMaps.insert(std::make_pair(id, new ValueItemMap(*itemMap)));
+            this->m_childMaps.try_emplace(id, new ValueItemMap(*itemMap));
         }
     }
 
@@ -126,7 +126,8 @@ ValueItemMap::insert(const std::string &key,
     if(it != m_valueMap.end()) {
         it->second = value;
     } else {
-        m_valueMap.insert(std::make_pair(key, value));
+        auto ret = m_valueMap.try_emplace(key, value);
+        return ret.second;
     }
 
     return true;
@@ -156,7 +157,8 @@ ValueItemMap::insert(const std::string &key,
     if(it != m_childMaps.end()) {
         it->second = value;
     } else {
-        m_childMaps.insert(std::make_pair(key, value));
+        auto ret = m_childMaps.try_emplace(key, value);
+        return ret.second;
     }
 
     return true;

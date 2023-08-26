@@ -38,11 +38,6 @@
 #include <api/http/v1/cluster/load_cluster.h>
 #include <api/http/v1/cluster/set_cluster_mode.h>
 
-#include <api/http/v1/template/upload_template.h>
-#include <api/http/v1/template/delete_template.h>
-#include <api/http/v1/template/list_templates.h>
-#include <api/http/v1/template/show_template.h>
-
 #include <api/http/v1/task/create_task.h>
 #include <api/http/v1/task/show_task.h>
 #include <api/http/v1/task/list_task.h>
@@ -156,43 +151,6 @@ initClusterBlossoms()
                                   BLOSSOM_TYPE,
                                   group,
                                   "set_mode");
-}
-
-/**
- * @brief initTemplateBlossoms
- */
-void
-initTemplateBlossoms()
-{
-    const std::string group = "Template";
-
-    assert(HanamiRoot::root->addBlossom(group, "upload", new UploadTemplate()));
-    HanamiRoot::root->addEndpoint("v1/template/upload",
-                                  Kitsunemimi::Hanami::POST_TYPE,
-                                  BLOSSOM_TYPE,
-                                  group,
-                                  "upload");
-
-    assert(HanamiRoot::root->addBlossom(group, "show", new ShowTemplate()));
-    HanamiRoot::root->addEndpoint("v1/template",
-                                  Kitsunemimi::Hanami::GET_TYPE,
-                                  BLOSSOM_TYPE,
-                                  group,
-                                  "show");
-
-    assert(HanamiRoot::root->addBlossom(group, "list", new ListTemplates()));
-    HanamiRoot::root->addEndpoint("v1/template/all",
-                                  Kitsunemimi::Hanami::GET_TYPE,
-                                  BLOSSOM_TYPE,
-                                  group,
-                                  "list");
-
-    assert(HanamiRoot::root->addBlossom(group, "delete", new DeleteTemplate()));
-    HanamiRoot::root->addEndpoint("v1/template",
-                                  Kitsunemimi::Hanami::DELETE_TYPE,
-                                  BLOSSOM_TYPE,
-                                  group,
-                                  "delete");
 }
 
 /**
@@ -584,7 +542,6 @@ void
 initBlossoms()
 {
     initClusterBlossoms();
-    initTemplateBlossoms();
     initTaskBlossoms();
     dataSetBlossoms();
     clusterSnapshotBlossoms();

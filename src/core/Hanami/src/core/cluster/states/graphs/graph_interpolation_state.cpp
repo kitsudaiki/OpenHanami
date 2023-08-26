@@ -22,10 +22,6 @@
 
 #include "graph_interpolation_state.h"
 
-#include <core/segments/core_segment/core_segment.h>
-#include <core/segments/input_segment/input_segment.h>
-#include <core/segments/output_segment/output_segment.h>
-
 #include <core/cluster/cluster.h>
 
 /**

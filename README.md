@@ -96,6 +96,7 @@ In case `git-lfs` while cloning and installed afterwards:
 
 ```
 git lfs fetch --all
+git lfs pull
 ```
 
 In case the repo was cloned without submodules initially:
@@ -105,12 +106,13 @@ git submodule init
 git submodule update --recursive
 ```
 
-For the OpenAPI-documentation the swagger-ui plugin for mkdocs is necessary:
+Mkdocs and plugins:
 
 ```
-pip3 install mkdocs-swagger-ui-tag
+pip3 install mkdocs-material mkdocs-swagger-ui-tag mkdocs-drawio-exporter
 ```
 
+(to build the documentation `Draw.io` also has to be installed on the system)
 
 ## Author
 

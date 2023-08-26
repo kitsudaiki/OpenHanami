@@ -19,7 +19,6 @@ SUBDIRS += libKitsunemimiSakuraHardware
 SUBDIRS += libKitsunemimiSakuraDatabase
 #SUBDIRS += libKitsunemimiSakuraNetwork
 SUBDIRS += libKitsunemimiHanamiPolicies
-SUBDIRS += libKitsunemimiHanamiSegmentParser
 SUBDIRS += libKitsunemimiHanamiClusterParser
 
 

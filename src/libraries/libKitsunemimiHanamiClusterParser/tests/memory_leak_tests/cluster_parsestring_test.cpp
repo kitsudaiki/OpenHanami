@@ -28,7 +28,7 @@ namespace Kitsunemimi::Hanami
 {
 
 Cluster_ParseString_Test::Cluster_ParseString_Test()
-    : Kitsunemimi::MemoryLeakTestHelpter("Segment_ParseString_Test")
+    : Kitsunemimi::MemoryLeakTestHelpter("Cluster_ParseString_Test")
 {
     parseString_test();
 }
@@ -39,18 +39,24 @@ Cluster_ParseString_Test::Cluster_ParseString_Test()
 void
 Cluster_ParseString_Test::parseString_test()
 {
-    std::string input("version: 1\n"
-                      "segments:\n"
-                      "    input\n"
-                      "        name: input\n"
-                      "        out: -> central : test_input\n"
-                      " \n"
-                      "    example_segment\n"
-                      "        name: central\n"
-                      "        out: test_output -> output\n"
-                      "\n"
-                      "    output\n"
-                      "        name: output\n");
+    const std::string input("version: 1\n"
+                            "settings:\n"
+                            "    max_synapse_sections: 100000\n"
+                            "    synapse_clusteration: 10\n"
+                            "    sign_neg: 0.5\n"
+                            "        \n"
+                            "bricks:\n"
+                            "    1,1,1\n"
+                            "        input: test_input\n"
+                            "        number_of_neurons: 20\n"
+                            "         \n "
+                            "    2,1,1\n"
+                            "        number_of_neurons: 10\n"
+                            "          \n"
+                            "    3,1,1\n"
+                            "        output: test_output\n"
+                            "        number_of_neurons: 5");
+
 
     ClusterMeta result;
     ErrorContainer error;

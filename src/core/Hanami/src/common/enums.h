@@ -26,7 +26,6 @@
 enum ObjectTypes
 {
     CLUSTER_OBJECT = 0,
-    SEGMENT_OBJECT = 1,
 };
 
 enum HttpResponseTypes

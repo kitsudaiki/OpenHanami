@@ -25,7 +25,6 @@
 
 #include <common.h>
 #include <database/cluster_table.h>
-#include <database/template_table.h>
 #include <database/users_table.h>
 #include <database/projects_table.h>
 
@@ -33,7 +32,7 @@
 #include <libKitsunemimiHanamiPolicies/policy.h>
 
 class ClusterHandler;
-class SegmentQueue;
+class ClusterQueue;
 class ProcessingUnitHandler;
 class WebSocketServer;
 class HttpServer;

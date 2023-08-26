@@ -159,7 +159,7 @@ TaskHandle_State::processEvent()
  * @param uuid uuid of the new task for identification
  * @param task task itself
  *
- * @return alsways true
+ * @return false, if uuid already exist, else true
  */
 bool
 TaskHandle_State::addTask(const std::string &uuid,
@@ -167,8 +167,11 @@ TaskHandle_State::addTask(const std::string &uuid,
 {
     std::lock_guard<std::mutex> guard(m_task_mutex);
 
-    // TODO: check if uuid already exist (update comment)
-    m_taskMap.insert(std::make_pair(uuid, task));
+    auto ret = m_taskMap.try_emplace(uuid, task);
+    if(ret.second == false) {
+        return false;
+    }
+
     m_taskQueue.push_back(uuid);
 
     return true;

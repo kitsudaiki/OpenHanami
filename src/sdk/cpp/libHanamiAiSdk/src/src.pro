@@ -27,31 +27,29 @@ INCLUDEPATH += $$PWD \
 
 HEADERS += \
     ../include/libHanamiAiSdk/cluster.h \
+    ../include/libHanamiAiSdk/common/websocket_client.h \
     ../include/libHanamiAiSdk/data_set.h \
     ../include/libHanamiAiSdk/init.h \
+    ../include/libHanamiAiSdk/io.h \
     ../include/libHanamiAiSdk/project.h \
     ../include/libHanamiAiSdk/request_result.h \
-    ../include/libHanamiAiSdk/task.h \
-    ../include/libHanamiAiSdk/template.h \
-    ../include/libHanamiAiSdk/user.h \
     ../include/libHanamiAiSdk/snapshot.h \
-    ../include/libHanamiAiSdk/io.h \
-    common/http_client.h \
-    ../include/libHanamiAiSdk/common/websocket_client.h
+    ../include/libHanamiAiSdk/task.h \
+    ../include/libHanamiAiSdk/user.h \
+    common/http_client.h
 
 SOURCES += \
     cluster.cpp \
+    common/http_client.cpp \
+    common/websocket_client.cpp \
     data_set.cpp \
     init.cpp \
     io.cpp \
     project.cpp \
     request_result.cpp \
-    task.cpp \
-    template.cpp \
-    user.cpp \
     snapshot.cpp \
-    common/http_client.cpp \
-    common/websocket_client.cpp
+    task.cpp \
+    user.cpp
 
 
 HANAMI_PROTO_BUFFER = ../../../../libraries/libKitsunemimiHanamiMessages/protobuffers/hanami_messages.proto3

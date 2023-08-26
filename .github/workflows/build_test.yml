@@ -5,7 +5,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: kitsudaiki/ci-build:0.1.0
+      image: kitsudaiki/hanami_ai_builder:0.4.0
     name: build-job
     steps:
       - name: "Checkout repository"
@@ -17,10 +17,6 @@ jobs:
           git checkout ${GITHUB_REF#refs/heads/}
           git submodule init
           git submodule update --recursive
-      - name: "update package-list"
-        run: apt-get update
-      - name: "install missing packages"
-        run: apt-get install -y libssl-dev libcrypto++-dev libboost1.74-dev uuid-dev  libsqlite3-dev protobuf-compiler protobuf-compiler nvidia-cuda-toolkit
       - name: "Build project"
         run:  |
           cd ${GITHUB_REPOSITORY#*/}
@@ -92,10 +88,6 @@ jobs:
         run: |
           chmod +x /build_result/libraries/libKitsunemimiHanamiClusterParser/tests/unit_tests/unit_tests
           /build_result/libraries/libKitsunemimiHanamiClusterParser/tests/unit_tests/unit_tests
-      - name: "Run test: libKitsunemimiHanamiSegmentParser"
-        run: |
-          chmod +x /build_result/libraries/libKitsunemimiHanamiSegmentParser/tests/unit_tests/unit_tests
-          /build_result/libraries/libKitsunemimiHanamiSegmentParser/tests/unit_tests/unit_tests
       - name: "Run test: libKitsunemimiHanamiPolicies"
         run: |
           chmod +x /build_result/libraries/libKitsunemimiHanamiPolicies/tests/unit_tests/unit_tests

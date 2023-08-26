@@ -6,11 +6,6 @@ CONFIG += c++17
 
 INCLUDEPATH += ../../libraries/libKitsunemimiHanamiMessages/protobuffers
 
-LIBS += -L../../libraries/libKitsunemimiHanamiSegmentParser/src -lKitsunemimiHanamiSegmentParser
-LIBS += -L../../libraries/libKitsunemimiHanamiSegmentParser/src/debug -lKitsunemimiHanamiSegmentParser
-LIBS += -L../../libraries/libKitsunemimiHanamiSegmentParser/src/release -lKitsunemimiHanamiSegmentParser
-INCLUDEPATH += ../../libraries/libKitsunemimiHanamiSegmentParser/include
-
 LIBS += -L../../libraries/libKitsunemimiHanamiClusterParser/src -lKitsunemimiHanamiClusterParser
 LIBS += -L../../libraries/libKitsunemimiHanamiClusterParser/src/debug -lKitsunemimiHanamiClusterParser
 LIBS += -L../../libraries/libKitsunemimiHanamiClusterParser/src/release -lKitsunemimiHanamiClusterParser
@@ -87,21 +82,23 @@ LIBS += -L../../sdk/cpp/libHanamiAiSdk/src/release -lHanamiAiSdk
 INCLUDEPATH += ../../sdk/cpp/libHanamiAiSdk/include
 
 LIBS += -lcryptopp -lssl -lsqlite3 -luuid -lcrypto -pthread -lprotobuf -lOpenCL
-LIBS +=  -L"/usr/local/cuda-12.1/targets/x86_64-linux/lib" -lcuda -lcudart -lcublas
+LIBS +=  -L"/usr/local/cuda-12.1/targets/x86_64-linux/lib"  -L"/usr/local/cuda-12.2/targets/x86_64-linux/lib" -lcuda -lcudart -lcublas
 
 INCLUDEPATH += $$PWD \
                src
 
 HANAMI_PROTO_BUFFER = ../../libraries/libKitsunemimiHanamiMessages/protobuffers/hanami_messages.proto3
-GPU_KERNEL = src/core/segments/core_segment/gpu_kernel.cl
-CUDA_SOURCES = src/core/segments/core_segment/gpu_kernel.cu
+GPU_KERNEL = src/core/processing/opencl/gpu_kernel.cl
+CUDA_SOURCES = src/core/processing/cuda/gpu_kernel.cu
 
 OTHER_FILES += \
     $$CUDA_SOURCES
 
 cudaKernel.input = CUDA_SOURCES
 cudaKernel.output = ${QMAKE_FILE_BASE}.o
-cudaKernel.commands = /usr/local/cuda-12.1/bin/nvcc -O3 -c -I$$PWD/../../libraries/libKitsunemimiCommon/include -o ${QMAKE_FILE_BASE}.o ${QMAKE_FILE_IN} || nvcc -O3 -c -I$$PWD/../../libraries/libKitsunemimiCommon/include -o ${QMAKE_FILE_BASE}.o ${QMAKE_FILE_IN}
+cudaKernel.commands = /usr/local/cuda-12.1/bin/nvcc -O3 -c -I$$PWD/../../libraries/libKitsunemimiCommon/include -o ${QMAKE_FILE_BASE}.o ${QMAKE_FILE_IN} \
+                      || /usr/local/cuda-12.2/bin/nvcc -O3 -c -I$$PWD/../../libraries/libKitsunemimiCommon/include -o ${QMAKE_FILE_BASE}.o ${QMAKE_FILE_IN} \
+                      || nvcc -O3 -c -I$$PWD/../../libraries/libKitsunemimiCommon/include -o ${QMAKE_FILE_BASE}.o ${QMAKE_FILE_IN}
 cudaKernel.CONFIG += target_predeps
 QMAKE_EXTRA_COMPILERS += cudaKernel
 
@@ -133,9 +130,6 @@ gpu_processing.variable_out = HEADERS
 gpu_processing.CONFIG += no_link
 
 QMAKE_EXTRA_COMPILERS += gpu_processing
-
-DISTFILES += \
-    src/core/segments/core_segment/gpu_kernel.cu
 
 HEADERS += \
     src/api/endpoint_processing/blossom.h \
@@ -194,10 +188,6 @@ HEADERS += \
     src/api/http/v1/task/delete_task.h \
     src/api/http/v1/task/list_task.h \
     src/api/http/v1/task/show_task.h \
-    src/api/http/v1/template/delete_template.h \
-    src/api/http/v1/template/list_templates.h \
-    src/api/http/v1/template/show_template.h \
-    src/api/http/v1/template/upload_template.h \
     src/api/http/v1/threading/get_thread_mapping.h \
     src/api/http/v1/user/add_project_to_user.h \
     src/api/http/v1/user/create_user.h \
@@ -215,6 +205,7 @@ HEADERS += \
     src/common/structs.h \
     src/common/typedefs.h \
     src/config.h \
+    src/core/cluster/add_tasks.h \
     src/core/cluster/cluster.h \
     src/core/cluster/cluster_handler.h \
     src/core/cluster/cluster_init.h \
@@ -235,28 +226,17 @@ HEADERS += \
     src/core/data_set_files/image_data_set_file.h \
     src/core/data_set_files/table_data_set_file.h \
     src/core/power_measuring.h \
+    src/core/processing/cluster_queue.h \
+    src/core/processing/cluster_io_functions.h \
+    src/core/processing/cpu/backpropagation.h \
+    src/core/processing/cpu/processing.h \
+    src/core/processing/cpu/reduction.h \
     src/core/processing/cpu_processing_unit.h \
+    src/core/processing/objects.h \
     src/core/processing/processing_unit_handler.h \
-    src/core/processing/segment_queue.h \
+    src/core/processing/section_update.h \
     src/core/routing_functions.h \
-    src/core/segments/abstract_segment.h \
-    src/core/segments/brick.h \
-    src/core/segments/core_segment/backpropagation.h \
-    src/core/segments/core_segment/core_segment.h \
-    src/core/segments/core_segment/objects.h \
-    src/core/segments/core_segment/processing.h \
-    src/core/segments/core_segment/reduction.h \
-    src/core/segments/core_segment/section_update.h \
-    src/core/segments/input_segment/input_segment.h \
-    src/core/segments/input_segment/objects.h \
-    src/core/segments/input_segment/processing.h \
-    src/core/segments/output_segment/backpropagation.h \
-    src/core/segments/output_segment/objects.h \
-    src/core/segments/output_segment/output_segment.h \
-    src/core/segments/output_segment/processing.h \
-    src/core/segments/segment_meta.h \
     src/core/speed_measuring.h \
-    src/core/struct_validation.h \
     src/core/temp_file_handler.h \
     src/core/temperature_measuring.h \
     src/core/thread_binder.h \
@@ -271,7 +251,6 @@ HEADERS += \
     src/database/generic_tables/hanami_sql_table.h \
     src/database/projects_table.h \
     src/database/request_result_table.h \
-    src/database/template_table.h \
     src/database/users_table.h \
     src/hanami_root.h
 
@@ -328,10 +307,6 @@ SOURCES += \
     src/api/http/v1/task/delete_task.cpp \
     src/api/http/v1/task/list_task.cpp \
     src/api/http/v1/task/show_task.cpp \
-    src/api/http/v1/template/delete_template.cpp \
-    src/api/http/v1/template/list_templates.cpp \
-    src/api/http/v1/template/show_template.cpp \
-    src/api/http/v1/template/upload_template.cpp \
     src/api/http/v1/threading/get_thread_mapping.cpp \
     src/api/http/v1/user/add_project_to_user.cpp \
     src/api/http/v1/user/create_user.cpp \
@@ -341,6 +316,7 @@ SOURCES += \
     src/api/http/v1/user/remove_project_from_user.cpp \
     src/api/websocket/cluster_io.cpp \
     src/api/websocket/file_upload.cpp \
+    src/core/cluster/add_tasks.cpp \
     src/core/cluster/cluster.cpp \
     src/core/cluster/cluster_handler.cpp \
     src/core/cluster/cluster_init.cpp \
@@ -360,13 +336,9 @@ SOURCES += \
     src/core/data_set_files/image_data_set_file.cpp \
     src/core/data_set_files/table_data_set_file.cpp \
     src/core/power_measuring.cpp \
+    src/core/processing/cluster_queue.cpp \
     src/core/processing/cpu_processing_unit.cpp \
     src/core/processing/processing_unit_handler.cpp \
-    src/core/processing/segment_queue.cpp \
-    src/core/segments/abstract_segment.cpp \
-    src/core/segments/core_segment/core_segment.cpp \
-    src/core/segments/input_segment/input_segment.cpp \
-    src/core/segments/output_segment/output_segment.cpp \
     src/core/speed_measuring.cpp \
     src/core/temp_file_handler.cpp \
     src/core/temperature_measuring.cpp \
@@ -382,8 +354,9 @@ SOURCES += \
     src/database/generic_tables/hanami_sql_table.cpp \
     src/database/projects_table.cpp \
     src/database/request_result_table.cpp \
-    src/database/template_table.cpp \
     src/database/users_table.cpp \
     src/hanami_root.cpp \
     src/main.cpp
+
+
 

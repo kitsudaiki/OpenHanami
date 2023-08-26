@@ -24,34 +24,31 @@
 
 #include <core/cluster/cluster.h>
 #include <../../libraries/libKitsunemimiHanamiMessages/protobuffers/hanami_messages.proto3.pb.h>
-#include <core/segments/input_segment/input_segment.h>
-#include <core/segments/output_segment/output_segment.h>
 
 /**
- * @brief send output of an output-segment as protobuf-message
+ * @brief send output of a cluster as protobuf-message
  *
- * @param segment segment, which output-data should send
+ * @param cluster cluster, which output-data should send
  */
 void
-sendClusterOutputMessage(const OutputSegment &segment)
+sendClusterOutputMessage(Cluster* cluster)
 {
-    if(segment.parentCluster->msgClient == nullptr) {
+    if(cluster->msgClient == nullptr) {
         return;
     }
 
     // build message
     ClusterIO_Message msg;
-    msg.set_segmentname(segment.getName());
     msg.set_islast(false);
     msg.set_processtype(ClusterProcessType::REQUEST_TYPE);
     msg.set_datatype(ClusterDataType::OUTPUT_TYPE);
-    msg.set_numberofvalues(segment.segmentHeader->outputs.count);
+    msg.set_numberofvalues(cluster->clusterHeader->outputValues.count);
 
     for(uint64_t outputNeuronId = 0;
-        outputNeuronId < segment.segmentHeader->outputs.count;
+        outputNeuronId < cluster->clusterHeader->outputValues.count;
         outputNeuronId++)
     {
-        msg.add_values(segment.outputs[outputNeuronId].outputWeight);
+        msg.add_values(cluster->outputValues[outputNeuronId]);
     }
 
     // serialize message
@@ -65,7 +62,7 @@ sendClusterOutputMessage(const OutputSegment &segment)
     }
 
     // send message
-    HttpWebsocketThread* client = segment.parentCluster->msgClient;
+    HttpWebsocketThread* client = cluster->msgClient;
     Kitsunemimi::ErrorContainer error;
     client->sendData(buffer, size, true);
 }
@@ -200,24 +197,14 @@ recvClusterInputMessage(Cluster* cluster,
     // fill given data into the target-segment
     if(msg.datatype() == ClusterDataType::INPUT_TYPE)
     {
-        const auto it = cluster->inputSegments.find(msg.segmentname());
-        if(it != cluster->inputSegments.end())
-        {
-            InputNeuron* inputNeurons = it->second->inputs;
-            for(uint64_t i = 0; i < msg.numberofvalues(); i++) {
-                inputNeurons[i].weight = msg.values(i);
-            }
+        for(uint64_t i = 0; i < msg.numberofvalues(); i++) {
+            cluster->inputValues[i] = msg.values(i);
         }
     }
     if(msg.datatype() == ClusterDataType::SHOULD_TYPE)
     {
-        const auto it = cluster->outputSegments.find(msg.segmentname());
-        if(it != cluster->outputSegments.end())
-        {
-            OutputNeuron* outputNeurons = it->second->outputs;
-            for(uint64_t i = 0; i < msg.numberofvalues(); i++) {
-                outputNeurons[i].shouldValue = msg.values(i);
-            }
+        for(uint64_t i = 0; i < msg.numberofvalues(); i++) {
+            cluster->expectedValues[i] = msg.values(i);
         }
     }
 
@@ -226,14 +213,14 @@ recvClusterInputMessage(Cluster* cluster,
         // start request
         if(msg.processtype() == ClusterProcessType::REQUEST_TYPE)
         {
-            cluster->mode = Cluster::NORMAL_MODE;
+            cluster->mode = ClusterProcessingMode::NORMAL_MODE;
             cluster->startForwardCycle();
         }
 
         // start learn
         if(msg.processtype() == ClusterProcessType::LEARN_TYPE)
         {
-            cluster->mode = Cluster::LEARN_FORWARD_MODE;
+            cluster->mode = ClusterProcessingMode::LEARN_FORWARD_MODE;
             cluster->startForwardCycle();
         }
     }

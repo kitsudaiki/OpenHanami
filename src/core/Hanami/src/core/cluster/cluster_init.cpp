@@ -22,14 +22,11 @@
 
 #include "cluster_init.h"
 
-
-#include <core/segments/core_segment/core_segment.h>
-#include <core/segments/input_segment/input_segment.h>
-#include <core/segments/output_segment/output_segment.h>
+#include <hanami_root.h>
 #include <core/cluster/cluster.h>
 
-#include <core/segments/core_segment/objects.h>
-#include <core/segments/core_segment/objects.h>
+#include <core/processing/objects.h>
+#include <core/processing/objects.h>
 
 #include <core/routing_functions.h>
 #include <core/cluster/cluster_init.h>
@@ -39,68 +36,19 @@
 #include <libKitsunemimiJson/json_item.h>
 
 /**
- * @brief re-initialize the pointer in the header of the cluster after restoring the cluster
- *        from a snapshot
- *
- * @param cluster pointer to the cluster
- * @param uuid new uuid of the cluster to override the old one coming from the snapshot
- *
- * @return true, if successful, else false
+ * @brief getNumberOfNeuronSections
+ * @param numberOfNeurons
+ * @return
  */
-bool
-reinitPointer(Cluster* cluster,
-              const std::string &uuid)
+uint32_t
+getNumberOfNeuronSections(const uint32_t numberOfNeurons)
 {
-    uint8_t* dataPtr = static_cast<uint8_t*>(cluster->clusterData.data);
-    uint64_t pos = 0;
+    uint32_t numberOfSections = numberOfNeurons / NEURONS_PER_NEURONSECTION;
+    if(numberOfNeurons % NEURONS_PER_NEURONSECTION != 0) {
+        numberOfSections++;
+    }
 
-    // write metadata to buffer
-    cluster->networkMetaData = reinterpret_cast<Cluster::MetaData*>(dataPtr + pos);
-    pos += sizeof(Cluster::MetaData);
-
-    // write settings to buffer
-    cluster->networkSettings = reinterpret_cast<Cluster::Settings*>(dataPtr + pos);
-    pos += sizeof(Cluster::Settings);
-
-    // override old uuid with the new one
-    strncpy(cluster->networkMetaData->uuid.uuid, uuid.c_str(), 36);
-    cluster->networkMetaData->uuid.uuid[36] = '\0';
-
-    cluster->clusterData.usedBufferSize = pos;
-
-    return true;
-}
-
-/**
- * @brief init header for a new cluster
- *
- * @param cluster pointer to the cluster where the header belongs to
- * @param metaData metadata-object to write into the header
- * @param settings settings-object to write into the header
- */
-void
-initHeader(Cluster* cluster,
-           const Cluster::MetaData &metaData,
-           const Cluster::Settings &settings)
-{
-    // allocate memory
-    const uint32_t numberOfBlocks = 1;
-    Kitsunemimi::allocateBlocks_DataBuffer(cluster->clusterData, numberOfBlocks);
-
-    uint8_t* dataPtr = static_cast<uint8_t*>(cluster->clusterData.data);
-    uint64_t pos = 0;
-
-    // write metadata to buffer
-    cluster->networkMetaData = reinterpret_cast<Cluster::MetaData*>(dataPtr + pos);
-    cluster->networkMetaData[0] = metaData;
-    pos += sizeof(Cluster::MetaData);
-
-    // write settings to buffer
-    cluster->networkSettings = reinterpret_cast<Cluster::Settings*>(dataPtr + pos);
-    cluster->networkSettings[0] = settings;
-    pos += sizeof(Cluster::Settings);
-
-    cluster->clusterData.usedBufferSize = pos;
+    return numberOfSections;
 }
 
 /**
@@ -115,174 +63,526 @@ initHeader(Cluster* cluster,
  */
 bool
 initNewCluster(Cluster* cluster,
-               const Kitsunemimi::Hanami::ClusterMeta &clusterTemplate,
-               const std::map<std::string, Kitsunemimi::Hanami::SegmentMeta> &segmentTemplates,
+               const Kitsunemimi::Hanami::ClusterMeta &clusterMeta,
                const std::string &uuid)
 {
-    // meta-data
-    Cluster::MetaData newMetaData;
-    strncpy(newMetaData.uuid.uuid, uuid.c_str(), 36);
-    newMetaData.uuid.uuid[36] = '\0';
+    cluster->numberOfBrickBlocks = 0;
+    Kitsunemimi::ErrorContainer error;
+    uint32_t numberOfInputs = 0;
+    uint32_t numberOfOutputs = 0;
 
-    // settings
-    Cluster::Settings newSettings;
-    initHeader(cluster, newMetaData, newSettings);
-
-    //const std::string clusterName = clusterTemplate.get("name").getString();
-    //const bool ret = cluster->setName(name);  // TODO: handle return
-
-    LOG_INFO("create new cluster with uuid: " + cluster->networkMetaData->uuid.toString());
-
-    // parse and create segments
-    for(const Kitsunemimi::Hanami::SegmentMetaPtr& segmentPtr : clusterTemplate.segments)
+    // calculate sizes
+    uint32_t neuronsInBrick = 0;
+    for(uint32_t i = 0; i < clusterMeta.bricks.size(); i++)
     {
-        AbstractSegment* newSegment = nullptr;
-        const auto it = segmentTemplates.find(segmentPtr.type);
-        if(it != segmentTemplates.end())
-        {
-            if(segmentPtr.type == "input") {
-                newSegment = addInputSegment(cluster, segmentPtr.name, it->second);
-            } else if(segmentPtr.type == "output") {
-                newSegment = addOutputSegment(cluster, segmentPtr.name, it->second);
-            } else {
-                newSegment = addDynamicSegment(cluster, segmentPtr.name, it->second);
-            }
+        const Kitsunemimi::Hanami::BrickMeta brickMeta = clusterMeta.bricks.at(i);
+        neuronsInBrick = brickMeta.numberOfNeurons;
+        if(brickMeta.type == Kitsunemimi::Hanami::BrickType::INPUT_BRICK_TYPE) {
+            numberOfInputs = brickMeta.numberOfNeurons;;
         }
-        else
-        {
-            // TODO: error-handling
-            std::cout<<"failed to init segment 1"<<std::endl;
-            return false;
+        if(brickMeta.type == Kitsunemimi::Hanami::BrickType::OUTPUT_BRICK_TYPE) {
+            numberOfOutputs = brickMeta.numberOfNeurons;;
         }
-
-        if(newSegment == nullptr)
-        {
-            // TODO: error-handling
-            std::cout<<"failed to init segment 2"<<std::endl;
-            return false;
-        }
-
-        // update segment information with cluster infos
-        newSegment->segmentHeader->parentClusterId = cluster->networkMetaData->uuid;
-        newSegment->parentCluster = cluster;
+        cluster->numberOfBrickBlocks += getNumberOfNeuronSections(neuronsInBrick);
     }
 
-    // connect all segments
-    for(const Kitsunemimi::Hanami::SegmentMetaPtr& sourceSegmentPtr : clusterTemplate.segments)
+    // create segment metadata
+    const SegmentSettings settings = initSettings(clusterMeta);
+    ClusterHeader header = createNewHeader(clusterMeta.bricks.size(),
+                                           cluster->numberOfBrickBlocks,
+                                           settings.maxSynapseSections,
+                                           numberOfInputs,
+                                           numberOfOutputs);
+
+    // initialize segment itself
+    allocateSegment(cluster, header);
+    initSegmentPointer(cluster, header);
+    strncpy(header.uuid.uuid, uuid.c_str(), uuid.size());
+
+    cluster->clusterSettings[0] = settings;
+    cluster->clusterHeader[0] = header;
+
+    // init content
+    initializeNeurons(cluster, clusterMeta);
+    addBricksToSegment(cluster, clusterMeta);
+    connectAllBricks(cluster);
+    initTargetBrickList(cluster);
+
+    /*if(HanamiRoot::useOpencl)
     {
-        const std::string sourceSegment = sourceSegmentPtr.name;
+        data = new Kitsunemimi::GpuData();
+        initOpencl(*data);
+    }*/
 
-        for(const Kitsunemimi::Hanami::ClusterConnection &conn : sourceSegmentPtr.outputs)
-        {
-            std::string targetSlot = conn.targetBrick;
-            if(targetSlot == "x") {
-                targetSlot = "input";
-            }
-            std::string sourceSlot = conn.sourceBrick;
-            if(sourceSlot == "x") {
-                sourceSlot = "output";
-            }
-
-            if(cluster->connectSlot(sourceSegment,
-                                    sourceSlot,
-                                    conn.targetSegment,
-                                    targetSlot) == false)
-            {
-                std::cout<<"Faild to connect segment '"
-                         << sourceSegment
-                         << "' with  segment '"
-                         << conn.targetSegment
-                         << "'"<<std::endl;
-            }
-        }
+    if(HanamiRoot::useCuda) {
+        cluster->initCuda();
     }
 
     return true;
 }
 
 /**
- * @brief add new input-segment to cluster
- *
- * @param cluster pointer to the uninitionalized cluster
- * @param clusterTemplatePart parsed json with the information of the cluster
- *
- * @return true, if successful, else false
+ * @brief DynamicSegment::reinitPointer
+ * @return
  */
-AbstractSegment*
-addInputSegment(Cluster* cluster,
-                const std::string &name,
-                const Kitsunemimi::Hanami::SegmentMeta &segmentMeta)
+bool
+reinitPointer(Cluster* cluster,
+              const uint64_t numberOfBytes)
 {
-    InputSegment* newSegment = new InputSegment();
+    // TODO: checks
+    uint8_t* dataPtr = static_cast<uint8_t*>(cluster->clusterData.staticData);
 
-    if(newSegment->initSegment(name, segmentMeta))
+    uint64_t pos = 0;
+    uint64_t byteCounter = 0;
+    cluster->clusterHeader = reinterpret_cast<ClusterHeader*>(dataPtr + pos);
+    byteCounter += sizeof(ClusterHeader);
+
+    ClusterHeader* clusterHeader = cluster->clusterHeader;
+
+    pos = clusterHeader->settings.bytePos;
+    cluster->clusterSettings = reinterpret_cast<SegmentSettings*>(dataPtr + pos);
+    byteCounter += sizeof(SegmentSettings);
+
+    pos = clusterHeader->inputValues.bytePos;
+    cluster->inputValues = reinterpret_cast<float*>(dataPtr + pos);
+    byteCounter += clusterHeader->inputValues.count * sizeof(float);
+
+    pos = clusterHeader->outputValues.bytePos;
+    cluster->outputValues = reinterpret_cast<float*>(dataPtr + pos);
+    byteCounter += clusterHeader->outputValues.count * sizeof(float);
+
+    pos = clusterHeader->expectedValues.bytePos;
+    cluster->expectedValues = reinterpret_cast<float*>(dataPtr + pos);
+    byteCounter += clusterHeader->expectedValues.count * sizeof(float);
+
+    pos = clusterHeader->bricks.bytePos;
+    cluster->bricks = reinterpret_cast<Brick*>(dataPtr + pos);
+    byteCounter += clusterHeader->bricks.count * sizeof(Brick);
+
+    pos = clusterHeader->brickOrder.bytePos;
+    cluster->brickOrder = reinterpret_cast<uint32_t*>(dataPtr + pos);
+    byteCounter += clusterHeader->brickOrder.count * sizeof(uint32_t);
+
+    pos = clusterHeader->neuronBlocks.bytePos;
+    cluster->neuronBlocks = reinterpret_cast<NeuronBlock*>(dataPtr + pos);
+    byteCounter += clusterHeader->neuronBlocks.count * sizeof(NeuronBlock);
+
+    pos = clusterHeader->synapseBlocks.bytePos;
+    cluster->synapseBlocks = reinterpret_cast<SynapseBlock*>(dataPtr + pos);
+    byteCounter += clusterHeader->synapseBlocks.count * sizeof(SynapseBlock);
+
+    dataPtr = static_cast<uint8_t*>(cluster->clusterData.itemData);
+    //pos = segmentHeader->synapseSections.bytePos;
+    cluster->synapseConnections = reinterpret_cast<SynapseConnection*>(dataPtr);
+    byteCounter += clusterHeader->synapseConnections.count * sizeof(SynapseConnection);
+
+    /*if(HanamiRoot::useOpencl)
     {
-        cluster->inputSegments.insert(std::make_pair(name, newSegment));
-        cluster->allSegments.push_back(newSegment);
-    }
-    else
-    {
-        delete newSegment;
-        newSegment = nullptr;
+        data = new Kitsunemimi::GpuData();
+        initOpencl(*data);
+    }*/
+
+    if(HanamiRoot::useCuda) {
+        cluster->initCuda();
     }
 
-    return newSegment;
+    // check result
+    if(byteCounter != numberOfBytes - 48) {
+        return false;
+    }
+
+    return true;
 }
 
 /**
- * @brief add new output-segment to cluster
- *
- * @param cluster pointer to the uninitionalized cluster
- * @param clusterTemplatePart parsed json with the information of the cluster
+ * @brief init all neurons with activation-border
  *
  * @return true, if successful, else false
  */
-AbstractSegment*
-addOutputSegment(Cluster* cluster,
-                 const std::string &name,
-                 const Kitsunemimi::Hanami::SegmentMeta &segmentMeta)
+bool
+initializeNeurons(Cluster* cluster,
+                  const Kitsunemimi::Hanami::ClusterMeta &clusterMeta)
 {
-    OutputSegment* newSegment = new OutputSegment();
-    Kitsunemimi::JsonItem placeHolder;
+    uint32_t sectionPositionOffset = 0;
 
-    if(newSegment->initSegment(name, segmentMeta))
+    for(uint32_t i = 0; i < clusterMeta.bricks.size(); i++)
     {
-        cluster->outputSegments.insert(std::make_pair(name, newSegment));
-        cluster->allSegments.push_back(newSegment);
-    }
-    else
-    {
-        delete newSegment;
-        newSegment = nullptr;
+        int64_t neuronsInBrick = clusterMeta.bricks.at(i).numberOfNeurons;
+        const uint32_t numberOfNeuronSectionsInBrick = getNumberOfNeuronSections(neuronsInBrick);
+
+        uint32_t sectionCounter = 0;
+        while(sectionCounter < numberOfNeuronSectionsInBrick)
+        {
+            const uint32_t blockId = sectionPositionOffset + sectionCounter;
+            NeuronBlock* block = &cluster->neuronBlocks[blockId];
+
+            if(neuronsInBrick >= NEURONS_PER_NEURONSECTION)
+            {
+                for(uint32_t i = 0; i < NEURONS_PER_NEURONSECTION; i++) {
+                    block->neurons[i].border = 0.0f;
+                }
+                block->numberOfNeurons = NEURONS_PER_NEURONSECTION;
+                neuronsInBrick -= NEURONS_PER_NEURONSECTION;
+            }
+            else
+            {
+                for(uint32_t i = 0; i < neuronsInBrick; i++) {
+                    block->neurons[i].border = 0.0f;
+                }
+                block->numberOfNeurons = neuronsInBrick;
+                break;
+            }
+            sectionCounter++;
+        }
+        sectionPositionOffset += numberOfNeuronSectionsInBrick;
     }
 
-    return newSegment;
+    return true;
 }
 
 /**
- * @brief add new dynamic-segment to cluster
+ * @brief init sttings-block for the segment
  *
- * @param cluster pointer to the uninitionalized cluster
- * @param clusterTemplatePart parsed json with the information of the cluster
+ * @param parsedContent json-object with the segment-description
+ *
+ * @return settings-object
+ */
+SegmentSettings
+initSettings(const Kitsunemimi::Hanami::ClusterMeta &clusterMeta)
+{
+    SegmentSettings settings;
+
+    // parse settings
+    settings.synapseSegmentation = clusterMeta.synapseSegmentation;
+    settings.signNeg = clusterMeta.signNeg;
+    settings.maxSynapseSections = clusterMeta.maxSynapseSections;
+
+    return settings;
+}
+
+/**
+ * @brief create new segment-header with size and position information
+ *
+ * @param numberOfBricks number of bricks
+ * @param numberOfNeurons number of neurons
+ * @param borderbufferSize size of border-buffer
+ *
+ * @return new segment-header
+ */
+ClusterHeader
+createNewHeader(const uint32_t numberOfBricks,
+                const uint32_t numberOfBrickBlocks,
+                const uint32_t maxSynapseSections,
+                const uint64_t numberOfInputs,
+                const uint64_t numberOfOutputs)
+{
+    ClusterHeader clusterHeader;
+    uint32_t clusterDataPos = 0;
+
+    // init header
+    clusterDataPos += sizeof(ClusterHeader);
+
+    // init settings
+    clusterHeader.settings.count = 1;
+    clusterHeader.settings.bytePos = clusterDataPos;
+    clusterDataPos += sizeof(SegmentSettings);
+
+    // init inputTransfers
+    clusterHeader.inputValues.count = numberOfInputs;
+    clusterHeader.inputValues.bytePos = clusterDataPos;
+    clusterDataPos += numberOfInputs * sizeof(float);
+
+    // init numberOfOutputs
+    clusterHeader.outputValues.count = numberOfOutputs;
+    clusterHeader.outputValues.bytePos = clusterDataPos;
+    clusterDataPos += numberOfOutputs * sizeof(float);
+
+    // init numberOfExprextes
+    clusterHeader.expectedValues.count = numberOfOutputs;
+    clusterHeader.expectedValues.bytePos = clusterDataPos;
+    clusterDataPos += numberOfOutputs * sizeof(float);
+
+    // init bricks
+    clusterHeader.bricks.count = numberOfBricks;
+    clusterHeader.bricks.bytePos = clusterDataPos;
+    clusterDataPos += numberOfBricks * sizeof(Brick);
+
+    // init brick-order
+    clusterHeader.brickOrder.count = numberOfBricks;
+    clusterHeader.brickOrder.bytePos = clusterDataPos;
+    clusterDataPos += numberOfBricks * sizeof(uint32_t);
+
+    // init neuron blocks
+    clusterHeader.neuronBlocks.count = numberOfBrickBlocks;
+    clusterHeader.neuronBlocks.bytePos = clusterDataPos;
+    clusterDataPos += numberOfBrickBlocks * sizeof(NeuronBlock);
+
+    // init synapse blocks
+    clusterHeader.synapseBlocks.count = maxSynapseSections;
+    clusterHeader.synapseBlocks.bytePos = clusterDataPos;
+    clusterDataPos += maxSynapseSections * sizeof(SynapseBlock);
+
+    clusterHeader.staticDataSize = clusterDataPos;
+
+    // init synapse sections
+    clusterDataPos = 0;
+    clusterHeader.synapseConnections.count = maxSynapseSections;
+    clusterHeader.synapseConnections.bytePos = clusterDataPos;
+
+    return clusterHeader;
+}
+
+/**
+ * @brief init pointer within the segment-header
+ *
+ * @param header segment-header
+ */
+void
+initSegmentPointer(Cluster* cluster,
+                   const ClusterHeader &header)
+{
+    uint8_t* dataPtr = static_cast<uint8_t*>(cluster->clusterData.staticData);
+    uint64_t pos = 0;
+
+    cluster->clusterHeader = reinterpret_cast<ClusterHeader*>(dataPtr + pos);
+    cluster->clusterHeader[0] = header;
+
+    ClusterHeader* clusterHeader = cluster->clusterHeader;
+
+    pos = clusterHeader->settings.bytePos;
+    cluster->clusterSettings = reinterpret_cast<SegmentSettings*>(dataPtr + pos);
+
+    pos = clusterHeader->inputValues.bytePos;
+    cluster->inputValues = reinterpret_cast<float*>(dataPtr + pos);
+    std::fill_n(cluster->inputValues, clusterHeader->inputValues.count, 0.0f);
+
+    pos = clusterHeader->outputValues.bytePos;
+    cluster->outputValues = reinterpret_cast<float*>(dataPtr + pos);
+    std::fill_n(cluster->outputValues, clusterHeader->outputValues.count, 0.0f);
+
+    pos = clusterHeader->expectedValues.bytePos;
+    cluster->expectedValues = reinterpret_cast<float*>(dataPtr + pos);
+    std::fill_n(cluster->expectedValues, clusterHeader->expectedValues.count, 0.0f);
+
+    pos = clusterHeader->bricks.bytePos;
+    cluster->bricks = reinterpret_cast<Brick*>(dataPtr + pos);
+    std::fill_n(cluster->bricks, clusterHeader->bricks.count, Brick());
+
+    pos = clusterHeader->brickOrder.bytePos;
+    cluster->brickOrder = reinterpret_cast<uint32_t*>(dataPtr + pos);
+    for(uint32_t i = 0; i < clusterHeader->bricks.count; i++) {
+        cluster->brickOrder[i] = i;
+    }
+
+    pos = clusterHeader->neuronBlocks.bytePos;
+    cluster->neuronBlocks = reinterpret_cast<NeuronBlock*>(dataPtr + pos);
+    std::fill_n(cluster->neuronBlocks, clusterHeader->neuronBlocks.count, NeuronBlock());
+
+    pos = clusterHeader->synapseBlocks.bytePos;
+    cluster->synapseBlocks = reinterpret_cast<SynapseBlock*>(dataPtr + pos);
+    std::fill_n(cluster->synapseBlocks, clusterHeader->synapseBlocks.count, SynapseBlock());
+
+    dataPtr = static_cast<uint8_t*>(cluster->clusterData.itemData);
+    pos = clusterHeader->synapseConnections.bytePos;
+    cluster->synapseConnections = reinterpret_cast<SynapseConnection*>(dataPtr + pos);
+}
+
+/**
+ * @brief allocate memory for the segment
+ *
+ * @param header header with the size-information
+ */
+void
+allocateSegment(Cluster* cluster,
+                ClusterHeader &header)
+{
+    cluster->clusterData.initBuffer<SynapseConnection>(header.synapseConnections.count, header.staticDataSize);
+    cluster->clusterData.deleteAll();
+}
+
+/**
+ * @brief create a new brick-object
+ *
+ * @param brickDef json with all brick-definitions
+ * @param id brick-id
+ *
+ * @return new brick with parsed information
+ */
+Brick
+createNewBrick(const Kitsunemimi::Hanami::BrickMeta &brickMeta,
+               const uint32_t id)
+{
+    Brick newBrick;
+
+    // copy metadata
+    newBrick.brickId = id;
+    newBrick.isOutputBrick = brickMeta.type == Kitsunemimi::Hanami::OUTPUT_BRICK_TYPE;
+    newBrick.isInputBrick = brickMeta.type == Kitsunemimi::Hanami::INPUT_BRICK_TYPE;
+
+    // convert other values
+    newBrick.brickPos = brickMeta.position;
+    newBrick.numberOfNeurons = brickMeta.numberOfNeurons;
+    newBrick.numberOfNeuronBlocks = getNumberOfNeuronSections(brickMeta.numberOfNeurons);
+
+    std::fill_n(newBrick.neighbors, 12, UNINIT_STATE_32);
+
+    return newBrick;
+}
+
+/**
+ * @brief init all bricks
+ *
+ * @param metaBase json with all brick-definitions
+ */
+void
+addBricksToSegment(Cluster* cluster,
+                   const Kitsunemimi::Hanami::ClusterMeta &clusterMeta)
+{
+    uint32_t neuronBrickIdCounter = 0;
+    uint32_t neuronSectionPosCounter = 0;
+    NeuronBlock* block = nullptr;
+    uint32_t neuronIdCounter = 0;
+
+    for(uint32_t i = 0; i < clusterMeta.bricks.size(); i++)
+    {
+        Brick newBrick = createNewBrick(clusterMeta.bricks.at(i), i);
+        newBrick.brickBlockPos = neuronSectionPosCounter;
+
+        for(uint32_t j = 0; j < newBrick.numberOfNeuronBlocks; j++)
+        {
+            block = &cluster->neuronBlocks[j + neuronSectionPosCounter];
+            block->brickId = newBrick.brickId;
+            for(uint32_t k = 0; k < block->numberOfNeurons; k++) {
+                neuronIdCounter++;
+            }
+        }
+
+        // copy new brick to segment
+        cluster->bricks[neuronBrickIdCounter] = newBrick;
+        assert(neuronBrickIdCounter == newBrick.brickId);
+        neuronBrickIdCounter++;
+        neuronSectionPosCounter += newBrick.numberOfNeuronBlocks;
+    }
+
+    return;
+}
+
+/**
+ * @brief connect a single side of a specific brick
+ *
+ * @param sourceBrick pointer to the brick
+ * @param side side of the brick to connect
+ */
+void
+connectBrick(Cluster* cluster,
+             Brick* sourceBrick,
+             const uint8_t side)
+{
+    const Kitsunemimi::Position next = getNeighborPos(sourceBrick->brickPos, side);
+    // debug-output
+    // std::cout<<next.x<<" : "<<next.y<<" : "<<next.z<<std::endl;
+
+    if(next.isValid())
+    {
+        for(uint32_t t = 0; t < cluster->clusterHeader->bricks.count; t++)
+        {
+            Brick* targetBrick = &cluster->bricks[t];
+            if(targetBrick->brickPos == next)
+            {
+                sourceBrick->neighbors[side] = targetBrick->brickId;
+                targetBrick->neighbors[11 - side] = sourceBrick->brickId;
+            }
+        }
+    }
+}
+
+/**
+ * @brief connect all breaks of the segment
+ */
+void
+connectAllBricks(Cluster* cluster)
+{
+    for(uint32_t i = 0; i < cluster->clusterHeader->bricks.count; i++)
+    {
+        Brick* sourceBrick = &cluster->bricks[i];
+        for(uint8_t side = 0; side < 12; side++) {
+            connectBrick(cluster, sourceBrick, side);
+        }
+    }
+}
+
+/**
+ * @brief get next possible brick
+ *
+ * @param currentBrick actual brick
+ * @param maxPathLength maximum path length left
+ *
+ * @return last brick-id of the gone path
+ */
+uint32_t
+goToNextInitBrick(Cluster* cluster,
+                  Brick* currentBrick,
+                  uint32_t* maxPathLength)
+{
+    // check path-length to not go too far
+    (*maxPathLength)--;
+    if(*maxPathLength == 0) {
+        return currentBrick->brickId;
+    }
+
+    // check based on the chance, if you go to the next, or not
+    const float chanceForNext = 0.0f;  // TODO: make hard-coded value configurable
+    if(1000.0f * chanceForNext > (rand() % 1000)) {
+        return currentBrick->brickId;
+    }
+
+    // get a random possible next brick
+    const uint8_t possibleNextSides[7] = {9, 3, 1, 4, 11, 5, 2};
+    const uint8_t startSide = possibleNextSides[rand() % 7];
+    for(uint32_t i = 0; i < 7; i++)
+    {
+        const uint8_t side = possibleNextSides[(i + startSide) % 7];
+        const uint32_t nextBrickId = currentBrick->neighbors[side];
+        if(nextBrickId != UNINIT_STATE_32) {
+            return goToNextInitBrick(cluster, &cluster->bricks[nextBrickId], maxPathLength);
+        }
+    }
+
+    // if no further next brick was found, the give back tha actual one as end of the path
+    return currentBrick->brickId;
+}
+
+/**
+ * @brief init target-brick-list of all bricks
  *
  * @return true, if successful, else false
  */
-AbstractSegment*
-addDynamicSegment(Cluster* cluster,
-                  const std::string &name,
-                  const Kitsunemimi::Hanami::SegmentMeta &segmentMeta)
+bool
+initTargetBrickList(Cluster* cluster)
 {
-    CoreSegment* newSegment = new CoreSegment();
-    if(newSegment->initSegment(name, segmentMeta))
+    for(uint32_t i = 0; i < cluster->clusterHeader->bricks.count; i++)
     {
-        cluster->coreSegments.insert(std::make_pair(name, newSegment));
-        cluster->allSegments.push_back(newSegment);
-    }
-    else
-    {
-        delete newSegment;
-        newSegment = nullptr;
+        Brick* baseBrick = &cluster->bricks[i];
+
+        // ignore output-bricks, because they only forward to the border-buffer
+        // and not to other bricks
+        if(baseBrick->isOutputBrick) {
+            continue;
+        }
+
+        // test 1000 samples for possible next bricks
+        for(uint32_t counter = 0; counter < 1000; counter++)
+        {
+            uint32_t maxPathLength = 2; // TODO: make configurable
+            const uint32_t brickId = goToNextInitBrick(cluster, baseBrick, &maxPathLength);
+            if(brickId == baseBrick->brickId)
+            {
+                LOG_WARNING("brick has no next brick and is a dead-end. Brick-ID: "
+                            + std::to_string(brickId));
+            }
+            baseBrick->possibleTargetNeuronBrickIds[counter] = brickId;
+        }
     }
 
-    return newSegment;
+    return true;
 }

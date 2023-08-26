@@ -791,9 +791,9 @@ DataMap::DataMap(const DataMap &other)
     for(const auto& [name, item] : otherMap)
     {
         if(item != nullptr) {
-            map.insert(std::make_pair(name, item->copy()));
+            map.try_emplace(name, item->copy());
         } else {
-            map.insert(std::make_pair(name, nullptr));
+            map.try_emplace(name, nullptr);
         }
     }
 }
@@ -827,9 +827,9 @@ DataMap
         for(const auto& [name, item] : otherMap)
         {
             if(item != nullptr) {
-                this->map.insert(make_pair(name, item->copy()));
+                this->map.try_emplace(name, item->copy());
             } else {
-                this->map.insert(std::make_pair(name, nullptr));
+                this->map.try_emplace(name, nullptr);
             }
         }
     }
@@ -1215,26 +1215,17 @@ DataMap::insert(const std::string &key,
                 DataItem* value,
                 bool force)
 {
-    // check if key already exist
-    auto it = map.find(key);
-    if(it != map.end()
-            && force == false)
+    auto ret = map.try_emplace(key, value);
+    if(ret.second == false)
     {
-        return false;
-    }
-
-    // if already exist and should be overwritten,
-    // then delete the old one at first and insert the new one
-    if(it != map.end())
-    {
-        if(it->second != nullptr) {
-            delete it->second;
+        if(force == false) {
+            return false;
         }
-        it->second = value;
-    }
-    else
-    {
-        map.insert(std::make_pair(key, value));
+
+        if(ret.first->second != nullptr) {
+            delete ret.first->second;
+        }
+        ret.first->second = value;
     }
 
     return true;

@@ -6,16 +6,19 @@ The dashboard is one way to interact with Hanami-AI. It is client-only and the f
 
 !!! warning
 
+    The current dashboard is only a first prototypical implementation with many minor bugs and problems. There is a rework planned for version 0.4.0.
+
+!!! warning
+
+    This documentation is not up-to-date at the moment, because there are a bunch of bigger changes at the moment and to reduce the amount of workload, the dashboard-docu here gets an update, when these chnages are done together.
+
+!!! warning
+
     Only tested on Firefox at the moment.
 
 !!! info
 
     Repository with source-code of the dashboard: https://github.com/kitsudaiki/Hanami-AI-Dashboard
-
-!!! info
-
-    The actual dashboard is only a first prototypical implementation with many minor bugs and problems. There is a rework planned for version 0.4.0.
-
 
 ## Example workflow
 
@@ -110,44 +113,6 @@ After this a new small window opens. There, in this example the `CSV` (**1**) ha
 
 The window is still open, until the upload is finished. This will be fixed later with progress-bar for better feedback. After this the new uploaded file is printed in the data-set-table.
 
-### Create Segment-Template
-
-Next is to create a `Segment-Template`.
-
-![step6](../img/dashboard/step6_x.png)
-
-For this you have to switch to the chapter within the `Cluster` section (**1**). There again to add a new entry you have to click at the right upper corner on the add-button (**2**).
-
-![step7](../img/dashboard/step7_x.png)
-
-Here you have to give it a name (**1**) and add the template for the segment (**2**). The name `example_segment`, which is used in this example is important, because the name of the segment is used in the `Cluster-Template` in the next step. At the end accept again (**3**).
-
-See basic explanation of the [templates](/Inner_Workings/3_kyouko/#templates)
-
-!!! example "Example Template"
-
-    ```
-    version: 1
-    segment_type: core_segment
-    settings:
-        max_synapse_sections: 100000
-        sign_neg: 0.5
-            
-    bricks:
-        1,1,1
-            input: test_input
-            number_of_neurons: 20
-        2,1,1
-            number_of_neurons: 10
-        3,1,1
-            output: test_output
-            number_of_neurons: 5
-    ```
-
-![step8](../img/dashboard/step8.png)
-
-Same like for the `Data-Set` the new `Segment-Template` is now in the list.
-
 ### Create Cluster
 
 Next you have to create the cluster itself based on the template.
@@ -166,17 +131,18 @@ See basic explanation of the [templates](/Inner_Workings/3_kyouko/#templates)
 
     ```
     version: 1
-    segments:
-        input
-            name: input
-            out: -> central : test_input
-
-        example_segment
-            name: central
-            out: test_output -> output
-
-        output
-            name: output
+    settings:
+        max_synapse_sections: 1000
+        
+    bricks:
+        1,1,1
+            input: test_input
+            number_of_neurons: 20
+        2,1,1
+            number_of_neurons: 10
+        3,1,1
+            output: test_output
+            number_of_neurons: 5
     ```
 
 ![step11](../img/dashboard/step11.png)

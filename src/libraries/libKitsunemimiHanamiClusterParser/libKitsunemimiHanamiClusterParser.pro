@@ -1,7 +1,7 @@
 TEMPLATE = subdirs
 CONFIG += ordered
 QT -= qt core gui
-CONFIG += c++17
+CONFIG += c++14
 
 lexxer.file = src/lexxer.pro
 parser.file = src/parser.pro

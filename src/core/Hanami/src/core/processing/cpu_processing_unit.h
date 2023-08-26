@@ -26,7 +26,7 @@
 #include <common.h>
 #include <libKitsunemimiCommon/threading/thread.h>
 
-class AbstractSegment;
+class Cluster;
 
 class CpuProcessingUnit
         : public Kitsunemimi::Thread
@@ -38,13 +38,12 @@ public:
 protected:
     void run();
 
-
 private:
     uint64_t reductionCounter = 0;
 
-    void learnSegmentForward(AbstractSegment* segment);
-    void learnSegmentBackward(AbstractSegment *segment);
-    void processSegment(AbstractSegment* segment);
+    void learnSegmentForward(Cluster* cluster);
+    void learnSegmentBackward(Cluster* cluster);
+    void processSegment(Cluster* cluster);
 };
 
 #endif // HANAMI_CPU_PROCESSING_UNIT_H

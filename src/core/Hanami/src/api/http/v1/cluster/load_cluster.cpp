@@ -26,6 +26,7 @@
 #include <database/cluster_snapshot_table.h>
 #include <core/cluster/cluster_handler.h>
 #include <core/cluster/cluster.h>
+#include <core/cluster/add_tasks.h>
 
 LoadCluster::LoadCluster()
     : Blossom("Load a snapshot from shiori into an existing cluster and override the old data.")
@@ -98,10 +99,11 @@ LoadCluster::runTask(BlossomIO &blossomIO,
 
     // init request-task
     const std::string infoStr = parsedSnapshotInfo.toString();
-    const std::string taskUuid = cluster->addClusterSnapshotRestoreTask("",
-                                                                        infoStr,
-                                                                        userContext.userId,
-                                                                        userContext.projectId);
+    const std::string taskUuid = addClusterSnapshotRestoreTask(*cluster,
+                                                               "",
+                                                               infoStr,
+                                                               userContext.userId,
+                                                               userContext.projectId);
     blossomIO.output.insert("uuid", taskUuid);
 
     return true;

@@ -22,7 +22,6 @@
 
 #include <hanami_root.h>
 
-#include <core/struct_validation.h>
 #include <core/cluster/cluster_init.h>
 
 #include <core/processing/processing_unit_handler.h>
@@ -58,11 +57,11 @@ uint32_t* HanamiRoot::m_randomValues = nullptr;
 Kitsunemimi::GpuInterface* HanamiRoot::gpuInterface = nullptr;
 Kitsunemimi::Jwt* HanamiRoot::jwt = nullptr;
 HanamiRoot* HanamiRoot::root = nullptr;
+HttpServer* HanamiRoot::httpServer = nullptr;
 
 // static flag to switch to experimental gpu-support (see issue #44 and #76)
 bool HanamiRoot::useOpencl = false;
-bool HanamiRoot::useCuda = false;
-HttpServer* HanamiRoot::httpServer = nullptr;
+bool HanamiRoot::useCuda = true;
 
 /**
  * @brief constructor
@@ -93,8 +92,6 @@ HanamiRoot::init(Kitsunemimi::ErrorContainer &error)
         assert(oclHandler.m_interfaces.size() == 1);
         gpuInterface = oclHandler.m_interfaces.at(0);
     }
-
-    validateStructSizes();
 
     // init predefinde random-values
     m_randomValues = new uint32_t[NUMBER_OF_RAND_VALUES];
@@ -213,15 +210,6 @@ HanamiRoot::initDatabase(Kitsunemimi::ErrorContainer &error)
     if(clustersTable->initTable(error) == false)
     {
         error.addMeesage("Failed to initialize cluster-table in database.");
-        LOG_ERROR(error);
-        return false;
-    }
-
-    // initialize template-table
-    TemplateTable* templateTable = TemplateTable::getInstance();
-    if(templateTable->initTable(error) == false)
-    {
-        error.addMeesage("Failed to initialize template-table in database.");
         LOG_ERROR(error);
         return false;
     }
@@ -454,12 +442,12 @@ HanamiRoot::addBlossom(const std::string &groupName,
     if(groupIt == m_registeredBlossoms.end())
     {
         std::map<std::string, Blossom*> newMap;
-        m_registeredBlossoms.insert(std::make_pair(groupName, newMap));
+        m_registeredBlossoms.try_emplace(groupName, newMap);
     }
 
     // add item to group
     groupIt = m_registeredBlossoms.find(groupName);
-    groupIt->second.insert(std::make_pair(itemName, newBlossom));
+    groupIt->second.try_emplace(itemName, newBlossom);
 
     return true;
 }

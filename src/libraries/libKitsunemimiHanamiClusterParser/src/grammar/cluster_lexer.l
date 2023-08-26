@@ -61,17 +61,33 @@ blank [ \t]
     clusterloc.step();
 %}
 
-{blank}+       clusterloc.step();
-[\n]           {clusterloc.lines(1); return Kitsunemimi::Hanami::ClusterParser::make_LINEBREAK (clusterloc); }
+{blank}+  clusterloc.step();
+[\n]      {clusterloc.lines(1); return Kitsunemimi::Hanami::ClusterParser::make_LINEBREAK (clusterloc); }
 "version:1"    return Kitsunemimi::Hanami::ClusterParser::make_VERSION_1 (clusterloc);
 "version: 1"   return Kitsunemimi::Hanami::ClusterParser::make_VERSION_1 (clusterloc);
+"settings"     return Kitsunemimi::Hanami::ClusterParser::make_SETTINGS (clusterloc);
+"bricks"       return Kitsunemimi::Hanami::ClusterParser::make_BRICKS (clusterloc);
+","            return Kitsunemimi::Hanami::ClusterParser::make_COMMA (clusterloc);
 ":"            return Kitsunemimi::Hanami::ClusterParser::make_ASSIGN (clusterloc);
-"->"           return Kitsunemimi::Hanami::ClusterParser::make_ARROW (clusterloc);
-"out"          return Kitsunemimi::Hanami::ClusterParser::make_OUT (clusterloc);
-"name"         return Kitsunemimi::Hanami::ClusterParser::make_NAME (clusterloc);
-"segments"     return Kitsunemimi::Hanami::ClusterParser::make_SEGMENTS (clusterloc);
 
 \"(\\.|[^"\\])*\" { return Kitsunemimi::Hanami::ClusterParser::make_STRING(yytext, clusterloc); }
+
+{long}      {
+    errno = 0;
+    long length = strtol(yytext, NULL, 10);
+    if (!(LONG_MIN <= length
+        && length <= LONG_MAX
+        && errno != ERANGE))
+    {
+        driver.error(clusterloc, "integer is out of range");
+    }
+    return Kitsunemimi::Hanami::ClusterParser::make_NUMBER (length, clusterloc);
+}
+
+{double}	{
+    double value = strtod( yytext , NULL );
+    return Kitsunemimi::Hanami::ClusterParser::make_FLOAT(value, clusterloc);
+}
 
 {id}       return Kitsunemimi::Hanami::ClusterParser::make_IDENTIFIER(yytext, clusterloc);
 

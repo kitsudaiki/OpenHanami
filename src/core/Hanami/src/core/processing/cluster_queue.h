@@ -1,5 +1,5 @@
 /**
- * @file        create_cluster_template.h
+ * @file        segment_queue.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,26 +20,36 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_CREATECLUSTER_H
-#define HANAMI_CREATECLUSTER_H
+#ifndef HANAMI_SEGMENTQUEUE_H
+#define HANAMI_SEGMENTQUEUE_H
 
-#include <api/endpoint_processing/blossom.h>
-
-#include <libKitsunemimiHanamiClusterParser/cluster_meta.h>
+#include <vector>
+#include <deque>
+#include <atomic>
 
 class Cluster;
 
-class CreateCluster
-        : public Blossom
+class ClusterQueue
 {
 public:
-    CreateCluster();
+    static ClusterQueue* getInstance()
+    {
+        if(instance == nullptr) {
+            instance = new ClusterQueue();
+        }
+        return instance;
+    }
 
-protected:
-    bool runTask(BlossomIO &blossomIO,
-                 const Kitsunemimi::DataMap &context,
-                 BlossomStatus &status,
-                 Kitsunemimi::ErrorContainer &error);
+    void addClusterToQueue(Cluster* newSegment);
+
+    Cluster* getClusterFromQueue();
+
+private:
+    ClusterQueue();
+    static ClusterQueue* instance;
+
+    std::atomic_flag m_queue_lock = ATOMIC_FLAG_INIT;
+    std::deque<Cluster*> m_clusterQueue;
 };
 
-#endif // HANAMI_CREATECLUSTER_H
+#endif // HANAMI_SEGMENTQUEUE_H

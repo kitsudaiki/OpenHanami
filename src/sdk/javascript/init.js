@@ -48,7 +48,7 @@ function checkTokenRequest(errorFunc, token)
 {
     // create request
     const request = "/control/v1/auth?token=" + token;
-    console.log("TOKENNNNNNNNNNNNNNNNNNNNNNNNNNN: " + token);
+    //console.log("TOKENNNNNNNNNNNNNNNNNNNNNNNNNNN: " + token);
     let authConnection = new XMLHttpRequest();
     authConnection.open("GET", request, true);
     authConnection.setRequestHeader("X-Auth-Token", token);

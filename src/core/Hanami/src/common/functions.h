@@ -35,6 +35,8 @@
 #include <common/defines.h>
 #include <common/structs.h>
 
+#include <core/processing/objects.h>
+
 /**
  * @brief get the current datetime of the system
  *
