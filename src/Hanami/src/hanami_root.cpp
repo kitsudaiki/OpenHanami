@@ -33,8 +33,6 @@
 #include <libKitsunemimiCommon/files/text_file.h>
 #include <libKitsunemimiConfig/config_handler.h>
 
-#include <libKitsunemimiOpencl/gpu_interface.h>
-#include <libKitsunemimiOpencl/gpu_handler.h>
 #include <api/endpoint_processing/http_server.h>
 #include <api/endpoint_processing/http_websocket_thread.h>
 #include <api/endpoint_processing/blossom.h>
@@ -48,9 +46,6 @@
 #include <database/audit_log_table.h>
 #include <core/temp_file_handler.h>
 #include <core/thread_binder.h>
-#include <hardware/power_measuring.h>
-#include <hardware/speed_measuring.h>
-#include <hardware/temperature_measuring.h>
 
 // init static variables
 uint32_t* HanamiRoot::m_randomValues = nullptr;
@@ -85,13 +80,13 @@ HanamiRoot::init(Kitsunemimi::ErrorContainer &error)
 {
     root = this;
 
-    if(useOpencl)
+    /*if(useOpencl)
     {
         Kitsunemimi::GpuHandler oclHandler;
         assert(oclHandler.initDevice(error));
         assert(oclHandler.m_interfaces.size() == 1);
         gpuInterface = oclHandler.m_interfaces.at(0);
-    }
+    }*/
 
     // init predefinde random-values
     m_randomValues = new uint32_t[NUMBER_OF_RAND_VALUES];

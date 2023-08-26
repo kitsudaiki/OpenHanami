@@ -1,5 +1,5 @@
 /**
- * @file        temperature_measuring.cpp
+ * @file        power_measuring.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,9 +20,8 @@
  *      limitations under the License.
  */
 
-#include "temperature_measuring.h"
-#include <hanami_root.h>
-#include <core/value_container.h>
+#include <libKitsunemimiHanamiHardware/power_measuring.h>
+#include <libKitsunemimiHanamiHardware/value_container.h>
 
 #include <libKitsunemimiSakuraHardware/host.h>
 #include <libKitsunemimiSakuraHardware/cpu_core.h>
@@ -31,21 +30,21 @@
 
 #include <libKitsunemimiJson/json_item.h>
 
-TemperatureMeasuring* TemperatureMeasuring::instance = nullptr;
+PowerMeasuring* PowerMeasuring::instance = nullptr;
 
-TemperatureMeasuring::TemperatureMeasuring()
-    : Kitsunemimi::Thread("Azuki_TemperatureMeasuring")
+PowerMeasuring::PowerMeasuring()
+    : Kitsunemimi::Thread("Azuki_EnergyMeasuring")
 {
     m_valueContainer = new ValueContainer();
 }
 
-TemperatureMeasuring::~TemperatureMeasuring()
+PowerMeasuring::~PowerMeasuring()
 {
     delete m_valueContainer;
 }
 
 Kitsunemimi::DataMap*
-TemperatureMeasuring::getJson()
+PowerMeasuring::getJson()
 {
     return m_valueContainer->toJson();
 }
@@ -54,16 +53,26 @@ TemperatureMeasuring::getJson()
  * @brief ThreadBinder::run
  */
 void
-TemperatureMeasuring::run()
+PowerMeasuring::run()
 {
-
     Kitsunemimi::ErrorContainer error;
     while(m_abort == false)
     {
+        double power = 0.0;
         Kitsunemimi::Sakura::Host* host = Kitsunemimi::Sakura::Host::getInstance();
+        for(uint64_t i = 0; i < host->cpuPackages.size(); i++) {
+            power += host->getPackage(i)->getTotalPackagePower();
+        }
 
-        const double temperature = host->getTotalTemperature(error);
-        m_valueContainer->addValue(temperature);
+        // HINT(kitsudaiki): first tests were made on a notebook. When this notebook came from
+        // standby, then there was a single extremly high value, which broke the outout.
+        // So this is only a workaround for this edge-case. I this there is no node,
+        // which takes more then 1MW per node and so this workaround shouldn't break any setup.
+        if(power > 1000000.0) {
+            power = 0.0f;
+        }
+
+        m_valueContainer->addValue(power);
 
         sleep(1);
     }

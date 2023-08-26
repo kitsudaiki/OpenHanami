@@ -6,6 +6,11 @@ CONFIG += c++17
 
 INCLUDEPATH += ../libraries/libKitsunemimiHanamiMessages/protobuffers
 
+LIBS += -L../libraries/libKitsunemimiHanamiHardware/src -lKitsunemimiHanamiHardware
+LIBS += -L../libraries/libKitsunemimiHanamiHardware/src/debug -lKitsunemimiHanamiHardware
+LIBS += -L../libraries/libKitsunemimiHanamiHardware/src/release -lKitsunemimiHanamiHardware
+INCLUDEPATH += ../libraries/libKitsunemimiHanamiHardware/include
+
 LIBS += -L../libraries/libKitsunemimiHanamiFiles/src -lKitsunemimiHanamiFiles
 LIBS += -L../libraries/libKitsunemimiHanamiFiles/src/debug -lKitsunemimiHanamiFiles
 LIBS += -L../libraries/libKitsunemimiHanamiFiles/src/release -lKitsunemimiHanamiFiles
@@ -70,11 +75,6 @@ LIBS += -L../libraries/libKitsunemimiCrypto/src -lKitsunemimiCrypto
 LIBS += -L../libraries/libKitsunemimiCrypto/src/debug -lKitsunemimiCrypto
 LIBS += -L../libraries/libKitsunemimiCrypto/src/release -lKitsunemimiCrypto
 INCLUDEPATH += ../libraries/libKitsunemimiCrypto/include
-
-LIBS += -L../libraries/libKitsunemimiOpencl/src -lKitsunemimiOpencl
-LIBS += -L../libraries/libKitsunemimiOpencl/src/debug -lKitsunemimiOpencl
-LIBS += -L../libraries/libKitsunemimiOpencl/src/release -lKitsunemimiOpencl
-INCLUDEPATH += ../libraries/libKitsunemimiOpencl/include
 
 LIBS += -L../libraries/../libraries/libKitsunemimiCpu/src -lKitsunemimiCpu
 LIBS += -L../libraries/../libraries/libKitsunemimiCpu/src/debug -lKitsunemimiCpu
@@ -226,7 +226,6 @@ HEADERS += \
     src/core/cluster/states/tables/table_learn_forward_state.h \
     src/core/cluster/states/task_handle_state.h \
     src/core/cluster/task.h \
-    src/hardware/power_measuring.h \
     src/core/processing/cluster_queue.h \
     src/core/processing/cluster_io_functions.h \
     src/core/processing/cpu/backpropagation.h \
@@ -237,11 +236,8 @@ HEADERS += \
     src/core/processing/processing_unit_handler.h \
     src/core/processing/section_update.h \
     src/core/routing_functions.h \
-    src/hardware/speed_measuring.h \
     src/core/temp_file_handler.h \
-    src/hardware/temperature_measuring.h \
     src/core/thread_binder.h \
-    src/core/value_container.h \
     src/database/audit_log_table.h \
     src/database/cluster_snapshot_table.h \
     src/database/cluster_table.h \
@@ -332,15 +328,11 @@ SOURCES += \
     src/core/cluster/states/tables/table_interpolation_state.cpp \
     src/core/cluster/states/tables/table_learn_forward_state.cpp \
     src/core/cluster/states/task_handle_state.cpp \
-    src/hardware/power_measuring.cpp \
     src/core/processing/cluster_queue.cpp \
     src/core/processing/cpu_processing_unit.cpp \
     src/core/processing/processing_unit_handler.cpp \
-    src/hardware/speed_measuring.cpp \
     src/core/temp_file_handler.cpp \
-    src/hardware/temperature_measuring.cpp \
     src/core/thread_binder.cpp \
-    src/core/value_container.cpp \
     src/database/audit_log_table.cpp \
     src/database/cluster_snapshot_table.cpp \
     src/database/cluster_table.cpp \

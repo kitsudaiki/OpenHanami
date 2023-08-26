@@ -1,5 +1,5 @@
 /**
- * @file        power_measuring.cpp
+ * @file        speed_measuring.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,9 +20,10 @@
  *      limitations under the License.
  */
 
-#include "power_measuring.h"
-#include <hanami_root.h>
-#include <core/value_container.h>
+#include <libKitsunemimiHanamiHardware/speed_measuring.h>
+#include <libKitsunemimiHanamiHardware/value_container.h>
+
+#include <libKitsunemimiSakuraHardware/cpu_thread.h>
 
 #include <libKitsunemimiSakuraHardware/host.h>
 #include <libKitsunemimiSakuraHardware/cpu_core.h>
@@ -31,21 +32,21 @@
 
 #include <libKitsunemimiJson/json_item.h>
 
-PowerMeasuring* PowerMeasuring::instance = nullptr;
+SpeedMeasuring* SpeedMeasuring::instance = nullptr;
 
-PowerMeasuring::PowerMeasuring()
-    : Kitsunemimi::Thread("Azuki_EnergyMeasuring")
+SpeedMeasuring::SpeedMeasuring()
+    : Kitsunemimi::Thread("Azuki_SpeedMeasuring")
 {
     m_valueContainer = new ValueContainer();
 }
 
-PowerMeasuring::~PowerMeasuring()
+SpeedMeasuring::~SpeedMeasuring()
 {
     delete m_valueContainer;
 }
 
 Kitsunemimi::DataMap*
-PowerMeasuring::getJson()
+SpeedMeasuring::getJson()
 {
     return m_valueContainer->toJson();
 }
@@ -54,26 +55,31 @@ PowerMeasuring::getJson()
  * @brief ThreadBinder::run
  */
 void
-PowerMeasuring::run()
+SpeedMeasuring::run()
 {
     Kitsunemimi::ErrorContainer error;
+    Kitsunemimi::Sakura::CpuThread* thread = nullptr;
+
     while(m_abort == false)
     {
-        double power = 0.0;
+        uint64_t currentSpeed = 0;
+        uint64_t numberOfValues = 0;
         Kitsunemimi::Sakura::Host* host = Kitsunemimi::Sakura::Host::getInstance();
-        for(uint64_t i = 0; i < host->cpuPackages.size(); i++) {
-            power += host->getPackage(i)->getTotalPackagePower();
+
+        for(uint64_t i = 0; i < host->cpuPackages.size(); i++)
+        {
+             for(uint64_t j = 0; j < host->getPackage(i)->cpuCores.size(); j++)
+             {
+                 numberOfValues++;
+                 thread = host->getPackage(i)->cpuCores.at(j)->cpuThreads.at(0);
+                 currentSpeed += thread->getCurrentThreadSpeed();
+             }
         }
 
-        // HINT(kitsudaiki): first tests were made on a notebook. When this notebook came from
-        // standby, then there was a single extremly high value, which broke the outout.
-        // So this is only a workaround for this edge-case. I this there is no node,
-        // which takes more then 1MW per node and so this workaround shouldn't break any setup.
-        if(power > 1000000.0) {
-            power = 0.0f;
-        }
+        double curSpeed = static_cast<double>(currentSpeed) / static_cast<double>(numberOfValues);
+        curSpeed /= 1000.0;  // convert from KHz to MHz
 
-        m_valueContainer->addValue(power);
+        m_valueContainer->addValue(curSpeed);
 
         sleep(1);
     }

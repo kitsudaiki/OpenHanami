@@ -31,9 +31,6 @@
 #include <core/processing/cluster_queue.h>
 #include <core/cluster/cluster.h>
 
-#include <libKitsunemimiOpencl/gpu_interface.h>
-#include <libKitsunemimiOpencl/gpu_handler.h>
-
 extern "C"
 void
 processing_CUDA(PointerHandler* gpuPointer,

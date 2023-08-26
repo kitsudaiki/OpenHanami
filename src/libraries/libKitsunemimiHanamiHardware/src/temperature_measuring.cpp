@@ -1,5 +1,5 @@
 /**
- * @file        speed_measuring.cpp
+ * @file        temperature_measuring.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,11 +20,8 @@
  *      limitations under the License.
  */
 
-#include "speed_measuring.h"
-#include <hanami_root.h>
-#include <core/value_container.h>
-
-#include <libKitsunemimiSakuraHardware/cpu_thread.h>
+#include <libKitsunemimiHanamiHardware/temperature_measuring.h>
+#include <libKitsunemimiHanamiHardware/value_container.h>
 
 #include <libKitsunemimiSakuraHardware/host.h>
 #include <libKitsunemimiSakuraHardware/cpu_core.h>
@@ -33,21 +30,21 @@
 
 #include <libKitsunemimiJson/json_item.h>
 
-SpeedMeasuring* SpeedMeasuring::instance = nullptr;
+TemperatureMeasuring* TemperatureMeasuring::instance = nullptr;
 
-SpeedMeasuring::SpeedMeasuring()
-    : Kitsunemimi::Thread("Azuki_SpeedMeasuring")
+TemperatureMeasuring::TemperatureMeasuring()
+    : Kitsunemimi::Thread("Azuki_TemperatureMeasuring")
 {
     m_valueContainer = new ValueContainer();
 }
 
-SpeedMeasuring::~SpeedMeasuring()
+TemperatureMeasuring::~TemperatureMeasuring()
 {
     delete m_valueContainer;
 }
 
 Kitsunemimi::DataMap*
-SpeedMeasuring::getJson()
+TemperatureMeasuring::getJson()
 {
     return m_valueContainer->toJson();
 }
@@ -56,31 +53,16 @@ SpeedMeasuring::getJson()
  * @brief ThreadBinder::run
  */
 void
-SpeedMeasuring::run()
+TemperatureMeasuring::run()
 {
-    Kitsunemimi::ErrorContainer error;
-    Kitsunemimi::Sakura::CpuThread* thread = nullptr;
 
+    Kitsunemimi::ErrorContainer error;
     while(m_abort == false)
     {
-        uint64_t currentSpeed = 0;
-        uint64_t numberOfValues = 0;
         Kitsunemimi::Sakura::Host* host = Kitsunemimi::Sakura::Host::getInstance();
 
-        for(uint64_t i = 0; i < host->cpuPackages.size(); i++)
-        {
-             for(uint64_t j = 0; j < host->getPackage(i)->cpuCores.size(); j++)
-             {
-                 numberOfValues++;
-                 thread = host->getPackage(i)->cpuCores.at(j)->cpuThreads.at(0);
-                 currentSpeed += thread->getCurrentThreadSpeed();
-             }
-        }
-
-        double curSpeed = static_cast<double>(currentSpeed) / static_cast<double>(numberOfValues);
-        curSpeed /= 1000.0;  // convert from KHz to MHz
-
-        m_valueContainer->addValue(curSpeed);
+        const double temperature = host->getTotalTemperature(error);
+        m_valueContainer->addValue(temperature);
 
         sleep(1);
     }
