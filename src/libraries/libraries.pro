@@ -4,7 +4,7 @@ QT -= qt core gui
 CONFIG += c++17
 
 SUBDIRS =  libKitsunemimiCommon
-#SUBDIRS += libKitsunemimiNetwork
+# SUBDIRS += libKitsunemimiNetwork
 SUBDIRS += libKitsunemimiJson
 SUBDIRS += libKitsunemimiCrypto
 SUBDIRS += libKitsunemimiJwt
@@ -13,13 +13,15 @@ SUBDIRS += libKitsunemimiArgs
 SUBDIRS += libKitsunemimiConfig
 SUBDIRS += libKitsunemimiCpu
 SUBDIRS += libKitsunemimiSqlite
-SUBDIRS += libKitsunemimiOpencl
-#SUBDIRS += libKitsunemimiObj
+# SUBDIRS += libKitsunemimiOpencl
+# SUBDIRS += libKitsunemimiObj
 SUBDIRS += libKitsunemimiSakuraHardware
 SUBDIRS += libKitsunemimiSakuraDatabase
-#SUBDIRS += libKitsunemimiSakuraNetwork
+# SUBDIRS += libKitsunemimiSakuraNetwork
 SUBDIRS += libKitsunemimiHanamiPolicies
 SUBDIRS += libKitsunemimiHanamiClusterParser
+SUBDIRS += libKitsunemimiHanamiFiles
+SUBDIRS += libKitsunemimiHanamiHardware
 
 
 #libKitsunemimiNetwork.depends = libKitsunemimiCommon

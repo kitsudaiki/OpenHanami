@@ -1,5 +1,5 @@
 /**
- * @file        table_data_set_file.cpp
+ * @file        data_set_functions.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,30 +20,21 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_TABLEDATASETFILE_H
-#define HANAMI_TABLEDATASETFILE_H
+#ifndef HANAMI_DATA_SET_FUNCTIONS_H
+#define HANAMI_DATA_SET_FUNCTIONS_H
 
-#include <libKitsunemimiHanamiFiles/data_set_files/data_set_file.h>
+#include <libKitsunemimiCommon/logger.h>
 
-class TableDataSetFile
-        : public DataSetFile
-{
-public:
-    TableDataSetFile(const std::string &filePath);
-    TableDataSetFile(Kitsunemimi::BinaryFile* file);
-    ~TableDataSetFile();
-    bool updateHeader();
-    float* getPayload(uint64_t &payloadSize,
-                      const std::string &columnName = "");
+namespace Kitsunemimi {
+class JsonItem;
+}
 
-    void print();
+float* getDataSetPayload(const std::string &location,
+                         Kitsunemimi::ErrorContainer &error,
+                         const std::string &columnName = "");
 
-    TableTypeHeader tableHeader;
-    std::vector<TableHeaderEntry> tableColumns;
+bool getHeaderInformation(Kitsunemimi::JsonItem &result,
+                          const std::string &location,
+                          Kitsunemimi::ErrorContainer &error);
 
-protected:
-    void initHeader();
-    void readHeader(const uint8_t* u8buffer);
-};
-
-#endif // HANAMI_TABLEDATASETFILE_H
+#endif // HANAMI_DATA_SET_FUNCTIONS_H
