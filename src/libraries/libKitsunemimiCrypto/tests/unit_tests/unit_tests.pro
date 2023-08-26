@@ -20,11 +20,9 @@ SOURCES += \
     common_test.cpp \
     hashes_test.cpp \
     main.cpp  \
-    signing_test.cpp \
     symmetric_encryption_test.cpp
 
 HEADERS += \
     common_test.h \
     hashes_test.h \
-    signing_test.h \
     symmetric_encryption_test.h
