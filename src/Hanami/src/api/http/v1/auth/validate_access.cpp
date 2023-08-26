@@ -24,11 +24,13 @@
 
 #include <libKitsunemimiCommon/items/data_items.h>
 #include <libKitsunemimiCommon/methods/string_methods.h>
-#include <libKitsunemimiJwt/jwt.h>
 #include <libKitsunemimiJson/json_item.h>
 
 #include <libKitsunemimiHanamiPolicies/policy.h>
 #include <hanami_root.h>
+
+#include <jwt-cpp/jwt.h>
+//#include <jwt-cpp/traits/nlohmann-json/defaults.h>
 
 using Kitsunemimi::Hanami::HttpRequestType;
 
@@ -114,12 +116,23 @@ ValidateAccess::runTask(BlossomIO &blossomIO,
     const std::string component = blossomIO.input.get("component").getString();
     const std::string endpoint = blossomIO.input.get("endpoint").getString();
 
-    // validate token
-    std::string publicError;
-    if(HanamiRoot::jwt->validateToken(blossomIO.output, token, publicError, error) == false)
+    try
     {
-        error.addMeesage("Misaki failed to validate JWT-Token");
-        status.errorMessage = publicError;
+        auto decodedToken = jwt::decode(token);
+        auto verifier = jwt::verify()
+            .allow_algorithm(jwt::algorithm::hs256{(const char*)HanamiRoot::tokenKey.data()});
+
+        verifier.verify(decodedToken);
+
+        // copy data of token into the output
+        for (const auto& e : decodedToken.get_payload_json()) {
+            blossomIO.output.parse(e.second.to_str(), error);
+        }
+    }
+    catch (const std::exception& ex)
+    {
+        error.addMeesage("Failed to validate JWT-Token with error: " + std::string(ex.what()));
+        status.errorMessage = "Failed to validate JWT-Token";
         status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }

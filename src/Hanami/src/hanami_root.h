@@ -28,8 +28,9 @@
 #include <database/users_table.h>
 #include <database/projects_table.h>
 
-#include <libKitsunemimiJwt/jwt.h>
 #include <libKitsunemimiHanamiPolicies/policy.h>
+
+#include <cryptopp/secblock.h>
 
 class ClusterHandler;
 class ClusterQueue;
@@ -94,10 +95,10 @@ public:
     WebSocketServer* websocketServer = nullptr;
 
     static Kitsunemimi::GpuInterface* gpuInterface;
-    static Kitsunemimi::Jwt* jwt;
     static HttpServer* httpServer;
     static HanamiRoot* root;
     static uint32_t* m_randomValues;
+    static CryptoPP::SecByteBlock tokenKey;
     static bool useOpencl;
     static bool useCuda;
 

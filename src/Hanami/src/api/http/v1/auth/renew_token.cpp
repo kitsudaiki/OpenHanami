@@ -25,8 +25,11 @@
 #include <hanami_root.h>
 
 #include <libKitsunemimiCrypto/hashes.h>
-#include <libKitsunemimiJwt/jwt.h>
 #include <libKitsunemimiJson/json_item.h>
+#include <libKitsunemimiConfig/config_handler.h>
+
+#include <jwt-cpp/jwt.h>
+//#include <jwt-cpp/traits/nlohmann-json/defaults.h>
 
 /**
  * @brief constructor
@@ -113,15 +116,25 @@ RenewToken::runTask(BlossomIO &blossomIO,
         return false;
     }
 
+    // get expire-time from config
+    bool success = false;
+    const u_int32_t expireTime = GET_INT_CONFIG("auth", "token_expire_time", success);
+    if(success == false)
+    {
+        error.addMeesage("Could not read 'token_expire_time' from config of misaki.");
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+    }
+
+    std::chrono::system_clock::time_point expireTimePoint = std::chrono::system_clock::now() + std::chrono::seconds(expireTime);
+
     // create token
     // TODO: make validation-time configurable
-    std::string jwtToken;
-    if(HanamiRoot::jwt->create_HS256_Token(jwtToken, userData, 3600, error) == false)
-    {
-        error.addMeesage("Failed to create JWT-Token");
-        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        return false;
-    }
+
+    const std::string jwtToken = jwt::create()
+                                    .set_type("JWT")
+                                    .set_expires_at(expireTimePoint)
+                                    .set_payload_claim("user", jwt::claim(userData.toString()))
+                                    .sign(jwt::algorithm::hs256{(const char*)HanamiRoot::tokenKey.data()});
 
     blossomIO.output.insert("id", userContext.userId);
     blossomIO.output.insert("is_admin", isAdmin);

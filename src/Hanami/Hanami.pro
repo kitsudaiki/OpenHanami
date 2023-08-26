@@ -66,11 +66,6 @@ LIBS += -L../libraries/libKitsunemimiJson/src/debug -lKitsunemimiJson
 LIBS += -L../libraries/libKitsunemimiJson/src/release -lKitsunemimiJson
 INCLUDEPATH += ../libraries/libKitsunemimiJson/include
 
-LIBS += -L../libraries/libKitsunemimiJwt/src -lKitsunemimiJwt
-LIBS += -L../libraries/libKitsunemimiJwt/src/debug -lKitsunemimiJwt
-LIBS += -L../libraries/libKitsunemimiJwti/src/release -lKitsunemimiJwt
-INCLUDEPATH += ../libraries/libKitsunemimiJwt/include
-
 LIBS += -L../libraries/libKitsunemimiCrypto/src -lKitsunemimiCrypto
 LIBS += -L../libraries/libKitsunemimiCrypto/src/debug -lKitsunemimiCrypto
 LIBS += -L../libraries/libKitsunemimiCrypto/src/release -lKitsunemimiCrypto
@@ -85,6 +80,8 @@ LIBS += -L../sdk/cpp/libHanamiAiSdk/src -lHanamiAiSdk
 LIBS += -L../sdk/cpp/libHanamiAiSdk/src/debug -lHanamiAiSdk
 LIBS += -L../sdk/cpp/libHanamiAiSdk/src/release -lHanamiAiSdk
 INCLUDEPATH += ../sdk/cpp/libHanamiAiSdk/include
+
+INCLUDEPATH += ../third-party-libs/jwt-cpp/include
 
 LIBS += -lcryptopp -lssl -lsqlite3 -luuid -lcrypto -pthread -lprotobuf -lOpenCL
 LIBS +=  -L"/usr/local/cuda-12.1/targets/x86_64-linux/lib"  -L"/usr/local/cuda-12.2/targets/x86_64-linux/lib" -lcuda -lcudart -lcublas

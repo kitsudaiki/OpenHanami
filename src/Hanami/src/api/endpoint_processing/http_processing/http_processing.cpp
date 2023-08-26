@@ -32,6 +32,9 @@
 #include <libKitsunemimiJson/json_item.h>
 #include <libKitsunemimiCommon/logger.h>
 
+#include <jwt-cpp/jwt.h>
+//#include <jwt-cpp/traits/nlohmann-json/defaults.h>
+
 /**
  * @brief process request and build response
  */
@@ -182,14 +185,35 @@ checkPermission(Kitsunemimi::JsonItem &tokenData,
     // collect information from the input
     const std::string endpoint = hanamiRequest.id;
 
-    // validate token
-    std::string publicError;
-    if(HanamiRoot::jwt->validateToken(tokenData, token, publicError, error) == false)
+    // handle empty token
+    if(token.empty())
     {
-        error.addMeesage("Misaki failed to validate JWT-Token");
+        error.addMeesage("Failed to validate JWT-Token, because token is missing");
         responseMsg.success = false;
         responseMsg.type = UNAUTHORIZED_RTYPE;
-        responseMsg.responseContent = publicError;
+        responseMsg.responseContent = "Failed to validate JWT-Token";
+        return false;
+    }
+
+    // validate token
+    try
+    {
+        auto decodedToken = jwt::decode(token);
+        auto verifier = jwt::verify()
+            .allow_algorithm(jwt::algorithm::hs256{(const char*)HanamiRoot::tokenKey.data()});
+        verifier.verify(decodedToken);
+
+        // copy data of token into the output
+        for (const auto& e : decodedToken.get_payload_json()) {
+            tokenData.parse(e.second.to_str(), error);
+        }
+    }
+    catch (const std::exception& ex)
+    {
+        error.addMeesage("Failed to validate JWT-Token with error: " + std::string(ex.what()));
+        responseMsg.success = false;
+        responseMsg.type = UNAUTHORIZED_RTYPE;
+        responseMsg.responseContent = "Failed to validate JWT-Token";
         return false;
     }
 

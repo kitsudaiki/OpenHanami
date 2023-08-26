@@ -50,9 +50,9 @@
 // init static variables
 uint32_t* HanamiRoot::m_randomValues = nullptr;
 Kitsunemimi::GpuInterface* HanamiRoot::gpuInterface = nullptr;
-Kitsunemimi::Jwt* HanamiRoot::jwt = nullptr;
 HanamiRoot* HanamiRoot::root = nullptr;
 HttpServer* HanamiRoot::httpServer = nullptr;
+CryptoPP::SecByteBlock HanamiRoot::tokenKey{};
 
 // static flag to switch to experimental gpu-support (see issue #44 and #76)
 bool HanamiRoot::useOpencl = false;
@@ -383,8 +383,7 @@ HanamiRoot::initJwt(Kitsunemimi::ErrorContainer &error)
     }
 
     // init jwt for token create and sign
-    CryptoPP::SecByteBlock tokenKey((unsigned char*)tokenKeyString.c_str(), tokenKeyString.size());
-    jwt = new Kitsunemimi::Jwt(tokenKey);
+    tokenKey = CryptoPP::SecByteBlock((unsigned char*)tokenKeyString.c_str(), tokenKeyString.size());
 
     return true;
 }
