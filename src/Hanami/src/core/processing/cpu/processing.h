@@ -124,7 +124,7 @@ synapseProcessing(Cluster &cluster,
     {
         synapse = &section[pos];
 
-        // create new synapse if necesarry and learning is active
+        // create new synapse if necesarry and training is active
         if(synapse->targetNeuronId == UNINIT_STATE_16) {
             createNewSynapse(neuronBlock, synapse, segmentSettings, counter);
         }

@@ -61,11 +61,11 @@
 #include <api/http/v1/data_files/csv/create_csv_data_set.h>
 #include <api/http/v1/data_files/csv/finalize_csv_data_set.h>
 
-#include <api/http/v1/cluster_snapshot/create_cluster_snapshot.h>
-#include <api/http/v1/cluster_snapshot/delete_cluster_snapshot.h>
-#include <api/http/v1/cluster_snapshot/finish_cluster_snapshot.h>
-#include <api/http/v1/cluster_snapshot/get_cluster_snapshot.h>
-#include <api/http/v1/cluster_snapshot/list_cluster_snapshot.h>
+#include <api/http/v1/checkpoint/create_checkpoint.h>
+#include <api/http/v1/checkpoint/delete_checkpoint.h>
+#include <api/http/v1/checkpoint/finish_checkpoint.h>
+#include <api/http/v1/checkpoint/get_checkpoint.h>
+#include <api/http/v1/checkpoint/list_checkpoint.h>
 
 #include <api/http/v1/request_results/delete_request_result.h>
 #include <api/http/v1/request_results/get_request_result.h>
@@ -266,40 +266,40 @@ dataSetBlossoms()
  * @brief init cluster_snaptho blossoms
  */
 void
-clusterSnapshotBlossoms()
+clusterCheckpointBlossoms()
 {
-    const std::string group = "Snapshot";
+    const std::string group = "Checkpoint";
 
-    assert(HanamiRoot::root->addBlossom(group, "create", new CreateClusterSnapshot()));
-    HanamiRoot::root->addEndpoint("v1/cluster_snapshot",
+    assert(HanamiRoot::root->addBlossom(group, "create", new CreateCheckpoint()));
+    HanamiRoot::root->addEndpoint("v1/checkpoint",
                                   Kitsunemimi::Hanami::POST_TYPE,
                                   BLOSSOM_TYPE,
                                   group,
                                   "create");
 
-    assert(HanamiRoot::root->addBlossom(group, "finalize", new FinalizeClusterSnapshot()));
-    HanamiRoot::root->addEndpoint("v1/cluster_snapshot",
+    assert(HanamiRoot::root->addBlossom(group, "finalize", new FinalizeCheckpoint()));
+    HanamiRoot::root->addEndpoint("v1/checkpoint",
                                   Kitsunemimi::Hanami::PUT_TYPE,
                                   BLOSSOM_TYPE,
                                   group,
                                   "finalize");
 
-    assert(HanamiRoot::root->addBlossom(group, "get", new GetClusterSnapshot()));
-    HanamiRoot::root->addEndpoint("v1/cluster_snapshot",
+    assert(HanamiRoot::root->addBlossom(group, "get", new GetCheckpoint()));
+    HanamiRoot::root->addEndpoint("v1/checkpoint",
                                   Kitsunemimi::Hanami::GET_TYPE,
                                   BLOSSOM_TYPE,
                                   group,
                                   "get");
 
-    assert(HanamiRoot::root->addBlossom(group, "delete", new DeleteClusterSnapshot()));
-    HanamiRoot::root->addEndpoint("v1/cluster_snapshot",
+    assert(HanamiRoot::root->addBlossom(group, "delete", new DeleteCheckpoint()));
+    HanamiRoot::root->addEndpoint("v1/checkpoint",
                                   Kitsunemimi::Hanami::DELETE_TYPE,
                                   BLOSSOM_TYPE,
                                   group,
                                   "delete");
 
-    assert(HanamiRoot::root->addBlossom(group, "list", new ListClusterSnapshot()));
-    HanamiRoot::root->addEndpoint("v1/cluster_snapshot/all",
+    assert(HanamiRoot::root->addBlossom(group, "list", new ListCheckpoint()));
+    HanamiRoot::root->addEndpoint("v1/checkpoint/all",
                                   Kitsunemimi::Hanami::GET_TYPE,
                                   BLOSSOM_TYPE,
                                   group,
@@ -544,7 +544,7 @@ initBlossoms()
     initClusterBlossoms();
     initTaskBlossoms();
     dataSetBlossoms();
-    clusterSnapshotBlossoms();
+    clusterCheckpointBlossoms();
     resultBlossoms();
     logsBlossoms();
     projectBlossomes();

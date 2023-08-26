@@ -48,7 +48,7 @@ backpropagateSection(const Cluster &cluster,
 {
     Synapse* synapse = nullptr;
     Neuron* targetNeuron = nullptr;
-    float learnValue = 0.2f;
+    float trainValue = 0.2f;
     uint16_t pos = 0;
     float counter = outH - connection->offset[sourceLocation->sectionId];
     NeuronBlock* neuronBlock = &neuronBlocks[connection->targetNeuronBlockId];
@@ -66,11 +66,11 @@ backpropagateSection(const Cluster &cluster,
         }
 
         // update weight
-        learnValue = static_cast<float>(126 - synapse->activeCounter) * 0.0002f;
-        learnValue += 0.05f;
+        trainValue = static_cast<float>(126 - synapse->activeCounter) * 0.0002f;
+        trainValue += 0.05f;
         targetNeuron = &neuronBlock->neurons[synapse->targetNeuronId];
         sourceNeuron->delta += targetNeuron->delta * synapse->weight;
-        synapse->weight -= learnValue * targetNeuron->delta;
+        synapse->weight -= trainValue * targetNeuron->delta;
 
         counter -= synapse->border;
         pos++;

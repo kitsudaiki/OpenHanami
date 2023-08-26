@@ -27,7 +27,7 @@
 
 void sendClusterOutputMessage(Cluster* cluster);
 void sendClusterNormalEndMessage(Cluster* cluster);
-void sendClusterLearnEndMessage(Cluster* cluster);
+void sendClusterTrainEndMessage(Cluster* cluster);
 
 bool recvClusterInputMessage(Cluster* cluster,
                               const void* data,

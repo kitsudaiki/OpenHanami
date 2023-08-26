@@ -67,9 +67,9 @@ TaskHandle_State::processEvent()
 
     switch(actualTask->type)
     {
-        case IMAGE_LEARN_TASK:
+        case IMAGE_TRAIN_TASK:
         {
-            if(m_cluster->goToNextState(LEARN)) {
+            if(m_cluster->goToNextState(TRAIN)) {
                 m_cluster->goToNextState(IMAGE);
                 // Azuki::setSpeedToAutomatic(error);
             } else {
@@ -89,9 +89,9 @@ TaskHandle_State::processEvent()
             }
             break;
         }
-        case TABLE_LEARN_TASK:
+        case TABLE_TRAIN_TASK:
         {
-            if(m_cluster->goToNextState(LEARN)) {
+            if(m_cluster->goToNextState(TRAIN)) {
                 m_cluster->goToNextState(TABLE);
                 // Azuki::setSpeedToAutomatic(error);
             } else {
@@ -111,9 +111,9 @@ TaskHandle_State::processEvent()
             }
             break;
         }
-        case CLUSTER_SNAPSHOT_SAVE_TASK:
+        case CLUSTER_CHECKPOINT_SAVE_TASK:
         {
-            if(m_cluster->goToNextState(SNAPSHOT)) {
+            if(m_cluster->goToNextState(CHECKPOINT)) {
                 if(m_cluster->goToNextState(CLUSTER)) {
                     m_cluster->goToNextState(SAVE);
                     // Azuki::setSpeedToAutomatic(error);
@@ -127,9 +127,9 @@ TaskHandle_State::processEvent()
             }
             break;
         }
-        case CLUSTER_SNAPSHOT_RESTORE_TASK:
+        case CLUSTER_CHECKPOINT_RESTORE_TASK:
         {
-            if(m_cluster->goToNextState(SNAPSHOT)) {
+            if(m_cluster->goToNextState(CHECKPOINT)) {
                 if(m_cluster->goToNextState(CLUSTER)) {
                     m_cluster->goToNextState(RESTORE);
                     // Azuki::setSpeedToAutomatic(error);

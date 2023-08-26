@@ -42,8 +42,8 @@ DataSetDeleteTest::runTest(Kitsunemimi::JsonItem &inputData,
                            Kitsunemimi::ErrorContainer &error)
 {
     std::string uuid = "";
-    if(m_type == "learn") {
-        uuid = inputData.get("learn_dataset_uuid").getString();
+    if(m_type == "train") {
+        uuid = inputData.get("train_dataset_uuid").getString();
     } else if(m_type == "request") {
         uuid = inputData.get("request_dataset_uuid").getString();
     } else {

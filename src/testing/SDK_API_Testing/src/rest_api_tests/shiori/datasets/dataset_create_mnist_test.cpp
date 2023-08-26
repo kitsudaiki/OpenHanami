@@ -43,12 +43,12 @@ DataSetCreateMnistTest::runTest(Kitsunemimi::JsonItem &inputData,
                                 Kitsunemimi::ErrorContainer &error)
 {
     std::string result;
-    if(m_type == "learn")
+    if(m_type == "train")
     {
         if(HanamiAI::uploadMnistData(result,
-                                     inputData.get("learn_dataset_name").getString(),
-                                     inputData.get("learn_inputs").getString(),
-                                     inputData.get("learn_labels").getString(),
+                                     inputData.get("train_dataset_name").getString(),
+                                     inputData.get("train_inputs").getString(),
+                                     inputData.get("train_labels").getString(),
                                      error) != m_expectSuccess)
         {
             return false;
@@ -77,8 +77,8 @@ DataSetCreateMnistTest::runTest(Kitsunemimi::JsonItem &inputData,
         return false;
     }
 
-    if(m_type == "learn") {
-        inputData.insert("learn_dataset_uuid", jsonItem.get("uuid").getString(), true);
+    if(m_type == "train") {
+        inputData.insert("train_dataset_uuid", jsonItem.get("uuid").getString(), true);
     } else {
         inputData.insert("request_dataset_uuid", jsonItem.get("uuid").getString(), true);
     }

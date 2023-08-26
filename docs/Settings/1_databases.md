@@ -25,7 +25,7 @@
 | name | varchar | 256 |   | Readable name of the resource |
 | data | text |  |   |  |
 
-### *cluster_snapshot*
+### *checkpoint*
 
 | Column-Name | Type | Max-Length | is primary key | Description | 
 | --- | --- | --- | --- | --- |

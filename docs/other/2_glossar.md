@@ -52,17 +52,17 @@ A `Data-Set` defines a set of train-data or data, which should be used for reque
 
 Tasks an asynchronous operation of the network based on a given `Data-Set`. There are two types:
 
-1. `Learn-Task`
+1. `Train-Task`
 
-For `Learn-Tasks` input-data and desired output must exist in the `Data-Set` in order to update the neuronal network based on the data.
+For `Train-Tasks` input-data and desired output must exist in the `Data-Set` in order to update the neuronal network based on the data.
 
 2. `Request-Task`
 
 In `Request-Tasks` only the input-data are provided for the network in order to generate a output of the previouly trained network. The output is stored in `Shiori` as `Request-Result`.
 
-### **Cluster-Snapshot** or **Snapshot**
+### **Cluster-Checkpoint** or **Checkpoint**
 
-`Cluster-Snapshots` are the serializied version of a `Cluster`. The Cluster will be converted into one single blob and send to `Shiori`, where it is written to disc and registered in the database. At the moment only `Cluster-Snapshots`, so at some points in the current implementation it is named als `Snapshot`, which is the same for now. In later versions, there should also exist `Segment-Snapshots`, which are the serialized version of a single segment.
+`Cluster-Checkpoints` are the serializied version of a `Cluster`. The Cluster will be converted into one single blob and send to `Shiori`, where it is written to disc and registered in the database. At the moment only `Cluster-Checkpoints`, so at some points in the current implementation it is named als `Checkpoint`, which is the same for now. In later versions, there should also exist `Segment-Checkpoints`, which are the serialized version of a single segment.
 
 ### **Segment-Template** or **Template**
 

@@ -38,7 +38,7 @@ registerConfigs(Kitsunemimi::ErrorContainer &error)
 
     // storage-section
     REGISTER_STRING_CONFIG( "storage", "data_set_location",         error, "", true );
-    REGISTER_STRING_CONFIG( "storage", "cluster_snapshot_location", error, "", true );
+    REGISTER_STRING_CONFIG( "storage", "checkpoint_location", error, "", true );
 
     // auth-section
     REGISTER_STRING_CONFIG( "auth", "token_key_path",    error, "",   true );

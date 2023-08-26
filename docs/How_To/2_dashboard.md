@@ -46,7 +46,7 @@ After this a new small window opens. There, in this example the `CSV` (**1**) ha
 
 !!! example
 
-    For this example workflow here, this [Example-file](/How_To/learn.csv) was used and uploaded, and looks like this
+    For this example workflow here, this [Example-file](/How_To/train.csv) was used and uploaded, and looks like this
 
     ```
     input,output
@@ -147,7 +147,7 @@ See basic explanation of the [templates](/Inner_Workings/3_kyouko/#templates)
 
 ![step11](../img/dashboard/step11.png)
 
-Now the cluster is created in Kyouko and ready to learn things.
+Now the cluster is created in Kyouko and ready to train things.
 
 ### Create Tasks
 
@@ -163,7 +163,7 @@ This switch the window to the overview of all Tasks for the `Cluster`. With the 
 
 ![step13](../img/dashboard/step13_x.png)
 
-In the new window you can give it a name (**1**) and say that the cluster should learn data (**2**). (**3**) is deprecated and not necessary anymore. The type of the dataset doesn't have to be explicit specified.
+In the new window you can give it a name (**1**) and say that the cluster should train data (**2**). (**3**) is deprecated and not necessary anymore. The type of the dataset doesn't have to be explicit specified.
 
 Then select the data-set in the dropdown menu (**4**) and accept again (**5**).
 
@@ -173,7 +173,7 @@ After this it switch back to the overview of the tasks, where the new one appear
 
 ![step15](../img/dashboard/step15.png)
 
-After this a few more of the same task can be created to improve the learn-result.
+After this a few more of the same task can be created to improve the train-result.
 
 !!! note
 
@@ -187,7 +187,7 @@ After the `Cluster` was trained with some data, now a `Request-Task` can be crea
 
 To see the result of the task after it was finished, you have to switch to the `Request-Result`-chapter (**1**) in the `Storage`-section, because at the end, `Kyouko` send the result to `Shiori` to write this in the database. Here the result is listed with the same name, like the request-task (**2**). Now the result can be downloaded (**4**) as json-formated string in a file or directly shown as graph (**3**) with the help of the d3-library.
 
-Result for the [Train-file](/How_To/learn.csv):
+Result for the [Train-file](/How_To/train.csv):
 
 ![step18_1](../img/dashboard/step18_1.png)
 
@@ -195,7 +195,7 @@ Result for the [Test-file](/How_To/test.csv)
 
 ![step18_2](../img/dashboard/step18_2.png)
 
-The output of this example is not optimal, but basically correct, when comparing the the up-and-down of the given input-values above. With a more optimal templates or more learn-tasks, the graph would look better. There is on the upper picture the real output of the cluster the on the other the rounded values, where all above 0.5 is rounded to 1.0 and the rest to 0.0. 
+The output of this example is not optimal, but basically correct, when comparing the the up-and-down of the given input-values above. With a more optimal templates or more train-tasks, the graph would look better. There is on the upper picture the real output of the cluster the on the other the rounded values, where all above 0.5 is rounded to 1.0 and the rest to 0.0. 
 
 ### Other
 

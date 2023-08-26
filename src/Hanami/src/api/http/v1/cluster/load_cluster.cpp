@@ -23,13 +23,13 @@
 #include "load_cluster.h"
 
 #include <hanami_root.h>
-#include <database/cluster_snapshot_table.h>
+#include <database/checkpoint_table.h>
 #include <core/cluster/cluster_handler.h>
 #include <core/cluster/cluster.h>
 #include <core/cluster/add_tasks.h>
 
 LoadCluster::LoadCluster()
-    : Blossom("Load a snapshot from shiori into an existing cluster and override the old data.")
+    : Blossom("Load a checkpoint from shiori into an existing cluster and override the old data.")
 {
     //----------------------------------------------------------------------------------------------
     // input
@@ -38,15 +38,15 @@ LoadCluster::LoadCluster()
     registerInputField("cluster_uuid",
                        SAKURA_STRING_TYPE,
                        true,
-                       "UUID of the cluster, where the snapshot should be loaded into.");
+                       "UUID of the cluster, where the checkpoint should be loaded into.");
     assert(addFieldRegex("cluster_uuid", UUID_REGEX));
 
-    registerInputField("snapshot_uuid",
+    registerInputField("checkpoint_uuid",
                        SAKURA_STRING_TYPE,
                        true,
-                       "UUID of the snapshot, which should be loaded from shiori "
+                       "UUID of the checkpoint, which should be loaded from shiori "
                        "into the cluster.");
-    assert(addFieldRegex("snapshot_uuid", UUID_REGEX));
+    assert(addFieldRegex("checkpoint_uuid", UUID_REGEX));
 
     //----------------------------------------------------------------------------------------------
     // output
@@ -71,7 +71,7 @@ LoadCluster::runTask(BlossomIO &blossomIO,
                      Kitsunemimi::ErrorContainer &error)
 {
     const std::string clusterUuid = blossomIO.input.get("cluster_uuid").getString();
-    const std::string snapshotUuid = blossomIO.input.get("snapshot_uuid").getString();
+    const std::string checkpointUuid = blossomIO.input.get("checkpoint_uuid").getString();
     const UserContext userContext(context);
 
     // get cluster
@@ -85,21 +85,21 @@ LoadCluster::runTask(BlossomIO &blossomIO,
     }
 
     // get meta-infos of data-set from shiori
-    Kitsunemimi::JsonItem parsedSnapshotInfo;
-    if(ClusterSnapshotTable::getInstance()->getClusterSnapshot(parsedSnapshotInfo,
-                                                               snapshotUuid,
+    Kitsunemimi::JsonItem parsedCheckpointInfo;
+    if(CheckpointTable::getInstance()->getCheckpoint(parsedCheckpointInfo,
+                                                               checkpointUuid,
                                                                userContext,
                                                                error,
                                                                true) == false)
     {
-        error.addMeesage("Failed to get information from database for UUID '" + snapshotUuid + "'");
+        error.addMeesage("Failed to get information from database for UUID '" + checkpointUuid + "'");
         status.statusCode = NOT_FOUND_RTYPE;
         return false;
     }
 
     // init request-task
-    const std::string infoStr = parsedSnapshotInfo.toString();
-    const std::string taskUuid = addClusterSnapshotRestoreTask(*cluster,
+    const std::string infoStr = parsedCheckpointInfo.toString();
+    const std::string taskUuid = addCheckpointRestoreTask(*cluster,
                                                                "",
                                                                infoStr,
                                                                userContext.userId,

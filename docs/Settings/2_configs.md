@@ -17,7 +17,7 @@
 | Field | Type | Description |
 | --- |  --- |  --- | 
 | data_set_location | string | Path to directory, where the uploaded data-sets should be stored |
-| cluster_snapshot_location | string | Path to directory, where the created snapshots coming from Kyouko should be stored |
+| checkpoint_location | string | Path to directory, where the created checkpoints coming from Kyouko should be stored |
 
 **[auth]**
 
@@ -50,7 +50,7 @@
 
     [storage]
     data_set_location = "/etc/hanami/train_data"
-    cluster_snapshot_location = "/etc/hanami/cluster_snapshots"
+    checkpoint_location = "/etc/hanami/checkpoints"
 
     [auth]
     policies = "/etc/hanami/policies"
@@ -96,8 +96,8 @@
 | Field | Type | Description |
 | --- |  --- |  --- | 
 | type | string | Type of the used test (mnist or csv) |
-| learn_inputs | string | Path to the mnist-file with inputs for training |
-| learn_labels | string |Path to the mnist-file with labels for training |
+| train_inputs | string | Path to the mnist-file with inputs for training |
+| train_labels | string | Path to the mnist-file with labels for training |
 | request_inputs | string | Path to the mnist-file with inputs for testing |
 | request_labels | string | Path to the mnist-file with labels for testing |
 | base_inputs | string | Path to a CSV-file with test-data |
@@ -116,8 +116,8 @@
 
     [test_data]
     type = "mnist"
-    learn_inputs = "/home/neptune/Schreibtisch/mnist/train-images.idx3-ubyte"
-    learn_labels = "/home/neptune/Schreibtisch/mnist/train-labels.idx1-ubyte"
+    train_inputs = "/home/neptune/Schreibtisch/mnist/train-images.idx3-ubyte"
+    train_labels = "/home/neptune/Schreibtisch/mnist/train-labels.idx1-ubyte"
     request_inputs = "/home/neptune/Schreibtisch/mnist/t10k-images.idx3-ubyte"
     request_labels = "/home/neptune/Schreibtisch/mnist/t10k-labels.idx1-ubyte"
     base_inputs = "/home/neptune/Schreibtisch/test.csv

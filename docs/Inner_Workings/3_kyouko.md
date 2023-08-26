@@ -4,9 +4,9 @@
 
 Before this project grows into the AI-as-a-Service, which it is now, Kyouko was the only component. The primary goal at this point was, to create a network, which is closer to the real functionality of the brain, then the classical deep-learning-networks. 
 
-The first working PoC was at the beginning of 2019 was an exaggerated version. It was the result of a try-and-error-process. Extreme dynamic, but horribly slow with very high memory consumption. Additionally it required manually input and was hard to handle, which made it impossible to learn more then a few single values. Interesting as PoC, but from practical perspective totally useless.
+The first working PoC was at the beginning of 2019 was an exaggerated version. It was the result of a try-and-error-process. Extreme dynamic, but horribly slow with very high memory consumption. Additionally it required manually input and was hard to handle, which made it impossible to train more then a few single values. Interesting as PoC, but from practical perspective totally useless.
 
-In the further development the dynamic was massively reduced in order to increase the performance and reduce memory-usage. It was a fight between the concept and the restrictions of compute-hardware. Additional some optional features were removed, to focus more on the base. The primary target was to bring the network to a state, where it can automatically learn the whole MNIST-set in a suitable time. The first version, which was able to do this, took 15min to learn the 60000 images and had a test-result of 30-50% correctness, which was also horrible. After many more optimization and fixing, it now need only a few seconds for learning and reach up to 97%.
+In the further development the dynamic was massively reduced in order to increase the performance and reduce memory-usage. It was a fight between the concept and the restrictions of compute-hardware. Additional some optional features were removed, to focus more on the base. The primary target was to bring the network to a state, where it can automatically train the whole MNIST-set in a suitable time. The first version, which was able to do this, took 15min to train the 60000 images and had a test-result of 30-50% correctness, which was also horrible. After many more optimization and fixing, it now need only a few seconds for learning and reach up to 97%.
 
 In this process were also 2 attempts in the past to bring this on a GPU with OpenCL. The results were slower, then on CPU. Because of this, the GPU-support was removed, to focus on CPU for now. 
 
@@ -24,7 +24,7 @@ The graphic shows a simple Cluster. Clusters consists of multiple Segment-types:
 
 Segments have a fixed connection between each other and each segment is only processed by one cpu-thread at the same time, but different segments can be processed by different CPU-threads at the same time, as long as they don't depend on each other. Each segment has in input- and output-buffer, to share data with the connected segments. The size of these buffers is fixed. Older versions had flexible buffers, which were too slow. 
 
-Even a segment consists of multiple different data-types (arrays of different types, configurations, etc.), each segment is in memory only one single binary-object, which can simply be written from the memory to the disc, without serialization. When reading a snapshot of a segment into the memory again, only the pointers within the structure have to be re-initialized.
+Even a segment consists of multiple different data-types (arrays of different types, configurations, etc.), each segment is in memory only one single binary-object, which can simply be written from the memory to the disc, without serialization. When reading a checkpoint of a segment into the memory again, only the pointers within the structure have to be re-initialized.
 
 !!! warning
 

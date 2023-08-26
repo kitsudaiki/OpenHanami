@@ -30,7 +30,7 @@ namespace HanamiAI
 {
 
 /**
- * @brief learn single value
+ * @brief train single value
  *
  * @param wsClient pointer to websocket-client for data-transfer
  * @param inputValues vector with all input-values
@@ -40,12 +40,12 @@ namespace HanamiAI
  * @return true, if successful, else false
  */
 bool
-learn(WebsocketClient* wsClient,
+train(WebsocketClient* wsClient,
       std::vector<float> &inputValues,
       std::vector<float> &shouldValues,
       Kitsunemimi::ErrorContainer &error)
 {
-    return learn(wsClient,
+    return train(wsClient,
                  &inputValues[0],
                  inputValues.size(),
                  &shouldValues[0],
@@ -77,7 +77,7 @@ request(WebsocketClient* wsClient,
 }
 
 /**
- * @brief learn single value
+ * @brief train single value
  *
  * @param wsClient pointer to websocket-client for data-transfer
  * @param inputValues float-pointer to array with input-values for input-segment
@@ -89,7 +89,7 @@ request(WebsocketClient* wsClient,
  * @return true, if successful, else false
  */
 bool
-learn(WebsocketClient* wsClient,
+train(WebsocketClient* wsClient,
       float* inputValues,
       const uint64_t numberOfInputValues,
       float* shouldValues,
@@ -102,7 +102,7 @@ learn(WebsocketClient* wsClient,
     ClusterIO_Message inputMsg;
     inputMsg.set_segmentname("input");
     inputMsg.set_islast(false);
-    inputMsg.set_processtype(ClusterProcessType::LEARN_TYPE);
+    inputMsg.set_processtype(ClusterProcessType::TRAIN_TYPE);
     inputMsg.set_datatype(ClusterDataType::INPUT_TYPE);
     inputMsg.set_numberofvalues(numberOfInputValues);
 
@@ -115,7 +115,7 @@ learn(WebsocketClient* wsClient,
     if(inputMsg.SerializeToArray(buffer, inputMsgSize) == false)
     {
         Kitsunemimi::ErrorContainer error;
-        error.addMeesage("Failed to serialize learn-message");
+        error.addMeesage("Failed to serialize train-message");
         return false;
     }
 
@@ -144,7 +144,7 @@ learn(WebsocketClient* wsClient,
     ClusterIO_Message shouldMsg;
     shouldMsg.set_segmentname("output");
     shouldMsg.set_islast(true);
-    shouldMsg.set_processtype(ClusterProcessType::LEARN_TYPE);
+    shouldMsg.set_processtype(ClusterProcessType::TRAIN_TYPE);
     shouldMsg.set_datatype(ClusterDataType::SHOULD_TYPE);
     shouldMsg.set_numberofvalues(numberOfShouldValues);
 
@@ -157,7 +157,7 @@ learn(WebsocketClient* wsClient,
     if(shouldMsg.SerializeToArray(buffer, shouldMsgSize) == false)
     {
         Kitsunemimi::ErrorContainer error;
-        error.addMeesage("Failed to serialize learn-message");
+        error.addMeesage("Failed to serialize train-message");
         return false;
     }
 
@@ -186,7 +186,7 @@ learn(WebsocketClient* wsClient,
     if(response.ParseFromArray(recvData, numberOfBytes) == false)
     {
         success = false;
-        error.addMeesage("Got no valid learn-end-message");
+        error.addMeesage("Got no valid train-end-message");
         LOG_ERROR(error);
     }
 

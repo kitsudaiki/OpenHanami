@@ -8,9 +8,9 @@
 
 - Move the entire project from a microservice architecture to a monolithic architecture, to reduce unnecessary complexity and increase performance and reliability of the program. Also it makes the developing process easier and faster, with is necessary in regard of my limited time-resources.
 
-#### Snapshot-Breaking
+#### Checkpoint-Breaking
 
-- List with update-positions in no longer written into the snapshot, because it contains only temporary information, which doesn't have to be saved
+- List with update-positions in no longer written into the checkpoint, because it contains only temporary information, which doesn't have to be saved
 
 ### Changed
 
@@ -26,10 +26,10 @@
 
 - use now custom syntax for cluster- and segment-templates instead of json
 - use protobuf-messages to send payload of files
-- merge endpoints to create learn- and request-tasks for csv- and mnist-files into one endpoint
+- merge endpoints to create train- and request-tasks for csv- and mnist-files into one endpoint
 - creating a task doesn't require the explicit selecting of the data-set type. This is now read from the data-set metadata
 
-#### Snapshot-Breaking
+#### Checkpoint-Breaking
 
 - changed internal data-structure of the core in order to make GPU-support possible without race-conditions
 
@@ -72,13 +72,13 @@
     - first incomplete implementation of the core-concept of a dynamic network with:
         - creates connections while learning
         - has nearly no upper limit for inputs
-    - capable to learn MNIST-Datasets and basic CSV-files
+    - capable to train MNIST-Datasets and basic CSV-files
     - creating neuronal networks based on templates in json-format
     - authentication with username + password and JWT-token
     - creating multiple user and multiple projects in one system
     - basic role-system
     - automatic creation of REST-API-documentation in PDF-, RST- or Markdown-format
-    - creating snapshots of neuronal networks and restore them again
+    - creating checkpoints of neuronal networks and restore them again
     - thread-binding for all components for more optimal usage of the CPU
     - PoC to change CPU-frequency based on load
     - measuring of power consumption, thermal production and frequency of the CPU

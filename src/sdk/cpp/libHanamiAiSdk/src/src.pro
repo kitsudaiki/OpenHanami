@@ -33,7 +33,7 @@ HEADERS += \
     ../include/libHanamiAiSdk/io.h \
     ../include/libHanamiAiSdk/project.h \
     ../include/libHanamiAiSdk/request_result.h \
-    ../include/libHanamiAiSdk/snapshot.h \
+    ../include/libHanamiAiSdk/checkpoint.h \
     ../include/libHanamiAiSdk/task.h \
     ../include/libHanamiAiSdk/user.h \
     common/http_client.h
@@ -47,7 +47,7 @@ SOURCES += \
     io.cpp \
     project.cpp \
     request_result.cpp \
-    snapshot.cpp \
+    checkpoint.cpp \
     task.cpp \
     user.cpp
 

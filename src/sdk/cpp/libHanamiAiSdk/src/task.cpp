@@ -27,11 +27,11 @@ namespace HanamiAI
 {
 
 /**
- * @brief create a new learn-task
+ * @brief create a new train-task
  *
  * @param result reference for response-message
  * @param name name of the new task
- * @param type type of the new task (learn or request)
+ * @param type type of the new task (train or request)
  * @param clusterUuid uuid of the cluster, which should execute the task
  * @param dataSetUuid uuid of the data-set-file on server
  * @param error reference for error-output
@@ -47,7 +47,7 @@ createTask(std::string &result,
            Kitsunemimi::ErrorContainer &error)
 {
     // precheck task-type
-    if(type != "learn"
+    if(type != "train"
             && type != "request")
     {
         error.addMeesage("Unknow task-type '" + type + "'");

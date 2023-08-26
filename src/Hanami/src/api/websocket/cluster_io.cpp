@@ -78,7 +78,7 @@ sendProtobufGotInputMessage(Cluster* cluster)
     ClusterIO_Message msg;
     msg.set_segmentname("output");
     msg.set_islast(false);
-    msg.set_processtype(ClusterProcessType::LEARN_TYPE);
+    msg.set_processtype(ClusterProcessType::TRAIN_TYPE);
     msg.set_datatype(ClusterDataType::SHOULD_TYPE);
     msg.set_numberofvalues(1);
     msg.add_values(0.0);
@@ -137,11 +137,11 @@ sendClusterNormalEndMessage(Cluster* cluster)
 }
 
 /**
- * @brief sendProtobufLearnEndMessage
+ * @brief sendProtobufTrainEndMessage
  * @param cluster
  */
 void
-sendClusterLearnEndMessage(Cluster* cluster)
+sendClusterTrainEndMessage(Cluster* cluster)
 {
     if(cluster->msgClient == nullptr) {
         return;
@@ -150,7 +150,7 @@ sendClusterLearnEndMessage(Cluster* cluster)
     // build message
     ClusterIO_Message msg;
     msg.set_islast(true);
-    msg.set_processtype(ClusterProcessType::LEARN_TYPE);
+    msg.set_processtype(ClusterProcessType::TRAIN_TYPE);
     msg.set_datatype(ClusterDataType::OUTPUT_TYPE);
     msg.add_values(0.0);
     msg.set_numberofvalues(1);
@@ -217,10 +217,10 @@ recvClusterInputMessage(Cluster* cluster,
             cluster->startForwardCycle();
         }
 
-        // start learn
-        if(msg.processtype() == ClusterProcessType::LEARN_TYPE)
+        // start train
+        if(msg.processtype() == ClusterProcessType::TRAIN_TYPE)
         {
-            cluster->mode = ClusterProcessingMode::LEARN_FORWARD_MODE;
+            cluster->mode = ClusterProcessingMode::TRAIN_FORWARD_MODE;
             cluster->startForwardCycle();
         }
     }

@@ -48,9 +48,9 @@
 #include <rest_api_tests/shiori/datasets/dataset_list_test.h>
 #include <rest_api_tests/shiori/datasets/dataset_check_test.h>
 
-#include <rest_api_tests/shiori/snapshots/snapshot_delete_test.h>
-#include <rest_api_tests/shiori/snapshots/snapshot_get_test.h>
-#include <rest_api_tests/shiori/snapshots/snapshot_list_test.h>
+#include <rest_api_tests/shiori/checkpoints/checkpoint_delete_test.h>
+#include <rest_api_tests/shiori/checkpoints/checkpoint_get_test.h>
+#include <rest_api_tests/shiori/checkpoints/checkpoint_list_test.h>
 
 #include <rest_api_tests/shiori/request_results/request_result_get_test.h>
 #include <rest_api_tests/shiori/request_results/request_result_list_test.h>
@@ -67,9 +67,9 @@
 
 #include <rest_api_tests/kyouko/io/direct_io_test.h>
 
-#include <rest_api_tests/kyouko/task/image_learn_task_test.h>
+#include <rest_api_tests/kyouko/task/image_train_task_test.h>
 #include <rest_api_tests/kyouko/task/image_request_task_test.h>
-#include <rest_api_tests/kyouko/task/table_learn_task_test.h>
+#include <rest_api_tests/kyouko/task/table_train_task_test.h>
 #include <rest_api_tests/kyouko/task/table_request_task_test.h>
 
 /**
@@ -190,19 +190,19 @@ runImageTest(Kitsunemimi::JsonItem &inputData)
 
     // test data-sets of shiori
     testThread.addTest(new DataSetCreateMnistTest(true, "request"));
-    testThread.addTest(new DataSetCreateMnistTest(true, "learn"));
+    testThread.addTest(new DataSetCreateMnistTest(true, "train"));
     testThread.addTest(new DataSetListTest(true));
-    testThread.addTest(new DataSetGetTest(true, "learn"));
-    testThread.addTest(new DataSetGetTest(false, "learn", "fail_user"));
+    testThread.addTest(new DataSetGetTest(true, "train"));
+    testThread.addTest(new DataSetGetTest(false, "train", "fail_user"));
 
     // test cluster of kyouko
     testThread.addTest(new ClusterCreateTest(true));
     testThread.addTest(new ClusterGetTest(true));
     testThread.addTest(new ClusterListTest(true));
 
-    // test learning-tasks of kyouko
+    // test training-tasks of kyouko
     for(int i = 0; i < 1; i++) {
-        testThread.addTest(new ImageLearnTaskTest(true));
+        testThread.addTest(new ImageTrainTaskTest(true));
     }
 
     // test cluster load and restore of kyouko and shiori
@@ -219,9 +219,9 @@ runImageTest(Kitsunemimi::JsonItem &inputData)
     testThread.addTest(new RequestResultGetTest(true));
     testThread.addTest(new RequestResultListTest(true));
 
-    // test snapshots of shiori
-    testThread.addTest(new SnapshotGetTest(true));
-    testThread.addTest(new SnapshotListTest(true));
+    // test checkpoints of shiori
+    testThread.addTest(new CheckpointGetTest(true));
+    testThread.addTest(new CheckpointListTest(true));
 
     // test direct-io of kyouko
     testThread.addTest(new ClusterSwitchToDirectTest(true));
@@ -233,14 +233,14 @@ runImageTest(Kitsunemimi::JsonItem &inputData)
     testThread.addTest(new UserDeleteTest(false));
     testThread.addTest(new ProjectDeleteTest(true));
     testThread.addTest(new ProjectDeleteTest(false));
-    testThread.addTest(new SnapshotDeleteTest(true));
+    testThread.addTest(new CheckpointDeleteTest(true));
     testThread.addTest(new ClusterDeleteTest(true));
     testThread.addTest(new ClusterDeleteTest(false));
     testThread.addTest(new RequestResultDeleteTest(true));
     testThread.addTest(new RequestResultDeleteTest(false));
     testThread.addTest(new DataSetDeleteTest(true, "request"));
-    testThread.addTest(new DataSetDeleteTest(true, "learn"));
-    testThread.addTest(new DataSetDeleteTest(false, "learn"));
+    testThread.addTest(new DataSetDeleteTest(true, "train"));
+    testThread.addTest(new DataSetDeleteTest(false, "train"));
 
     // check that the running user can not delete himself
     bool success = false;
@@ -293,20 +293,20 @@ runRestApiTests()
     inputData.insert("project_name", "Test Project");
 
     // add data from config
-    inputData.insert("learn_inputs", GET_STRING_CONFIG("test_data", "learn_inputs", success)),
-    inputData.insert("learn_labels", GET_STRING_CONFIG("test_data", "learn_labels", success)),
+    inputData.insert("train_inputs", GET_STRING_CONFIG("test_data", "train_inputs", success)),
+    inputData.insert("train_labels", GET_STRING_CONFIG("test_data", "train_labels", success)),
     inputData.insert("request_inputs", GET_STRING_CONFIG("test_data", "request_inputs", success)),
     inputData.insert("request_labels", GET_STRING_CONFIG("test_data", "request_labels", success)),
     inputData.insert("base_inputs", GET_STRING_CONFIG("test_data", "base_inputs", success)),
 
     // add predefined names for the coming test-resources
     inputData.insert("cluster_name", "test_cluster");
-    inputData.insert("cluster_snapshot_name", "test_snapshot");
+    inputData.insert("checkpoint_name", "test_checkpoint");
     inputData.insert("generic_task_name", "test_task");
     inputData.insert("template_name", "dynamic");
     inputData.insert("cluster_definition", clusterDefinition);
     inputData.insert("request_dataset_name", "request_test_dataset");
-    inputData.insert("learn_dataset_name", "learn_test_dataset");
+    inputData.insert("train_dataset_name", "train_test_dataset");
     inputData.insert("base_dataset_name", "base_test_dataset");
 
     runImageTest(inputData);

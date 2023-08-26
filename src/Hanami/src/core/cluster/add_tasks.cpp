@@ -29,7 +29,7 @@
 #include <libKitsunemimiCommon/statemachine.h>
 
 /**
- * @brief create a learn-task and add it to the task-queue
+ * @brief create a train-task and add it to the task-queue
  *
  * @param inputData input-data
  * @param numberOfInputsPerCycle number of inputs per cycle
@@ -39,7 +39,7 @@
  * @return task-uuid
  */
 const std::string
-addImageLearnTask(Cluster &cluster,
+addImageTrainTask(Cluster &cluster,
                   const std::string &name,
                   const std::string &userId,
                   const std::string &projectId,
@@ -48,14 +48,14 @@ addImageLearnTask(Cluster &cluster,
                   const uint64_t numberOfOuputsPerCycle,
                   const uint64_t numberOfCycles)
 {
-    // create new learn-task
+    // create new train-task
     Task newTask;
     newTask.uuid = generateUuid();
     newTask.name = name;
     newTask.userId = userId;
     newTask.projectId = projectId;
     newTask.inputData = inputData;
-    newTask.type = IMAGE_LEARN_TASK;
+    newTask.type = IMAGE_TRAIN_TASK;
     newTask.progress.state = QUEUED_TASK_STATE;
     newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
 
@@ -122,7 +122,7 @@ addImageRequestTask(Cluster &cluster,
 }
 
 /**
- * @brief create task to learn table-data and add it to the task-queue
+ * @brief create task to train table-data and add it to the task-queue
  *
  * @param inputData input-data
  * @param numberOfInputs number of inputs per cycle
@@ -131,7 +131,7 @@ addImageRequestTask(Cluster &cluster,
  * @return task-uuid
  */
 const std::string
-addTableLearnTask(Cluster &cluster,
+addTableTrainTask(Cluster &cluster,
                   const std::string &name,
                   const std::string &userId,
                   const std::string &projectId,
@@ -141,7 +141,7 @@ addTableLearnTask(Cluster &cluster,
                   const uint64_t numberOfOutputs,
                   const uint64_t numberOfCycles)
 {
-    // create new learn-task
+    // create new train-task
     Task newTask;
     newTask.uuid = generateUuid();
     newTask.name = name;
@@ -149,7 +149,7 @@ addTableLearnTask(Cluster &cluster,
     newTask.projectId = projectId;
     newTask.inputData = inputData;
     newTask.outputData = outputData;
-    newTask.type = TABLE_LEARN_TASK;
+    newTask.type = TABLE_TRAIN_TASK;
     newTask.progress.state = QUEUED_TASK_STATE;
     newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
 
@@ -215,32 +215,32 @@ addTableRequestTask(Cluster &cluster,
 }
 
 /**
- * @brief create task to create a snapshot from a cluster and add it to the task-queue
+ * @brief create task to create a checkpoint from a cluster and add it to the task-queue
  *
- * @param snapshotName name for the snapshot
- * @param userId uuid of the user, where the snapshot belongs to
- * @param projectId uuid of the project, where the snapshot belongs to
+ * @param checkpointName name for the checkpoint
+ * @param userId uuid of the user, where the checkpoint belongs to
+ * @param projectId uuid of the project, where the checkpoint belongs to
  *
  * @return task-uuid
  */
 const std::string
-addClusterSnapshotSaveTask(Cluster &cluster,
-                           const std::string &snapshotName,
+addCheckpointSaveTask(Cluster &cluster,
+                           const std::string &checkpointName,
                            const std::string &userId,
                            const std::string &projectId)
 {
     // create new request-task
     Task newTask;
     newTask.uuid = generateUuid();
-    newTask.name = snapshotName;
+    newTask.name = checkpointName;
     newTask.userId = userId;
     newTask.projectId = projectId;
-    newTask.type = CLUSTER_SNAPSHOT_SAVE_TASK;
+    newTask.type = CLUSTER_CHECKPOINT_SAVE_TASK;
     newTask.progress.state = QUEUED_TASK_STATE;
     newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
 
     // fill metadata
-    newTask.snapshotName = snapshotName;
+    newTask.checkpointName = checkpointName;
 
     // add tasgetNextTaskk to queue
     const std::string uuid = newTask.uuid.toString();
@@ -252,18 +252,18 @@ addClusterSnapshotSaveTask(Cluster &cluster,
 }
 
 /**
- * @brief create task to restore a cluster from a snapshot and add it to the task-queue
+ * @brief create task to restore a cluster from a checkpoint and add it to the task-queue
  *
- * @param snapshotUuid uuid of the snapshot
- * @param userId uuid of the user, where the snapshot belongs to
- * @param projectId uuid of the project, where the snapshot belongs to
+ * @param checkpointUuid uuid of the checkpoint
+ * @param userId uuid of the user, where the checkpoint belongs to
+ * @param projectId uuid of the project, where the checkpoint belongs to
  *
  * @return task-uuid
  */
 const std::string
-addClusterSnapshotRestoreTask(Cluster &cluster,
+addCheckpointRestoreTask(Cluster &cluster,
                               const std::string &name,
-                              const std::string &snapshotInfo,
+                              const std::string &checkpointInfo,
                               const std::string &userId,
                               const std::string &projectId)
 {
@@ -273,12 +273,12 @@ addClusterSnapshotRestoreTask(Cluster &cluster,
     newTask.name = name;
     newTask.userId = userId;
     newTask.projectId = projectId;
-    newTask.type = CLUSTER_SNAPSHOT_RESTORE_TASK;
+    newTask.type = CLUSTER_CHECKPOINT_RESTORE_TASK;
     newTask.progress.state = QUEUED_TASK_STATE;
     newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
 
     // fill metadata
-    newTask.snapshotInfo = snapshotInfo;
+    newTask.checkpointInfo = checkpointInfo;
 
     // add tasgetNextTaskk to queue
     const std::string uuid = newTask.uuid.toString();

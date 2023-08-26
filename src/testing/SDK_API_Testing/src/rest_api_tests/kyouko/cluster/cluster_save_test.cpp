@@ -44,7 +44,7 @@ ClusterSaveTest::runTest(Kitsunemimi::JsonItem &inputData,
     std::string result;
     if(HanamiAI::saveCluster(result,
                              inputData.get("cluster_uuid").getString(),
-                             inputData.get("cluster_snapshot_name").getString(),
+                             inputData.get("checkpoint_name").getString(),
                              error) != m_expectSuccess)
     {
         return false;
@@ -60,7 +60,7 @@ ClusterSaveTest::runTest(Kitsunemimi::JsonItem &inputData,
         return false;
     }
 
-    inputData.insert("cluster_snapshot_uuid", jsonItem.get("uuid").getString(), true);
+    inputData.insert("checkpoint_uuid", jsonItem.get("uuid").getString(), true);
 
     // wait until task is finished
     do
@@ -68,7 +68,7 @@ ClusterSaveTest::runTest(Kitsunemimi::JsonItem &inputData,
         sleep(1);
 
         HanamiAI::getTask(result,
-                          inputData.get("cluster_snapshot_uuid").getString(),
+                          inputData.get("checkpoint_uuid").getString(),
                           inputData.get("cluster_uuid").getString(),
                           error);
 

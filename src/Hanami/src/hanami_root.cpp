@@ -40,7 +40,7 @@
 
 #include <libKitsunemimiSakuraDatabase/sql_database.h>
 #include <database/data_set_table.h>
-#include <database/cluster_snapshot_table.h>
+#include <database/checkpoint_table.h>
 #include <database/request_result_table.h>
 #include <database/error_log_table.h>
 #include <database/audit_log_table.h>
@@ -248,11 +248,11 @@ HanamiRoot::initDatabase(Kitsunemimi::ErrorContainer &error)
         return false;
     }
 
-    // initialize cluster-snapshot-table
-    ClusterSnapshotTable* clusterSnapshotTable = ClusterSnapshotTable::getInstance();
-    if(clusterSnapshotTable->initTable(error) == false)
+    // initialize checkpoint-table
+    CheckpointTable* clusterCheckpointTable = CheckpointTable::getInstance();
+    if(clusterCheckpointTable->initTable(error) == false)
     {
-        error.addMeesage("Failed to initialize cluster-snapshot-table in database.");
+        error.addMeesage("Failed to initialize checkpoint-table in database.");
         LOG_ERROR(error);
         return false;
     }

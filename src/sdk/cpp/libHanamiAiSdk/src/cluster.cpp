@@ -160,11 +160,11 @@ deleteCluster(std::string &result,
 }
 
 /**
- * @brief create a snapshot of a cluster
+ * @brief create a checkpoint of a cluster
  *
  * @param result reference for response-message
  * @param clusterUuid uuid of the cluster to delete
- * @param snapshotName name of the new snapshot
+ * @param checkpointName name of the new checkpoint
  * @param error reference for error-output
  *
  * @return true, if successful, else false
@@ -172,7 +172,7 @@ deleteCluster(std::string &result,
 bool
 saveCluster(std::string &result,
             const std::string &clusterUuid,
-            const std::string &snapshotName,
+            const std::string &checkpointName,
             Kitsunemimi::ErrorContainer &error)
 {
     // create request
@@ -180,7 +180,7 @@ saveCluster(std::string &result,
     const std::string path = "/control/v1/cluster/save";
     const std::string vars = "";
     const std::string jsonBody = "{\"name\":\""
-                                 + snapshotName
+                                 + checkpointName
                                  + "\",\"cluster_uuid\":\""
                                  + clusterUuid
                                  + "\"}";
@@ -197,11 +197,11 @@ saveCluster(std::string &result,
 }
 
 /**
- * @brief restore cluster from a snapshot
+ * @brief restore cluster from a checkpoint
  *
  * @param result reference for response-message
  * @param clusterUuid uuid of the cluster to delete
- * @param snapshotUuid uuid of the snapshot, which should be loaded into the cluster
+ * @param checkpointUuid uuid of the checkpoint, which should be loaded into the cluster
  * @param error reference for error-output
  *
  * @return true, if successful, else false
@@ -209,15 +209,15 @@ saveCluster(std::string &result,
 bool
 restoreCluster(std::string &result,
                const std::string &clusterUuid,
-               const std::string &snapshotUuid,
+               const std::string &checkpointUuid,
                Kitsunemimi::ErrorContainer &error)
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/cluster/load";
     const std::string vars = "";
-    const std::string jsonBody = "{\"snapshot_uuid\":\""
-                                 + snapshotUuid
+    const std::string jsonBody = "{\"checkpoint_uuid\":\""
+                                 + checkpointUuid
                                  + "\",\"cluster_uuid\":\""
                                  + clusterUuid
                                  + "\"}";
@@ -225,7 +225,7 @@ restoreCluster(std::string &result,
     // send request
     if(request->sendPostRequest(result, path, vars, jsonBody, error) == false)
     {
-        error.addMeesage("Failed to restore snapshot with UUID '" + snapshotUuid + "'");
+        error.addMeesage("Failed to restore checkpoint with UUID '" + checkpointUuid + "'");
         LOG_ERROR(error);
         return false;
     }

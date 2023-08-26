@@ -1,5 +1,5 @@
 /**
- * @file        create_image_learn_task.cpp
+ * @file        create_image_train_task.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -50,7 +50,7 @@ CreateTask::CreateTask()
                        SAKURA_STRING_TYPE,
                        true,
                        "UUID of the data-set with the input, which coming from shiori.");
-    assert(addFieldRegex("type", "^(learn|request)$"));
+    assert(addFieldRegex("type", "^(train|request)$"));
 
     registerInputField("cluster_uuid",
                        SAKURA_STRING_TYPE,
@@ -166,7 +166,7 @@ CreateTask::runTask(BlossomIO &blossomIO,
  *
  * @param taskUuid reference for the output of the uuid of the new task
  * @param name name of the task
- * @param taskType type of the task (learn or request)
+ * @param taskType type of the task (train or request)
  * @param dataSetLocation location of the base-dataset for the task
  * @param userContext user-context
  * @param cluster pointer to the cluster, which should process the new task
@@ -204,9 +204,9 @@ CreateTask::imageTask(std::string &taskUuid,
     const uint64_t numberOfOutputs = dataSetInfo.get("outputs").getLong();
     const uint64_t numberOfLines = dataSetInfo.get("lines").getLong();
 
-    if(taskType == "learn")
+    if(taskType == "train")
     {
-        taskUuid = addImageLearnTask(*cluster,
+        taskUuid = addImageTrainTask(*cluster,
                                      name,
                                      userContext.userId,
                                      userContext.projectId,
@@ -235,7 +235,7 @@ CreateTask::imageTask(std::string &taskUuid,
  *
  * @param taskUuid reference for the output of the uuid of the new task
  * @param name name of the task
- * @param taskType type of the task (learn or request)
+ * @param taskType type of the task (train or request)
  * @param dataSetLocation location of the base-dataset for the task
  * @param userContext user-context
  * @param cluster pointer to the cluster, which should process the new task
@@ -307,7 +307,7 @@ CreateTask::tableTask(std::string &taskUuid,
 
         // create task
         const uint64_t numberOfLines = dataSetInfo.get("lines").getLong();
-        taskUuid = addTableLearnTask(*cluster,
+        taskUuid = addTableTrainTask(*cluster,
                                      name,
                                      userContext.userId,
                                      userContext.projectId,
