@@ -48,9 +48,9 @@
 #include <database/audit_log_table.h>
 #include <core/temp_file_handler.h>
 #include <core/thread_binder.h>
-#include <core/power_measuring.h>
-#include <core/speed_measuring.h>
-#include <core/temperature_measuring.h>
+#include <hardware/power_measuring.h>
+#include <hardware/speed_measuring.h>
+#include <hardware/temperature_measuring.h>
 
 // init static variables
 uint32_t* HanamiRoot::m_randomValues = nullptr;

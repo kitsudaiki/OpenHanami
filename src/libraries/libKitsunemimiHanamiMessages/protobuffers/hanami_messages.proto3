@@ -37,8 +37,6 @@ message ClusterIO_Message {
   repeated float values = 6 [packed=true];
 }
 
-
-
 enum UploadDataType 
 {
     DATASET_TYPE = 0;
@@ -70,7 +68,6 @@ message ErrorLog_Message
     string values = 5;
 }
 
-
 message AuditLog_Message
 {
     string userId = 1;
@@ -79,19 +76,16 @@ message AuditLog_Message
     string type = 4;
 }
 
-
 message ClusterSnapshotPull_Message
 {
     string location = 1;
 }
-
 
 message DatasetRequest_Message
 {
     string location = 1;
     string columnName = 2;
 }
-
 
 message ResultPush_Message
 {
