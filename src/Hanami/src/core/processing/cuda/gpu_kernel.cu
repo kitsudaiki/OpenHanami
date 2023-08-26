@@ -41,9 +41,6 @@ createNewSynapse(NeuronBlock* block,
                  const float remainingW,
                  const uint* randomValues)
 {
-    const float randMax = static_cast<float>(RAND_MAX);
-    const float sigNeg = segmentSettings->signNeg;
-
     // set activation-border
     synapse->border = remainingW;
 
@@ -145,7 +142,6 @@ prcessCoreSegmentKernel(NeuronBlock* neuronBlocks,
     while(synapseBlockId != UNINIT_STATE_32)
     {
         // process synapse-sections
-        const uint sectionId = threadIdx.x;
         Synapse* section = synapseBlocks[synapseBlockId].synapses[threadIdx.x];
         SynapseConnection* connection = &synapseConnections[synapseBlockId];
 
