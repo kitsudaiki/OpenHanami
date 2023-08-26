@@ -14,14 +14,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
  
-function listClusterSnapshots_request(outputFunc, token)
+function listCheckpoints_request(outputFunc, token)
 {
-    listObjects_request(outputFunc, "/control/v1/cluster_snapshot/all", token);
+    listObjects_request(outputFunc, "/control/v1/checkpoint/all", token);
 }
 
-function deleteClusterSnapshot_request(postProcessFunc, resultUuid, token)
+function deleteCheckpoint_request(postProcessFunc, resultUuid, token)
 {
-    const request = "/control/v1/cluster_snapshot?uuid=" + resultUuid;
+    const request = "/control/v1/checkpoint?uuid=" + resultUuid;
     deleteObject_request(postProcessFunc, request, token);
 }
 

@@ -29,7 +29,7 @@ limitations under the License. -->
         </button>
         <div class="sidebar_drop_content">
             <a id="shiori_dataset_list" class="sidebar_dropdown_entry" href="#">Datasets</a>
-            <a id="shiori_cluster_snapshot_list" class="sidebar_dropdown_entry" href="#">Cluster Snapshots</a>
+            <a id="shiori_checkpoint_list" class="sidebar_dropdown_entry" href="#">Checkpoints</a>
             <a id="shiori_request_result_list" class="sidebar_dropdown_entry" href="#">Request Results</a>
             <a id="shiori_audit_log_list" class="sidebar_dropdown_entry" href="#">Audit Logs</a>
         </div>
@@ -153,8 +153,8 @@ limitations under the License. -->
     document.getElementById("shiori_dataset_list").addEventListener("click", function() {
         $("#content_div").load("/subsites/shiori/dataset.html"); 
     });
-    document.getElementById("shiori_cluster_snapshot_list").addEventListener("click", function() {
-        $("#content_div").load("/subsites/shiori/cluster_snapshot.html"); 
+    document.getElementById("shiori_checkpoint_list").addEventListener("click", function() {
+        $("#content_div").load("/subsites/shiori/checkpoint.html"); 
     });
     document.getElementById("shiori_request_result_list").addEventListener("click", function() {
         $("#content_div").load("/subsites/shiori/request_result.html"); 
