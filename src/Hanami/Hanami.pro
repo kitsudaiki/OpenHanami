@@ -4,82 +4,82 @@ TARGET = Hanami
 CONFIG += console
 CONFIG += c++17
 
-INCLUDEPATH += ../../libraries/libKitsunemimiHanamiMessages/protobuffers
+INCLUDEPATH += ../libraries/libKitsunemimiHanamiMessages/protobuffers
 
-LIBS += -L../../libraries/libKitsunemimiHanamiClusterParser/src -lKitsunemimiHanamiClusterParser
-LIBS += -L../../libraries/libKitsunemimiHanamiClusterParser/src/debug -lKitsunemimiHanamiClusterParser
-LIBS += -L../../libraries/libKitsunemimiHanamiClusterParser/src/release -lKitsunemimiHanamiClusterParser
-INCLUDEPATH += ../../libraries/libKitsunemimiHanamiClusterParser/include
+LIBS += -L../libraries/libKitsunemimiHanamiClusterParser/src -lKitsunemimiHanamiClusterParser
+LIBS += -L../libraries/libKitsunemimiHanamiClusterParser/src/debug -lKitsunemimiHanamiClusterParser
+LIBS += -L../libraries/libKitsunemimiHanamiClusterParser/src/release -lKitsunemimiHanamiClusterParser
+INCLUDEPATH += ../libraries/libKitsunemimiHanamiClusterParser/include
 
-LIBS += -L../../libraries/libKitsunemimiHanamiPolicies/src -lKitsunemimiHanamiPolicies
-LIBS += -L../../libraries/libKitsunemimiHanamiPolicies/src/debug -lKitsunemimiHanamiPolicies
-LIBS += -L../../libraries/libKitsunemimiHanamiPolicies/src/release -lKitsunemimiHanamiPolicies
-INCLUDEPATH += ../../libraries/libKitsunemimiHanamiPolicies/include
+LIBS += -L../libraries/libKitsunemimiHanamiPolicies/src -lKitsunemimiHanamiPolicies
+LIBS += -L../libraries/libKitsunemimiHanamiPolicies/src/debug -lKitsunemimiHanamiPolicies
+LIBS += -L../libraries/libKitsunemimiHanamiPolicies/src/release -lKitsunemimiHanamiPolicies
+INCLUDEPATH += ../libraries/libKitsunemimiHanamiPolicies/include
 
-LIBS += -L../../libraries/libKitsunemimiArgs/src -lKitsunemimiArgs
-LIBS += -L../../libraries/libKitsunemimiArgs/src/debug -lKitsunemimiArgs
-LIBS += -L../../libraries/libKitsunemimiArgs/src/release -lKitsunemimiArgs
-INCLUDEPATH += ../../libraries/libKitsunemimiArgs/include
+LIBS += -L../libraries/libKitsunemimiArgs/src -lKitsunemimiArgs
+LIBS += -L../libraries/libKitsunemimiArgs/src/debug -lKitsunemimiArgs
+LIBS += -L../libraries/libKitsunemimiArgs/src/release -lKitsunemimiArgs
+INCLUDEPATH += ../libraries/libKitsunemimiArgs/include
 
-LIBS += -L../../libraries/libKitsunemimiConfig/src -lKitsunemimiConfig
-LIBS += -L../../libraries/libKitsunemimiConfig/src/debug -lKitsunemimiConfig
-LIBS += -L../../libraries/libKitsunemimiConfig/src/release -lKitsunemimiConfig
-INCLUDEPATH += ../../libraries/libKitsunemimiConfig/include
+LIBS += -L../libraries/libKitsunemimiConfig/src -lKitsunemimiConfig
+LIBS += -L../libraries/libKitsunemimiConfig/src/debug -lKitsunemimiConfig
+LIBS += -L../libraries/libKitsunemimiConfig/src/release -lKitsunemimiConfig
+INCLUDEPATH += ../libraries/libKitsunemimiConfig/include
 
-LIBS += -L../../libraries/../libraries/libKitsunemimiSakuraHardware/src -lKitsunemimiSakuraHardware
-LIBS += -L../../libraries/../libraries/libKitsunemimiSakuraHardware/src/debug -lKitsunemimiSakuraHardware
-LIBS += -L../../libraries/../libraries/libKitsunemimiSakuraHardware/src/release -lKitsunemimiSakuraHardware
-INCLUDEPATH += ../../libraries/libKitsunemimiSakuraHardware/include
+LIBS += -L../libraries/../libraries/libKitsunemimiSakuraHardware/src -lKitsunemimiSakuraHardware
+LIBS += -L../libraries/../libraries/libKitsunemimiSakuraHardware/src/debug -lKitsunemimiSakuraHardware
+LIBS += -L../libraries/../libraries/libKitsunemimiSakuraHardware/src/release -lKitsunemimiSakuraHardware
+INCLUDEPATH += ../libraries/libKitsunemimiSakuraHardware/include
 
-LIBS += -L../../libraries/libKitsunemimiSakuraDatabase/src -lKitsunemimiSakuraDatabase
-LIBS += -L../../libraries/libKitsunemimiSakuraDatabase/src/debug -lKitsunemimiSakuraDatabase
-LIBS += -L../../libraries/libKitsunemimiSakuraDatabase/src/release -lKitsunemimiSakuraDatabase
-INCLUDEPATH += ../../libraries/libKitsunemimiSakuraDatabase/include
+LIBS += -L../libraries/libKitsunemimiSakuraDatabase/src -lKitsunemimiSakuraDatabase
+LIBS += -L../libraries/libKitsunemimiSakuraDatabase/src/debug -lKitsunemimiSakuraDatabase
+LIBS += -L../libraries/libKitsunemimiSakuraDatabase/src/release -lKitsunemimiSakuraDatabase
+INCLUDEPATH += ../libraries/libKitsunemimiSakuraDatabase/include
 
-LIBS += -L../../libraries/libKitsunemimiCommon/src -lKitsunemimiCommon
-LIBS += -L../../libraries/libKitsunemimiCommon/src/debug -lKitsunemimiCommon
-LIBS += -L../../libraries/libKitsunemimiCommon/src/release -lKitsunemimiCommon
-INCLUDEPATH += ../../libraries/libKitsunemimiCommon/include
+LIBS += -L../libraries/libKitsunemimiCommon/src -lKitsunemimiCommon
+LIBS += -L../libraries/libKitsunemimiCommon/src/debug -lKitsunemimiCommon
+LIBS += -L../libraries/libKitsunemimiCommon/src/release -lKitsunemimiCommon
+INCLUDEPATH += ../libraries/libKitsunemimiCommon/include
 
-LIBS += -L../../libraries/libKitsunemimiSqlite/src -lKitsunemimiSqlite
-LIBS += -L../../libraries/libKitsunemimiSqlite/src/debug -lKitsunemimiSqlite
-LIBS += -L../../libraries/libKitsunemimiSqlite/src/release -lKitsunemimiSqlite
-INCLUDEPATH += ../../libraries/libKitsunemimiSqlite/include
+LIBS += -L../libraries/libKitsunemimiSqlite/src -lKitsunemimiSqlite
+LIBS += -L../libraries/libKitsunemimiSqlite/src/debug -lKitsunemimiSqlite
+LIBS += -L../libraries/libKitsunemimiSqlite/src/release -lKitsunemimiSqlite
+INCLUDEPATH += ../libraries/libKitsunemimiSqlite/include
 
-LIBS += -L../../libraries/libKitsunemimiIni/src -lKitsunemimiIni
-LIBS += -L../../libraries/libKitsunemimiIni/src/debug -lKitsunemimiIni
-LIBS += -L../../libraries/libKitsunemimiIni/src/release -lKitsunemimiIni
-INCLUDEPATH += ../../libraries/libKitsunemimiIni/include
+LIBS += -L../libraries/libKitsunemimiIni/src -lKitsunemimiIni
+LIBS += -L../libraries/libKitsunemimiIni/src/debug -lKitsunemimiIni
+LIBS += -L../libraries/libKitsunemimiIni/src/release -lKitsunemimiIni
+INCLUDEPATH += ../libraries/libKitsunemimiIni/include
 
-LIBS += -L../../libraries/libKitsunemimiJson/src -lKitsunemimiJson
-LIBS += -L../../libraries/libKitsunemimiJson/src/debug -lKitsunemimiJson
-LIBS += -L../../libraries/libKitsunemimiJson/src/release -lKitsunemimiJson
-INCLUDEPATH += ../../libraries/libKitsunemimiJson/include
+LIBS += -L../libraries/libKitsunemimiJson/src -lKitsunemimiJson
+LIBS += -L../libraries/libKitsunemimiJson/src/debug -lKitsunemimiJson
+LIBS += -L../libraries/libKitsunemimiJson/src/release -lKitsunemimiJson
+INCLUDEPATH += ../libraries/libKitsunemimiJson/include
 
-LIBS += -L../../libraries/libKitsunemimiJwt/src -lKitsunemimiJwt
-LIBS += -L../../libraries/libKitsunemimiJwt/src/debug -lKitsunemimiJwt
-LIBS += -L../../libraries/libKitsunemimiJwti/src/release -lKitsunemimiJwt
-INCLUDEPATH += ../../libraries/libKitsunemimiJwt/include
+LIBS += -L../libraries/libKitsunemimiJwt/src -lKitsunemimiJwt
+LIBS += -L../libraries/libKitsunemimiJwt/src/debug -lKitsunemimiJwt
+LIBS += -L../libraries/libKitsunemimiJwti/src/release -lKitsunemimiJwt
+INCLUDEPATH += ../libraries/libKitsunemimiJwt/include
 
-LIBS += -L../../libraries/libKitsunemimiCrypto/src -lKitsunemimiCrypto
-LIBS += -L../../libraries/libKitsunemimiCrypto/src/debug -lKitsunemimiCrypto
-LIBS += -L../../libraries/libKitsunemimiCrypto/src/release -lKitsunemimiCrypto
-INCLUDEPATH += ../../libraries/libKitsunemimiCrypto/include
+LIBS += -L../libraries/libKitsunemimiCrypto/src -lKitsunemimiCrypto
+LIBS += -L../libraries/libKitsunemimiCrypto/src/debug -lKitsunemimiCrypto
+LIBS += -L../libraries/libKitsunemimiCrypto/src/release -lKitsunemimiCrypto
+INCLUDEPATH += ../libraries/libKitsunemimiCrypto/include
 
-LIBS += -L../../libraries/libKitsunemimiOpencl/src -lKitsunemimiOpencl
-LIBS += -L../../libraries/libKitsunemimiOpencl/src/debug -lKitsunemimiOpencl
-LIBS += -L../../libraries/libKitsunemimiOpencl/src/release -lKitsunemimiOpencl
-INCLUDEPATH += ../../libraries/libKitsunemimiOpencl/include
+LIBS += -L../libraries/libKitsunemimiOpencl/src -lKitsunemimiOpencl
+LIBS += -L../libraries/libKitsunemimiOpencl/src/debug -lKitsunemimiOpencl
+LIBS += -L../libraries/libKitsunemimiOpencl/src/release -lKitsunemimiOpencl
+INCLUDEPATH += ../libraries/libKitsunemimiOpencl/include
 
-LIBS += -L../../libraries/../libraries/libKitsunemimiCpu/src -lKitsunemimiCpu
-LIBS += -L../../libraries/../libraries/libKitsunemimiCpu/src/debug -lKitsunemimiCpu
-LIBS += -L../../libraries/../libraries/libKitsunemimiCpu/src/release -lKitsunemimiCpu
-INCLUDEPATH += ../../libraries/libKitsunemimiCpu/include
+LIBS += -L../libraries/../libraries/libKitsunemimiCpu/src -lKitsunemimiCpu
+LIBS += -L../libraries/../libraries/libKitsunemimiCpu/src/debug -lKitsunemimiCpu
+LIBS += -L../libraries/../libraries/libKitsunemimiCpu/src/release -lKitsunemimiCpu
+INCLUDEPATH += ../libraries/libKitsunemimiCpu/include
 
-LIBS += -L../../sdk/cpp/libHanamiAiSdk/src -lHanamiAiSdk
-LIBS += -L../../sdk/cpp/libHanamiAiSdk/src/debug -lHanamiAiSdk
-LIBS += -L../../sdk/cpp/libHanamiAiSdk/src/release -lHanamiAiSdk
-INCLUDEPATH += ../../sdk/cpp/libHanamiAiSdk/include
+LIBS += -L../sdk/cpp/libHanamiAiSdk/src -lHanamiAiSdk
+LIBS += -L../sdk/cpp/libHanamiAiSdk/src/debug -lHanamiAiSdk
+LIBS += -L../sdk/cpp/libHanamiAiSdk/src/release -lHanamiAiSdk
+INCLUDEPATH += ../sdk/cpp/libHanamiAiSdk/include
 
 LIBS += -lcryptopp -lssl -lsqlite3 -luuid -lcrypto -pthread -lprotobuf -lOpenCL
 LIBS +=  -L"/usr/local/cuda-12.1/targets/x86_64-linux/lib"  -L"/usr/local/cuda-12.2/targets/x86_64-linux/lib" -lcuda -lcudart -lcublas
@@ -87,7 +87,7 @@ LIBS +=  -L"/usr/local/cuda-12.1/targets/x86_64-linux/lib"  -L"/usr/local/cuda-1
 INCLUDEPATH += $$PWD \
                src
 
-HANAMI_PROTO_BUFFER = ../../libraries/libKitsunemimiHanamiMessages/protobuffers/hanami_messages.proto3
+HANAMI_PROTO_BUFFER = ../libraries/libKitsunemimiHanamiMessages/protobuffers/hanami_messages.proto3
 GPU_KERNEL = src/core/processing/opencl/gpu_kernel.cl
 CUDA_SOURCES = src/core/processing/cuda/gpu_kernel.cu
 
@@ -96,9 +96,9 @@ OTHER_FILES += \
 
 cudaKernel.input = CUDA_SOURCES
 cudaKernel.output = ${QMAKE_FILE_BASE}.o
-cudaKernel.commands = /usr/local/cuda-12.1/bin/nvcc -O3 -c -I$$PWD/../../libraries/libKitsunemimiCommon/include -o ${QMAKE_FILE_BASE}.o ${QMAKE_FILE_IN} \
-                      || /usr/local/cuda-12.2/bin/nvcc -O3 -c -I$$PWD/../../libraries/libKitsunemimiCommon/include -o ${QMAKE_FILE_BASE}.o ${QMAKE_FILE_IN} \
-                      || nvcc -O3 -c -I$$PWD/../../libraries/libKitsunemimiCommon/include -o ${QMAKE_FILE_BASE}.o ${QMAKE_FILE_IN}
+cudaKernel.commands = /usr/local/cuda-12.1/bin/nvcc -O3 -c -I$$PWD/../libraries/libKitsunemimiCommon/include -o ${QMAKE_FILE_BASE}.o ${QMAKE_FILE_IN} \
+                      || /usr/local/cuda-12.2/bin/nvcc -O3 -c -I$$PWD/../libraries/libKitsunemimiCommon/include -o ${QMAKE_FILE_BASE}.o ${QMAKE_FILE_IN} \
+                      || nvcc -O3 -c -I$$PWD/../libraries/libKitsunemimiCommon/include -o ${QMAKE_FILE_BASE}.o ${QMAKE_FILE_IN}
 cudaKernel.CONFIG += target_predeps
 QMAKE_EXTRA_COMPILERS += cudaKernel
 
