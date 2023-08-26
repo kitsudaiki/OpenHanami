@@ -7,7 +7,6 @@ SUBDIRS =  libKitsunemimiCommon
 # SUBDIRS += libKitsunemimiNetwork
 SUBDIRS += libKitsunemimiJson
 SUBDIRS += libKitsunemimiCrypto
-SUBDIRS += libKitsunemimiJwt
 SUBDIRS += libKitsunemimiIni
 SUBDIRS += libKitsunemimiArgs
 SUBDIRS += libKitsunemimiConfig
