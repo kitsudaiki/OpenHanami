@@ -24,6 +24,5 @@ HEADERS += \
 SOURCES += \
     common.cpp \
     hashes.cpp \
-    signing.cpp \
     symmetric_encryption.cpp
 
