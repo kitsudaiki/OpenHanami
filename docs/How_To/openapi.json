@@ -175,6 +175,331 @@
                 ]
             }
         },
+        "v1/checkpoint": {
+            "delete": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "UUID of the checkpoint to delete.",
+                        "in": "query",
+                        "name": "uuid",
+                        "required": true,
+                        "schema": {
+                            "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Delete a result-set from shiori.",
+                "tags": [
+                    "Checkpoint"
+                ]
+            },
+            "get": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "UUID of the original request-task, which placed the result in shiori.",
+                        "in": "query",
+                        "name": "uuid",
+                        "required": true,
+                        "schema": {
+                            "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "header": {
+                                            "description": "Header-information of the checkpoint-file.",
+                                            "type": "object"
+                                        },
+                                        "location": {
+                                            "description": "File path on local storage.",
+                                            "type": "string"
+                                        },
+                                        "name": {
+                                            "description": "Name of the data-set.",
+                                            "type": "string"
+                                        },
+                                        "uuid": {
+                                            "description": "UUID of the data-set.",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Get checkpoint of a cluster.",
+                "tags": [
+                    "Checkpoint"
+                ]
+            },
+            "post": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "header": {
+                                        "description": "Header of the file with information of the splits.",
+                                        "type": "object"
+                                    },
+                                    "input_data_size": {
+                                        "description": "Total size of the checkpoint in number of bytes.",
+                                        "maximum": "10000000000",
+                                        "minimum": "1",
+                                        "type": "integer"
+                                    },
+                                    "name": {
+                                        "description": "Name of the new checkpoint.",
+                                        "maxLength": "256",
+                                        "minLength": "4",
+                                        "pattern": "[a-zA-Z][a-zA-Z_0-9 ]*",
+                                        "type": "string"
+                                    },
+                                    "project_id": {
+                                        "description": "ID of the project, where the checkpoint belongs to.",
+                                        "maxLength": "256",
+                                        "minLength": "4",
+                                        "pattern": "[a-zA-Z][a-zA-Z_0-9]*",
+                                        "type": "string"
+                                    },
+                                    "user_id": {
+                                        "description": "ID of the user, who owns the checkpoint.",
+                                        "maxLength": "256",
+                                        "minLength": "4",
+                                        "pattern": "[a-zA-Z][a-zA-Z_0-9@]*",
+                                        "type": "string"
+                                    },
+                                    "uuid": {
+                                        "description": "UUID of the new checkpoint.",
+                                        "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "header",
+                                    "input_data_size",
+                                    "name",
+                                    "project_id",
+                                    "user_id",
+                                    "uuid"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "name": {
+                                            "description": "Name of the new checkpoint.",
+                                            "type": "string"
+                                        },
+                                        "uuid": {
+                                            "description": "UUID of the new checkpoint.",
+                                            "type": "string"
+                                        },
+                                        "uuid_input_file": {
+                                            "description": "UUID to identify the file for data upload of the checkpoint.",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Init new checkpoint of a cluster.",
+                "tags": [
+                    "Checkpoint"
+                ]
+            },
+            "put": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "project_id": {
+                                        "description": "Name of the new set.",
+                                        "type": "string"
+                                    },
+                                    "user_id": {
+                                        "description": "ID of the user, who belongs to the checkpoint.",
+                                        "maxLength": "256",
+                                        "minLength": "4",
+                                        "pattern": "[a-zA-Z][a-zA-Z_0-9]*",
+                                        "type": "string"
+                                    },
+                                    "uuid": {
+                                        "description": "Name of the new set.",
+                                        "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                                        "type": "string"
+                                    },
+                                    "uuid_input_file": {
+                                        "description": "UUID to identify the file for date upload of input-data.",
+                                        "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "project_id",
+                                    "user_id",
+                                    "uuid",
+                                    "uuid_input_file"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "uuid": {
+                                            "description": "UUID of the new set.",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Finish checkpoint of a cluster.",
+                "tags": [
+                    "Checkpoint"
+                ]
+            }
+        },
+        "v1/checkpoint/all": {
+            "get": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "body": {
+                                            "description": "Array with all rows of the table, which array arrays too.",
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        },
+                                        "header": {
+                                            "description": "Array with the namings all columns of the table.",
+                                            "items": {
+                                                "enum": [
+                                                    "uuid",
+                                                    "project_id",
+                                                    "owner_id",
+                                                    "visibility",
+                                                    "name"
+                                                ],
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "List checkpoints of all visible cluster.",
+                "tags": [
+                    "Checkpoint"
+                ]
+            }
+        },
         "v1/cluster": {
             "delete": {
                 "parameters": [
@@ -426,20 +751,20 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
-                                    "cluster_uuid": {
-                                        "description": "UUID of the cluster, where the snapshot should be loaded into.",
+                                    "checkpoint_uuid": {
+                                        "description": "UUID of the checkpoint, which should be loaded from shiori into the cluster.",
                                         "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
                                         "type": "string"
                                     },
-                                    "snapshot_uuid": {
-                                        "description": "UUID of the snapshot, which should be loaded from shiori into the cluster.",
+                                    "cluster_uuid": {
+                                        "description": "UUID of the cluster, where the checkpoint should be loaded into.",
                                         "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
                                         "type": "string"
                                     }
                                 },
                                 "required": [
-                                    "cluster_uuid",
-                                    "snapshot_uuid"
+                                    "checkpoint_uuid",
+                                    "cluster_uuid"
                                 ],
                                 "type": "object"
                             }
@@ -465,7 +790,7 @@
                         "description": "Successful response"
                     }
                 },
-                "summary": "Load a snapshot from shiori into an existing cluster and override the old data.",
+                "summary": "Load a checkpoint from shiori into an existing cluster and override the old data.",
                 "tags": [
                     "Cluster"
                 ]
@@ -495,7 +820,7 @@
                                         "type": "string"
                                     },
                                     "name": {
-                                        "description": "Name for task, which is place in the task-queue and for the new snapshot.",
+                                        "description": "Name for task, which is place in the task-queue and for the new checkpoint.",
                                         "maxLength": "256",
                                         "minLength": "4",
                                         "pattern": "[a-zA-Z][a-zA-Z_0-9 ]*",
@@ -519,7 +844,7 @@
                                 "schema": {
                                     "properties": {
                                         "name": {
-                                            "description": "Name of the new created task and of the snapshot, which should be created by the task.",
+                                            "description": "Name of the new created task and of the checkpoint, which should be created by the task.",
                                             "type": "string"
                                         },
                                         "uuid": {
@@ -613,331 +938,6 @@
                 "summary": "Set mode of the cluster.",
                 "tags": [
                     "Cluster"
-                ]
-            }
-        },
-        "v1/cluster_snapshot": {
-            "delete": {
-                "parameters": [
-                    {
-                        "description": "JWT-Token for authentication",
-                        "in": "header",
-                        "name": "X-Auth-Token",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "UUID of the cluster-snapshot to delete.",
-                        "in": "query",
-                        "name": "uuid",
-                        "required": true,
-                        "schema": {
-                            "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object"
-                                }
-                            }
-                        },
-                        "description": "Successful response"
-                    }
-                },
-                "summary": "Delete a result-set from shiori.",
-                "tags": [
-                    "Snapshot"
-                ]
-            },
-            "get": {
-                "parameters": [
-                    {
-                        "description": "JWT-Token for authentication",
-                        "in": "header",
-                        "name": "X-Auth-Token",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "UUID of the original request-task, which placed the result in shiori.",
-                        "in": "query",
-                        "name": "uuid",
-                        "required": true,
-                        "schema": {
-                            "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "header": {
-                                            "description": "Header-information of the snapshot-file.",
-                                            "type": "object"
-                                        },
-                                        "location": {
-                                            "description": "File path on local storage.",
-                                            "type": "string"
-                                        },
-                                        "name": {
-                                            "description": "Name of the data-set.",
-                                            "type": "string"
-                                        },
-                                        "uuid": {
-                                            "description": "UUID of the data-set.",
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        },
-                        "description": "Successful response"
-                    }
-                },
-                "summary": "Get snapshot of a cluster.",
-                "tags": [
-                    "Snapshot"
-                ]
-            },
-            "post": {
-                "parameters": [
-                    {
-                        "description": "JWT-Token for authentication",
-                        "in": "header",
-                        "name": "X-Auth-Token",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "header": {
-                                        "description": "Header of the file with information of the splits.",
-                                        "type": "object"
-                                    },
-                                    "input_data_size": {
-                                        "description": "Total size of the snapshot in number of bytes.",
-                                        "maximum": "10000000000",
-                                        "minimum": "1",
-                                        "type": "integer"
-                                    },
-                                    "name": {
-                                        "description": "Name of the new snapshot.",
-                                        "maxLength": "256",
-                                        "minLength": "4",
-                                        "pattern": "[a-zA-Z][a-zA-Z_0-9 ]*",
-                                        "type": "string"
-                                    },
-                                    "project_id": {
-                                        "description": "ID of the project, where the snapshot belongs to.",
-                                        "maxLength": "256",
-                                        "minLength": "4",
-                                        "pattern": "[a-zA-Z][a-zA-Z_0-9]*",
-                                        "type": "string"
-                                    },
-                                    "user_id": {
-                                        "description": "ID of the user, who owns the snapshot.",
-                                        "maxLength": "256",
-                                        "minLength": "4",
-                                        "pattern": "[a-zA-Z][a-zA-Z_0-9@]*",
-                                        "type": "string"
-                                    },
-                                    "uuid": {
-                                        "description": "UUID of the new snapshot.",
-                                        "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
-                                        "type": "string"
-                                    }
-                                },
-                                "required": [
-                                    "header",
-                                    "input_data_size",
-                                    "name",
-                                    "project_id",
-                                    "user_id",
-                                    "uuid"
-                                ],
-                                "type": "object"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "name": {
-                                            "description": "Name of the new snapshot.",
-                                            "type": "string"
-                                        },
-                                        "uuid": {
-                                            "description": "UUID of the new snapshot.",
-                                            "type": "string"
-                                        },
-                                        "uuid_input_file": {
-                                            "description": "UUID to identify the file for data upload of the snapshot.",
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        },
-                        "description": "Successful response"
-                    }
-                },
-                "summary": "Init new snapshot of a cluster.",
-                "tags": [
-                    "Snapshot"
-                ]
-            },
-            "put": {
-                "parameters": [
-                    {
-                        "description": "JWT-Token for authentication",
-                        "in": "header",
-                        "name": "X-Auth-Token",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "project_id": {
-                                        "description": "Name of the new set.",
-                                        "type": "string"
-                                    },
-                                    "user_id": {
-                                        "description": "ID of the user, who belongs to the snapshot.",
-                                        "maxLength": "256",
-                                        "minLength": "4",
-                                        "pattern": "[a-zA-Z][a-zA-Z_0-9]*",
-                                        "type": "string"
-                                    },
-                                    "uuid": {
-                                        "description": "Name of the new set.",
-                                        "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
-                                        "type": "string"
-                                    },
-                                    "uuid_input_file": {
-                                        "description": "UUID to identify the file for date upload of input-data.",
-                                        "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
-                                        "type": "string"
-                                    }
-                                },
-                                "required": [
-                                    "project_id",
-                                    "user_id",
-                                    "uuid",
-                                    "uuid_input_file"
-                                ],
-                                "type": "object"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "uuid": {
-                                            "description": "UUID of the new set.",
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        },
-                        "description": "Successful response"
-                    }
-                },
-                "summary": "Finish snapshot of a cluster.",
-                "tags": [
-                    "Snapshot"
-                ]
-            }
-        },
-        "v1/cluster_snapshot/all": {
-            "get": {
-                "parameters": [
-                    {
-                        "description": "JWT-Token for authentication",
-                        "in": "header",
-                        "name": "X-Auth-Token",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "body": {
-                                            "description": "Array with all rows of the table, which array arrays too.",
-                                            "items": {
-                                                "type": "string"
-                                            },
-                                            "type": "array"
-                                        },
-                                        "header": {
-                                            "description": "Array with the namings all columns of the table.",
-                                            "items": {
-                                                "enum": [
-                                                    "uuid",
-                                                    "project_id",
-                                                    "owner_id",
-                                                    "visibility",
-                                                    "name"
-                                                ],
-                                                "type": "string"
-                                            },
-                                            "type": "array"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        },
-                        "description": "Successful response"
-                    }
-                },
-                "summary": "List snapshots of all visible cluster.",
-                "tags": [
-                    "Snapshot"
                 ]
             }
         },
@@ -2323,7 +2323,7 @@
                                     },
                                     "type": {
                                         "description": "UUID of the data-set with the input, which coming from shiori.",
-                                        "pattern": "^(learn|request)$",
+                                        "pattern": "^(train|request)$",
                                         "type": "string"
                                     }
                                 },
@@ -2466,243 +2466,6 @@
                 "summary": "Request the temperature-measurement of the CPU",
                 "tags": [
                     "Measurements"
-                ]
-            }
-        },
-        "v1/template": {
-            "delete": {
-                "parameters": [
-                    {
-                        "description": "JWT-Token for authentication",
-                        "in": "header",
-                        "name": "X-Auth-Token",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "UUID of the template.",
-                        "in": "query",
-                        "name": "uuid",
-                        "required": true,
-                        "schema": {
-                            "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object"
-                                }
-                            }
-                        },
-                        "description": "Successful response"
-                    }
-                },
-                "summary": "Delete a template from the database.",
-                "tags": [
-                    "Template"
-                ]
-            },
-            "get": {
-                "parameters": [
-                    {
-                        "description": "JWT-Token for authentication",
-                        "in": "header",
-                        "name": "X-Auth-Token",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "UUID of the template.",
-                        "in": "query",
-                        "name": "uuid",
-                        "required": true,
-                        "schema": {
-                            "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "name": {
-                                            "description": "Name of the template.",
-                                            "type": "string"
-                                        },
-                                        "owner_id": {
-                                            "description": "ID of the user, who created the template.",
-                                            "type": "string"
-                                        },
-                                        "project_id": {
-                                            "description": "ID of the project, where the template belongs to.",
-                                            "type": "string"
-                                        },
-                                        "template": {
-                                            "description": "The template itself.",
-                                            "type": "string"
-                                        },
-                                        "uuid": {
-                                            "description": "UUID of the template.",
-                                            "type": "string"
-                                        },
-                                        "visibility": {
-                                            "description": "Visibility of the template (private, shared, public).",
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        },
-                        "description": "Successful response"
-                    }
-                },
-                "summary": "Show a specific template.",
-                "tags": [
-                    "Template"
-                ]
-            }
-        },
-        "v1/template/all": {
-            "get": {
-                "parameters": [
-                    {
-                        "description": "JWT-Token for authentication",
-                        "in": "header",
-                        "name": "X-Auth-Token",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "body": {
-                                            "description": "Array with all rows of the table, which array arrays too.",
-                                            "items": {
-                                                "type": "string"
-                                            },
-                                            "type": "array"
-                                        },
-                                        "header": {
-                                            "description": "Array with the namings all columns of the table.",
-                                            "items": {
-                                                "enum": [
-                                                    "uuid",
-                                                    "name"
-                                                ],
-                                                "type": "string"
-                                            },
-                                            "type": "array"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        },
-                        "description": "Successful response"
-                    }
-                },
-                "summary": "List all visible templates.",
-                "tags": [
-                    "Template"
-                ]
-            }
-        },
-        "v1/template/upload": {
-            "post": {
-                "parameters": [
-                    {
-                        "description": "JWT-Token for authentication",
-                        "in": "header",
-                        "name": "X-Auth-Token",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "name": {
-                                        "description": "Name for the new template.",
-                                        "maxLength": "256",
-                                        "minLength": "4",
-                                        "pattern": "[a-zA-Z][a-zA-Z_0-9]*",
-                                        "type": "string"
-                                    },
-                                    "template": {
-                                        "description": "New template to upload as base64 string.",
-                                        "type": "string"
-                                    }
-                                },
-                                "required": [
-                                    "name",
-                                    "template"
-                                ],
-                                "type": "object"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "name": {
-                                            "description": "Name of the new uploaded template.",
-                                            "type": "string"
-                                        },
-                                        "owner_id": {
-                                            "description": "ID of the user, who created the new template.",
-                                            "type": "string"
-                                        },
-                                        "project_id": {
-                                            "description": "ID of the project, where the new template belongs to.",
-                                            "type": "string"
-                                        },
-                                        "uuid": {
-                                            "description": "UUID of the new uploaded template.",
-                                            "type": "string"
-                                        },
-                                        "visibility": {
-                                            "description": "Visibility of the new created template (private, shared, public).",
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        },
-                        "description": "Successful response"
-                    }
-                },
-                "summary": "Upload a new template and store it within the database.",
-                "tags": [
-                    "Template"
                 ]
             }
         },
