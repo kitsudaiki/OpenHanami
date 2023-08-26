@@ -59,13 +59,13 @@ data:
     v1/data_set/all
     - GET: admin, member
 
-    v1/cluster_snapshot
+    v1/checkpoint
     - POST: admin, member
     - PUT: admin, member
     - GET: admin, member
     - DELETE: admin, member
 
-    v1/cluster_snapshot/all
+    v1/checkpoint/all
     - GET: admin, member
 
     v1/request_result

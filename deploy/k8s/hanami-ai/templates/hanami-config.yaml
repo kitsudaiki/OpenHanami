@@ -11,7 +11,7 @@ data:
 
     [storage]
     data_set_location = "/etc/hanami/train_data"
-    cluster_snapshot_location = "/etc/hanami/cluster_snapshots"
+    checkpoint_location = "/etc/hanami/checkpoint"
 
     [auth]
     policies = "/etc/hanami/policies"
