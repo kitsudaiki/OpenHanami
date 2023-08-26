@@ -28,9 +28,6 @@
 #include <libKitsunemimiSakuraHardware/cpu_package.h>
 #include <libKitsunemimiSakuraHardware/cpu_thread.h>
 
-
-
-#include <libKitsunemimiJwt/jwt.h>
 #include <libKitsunemimiJson/json_item.h>
 #include <libKitsunemimiCommon/threading/thread.h>
 #include <libKitsunemimiCommon/threading/thread_handler.h>

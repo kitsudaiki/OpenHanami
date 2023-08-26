@@ -26,7 +26,6 @@
 
 #include <libKitsunemimiCommon/methods/string_methods.h>
 #include <libKitsunemimiCrypto/hashes.h>
-#include <libKitsunemimiJwt/jwt.h>
 #include <libKitsunemimiJson/json_item.h>
 
 /**

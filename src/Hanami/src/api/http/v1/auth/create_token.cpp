@@ -25,9 +25,11 @@
 #include <hanami_root.h>
 
 #include <libKitsunemimiCrypto/hashes.h>
-#include <libKitsunemimiJwt/jwt.h>
 #include <libKitsunemimiJson/json_item.h>
 #include <libKitsunemimiConfig/config_handler.h>
+
+#include <jwt-cpp/jwt.h>
+//#include <jwt-cpp/traits/nlohmann-json/defaults.h>
 
 /**
  * @brief constructor
@@ -115,7 +117,6 @@ CreateToken::runTask(BlossomIO &blossomIO,
     }
 
     // remove entries, which are NOT allowed to be part of the token
-    std::string jwtToken;
     userData.remove("pw_hash");
     userData.remove("salt");
 
@@ -156,13 +157,14 @@ CreateToken::runTask(BlossomIO &blossomIO,
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
     }
 
+    std::chrono::system_clock::time_point expireTimePoint = std::chrono::system_clock::now() + std::chrono::seconds(expireTime);
+
     // create token
-    if(HanamiRoot::jwt->create_HS256_Token(jwtToken, userData, expireTime, error) == false)
-    {
-        error.addMeesage("Failed to create JWT-Token");
-        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        return false;
-    }
+    const std::string jwtToken = jwt::create()
+                                    .set_type("JWT")
+                                    .set_expires_at(expireTimePoint)
+                                    .set_payload_claim("user", jwt::claim(userData.toString()))
+                                    .sign(jwt::algorithm::hs256{(const char*)HanamiRoot::tokenKey.data()});
 
     blossomIO.output.insert("id", userId);
     blossomIO.output.insert("is_admin", isAdmin);

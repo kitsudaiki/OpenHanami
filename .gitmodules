@@ -1,3 +1,6 @@
 [submodule "src/frontend/Hanami-AI-Dashboard-Dependencies"]
 	path = src/frontend/Hanami-AI-Dashboard-Dependencies
 	url = https://github.com/kitsudaiki/Hanami-AI-Dashboard-Dependencies.git
+[submodule "src/third-party-libs/jwt-cpp"]
+	path = src/third-party-libs/jwt-cpp
+	url = https://github.com/Thalhammer/jwt-cpp.git
