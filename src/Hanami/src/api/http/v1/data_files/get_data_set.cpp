@@ -23,7 +23,9 @@
 #include "get_data_set.h"
 
 #include <hanami_root.h>
-#include <core/data_set_files/data_set_functions.h>
+#include <database/data_set_table.h>
+
+#include <libKitsunemimiHanamiFiles/data_set_files/data_set_functions.h>
 
 #include <libKitsunemimiJson/json_item.h>
 
@@ -90,7 +92,10 @@ GetDataSet::runTask(BlossomIO &blossomIO,
                       Kitsunemimi::ErrorContainer &error)
 {
     const std::string dataUuid = blossomIO.input.get("uuid").getString();
-    if(getDateSetInfo(blossomIO.output, dataUuid, context, error) == false)
+    if(DataSetTable::getInstance()->getDateSetInfo(blossomIO.output,
+                                                   dataUuid,
+                                                   context,
+                                                   error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;

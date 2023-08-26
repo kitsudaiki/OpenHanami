@@ -25,7 +25,8 @@
 #include <hanami_root.h>
 #include <database/request_result_table.h>
 #include <database/data_set_table.h>
-#include <core/data_set_files/data_set_file.h>
+
+#include <libKitsunemimiHanamiFiles/data_set_files/data_set_file.h>
 
 #include <libKitsunemimiJson/json_item.h>
 #include <libKitsunemimiCommon/methods/file_methods.h>

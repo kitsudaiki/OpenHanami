@@ -22,7 +22,7 @@
 
 #include "temperature_production.h"
 #include <hanami_root.h>
-#include <core/temperature_measuring.h>
+#include <hardware/temperature_measuring.h>
 
 ThermalProduction::ThermalProduction()
     : Blossom("Request the temperature-measurement of the CPU")

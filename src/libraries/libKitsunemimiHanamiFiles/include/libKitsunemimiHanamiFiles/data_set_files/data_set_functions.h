@@ -1,5 +1,5 @@
 /**
- * @file        image_data_set_file.h
+ * @file        data_set_functions.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,27 +20,21 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_IMAGEDATASETFILE_H
-#define HANAMI_IMAGEDATASETFILE_H
+#ifndef HANAMI_DATA_SET_FUNCTIONS_H
+#define HANAMI_DATA_SET_FUNCTIONS_H
 
-#include <core/data_set_files/data_set_file.h>
+#include <libKitsunemimiCommon/logger.h>
 
-class ImageDataSetFile
-        : public DataSetFile
-{
-public:
-    ImageDataSetFile(const std::string &filePath);
-    ImageDataSetFile(Kitsunemimi::BinaryFile* file);
-    ~ImageDataSetFile();
-    bool updateHeader();
-    float* getPayload(uint64_t &payloadSize,
-                      const std::string &columnName = "");
+namespace Kitsunemimi {
+class JsonItem;
+}
 
-    ImageTypeHeader imageHeader;
+float* getDataSetPayload(const std::string &location,
+                         Kitsunemimi::ErrorContainer &error,
+                         const std::string &columnName = "");
 
-protected:
-    void initHeader();
-    void readHeader(const uint8_t* u8buffer);
-};
+bool getHeaderInformation(Kitsunemimi::JsonItem &result,
+                          const std::string &location,
+                          Kitsunemimi::ErrorContainer &error);
 
-#endif // HANAMI_IMAGEDATASETFILE_H
+#endif // HANAMI_DATA_SET_FUNCTIONS_H

@@ -24,9 +24,10 @@
 
 #include <hanami_root.h>
 #include <database/data_set_table.h>
-#include <core/data_set_files/data_set_file.h>
-#include <core/data_set_files/image_data_set_file.h>
-#include <core/data_set_files/table_data_set_file.h>
+
+#include <libKitsunemimiHanamiFiles/data_set_files/data_set_file.h>
+#include <libKitsunemimiHanamiFiles/data_set_files/image_data_set_file.h>
+#include <libKitsunemimiHanamiFiles/data_set_files/table_data_set_file.h>
 
 #include <libKitsunemimiCrypto/common.h>
 #include <libKitsunemimiJson/json_item.h>

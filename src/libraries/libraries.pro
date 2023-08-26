@@ -20,6 +20,7 @@ SUBDIRS += libKitsunemimiSakuraDatabase
 #SUBDIRS += libKitsunemimiSakuraNetwork
 SUBDIRS += libKitsunemimiHanamiPolicies
 SUBDIRS += libKitsunemimiHanamiClusterParser
+SUBDIRS += libKitsunemimiHanamiFiles
 
 
 #libKitsunemimiNetwork.depends = libKitsunemimiCommon

@@ -26,7 +26,8 @@
 #include <core/cluster/cluster_handler.h>
 #include <core/cluster/cluster.h>
 #include <core/cluster/add_tasks.h>
-#include <core/data_set_files/data_set_functions.h>
+
+#include <libKitsunemimiHanamiFiles/data_set_files/data_set_functions.h>
 
 #include <libKitsunemimiCommon/files/binary_file.h>
 #include <libKitsunemimiCrypto/common.h>
@@ -106,7 +107,10 @@ CreateTask::runTask(BlossomIO &blossomIO,
 
     // get meta-infos of data-set from shiori
     Kitsunemimi::JsonItem dataSetInfo;
-    if(getDateSetInfo(dataSetInfo, dataSetUuid, context, error) == false)
+    if(DataSetTable::getInstance()->getDateSetInfo(dataSetInfo,
+                                                   dataSetUuid,
+                                                   context,
+                                                   error) == false)
     {
         error.addMeesage("Failed to get information from shiori for UUID '" + dataSetUuid + "'");
         // TODO: add status-error from response from shiori

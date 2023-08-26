@@ -63,6 +63,10 @@ public:
                          const std::string &fileUuid,
                          Kitsunemimi::ErrorContainer &error);
 
+    bool getDateSetInfo(Kitsunemimi::JsonItem &result,
+                        const std::string &dataUuid,
+                        const Kitsunemimi::DataMap &context,
+                        Kitsunemimi::ErrorContainer &error);
 private:
     DataSetTable();
     static DataSetTable* instance;

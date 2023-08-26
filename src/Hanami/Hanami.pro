@@ -6,6 +6,11 @@ CONFIG += c++17
 
 INCLUDEPATH += ../libraries/libKitsunemimiHanamiMessages/protobuffers
 
+LIBS += -L../libraries/libKitsunemimiHanamiFiles/src -lKitsunemimiHanamiFiles
+LIBS += -L../libraries/libKitsunemimiHanamiFiles/src/debug -lKitsunemimiHanamiFiles
+LIBS += -L../libraries/libKitsunemimiHanamiFiles/src/release -lKitsunemimiHanamiFiles
+INCLUDEPATH += ../libraries/libKitsunemimiHanamiFiles/include
+
 LIBS += -L../libraries/libKitsunemimiHanamiClusterParser/src -lKitsunemimiHanamiClusterParser
 LIBS += -L../libraries/libKitsunemimiHanamiClusterParser/src/debug -lKitsunemimiHanamiClusterParser
 LIBS += -L../libraries/libKitsunemimiHanamiClusterParser/src/release -lKitsunemimiHanamiClusterParser
@@ -221,10 +226,6 @@ HEADERS += \
     src/core/cluster/states/tables/table_learn_forward_state.h \
     src/core/cluster/states/task_handle_state.h \
     src/core/cluster/task.h \
-    src/core/data_set_files/data_set_file.h \
-    src/core/data_set_files/data_set_functions.h \
-    src/core/data_set_files/image_data_set_file.h \
-    src/core/data_set_files/table_data_set_file.h \
     src/hardware/power_measuring.h \
     src/core/processing/cluster_queue.h \
     src/core/processing/cluster_io_functions.h \
@@ -331,10 +332,6 @@ SOURCES += \
     src/core/cluster/states/tables/table_interpolation_state.cpp \
     src/core/cluster/states/tables/table_learn_forward_state.cpp \
     src/core/cluster/states/task_handle_state.cpp \
-    src/core/data_set_files/data_set_file.cpp \
-    src/core/data_set_files/data_set_functions.cpp \
-    src/core/data_set_files/image_data_set_file.cpp \
-    src/core/data_set_files/table_data_set_file.cpp \
     src/hardware/power_measuring.cpp \
     src/core/processing/cluster_queue.cpp \
     src/core/processing/cpu_processing_unit.cpp \

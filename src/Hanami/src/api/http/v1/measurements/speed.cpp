@@ -22,7 +22,7 @@
 
 #include "speed.h"
 #include <hanami_root.h>
-#include <core/speed_measuring.h>
+#include <hardware/speed_measuring.h>
 
 Speed::Speed()
     : Blossom("Request the speed of the CPU")

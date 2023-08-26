@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef SHIORIARCHIVE_IMAGEDATASETFILE_H
-#define SHIORIARCHIVE_IMAGEDATASETFILE_H
+#ifndef HANAMI_IMAGEDATASETFILE_H
+#define HANAMI_IMAGEDATASETFILE_H
 
 #include <libKitsunemimiHanamiFiles/data_set_files/data_set_file.h>
 
@@ -43,4 +43,4 @@ protected:
     void readHeader(const uint8_t* u8buffer);
 };
 
-#endif // SHIORIARCHIVE_IMAGEDATASETFILE_H
+#endif // HANAMI_IMAGEDATASETFILE_H

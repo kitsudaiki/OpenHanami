@@ -20,13 +20,11 @@
  *      limitations under the License.
  */
 
-#include "data_set_functions.h"
+#include <libKitsunemimiHanamiFiles/data_set_files/data_set_functions.h>
 
-#include <hanami_root.h>
-#include <core/data_set_files/data_set_file.h>
-#include <core/data_set_files/image_data_set_file.h>
-#include <core/data_set_files/table_data_set_file.h>
-#include <database/data_set_table.h>
+#include <libKitsunemimiHanamiFiles/data_set_files/data_set_file.h>
+#include <libKitsunemimiHanamiFiles/data_set_files/image_data_set_file.h>
+#include <libKitsunemimiHanamiFiles/data_set_files/table_data_set_file.h>
 
 #include <libKitsunemimiJson/json_item.h>
 #include <libKitsunemimiCommon/files/binary_file.h>
@@ -60,43 +58,6 @@ getDataSetPayload(const std::string &location,
     }
 
     return payload;
-}
-
-/**
- * @brief getDateSetInfo
- * @param dataUuid
- * @param error
- * @return
- */
-bool
-getDateSetInfo(Kitsunemimi::JsonItem &result,
-               const std::string &dataUuid,
-               const Kitsunemimi::DataMap &context,
-               Kitsunemimi::ErrorContainer &error)
-{
-    const UserContext userContext(context);
-
-    if(DataSetTable::getInstance()->getDataSet(result,
-                                               dataUuid,
-                                               userContext,
-                                               error,
-                                               true) == false)
-    {
-        return false;
-    }
-
-    // get file information
-    const std::string location = result.get("location").getString();
-    if(getHeaderInformation(result, location, error) == false)
-    {
-        error.addMeesage("Failed the read information from file '" + location + "'");
-        return false;
-    }
-
-    // remove irrelevant fields
-    result.remove("temp_files");
-
-    return true;
 }
 
 /**

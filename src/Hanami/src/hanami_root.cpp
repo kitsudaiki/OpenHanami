@@ -582,7 +582,7 @@ HanamiRoot::mapEndpoint(EndpointEntry &result,
     if(id_it != endpointRules.end())
     {
         auto type_it = id_it->second.find(type);
-        if(id_it->second.find(type) != id_it->second.end())
+        if(type_it != id_it->second.end())
         {
             result.type = type_it->second.type;
             result.group = type_it->second.group;

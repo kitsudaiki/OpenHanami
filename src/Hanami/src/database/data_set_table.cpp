@@ -22,11 +22,13 @@
 
 #include <database/data_set_table.h>
 
+#include <libKitsunemimiHanamiFiles/data_set_files/data_set_functions.h>
+
+#include <libKitsunemimiSakuraDatabase/sql_database.h>
+
 #include <libKitsunemimiCommon/items/table_item.h>
 #include <libKitsunemimiCommon/methods/string_methods.h>
 #include <libKitsunemimiJson/json_item.h>
-
-#include <libKitsunemimiSakuraDatabase/sql_database.h>
 
 DataSetTable* DataSetTable::instance = nullptr;
 
@@ -229,6 +231,38 @@ DataSetTable::setUploadFinish(const std::string &uuid,
         LOG_ERROR(error);
         return false;
     }
+
+    return true;
+}
+
+/**
+ * @brief getDateSetInfo
+ * @param dataUuid
+ * @param error
+ * @return
+ */
+bool
+DataSetTable::getDateSetInfo(Kitsunemimi::JsonItem &result,
+                             const std::string &dataUuid,
+                             const Kitsunemimi::DataMap &context,
+                             Kitsunemimi::ErrorContainer &error)
+{
+    const UserContext userContext(context);
+
+    if(getDataSet(result, dataUuid, userContext, error, true) == false) {
+        return false;
+    }
+
+    // get file information
+    const std::string location = result.get("location").getString();
+    if(getHeaderInformation(result, location, error) == false)
+    {
+        error.addMeesage("Failed the read information from file '" + location + "'");
+        return false;
+    }
+
+    // remove irrelevant fields
+    result.remove("temp_files");
 
     return true;
 }
