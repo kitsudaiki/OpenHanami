@@ -45,11 +45,6 @@ AuditLogTable::AuditLogTable()
     userid.maxLength = 256;
     m_tableHeader.push_back(userid);
 
-    DbHeaderEntry component;
-    component.name = "component";
-    component.maxLength = 128;
-    m_tableHeader.push_back(component);
-
     DbHeaderEntry endpoint;
     endpoint.name = "endpoint";
     endpoint.maxLength = 1024;
