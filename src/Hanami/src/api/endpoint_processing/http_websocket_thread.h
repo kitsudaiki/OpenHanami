@@ -56,9 +56,9 @@ class HttpWebsocketThread
 public:
     HttpWebsocketThread(const std::string &threadName);
 
-    bool sendData(const void* data, const uint64_t dataSize, const bool waitForInput);
+    bool sendData(const void* data, const uint64_t dataSize);
     Cluster* m_targetCluster = nullptr;
-    void closeClient(Kitsunemimi::ErrorContainer &error);
+    void closeClient(Kitsunemimi::ErrorContainer &);
 
 protected:
     void run();

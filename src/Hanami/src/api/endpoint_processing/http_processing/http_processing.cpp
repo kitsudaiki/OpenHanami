@@ -126,7 +126,6 @@ processRequest(http::request<http::string_body> &httpRequest,
 /**
  * @brief request token from misaki
  *
- * @param target target (misaki)
  * @param hanamiRequest hanami-request for the token-request
  * @param error reference for error-output
  *
@@ -134,7 +133,6 @@ processRequest(http::request<http::string_body> &httpRequest,
  */
 bool
 requestToken(http::response<http::dynamic_body> &httpResponse,
-             const std::string &target,
              const RequestMessage &hanamiRequest,
              Kitsunemimi::ErrorContainer &error)
 {
@@ -259,7 +257,6 @@ processControlRequest(http::response<http::dynamic_body> &httpResponse,
                       const Kitsunemimi::Hanami::HttpRequestType httpType,
                       Kitsunemimi::ErrorContainer &error)
 {
-    std::string target = "";
     RequestMessage hanamiRequest;
     ResponseMessage hanamiResponse;
 
@@ -274,7 +271,7 @@ processControlRequest(http::response<http::dynamic_body> &httpResponse,
     if(uri == "v1/token"
             && hanamiRequest.httpType == Kitsunemimi::Hanami::POST_TYPE)
     {
-        return requestToken(httpResponse, target, hanamiRequest, error);
+        return requestToken(httpResponse, hanamiRequest, error);
     }
 
     // check authentication
@@ -313,7 +310,6 @@ processControlRequest(http::response<http::dynamic_body> &httpResponse,
     // write new audit-entry to database
     if(AuditLogTable::getInstance()->addAuditLogEntry(getDatetime(),
                                                       tokenData.get("id").getString(),
-                                                      target,
                                                       hanamiRequest.id,
                                                       httpTypeStr,
                                                       error) == false)

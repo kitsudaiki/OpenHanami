@@ -64,6 +64,18 @@ operator delete[](void* ptr) noexcept
     Kitsunemimi::decreaseGlobalMemoryCounter(0);
 }
 
+void  operator delete(void* ptr, std::size_t)  noexcept
+{
+    free(ptr);
+    Kitsunemimi::decreaseGlobalMemoryCounter(0);
+}
+
+void  operator delete[](void* ptr, std::size_t)  noexcept
+{
+    free(ptr);
+    Kitsunemimi::decreaseGlobalMemoryCounter(0);
+}
+
 //==================================================================================================
 
 namespace Kitsunemimi

@@ -9,9 +9,9 @@
 %skeleton "lalr1.cc"
 
 %defines
-%require "3.0.4"
+%require "3.8.2"
 
-%define parser_class_name {JsonParser}
+%define api.parser.class {JsonParser}
 
 %define api.prefix {json}
 %define api.namespace {Kitsunemimi}

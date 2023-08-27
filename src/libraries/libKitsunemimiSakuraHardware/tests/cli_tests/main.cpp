@@ -26,16 +26,9 @@
 #include <libKitsunemimiJson/json_item.h>
 #include <libKitsunemimiCommon/logger.h>
 
-void
-handleErrorCallback(const std::string &errorMessage)
-{
-}
-
-
 int main()
 {
     Kitsunemimi::initConsoleLogger(true);
-    Kitsunemimi::setErrorLogCallback(&handleErrorCallback);
 
     Kitsunemimi::Sakura::Host* host = Kitsunemimi::Sakura::Host::getInstance();
     Kitsunemimi::ErrorContainer error;

@@ -58,7 +58,6 @@ bool processRequest(http::request<http::string_body> &httpRequest,
                     Kitsunemimi::ErrorContainer &error);
 
 bool requestToken(http::response<http::dynamic_body> &httpResponse,
-                  const std::string &target,
                   const RequestMessage &hanamiRequest,
                   Kitsunemimi::ErrorContainer &error);
 bool checkPermission(Kitsunemimi::JsonItem &tokenData,

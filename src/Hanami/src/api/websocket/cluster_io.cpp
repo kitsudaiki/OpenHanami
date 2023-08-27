@@ -64,7 +64,7 @@ sendClusterOutputMessage(Cluster* cluster)
     // send message
     HttpWebsocketThread* client = cluster->msgClient;
     Kitsunemimi::ErrorContainer error;
-    client->sendData(buffer, size, true);
+    client->sendData(buffer, size);
 }
 
 void
@@ -96,7 +96,7 @@ sendProtobufGotInputMessage(Cluster* cluster)
 
     // send message
     Kitsunemimi::ErrorContainer error;
-    cluster->msgClient->sendData(buffer, size, true);
+    cluster->msgClient->sendData(buffer, size);
 }
 
 /**
@@ -133,7 +133,7 @@ sendClusterNormalEndMessage(Cluster* cluster)
 
     // send message
     Kitsunemimi::ErrorContainer error;
-    cluster->msgClient->sendData(buffer, size, false);
+    cluster->msgClient->sendData(buffer, size);
 }
 
 /**
@@ -167,7 +167,7 @@ sendClusterTrainEndMessage(Cluster* cluster)
 
     // send message
     Kitsunemimi::ErrorContainer error;
-    cluster->msgClient->sendData(buffer, size, false);
+    cluster->msgClient->sendData(buffer, size);
 }
 
 /**

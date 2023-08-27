@@ -11,8 +11,8 @@
 %defines
 
 //requires 3.2 to avoid the creation of the stack.hh
-%require "3.0.4"
-%define parser_class_name {IniParser}
+%require "3.8.2"
+%define api.parser.class {IniParser}
 
 %define api.prefix {ini}
 %define api.namespace {Kitsunemimi}
