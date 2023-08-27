@@ -54,7 +54,6 @@ private:
     bool tableTask(std::string &taskUuid,
                    const std::string &name,
                    const std::string &taskType,
-                   const std::string &dataSetLocation,
                    const UserContext &userContext,
                    Cluster* cluster,
                    Kitsunemimi::JsonItem &dataSetInfo,
