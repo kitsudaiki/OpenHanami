@@ -93,16 +93,7 @@ std::vector<std::string> tempRules;
 %type  <std::string> endpoint;
 
 %%
-%start policy_content;
-
-policy_content:
-    policy_content component_policy_content
-    {
-    }
-|
-    component_policy_content
-    {
-    }
+%start component_policy_content;
 
 component_policy_content:
     component_policy_content endpoint policy_entry

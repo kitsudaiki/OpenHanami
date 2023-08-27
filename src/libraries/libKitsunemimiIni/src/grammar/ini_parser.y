@@ -89,26 +89,26 @@ startpoint:
     }
 
 grouplist:
-    grouplist groupheader linebreaks itemlist
+    grouplist groupheader itemlist
     {
-        $1->insert($2, $4);
+        $1->insert($2, $3);
         $$ = $1;
     }
 |
-    grouplist groupheader linebreaks
+    grouplist groupheader
     {
         $1->insert($2, new DataMap());
         $$ = $1;
     }
 |
-    groupheader linebreaks itemlist
+    groupheader itemlist
     {
         DataMap* newMap = new DataMap();
-        newMap->insert($1, $3);
+        newMap->insert($1, $2);
         $$ = newMap;
     }
 |
-    groupheader linebreaks
+    groupheader
     {
         DataMap* newMap = new DataMap();
         newMap->insert($1, new DataMap());
@@ -116,7 +116,7 @@ grouplist:
     }
 
 groupheader:
-    "[" "identifier" "]"
+    "[" "identifier" "]" linebreaks
     {
         $$ = $2;
     }
@@ -136,18 +136,15 @@ itemlist:
     }
 
 itemValue:
-    itemValue "identifier"
-    {
-        std::string temp = $1->toString();
-        delete $1;
-        temp += " " + $2;
-        $$ = new DataValue(temp);
-    }
-|
     "identifier" "=" "identifier"
     {
         std::string temp = $1 + "=" + $3;
         $$ = new DataValue(temp);
+    }
+|
+    identifierlist
+    {
+        $$ = $1;
     }
 |
     "identifier"
@@ -160,16 +157,11 @@ itemValue:
         $$ = new DataValue($1);
     }
 |
-    identifierlist
-    {
-        $$ = $1;
-    }
-|
     "string"
     {
         $$ = new DataValue(driver.removeQuotes($1));
     }
-|
+ |
     "number"
     {
         $$ = new DataValue($1);
@@ -218,17 +210,19 @@ identifierlist:
         $$ = $1;
     }
 |
-    "string"
+    "string" "," "string"
     {
         DataArray* tempItem = new DataArray();
         tempItem->append(new DataValue(driver.removeQuotes($1)));
+        tempItem->append(new DataValue(driver.removeQuotes($3)));
         $$ = tempItem;
     }
 |
-    "string_pln"
+    "string_pln" "," "string_pln"
     {
         DataArray* tempItem = new DataArray();
         tempItem->append(new DataValue($1));
+        tempItem->append(new DataValue($3));
         $$ = tempItem;
     }
 |

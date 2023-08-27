@@ -91,10 +91,6 @@ blank [ \t]
 
 {id}       return Kitsunemimi::Hanami::ClusterParser::make_IDENTIFIER(yytext, clusterloc);
 
-[a-zA-Z_0-9|\-|.]* {
-    return Kitsunemimi::Hanami::ClusterParser::make_STRING_PLN(yytext, clusterloc);
-}
-
 .          driver.error(clusterloc, "invalid character");
 <<EOF>>    return Kitsunemimi::Hanami::ClusterParser::make_END(clusterloc);
 

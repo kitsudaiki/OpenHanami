@@ -17,7 +17,7 @@ OTHER_FILES +=  \
 
 bisonsource.input = BISONSOURCES
 bisonsource.output = ${QMAKE_FILE_BASE}.cpp
-bisonsource.commands = bison -d -Wcounterexamples --defines=${QMAKE_FILE_BASE}.h -o ${QMAKE_FILE_BASE}.cpp ${QMAKE_FILE_IN}
+bisonsource.commands = bison -d --defines=${QMAKE_FILE_BASE}.h -o ${QMAKE_FILE_BASE}.cpp ${QMAKE_FILE_IN}
 bisonsource.variable_out = SOURCES
 bisonsource.name = Bison Sources ${QMAKE_FILE_IN}
 

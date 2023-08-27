@@ -80,11 +80,9 @@ YY_DECL;
 
 %token <std::string> IDENTIFIER "identifier"
 %token <std::string> STRING "string"
-%token <std::string> STRING_PLN "string"
 %token <long> NUMBER "number"
 %token <double> FLOAT "float"
 
-%type  <std::string> string_ident
 %type  <Kitsunemimi::Position> position
 %type  <Kitsunemimi::Hanami::BrickMeta> brick_settings
 
@@ -95,9 +93,7 @@ YY_DECL;
 //
 // version: 1
 // settings:
-//     max_synapse_sections: 100000
-//     synapse_clusteration: 10
-//     sign_neg: 0.5
+//     max_synapse_sections: 1000
 //
 // bricks:
 //     1,1,1
@@ -276,17 +272,6 @@ position:
         pos.y = $3;
         pos.z = $5;
         $$ = pos;
-    }
-
-string_ident:
-    "identifier"
-    {
-        $$ = $1;
-    }
-|
-    "string"
-    {
-        $$ = $1;
     }
 
 linebreaks:
