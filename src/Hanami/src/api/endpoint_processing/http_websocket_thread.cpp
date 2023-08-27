@@ -264,8 +264,7 @@ HttpWebsocketThread::initWebsocket(http::request<http::string_body> &httpRequest
  */
 bool
 HttpWebsocketThread::sendData(const void* data,
-                              const uint64_t dataSize,
-                              const bool waitForInput)
+                              const uint64_t dataSize)
 {
     if(m_abort) {
         return false;
@@ -402,7 +401,7 @@ HttpWebsocketThread::processInitialMessage(const std::string &message,
  * @param error reference for error-output
  */
 void
-HttpWebsocketThread::closeClient(ErrorContainer &error)
+HttpWebsocketThread::closeClient(ErrorContainer &)
 {
     m_clientInit = false;
     if(m_targetCluster != nullptr) {

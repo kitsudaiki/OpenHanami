@@ -45,7 +45,6 @@ private:
     bool imageTask(std::string &taskUuid,
                    const std::string &name,
                    const std::string &taskType,
-                   const std::string &dataSetUuid,
                    const UserContext &userContext,
                    Cluster* cluster,
                    Kitsunemimi::JsonItem &dataSetInfo,

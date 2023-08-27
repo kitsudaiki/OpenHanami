@@ -53,7 +53,7 @@ getDataSetPayload(const std::string &location,
     delete file;
     if(payload == nullptr)
     {
-        // TODO: error
+        error.addMeesage("Failed to get payload.");
         return nullptr;
     }
 

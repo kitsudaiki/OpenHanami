@@ -125,7 +125,6 @@ CreateTask::runTask(BlossomIO &blossomIO,
         imageTask(taskUuid,
                   name,
                   taskType,
-                  dataSetUuid,
                   userContext,
                   cluster,
                   dataSetInfo,
@@ -167,7 +166,6 @@ CreateTask::runTask(BlossomIO &blossomIO,
  * @param taskUuid reference for the output of the uuid of the new task
  * @param name name of the task
  * @param taskType type of the task (train or request)
- * @param dataSetLocation location of the base-dataset for the task
  * @param userContext user-context
  * @param cluster pointer to the cluster, which should process the new task
  * @param dataSetInfo info-object with information about the dataset
@@ -180,7 +178,6 @@ bool
 CreateTask::imageTask(std::string &taskUuid,
                       const std::string &name,
                       const std::string &taskType,
-                      const std::string &dataSetUuid,
                       const UserContext &userContext,
                       Cluster* cluster,
                       Kitsunemimi::JsonItem &dataSetInfo,

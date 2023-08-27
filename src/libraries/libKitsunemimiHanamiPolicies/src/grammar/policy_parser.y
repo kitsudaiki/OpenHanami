@@ -23,9 +23,9 @@
 %skeleton "lalr1.cc"
 
 %defines
-%require "3.0.4"
+%require "3.8.2"
 
-%define parser_class_name {PolicyParser}
+%define api.parser.class {PolicyParser}
 
 %define api.prefix {policy}
 %define api.namespace {Kitsunemimi::Hanami}
@@ -93,16 +93,7 @@ std::vector<std::string> tempRules;
 %type  <std::string> endpoint;
 
 %%
-%start policy_content;
-
-policy_content:
-    policy_content component_policy_content
-    {
-    }
-|
-    component_policy_content
-    {
-    }
+%start component_policy_content;
 
 component_policy_content:
     component_policy_content endpoint policy_entry

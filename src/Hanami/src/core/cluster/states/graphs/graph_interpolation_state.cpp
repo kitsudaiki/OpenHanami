@@ -48,8 +48,8 @@ bool
 GraphInterpolation_State::processEvent()
 {
 
-    Task* actualTask = m_cluster->getActualTask();
-    /*if(actualTask->isInit)
+    /*Task* actualTask = m_cluster->getActualTask();
+    if(actualTask->isInit)
     {
         // set input
         InputNode* inputNodes = m_cluster->inputSegments[0]->inputs;

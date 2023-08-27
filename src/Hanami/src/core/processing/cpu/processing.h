@@ -219,43 +219,6 @@ processSingleNeuron(Cluster &cluster,
 }
 
 /**
- * @brief process output brick
- */
-inline void
-processNeuronsOfOutputBrick(Cluster &cluster,
-                            const Brick* brick,
-                            float* outputValues,
-                            NeuronBlock* neuronBlocks,
-                            SegmentSettings* segmentSettings)
-{
-    Neuron* neuron = nullptr;
-    NeuronBlock* block = nullptr;
-    uint32_t counter = 0;
-
-    // iterate over all neurons within the brick
-    for(uint32_t blockId = brick->brickBlockPos;
-        blockId < brick->numberOfNeuronBlocks + brick->brickBlockPos;
-        blockId++)
-    {
-        block = &neuronBlocks[blockId];
-        for(uint32_t neuronIdInBlock = 0;
-            neuronIdInBlock < block->numberOfNeurons;
-            neuronIdInBlock++)
-        {
-            neuron = &block->neurons[neuronIdInBlock];
-            neuron->potential = segmentSettings->potentialOverflow * neuron->input;
-            if(neuron->potential != 0.0f) {
-                neuron->potential = 1.0f / (1.0f + exp(-1.0f * neuron->potential));
-            }
-            //std::cout<<"neuron->potential: "<<neuron->potential<<std::endl;
-            outputValues[counter] = neuron->potential;
-            neuron->input = 0.0f;
-            counter++;
-        }
-    }
-}
-
-/**
  * @brief process input brick
  */
 inline void

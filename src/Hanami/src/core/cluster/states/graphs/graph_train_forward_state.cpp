@@ -47,7 +47,7 @@ GraphTrainForward_State::~GraphTrainForward_State() {}
 bool
 GraphTrainForward_State::processEvent()
 {
-    Task* actualTask = m_cluster->getActualTask();
+    /*Task* actualTask = m_cluster->getActualTask();
 
     float lastVal = actualTask->inputData[actualTask->actualCycle + 1];
 
@@ -56,7 +56,7 @@ GraphTrainForward_State::processEvent()
     uint64_t pos = 0;
 
     // set input
-    /*InputNode* inputNodes = m_cluster->inputSegments.begin()->second->inputs;
+    InputNode* inputNodes = m_cluster->inputSegments.begin()->second->inputs;
     OutputNode* outputNodes = m_cluster->outputSegments.begin()->second->outputs;
     uint64_t i = actualTask->actualCycle + 1;
 

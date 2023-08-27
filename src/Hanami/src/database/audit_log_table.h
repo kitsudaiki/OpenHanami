@@ -46,7 +46,6 @@ public:
 
     bool addAuditLogEntry(const std::string &timestamp,
                           const std::string &userId,
-                          const std::string &component,
                           const std::string &endpoint,
                           const std::string &requestType,
                           Kitsunemimi::ErrorContainer &error);

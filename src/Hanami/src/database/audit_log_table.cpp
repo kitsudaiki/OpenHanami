@@ -45,11 +45,6 @@ AuditLogTable::AuditLogTable()
     userid.maxLength = 256;
     m_tableHeader.push_back(userid);
 
-    DbHeaderEntry component;
-    component.name = "component";
-    component.maxLength = 128;
-    m_tableHeader.push_back(component);
-
     DbHeaderEntry endpoint;
     endpoint.name = "endpoint";
     endpoint.maxLength = 1024;
@@ -71,7 +66,6 @@ AuditLogTable::~AuditLogTable() {}
  *
  * @param timestamp UTC-timestamp of the request as string
  * @param userId id of the user, who made the request
- * @param component requested componen
  * @param endpoint requested endpoint
  * @param requestType HTTP-type of the request
  * @param error reference for error-output
@@ -81,7 +75,6 @@ AuditLogTable::~AuditLogTable() {}
 bool
 AuditLogTable::addAuditLogEntry(const std::string &timestamp,
                                 const std::string &userId,
-                                const std::string &component,
                                 const std::string &endpoint,
                                 const std::string &requestType,
                                 Kitsunemimi::ErrorContainer &error)
@@ -90,7 +83,6 @@ AuditLogTable::addAuditLogEntry(const std::string &timestamp,
     data.insert("timestamp", timestamp);
     data.insert("user_id", userId);
     data.insert("endpoint", endpoint);
-    data.insert("component", component);
     data.insert("request_type", requestType);
 
     if(insertToDb(data, error) == false)
