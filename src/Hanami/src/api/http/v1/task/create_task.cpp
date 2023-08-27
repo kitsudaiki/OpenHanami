@@ -136,7 +136,6 @@ CreateTask::runTask(BlossomIO &blossomIO,
         tableTask(taskUuid,
                   name,
                   taskType,
-                  dataSetUuid,
                   userContext,
                   cluster,
                   dataSetInfo,
@@ -233,7 +232,6 @@ CreateTask::imageTask(std::string &taskUuid,
  * @param taskUuid reference for the output of the uuid of the new task
  * @param name name of the task
  * @param taskType type of the task (train or request)
- * @param dataSetLocation location of the base-dataset for the task
  * @param userContext user-context
  * @param cluster pointer to the cluster, which should process the new task
  * @param dataSetInfo info-object with information about the dataset
@@ -246,7 +244,6 @@ bool
 CreateTask::tableTask(std::string &taskUuid,
                       const std::string &name,
                       const std::string &taskType,
-                      const std::string &dataSetLocation,
                       const UserContext &userContext,
                       Cluster* cluster,
                       Kitsunemimi::JsonItem &dataSetInfo,
@@ -260,7 +257,8 @@ CreateTask::tableTask(std::string &taskUuid,
 
     // get input-data
     // TODO: fix
-    const std::string inputColumnName = "";
+    const std::string inputColumnName = "input";
+    const std::string dataSetLocation = dataSetInfo.get("location").getString();
     float* inputBuffer = getDataSetPayload(dataSetLocation, error, inputColumnName);
     if(inputBuffer == nullptr)
     {
@@ -289,7 +287,7 @@ CreateTask::tableTask(std::string &taskUuid,
     {
         // get output-data
         // TODO: fix
-        const std::string outputColumnName = "";
+        const std::string outputColumnName = "output";
         float* outputBuffer = getDataSetPayload(dataSetLocation, error, outputColumnName);
         if(outputBuffer == nullptr)
         {
@@ -313,13 +311,7 @@ CreateTask::tableTask(std::string &taskUuid,
                                      numberOfInputs,
                                      numberOfOutputs,
                                      numberOfLines - numberOfInputs);
-
-        // clear leftover of the buffer
-        delete outputBuffer;
     }
-
-    // clear leftover of the buffer
-    delete inputBuffer;
 
     return true;
 }
