@@ -50,6 +50,15 @@ registerArguments(Kitsunemimi::ArgParser* argparser,
         return false;
     }
 
+    // generate_docu-flag
+    helpText = "generate documenation of the current state of: \n"
+               "- REST-API as OpenAPI json-document\n"
+               "- default-configurations as md-document\n"
+               "- database-schemas as md-document";
+    if(argparser->registerPlain("generate_docu,g", helpText, error) == false) {
+        return false;
+    }
+
     return true;
 }
 

@@ -30,14 +30,18 @@
 #include <api/websocket/cluster_io.h>
 #include <api/http/v1/blossom_initializing.h>
 
+#include <documentation/generate_rest_api_docu.h>
+
 #include <libKitsunemimiArgs/arg_parser.h>
 #include <libKitsunemimiCommon/logger.h>
+#include <libKitsunemimiCommon/files/text_file.h>
 
 int
 main(int argc, char *argv[])
 {
     Kitsunemimi::ErrorContainer error;
     HanamiRoot rootObj;
+    initBlossoms();
 
     Kitsunemimi::initConsoleLogger(true);
 
@@ -50,6 +54,27 @@ main(int argc, char *argv[])
     {
         LOG_ERROR(error);
         return 1;
+    }
+
+    // generate api-, config- and database-docu, if requested
+    if(argParser.wasSet("generate_docu"))
+    {
+        namespace fs = std::filesystem;
+
+        Kitsunemimi::ErrorContainer error;
+
+        std::string openApiDocu = "";
+        createOpenApiDocumentation(openApiDocu);
+        const fs::path file{"open_api_docu.json"};
+        fs::path complete = fs::current_path() / file;
+        if(writeFile(complete.generic_string(), openApiDocu, error, true) == false)
+        {
+            LOG_ERROR(error);
+            return 1;
+        }
+        std::cout<<"Written OpenAPI-docu to "<<complete<<std::endl;
+
+        return 0;
     }
 
     // init and check config-file
@@ -83,15 +108,12 @@ main(int argc, char *argv[])
     Kitsunemimi::initConsoleLogger(enableDebug);
     Kitsunemimi::initFileLogger(logPath, "hanami", enableDebug);
 
-    // init blossoms
+    // init root-object
     if(rootObj.init(error) == false)
     {
         LOG_ERROR(error);
         return 1;
     }
-
-    initBlossoms();
-
     rootObj.initThreads();
 
     // sleep forever

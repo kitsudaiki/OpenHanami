@@ -61,7 +61,10 @@ bool HanamiRoot::useCuda = false;
 /**
  * @brief constructor
  */
-HanamiRoot::HanamiRoot() {}
+HanamiRoot::HanamiRoot()
+{
+    root = this;
+}
 
 /**
  * @brief destructor
@@ -78,8 +81,6 @@ HanamiRoot::~HanamiRoot() {}
 bool
 HanamiRoot::init(Kitsunemimi::ErrorContainer &error)
 {
-    root = this;
-
     /*if(useOpencl)
     {
         Kitsunemimi::GpuHandler oclHandler;

@@ -23,65 +23,43 @@
 #include "generate_rest_api_docu.h"
 
 #include <hanami_root.h>
+#include <api/endpoint_processing/blossom.h>
 
 #include <libKitsunemimiCrypto/common.h>
 #include <libKitsunemimiCommon/methods/string_methods.h>
 #include <libKitsunemimiCommon/methods/file_methods.h>
-#include <libKitsunemimiCommon/files/text_file.h>
-#include <libKitsunemimiCommon/files/binary_file.h>
-#include <libKitsunemimiCommon/process_execution.h>
 #include <libKitsunemimiJson/json_item.h>
 
 /**
- * @brief constructor
+ * @brief createMdDocumentation
+ * @param docu
  */
-GenerateRestApiDocu::GenerateRestApiDocu()
-    : Blossom("Generate a OpenAPI documentation for the REST-API of all available components.")
+void
+createOpenApiDocumentation(std::string &docu)
 {
-    //----------------------------------------------------------------------------------------------
-    // output
-    //----------------------------------------------------------------------------------------------
+    Kitsunemimi::JsonItem result;
+    result.insert("openapi", "3.0.0");
 
-    registerOutputField("documentation",
-                        SAKURA_STRING_TYPE,
-                        "REST-API-documentation as base64 converted string.");
+    Kitsunemimi::JsonItem info;
+    info.insert("title", "API documentation");
+    info.insert("version", "unreleased");
+    result.insert("info", info);
 
-    //----------------------------------------------------------------------------------------------
-    //
-    //----------------------------------------------------------------------------------------------
-}
+    Kitsunemimi::JsonItem contact;
+    info.insert("name", "Tobias Anker");
+    info.insert("email", "tobias.anker@kitsunemimi.moe");
+    result.insert("contact", contact);
 
-/**
- * @brief runTask
- */
-bool
-GenerateRestApiDocu::runTask(BlossomIO &blossomIO,
-                             const Kitsunemimi::DataMap &context,
-                             BlossomStatus &,
-                             Kitsunemimi::ErrorContainer &)
-{
-    const std::string role = context.getStringByKey("role");
-    const std::string type = blossomIO.input.get("type").getString();
-    const std::string token = context.getStringByKey("token");
+    Kitsunemimi::JsonItem license;
+    license.insert("name", "Apache 2.0");
+    license.insert("url", "https://www.apache.org/licenses/LICENSE-2.0.html");
+    result.insert("license", license);
 
-    // create request for remote-calls
-    RequestMessage request;
-    request.id = "v1/documentation/api";
-    request.httpType = Kitsunemimi::Hanami::GET_TYPE;
-    request.inputValues = "{\"token\":\"" + token + "\",\"type\":\"" + type + "\"}";
+    Kitsunemimi::JsonItem paths;
+    generateEndpointDocu_openapi(paths);
+    result.insert("paths", paths);
 
-    // create header of the final document
-    std::string output = "";
-    std::string completeDocumentation = "";
-
-    createOpenApiDocumentation(completeDocumentation);
-
-    Kitsunemimi::encodeBase64(output,
-                              completeDocumentation.c_str(),
-                              completeDocumentation.size());
-    blossomIO.output.insert("documentation", output);
-
-    return true;
+    docu = result.toString(true);
 }
 
 /**
@@ -89,7 +67,7 @@ GenerateRestApiDocu::runTask(BlossomIO &blossomIO,
  * @param parameters
  */
 void
-GenerateRestApiDocu::addTokenRequirement(Kitsunemimi::JsonItem &parameters)
+addTokenRequirement(Kitsunemimi::JsonItem &parameters)
 {
     Kitsunemimi::JsonItem param;
     param.insert("in", "header");
@@ -111,8 +89,8 @@ GenerateRestApiDocu::addTokenRequirement(Kitsunemimi::JsonItem &parameters)
  * @param isRequest
  */
 void
-GenerateRestApiDocu::createQueryParams_openapi(Kitsunemimi::JsonItem &parameters,
-                                               const std::map<std::string, FieldDef>* defMap)
+createQueryParams_openapi(Kitsunemimi::JsonItem &parameters,
+                          const std::map<std::string, FieldDef>* defMap)
 {
     for(const auto& [field, fieldDef] : *defMap)
     {
@@ -209,9 +187,9 @@ GenerateRestApiDocu::createQueryParams_openapi(Kitsunemimi::JsonItem &parameters
  * @param isRequest true to say that the actual field is a request-field
  */
 void
-GenerateRestApiDocu::createBodyParams_openapi(Kitsunemimi::JsonItem &schema,
-                                              const std::map<std::string, FieldDef>* defMap,
-                                              const bool isRequest)
+createBodyParams_openapi(Kitsunemimi::JsonItem &schema,
+                         const std::map<std::string, FieldDef>* defMap,
+                         const bool isRequest)
 {
     std::vector<std::string> requiredFields;
 
@@ -333,7 +311,7 @@ GenerateRestApiDocu::createBodyParams_openapi(Kitsunemimi::JsonItem &schema,
  * @param docu reference to the complete document
  */
 void
-GenerateRestApiDocu::generateEndpointDocu_openapi(Kitsunemimi::JsonItem &result)
+generateEndpointDocu_openapi(Kitsunemimi::JsonItem &result)
 {
     for(const auto& [endpointPath, httpDef] : HanamiRoot::root->endpointRules)
     {
@@ -417,36 +395,4 @@ GenerateRestApiDocu::generateEndpointDocu_openapi(Kitsunemimi::JsonItem &result)
 
         result.insert(endpointPath, endpoint);
     }
-}
-
-/**
- * @brief createMdDocumentation
- * @param docu
- */
-void
-GenerateRestApiDocu::createOpenApiDocumentation(std::string &docu)
-{
-    Kitsunemimi::JsonItem result;
-    result.insert("openapi", "3.0.0");
-
-    Kitsunemimi::JsonItem info;
-    info.insert("title", "API documentation");
-    info.insert("version", "unreleased");
-    result.insert("info", info);
-
-    Kitsunemimi::JsonItem contact;
-    info.insert("name", "Tobias Anker");
-    info.insert("email", "tobias.anker@kitsunemimi.moe");
-    result.insert("contact", contact);
-
-    Kitsunemimi::JsonItem license;
-    license.insert("name", "Apache 2.0");
-    license.insert("url", "https://www.apache.org/licenses/LICENSE-2.0.html");
-    result.insert("license", license);
-
-    Kitsunemimi::JsonItem paths;
-    generateEndpointDocu_openapi(paths);
-    result.insert("paths", paths);
-
-    docu = result.toString(true);
 }
