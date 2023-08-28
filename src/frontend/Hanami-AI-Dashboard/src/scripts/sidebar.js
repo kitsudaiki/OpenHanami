@@ -100,57 +100,6 @@ function resetAllSidebarEntries()
 }
 
 /**
- * Download REST-API-documentation. At the moment only pdf-version
- */
-function downloadDocumentation_Request()
-{
-    const token = getAndCheckToken();
-    if(token == "") {
-        return;
-    }
-    
-    const request = "/control/v1/documentation/api/rest";
-    let requestConnection = new XMLHttpRequest();
-    requestConnection.open("GET", request, true);
-    requestConnection.setRequestHeader("X-Auth-Token", token);
-
-    // callback for success
-    requestConnection.onload = function(e) 
-    {
-        if(requestConnection.status != 200) {
-            return;
-        }
-
-        let decodedDocu = atob(JSON.parse(requestConnection.responseText).documentation);
-
-        // write data to file
-        let saveByteArray = (function () {
-            let a = document.createElement("a");
-            document.body.appendChild(a);
-            a.style = "display: none";
-            return function (data, name) {
-                var blob = new Blob(data, {type: "octet/stream"}),
-                    url = window.URL.createObjectURL(blob);
-                a.href = url;
-                a.download = name;
-                a.click();
-                window.URL.revokeObjectURL(url);
-            };
-        }());
-
-        saveByteArray([decodedDocu], 'rest_api_documentation.json');
-    };
-
-    // callback for fail
-    requestConnection.onerror = function(e) 
-    {
-        console.log("Download documentation failed.");
-    };
-
-    requestConnection.send(null);
-}
-
-/**
  * Switch between admin- and non-admin-view in the sidebar based on the cookies
  */
 function updateSidebar()

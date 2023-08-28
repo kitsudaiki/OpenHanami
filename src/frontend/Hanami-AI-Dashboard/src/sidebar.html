@@ -59,7 +59,6 @@ limitations under the License. -->
 <center>
     <button id="switch_project_button" class="create_button">Switch Project</button>
     <button id="logout_button" class="create_button">Logout</button>
-    <button id="download_rest_api_docu_button" class="create_button">Download Rest-API-documentation</button>
 </center>
 
 
@@ -105,13 +104,6 @@ limitations under the License. -->
 <!--=============================================================================-->
 
 <style>
-    #download_rest_api_docu_button { 
-        color: invert(var(--color-text));
-        width: 10rem;
-        height: 3.5rem;
-        margin-bottom: 0.5rem;
-    }
-
     #logout_button { 
         color: invert(var(--color-text));
         width: 10rem;
@@ -190,7 +182,6 @@ limitations under the License. -->
 
     updateSidebar();
 
-    document.getElementById("download_rest_api_docu_button").addEventListener("click", downloadDocumentation_Request, false);
     document.getElementById("logout_button").addEventListener("click", logout, false);
     document.getElementById("switch_project_button").addEventListener("click", switchProject, false);
 
