@@ -51,13 +51,10 @@ int main(int argc, char *argv[])
     if(configPath == "") {
         configPath = "/etc/hanami/hanami_testing.conf";
     }
+    registerConfigs(error);
     if(Kitsunemimi::initConfig(configPath, error) == false)
     {
         LOG_ERROR(error);
-        return 1;
-    }
-    registerConfigs(error);
-    if(Kitsunemimi::isConfigValid() == false) {
         return 1;
     }
 
