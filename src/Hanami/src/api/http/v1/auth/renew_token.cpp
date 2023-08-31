@@ -23,6 +23,7 @@
 #include "renew_token.h"
 
 #include <hanami_root.h>
+#include <database/users_table.h>
 
 #include <libKitsunemimiCrypto/hashes.h>
 #include <libKitsunemimiJson/json_item.h>

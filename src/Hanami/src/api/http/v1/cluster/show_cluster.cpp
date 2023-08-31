@@ -23,6 +23,7 @@
 #include "show_cluster.h"
 
 #include <hanami_root.h>
+#include <database/cluster_table.h>
 
 #include <libKitsunemimiJson/json_item.h>
 

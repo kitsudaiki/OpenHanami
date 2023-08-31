@@ -45,6 +45,7 @@ public:
     virtual ~SqlTable();
 
     bool initTable(ErrorContainer &error);
+    void createDocumentation(std::string &docu);
 
 protected:
     enum DbVataValueTypes

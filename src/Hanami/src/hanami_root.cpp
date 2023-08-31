@@ -39,6 +39,9 @@
 #include <api/endpoint_processing/items/item_methods.h>
 
 #include <libKitsunemimiSakuraDatabase/sql_database.h>
+#include <database/cluster_table.h>
+#include <database/users_table.h>
+#include <database/projects_table.h>
 #include <database/data_set_table.h>
 #include <database/checkpoint_table.h>
 #include <database/request_result_table.h>
@@ -97,10 +100,6 @@ HanamiRoot::init(Kitsunemimi::ErrorContainer &error)
     }
 
     // init db
-    if(initDatabase(error) == false) {
-        return false;
-    }
-
     if(initDatabase(error) == false)
     {
         error.addMeesage("Failed to initialize database");

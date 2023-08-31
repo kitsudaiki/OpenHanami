@@ -24,9 +24,6 @@
 #define HANAMI_HANAMI_ROOT_H
 
 #include <common.h>
-#include <database/cluster_table.h>
-#include <database/users_table.h>
-#include <database/projects_table.h>
 
 #include <libKitsunemimiHanamiPolicies/policy.h>
 

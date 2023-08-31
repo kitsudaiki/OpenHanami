@@ -23,6 +23,7 @@
 #include "delete_project.h"
 
 #include <hanami_root.h>
+#include <database/projects_table.h>
 
 #include <libKitsunemimiJson/json_item.h>
 

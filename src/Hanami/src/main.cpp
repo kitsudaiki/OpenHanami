@@ -37,6 +37,15 @@
 #include <libKitsunemimiCommon/files/text_file.h>
 #include <libKitsunemimiConfig/config_handler.h>
 
+#include <database/cluster_table.h>
+#include <database/users_table.h>
+#include <database/projects_table.h>
+#include <database/data_set_table.h>
+#include <database/checkpoint_table.h>
+#include <database/request_result_table.h>
+#include <database/error_log_table.h>
+#include <database/audit_log_table.h>
+
 int
 main(int argc, char *argv[])
 {
@@ -65,6 +74,8 @@ main(int argc, char *argv[])
 
         Kitsunemimi::ErrorContainer error;
 
+        //-------------------------------------------------------------------------
+
         std::string openApiDocu = "";
         createOpenApiDocumentation(openApiDocu);
         fs::path complete = fs::current_path() / fs::path{"open_api_docu.json"};
@@ -75,6 +86,8 @@ main(int argc, char *argv[])
         }
         std::cout<<"Written OpenAPI-docu to "<<complete<<std::endl;
 
+        //-------------------------------------------------------------------------
+
         std::string configDocu = "";
         Kitsunemimi::ConfigHandler::getInstance()->createDocumentation(configDocu);
         complete = fs::current_path() / fs::path{"config.md"};
@@ -84,6 +97,27 @@ main(int argc, char *argv[])
             return 1;
         }
         std::cout<<"Written Config-docu to "<<complete<<std::endl;
+
+        //-------------------------------------------------------------------------
+
+        std::string dbDocu = "# Database-Tables\n\n";
+        ClusterTable::getInstance()->createDocumentation(dbDocu);
+        ProjectsTable::getInstance()->createDocumentation(dbDocu);
+        UsersTable::getInstance()->createDocumentation(dbDocu);
+        DataSetTable::getInstance()->createDocumentation(dbDocu);
+        RequestResultTable::getInstance()->createDocumentation(dbDocu);
+        CheckpointTable::getInstance()->createDocumentation(dbDocu);
+        ErrorLogTable::getInstance()->createDocumentation(dbDocu);
+        AuditLogTable::getInstance()->createDocumentation(dbDocu);
+        complete = fs::current_path() / fs::path{"db.md"};
+        if(writeFile(complete.generic_string(), dbDocu, error, true) == false)
+        {
+            LOG_ERROR(error);
+            return 1;
+        }
+        std::cout<<"Written Database-docu to "<<complete<<std::endl;
+
+        //-------------------------------------------------------------------------
 
         return 0;
     }

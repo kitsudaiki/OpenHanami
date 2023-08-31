@@ -23,6 +23,7 @@
 #include "list_cluster.h"
 
 #include <hanami_root.h>
+#include <database/cluster_table.h>
 
 ListCluster::ListCluster()
     : Blossom("List all visible clusters.")
