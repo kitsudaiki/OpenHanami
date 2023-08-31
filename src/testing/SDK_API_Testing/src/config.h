@@ -33,21 +33,82 @@ void
 registerConfigs(Kitsunemimi::ErrorContainer &error)
 {
     // DEFAULT-section
-    REGISTER_BOOL_CONFIG(   "DEFAULT", "debug",    error, false,      false);
-    REGISTER_STRING_CONFIG( "DEFAULT", "log_path", error, "/var/log", false);
-    REGISTER_STRING_CONFIG( "DEFAULT", "database", error, "",         false);
+    REGISTER_BOOL_CONFIG(   "DEFAULT",
+                            "debug",
+                            "Flag to enable debug-output in logging.",
+                            error,
+                            false,
+                            false);
+    REGISTER_STRING_CONFIG( "DEFAULT",
+                            "log_path",
+                            "Path to the directory, where the log-files should be written into.",
+                            error,
+                            "/var/log",
+                            false);
 
-    REGISTER_STRING_CONFIG( "connection", "host",      error, "", true);
-    REGISTER_INT_CONFIG(    "connection", "port",      error, 0,  true);
-    REGISTER_STRING_CONFIG( "connection", "test_user", error, "", true);
-    REGISTER_STRING_CONFIG( "connection", "test_pw",   error, "", true);
+    REGISTER_STRING_CONFIG( "connection",
+                            "host",
+                            "IP-address where the hanami-instance is listening.",
+                            error,
+                            "",
+                            true);
+    REGISTER_INT_CONFIG(    "connection",
+                            "port",
+                            "Port where the hanami-instance is listening.",
+                            error,
+                            0,
+                            true);
+    REGISTER_STRING_CONFIG( "connection",
+                            "test_user",
+                            "Login-name of the user, which is used for testing.",
+                            error,
+                            "",
+                            true);
+    REGISTER_STRING_CONFIG( "connection",
+                            "test_pw",
+                            "Passphrase of the user, which is used for testing.",
+                            error,
+                            "",
+                            true);
 
-    REGISTER_STRING_CONFIG( "test_data", "type",           error, "", true);
-    REGISTER_STRING_CONFIG( "test_data", "train_inputs",   error, "", true);
-    REGISTER_STRING_CONFIG( "test_data", "train_labels",   error, "", true);
-    REGISTER_STRING_CONFIG( "test_data", "request_inputs", error, "", true);
-    REGISTER_STRING_CONFIG( "test_data", "request_labels", error, "", true);
-    REGISTER_STRING_CONFIG( "test_data", "base_inputs",    error, "", true);
+    const std::string testDataGroup = "test_data";
+    REGISTER_STRING_CONFIG( testDataGroup,
+                            "type",
+                            "Type of the test ('mnist' or 'csv'). "
+                                "IMPORTANT: only the mnist-input is supported at the moment.",
+                            error,
+                            "mnist",
+                            false);
+    REGISTER_STRING_CONFIG( testDataGroup,
+                            "train_inputs",
+                            "Local path to the file with the mnist train inputs.",
+                            error,
+                            "",
+                            true);
+    REGISTER_STRING_CONFIG( testDataGroup,
+                            "train_labels",
+                            "Local path to the file with the mnist train lables.",
+                            error,
+                            "",
+                            true);
+    REGISTER_STRING_CONFIG( testDataGroup,
+                            "request_inputs",
+                            "Local path to the file with the mnist request inputs.",
+                            error,
+                            "",
+                            true);
+    REGISTER_STRING_CONFIG( testDataGroup,
+                            "request_labels",
+                            "Local path to the file with the mnist request labels.",
+                            error,
+                            "",
+                            true);
+    /*REGISTER_STRING_CONFIG( testDataGroup,
+                            "base_inputs",
+                            "Local path to the file with the csv-data.",
+                            error,
+                            "",
+                            true);*/
 }
 
 #endif // TSUGUMITESTER_CONFIG_H

@@ -55,6 +55,7 @@ initConfig(const std::string &configFilePath,
  *
  * @param groupName name of the group
  * @param itemName name of the item within the group
+ * @prama comment comment for the docu about the config-entry
  * @param error reference for error-output
  * @param defaultValue default value, if nothing was set inside of the config
  * @param required if true, then the value must be in the config-file (default: false)
@@ -64,6 +65,7 @@ initConfig(const std::string &configFilePath,
 bool
 registerString(const std::string &groupName,
                const std::string &itemName,
+               const std::string &comment,
                ErrorContainer &error,
                const std::string &defaultValue,
                const bool required)
@@ -72,7 +74,12 @@ registerString(const std::string &groupName,
         ConfigHandler::m_config = new ConfigHandler();
     }
 
-    return ConfigHandler::m_config->registerString(groupName, itemName, error, defaultValue, required);
+    return ConfigHandler::m_config->registerString(groupName,
+                                                   itemName,
+                                                   comment,
+                                                   error,
+                                                   defaultValue,
+                                                   required);
 }
 
 /**
@@ -80,6 +87,7 @@ registerString(const std::string &groupName,
  *
  * @param groupName name of the group
  * @param itemName name of the item within the group
+ * @prama comment comment for the docu about the config-entry
  * @param error reference for error-output
  * @param defaultValue default value, if nothing was set inside of the config
  * @param required if true, then the value must be in the config-file (default: false)
@@ -89,6 +97,7 @@ registerString(const std::string &groupName,
 bool
 registerInteger(const std::string &groupName,
                 const std::string &itemName,
+                const std::string &comment,
                 ErrorContainer &error,
                 const long defaultValue,
                 const bool required)
@@ -97,7 +106,12 @@ registerInteger(const std::string &groupName,
         ConfigHandler::m_config = new ConfigHandler();
     }
 
-    return ConfigHandler::m_config->registerInteger(groupName, itemName, error, defaultValue, required);
+    return ConfigHandler::m_config->registerInteger(groupName,
+                                                    itemName,
+                                                    comment,
+                                                    error,
+                                                    defaultValue,
+                                                    required);
 }
 
 /**
@@ -105,6 +119,7 @@ registerInteger(const std::string &groupName,
  *
  * @param groupName name of the group
  * @param itemName name of the item within the group
+ * @prama comment comment for the docu about the config-entry
  * @param error reference for error-output
  * @param defaultValue default value, if nothing was set inside of the config
  * @param required if true, then the value must be in the config-file (default: false)
@@ -114,6 +129,7 @@ registerInteger(const std::string &groupName,
 bool
 registerFloat(const std::string &groupName,
               const std::string &itemName,
+              const std::string &comment,
               ErrorContainer &error,
               const double defaultValue,
               const bool required)
@@ -122,7 +138,12 @@ registerFloat(const std::string &groupName,
         ConfigHandler::m_config = new ConfigHandler();
     }
 
-    return ConfigHandler::m_config->registerFloat(groupName, itemName, error, defaultValue, required);
+    return ConfigHandler::m_config->registerFloat(groupName,
+                                                  itemName,
+                                                  comment,
+                                                  error,
+                                                  defaultValue,
+                                                  required);
 }
 
 /**
@@ -130,6 +151,7 @@ registerFloat(const std::string &groupName,
  *
  * @param groupName name of the group
  * @param itemName name of the item within the group
+ * @prama comment comment for the docu about the config-entry
  * @param error reference for error-output
  * @param defaultValue default value, if nothing was set inside of the config
  * @param required if true, then the value must be in the config-file (default: false)
@@ -139,6 +161,7 @@ registerFloat(const std::string &groupName,
 bool
 registerBoolean(const std::string &groupName,
                 const std::string &itemName,
+                const std::string &comment,
                 ErrorContainer &error,
                 const bool defaultValue,
                 const bool required)
@@ -147,7 +170,12 @@ registerBoolean(const std::string &groupName,
         ConfigHandler::m_config = new ConfigHandler();
     }
 
-    return ConfigHandler::m_config->registerBoolean(groupName, itemName, error, defaultValue, required);
+    return ConfigHandler::m_config->registerBoolean(groupName,
+                                                    itemName,
+                                                    comment,
+                                                    error,
+                                                    defaultValue,
+                                                    required);
 }
 
 /**
@@ -155,6 +183,7 @@ registerBoolean(const std::string &groupName,
  *
  * @param groupName name of the group
  * @param itemName name of the item within the group
+ * @prama comment comment for the docu about the config-entry
  * @param error reference for error-output
  * @param defaultValue default value, if nothing was set inside of the config
  * @param required if true, then the value must be in the config-file (default: false)
@@ -164,6 +193,7 @@ registerBoolean(const std::string &groupName,
 bool
 registerStringArray(const std::string &groupName,
                     const std::string &itemName,
+                    const std::string &comment,
                     ErrorContainer &error,
                     const std::vector<std::string> &defaultValue,
                     const bool required)
@@ -172,7 +202,12 @@ registerStringArray(const std::string &groupName,
         ConfigHandler::m_config = new ConfigHandler();
     }
 
-    return ConfigHandler::m_config->registerStringArray(groupName, itemName, error, defaultValue,required);
+    return ConfigHandler::m_config->registerStringArray(groupName,
+                                                        itemName,
+                                                        comment,
+                                                        error,
+                                                        defaultValue,
+                                                        required);
 }
 
 /**
@@ -380,6 +415,7 @@ ConfigHandler::initConfig(const std::string &configFilePath,
  *
  * @param groupName name of the group
  * @param itemName name of the item within the group
+ * @prama comment comment for the docu about the config-entry
  * @param error reference for error-output
  * @param defaultValue default value, if nothing was set inside of the config
  * @param required if true, then the value must be in the config-file (default: false)
@@ -389,6 +425,7 @@ ConfigHandler::initConfig(const std::string &configFilePath,
 bool
 ConfigHandler::registerString(const std::string &groupName,
                               const std::string &itemName,
+                              const std::string &comment,
                               ErrorContainer &error,
                               const std::string &defaultValue,
                               const bool required)
@@ -397,6 +434,7 @@ ConfigHandler::registerString(const std::string &groupName,
     std::string finalGroupName = groupName;
     return registerValue(finalGroupName,
                          itemName,
+                         comment,
                          STRING_TYPE,
                          required,
                          &convertedDefault,
@@ -408,6 +446,7 @@ ConfigHandler::registerString(const std::string &groupName,
  *
  * @param groupName name of the group
  * @param itemName name of the item within the group
+ * @prama comment comment for the docu about the config-entry
  * @param error reference for error-output
  * @param defaultValue default value, if nothing was set inside of the config
  * @param required if true, then the value must be in the config-file (default: false)
@@ -417,6 +456,7 @@ ConfigHandler::registerString(const std::string &groupName,
 bool
 ConfigHandler::registerInteger(const std::string &groupName,
                                const std::string &itemName,
+                               const std::string &comment,
                                ErrorContainer &error,
                                const long defaultValue,
                                const bool required)
@@ -425,6 +465,7 @@ ConfigHandler::registerInteger(const std::string &groupName,
     std::string finalGroupName = groupName;
     return registerValue(finalGroupName,
                          itemName,
+                         comment,
                          INT_TYPE,
                          required,
                          &convertedDefault,
@@ -436,6 +477,7 @@ ConfigHandler::registerInteger(const std::string &groupName,
  *
  * @param groupName name of the group
  * @param itemName name of the item within the group
+ * @prama comment comment for the docu about the config-entry
  * @param error reference for error-output
  * @param defaultValue default value, if nothing was set inside of the config
  * @param required if true, then the value must be in the config-file (default: false)
@@ -445,6 +487,7 @@ ConfigHandler::registerInteger(const std::string &groupName,
 bool
 ConfigHandler::registerFloat(const std::string &groupName,
                              const std::string &itemName,
+                             const std::string &comment,
                              ErrorContainer &error,
                              const double defaultValue,
                              const bool required)
@@ -453,6 +496,7 @@ ConfigHandler::registerFloat(const std::string &groupName,
     std::string finalGroupName = groupName;
     return registerValue(finalGroupName,
                          itemName,
+                         comment,
                          FLOAT_TYPE,
                          required,
                          &convertedDefault,
@@ -464,6 +508,7 @@ ConfigHandler::registerFloat(const std::string &groupName,
  *
  * @param groupName name of the group
  * @param itemName name of the item within the group
+ * @prama comment comment for the docu about the config-entry
  * @param error reference for error-output
  * @param defaultValue default value, if nothing was set inside of the config
  * @param required if true, then the value must be in the config-file (default: false)
@@ -473,6 +518,7 @@ ConfigHandler::registerFloat(const std::string &groupName,
 bool
 ConfigHandler::registerBoolean(const std::string &groupName,
                                const std::string &itemName,
+                               const std::string &comment,
                                ErrorContainer &error,
                                const bool defaultValue,
                                const bool required)
@@ -481,6 +527,7 @@ ConfigHandler::registerBoolean(const std::string &groupName,
     std::string finalGroupName = groupName;
     return registerValue(finalGroupName,
                          itemName,
+                         comment,
                          BOOL_TYPE,
                          required,
                          &convertedDefault,
@@ -492,6 +539,7 @@ ConfigHandler::registerBoolean(const std::string &groupName,
  *
  * @param groupName name of the group
  * @param itemName name of the item within the group
+ * @prama comment comment for the docu about the config-entry
  * @param defaultValue default value, if nothing was set inside of the config
  * @param required if true, then the value must be in the config-file (default: false)
  *
@@ -500,6 +548,7 @@ ConfigHandler::registerBoolean(const std::string &groupName,
 bool
 ConfigHandler::registerStringArray(const std::string &groupName,
                                    const std::string &itemName,
+                                   const std::string &comment,
                                    ErrorContainer &error,
                                    const std::vector<std::string> &defaultValue,
                                    const bool required)
@@ -512,6 +561,7 @@ ConfigHandler::registerStringArray(const std::string &groupName,
     std::string finalGroupName = groupName;
     return registerValue(finalGroupName,
                          itemName,
+                         comment,
                          STRING_ARRAY_TYPE,
                          required,
                          &convertedDefault,
@@ -844,6 +894,7 @@ ConfigHandler::getRegisteredType(const std::string &groupName,
  *
  * @param groupName name of the group
  * @param itemName name of the item within the group
+ * @prama comment comment for the docu about the config-entry
  * @param type type of the value to register
  * @param required if true, then the value must be in the config-file
  * @param defaultValue default-value of the item, for the case that
@@ -855,6 +906,7 @@ ConfigHandler::getRegisteredType(const std::string &groupName,
 bool
 ConfigHandler::registerValue(std::string &groupName,
                              const std::string &itemName,
+                             const std::string &comment,
                              const ConfigType type,
                              const bool required,
                              DataItem* defaultValue,
@@ -887,6 +939,7 @@ ConfigHandler::registerValue(std::string &groupName,
     ConfigEntry entry;
     entry.type = type;
     entry.isRequired = required;
+    entry.comment = comment;
     if(defaultValue != nullptr) {
         entry.value = defaultValue->copy();
     }

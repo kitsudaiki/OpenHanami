@@ -53,26 +53,31 @@ bool initConfig(const std::string &configFilePath,
 // register config-options
 bool registerString(const std::string &groupName,
                     const std::string &itemName,
+                    const std::string &comment,
                     ErrorContainer &error,
                     const std::string &defaultValue = "",
                     const bool required = false);
 bool registerInteger(const std::string &groupName,
                      const std::string &itemName,
+                     const std::string &comment,
                      ErrorContainer &error,
                      const long defaultValue = 0,
                      const bool required = false);
 bool registerFloat(const std::string &groupName,
                    const std::string &itemName,
+                   const std::string &comment,
                    ErrorContainer &error,
                    const double defaultValue = 0.0,
                    const bool required = false);
 bool registerBoolean(const std::string &groupName,
                      const std::string &itemName,
+                     const std::string &comment,
                      ErrorContainer &error,
                      const bool defaultValue = false,
                      const bool required = false);
 bool registerStringArray(const std::string &groupName,
                          const std::string &itemName,
+                         const std::string &comment,
                          ErrorContainer &error,
                          const std::vector<std::string> &defaultValue = {},
                          const bool required = false);
@@ -108,26 +113,31 @@ public:
     // register config-options
     bool registerString(const std::string &groupName,
                         const std::string &itemName,
+                        const std::string &comment,
                         ErrorContainer &error,
                         const std::string &defaultValue = "",
                         const bool required = false);
     bool registerInteger(const std::string &groupName,
                          const std::string &itemName,
+                         const std::string &comment,
                          ErrorContainer &error,
                          const long defaultValue = 0,
                          const bool required = false);
     bool registerFloat(const std::string &groupName,
                        const std::string &itemName,
+                       const std::string &comment,
                        ErrorContainer &error,
                        const double defaultValue = 0.0,
                        const bool required = false);
     bool registerBoolean(const std::string &groupName,
                          const std::string &itemName,
+                         const std::string &comment,
                          ErrorContainer &error,
                          const bool defaultValue = false,
                          const bool required = false);
     bool registerStringArray(const std::string &groupName,
                              const std::string &itemName,
+                             const std::string &comment,
                              ErrorContainer &error,
                              const std::vector<std::string> &defaultValue = {},
                              const bool required = false);
@@ -169,7 +179,7 @@ private:
         bool isRequired = false;
         ConfigType type = UNDEFINED_TYPE;
         DataItem* value = nullptr;
-        const std::string comment = "";
+        std::string comment = "";
     };
 
     bool checkEntry(const std::string &groupName,
@@ -187,6 +197,7 @@ private:
 
     bool registerValue(std::string &groupName,
                        const std::string &itemName,
+                       const std::string &comment,
                        const ConfigType type,
                        const bool required,
                        DataItem* defaultValue,
