@@ -49,6 +49,7 @@ class ConfigHandler_Test;
 
 bool initConfig(const std::string &configFilePath,
                 ErrorContainer &error);
+void createDocumentation(std::string &docu);
 
 // register config-options
 bool registerString(const std::string &groupName,
@@ -109,6 +110,7 @@ public:
 
     bool initConfig(const std::string &configFilePath,
                     ErrorContainer &error);
+    void createDocumentation(std::string &docu);
 
     // register config-options
     bool registerString(const std::string &groupName,

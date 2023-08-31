@@ -35,6 +35,7 @@
 #include <libKitsunemimiArgs/arg_parser.h>
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiCommon/files/text_file.h>
+#include <libKitsunemimiConfig/config_handler.h>
 
 int
 main(int argc, char *argv[])
@@ -48,6 +49,7 @@ main(int argc, char *argv[])
     // create and init argument-parser
     Kitsunemimi::ArgParser argParser;
     registerArguments(&argParser, error);
+    registerConfigs(error);
 
     // parse cli-input
     if(argParser.parse(argc, argv, error) == false)
@@ -65,14 +67,23 @@ main(int argc, char *argv[])
 
         std::string openApiDocu = "";
         createOpenApiDocumentation(openApiDocu);
-        const fs::path file{"open_api_docu.json"};
-        fs::path complete = fs::current_path() / file;
+        fs::path complete = fs::current_path() / fs::path{"open_api_docu.json"};
         if(writeFile(complete.generic_string(), openApiDocu, error, true) == false)
         {
             LOG_ERROR(error);
             return 1;
         }
         std::cout<<"Written OpenAPI-docu to "<<complete<<std::endl;
+
+        std::string configDocu = "";
+        Kitsunemimi::createDocumentation(configDocu);
+        complete = fs::current_path() / fs::path{"config.md"};
+        if(writeFile(complete.generic_string(), configDocu, error, true) == false)
+        {
+            LOG_ERROR(error);
+            return 1;
+        }
+        std::cout<<"Written Config-docu to "<<complete<<std::endl;
 
         return 0;
     }
@@ -82,7 +93,6 @@ main(int argc, char *argv[])
     if(configPath == "") {
         configPath = "/etc/hanami/hanami.conf";
     }
-    registerConfigs(error);
     if(Kitsunemimi::initConfig(configPath, error) == false)
     {
         LOG_ERROR(error);

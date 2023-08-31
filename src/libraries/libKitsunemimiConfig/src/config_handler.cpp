@@ -51,6 +51,21 @@ initConfig(const std::string &configFilePath,
 }
 
 /**
+ * @brief generate markdown-text with all registered config-entries
+ *
+ * @param docu reference for the output of the final document
+ */
+void
+createDocumentation(std::string &docu)
+{
+    if(ConfigHandler::m_config == nullptr) {
+        ConfigHandler::m_config = new ConfigHandler();
+    }
+
+    return ConfigHandler::m_config->createDocumentation(docu);
+}
+
+/**
  * @brief register string config value
  *
  * @param groupName name of the group
@@ -946,6 +961,44 @@ ConfigHandler::registerValue(std::string &groupName,
     outerIt->second.emplace(itemName, entry);
 
     return true;
+}
+
+/**
+ * @brief generate markdown-text with all registered config-entries
+ *
+ * @param docu reference for the output of the final document
+ */
+void
+ConfigHandler::createDocumentation(std::string &docu)
+{
+    docu.clear();
+
+    docu.append("# Config\n");
+
+    for(auto& [groupName, groupConfig] : m_registeredConfigs)
+    {
+        docu.append("## " + groupName + "\n");
+        docu.append("| Item | Description |\n");
+        docu.append("| --- | --- |\n");
+
+        for(auto& [itemName, entry] : groupConfig)
+        {
+            docu.append("| " + itemName + "| ");
+            docu.append("**Description**: " + entry.comment + "<br>");
+            if(entry.isRequired) {
+                docu.append("**Required**: TRUE<br>");
+            } else {
+                docu.append("**Required**: FALSE<br>");
+            }
+            if(entry.value != nullptr
+                    && entry.isRequired == false)
+            {
+                docu.append("**Default**: " + entry.value->toString() + "<br>");
+            }
+            docu.append(" |\n");
+        }
+        docu.append("\n");
+    }
 }
 
 }
