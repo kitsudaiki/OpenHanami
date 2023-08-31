@@ -76,7 +76,7 @@ main(int argc, char *argv[])
         std::cout<<"Written OpenAPI-docu to "<<complete<<std::endl;
 
         std::string configDocu = "";
-        Kitsunemimi::createDocumentation(configDocu);
+        Kitsunemimi::ConfigHandler::getInstance()->createDocumentation(configDocu);
         complete = fs::current_path() / fs::path{"config.md"};
         if(writeFile(complete.generic_string(), configDocu, error, true) == false)
         {
@@ -93,7 +93,7 @@ main(int argc, char *argv[])
     if(configPath == "") {
         configPath = "/etc/hanami/hanami.conf";
     }
-    if(Kitsunemimi::initConfig(configPath, error) == false)
+    if(INIT_CONFIG(configPath, error) == false)
     {
         LOG_ERROR(error);
         return 1;

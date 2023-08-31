@@ -28,17 +28,19 @@
 #include <map>
 #include <libKitsunemimiCommon/logger.h>
 
-#define REGISTER_STRING_CONFIG Kitsunemimi::registerString
-#define REGISTER_INT_CONFIG Kitsunemimi::registerInteger
-#define REGISTER_FLOAT_CONFIG Kitsunemimi::registerFloat
-#define REGISTER_BOOL_CONFIG Kitsunemimi::registerBoolean
-#define REGISTER_STRING_ARRAY_CONFIG Kitsunemimi::registerStringArray
+#define INIT_CONFIG Kitsunemimi::ConfigHandler::getInstance()->initConfig
 
-#define GET_STRING_CONFIG Kitsunemimi::getString
-#define GET_INT_CONFIG Kitsunemimi::getInteger
-#define GET_FLOAT_CONFIG Kitsunemimi::getFloat
-#define GET_BOOL_CONFIG Kitsunemimi::getBoolean
-#define GET_STRING_ARRAY_CONFIG Kitsunemimi::getStringArray
+#define REGISTER_STRING_CONFIG Kitsunemimi::ConfigHandler::getInstance()->registerString
+#define REGISTER_INT_CONFIG Kitsunemimi::ConfigHandler::getInstance()->registerInteger
+#define REGISTER_FLOAT_CONFIG Kitsunemimi::ConfigHandler::getInstance()->registerFloat
+#define REGISTER_BOOL_CONFIG Kitsunemimi::ConfigHandler::getInstance()->registerBoolean
+#define REGISTER_STRING_ARRAY_CONFIG Kitsunemimi::ConfigHandler::getInstance()->registerStringArray
+
+#define GET_STRING_CONFIG Kitsunemimi::ConfigHandler::getInstance()->getString
+#define GET_INT_CONFIG Kitsunemimi::ConfigHandler::getInstance()->getInteger
+#define GET_FLOAT_CONFIG Kitsunemimi::ConfigHandler::getInstance()->getFloat
+#define GET_BOOL_CONFIG Kitsunemimi::ConfigHandler::getInstance()->getBoolean
+#define GET_STRING_ARRAY_CONFIG Kitsunemimi::ConfigHandler::getInstance()->getStringArray
 
 namespace Kitsunemimi
 {
@@ -47,66 +49,18 @@ class IniItem;
 
 class ConfigHandler_Test;
 
-bool initConfig(const std::string &configFilePath,
-                ErrorContainer &error);
-void createDocumentation(std::string &docu);
-
-// register config-options
-bool registerString(const std::string &groupName,
-                    const std::string &itemName,
-                    const std::string &comment,
-                    ErrorContainer &error,
-                    const std::string &defaultValue = "",
-                    const bool required = false);
-bool registerInteger(const std::string &groupName,
-                     const std::string &itemName,
-                     const std::string &comment,
-                     ErrorContainer &error,
-                     const long defaultValue = 0,
-                     const bool required = false);
-bool registerFloat(const std::string &groupName,
-                   const std::string &itemName,
-                   const std::string &comment,
-                   ErrorContainer &error,
-                   const double defaultValue = 0.0,
-                   const bool required = false);
-bool registerBoolean(const std::string &groupName,
-                     const std::string &itemName,
-                     const std::string &comment,
-                     ErrorContainer &error,
-                     const bool defaultValue = false,
-                     const bool required = false);
-bool registerStringArray(const std::string &groupName,
-                         const std::string &itemName,
-                         const std::string &comment,
-                         ErrorContainer &error,
-                         const std::vector<std::string> &defaultValue = {},
-                         const bool required = false);
-
-// getter
-const std::string getString(const std::string &groupName,
-                            const std::string &itemName,
-                            bool &success);
-long getInteger(const std::string &groupName,
-                const std::string &itemName,
-                bool &success);
-double getFloat(const std::string &groupName,
-                const std::string &itemName,
-                bool &success);
-bool getBoolean(const std::string &groupName,
-                const std::string &itemName,
-                bool &success);
-const std::vector<std::string> getStringArray(const std::string &groupName,
-                                              const std::string &itemName,
-                                              bool &success);
-
 //==================================================================================================
 
 class ConfigHandler
 {
 public:
-    ConfigHandler();
-    ~ConfigHandler();
+    static ConfigHandler* getInstance()
+    {
+        if(instance == nullptr) {
+            instance = new ConfigHandler();
+        }
+        return instance;
+    }
 
     bool initConfig(const std::string &configFilePath,
                     ErrorContainer &error);
@@ -165,6 +119,10 @@ public:
 
 private:
     friend ConfigHandler_Test;
+
+    ConfigHandler();
+    ~ConfigHandler();
+    static ConfigHandler* instance;
 
     enum ConfigType
     {

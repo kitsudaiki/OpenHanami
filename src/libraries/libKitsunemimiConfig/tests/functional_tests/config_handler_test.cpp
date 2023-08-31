@@ -49,7 +49,7 @@ ConfigHandler_Test::runTest()
     REGISTER_INT_CONFIG("DEFAULT", "another_int_val", "", error, 42);
 
     // init config
-    TEST_EQUAL(Kitsunemimi::initConfig(m_testFilePath, error), true);
+    TEST_EQUAL(INIT_CONFIG(m_testFilePath, error), true);
 
     bool success = false;
     TEST_EQUAL(GET_STRING_CONFIG("DEFAULT", "string_val", success), "asdf.asdf");

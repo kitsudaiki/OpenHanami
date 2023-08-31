@@ -32,7 +32,7 @@ REGISTER_INT_CONFIG("DEFAULT", "int_val", error, 42);
 REGISTER_INT_CONFIG("DEFAULT", "another_int_val", error, 42);
 
 // init configuration
-if(Kitsunemimi::initConfig(m_testFilePath, error) == false) {
+if(INIT_CONFIG(m_testFilePath, error) == false) {
 	// invalid config
 	LOG_ERROR(error);
 }
