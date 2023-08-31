@@ -641,13 +641,9 @@ ConfigHandler::registerValue(std::string &groupName,
 void
 ConfigHandler::createDocumentation(std::string &docu)
 {
-    docu.clear();
-
-    docu.append("# Config\n");
-
     for(auto& [groupName, groupConfig] : m_registeredConfigs)
     {
-        docu.append("## " + groupName + "\n");
+        docu.append("## " + groupName + "\n\n");
         docu.append("| Item | Description |\n");
         docu.append("| --- | --- |\n");
 

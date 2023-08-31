@@ -88,7 +88,7 @@ main(int argc, char *argv[])
 
         //-------------------------------------------------------------------------
 
-        std::string configDocu = "";
+        std::string configDocu = "# Configs of Hanami\n\n";
         Kitsunemimi::ConfigHandler::getInstance()->createDocumentation(configDocu);
         complete = fs::current_path() / fs::path{"config.md"};
         if(writeFile(complete.generic_string(), configDocu, error, true) == false)

@@ -36,9 +36,8 @@ Installed packages under the actual used Ubuntu 22.04
 | libsqlite3-0  | Library to interact with the SQLite3 databases | 
 | libprotobuf23 | Runtime-library for protobuffers | 
 | libboost1.74 | Provides the Beast-library of Boost, which is used for the REST-API within the Torii |
-| rst2pdf | Used in case of downloading a REST-API-Docu as pdf-file by converting a rst-file into a pdf | 
 | ocl-icd-libopencl1 | Runtime-library for OpenCL | 
-| libcudart11.0 | Runtime-library for CUDA | 
+| libcudart12.0 | Runtime-library for CUDA | 
 
 ## Overview
 
@@ -66,9 +65,11 @@ I know, this is not a valid UML-diagram or something like this. It should old vi
 
 [libKitsunemimiHanamiClusterParser](#libkitsunemimihanamisegmentparser)
 
-[libKitsunemimiHanamiSegmentParser](#libkitsunemimihanamiclusterparser)
-
 [libKitsunemimiHanamiPolicies](#libKitsunemimiHanamiPolicies)
+
+[libKitsunemimiHanamiFiles](#libKitsunemimiHanamiFiles)
+
+[libKitsunemimiHanamiHardware](#libKitsunemimiHanamiHardware)
 
 [libKitsunemimiSakuraNetwork](#libkitsunemimisakuranetwork)
 
@@ -150,18 +151,25 @@ __________
 
 __________
 
-### libKitsunemimiHanamiSegmentParser
+### libKitsunemimiHanamiPolicies
 
-- **content**: Parser-library for segment-templates
+- **content**: Parser for custon policy-files.
 
 - **language**: `C++17`
 
 __________
 
+### libKitsunemimiHanamiHardware
 
-### libKitsunemimiHanamiPolicies
+- **content**: Hardware related functions to regulate cpu and so on.
 
-- **content**: Parser for custon policy-files.
+- **language**: `C++17`
+
+__________
+
+### libKitsunemimiHanamiFiles
+
+- **content**: File-handler and converter.
 
 - **language**: `C++17`
 

@@ -1387,43 +1387,6 @@
                 ]
             }
         },
-        "v1/documentation/api/rest": {
-            "get": {
-                "parameters": [
-                    {
-                        "description": "JWT-Token for authentication",
-                        "in": "header",
-                        "name": "X-Auth-Token",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "documentation": {
-                                            "description": "REST-API-documentation as base64 converted string.",
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        },
-                        "description": "Successful response"
-                    }
-                },
-                "summary": "Generate a OpenAPI documentation for the REST-API of all available components.",
-                "tags": [
-                    "Documentation"
-                ]
-            }
-        },
         "v1/error_log": {
             "get": {
                 "parameters": [

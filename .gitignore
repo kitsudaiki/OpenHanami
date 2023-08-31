@@ -4,3 +4,4 @@ gitIdentityChange.sh
 *.pro.user
 *.pb.cc
 *.pb.h
+*.drawio.bkp
