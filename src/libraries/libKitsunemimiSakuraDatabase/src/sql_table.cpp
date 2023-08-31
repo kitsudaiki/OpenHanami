@@ -58,6 +58,67 @@ SqlTable::initTable(ErrorContainer &error)
 }
 
 /**
+ * @brief generate markdown-text with all registered database-columns
+ *
+ * @param docu reference for the output of the final document
+ */
+void
+SqlTable::createDocumentation(std::string &docu)
+{
+    // header
+    docu.append("## " + m_tableName + "\n\n");
+    docu.append("| Column-Name | Type | is primary | allow NULL|\n");
+    docu.append("| --- | --- | --- | --- |\n");
+
+    for(const DbHeaderEntry& entry : m_tableHeader)
+    {
+        docu.append("| ");
+
+        // name
+        docu.append(entry.name + " | ");
+
+        // type
+        switch(entry.type)
+        {
+            case STRING_TYPE:
+                if(entry.maxLength > 0) {
+                    docu.append("varchar(" + std::to_string(entry.maxLength) + ") | ");
+                } else {
+                   docu.append("text | ");
+                }
+                break;
+            case INT_TYPE:
+                docu.append("int | ");
+                break;
+            case BOOL_TYPE:
+                docu.append("bool | ");
+                break;
+            case FLOAT_TYPE:
+                docu.append("real | ");
+                break;
+        }
+
+        // primary
+        if(entry.isPrimary) {
+            docu.append("true | ");
+        } else {
+            docu.append("false | ");
+        }
+
+        // NULL
+        if(entry.allowNull) {
+            docu.append("true | ");
+        } else {
+            docu.append("false | ");
+        }
+
+        docu.append("\n");
+    }
+
+    docu.append("\n");
+}
+
+/**
  * @brief insert values into the table
  *
  * @param values string-list with values to insert

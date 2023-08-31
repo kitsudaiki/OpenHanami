@@ -45,12 +45,12 @@ HanamiSqlTable::HanamiSqlTable(Kitsunemimi::Sakura::SqlDatabase* db)
 
     DbHeaderEntry projectId;
     projectId.name = "project_id";
-    projectId.maxLength = 128;
+    projectId.maxLength = 256;
     m_tableHeader.push_back(projectId);
 
     DbHeaderEntry ownerId;
     ownerId.name = "owner_id";
-    ownerId.maxLength = 128;
+    ownerId.maxLength = 256;
     m_tableHeader.push_back(ownerId);
 
     DbHeaderEntry visibility;

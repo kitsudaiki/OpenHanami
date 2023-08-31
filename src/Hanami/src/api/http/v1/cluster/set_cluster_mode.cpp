@@ -23,6 +23,7 @@
 #include "set_cluster_mode.h"
 
 #include <hanami_root.h>
+#include <database/cluster_table.h>
 #include <core/cluster/cluster_handler.h>
 #include <core/cluster/cluster.h>
 

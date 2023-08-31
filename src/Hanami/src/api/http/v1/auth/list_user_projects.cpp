@@ -23,6 +23,7 @@
 #include "list_user_projects.h"
 
 #include <hanami_root.h>
+#include <database/users_table.h>
 
 #include <libKitsunemimiCommon/methods/string_methods.h>
 #include <libKitsunemimiCrypto/hashes.h>

@@ -86,8 +86,6 @@
 #include <api/http/v1/project/list_projects.h>
 #include <api/http/v1/project/delete_project.h>
 
-#include  <api/http/v1/documentation/generate_rest_api_docu.h>
-
 #include <api/http/v1/auth/create_token.h>
 #include <api/http/v1/auth/validate_access.h>
 #include <api/http/v1/auth/list_user_projects.h>
@@ -390,22 +388,6 @@ tokenBlossomes()
 }
 
 /**
- * @brief documentation endpoints
- */
-void
-documentationBlossomes()
-{
-    const std::string group = "Documentation";
-
-    assert(HanamiRoot::root->addBlossom(group, "generate_rest_api", new GenerateRestApiDocu()));
-    HanamiRoot::root->addEndpoint("v1/documentation/api/rest",
-                                  Kitsunemimi::Hanami::GET_TYPE,
-                                  BLOSSOM_TYPE,
-                                  group,
-                                  "generate_rest_api");
-}
-
-/**
  * @brief init user endpoints
  */
 void
@@ -549,7 +531,6 @@ initBlossoms()
     logsBlossoms();
     projectBlossomes();
     userBlossomes();
-    documentationBlossomes();
     tokenBlossomes();
     measuringBlossomes();
 

@@ -23,6 +23,7 @@
 #include "list_users.h"
 
 #include <hanami_root.h>
+#include <database/users_table.h>
 
 /**
  * @brief constructor

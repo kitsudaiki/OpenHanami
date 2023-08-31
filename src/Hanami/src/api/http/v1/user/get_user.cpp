@@ -23,6 +23,7 @@
 #include "get_user.h"
 
 #include <hanami_root.h>
+#include <database/users_table.h>
 
 #include <libKitsunemimiJson/json_item.h>
 

@@ -23,30 +23,23 @@
 #ifndef HANAMI_GENERATERESTAPIDOCU_H
 #define HANAMI_GENERATERESTAPIDOCU_H
 
-#include <api/endpoint_processing/blossom.h>
+#include <string>
+#include <map>
 
+namespace Kitsunemimi {
+class JsonItem;
+}
+struct FieldDef;
 
-class GenerateRestApiDocu
-        : public Blossom
-{
-public:
-    GenerateRestApiDocu();
+void createOpenApiDocumentation(std::string &docu);
 
-protected:
-    bool runTask(BlossomIO &blossomIO,
-                 const Kitsunemimi::DataMap &context,
-                 BlossomStatus &,
-                 Kitsunemimi::ErrorContainer &);
+void generateEndpointDocu_openapi(Kitsunemimi::JsonItem &result);
+void createBodyParams_openapi(Kitsunemimi::JsonItem &schema,
+                              const std::map<std::string, FieldDef>* defMap,
+                              const bool isRequest);
+void createQueryParams_openapi(Kitsunemimi::JsonItem &parameters,
+                               const std::map<std::string, FieldDef>* defMap);
+void addTokenRequirement(Kitsunemimi::JsonItem &parameters);
 
-private:
-    void createOpenApiDocumentation(std::string &docu);
-    void generateEndpointDocu_openapi(Kitsunemimi::JsonItem &result);
-    void createBodyParams_openapi(Kitsunemimi::JsonItem &schema,
-                                  const std::map<std::string, FieldDef>* defMap,
-                                  const bool isRequest);
-    void createQueryParams_openapi(Kitsunemimi::JsonItem &parameters,
-                                   const std::map<std::string, FieldDef>* defMap);
-    void addTokenRequirement(Kitsunemimi::JsonItem &parameters);
-};
 
 #endif // HANAMI_GENERATERESTAPIDOCU_H

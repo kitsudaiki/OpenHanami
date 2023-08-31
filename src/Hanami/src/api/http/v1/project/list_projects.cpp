@@ -23,6 +23,7 @@
 #include "list_projects.h"
 
 #include <hanami_root.h>
+#include <database/projects_table.h>
 
 /**
  * @brief constructor

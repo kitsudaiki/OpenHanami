@@ -24,6 +24,7 @@
 
 #include <libKitsunemimiConfig/config_handler.h>
 #include <libKitsunemimiCommon/files/text_file.h>
+#include <libKitsunemimiCommon/items/data_items.h>
 #include <libKitsunemimiCommon/methods/file_methods.h>
 
 namespace Kitsunemimi
@@ -87,10 +88,12 @@ void
 ConfigHandler_Test::registerType_test()
 {
     ConfigHandler configHandler;
+    Kitsunemimi::ErrorContainer error;
+    std::string groupName = "groupName";
 
-    TEST_EQUAL(configHandler.registerType("groupName", "key1", ConfigHandler::ConfigType::STRING_TYPE), true);
-    TEST_EQUAL(configHandler.registerType("groupName", "key2", ConfigHandler::ConfigType::STRING_TYPE), true);
-    TEST_EQUAL(configHandler.registerType("groupName", "key1", ConfigHandler::ConfigType::STRING_TYPE), false);
+    TEST_EQUAL(configHandler.registerValue(groupName, "key1", "", ConfigHandler::ConfigType::STRING_TYPE, false, nullptr, error), true);
+    TEST_EQUAL(configHandler.registerValue(groupName, "key2", "", ConfigHandler::ConfigType::STRING_TYPE, false, nullptr, error), true);
+    TEST_EQUAL(configHandler.registerValue(groupName, "key1", "", ConfigHandler::ConfigType::STRING_TYPE, false, nullptr, error), false);
 }
 
 /**
@@ -100,8 +103,10 @@ void
 ConfigHandler_Test::isRegistered_test()
 {
     ConfigHandler configHandler;
+    Kitsunemimi::ErrorContainer error;
+    std::string groupName = "groupName";
 
-    configHandler.registerType("groupName", "key1", ConfigHandler::ConfigType::STRING_TYPE);
+    configHandler.registerValue(groupName, "key1", "", ConfigHandler::ConfigType::STRING_TYPE, false, nullptr, error);
 
     TEST_EQUAL(configHandler.isRegistered("groupName", "key1"), true);
     TEST_EQUAL(configHandler.isRegistered("groupName", "key2"), false);
@@ -114,9 +119,12 @@ void
 ConfigHandler_Test::getRegisteredType_test()
 {
     ConfigHandler configHandler;
+    Kitsunemimi::ErrorContainer error;
+    std::string groupName = "groupName";
+    DataValue value("");
 
-    configHandler.registerType("groupName", "key1", ConfigHandler::ConfigType::STRING_TYPE);
-    configHandler.registerType("groupName", "key2", ConfigHandler::ConfigType::INT_TYPE);
+    configHandler.registerValue(groupName, "key1", "", ConfigHandler::ConfigType::STRING_TYPE, false, &value, error);
+    configHandler.registerValue(groupName, "key2", "", ConfigHandler::ConfigType::INT_TYPE, false, &value, error);
 
     TEST_EQUAL(configHandler.getRegisteredType("groupName", "key1"), ConfigHandler::ConfigType::STRING_TYPE);
     TEST_EQUAL(configHandler.getRegisteredType("groupName", "key2"), ConfigHandler::ConfigType::INT_TYPE);
@@ -149,10 +157,10 @@ ConfigHandler_Test::registerString_test()
 
     configHandler.initConfig(m_testFilePath, error);
 
-    configHandler.registerString("DEFAULT", "int_val", error, "default");
-    configHandler.registerString("DEFAULT", "itemName", error, "default");
-    configHandler.registerString("DEFAULT", "string_val", error, "default");
-    configHandler.registerString("DEFAULT", "string_val", error, "default");
+    configHandler.registerString("DEFAULT", "int_val", "", error, "default");
+    configHandler.registerString("DEFAULT", "itemName", "", error, "default");
+    configHandler.registerString("DEFAULT", "string_val", "", error, "default");
+    configHandler.registerString("DEFAULT", "string_val", "", error, "default");
 }
 
 /**
@@ -166,10 +174,10 @@ ConfigHandler_Test::registerInteger_test()
 
     configHandler.initConfig(m_testFilePath, error);
 
-    configHandler.registerInteger("DEFAULT", "string_val", error, 42);
-    configHandler.registerInteger("DEFAULT", "itemName", error, 42);
-    configHandler.registerInteger("DEFAULT", "int_val", error, 42);
-    configHandler.registerInteger("DEFAULT", "int_val", error, 42);
+    configHandler.registerInteger("DEFAULT", "string_val", "", error, 42);
+    configHandler.registerInteger("DEFAULT", "itemName", "", error, 42);
+    configHandler.registerInteger("DEFAULT", "int_val", "", error, 42);
+    configHandler.registerInteger("DEFAULT", "int_val", "", error, 42);
 }
 
 /**
@@ -183,10 +191,10 @@ ConfigHandler_Test::registerFloat_test()
 
     configHandler.initConfig(m_testFilePath, error);
 
-    configHandler.registerFloat("DEFAULT", "string_val", error, 42.0);
-    configHandler.registerFloat("DEFAULT", "itemName", error, 42.0);
-    configHandler.registerFloat("DEFAULT", "float_val", error, 42.0);
-    configHandler.registerFloat("DEFAULT", "float_val", error, 42.0);
+    configHandler.registerFloat("DEFAULT", "string_val", "", error, 42.0);
+    configHandler.registerFloat("DEFAULT", "itemName", "", error, 42.0);
+    configHandler.registerFloat("DEFAULT", "float_val", "", error, 42.0);
+    configHandler.registerFloat("DEFAULT", "float_val", "", error, 42.0);
 }
 
 /**
@@ -200,10 +208,10 @@ ConfigHandler_Test::registerBoolean_test()
 
     configHandler.initConfig(m_testFilePath, error);
 
-    configHandler.registerBoolean("DEFAULT", "string_val", error, true);
-    configHandler.registerBoolean("DEFAULT", "itemName", error, true);
-    configHandler.registerBoolean("DEFAULT", "bool_value", error, true);
-    configHandler.registerBoolean("DEFAULT", "bool_value", error, true);
+    configHandler.registerBoolean("DEFAULT", "string_val", "", error, true);
+    configHandler.registerBoolean("DEFAULT", "itemName", "", error, true);
+    configHandler.registerBoolean("DEFAULT", "bool_value", "", error, true);
+    configHandler.registerBoolean("DEFAULT", "bool_value", "", error, true);
 }
 
 /**
@@ -219,10 +227,10 @@ ConfigHandler_Test::registerStringArray_test()
     configHandler.initConfig(m_testFilePath, error);
     defaultValue.push_back("test");
 
-    configHandler.registerStringArray("DEFAULT", "string_val", error, defaultValue);
-    configHandler.registerStringArray("DEFAULT", "itemName", error, defaultValue);
-    configHandler.registerStringArray("DEFAULT", "string_list", error, defaultValue);
-    configHandler.registerStringArray("DEFAULT", "string_list", error, defaultValue);
+    configHandler.registerStringArray("DEFAULT", "string_val", "", error, defaultValue);
+    configHandler.registerStringArray("DEFAULT", "itemName", "", error, defaultValue);
+    configHandler.registerStringArray("DEFAULT", "string_list", "", error, defaultValue);
+    configHandler.registerStringArray("DEFAULT", "string_list", "", error, defaultValue);
 }
 
 /**
@@ -235,27 +243,11 @@ ConfigHandler_Test::getString_test()
     bool success = false;
     ErrorContainer error;
 
-    configHandler.initConfig(m_testFilePath, error);
-
-    // test if unregistered
-    TEST_EQUAL(configHandler.getString("DEFAULT", "string_val", success), "");
-    TEST_EQUAL(success, false);
-
-    configHandler.registerString("DEFAULT", "string_val", error, "xyz");
-
-    // successful test
+    TEST_EQUAL(configHandler.registerString("DEFAULT", "string_val", "", error, "xyz"), true);
+    TEST_EQUAL(configHandler.initConfig(m_testFilePath, error), true);
     TEST_EQUAL(configHandler.getString("DEFAULT", "string_val", success), "asdf.asdf");
     TEST_EQUAL(success, true);
 
-    // test false type
-    TEST_EQUAL(configHandler.getInteger("DEFAULT", "string_val", success), 0);
-    TEST_EQUAL(success, false);
-
-    configHandler.registerString("DEFAULT", "string_val2", error, "xyz");
-
-    // test default
-    TEST_EQUAL(configHandler.getString("DEFAULT", "string_val2", success), "xyz");
-    TEST_EQUAL(success, true);
 }
 
 /**
@@ -268,26 +260,9 @@ ConfigHandler_Test::getInteger_test()
     bool success = false;
     ErrorContainer error;
 
-    configHandler.initConfig(m_testFilePath, error);
-
-    // test if unregistered
-    TEST_EQUAL(configHandler.getInteger("DEFAULT", "int_val", success), 0);
-    TEST_EQUAL(success, false);
-
-    configHandler.registerInteger("DEFAULT", "int_val", error, 42);
-
-    // successful test
+    TEST_EQUAL(configHandler.registerInteger("DEFAULT", "int_val", "", error, 42), true);
+    TEST_EQUAL(configHandler.initConfig(m_testFilePath, error), true);
     TEST_EQUAL(configHandler.getInteger("DEFAULT", "int_val", success), 2);
-    TEST_EQUAL(success, true);
-
-    // test false type
-    TEST_EQUAL(configHandler.getString("DEFAULT", "int_val", success), "");
-    TEST_EQUAL(success, false);
-
-    configHandler.registerInteger("DEFAULT", "int_val2", error, 42);
-
-    // test default
-    TEST_EQUAL(configHandler.getInteger("DEFAULT", "int_val2", success), 42);
     TEST_EQUAL(success, true);
 }
 
@@ -301,26 +276,9 @@ ConfigHandler_Test::getFloat_test()
     bool success = false;
     ErrorContainer error;
 
-    configHandler.initConfig(m_testFilePath, error);
-
-    // test if unregistered
-    TEST_EQUAL(configHandler.getFloat("DEFAULT", "float_val", success), 0.0);
-    TEST_EQUAL(success, false);
-
-    configHandler.registerFloat("DEFAULT", "float_val", error, 42.0);
-
-    // successful test
+    TEST_EQUAL(configHandler.registerFloat("DEFAULT", "float_val", "", error, 42.0), true);
+    TEST_EQUAL(configHandler.initConfig(m_testFilePath, error), true);
     TEST_EQUAL(configHandler.getFloat("DEFAULT", "float_val", success), 123.0);
-    TEST_EQUAL(success, true);
-
-    // test false type
-    TEST_EQUAL(configHandler.getString("DEFAULT", "string_val", success), "");
-    TEST_EQUAL(success, false);
-
-    configHandler.registerFloat("DEFAULT", "float_val2", error, 42.0);
-
-    // test default
-    TEST_EQUAL(configHandler.getFloat("DEFAULT", "float_val2", success), 42.0);
     TEST_EQUAL(success, true);
 }
 
@@ -334,26 +292,9 @@ ConfigHandler_Test::getBoolean_test()
     bool success = false;
     ErrorContainer error;
 
-    configHandler.initConfig(m_testFilePath, error);
-
-    // test if unregistered
-    TEST_EQUAL(configHandler.getBoolean("DEFAULT", "bool_value", success), false);
-    TEST_EQUAL(success, false);
-
-    configHandler.registerBoolean("DEFAULT", "bool_value", error, false);
-
-    // successful test
+    TEST_EQUAL(configHandler.registerBoolean("DEFAULT", "bool_value", "", error, false), true);
+    TEST_EQUAL(configHandler.initConfig(m_testFilePath, error), true);
     TEST_EQUAL(configHandler.getBoolean("DEFAULT", "bool_value", success), true);
-    TEST_EQUAL(success, true);
-
-    // test false type
-    TEST_EQUAL(configHandler.getInteger("DEFAULT", "string_val", success), 0);
-    TEST_EQUAL(success, false);
-
-    configHandler.registerBoolean("DEFAULT", "bool_value2", error, true);
-
-    // test default
-    TEST_EQUAL(configHandler.getBoolean("DEFAULT", "bool_value2", success), true);
     TEST_EQUAL(success, true);
 }
 
@@ -368,31 +309,12 @@ ConfigHandler_Test::getStringArray_test()
     std::vector<std::string> defaultValue;
     std::vector<std::string> ret;
     ErrorContainer error;
-
-    configHandler.initConfig(m_testFilePath, error);
     defaultValue.push_back("test");
 
-    // test if unregistered
-    ret = configHandler.getStringArray("DEFAULT", "string_list", success);
-    TEST_EQUAL(ret.size(), 0);
-    TEST_EQUAL(success, false);
-
-    configHandler.registerStringArray("DEFAULT", "string_list", error, defaultValue);
-
-    // successful test
+    TEST_EQUAL(configHandler.registerStringArray("DEFAULT", "string_list", "", error, defaultValue), true);
+    TEST_EQUAL(configHandler.initConfig(m_testFilePath, error), true);
     ret = configHandler.getStringArray("DEFAULT", "string_list", success);
     TEST_EQUAL(ret.size(), 3);
-    TEST_EQUAL(success, true);
-
-    // test false type
-    TEST_EQUAL(configHandler.getInteger("DEFAULT", "string_val", success), 0);
-    TEST_EQUAL(success, false);
-
-    configHandler.registerStringArray("DEFAULT", "string_list2", error, defaultValue);
-
-    // test default
-    ret = configHandler.getStringArray("DEFAULT", "string_list2", success);
-    TEST_EQUAL(ret.size(), 1);
     TEST_EQUAL(success, true);
 }
 

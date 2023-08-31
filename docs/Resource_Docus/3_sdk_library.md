@@ -382,111 +382,6 @@ Compares a `Request-Result` against a `Data-Set` to check, how much of the Data-
     }
     ```
 
-
-## Segment-Template
-
-### Upload Segment-Template
-
-=== "C++"
-
-    ``` c++
-    #include <libHanamiAiSdk/template.h>
-
-    std::string result;
-    Kitsunemimi::ErrorContainer error;
-    const std::string templateName = "Test Template";
-    const std::string segmentTemplate = ...;
-
-    if(HanamiAI::uploadTemplate(result, templateName, segmentTemplate, error)) {
-        std::cout<<result<<std::endl;
-    } else {
-        std::cout<<error.toString()<<std::endl;
-    }
-    ```
-
-    ??? example "Example for segmentTemplate"
-
-        ```
-        const std::string segmentTemplate = "{\n"
-                                            "    \"version\": 1,\n"
-                                            "    \"segment_type\": \"dynamic_segment\",\n"
-                                            "    \"bricks\": [\n"
-                                            "        {\n"
-                                            "            \"number_of_neurons\": 784,\n"
-                                            "            \"position\": [ 1, 1, 1 ],\n"
-                                            "            \"type\": \"input\",\n"
-                                            "            \"name\": \"test_input\"\n"
-                                            "        },\n"
-                                            "        {\n"
-                                            "            \"number_of_neurons\": 300,\n"
-                                            "            \"position\": [ 2, 1, 1 ]\n"
-                                            "        },\n"
-                                            "        {\n"
-                                            "            \"number_of_neurons\": 10,\n"
-                                            "            \"position\": [ 3, 1, 1 ],\n"
-                                            "            \"type\": \"output\",\n"
-                                            "            \"name\": \"test_output\"\n"
-                                            "        }\n"
-                                            "    ],\n"
-                                            "    \"settings\": {\n"
-                                            "        \"max_synapse_sections\": 100000,\n"
-                                            "        \"sign_neg\": 0.5\n"
-                                            "    }\n"
-                                            "}\n";
-        ```
-### Get Segment-Template
-
-=== "C++"
-
-    ``` c++
-    #include <libHanamiAiSdk/template.h>
-
-    std::string result;
-    Kitsunemimi::ErrorContainer error;
-    const std::string templateUuid = "d922013a-48d2-11ed-b878-0242ac120002";
-    
-    if(HanamiAI::getTemplate(result, templateUuid, error)) {
-        std::cout<<result<<std::endl;
-    } else {
-        std::cout<<error.toString()<<std::endl;
-    }
-    ```
-
-### List Segment-Templates
-
-=== "C++"
-
-    ``` c++
-    #include <libHanamiAiSdk/template.h>
-
-    std::string result;
-    Kitsunemimi::ErrorContainer error;
-    
-    if(HanamiAI::listTemplate(result, error)) {
-        std::cout<<result<<std::endl;
-    } else {
-        std::cout<<error.toString()<<std::endl;
-    }
-    ```
-
-### Delete Segment-Template
-
-=== "C++"
-
-    ``` c++
-    #include <libHanamiAiSdk/template.h>
-
-    std::string result;
-    Kitsunemimi::ErrorContainer error;
-    const std::string templateUuid = "d922013a-48d2-11ed-b878-0242ac120002";
-    
-    if(HanamiAI::deleteTemplate(result, templateUuid, error) == false) {
-        std::cout<<error.toString()<<std::endl;
-    }
-    ```
-
-
-
 ## Cluster
 
 ### Create Cluster
@@ -511,37 +406,20 @@ Compares a `Request-Result` against a `Data-Set` to check, how much of the Data-
     ??? example "Example for clusterTemplate"
 
         ```
-        const std::string clusterTemplate = "{\n"
-                                            "    \"version\": 1,\n"
-                                            "    \"segments\": [\n"
-                                            "        {\n"
-                                            "            \"type\":\"input\",\n"
-                                            "            \"number_of_neurons\": 784,\n"
-                                            "            \"name\": \"input\",\n"
-                                            "            \"out\": [\n"
-                                            "                {\n"
-                                            "                    \"target_segment\": \"central\",\n"
-                                            "                    \"target_brick\": \"test_input\"\n"
-                                            "                }\n"
-                                            "            ]\n"
-                                            "        },\n"
-                                            "        {\n"
-                                            "            \"type\":\"dynamic\",\n"
-                                            "            \"name\": \"central\",\n"
-                                            "            \"out\": [\n"
-                                            "                {\n"
-                                            "                    \"source_brick\": \"test_output\",\n"
-                                            "                    \"target_segment\": \"output\"\n"
-                                            "                }\n"
-                                            "            ]\n"
-                                            "        },\n"
-                                            "        {\n"
-                                            "            \"type\": \"output\",\n"
-                                            "            \"name\": \"output\",\n"
-                                            "            \"number_of_neurons\": 10\n"
-                                            "        }\n"
-                                            "    ]\n"
-                                            "}\n";
+        const std::string clusterTemplate = "version: 1\n"
+                                            "settings:\n"
+                                            "    max_synapse_sections: 1000\n"
+                                            "    sign_neg: 0.5\n"
+                                            "        \n"
+                                            "bricks:\n"
+                                            "    1,1,1\n"
+                                            "        input: test_input\n"
+                                            "        number_of_neurons: 784\n"
+                                            "    2,1,1\n"
+                                            "        number_of_neurons: 400\n"
+                                            "    3,1,1\n"
+                                            "        output: test_output\n"
+                                            "        number_of_neurons: 10");
         ```
 
 

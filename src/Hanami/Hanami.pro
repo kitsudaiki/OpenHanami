@@ -172,7 +172,7 @@ HEADERS += \
     src/api/http/v1/data_files/list_data_set.h \
     src/api/http/v1/data_files/mnist/create_mnist_data_set.h \
     src/api/http/v1/data_files/mnist/finalize_mnist_data_set.h \
-    src/api/http/v1/documentation/generate_rest_api_docu.h \
+    src/documentation/generate_rest_api_docu.h \
     src/api/http/v1/logs/get_audit_log.h \
     src/api/http/v1/logs/get_error_log.h \
     src/api/http/v1/measurements/power_consumption.h \
@@ -283,7 +283,7 @@ SOURCES += \
     src/api/http/v1/data_files/list_data_set.cpp \
     src/api/http/v1/data_files/mnist/create_mnist_data_set.cpp \
     src/api/http/v1/data_files/mnist/finalize_mnist_data_set.cpp \
-    src/api/http/v1/documentation/generate_rest_api_docu.cpp \
+    src/documentation/generate_rest_api_docu.cpp \
     src/api/http/v1/logs/get_audit_log.cpp \
     src/api/http/v1/logs/get_error_log.cpp \
     src/api/http/v1/measurements/power_consumption.cpp \

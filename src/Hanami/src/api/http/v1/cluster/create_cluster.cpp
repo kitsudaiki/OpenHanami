@@ -24,6 +24,7 @@
 
 #include <core/cluster/cluster_handler.h>
 #include <core/cluster/cluster.h>
+#include <database/cluster_table.h>
 
 #include <libKitsunemimiCrypto/common.h>
 #include <libKitsunemimiCommon/buffer/data_buffer.h>

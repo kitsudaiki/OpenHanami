@@ -4,14 +4,14 @@
 
     Description comes later...
 
-## File-upload to Shiori
+## File-upload of Data-sets
 
 TBD
 
 ![File-upload](../img/Dataset_upload_workflow.drawio)
 
 
-## Direct interaction with Kyouko
+## Direct interaction with Cluster
 
 TBD
 

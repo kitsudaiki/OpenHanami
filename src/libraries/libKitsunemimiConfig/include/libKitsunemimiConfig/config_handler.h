@@ -28,17 +28,19 @@
 #include <map>
 #include <libKitsunemimiCommon/logger.h>
 
-#define REGISTER_STRING_CONFIG Kitsunemimi::registerString
-#define REGISTER_INT_CONFIG Kitsunemimi::registerInteger
-#define REGISTER_FLOAT_CONFIG Kitsunemimi::registerFloat
-#define REGISTER_BOOL_CONFIG Kitsunemimi::registerBoolean
-#define REGISTER_STRING_ARRAY_CONFIG Kitsunemimi::registerStringArray
+#define INIT_CONFIG Kitsunemimi::ConfigHandler::getInstance()->initConfig
 
-#define GET_STRING_CONFIG Kitsunemimi::getString
-#define GET_INT_CONFIG Kitsunemimi::getInteger
-#define GET_FLOAT_CONFIG Kitsunemimi::getFloat
-#define GET_BOOL_CONFIG Kitsunemimi::getBoolean
-#define GET_STRING_ARRAY_CONFIG Kitsunemimi::getStringArray
+#define REGISTER_STRING_CONFIG Kitsunemimi::ConfigHandler::getInstance()->registerString
+#define REGISTER_INT_CONFIG Kitsunemimi::ConfigHandler::getInstance()->registerInteger
+#define REGISTER_FLOAT_CONFIG Kitsunemimi::ConfigHandler::getInstance()->registerFloat
+#define REGISTER_BOOL_CONFIG Kitsunemimi::ConfigHandler::getInstance()->registerBoolean
+#define REGISTER_STRING_ARRAY_CONFIG Kitsunemimi::ConfigHandler::getInstance()->registerStringArray
+
+#define GET_STRING_CONFIG Kitsunemimi::ConfigHandler::getInstance()->getString
+#define GET_INT_CONFIG Kitsunemimi::ConfigHandler::getInstance()->getInteger
+#define GET_FLOAT_CONFIG Kitsunemimi::ConfigHandler::getInstance()->getFloat
+#define GET_BOOL_CONFIG Kitsunemimi::ConfigHandler::getInstance()->getBoolean
+#define GET_STRING_ARRAY_CONFIG Kitsunemimi::ConfigHandler::getInstance()->getStringArray
 
 namespace Kitsunemimi
 {
@@ -47,90 +49,51 @@ class IniItem;
 
 class ConfigHandler_Test;
 
-bool initConfig(const std::string &configFilePath,
-                ErrorContainer &error);
-bool isConfigValid();
-void resetConfig();
-
-// register config-options
-void registerString(const std::string &groupName,
-                    const std::string &itemName,
-                    ErrorContainer &error,
-                    const std::string &defaultValue = "",
-                    const bool required = false);
-void registerInteger(const std::string &groupName,
-                     const std::string &itemName,
-                     ErrorContainer &error,
-                     const long defaultValue = 0,
-                     const bool required = false);
-void registerFloat(const std::string &groupName,
-                   const std::string &itemName,
-                   ErrorContainer &error,
-                   const double defaultValue = 0.0,
-                   const bool required = false);
-void registerBoolean(const std::string &groupName,
-                     const std::string &itemName,
-                     ErrorContainer &error,
-                     const bool defaultValue = false,
-                     const bool required = false);
-void registerStringArray(const std::string &groupName,
-                         const std::string &itemName,
-                         ErrorContainer &error,
-                         const std::vector<std::string> &defaultValue = {},
-                         const bool required = false);
-
-// getter
-const std::string getString(const std::string &groupName,
-                            const std::string &itemName,
-                            bool &success);
-long getInteger(const std::string &groupName,
-                const std::string &itemName,
-                bool &success);
-double getFloat(const std::string &groupName,
-                const std::string &itemName,
-                bool &success);
-bool getBoolean(const std::string &groupName,
-                const std::string &itemName,
-                bool &success);
-const std::vector<std::string> getStringArray(const std::string &groupName,
-                                              const std::string &itemName,
-                                              bool &success);
-
 //==================================================================================================
 
 class ConfigHandler
 {
 public:
-    ConfigHandler();
-    ~ConfigHandler();
+    static ConfigHandler* getInstance()
+    {
+        if(instance == nullptr) {
+            instance = new ConfigHandler();
+        }
+        return instance;
+    }
 
     bool initConfig(const std::string &configFilePath,
                     ErrorContainer &error);
-    bool isConfigValid() const;
+    void createDocumentation(std::string &docu);
 
     // register config-options
-    void registerString(const std::string &groupName,
+    bool registerString(const std::string &groupName,
                         const std::string &itemName,
+                        const std::string &comment,
                         ErrorContainer &error,
                         const std::string &defaultValue = "",
                         const bool required = false);
-    void registerInteger(const std::string &groupName,
+    bool registerInteger(const std::string &groupName,
                          const std::string &itemName,
+                         const std::string &comment,
                          ErrorContainer &error,
                          const long defaultValue = 0,
                          const bool required = false);
-    void registerFloat(const std::string &groupName,
+    bool registerFloat(const std::string &groupName,
                        const std::string &itemName,
+                       const std::string &comment,
                        ErrorContainer &error,
                        const double defaultValue = 0.0,
                        const bool required = false);
-    void registerBoolean(const std::string &groupName,
+    bool registerBoolean(const std::string &groupName,
                          const std::string &itemName,
+                         const std::string &comment,
                          ErrorContainer &error,
                          const bool defaultValue = false,
                          const bool required = false);
-    void registerStringArray(const std::string &groupName,
+    bool registerStringArray(const std::string &groupName,
                              const std::string &itemName,
+                             const std::string &comment,
                              ErrorContainer &error,
                              const std::vector<std::string> &defaultValue = {},
                              const bool required = false);
@@ -157,6 +120,10 @@ public:
 private:
     friend ConfigHandler_Test;
 
+    ConfigHandler();
+    ~ConfigHandler();
+    static ConfigHandler* instance;
+
     enum ConfigType
     {
         UNDEFINED_TYPE,
@@ -167,27 +134,38 @@ private:
         STRING_ARRAY_TYPE
     };
 
+    struct ConfigEntry
+    {
+        bool isRequired = false;
+        ConfigType type = UNDEFINED_TYPE;
+        DataItem* value = nullptr;
+        std::string comment = "";
+    };
+
+    bool checkEntry(const std::string &groupName,
+                    const std::string &itemName,
+                    ConfigEntry &entry,
+                    ErrorContainer &error);
     bool checkType(const std::string &groupName,
                    const std::string &itemName,
                    const ConfigType type);
     bool isRegistered(const std::string &groupName,
                       const std::string &itemName);
-    bool registerType(const std::string &groupName,
-                      const std::string &itemName,
-                      const ConfigType type);
+
     ConfigType getRegisteredType(const std::string &groupName,
                                  const std::string &itemName);
 
     bool registerValue(std::string &groupName,
                        const std::string &itemName,
+                       const std::string &comment,
                        const ConfigType type,
                        const bool required,
+                       DataItem* defaultValue,
                        ErrorContainer &error);
 
     std::string m_configFilePath = "";
     IniItem* m_iniItem = nullptr;
-    bool m_configValid = true;
-    std::map<std::string, std::map<std::string, ConfigType>> m_registeredConfigs;
+    std::map<std::string, std::map<std::string, ConfigEntry>> m_registeredConfigs;
 };
 
 }

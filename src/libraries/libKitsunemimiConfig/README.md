@@ -26,19 +26,14 @@ Example usage in code:
 
 ErrorContainer error;
 
-// init configuration
-// called anywhere at the beginning of the programm
-Kitsunemimi::initConfig(m_testFilePath, error), true);
-
 // register values
 REGISTER_STRING_CONFIG("DEFAULT", "string_val", error, "");
 REGISTER_INT_CONFIG("DEFAULT", "int_val", error, 42);
 REGISTER_INT_CONFIG("DEFAULT", "another_int_val", error, 42);
 
-// check if config is valid and all registrations were successfull
-bool valid = Kitsunemimi::isConfigValid();
-// is true in this example
-if(valid == false) {
+// init configuration
+if(INIT_CONFIG(m_testFilePath, error) == false) {
+	// invalid config
 	LOG_ERROR(error);
 }
 
