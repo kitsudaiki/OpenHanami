@@ -39,18 +39,18 @@ HanamiSqlAdminTable::HanamiSqlAdminTable(Kitsunemimi::Sakura::SqlDatabase* db)
 {
     DbHeaderEntry id;
     id.name = "id";
-    id.maxLength = 36;
+    id.maxLength = 256;
     id.isPrimary = true;
     m_tableHeader.push_back(id);
 
     DbHeaderEntry name;
     name.name = "name";
-    name.maxLength = 36;
+    name.maxLength = 256;
     m_tableHeader.push_back(name);
 
     DbHeaderEntry creatorId;
     creatorId.name = "creator_id";
-    creatorId.maxLength = 128;
+    creatorId.maxLength = 256;
     m_tableHeader.push_back(creatorId);
 }
 
