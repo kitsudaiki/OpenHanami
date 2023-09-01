@@ -25,6 +25,8 @@
 
 #include <mutex>
 
+#include <libKitsunemimiHanamiHardware/value_container.h>
+
 #include <libKitsunemimiCommon/threading/thread.h>
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiCommon/items/data_items.h>
@@ -32,8 +34,6 @@
 namespace Kitsunemimi::Hanami {
 struct RequestMessage;
 }
-
-class ValueContainer;
 
 class SpeedMeasuring
         : public Kitsunemimi::Thread
@@ -57,7 +57,7 @@ private:
     SpeedMeasuring();
     static SpeedMeasuring* instance;
 
-    ValueContainer* m_valueContainer;
+    ValueContainer m_valueContainer;
 };
 
 #endif // HANAMI_SPEED_MEASURING_H

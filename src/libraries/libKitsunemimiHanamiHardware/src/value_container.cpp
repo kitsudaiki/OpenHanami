@@ -73,7 +73,11 @@ ValueContainer::addValue(const float newValue, const uint64_t sectionId)
         for(const float val : currentSection->values) {
             valueOverflow += val;
         }
-        valueOverflow /= currentSection->values.size();
+        if(currentSection->values.size() != 0) {
+            valueOverflow /= currentSection->values.size();
+        } else {
+            valueOverflow = 0.0f;
+        }
 
         addValue(valueOverflow, sectionId + 1);
     }

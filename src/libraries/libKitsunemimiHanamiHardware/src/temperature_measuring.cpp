@@ -21,7 +21,6 @@
  */
 
 #include <libKitsunemimiHanamiHardware/temperature_measuring.h>
-#include <libKitsunemimiHanamiHardware/value_container.h>
 
 #include <libKitsunemimiSakuraHardware/host.h>
 #include <libKitsunemimiSakuraHardware/cpu_core.h>
@@ -33,20 +32,19 @@
 TemperatureMeasuring* TemperatureMeasuring::instance = nullptr;
 
 TemperatureMeasuring::TemperatureMeasuring()
-    : Kitsunemimi::Thread("Azuki_TemperatureMeasuring")
-{
-    m_valueContainer = new ValueContainer();
-}
+    : Kitsunemimi::Thread("TemperatureMeasuring") {}
 
-TemperatureMeasuring::~TemperatureMeasuring()
-{
-    delete m_valueContainer;
-}
+TemperatureMeasuring::~TemperatureMeasuring() {}
 
+/**
+ * @brief return all collected values as json-like tree
+ *
+ * @return json-output
+ */
 Kitsunemimi::DataMap*
 TemperatureMeasuring::getJson()
 {
-    return m_valueContainer->toJson();
+    return m_valueContainer.toJson();
 }
 
 /**
@@ -62,7 +60,7 @@ TemperatureMeasuring::run()
         Kitsunemimi::Sakura::Host* host = Kitsunemimi::Sakura::Host::getInstance();
 
         const double temperature = host->getTotalTemperature(error);
-        m_valueContainer->addValue(temperature);
+        m_valueContainer.addValue(temperature);
 
         sleep(1);
     }

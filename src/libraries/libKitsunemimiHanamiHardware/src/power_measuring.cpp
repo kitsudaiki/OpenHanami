@@ -21,7 +21,6 @@
  */
 
 #include <libKitsunemimiHanamiHardware/power_measuring.h>
-#include <libKitsunemimiHanamiHardware/value_container.h>
 
 #include <libKitsunemimiSakuraHardware/host.h>
 #include <libKitsunemimiSakuraHardware/cpu_core.h>
@@ -33,20 +32,19 @@
 PowerMeasuring* PowerMeasuring::instance = nullptr;
 
 PowerMeasuring::PowerMeasuring()
-    : Kitsunemimi::Thread("Azuki_EnergyMeasuring")
-{
-    m_valueContainer = new ValueContainer();
-}
+    : Kitsunemimi::Thread("PowerMeasuring") {}
 
-PowerMeasuring::~PowerMeasuring()
-{
-    delete m_valueContainer;
-}
+PowerMeasuring::~PowerMeasuring() {}
 
+/**
+ * @brief return all collected values as json-like tree
+ *
+ * @return json-output
+ */
 Kitsunemimi::DataMap*
 PowerMeasuring::getJson()
 {
-    return m_valueContainer->toJson();
+    return m_valueContainer.toJson();
 }
 
 /**
@@ -72,7 +70,7 @@ PowerMeasuring::run()
             power = 0.0f;
         }
 
-        m_valueContainer->addValue(power);
+        m_valueContainer.addValue(power);
 
         sleep(1);
     }

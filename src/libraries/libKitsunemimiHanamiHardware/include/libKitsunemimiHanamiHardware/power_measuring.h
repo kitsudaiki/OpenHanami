@@ -25,6 +25,8 @@
 
 #include <mutex>
 
+#include <libKitsunemimiHanamiHardware/value_container.h>
+
 #include <libKitsunemimiCommon/threading/thread.h>
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiCommon/items/data_items.h>
@@ -57,7 +59,7 @@ private:
     PowerMeasuring();
     static PowerMeasuring* instance;
 
-    ValueContainer* m_valueContainer;
+    ValueContainer m_valueContainer;
 };
 
 #endif // HANAMI_POWER_MEASURING_H

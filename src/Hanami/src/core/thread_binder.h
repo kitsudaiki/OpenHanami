@@ -50,18 +50,13 @@ private:
     ThreadBinder();
     static ThreadBinder* instance;
 
-    const std::string convertCoreIdList(const std::vector<uint64_t> coreIds);
-    bool changeInternalCoreIds(const std::vector<std::string> &threadNames,
-                               const std::vector<uint64_t> coreIds);
-    bool makeInternalRequest(Kitsunemimi::DataMap *completeMap,
-                             Kitsunemimi::ErrorContainer &);
-
     bool fillCoreIds(std::vector<uint64_t> &coreIds,
-                     std::vector<uint64_t> &processingCoreIds);
+                     std::vector<uint64_t> &processingCoreIds,
+                     Kitsunemimi::ErrorContainer &error);
 
     std::mutex m_mapLock;
     Kitsunemimi::DataMap m_completeMap;
-    std::string m_lastMapping = "";
+
     std::vector<uint64_t> m_controlCoreIds;
     std::vector<uint64_t> m_processingCoreIds;
 };
