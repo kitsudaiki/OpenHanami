@@ -35,11 +35,9 @@ DeleteDataSet::DeleteDataSet()
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("uuid",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID of the data-set to delete.");
-    assert(addFieldRegex("uuid", UUID_REGEX));
+    registerInputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the data-set to delete.")
+            .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     //

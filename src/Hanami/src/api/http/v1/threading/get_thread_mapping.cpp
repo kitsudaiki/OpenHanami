@@ -33,9 +33,8 @@ GetThreadMapping::GetThreadMapping()
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("thread_map",
-                        SAKURA_MAP_TYPE,
-                        "Map with all thread-names and its core-id as json-string.");
+    registerOutputField("thread_map", SAKURA_MAP_TYPE)
+            .setComment("Map with all thread-names and its core-id as json-string.");
 
     //----------------------------------------------------------------------------------------------
     //

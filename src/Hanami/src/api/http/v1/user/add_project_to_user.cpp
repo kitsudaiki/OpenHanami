@@ -39,53 +39,44 @@ AddProjectToUser::AddProjectToUser()
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("id",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "ID of the user.");
-    assert(addFieldBorder("id", 4, 256));
-    assert(addFieldRegex("id", ID_EXT_REGEX));
+    registerInputField("id", SAKURA_STRING_TYPE)
+            .setComment("ID of the user.")
+            .setLimit(4, 256)
+            .setRegex(ID_EXT_REGEX);
 
-    registerInputField("project_id",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "ID of the project, which has to be added to the user.");
-    assert(addFieldBorder("project_id", 4, 256));
-    assert(addFieldRegex("project_id", ID_REGEX));
+    registerInputField("project_id", SAKURA_STRING_TYPE)
+            .setComment("ID of the project, which has to be added to the user.")
+            .setLimit(4, 256)
+            .setRegex(ID_REGEX);
 
-    registerInputField("role",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "Role, which has to be assigned to the user within the project");
-    assert(addFieldBorder("role", 4, 256));
-    assert(addFieldRegex("role", ID_REGEX));
+    registerInputField("role", SAKURA_STRING_TYPE)
+            .setComment("Role, which has to be assigned to the user within the project")
+            .setLimit(4, 256)
+            .setRegex(ID_REGEX);
 
-    registerInputField("is_project_admin",
-                       SAKURA_BOOL_TYPE,
-                       false,
-                       "Set this to true, if the user should be an admin "
-                       "within the assigned project.");
-    assert(addFieldDefault("is_project_admin", new Kitsunemimi::DataValue(false)));
+    registerInputField("is_project_admin", SAKURA_BOOL_TYPE)
+            .setComment("Set this to true, if the user should be an admin "
+                        "within the assigned project.")
+            .setDefault(new Kitsunemimi::DataValue(false));
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("id",
-                        SAKURA_STRING_TYPE,
-                        "ID of the user.");
-    registerOutputField("name",
-                        SAKURA_STRING_TYPE,
-                        "Name of the user.");
-    registerOutputField("is_admin",
-                        SAKURA_BOOL_TYPE,
-                        "True, if user is an admin.");
-    registerOutputField("creator_id",
-                        SAKURA_STRING_TYPE,
-                        "Id of the creator of the user.");
-    registerOutputField("projects",
-                        SAKURA_ARRAY_TYPE,
-                        "Json-array with all assigned projects "
+    registerOutputField("id", SAKURA_STRING_TYPE)
+            .setComment("ID of the user.");
+
+    registerOutputField("name", SAKURA_STRING_TYPE)
+            .setComment("Name of the user.");
+
+    registerOutputField("is_admin", SAKURA_BOOL_TYPE)
+            .setComment("True, if user is an admin.");
+
+    registerOutputField("creator_id", SAKURA_STRING_TYPE)
+            .setComment("Id of the creator of the user.");
+
+    registerOutputField("projects", SAKURA_ARRAY_TYPE)
+            .setComment("Json-array with all assigned projects "
                         "together with role and project-admin-status.");
 
     //----------------------------------------------------------------------------------------------

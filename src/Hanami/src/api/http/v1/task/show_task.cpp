@@ -33,38 +33,33 @@ ShowTask::ShowTask()
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("uuid",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID of the cluster, which should process the request");
-    assert(addFieldRegex("uuid", UUID_REGEX));
+    registerInputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the cluster, which should process the request")
+            .setRegex(UUID_REGEX);
 
-    registerInputField("cluster_uuid",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID of the cluster, which should process the request");
-    assert(addFieldRegex("cluster_uuid", UUID_REGEX));
+    registerInputField("cluster_uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the cluster, which should process the request")
+            .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("percentage_finished",
-                        SAKURA_FLOAT_TYPE,
-                        "Percentation of the progress between 0.0 and 1.0.");
-    registerOutputField("state",
-                        SAKURA_STRING_TYPE,
-                        "Actual state of the task (queued, active, aborted or finished).");
-    registerOutputField("queue_timestamp",
-                        SAKURA_STRING_TYPE,
-                        "Timestamp in UTC when the task entered the queued state, "
+    registerOutputField("percentage_finished", SAKURA_FLOAT_TYPE)
+            .setComment("Percentation of the progress between 0.0 and 1.0.");
+
+    registerOutputField("state", SAKURA_STRING_TYPE)
+            .setComment("Actual state of the task (queued, active, aborted or finished).");
+
+    registerOutputField("queue_timestamp", SAKURA_STRING_TYPE)
+            .setComment("Timestamp in UTC when the task entered the queued state, "
                         "which is basicall the timestamp when the task was created");
-    registerOutputField("start_timestamp",
-                        SAKURA_STRING_TYPE,
-                        "Timestamp in UTC when the task entered the active state.");
-    registerOutputField("end_timestamp",
-                        SAKURA_STRING_TYPE,
-                        "Timestamp in UTC when the task was finished.");
+
+    registerOutputField("start_timestamp", SAKURA_STRING_TYPE)
+            .setComment("Timestamp in UTC when the task entered the active state.");
+
+    registerOutputField("end_timestamp", SAKURA_STRING_TYPE)
+            .setComment("Timestamp in UTC when the task was finished.");
 
     //----------------------------------------------------------------------------------------------
     //

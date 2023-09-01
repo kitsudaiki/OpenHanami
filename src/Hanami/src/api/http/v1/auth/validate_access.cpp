@@ -46,56 +46,47 @@ ValidateAccess::ValidateAccess()
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("token",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "User specific JWT-access-token.");
-    assert(addFieldRegex("token", "[a-zA-Z_.\\-0-9]*"));
+    registerInputField("token", SAKURA_STRING_TYPE)
+            .setComment("User specific JWT-access-token.")
+            .setRegex("[a-zA-Z_.\\-0-9]*");
 
-    registerInputField("component",
-                       SAKURA_STRING_TYPE,
-                       false,
-                       "Requested component-name of the request. If this is not set, then only "
-                       "the token in itself will be validated.");
-    assert(addFieldBorder("component", 4, 256));
-    assert(addFieldRegex("component", "[a-zA-Z][a-zA-Z_0-9]*"));
+    registerInputField("component", SAKURA_STRING_TYPE)
+            .setComment("Requested component-name of the request. If this is not set, then only "
+                        "the token in itself will be validated.")
+            .setLimit(4, 256)
+            .setRegex("[a-zA-Z][a-zA-Z_0-9]*");
 
-    registerInputField("endpoint",
-                       SAKURA_STRING_TYPE,
-                       false,
-                       "Requesed endpoint within the component.");
-    assert(addFieldBorder("endpoint", 4, 256));
-    assert(addFieldRegex("endpoint", "[a-zA-Z][a-zA-Z_/0-9]*"));
+    registerInputField("endpoint", SAKURA_STRING_TYPE)
+            .setComment("Requesed endpoint within the component.")
+            .setLimit(4, 256)
+            .setRegex("[a-zA-Z][a-zA-Z_/0-9]*");
 
-    registerInputField("http_type",
-                       SAKURA_INT_TYPE,
-                       false,
-                       "Type of the HTTP-request as enum "
-                       "(DELETE = 1, GET = 2, HEAD = 3, POST = 4, PUT = 5).");
-    assert(addFieldBorder("http_type", 1, 5));
+    registerInputField("http_type", SAKURA_INT_TYPE)
+            .setComment("Type of the HTTP-request as enum "
+                        "(DELETE = 1, GET = 2, HEAD = 3, POST = 4, PUT = 5).")
+            .setLimit(1, 5);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("id",
-                        SAKURA_STRING_TYPE,
-                        "ID of the user.");
-    registerOutputField("name",
-                        SAKURA_STRING_TYPE,
-                        "Name of the user.");
-    registerOutputField("is_admin",
-                        SAKURA_BOOL_TYPE,
-                        "Show if the user is an admin or not.");
-    registerOutputField("project_id",
-                        SAKURA_STRING_TYPE,
-                        "Selected project of the user.");
-    registerOutputField("role",
-                        SAKURA_STRING_TYPE,
-                        "Role of the user within the project.");
-    registerOutputField("is_project_admin",
-                        SAKURA_BOOL_TYPE,
-                        "True, if the user is admin within the selected project.");
+    registerOutputField("id", SAKURA_STRING_TYPE)
+            .setComment("ID of the user.");
+
+    registerOutputField("name", SAKURA_STRING_TYPE)
+            .setComment("Name of the user.");
+
+    registerOutputField("is_admin", SAKURA_BOOL_TYPE)
+            .setComment("Show if the user is an admin or not.");
+
+    registerOutputField("project_id", SAKURA_STRING_TYPE)
+            .setComment("Selected project of the user.");
+
+    registerOutputField("role", SAKURA_STRING_TYPE)
+            .setComment("Role of the user within the project.");
+
+    registerOutputField("is_project_admin", SAKURA_BOOL_TYPE)
+            .setComment("True, if the user is admin within the selected project.");
 
     //----------------------------------------------------------------------------------------------
     //

@@ -38,53 +38,46 @@ CreateMnistDataSet::CreateMnistDataSet()
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("name",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "Name of the new set.");
-    assert(addFieldBorder("name", 4, 256));
-    assert(addFieldRegex("name", NAME_REGEX));
+    registerInputField("name", SAKURA_STRING_TYPE)
+            .setComment("Name of the new set.")
+            .setLimit(4, 256)
+            .setRegex(NAME_REGEX);
 
-    registerInputField("input_data_size",
-                       SAKURA_INT_TYPE,
-                       true,
-                       "Total size of the input-data.");
-    assert(addFieldBorder("input_data_size", 1, 10000000000));
+    registerInputField("input_data_size", SAKURA_INT_TYPE)
+            .setComment("Total size of the input-data.")
+            .setLimit(1, 10000000000);
 
-    registerInputField("label_data_size",
-                       SAKURA_INT_TYPE,
-                       true,
-                       "Total size of the label-data.");
-    assert(addFieldBorder("label_data_size", 1, 10000000000));
+    registerInputField("label_data_size", SAKURA_INT_TYPE)
+            .setComment("Total size of the label-data.")
+            .setLimit(1, 10000000000);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid",
-                        SAKURA_STRING_TYPE,
-                        "UUID of the new data-set.");
-    registerOutputField("name",
-                        SAKURA_STRING_TYPE,
-                        "Name of the new data-set.");
-    registerOutputField("owner_id",
-                        SAKURA_STRING_TYPE,
-                        "ID of the user, who created the data-set.");
-    registerOutputField("project_id",
-                        SAKURA_STRING_TYPE,
-                        "ID of the project, where the data-set belongs to.");
-    registerOutputField("visibility",
-                        SAKURA_STRING_TYPE,
-                        "Visibility of the data-set (private, shared, public).");
-    registerOutputField("type",
-                        SAKURA_STRING_TYPE,
-                        "Type of the new set (mnist)");
-    registerOutputField("uuid_input_file",
-                        SAKURA_STRING_TYPE,
-                        "UUID to identify the file for date upload of input-data.");
-    registerOutputField("uuid_label_file",
-                        SAKURA_STRING_TYPE,
-                        "UUID to identify the file for date upload of label-data.");
+    registerOutputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the new data-set.");
+
+    registerOutputField("name", SAKURA_STRING_TYPE)
+            .setComment("Name of the new data-set.");
+
+    registerOutputField("owner_id", SAKURA_STRING_TYPE)
+            .setComment("ID of the user, who created the data-set.");
+
+    registerOutputField("project_id", SAKURA_STRING_TYPE)
+            .setComment("ID of the project, where the data-set belongs to.");
+
+    registerOutputField("visibility", SAKURA_STRING_TYPE)
+            .setComment("Visibility of the data-set (private, shared, public).");
+
+    registerOutputField("type", SAKURA_STRING_TYPE)
+            .setComment("Type of the new set (mnist)");
+
+    registerOutputField("uuid_input_file", SAKURA_STRING_TYPE)
+            .setComment("UUID to identify the file for date upload of input-data.");
+
+    registerOutputField("uuid_label_file", SAKURA_STRING_TYPE)
+            .setComment("UUID to identify the file for date upload of label-data.");
 
     //----------------------------------------------------------------------------------------------
     //

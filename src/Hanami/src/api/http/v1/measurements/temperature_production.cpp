@@ -31,9 +31,8 @@ ThermalProduction::ThermalProduction()
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("temperature",
-                        SAKURA_MAP_TYPE,
-                        "Json-object with temperature-measurements");
+    registerOutputField("temperature", SAKURA_MAP_TYPE)
+            .setComment("Json-object with temperature-measurements");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -45,9 +44,9 @@ ThermalProduction::ThermalProduction()
  */
 bool
 ThermalProduction::runTask(BlossomIO &blossomIO,
-                                const Kitsunemimi::DataMap &,
-                                BlossomStatus &,
-                                Kitsunemimi::ErrorContainer &)
+                           const Kitsunemimi::DataMap &,
+                           BlossomStatus &,
+                           Kitsunemimi::ErrorContainer &)
 {
     blossomIO.output.insert("temperature", TemperatureMeasuring::getInstance()->getJson());
 

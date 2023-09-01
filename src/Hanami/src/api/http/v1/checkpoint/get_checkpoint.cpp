@@ -32,29 +32,23 @@ GetCheckpoint::GetCheckpoint()
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("uuid",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID of the original request-task, which placed the result in shiori.");
-    assert(addFieldRegex("uuid", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
-                                 "[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"));
+    registerInputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the original request-task, which placed the result in shiori.")
+            .setRegex("[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
+                      "[a-fA-F0-9]{4}-[a-fA-F0-9]{12}");
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid",
-                        SAKURA_STRING_TYPE,
-                        "UUID of the data-set.");
-    registerOutputField("name",
-                        SAKURA_STRING_TYPE,
-                        "Name of the data-set.");
-    registerOutputField("location",
-                        SAKURA_STRING_TYPE,
-                        "File path on local storage.");
-    registerOutputField("header",
-                        SAKURA_MAP_TYPE,
-                        "Header-information of the checkpoint-file.");
+    registerOutputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the data-set.");
+
+    registerOutputField("name", SAKURA_STRING_TYPE)
+            .setComment("Name of the data-set.");
+
+    registerOutputField("location", SAKURA_STRING_TYPE)
+            .setComment("File path on local storage.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -66,18 +60,18 @@ GetCheckpoint::GetCheckpoint()
  */
 bool
 GetCheckpoint::runTask(BlossomIO &blossomIO,
-                            const Kitsunemimi::DataMap &context,
-                            BlossomStatus &status,
-                            Kitsunemimi::ErrorContainer &error)
+                       const Kitsunemimi::DataMap &context,
+                       BlossomStatus &status,
+                       Kitsunemimi::ErrorContainer &error)
 {
     const std::string dataUuid = blossomIO.input.get("uuid").getString();
     const UserContext userContext(context);
 
     if(CheckpointTable::getInstance()->getCheckpoint(blossomIO.output,
-                                                               dataUuid,
-                                                               userContext,
-                                                               error,
-                                                               true) == false)
+                                                     dataUuid,
+                                                     userContext,
+                                                     error,
+                                                     true) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;

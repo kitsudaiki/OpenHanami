@@ -32,19 +32,17 @@ ListDataSet::ListDataSet()
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("header",
-                        SAKURA_ARRAY_TYPE,
-                        "Array with the namings all columns of the table.");
-    assert(addFieldMatch("header", new Kitsunemimi::DataValue("[\"uuid\","
-                                                              "\"project_id\","
-                                                              "\"owner_id\","
-                                                              "\"visibility\","
-                                                              "\"name\","
-                                                              "\"type\"]")));
+    registerOutputField("header", SAKURA_ARRAY_TYPE)
+            .setComment("Array with the namings all columns of the table.")
+            .setMatch(new Kitsunemimi::DataValue("[\"uuid\","
+                                                 "\"project_id\","
+                                                 "\"owner_id\","
+                                                 "\"visibility\","
+                                                 "\"name\","
+                                                 "\"type\"]"));
 
-    registerOutputField("body",
-                        SAKURA_ARRAY_TYPE,
-                        "Array with all rows of the table, which array arrays too.");
+    registerOutputField("body", SAKURA_ARRAY_TYPE)
+            .setComment("Array with all rows of the table, which array arrays too.");
 
     //----------------------------------------------------------------------------------------------
     //

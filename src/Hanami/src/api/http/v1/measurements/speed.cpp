@@ -31,9 +31,8 @@ Speed::Speed()
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("current_speed",
-                        SAKURA_MAP_TYPE,
-                        "Json-object with current-speed-measurements");
+    registerOutputField("current_speed", SAKURA_MAP_TYPE)
+            .setComment("Json-object with current-speed-measurements");
 
     //----------------------------------------------------------------------------------------------
     //

@@ -37,27 +37,23 @@ GetProject::GetProject()
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("id",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "Id of the user.");
-    // column in database is limited to 256 characters size
-    assert(addFieldBorder("id", 4, 256));
-    assert(addFieldRegex("id", ID_REGEX));
+    registerInputField("id", SAKURA_STRING_TYPE)
+            .setComment("Id of the user.")
+            .setLimit(4, 256)
+            .setRegex(ID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("id",
-                        SAKURA_STRING_TYPE,
-                        "ID of the new user.");
-    registerOutputField("name",
-                        SAKURA_STRING_TYPE,
-                        "Name of the new user.");
-    registerOutputField("creator_id",
-                        SAKURA_STRING_TYPE,
-                        "Id of the creator of the user.");
+    registerOutputField("id", SAKURA_STRING_TYPE)
+            .setComment("ID of the new user.");
+
+    registerOutputField("name", SAKURA_STRING_TYPE)
+            .setComment("Name of the new user.");
+
+    registerOutputField("creator_id", SAKURA_STRING_TYPE)
+            .setComment("Id of the creator of the user.");
 
     //----------------------------------------------------------------------------------------------
     //

@@ -37,32 +37,29 @@ GetUser::GetUser()
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("id",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "Id of the user.");
-    assert(addFieldBorder("id", 4, 256));
-    assert(addFieldRegex("id", ID_EXT_REGEX));
+    registerInputField("id", SAKURA_STRING_TYPE)
+            .setComment("Id of the user.")
+            .setLimit(4, 256)
+            .setRegex(ID_EXT_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("id",
-                        SAKURA_STRING_TYPE,
-                        "ID of the user.");
-    registerOutputField("name",
-                        SAKURA_STRING_TYPE,
-                        "Name of the user.");
-    registerOutputField("creator_id",
-                        SAKURA_STRING_TYPE,
-                        "Id of the creator of the user.");
-    registerOutputField("is_admin",
-                        SAKURA_BOOL_TYPE,
-                        "Set this to true to register the new user as admin.");
-    registerOutputField("projects",
-                        SAKURA_ARRAY_TYPE,
-                        "Json-array with all assigned projects "
+    registerOutputField("id", SAKURA_STRING_TYPE)
+            .setComment("ID of the user.");
+
+    registerOutputField("name", SAKURA_STRING_TYPE)
+            .setComment("Name of the user.");
+
+    registerOutputField("creator_id", SAKURA_STRING_TYPE)
+            .setComment("Id of the creator of the user.");
+
+    registerOutputField("is_admin", SAKURA_BOOL_TYPE)
+            .setComment("Set this to true to register the new user as admin.");
+
+    registerOutputField("projects", SAKURA_ARRAY_TYPE)
+            .setComment("Json-array with all assigned projects "
                         "together with role and project-admin-status.");
 
     //----------------------------------------------------------------------------------------------

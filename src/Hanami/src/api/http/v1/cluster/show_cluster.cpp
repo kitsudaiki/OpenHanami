@@ -34,31 +34,28 @@ ShowCluster::ShowCluster()
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("uuid",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "uuid of the cluster.");
-    assert(addFieldRegex("uuid", UUID_REGEX));
+    registerInputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("uuid of the cluster.")
+            .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid",
-                        SAKURA_STRING_TYPE,
-                        "UUID of the cluster.");
-    registerOutputField("name",
-                        SAKURA_STRING_TYPE,
-                        "Name of the cluster.");
-    registerOutputField("owner_id",
-                        SAKURA_STRING_TYPE,
-                        "ID of the user, who created the cluster.");
-    registerOutputField("project_id",
-                        SAKURA_STRING_TYPE,
-                        "ID of the project, where the cluster belongs to.");
-    registerOutputField("visibility",
-                        SAKURA_STRING_TYPE,
-                        "Visibility of the cluster (private, shared, public).");
+    registerOutputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the cluster.");
+
+    registerOutputField("name", SAKURA_STRING_TYPE)
+            .setComment("Name of the cluster.");
+
+    registerOutputField("owner_id", SAKURA_STRING_TYPE)
+            .setComment("ID of the user, who created the cluster.");
+
+    registerOutputField("project_id", SAKURA_STRING_TYPE)
+            .setComment("ID of the project, where the cluster belongs to.");
+
+    registerOutputField("visibility", SAKURA_STRING_TYPE)
+            .setComment("Visibility of the cluster (private, shared, public).");
 
     //----------------------------------------------------------------------------------------------
     //

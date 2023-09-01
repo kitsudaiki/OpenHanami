@@ -59,7 +59,6 @@ public:
     ValueItem getValueItem(const std::string &key);
     uint64_t size();
     const std::string toString();
-    void getValidationMap(std::map<std::string, FieldDef> &validationMap) const;
 
     // internal value-maps
     std::map<std::string, ValueItem> m_valueMap;

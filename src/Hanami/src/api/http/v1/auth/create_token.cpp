@@ -42,35 +42,30 @@ CreateToken::CreateToken()
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("id",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "ID of the user.");
-    assert(addFieldBorder("id", 4, 256));
-    assert(addFieldRegex("id", ID_EXT_REGEX));
+    registerInputField("id", SAKURA_STRING_TYPE)
+            .setComment("ID of the user.")
+            .setRegex(ID_EXT_REGEX)
+            .setLimit(4, 256);
 
-    registerInputField("password",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "Passphrase of the user, to verify the access.");
-    assert(addFieldBorder("password", 8, 4096));
+    registerInputField("password", SAKURA_STRING_TYPE)
+            .setComment("Passphrase of the user, to verify the access.")
+            .setLimit(8, 4096);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("id",
-                        SAKURA_STRING_TYPE,
-                        "ID of the user.");
-    registerOutputField("name",
-                        SAKURA_STRING_TYPE,
-                        "Name of the user.");
-    registerOutputField("is_admin",
-                        SAKURA_BOOL_TYPE,
-                        "Set this to true to register the new user as admin.");
-    registerOutputField("token",
-                        SAKURA_STRING_TYPE,
-                        "New JWT-access-token for the user.");
+    registerOutputField("id", SAKURA_STRING_TYPE)
+            .setComment("ID of the user.");
+
+    registerOutputField("name", SAKURA_STRING_TYPE)
+            .setComment("Name of the user.");
+
+    registerOutputField("is_admin", SAKURA_BOOL_TYPE)
+            .setComment("Set this to true to register the new user as admin.");
+
+    registerOutputField("token", SAKURA_STRING_TYPE)
+            .setComment("New JWT-access-token for the user.");
 
     //----------------------------------------------------------------------------------------------
     //

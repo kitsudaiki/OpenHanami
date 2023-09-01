@@ -100,8 +100,8 @@ createQueryParams_openapi(Kitsunemimi::JsonItem &parameters,
         const Kitsunemimi::DataItem* defaultVal = fieldDef.defaultVal;
         const Kitsunemimi::DataItem* matchVal = fieldDef.match;
         std::string regexVal = fieldDef.regex;
-        const long lowerBorder = fieldDef.lowerBorder;
-        const long upperBorder = fieldDef.upperBorder;
+        const long lowerLimit = fieldDef.lowerLimit;
+        const long upperLimit = fieldDef.upperLimit;
 
         Kitsunemimi::JsonItem param;
         param.insert("in", "query");
@@ -149,18 +149,18 @@ createQueryParams_openapi(Kitsunemimi::JsonItem &parameters,
         }
 
         // border
-        if(lowerBorder != 0
-                || upperBorder != 0)
+        if(lowerLimit != 0
+                || upperLimit != 0)
         {
             if(fieldType == SAKURA_INT_TYPE)
             {
-                schema.insert("minimum", std::to_string(lowerBorder));
-                schema.insert("maximum", std::to_string(upperBorder));
+                schema.insert("minimum", std::to_string(lowerLimit));
+                schema.insert("maximum", std::to_string(upperLimit));
             }
             if(fieldType == SAKURA_STRING_TYPE)
             {
-                schema.insert("minLength", std::to_string(lowerBorder));
-                schema.insert("maxLength", std::to_string(upperBorder));
+                schema.insert("minLength", std::to_string(lowerLimit));
+                schema.insert("maxLength", std::to_string(upperLimit));
             }
         }
 
@@ -205,8 +205,8 @@ createBodyParams_openapi(Kitsunemimi::JsonItem &schema,
         const Kitsunemimi::DataItem* defaultVal = fieldDef.defaultVal;
         const Kitsunemimi::DataItem* matchVal = fieldDef.match;
         std::string regexVal = fieldDef.regex;
-        const long lowerBorder = fieldDef.lowerBorder;
-        const long upperBorder = fieldDef.upperBorder;
+        const long lowerLimit = fieldDef.lowerLimit;
+        const long upperLimit = fieldDef.upperLimit;
 
         // type
         if(fieldType == SAKURA_MAP_TYPE) {
@@ -263,18 +263,18 @@ createBodyParams_openapi(Kitsunemimi::JsonItem &schema,
             }
 
             // border
-            if(lowerBorder != 0
-                    || upperBorder != 0)
+            if(lowerLimit != 0
+                    || upperLimit != 0)
             {
                 if(fieldType == SAKURA_INT_TYPE)
                 {
-                    temp.insert("minimum", std::to_string(lowerBorder));
-                    temp.insert("maximum", std::to_string(upperBorder));
+                    temp.insert("minimum", std::to_string(lowerLimit));
+                    temp.insert("maximum", std::to_string(upperLimit));
                 }
                 if(fieldType == SAKURA_STRING_TYPE)
                 {
-                    temp.insert("minLength", std::to_string(lowerBorder));
-                    temp.insert("maxLength", std::to_string(upperBorder));
+                    temp.insert("minLength", std::to_string(lowerLimit));
+                    temp.insert("maxLength", std::to_string(upperLimit));
                 }
             }
 

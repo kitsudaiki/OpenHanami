@@ -39,51 +39,42 @@ CreateUser::CreateUser()
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("id",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "ID of the new user.");
-    assert(addFieldBorder("id", 4, 256));
-    assert(addFieldRegex("id", ID_EXT_REGEX));
+    registerInputField("id", SAKURA_STRING_TYPE)
+            .setComment("ID of the new user.")
+            .setLimit(4, 256)
+            .setRegex(ID_EXT_REGEX);
 
-    registerInputField("name",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "Name of the new user.");
-    assert(addFieldBorder("name", 4, 256));
-    assert(addFieldRegex("name", NAME_REGEX));
+    registerInputField("name", SAKURA_STRING_TYPE)
+            .setComment("Name of the new user.")
+            .setLimit(4, 256)
+            .setRegex(NAME_REGEX);
 
-    registerInputField("password",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "Passphrase of the user.");
-    assert(addFieldBorder("password", 8, 4096));
+    registerInputField("password", SAKURA_STRING_TYPE)
+            .setComment("Passphrase of the user.")
+            .setLimit(8, 4096);
 
-    registerInputField("is_admin",
-                       SAKURA_BOOL_TYPE,
-                       false,
-                       "Set this to 1 to register the new user as admin.");
-    assert(addFieldDefault("is_admin", new Kitsunemimi::DataValue(false)));
+    registerInputField("is_admin", SAKURA_BOOL_TYPE)
+            .setComment("Set this to 1 to register the new user as admin.")
+            .setDefault(new Kitsunemimi::DataValue(false));
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("id",
-                        SAKURA_STRING_TYPE,
-                        "ID of the new user.");
-    registerOutputField("name",
-                        SAKURA_STRING_TYPE,
-                        "Name of the new user.");
-    registerOutputField("is_admin",
-                        SAKURA_BOOL_TYPE,
-                        "True, if user is an admin.");
-    registerOutputField("creator_id",
-                        SAKURA_STRING_TYPE,
-                        "Id of the creator of the user.");
-    registerOutputField("projects",
-                        SAKURA_ARRAY_TYPE,
-                        "Json-array with all assigned projects "
+    registerOutputField("id", SAKURA_STRING_TYPE)
+            .setComment("ID of the new user.");
+
+    registerOutputField("name", SAKURA_STRING_TYPE)
+            .setComment("Name of the new user.");
+
+    registerOutputField("is_admin", SAKURA_BOOL_TYPE)
+            .setComment("True, if user is an admin.");
+
+    registerOutputField("creator_id", SAKURA_STRING_TYPE)
+            .setComment("Id of the creator of the user.");
+
+    registerOutputField("projects", SAKURA_ARRAY_TYPE)
+            .setComment("Json-array with all assigned projects "
                         "together with role and project-admin-status.");
 
     //----------------------------------------------------------------------------------------------

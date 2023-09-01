@@ -39,41 +39,32 @@ CreateTask::CreateTask()
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("name",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "Name for the new task for better identification.");
-    assert(addFieldBorder("name", 4, 256));
-    assert(addFieldRegex("name", NAME_REGEX));
+    registerInputField("name", SAKURA_STRING_TYPE)
+            .setComment("Name for the new task for better identification.")
+            .setLimit(4, 256)
+            .setRegex(NAME_REGEX);
 
-    registerInputField("type",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID of the data-set with the input, which coming from shiori.");
-    assert(addFieldRegex("type", "^(train|request)$"));
+    registerInputField("type", SAKURA_STRING_TYPE)
+            .setComment("UUID of the data-set with the input, which coming from shiori.")
+            .setRegex("^(train|request)$");
 
-    registerInputField("cluster_uuid",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID of the cluster, which should process the request");
-    assert(addFieldRegex("cluster_uuid", UUID_REGEX));
+    registerInputField("cluster_uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the cluster, which should process the request")
+            .setRegex(UUID_REGEX);
 
-    registerInputField("data_set_uuid",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID of the data-set with the input, which coming from shiori.");
-    assert(addFieldRegex("data_set_uuid", UUID_REGEX));
+    registerInputField("data_set_uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the data-set with the input, which coming from shiori.")
+            .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid",
-                        SAKURA_STRING_TYPE,
-                        "UUID of the new created task.");
-    registerOutputField("name",
-                        SAKURA_STRING_TYPE,
-                        "Name of the new created task.");
+    registerOutputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the new created task.");
+
+    registerOutputField("name", SAKURA_STRING_TYPE)
+            .setComment("Name of the new created task.");
 
     //----------------------------------------------------------------------------------------------
     //

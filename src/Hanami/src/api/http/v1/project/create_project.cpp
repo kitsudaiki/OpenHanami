@@ -39,37 +39,28 @@ CreateProject::CreateProject()
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("id",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "ID of the new project.");
-    // column in database is limited to 256 characters size
-    assert(addFieldBorder("id", 4, 256));
-    assert(addFieldRegex("id", ID_REGEX));
+    registerInputField("id", SAKURA_STRING_TYPE)
+            .setComment("ID of the new project.")
+            .setLimit(4, 256)
+            .setRegex(ID_REGEX);
 
-    registerInputField("name",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "Name of the new project.");
-    // column in database is limited to 256 characters size
-    assert(addFieldBorder("name", 4, 256));
-    assert(addFieldRegex("name", NAME_REGEX));
+    registerInputField("name", SAKURA_STRING_TYPE)
+            .setComment("Name of the new project.")
+            .setLimit(4, 256)
+            .setRegex(NAME_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("id",
-                        SAKURA_STRING_TYPE,
-                        "ID of the new project.");
+    registerOutputField("id", SAKURA_STRING_TYPE)
+            .setComment("ID of the new project.");
 
-    registerOutputField("name",
-                        SAKURA_STRING_TYPE,
-                        "Name of the new project.");
+    registerOutputField("name", SAKURA_STRING_TYPE)
+            .setComment("Name of the new project.");
 
-    registerOutputField("creator_id",
-                        SAKURA_STRING_TYPE,
-                        "Id of the creator of the project.");
+    registerOutputField("creator_id", SAKURA_STRING_TYPE)
+            .setComment("Id of the creator of the project.");
 
     //----------------------------------------------------------------------------------------------
     //

@@ -33,29 +33,24 @@ SaveCluster::SaveCluster()
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("name",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "Name for task, which is place in the task-queue and for the new checkpoint.");
-    assert(addFieldBorder("name", 4, 256));
-    assert(addFieldRegex("name", NAME_REGEX));
+    registerInputField("name", SAKURA_STRING_TYPE)
+            .setComment("Name for task, which is place in the task-queue and for the new checkpoint.")
+            .setLimit(4, 256)
+            .setRegex(NAME_REGEX);
 
-    registerInputField("cluster_uuid",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID of the cluster, which should be saved as new snapstho to shiori.");
-    assert(addFieldRegex("cluster_uuid", UUID_REGEX));
+    registerInputField("cluster_uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the cluster, which should be saved as new snapstho to shiori.")
+            .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid",
-                        SAKURA_STRING_TYPE,
-                        "UUID of the save-task in the queue of the cluster.");
-    registerOutputField("name",
-                        SAKURA_STRING_TYPE,
-                        "Name of the new created task and of the checkpoint, "
+    registerOutputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the save-task in the queue of the cluster.");
+
+    registerOutputField("name", SAKURA_STRING_TYPE)
+            .setComment("Name of the new created task and of the checkpoint, "
                         "which should be created by the task.");
 
     //----------------------------------------------------------------------------------------------

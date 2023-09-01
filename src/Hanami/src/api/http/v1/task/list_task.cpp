@@ -33,29 +33,25 @@ ListTask::ListTask()
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("cluster_uuid",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID of the cluster, whos tasks should be listed");
-    assert(addFieldRegex("cluster_uuid", UUID_REGEX));
+    registerInputField("cluster_uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the cluster, whos tasks should be listed")
+            .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("header",
-                        SAKURA_ARRAY_TYPE,
-                        "Array with the namings all columns of the table.");
-    assert(addFieldMatch("header", new Kitsunemimi::DataValue("[\"uuid\","
-                                                              "\"state\","
-                                                              "\"percentage\","
-                                                              "\"queued\","
-                                                              "\"start\","
-                                                              "\"end\"]")));
+    registerOutputField("header", SAKURA_ARRAY_TYPE)
+            .setComment("Array with the namings all columns of the table.")
+            .setMatch(new Kitsunemimi::DataValue("[\"uuid\","
+                                                 "\"state\","
+                                                 "\"percentage\","
+                                                 "\"queued\","
+                                                 "\"start\","
+                                                 "\"end\"]"));
 
-    registerOutputField("body",
-                        SAKURA_ARRAY_TYPE,
-                        "Array with all rows of the table, which array arrays too.");
+    registerOutputField("body", SAKURA_ARRAY_TYPE)
+            .setComment("Array with all rows of the table, which array arrays too.");
 
     //----------------------------------------------------------------------------------------------
     //

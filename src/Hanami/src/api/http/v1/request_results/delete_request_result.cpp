@@ -32,11 +32,9 @@ DeleteRequestResult::DeleteRequestResult()
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("uuid",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID of the original request-task, which placed the result in shiori.");
-    assert(addFieldRegex("uuid", UUID_REGEX));
+    registerInputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the original request-task, which placed the result in shiori.")
+            .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     //

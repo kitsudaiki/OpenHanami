@@ -34,35 +34,31 @@ SetClusterMode::SetClusterMode()
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("uuid",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID of the cluster.");
-    assert(addFieldRegex("uuid", UUID_REGEX));
-    registerInputField("connection_uuid",
-                       SAKURA_STRING_TYPE,
-                       false,
-                       "UUID of the connection for input and output.");
-    assert(addFieldRegex("connection_uuid", UUID_REGEX));
-    registerInputField("new_state",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "New desired state for the cluster.");
-    assert(addFieldRegex("new_state", "^(TASK|DIRECT)$"));
+    registerInputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the cluster.")
+            .setRegex(UUID_REGEX);
+
+    registerInputField("connection_uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the connection for input and output.")
+            .setRegex(UUID_REGEX)
+            .setDefault(nullptr);
+
+    registerInputField("new_state", SAKURA_STRING_TYPE)
+            .setComment("New desired state for the cluster.")
+            .setRegex("^(TASK|DIRECT)$");
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid",
-                        SAKURA_STRING_TYPE,
-                        "UUID of the cluster.");
-    registerOutputField("name",
-                        SAKURA_STRING_TYPE,
-                        "Name of the cluster.");
-    registerOutputField("new_state",
-                        SAKURA_STRING_TYPE,
-                        "New desired state for the cluster.");
+    registerOutputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the cluster.");
+
+    registerOutputField("name", SAKURA_STRING_TYPE)
+            .setComment("Name of the cluster.");
+
+    registerOutputField("new_state", SAKURA_STRING_TYPE)
+            .setComment("New desired state for the cluster.");
 
     //----------------------------------------------------------------------------------------------
     //

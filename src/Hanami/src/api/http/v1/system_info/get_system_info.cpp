@@ -33,9 +33,8 @@ GetSystemInfo::GetSystemInfo()
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("info",
-                        SAKURA_MAP_TYPE,
-                        "All available information of the local system.");
+    registerOutputField("info", SAKURA_MAP_TYPE)
+            .setComment("All available information of the local system.");
 
     //----------------------------------------------------------------------------------------------
     //

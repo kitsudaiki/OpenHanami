@@ -35,26 +35,21 @@ LoadCluster::LoadCluster()
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("cluster_uuid",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID of the cluster, where the checkpoint should be loaded into.");
-    assert(addFieldRegex("cluster_uuid", UUID_REGEX));
+    registerInputField("cluster_uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the cluster, where the checkpoint should be loaded into.")
+            .setRegex(UUID_REGEX);
 
-    registerInputField("checkpoint_uuid",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID of the checkpoint, which should be loaded from shiori "
-                       "into the cluster.");
-    assert(addFieldRegex("checkpoint_uuid", UUID_REGEX));
+    registerInputField("checkpoint_uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the checkpoint, which should be loaded from shiori "
+                       "into the cluster.")
+            .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid",
-                        SAKURA_STRING_TYPE,
-                        "UUID of the load-task in the queue of the cluster.");
+    registerOutputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the load-task in the queue of the cluster.");
 
     //----------------------------------------------------------------------------------------------
     //

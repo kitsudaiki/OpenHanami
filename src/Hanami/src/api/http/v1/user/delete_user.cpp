@@ -37,13 +37,10 @@ DeleteUser::DeleteUser()
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("id",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "ID of the user.");
-    // column in database is limited to 256 characters size
-    assert(addFieldBorder("id", 4, 256));
-    assert(addFieldRegex("id", ID_EXT_REGEX));
+    registerInputField("id", SAKURA_STRING_TYPE)
+            .setComment("ID of the user.")
+            .setLimit(4, 256)
+            .setRegex(ID_EXT_REGEX);
 
     //----------------------------------------------------------------------------------------------
     //

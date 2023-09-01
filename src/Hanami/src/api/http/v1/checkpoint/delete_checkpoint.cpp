@@ -35,11 +35,9 @@ DeleteCheckpoint::DeleteCheckpoint()
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("uuid",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID of the checkpoint to delete.");
-    assert(addFieldRegex("uuid", UUID_REGEX));
+    registerInputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the checkpoint to delete.")
+            .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     //
@@ -51,9 +49,9 @@ DeleteCheckpoint::DeleteCheckpoint()
  */
 bool
 DeleteCheckpoint::runTask(BlossomIO &blossomIO,
-                               const Kitsunemimi::DataMap &context,
-                               BlossomStatus &status,
-                               Kitsunemimi::ErrorContainer &error)
+                          const Kitsunemimi::DataMap &context,
+                          BlossomStatus &status,
+                          Kitsunemimi::ErrorContainer &error)
 {
     const std::string dataUuid = blossomIO.input.get("uuid").getString();
     const UserContext userContext(context);
@@ -61,10 +59,10 @@ DeleteCheckpoint::runTask(BlossomIO &blossomIO,
     // get location from database
     Kitsunemimi::JsonItem result;
     if(CheckpointTable::getInstance()->getCheckpoint(result,
-                                                               dataUuid,
-                                                               userContext,
-                                                               error,
-                                                               true) == false)
+                                                     dataUuid,
+                                                     userContext,
+                                                     error,
+                                                     true) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
@@ -75,8 +73,8 @@ DeleteCheckpoint::runTask(BlossomIO &blossomIO,
 
     // delete entry from db
     if(CheckpointTable::getInstance()->deleteCheckpoint(dataUuid,
-                                                                  userContext,
-                                                                  error) == false)
+                                                        userContext,
+                                                        error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;

@@ -35,15 +35,13 @@ ListProjects::ListProjects()
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("header",
-                        SAKURA_ARRAY_TYPE,
-                        "Array with the namings all columns of the table.");
-    assert(addFieldMatch("header", new Kitsunemimi::DataValue("[\"id\""
-                                                              ",\"name\""
-                                                              ",\"creator_id\"]")));
-    registerOutputField("body",
-                        SAKURA_ARRAY_TYPE,
-                        "Array with all rows of the table, which array arrays too.");
+    registerOutputField("header", SAKURA_ARRAY_TYPE)
+            .setComment("Array with the namings all columns of the table.")
+            .setMatch(new Kitsunemimi::DataValue("[\"id\""
+                                                 ",\"name\""
+                                                 ",\"creator_id\"]"));
+    registerOutputField("body", SAKURA_ARRAY_TYPE)
+            .setComment("Array with all rows of the table, which array arrays too.");
 
     //----------------------------------------------------------------------------------------------
     //

@@ -39,20 +39,17 @@ ListUserProjects::ListUserProjects()
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("user_id",
-                       SAKURA_STRING_TYPE,
-                       false,
-                       "ID of the user.");
-    assert(addFieldBorder("user_id", 4, 256));
-    assert(addFieldRegex("user_id", ID_EXT_REGEX));
+    registerInputField("user_id", SAKURA_STRING_TYPE)
+            .setComment("ID of the user.")
+            .setLimit(4, 256)
+            .setRegex(ID_EXT_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("projects",
-                        SAKURA_ARRAY_TYPE,
-                        "Json-array with all assigned projects "
+    registerOutputField("projects", SAKURA_ARRAY_TYPE)
+            .setComment("Json-array with all assigned projects "
                         "together with role and project-admin-status.");
 
     //----------------------------------------------------------------------------------------------

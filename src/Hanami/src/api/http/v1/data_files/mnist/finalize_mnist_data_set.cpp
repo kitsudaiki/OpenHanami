@@ -42,29 +42,24 @@ FinalizeMnistDataSet::FinalizeMnistDataSet()
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("uuid",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID of the new data-set.");
-    assert(addFieldRegex("uuid", UUID_REGEX));
-    registerInputField("uuid_input_file",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID to identify the file for date upload of input-data.");
-    assert(addFieldRegex("uuid_input_file", UUID_REGEX));
-    registerInputField("uuid_label_file",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID to identify the file for date upload of label-data.");
-    assert(addFieldRegex("uuid_label_file", UUID_REGEX));
+    registerInputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the new data-set.")
+            .setRegex(UUID_REGEX);
+
+    registerInputField("uuid_input_file", SAKURA_STRING_TYPE)
+            .setComment("UUID to identify the file for date upload of input-data.")
+            .setRegex(UUID_REGEX);
+
+    registerInputField("uuid_label_file", SAKURA_STRING_TYPE)
+            .setComment("UUID to identify the file for date upload of label-data.")
+            .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid",
-                        SAKURA_STRING_TYPE,
-                        "UUID of the new data-set.");
+    registerOutputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the new data-set.");
 
     //----------------------------------------------------------------------------------------------
     //

@@ -32,17 +32,16 @@ ListCluster::ListCluster()
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("header",
-                        SAKURA_ARRAY_TYPE,
-                        "Array with the names all columns of the table.");
-    assert(addFieldMatch("header", new Kitsunemimi::DataValue("[\"uuid\","
-                                                              "\"project_id\","
-                                                              "\"owner_id\","
-                                                              "\"visibility\","
-                                                              "\"name\"]")));
-    registerOutputField("body",
-                        SAKURA_ARRAY_TYPE,
-                        "Json-string with all information of all vilible clusters.");
+    registerOutputField("header", SAKURA_ARRAY_TYPE)
+            .setComment("Array with the names all columns of the table.")
+            .setMatch(new Kitsunemimi::DataValue("[\"uuid\","
+                                                 "\"project_id\","
+                                                 "\"owner_id\","
+                                                 "\"visibility\","
+                                                 "\"name\"]"));
+
+    registerOutputField("body", SAKURA_ARRAY_TYPE)
+            .setComment("Json-string with all information of all vilible clusters.");
 
     //----------------------------------------------------------------------------------------------
     //

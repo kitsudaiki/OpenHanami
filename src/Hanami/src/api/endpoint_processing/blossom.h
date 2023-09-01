@@ -86,22 +86,50 @@ struct FieldDef
 
     const IO_ValueType ioType;
     const FieldType fieldType;
-    const bool isRequired;
-    const std::string comment;
+    bool isRequired = true;
+    std::string comment = "";
     Kitsunemimi::DataItem* match = nullptr;
     Kitsunemimi::DataItem* defaultVal = nullptr;
     std::string regex = "";
-    long lowerBorder = 0;
-    long upperBorder = 0;
+    long lowerLimit = 0;
+    long upperLimit = 0;
 
     FieldDef(const IO_ValueType ioType,
-             const FieldType fieldType,
-             const bool isRequired,
-             const std::string &comment)
+             const FieldType fieldType)
         : ioType(ioType),
-          fieldType(fieldType),
-          isRequired(isRequired),
-          comment(comment) { }
+          fieldType(fieldType) { }
+
+    FieldDef& setComment(const std::string &comment)
+    {
+        this->comment = comment;
+        return *this;
+    }
+
+    FieldDef& setMatch(Kitsunemimi::DataItem* match)
+    {
+        this->match = match;
+        return *this;
+    }
+
+    FieldDef& setDefault(Kitsunemimi::DataItem* defaultValue)
+    {
+        this->defaultVal = defaultValue;
+        this->isRequired = false;
+        return *this;
+    }
+
+    FieldDef& setRegex(const std::string &regex)
+    {
+        this->regex = regex;
+        return *this;
+    }
+
+    FieldDef& setLimit(const long lowerLimit, const long upperLimit)
+    {
+        this->lowerLimit = lowerLimit;
+        this->upperLimit = upperLimit;
+        return *this;
+    }
 };
 
 //--------------------------------------------------------------------------------------------------
@@ -125,22 +153,10 @@ protected:
                          Kitsunemimi::ErrorContainer &error) = 0;
     bool allowUnmatched = false;
 
-    bool registerInputField(const std::string &name,
-                            const FieldType fieldType,
-                            const bool required,
-                            const std::string &comment);
-    bool registerOutputField(const std::string &name,
-                             const FieldType fieldType,
-                             const std::string &comment);
-    bool addFieldMatch(const std::string &name,
-                       Kitsunemimi::DataItem* match);
-    bool addFieldDefault(const std::string &name,
-                         Kitsunemimi::DataItem* defaultValue);
-    bool addFieldRegex(const std::string &name,
-                       const std::string &regex);
-    bool addFieldBorder(const std::string &name,
-                        const long lowerBorder,
-                        const long upperBorder);
+    FieldDef& registerInputField(const std::string &name,
+                                 const FieldType fieldType);
+    FieldDef& registerOutputField(const std::string &name,
+                                  const FieldType fieldType);
 
 private:
     friend SakuraThread;

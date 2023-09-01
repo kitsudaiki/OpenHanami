@@ -43,25 +43,20 @@ CheckDataSet::CheckDataSet()
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("result_uuid",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID of the data-set to compare to.");
-    assert(addFieldRegex("result_uuid", UUID_REGEX));
+    registerInputField("result_uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the data-set to compare to.")
+            .setRegex(UUID_REGEX);
 
-    registerInputField("data_set_uuid",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID of the data-set to compare to.");
-    assert(addFieldRegex("data_set_uuid", UUID_REGEX));
+    registerInputField("data_set_uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the data-set to compare to.")
+            .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("correctness",
-                        SAKURA_FLOAT_TYPE,
-                        "Correctness of the values compared to the data-set.");
+    registerOutputField("correctness", SAKURA_FLOAT_TYPE)
+            .setComment("Correctness of the values compared to the data-set.");
 
     //----------------------------------------------------------------------------------------------
     //

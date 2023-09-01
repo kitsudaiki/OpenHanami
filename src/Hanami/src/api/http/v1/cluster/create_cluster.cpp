@@ -39,37 +39,33 @@ CreateCluster::CreateCluster()
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("name",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "Name for the new cluster.");
-    assert(addFieldBorder("name", 4, 256));
-    assert(addFieldRegex("name", NAME_REGEX));
+    registerInputField("name", SAKURA_STRING_TYPE)
+            .setComment("Name for the new cluster.")
+            .setLimit(4, 256)
+            .setRegex(NAME_REGEX);
 
-    registerInputField("template",
-                       SAKURA_STRING_TYPE,
-                       false,
-                       "Cluster-template as base64-string.");
+    registerInputField("template", SAKURA_STRING_TYPE)
+            .setComment("Cluster-template as base64-string.")
+            .setDefault(nullptr);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid",
-                        SAKURA_STRING_TYPE,
-                        "UUID of the new created cluster.");
-    registerOutputField("name",
-                        SAKURA_STRING_TYPE,
-                        "Name of the new created cluster.");
-    registerOutputField("owner_id",
-                        SAKURA_STRING_TYPE,
-                        "ID of the user, who created the new cluster.");
-    registerOutputField("project_id",
-                        SAKURA_STRING_TYPE,
-                        "ID of the project, where the new cluster belongs to.");
-    registerOutputField("visibility",
-                        SAKURA_STRING_TYPE,
-                        "Visibility of the new created cluster (private, shared, public).");
+    registerOutputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the new created cluster.");
+
+    registerOutputField("name", SAKURA_STRING_TYPE)
+            .setComment("Name of the new created cluster.");
+
+    registerOutputField("owner_id", SAKURA_STRING_TYPE)
+            .setComment("ID of the user, who created the new cluster.");
+
+    registerOutputField("project_id", SAKURA_STRING_TYPE)
+            .setComment("ID of the project, where the new cluster belongs to.");
+
+    registerOutputField("visibility", SAKURA_STRING_TYPE)
+            .setComment("Visibility of the new created cluster (private, shared, public).");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -171,11 +167,6 @@ CreateCluster::runTask(BlossomIO &blossomIO,
     }
 
     ClusterHandler::getInstance()->addCluster(uuid, newCluster);
-
-    // remove irrelevant fields
-    blossomIO.output.remove("owner_id");
-    blossomIO.output.remove("project_id");
-    blossomIO.output.remove("visibility");
 
     return true;
 }
