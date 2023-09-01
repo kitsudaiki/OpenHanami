@@ -116,6 +116,7 @@ Host::addPackage(const uint32_t packageId)
  * @param error reference for error-output
  *
  * @return average of the temperature of all packages
+ *         or 0.0 if no data can be read
  */
 double
 Host::getTotalTemperature(ErrorContainer &error)
@@ -127,7 +128,12 @@ Host::getTotalTemperature(ErrorContainer &error)
     for(const uint64_t id : ids) {
         result += getPkgTemperature(id, error);
     }
-    result /= static_cast<double>(ids.size());
+
+    if(ids.size() != 0) {
+        result /= static_cast<double>(ids.size());
+    } else {
+        result = 0.0;
+    }
 
     return result;
 }

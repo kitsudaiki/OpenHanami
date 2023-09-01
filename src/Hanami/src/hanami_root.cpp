@@ -22,12 +22,10 @@
 
 #include <hanami_root.h>
 
-#include <core/cluster/cluster_init.h>
-
 #include <core/processing/processing_unit_handler.h>
-
 #include <core/cluster/cluster_handler.h>
 #include <core/cluster/cluster.h>
+#include <core/cluster/cluster_init.h>
 
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiCommon/files/text_file.h>
@@ -37,6 +35,10 @@
 #include <api/endpoint_processing/http_websocket_thread.h>
 #include <api/endpoint_processing/blossom.h>
 #include <api/endpoint_processing/items/item_methods.h>
+
+#include <libKitsunemimiHanamiHardware/power_measuring.h>
+#include <libKitsunemimiHanamiHardware/speed_measuring.h>
+#include <libKitsunemimiHanamiHardware/temperature_measuring.h>
 
 #include <libKitsunemimiSakuraDatabase/sql_database.h>
 #include <database/cluster_table.h>
@@ -126,30 +128,13 @@ HanamiRoot::init(Kitsunemimi::ErrorContainer &error)
         return false;
     }
 
-    // init overview of all resources of the host
-    //Kitsunemimi::Sakura::Host* host = Kitsunemimi::Sakura::Host::getInstance();
-    //if(host->initHost(error) == false)
-    //{
-    //    error.addMeesage("Failed read resource-information of the local host");
-    //    LOG_ERROR(error);
-    //    return 1;
-    //}
-
     // create thread-binder
-    //threadBinder = new ThreadBinder();
-    //threadBinder->startThread();
+    //ThreadBinder::getInstance()->startThread();
 
-    // create power-measuring-loop
-    //powerMeasuring = new PowerMeasuring();
-    //powerMeasuring->startThread();
-
-    // create speed-measuring-loop
-    //speedMeasuring = new SpeedMeasuring();
-    //speedMeasuring->startThread();
-
-    // create temperature-measuring-loop
-    //temperatureMeasuring = new TemperatureMeasuring();
-    //temperatureMeasuring->startThread();
+    // start monitoring
+    PowerMeasuring::getInstance()->startThread();
+    SpeedMeasuring::getInstance()->startThread();
+    TemperatureMeasuring::getInstance()->startThread();
 
     return true;
 }

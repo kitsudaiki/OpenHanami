@@ -21,7 +21,6 @@
  */
 
 #include <libKitsunemimiHanamiHardware/speed_measuring.h>
-#include <libKitsunemimiHanamiHardware/value_container.h>
 
 #include <libKitsunemimiSakuraHardware/cpu_thread.h>
 
@@ -35,20 +34,19 @@
 SpeedMeasuring* SpeedMeasuring::instance = nullptr;
 
 SpeedMeasuring::SpeedMeasuring()
-    : Kitsunemimi::Thread("Azuki_SpeedMeasuring")
-{
-    m_valueContainer = new ValueContainer();
-}
+    : Kitsunemimi::Thread("Azuki_SpeedMeasuring") {}
 
-SpeedMeasuring::~SpeedMeasuring()
-{
-    delete m_valueContainer;
-}
+SpeedMeasuring::~SpeedMeasuring() {}
 
+/**
+ * @brief return all collected values as json-like tree
+ *
+ * @return json-output
+ */
 Kitsunemimi::DataMap*
 SpeedMeasuring::getJson()
 {
-    return m_valueContainer->toJson();
+    return m_valueContainer.toJson();
 }
 
 /**
@@ -76,10 +74,17 @@ SpeedMeasuring::run()
              }
         }
 
-        double curSpeed = static_cast<double>(currentSpeed) / static_cast<double>(numberOfValues);
-        curSpeed /= 1000.0;  // convert from KHz to MHz
-
-        m_valueContainer->addValue(curSpeed);
+        if(currentSpeed != 0
+                && numberOfValues != 0)
+        {
+            double curSpeed = static_cast<double>(currentSpeed) / static_cast<double>(numberOfValues);
+            curSpeed /= 1000.0;  // convert from KHz to MHz
+            m_valueContainer.addValue(curSpeed);
+        }
+        else
+        {
+            m_valueContainer.addValue(0.0);
+        }
 
         sleep(1);
     }
