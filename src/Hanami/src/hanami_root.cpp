@@ -99,12 +99,13 @@ HanamiRoot::init(Kitsunemimi::ErrorContainer &error)
         m_randomValues[i] = static_cast<uint32_t>(rand());
     }
 
-    // init db
     if(initDatabase(error) == false)
     {
         error.addMeesage("Failed to initialize database");
         return false;
     }
+
+    clearCluster(error);
 
     if(initJwt(error) == false)
     {
@@ -389,6 +390,17 @@ HanamiRoot::initJwt(Kitsunemimi::ErrorContainer &error)
 }
 
 /**
+ * @brief delete all clusters, because after a restart these are broken
+ */
+void
+HanamiRoot::clearCluster(Kitsunemimi::ErrorContainer &error)
+{
+    ClusterTable::getInstance()->deleteAllCluster(error);
+    // TODO: if a checkpoint exist for a broken cluster, then the cluster should be
+    //       restored with the last available checkpoint
+}
+
+/**
  * @brief check if a specific blossom was registered
  *
  * @param groupName group-identifier of the blossom
@@ -614,7 +626,7 @@ HanamiRoot::addEndpoint(const std::string &id,
 
     // search for id
     auto id_it = endpointRules.find(id);
-    if(endpointRules.find(id) != endpointRules.end())
+    if(id_it != endpointRules.end())
     {
         // search for http-type
         if(id_it->second.find(httpType) != id_it->second.end()) {

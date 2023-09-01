@@ -62,7 +62,7 @@ public:
     bool deleteCluster(const std::string &clusterUuid,
                        const UserContext &userContext,
                        Kitsunemimi::ErrorContainer &error);
-
+    bool deleteAllCluster(Kitsunemimi::ErrorContainer &error);
 private:
     ClusterTable();
     static ClusterTable* instance;

@@ -182,3 +182,17 @@ ClusterTable::deleteCluster(const std::string &clusterUuid,
 
     return true;
 }
+
+/**
+ * @brief delete all cluster from database. This currently used to avoid
+ *        broken empty clusters after a restart of the backend
+ *
+ * @param error reference for error-output
+ *
+ * @return true, if successful, else false
+ */
+bool
+ClusterTable::deleteAllCluster(Kitsunemimi::ErrorContainer &error)
+{
+    return deleteAllFromDb(error);
+}

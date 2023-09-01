@@ -111,6 +111,8 @@ private:
     bool initDatabase(Kitsunemimi::ErrorContainer &error);
     bool initPolicies(Kitsunemimi::ErrorContainer &error);
     bool initJwt(Kitsunemimi::ErrorContainer &error);
+
+    void clearCluster(Kitsunemimi::ErrorContainer &error);
 };
 
 #endif //HANAMI_HANAMI_ROOT_H
