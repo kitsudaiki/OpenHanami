@@ -32,7 +32,7 @@
 TemperatureMeasuring* TemperatureMeasuring::instance = nullptr;
 
 TemperatureMeasuring::TemperatureMeasuring()
-    : Kitsunemimi::Thread("Azuki_TemperatureMeasuring") {}
+    : Kitsunemimi::Thread("TemperatureMeasuring") {}
 
 TemperatureMeasuring::~TemperatureMeasuring() {}
 

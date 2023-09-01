@@ -32,7 +32,7 @@
 PowerMeasuring* PowerMeasuring::instance = nullptr;
 
 PowerMeasuring::PowerMeasuring()
-    : Kitsunemimi::Thread("Azuki_EnergyMeasuring") {}
+    : Kitsunemimi::Thread("PowerMeasuring") {}
 
 PowerMeasuring::~PowerMeasuring() {}
 

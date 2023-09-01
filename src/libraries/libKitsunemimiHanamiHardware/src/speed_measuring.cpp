@@ -34,7 +34,7 @@
 SpeedMeasuring* SpeedMeasuring::instance = nullptr;
 
 SpeedMeasuring::SpeedMeasuring()
-    : Kitsunemimi::Thread("Azuki_SpeedMeasuring") {}
+    : Kitsunemimi::Thread("SpeedMeasuring") {}
 
 SpeedMeasuring::~SpeedMeasuring() {}
 

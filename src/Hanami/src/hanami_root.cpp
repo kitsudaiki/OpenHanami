@@ -40,7 +40,9 @@
 #include <libKitsunemimiHanamiHardware/speed_measuring.h>
 #include <libKitsunemimiHanamiHardware/temperature_measuring.h>
 
+#include <libKitsunemimiSakuraHardware/host.h>
 #include <libKitsunemimiSakuraDatabase/sql_database.h>
+
 #include <database/cluster_table.h>
 #include <database/users_table.h>
 #include <database/projects_table.h>
@@ -128,8 +130,16 @@ HanamiRoot::init(Kitsunemimi::ErrorContainer &error)
         return false;
     }
 
+    Kitsunemimi::Sakura::Host* host = Kitsunemimi::Sakura::Host::getInstance();
+    if(host->initHost(error) == false)
+    {
+        error.addMeesage("Failed to initialize host-information.");
+        LOG_ERROR(error);
+        return false;
+    }
+
     // create thread-binder
-    //ThreadBinder::getInstance()->startThread();
+    ThreadBinder::getInstance()->startThread();
 
     // start monitoring
     PowerMeasuring::getInstance()->startThread();

@@ -35,7 +35,7 @@
 ThreadBinder* ThreadBinder::instance = nullptr;
 
 ThreadBinder::ThreadBinder()
-    : Kitsunemimi::Thread("Azuki_ThreadBinder")
+    : Kitsunemimi::Thread("ThreadBinder")
 {
 }
 
@@ -51,82 +51,33 @@ ThreadBinder::getMapping()
 }
 
 /**
- * @brief change core-ids of the threads of azuki itself
- *
- * @param threadNames name of the thread-type
- * @param coreId is of the core (physical thread) to bind to
- *
- * @return true, if successful, false if core-id is out-of-range
- */
-bool
-ThreadBinder::changeInternalCoreIds(const std::vector<std::string> &threadNames,
-                                    const std::vector<uint64_t> coreIds)
-{
-    Kitsunemimi::ThreadHandler* threadHandler = Kitsunemimi::ThreadHandler::getInstance();
-    for(const std::string &name : threadNames)
-    {
-        const std::vector<Kitsunemimi::Thread*> threads = threadHandler->getThreads(name);
-        for(Kitsunemimi::Thread* thread : threads)
-        {
-            if(thread->bindThreadToCores(coreIds) == false) {
-                return false;
-            }
-        }
-    }
-
-    return true;
-}
-
-/**
- * @brief request the thread-mapping of azuki itself
- *
- * @param completeMap pointer for the result to attach the thread-mapping of azuki
- *
- * @return always true
- */
-bool
-ThreadBinder::makeInternalRequest(Kitsunemimi::DataMap* completeMap,
-                                  Kitsunemimi::ErrorContainer &)
-{
-    Kitsunemimi::ThreadHandler* threadHandler = Kitsunemimi::ThreadHandler::getInstance();
-    const std::vector<std::string> names = threadHandler->getRegisteredNames();
-    Kitsunemimi::DataMap* result = new Kitsunemimi::DataMap();
-
-    for(const std::string &name : names)
-    {
-        const std::vector<Kitsunemimi::Thread*> threads = threadHandler->getThreads(name);
-        Kitsunemimi::DataArray* threadArray = new Kitsunemimi::DataArray();
-        for(Kitsunemimi::Thread* thread : threads)
-        {
-            const std::vector<uint64_t> coreIds = thread->getCoreIds();
-            Kitsunemimi::DataArray* cores = new Kitsunemimi::DataArray();
-            for(const uint64_t coreId : coreIds) {
-                cores->append(new Kitsunemimi::DataValue(static_cast<long>(coreId)));
-            }
-            threadArray->append(cores);
-        }
-        result->insert(name, threadArray);
-    }
-
-    completeMap->insert("azuki", result);
-
-    return true;
-}
-
-/**
  * @brief fill lists with ids for the binding
  *
  * @param controlCoreIds reference to the list for all ids of control-processes
  * @param processingCoreIds reference to the list for all ids of processing-processes
+ * @param error reference for error-output
  *
  * @return false, if a list is empty, else true
  */
 bool
 ThreadBinder::fillCoreIds(std::vector<uint64_t> &controlCoreIds,
-                          std::vector<uint64_t> &processingCoreIds)
+                          std::vector<uint64_t> &processingCoreIds,
+                          Kitsunemimi::ErrorContainer &error)
 {
     Kitsunemimi::Sakura::CpuCore* phyCore = nullptr;
     Kitsunemimi::Sakura::Host* host = Kitsunemimi::Sakura::Host::getInstance();
+
+    if(host->cpuPackages.size() == 0)
+    {
+        error.addMeesage("Failed to read number of cpu-packages from host.");
+        return false;
+    }
+
+    if(host->cpuPackages[0]->cpuCores.size() == 0)
+    {
+        error.addMeesage("Failed to read number of cpu-cores from host.");
+        return false;
+    }
 
     // control-cores
     phyCore = host->cpuPackages[0]->cpuCores[0];
@@ -143,16 +94,6 @@ ThreadBinder::fillCoreIds(std::vector<uint64_t> &controlCoreIds,
         }
     }
 
-    if(controlCoreIds.size() == 0) {
-        // TODO: error
-        return false;
-    }
-
-    if(processingCoreIds.size() == 0) {
-        // TODO: error
-        return false;
-    }
-
     return true;
 }
 
@@ -162,65 +103,70 @@ ThreadBinder::fillCoreIds(std::vector<uint64_t> &controlCoreIds,
 void
 ThreadBinder::run()
 {
-    if(fillCoreIds(m_controlCoreIds, m_processingCoreIds) == false) {
+    Kitsunemimi::ErrorContainer error;
+    if(fillCoreIds(m_controlCoreIds, m_processingCoreIds, error) == false)
+    {
+        error.addMeesage("Failed to initialize cpu-thread-lists for thread-binder.");
+        LOG_ERROR(error);
         return;
     }
 
+    Kitsunemimi::ThreadHandler* threadHandler = Kitsunemimi::ThreadHandler::getInstance();
+
     while(m_abort == false)
     {
+        sleep(10);
+
         m_mapLock.lock();
+
+        m_completeMap.clear();
+        const std::vector<std::string> threadNames = threadHandler->getRegisteredNames();
 
         Kitsunemimi::ErrorContainer error;
 
-        // get thread-mapping of all components
-        Kitsunemimi::DataMap newMapping;
-
-        const std::string newMappingStr = newMapping.toString();
-        if(m_lastMapping != newMappingStr)
+        for(const std::string &name : threadNames)
         {
-            m_completeMap = newMapping;
-            // debug-output
-            //std::cout<<"#############################################################"<<std::endl;
-            //std::cout<<newMapping.toString(true)<<std::endl;
-            //std::cout<<"#############################################################"<<std::endl;
-            LOG_DEBUG(newMapping.toString(true));
-
-            // update thread-binding for all components
-            for(const auto& [name, value] : newMapping.map)
+            // update thread-binding
+            const std::vector<Kitsunemimi::Thread*> threads = threadHandler->getThreads(name);
+            for(Kitsunemimi::Thread* thread : threads)
             {
-                const std::vector<std::string> threadNames = value->toMap()->getKeys();
-                if(name == "azuki") {
-                    changeInternalCoreIds(threadNames, m_controlCoreIds);
+                if(name == "CpuProcessingUnit")
+                {
+                    if(thread->bindThreadToCores(m_processingCoreIds) == false) {
+                        continue;
+                    }
+                }
+                else
+                {
+                    if(thread->bindThreadToCores(m_controlCoreIds) == false) {
+                        continue;
+                    }
                 }
             }
 
-            m_lastMapping = newMappingStr;
+            // update list for output
+            Kitsunemimi::DataArray* idList = new Kitsunemimi::DataArray();
+            if(name == "CpuProcessingUnit")
+            {
+                for(const uint64_t id : m_processingCoreIds) {
+                    idList->append(new Kitsunemimi::DataValue((long)id));
+                }
+            }
+            else
+            {
+                for(const uint64_t id : m_controlCoreIds) {
+                    idList->append(new Kitsunemimi::DataValue((long)id));
+                }
+            }
+            m_completeMap.insert(name, idList, true);
         }
+
+        // debug-output
+        // std::cout<<"#############################################################"<<std::endl;
+        // std::cout<<m_completeMap.toString(true)<<std::endl;
+        // std::cout<<"#############################################################"<<std::endl;
+        //LOG_DEBUG(newMapping.toString(true));
 
         m_mapLock.unlock();
-
-        sleep(10);
     }
-}
-
-/**
- * @brief convert list to a string
- *
- * @param coreIds list with ids
- *
- * @return comma-separated string with the input-values
- */
-const std::string
-ThreadBinder::convertCoreIdList(const std::vector<uint64_t> coreIds)
-{
-    std::string result = "";
-    for(uint64_t i = 0; i < coreIds.size(); i++)
-    {
-        if(i != 0) {
-            result.append(",");
-        }
-        result.append(std::to_string(coreIds[i]));
-    }
-
-    return result;
 }
