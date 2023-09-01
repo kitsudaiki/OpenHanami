@@ -36,28 +36,28 @@
  * @param columnName
  * @return
  */
-float*
-getDataSetPayload(const std::string &location,
+bool
+getDataSetPayload(Kitsunemimi::DataBuffer &result,
+                  const std::string &location,
                   Kitsunemimi::ErrorContainer &error,
                   const std::string &columnName)
 {
     // init file
-    DataSetFile* file = readDataSetFile(location);
+    DataSetFile* file = readDataSetFile(location, error);
     if(file == nullptr) {
-        return nullptr;
+        return false;
     }
 
     // get payload
-    uint64_t payloadSize = 0;
-    float* payload = file->getPayload(payloadSize, columnName);
-    delete file;
-    if(payload == nullptr)
+    if(file->getPayload(result, error, columnName) == false)
     {
+        delete file;
         error.addMeesage("Failed to get payload.");
-        return nullptr;
+        return false;
     }
+    delete file;
 
-    return payload;
+    return true;
 }
 
 /**
@@ -76,7 +76,7 @@ getHeaderInformation(Kitsunemimi::JsonItem &result,
 {
     bool ret = false;
 
-    DataSetFile* file = readDataSetFile(location);
+    DataSetFile* file = readDataSetFile(location, error);
     if(file == nullptr) {
         return ret;
     }
@@ -84,7 +84,7 @@ getHeaderInformation(Kitsunemimi::JsonItem &result,
     do
     {
         // read data-set-header
-        if(file->readFromFile() == false)
+        if(file->readFromFile(error) == false)
         {
             error.addMeesage("Failed to read header from file '" + location + "'");
             break;
@@ -119,7 +119,7 @@ getHeaderInformation(Kitsunemimi::JsonItem &result,
             long outputs = 0;
 
             // get number of inputs and outputs
-            for(const DataSetFile::TableHeaderEntry &entry : imgT->tableColumns)
+            for(const TableDataSetFile::TableHeaderEntry &entry : imgT->tableColumns)
             {
                 if(entry.isInput) {
                     inputs++;
@@ -138,11 +138,8 @@ getHeaderInformation(Kitsunemimi::JsonItem &result,
             ret = true;
             break;
         }
-
-        // TODO: handle other types
-        break;
     }
-    while(true);
+    while(false);
 
     delete file;
 

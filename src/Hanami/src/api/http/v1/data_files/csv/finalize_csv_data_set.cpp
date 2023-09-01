@@ -176,6 +176,8 @@ FinalizeCsvDataSet::convertCsvData(const std::string &filePath,
                                    const std::string &name,
                                    const Kitsunemimi::DataBuffer &inputBuffer)
 {
+    Kitsunemimi::ErrorContainer error;
+
     TableDataSetFile file(filePath);
     file.type = DataSetFile::TABLE_TYPE;
     file.name = name;
@@ -219,13 +221,13 @@ FinalizeCsvDataSet::convertCsvData(const std::string &filePath,
             for(const std::string &col : lineContent)
             {
                 // create and add header-entry
-                DataSetFile::TableHeaderEntry entry;
+                TableDataSetFile::TableHeaderEntry entry;
                 entry.setName(col);
                 file.tableColumns.push_back(entry);
             }
             isHeader = false;
 
-            if(file.initNewFile() == false) {
+            if(file.initNewFile(error) == false) {
                 return false;
             }
 
@@ -255,7 +257,9 @@ FinalizeCsvDataSet::convertCsvData(const std::string &filePath,
                 segmentPos++;
                 if(segmentPos == segmentSize)
                 {
-                    file.addBlock(segmentCounter, &segment[0], segmentSize);
+                    if(file.addBlock(segmentCounter, &segment[0], segmentSize, error) == false) {
+                        return false;
+                    }
                     segmentPos = 0;
                     segmentCounter++;
                 }                
@@ -266,13 +270,16 @@ FinalizeCsvDataSet::convertCsvData(const std::string &filePath,
     }
 
     // write last incomplete segment to file
-    if(segmentPos != 0) {
-        file.addBlock(segmentCounter, &segment[0], segmentPos);
+    if(segmentPos != 0)
+    {
+        if(file.addBlock(segmentCounter, &segment[0], segmentPos, error) == false) {
+            return false;
+        }
     }
 
     // update header in file for the final number of lines for the case,
     // that there were invalid lines
-    if(file.updateHeader() == false) {
+    if(file.updateHeader(error) == false) {
         return false;
     }
 

@@ -185,8 +185,8 @@ CreateTask::imageTask(std::string &taskUuid,
 {
     // get input-data
     const std::string dataSetLocation = dataSetInfo.get("location").getString();
-    float* floatData = getDataSetPayload(dataSetLocation, error);
-    if(floatData == nullptr)
+    Kitsunemimi::DataBuffer buffer;
+    if(getDataSetPayload(buffer, dataSetLocation, error) == false)
     {
         error.addMeesage("Failed to get data of data-set from location '"
                          + dataSetLocation
@@ -206,7 +206,7 @@ CreateTask::imageTask(std::string &taskUuid,
                                      name,
                                      userContext.userId,
                                      userContext.projectId,
-                                     floatData,
+                                     static_cast<float*>(buffer.data),
                                      numberOfInputs,
                                      numberOfOutputs,
                                      numberOfLines);
@@ -217,11 +217,14 @@ CreateTask::imageTask(std::string &taskUuid,
                                        name,
                                        userContext.userId,
                                        userContext.projectId,
-                                       floatData,
+                                       static_cast<float*>(buffer.data),
                                        numberOfInputs,
                                        numberOfOutputs,
                                        numberOfLines);
     }
+
+    // detach buffer because the buffer-content is now attached to the task
+    buffer.data = nullptr;
 
     return true;
 }
@@ -256,11 +259,10 @@ CreateTask::tableTask(std::string &taskUuid,
     const uint64_t numberOfLines = dataSetInfo.get("lines").getLong();
 
     // get input-data
-    // TODO: fix
     const std::string inputColumnName = "input";
     const std::string dataSetLocation = dataSetInfo.get("location").getString();
-    float* inputBuffer = getDataSetPayload(dataSetLocation, error, inputColumnName);
-    if(inputBuffer == nullptr)
+    Kitsunemimi::DataBuffer inputBuffer;
+    if(getDataSetPayload(inputBuffer, dataSetLocation, error) == false)
     {
         error.addMeesage("Failed to get data of data-set from location '"
                          + dataSetLocation
@@ -277,19 +279,18 @@ CreateTask::tableTask(std::string &taskUuid,
                                        name,
                                        userContext.userId,
                                        userContext.projectId,
-                                       inputBuffer,
+                                       static_cast<float*>(inputBuffer.data),
                                        numberOfInputs,
                                        numberOfOutputs,
                                        numberOfLines - numberOfInputs);
-
+        inputBuffer.data = nullptr;
     }
     else
     {
         // get output-data
-        // TODO: fix
         const std::string outputColumnName = "output";
-        float* outputBuffer = getDataSetPayload(dataSetLocation, error, outputColumnName);
-        if(outputBuffer == nullptr)
+        Kitsunemimi::DataBuffer outputBuffer;
+        if(getDataSetPayload(outputBuffer, dataSetLocation, error) == false)
         {
             error.addMeesage("Failed to get data of data-set from location '"
                              + dataSetLocation
@@ -306,11 +307,13 @@ CreateTask::tableTask(std::string &taskUuid,
                                      name,
                                      userContext.userId,
                                      userContext.projectId,
-                                     inputBuffer,
-                                     outputBuffer,
+                                     static_cast<float*>(inputBuffer.data),
+                                     static_cast<float*>(outputBuffer.data),
                                      numberOfInputs,
                                      numberOfOutputs,
                                      numberOfLines - numberOfInputs);
+        inputBuffer.data = nullptr;
+        outputBuffer.data = nullptr;
     }
 
     return true;

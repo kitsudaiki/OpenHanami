@@ -29,12 +29,39 @@ class TableDataSetFile
         : public DataSetFile
 {
 public:
+    struct TableTypeHeader
+    {
+        uint64_t numberOfColumns = 0;
+        uint64_t numberOfLines = 0;
+    };
+
+    struct TableHeaderEntry
+    {
+        char name[256];
+        bool isInput = false;
+        bool isOutput = false;
+        float multiplicator = 1.0f;
+        float averageVal = 0.0f;
+        float maxVal = 0.0f;
+
+        void setName(const std::string &name)
+        {
+            uint32_t nameSize = name.size();
+            if(nameSize > 255) {
+                nameSize = 255;
+            }
+            memcpy(this->name, name.c_str(), nameSize);
+            this->name[nameSize] = '\0';
+        }
+    };
+
     TableDataSetFile(const std::string &filePath);
     TableDataSetFile(Kitsunemimi::BinaryFile* file);
     ~TableDataSetFile();
-    bool updateHeader();
-    float* getPayload(uint64_t &payloadSize,
-                      const std::string &columnName = "");
+    bool updateHeader(Kitsunemimi::ErrorContainer &error);
+    bool getPayload(Kitsunemimi::DataBuffer &result,
+                    Kitsunemimi::ErrorContainer &error,
+                    const std::string &columnName = "");
 
     void print();
 

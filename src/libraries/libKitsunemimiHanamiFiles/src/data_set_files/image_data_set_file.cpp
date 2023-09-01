@@ -79,19 +79,20 @@ ImageDataSetFile::readHeader(const uint8_t* u8buffer)
 /**
  * @brief update header in file
  *
+ * @param error reference for error-output
+ *
  * @return true, if successful, else false
  */
 bool
-ImageDataSetFile::updateHeader()
+ImageDataSetFile::updateHeader(Kitsunemimi::ErrorContainer &error)
 {
     // write image-header to file
-    Kitsunemimi::ErrorContainer error;
     if(m_targetFile->writeDataIntoFile(&imageHeader,
                                        sizeof(DataSetHeader),
                                        sizeof(ImageTypeHeader),
                                        error) == false)
     {
-        LOG_ERROR(error);
+        error.addMeesage("Failed to update header of image-file");
         return false;
     }
 
@@ -99,22 +100,28 @@ ImageDataSetFile::updateHeader()
 }
 
 /**
- * @brief get pointer to payload of a file
+ * @brief read payload of the image-file
  *
- * @param payloadSize reference for size of the read payload
+ * @param result reference to buffer for the read data
+ * @param error reference for error-output
  *
- * @return pointer to the payload
+ * @return true, if successful, else false
  */
-float*
-ImageDataSetFile::getPayload(uint64_t &payloadSize,
+bool
+ImageDataSetFile::getPayload(Kitsunemimi::DataBuffer &result,
+                             Kitsunemimi::ErrorContainer &error,
                              const std::string &)
 {
-    payloadSize = m_totalFileSize - m_headerSize;
-    float* payload = new float[payloadSize / sizeof(float)];
-    Kitsunemimi::ErrorContainer error;
-    if(m_targetFile->readDataFromFile(payload, m_headerSize, payloadSize, error) == false) {
-        LOG_ERROR(error);
-        // TODO: handle error
+    const uint64_t payloadSize = m_totalFileSize - m_headerSize;
+    Kitsunemimi::allocateBlocks_DataBuffer(result, Kitsunemimi::calcBytesToBlocks(payloadSize));
+    if(m_targetFile->readDataFromFile(result.data,
+                                      m_headerSize,
+                                      payloadSize,
+                                      error) == false)
+    {
+        error.addMeesage("Failed to read data of image-data-set-file");
+        return false;
     }
-    return payload;
+
+    return true;
 }

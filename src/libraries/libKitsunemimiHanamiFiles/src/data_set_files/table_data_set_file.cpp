@@ -90,19 +90,20 @@ TableDataSetFile::readHeader(const uint8_t* u8buffer)
 /**
  * @brief update header in file
  *
+ * @param error reference for error-output
+ *
  * @return true, if successful, else false
  */
 bool
-TableDataSetFile::updateHeader()
+TableDataSetFile::updateHeader(Kitsunemimi::ErrorContainer &error)
 {
     // write table-header to file
-    Kitsunemimi::ErrorContainer error;
     if(m_targetFile->writeDataIntoFile(&tableHeader,
                                        sizeof(DataSetHeader),
                                        sizeof(TableTypeHeader),
                                        error) == false)
     {
-        LOG_ERROR(error);
+        error.addMeesage("Failed to write table-header");
         return false;
     }
 
@@ -115,7 +116,7 @@ TableDataSetFile::updateHeader()
                                            sizeof(TableHeaderEntry),
                                            error) == false)
         {
-            LOG_ERROR(error);
+            error.addMeesage("Failed to write table-entry-header");
             return false;
         }
     }
@@ -124,30 +125,34 @@ TableDataSetFile::updateHeader()
 }
 
 /**
- * @brief get pointer to payload of a file
+ * @brief read a specific column from the table-file
  *
- * @param payloadSize reference for size of the read payload
+ * @param result reference to buffer for the read data
+ * @param error reference for error-output
+ * @param columnName name of the column to read from the file
  *
- * @return pointer to the payload
+ * @return true, if successful, else false
  */
-float*
-TableDataSetFile::getPayload(uint64_t &payloadSize,
+bool
+TableDataSetFile::getPayload(Kitsunemimi::DataBuffer &result,
+                             Kitsunemimi::ErrorContainer &error,
                              const std::string &columnName)
 {
-    Kitsunemimi::ErrorContainer error;
+    Kitsunemimi::DataBuffer readBuffer;
+    const uint64_t bufferSize = (m_totalFileSize - m_headerSize) / sizeof(float);
+    Kitsunemimi::allocateBlocks_DataBuffer(readBuffer, Kitsunemimi::calcBytesToBlocks(bufferSize));
 
-    float* payload = new float[(m_totalFileSize - m_headerSize) / sizeof(float)];
-    if(m_targetFile->readDataFromFile(payload,
+    if(m_targetFile->readDataFromFile(readBuffer.data,
                                       m_headerSize,
                                       m_totalFileSize - m_headerSize,
                                       error) == false)
     {
-        //TODO: handle error
-        LOG_ERROR(error);
-        return payload;
+        error.addMeesage("Failed to read data of table-data-set-file");
+        return false;
     }
 
-    uint64_t columnPos = 0;
+    // search for column-name
+    int64_t columnPos = -1;
     for(uint64_t i = 0; i < tableColumns.size(); i++)
     {
         if(tableColumns[i].name == columnName) {
@@ -155,15 +160,25 @@ TableDataSetFile::getPayload(uint64_t &payloadSize,
         }
     }
 
-    payloadSize = tableHeader.numberOfLines * sizeof(float);
-    float* filteredData = new float[tableHeader.numberOfLines];
-    for(uint64_t line = 0; line < tableHeader.numberOfLines; line++) {
-        filteredData[line] = payload[line * tableHeader.numberOfColumns + columnPos];
+    // check if column was found
+    if(columnPos == -1)
+    {
+        error.addMeesage("Column with name '"
+                         + columnName
+                         + "' was not found in table-data-set-file");
+        return false;
     }
 
-    delete[] payload;
+    // write data of column into the output-buffer
+    const uint64_t payloadSize = tableHeader.numberOfLines * sizeof(float);
+    Kitsunemimi::allocateBlocks_DataBuffer(result, Kitsunemimi::calcBytesToBlocks(payloadSize));
+    float* filteredData = static_cast<float*>(result.data);
+    float* floatPayload = static_cast<float*>(readBuffer.data);
+    for(uint64_t line = 0; line < tableHeader.numberOfLines; line++) {
+        filteredData[line] = floatPayload[line * tableHeader.numberOfColumns + columnPos];
+    }
 
-    return filteredData;
+    return true;
 }
 
 /**

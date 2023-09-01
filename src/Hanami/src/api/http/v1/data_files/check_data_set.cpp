@@ -27,6 +27,7 @@
 #include <database/data_set_table.h>
 
 #include <libKitsunemimiHanamiFiles/data_set_files/data_set_file.h>
+#include <libKitsunemimiHanamiFiles/data_set_files/image_data_set_file.h>
 
 #include <libKitsunemimiJson/json_item.h>
 #include <libKitsunemimiCommon/methods/file_methods.h>
@@ -111,7 +112,7 @@ CheckDataSet::runTask(BlossomIO &blossomIO,
 
     Kitsunemimi::DataBuffer buffer;
     DataSetFile::DataSetHeader dataSetHeader;
-    DataSetFile::ImageTypeHeader imageTypeHeader;
+    ImageDataSetFile::ImageTypeHeader imageTypeHeader;
     Kitsunemimi::BinaryFile file(location);
 
     // read data-set-header
@@ -123,12 +124,12 @@ CheckDataSet::runTask(BlossomIO &blossomIO,
 
     // prepare values
     uint64_t correctValues = 0;
-    uint64_t dataPos = sizeof(DataSetFile::DataSetHeader) + sizeof(DataSetFile::ImageTypeHeader);
+    uint64_t dataPos = sizeof(DataSetFile::DataSetHeader) + sizeof(ImageDataSetFile::ImageTypeHeader);
     const uint8_t* u8Data = static_cast<const uint8_t*>(buffer.data);
     memcpy(&dataSetHeader, buffer.data, sizeof(DataSetFile::DataSetHeader));
     memcpy(&imageTypeHeader,
            &u8Data[sizeof(DataSetFile::DataSetHeader)],
-           sizeof(DataSetFile::ImageTypeHeader));
+           sizeof(ImageDataSetFile::ImageTypeHeader));
     const uint64_t lineOffset = imageTypeHeader.numberOfInputsX * imageTypeHeader.numberOfInputsY;
     const uint64_t lineSize = (imageTypeHeader.numberOfInputsX * imageTypeHeader.numberOfInputsY)
                               + imageTypeHeader.numberOfOutputs;

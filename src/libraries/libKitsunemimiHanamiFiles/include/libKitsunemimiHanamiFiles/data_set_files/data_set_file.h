@@ -23,12 +23,13 @@
 #ifndef HANAMI_DATASETFILE_H
 #define HANAMI_DATASETFILE_H
 
-#include <libKitsunemimiCommon/logger.h>
-
 #include <string>
 #include <vector>
 #include <stdint.h>
 #include <cstring>
+
+#include <libKitsunemimiCommon/logger.h>
+#include <libKitsunemimiCommon/buffer/data_buffer.h>
 
 namespace Kitsunemimi {
 struct DataBuffer;
@@ -51,55 +52,21 @@ public:
         char name[256];
     };
 
-    struct ImageTypeHeader
-    {
-        uint64_t numberOfInputsX = 0;
-        uint64_t numberOfInputsY = 0;
-        uint64_t numberOfOutputs = 0;
-        uint64_t numberOfImages = 0;
-        float maxValue = 0.0f;
-        float avgValue = 0.0f;
-    };
-
-    struct TableTypeHeader
-    {
-        uint64_t numberOfColumns = 0;
-        uint64_t numberOfLines = 0;
-    };
-
-    struct TableHeaderEntry
-    {
-        char name[256];
-        bool isInput = false;
-        bool isOutput = false;
-        float multiplicator = 1.0f;
-        float averageVal = 0.0f;
-        float maxVal = 0.0f;
-
-        void setName(const std::string &name)
-        {
-            uint32_t nameSize = name.size();
-            if(nameSize > 255) {
-                nameSize = 255;
-            }
-            memcpy(this->name, name.c_str(), nameSize);
-            this->name[nameSize] = '\0';
-        }
-    };
-
     DataSetFile(const std::string &filePath);
     DataSetFile(Kitsunemimi::BinaryFile* file);
     virtual ~DataSetFile();
 
-    bool initNewFile();
-    bool readFromFile();
+    bool initNewFile(Kitsunemimi::ErrorContainer &error);
+    bool readFromFile(Kitsunemimi::ErrorContainer &error);
 
     bool addBlock(const uint64_t pos,
                   const float* data,
-                  const u_int64_t numberOfValues);
-    virtual float* getPayload(uint64_t &payloadSize,
-                              const std::string &columnName = "") = 0;
-    virtual bool updateHeader() = 0;
+                  const u_int64_t numberOfValues,
+                  Kitsunemimi::ErrorContainer &error);
+    virtual bool getPayload(Kitsunemimi::DataBuffer &result,
+                            Kitsunemimi::ErrorContainer &error,
+                            const std::string &columnName = "") = 0;
+    virtual bool updateHeader(Kitsunemimi::ErrorContainer &error) = 0;
 
     DataSetType type = UNDEFINED_TYPE;
     std::string name = "";
@@ -114,6 +81,7 @@ protected:
     uint64_t m_totalFileSize = 0;
 };
 
-DataSetFile* readDataSetFile(const std::string &filePath);
+DataSetFile* readDataSetFile(const std::string &filePath,
+                             Kitsunemimi::ErrorContainer &error);
 
 #endif // HANAMI_DATASETFILE_H

@@ -149,6 +149,7 @@ FinalizeMnistDataSet::convertMnistData(const std::string &filePath,
                                        const Kitsunemimi::DataBuffer &inputBuffer,
                                        const Kitsunemimi::DataBuffer &labelBuffer)
 {
+    Kitsunemimi::ErrorContainer error;
     ImageDataSetFile file(filePath);
     file.type = DataSetFile::IMAGE_TYPE;
     file.name = name;
@@ -195,7 +196,7 @@ FinalizeMnistDataSet::convertMnistData(const std::string &filePath,
     uint64_t segmentCounter = 0;
 
     // init file
-    if(file.initNewFile() == false) {
+    if(file.initNewFile(error) == false) {
         return false;
     }
 
@@ -236,15 +237,20 @@ FinalizeMnistDataSet::convertMnistData(const std::string &filePath,
         // write line to file, if segment is full
         if(segmentPos == segmentSize)
         {
-            file.addBlock(segmentCounter * segmentSize, &segment[0], segmentSize);
+            if(file.addBlock(segmentCounter * segmentSize, &segment[0], segmentSize, error) == false) {
+                return false;
+            }
             segmentPos = 0;
             segmentCounter++;
         }
     }
 
     // write last incomplete segment to file
-    if(segmentPos != 0) {
-        file.addBlock(segmentCounter * segmentSize, &segment[0], segmentPos);
+    if(segmentPos != 0)
+    {
+        if(file.addBlock(segmentCounter * segmentSize, &segment[0], segmentPos, error) == false) {
+            return false;
+        }
     }
 
     // write additional information to header
@@ -253,7 +259,7 @@ FinalizeMnistDataSet::convertMnistData(const std::string &filePath,
 
     // update header in file for the final number of lines for the case,
     // that there were invalid lines
-    if(file.updateHeader() == false) {
+    if(file.updateHeader(error) == false) {
         return false;
     }
 

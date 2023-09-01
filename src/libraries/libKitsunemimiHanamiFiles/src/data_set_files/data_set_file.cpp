@@ -57,13 +57,14 @@ DataSetFile::~DataSetFile()
 
 /**
  * @brief initialize a new file with the already created header
+ *
+ * @param error reference for error-output
+ *
+ * @return true, if successful, else false
  */
 bool
-DataSetFile::initNewFile()
+DataSetFile::initNewFile(Kitsunemimi::ErrorContainer &error)
 {
-    // TODO: check if header are set
-    Kitsunemimi::ErrorContainer error;
-
     initHeader();
 
     // allocate storage
@@ -87,31 +88,29 @@ DataSetFile::initNewFile()
     // write dataset-header to file
     if(m_targetFile->writeDataIntoFile(&dataSetHeader, 0, sizeof(DataSetHeader), error) == false)
     {
-        LOG_ERROR(error);
-        // TODO: error-message
+        error.addMeesage("Failed to write data-set to disc");
         return false;
     }
 
     // write data to file
-    return updateHeader();
+    return updateHeader(error);
 }
 
 /**
  * @brief read complete file into memory
  *
+ * @param error reference for error-output
+ *
  * @return true, if successful, else false
  */
 bool
-DataSetFile::readFromFile()
+DataSetFile::readFromFile(Kitsunemimi::ErrorContainer &error)
 {
-    Kitsunemimi::ErrorContainer error;
-
     // create complete file
     Kitsunemimi::DataBuffer buffer;
     if(m_targetFile->readCompleteFile(buffer, error) == false)
     {
-        LOG_ERROR(error);
-        // TODO: error-message
+        error.addMeesage("Faile to read data of data-set from disc");
         return false;
     }
 
@@ -135,16 +134,16 @@ DataSetFile::readFromFile()
  * @param pos value-position, where to start to write to file
  * @param data values to write
  * @param numberOfValues number of values to write
+ * @param error reference for error-output
  *
  * @return true, if successful, else false
  */
 bool
 DataSetFile::addBlock(const uint64_t pos,
                       const float* data,
-                      const u_int64_t numberOfValues)
+                      const u_int64_t numberOfValues,
+                      Kitsunemimi::ErrorContainer &error)
 {
-    Kitsunemimi::ErrorContainer error;
-
     // check size to not write over the end of the file
     if(m_headerSize + ((pos + numberOfValues) * sizeof(float)) > m_totalFileSize)
     {
@@ -158,8 +157,7 @@ DataSetFile::addBlock(const uint64_t pos,
                                        numberOfValues * sizeof(float),
                                        error) == false)
     {
-        LOG_ERROR(error);
-        // TODO: error-message
+        error.addMeesage("Failed to write block into data-set");
         return false;
     }
 
@@ -170,34 +168,37 @@ DataSetFile::addBlock(const uint64_t pos,
  * @brief read file as data-set
  *
  * @param filePath path to file
+ * @param error reference for error-output
  *
  * @return pointer to file-handler, if successful, else nullptr
  */
 DataSetFile*
-readDataSetFile(const std::string &filePath)
+readDataSetFile(const std::string &filePath,
+                Kitsunemimi::ErrorContainer &error)
 {
-    Kitsunemimi::ErrorContainer error;
-
     // read header of file to identify type
     Kitsunemimi::BinaryFile* targetFile = new Kitsunemimi::BinaryFile(filePath);
     DataSetFile::DataSetHeader header;
     if(targetFile->readDataFromFile(&header, 0 , sizeof(DataSetFile::DataSetHeader), error) == false)
     {
-        //TODO: handle error
-        LOG_ERROR(error);
+        error.addMeesage("failed to read dataset-file");
+        return nullptr;
     }
 
     // create file-handling object based on the type from the header
     DataSetFile* file = nullptr;
-    if(header.type == DataSetFile::IMAGE_TYPE)
-    {
+    if(header.type == DataSetFile::IMAGE_TYPE) {
         file = new ImageDataSetFile(targetFile);
-        file->readFromFile();
     }
-    else if(header.type == DataSetFile::TABLE_TYPE)
-    {
+    else if(header.type == DataSetFile::TABLE_TYPE) {
         file = new TableDataSetFile(targetFile);
-        file->readFromFile();
+    }
+
+    if(file != nullptr
+            && file->readFromFile(error) == false)
+    {
+        delete file;
+        return nullptr;
     }
 
     return file;

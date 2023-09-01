@@ -29,12 +29,23 @@ class ImageDataSetFile
         : public DataSetFile
 {
 public:
+    struct ImageTypeHeader
+    {
+        uint64_t numberOfInputsX = 0;
+        uint64_t numberOfInputsY = 0;
+        uint64_t numberOfOutputs = 0;
+        uint64_t numberOfImages = 0;
+        float maxValue = 0.0f;
+        float avgValue = 0.0f;
+    };
+
     ImageDataSetFile(const std::string &filePath);
     ImageDataSetFile(Kitsunemimi::BinaryFile* file);
     ~ImageDataSetFile();
-    bool updateHeader();
-    float* getPayload(uint64_t &payloadSize,
-                      const std::string &columnName = "");
+    bool updateHeader(Kitsunemimi::ErrorContainer &error);
+    bool getPayload(Kitsunemimi::DataBuffer &result,
+                    Kitsunemimi::ErrorContainer &error,
+                    const std::string &columnName = "");
 
     ImageTypeHeader imageHeader;
 
