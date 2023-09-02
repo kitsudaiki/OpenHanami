@@ -34,7 +34,11 @@
 Blossom::Blossom(const std::string &comment, const bool requiresToken)
     : comment(comment),
       requiresAuthToken(requiresToken)
-{}
+{
+    if(requiresToken) {
+        errorCodes.push_back(UNAUTHORIZED_RTYPE);
+    }
+}
 
 /**
  * @brief destructor

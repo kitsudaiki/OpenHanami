@@ -30,6 +30,17 @@
 #include <libKitsunemimiCommon/methods/file_methods.h>
 #include <libKitsunemimiJson/json_item.h>
 
+std::map<HttpResponseTypes, std::string> responseMessage =
+{
+    {OK_RTYPE, "Successful response."},
+    {CONFLICT_RTYPE, "Resource with name or id already exist."},
+    {BAD_REQUEST_RTYPE, "Request has invalid syntax."},
+    {UNAUTHORIZED_RTYPE, "Information for authentication are missing or are invalid"},
+    {NOT_FOUND_RTYPE, "The requested resource was not found."},
+    {INTERNAL_SERVER_ERROR_RTYPE, "Something internally went wrong. "
+                                  "Check the server-internal logs for more information."},
+};
+
 /**
  * @brief createMdDocumentation
  * @param docu
@@ -60,6 +71,42 @@ createOpenApiDocumentation(std::string &docu)
     result.insert("paths", paths);
 
     docu = result.toString(true);
+}
+
+/**
+ * @brief addErrorCodes
+ * @param responses
+ * @param allowedErrorCodes
+ */
+void
+addResponsess(Kitsunemimi::JsonItem &responses,
+              Blossom* blossom)
+{
+    Kitsunemimi::JsonItem resp200;
+    resp200.insert("description", responseMessage[OK_RTYPE]);
+    Kitsunemimi::JsonItem content;
+    Kitsunemimi::JsonItem jsonApplication;
+    Kitsunemimi::JsonItem schema;
+    schema.insert("type", "object");
+    createBodyParams_openapi(schema, blossom->getOutputValidationMap(), false);
+    jsonApplication.insert("schema", schema);
+    content.insert("application/json", jsonApplication);
+    resp200.insert("content", content);
+    responses.insert("200", resp200);
+
+    for(const HttpResponseTypes code : blossom->errorCodes)
+    {
+        Kitsunemimi::JsonItem errorResponse;
+        errorResponse.insert("description", responseMessage[code]);
+        Kitsunemimi::JsonItem content;
+        Kitsunemimi::JsonItem jsonApplication;
+        Kitsunemimi::JsonItem schema;
+        schema.insert("type", "string");
+        jsonApplication.insert("schema", schema);
+        content.insert("text/plain", jsonApplication);
+        errorResponse.insert("content", content);
+        responses.insert(std::to_string(code), errorResponse);
+    }
 }
 
 /**
@@ -365,21 +412,10 @@ generateEndpointDocu_openapi(Kitsunemimi::JsonItem &result)
             }
             endpointType.insert("parameters", parameters);
 
-            {
-                Kitsunemimi::JsonItem responses;
-                Kitsunemimi::JsonItem resp200;
-                resp200.insert("description", "Successful response");
-                Kitsunemimi::JsonItem content;
-                Kitsunemimi::JsonItem jsonApplication;
-                Kitsunemimi::JsonItem schema;
-                schema.insert("type", "object");
-                createBodyParams_openapi(schema, blossom->getOutputValidationMap(), false);
-                jsonApplication.insert("schema", schema);
-                content.insert("application/json", jsonApplication);
-                resp200.insert("content", content);
-                responses.insert("200", resp200);
-                endpointType.insert("responses", responses);
-            }
+            // add response-codes
+            Kitsunemimi::JsonItem responses;
+            addResponsess(responses, blossom);
+            endpointType.insert("responses", responses);
 
             // add http-type
             if(type == GET_TYPE) {

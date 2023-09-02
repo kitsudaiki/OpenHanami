@@ -142,7 +142,7 @@ public:
 
     const std::string comment;
     const bool requiresAuthToken;
-    std::vector<uint32_t> errorCodes = {INTERNAL_SERVER_ERROR_RTYPE};
+    std::vector<HttpResponseTypes> errorCodes = {INTERNAL_SERVER_ERROR_RTYPE};
 
     const std::map<std::string, FieldDef>* getInputValidationMap() const;
     const std::map<std::string, FieldDef>* getOutputValidationMap() const;
