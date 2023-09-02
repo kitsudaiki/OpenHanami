@@ -23,7 +23,7 @@
 #include <hanami_sdk/task.h>
 #include <common/http_client.h>
 
-namespace HanamiAI
+namespace Hanami
 {
 
 /**
@@ -180,4 +180,4 @@ deleteTask(std::string &result,
     return true;
 }
 
-} // namespace HanamiAI
+} // namespace Hanami

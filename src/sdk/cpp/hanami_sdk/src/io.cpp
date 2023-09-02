@@ -26,7 +26,7 @@
 
 #include <../../hanami_messages/protobuffers/hanami_messages.proto3.pb.h>
 
-namespace HanamiAI
+namespace Hanami
 {
 
 /**
@@ -80,10 +80,10 @@ request(WebsocketClient* wsClient,
  * @brief train single value
  *
  * @param wsClient pointer to websocket-client for data-transfer
- * @param inputValues float-pointer to array with input-values for input-segment
- * @param numberOfInputValues number of input-values for input-segment
- * @param shouldValues float-pointer to array with should-values for output-segment
- * @param numberOfShouldValues number of should-values for output-segment
+ * @param inputValues float-pointer to array with input-values for input-cluster
+ * @param numberOfInputValues number of input-values for input-cluster
+ * @param shouldValues float-pointer to array with should-values for output-cluster
+ * @param numberOfShouldValues number of should-values for output-cluster
  * @param error reference for error-output
  *
  * @return true, if successful, else false
@@ -199,8 +199,8 @@ train(WebsocketClient* wsClient,
  * @brief request single value
  *
  * @param wsClient pointer to websocket-client for data-transfer
- * @param inputValues float-pointer to array with input-values for input-segment
- * @param numberOfInputValues number of input-values for input-segment
+ * @param inputValues float-pointer to array with input-values for input-cluster
+ * @param numberOfInputValues number of input-values for input-cluster
  * @param numberOfOutputValues reference for returning number of output-values
  * @param error reference for error-output
  *
@@ -278,4 +278,4 @@ request(WebsocketClient* wsClient,
     return result;
 }
 
-} // namespace HanamiAI
+} // namespace Hanami

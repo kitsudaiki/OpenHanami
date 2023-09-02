@@ -6,7 +6,7 @@
 ![Platform](https://img.shields.io/badge/platform-Linux--x64-lightgrey?style=flat-square)
 
 <p align="center">
-  <img src="assets/hanami-logo-with-text.png" width="750" height="890" />
+  <img src="assets/hanami-logo-with-text.png" width="500" height="594" />
 </p>
 
 # **IMPORTANT: This project is still an experimental prototype at the moment and NOT ready for productive usage.** 
@@ -20,7 +20,7 @@ Hanami is an AI-as-a-Service project, based on a concept created by myself. It i
 The actual prototype consists of:
 
 - partially implementation of an own concept for an artificial neuronal network. It has no fixed connections between the nodes, but creates connections over time while learning. Additionally it doesn't need a normalization of input-values and this way it can also handle unknown data as input. This should make it flexible and efficient. The current state is extremely experimental.
-- very experimental but working GPU-support with CUDA and OpenCL
+- very experimental but working GPU-support with CUDA ~~and OpenCL~~
 - multi-user- and multi-project-support, so multiple-users can share the same physical host
 - able to generate an OpenAPI-documentation from source-code
 - basic energy-optimization supporting the scheduling of threads of all components and changing the cpu-frequency based on workload
@@ -37,19 +37,19 @@ https://docs.hanami-ai.com
 
 - Installation-Guide to deploy HanamiAI on a kubernetes for testing:
 
-    https://docs.hanami-ai.com/How_To/1_installation/
+    [Installation on Kubernetes](https://docs.hanami-ai.com/How_To/1_installation/)
 
 - Automatic generated OpenAPI documentation
 
-    https://docs.hanami-ai.com/How_To/3_rest_api_documentation/
+    [OpenAPI docu](https://docs.hanami-ai.com/How_To/3_rest_api_documentation/)
 
 - To get a first impression there is a first example-workflow via the dashboard:
 
-    https://docs.hanami-ai.com/How_To/2_dashboard/
+    [Dashboard](https://docs.hanami-ai.com/How_To/2_dashboard/)
 
 - Many basic dependencies were created in context of this project. Here is an overview of all involved repositories:
 
-    https://docs.hanami-ai.com/other/1_dependencies/
+    [Dependency-Overview](https://docs.hanami-ai.com/other/1_dependencies/)
 
 
 

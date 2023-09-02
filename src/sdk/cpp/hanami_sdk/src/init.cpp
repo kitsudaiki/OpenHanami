@@ -23,7 +23,7 @@
 #include <hanami_sdk/init.h>
 #include <common/http_client.h>
 
-namespace HanamiAI
+namespace Hanami
 {
 
 /**
@@ -55,4 +55,4 @@ initClient(const std::string &host,
     return true;
 }
 
-} // namespace HanamiAI
+} // namespace Hanami

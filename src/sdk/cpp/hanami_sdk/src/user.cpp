@@ -24,7 +24,7 @@
 #include <common/http_client.h>
 #include <hanami_json/json_item.h>
 
-namespace HanamiAI
+namespace Hanami
 {
 
 /**
@@ -318,4 +318,4 @@ switchProject(std::string &result,
     return true;
 }
 
-} // namespace HanamiAI
+} // namespace Hanami

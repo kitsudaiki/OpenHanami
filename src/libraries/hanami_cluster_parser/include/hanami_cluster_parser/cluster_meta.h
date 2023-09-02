@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef KITSUNEMIMI_HANAMI_SEGMENT_PARSER_ITEM_H
-#define KITSUNEMIMI_HANAMI_SEGMENT_PARSER_ITEM_H
+#ifndef HANAMI_SEGMENT_PARSER_ITEM_H
+#define HANAMI_SEGMENT_PARSER_ITEM_H
 
 #include <string>
 #include <vector>
@@ -79,4 +79,4 @@ parseCluster(ClusterMeta* result,
 
 }
 
-#endif // KITSUNEMIMI_HANAMI_SEGMENT_PARSER_ITEM_H
+#endif // HANAMI_SEGMENT_PARSER_ITEM_H

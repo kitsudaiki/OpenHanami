@@ -50,7 +50,7 @@ ImageRequestTaskTest::runTest(Hanami::JsonItem &inputData,
 {
     // create new user
     std::string result;
-    if(HanamiAI::createTask(result,
+    if(Hanami::createTask(result,
                             inputData.get("generic_task_name").getString(),
                             "request",
                             inputData.get("cluster_uuid").getString(),
@@ -81,7 +81,7 @@ ImageRequestTaskTest::runTest(Hanami::JsonItem &inputData,
     do
     {
         usleep(1000000);
-        HanamiAI::getTask(result,
+        Hanami::getTask(result,
                           inputData.get("request_task_uuid").getString(),
                           inputData.get("cluster_uuid").getString(),
                           error);

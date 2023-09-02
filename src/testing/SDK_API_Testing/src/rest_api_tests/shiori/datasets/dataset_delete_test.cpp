@@ -52,7 +52,7 @@ DataSetDeleteTest::runTest(Hanami::JsonItem &inputData,
 
     // delete user by name
     std::string result;
-    if(HanamiAI::deleteDataset(result, uuid, error) != m_expectSuccess)
+    if(Hanami::deleteDataset(result, uuid, error) != m_expectSuccess)
     {
         return false;
     }

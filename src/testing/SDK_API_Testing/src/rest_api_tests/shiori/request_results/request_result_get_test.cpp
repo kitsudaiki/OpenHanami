@@ -47,7 +47,7 @@ RequestResultGetTest::runTest(Hanami::JsonItem &inputData,
 
     // get user by name
     std::string result;
-    if(HanamiAI::getRequestResult(result, m_uuid, error) != m_expectSuccess) {
+    if(Hanami::getRequestResult(result, m_uuid, error) != m_expectSuccess) {
         return false;
     }
 

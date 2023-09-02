@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef KITSUNEMIMI_SAKURA_HARDWARE_HOST_H
-#define KITSUNEMIMI_SAKURA_HARDWARE_HOST_H
+#ifndef HANAMI_HARDWARE_HOST_H
+#define HANAMI_HARDWARE_HOST_H
 
 #include <string>
 #include <iostream>
@@ -75,4 +75,4 @@ private:
 
 }
 
-#endif // KITSUNEMIMI_SAKURA_HARDWARE_HOST_H
+#endif // HANAMI_HARDWARE_HOST_H

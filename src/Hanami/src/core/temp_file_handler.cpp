@@ -213,8 +213,8 @@ TempFileHandler::moveData(const std::string &uuid,
         }
 
         if(Hanami::renameFileOrDir(targetFilePath + "/" + it->first,
-                                        targetLocation,
-                                        error) == false)
+                                   targetLocation,
+                                   error) == false)
         {
             error.addMeesage("Failed to move temp-file with uuid '"
                              + uuid

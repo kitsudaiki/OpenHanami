@@ -45,7 +45,7 @@ UserDeleteTest::runTest(Hanami::JsonItem &inputData,
     std::string result;
     if(m_nameOverride != "")
     {
-        if(HanamiAI::deleteUser(result,
+        if(Hanami::deleteUser(result,
                                 m_nameOverride,
                                 error) != m_expectSuccess)
         {
@@ -54,7 +54,7 @@ UserDeleteTest::runTest(Hanami::JsonItem &inputData,
     }
     else
     {
-        if(HanamiAI::deleteUser(result,
+        if(Hanami::deleteUser(result,
                                 inputData.get("user_id").getString(),
                                 error) != m_expectSuccess)
         {

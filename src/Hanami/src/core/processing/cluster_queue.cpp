@@ -32,23 +32,22 @@ ClusterQueue* ClusterQueue::instance = nullptr;
 ClusterQueue::ClusterQueue() {}
 
 /**
- * @brief add segment to queue
+ * @brief add cluster to queue
  *
- * @param newSegment segment to add to queue
+ * @param newSegment cluster to add to queue
  */
 void
 ClusterQueue::addClusterToQueue(Cluster* newSegment)
 {
     while(m_queue_lock.test_and_set(std::memory_order_acquire)) { asm(""); }
-
     m_clusterQueue.push_back(newSegment);
     m_queue_lock.clear(std::memory_order_release);
 }
 
 /**
- * @brief get next segment in the queue
+ * @brief get next cluster in the queue
  *
- * @return nullptr, if queue is empty, else next segment in queue
+ * @return nullptr, if queue is empty, else next cluster in queue
  */
 Cluster*
 ClusterQueue::getClusterFromQueue()

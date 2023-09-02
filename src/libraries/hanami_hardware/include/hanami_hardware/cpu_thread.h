@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef KITSUNEMIMI_SAKURA_HARDWARE_CPUTHREAD_H
-#define KITSUNEMIMI_SAKURA_HARDWARE_CPUTHREAD_H
+#ifndef HANAMI_HARDWARE_CPUTHREAD_H
+#define HANAMI_HARDWARE_CPUTHREAD_H
 
 #include <string>
 #include <iostream>
@@ -62,4 +62,4 @@ private:
 
 }
 
-#endif // KITSUNEMIMI_SAKURA_HARDWARE_CPUTHREAD_H
+#endif // HANAMI_HARDWARE_CPUTHREAD_H

@@ -68,7 +68,7 @@ DirectIoTest::trainTest()
     {
         std::cout<<"run: "<<i<<std::endl;
 
-        if(HanamiAI::train(TestThread::m_wsClient,
+        if(Hanami::train(TestThread::m_wsClient,
                            inputValues,
                            784,
                            shouldValues,
@@ -96,7 +96,7 @@ DirectIoTest::requestTest()
     }
 
     uint64_t numberOfValues = 0;
-    float* values = HanamiAI::request(TestThread::m_wsClient,
+    float* values = Hanami::request(TestThread::m_wsClient,
                                       inputValues,
                                       784,
                                       numberOfValues,

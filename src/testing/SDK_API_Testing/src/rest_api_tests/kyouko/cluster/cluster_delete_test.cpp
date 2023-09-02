@@ -41,7 +41,7 @@ ClusterDeleteTest::runTest(Hanami::JsonItem &inputData,
 {
     // delete cluster
     std::string result;
-    if(HanamiAI::deleteCluster(result,
+    if(Hanami::deleteCluster(result,
                               inputData.get("cluster_uuid").getString(),
                                error) != m_expectSuccess)
     {

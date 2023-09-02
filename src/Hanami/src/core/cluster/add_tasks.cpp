@@ -29,14 +29,18 @@
 #include <hanami_common/statemachine.h>
 
 /**
- * @brief create a train-task and add it to the task-queue
+ * @brief create image training task
  *
- * @param inputData input-data
- * @param numberOfInputsPerCycle number of inputs per cycle
- * @param numberOfOuputsPerCycle number of outputs per cycle
- * @param numberOfCycles number of cycles
+ * @param cluster reference to the cluster, which should run the task
+ * @param name name of the task
+ * @param userId id of the user, who started the task
+ * @param projectId id of the project, where the user is
+ * @param inputData pointer to the input training-data
+ * @param numberOfInputsPerCycle number of input-values per iteration
+ * @param numberOfOuputsPerCycle number of output-values per iteration
+ * @param numberOfCycles number of iterations
  *
- * @return task-uuid
+ * @return uuid of the new task
  */
 const std::string
 addImageTrainTask(Cluster &cluster,
@@ -74,14 +78,18 @@ addImageTrainTask(Cluster &cluster,
 }
 
 /**
- * @brief create a request-task and add it to the task-queue
+ * @brief create image request task
  *
- * @param inputData input-data
- * @param numberOfInputsPerCycle number of inputs per cycle
- * @param numberOfOuputsPerCycle number of outputs per cycle
- * @param numberOfCycles number of cycles
+ * @param cluster reference to the cluster, which should run the task
+ * @param name name of the task
+ * @param userId id of the user, who started the task
+ * @param projectId id of the project, where the user is
+ * @param inputData pointer to the input test-data
+ * @param numberOfInputsPerCycle number of input-values per iteration
+ * @param numberOfOuputsPerCycle number of output-values per iteration
+ * @param numberOfCycles number of iterations
  *
- * @return task-uuid
+ * @return uuid of the new task
  */
 const std::string
 addImageRequestTask(Cluster &cluster,
@@ -122,13 +130,19 @@ addImageRequestTask(Cluster &cluster,
 }
 
 /**
- * @brief create task to train table-data and add it to the task-queue
+ * @brief create table training task
  *
- * @param inputData input-data
- * @param numberOfInputs number of inputs per cycle
- * @param numberOfCycles number of cycles
+ * @param cluster reference to the cluster, which should run the task
+ * @param name name of the task
+ * @param userId id of the user, who started the task
+ * @param projectId id of the project, where the user is
+ * @param inputData pointer to the input training-data
+ * @param outputData pointer to the output training-data
+ * @param numberOfInputsPerCycle number of input-values per iteration
+ * @param numberOfOuputsPerCycle number of output-values per iteration
+ * @param numberOfCycles number of iterations
  *
- * @return task-uuid
+ * @return uuid of the new task
  */
 const std::string
 addTableTrainTask(Cluster &cluster,
@@ -168,13 +182,18 @@ addTableTrainTask(Cluster &cluster,
 }
 
 /**
- * @brief create task to request table-data and add it to the task-queue
+ * @brief create table request task
  *
- * @param inputData input-data
- * @param numberOfInputs number of inputs per cycle
- * @param numberOfCycles number of cycles
+ * @param cluster reference to the cluster, which should run the task
+ * @param name name of the task
+ * @param userId id of the user, who started the task
+ * @param projectId id of the project, where the user is
+ * @param inputData pointer to the input test-data
+ * @param numberOfInputsPerCycle number of input-values per iteration
+ * @param numberOfOuputsPerCycle number of output-values per iteration
+ * @param numberOfCycles number of iterations
  *
- * @return task-uuid
+ * @return uuid of the new task
  */
 const std::string
 addTableRequestTask(Cluster &cluster,
@@ -217,17 +236,18 @@ addTableRequestTask(Cluster &cluster,
 /**
  * @brief create task to create a checkpoint from a cluster and add it to the task-queue
  *
+ * @param cluster reference to the cluster, which should run the task
  * @param checkpointName name for the checkpoint
  * @param userId uuid of the user, where the checkpoint belongs to
  * @param projectId uuid of the project, where the checkpoint belongs to
  *
- * @return task-uuid
+ * @return uuid of the new task
  */
 const std::string
 addCheckpointSaveTask(Cluster &cluster,
-                           const std::string &checkpointName,
-                           const std::string &userId,
-                           const std::string &projectId)
+                      const std::string &checkpointName,
+                      const std::string &userId,
+                      const std::string &projectId)
 {
     // create new request-task
     Task newTask;
@@ -254,18 +274,20 @@ addCheckpointSaveTask(Cluster &cluster,
 /**
  * @brief create task to restore a cluster from a checkpoint and add it to the task-queue
  *
+ * @param cluster reference to the cluster, which should run the task
+ * @param name name of the new checkpoint
  * @param checkpointUuid uuid of the checkpoint
  * @param userId uuid of the user, where the checkpoint belongs to
  * @param projectId uuid of the project, where the checkpoint belongs to
  *
- * @return task-uuid
+ * @return uuid of the new task
  */
 const std::string
 addCheckpointRestoreTask(Cluster &cluster,
-                              const std::string &name,
-                              const std::string &checkpointInfo,
-                              const std::string &userId,
-                              const std::string &projectId)
+                         const std::string &name,
+                         const std::string &checkpointInfo,
+                         const std::string &userId,
+                         const std::string &projectId)
 {
     // create new request-task
     Task newTask;

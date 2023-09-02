@@ -20,12 +20,12 @@
  *      limitations under the License.
  */
 
-#ifndef KITSUNEMIMI_HANAMISDK_DATA_SET_H
-#define KITSUNEMIMI_HANAMISDK_DATA_SET_H
+#ifndef HANAMISDK_DATA_SET_H
+#define HANAMISDK_DATA_SET_H
 
 #include <hanami_common/logger.h>
 
-namespace HanamiAI
+namespace Hanami
 {
 
 bool uploadCsvData(std::string &result,
@@ -59,6 +59,6 @@ bool getDatasetProgress(std::string &result,
                    const std::string &dataUuid,
                    Hanami::ErrorContainer &error);
 
-} // namespace HanamiAI
+} // namespace Hanami
 
-#endif // KITSUNEMIMI_HANAMISDK_DATA_SET_H
+#endif // HANAMISDK_DATA_SET_H

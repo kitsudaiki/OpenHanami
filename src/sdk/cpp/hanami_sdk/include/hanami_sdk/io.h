@@ -30,7 +30,7 @@
 
 #include <hanami_common/logger.h>
 
-namespace HanamiAI
+namespace Hanami
 {
 class WebsocketClient;
 
@@ -57,6 +57,6 @@ float* request(WebsocketClient* wsClient,
                uint64_t &numberOfOutputValues,
                Hanami::ErrorContainer &error);
 
-} // namespace HanamiAI
+} // namespace Hanami
 
 #endif // IO_H

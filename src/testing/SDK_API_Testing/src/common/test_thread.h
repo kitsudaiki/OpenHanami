@@ -44,7 +44,7 @@ public:
     void addTest(TestStep* newStep);
 
     bool isFinished = false;
-    static HanamiAI::WebsocketClient* m_wsClient;
+    static Hanami::WebsocketClient* m_wsClient;
 
 protected:
     void run();

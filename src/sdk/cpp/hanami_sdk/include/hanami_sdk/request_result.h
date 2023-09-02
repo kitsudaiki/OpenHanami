@@ -20,12 +20,12 @@
  *      limitations under the License.
  */
 
-#ifndef KITSUNEMIMI_HANAMISDK_REQUEST_RESULT_H
-#define KITSUNEMIMI_HANAMISDK_REQUEST_RESULT_H
+#ifndef HANAMISDK_REQUEST_RESULT_H
+#define HANAMISDK_REQUEST_RESULT_H
 
 #include <hanami_common/logger.h>
 
-namespace HanamiAI
+namespace Hanami
 {
 
 bool getRequestResult(std::string &result,
@@ -39,6 +39,6 @@ bool deleteRequestResult(std::string &result,
                          const std::string &userId,
                          Hanami::ErrorContainer &error);
 
-} // namespace HanamiAI
+} // namespace Hanami
 
-#endif // KITSUNEMIMI_HANAMISDK_REQUEST_RESULT_H
+#endif // HANAMISDK_REQUEST_RESULT_H

@@ -23,7 +23,7 @@
 #include <hanami_sdk/project.h>
 #include <common/http_client.h>
 
-namespace HanamiAI
+namespace Hanami
 {
 
 /**
@@ -149,4 +149,4 @@ deleteProject(std::string &result,
     return true;
 }
 
-} // namespace HanamiAI
+} // namespace Hanami

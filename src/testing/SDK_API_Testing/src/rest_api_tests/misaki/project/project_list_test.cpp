@@ -41,7 +41,7 @@ ProjectListTest::runTest(Hanami::JsonItem &inputData,
 {
     // list all users
     std::string result;
-    if(HanamiAI::listProject(result, error) != m_expectSuccess) {
+    if(Hanami::listProject(result, error) != m_expectSuccess) {
         return false;
     }
 

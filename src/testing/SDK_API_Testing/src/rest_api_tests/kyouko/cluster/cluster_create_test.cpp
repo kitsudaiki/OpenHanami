@@ -41,7 +41,7 @@ ClusterCreateTest::runTest(Hanami::JsonItem &inputData,
 {
     // create new cluster
     std::string result;
-    if(HanamiAI::createCluster(result,
+    if(Hanami::createCluster(result,
                                inputData.get("cluster_name").getString(),
                                inputData.get("cluster_definition").getString(),
                                error) != m_expectSuccess)

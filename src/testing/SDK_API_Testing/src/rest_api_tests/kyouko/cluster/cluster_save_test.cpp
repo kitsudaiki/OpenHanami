@@ -42,7 +42,7 @@ ClusterSaveTest::runTest(Hanami::JsonItem &inputData,
 {
     // create new cluster
     std::string result;
-    if(HanamiAI::saveCluster(result,
+    if(Hanami::saveCluster(result,
                              inputData.get("cluster_uuid").getString(),
                              inputData.get("checkpoint_name").getString(),
                              error) != m_expectSuccess)
@@ -67,7 +67,7 @@ ClusterSaveTest::runTest(Hanami::JsonItem &inputData,
     {
         sleep(1);
 
-        HanamiAI::getTask(result,
+        Hanami::getTask(result,
                           inputData.get("checkpoint_uuid").getString(),
                           inputData.get("cluster_uuid").getString(),
                           error);

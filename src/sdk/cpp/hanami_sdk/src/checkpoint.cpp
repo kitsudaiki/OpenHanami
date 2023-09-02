@@ -23,7 +23,7 @@
 #include <hanami_sdk/checkpoint.h>
 #include <common/http_client.h>
 
-namespace HanamiAI
+namespace Hanami
 {
 
 /**
@@ -113,4 +113,4 @@ deleteCheckpoint(std::string &result,
     return true;
 }
 
-} // namespace HanamiAI
+} // namespace Hanami

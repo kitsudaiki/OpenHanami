@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef KITSUNEMIMI_SAKURA_LANG_RUNTIME_VALIDATION_H
-#define KITSUNEMIMI_SAKURA_LANG_RUNTIME_VALIDATION_H
+#ifndef HANAMI_LANG_RUNTIME_VALIDATION_H
+#define HANAMI_LANG_RUNTIME_VALIDATION_H
 
 #include <regex>
 
@@ -41,4 +41,4 @@ bool checkBlossomValues(const std::map<std::string, FieldDef> &defs,
 bool checkType(Hanami::DataItem* item,
                const FieldType fieldType);
 
-#endif // KITSUNEMIMI_SAKURA_LANG_RUNTIME_VALIDATION_H
+#endif // HANAMI_LANG_RUNTIME_VALIDATION_H

@@ -41,7 +41,7 @@ UserCreateTest::runTest(Hanami::JsonItem &inputData,
 {
     // create new user
     std::string result;
-    if(HanamiAI::createUser(result,
+    if(Hanami::createUser(result,
                             inputData.get("user_id").getString(),
                             inputData.get("user_name").getString(),
                             inputData.get("password").getString(),

@@ -31,7 +31,7 @@
 
 #include <../../../libraries/hanami_messages/protobuffers/hanami_messages.proto3.pb.h>
 
-namespace HanamiAI
+namespace Hanami
 {
 
 /**
@@ -211,7 +211,7 @@ sendFile(WebsocketClient* client,
 
     do
     {
-        // check the size for the last segment
+        // check the size for the last cluster
         segmentSize = 96 * 1024;
         if(dataSize - pos < segmentSize) {
             segmentSize = dataSize - pos;
@@ -226,7 +226,7 @@ sendFile(WebsocketClient* client,
             message.set_islast(true);
         }
 
-        // read segment of the local file
+        // read cluster of the local file
         if(sourceFile.readDataFromFile(&readBuffer[0], pos, segmentSize, error) == false)
         {
             success = false;
@@ -244,7 +244,7 @@ sendFile(WebsocketClient* client,
             return false;
         }
 
-        // send segment
+        // send cluster
         if(client->sendMessage(sendBuffer, msgSize, error) == false)
         {
             LOG_ERROR(error);
@@ -614,4 +614,4 @@ getDatasetProgress(std::string &result,
     return true;
 }
 
-} // namespace HanamiAI
+} // namespace Hanami

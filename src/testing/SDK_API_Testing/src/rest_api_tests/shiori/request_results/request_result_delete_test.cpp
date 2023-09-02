@@ -43,7 +43,7 @@ RequestResultDeleteTest::runTest(Hanami::JsonItem &inputData,
 
     // delete user by name
     std::string result;
-    if(HanamiAI::deleteRequestResult(result, uuid, error) != m_expectSuccess) {
+    if(Hanami::deleteRequestResult(result, uuid, error) != m_expectSuccess) {
         return false;
     }
 

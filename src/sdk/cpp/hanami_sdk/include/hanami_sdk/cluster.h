@@ -20,12 +20,12 @@
  *      limitations under the License.
  */
 
-#ifndef KITSUNEMIMI_HANAMISDK_CLUSTER_H
-#define KITSUNEMIMI_HANAMISDK_CLUSTER_H
+#ifndef HANAMISDK_CLUSTER_H
+#define HANAMISDK_CLUSTER_H
 
 #include <hanami_common/logger.h>
 
-namespace HanamiAI
+namespace Hanami
 {
 
 class WebsocketClient;
@@ -64,6 +64,6 @@ WebsocketClient* switchToDirectMode(std::string &result,
                                     const std::string &clusterUuid,
                                     Hanami::ErrorContainer &error);
 
-} // namespace HanamiAI
+} // namespace Hanami
 
-#endif // KITSUNEMIMI_HANAMISDK_CLUSTER_H
+#endif // HANAMISDK_CLUSTER_H

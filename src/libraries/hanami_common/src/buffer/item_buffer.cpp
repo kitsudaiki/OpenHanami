@@ -209,7 +209,7 @@ ItemBuffer::deleteItem(const uint64_t itemPos)
 }
 
 /**
- * @brief try to reuse a deleted buffer segment
+ * @brief try to reuse a deleted buffer cluster
  *
  * @return item-position in the buffer, else UNINIT_STATE_32 if no empty space in buffer exist
  */

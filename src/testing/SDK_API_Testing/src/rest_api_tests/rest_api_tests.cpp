@@ -86,7 +86,7 @@ initClient()
     const std::string user = GET_STRING_CONFIG("connection", "test_user", success);
     const std::string pw = GET_STRING_CONFIG("connection", "test_pw", success);
 
-    if(HanamiAI::initClient(host, port, user, pw, error) == false)
+    if(Hanami::initClient(host, port, user, pw, error) == false)
     {
         LOG_ERROR(error);
         return false;
@@ -103,7 +103,7 @@ deleteAllClusters()
 {
     std::string result = "";
     Hanami::ErrorContainer error;
-    HanamiAI::listCluster(result, error);
+    Hanami::listCluster(result, error);
 
     Hanami::JsonItem parsedList;
     parsedList.parse(result, error);
@@ -112,7 +112,7 @@ deleteAllClusters()
     for(uint64_t i = 0; i < body.size(); i++)
     {
         const std::string uuid = body.get(i).get(0).getString();
-        HanamiAI::deleteCluster(result, uuid, error);
+        Hanami::deleteCluster(result, uuid, error);
     }
 }
 
@@ -124,7 +124,7 @@ deleteAllProjects()
 {
     std::string result = "";
     Hanami::ErrorContainer error;
-    HanamiAI::listProject(result, error);
+    Hanami::listProject(result, error);
 
     Hanami::JsonItem parsedList;
     parsedList.parse(result, error);
@@ -133,7 +133,7 @@ deleteAllProjects()
     for(uint64_t i = 0; i < body.size(); i++)
     {
         const std::string uuid = body.get(i).get(0).getString();
-        HanamiAI::deleteProject(result, uuid, error);
+        Hanami::deleteProject(result, uuid, error);
     }
 }
 
@@ -145,7 +145,7 @@ deleteAllUsers()
 {
     std::string result = "";
     Hanami::ErrorContainer error;
-    HanamiAI::listUser(result, error);
+    Hanami::listUser(result, error);
 
     Hanami::JsonItem parsedList;
     parsedList.parse(result, error);
@@ -154,7 +154,7 @@ deleteAllUsers()
     for(uint64_t i = 0; i < body.size(); i++)
     {
         const std::string uuid = body.get(i).get(0).getString();
-        HanamiAI::deleteUser(result, uuid, error);
+        Hanami::deleteUser(result, uuid, error);
     }
 }
 

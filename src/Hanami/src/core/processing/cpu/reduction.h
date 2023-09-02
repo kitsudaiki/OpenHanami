@@ -42,9 +42,9 @@ reduceSynapses(Cluster &,
     {
         // delete if sections is empty
         foundEnd = true;
-        if(reduceSynapses(segment, segment.synapseSections[section.next]) == false)
+        if(reduceSynapses(cluster, cluster.synapseSections[section.next]) == false)
         {
-            segment.segmentData.deleteItem(section.next);
+            cluster.segmentData.deleteItem(section.next);
             section.next = UNINIT_STATE_32;
             foundEnd = false;
         }
@@ -74,7 +74,7 @@ reduceSynapses(Cluster &,
 }
 
 /**
- * @brief reduce all synapses within the segment and delete them, if the reach a deletion-border
+ * @brief reduce all synapses within the cluster and delete them, if the reach a deletion-border
  */
 inline void
 reduceNeurons(Cluster &)
@@ -83,21 +83,21 @@ reduceNeurons(Cluster &)
     Neuron* sourceNeuron = nullptr;
 
     for(uint32_t neuronId = 0;
-        neuronId < segment.segmentHeader->neuronSections.count;
+        neuronId < cluster.segmentHeader->neuronSections.count;
         neuronId++)
     {
-        //sourceNeuron = &segment.neurons[neuronId];
+        //sourceNeuron = &cluster.neurons[neuronId];
         if(sourceNeuron->targetSectionId == UNINIT_STATE_32) {
             continue;
         }
 
         // set start-values
-        section = &segment.synapseSections[sourceNeuron->targetSectionId];
+        section = &cluster.synapseSections[sourceNeuron->targetSectionId];
 
         // delete if sections is empty
-        if(reduceSynapses(segment, *section) == false)
+        if(reduceSynapses(cluster, *section) == false)
         {
-            segment.segmentData.deleteItem(sourceNeuron->targetSectionId);
+            cluster.segmentData.deleteItem(sourceNeuron->targetSectionId);
             sourceNeuron->targetSectionId = UNINIT_STATE_32;
         }
     }*/

@@ -41,7 +41,7 @@ CheckpointListTest::runTest(Hanami::JsonItem &inputData,
 {
     // list all data
     std::string result;
-    if(HanamiAI::listCheckpoint(result, error) != m_expectSuccess) {
+    if(Hanami::listCheckpoint(result, error) != m_expectSuccess) {
         return false;
     }
 

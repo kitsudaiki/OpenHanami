@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef KITSUNEMIMI_SAKURA_LANG_BLOSSOM_H
-#define KITSUNEMIMI_SAKURA_LANG_BLOSSOM_H
+#ifndef HANAMI_LANG_BLOSSOM_H
+#define HANAMI_LANG_BLOSSOM_H
 
 #include <common/structs.h>
 
@@ -184,4 +184,4 @@ private:
     void fillDefaultValues(Hanami::DataMap &values);
 };
 
-#endif // KITSUNEMIMI_SAKURA_LANG_BLOSSOM_H
+#endif // HANAMI_LANG_BLOSSOM_H

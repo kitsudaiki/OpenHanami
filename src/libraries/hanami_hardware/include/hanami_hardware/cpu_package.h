@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef KITSUNEMIMI_SAKURA_HARDWARE_CPUPACKAGE_H
-#define KITSUNEMIMI_SAKURA_HARDWARE_CPUPACKAGE_H
+#ifndef HANAMI_HARDWARE_CPUPACKAGE_H
+#define HANAMI_HARDWARE_CPUPACKAGE_H
 
 #include <string>
 #include <iostream>
@@ -59,4 +59,4 @@ public:
 
 }
 
-#endif // KITSUNEMIMI_SAKURA_HARDWARE_CPUPACKAGE_H
+#endif // HANAMI_HARDWARE_CPUPACKAGE_H

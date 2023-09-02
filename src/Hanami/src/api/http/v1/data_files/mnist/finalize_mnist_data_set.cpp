@@ -196,7 +196,7 @@ FinalizeMnistDataSet::convertMnistData(const std::string &filePath,
     // buffer for values to reduce write-access to file
     const uint64_t lineSize = (numberOfColumns * numberOfRows) * 10;
     const uint32_t segmentSize = lineSize * 10000;
-    std::vector<float> segment(segmentSize, 0.0f);
+    std::vector<float> cluster(segmentSize, 0.0f);
     uint64_t segmentPos = 0;
     uint64_t segmentCounter = 0;
 
@@ -218,13 +218,13 @@ FinalizeMnistDataSet::convertMnistData(const std::string &filePath,
         for(uint32_t i = 0; i < pictureSize; i++)
         {
             const uint32_t pos = pic * pictureSize + i + dataOffset;
-            segment[segmentPos] = static_cast<float>(dataBufferPtr[pos]);
+            cluster[segmentPos] = static_cast<float>(dataBufferPtr[pos]);
 
             // update values for metadata
-            averageVal += segment[segmentPos];
+            averageVal += cluster[segmentPos];
             valueCounter++;
-            if(maxVal < segment[segmentPos]) {
-                maxVal = segment[segmentPos];
+            if(maxVal < cluster[segmentPos]) {
+                maxVal = cluster[segmentPos];
             }
 
             segmentPos++;
@@ -233,16 +233,16 @@ FinalizeMnistDataSet::convertMnistData(const std::string &filePath,
         // label
         for(uint32_t i = 0; i < 10; i++)
         {
-            segment[segmentPos] = 0.0f;
+            cluster[segmentPos] = 0.0f;
             segmentPos++;
         }
         const uint32_t label = labelBufferPtr[pic + labelOffset];
-        segment[(segmentPos - 10) + label] = 1;
+        cluster[(segmentPos - 10) + label] = 1;
 
-        // write line to file, if segment is full
+        // write line to file, if cluster is full
         if(segmentPos == segmentSize)
         {
-            if(file.addBlock(segmentCounter * segmentSize, &segment[0], segmentSize, error) == false) {
+            if(file.addBlock(segmentCounter * segmentSize, &cluster[0], segmentSize, error) == false) {
                 return false;
             }
             segmentPos = 0;
@@ -250,10 +250,10 @@ FinalizeMnistDataSet::convertMnistData(const std::string &filePath,
         }
     }
 
-    // write last incomplete segment to file
+    // write last incomplete cluster to file
     if(segmentPos != 0)
     {
-        if(file.addBlock(segmentCounter * segmentSize, &segment[0], segmentPos, error) == false) {
+        if(file.addBlock(segmentCounter * segmentSize, &cluster[0], segmentPos, error) == false) {
             return false;
         }
     }

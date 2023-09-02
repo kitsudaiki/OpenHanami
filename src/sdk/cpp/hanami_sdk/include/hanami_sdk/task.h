@@ -20,12 +20,12 @@
  *      limitations under the License.
  */
 
-#ifndef KITSUNEMIMI_HANAMISDK_TASK_H
-#define KITSUNEMIMI_HANAMISDK_TASK_H
+#ifndef HANAMISDK_TASK_H
+#define HANAMISDK_TASK_H
 
 #include <hanami_common/logger.h>
 
-namespace HanamiAI
+namespace Hanami
 {
 
 bool createTask(std::string &result,
@@ -49,6 +49,6 @@ bool deleteTask(std::string &result,
                 const std::string &clusterUuid,
                 Hanami::ErrorContainer &error);
 
-} // namespace HanamiAI
+} // namespace Hanami
 
-#endif // KITSUNEMIMI_HANAMISDK_TASK_H
+#endif // HANAMISDK_TASK_H

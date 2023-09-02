@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef KITSUNEMIMI_HANAMISDK_HANAMI_REQUEST_H
-#define KITSUNEMIMI_HANAMISDK_HANAMI_REQUEST_H
+#ifndef HANAMISDK_HANAMI_REQUEST_H
+#define HANAMISDK_HANAMI_REQUEST_H
 
 #include <cstdlib>
 #include <iostream>
@@ -45,7 +45,7 @@ using tcp = net::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 
 #include <hanami_common/logger.h>
 
-namespace HanamiAI
+namespace Hanami
 {
 
 class HanamiRequest
@@ -115,6 +115,6 @@ private:
                    const std::string &key) const;
 };
 
-} // namespace HanamiAI
+} // namespace Hanami
 
-#endif // KITSUNEMIMI_HANAMISDK_HANAMI_REQUEST_H
+#endif // HANAMISDK_HANAMI_REQUEST_H

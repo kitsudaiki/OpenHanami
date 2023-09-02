@@ -155,7 +155,7 @@ backpropagateNeurons(const Cluster &cluster,
 }
 
 /**
- * @brief correct weight of synapses within a segment
+ * @brief correct weight of synapses within a cluster
  */
 void
 reweightCoreSegment(const Cluster &cluster)

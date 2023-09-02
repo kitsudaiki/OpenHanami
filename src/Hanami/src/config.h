@@ -31,6 +31,10 @@
 inline void
 registerConfigs(Hanami::ErrorContainer &error)
 {
+    // TODO: This here looks horrible and I don't know anymore, why I have done it like this.
+    //       This entire registration-process must be fixed in context of issue:
+    //       https://github.com/kitsudaiki/Hanami/issues/153
+
     // DEFAULT-section
     REGISTER_BOOL_CONFIG(   "DEFAULT",
                             "debug",

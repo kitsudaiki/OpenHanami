@@ -20,12 +20,12 @@
  *      limitations under the License.
  */
 
-#ifndef KITSUNEMIMI_HANAMISDK_INIT_H
-#define KITSUNEMIMI_HANAMISDK_INIT_H
+#ifndef HANAMISDK_INIT_H
+#define HANAMISDK_INIT_H
 
 #include <hanami_common/logger.h>
 
-namespace HanamiAI
+namespace Hanami
 {
 
 bool initClient(const std::string &host,
@@ -34,6 +34,6 @@ bool initClient(const std::string &host,
                 const std::string &password,
                 Hanami::ErrorContainer &error);
 
-} // namespace HanamiAI
+} // namespace Hanami
 
-#endif // KITSUNEMIMI_HANAMISDK_INIT_H
+#endif // HANAMISDK_INIT_H

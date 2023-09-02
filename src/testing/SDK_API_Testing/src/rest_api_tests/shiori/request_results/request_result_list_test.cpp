@@ -41,7 +41,7 @@ RequestResultListTest::runTest(Hanami::JsonItem &inputData,
 {
     // list all data
     std::string result;
-    if(HanamiAI::listRequestResult(result, error) != m_expectSuccess) {
+    if(Hanami::listRequestResult(result, error) != m_expectSuccess) {
         return false;
     }
 

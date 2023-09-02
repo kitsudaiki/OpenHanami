@@ -20,12 +20,12 @@
  *      limitations under the License.
  */
 
-#ifndef KITSUNEMIMI_HANAMISDK_CHECKPOINT_H
-#define KITSUNEMIMI_HANAMISDK_CHECKPOINT_H
+#ifndef HANAMISDK_CHECKPOINT_H
+#define HANAMISDK_CHECKPOINT_H
 
 #include <hanami_common/logger.h>
 
-namespace HanamiAI
+namespace Hanami
 {
 
 bool getCheckpoint(std::string &result,
@@ -39,6 +39,6 @@ bool deleteCheckpoint(std::string &result,
                     const std::string &checkpointUuid,
                     Hanami::ErrorContainer &error);
 
-} // namespace HanamiAI
+} // namespace Hanami
 
-#endif // KITSUNEMIMI_HANAMISDK_CHECKPOINT_H
+#endif // HANAMISDK_CHECKPOINT_H
