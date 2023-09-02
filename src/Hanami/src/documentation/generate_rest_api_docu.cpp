@@ -30,6 +30,17 @@
 #include <libKitsunemimiCommon/methods/file_methods.h>
 #include <libKitsunemimiJson/json_item.h>
 
+std::map<HttpResponseTypes, std::string> responseMessage =
+{
+    {OK_RTYPE, "Successful response."},
+    {CONFLICT_RTYPE, "Resource with name or id already exist."},
+    {BAD_REQUEST_RTYPE, "Request has invalid syntax."},
+    {UNAUTHORIZED_RTYPE, "Information for authentication are missing or are invalid"},
+    {NOT_FOUND_RTYPE, "The requested resource was not found."},
+    {INTERNAL_SERVER_ERROR_RTYPE, "Something internally went wrong. "
+                                  "Check the server-internal logs for more information."},
+};
+
 /**
  * @brief createMdDocumentation
  * @param docu
@@ -60,6 +71,42 @@ createOpenApiDocumentation(std::string &docu)
     result.insert("paths", paths);
 
     docu = result.toString(true);
+}
+
+/**
+ * @brief addErrorCodes
+ * @param responses
+ * @param allowedErrorCodes
+ */
+void
+addResponsess(Kitsunemimi::JsonItem &responses,
+              Blossom* blossom)
+{
+    Kitsunemimi::JsonItem resp200;
+    resp200.insert("description", responseMessage[OK_RTYPE]);
+    Kitsunemimi::JsonItem content;
+    Kitsunemimi::JsonItem jsonApplication;
+    Kitsunemimi::JsonItem schema;
+    schema.insert("type", "object");
+    createBodyParams_openapi(schema, blossom->getOutputValidationMap(), false);
+    jsonApplication.insert("schema", schema);
+    content.insert("application/json", jsonApplication);
+    resp200.insert("content", content);
+    responses.insert("200", resp200);
+
+    for(const HttpResponseTypes code : blossom->errorCodes)
+    {
+        Kitsunemimi::JsonItem errorResponse;
+        errorResponse.insert("description", responseMessage[code]);
+        Kitsunemimi::JsonItem content;
+        Kitsunemimi::JsonItem jsonApplication;
+        Kitsunemimi::JsonItem schema;
+        schema.insert("type", "string");
+        jsonApplication.insert("schema", schema);
+        content.insert("text/plain", jsonApplication);
+        errorResponse.insert("content", content);
+        responses.insert(std::to_string(code), errorResponse);
+    }
 }
 
 /**
@@ -100,8 +147,8 @@ createQueryParams_openapi(Kitsunemimi::JsonItem &parameters,
         const Kitsunemimi::DataItem* defaultVal = fieldDef.defaultVal;
         const Kitsunemimi::DataItem* matchVal = fieldDef.match;
         std::string regexVal = fieldDef.regex;
-        const long lowerBorder = fieldDef.lowerBorder;
-        const long upperBorder = fieldDef.upperBorder;
+        const long lowerLimit = fieldDef.lowerLimit;
+        const long upperLimit = fieldDef.upperLimit;
 
         Kitsunemimi::JsonItem param;
         param.insert("in", "query");
@@ -149,18 +196,18 @@ createQueryParams_openapi(Kitsunemimi::JsonItem &parameters,
         }
 
         // border
-        if(lowerBorder != 0
-                || upperBorder != 0)
+        if(lowerLimit != 0
+                || upperLimit != 0)
         {
             if(fieldType == SAKURA_INT_TYPE)
             {
-                schema.insert("minimum", std::to_string(lowerBorder));
-                schema.insert("maximum", std::to_string(upperBorder));
+                schema.insert("minimum", std::to_string(lowerLimit));
+                schema.insert("maximum", std::to_string(upperLimit));
             }
             if(fieldType == SAKURA_STRING_TYPE)
             {
-                schema.insert("minLength", std::to_string(lowerBorder));
-                schema.insert("maxLength", std::to_string(upperBorder));
+                schema.insert("minLength", std::to_string(lowerLimit));
+                schema.insert("maxLength", std::to_string(upperLimit));
             }
         }
 
@@ -205,8 +252,8 @@ createBodyParams_openapi(Kitsunemimi::JsonItem &schema,
         const Kitsunemimi::DataItem* defaultVal = fieldDef.defaultVal;
         const Kitsunemimi::DataItem* matchVal = fieldDef.match;
         std::string regexVal = fieldDef.regex;
-        const long lowerBorder = fieldDef.lowerBorder;
-        const long upperBorder = fieldDef.upperBorder;
+        const long lowerLimit = fieldDef.lowerLimit;
+        const long upperLimit = fieldDef.upperLimit;
 
         // type
         if(fieldType == SAKURA_MAP_TYPE) {
@@ -263,18 +310,18 @@ createBodyParams_openapi(Kitsunemimi::JsonItem &schema,
             }
 
             // border
-            if(lowerBorder != 0
-                    || upperBorder != 0)
+            if(lowerLimit != 0
+                    || upperLimit != 0)
             {
                 if(fieldType == SAKURA_INT_TYPE)
                 {
-                    temp.insert("minimum", std::to_string(lowerBorder));
-                    temp.insert("maximum", std::to_string(upperBorder));
+                    temp.insert("minimum", std::to_string(lowerLimit));
+                    temp.insert("maximum", std::to_string(upperLimit));
                 }
                 if(fieldType == SAKURA_STRING_TYPE)
                 {
-                    temp.insert("minLength", std::to_string(lowerBorder));
-                    temp.insert("maxLength", std::to_string(upperBorder));
+                    temp.insert("minLength", std::to_string(lowerLimit));
+                    temp.insert("maxLength", std::to_string(upperLimit));
                 }
             }
 
@@ -365,21 +412,10 @@ generateEndpointDocu_openapi(Kitsunemimi::JsonItem &result)
             }
             endpointType.insert("parameters", parameters);
 
-            {
-                Kitsunemimi::JsonItem responses;
-                Kitsunemimi::JsonItem resp200;
-                resp200.insert("description", "Successful response");
-                Kitsunemimi::JsonItem content;
-                Kitsunemimi::JsonItem jsonApplication;
-                Kitsunemimi::JsonItem schema;
-                schema.insert("type", "object");
-                createBodyParams_openapi(schema, blossom->getOutputValidationMap(), false);
-                jsonApplication.insert("schema", schema);
-                content.insert("application/json", jsonApplication);
-                resp200.insert("content", content);
-                responses.insert("200", resp200);
-                endpointType.insert("responses", responses);
-            }
+            // add response-codes
+            Kitsunemimi::JsonItem responses;
+            addResponsess(responses, blossom);
+            endpointType.insert("responses", responses);
 
             // add http-type
             if(type == GET_TYPE) {

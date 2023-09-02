@@ -38,32 +38,31 @@
 RenewToken::RenewToken()
     : Blossom("Renew a JWT-access-token for a specific user.")
 {
+    errorCodes.push_back(UNAUTHORIZED_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("project_id",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "ID of the project, which has to be used for the new token.");
-    assert(addFieldBorder("project_id", 4, 256));
-    assert(addFieldRegex("project_id", ID_REGEX));
+    registerInputField("project_id", SAKURA_STRING_TYPE)
+            .setComment("ID of the project, which has to be used for the new token.")
+            .setLimit(4, 256)
+            .setRegex(ID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("id",
-                        SAKURA_STRING_TYPE,
-                        "ID of the user.");
-    registerOutputField("name",
-                        SAKURA_STRING_TYPE,
-                        "Name of the user.");
-    registerOutputField("is_admin",
-                        SAKURA_BOOL_TYPE,
-                        "Set this to true to register the new user as admin.");
-    registerOutputField("token",
-                        SAKURA_STRING_TYPE,
+    registerOutputField("id", SAKURA_STRING_TYPE)
+            .setComment("ID of the user.");
+
+    registerOutputField("name", SAKURA_STRING_TYPE)
+            .setComment("Name of the user.");
+
+    registerOutputField("is_admin", SAKURA_BOOL_TYPE)
+            .setComment("Set this to true to register the new user as admin.");
+
+    registerOutputField("token", SAKURA_STRING_TYPE).setComment(
                         "New JWT-access-token for the user.");
 
     //----------------------------------------------------------------------------------------------
@@ -88,6 +87,16 @@ RenewToken::runTask(BlossomIO &blossomIO,
     if(UsersTable::getInstance()->getUser(userData, userContext.userId, error, false) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(userData.size() == 0)
+    {
+        status.errorMessage = "ACCESS DENIED!\n"
+                              "User or password is incorrect.";
+        error.addMeesage(status.errorMessage);
+        status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
 

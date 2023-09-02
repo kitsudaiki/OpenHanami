@@ -39,29 +39,26 @@
 CheckDataSet::CheckDataSet()
     : Blossom("Compare a list of values with a data-set to check correctness.")
 {
+    errorCodes.push_back(NOT_FOUND_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("result_uuid",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID of the data-set to compare to.");
-    assert(addFieldRegex("result_uuid", UUID_REGEX));
+    registerInputField("result_uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the data-set to compare to.")
+            .setRegex(UUID_REGEX);
 
-    registerInputField("data_set_uuid",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID of the data-set to compare to.");
-    assert(addFieldRegex("data_set_uuid", UUID_REGEX));
+    registerInputField("data_set_uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the data-set to compare to.")
+            .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("correctness",
-                        SAKURA_FLOAT_TYPE,
-                        "Correctness of the values compared to the data-set.");
+    registerOutputField("correctness", SAKURA_FLOAT_TYPE)
+            .setComment("Correctness of the values compared to the data-set.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -90,7 +87,14 @@ CheckDataSet::runTask(BlossomIO &blossomIO,
                                                            error,
                                                            true) == false)
     {
-        status.errorMessage = "Request-result with UUID '" + resultUuid + "' not found.";
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(result.size() == 0)
+    {
+        status.errorMessage = "Result with uuid '" + resultUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;

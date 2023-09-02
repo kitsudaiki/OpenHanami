@@ -28,40 +28,38 @@
 GetAuditLog::GetAuditLog()
     : Blossom("Get audit-log of a user.")
 {
+    errorCodes.push_back(UNAUTHORIZED_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------
-    registerInputField("user_id",
-                       SAKURA_STRING_TYPE,
-                       false,
-                       "ID of the user, whos entries are requested. Only an admin is allowed to "
-                       "set this values. Any other user get only its own log output based on the "
-                       "token-context.");
-    assert(addFieldBorder("user_id", 4, 256));
-    assert(addFieldRegex("user_id", ID_EXT_REGEX));
+    registerInputField("user_id", SAKURA_STRING_TYPE)
+            .setComment("ID of the user, whos entries are requested. Only an admin is allowed to "
+                        "set this values. Any other user get only its own log output based on the "
+                        "token-context.")
+            .setDefault(new Kitsunemimi::DataValue(""))
+            .setLimit(4, 256)
+            .setRegex(ID_EXT_REGEX);
 
-    registerInputField("page",
-                       SAKURA_INT_TYPE,
-                       true,
-                       "Page-number starting with 0 to access the logs. "
-                       "A page has up to 100 entries.");
-    assert(addFieldBorder("page", 0, 1000000000));
+    registerInputField("page", SAKURA_INT_TYPE)
+            .setComment("Page-number starting with 0 to access the logs. "
+                        "A page has up to 100 entries.")
+            .setLimit(0, 1000000000);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("header",
-                        SAKURA_ARRAY_TYPE,
-                        "Array with the namings all columns of the table.");
-    assert(addFieldMatch("header", new Kitsunemimi::DataValue("[\"timestamp\","
-                                                              "\"user_id\","
-                                                              "\"component\","
-                                                              "\"endpoint\","
-                                                              "\"request_type\"]")));
-    registerOutputField("body",
-                        SAKURA_ARRAY_TYPE,
-                        "Array with all rows of the table, which array arrays too.");
+    registerOutputField("header", SAKURA_ARRAY_TYPE)
+            .setComment("Array with the namings all columns of the table.")
+            .setMatch(new Kitsunemimi::DataValue("[\"timestamp\","
+                                                 "\"user_id\","
+                                                 "\"component\","
+                                                 "\"endpoint\","
+                                                 "\"request_type\"]"));
+
+    registerOutputField("body", SAKURA_ARRAY_TYPE)
+            .setComment("Array with all rows of the table, which array arrays too.");
 
     //----------------------------------------------------------------------------------------------
     //

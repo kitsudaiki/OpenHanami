@@ -23,8 +23,10 @@
 #include <api/endpoint_processing/blossom.h>
 
 #include <api/endpoint_processing/items/item_methods.h>
-#include <libKitsunemimiCommon/logger.h>
 #include <api/endpoint_processing/runtime_validation.h>
+#include <common.h>
+
+#include <libKitsunemimiCommon/logger.h>
 
 /**
  * @brief constructor
@@ -32,7 +34,11 @@
 Blossom::Blossom(const std::string &comment, const bool requiresToken)
     : comment(comment),
       requiresAuthToken(requiresToken)
-{}
+{
+    if(requiresToken) {
+        errorCodes.push_back(UNAUTHORIZED_RTYPE);
+    }
+}
 
 /**
  * @brief destructor
@@ -44,24 +50,16 @@ Blossom::~Blossom() {}
  *
  * @param name name of the filed to identifiy value
  * @param fieldType type for value-validation
- * @param required false, to make field optional, true to make it required
- * @param comment additional comment to describe the content of the field
  *
- * @return false, if already name already registered, else true
+ * @return reference to entry for further updates
  */
-bool
+FieldDef&
 Blossom::registerInputField(const std::string &name,
-                            const FieldType fieldType,
-                            const bool required,
-                            const std::string &comment)
+                            const FieldType fieldType)
 {
-    if(m_inputValidationMap.find(name) != m_inputValidationMap.end()) {
-        return false;
-    }
-
-    m_inputValidationMap.emplace(name, FieldDef(FieldDef::INPUT_TYPE, fieldType, required, comment));
-
-    return true;
+    errorCodes.push_back(BAD_REQUEST_RTYPE);
+    auto ret = m_inputValidationMap.try_emplace(name, FieldDef(FieldDef::INPUT_TYPE, fieldType));
+    return ret.first->second;
 }
 
 /**
@@ -69,142 +67,15 @@ Blossom::registerInputField(const std::string &name,
  *
  * @param name name of the filed to identifiy value
  * @param fieldType type for value-validation
- * @param comment additional comment to describe the content of the field
  *
- * @return false, if already name already registered, else true
+ * @return reference to entry for further updates
  */
-bool
+FieldDef&
 Blossom::registerOutputField(const std::string &name,
-                             const FieldType fieldType,
-                             const std::string &comment)
+                             const FieldType fieldType)
 {
-    if(m_outputValidationMap.find(name) != m_outputValidationMap.end()) {
-        return false;
-    }
-
-    m_outputValidationMap.emplace(name, FieldDef(FieldDef::OUTPUT_TYPE, fieldType, false, comment));
-
-    return true;
-}
-
-/**
- * @brief add match-value for a specific field for static expected outputs
- *
- * @param name name of the filed to identifiy value
- * @param match value, which should match in the validation
- *
- * @return false, if field doesn't exist, else true
- */
-bool
-Blossom::addFieldMatch(const std::string &name,
-                       Kitsunemimi::DataItem* match)
-{
-    auto defIt = m_outputValidationMap.find(name);
-    if(defIt != m_outputValidationMap.end())
-    {
-        // delete old entry
-        if(defIt->second.match != nullptr) {
-            delete defIt->second.match;
-        }
-
-        defIt->second.match = match;
-        return true;
-    }
-
-    return false;
-}
-
-/**
- * @brief add default-value for a specific field (only works if the field is NOT required)
- *
- * @param name name of the filed to identifiy value
- * @param defaultValue default-value for a field
- *
- * @return false, if field doesn't exist, else true
- */
-bool
-Blossom::addFieldDefault(const std::string &name,
-                         Kitsunemimi::DataItem* defaultValue)
-{
-    auto defIt = m_inputValidationMap.find(name);
-    if(defIt != m_inputValidationMap.end())
-    {
-        // make sure, that it is not required
-        if(defIt->second.isRequired) {
-            return false;
-        }
-
-        // delete old entry
-        if(defIt->second.defaultVal != nullptr) {
-            delete defIt->second.defaultVal;
-        }
-
-        defIt->second.defaultVal = defaultValue;
-        return true;
-    }
-
-    return false;
-}
-
-/**
- * @brief add regex to check string for special styling
- *
- * @param name name of the filed to identifiy value
- * @param regex regex-string
- *
- * @return false, if field doesn't exist or a string-type, else true
- */
-bool
-Blossom::addFieldRegex(const std::string &name,
-                       const std::string &regex)
-{
-    auto defIt = m_inputValidationMap.find(name);
-    if(defIt != m_inputValidationMap.end())
-    {
-        // make sure, that it is a string-type
-        if(defIt->second.fieldType != SAKURA_STRING_TYPE) {
-            return false;
-        }
-
-        defIt->second.regex = regex;
-
-        return true;
-    }
-
-    return false;
-}
-
-/**
- * @brief add lower and upper border for int and string values
- *
- * @param name name of the filed to identifiy value
- * @param lowerBorder lower value or length border
- * @param upperBorder upper value or length border
- *
- * @return false, if field doesn't exist or not matching requirements, else true
- */
-bool
-Blossom::addFieldBorder(const std::string &name,
-                        const long lowerBorder,
-                        const long upperBorder)
-{
-    auto defIt = m_inputValidationMap.find(name);
-    if(defIt != m_inputValidationMap.end())
-    {
-        // make sure, that it is an int- or string-type
-        if(defIt->second.fieldType != SAKURA_STRING_TYPE
-                && defIt->second.fieldType != SAKURA_INT_TYPE)
-        {
-            return false;
-        }
-
-        defIt->second.lowerBorder = lowerBorder;
-        defIt->second.upperBorder = upperBorder;
-
-        return true;
-    }
-
-    return false;
+    auto ret = m_outputValidationMap.try_emplace(name, FieldDef(FieldDef::OUTPUT_TYPE, fieldType));
+    return ret.first->second;
 }
 
 /**

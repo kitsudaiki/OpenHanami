@@ -121,7 +121,7 @@ private:
     const std::string createDeleteQuery(const std::vector<RequestCondition> &conditions);
     const std::string createCountQuery();
 
-    bool processGetResult(JsonItem &result,
+    void processGetResult(JsonItem &result,
                           TableItem &tableContent);
 };
 

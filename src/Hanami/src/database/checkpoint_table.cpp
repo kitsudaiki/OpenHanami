@@ -62,8 +62,8 @@ CheckpointTable::~CheckpointTable() {}
  */
 bool
 CheckpointTable::addCheckpoint(Kitsunemimi::JsonItem &data,
-                                         const UserContext &userContext,
-                                         Kitsunemimi::ErrorContainer &error)
+                               const UserContext &userContext,
+                               Kitsunemimi::ErrorContainer &error)
 {
     if(add(data, userContext, error) == false)
     {
@@ -87,10 +87,10 @@ CheckpointTable::addCheckpoint(Kitsunemimi::JsonItem &data,
  */
 bool
 CheckpointTable::getCheckpoint(Kitsunemimi::JsonItem &result,
-                                         const std::string &checkpointUuid,
-                                         const UserContext &userContext,
-                                         Kitsunemimi::ErrorContainer &error,
-                                         const bool showHiddenValues)
+                               const std::string &checkpointUuid,
+                               const UserContext &userContext,
+                               Kitsunemimi::ErrorContainer &error,
+                               const bool showHiddenValues)
 {
     // get user from db
     std::vector<RequestCondition> conditions;
@@ -120,8 +120,8 @@ CheckpointTable::getCheckpoint(Kitsunemimi::JsonItem &result,
  */
 bool
 CheckpointTable::getAllCheckpoint(Kitsunemimi::TableItem &result,
-                                            const UserContext &userContext,
-                                            Kitsunemimi::ErrorContainer &error)
+                                  const UserContext &userContext,
+                                  Kitsunemimi::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
     if(getAll(result, userContext, conditions, error) == false)
@@ -144,8 +144,8 @@ CheckpointTable::getAllCheckpoint(Kitsunemimi::TableItem &result,
  */
 bool
 CheckpointTable::deleteCheckpoint(const std::string &checkpointUuid,
-                                            const UserContext &userContext,
-                                            Kitsunemimi::ErrorContainer &error)
+                                  const UserContext &userContext,
+                                  Kitsunemimi::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", checkpointUuid);
@@ -171,8 +171,8 @@ CheckpointTable::deleteCheckpoint(const std::string &checkpointUuid,
  */
 bool
 CheckpointTable::setUploadFinish(const std::string &uuid,
-                                      const std::string &fileUuid,
-                                      Kitsunemimi::ErrorContainer &error)
+                                 const std::string &fileUuid,
+                                 Kitsunemimi::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", uuid);

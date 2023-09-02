@@ -33,17 +33,17 @@
 DeleteUser::DeleteUser()
     : Blossom("Delete a specific user from the database.")
 {
+    errorCodes.push_back(UNAUTHORIZED_RTYPE);
+    errorCodes.push_back(NOT_FOUND_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("id",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "ID of the user.");
-    // column in database is limited to 256 characters size
-    assert(addFieldBorder("id", 4, 256));
-    assert(addFieldRegex("id", ID_EXT_REGEX));
+    registerInputField("id", SAKURA_STRING_TYPE)
+            .setComment("ID of the user.")
+            .setLimit(4, 256)
+            .setRegex(ID_EXT_REGEX);
 
     //----------------------------------------------------------------------------------------------
     //
@@ -74,7 +74,14 @@ DeleteUser::runTask(BlossomIO &blossomIO,
     Kitsunemimi::JsonItem result;
     if(UsersTable::getInstance()->getUser(result, userId, error, false) == false)
     {
-        status.errorMessage = "User with id '" + userId + "' not found.";
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(result.size() == 0)
+    {
+        status.errorMessage = "User with id '" + userId + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;

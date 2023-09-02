@@ -28,15 +28,15 @@
 DeleteRequestResult::DeleteRequestResult()
     : Blossom("Delete a request-result from shiori.")
 {
+    errorCodes.push_back(NOT_FOUND_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("uuid",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID of the original request-task, which placed the result in shiori.");
-    assert(addFieldRegex("uuid", UUID_REGEX));
+    registerInputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the original request-task, which placed the result in shiori.")
+            .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     //
@@ -63,7 +63,14 @@ DeleteRequestResult::runTask(BlossomIO &blossomIO,
                                                            error,
                                                            false) == false)
     {
-        status.errorMessage = "Request-result with UUID '" + uuid + "' not found.";
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(result.size() == 0)
+    {
+        status.errorMessage = "Request-result with uuid '" + uuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;

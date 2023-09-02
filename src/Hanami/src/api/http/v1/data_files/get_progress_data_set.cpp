@@ -35,29 +35,28 @@
 GetProgressDataSet::GetProgressDataSet()
     : Blossom("Get upload progress of a specific data-set.")
 {
+    errorCodes.push_back(NOT_FOUND_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("uuid",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID of the dataset set to delete.");
-    assert(addFieldRegex("uuid", UUID_REGEX));
+    registerInputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the dataset set to delete.")
+            .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid",
-                        SAKURA_STRING_TYPE,
-                        "UUID of the data-set.");
-    registerOutputField("temp_files",
-                        SAKURA_MAP_TYPE,
-                        "Map with the uuids of the temporary files and it's upload progress");
-    registerOutputField("complete",
-                        SAKURA_BOOL_TYPE,
-                        "True, if all temporary files for complete.");
+    registerOutputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the data-set.");
+
+    registerOutputField("temp_files", SAKURA_MAP_TYPE)
+            .setComment("Map with the uuids of the temporary files and it's upload progress");
+
+    registerOutputField("complete", SAKURA_BOOL_TYPE)
+            .setComment("True, if all temporary files for complete.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -84,6 +83,15 @@ GetProgressDataSet::runTask(BlossomIO &blossomIO,
                                                true) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(databaseOutput.size() == 0)
+    {
+        status.errorMessage = "Data-set with uuid '" + dataUuid + "' not found";
+        status.statusCode = NOT_FOUND_RTYPE;
+        error.addMeesage(status.errorMessage);
         return false;
     }
 

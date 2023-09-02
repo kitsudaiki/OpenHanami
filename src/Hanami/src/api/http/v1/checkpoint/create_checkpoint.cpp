@@ -34,6 +34,8 @@
 CreateCheckpoint::CreateCheckpoint()
     : Blossom("Init new checkpoint of a cluster.")
 {
+    errorCodes.push_back(UNAUTHORIZED_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------
@@ -41,57 +43,42 @@ CreateCheckpoint::CreateCheckpoint()
     // HINT(kitsudaiki): Checkpoints are created internally asynchrous by the cluster and get the same
     //                   uuid as the task, where the checkpoint was created. Because of this the uuid
     //                   has to be predefined.
-    registerInputField("uuid",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID of the new checkpoint.");
-    assert(addFieldRegex("uuid", UUID_REGEX));
+    registerInputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the new checkpoint.")
+            .setRegex(UUID_REGEX);
 
-    registerInputField("name",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "Name of the new checkpoint.");
-    assert(addFieldBorder("name", 4, 256));
-    assert(addFieldRegex("name", NAME_REGEX));
+    registerInputField("name", SAKURA_STRING_TYPE)
+            .setComment("Name of the new checkpoint.")
+            .setLimit(4, 256)
+            .setRegex(NAME_REGEX);
 
-    registerInputField("user_id",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "ID of the user, who owns the checkpoint.");
-    assert(addFieldBorder("user_id", 4, 256));
-    assert(addFieldRegex("user_id", ID_EXT_REGEX));
+    registerInputField("user_id", SAKURA_STRING_TYPE)
+            .setComment("ID of the user, who owns the checkpoint.")
+            .setLimit(4, 256)
+            .setRegex(ID_EXT_REGEX);
 
-    registerInputField("project_id",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "ID of the project, where the checkpoint belongs to.");
-    assert(addFieldBorder("project_id", 4, 256));
-    assert(addFieldRegex("project_id", ID_REGEX));
+    registerInputField("project_id", SAKURA_STRING_TYPE)
+            .setComment("ID of the project, where the checkpoint belongs to.")
+            .setLimit(4, 256)
+            .setRegex(ID_REGEX);
 
-    registerInputField("header",
-                       SAKURA_MAP_TYPE,
-                       true,
-                       "Header of the file with information of the splits.");
+    registerInputField("header", SAKURA_MAP_TYPE)
+            .setComment("Header of the file with information of the splits.");
 
-    registerInputField("input_data_size",
-                       SAKURA_INT_TYPE,
-                       true,
-                       "Total size of the checkpoint in number of bytes.");
-    assert(addFieldBorder("input_data_size", 1, 10000000000));
+    registerInputField("input_data_size", SAKURA_INT_TYPE)
+            .setComment("Total size of the checkpoint in number of bytes.")
+            .setLimit(1, 10000000000);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid",
-                        SAKURA_STRING_TYPE,
-                        "UUID of the new checkpoint.");
-    registerOutputField("name",
-                        SAKURA_STRING_TYPE,
-                        "Name of the new checkpoint.");
-    registerOutputField("uuid_input_file",
-                        SAKURA_STRING_TYPE,
-                        "UUID to identify the file for data upload of the checkpoint.");
+    registerOutputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the new checkpoint.");
+    registerOutputField("name", SAKURA_STRING_TYPE)
+            .setComment("Name of the new checkpoint.");
+    registerOutputField("uuid_input_file", SAKURA_STRING_TYPE)
+            .setComment("UUID to identify the file for data upload of the checkpoint.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -103,9 +90,9 @@ CreateCheckpoint::CreateCheckpoint()
  */
 bool
 CreateCheckpoint::runTask(BlossomIO &blossomIO,
-                               const Kitsunemimi::DataMap &,
-                               BlossomStatus &status,
-                               Kitsunemimi::ErrorContainer &error)
+                          const Kitsunemimi::DataMap &,
+                          BlossomStatus &status,
+                          Kitsunemimi::ErrorContainer &error)
 {
     const std::string uuid = blossomIO.input.get("uuid").getString();
     const std::string name = blossomIO.input.get("name").getString();
@@ -160,8 +147,8 @@ CreateCheckpoint::runTask(BlossomIO &blossomIO,
 
     // add to database
     if(CheckpointTable::getInstance()->addCheckpoint(blossomIO.output,
-                                                               userContext,
-                                                               error) == false)
+                                                     userContext,
+                                                     error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;

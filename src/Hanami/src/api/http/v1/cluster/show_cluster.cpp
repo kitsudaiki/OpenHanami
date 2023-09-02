@@ -30,35 +30,34 @@
 ShowCluster::ShowCluster()
     : Blossom("Show information of a specific cluster.")
 {
+    errorCodes.push_back(NOT_FOUND_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("uuid",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "uuid of the cluster.");
-    assert(addFieldRegex("uuid", UUID_REGEX));
+    registerInputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("uuid of the cluster.")
+            .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid",
-                        SAKURA_STRING_TYPE,
-                        "UUID of the cluster.");
-    registerOutputField("name",
-                        SAKURA_STRING_TYPE,
-                        "Name of the cluster.");
-    registerOutputField("owner_id",
-                        SAKURA_STRING_TYPE,
-                        "ID of the user, who created the cluster.");
-    registerOutputField("project_id",
-                        SAKURA_STRING_TYPE,
-                        "ID of the project, where the cluster belongs to.");
-    registerOutputField("visibility",
-                        SAKURA_STRING_TYPE,
-                        "Visibility of the cluster (private, shared, public).");
+    registerOutputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the cluster.");
+
+    registerOutputField("name", SAKURA_STRING_TYPE)
+            .setComment("Name of the cluster.");
+
+    registerOutputField("owner_id", SAKURA_STRING_TYPE)
+            .setComment("ID of the user, who created the cluster.");
+
+    registerOutputField("project_id", SAKURA_STRING_TYPE)
+            .setComment("ID of the project, where the cluster belongs to.");
+
+    registerOutputField("visibility", SAKURA_STRING_TYPE)
+            .setComment("Visibility of the cluster (private, shared, public).");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -83,7 +82,14 @@ ShowCluster::runTask(BlossomIO &blossomIO,
                                                userContext,
                                                error) == false)
     {
-        status.errorMessage = "Cluster with UUID '" + clusterUuid + "' not found.";
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(blossomIO.output.size() == 0)
+    {
+        status.errorMessage = "Cluster with uuid '" + clusterUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;

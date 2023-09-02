@@ -37,6 +37,7 @@
                         "in": "query",
                         "name": "user_id",
                         "schema": {
+                            "default": "",
                             "maxLength": "256",
                             "minLength": "4",
                             "pattern": "[a-zA-Z][a-zA-Z_0-9@]*",
@@ -76,7 +77,37 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Get audit-log of a user.",
@@ -92,6 +123,7 @@
                         "description": "Requested component-name of the request. If this is not set, then only the token in itself will be validated.",
                         "in": "query",
                         "name": "component",
+                        "required": true,
                         "schema": {
                             "maxLength": "256",
                             "minLength": "4",
@@ -103,6 +135,7 @@
                         "description": "Requesed endpoint within the component.",
                         "in": "query",
                         "name": "endpoint",
+                        "required": true,
                         "schema": {
                             "maxLength": "256",
                             "minLength": "4",
@@ -114,6 +147,7 @@
                         "description": "Type of the HTTP-request as enum (DELETE = 1, GET = 2, HEAD = 3, POST = 4, PUT = 5).",
                         "in": "query",
                         "name": "http_type",
+                        "required": true,
                         "schema": {
                             "maximum": "5",
                             "minimum": "1",
@@ -166,7 +200,37 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Checks if a JWT-access-token of a user is valid or not and optional check if the user is allowed by its roles and the policy to access a specific endpoint.",
@@ -207,7 +271,47 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "404": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "The requested resource was not found."
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Delete a result-set from shiori.",
@@ -243,10 +347,6 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "header": {
-                                            "description": "Header-information of the checkpoint-file.",
-                                            "type": "object"
-                                        },
                                         "location": {
                                             "description": "File path on local storage.",
                                             "type": "string"
@@ -264,7 +364,47 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "404": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "The requested resource was not found."
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Get checkpoint of a cluster.",
@@ -363,7 +503,37 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Init new checkpoint of a cluster.",
@@ -437,7 +607,47 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "404": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "The requested resource was not found."
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Finish checkpoint of a cluster.",
@@ -491,7 +701,27 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "List checkpoints of all visible cluster.",
@@ -532,7 +762,47 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "404": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "The requested resource was not found."
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Delete a cluster.",
@@ -593,7 +863,47 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "404": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "The requested resource was not found."
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Show information of a specific cluster.",
@@ -670,7 +980,47 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "409": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Resource with name or id already exist."
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Create new cluster.",
@@ -724,7 +1074,27 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "List all visible clusters.",
@@ -787,7 +1157,47 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "404": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "The requested resource was not found."
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Load a checkpoint from shiori into an existing cluster and override the old data.",
@@ -856,7 +1266,47 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "404": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "The requested resource was not found."
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Save a cluster.",
@@ -932,7 +1382,47 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "404": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "The requested resource was not found."
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Set mode of the cluster.",
@@ -1022,7 +1512,37 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Init new csv-file data-set.",
@@ -1083,7 +1603,47 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "404": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "The requested resource was not found."
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Finalize uploaded data-set by checking completeness of the uploaded and convert into generic format.",
@@ -1124,7 +1684,47 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "404": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "The requested resource was not found."
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Delete a speific data-set.",
@@ -1205,7 +1805,47 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "404": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "The requested resource was not found."
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Get information of a specific data-set.",
@@ -1260,7 +1900,27 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "List all visible data-sets.",
@@ -1323,7 +1983,47 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "404": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "The requested resource was not found."
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Compare a list of values with a data-set to check correctness.",
@@ -1378,7 +2078,47 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "404": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "The requested resource was not found."
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Get upload progress of a specific data-set.",
@@ -1415,6 +2155,7 @@
                         "in": "query",
                         "name": "user_id",
                         "schema": {
+                            "default": "",
                             "maxLength": "256",
                             "minLength": "4",
                             "pattern": "[a-zA-Z][a-zA-Z_0-9@]*",
@@ -1455,7 +2196,37 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Get error-log of a user. Only an admin is allowed to request the error-log.",
@@ -1556,7 +2327,37 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Init new mnist-file data-set.",
@@ -1623,7 +2424,47 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "404": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "The requested resource was not found."
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Finalize uploaded data-set by checking completeness of the uploaded and convert into generic format.",
@@ -1660,7 +2501,27 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Request the power-measurement of the CPU",
@@ -1703,7 +2564,47 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "404": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "The requested resource was not found."
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Delete a specific user from the database.",
@@ -1758,7 +2659,47 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "404": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "The requested resource was not found."
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Show information of a specific registered user.",
@@ -1831,7 +2772,47 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "409": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Resource with name or id already exist."
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Register a new project within Misaki.",
@@ -1883,7 +2864,27 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Get information of all registered user as table.",
@@ -1924,7 +2925,47 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "404": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "The requested resource was not found."
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Delete a request-result from shiori.",
@@ -1992,7 +3033,47 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "404": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "The requested resource was not found."
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Get a specific request-result",
@@ -2046,7 +3127,27 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "List all visilbe request-results.",
@@ -2083,7 +3184,27 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Request the speed of the CPU",
@@ -2120,7 +3241,27 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Get all available information of the local system, like topology of the cpu-resources and speed of the cpu",
@@ -2171,7 +3312,47 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "404": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "The requested resource was not found."
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Delete a task or abort a task, if it is actually running.",
@@ -2242,7 +3423,47 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "404": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "The requested resource was not found."
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Show information of a specific task.",
@@ -2321,7 +3542,47 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "404": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "The requested resource was not found."
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Add new task to the task-queue of a cluster.",
@@ -2386,7 +3647,47 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "404": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "The requested resource was not found."
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "List all visible tasks of a specific cluster.",
@@ -2423,7 +3724,27 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Request the temperature-measurement of the CPU",
@@ -2460,7 +3781,27 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Get Mapping of the all threads of all components to its bound cpu-core",
@@ -2527,7 +3868,37 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Create a JWT-access-token for a specific user.",
@@ -2596,7 +3967,37 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Renew a JWT-access-token for a specific user.",
@@ -2639,7 +4040,47 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "404": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "The requested resource was not found."
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Delete a specific user from the database.",
@@ -2705,7 +4146,47 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "404": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "The requested resource was not found."
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Show information of a specific user.",
@@ -2801,7 +4282,47 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "409": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Resource with name or id already exist."
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Register a new user within Misaki.",
@@ -2855,7 +4376,27 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Get information of all registered users.",
@@ -2935,7 +4476,47 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "404": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "The requested resource was not found."
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Remove a project from a specific user",
@@ -2958,6 +4539,7 @@
                         "description": "ID of the user.",
                         "in": "query",
                         "name": "user_id",
+                        "required": true,
                         "schema": {
                             "maxLength": "256",
                             "minLength": "4",
@@ -2984,7 +4566,37 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "List all available projects of the user, who made the request.",
@@ -3081,7 +4693,57 @@
                                 }
                             }
                         },
-                        "description": "Successful response"
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "404": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "The requested resource was not found."
+                    },
+                    "409": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Resource with name or id already exist."
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
                 "summary": "Add a project to a specific user.",

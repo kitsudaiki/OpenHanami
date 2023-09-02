@@ -32,50 +32,49 @@
 GetDataSet::GetDataSet()
     : Blossom("Get information of a specific data-set.")
 {
+    errorCodes.push_back(NOT_FOUND_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("uuid",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID of the data-set set to delete.");
-    assert(addFieldRegex("uuid", UUID_REGEX));
+    registerInputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the data-set set to delete.")
+            .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid",
-                        SAKURA_STRING_TYPE,
-                        "UUID of the data-set.");
-    registerOutputField("name",
-                        SAKURA_STRING_TYPE,
-                        "Name of the data-set.");
-    registerOutputField("owner_id",
-                        SAKURA_STRING_TYPE,
-                        "ID of the user, who created the data-set.");
-    registerOutputField("project_id",
-                        SAKURA_STRING_TYPE,
-                        "ID of the project, where the data-set belongs to.");
-    registerOutputField("visibility",
-                        SAKURA_STRING_TYPE,
-                        "Visibility of the data-set (private, shared, public).");
-    registerOutputField("location",
-                        SAKURA_STRING_TYPE,
-                        "Local file-path of the data-set.");
-    registerOutputField("type",
-                        SAKURA_STRING_TYPE,
-                        "Type of the new set (csv or mnist)");
-    registerOutputField("inputs",
-                        SAKURA_INT_TYPE,
-                        "Number of inputs.");
-    registerOutputField("outputs",
-                        SAKURA_INT_TYPE,
-                        "Number of outputs.");
-    registerOutputField("lines",
-                        SAKURA_INT_TYPE,
-                        "Number of lines.");
+    registerOutputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the data-set.");
+
+    registerOutputField("name", SAKURA_STRING_TYPE)
+            .setComment("Name of the data-set.");
+
+    registerOutputField("owner_id", SAKURA_STRING_TYPE)
+            .setComment("ID of the user, who created the data-set.");
+
+    registerOutputField("project_id", SAKURA_STRING_TYPE)
+            .setComment("ID of the project, where the data-set belongs to.");
+
+    registerOutputField("visibility", SAKURA_STRING_TYPE)
+            .setComment("Visibility of the data-set (private, shared, public).");
+
+    registerOutputField("location", SAKURA_STRING_TYPE)
+            .setComment("Local file-path of the data-set.");
+
+    registerOutputField("type", SAKURA_STRING_TYPE)
+            .setComment("Type of the new set (csv or mnist)");
+
+    registerOutputField("inputs", SAKURA_INT_TYPE)
+            .setComment("Number of inputs.");
+
+    registerOutputField("outputs", SAKURA_INT_TYPE)
+            .setComment("Number of outputs.");
+
+    registerOutputField("lines", SAKURA_INT_TYPE)
+            .setComment("Number of lines.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -98,6 +97,15 @@ GetDataSet::runTask(BlossomIO &blossomIO,
                                                    error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(blossomIO.output.size() == 0)
+    {
+        status.errorMessage = "Data-set with uuid '" + dataUuid + "' not found";
+        status.statusCode = NOT_FOUND_RTYPE;
+        error.addMeesage(status.errorMessage);
         return false;
     }
 

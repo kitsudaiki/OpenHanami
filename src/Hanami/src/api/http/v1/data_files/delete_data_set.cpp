@@ -31,15 +31,15 @@
 DeleteDataSet::DeleteDataSet()
     : Blossom("Delete a speific data-set.")
 {
+    errorCodes.push_back(NOT_FOUND_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("uuid",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID of the data-set to delete.");
-    assert(addFieldRegex("uuid", UUID_REGEX));
+    registerInputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the data-set to delete.")
+            .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     //
@@ -67,6 +67,15 @@ DeleteDataSet::runTask(BlossomIO &blossomIO,
                                                true) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(result.size() == 0)
+    {
+        status.errorMessage = "Data-set with uuid '" + dataUuid + "' not found";
+        status.statusCode = NOT_FOUND_RTYPE;
+        error.addMeesage(status.errorMessage);
         return false;
     }
 

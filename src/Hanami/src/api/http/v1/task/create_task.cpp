@@ -23,6 +23,7 @@
 #include "create_task.h"
 #include <hanami_root.h>
 #include <database/data_set_table.h>
+#include <database/cluster_table.h>
 #include <core/cluster/cluster_handler.h>
 #include <core/cluster/cluster.h>
 #include <core/cluster/add_tasks.h>
@@ -35,45 +36,38 @@
 CreateTask::CreateTask()
     : Blossom("Add new task to the task-queue of a cluster.")
 {
+    errorCodes.push_back(NOT_FOUND_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("name",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "Name for the new task for better identification.");
-    assert(addFieldBorder("name", 4, 256));
-    assert(addFieldRegex("name", NAME_REGEX));
+    registerInputField("name", SAKURA_STRING_TYPE)
+            .setComment("Name for the new task for better identification.")
+            .setLimit(4, 256)
+            .setRegex(NAME_REGEX);
 
-    registerInputField("type",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID of the data-set with the input, which coming from shiori.");
-    assert(addFieldRegex("type", "^(train|request)$"));
+    registerInputField("type", SAKURA_STRING_TYPE)
+            .setComment("UUID of the data-set with the input, which coming from shiori.")
+            .setRegex("^(train|request)$");
 
-    registerInputField("cluster_uuid",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID of the cluster, which should process the request");
-    assert(addFieldRegex("cluster_uuid", UUID_REGEX));
+    registerInputField("cluster_uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the cluster, which should process the request")
+            .setRegex(UUID_REGEX);
 
-    registerInputField("data_set_uuid",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID of the data-set with the input, which coming from shiori.");
-    assert(addFieldRegex("data_set_uuid", UUID_REGEX));
+    registerInputField("data_set_uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the data-set with the input, which coming from shiori.")
+            .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid",
-                        SAKURA_STRING_TYPE,
-                        "UUID of the new created task.");
-    registerOutputField("name",
-                        SAKURA_STRING_TYPE,
-                        "Name of the new created task.");
+    registerOutputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the new created task.");
+
+    registerOutputField("name", SAKURA_STRING_TYPE)
+            .setComment("Name of the new created task.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -95,6 +89,26 @@ CreateTask::runTask(BlossomIO &blossomIO,
     const std::string taskType = blossomIO.input.get("type").getString();
     const UserContext userContext(context);
 
+    // check if user exist within the table
+    Kitsunemimi::JsonItem getResult;
+    if(ClusterTable::getInstance()->getCluster(getResult,
+                                               clusterUuid,
+                                               userContext,
+                                               error) == false)
+    {
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(getResult.size() == 0)
+    {
+        status.errorMessage = "Cluster with uuid '" + clusterUuid + "' not found";
+        status.statusCode = NOT_FOUND_RTYPE;
+        error.addMeesage(status.errorMessage);
+        return false;
+    }
+
     // get cluster
     Cluster* cluster = ClusterHandler::getInstance()->getCluster(clusterUuid);
     if(cluster == nullptr)
@@ -112,9 +126,16 @@ CreateTask::runTask(BlossomIO &blossomIO,
                                                    context,
                                                    error) == false)
     {
-        error.addMeesage("Failed to get information from shiori for UUID '" + dataSetUuid + "'");
-        // TODO: add status-error from response from shiori
-        status.statusCode = UNAUTHORIZED_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(dataSetInfo.size() == 0)
+    {
+        status.errorMessage = "Data-set with uuid '" + dataSetUuid + "' not found";
+        status.statusCode = NOT_FOUND_RTYPE;
+        error.addMeesage(status.errorMessage);
         return false;
     }
 

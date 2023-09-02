@@ -35,44 +35,41 @@
 RemoveProjectFromUser::RemoveProjectFromUser()
     : Blossom("Remove a project from a specific user")
 {
+    errorCodes.push_back(UNAUTHORIZED_RTYPE);
+    errorCodes.push_back(NOT_FOUND_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("id",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "ID of the user.");
-    assert(addFieldBorder("id", 4, 256));
-    assert(addFieldRegex("id", ID_EXT_REGEX));
+    registerInputField("id", SAKURA_STRING_TYPE)
+            .setComment("ID of the user.")
+            .setLimit(4, 256)
+            .setRegex(ID_EXT_REGEX);
 
-    registerInputField("project_id",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "ID of the project, which has to be removed from the user.");
-    // column in database is limited to 256 characters size
-    assert(addFieldBorder("project_id", 4, 256));
-    assert(addFieldRegex("project_id", ID_REGEX));
+    registerInputField("project_id", SAKURA_STRING_TYPE)
+            .setComment("ID of the project, which has to be removed from the user.")
+            .setLimit(4, 256)
+            .setRegex(ID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("id",
-                        SAKURA_STRING_TYPE,
-                        "ID of the user.");
-    registerOutputField("name",
-                        SAKURA_STRING_TYPE,
-                        "Name of the user.");
-    registerOutputField("is_admin",
-                        SAKURA_BOOL_TYPE,
-                        "True, if user is an admin.");
-    registerOutputField("creator_id",
-                        SAKURA_STRING_TYPE,
-                        "Id of the creator of the user.");
-    registerOutputField("projects",
-                        SAKURA_ARRAY_TYPE,
-                        "Json-array with all assigned projects "
+    registerOutputField("id", SAKURA_STRING_TYPE)
+            .setComment("ID of the user.");
+
+    registerOutputField("name", SAKURA_STRING_TYPE)
+            .setComment("Name of the user.");
+
+    registerOutputField("is_admin", SAKURA_BOOL_TYPE)
+            .setComment("True, if user is an admin.");
+
+    registerOutputField("creator_id", SAKURA_STRING_TYPE)
+            .setComment("Id of the creator of the user.");
+
+    registerOutputField("projects", SAKURA_ARRAY_TYPE)
+            .setComment("Json-array with all assigned projects "
                         "together with role and project-admin-status.");
 
     //----------------------------------------------------------------------------------------------
@@ -104,8 +101,16 @@ RemoveProjectFromUser::runTask(BlossomIO &blossomIO,
     Kitsunemimi::JsonItem getResult;
     if(UsersTable::getInstance()->getUser(getResult, userId, error, false) == false)
     {
-        status.errorMessage = "User with id '" + userId + "' not found.";
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(getResult.size() == 0)
+    {
+        status.errorMessage = "User with id '" + userId + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
+        error.addMeesage(status.errorMessage);
         return false;
     }
 

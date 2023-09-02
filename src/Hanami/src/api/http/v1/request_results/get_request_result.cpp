@@ -28,38 +28,37 @@
 GetRequestResult::GetRequestResult()
     : Blossom("Get a specific request-result")
 {
+    errorCodes.push_back(NOT_FOUND_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("uuid",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID of the original request-task, which placed the result in shiori.");
-    assert(addFieldRegex("uuid", UUID_REGEX));
+    registerInputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the original request-task, which placed the result in shiori.")
+            .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid",
-                        SAKURA_STRING_TYPE,
-                        "UUID of the request-result.");
-    registerOutputField("name",
-                        SAKURA_STRING_TYPE,
-                        "Name of the request-result.");
-    registerOutputField("owner_id",
-                        SAKURA_STRING_TYPE,
-                        "ID of the user, who created the request-result.");
-    registerOutputField("project_id",
-                        SAKURA_STRING_TYPE,
-                        "ID of the project, where the request-result belongs to.");
-    registerOutputField("visibility",
-                        SAKURA_STRING_TYPE,
-                        "Visibility of the request-result (private, shared, public).");
-    registerOutputField("data",
-                        SAKURA_ARRAY_TYPE,
-                        "Result of the request-task as json-array.");
+    registerOutputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the request-result.");
+
+    registerOutputField("name", SAKURA_STRING_TYPE)
+            .setComment("Name of the request-result.");
+
+    registerOutputField("owner_id", SAKURA_STRING_TYPE)
+            .setComment("ID of the user, who created the request-result.");
+
+    registerOutputField("project_id", SAKURA_STRING_TYPE)
+            .setComment("ID of the project, where the request-result belongs to.");
+
+    registerOutputField("visibility", SAKURA_STRING_TYPE)
+            .setComment("Visibility of the request-result (private, shared, public).");
+
+    registerOutputField("data", SAKURA_ARRAY_TYPE)
+            .setComment("Result of the request-task as json-array.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -85,7 +84,14 @@ GetRequestResult::runTask(BlossomIO &blossomIO,
                                                            error,
                                                            true) == false)
     {
-        status.errorMessage = "Request-result with UUID '" + uuid + "' not found.";
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(blossomIO.output.size() == 0)
+    {
+        status.errorMessage = "Request-result with uuid '" + uuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;

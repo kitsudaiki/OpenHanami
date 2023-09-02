@@ -31,9 +31,8 @@ PowerConsumption::PowerConsumption()
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("power",
-                        SAKURA_MAP_TYPE,
-                        "Json-object with power-measurements");
+    registerOutputField("power", SAKURA_MAP_TYPE)
+            .setComment("Json-object with power-measurements");
 
     //----------------------------------------------------------------------------------------------
     //

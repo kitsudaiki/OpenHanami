@@ -25,37 +25,35 @@
 #include <core/cluster/cluster_handler.h>
 #include <core/cluster/cluster.h>
 #include <core/cluster/add_tasks.h>
+#include <database/cluster_table.h>
 
 SaveCluster::SaveCluster()
     : Blossom("Save a cluster.")
 {
+    errorCodes.push_back(NOT_FOUND_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("name",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "Name for task, which is place in the task-queue and for the new checkpoint.");
-    assert(addFieldBorder("name", 4, 256));
-    assert(addFieldRegex("name", NAME_REGEX));
+    registerInputField("name", SAKURA_STRING_TYPE)
+            .setComment("Name for task, which is place in the task-queue and for the new checkpoint.")
+            .setLimit(4, 256)
+            .setRegex(NAME_REGEX);
 
-    registerInputField("cluster_uuid",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID of the cluster, which should be saved as new snapstho to shiori.");
-    assert(addFieldRegex("cluster_uuid", UUID_REGEX));
+    registerInputField("cluster_uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the cluster, which should be saved as new snapstho to shiori.")
+            .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid",
-                        SAKURA_STRING_TYPE,
-                        "UUID of the save-task in the queue of the cluster.");
-    registerOutputField("name",
-                        SAKURA_STRING_TYPE,
-                        "Name of the new created task and of the checkpoint, "
+    registerOutputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the save-task in the queue of the cluster.");
+
+    registerOutputField("name", SAKURA_STRING_TYPE)
+            .setComment("Name of the new created task and of the checkpoint, "
                         "which should be created by the task.");
 
     //----------------------------------------------------------------------------------------------
@@ -76,21 +74,42 @@ SaveCluster::runTask(BlossomIO &blossomIO,
     const std::string name = blossomIO.input.get("name").getString();
     const UserContext userContext(context);
 
-    // get cluster
-    Cluster* cluster = ClusterHandler::getInstance()->getCluster(clusterUuid);
-    if(cluster == nullptr)
+    // get data from table
+    Kitsunemimi::JsonItem clusterResult;
+    if(ClusterTable::getInstance()->getCluster(clusterResult,
+                                               clusterUuid,
+                                               userContext,
+                                               error) == false)
     {
-        status.errorMessage = "Cluster with UUID '" + clusterUuid + "'not found";
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(clusterResult.size() == 0)
+    {
+        status.errorMessage = "Cluster with uuid '" + clusterUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;
     }
 
+    // get cluster
+    Cluster* cluster = ClusterHandler::getInstance()->getCluster(clusterUuid);
+    if(cluster == nullptr)
+    {
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        error.addMeesage("Cluster with UUID '"
+                         + clusterUuid
+                         + "'not found even it exists within the database");
+        return false;
+    }
+
     // init request-task
     const std::string taskUuid = addCheckpointSaveTask(*cluster,
-                                                            name,
-                                                            userContext.userId,
-                                                            userContext.projectId);
+                                                       name,
+                                                       userContext.userId,
+                                                       userContext.projectId);
     blossomIO.output.insert("uuid", taskUuid);
     blossomIO.output.insert("name", name);
 

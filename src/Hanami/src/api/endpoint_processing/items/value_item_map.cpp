@@ -299,25 +299,6 @@ ValueItemMap::toString()
 }
 
 /**
- * @brief ValueItemMap::getValidationMap
- * @param validationMap
- */
-void
-ValueItemMap::getValidationMap(std::map<std::string, FieldDef> &validationMap) const
-{
-    for(const auto& [id, item] : m_valueMap)
-    {
-        FieldDef::IO_ValueType ioType = FieldDef::INPUT_TYPE;
-        if(item.type == ValueItem::OUTPUT_PAIR_TYPE) {
-            ioType = FieldDef::OUTPUT_TYPE;
-        }
-        const bool isReq = item.item->getString() == "?";
-
-        validationMap.emplace(id, FieldDef(ioType, item.fieldType, isReq, item.comment));
-    }
-}
-
-/**
  * @brief ValueItemMap::clearChildMap
  */
 void

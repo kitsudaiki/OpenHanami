@@ -35,41 +35,35 @@
 CreateProject::CreateProject()
     : Blossom("Register a new project within Misaki.")
 {
+    errorCodes.push_back(UNAUTHORIZED_RTYPE);
+    errorCodes.push_back(CONFLICT_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("id",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "ID of the new project.");
-    // column in database is limited to 256 characters size
-    assert(addFieldBorder("id", 4, 256));
-    assert(addFieldRegex("id", ID_REGEX));
+    registerInputField("id", SAKURA_STRING_TYPE)
+            .setComment("ID of the new project.")
+            .setLimit(4, 256)
+            .setRegex(ID_REGEX);
 
-    registerInputField("name",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "Name of the new project.");
-    // column in database is limited to 256 characters size
-    assert(addFieldBorder("name", 4, 256));
-    assert(addFieldRegex("name", NAME_REGEX));
+    registerInputField("name", SAKURA_STRING_TYPE)
+            .setComment("Name of the new project.")
+            .setLimit(4, 256)
+            .setRegex(NAME_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("id",
-                        SAKURA_STRING_TYPE,
-                        "ID of the new project.");
+    registerOutputField("id", SAKURA_STRING_TYPE)
+            .setComment("ID of the new project.");
 
-    registerOutputField("name",
-                        SAKURA_STRING_TYPE,
-                        "Name of the new project.");
+    registerOutputField("name", SAKURA_STRING_TYPE)
+            .setComment("Name of the new project.");
 
-    registerOutputField("creator_id",
-                        SAKURA_STRING_TYPE,
-                        "Id of the creator of the project.");
+    registerOutputField("creator_id", SAKURA_STRING_TYPE)
+            .setComment("Id of the creator of the project.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -99,10 +93,18 @@ CreateProject::runTask(BlossomIO &blossomIO,
 
     // check if user already exist within the table
     Kitsunemimi::JsonItem getResult;
-    if(ProjectsTable::getInstance()->getProject(getResult, projectId, error))
+    if(ProjectsTable::getInstance()->getProject(getResult, projectId, error) == false)
+    {
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(getResult.size() != 0)
     {
         status.errorMessage = "Project with id '" + projectId + "' already exist.";
         status.statusCode = CONFLICT_RTYPE;
+        error.addMeesage(status.errorMessage);
         return false;
     }
 

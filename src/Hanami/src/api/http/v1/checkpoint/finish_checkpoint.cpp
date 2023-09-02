@@ -35,46 +35,39 @@ FinalizeCheckpoint::FinalizeCheckpoint()
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("uuid",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "Name of the new set.");
-    assert(addFieldRegex("uuid", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
-                                 "[a-fA-F0-9]{12}"));
+    registerInputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("Name of the new set.")
+            .setRegex("[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
+                      "[a-fA-F0-9]{12}");
 
-    registerInputField("user_id",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "ID of the user, who belongs to the checkpoint.");
-    assert(addFieldBorder("user_id", 4, 256));
-    assert(addFieldRegex("user_id", "[a-zA-Z][a-zA-Z_0-9]*"));
+    registerInputField("user_id", SAKURA_STRING_TYPE)
+            .setComment("ID of the user, who belongs to the checkpoint.")
+            .setLimit(4, 256)
+            .setRegex("[a-zA-Z][a-zA-Z_0-9]*");
 
-    registerInputField("project_id",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "Name of the new set.");
+    registerInputField("project_id",  SAKURA_STRING_TYPE)
+            .setComment("Name of the new set.");
     // TODO: issue Hanami-Meta#17
     //assert(addFieldRegex("project_id", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
     //                                     "[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"));
 
-    registerInputField("uuid_input_file",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID to identify the file for date upload of input-data.");
-    assert(addFieldRegex("uuid_input_file", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
-                                            "[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"));
+    registerInputField("uuid_input_file", SAKURA_STRING_TYPE)
+            .setComment("UUID to identify the file for date upload of input-data.")
+            .setRegex("[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
+                      "[a-fA-F0-9]{4}-[a-fA-F0-9]{12}");
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid",
-                        SAKURA_STRING_TYPE,
-                        "UUID of the new set.");
+    registerOutputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the new set.");
 
     //----------------------------------------------------------------------------------------------
     //
     //----------------------------------------------------------------------------------------------
+
+    errorCodes.push_back(NOT_FOUND_RTYPE);
 }
 
 /**
@@ -82,9 +75,9 @@ FinalizeCheckpoint::FinalizeCheckpoint()
  */
 bool
 FinalizeCheckpoint::runTask(BlossomIO &blossomIO,
-                                 const Kitsunemimi::DataMap &,
-                                 BlossomStatus &status,
-                                 Kitsunemimi::ErrorContainer &error)
+                            const Kitsunemimi::DataMap &,
+                            BlossomStatus &status,
+                            Kitsunemimi::ErrorContainer &error)
 {
     const std::string uuid = blossomIO.input.get("uuid").getString();
     const std::string inputUuid = blossomIO.input.get("uuid_input_file").getString();
@@ -100,10 +93,10 @@ FinalizeCheckpoint::runTask(BlossomIO &blossomIO,
     // get location from database
     Kitsunemimi::JsonItem result;
     if(CheckpointTable::getInstance()->getCheckpoint(result,
-                                                               uuid,
-                                                               userContext,
-                                                               error,
-                                                               true) == false)
+                                                     uuid,
+                                                     userContext,
+                                                     error,
+                                                     true) == false)
     {
         status.errorMessage = "Checkpoint with uuid '" + uuid + "' not found.";
         status.statusCode = NOT_FOUND_RTYPE;

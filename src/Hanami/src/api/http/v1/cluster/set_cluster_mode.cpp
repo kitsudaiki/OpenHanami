@@ -30,39 +30,37 @@
 SetClusterMode::SetClusterMode()
     : Blossom("Set mode of the cluster.")
 {
+    errorCodes.push_back(NOT_FOUND_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("uuid",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID of the cluster.");
-    assert(addFieldRegex("uuid", UUID_REGEX));
-    registerInputField("connection_uuid",
-                       SAKURA_STRING_TYPE,
-                       false,
-                       "UUID of the connection for input and output.");
-    assert(addFieldRegex("connection_uuid", UUID_REGEX));
-    registerInputField("new_state",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "New desired state for the cluster.");
-    assert(addFieldRegex("new_state", "^(TASK|DIRECT)$"));
+    registerInputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the cluster.")
+            .setRegex(UUID_REGEX);
+
+    registerInputField("connection_uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the connection for input and output.")
+            .setRegex(UUID_REGEX)
+            .setDefault(nullptr);
+
+    registerInputField("new_state", SAKURA_STRING_TYPE)
+            .setComment("New desired state for the cluster.")
+            .setRegex("^(TASK|DIRECT)$");
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid",
-                        SAKURA_STRING_TYPE,
-                        "UUID of the cluster.");
-    registerOutputField("name",
-                        SAKURA_STRING_TYPE,
-                        "Name of the cluster.");
-    registerOutputField("new_state",
-                        SAKURA_STRING_TYPE,
-                        "New desired state for the cluster.");
+    registerOutputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the cluster.");
+
+    registerOutputField("name", SAKURA_STRING_TYPE)
+            .setComment("Name of the cluster.");
+
+    registerOutputField("new_state", SAKURA_STRING_TYPE)
+            .setComment("New desired state for the cluster.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -89,7 +87,14 @@ SetClusterMode::runTask(BlossomIO &blossomIO,
                                                userContext,
                                                error) == false)
     {
-        status.errorMessage = "Cluster with UUID '" + clusterUuid + "' not found.";
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(blossomIO.output.size() == 0)
+    {
+        status.errorMessage = "Cluster with uuid '" + clusterUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;
@@ -99,9 +104,10 @@ SetClusterMode::runTask(BlossomIO &blossomIO,
     Cluster* cluster = ClusterHandler::getInstance()->getCluster(clusterUuid);
     if(cluster == nullptr)
     {
-        status.errorMessage = "Cluster with UUID '" + clusterUuid + "'not found";
-        status.statusCode = NOT_FOUND_RTYPE;
-        error.addMeesage(status.errorMessage);
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        error.addMeesage("Cluster with UUID '"
+                         + clusterUuid
+                         + "'not found even it exists within the database");
         return false;
     }
 

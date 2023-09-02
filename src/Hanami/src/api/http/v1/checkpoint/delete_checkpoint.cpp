@@ -31,15 +31,15 @@
 DeleteCheckpoint::DeleteCheckpoint()
     : Blossom("Delete a result-set from shiori.")
 {
+    errorCodes.push_back(NOT_FOUND_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("uuid",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID of the checkpoint to delete.");
-    assert(addFieldRegex("uuid", UUID_REGEX));
+    registerInputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the checkpoint to delete.")
+            .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     //
@@ -51,22 +51,31 @@ DeleteCheckpoint::DeleteCheckpoint()
  */
 bool
 DeleteCheckpoint::runTask(BlossomIO &blossomIO,
-                               const Kitsunemimi::DataMap &context,
-                               BlossomStatus &status,
-                               Kitsunemimi::ErrorContainer &error)
+                          const Kitsunemimi::DataMap &context,
+                          BlossomStatus &status,
+                          Kitsunemimi::ErrorContainer &error)
 {
-    const std::string dataUuid = blossomIO.input.get("uuid").getString();
+    const std::string checkpointUuid = blossomIO.input.get("uuid").getString();
     const UserContext userContext(context);
 
     // get location from database
     Kitsunemimi::JsonItem result;
     if(CheckpointTable::getInstance()->getCheckpoint(result,
-                                                               dataUuid,
-                                                               userContext,
-                                                               error,
-                                                               true) == false)
+                                                     checkpointUuid,
+                                                     userContext,
+                                                     error,
+                                                     true) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(result.size() == 0)
+    {
+        status.errorMessage = "Chekckpoint with uuid '" + checkpointUuid + "' not found";
+        status.statusCode = NOT_FOUND_RTYPE;
+        error.addMeesage(status.errorMessage);
         return false;
     }
 
@@ -74,9 +83,9 @@ DeleteCheckpoint::runTask(BlossomIO &blossomIO,
     const std::string location = result.get("location").getString();
 
     // delete entry from db
-    if(CheckpointTable::getInstance()->deleteCheckpoint(dataUuid,
-                                                                  userContext,
-                                                                  error) == false)
+    if(CheckpointTable::getInstance()->deleteCheckpoint(checkpointUuid,
+                                                        userContext,
+                                                        error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;

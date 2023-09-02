@@ -33,31 +33,30 @@
 GetProject::GetProject()
     : Blossom("Show information of a specific registered user.")
 {
+    errorCodes.push_back(UNAUTHORIZED_RTYPE);
+    errorCodes.push_back(NOT_FOUND_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("id",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "Id of the user.");
-    // column in database is limited to 256 characters size
-    assert(addFieldBorder("id", 4, 256));
-    assert(addFieldRegex("id", ID_REGEX));
+    registerInputField("id", SAKURA_STRING_TYPE)
+            .setComment("Id of the user.")
+            .setLimit(4, 256)
+            .setRegex(ID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("id",
-                        SAKURA_STRING_TYPE,
-                        "ID of the new user.");
-    registerOutputField("name",
-                        SAKURA_STRING_TYPE,
-                        "Name of the new user.");
-    registerOutputField("creator_id",
-                        SAKURA_STRING_TYPE,
-                        "Id of the creator of the user.");
+    registerOutputField("id", SAKURA_STRING_TYPE)
+            .setComment("ID of the new user.");
+
+    registerOutputField("name", SAKURA_STRING_TYPE)
+            .setComment("Name of the new user.");
+
+    registerOutputField("creator_id", SAKURA_STRING_TYPE)
+            .setComment("Id of the creator of the user.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -86,8 +85,16 @@ GetProject::runTask(BlossomIO &blossomIO,
     // get data from table
     if(ProjectsTable::getInstance()->getProject(blossomIO.output, projectId, error) == false)
     {
-        status.errorMessage = "Project with id '" + projectId + "' not found.";
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(blossomIO.output.size() == 0)
+    {
+        status.errorMessage = "Project with id '" + projectId + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
+        error.addMeesage(status.errorMessage);
         return false;
     }
 

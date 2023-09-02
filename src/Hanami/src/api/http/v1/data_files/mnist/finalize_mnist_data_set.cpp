@@ -38,33 +38,30 @@ FinalizeMnistDataSet::FinalizeMnistDataSet()
     : Blossom("Finalize uploaded data-set by checking completeness of the "
               "uploaded and convert into generic format.")
 {
+    errorCodes.push_back(NOT_FOUND_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("uuid",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID of the new data-set.");
-    assert(addFieldRegex("uuid", UUID_REGEX));
-    registerInputField("uuid_input_file",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID to identify the file for date upload of input-data.");
-    assert(addFieldRegex("uuid_input_file", UUID_REGEX));
-    registerInputField("uuid_label_file",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID to identify the file for date upload of label-data.");
-    assert(addFieldRegex("uuid_label_file", UUID_REGEX));
+    registerInputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the new data-set.")
+            .setRegex(UUID_REGEX);
+
+    registerInputField("uuid_input_file", SAKURA_STRING_TYPE)
+            .setComment("UUID to identify the file for date upload of input-data.")
+            .setRegex(UUID_REGEX);
+
+    registerInputField("uuid_label_file", SAKURA_STRING_TYPE)
+            .setComment("UUID to identify the file for date upload of label-data.")
+            .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid",
-                        SAKURA_STRING_TYPE,
-                        "UUID of the new data-set.");
+    registerOutputField("uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the new data-set.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -89,8 +86,16 @@ FinalizeMnistDataSet::runTask(BlossomIO &blossomIO,
     Kitsunemimi::JsonItem result;
     if(DataSetTable::getInstance()->getDataSet(result, uuid, userContext, error, true) == false)
     {
-        status.errorMessage = "Data with uuid '" + uuid + "' not found.";
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(result.size() == 0)
+    {
+        status.errorMessage = "Data-set with uuid '" + uuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
+        error.addMeesage(status.errorMessage);
         return false;
     }
 

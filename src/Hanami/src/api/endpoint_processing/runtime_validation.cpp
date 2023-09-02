@@ -106,27 +106,27 @@ checkBlossomValues(const std::map<std::string, FieldDef> &defs,
             }
 
             // check value border
-            if(field.upperBorder != 0
-                    || field.lowerBorder != 0)
+            if(field.upperLimit != 0
+                    || field.lowerLimit != 0)
             {
                 if(item->isIntValue())
                 {
                     const long value = item->toValue()->getLong();
-                    if(value < field.lowerBorder)
+                    if(value < field.lowerLimit)
                     {
                         errorMessage = "Given item '"
                                        + name
                                        + "' is smaller than "
-                                       + std::to_string(field.lowerBorder);
+                                       + std::to_string(field.lowerLimit);
                         return false;
                     }
 
-                    if(value > field.upperBorder)
+                    if(value > field.upperLimit)
                     {
                         errorMessage = "Given item '"
                                        + name
                                        + "' is bigger than "
-                                       + std::to_string(field.upperBorder);
+                                       + std::to_string(field.upperLimit);
                         return false;
                     }
                 }
@@ -134,22 +134,22 @@ checkBlossomValues(const std::map<std::string, FieldDef> &defs,
                 if(item->isStringValue())
                 {
                     const long length = item->toValue()->getString().size();
-                    if(length < field.lowerBorder)
+                    if(length < field.lowerLimit)
                     {
                         errorMessage = "Given item '"
                                        + name
                                        + "' is shorter than "
-                                       + std::to_string(field.lowerBorder)
+                                       + std::to_string(field.lowerLimit)
                                        + " characters";
                         return false;
                     }
 
-                    if(length > field.upperBorder)
+                    if(length > field.upperLimit)
                     {
                         errorMessage = "Given item '"
                                        + name
                                        + "' is longer than "
-                                       + std::to_string(field.upperBorder)
+                                       + std::to_string(field.upperLimit)
                                        + " characters";
                         return false;
                     }

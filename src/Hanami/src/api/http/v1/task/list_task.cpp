@@ -24,38 +24,37 @@
 
 #include <core/cluster/cluster_handler.h>
 #include <core/cluster/cluster.h>
+#include <database/cluster_table.h>
 #include <hanami_root.h>
 
 ListTask::ListTask()
     : Blossom("List all visible tasks of a specific cluster.")
 {
+    errorCodes.push_back(NOT_FOUND_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("cluster_uuid",
-                       SAKURA_STRING_TYPE,
-                       true,
-                       "UUID of the cluster, whos tasks should be listed");
-    assert(addFieldRegex("cluster_uuid", UUID_REGEX));
+    registerInputField("cluster_uuid", SAKURA_STRING_TYPE)
+            .setComment("UUID of the cluster, whos tasks should be listed")
+            .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("header",
-                        SAKURA_ARRAY_TYPE,
-                        "Array with the namings all columns of the table.");
-    assert(addFieldMatch("header", new Kitsunemimi::DataValue("[\"uuid\","
-                                                              "\"state\","
-                                                              "\"percentage\","
-                                                              "\"queued\","
-                                                              "\"start\","
-                                                              "\"end\"]")));
+    registerOutputField("header", SAKURA_ARRAY_TYPE)
+            .setComment("Array with the namings all columns of the table.")
+            .setMatch(new Kitsunemimi::DataValue("[\"uuid\","
+                                                 "\"state\","
+                                                 "\"percentage\","
+                                                 "\"queued\","
+                                                 "\"start\","
+                                                 "\"end\"]"));
 
-    registerOutputField("body",
-                        SAKURA_ARRAY_TYPE,
-                        "Array with all rows of the table, which array arrays too.");
+    registerOutputField("body", SAKURA_ARRAY_TYPE)
+            .setComment("Array with all rows of the table, which array arrays too.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -73,6 +72,26 @@ ListTask::runTask(BlossomIO &blossomIO,
 {
     const UserContext userContext(context);
     const std::string clusterUuid = blossomIO.input.get("cluster_uuid").getString();
+
+    // check if user exist within the table
+    Kitsunemimi::JsonItem getResult;
+    if(ClusterTable::getInstance()->getCluster(getResult,
+                                               clusterUuid,
+                                               userContext,
+                                               error) == false)
+    {
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(getResult.size() == 0)
+    {
+        status.errorMessage = "Cluster with uuid '" + clusterUuid + "' not found";
+        status.statusCode = NOT_FOUND_RTYPE;
+        error.addMeesage(status.errorMessage);
+        return false;
+    }
 
     // get cluster
     Cluster* cluster = ClusterHandler::getInstance()->getCluster(clusterUuid);
