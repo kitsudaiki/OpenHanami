@@ -85,7 +85,14 @@ CheckDataSet::runTask(BlossomIO &blossomIO,
                                                            error,
                                                            true) == false)
     {
-        status.errorMessage = "Request-result with UUID '" + resultUuid + "' not found.";
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(result.size() == 0)
+    {
+        status.errorMessage = "Result with uuid '" + resultUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;

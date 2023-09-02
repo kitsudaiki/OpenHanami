@@ -24,6 +24,7 @@
 
 #include <core/cluster/cluster_handler.h>
 #include <core/cluster/cluster.h>
+#include <database/cluster_table.h>
 #include <hanami_root.h>
 
 DeleteTask::DeleteTask()
@@ -58,6 +59,26 @@ DeleteTask::runTask(BlossomIO &blossomIO,
     const UserContext userContext(context);
     const std::string taskUuid = blossomIO.input.get("uuid").getString();
     const std::string clusterUuid = blossomIO.input.get("cluster_uuid").getString();
+
+    // check if user exist within the table
+    Kitsunemimi::JsonItem getResult;
+    if(ClusterTable::getInstance()->getCluster(getResult,
+                                               clusterUuid,
+                                               userContext,
+                                               error) == false)
+    {
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(getResult.size() == 0)
+    {
+        status.errorMessage = "Cluster with uuid '" + clusterUuid + "' not found";
+        status.statusCode = NOT_FOUND_RTYPE;
+        error.addMeesage(status.errorMessage);
+        return false;
+    }
 
     // get cluster
     Cluster* cluster = ClusterHandler::getInstance()->getCluster(clusterUuid);

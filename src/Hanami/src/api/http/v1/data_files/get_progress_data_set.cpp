@@ -84,6 +84,15 @@ GetProgressDataSet::runTask(BlossomIO &blossomIO,
         return false;
     }
 
+    // handle not found
+    if(databaseOutput.size() == 0)
+    {
+        status.errorMessage = "Data-set with uuid '" + dataUuid + "' not found";
+        status.statusCode = NOT_FOUND_RTYPE;
+        error.addMeesage(status.errorMessage);
+        return false;
+    }
+
     // add uuid
     blossomIO.output.insert("uuid", databaseOutput.get("uuid"));
 

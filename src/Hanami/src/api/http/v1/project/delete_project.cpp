@@ -70,7 +70,14 @@ DeleteProject::runTask(BlossomIO &blossomIO,
     Kitsunemimi::JsonItem result;
     if(ProjectsTable::getInstance()->getProject(result, projectId, error) == false)
     {
-        status.errorMessage = "Project with id '" + projectId + "' not found.";
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(result.size() == 0)
+    {
+        status.errorMessage = "Project with id '" + projectId + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;

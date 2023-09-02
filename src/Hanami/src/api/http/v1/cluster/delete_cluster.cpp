@@ -60,9 +60,19 @@ DeleteCluster::runTask(BlossomIO &blossomIO,
 
     // check if user exist within the table
     Kitsunemimi::JsonItem getResult;
-    if(ClusterTable::getInstance()->getCluster(getResult, clusterUuid, userContext, error) == false)
+    if(ClusterTable::getInstance()->getCluster(getResult,
+                                               clusterUuid,
+                                               userContext,
+                                               error) == false)
     {
-        status.errorMessage = "Cluster with uuid '" + clusterUuid + "' not found.";
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(getResult.size() == 0)
+    {
+        status.errorMessage = "Cluster with uuid '" + clusterUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;

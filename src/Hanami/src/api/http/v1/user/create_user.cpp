@@ -103,10 +103,18 @@ CreateUser::runTask(BlossomIO &blossomIO,
 
     // check if user already exist within the table
     Kitsunemimi::JsonItem getResult;
-    if(UsersTable::getInstance()->getUser(getResult, newUserId, error, false))
+    if(UsersTable::getInstance()->getUser(getResult, newUserId, error, false) == false)
+    {
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(getResult.size() != 0)
     {
         status.errorMessage = "User with id '" + newUserId + "' already exist.";
         status.statusCode = CONFLICT_RTYPE;
+        error.addMeesage(status.errorMessage);
         return false;
     }
 

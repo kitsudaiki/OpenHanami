@@ -329,15 +329,12 @@ SqlTable::getFromDb(JsonItem &result,
         return false;
     }
 
-    // convert table-row to json
-    if(processGetResult(result, tableResult) == false)
-    {
-        error.addMeesage("no entry found in database-table '" + m_tableName + "'.");
-        // HINT: no LOG_ERROR here, because it is possible, that the getFromDb was only called to
-        // check if the entry exist within the database. In this case a false as return is a valid
-        // output and not an error
-        return false;
+    if(tableResult.getNumberOfRows() == 0) {
+        return true;
     }
+
+    // convert table-row to json
+    processGetResult(result, tableResult);
 
     // remove all values, which should be hide
     if(showHiddenValues == false)
@@ -667,15 +664,13 @@ SqlTable::createCountQuery()
  *
  * @param result reference for json-formated output
  * @param tableContent table-input with at least one row
- *
- * @return false, if table is empty, else true
  */
-bool
+void
 SqlTable::processGetResult(JsonItem &result,
                            TableItem &tableContent)
 {
     if(tableContent.getNumberOfRows() == 0) {
-        return false;
+        return;
     }
 
     // prepare result
@@ -684,8 +679,6 @@ SqlTable::processGetResult(JsonItem &result,
     for(uint32_t i = 0; i < m_tableHeader.size(); i++) {
         result.insert(m_tableHeader.at(i).name, firstRow->get(i));
     }
-
-    return true;
 }
 
 }

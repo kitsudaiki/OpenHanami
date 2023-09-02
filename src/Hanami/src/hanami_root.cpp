@@ -520,8 +520,8 @@ HanamiRoot::triggerBlossom(Kitsunemimi::DataMap &result,
     blossomIO.parentValues = blossomIO.input.getItemContent()->toMap();
     blossomIO.nameHirarchie.push_back("BLOSSOM: " + blossomName);
 
-    std::string errorMessage;
     // check input to be complete
+    std::string errorMessage;
     if(blossom->validateFieldsCompleteness(initialValues,
                                            *blossom->getInputValidationMap(),
                                            FieldDef::INPUT_TYPE,
@@ -529,7 +529,12 @@ HanamiRoot::triggerBlossom(Kitsunemimi::DataMap &result,
     {
         error.addMeesage(errorMessage);
         error.addMeesage("check of completeness of input-fields failed");
-        status.statusCode = 400;
+        error.addMeesage("Check of blossom '"
+                         + blossomName
+                         + " in group '"
+                         + blossomGroupName
+                         + "' failed.");
+        status.statusCode = BAD_REQUEST_RTYPE;
         status.errorMessage = errorMessage;
         LOG_ERROR(error);
         return false;
@@ -552,8 +557,12 @@ HanamiRoot::triggerBlossom(Kitsunemimi::DataMap &result,
     {
         error.addMeesage(errorMessage);
         error.addMeesage("check of completeness of output-fields failed");
-        status.statusCode = 500;
-        status.errorMessage = errorMessage;
+        error.addMeesage("Check of blossom '"
+                         + blossomName
+                         + " in group '"
+                         + blossomGroupName
+                         + "' failed.");
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         LOG_ERROR(error);
         return false;
     }

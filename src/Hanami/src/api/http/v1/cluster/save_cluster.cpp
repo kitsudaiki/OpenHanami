@@ -25,6 +25,7 @@
 #include <core/cluster/cluster_handler.h>
 #include <core/cluster/cluster.h>
 #include <core/cluster/add_tasks.h>
+#include <database/cluster_table.h>
 
 SaveCluster::SaveCluster()
     : Blossom("Save a cluster.")
@@ -71,21 +72,42 @@ SaveCluster::runTask(BlossomIO &blossomIO,
     const std::string name = blossomIO.input.get("name").getString();
     const UserContext userContext(context);
 
-    // get cluster
-    Cluster* cluster = ClusterHandler::getInstance()->getCluster(clusterUuid);
-    if(cluster == nullptr)
+    // get data from table
+    Kitsunemimi::JsonItem clusterResult;
+    if(ClusterTable::getInstance()->getCluster(clusterResult,
+                                               clusterUuid,
+                                               userContext,
+                                               error) == false)
     {
-        status.errorMessage = "Cluster with UUID '" + clusterUuid + "'not found";
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(clusterResult.size() == 0)
+    {
+        status.errorMessage = "Cluster with uuid '" + clusterUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;
     }
 
+    // get cluster
+    Cluster* cluster = ClusterHandler::getInstance()->getCluster(clusterUuid);
+    if(cluster == nullptr)
+    {
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        error.addMeesage("Cluster with UUID '"
+                         + clusterUuid
+                         + "'not found even it exists within the database");
+        return false;
+    }
+
     // init request-task
     const std::string taskUuid = addCheckpointSaveTask(*cluster,
-                                                            name,
-                                                            userContext.userId,
-                                                            userContext.projectId);
+                                                       name,
+                                                       userContext.userId,
+                                                       userContext.projectId);
     blossomIO.output.insert("uuid", taskUuid);
     blossomIO.output.insert("name", name);
 

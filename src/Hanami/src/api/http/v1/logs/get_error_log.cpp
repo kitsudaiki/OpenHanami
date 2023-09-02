@@ -33,6 +33,7 @@ GetErrorLog::GetErrorLog()
     //----------------------------------------------------------------------------------------------
     registerInputField("user_id", SAKURA_STRING_TYPE)
             .setComment("ID of the user, whos entries are requested.")
+            .setDefault(new Kitsunemimi::DataValue(""))
             .setLimit(4, 256)
             .setRegex(ID_EXT_REGEX);
 

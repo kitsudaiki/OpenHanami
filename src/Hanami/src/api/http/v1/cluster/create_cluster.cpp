@@ -87,15 +87,20 @@ CreateCluster::runTask(BlossomIO &blossomIO,
 
     // check if user already exist within the table
     Kitsunemimi::JsonItem getResult;
-    if(ClusterTable::getInstance()->getClusterByName(getResult, clusterName, userContext, error))
+    if(ClusterTable::getInstance()->getClusterByName(getResult, clusterName, userContext, error) == false)
     {
-        status.errorMessage = "Cluster with name '" + clusterName + "' already exist.";
-        error.addMeesage(status.errorMessage);
-        status.statusCode = CONFLICT_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
-    error._errorMessages.clear();
-    error._possibleSolution.clear();
+
+    // handle not found
+    if(getResult.size() != 0)
+    {
+        status.errorMessage = "Cluster with name '" + clusterName + "' already exist.";
+        status.statusCode = CONFLICT_RTYPE;
+        error.addMeesage(status.errorMessage);
+        return false;
+    }
 
     Kitsunemimi::Hanami::ClusterMeta parsedCluster;
     if(base64Template != "")

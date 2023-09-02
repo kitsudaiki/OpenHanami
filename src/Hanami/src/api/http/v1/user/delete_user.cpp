@@ -71,7 +71,14 @@ DeleteUser::runTask(BlossomIO &blossomIO,
     Kitsunemimi::JsonItem result;
     if(UsersTable::getInstance()->getUser(result, userId, error, false) == false)
     {
-        status.errorMessage = "User with id '" + userId + "' not found.";
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(result.size() == 0)
+    {
+        status.errorMessage = "User with id '" + userId + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;

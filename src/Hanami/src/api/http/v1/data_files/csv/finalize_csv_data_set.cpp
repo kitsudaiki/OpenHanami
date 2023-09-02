@@ -81,8 +81,16 @@ FinalizeCsvDataSet::runTask(BlossomIO &blossomIO,
     Kitsunemimi::JsonItem result;
     if(DataSetTable::getInstance()->getDataSet(result, uuid, userContext, error, true) == false)
     {
-        status.errorMessage = "Data with uuid '" + uuid + "' not found.";
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(result.size() == 0)
+    {
+        status.errorMessage = "Data-set with uuid '" + uuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
+        error.addMeesage(status.errorMessage);
         return false;
     }
 

@@ -110,8 +110,16 @@ AddProjectToUser::runTask(BlossomIO &blossomIO,
     Kitsunemimi::JsonItem getResult;
     if(UsersTable::getInstance()->getUser(getResult, userId, error, false) == false)
     {
-        status.errorMessage = "User with id '" + userId + "' not found.";
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(getResult.size() == 0)
+    {
+        status.errorMessage = "User with id '" + userId + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
+        error.addMeesage(status.errorMessage);
         return false;
     }
 

@@ -28,6 +28,8 @@
 GetCheckpoint::GetCheckpoint()
     : Blossom("Get checkpoint of a cluster.")
 {
+    errorCodes.push_back(NOT_FOUND_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------
@@ -64,16 +66,26 @@ GetCheckpoint::runTask(BlossomIO &blossomIO,
                        BlossomStatus &status,
                        Kitsunemimi::ErrorContainer &error)
 {
-    const std::string dataUuid = blossomIO.input.get("uuid").getString();
+    const std::string checkpointUuid = blossomIO.input.get("uuid").getString();
     const UserContext userContext(context);
 
+    // get checkpoint-info from database
     if(CheckpointTable::getInstance()->getCheckpoint(blossomIO.output,
-                                                     dataUuid,
+                                                     checkpointUuid,
                                                      userContext,
                                                      error,
                                                      true) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(blossomIO.output.size() == 0)
+    {
+        status.errorMessage = "Checkpoint with uuid '" + checkpointUuid + "' not found";
+        status.statusCode = NOT_FOUND_RTYPE;
+        error.addMeesage(status.errorMessage);
         return false;
     }
 

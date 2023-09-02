@@ -85,7 +85,14 @@ SetClusterMode::runTask(BlossomIO &blossomIO,
                                                userContext,
                                                error) == false)
     {
-        status.errorMessage = "Cluster with UUID '" + clusterUuid + "' not found.";
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(blossomIO.output.size() == 0)
+    {
+        status.errorMessage = "Cluster with uuid '" + clusterUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;
@@ -95,9 +102,10 @@ SetClusterMode::runTask(BlossomIO &blossomIO,
     Cluster* cluster = ClusterHandler::getInstance()->getCluster(clusterUuid);
     if(cluster == nullptr)
     {
-        status.errorMessage = "Cluster with UUID '" + clusterUuid + "'not found";
-        status.statusCode = NOT_FOUND_RTYPE;
-        error.addMeesage(status.errorMessage);
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        error.addMeesage("Cluster with UUID '"
+                         + clusterUuid
+                         + "'not found even it exists within the database");
         return false;
     }
 

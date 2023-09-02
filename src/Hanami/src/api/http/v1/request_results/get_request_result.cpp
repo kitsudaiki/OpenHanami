@@ -82,7 +82,14 @@ GetRequestResult::runTask(BlossomIO &blossomIO,
                                                            error,
                                                            true) == false)
     {
-        status.errorMessage = "Request-result with UUID '" + uuid + "' not found.";
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(blossomIO.output.size() == 0)
+    {
+        status.errorMessage = "Request-result with uuid '" + uuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
         return false;

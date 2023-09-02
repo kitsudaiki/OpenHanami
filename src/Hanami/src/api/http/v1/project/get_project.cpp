@@ -82,8 +82,16 @@ GetProject::runTask(BlossomIO &blossomIO,
     // get data from table
     if(ProjectsTable::getInstance()->getProject(blossomIO.output, projectId, error) == false)
     {
-        status.errorMessage = "Project with id '" + projectId + "' not found.";
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(blossomIO.output.size() == 0)
+    {
+        status.errorMessage = "Project with id '" + projectId + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
+        error.addMeesage(status.errorMessage);
         return false;
     }
 

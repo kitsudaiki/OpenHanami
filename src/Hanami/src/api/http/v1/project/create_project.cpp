@@ -90,10 +90,18 @@ CreateProject::runTask(BlossomIO &blossomIO,
 
     // check if user already exist within the table
     Kitsunemimi::JsonItem getResult;
-    if(ProjectsTable::getInstance()->getProject(getResult, projectId, error))
+    if(ProjectsTable::getInstance()->getProject(getResult, projectId, error) == false)
+    {
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(getResult.size() != 0)
     {
         status.errorMessage = "Project with id '" + projectId + "' already exist.";
         status.statusCode = CONFLICT_RTYPE;
+        error.addMeesage(status.errorMessage);
         return false;
     }
 

@@ -38,6 +38,8 @@
 RenewToken::RenewToken()
     : Blossom("Renew a JWT-access-token for a specific user.")
 {
+    errorCodes.push_back(UNAUTHORIZED_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------
@@ -85,6 +87,16 @@ RenewToken::runTask(BlossomIO &blossomIO,
     if(UsersTable::getInstance()->getUser(userData, userContext.userId, error, false) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(userData.size() == 0)
+    {
+        status.errorMessage = "ACCESS DENIED!\n"
+                              "User or password is incorrect.";
+        error.addMeesage(status.errorMessage);
+        status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
 

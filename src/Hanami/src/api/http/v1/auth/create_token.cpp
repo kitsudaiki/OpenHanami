@@ -38,6 +38,8 @@
 CreateToken::CreateToken()
     : Blossom("Create a JWT-access-token for a specific user.", false)
 {
+    errorCodes.push_back(UNAUTHORIZED_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------
@@ -86,6 +88,13 @@ CreateToken::runTask(BlossomIO &blossomIO,
     // get data from table
     Kitsunemimi::JsonItem userData;
     if(UsersTable::getInstance()->getUser(userData, userId, error, true) == false)
+    {
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(userData.size() == 0)
     {
         status.errorMessage = "ACCESS DENIED!\n"
                               "User or password is incorrect.";

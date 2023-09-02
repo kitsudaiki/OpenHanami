@@ -23,6 +23,7 @@
 #include "create_task.h"
 #include <hanami_root.h>
 #include <database/data_set_table.h>
+#include <database/cluster_table.h>
 #include <core/cluster/cluster_handler.h>
 #include <core/cluster/cluster.h>
 #include <core/cluster/add_tasks.h>
@@ -85,6 +86,26 @@ CreateTask::runTask(BlossomIO &blossomIO,
     const std::string dataSetUuid = blossomIO.input.get("data_set_uuid").getString();
     const std::string taskType = blossomIO.input.get("type").getString();
     const UserContext userContext(context);
+
+    // check if user exist within the table
+    Kitsunemimi::JsonItem getResult;
+    if(ClusterTable::getInstance()->getCluster(getResult,
+                                               clusterUuid,
+                                               userContext,
+                                               error) == false)
+    {
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(getResult.size() == 0)
+    {
+        status.errorMessage = "Cluster with uuid '" + clusterUuid + "' not found";
+        status.statusCode = NOT_FOUND_RTYPE;
+        error.addMeesage(status.errorMessage);
+        return false;
+    }
 
     // get cluster
     Cluster* cluster = ClusterHandler::getInstance()->getCluster(clusterUuid);

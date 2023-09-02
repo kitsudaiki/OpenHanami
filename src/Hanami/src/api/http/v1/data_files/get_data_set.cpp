@@ -98,5 +98,14 @@ GetDataSet::runTask(BlossomIO &blossomIO,
         return false;
     }
 
+    // handle not found
+    if(blossomIO.output.size() == 0)
+    {
+        status.errorMessage = "Data-set with uuid '" + dataUuid + "' not found";
+        status.statusCode = NOT_FOUND_RTYPE;
+        error.addMeesage(status.errorMessage);
+        return false;
+    }
+
     return true;
 }

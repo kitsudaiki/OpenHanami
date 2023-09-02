@@ -42,6 +42,8 @@ ValidateAccess::ValidateAccess()
               "and optional check if the user is allowed by its roles "
               "and the policy to access a specific endpoint.", false)
 {
+    errorCodes.push_back(UNAUTHORIZED_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------

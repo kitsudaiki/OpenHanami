@@ -68,6 +68,15 @@ DeleteDataSet::runTask(BlossomIO &blossomIO,
         return false;
     }
 
+    // handle not found
+    if(result.size() == 0)
+    {
+        status.errorMessage = "Data-set with uuid '" + dataUuid + "' not found";
+        status.statusCode = NOT_FOUND_RTYPE;
+        error.addMeesage(status.errorMessage);
+        return false;
+    }
+
     // get location from response
     const std::string location = result.get("location").getString();
 

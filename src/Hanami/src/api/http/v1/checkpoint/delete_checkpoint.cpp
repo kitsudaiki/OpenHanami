@@ -53,13 +53,13 @@ DeleteCheckpoint::runTask(BlossomIO &blossomIO,
                           BlossomStatus &status,
                           Kitsunemimi::ErrorContainer &error)
 {
-    const std::string dataUuid = blossomIO.input.get("uuid").getString();
+    const std::string checkpointUuid = blossomIO.input.get("uuid").getString();
     const UserContext userContext(context);
 
     // get location from database
     Kitsunemimi::JsonItem result;
     if(CheckpointTable::getInstance()->getCheckpoint(result,
-                                                     dataUuid,
+                                                     checkpointUuid,
                                                      userContext,
                                                      error,
                                                      true) == false)
@@ -68,11 +68,20 @@ DeleteCheckpoint::runTask(BlossomIO &blossomIO,
         return false;
     }
 
+    // handle not found
+    if(result.size() == 0)
+    {
+        status.errorMessage = "Chekckpoint with uuid '" + checkpointUuid + "' not found";
+        status.statusCode = NOT_FOUND_RTYPE;
+        error.addMeesage(status.errorMessage);
+        return false;
+    }
+
     // get location from response
     const std::string location = result.get("location").getString();
 
     // delete entry from db
-    if(CheckpointTable::getInstance()->deleteCheckpoint(dataUuid,
+    if(CheckpointTable::getInstance()->deleteCheckpoint(checkpointUuid,
                                                         userContext,
                                                         error) == false)
     {
