@@ -20,7 +20,7 @@
  *      limitations under the License.
  */
 
-#include <libHanamiAiSdk/checkpoint.h>
+#include <hanami_sdk/checkpoint.h>
 #include <common/http_client.h>
 
 namespace HanamiAI

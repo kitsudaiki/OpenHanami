@@ -20,9 +20,9 @@
  *      limitations under the License.
  */
 
-#include <libHanamiAiSdk/io.h>
+#include <hanami_sdk/io.h>
 
-#include <libHanamiAiSdk/common/websocket_client.h>
+#include <hanami_sdk/common/websocket_client.h>
 
 #include <../../hanami_messages/protobuffers/hanami_messages.proto3.pb.h>
 

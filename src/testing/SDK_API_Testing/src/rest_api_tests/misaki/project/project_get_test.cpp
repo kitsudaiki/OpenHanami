@@ -22,7 +22,7 @@
 
 #include "project_get_test.h"
 
-#include <libHanamiAiSdk/project.h>
+#include <hanami_sdk/project.h>
 
 ProjectGetTest::ProjectGetTest(const bool expectSuccess,
                                const std::string &nameOverride)

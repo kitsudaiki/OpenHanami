@@ -22,7 +22,7 @@
 
 #include "direct_io_test.h"
 
-#include <libHanamiAiSdk/io.h>
+#include <hanami_sdk/io.h>
 #include <common/test_thread.h>
 
 DirectIoTest::DirectIoTest(const bool expectSuccess)

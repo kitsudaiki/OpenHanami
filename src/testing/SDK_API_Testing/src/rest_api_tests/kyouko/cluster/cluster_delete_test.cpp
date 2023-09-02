@@ -22,7 +22,7 @@
 
 #include "cluster_delete_test.h"
 
-#include <libHanamiAiSdk/cluster.h>
+#include <hanami_sdk/cluster.h>
 
 ClusterDeleteTest::ClusterDeleteTest(const bool expectSuccess)
           : TestStep(expectSuccess)

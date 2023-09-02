@@ -26,7 +26,7 @@
 #include <deque>
 #include <mutex>
 
-#include <libHanamiAiSdk/common/websocket_client.h>
+#include <hanami_sdk/common/websocket_client.h>
 
 #include <hanami_common/threading/thread.h>
 #include <hanami_json/json_item.h>

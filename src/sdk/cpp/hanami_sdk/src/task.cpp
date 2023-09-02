@@ -20,7 +20,7 @@
  *      limitations under the License.
  */
 
-#include <libHanamiAiSdk/task.h>
+#include <hanami_sdk/task.h>
 #include <common/http_client.h>
 
 namespace HanamiAI

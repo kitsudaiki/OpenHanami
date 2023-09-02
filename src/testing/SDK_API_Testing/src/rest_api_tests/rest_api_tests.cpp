@@ -24,12 +24,12 @@
 
 #include <hanami_config/config_handler.h>
 #include <hanami_json/json_item.h>
-#include <libHanamiAiSdk/init.h>
+#include <hanami_sdk/init.h>
 
 #include <common/test_thread.h>
-#include <libHanamiAiSdk/cluster.h>
-#include <libHanamiAiSdk/user.h>
-#include <libHanamiAiSdk/project.h>
+#include <hanami_sdk/cluster.h>
+#include <hanami_sdk/user.h>
+#include <hanami_sdk/project.h>
 
 #include <rest_api_tests/misaki/project/project_create_test.h>
 #include <rest_api_tests/misaki/project/project_delete_test.h>

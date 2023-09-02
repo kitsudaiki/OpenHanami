@@ -22,7 +22,7 @@
 
 #include "table_request_task_test.h"
 
-#include <libHanamiAiSdk/task.h>
+#include <hanami_sdk/task.h>
 
 TableRequestTaskTest::TableRequestTaskTest(const bool expectSuccess)
       : TestStep(expectSuccess)

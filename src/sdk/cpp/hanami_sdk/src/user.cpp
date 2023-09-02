@@ -20,7 +20,7 @@
  *      limitations under the License.
  */
 
-#include <libHanamiAiSdk/user.h>
+#include <hanami_sdk/user.h>
 #include <common/http_client.h>
 #include <hanami_json/json_item.h>
 

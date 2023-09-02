@@ -22,7 +22,7 @@
 
 #include "user_delete_test.h"
 
-#include <libHanamiAiSdk/user.h>
+#include <hanami_sdk/user.h>
 
 UserDeleteTest::UserDeleteTest(const bool expectSuccess,
                                const std::string &nameOverride)

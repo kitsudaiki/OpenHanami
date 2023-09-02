@@ -22,7 +22,7 @@
 
 #include "cluster_get_test.h"
 
-#include <libHanamiAiSdk/cluster.h>
+#include <hanami_sdk/cluster.h>
 
 ClusterGetTest::ClusterGetTest(const bool expectSuccess,
                                const std::string &nameOverride)

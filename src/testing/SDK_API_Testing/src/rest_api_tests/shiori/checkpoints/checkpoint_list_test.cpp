@@ -22,7 +22,7 @@
 
 #include "checkpoint_list_test.h"
 
-#include <libHanamiAiSdk/checkpoint.h>
+#include <hanami_sdk/checkpoint.h>
 
 CheckpointListTest::CheckpointListTest(const bool expectSuccess)
       : TestStep(expectSuccess)

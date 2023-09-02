@@ -22,7 +22,7 @@
 
 #include "request_result_list_test.h"
 
-#include <libHanamiAiSdk/request_result.h>
+#include <hanami_sdk/request_result.h>
 
 RequestResultListTest::RequestResultListTest(const bool expectSuccess)
       : TestStep(expectSuccess)

@@ -20,9 +20,9 @@
  *      limitations under the License.
  */
 
-#include <libHanamiAiSdk/cluster.h>
+#include <hanami_sdk/cluster.h>
 #include <common/http_client.h>
-#include <libHanamiAiSdk/common/websocket_client.h>
+#include <hanami_sdk/common/websocket_client.h>
 #include <hanami_crypto/common.h>
 
 namespace HanamiAI

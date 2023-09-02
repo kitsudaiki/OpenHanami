@@ -1,5 +1,5 @@
-# libHanamiAiSdk
+# hanami_sdk
 
 ## Description
 
-SDK-library for Hanami-AI
+SDK-library for Hanami

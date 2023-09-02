@@ -28,7 +28,7 @@
 
 #include <rest_api_tests/rest_api_tests.h>
 
-#include <libHanamiAiSdk/common/websocket_client.h>
+#include <hanami_sdk/common/websocket_client.h>
 
 int main(int argc, char *argv[])
 {

@@ -23,7 +23,7 @@
 #ifndef TSUGUMITESTER_REST_API_TESTS_H
 #define TSUGUMITESTER_REST_API_TESTS_H
 
-#include <libHanamiAiSdk/common/websocket_client.h>
+#include <hanami_sdk/common/websocket_client.h>
 
 bool runRestApiTests();
 

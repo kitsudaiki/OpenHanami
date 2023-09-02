@@ -23,7 +23,7 @@
 #include "image_train_task_test.h"
 #include <chrono>
 
-#include <libHanamiAiSdk/task.h>
+#include <hanami_sdk/task.h>
 
 typedef std::chrono::milliseconds chronoMilliSec;
 typedef std::chrono::microseconds chronoMicroSec;

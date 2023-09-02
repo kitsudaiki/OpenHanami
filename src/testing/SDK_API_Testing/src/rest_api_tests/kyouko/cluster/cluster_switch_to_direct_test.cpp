@@ -24,8 +24,8 @@
 
 #include <common/test_thread.h>
 
-#include <libHanamiAiSdk/cluster.h>
-#include <libHanamiAiSdk/common/websocket_client.h>
+#include <hanami_sdk/cluster.h>
+#include <hanami_sdk/common/websocket_client.h>
 
 ClusterSwitchToDirectTest::ClusterSwitchToDirectTest(const bool expectSuccess)
     : TestStep(expectSuccess)

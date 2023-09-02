@@ -22,7 +22,7 @@
 
 #include "checkpoint_get_test.h"
 
-#include <libHanamiAiSdk/checkpoint.h>
+#include <hanami_sdk/checkpoint.h>
 
 CheckpointGetTest::CheckpointGetTest(const bool expectSuccess,
                                  const std::string &uuidOverride)

@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#include <libHanamiAiSdk/data_set.h>
-#include <libHanamiAiSdk/common/websocket_client.h>
+#include <hanami_sdk/data_set.h>
+#include <hanami_sdk/common/websocket_client.h>
 #include <common/http_client.h>
 
 #include <hanami_crypto/common.h>

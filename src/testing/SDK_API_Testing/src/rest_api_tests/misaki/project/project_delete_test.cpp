@@ -22,7 +22,7 @@
 
 #include "project_delete_test.h"
 
-#include <libHanamiAiSdk/project.h>
+#include <hanami_sdk/project.h>
 
 ProjectDeleteTest::ProjectDeleteTest(const bool expectSuccess,
                                      const std::string &nameOverride)

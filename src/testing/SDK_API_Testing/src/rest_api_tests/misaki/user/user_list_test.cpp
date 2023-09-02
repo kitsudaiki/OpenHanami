@@ -22,7 +22,7 @@
 
 #include "user_list_test.h"
 
-#include <libHanamiAiSdk/user.h>
+#include <hanami_sdk/user.h>
 
 UserListTest::UserListTest(const bool expectSuccess)
     : TestStep(expectSuccess)

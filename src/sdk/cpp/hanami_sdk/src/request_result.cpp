@@ -20,7 +20,7 @@
  *      limitations under the License.
  */
 
-#include <libHanamiAiSdk/request_result.h>
+#include <hanami_sdk/request_result.h>
 #include <common/http_client.h>
 
 namespace HanamiAI

@@ -22,7 +22,7 @@
 
 #include "checkpoint_delete_test.h"
 
-#include <libHanamiAiSdk/checkpoint.h>
+#include <hanami_sdk/checkpoint.h>
 
 CheckpointDeleteTest::CheckpointDeleteTest(const bool expectSuccess)
           : TestStep(expectSuccess)

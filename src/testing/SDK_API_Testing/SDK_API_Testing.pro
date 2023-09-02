@@ -4,10 +4,10 @@ TARGET = SDK_API_Testing
 CONFIG += console c++17
 CONFIG -= app_bundle
 
-LIBS += -L../../sdk/cpp/libHanamiAiSdk/src -lHanamiAiSdk
-LIBS += -L../../sdk/cpp/libHanamiAiSdk/src/debug -lHanamiAiSdk
-LIBS += -L../../sdk/cpp/libHanamiAiSdk/src/release -lHanamiAiSdk
-INCLUDEPATH += ../../sdk/cpp/libHanamiAiSdk/include
+LIBS += -L../../sdk/cpp/hanami_sdk/src -lhanami_sdk
+LIBS += -L../../sdk/cpp/hanami_sdk/src/debug -lhanami_sdk
+LIBS += -L../../sdk/cpp/hanami_sdk/src/release -lhanami_sdk
+INCLUDEPATH += ../../sdk/cpp/hanami_sdk/include
 
 LIBS += -L../../libraries/hanami_config/src -lhanami_config
 LIBS += -L../../libraries/hanami_config/src/debug -lhanami_config

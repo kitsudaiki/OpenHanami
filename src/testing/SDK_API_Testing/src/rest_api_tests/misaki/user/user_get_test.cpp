@@ -22,7 +22,7 @@
 
 #include "user_get_test.h"
 
-#include <libHanamiAiSdk/user.h>
+#include <hanami_sdk/user.h>
 
 UserGetTest::UserGetTest(const bool expectSuccess,
                          const std::string &nameOverride)

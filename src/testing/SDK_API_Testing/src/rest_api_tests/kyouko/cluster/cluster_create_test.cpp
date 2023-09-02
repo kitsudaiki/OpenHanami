@@ -22,7 +22,7 @@
 
 #include "cluster_create_test.h"
 
-#include <libHanamiAiSdk/cluster.h>
+#include <hanami_sdk/cluster.h>
 
 ClusterCreateTest::ClusterCreateTest(const bool expectSuccess)
           : TestStep(expectSuccess)

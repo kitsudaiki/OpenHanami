@@ -1,6 +1,6 @@
 QT -= qt core gui
 
-TARGET = HanamiAiSdk
+TARGET = hanami_sdk
 CONFIG += c++17
 TEMPLATE = lib
 VERSION = 0.3.1
@@ -26,16 +26,16 @@ INCLUDEPATH += $$PWD \
                $$PWD/../include
 
 HEADERS += \
-    ../include/libHanamiAiSdk/cluster.h \
-    ../include/libHanamiAiSdk/common/websocket_client.h \
-    ../include/libHanamiAiSdk/data_set.h \
-    ../include/libHanamiAiSdk/init.h \
-    ../include/libHanamiAiSdk/io.h \
-    ../include/libHanamiAiSdk/project.h \
-    ../include/libHanamiAiSdk/request_result.h \
-    ../include/libHanamiAiSdk/checkpoint.h \
-    ../include/libHanamiAiSdk/task.h \
-    ../include/libHanamiAiSdk/user.h \
+    ../include/hanami_sdk/cluster.h \
+    ../include/hanami_sdk/common/websocket_client.h \
+    ../include/hanami_sdk/data_set.h \
+    ../include/hanami_sdk/init.h \
+    ../include/hanami_sdk/io.h \
+    ../include/hanami_sdk/project.h \
+    ../include/hanami_sdk/request_result.h \
+    ../include/hanami_sdk/checkpoint.h \
+    ../include/hanami_sdk/task.h \
+    ../include/hanami_sdk/user.h \
     common/http_client.h
 
 SOURCES += \

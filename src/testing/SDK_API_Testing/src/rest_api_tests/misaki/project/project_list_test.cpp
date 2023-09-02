@@ -22,7 +22,7 @@
 
 #include "project_list_test.h"
 
-#include <libHanamiAiSdk/project.h>
+#include <hanami_sdk/project.h>
 
 ProjectListTest::ProjectListTest(const bool expectSuccess)
     : TestStep(expectSuccess)

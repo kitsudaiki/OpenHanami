@@ -22,7 +22,7 @@
 
 #include "table_train_task_test.h"
 
-#include <libHanamiAiSdk/task.h>
+#include <hanami_sdk/task.h>
 
 TableTrainTaskTest::TableTrainTaskTest(const bool expectSuccess)
   : TestStep(expectSuccess)
