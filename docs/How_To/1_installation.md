@@ -34,7 +34,6 @@ For the installation on a kubernetes `helm` is used.
         - **Intel**: 
             - Sandy-Bridge or newer
         - **AMD** : 
-            - (**Actually broken on AMD-cpus!!!**)
             - Zen-Architecture or newer
             - for CPUs of AMD Zen/Zen2 Linux-Kernel of version `5.8` or newer must be used, for Zen3 Linux-Kernel of version `5.11` or newer
 
@@ -43,11 +42,11 @@ For the installation on a kubernetes `helm` is used.
 ### Installation
 
 ```
-git clone https://github.com/kitsudaiki/Hanami-AI.git
+git clone https://github.com/kitsudaiki/Hanami.git
 
 cd Hanami-AI/deploy/k8s
 
-helm install ./hanami-ai/ --generate-name \
+helm install ./hanami/ --generate-name \
     --set user.id=USER_ID  \
     --set user.name=USER_NAME  \
     --set user.pw=PASSWORD  \
@@ -82,7 +81,7 @@ After a successful installation the `USER_ID` and `PASSWORD` have to be used for
     kubectl get pods | grep hanami
 
     svclb-hanami-service-hg7ht   1/1     Running   0          20m
-    hanami-ai-fb996969f-5gd68    5/5     Running   2          20m
+    hanami-fb996969f-5gd68       5/5     Running   2          20m
     ```
 
 - get EXTERNAL-IP-address

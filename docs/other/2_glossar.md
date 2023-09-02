@@ -20,27 +20,9 @@ A `Brick` consist of multiple nodes, which are connected by synapses ot nodes in
 
 3. `Core-Bricks`
 
-### **Segment**
-
-A `Segment` it the atomic entity and consist of multiple `Bricks` with at least one `Input-Brick` and `Output-Brick`. Here is also the 3 type separation:
-
-1. `Input-Segments`
-    
-    Connected to the input-buffer of the segment.
-
-2. `Output-Segments`
-
-    Connected to the output-buffer of the segment.
-
-3. `Core-Segments`
-
-    1. `Dynamic Segments`
-
-        Segment of the actual core-concept with dynamic creation of connctions between artificial neurons.
-
 ### **Cluster**
 
-`Cluster` are again a collection of multiple `Segments`
+`Cluster` are again a collection of multiple `Bricks`
 
 ### **Data-Set**
 
@@ -60,19 +42,13 @@ For `Train-Tasks` input-data and desired output must exist in the `Data-Set` in 
 
 In `Request-Tasks` only the input-data are provided for the network in order to generate a output of the previouly trained network. The output is stored in `Shiori` as `Request-Result`.
 
-### **Cluster-Checkpoint** or **Checkpoint**
+### **Checkpoint**
 
-`Cluster-Checkpoints` are the serializied version of a `Cluster`. The Cluster will be converted into one single blob and send to `Shiori`, where it is written to disc and registered in the database. At the moment only `Cluster-Checkpoints`, so at some points in the current implementation it is named als `Checkpoint`, which is the same for now. In later versions, there should also exist `Segment-Checkpoints`, which are the serialized version of a single segment.
-
-### **Segment-Template** or **Template**
-
-`Segment-Templates` are json-formated strings, which describe the structure of a single type of segment. It can be stored in Kyouko and used to created `Cluster`. 
-
-Originally there was only one type of `Templates` at the beginning, but this didn't scales very well, so it was split later into `Segment-Templates` and `Cluster-Templates`. Because only `Segment-Templates` can be stored, at some parts and also the dashboard when it comes to `Templates`, then it meens `Segment-Templates`.
+`Checkpoints` are the serializied version of a `Cluster`. The Cluster will be converted into one single blob, written to disc and registered in the database.
 
 ### **Cluster-Template**
 
-Similar to `Segment-Templates` the `Cluster-Templates` are a json-formated string, which defines the structure of the `Cluster`, by defining which `Segment-Templates` should be used and connected in which way to create the desired `Cluster`.
+`Cluster-Templates` are a custom-formated string, which defines the structure of the `Cluster`. Basically it describes the sizes and order of the bricks.
 
 ### **Request-Result** or **Result**
 

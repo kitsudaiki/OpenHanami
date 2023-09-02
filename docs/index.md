@@ -84,7 +84,7 @@ Because the normalization of input is not necessary, together with the good perf
 
     Automatic generated OpenAPI documentation
 
-    [:octicons-arrow-right-24: OpenAPI documentation](/How_To/3_rest_api_documentation/)
+    [:octicons-arrow-right-24: OpenAPI documentation](/Resource_Docus/1_rest_api_documentation/)
 
 
 -   :octicons-package-dependencies-24:{ .lg .middle } __Dependencies__

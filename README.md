@@ -5,7 +5,9 @@
 ![GitHub](https://img.shields.io/github/license/kitsudaiki/Hanami-AI?style=flat-square)
 ![Platform](https://img.shields.io/badge/platform-Linux--x64-lightgrey?style=flat-square)
 
-![Logo](assets/hanami-logo-with-text.png)
+<p align="center">
+  <img src="assets/hanami-logo-with-text.png" width="750" height="890" />
+</p>
 
 # **IMPORTANT: This project is still an experimental prototype at the moment and NOT ready for productive usage.** 
 
