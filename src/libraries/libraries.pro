@@ -4,7 +4,6 @@ QT -= qt core gui
 CONFIG += c++17
 
 SUBDIRS =  libKitsunemimiCommon
-# SUBDIRS += libKitsunemimiNetwork
 SUBDIRS += libKitsunemimiJson
 SUBDIRS += libKitsunemimiCrypto
 SUBDIRS += libKitsunemimiIni

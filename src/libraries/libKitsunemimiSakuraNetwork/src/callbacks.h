@@ -23,7 +23,7 @@
 #ifndef KITSUNEMIMI_SAKURA_NETWORK_CALLBACKS_H
 #define KITSUNEMIMI_SAKURA_NETWORK_CALLBACKS_H
 
-#include <libKitsunemimiNetwork/abstract_socket.h>
+#include <abstract_socket.h>
 #include <libKitsunemimiCommon/buffer/ring_buffer.h>
 
 #include <libKitsunemimiCommon/buffer/data_buffer.h>

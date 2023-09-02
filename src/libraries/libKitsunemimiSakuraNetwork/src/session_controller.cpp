@@ -28,14 +28,14 @@
 #include <callbacks.h>
 #include <messages_processing/session_processing.h>
 
-#include <libKitsunemimiNetwork/tcp/tcp_server.h>
-#include <libKitsunemimiNetwork/tcp/tcp_socket.h>
-#include <libKitsunemimiNetwork/unix/unix_domain_server.h>
-#include <libKitsunemimiNetwork/unix/unix_domain_socket.h>
-#include <libKitsunemimiNetwork/tls_tcp/tls_tcp_server.h>
-#include <libKitsunemimiNetwork/tls_tcp/tls_tcp_socket.h>
-#include <libKitsunemimiNetwork/template_socket.h>
-#include <libKitsunemimiNetwork/template_server.h>
+#include <tcp/tcp_server.h>
+#include <tcp/tcp_socket.h>
+#include <unix/unix_domain_server.h>
+#include <unix/unix_domain_socket.h>
+#include <tls_tcp/tls_tcp_server.h>
+#include <tls_tcp/tls_tcp_socket.h>
+#include <template_socket.h>
+#include <template_server.h>
 
 #include <libKitsunemimiCommon/logger.h>
 

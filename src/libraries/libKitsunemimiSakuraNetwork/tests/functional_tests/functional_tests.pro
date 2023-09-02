@@ -13,16 +13,18 @@ LIBS += -L../../../libKitsunemimiCommon/src/debug -lKitsunemimiCommon
 LIBS += -L../../../libKitsunemimiCommon/src/release -lKitsunemimiCommon
 INCLUDEPATH += ../../../libKitsunemimiCommon/include
 
-LIBS += -L../../../libKitsunemimiNetwork/src -lKitsunemimiNetwork
-LIBS += -L../../../libKitsunemimiNetwork/src/debug -lKitsunemimiNetwork
-LIBS += -L../../../libKitsunemimiNetwork/src/release -lKitsunemimiNetwork
-INCLUDEPATH += ../../../libKitsunemimiNetwork/include
-
 LIBS +=  -lssl -lcrypt
 
 SOURCES += \
     main.cpp \
-    session_test.cpp
+    session_test.cpp \
+    tcp/tcp_test.cpp \
+    tls_tcp/tls_tcp_test.cpp \
+    unix/unix_domain_test.cpp
 
 HEADERS += \
-    session_test.h
+    session_test.h \
+    cert_init.h \
+    tcp/tcp_test.h \
+    tls_tcp/tls_tcp_test.h \
+    unix/unix_domain_test.h

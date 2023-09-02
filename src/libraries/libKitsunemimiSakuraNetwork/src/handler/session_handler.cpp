@@ -30,7 +30,7 @@
 #include <libKitsunemimiSakuraNetwork/session_controller.h>
 
 #include <libKitsunemimiCommon/logger.h>
-#include <libKitsunemimiNetwork/abstract_socket.h>
+#include <abstract_socket.h>
 
 namespace Kitsunemimi::Sakura
 {

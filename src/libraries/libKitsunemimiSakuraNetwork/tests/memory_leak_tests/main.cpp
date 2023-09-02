@@ -22,11 +22,16 @@
 
 #include <libKitsunemimiCommon/logger.h>
 
+#include <tcp/tcp_test.h>
+#include <unix/unix_domain_test.h>
+
 #include <session_test.h>
 
 int main()
 {
     //Kitsunemimi::initConsoleLogger(true);
 
+    Kitsunemimi::UnixDomain_Test();
+    Kitsunemimi::Tcp_Test();
     Kitsunemimi::Sakura::Session_Test();
 }

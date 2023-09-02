@@ -27,7 +27,7 @@
 #include <handler/session_handler.h>
 #include <multiblock_io.h>
 
-#include <libKitsunemimiNetwork/abstract_socket.h>
+#include <abstract_socket.h>
 
 #include <libKitsunemimiSakuraNetwork/session_controller.h>
 #include <libKitsunemimiSakuraNetwork/session.h>

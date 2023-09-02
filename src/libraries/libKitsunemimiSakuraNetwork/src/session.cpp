@@ -21,7 +21,7 @@
  */
 
 #include <libKitsunemimiSakuraNetwork/session.h>
-#include <libKitsunemimiNetwork/abstract_socket.h>
+#include <abstract_socket.h>
 
 #include <messages_processing/session_processing.h>
 #include <messages_processing/heartbeat_processing.h>

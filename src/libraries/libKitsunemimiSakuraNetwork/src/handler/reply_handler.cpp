@@ -26,7 +26,7 @@
 
 #include <libKitsunemimiSakuraNetwork/session.h>
 
-#include <libKitsunemimiNetwork/abstract_socket.h>
+#include <abstract_socket.h>
 #include <libKitsunemimiCommon/logger.h>
 
 namespace Kitsunemimi::Sakura
