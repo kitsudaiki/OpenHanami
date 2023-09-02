@@ -62,7 +62,6 @@ HttpServer* HanamiRoot::httpServer = nullptr;
 CryptoPP::SecByteBlock HanamiRoot::tokenKey{};
 
 // static flag to switch to experimental gpu-support (see issue #44 and #76)
-bool HanamiRoot::useOpencl = false;
 bool HanamiRoot::useCuda = false;
 
 /**
@@ -137,6 +136,10 @@ HanamiRoot::init(Hanami::ErrorContainer &error)
         LOG_ERROR(error);
         return false;
     }
+
+    bool success = false;
+    useCuda = GET_BOOL_CONFIG("DEFAULT", "use_cuda", success);
+    assert(success);
 
     // create thread-binder
     ThreadBinder::getInstance()->startThread();

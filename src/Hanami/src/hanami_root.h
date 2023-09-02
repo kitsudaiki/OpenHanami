@@ -93,7 +93,6 @@ public:
     static HanamiRoot* root;
     static uint32_t* m_randomValues;
     static CryptoPP::SecByteBlock tokenKey;
-    static bool useOpencl;
     static bool useCuda;
 
     std::map<std::string, std::map<HttpRequestType, EndpointEntry>> endpointRules;
