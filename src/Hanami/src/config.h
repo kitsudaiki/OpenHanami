@@ -50,6 +50,12 @@ registerConfigs(Hanami::ErrorContainer &error)
                             error,
                             "/etc/hanami/hanami_db",
                             false);
+    REGISTER_BOOL_CONFIG(   "DEFAULT",
+                            "use_cuda",
+                            "Use very experimental CUDA processing.",
+                            error,
+                            false,
+                            false);
 
     // storage-section
     REGISTER_STRING_CONFIG( "storage",
