@@ -78,14 +78,15 @@ INCLUDEPATH += ../sdk/cpp/hanami_sdk/include
 
 INCLUDEPATH += ../third-party-libs/jwt-cpp/include
 
-LIBS += -lcryptopp -lssl -lsqlite3 -luuid -lcrypto -pthread -lprotobuf -lOpenCL
+LIBS += -lcryptopp -lcrypto -lssl -lsqlite3 -luuid -pthread -lprotobuf
+# LIBS += -lOpenCL
 LIBS +=  -L"/usr/local/cuda-12.1/targets/x86_64-linux/lib"  -L"/usr/local/cuda-12.2/targets/x86_64-linux/lib" -lcuda -lcudart -lcublas
 
 INCLUDEPATH += $$PWD \
                src
 
 HANAMI_PROTO_BUFFER = ../libraries/hanami_messages/protobuffers/hanami_messages.proto3
-GPU_KERNEL = src/core/processing/opencl/gpu_kernel.cl
+# GPU_KERNEL = src/core/processing/opencl/gpu_kernel.cl
 CUDA_SOURCES = src/core/processing/cuda/gpu_kernel.cu
 
 OTHER_FILES += \
@@ -118,14 +119,13 @@ protobuf_impl.commands = $$escape_expand(\n)
 protobuf_impl.variable_out = SOURCES
 QMAKE_EXTRA_COMPILERS += protobuf_impl
 
-gpu_processing.input = GPU_KERNEL
-gpu_processing.output = ${QMAKE_FILE_BASE}.h
-gpu_processing.commands = xxd -i ${QMAKE_FILE_IN} \
-   | sed -E \'s/unsigned char.*\\\[\\\]/unsigned char gpu_kernel_cl\\\[\\\]/g\' \
-   | sed -E \'s/unsigned int .* =/unsigned int gpu_kernel_cl_len =/g\' > ${QMAKE_FILE_BASE}.h
-gpu_processing.variable_out = HEADERS
-gpu_processing.CONFIG += no_link
-
+# gpu_processing.input = GPU_KERNEL
+# gpu_processing.output = ${QMAKE_FILE_BASE}.h
+# gpu_processing.commands = xxd -i ${QMAKE_FILE_IN} \
+#    | sed -E \'s/unsigned char.*\\\[\\\]/unsigned char gpu_kernel_cl\\\[\\\]/g\' \
+#    | sed -E \'s/unsigned int .* =/unsigned int gpu_kernel_cl_len =/g\' > ${QMAKE_FILE_BASE}.h
+# gpu_processing.variable_out = HEADERS
+# gpu_processing.CONFIG += no_link
 # QMAKE_EXTRA_COMPILERS += gpu_processing
 
 HEADERS += \

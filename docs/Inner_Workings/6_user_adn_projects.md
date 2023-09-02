@@ -7,7 +7,7 @@ Folling tasks:
 - manage projects
 - manage user
 - create JWT-Token in case of a login and validate them for each API-access
-    - for the token the `libKitsunemimiJwt`-library is used
+    - for the token the `jwt-cpp`-library is used
     - only Token-type `HS256` available at the moment
 - generating REST-API-Documation
     - request all components for their REST-API-information and converts all these data into one file
