@@ -1,4 +1,4 @@
-# Hanami-AI
+# Hanami
 
 ![Logo](img/hanami-logo-with-text.png)
 
@@ -13,21 +13,9 @@
 
     At this documentation here at the moment is the develop-branch version. So this site will follow the develop-branches of the single components. Additionally there will be continuously updates of things, which are still missing in general in this documentation, like config-descriptions, sequence diagrams, manual to build docker-images and so on.
 
-??? question "Why it is named `Hanami-AI`?"
-
-    "Hanami" is the japanese word for viewing blossoms and primary cherry blossoms. I love the cherry blossom season in Japan and I would be absolute happy, when I can see them again, after COVID-19 prevented me for 3 seasons from visiting Japan. I hope that, despite all new problems like inflation, energy shortage and so on, I will be able to see them again in the near future, and if anyway possible I would like to live in Japan, at least for a few years. Maybe this project here lead to some good job opportunities to make this possible.
-
-??? question "Why this project was created?"
-
-    Originally it was only a tiny single repository for some experimental workings with artificial neural networks. The goal was simple to create something, which is not so static like the classical existing networks. Over time more an more interestingly looking features were added. It was also a good opportunity to improve my programming skills and experiment with new programming languages, frameworks and other technologies. In this process the project become more and more bigger to what it is now. 
-
-??? question "Why this logo?"
-
-    The cherry-blossom is related to the project-name `Hanami-AI` and the hexagons represent the base-structure of the network (see [Internal documentation](/Inner_Workings/3_kyouko/#core-segment)). Originally this logo was invented in my old automation tool [SakuraTree](https://github.com/kitsudaiki/SakuraTree), which was created to deploy Hanami-AI on server, before I learned Kubernetes. But the logo was too good in my opinion, so I reused it for this project here, to not waste it.
-
 ## Intro
 
-Hanami-AI is basically an AI-as-a-Service project, based on a concept created by myself. It is written from scratch with a Backend in C++ with Web-frontend.
+Hanami is basically an AI-as-a-Service project, based on a concept created by myself. It is written from scratch with a Backend in C++ with Web-frontend.
 
 The actual prototype consists of:
 
@@ -60,10 +48,6 @@ Test-case:
 | time for test-dataset (10000 Images)       |  0.1 s |
 | accuracy of test-dataset after 1. epoch   |  94.21 % |
 | accuracy of test-dataset after 10. epoch   |  96.43 % |
-
-!!! info
-
-    In an older version there was already a state, where up to *98,1%* were correct with a similar speed, but removing the limitation for the input-values to be able to handle much bigger values had its price, but I think this exchange was it worth. Some things are still missing in the implementation and there is still much space for optimization and research, so I think this is not the maximum possible at the moment.
 
 ## Possible use-case
 
@@ -113,38 +97,9 @@ Because the normalization of input is not necessary, together with the good perf
 
 </div>
 
-## Roadmap
-
-- **0.1.0**
-    - first prototype with basic feature-set
-
-- **0.2.0**
-    - merge all involved repositories into the main-repository
-    - internal restructures, primary for the GPU-support
-    - experimental GPU-support wiht CUDA and OpenCL (disabled at the moment)
-    - general minor improvements
-
-- **0.3.0**
-    - *desired date*: Q3 2023
-    - *content*: 
-        - complete implementation of the core-concept and further evaluation and improvement of the learning-process:
-            - allow to use it as spiking-neuronal-network
-            - remove strict layer-structure, which is still enforced by hard configuration at the moment
-            - build 3-dimensional networks
-            - re-add the old reduction-process again
-        - further evaluation and improving of the core-process
-        - make GPU-support usable
-
-- **0.4.0**
-    - *desired date*: Q4 2023
-    - *content*: 
-        - first Multi-Node-Setup
-        - rework dashboard
-
-
 ## Issue-Overview
 
-[Hanami-AI-Project](https://github.com/users/kitsudaiki/projects/9/views/4)
+[Hanami-Project](https://github.com/users/kitsudaiki/projects/9/views/4)
 
 ## Author
 
@@ -154,4 +109,4 @@ eMail: tobias.anker@kitsunemimi.moe
 
 ## License
 
-The complete project is under [Apache 2 license](https://github.com/kitsudaiki/Hanami-AI/blob/develop/LICENSE).
+The complete project is under [Apache 2 license](https://github.com/kitsudaiki/Hanami/blob/develop/LICENSE).

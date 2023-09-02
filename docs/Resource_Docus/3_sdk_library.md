@@ -1,6 +1,6 @@
 # SDK-library
 
-Repo: [libHanamiAiSdk](https://github.com/kitsudaiki/libHanamiAiSdk)
+Repo: [hanami_sdk](https://github.com/kitsudaiki/hanami_sdk)
 
 The SDK-library privides functions to interact with the API of the backend. At the moment 2 versions are provided:
 
@@ -22,9 +22,9 @@ The SDK-library privides functions to interact with the API of the backend. At t
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/init.h>
+    #include <hanami_sdk/init.h>
 
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string host = "127.0.0.1";
     const std::string port = "1337";
     const std::string user = "test_user";
@@ -47,10 +47,10 @@ The SDK-library privides functions to interact with the API of the backend. At t
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/user.h>
+    #include <hanami_sdk/user.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string userId = "test_user";
     const std::string userName = "Test User";
     const std::string password = "12345";
@@ -68,10 +68,10 @@ The SDK-library privides functions to interact with the API of the backend. At t
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/user.h>
+    #include <hanami_sdk/user.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string userId = "test_user";
 
     if(HanamiAI::getUser(result, userId, error)) {
@@ -86,10 +86,10 @@ The SDK-library privides functions to interact with the API of the backend. At t
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/user.h>
+    #include <hanami_sdk/user.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string userId = "test_user";
 
     if(HanamiAI::getUser(result, userId, error)) {
@@ -104,10 +104,10 @@ The SDK-library privides functions to interact with the API of the backend. At t
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/user.h>
+    #include <hanami_sdk/user.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string userId = "test_user";
 
     if(HanamiAI::getUser(result, userId, error) == false) {
@@ -120,10 +120,10 @@ The SDK-library privides functions to interact with the API of the backend. At t
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/user.h>
+    #include <hanami_sdk/user.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string userId = "test_user";
     const std::string projectId = "test_project";
     const std::string role = "member";
@@ -141,10 +141,10 @@ The SDK-library privides functions to interact with the API of the backend. At t
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/user.h>
+    #include <hanami_sdk/user.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string userId = "test_user";
     const std::string projectId = "test_project";
 
@@ -160,10 +160,10 @@ The SDK-library privides functions to interact with the API of the backend. At t
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/user.h>
+    #include <hanami_sdk/user.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
 
     if(HanamiAI::listProjectsOfUser(result, userId, error)) {
         std::cout<<result<<std::endl;
@@ -177,10 +177,10 @@ The SDK-library privides functions to interact with the API of the backend. At t
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/user.h>
+    #include <hanami_sdk/user.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string projectId = "test_project";
 
     if(HanamiAI::switchProject(result, projectId, error)) {
@@ -199,10 +199,10 @@ The SDK-library privides functions to interact with the API of the backend. At t
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/project.h>
+    #include <hanami_sdk/project.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string projectId = "test_project";
     const std::string projectName = "Test Project";
 
@@ -218,10 +218,10 @@ The SDK-library privides functions to interact with the API of the backend. At t
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/project.h>
+    #include <hanami_sdk/project.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string projectId = "test_project";
 
     if(HanamiAI::getProject(result, projectId, error)) {
@@ -236,10 +236,10 @@ The SDK-library privides functions to interact with the API of the backend. At t
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/project.h>
+    #include <hanami_sdk/project.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
 
     if(HanamiAI::listProject(result, error)) {
         std::cout<<result<<std::endl;
@@ -253,10 +253,10 @@ The SDK-library privides functions to interact with the API of the backend. At t
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/project.h>
+    #include <hanami_sdk/project.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string projectId = "test_project";
 
     if(HanamiAI::deleteProject(result, projectId, error)== false) {
@@ -272,10 +272,10 @@ The SDK-library privides functions to interact with the API of the backend. At t
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/data_set.h>
+    #include <hanami_sdk/data_set.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string datasetName = "Test Dataset";
     const std::string csvFilePath = "/tmp/test.csv";
 
@@ -291,10 +291,10 @@ The SDK-library privides functions to interact with the API of the backend. At t
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/data_set.h>
+    #include <hanami_sdk/data_set.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string datasetName = "Test Dataset";
     const std::string inputFilePath = "/tmp/train-images.idx3-ubyte";
     const std::string labelFilePath = "/tmp/train-labels.idx1-ubyte";
@@ -311,10 +311,10 @@ The SDK-library privides functions to interact with the API of the backend. At t
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/data_set.h>
+    #include <hanami_sdk/data_set.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string datasetUuid = "30cfeb32-48d7-11ed-b878-0242ac120002";
 
     if(HanamiAI::getDataset(result, datasetUuid, error)) {
@@ -329,10 +329,10 @@ The SDK-library privides functions to interact with the API of the backend. At t
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/data_set.h>
+    #include <hanami_sdk/data_set.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
 
     if(HanamiAI::listDatasets(result, requestUuid, error)) {
         std::cout<<result<<std::endl;
@@ -346,10 +346,10 @@ The SDK-library privides functions to interact with the API of the backend. At t
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/data_set.h>
+    #include <hanami_sdk/data_set.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string datasetUuid = "30cfeb32-48d7-11ed-b878-0242ac120002";
 
     if(HanamiAI::deleteDataset(result, datasetUuid, error) == false) {
@@ -368,10 +368,10 @@ Compares a `Request-Result` against a `Data-Set` to check, how much of the Data-
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/data_set.h>
+    #include <hanami_sdk/data_set.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string requestUuid = "d922013a-48d2-11ed-b878-0242ac120002";
     const std::string datasetUuid = "30cfeb32-48d7-11ed-b878-0242ac120002";
 
@@ -389,10 +389,10 @@ Compares a `Request-Result` against a `Data-Set` to check, how much of the Data-
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/cluster.h>
+    #include <hanami_sdk/cluster.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string clusterName = "test_cluster";
     const std::string clusterTemplate = ...;
 
@@ -429,10 +429,10 @@ Compares a `Request-Result` against a `Data-Set` to check, how much of the Data-
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/cluster.h>
+    #include <hanami_sdk/cluster.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string clusterUuid = "d922013a-48d2-11ed-b878-0242ac120002";
 
     if(HanamiAI::getCluster(result, clusterUuid, error)) {
@@ -449,10 +449,10 @@ Compares a `Request-Result` against a `Data-Set` to check, how much of the Data-
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/cluster.h>
+    #include <hanami_sdk/cluster.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
 
     if(HanamiAI::listCluster(result, error)) {
         std::cout<<result<<std::endl;
@@ -468,10 +468,10 @@ Compares a `Request-Result` against a `Data-Set` to check, how much of the Data-
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/cluster.h>
+    #include <hanami_sdk/cluster.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string clusterUuid = "d922013a-48d2-11ed-b878-0242ac120002";
 
     if(HanamiAI::deleteCluster(result, clusterUuid, error) == false) {
@@ -485,10 +485,10 @@ Compares a `Request-Result` against a `Data-Set` to check, how much of the Data-
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/cluster.h>
+    #include <hanami_sdk/cluster.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string clusterUuid = "d922013a-48d2-11ed-b878-0242ac120002";
     const std::string checkpointName = "test-checkpoint";
 
@@ -504,10 +504,10 @@ Compares a `Request-Result` against a `Data-Set` to check, how much of the Data-
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/cluster.h>
+    #include <hanami_sdk/cluster.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string clusterUuid = "d922013a-48d2-11ed-b878-0242ac120002";
     const std::string checkpointUuid = "30cfeb32-48d7-11ed-b878-0242ac120002";
 
@@ -523,10 +523,10 @@ Compares a `Request-Result` against a `Data-Set` to check, how much of the Data-
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/cluster.h>
+    #include <hanami_sdk/cluster.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string clusterUuid = "d922013a-48d2-11ed-b878-0242ac120002";
 
     if(HanamiAI::switchToTaskMode(result, clusterUuid, error)){
@@ -548,10 +548,10 @@ see [Initializing Websocket](/How_To/5_sdk_library/#init-websocket)
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/request_result.h>
+    #include <hanami_sdk/request_result.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string resultUuid = "d922013a-48d2-11ed-b878-0242ac120002";
 
     if(HanamiAI::getRequestResult(result, resultUuid, error)) {
@@ -566,10 +566,10 @@ see [Initializing Websocket](/How_To/5_sdk_library/#init-websocket)
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/request_result.h>
+    #include <hanami_sdk/request_result.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
 
     if(HanamiAI::listRequestResult(result, resultUuid, error)) {
         std::cout<<result<<std::endl;
@@ -583,10 +583,10 @@ see [Initializing Websocket](/How_To/5_sdk_library/#init-websocket)
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/request_result.h>
+    #include <hanami_sdk/request_result.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string resultUuid = "d922013a-48d2-11ed-b878-0242ac120002";
 
     if(HanamiAI::deleteRequestResult(result, resultUuid, error) == false) {
@@ -602,10 +602,10 @@ see [Initializing Websocket](/How_To/5_sdk_library/#init-websocket)
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/task.h>
+    #include <hanami_sdk/task.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string clusterUuid = "d922013a-48d2-11ed-b878-0242ac120002";
     const std::string dataSetUuid = "30cfeb32-48d7-11ed-b878-0242ac120002";
 
@@ -621,10 +621,10 @@ see [Initializing Websocket](/How_To/5_sdk_library/#init-websocket)
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/task.h>
+    #include <hanami_sdk/task.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string clusterUuid = "d922013a-48d2-11ed-b878-0242ac120002";
     const std::string dataSetUuid = "30cfeb32-48d7-11ed-b878-0242ac120002";
 
@@ -640,10 +640,10 @@ see [Initializing Websocket](/How_To/5_sdk_library/#init-websocket)
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/task.h>
+    #include <hanami_sdk/task.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string clusterUuid = "d922013a-48d2-11ed-b878-0242ac120002";
     const std::string dataSetUuid = "30cfeb32-48d7-11ed-b878-0242ac120002";
 
@@ -659,10 +659,10 @@ see [Initializing Websocket](/How_To/5_sdk_library/#init-websocket)
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/task.h>
+    #include <hanami_sdk/task.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string clusterUuid = "d922013a-48d2-11ed-b878-0242ac120002";
     const std::string dataSetUuid = "30cfeb32-48d7-11ed-b878-0242ac120002";
 
@@ -678,10 +678,10 @@ see [Initializing Websocket](/How_To/5_sdk_library/#init-websocket)
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/task.h>
+    #include <hanami_sdk/task.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string taskUuid = "d922013a-48d2-11ed-b878-0242ac120002";
     const std::string clusterUuid = "30cfeb32-48d7-11ed-b878-0242ac120002";
 
@@ -697,10 +697,10 @@ see [Initializing Websocket](/How_To/5_sdk_library/#init-websocket)
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/task.h>
+    #include <hanami_sdk/task.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string clusterUuid = "30cfeb32-48d7-11ed-b878-0242ac120002";
 
     if(HanamiAI::listTask(result, clusterUuid, error)) {
@@ -715,10 +715,10 @@ see [Initializing Websocket](/How_To/5_sdk_library/#init-websocket)
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/task.h>
+    #include <hanami_sdk/task.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string taskUuid = "d922013a-48d2-11ed-b878-0242ac120002";
     const std::string clusterUuid = "30cfeb32-48d7-11ed-b878-0242ac120002";
 
@@ -735,10 +735,10 @@ see [Initializing Websocket](/How_To/5_sdk_library/#init-websocket)
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/checkpoint.h>
+    #include <hanami_sdk/checkpoint.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string checkpointUuid = "30cfeb32-48d7-11ed-b878-0242ac120002";
 
     if(HanamiAI::getCheckpoint(result, checkpointUuid, error)) {
@@ -753,10 +753,10 @@ see [Initializing Websocket](/How_To/5_sdk_library/#init-websocket)
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/checkpoint.h>
+    #include <hanami_sdk/checkpoint.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
 
     if(HanamiAI::listCheckpoint(result, error)) {
         std::cout<<result<<std::endl;
@@ -770,10 +770,10 @@ see [Initializing Websocket](/How_To/5_sdk_library/#init-websocket)
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/checkpoint.h>
+    #include <hanami_sdk/checkpoint.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string checkpointUuid = "30cfeb32-48d7-11ed-b878-0242ac120002";
 
     if(HanamiAI::deleteCheckpoint(result, checkpointUuid, error) == false) {
@@ -789,11 +789,11 @@ see [Initializing Websocket](/How_To/5_sdk_library/#init-websocket)
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/cluster.h>
-    #include <libHanamiAiSdk/common/websocket_client.h>
+    #include <hanami_sdk/cluster.h>
+    #include <hanami_sdk/common/websocket_client.h>
 
     std::string result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string clusterUuid = "30cfeb32-48d7-11ed-b878-0242ac120002";
 
     HanamiAI::WebsocketClient* client = nullptr;
@@ -808,7 +808,7 @@ see [Initializing Websocket](/How_To/5_sdk_library/#init-websocket)
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/io.h>
+    #include <hanami_sdk/io.h>
 
     std::vector<float> input;
     // init number of input-values, which match the number of inputs of the cluster
@@ -829,7 +829,7 @@ see [Initializing Websocket](/How_To/5_sdk_library/#init-websocket)
 === "C++"
 
     ``` c++
-    #include <libHanamiAiSdk/io.h>
+    #include <hanami_sdk/io.h>
 
     std::vector<float> input;
     // init number of input-values, which match the number of inputs of the cluster
