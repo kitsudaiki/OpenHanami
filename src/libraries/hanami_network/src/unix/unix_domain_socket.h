@@ -11,7 +11,7 @@
 
 #include <template_socket.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 class UnixDomainServer;
 class TcpServer;

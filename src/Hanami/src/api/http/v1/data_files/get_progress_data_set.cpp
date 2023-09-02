@@ -68,14 +68,14 @@ GetProgressDataSet::GetProgressDataSet()
  */
 bool
 GetProgressDataSet::runTask(BlossomIO &blossomIO,
-                            const Kitsunemimi::DataMap &context,
+                            const Hanami::DataMap &context,
                             BlossomStatus &status,
-                            Kitsunemimi::ErrorContainer &error)
+                            Hanami::ErrorContainer &error)
 {
     const std::string dataUuid = blossomIO.input.get("uuid").getString();
     const UserContext userContext(context);
 
-    Kitsunemimi::JsonItem databaseOutput;
+    Hanami::JsonItem databaseOutput;
     if(DataSetTable::getInstance()->getDataSet(databaseOutput,
                                                dataUuid,
                                                userContext,
@@ -100,7 +100,7 @@ GetProgressDataSet::runTask(BlossomIO &blossomIO,
 
     // parse and add temp-file-information
     const std::string tempFilesStr = databaseOutput.get("temp_files").toString();
-    Kitsunemimi::JsonItem tempFiles;
+    Hanami::JsonItem tempFiles;
     if(tempFiles.parse(tempFilesStr, error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;

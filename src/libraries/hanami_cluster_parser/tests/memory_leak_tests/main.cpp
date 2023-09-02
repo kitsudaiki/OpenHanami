@@ -27,6 +27,6 @@
 
 int main()
 {
-    Kitsunemimi::initConsoleLogger(true);
-    Kitsunemimi::Hanami::Cluster_ParseString_Test();
+    Hanami::initConsoleLogger(true);
+    Hanami::Cluster_ParseString_Test();
 }

@@ -29,7 +29,7 @@
 #include <utility>
 #include <atomic>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 struct State;
 class Event;

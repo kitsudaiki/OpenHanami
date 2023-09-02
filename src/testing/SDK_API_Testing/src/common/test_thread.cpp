@@ -30,8 +30,8 @@ HanamiAI::WebsocketClient* TestThread::m_wsClient = nullptr;
  * @brief constructor
  */
 TestThread::TestThread(const std::string &name,
-                       Kitsunemimi::JsonItem &inputData)
-    : Kitsunemimi::Thread(name)
+                       Hanami::JsonItem &inputData)
+    : Hanami::Thread(name)
 {
     m_inputData = inputData;
 }
@@ -73,7 +73,7 @@ TestThread::run()
         std::cout<<"-------------------------------------------------------------------"<<std::endl;
 
         // run test
-        Kitsunemimi::ErrorContainer error;
+        Hanami::ErrorContainer error;
         if(currentStep->runTest(m_inputData, error) == false)
         {
             error.addMeesage("Test '"

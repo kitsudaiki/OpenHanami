@@ -30,7 +30,7 @@
 #include <assert.h>
 #include <map>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 class DataArray;
 class DataMap;

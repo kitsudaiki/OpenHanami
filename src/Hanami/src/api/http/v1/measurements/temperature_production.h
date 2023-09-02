@@ -34,9 +34,9 @@ public:
 
 protected:
     bool runTask(BlossomIO &blossomIO,
-                 const Kitsunemimi::DataMap &,
+                 const Hanami::DataMap &,
                  BlossomStatus &,
-                 Kitsunemimi::ErrorContainer &);
+                 Hanami::ErrorContainer &);
 };
 
 #endif // AZUKIHEART_TEMPERATURE_PRODUCTION_H

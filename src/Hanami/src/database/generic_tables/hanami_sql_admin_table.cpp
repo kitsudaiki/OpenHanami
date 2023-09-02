@@ -34,7 +34,7 @@
  *
  * @param db pointer to database
  */
-HanamiSqlAdminTable::HanamiSqlAdminTable(Kitsunemimi::Sakura::SqlDatabase* db)
+HanamiSqlAdminTable::HanamiSqlAdminTable(Hanami::SqlDatabase* db)
     : SqlTable(db)
 {
     DbHeaderEntry id;

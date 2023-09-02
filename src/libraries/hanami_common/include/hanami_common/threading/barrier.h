@@ -31,7 +31,7 @@
 #include <atomic>
 #include <unistd.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 class Barrier

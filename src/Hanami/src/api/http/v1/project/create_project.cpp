@@ -75,9 +75,9 @@ CreateProject::CreateProject()
  */
 bool
 CreateProject::runTask(BlossomIO &blossomIO,
-                       const Kitsunemimi::DataMap &context,
+                       const Hanami::DataMap &context,
                        BlossomStatus &status,
-                       Kitsunemimi::ErrorContainer &error)
+                       Hanami::ErrorContainer &error)
 {
     // check if admin
     if(context.getBoolByKey("is_admin") == false)
@@ -92,7 +92,7 @@ CreateProject::runTask(BlossomIO &blossomIO,
     const std::string creatorId = context.getStringByKey("id");
 
     // check if user already exist within the table
-    Kitsunemimi::JsonItem getResult;
+    Hanami::JsonItem getResult;
     if(ProjectsTable::getInstance()->getProject(getResult, projectId, error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -109,7 +109,7 @@ CreateProject::runTask(BlossomIO &blossomIO,
     }
 
     // convert values
-    Kitsunemimi::JsonItem userData;
+    Hanami::JsonItem userData;
     userData.insert("id", projectId);
     userData.insert("name", projectName);
     userData.insert("creator_id", creatorId);

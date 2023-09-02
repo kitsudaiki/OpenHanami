@@ -64,9 +64,9 @@ ListUserProjects::ListUserProjects()
  */
 bool
 ListUserProjects::runTask(BlossomIO &blossomIO,
-                          const Kitsunemimi::DataMap &context,
+                          const Hanami::DataMap &context,
                           BlossomStatus &status,
-                          Kitsunemimi::ErrorContainer &error)
+                          Hanami::ErrorContainer &error)
 {
     const UserContext userContext(context);
     std::string userId = blossomIO.input.get("user_id").getString();
@@ -85,7 +85,7 @@ ListUserProjects::runTask(BlossomIO &blossomIO,
     }
 
     // get data from table
-    Kitsunemimi::JsonItem userData;
+    Hanami::JsonItem userData;
     if(UsersTable::getInstance()->getUser(userData, userId, error, false) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -105,10 +105,10 @@ ListUserProjects::runTask(BlossomIO &blossomIO,
     const bool isAdmin = userData.get("is_admin").getBool();
     if(isAdmin)
     {
-        Kitsunemimi::DataMap* adminProject = new Kitsunemimi::DataMap();
-        adminProject->insert("project_id", new Kitsunemimi::DataValue("admin"));
-        adminProject->insert("role", new Kitsunemimi::DataValue("admin"));
-        adminProject->insert("is_project_admin", new Kitsunemimi::DataValue(true));
+        Hanami::DataMap* adminProject = new Hanami::DataMap();
+        adminProject->insert("project_id", new Hanami::DataValue("admin"));
+        adminProject->insert("role", new Hanami::DataValue("admin"));
+        adminProject->insert("is_project_admin", new Hanami::DataValue(true));
         userData.get("projects").append(adminProject);
     }
 

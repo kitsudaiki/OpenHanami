@@ -10,11 +10,11 @@
 
 #include <hanami_common/buffer/ring_buffer.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 RingBuffer_Test::RingBuffer_Test()
-    : Kitsunemimi::CompareTestHelper("RingBuffer_Test")
+    : Hanami::CompareTestHelper("RingBuffer_Test")
 {
     addData_RingBuffer_test();
     addObject_RingBuffer_test();

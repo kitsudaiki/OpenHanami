@@ -11,7 +11,7 @@
 
 #include <hanami_obj/obj_item.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 class ObjCreator

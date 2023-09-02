@@ -28,21 +28,21 @@
 #include <map>
 #include <hanami_common/logger.h>
 
-#define INIT_CONFIG Kitsunemimi::ConfigHandler::getInstance()->initConfig
+#define INIT_CONFIG Hanami::ConfigHandler::getInstance()->initConfig
 
-#define REGISTER_STRING_CONFIG Kitsunemimi::ConfigHandler::getInstance()->registerString
-#define REGISTER_INT_CONFIG Kitsunemimi::ConfigHandler::getInstance()->registerInteger
-#define REGISTER_FLOAT_CONFIG Kitsunemimi::ConfigHandler::getInstance()->registerFloat
-#define REGISTER_BOOL_CONFIG Kitsunemimi::ConfigHandler::getInstance()->registerBoolean
-#define REGISTER_STRING_ARRAY_CONFIG Kitsunemimi::ConfigHandler::getInstance()->registerStringArray
+#define REGISTER_STRING_CONFIG Hanami::ConfigHandler::getInstance()->registerString
+#define REGISTER_INT_CONFIG Hanami::ConfigHandler::getInstance()->registerInteger
+#define REGISTER_FLOAT_CONFIG Hanami::ConfigHandler::getInstance()->registerFloat
+#define REGISTER_BOOL_CONFIG Hanami::ConfigHandler::getInstance()->registerBoolean
+#define REGISTER_STRING_ARRAY_CONFIG Hanami::ConfigHandler::getInstance()->registerStringArray
 
-#define GET_STRING_CONFIG Kitsunemimi::ConfigHandler::getInstance()->getString
-#define GET_INT_CONFIG Kitsunemimi::ConfigHandler::getInstance()->getInteger
-#define GET_FLOAT_CONFIG Kitsunemimi::ConfigHandler::getInstance()->getFloat
-#define GET_BOOL_CONFIG Kitsunemimi::ConfigHandler::getInstance()->getBoolean
-#define GET_STRING_ARRAY_CONFIG Kitsunemimi::ConfigHandler::getInstance()->getStringArray
+#define GET_STRING_CONFIG Hanami::ConfigHandler::getInstance()->getString
+#define GET_INT_CONFIG Hanami::ConfigHandler::getInstance()->getInteger
+#define GET_FLOAT_CONFIG Hanami::ConfigHandler::getInstance()->getFloat
+#define GET_BOOL_CONFIG Hanami::ConfigHandler::getInstance()->getBoolean
+#define GET_STRING_ARRAY_CONFIG Hanami::ConfigHandler::getInstance()->getStringArray
 
-namespace Kitsunemimi
+namespace Hanami
 {
 class DataItem;
 class IniItem;
@@ -115,7 +115,7 @@ public:
                                                   const std::string &itemName,
                                                   bool &success);
 
-    static Kitsunemimi::ConfigHandler* m_config;
+    static Hanami::ConfigHandler* m_config;
 
 private:
     friend ConfigHandler_Test;

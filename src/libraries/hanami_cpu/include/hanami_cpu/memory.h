@@ -26,7 +26,7 @@
 #include <unistd.h>
 #include <stdint.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 uint64_t getTotalMemory();

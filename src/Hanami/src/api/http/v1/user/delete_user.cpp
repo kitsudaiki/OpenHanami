@@ -55,9 +55,9 @@ DeleteUser::DeleteUser()
  */
 bool
 DeleteUser::runTask(BlossomIO &blossomIO,
-                    const Kitsunemimi::DataMap &context,
+                    const Hanami::DataMap &context,
                     BlossomStatus &status,
-                    Kitsunemimi::ErrorContainer &error)
+                    Hanami::ErrorContainer &error)
 {
     // check if admin
     if(context.getBoolByKey("is_admin") == false)
@@ -71,7 +71,7 @@ DeleteUser::runTask(BlossomIO &blossomIO,
     const std::string userId = blossomIO.input.get("id").getString();
 
     // check if user exist within the table
-    Kitsunemimi::JsonItem result;
+    Hanami::JsonItem result;
     if(UsersTable::getInstance()->getUser(result, userId, error, false) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;

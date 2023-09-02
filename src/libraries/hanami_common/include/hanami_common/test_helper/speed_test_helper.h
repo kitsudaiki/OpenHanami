@@ -33,7 +33,7 @@
 
 #include <hanami_common/items/table_item.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 typedef std::chrono::milliseconds chronoMilliSec;

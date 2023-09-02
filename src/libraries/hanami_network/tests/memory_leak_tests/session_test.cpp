@@ -22,10 +22,10 @@
 
 #include "session_test.h"
 
-namespace Kitsunemimi::Sakura
+namespace Hanami
 {
 
-Kitsunemimi::Sakura::Session_Test* Session_Test::m_instance = nullptr;
+Hanami::Session_Test* Session_Test::m_instance = nullptr;
 
 /**
  * @brief streamDataCallback
@@ -61,7 +61,7 @@ void standaloneDataCallback(void*,
 /**
  * @brief errorCallback
  */
-void errorCallback(Kitsunemimi::Sakura::Session*,
+void errorCallback(Hanami::Session*,
                    const uint8_t,
                    const std::string message)
 {
@@ -73,7 +73,7 @@ void errorCallback(Kitsunemimi::Sakura::Session*,
  * @param session
  * @param sessionIdentifier
  */
-void sessionCreateCallback(Kitsunemimi::Sakura::Session* session,
+void sessionCreateCallback(Hanami::Session* session,
                            const std::string )
 {
     session->setStreamCallback(Session_Test::m_instance, &streamDataCallback);
@@ -83,7 +83,7 @@ void sessionCreateCallback(Kitsunemimi::Sakura::Session* session,
     }
 }
 
-void sessionCloseCallback(Kitsunemimi::Sakura::Session*,
+void sessionCloseCallback(Hanami::Session*,
                           const std::string)
 {
     Session_Test::m_instance->m_numberOfEndSessions++;
@@ -93,7 +93,7 @@ void sessionCloseCallback(Kitsunemimi::Sakura::Session*,
  * @brief Session_Test::Session_Test
  */
 Session_Test::Session_Test()
-    : Kitsunemimi::MemoryLeakTestHelpter("Session_Test")
+    : Hanami::MemoryLeakTestHelpter("Session_Test")
 {
     Session_Test::m_instance = this;
 

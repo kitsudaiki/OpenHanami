@@ -25,7 +25,7 @@
 
 #include <string>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 struct DataBuffer;
 

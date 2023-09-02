@@ -57,13 +57,13 @@ public:
                     const std::string &host,
                     const std::string &port,
                     const std::string &targetUuid,
-                    Kitsunemimi::ErrorContainer &error);
+                    Hanami::ErrorContainer &error);
     bool sendMessage(const void* data,
                      const uint64_t dataSize,
-                     Kitsunemimi::ErrorContainer &error);
+                     Hanami::ErrorContainer &error);
 
     uint8_t* readMessage(uint64_t &numberOfByes,
-                         Kitsunemimi::ErrorContainer &error);
+                         Hanami::ErrorContainer &error);
 
 private:
     websocket::stream<beast::ssl_stream<tcp::socket>>* m_websocket = nullptr;

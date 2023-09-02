@@ -7,11 +7,11 @@
 
 #include <test_table.h>
 
-namespace Kitsunemimi::Sakura
+namespace Hanami
 {
 
 SqlTable_Test::SqlTable_Test()
-    : Kitsunemimi::CompareTestHelper("SqlTable_Test")
+    : Hanami::CompareTestHelper("SqlTable_Test")
 {
     initTest();
 
@@ -42,7 +42,7 @@ SqlTable_Test::initTest()
 void
 SqlTable_Test::initDatabase_test()
 {
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     m_db = SqlDatabase::getInstance();
     TEST_EQUAL(m_db->initDatabase(m_filePath, error), true);
 }

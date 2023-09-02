@@ -25,11 +25,11 @@
 #include <hanami_opencl/gpu_interface.h>
 #include <hanami_opencl/gpu_handler.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 SimpleTest::SimpleTest()
-    : Kitsunemimi::CompareTestHelper("SimpleTest")
+    : Hanami::CompareTestHelper("SimpleTest")
 {
     simple_test();
 }
@@ -62,15 +62,15 @@ SimpleTest::simple_test()
         "    }\n"
         "}\n";
 
-    Kitsunemimi::GpuHandler oclHandler;
+    Hanami::GpuHandler oclHandler;
     assert(oclHandler.initDevice(error));
 
     TEST_NOT_EQUAL(oclHandler.m_interfaces.size(), 0)
 
-    Kitsunemimi::GpuInterface* ocl = oclHandler.m_interfaces.at(0);
+    Hanami::GpuInterface* ocl = oclHandler.m_interfaces.at(0);
 
     // create data-object
-    Kitsunemimi::GpuData data;
+    Hanami::GpuData data;
 
     data.numberOfWg.x = testSize / 128;
     data.numberOfWg.y = 1;

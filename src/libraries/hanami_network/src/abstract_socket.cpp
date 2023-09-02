@@ -10,14 +10,14 @@
 #include <hanami_common/buffer/ring_buffer.h>
 #include <hanami_common/threading/cleanup_thread.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 /**
  * @brief AbstractSocket::AbstractSocket
  */
 AbstractSocket::AbstractSocket(const std::string &threadName)
-    : Kitsunemimi::Thread(threadName)
+    : Hanami::Thread(threadName)
 {
 }
 
@@ -37,7 +37,7 @@ AbstractSocket::~AbstractSocket() {}
 void
 AbstractSocket::setMessageCallback(void* target,
                                    uint64_t (*processMessage)(void*,
-                                                              Kitsunemimi::RingBuffer*,
+                                                              Hanami::RingBuffer*,
                                                               AbstractSocket*))
 {
     m_target = target;

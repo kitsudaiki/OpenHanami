@@ -51,33 +51,33 @@ namespace ssl = boost::asio::ssl;       // from <boost/asio/ssl.hpp>
 class Cluster;
 
 class HttpWebsocketThread
-        : public Kitsunemimi::Thread
+        : public Hanami::Thread
 {
 public:
     HttpWebsocketThread(const std::string &threadName);
 
     bool sendData(const void* data, const uint64_t dataSize);
     Cluster* m_targetCluster = nullptr;
-    void closeClient(Kitsunemimi::ErrorContainer &);
+    void closeClient(Hanami::ErrorContainer &);
 
 protected:
     void run();
 
 private:
     bool handleSocket(tcp::socket* socket,
-                      Kitsunemimi::ErrorContainer &error);
+                      Hanami::ErrorContainer &error);
     bool readMessage(beast::ssl_stream<tcp::socket&> &stream,
                      http::request<http::string_body> &httpRequest,
-                     Kitsunemimi::ErrorContainer &error);
+                     Hanami::ErrorContainer &error);
     bool sendResponse(beast::ssl_stream<tcp::socket&> &stream,
                       http::response<http::dynamic_body> &httpResponse,
-                      Kitsunemimi::ErrorContainer &error);
+                      Hanami::ErrorContainer &error);
 
     // websocket-functions and variables
     bool initWebsocket(http::request<http::string_body> &httpRequest);
     void runWebsocket();
     bool processInitialMessage(const std::string &message,
-                               Kitsunemimi::ErrorContainer &error);
+                               Hanami::ErrorContainer &error);
 
     websocket::stream<beast::ssl_stream<tcp::socket&>>* m_webSocket = nullptr;
     std::string m_uuid = "";

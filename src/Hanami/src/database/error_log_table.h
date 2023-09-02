@@ -26,7 +26,7 @@
 #include <hanami_common/logger.h>
 #include <database/generic_tables/hanami_sql_log_table.h>
 
-namespace Kitsunemimi {
+namespace Hanami {
 class JsonItem;
 }
 
@@ -50,11 +50,11 @@ public:
                           const std::string &context,
                           const std::string &values,
                           const std::string &message,
-                          Kitsunemimi::ErrorContainer &error);
-    bool getAllErrorLogEntries(Kitsunemimi::TableItem &result,
+                          Hanami::ErrorContainer &error);
+    bool getAllErrorLogEntries(Hanami::TableItem &result,
                                const std::string &userId,
                                const uint64_t page,
-                               Kitsunemimi::ErrorContainer &error);
+                               Hanami::ErrorContainer &error);
 
 private:
     ErrorLogTable();

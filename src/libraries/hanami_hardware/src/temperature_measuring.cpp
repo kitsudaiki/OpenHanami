@@ -32,7 +32,7 @@
 TemperatureMeasuring* TemperatureMeasuring::instance = nullptr;
 
 TemperatureMeasuring::TemperatureMeasuring()
-    : Kitsunemimi::Thread("TemperatureMeasuring") {}
+    : Hanami::Thread("TemperatureMeasuring") {}
 
 TemperatureMeasuring::~TemperatureMeasuring() {}
 
@@ -41,7 +41,7 @@ TemperatureMeasuring::~TemperatureMeasuring() {}
  *
  * @return json-output
  */
-Kitsunemimi::DataMap*
+Hanami::DataMap*
 TemperatureMeasuring::getJson()
 {
     return m_valueContainer.toJson();
@@ -54,10 +54,10 @@ void
 TemperatureMeasuring::run()
 {
 
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     while(m_abort == false)
     {
-        Kitsunemimi::Sakura::Host* host = Kitsunemimi::Sakura::Host::getInstance();
+        Hanami::Host* host = Hanami::Host::getInstance();
 
         const double temperature = host->getTotalTemperature(error);
         m_valueContainer.addValue(temperature);

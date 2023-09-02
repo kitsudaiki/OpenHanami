@@ -52,7 +52,7 @@ TaskHandle_State::~TaskHandle_State() {}
 bool
 TaskHandle_State::processEvent()
 {
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     m_task_mutex.lock();
     finishTask();
     const bool hasNextState = getNextTask();
@@ -237,15 +237,15 @@ TaskHandle_State::finishTask()
             float val = 0.0f;
             for(uint64_t i = 0; i < actualTask->resultData.getItemContent()->size(); i++)
             {
-                Kitsunemimi::DataValue* value = actualTask->resultData.get(i).getItemContent()->toValue();
+                Hanami::DataValue* value = actualTask->resultData.get(i).getItemContent()->toValue();
                 val = value->getFloat() / numberOfOutputs;
                 value->setValue(val);
             }
         }
 
         // write result to database
-        Kitsunemimi::ErrorContainer error;
-        Kitsunemimi::JsonItem resultData;
+        Hanami::ErrorContainer error;
+        Hanami::JsonItem resultData;
         resultData.insert("uuid", actualTask->uuid.toString());
         resultData.insert("name", actualTask->name);
         resultData.insert("data", actualTask->resultData);

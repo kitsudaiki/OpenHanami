@@ -26,7 +26,7 @@
 #include <hanami_common/logger.h>
 #include <messages_processing/multiblock_data_processing.h>
 
-namespace Kitsunemimi::Sakura
+namespace Hanami
 {
 
 MultiblockIO::MultiblockIO(Session* session)
@@ -124,7 +124,7 @@ MultiblockIO::createIncomingBuffer(const uint64_t multiblockId,
 {
     // init new multiblock-message
     MultiblockBuffer newMultiblockMessage;
-    newMultiblockMessage.incomingData = new Kitsunemimi::DataBuffer(calcBytesToBlocks(size));
+    newMultiblockMessage.incomingData = new Hanami::DataBuffer(calcBytesToBlocks(size));
     newMultiblockMessage.messageSize = size;
     newMultiblockMessage.multiblockId = multiblockId;
 
@@ -186,7 +186,7 @@ MultiblockIO::writeIntoIncomingBuffer(const uint64_t multiblockId,
     it = m_incomingBuffer.find(multiblockId);
 
     if(it != m_incomingBuffer.end()) {
-        result = Kitsunemimi::addData_DataBuffer(*it->second.incomingData, data, size);
+        result = Hanami::addData_DataBuffer(*it->second.incomingData, data, size);
     }
 
     return result;

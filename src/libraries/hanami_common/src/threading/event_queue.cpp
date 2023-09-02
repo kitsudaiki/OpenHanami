@@ -25,7 +25,7 @@
 #include <hanami_common/logger.h>
 #include <hanami_common/threading/event.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 /**

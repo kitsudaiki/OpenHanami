@@ -25,11 +25,11 @@
 #include <hanami_common/items/data_items.h>
 #include <hanami_args/arg_parser.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 ArgParser_Test::ArgParser_Test()
-    : Kitsunemimi::CompareTestHelper("ArgParser_Test")
+    : Hanami::CompareTestHelper("ArgParser_Test")
 {
     registerArgument_test();
     getArgument_test();

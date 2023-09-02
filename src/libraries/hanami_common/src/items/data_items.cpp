@@ -22,7 +22,7 @@
 
 #include <hanami_common/items/data_items.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 //==================================================================================================

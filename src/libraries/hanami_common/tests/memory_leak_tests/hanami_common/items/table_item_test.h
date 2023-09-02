@@ -12,11 +12,11 @@
 #include <hanami_common/test_helper/memory_leak_test_helper.h>
 #include <hanami_common/items/table_item.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 class TableItem_test
-        : public Kitsunemimi::MemoryLeakTestHelpter
+        : public Hanami::MemoryLeakTestHelpter
 {
 public:
     TableItem_test();

@@ -36,7 +36,7 @@ CheckpointTable* CheckpointTable::instance = nullptr;
  * @param db pointer to database
  */
 CheckpointTable::CheckpointTable()
-    : HanamiSqlTable(Kitsunemimi::Sakura::SqlDatabase::getInstance())
+    : HanamiSqlTable(Hanami::SqlDatabase::getInstance())
 {
     m_tableName = "checkpoint";
 
@@ -61,9 +61,9 @@ CheckpointTable::~CheckpointTable() {}
  * @return true, if successful, else false
  */
 bool
-CheckpointTable::addCheckpoint(Kitsunemimi::JsonItem &data,
+CheckpointTable::addCheckpoint(Hanami::JsonItem &data,
                                const UserContext &userContext,
-                               Kitsunemimi::ErrorContainer &error)
+                               Hanami::ErrorContainer &error)
 {
     if(add(data, userContext, error) == false)
     {
@@ -86,10 +86,10 @@ CheckpointTable::addCheckpoint(Kitsunemimi::JsonItem &data,
  * @return true, if successful, else false
  */
 bool
-CheckpointTable::getCheckpoint(Kitsunemimi::JsonItem &result,
+CheckpointTable::getCheckpoint(Hanami::JsonItem &result,
                                const std::string &checkpointUuid,
                                const UserContext &userContext,
-                               Kitsunemimi::ErrorContainer &error,
+                               Hanami::ErrorContainer &error,
                                const bool showHiddenValues)
 {
     // get user from db
@@ -119,9 +119,9 @@ CheckpointTable::getCheckpoint(Kitsunemimi::JsonItem &result,
  * @return true, if successful, else false
  */
 bool
-CheckpointTable::getAllCheckpoint(Kitsunemimi::TableItem &result,
+CheckpointTable::getAllCheckpoint(Hanami::TableItem &result,
                                   const UserContext &userContext,
-                                  Kitsunemimi::ErrorContainer &error)
+                                  Hanami::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
     if(getAll(result, userContext, conditions, error) == false)
@@ -145,7 +145,7 @@ CheckpointTable::getAllCheckpoint(Kitsunemimi::TableItem &result,
 bool
 CheckpointTable::deleteCheckpoint(const std::string &checkpointUuid,
                                   const UserContext &userContext,
-                                  Kitsunemimi::ErrorContainer &error)
+                                  Hanami::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", checkpointUuid);
@@ -172,11 +172,11 @@ CheckpointTable::deleteCheckpoint(const std::string &checkpointUuid,
 bool
 CheckpointTable::setUploadFinish(const std::string &uuid,
                                  const std::string &fileUuid,
-                                 Kitsunemimi::ErrorContainer &error)
+                                 Hanami::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", uuid);
-    Kitsunemimi::JsonItem result;
+    Hanami::JsonItem result;
 
     UserContext userContext;
     userContext.isAdmin = true;
@@ -199,7 +199,7 @@ CheckpointTable::setUploadFinish(const std::string &uuid,
 
     // update temp-files entry to 100%
     const std::string tempFilesStr = result.get("temp_files").toString();
-    Kitsunemimi::JsonItem tempFiles;
+    Hanami::JsonItem tempFiles;
     if(tempFiles.parse(tempFilesStr, error) == false)
     {
         error.addMeesage("Failed to parse temp_files entry of checkpoint with UUID '"
@@ -208,11 +208,11 @@ CheckpointTable::setUploadFinish(const std::string &uuid,
         LOG_ERROR(error);
         return false;
     }
-    tempFiles.insert(fileUuid, Kitsunemimi::JsonItem(1.0f), true);
+    tempFiles.insert(fileUuid, Hanami::JsonItem(1.0f), true);
 
     // update new entry within the database
-    Kitsunemimi::JsonItem newValues;
-    newValues.insert("temp_files", Kitsunemimi::JsonItem(tempFiles.toString()));
+    Hanami::JsonItem newValues;
+    newValues.insert("temp_files", Hanami::JsonItem(tempFiles.toString()));
     if(update(newValues, userContext, conditions, error) == false)
     {
         error.addMeesage("Failed to update entry of checkpoint with UUID '" + uuid + "' in database");

@@ -10,11 +10,11 @@
 
 #include <hanami_common/statemachine.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 Statemachine_Test::Statemachine_Test()
-    : Kitsunemimi::CompareTestHelper("Statemachine_Test")
+    : Hanami::CompareTestHelper("Statemachine_Test")
 {
     createNewState_test();
     addTransition_test();

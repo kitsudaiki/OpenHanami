@@ -37,7 +37,7 @@
 #include <messages_processing/multiblock_data_processing.h>
 #include <messages_processing/singleblock_data_processing.h>
 
-namespace Kitsunemimi::Sakura
+namespace Hanami
 {
 
 /**

@@ -26,15 +26,15 @@
 #include <hanami_common/methods/string_methods.h>
 
 # define YY_DECL \
-    Kitsunemimi::Hanami::ClusterParser::symbol_type clusterlex (Kitsunemimi::Hanami::ClusterParserInterface& driver)
+    Hanami::ClusterParser::symbol_type clusterlex (Hanami::ClusterParserInterface& driver)
 YY_DECL;
 
-namespace Kitsunemimi::Hanami
+namespace Hanami
 {
 
-Kitsunemimi::Hanami::ClusterParserInterface* ClusterParserInterface::m_instance = nullptr;
+Hanami::ClusterParserInterface* ClusterParserInterface::m_instance = nullptr;
 
-using Kitsunemimi::splitStringByDelimiter;
+using Hanami::splitStringByDelimiter;
 
 /**
  * @brief The class is the interface for the bison-generated parser.
@@ -89,7 +89,7 @@ ClusterParserInterface::parse(ClusterMeta* result,
     m_inputString = inputString;
     m_errorMessage = "";
     int parserResult = 0;
-    Kitsunemimi::Hanami::ClusterParser parser(*this);
+    Hanami::ClusterParser parser(*this);
 
     this->scan_begin(inputString);
     parserResult = parser.parse();
@@ -147,7 +147,7 @@ ClusterParserInterface::removeQuotes(const std::string &input)
  * @param message error-specific message from the parser
  */
 void
-ClusterParserInterface::error(const Kitsunemimi::Hanami::location& location,
+ClusterParserInterface::error(const Hanami::location& location,
                               const std::string& message)
 {
     if(m_errorMessage.size() > 0) {

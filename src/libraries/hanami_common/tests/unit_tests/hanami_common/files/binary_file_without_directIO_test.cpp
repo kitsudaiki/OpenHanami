@@ -10,7 +10,7 @@
 
 #include <hanami_common/files/binary_file.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 struct TestStruct
@@ -21,7 +21,7 @@ struct TestStruct
 } __attribute__((packed));
 
 BinaryFile_withoutDirectIO_Test::BinaryFile_withoutDirectIO_Test()
-    : Kitsunemimi::CompareTestHelper("BinaryFile_withoutDirectIO_Test")
+    : Hanami::CompareTestHelper("BinaryFile_withoutDirectIO_Test")
 {
     initTest();
     closeFile_test();

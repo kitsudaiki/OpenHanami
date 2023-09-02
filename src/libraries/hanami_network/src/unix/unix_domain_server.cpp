@@ -9,7 +9,7 @@
 #include <unix/unix_domain_server.h>
 #include <hanami_common/logger.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 /**

@@ -70,9 +70,9 @@ GetRequestResult::GetRequestResult()
  */
 bool
 GetRequestResult::runTask(BlossomIO &blossomIO,
-                          const Kitsunemimi::DataMap &context,
+                          const Hanami::DataMap &context,
                           BlossomStatus &status,
-                          Kitsunemimi::ErrorContainer &error)
+                          Hanami::ErrorContainer &error)
 {
     const std::string uuid = blossomIO.input.get("uuid").getString();
     const UserContext userContext(context);

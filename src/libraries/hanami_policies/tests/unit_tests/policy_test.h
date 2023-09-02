@@ -25,11 +25,11 @@
 
 #include <hanami_common/test_helper/compare_test_helper.h>
 
-namespace Kitsunemimi::Hanami
+namespace Hanami
 {
 
 class Policy_Test
-        : public Kitsunemimi::CompareTestHelper
+        : public Hanami::CompareTestHelper
 {
 public:
     Policy_Test();

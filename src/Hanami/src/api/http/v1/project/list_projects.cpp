@@ -39,7 +39,7 @@ ListProjects::ListProjects()
 
     registerOutputField("header", SAKURA_ARRAY_TYPE)
             .setComment("Array with the namings all columns of the table.")
-            .setMatch(new Kitsunemimi::DataValue("[\"id\""
+            .setMatch(new Hanami::DataValue("[\"id\""
                                                  ",\"name\""
                                                  ",\"creator_id\"]"));
     registerOutputField("body", SAKURA_ARRAY_TYPE)
@@ -55,9 +55,9 @@ ListProjects::ListProjects()
  */
 bool
 ListProjects::runTask(BlossomIO &blossomIO,
-                      const Kitsunemimi::DataMap &context,
+                      const Hanami::DataMap &context,
                       BlossomStatus &status,
-                      Kitsunemimi::ErrorContainer &error)
+                      Hanami::ErrorContainer &error)
 {
     // check if admin
     if(context.getBoolByKey("is_admin") == false)
@@ -67,7 +67,7 @@ ListProjects::runTask(BlossomIO &blossomIO,
     }
 
     // get data from table
-    Kitsunemimi::TableItem table;
+    Hanami::TableItem table;
     if(ProjectsTable::getInstance()->getAllProjects(table, error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -75,7 +75,7 @@ ListProjects::runTask(BlossomIO &blossomIO,
     }
 
     // create output
-    Kitsunemimi::DataArray* headerInfo = table.getInnerHeader();
+    Hanami::DataArray* headerInfo = table.getInnerHeader();
     blossomIO.output.insert("header", headerInfo);
     blossomIO.output.insert("body", table.getBody());
     delete headerInfo;

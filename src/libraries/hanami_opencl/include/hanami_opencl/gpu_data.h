@@ -33,7 +33,7 @@
 #define __CL_ENABLE_EXCEPTIONS
 #include <CL/cl2.hpp>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 class GpuInterface;
 

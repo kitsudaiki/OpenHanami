@@ -30,11 +30,11 @@
 
 #include <hanami_common/logger.h>
 
-namespace Kitsunemimi {
+namespace Hanami {
 class DataMap;
 }
 
-namespace Kitsunemimi::Sakura
+namespace Hanami
 {
 class CpuPackage;
 
@@ -63,7 +63,7 @@ public:
     double getTotalTemperature(ErrorContainer &error);
 
     const std::string toJsonString() const;
-    Kitsunemimi::DataMap* toJson() const;
+    Hanami::DataMap* toJson() const;
 
 private:
     Host();

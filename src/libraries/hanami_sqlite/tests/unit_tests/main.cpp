@@ -4,6 +4,6 @@
 
 int main()
 {
-    Kitsunemimi::Sqlite_Test();
+    Hanami::Sqlite_Test();
     return 0;
 }

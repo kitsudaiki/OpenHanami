@@ -10,7 +10,7 @@
 
 #include <hanami_common/buffer/data_buffer.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 struct TestStruct
@@ -21,7 +21,7 @@ struct TestStruct
 } __attribute__((packed));
 
 DataBuffer_Test::DataBuffer_Test()
-    : Kitsunemimi::CompareTestHelper("DataBuffer_Test")
+    : Hanami::CompareTestHelper("DataBuffer_Test")
 {
     structSize_test();
     constructor_test();

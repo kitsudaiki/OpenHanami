@@ -31,18 +31,18 @@ namespace HanamiAI
 bool createProject(std::string &result,
                    const std::string &projectId,
                    const std::string &projectName,
-                   Kitsunemimi::ErrorContainer &error);
+                   Hanami::ErrorContainer &error);
 
 bool getProject(std::string &result,
                 const std::string &projectId,
-                Kitsunemimi::ErrorContainer &error);
+                Hanami::ErrorContainer &error);
 
 bool listProject(std::string &result,
-                 Kitsunemimi::ErrorContainer &error);
+                 Hanami::ErrorContainer &error);
 
 bool deleteProject(std::string &result,
                    const std::string &projectId,
-                   Kitsunemimi::ErrorContainer &error);
+                   Hanami::ErrorContainer &error);
 
 } // namespace HanamiAI
 

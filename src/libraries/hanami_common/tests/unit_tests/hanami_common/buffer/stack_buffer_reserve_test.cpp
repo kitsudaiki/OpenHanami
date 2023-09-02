@@ -9,11 +9,11 @@
 #include "stack_buffer_reserve_test.h"
 #include <hanami_common/buffer/stack_buffer_reserve.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 StackBufferReserve_Test::StackBufferReserve_Test()
-    : Kitsunemimi::CompareTestHelper("StackBufferReserve_Test")
+    : Hanami::CompareTestHelper("StackBufferReserve_Test")
 {
     addBuffer_test();
     getNumberOfBuffers_test();

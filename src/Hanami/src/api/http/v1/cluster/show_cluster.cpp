@@ -69,9 +69,9 @@ ShowCluster::ShowCluster()
  */
 bool
 ShowCluster::runTask(BlossomIO &blossomIO,
-                     const Kitsunemimi::DataMap &context,
+                     const Hanami::DataMap &context,
                      BlossomStatus &status,
-                     Kitsunemimi::ErrorContainer &error)
+                     Hanami::ErrorContainer &error)
 {
     const UserContext userContext(context);
     const std::string clusterUuid = blossomIO.input.get("uuid").getString();

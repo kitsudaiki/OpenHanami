@@ -11,11 +11,11 @@
 #include <hanami_sqlite/sqlite.h>
 #include <hanami_common/items/table_item.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 Sqlite_Test::Sqlite_Test()
-    : Kitsunemimi::CompareTestHelper("Sqlite_Test")
+    : Hanami::CompareTestHelper("Sqlite_Test")
 {
     initTest();
     initDB_test();
@@ -59,7 +59,7 @@ Sqlite_Test::execSqlCommand_test()
     ErrorContainer error;
     testDB.initDB(m_filePath, error);
 
-    Kitsunemimi::TableItem resultItem;
+    Hanami::TableItem resultItem;
 
     //-----------------------------------------------------------------
     // CREATE TABLE

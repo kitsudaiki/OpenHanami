@@ -35,7 +35,7 @@ UsersTable* UsersTable::instance = nullptr;
  * @brief constructor
  */
 UsersTable::UsersTable()
-    : HanamiSqlAdminTable(Kitsunemimi::Sakura::SqlDatabase::getInstance())
+    : HanamiSqlAdminTable(Hanami::SqlDatabase::getInstance())
 {
     m_tableName = "users";
 
@@ -95,13 +95,13 @@ UsersTable::getEnvVar(std::string &content,
  * @return true, if seccuessful, else false
  */
 bool
-UsersTable::getAllAdminUser(Kitsunemimi::ErrorContainer &error)
+UsersTable::getAllAdminUser(Hanami::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("is_admin", "true");
 
     // get admin-user from db
-    Kitsunemimi::JsonItem users;
+    Hanami::JsonItem users;
     if(getFromDb(users, conditions, error, false) == false)
     {
         error.addMeesage("Failed to get admin-users from database");
@@ -120,7 +120,7 @@ UsersTable::getAllAdminUser(Kitsunemimi::ErrorContainer &error)
  * @return true, if seccuessful, else false
  */
 bool
-UsersTable::initNewAdminUser(Kitsunemimi::ErrorContainer &error)
+UsersTable::initNewAdminUser(Hanami::ErrorContainer &error)
 {
     std::string userId = "";
     std::string userName = "";
@@ -163,9 +163,9 @@ UsersTable::initNewAdminUser(Kitsunemimi::ErrorContainer &error)
     std::string pwHash;
     const std::string salt = "e307bee0-9286-49bd-9273-6f644c12da1d";
     const std::string saltedPw = pw + salt;
-    Kitsunemimi::generate_SHA_256(pwHash, saltedPw);
+    Hanami::generate_SHA_256(pwHash, saltedPw);
 
-    Kitsunemimi::JsonItem userData;
+    Hanami::JsonItem userData;
     userData.insert("id", userId);
     userData.insert("name", userName);
     userData.insert("projects", "[]");
@@ -194,8 +194,8 @@ UsersTable::initNewAdminUser(Kitsunemimi::ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-UsersTable::addUser(Kitsunemimi::JsonItem &userData,
-                    Kitsunemimi::ErrorContainer &error)
+UsersTable::addUser(Hanami::JsonItem &userData,
+                    Hanami::ErrorContainer &error)
 {
     if(insertToDb(userData, error) == false)
     {
@@ -217,9 +217,9 @@ UsersTable::addUser(Kitsunemimi::JsonItem &userData,
  * @return true, if successful, else false
  */
 bool
-UsersTable::getUser(Kitsunemimi::JsonItem &result,
+UsersTable::getUser(Hanami::JsonItem &result,
                     const std::string &userId,
-                    Kitsunemimi::ErrorContainer &error,
+                    Hanami::ErrorContainer &error,
                     const bool showHiddenValues)
 {
     std::vector<RequestCondition> conditions;
@@ -247,8 +247,8 @@ UsersTable::getUser(Kitsunemimi::JsonItem &result,
  * @return true, if successful, else false
  */
 bool
-UsersTable::getAllUser(Kitsunemimi::TableItem &result,
-                       Kitsunemimi::ErrorContainer &error)
+UsersTable::getAllUser(Hanami::TableItem &result,
+                       Hanami::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
     if(getFromDb(result, conditions, error, false) == false)
@@ -270,7 +270,7 @@ UsersTable::getAllUser(Kitsunemimi::TableItem &result,
  */
 bool
 UsersTable::deleteUser(const std::string &userId,
-                       Kitsunemimi::ErrorContainer &error)
+                       Hanami::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("id", userId);
@@ -298,10 +298,10 @@ UsersTable::deleteUser(const std::string &userId,
 bool
 UsersTable::updateProjectsOfUser(const std::string &userId,
                                  const std::string &newProjects,
-                                 Kitsunemimi::ErrorContainer &error)
+                                 Hanami::ErrorContainer &error)
 {
-    Kitsunemimi::JsonItem newValues;
-    newValues.insert("projects", Kitsunemimi::JsonItem(newProjects));
+    Hanami::JsonItem newValues;
+    newValues.insert("projects", Hanami::JsonItem(newProjects));
 
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("id", userId);

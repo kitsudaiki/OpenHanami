@@ -22,7 +22,7 @@
 
 #include <hanami_opencl/gpu_data.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 GpuData::GpuData() {}
@@ -66,7 +66,7 @@ GpuData::addBuffer(const std::string &name,
             newBuffer.numberOfBytes += 4096 - (newBuffer.numberOfBytes % 4096);
         }
 
-        newBuffer.data = Kitsunemimi::alignedMalloc(4096, newBuffer.numberOfBytes);
+        newBuffer.data = Hanami::alignedMalloc(4096, newBuffer.numberOfBytes);
     }
     else
     {

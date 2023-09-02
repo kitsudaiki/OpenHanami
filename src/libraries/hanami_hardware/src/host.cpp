@@ -28,7 +28,7 @@
 #include <hanami_cpu/cpu.h>
 #include <hanami_common/items/data_items.h>
 
-namespace Kitsunemimi::Sakura
+namespace Hanami
 {
 
 Host* Host::instance = nullptr;
@@ -178,7 +178,7 @@ Host::toJsonString() const
 DataMap*
 Host::toJson() const
 {
-    Kitsunemimi::DataMap* result = new DataMap();
+    Hanami::DataMap* result = new DataMap();
 
     // convert host-specific information
     result->insert("hostname", new DataValue(hostName));

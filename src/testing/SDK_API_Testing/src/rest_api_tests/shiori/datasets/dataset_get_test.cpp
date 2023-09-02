@@ -40,8 +40,8 @@ DataSetGetTest::DataSetGetTest(const bool expectSuccess,
 }
 
 bool
-DataSetGetTest::runTest(Kitsunemimi::JsonItem &inputData,
-                        Kitsunemimi::ErrorContainer &error)
+DataSetGetTest::runTest(Hanami::JsonItem &inputData,
+                        Hanami::ErrorContainer &error)
 {
     if(m_uuid == "")
     {
@@ -63,7 +63,7 @@ DataSetGetTest::runTest(Kitsunemimi::JsonItem &inputData,
     }
 
     // parse output
-    Kitsunemimi::JsonItem jsonItem;
+    Hanami::JsonItem jsonItem;
     if(jsonItem.parse(result, error) == false) {
         return false;
     }

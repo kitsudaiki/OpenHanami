@@ -43,7 +43,7 @@ bool
 train(WebsocketClient* wsClient,
       std::vector<float> &inputValues,
       std::vector<float> &shouldValues,
-      Kitsunemimi::ErrorContainer &error)
+      Hanami::ErrorContainer &error)
 {
     return train(wsClient,
                  &inputValues[0],
@@ -67,7 +67,7 @@ float*
 request(WebsocketClient* wsClient,
         std::vector<float> &inputValues,
         uint64_t &numberOfOutputValues,
-        Kitsunemimi::ErrorContainer &error)
+        Hanami::ErrorContainer &error)
 {
     return request(wsClient,
                    &inputValues[0],
@@ -94,7 +94,7 @@ train(WebsocketClient* wsClient,
       const uint64_t numberOfInputValues,
       float* shouldValues,
       const uint64_t numberOfShouldValues,
-      Kitsunemimi::ErrorContainer &error)
+      Hanami::ErrorContainer &error)
 {
     uint8_t buffer[96*1024];
 
@@ -114,7 +114,7 @@ train(WebsocketClient* wsClient,
     const uint64_t inputMsgSize = inputMsg.ByteSizeLong();
     if(inputMsg.SerializeToArray(buffer, inputMsgSize) == false)
     {
-        Kitsunemimi::ErrorContainer error;
+        Hanami::ErrorContainer error;
         error.addMeesage("Failed to serialize train-message");
         return false;
     }
@@ -156,7 +156,7 @@ train(WebsocketClient* wsClient,
     const uint64_t shouldMsgSize = shouldMsg.ByteSizeLong();
     if(shouldMsg.SerializeToArray(buffer, shouldMsgSize) == false)
     {
-        Kitsunemimi::ErrorContainer error;
+        Hanami::ErrorContainer error;
         error.addMeesage("Failed to serialize train-message");
         return false;
     }
@@ -211,7 +211,7 @@ request(WebsocketClient* wsClient,
         float* inputData,
         const uint64_t numberOfInputValues,
         uint64_t &numberOfOutputValues,
-        Kitsunemimi::ErrorContainer &error)
+        Hanami::ErrorContainer &error)
 {
     uint8_t buffer[96*1024];
 
@@ -231,7 +231,7 @@ request(WebsocketClient* wsClient,
     const uint64_t inputMsgSize = inputMsg.ByteSizeLong();
     if(inputMsg.SerializeToArray(buffer, inputMsgSize) == false)
     {
-        Kitsunemimi::ErrorContainer error;
+        Hanami::ErrorContainer error;
         error.addMeesage("Failed to serialize request-message");
         LOG_ERROR(error);
         return nullptr;

@@ -26,7 +26,7 @@
 #include <hanami_common/logger.h>
 #include <database/generic_tables/hanami_sql_admin_table.h>
 
-namespace Kitsunemimi {
+namespace Hanami {
 class JsonItem;
 }
 class UsersTable
@@ -43,21 +43,21 @@ public:
 
     ~UsersTable();
 
-    bool initNewAdminUser(Kitsunemimi::ErrorContainer &error);
+    bool initNewAdminUser(Hanami::ErrorContainer &error);
 
-    bool addUser(Kitsunemimi::JsonItem &userData,
-                 Kitsunemimi::ErrorContainer &error);
-    bool getUser(Kitsunemimi::JsonItem &result,
+    bool addUser(Hanami::JsonItem &userData,
+                 Hanami::ErrorContainer &error);
+    bool getUser(Hanami::JsonItem &result,
                  const std::string &userId,
-                 Kitsunemimi::ErrorContainer &error,
+                 Hanami::ErrorContainer &error,
                  const bool showHiddenValues);
-    bool getAllUser(Kitsunemimi::TableItem &result,
-                    Kitsunemimi::ErrorContainer &error);
+    bool getAllUser(Hanami::TableItem &result,
+                    Hanami::ErrorContainer &error);
     bool deleteUser(const std::string &userId,
-                    Kitsunemimi::ErrorContainer &error);
+                    Hanami::ErrorContainer &error);
     bool updateProjectsOfUser(const std::string &userId,
                               const std::string &newProjects,
-                              Kitsunemimi::ErrorContainer &error);
+                              Hanami::ErrorContainer &error);
 
 private:
     UsersTable();
@@ -65,7 +65,7 @@ private:
 
     bool getEnvVar(std::string &content, const std::string &key) const;
 
-    bool getAllAdminUser(Kitsunemimi::ErrorContainer &error);
+    bool getAllAdminUser(Hanami::ErrorContainer &error);
 };
 
 #endif // HANAMI_USERS_TABLE_H

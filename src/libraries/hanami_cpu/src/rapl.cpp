@@ -29,7 +29,7 @@ typedef std::chrono::seconds chronoSec;
 typedef std::chrono::high_resolution_clock::time_point chronoTimePoint;
 typedef std::chrono::high_resolution_clock chronoClock;
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 #define MSR_RAPL_POWER_UNIT            0x606

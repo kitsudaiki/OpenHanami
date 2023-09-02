@@ -8,7 +8,7 @@
 
 #include "bogus_event.h"
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 BogusEvent::BogusEvent() {}

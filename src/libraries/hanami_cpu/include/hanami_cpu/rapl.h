@@ -31,7 +31,7 @@
 #ifndef KITSUNEMIMI_CPU_RAPL_H
 #define KITSUNEMIMI_CPU_RAPL_H
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 struct RaplDiff

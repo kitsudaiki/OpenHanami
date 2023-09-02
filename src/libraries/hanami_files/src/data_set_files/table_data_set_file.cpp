@@ -37,7 +37,7 @@ TableDataSetFile::TableDataSetFile(const std::string &filePath)
  *
  * @param file pointer to binary-file object
  */
-TableDataSetFile::TableDataSetFile(Kitsunemimi::BinaryFile* file)
+TableDataSetFile::TableDataSetFile(Hanami::BinaryFile* file)
     : DataSetFile(file) {}
 
 /**
@@ -95,7 +95,7 @@ TableDataSetFile::readHeader(const uint8_t* u8buffer)
  * @return true, if successful, else false
  */
 bool
-TableDataSetFile::updateHeader(Kitsunemimi::ErrorContainer &error)
+TableDataSetFile::updateHeader(Hanami::ErrorContainer &error)
 {
     // write table-header to file
     if(m_targetFile->writeDataIntoFile(&tableHeader,
@@ -134,13 +134,13 @@ TableDataSetFile::updateHeader(Kitsunemimi::ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-TableDataSetFile::getPayload(Kitsunemimi::DataBuffer &result,
-                             Kitsunemimi::ErrorContainer &error,
+TableDataSetFile::getPayload(Hanami::DataBuffer &result,
+                             Hanami::ErrorContainer &error,
                              const std::string &columnName)
 {
-    Kitsunemimi::DataBuffer readBuffer;
+    Hanami::DataBuffer readBuffer;
     const uint64_t bufferSize = (m_totalFileSize - m_headerSize) / sizeof(float);
-    Kitsunemimi::allocateBlocks_DataBuffer(readBuffer, Kitsunemimi::calcBytesToBlocks(bufferSize));
+    Hanami::allocateBlocks_DataBuffer(readBuffer, Hanami::calcBytesToBlocks(bufferSize));
 
     if(m_targetFile->readDataFromFile(readBuffer.data,
                                       m_headerSize,
@@ -171,7 +171,7 @@ TableDataSetFile::getPayload(Kitsunemimi::DataBuffer &result,
 
     // write data of column into the output-buffer
     const uint64_t payloadSize = tableHeader.numberOfLines * sizeof(float);
-    Kitsunemimi::allocateBlocks_DataBuffer(result, Kitsunemimi::calcBytesToBlocks(payloadSize));
+    Hanami::allocateBlocks_DataBuffer(result, Hanami::calcBytesToBlocks(payloadSize));
     float* filteredData = static_cast<float*>(result.data);
     float* floatPayload = static_cast<float*>(readBuffer.data);
     for(uint64_t line = 0; line < tableHeader.numberOfLines; line++) {
@@ -192,9 +192,9 @@ TableDataSetFile::print()
     std::cout<<"======================================================="<<std::endl;
     std::cout<<std::endl;
 
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
 
-    Kitsunemimi::DataBuffer completeFile;
+    Hanami::DataBuffer completeFile;
     if(m_targetFile->readCompleteFile(completeFile, error) == false)
     {
         error.addMeesage("Failed to read file");

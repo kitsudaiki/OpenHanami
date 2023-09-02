@@ -36,8 +36,8 @@ ClusterListTest::ClusterListTest(const bool expectSuccess)
 }
 
 bool
-ClusterListTest::runTest(Kitsunemimi::JsonItem &inputData,
-                         Kitsunemimi::ErrorContainer &error)
+ClusterListTest::runTest(Hanami::JsonItem &inputData,
+                         Hanami::ErrorContainer &error)
 {
     // list clusters
     std::string result;
@@ -50,7 +50,7 @@ ClusterListTest::runTest(Kitsunemimi::JsonItem &inputData,
     }
 
     // parse output
-    Kitsunemimi::JsonItem jsonItem;
+    Hanami::JsonItem jsonItem;
     if(jsonItem.parse(result, error) == false) {
         return false;
     }

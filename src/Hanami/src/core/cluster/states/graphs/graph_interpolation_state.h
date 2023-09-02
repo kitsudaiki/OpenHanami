@@ -28,7 +28,7 @@
 class Cluster;
 
 class GraphInterpolation_State
-        : public Kitsunemimi::Event
+        : public Hanami::Event
 {
 public:
     GraphInterpolation_State(Cluster* cluster);

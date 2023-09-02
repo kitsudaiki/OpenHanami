@@ -29,10 +29,10 @@
 
 int main()
 {
-    Kitsunemimi::initConsoleLogger(true);
+    Hanami::initConsoleLogger(true);
 
-    Kitsunemimi::UnixDomain_Test();
-    Kitsunemimi::Tcp_Test();
-    Kitsunemimi::TlsTcp_Test();
-    Kitsunemimi::Sakura::Session_Test();
+    Hanami::UnixDomain_Test();
+    Hanami::Tcp_Test();
+    Hanami::TlsTcp_Test();
+    Hanami::Session_Test();
 }

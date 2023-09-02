@@ -33,37 +33,37 @@ bool createUser(std::string &result,
                 const std::string &userName,
                 const std::string &password,
                 const bool isAdmin,
-                Kitsunemimi::ErrorContainer &error);
+                Hanami::ErrorContainer &error);
 
 bool getUser(std::string &result,
              const std::string &userId,
-             Kitsunemimi::ErrorContainer &error);
+             Hanami::ErrorContainer &error);
 
 bool listUser(std::string &result,
-              Kitsunemimi::ErrorContainer &error);
+              Hanami::ErrorContainer &error);
 
 bool deleteUser(std::string &result,
                 const std::string &userId,
-                Kitsunemimi::ErrorContainer &error);
+                Hanami::ErrorContainer &error);
 
 bool addProjectToUser(std::string &result,
                       const std::string &userId,
                       const std::string &projectId,
                       const std::string &role,
                       const bool isProjectAdmin,
-                      Kitsunemimi::ErrorContainer &error);
+                      Hanami::ErrorContainer &error);
 
 bool removeProjectFromUser(std::string &result,
                            const std::string &userId,
                            const std::string &projectId,
-                           Kitsunemimi::ErrorContainer &error);
+                           Hanami::ErrorContainer &error);
 
 bool listProjectsOfUser(std::string &result,
-                        Kitsunemimi::ErrorContainer &error);
+                        Hanami::ErrorContainer &error);
 
 bool switchProject(std::string &result,
                    const std::string &projectId,
-                   Kitsunemimi::ErrorContainer &error);
+                   Hanami::ErrorContainer &error);
 
 } // namespace HanamiAI
 

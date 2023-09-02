@@ -29,7 +29,7 @@
 
 #include <hanami_common/methods/string_methods.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 //--------------------------------------------------------------------------------------------------
@@ -79,7 +79,7 @@ generate_SHA_256(std::string &result,
 
     hash.CalculateDigest(digest, (CryptoPP::byte*)input, inputSize);
     hexEncode(result, digest, sizeof(digest));
-    Kitsunemimi::toLowerCase(result);
+    Hanami::toLowerCase(result);
 
     return true;
 }

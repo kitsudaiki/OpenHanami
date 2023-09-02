@@ -10,11 +10,11 @@
 
 #include <hanami_common/methods/string_methods.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 StringMethods_Test::StringMethods_Test()
-    : Kitsunemimi::CompareTestHelper("StringMethods_Test")
+    : Hanami::CompareTestHelper("StringMethods_Test")
 {
     splitStringByDelimiter_test();
     splitStringByLength_test();

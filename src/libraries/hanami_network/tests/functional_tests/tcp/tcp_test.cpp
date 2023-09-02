@@ -13,14 +13,14 @@
 #include <template_server.h>
 #include <hanami_common/threading/thread_handler.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 /**
  * processMessageTcp-callback
  */
 uint64_t processMessageTcp(void* target,
-                           Kitsunemimi::RingBuffer* recvBuffer,
+                           Hanami::RingBuffer* recvBuffer,
                            AbstractSocket*)
 {
     Tcp_Test* targetTest = static_cast<Tcp_Test*>(target);
@@ -47,7 +47,7 @@ void processConnectionTcp(void* target,
 
 
 Tcp_Test::Tcp_Test() :
-    Kitsunemimi::CompareTestHelper("Tcp_Test")
+    Hanami::CompareTestHelper("Tcp_Test")
 {
     initTestCase();
     checkConnectionInit();

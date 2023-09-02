@@ -26,7 +26,7 @@
 #include <string>
 #include <iostream>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 class CompareTestHelper

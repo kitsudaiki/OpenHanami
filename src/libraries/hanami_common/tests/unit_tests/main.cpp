@@ -36,30 +36,30 @@
 
 int main()
 {
-    Kitsunemimi::DataBuffer_Test();
-    Kitsunemimi::ItemBuffer_Test();
-    Kitsunemimi::RingBuffer_Test();
-    Kitsunemimi::StackBufferReserve_Test();
-    Kitsunemimi::StackBuffer_Test();
+    Hanami::DataBuffer_Test();
+    Hanami::ItemBuffer_Test();
+    Hanami::RingBuffer_Test();
+    Hanami::StackBufferReserve_Test();
+    Hanami::StackBuffer_Test();
 
-    Kitsunemimi::StringMethods_Test();
-    Kitsunemimi::VectorMethods_Test();
-    Kitsunemimi::FileMethods_Test();
+    Hanami::StringMethods_Test();
+    Hanami::VectorMethods_Test();
+    Hanami::FileMethods_Test();
 
-    Kitsunemimi::State_Test();
-    Kitsunemimi::Statemachine_Test();
-    Kitsunemimi::ProgressBar_Test();
-    Kitsunemimi::Logger_Test();
+    Hanami::State_Test();
+    Hanami::Statemachine_Test();
+    Hanami::ProgressBar_Test();
+    Hanami::Logger_Test();
 
-    Kitsunemimi::ThreadHandler_Test();
+    Hanami::ThreadHandler_Test();
 
-    Kitsunemimi::DataItems_DataValue_Test();
-    Kitsunemimi::DataItems_DataArray_Test();
-    Kitsunemimi::DataItems_DataMap_Test();
+    Hanami::DataItems_DataValue_Test();
+    Hanami::DataItems_DataArray_Test();
+    Hanami::DataItems_DataMap_Test();
 
-    Kitsunemimi::TextFile_Test();
-    Kitsunemimi::BinaryFile_withDirectIO_Test();
-    Kitsunemimi::BinaryFile_withoutDirectIO_Test();
+    Hanami::TextFile_Test();
+    Hanami::BinaryFile_withDirectIO_Test();
+    Hanami::BinaryFile_withoutDirectIO_Test();
 
-    Kitsunemimi::TableItem_test();
+    Hanami::TableItem_test();
 }

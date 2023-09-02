@@ -25,11 +25,11 @@
 
 #include <hanami_common/test_helper/memory_leak_test_helper.h>
 
-namespace Kitsunemimi::Hanami
+namespace Hanami
 {
 
 class Cluster_ParseString_Test
-        : public Kitsunemimi::MemoryLeakTestHelpter
+        : public Hanami::MemoryLeakTestHelpter
 {
 public:
     Cluster_ParseString_Test();

@@ -23,14 +23,14 @@
 #include "message_blocker_handler.h"
 #include <hanami_network/session.h>
 
-namespace Kitsunemimi::Sakura
+namespace Hanami
 {
 
 /**
  * @brief constructor
  */
 MessageBlockerHandler::MessageBlockerHandler()
-    : Kitsunemimi::Thread("MessageBlockerHandler") {}
+    : Hanami::Thread("MessageBlockerHandler") {}
 
 /**
  * @brief destructor

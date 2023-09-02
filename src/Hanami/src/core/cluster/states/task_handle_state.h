@@ -35,7 +35,7 @@
 class Cluster;
 
 class TaskHandle_State
-        : public Kitsunemimi::Event
+        : public Hanami::Event
 {
 public:
     TaskHandle_State(Cluster* cluster);

@@ -64,7 +64,7 @@ ClusterHandler::removeCluster(const std::string uuid)
             if(it->second->msgClient != nullptr)
             {
                 it->second->msgClient->m_targetCluster = nullptr;
-                Kitsunemimi::ErrorContainer error;
+                Hanami::ErrorContainer error;
                 it->second->msgClient->closeClient(error);
             }
 

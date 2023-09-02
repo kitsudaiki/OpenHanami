@@ -54,7 +54,7 @@ struct ValueItem
         COMPARE_UNEQUAL_PAIR_TYPE = 4,
     };
 
-    Kitsunemimi::DataItem* item = nullptr;
+    Hanami::DataItem* item = nullptr;
     ValueType type = INPUT_PAIR_TYPE;
     bool isIdentifier = false;
     std::string comment = "";

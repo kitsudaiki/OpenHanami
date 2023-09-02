@@ -26,15 +26,15 @@
 #include <hanami_common/methods/string_methods.h>
 
 # define YY_DECL \
-    Kitsunemimi::Hanami::PolicyParser::symbol_type policylex (Kitsunemimi::Hanami::PolicyParserInterface& driver)
+    Hanami::PolicyParser::symbol_type policylex (Hanami::PolicyParserInterface& driver)
 YY_DECL;
 
-namespace Kitsunemimi::Hanami
+namespace Hanami
 {
 
-Kitsunemimi::Hanami::PolicyParserInterface* PolicyParserInterface::m_instance = nullptr;
+Hanami::PolicyParserInterface* PolicyParserInterface::m_instance = nullptr;
 
-using Kitsunemimi::splitStringByDelimiter;
+using Hanami::splitStringByDelimiter;
 
 /**
  * @brief The class is the interface for the bison-generated parser.
@@ -93,7 +93,7 @@ PolicyParserInterface::parse(std::map<std::string, PolicyEntry>* result,
 
     // run parser-code
     this->scan_begin(inputString);
-    Kitsunemimi::Hanami::PolicyParser parser(*this);
+    Hanami::PolicyParser parser(*this);
     int res = parser.parse();
     this->scan_end();
 
@@ -148,7 +148,7 @@ PolicyParserInterface::removeQuotes(const std::string &input)
  * @param message error-specific message from the parser
  */
 void
-PolicyParserInterface::error(const Kitsunemimi::Hanami::location& location,
+PolicyParserInterface::error(const Hanami::location& location,
                              const std::string& message)
 {
     if(m_errorMessage.size() > 0) {

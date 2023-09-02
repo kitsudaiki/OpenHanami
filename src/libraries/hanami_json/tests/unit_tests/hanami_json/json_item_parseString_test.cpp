@@ -10,11 +10,11 @@
 #include <hanami_json/json_item.h>
 #include <hanami_common/items/data_items.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 JsonItem_ParseString_Test::JsonItem_ParseString_Test()
-    : Kitsunemimi::CompareTestHelper("JsonItems_ParseString_Test")
+    : Hanami::CompareTestHelper("JsonItems_ParseString_Test")
 {
     parseString_test();
 }
@@ -78,7 +78,7 @@ JsonItem_ParseString_Test::parseString_test()
     JsonItem emptyItem;
     result = emptyItem.parse(input, error);
     TEST_EQUAL(result, true);
-    TEST_EQUAL(emptyItem.getItemContent()->getType(), Kitsunemimi::DataItem::MAP_TYPE);
+    TEST_EQUAL(emptyItem.getItemContent()->getType(), Hanami::DataItem::MAP_TYPE);
     TEST_EQUAL(emptyItem.getItemContent()->toMap()->size(), 0);
 
     // negative test

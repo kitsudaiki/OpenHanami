@@ -29,7 +29,7 @@
 #include <sstream>
 #include <algorithm>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 void splitStringByDelimiter(std::vector<std::string> &result,

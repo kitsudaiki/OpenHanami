@@ -10,11 +10,11 @@
 
 #include <hanami_common/progress_bar.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 ProgressBar_Test::ProgressBar_Test()
-    : Kitsunemimi::CompareTestHelper("ProgressBar_Test")
+    : Hanami::CompareTestHelper("ProgressBar_Test")
 {
     progress_test();
 }

@@ -45,8 +45,8 @@ ImageTrainTaskTest::ImageTrainTaskTest(const bool expectSuccess)
 }
 
 bool
-ImageTrainTaskTest::runTest(Kitsunemimi::JsonItem &inputData,
-                            Kitsunemimi::ErrorContainer &error)
+ImageTrainTaskTest::runTest(Hanami::JsonItem &inputData,
+                            Hanami::ErrorContainer &error)
 {
     // create new user
     std::string result;
@@ -65,7 +65,7 @@ ImageTrainTaskTest::runTest(Kitsunemimi::JsonItem &inputData,
     }
 
     // parse output
-    Kitsunemimi::JsonItem jsonItem;
+    Hanami::JsonItem jsonItem;
     if(jsonItem.parse(result, error) == false) {
         return false;
     }

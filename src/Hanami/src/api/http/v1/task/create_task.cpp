@@ -79,9 +79,9 @@ CreateTask::CreateTask()
  */
 bool
 CreateTask::runTask(BlossomIO &blossomIO,
-                              const Kitsunemimi::DataMap &context,
+                              const Hanami::DataMap &context,
                               BlossomStatus &status,
-                              Kitsunemimi::ErrorContainer &error)
+                              Hanami::ErrorContainer &error)
 {
     const std::string name = blossomIO.input.get("name").getString();
     const std::string clusterUuid = blossomIO.input.get("cluster_uuid").getString();
@@ -90,7 +90,7 @@ CreateTask::runTask(BlossomIO &blossomIO,
     const UserContext userContext(context);
 
     // check if user exist within the table
-    Kitsunemimi::JsonItem getResult;
+    Hanami::JsonItem getResult;
     if(ClusterTable::getInstance()->getCluster(getResult,
                                                clusterUuid,
                                                userContext,
@@ -120,7 +120,7 @@ CreateTask::runTask(BlossomIO &blossomIO,
     }
 
     // get meta-infos of data-set from shiori
-    Kitsunemimi::JsonItem dataSetInfo;
+    Hanami::JsonItem dataSetInfo;
     if(DataSetTable::getInstance()->getDateSetInfo(dataSetInfo,
                                                    dataSetUuid,
                                                    context,
@@ -200,13 +200,13 @@ CreateTask::imageTask(std::string &taskUuid,
                       const std::string &taskType,
                       const UserContext &userContext,
                       Cluster* cluster,
-                      Kitsunemimi::JsonItem &dataSetInfo,
+                      Hanami::JsonItem &dataSetInfo,
                       BlossomStatus &status,
-                      Kitsunemimi::ErrorContainer &error)
+                      Hanami::ErrorContainer &error)
 {
     // get input-data
     const std::string dataSetLocation = dataSetInfo.get("location").getString();
-    Kitsunemimi::DataBuffer buffer;
+    Hanami::DataBuffer buffer;
     if(getDataSetPayload(buffer, dataSetLocation, error) == false)
     {
         error.addMeesage("Failed to get data of data-set from location '"
@@ -270,9 +270,9 @@ CreateTask::tableTask(std::string &taskUuid,
                       const std::string &taskType,
                       const UserContext &userContext,
                       Cluster* cluster,
-                      Kitsunemimi::JsonItem &dataSetInfo,
+                      Hanami::JsonItem &dataSetInfo,
                       BlossomStatus &status,
-                      Kitsunemimi::ErrorContainer &error)
+                      Hanami::ErrorContainer &error)
 {
     // init request-task
     const uint64_t numberOfInputs = cluster->clusterHeader->inputValues.count;
@@ -282,7 +282,7 @@ CreateTask::tableTask(std::string &taskUuid,
     // get input-data
     const std::string inputColumnName = "input";
     const std::string dataSetLocation = dataSetInfo.get("location").getString();
-    Kitsunemimi::DataBuffer inputBuffer;
+    Hanami::DataBuffer inputBuffer;
     if(getDataSetPayload(inputBuffer, dataSetLocation, error) == false)
     {
         error.addMeesage("Failed to get data of data-set from location '"
@@ -310,7 +310,7 @@ CreateTask::tableTask(std::string &taskUuid,
     {
         // get output-data
         const std::string outputColumnName = "output";
-        Kitsunemimi::DataBuffer outputBuffer;
+        Hanami::DataBuffer outputBuffer;
         if(getDataSetPayload(outputBuffer, dataSetLocation, error) == false)
         {
             error.addMeesage("Failed to get data of data-set from location '"

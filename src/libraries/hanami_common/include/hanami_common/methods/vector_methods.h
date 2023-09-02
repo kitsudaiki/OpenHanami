@@ -28,7 +28,7 @@
 #include <iostream>
 #include <algorithm>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 void removeEmptyStrings(std::vector<std::string> &inputVector);

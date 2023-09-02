@@ -22,7 +22,7 @@
 
 #include <hanami_common/progress_bar.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 /**

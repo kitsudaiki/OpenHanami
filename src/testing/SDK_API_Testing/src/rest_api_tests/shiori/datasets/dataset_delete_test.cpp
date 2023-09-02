@@ -38,8 +38,8 @@ DataSetDeleteTest::DataSetDeleteTest(const bool expectSuccess,
 }
 
 bool
-DataSetDeleteTest::runTest(Kitsunemimi::JsonItem &inputData,
-                           Kitsunemimi::ErrorContainer &error)
+DataSetDeleteTest::runTest(Hanami::JsonItem &inputData,
+                           Hanami::ErrorContainer &error)
 {
     std::string uuid = "";
     if(m_type == "train") {
@@ -62,7 +62,7 @@ DataSetDeleteTest::runTest(Kitsunemimi::JsonItem &inputData,
     }
 
     // parse output
-    Kitsunemimi::JsonItem jsonItem;
+    Hanami::JsonItem jsonItem;
     if(jsonItem.parse(result, error) == false) {
         return false;
     }

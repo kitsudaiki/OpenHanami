@@ -10,9 +10,9 @@
 
 #include <hanami_common/files/binary_file.h>
 
-using Kitsunemimi::DataBuffer;
+using Hanami::DataBuffer;
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 /**
@@ -49,7 +49,7 @@ BinaryFile::~BinaryFile()
  * @return true is successful, else false
  */
 bool
-BinaryFile::initFile(Kitsunemimi::ErrorContainer &error)
+BinaryFile::initFile(Hanami::ErrorContainer &error)
 {
     m_fileDescriptor = open(m_filePath.c_str(),
                             O_CREAT | O_RDWR | O_LARGEFILE,

@@ -5,7 +5,7 @@
 
 int main()
 {
-    Kitsunemimi::initConsoleLogger(true);
-    Kitsunemimi::Sakura::SqlTable_Test();
+    Hanami::initConsoleLogger(true);
+    Hanami::SqlTable_Test();
     return 0;
 }

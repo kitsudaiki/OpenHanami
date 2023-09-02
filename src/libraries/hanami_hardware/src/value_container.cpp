@@ -88,10 +88,10 @@ ValueContainer::addValue(const float newValue, const uint64_t sectionId)
  *
  * @param result data-item with all information
  */
-Kitsunemimi::DataMap*
+Hanami::DataMap*
 ValueContainer::toJson()
 {
-    Kitsunemimi::DataMap* result = new Kitsunemimi::DataMap();
+    Hanami::DataMap* result = new Hanami::DataMap();
     result->insert("seconds",appendSectionToJson(0));
     result->insert("minutes",appendSectionToJson(1));
     result->insert("hours",appendSectionToJson(2));
@@ -106,7 +106,7 @@ ValueContainer::toJson()
  *
  * @return data-item with all value of the selected value-section
  */
-Kitsunemimi::DataArray*
+Hanami::DataArray*
 ValueContainer::appendSectionToJson(const uint64_t sectionId)
 {
     // precheck
@@ -115,12 +115,12 @@ ValueContainer::appendSectionToJson(const uint64_t sectionId)
     }
 
     // fill value in a array
-    Kitsunemimi::DataArray* valueList = new Kitsunemimi::DataArray();
+    Hanami::DataArray* valueList = new Hanami::DataArray();
     ValueSection* tempValueSection = &m_valueSections[sectionId];
     uint64_t pos = tempValueSection->pos;
     for(uint64_t i = 0; i < tempValueSection->values.size(); i++)
     {
-        valueList->append(new Kitsunemimi::DataValue(tempValueSection->values.at(pos)));
+        valueList->append(new Hanami::DataValue(tempValueSection->values.at(pos)));
         pos = (pos + 1) % tempValueSection->values.size();
     }
 

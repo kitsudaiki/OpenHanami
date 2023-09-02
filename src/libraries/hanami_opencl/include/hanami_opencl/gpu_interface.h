@@ -34,7 +34,7 @@
 #include <hanami_opencl/gpu_data.h>
 #include <hanami_common/logger.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 class GpuInterface

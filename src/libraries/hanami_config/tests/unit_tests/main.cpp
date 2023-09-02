@@ -25,6 +25,6 @@
 
 int main()
 {
-    Kitsunemimi::ConfigHandler_Test configHandler_Test;
+    Hanami::ConfigHandler_Test configHandler_Test;
     return 0;
 }

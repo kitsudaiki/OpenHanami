@@ -38,7 +38,7 @@ void*
 operator new(size_t size)
 {
     void* ptr = malloc(size);
-    Kitsunemimi::increaseGlobalMemoryCounter(0);
+    Hanami::increaseGlobalMemoryCounter(0);
     return ptr;
 }
 
@@ -46,7 +46,7 @@ void*
 operator new[](size_t size)
 {
     void* ptr = malloc(size);
-    Kitsunemimi::increaseGlobalMemoryCounter(0);
+    Hanami::increaseGlobalMemoryCounter(0);
     return ptr;
 }
 
@@ -54,31 +54,31 @@ void
 operator delete(void* ptr) noexcept
 {
     free(ptr);
-    Kitsunemimi::decreaseGlobalMemoryCounter(0);
+    Hanami::decreaseGlobalMemoryCounter(0);
 }
 
 void
 operator delete[](void* ptr) noexcept
 {
     free(ptr);
-    Kitsunemimi::decreaseGlobalMemoryCounter(0);
+    Hanami::decreaseGlobalMemoryCounter(0);
 }
 
 void  operator delete(void* ptr, std::size_t)  noexcept
 {
     free(ptr);
-    Kitsunemimi::decreaseGlobalMemoryCounter(0);
+    Hanami::decreaseGlobalMemoryCounter(0);
 }
 
 void  operator delete[](void* ptr, std::size_t)  noexcept
 {
     free(ptr);
-    Kitsunemimi::decreaseGlobalMemoryCounter(0);
+    Hanami::decreaseGlobalMemoryCounter(0);
 }
 
 //==================================================================================================
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 /**

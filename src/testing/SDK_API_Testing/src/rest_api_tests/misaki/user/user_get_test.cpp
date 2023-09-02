@@ -38,8 +38,8 @@ UserGetTest::UserGetTest(const bool expectSuccess,
 }
 
 bool
-UserGetTest::runTest(Kitsunemimi::JsonItem &inputData,
-                     Kitsunemimi::ErrorContainer &error)
+UserGetTest::runTest(Hanami::JsonItem &inputData,
+                     Hanami::ErrorContainer &error)
 {
     if(m_id == "") {
         m_id = inputData.get("user_id").getString();
@@ -56,7 +56,7 @@ UserGetTest::runTest(Kitsunemimi::JsonItem &inputData,
     }
 
     // parse output
-    Kitsunemimi::JsonItem jsonItem;
+    Hanami::JsonItem jsonItem;
     if(jsonItem.parse(result, error) == false) {
         return false;
     }

@@ -10,7 +10,7 @@
 #include <tls_tcp/tls_tcp_socket.h>
 #include <hanami_common/logger.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 /**

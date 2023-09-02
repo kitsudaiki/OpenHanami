@@ -23,14 +23,14 @@
 #include <hanami_common/threading/thread.h>
 #include <hanami_common/logger.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 struct RingBuffer;
 
 class AbstractSocket;
 
 class AbstractServer
-        : public Kitsunemimi::Thread
+        : public Hanami::Thread
 {
 public:
     AbstractServer(void* target,

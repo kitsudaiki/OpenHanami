@@ -39,8 +39,8 @@ DataSetCreateMnistTest::DataSetCreateMnistTest(const bool expectSuccess,
 }
 
 bool
-DataSetCreateMnistTest::runTest(Kitsunemimi::JsonItem &inputData,
-                                Kitsunemimi::ErrorContainer &error)
+DataSetCreateMnistTest::runTest(Hanami::JsonItem &inputData,
+                                Hanami::ErrorContainer &error)
 {
     std::string result;
     if(m_type == "train")
@@ -72,7 +72,7 @@ DataSetCreateMnistTest::runTest(Kitsunemimi::JsonItem &inputData,
     }
 
     // parse output
-    Kitsunemimi::JsonItem jsonItem;
+    Hanami::JsonItem jsonItem;
     if(jsonItem.parse(result, error) == false) {
         return false;
     }

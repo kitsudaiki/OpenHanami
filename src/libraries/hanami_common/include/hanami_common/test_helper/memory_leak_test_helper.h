@@ -35,9 +35,9 @@ void  operator delete[](void* ptr)  noexcept;
 void  operator delete(void* ptr, std::size_t)  noexcept;
 void  operator delete[](void* ptr, std::size_t)  noexcept;
 
-namespace Kitsunemimi
+namespace Hanami
 {
-using Kitsunemimi::MemoryCounter;
+using Hanami::MemoryCounter;
 
 class MemoryLeakTestHelpter
 {

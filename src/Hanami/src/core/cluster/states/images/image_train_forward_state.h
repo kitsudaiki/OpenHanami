@@ -28,7 +28,7 @@
 class Cluster;
 
 class ImageTrainForward_State
-        : public Kitsunemimi::Event
+        : public Hanami::Event
 {
 public:
     ImageTrainForward_State(Cluster* cluster);

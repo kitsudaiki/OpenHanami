@@ -22,7 +22,7 @@
 
 #include <hanami_database/sql_database.h>
 
-namespace Kitsunemimi::Sakura
+namespace Hanami
 {
 
 SqlDatabase* SqlDatabase::instance = nullptr;
@@ -50,7 +50,7 @@ SqlDatabase::~SqlDatabase()
  */
 bool
 SqlDatabase::initDatabase(const std::string &path,
-                          Kitsunemimi::ErrorContainer &error)
+                          Hanami::ErrorContainer &error)
 {
     std::lock_guard<std::mutex> guard(m_lock);
 

@@ -26,7 +26,7 @@
 #include <hanami_common/logger.h>
 #include <database/generic_tables/hanami_sql_table.h>
 
-namespace Kitsunemimi {
+namespace Hanami {
 class JsonItem;
 }
 
@@ -44,29 +44,29 @@ public:
 
     ~DataSetTable();
 
-    bool addDataSet(Kitsunemimi::JsonItem &data,
+    bool addDataSet(Hanami::JsonItem &data,
                     const UserContext &userContext,
-                    Kitsunemimi::ErrorContainer &error);
-    bool getDataSet(Kitsunemimi::JsonItem &result,
+                    Hanami::ErrorContainer &error);
+    bool getDataSet(Hanami::JsonItem &result,
                     const std::string &datasetUuid,
                     const UserContext &userContext,
-                    Kitsunemimi::ErrorContainer &error,
+                    Hanami::ErrorContainer &error,
                     const bool showHiddenValues);
-    bool getAllDataSet(Kitsunemimi::TableItem &result,
+    bool getAllDataSet(Hanami::TableItem &result,
                        const UserContext &userContext,
-                       Kitsunemimi::ErrorContainer &error);
+                       Hanami::ErrorContainer &error);
     bool deleteDataSet(const std::string &uuid,
                        const UserContext &userContext,
-                       Kitsunemimi::ErrorContainer &error);
+                       Hanami::ErrorContainer &error);
 
     bool setUploadFinish(const std::string &uuid,
                          const std::string &fileUuid,
-                         Kitsunemimi::ErrorContainer &error);
+                         Hanami::ErrorContainer &error);
 
-    bool getDateSetInfo(Kitsunemimi::JsonItem &result,
+    bool getDateSetInfo(Hanami::JsonItem &result,
                         const std::string &dataUuid,
-                        const Kitsunemimi::DataMap &context,
-                        Kitsunemimi::ErrorContainer &error);
+                        const Hanami::DataMap &context,
+                        Hanami::ErrorContainer &error);
 private:
     DataSetTable();
     static DataSetTable* instance;

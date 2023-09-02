@@ -28,7 +28,7 @@
 
 #include <hanami_cpu/cpu.h>
 
-namespace Kitsunemimi::Sakura
+namespace Hanami
 {
 
 /**

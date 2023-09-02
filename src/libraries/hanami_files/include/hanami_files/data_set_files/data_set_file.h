@@ -31,7 +31,7 @@
 #include <hanami_common/logger.h>
 #include <hanami_common/buffer/data_buffer.h>
 
-namespace Kitsunemimi {
+namespace Hanami {
 struct DataBuffer;
 class BinaryFile;
 }
@@ -53,20 +53,20 @@ public:
     };
 
     DataSetFile(const std::string &filePath);
-    DataSetFile(Kitsunemimi::BinaryFile* file);
+    DataSetFile(Hanami::BinaryFile* file);
     virtual ~DataSetFile();
 
-    bool initNewFile(Kitsunemimi::ErrorContainer &error);
-    bool readFromFile(Kitsunemimi::ErrorContainer &error);
+    bool initNewFile(Hanami::ErrorContainer &error);
+    bool readFromFile(Hanami::ErrorContainer &error);
 
     bool addBlock(const uint64_t pos,
                   const float* data,
                   const u_int64_t numberOfValues,
-                  Kitsunemimi::ErrorContainer &error);
-    virtual bool getPayload(Kitsunemimi::DataBuffer &result,
-                            Kitsunemimi::ErrorContainer &error,
+                  Hanami::ErrorContainer &error);
+    virtual bool getPayload(Hanami::DataBuffer &result,
+                            Hanami::ErrorContainer &error,
                             const std::string &columnName = "") = 0;
-    virtual bool updateHeader(Kitsunemimi::ErrorContainer &error) = 0;
+    virtual bool updateHeader(Hanami::ErrorContainer &error) = 0;
 
     DataSetType type = UNDEFINED_TYPE;
     std::string name = "";
@@ -75,13 +75,13 @@ protected:
     virtual void initHeader() = 0;
     virtual void readHeader(const uint8_t* u8buffer) = 0;
 
-    Kitsunemimi::BinaryFile* m_targetFile = nullptr;
+    Hanami::BinaryFile* m_targetFile = nullptr;
 
     uint64_t m_headerSize = 0;
     uint64_t m_totalFileSize = 0;
 };
 
 DataSetFile* readDataSetFile(const std::string &filePath,
-                             Kitsunemimi::ErrorContainer &error);
+                             Hanami::ErrorContainer &error);
 
 #endif // HANAMI_DATASETFILE_H

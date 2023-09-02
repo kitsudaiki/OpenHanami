@@ -35,7 +35,7 @@
 
 #include <hanami_common/logger.h>
 
-namespace Kitsunemimi::Sakura
+namespace Hanami
 {
 
 /**
@@ -110,7 +110,7 @@ process_Data_SingleBlock(Session* session,
 {
     // prepare buffer for payload
     const uint32_t payloadSize = header->commonHeader.payloadSize;
-    DataBuffer* buffer = new DataBuffer(Kitsunemimi::calcBytesToBlocks(payloadSize));
+    DataBuffer* buffer = new DataBuffer(Hanami::calcBytesToBlocks(payloadSize));
 
     // get pointer to the beginning of the payload
     const uint8_t* payloadData = static_cast<const uint8_t*>(rawMessage)

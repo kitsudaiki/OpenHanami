@@ -14,14 +14,14 @@
 
 #include <cert_init.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 /**
  * processMessageTlsTcp-callback
  */
 uint64_t processMessageTlsTcp(void* target,
-                              Kitsunemimi::RingBuffer* recvBuffer,
+                              Hanami::RingBuffer* recvBuffer,
                               AbstractSocket*)
 {
     TlsTcp_Test* targetTest = static_cast<TlsTcp_Test*>(target);
@@ -48,7 +48,7 @@ void processConnectionTlsTcp(void* target,
 
 
 TlsTcp_Test::TlsTcp_Test() :
-    Kitsunemimi::CompareTestHelper("TlsTcp_Test")
+    Hanami::CompareTestHelper("TlsTcp_Test")
 {
     initTestCase();
     checkConnectionInit();

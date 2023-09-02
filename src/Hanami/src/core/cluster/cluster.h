@@ -35,7 +35,7 @@
 
 class TaskHandle_State;
 
-namespace Kitsunemimi {
+namespace Hanami {
 class EventQueue;
 class Statemachine;
 }
@@ -48,7 +48,7 @@ public:
     ~Cluster();
 
     // cluster-data
-    Kitsunemimi::ItemBuffer clusterData;
+    Hanami::ItemBuffer clusterData;
     PointerHandler gpuPointer;
 
     void initCuda();
@@ -70,7 +70,7 @@ public:
     const std::string getUuid();
     const std::string getName();
     bool setName(const std::string newName);
-    bool init(const Kitsunemimi::Hanami::ClusterMeta &clusterTemplate,
+    bool init(const Hanami::ClusterMeta &clusterTemplate,
               const std::string &uuid);
 
     // tasks
@@ -91,7 +91,7 @@ public:
     ClusterProcessingMode mode = NORMAL_MODE;
     HttpWebsocketThread* msgClient = nullptr;
 
-    Kitsunemimi::Statemachine* stateMachine = nullptr;
+    Hanami::Statemachine* stateMachine = nullptr;
     TaskHandle_State* taskHandleState = nullptr;
 
 private:

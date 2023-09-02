@@ -8,11 +8,11 @@
 
 #include "bogus_thread.h"
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 BogusThread::BogusThread()
-    : Kitsunemimi::Thread("BogusThread") {}
+    : Hanami::Thread("BogusThread") {}
 
 void BogusThread::run()
 {

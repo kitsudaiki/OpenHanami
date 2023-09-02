@@ -63,11 +63,11 @@ getNumberOfNeuronSections(const uint32_t numberOfNeurons)
  */
 bool
 initNewCluster(Cluster* cluster,
-               const Kitsunemimi::Hanami::ClusterMeta &clusterMeta,
+               const Hanami::ClusterMeta &clusterMeta,
                const std::string &uuid)
 {
     cluster->numberOfBrickBlocks = 0;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     uint32_t numberOfInputs = 0;
     uint32_t numberOfOutputs = 0;
 
@@ -75,12 +75,12 @@ initNewCluster(Cluster* cluster,
     uint32_t neuronsInBrick = 0;
     for(uint32_t i = 0; i < clusterMeta.bricks.size(); i++)
     {
-        const Kitsunemimi::Hanami::BrickMeta brickMeta = clusterMeta.bricks.at(i);
+        const Hanami::BrickMeta brickMeta = clusterMeta.bricks.at(i);
         neuronsInBrick = brickMeta.numberOfNeurons;
-        if(brickMeta.type == Kitsunemimi::Hanami::BrickType::INPUT_BRICK_TYPE) {
+        if(brickMeta.type == Hanami::BrickType::INPUT_BRICK_TYPE) {
             numberOfInputs = brickMeta.numberOfNeurons;;
         }
-        if(brickMeta.type == Kitsunemimi::Hanami::BrickType::OUTPUT_BRICK_TYPE) {
+        if(brickMeta.type == Hanami::BrickType::OUTPUT_BRICK_TYPE) {
             numberOfOutputs = brickMeta.numberOfNeurons;;
         }
         cluster->numberOfBrickBlocks += getNumberOfNeuronSections(neuronsInBrick);
@@ -110,7 +110,7 @@ initNewCluster(Cluster* cluster,
 
     /*if(HanamiRoot::useOpencl)
     {
-        data = new Kitsunemimi::GpuData();
+        data = new Hanami::GpuData();
         initOpencl(*data);
     }*/
 
@@ -178,7 +178,7 @@ reinitPointer(Cluster* cluster,
 
     /*if(HanamiRoot::useOpencl)
     {
-        data = new Kitsunemimi::GpuData();
+        data = new Hanami::GpuData();
         initOpencl(*data);
     }*/
 
@@ -201,7 +201,7 @@ reinitPointer(Cluster* cluster,
  */
 bool
 initializeNeurons(Cluster* cluster,
-                  const Kitsunemimi::Hanami::ClusterMeta &clusterMeta)
+                  const Hanami::ClusterMeta &clusterMeta)
 {
     uint32_t sectionPositionOffset = 0;
 
@@ -248,7 +248,7 @@ initializeNeurons(Cluster* cluster,
  * @return settings-object
  */
 SegmentSettings
-initSettings(const Kitsunemimi::Hanami::ClusterMeta &clusterMeta)
+initSettings(const Hanami::ClusterMeta &clusterMeta)
 {
     SegmentSettings settings;
 
@@ -409,15 +409,15 @@ allocateSegment(Cluster* cluster,
  * @return new brick with parsed information
  */
 Brick
-createNewBrick(const Kitsunemimi::Hanami::BrickMeta &brickMeta,
+createNewBrick(const Hanami::BrickMeta &brickMeta,
                const uint32_t id)
 {
     Brick newBrick;
 
     // copy metadata
     newBrick.brickId = id;
-    newBrick.isOutputBrick = brickMeta.type == Kitsunemimi::Hanami::OUTPUT_BRICK_TYPE;
-    newBrick.isInputBrick = brickMeta.type == Kitsunemimi::Hanami::INPUT_BRICK_TYPE;
+    newBrick.isOutputBrick = brickMeta.type == Hanami::OUTPUT_BRICK_TYPE;
+    newBrick.isInputBrick = brickMeta.type == Hanami::INPUT_BRICK_TYPE;
 
     // convert other values
     newBrick.brickPos = brickMeta.position;
@@ -436,7 +436,7 @@ createNewBrick(const Kitsunemimi::Hanami::BrickMeta &brickMeta,
  */
 void
 addBricksToSegment(Cluster* cluster,
-                   const Kitsunemimi::Hanami::ClusterMeta &clusterMeta)
+                   const Hanami::ClusterMeta &clusterMeta)
 {
     uint32_t neuronBrickIdCounter = 0;
     uint32_t neuronSectionPosCounter = 0;
@@ -478,7 +478,7 @@ connectBrick(Cluster* cluster,
              Brick* sourceBrick,
              const uint8_t side)
 {
-    const Kitsunemimi::Position next = getNeighborPos(sourceBrick->brickPos, side);
+    const Hanami::Position next = getNeighborPos(sourceBrick->brickPos, side);
     // debug-output
     // std::cout<<next.x<<" : "<<next.y<<" : "<<next.z<<std::endl;
 

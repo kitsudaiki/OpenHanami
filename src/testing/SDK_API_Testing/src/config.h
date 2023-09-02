@@ -30,7 +30,7 @@
  * @brief register configs
  */
 void
-registerConfigs(Kitsunemimi::ErrorContainer &error)
+registerConfigs(Hanami::ErrorContainer &error)
 {
     // DEFAULT-section
     REGISTER_BOOL_CONFIG(   "DEFAULT",

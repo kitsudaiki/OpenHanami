@@ -32,7 +32,7 @@
 #include <jwt-cpp/jwt.h>
 //#include <jwt-cpp/traits/nlohmann-json/defaults.h>
 
-using Kitsunemimi::Hanami::HttpRequestType;
+using Hanami::HttpRequestType;
 
 /**
  * @brief constructor
@@ -100,9 +100,9 @@ ValidateAccess::ValidateAccess()
  */
 bool
 ValidateAccess::runTask(BlossomIO &blossomIO,
-                        const Kitsunemimi::DataMap &,
+                        const Hanami::DataMap &,
                         BlossomStatus &status,
-                        Kitsunemimi::ErrorContainer &error)
+                        Hanami::ErrorContainer &error)
 {
     // collect information from the input
     const std::string token = blossomIO.input.get("token").getString();

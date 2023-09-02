@@ -24,11 +24,11 @@
 
 #include <hanami_crypto/symmetric_encryption.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 Symmetric_Encryption_Test::Symmetric_Encryption_Test()
-    : Kitsunemimi::CompareTestHelper("Symmetric_Encryption_Test")
+    : Hanami::CompareTestHelper("Symmetric_Encryption_Test")
 {
     encrypt_decrypt_AES_256();
 }
@@ -39,7 +39,7 @@ Symmetric_Encryption_Test::Symmetric_Encryption_Test()
 void
 Symmetric_Encryption_Test::encrypt_decrypt_AES_256()
 {
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
 
     const std::string testData = "this is a test-string";
     CryptoPP::SecByteBlock key((unsigned char*)"asdf", 4);

@@ -71,16 +71,16 @@ FinalizeCsvDataSet::FinalizeCsvDataSet()
  */
 bool
 FinalizeCsvDataSet::runTask(BlossomIO &blossomIO,
-                            const Kitsunemimi::DataMap &context,
+                            const Hanami::DataMap &context,
                             BlossomStatus &status,
-                            Kitsunemimi::ErrorContainer &error)
+                            Hanami::ErrorContainer &error)
 {
     const std::string uuid = blossomIO.input.get("uuid").getString();
     const std::string inputUuid = blossomIO.input.get("uuid_input_file").getString();
     const UserContext userContext(context);
 
     // get location from database
-    Kitsunemimi::JsonItem result;
+    Hanami::JsonItem result;
     if(DataSetTable::getInstance()->getDataSet(result, uuid, userContext, error, true) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -97,7 +97,7 @@ FinalizeCsvDataSet::runTask(BlossomIO &blossomIO,
     }
 
     // read input-data from temp-file
-    Kitsunemimi::DataBuffer inputBuffer;
+    Hanami::DataBuffer inputBuffer;
     if(TempFileHandler::getInstance()->getData(inputBuffer, inputUuid) == false)
     {
         status.errorMessage = "Input-data with uuid '" + inputUuid + "' not found.";
@@ -179,9 +179,9 @@ FinalizeCsvDataSet::convertField(float* segmentPos,
 bool
 FinalizeCsvDataSet::convertCsvData(const std::string &filePath,
                                    const std::string &name,
-                                   const Kitsunemimi::DataBuffer &inputBuffer)
+                                   const Hanami::DataBuffer &inputBuffer)
 {
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
 
     TableDataSetFile file(filePath);
     file.type = DataSetFile::TABLE_TYPE;
@@ -200,7 +200,7 @@ FinalizeCsvDataSet::convertCsvData(const std::string &filePath,
 
     // split content
     std::vector<std::string> lines;
-    Kitsunemimi::splitStringByDelimiter(lines, stringContent, '\n');
+    Hanami::splitStringByDelimiter(lines, stringContent, '\n');
 
     bool isHeader = true;
 
@@ -216,7 +216,7 @@ FinalizeCsvDataSet::convertCsvData(const std::string &filePath,
 
         // split line
         std::vector<std::string> lineContent;
-        Kitsunemimi::splitStringByDelimiter(lineContent, *line, ',');
+        Hanami::splitStringByDelimiter(lineContent, *line, ',');
 
         if(isHeader)
         {

@@ -36,8 +36,8 @@ UserListTest::UserListTest(const bool expectSuccess)
 }
 
 bool
-UserListTest::runTest(Kitsunemimi::JsonItem &inputData,
-                      Kitsunemimi::ErrorContainer &error)
+UserListTest::runTest(Hanami::JsonItem &inputData,
+                      Hanami::ErrorContainer &error)
 {
     // list all users
     std::string result;
@@ -50,7 +50,7 @@ UserListTest::runTest(Kitsunemimi::JsonItem &inputData,
     }
 
     // parse output
-    Kitsunemimi::JsonItem jsonItem;
+    Hanami::JsonItem jsonItem;
     if(jsonItem.parse(result, error) == false) {
         return false;
     }

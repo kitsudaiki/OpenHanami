@@ -11,16 +11,16 @@
 #include <hanami_common/methods/string_methods.h>
 
 # define YY_DECL \
-    Kitsunemimi::IniParser::symbol_type inilex (Kitsunemimi::IniParserInterface& driver)
+    Hanami::IniParser::symbol_type inilex (Hanami::IniParserInterface& driver)
 YY_DECL;
 
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
-Kitsunemimi::IniParserInterface* IniParserInterface::m_instance = nullptr;
+Hanami::IniParserInterface* IniParserInterface::m_instance = nullptr;
 
-using Kitsunemimi::splitStringByDelimiter;
+using Hanami::splitStringByDelimiter;
 
 bool IniParserInterface::m_outsideComment = true;
 
@@ -77,7 +77,7 @@ IniParserInterface::parse(const std::string &inputString,
 
     // run parser-code
     this->scan_begin(inputString);
-    Kitsunemimi::IniParser parser(*this);
+    Hanami::IniParser parser(*this);
     int res = parser.parse();
     this->scan_end();
 

@@ -37,8 +37,8 @@ ClusterLoadTest::ClusterLoadTest(const bool expectSuccess)
 }
 
 bool
-ClusterLoadTest::runTest(Kitsunemimi::JsonItem &inputData,
-                         Kitsunemimi::ErrorContainer &error)
+ClusterLoadTest::runTest(Hanami::JsonItem &inputData,
+                         Hanami::ErrorContainer &error)
 {
     // create new cluster
     std::string result;
@@ -55,7 +55,7 @@ ClusterLoadTest::runTest(Kitsunemimi::JsonItem &inputData,
     }
 
     // parse output
-    Kitsunemimi::JsonItem jsonItem;
+    Hanami::JsonItem jsonItem;
     if(jsonItem.parse(result, error) == false) {
         return false;
     }

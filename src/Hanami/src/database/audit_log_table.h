@@ -26,7 +26,7 @@
 #include <hanami_common/logger.h>
 #include <database/generic_tables/hanami_sql_log_table.h>
 
-namespace Kitsunemimi {
+namespace Hanami {
 class JsonItem;
 }
 
@@ -48,11 +48,11 @@ public:
                           const std::string &userId,
                           const std::string &endpoint,
                           const std::string &requestType,
-                          Kitsunemimi::ErrorContainer &error);
-    bool getAllAuditLogEntries(Kitsunemimi::TableItem &result,
+                          Hanami::ErrorContainer &error);
+    bool getAllAuditLogEntries(Hanami::TableItem &result,
                                const std::string &userId,
                                const uint64_t page,
-                               Kitsunemimi::ErrorContainer &error);
+                               Hanami::ErrorContainer &error);
 
 private:
     AuditLogTable();

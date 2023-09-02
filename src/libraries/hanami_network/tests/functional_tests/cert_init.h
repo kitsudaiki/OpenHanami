@@ -4,7 +4,7 @@
 #include <iostream>
 #include <hanami_common/files/text_file.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 const std::string testCert = "-----BEGIN CERTIFICATE-----\n"
         "MIIDYDCCAkigAwIBAgIJAPrYys+kYk3BMA0GCSqGSIb3DQEBCwUAMEUxCzAJBgNV\n"
@@ -60,8 +60,8 @@ const std::string testKey = "-----BEGIN PRIVATE KEY-----\n"
 void writeTestCerts()
 {
     ErrorContainer error;
-    Kitsunemimi::writeFile("/tmp/cert.pem", testCert, error, true);
-    Kitsunemimi::writeFile("/tmp/key.pem", testKey, error, true);
+    Hanami::writeFile("/tmp/cert.pem", testCert, error, true);
+    Hanami::writeFile("/tmp/key.pem", testKey, error, true);
 }
 
 }

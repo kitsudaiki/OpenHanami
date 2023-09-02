@@ -12,14 +12,14 @@
 #include <template_socket.h>
 #include <template_server.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 /**
  * processMessageUnixDomain-callback
  */
 uint64_t processMessageUnixDomain(void* target,
-                                  Kitsunemimi::RingBuffer* recvBuffer,
+                                  Hanami::RingBuffer* recvBuffer,
                                   AbstractSocket*)
 {
     UnixDomain_Test* targetTest = static_cast<UnixDomain_Test*>(target);
@@ -46,7 +46,7 @@ void processConnectionUnixDomain(void* target,
 
 
 UnixDomain_Test::UnixDomain_Test() :
-    Kitsunemimi::CompareTestHelper("UnixDomain_Test")
+    Hanami::CompareTestHelper("UnixDomain_Test")
 {
     initTestCase();
     checkConnectionInit();

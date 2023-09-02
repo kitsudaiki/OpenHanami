@@ -38,8 +38,8 @@ public:
 
     const std::string getTestName() const;
 
-    virtual bool runTest(Kitsunemimi::JsonItem &inputData,
-                         Kitsunemimi::ErrorContainer &error) = 0;
+    virtual bool runTest(Hanami::JsonItem &inputData,
+                         Hanami::ErrorContainer &error) = 0;
 
 protected:
     const bool m_expectSuccess;

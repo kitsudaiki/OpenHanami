@@ -11,7 +11,7 @@
 
 #include <hanami_common/test_helper/memory_leak_test_helper.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 struct DataBuffer;
 
@@ -27,7 +27,7 @@ template<class>
 class TemplateServer;
 
 class UnixDomain_Test
-        : public Kitsunemimi::MemoryLeakTestHelpter
+        : public Hanami::MemoryLeakTestHelpter
 {
 public:
     UnixDomain_Test();

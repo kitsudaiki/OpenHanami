@@ -28,7 +28,7 @@
 class Cluster;
 
 class TableInterpolation_State
-        : public Kitsunemimi::Event
+        : public Hanami::Event
 {
 public:
     TableInterpolation_State(Cluster* cluster);

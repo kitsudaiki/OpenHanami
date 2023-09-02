@@ -79,14 +79,14 @@ CreateToken::CreateToken()
  */
 bool
 CreateToken::runTask(BlossomIO &blossomIO,
-                     const Kitsunemimi::DataMap &,
+                     const Hanami::DataMap &,
                      BlossomStatus &status,
-                     Kitsunemimi::ErrorContainer &error)
+                     Hanami::ErrorContainer &error)
 {
     const std::string userId = blossomIO.input.get("id").getString();
 
     // get data from table
-    Kitsunemimi::JsonItem userData;
+    Hanami::JsonItem userData;
     if(UsersTable::getInstance()->getUser(userData, userId, error, true) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -107,7 +107,7 @@ CreateToken::runTask(BlossomIO &blossomIO,
     std::string compareHash = "";
     const std::string saltedPw = blossomIO.input.get("password").getString()
                                  + userData.get("salt").getString();
-    Kitsunemimi::generate_SHA_256(compareHash, saltedPw);
+    Hanami::generate_SHA_256(compareHash, saltedPw);
 
     // check password
     const std::string pwHash = userData.get("pw_hash").getString();
@@ -125,7 +125,7 @@ CreateToken::runTask(BlossomIO &blossomIO,
     userData.remove("pw_hash");
     userData.remove("salt");
 
-    Kitsunemimi::JsonItem parsedProjects = userData.get("projects");
+    Hanami::JsonItem parsedProjects = userData.get("projects");
 
     // get project
     const bool isAdmin = userData.get("is_admin").getBool();

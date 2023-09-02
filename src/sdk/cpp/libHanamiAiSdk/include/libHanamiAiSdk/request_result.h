@@ -30,14 +30,14 @@ namespace HanamiAI
 
 bool getRequestResult(std::string &result,
                       const std::string &userId,
-                      Kitsunemimi::ErrorContainer &error);
+                      Hanami::ErrorContainer &error);
 
 bool listRequestResult(std::string &result,
-                       Kitsunemimi::ErrorContainer &error);
+                       Hanami::ErrorContainer &error);
 
 bool deleteRequestResult(std::string &result,
                          const std::string &userId,
-                         Kitsunemimi::ErrorContainer &error);
+                         Hanami::ErrorContainer &error);
 
 } // namespace HanamiAI
 

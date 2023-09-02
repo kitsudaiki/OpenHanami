@@ -3,16 +3,16 @@
 
 #include <hanami_database/sql_table.h>
 
-namespace Kitsunemimi::Sakura
+namespace Hanami
 {
 
 class SqlDatabase;
 
 class TestTable :
-        public Kitsunemimi::Sakura::SqlTable
+        public Hanami::SqlTable
 {
 public:
-    TestTable(Kitsunemimi::Sakura::SqlDatabase* db);
+    TestTable(Hanami::SqlDatabase* db);
     ~TestTable();
 
     bool addUser(JsonItem &data,

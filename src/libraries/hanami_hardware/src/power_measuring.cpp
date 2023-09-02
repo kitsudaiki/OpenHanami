@@ -32,7 +32,7 @@
 PowerMeasuring* PowerMeasuring::instance = nullptr;
 
 PowerMeasuring::PowerMeasuring()
-    : Kitsunemimi::Thread("PowerMeasuring") {}
+    : Hanami::Thread("PowerMeasuring") {}
 
 PowerMeasuring::~PowerMeasuring() {}
 
@@ -41,7 +41,7 @@ PowerMeasuring::~PowerMeasuring() {}
  *
  * @return json-output
  */
-Kitsunemimi::DataMap*
+Hanami::DataMap*
 PowerMeasuring::getJson()
 {
     return m_valueContainer.toJson();
@@ -53,11 +53,11 @@ PowerMeasuring::getJson()
 void
 PowerMeasuring::run()
 {
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     while(m_abort == false)
     {
         double power = 0.0;
-        Kitsunemimi::Sakura::Host* host = Kitsunemimi::Sakura::Host::getInstance();
+        Hanami::Host* host = Hanami::Host::getInstance();
         for(uint64_t i = 0; i < host->cpuPackages.size(); i++) {
             power += host->getPackage(i)->getTotalPackagePower();
         }

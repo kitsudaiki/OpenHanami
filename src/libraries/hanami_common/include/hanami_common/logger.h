@@ -21,10 +21,10 @@
 
 #include <hanami_common/items/table_item.h>
 
-#define LOG_DEBUG Kitsunemimi::LOG_debug
-#define LOG_INFO Kitsunemimi::LOG_info
-#define LOG_WARNING Kitsunemimi::LOG_warning
-#define LOG_ERROR Kitsunemimi::LOG_error
+#define LOG_DEBUG Hanami::LOG_debug
+#define LOG_INFO Hanami::LOG_info
+#define LOG_WARNING Hanami::LOG_warning
+#define LOG_ERROR Hanami::LOG_error
 
 #ifndef ALL_WHITE_OUTPUT
 #define YELLOW_COLOR "\033[1;33m"
@@ -42,7 +42,7 @@
 #define PINK_COLOR "\033[0m"
 #endif
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 struct ErrorContainer
@@ -134,7 +134,7 @@ public:
     bool m_debugLog = false;
     void (*m_handleError)(const std::string &);
 
-    static Kitsunemimi::Logger* m_logger;
+    static Hanami::Logger* m_logger;
 
 private:
     bool m_enableConsoleLog = false;

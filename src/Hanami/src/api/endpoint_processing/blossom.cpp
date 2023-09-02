@@ -107,13 +107,13 @@ Blossom::getOutputValidationMap() const
  * @param values input-values to fill
  */
 void
-Blossom::fillDefaultValues(Kitsunemimi::DataMap &values)
+Blossom::fillDefaultValues(Hanami::DataMap &values)
 {
     for(const auto& [name, field] : m_inputValidationMap)
     {
         if(field.defaultVal != nullptr)
         {
-            Kitsunemimi::DataItem* tempItem = field.defaultVal->copy();
+            Hanami::DataItem* tempItem = field.defaultVal->copy();
             if(values.insert(name, tempItem, false) == false) {
                 delete tempItem;
             }
@@ -133,9 +133,9 @@ Blossom::fillDefaultValues(Kitsunemimi::DataMap &values)
  */
 bool
 Blossom::growBlossom(BlossomIO &blossomIO,
-                     const Kitsunemimi::DataMap* context,
+                     const Hanami::DataMap* context,
                      BlossomStatus &status,
-                     Kitsunemimi::ErrorContainer &error)
+                     Hanami::ErrorContainer &error)
 {
     LOG_DEBUG("runTask " + blossomIO.blossomName);
 
@@ -241,7 +241,7 @@ bool
 Blossom::validateInput(BlossomItem &blossomItem,
                        const std::map<std::string, FieldDef> &validationMap,
                        const std::string &filePath,
-                       Kitsunemimi::ErrorContainer &error)
+                       Hanami::ErrorContainer &error)
 {
     std::map<std::string, FieldDef::IO_ValueType> compareMap;
     getCompareMap(compareMap, blossomItem.values);

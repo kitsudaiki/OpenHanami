@@ -86,9 +86,9 @@ CreateMnistDataSet::CreateMnistDataSet()
 
 bool
 CreateMnistDataSet::runTask(BlossomIO &blossomIO,
-                            const Kitsunemimi::DataMap &context,
+                            const Hanami::DataMap &context,
                             BlossomStatus &status,
-                            Kitsunemimi::ErrorContainer &error)
+                            Hanami::ErrorContainer &error)
 {
     const std::string name = blossomIO.input.get("name").getString();
     const long inputDataSize = blossomIO.input.get("input_data_size").getLong();
@@ -140,9 +140,9 @@ CreateMnistDataSet::runTask(BlossomIO &blossomIO,
     blossomIO.output.insert("visibility", "private");
 
     // init placeholder for temp-file progress to database
-    Kitsunemimi::JsonItem tempFiles;
-    tempFiles.insert(inputUuid, Kitsunemimi::JsonItem(0.0f));
-    tempFiles.insert(labelUuid, Kitsunemimi::JsonItem(0.0f));
+    Hanami::JsonItem tempFiles;
+    tempFiles.insert(inputUuid, Hanami::JsonItem(0.0f));
+    tempFiles.insert(labelUuid, Hanami::JsonItem(0.0f));
     blossomIO.output.insert("temp_files", tempFiles);
 
     // add to database

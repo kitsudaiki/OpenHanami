@@ -10,9 +10,9 @@
 
 #include <hanami_common/files/binary_file_direct.h>
 
-using Kitsunemimi::DataBuffer;
+using Hanami::DataBuffer;
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 /**

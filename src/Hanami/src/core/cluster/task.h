@@ -70,7 +70,7 @@ struct Task
     // data-buffer
     float* inputData = nullptr;
     float* outputData = nullptr;
-    Kitsunemimi::JsonItem resultData;
+    Hanami::JsonItem resultData;
 
     // train-request-task meta
     uint64_t numberOfCycles = 0;

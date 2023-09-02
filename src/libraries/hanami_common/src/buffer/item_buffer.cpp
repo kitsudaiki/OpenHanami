@@ -22,7 +22,7 @@
 
 #include <hanami_common/buffer/item_buffer.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 struct EmptyPlaceHolder
@@ -79,7 +79,7 @@ ItemBuffer::initBuffer(const void* data, const uint64_t dataSize)
     }
 
     // allocate blocks in buffer and fill with old data
-    Kitsunemimi::allocateBlocks_DataBuffer(buffer, calcBytesToBlocks(dataSize));
+    Hanami::allocateBlocks_DataBuffer(buffer, calcBytesToBlocks(dataSize));
     buffer.usedBufferSize = dataSize;
     memcpy(buffer.data, data, dataSize);
 
@@ -134,7 +134,7 @@ ItemBuffer::initDataBlocks(const uint64_t numberOfItems,
     const uint64_t requiredNumberOfBlocks = calcBytesToBlocks(requiredBytes);
 
     // allocate blocks in buffer
-    Kitsunemimi::allocateBlocks_DataBuffer(buffer, requiredNumberOfBlocks);
+    Hanami::allocateBlocks_DataBuffer(buffer, requiredNumberOfBlocks);
     buffer.usedBufferSize = requiredBytes;
 
     // init metadata object
@@ -261,7 +261,7 @@ ItemBuffer::reserveDynamicItem()
 
     // allocate a new block, if necessary
     if(numberOfBlocks < newNumberOfBlocks) {
-        Kitsunemimi::allocateBlocks_DataBuffer(buffer, newNumberOfBlocks - numberOfBlocks);
+        Hanami::allocateBlocks_DataBuffer(buffer, newNumberOfBlocks - numberOfBlocks);
     }
 
     metaData->itemCapacity++;

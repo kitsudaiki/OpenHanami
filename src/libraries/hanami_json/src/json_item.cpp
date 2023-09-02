@@ -11,12 +11,12 @@
 #include <hanami_common/items/data_items.h>
 #include <json_parsing/json_parser_interface.h>
 
-using Kitsunemimi::DataItem;
-using Kitsunemimi::DataArray;
-using Kitsunemimi::DataValue;
-using Kitsunemimi::DataMap;
+using Hanami::DataItem;
+using Hanami::DataArray;
+using Hanami::DataValue;
+using Hanami::DataMap;
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 /**

@@ -37,9 +37,9 @@
 # undef YY_DECL
 # endif
 # define YY_DECL \
-    Kitsunemimi::Hanami::ClusterParser::symbol_type clusterlex (Kitsunemimi::Hanami::ClusterParserInterface& driver)
+    Hanami::ClusterParser::symbol_type clusterlex (Hanami::ClusterParserInterface& driver)
 YY_DECL;
-Kitsunemimi::Hanami::location clusterloc;
+Hanami::location clusterloc;
 
 %}
 
@@ -62,15 +62,15 @@ blank [ \t]
 %}
 
 {blank}+  clusterloc.step();
-[\n]      {clusterloc.lines(1); return Kitsunemimi::Hanami::ClusterParser::make_LINEBREAK (clusterloc); }
-"version:1"    return Kitsunemimi::Hanami::ClusterParser::make_VERSION_1 (clusterloc);
-"version: 1"   return Kitsunemimi::Hanami::ClusterParser::make_VERSION_1 (clusterloc);
-"settings"     return Kitsunemimi::Hanami::ClusterParser::make_SETTINGS (clusterloc);
-"bricks"       return Kitsunemimi::Hanami::ClusterParser::make_BRICKS (clusterloc);
-","            return Kitsunemimi::Hanami::ClusterParser::make_COMMA (clusterloc);
-":"            return Kitsunemimi::Hanami::ClusterParser::make_ASSIGN (clusterloc);
+[\n]      {clusterloc.lines(1); return Hanami::ClusterParser::make_LINEBREAK (clusterloc); }
+"version:1"    return Hanami::ClusterParser::make_VERSION_1 (clusterloc);
+"version: 1"   return Hanami::ClusterParser::make_VERSION_1 (clusterloc);
+"settings"     return Hanami::ClusterParser::make_SETTINGS (clusterloc);
+"bricks"       return Hanami::ClusterParser::make_BRICKS (clusterloc);
+","            return Hanami::ClusterParser::make_COMMA (clusterloc);
+":"            return Hanami::ClusterParser::make_ASSIGN (clusterloc);
 
-\"(\\.|[^"\\])*\" { return Kitsunemimi::Hanami::ClusterParser::make_STRING(yytext, clusterloc); }
+\"(\\.|[^"\\])*\" { return Hanami::ClusterParser::make_STRING(yytext, clusterloc); }
 
 {long}      {
     errno = 0;
@@ -81,31 +81,31 @@ blank [ \t]
     {
         driver.error(clusterloc, "integer is out of range");
     }
-    return Kitsunemimi::Hanami::ClusterParser::make_NUMBER (length, clusterloc);
+    return Hanami::ClusterParser::make_NUMBER (length, clusterloc);
 }
 
 {double}	{
     double value = strtod( yytext , NULL );
-    return Kitsunemimi::Hanami::ClusterParser::make_FLOAT(value, clusterloc);
+    return Hanami::ClusterParser::make_FLOAT(value, clusterloc);
 }
 
-{id}       return Kitsunemimi::Hanami::ClusterParser::make_IDENTIFIER(yytext, clusterloc);
+{id}       return Hanami::ClusterParser::make_IDENTIFIER(yytext, clusterloc);
 
 .          driver.error(clusterloc, "invalid character");
-<<EOF>>    return Kitsunemimi::Hanami::ClusterParser::make_END(clusterloc);
+<<EOF>>    return Hanami::ClusterParser::make_END(clusterloc);
 
 %%
 
 
-void Kitsunemimi::Hanami::ClusterParserInterface::scan_begin(const std::string &inputString)
+void Hanami::ClusterParserInterface::scan_begin(const std::string &inputString)
 {
-    Kitsunemimi::Hanami::location newClusterloc;
+    Hanami::location newClusterloc;
     clusterloc = newClusterloc;
     yy_flex_debug = m_traceParsing;
     yy_scan_string(inputString.c_str());
 }
 
-void Kitsunemimi::Hanami::ClusterParserInterface::scan_end()
+void Hanami::ClusterParserInterface::scan_end()
 {
     yy_delete_buffer(YY_CURRENT_BUFFER);
 }

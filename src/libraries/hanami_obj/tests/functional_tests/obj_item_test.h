@@ -15,7 +15,7 @@
 #include <vector>
 
 class ObjItem_Test
-        : public Kitsunemimi::CompareTestHelper
+        : public Hanami::CompareTestHelper
 {
 
 public:

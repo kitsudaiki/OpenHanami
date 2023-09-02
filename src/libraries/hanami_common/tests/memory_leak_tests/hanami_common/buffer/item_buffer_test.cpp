@@ -10,11 +10,11 @@
 
 #include <hanami_common/buffer/item_buffer.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 ItemBuffer_Test::ItemBuffer_Test()
-    : Kitsunemimi::MemoryLeakTestHelpter("ItemBuffer_Test")
+    : Hanami::MemoryLeakTestHelpter("ItemBuffer_Test")
 {
     create_delete_test();
 }

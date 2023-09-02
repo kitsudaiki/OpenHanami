@@ -35,15 +35,15 @@ public:
 
 protected:
     bool runTask(BlossomIO &blossomIO,
-                 const Kitsunemimi::DataMap &context,
+                 const Hanami::DataMap &context,
                  BlossomStatus &status,
-                 Kitsunemimi::ErrorContainer &error);
+                 Hanami::ErrorContainer &error);
 
 private:
     bool convertMnistData(const std::string &filePath,
                           const std::string &name,
-                          const Kitsunemimi::DataBuffer &inputBuffer,
-                          const Kitsunemimi::DataBuffer &labelBuffer);
+                          const Hanami::DataBuffer &inputBuffer,
+                          const Hanami::DataBuffer &labelBuffer);
 };
 
 #endif // HANAMI_MNIST_FINALIZE_DATA_SET_H

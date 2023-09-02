@@ -34,11 +34,11 @@
 class ValueItemMap;
 
 bool checkBlossomValues(const std::map<std::string, FieldDef> &defs,
-                        const Kitsunemimi::DataMap &values,
+                        const Hanami::DataMap &values,
                         const FieldDef::IO_ValueType ioType,
                         std::string &errorMessage);
 
-bool checkType(Kitsunemimi::DataItem* item,
+bool checkType(Hanami::DataItem* item,
                const FieldType fieldType);
 
 #endif // KITSUNEMIMI_SAKURA_LANG_RUNTIME_VALIDATION_H

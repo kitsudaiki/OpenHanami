@@ -49,14 +49,14 @@
 int
 main(int argc, char *argv[])
 {
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     HanamiRoot rootObj;
     initBlossoms();
 
-    Kitsunemimi::initConsoleLogger(true);
+    Hanami::initConsoleLogger(true);
 
     // create and init argument-parser
-    Kitsunemimi::ArgParser argParser;
+    Hanami::ArgParser argParser;
     registerArguments(&argParser, error);
     registerConfigs(error);
 
@@ -72,7 +72,7 @@ main(int argc, char *argv[])
     {
         namespace fs = std::filesystem;
 
-        Kitsunemimi::ErrorContainer error;
+        Hanami::ErrorContainer error;
 
         //-------------------------------------------------------------------------
 
@@ -89,7 +89,7 @@ main(int argc, char *argv[])
         //-------------------------------------------------------------------------
 
         std::string configDocu = "# Configs of Hanami\n\n";
-        Kitsunemimi::ConfigHandler::getInstance()->createDocumentation(configDocu);
+        Hanami::ConfigHandler::getInstance()->createDocumentation(configDocu);
         complete = fs::current_path() / fs::path{"config.md"};
         if(writeFile(complete.generic_string(), configDocu, error, true) == false)
         {
@@ -146,8 +146,8 @@ main(int argc, char *argv[])
     }
 
     // init logger
-    Kitsunemimi::initConsoleLogger(enableDebug);
-    Kitsunemimi::initFileLogger(logPath, "hanami", enableDebug);
+    Hanami::initConsoleLogger(enableDebug);
+    Hanami::initFileLogger(logPath, "hanami", enableDebug);
 
     // init root-object
     if(rootObj.init(error) == false)

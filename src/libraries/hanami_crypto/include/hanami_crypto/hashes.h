@@ -26,7 +26,7 @@
 #include <iostream>
 #include <vector>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 //--------------------------------------------------------------------------------------------------

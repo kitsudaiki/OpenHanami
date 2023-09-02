@@ -24,7 +24,7 @@
 #include <hanami_common/buffer/data_buffer.h>
 #include <hanami_common/logger.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 class BinaryFileDirect

@@ -31,7 +31,7 @@
 #include <cinttypes>
 #include <unistd.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 CleanupThread* CleanupThread::m_cleanupThread = nullptr;
@@ -40,7 +40,7 @@ CleanupThread* CleanupThread::m_cleanupThread = nullptr;
  * constructor
  */
 CleanupThread::CleanupThread()
-    : Kitsunemimi::Thread("Kitsunemimi_CleanupThread") {}
+    : Hanami::Thread("Kitsunemimi_CleanupThread") {}
 
 /**
  * @brief destructor

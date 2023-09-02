@@ -29,7 +29,7 @@
 
 class ProgressBar_Test;
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 class ProgressBar

@@ -40,7 +40,7 @@ bool
 createProject(std::string &result,
               const std::string &projectId,
               const std::string &projectName,
-              Kitsunemimi::ErrorContainer &error)
+              Hanami::ErrorContainer &error)
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
@@ -75,7 +75,7 @@ createProject(std::string &result,
 bool
 getProject(std::string &result,
            const std::string &projectId,
-           Kitsunemimi::ErrorContainer &error)
+           Hanami::ErrorContainer &error)
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
@@ -102,7 +102,7 @@ getProject(std::string &result,
  */
 bool
 listProject(std::string &result,
-            Kitsunemimi::ErrorContainer &error)
+            Hanami::ErrorContainer &error)
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
@@ -131,7 +131,7 @@ listProject(std::string &result,
 bool
 deleteProject(std::string &result,
               const std::string &projectId,
-              Kitsunemimi::ErrorContainer &error)
+              Hanami::ErrorContainer &error)
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();

@@ -29,9 +29,9 @@
 
 int main()
 {
-    Kitsunemimi::Common_Test();
-    Kitsunemimi::Hashes_Test();
-    Kitsunemimi::Symmetric_Encryption_Test();
+    Hanami::Common_Test();
+    Hanami::Hashes_Test();
+    Hanami::Symmetric_Encryption_Test();
 
     return 0;
 }

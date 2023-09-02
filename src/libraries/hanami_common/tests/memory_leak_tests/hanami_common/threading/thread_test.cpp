@@ -14,16 +14,16 @@
 #include "bogus_event.h"
 #include "bogus_thread.h"
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 Thread_Test::Thread_Test()
-    : Kitsunemimi::MemoryLeakTestHelpter("DataBuffer_Test")
+    : Hanami::MemoryLeakTestHelpter("DataBuffer_Test")
 {
     // The first created thread initialize a static instance of a central thread-handler to
     // track all threads. This will not be deleted anytime, so one thread has to be created
     // outside of the test-case.
-    Kitsunemimi::Thread* testThread = new BogusThread();
+    Hanami::Thread* testThread = new BogusThread();
     delete testThread;
 
     create_delete_test();
@@ -38,7 +38,7 @@ Thread_Test::create_delete_test()
 {
     REINIT_TEST();
 
-    Kitsunemimi::Thread* testThread = new BogusThread();
+    Hanami::Thread* testThread = new BogusThread();
     testThread->startThread();
     usleep(100000);
     delete testThread;
@@ -54,7 +54,7 @@ Thread_Test::create_delete_with_events_test()
 {
     REINIT_TEST();
 
-    Kitsunemimi::Thread* testThread = new BogusThread();
+    Hanami::Thread* testThread = new BogusThread();
     testThread->startThread();
     Event* testEvent = new BogusEvent();
     testThread->addEventToQueue(testEvent);

@@ -37,25 +37,25 @@ class WebsocketClient;
 bool train(WebsocketClient* wsClient,
            std::vector<float> &inputValues,
            std::vector<float> &shouldValues,
-           Kitsunemimi::ErrorContainer &error);
+           Hanami::ErrorContainer &error);
 
 float* request(WebsocketClient* wsClient,
                std::vector<float> &inputValues,
                uint64_t &numberOfOutputValues,
-               Kitsunemimi::ErrorContainer &error);
+               Hanami::ErrorContainer &error);
 
 bool train(WebsocketClient* wsClient,
            float* inputValues,
            const uint64_t numberOfInputValues,
            float* shouldValues,
            const uint64_t numberOfShouldValues,
-           Kitsunemimi::ErrorContainer &error);
+           Hanami::ErrorContainer &error);
 
 float* request(WebsocketClient* wsClient,
                float* inputData,
                const uint64_t numberOfInputValues,
                uint64_t &numberOfOutputValues,
-               Kitsunemimi::ErrorContainer &error);
+               Hanami::ErrorContainer &error);
 
 } // namespace HanamiAI
 

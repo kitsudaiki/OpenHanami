@@ -24,7 +24,7 @@
 #include <hanami_common/threading/event_queue.h>
 #include <state.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 /**

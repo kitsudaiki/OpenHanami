@@ -25,11 +25,11 @@
 
 #include <hanami_common/threading/thread.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 class EventQueue
-        : public Kitsunemimi::Thread
+        : public Hanami::Thread
 {
 
 public:

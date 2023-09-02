@@ -25,7 +25,7 @@
 #include <hanami_common/items/data_items.h>
 #include <policy_parsing/policy_parser_interface.h>
 
-namespace Kitsunemimi::Hanami
+namespace Hanami
 {
 
 Policy* Policy::instance = nullptr;

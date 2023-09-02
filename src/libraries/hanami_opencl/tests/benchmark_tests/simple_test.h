@@ -30,12 +30,12 @@
 
 #include <hanami_common/test_helper/speed_test_helper.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 class GpuHandler;
 
 class SimpleTest
-        : public Kitsunemimi::SpeedTestHelper
+        : public Hanami::SpeedTestHelper
 {
 public:
     SimpleTest();
@@ -51,7 +51,7 @@ public:
 
 private:
     uint32_t m_id = 0xFFFFFFFF;
-    Kitsunemimi::GpuHandler* m_oclHandler = nullptr;
+    Hanami::GpuHandler* m_oclHandler = nullptr;
 
     void chooseDevice();
 };

@@ -38,7 +38,7 @@ namespace HanamiAI
 bool
 getRequestResult(std::string &result,
                  const std::string &requestResultUuid,
-                 Kitsunemimi::ErrorContainer &error)
+                 Hanami::ErrorContainer &error)
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
@@ -65,7 +65,7 @@ getRequestResult(std::string &result,
  */
 bool
 listRequestResult(std::string &result,
-                  Kitsunemimi::ErrorContainer &error)
+                  Hanami::ErrorContainer &error)
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
@@ -94,7 +94,7 @@ listRequestResult(std::string &result,
 bool
 deleteRequestResult(std::string &result,
                     const std::string &requestResultUuid,
-                    Kitsunemimi::ErrorContainer &error)
+                    Hanami::ErrorContainer &error)
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();

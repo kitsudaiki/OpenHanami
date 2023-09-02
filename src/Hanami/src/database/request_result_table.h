@@ -26,7 +26,7 @@
 #include <hanami_common/logger.h>
 #include <database/generic_tables/hanami_sql_table.h>
 
-namespace Kitsunemimi {
+namespace Hanami {
 class JsonItem;
 }
 
@@ -44,20 +44,20 @@ public:
 
     ~RequestResultTable();
 
-    bool addRequestResult(Kitsunemimi::JsonItem &data,
+    bool addRequestResult(Hanami::JsonItem &data,
                           const UserContext &userContext,
-                          Kitsunemimi::ErrorContainer &error);
-    bool getRequestResult(Kitsunemimi::JsonItem &result,
+                          Hanami::ErrorContainer &error);
+    bool getRequestResult(Hanami::JsonItem &result,
                           const std::string &resultUuid,
                           const UserContext &userContext,
-                          Kitsunemimi::ErrorContainer &error,
+                          Hanami::ErrorContainer &error,
                           const bool showHiddenValues);
-    bool getAllRequestResult(Kitsunemimi::TableItem &result,
+    bool getAllRequestResult(Hanami::TableItem &result,
                              const UserContext &userContext,
-                             Kitsunemimi::ErrorContainer &error);
+                             Hanami::ErrorContainer &error);
     bool deleteRequestResult(const std::string &resultUuid,
                              const UserContext &userContext,
-                             Kitsunemimi::ErrorContainer &error);
+                             Hanami::ErrorContainer &error);
 
 private:
     RequestResultTable();

@@ -31,12 +31,12 @@
 #include <hanami_common/logger.h>
 #include <hanami_common/items/data_items.h>
 
-namespace Kitsunemimi::Hanami {
+namespace Hanami {
 struct RequestMessage;
 }
 
 class SpeedMeasuring
-        : public Kitsunemimi::Thread
+        : public Hanami::Thread
 {
 public:
     static SpeedMeasuring* getInstance()
@@ -48,7 +48,7 @@ public:
     }
     ~SpeedMeasuring();
 
-    Kitsunemimi::DataMap* getJson();
+    Hanami::DataMap* getJson();
 
 protected:
     void run();

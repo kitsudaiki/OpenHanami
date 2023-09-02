@@ -24,11 +24,11 @@
 
 #include <hanami_crypto/hashes.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 Hashes_Test::Hashes_Test()
-    : Kitsunemimi::CompareTestHelper("Hashes_Test")
+    : Hanami::CompareTestHelper("Hashes_Test")
 {
     generate_SHA_256_test();
 }

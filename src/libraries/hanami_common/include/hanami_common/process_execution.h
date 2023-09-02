@@ -28,7 +28,7 @@
 #include <map>
 #include <utility>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 struct ProcessResult

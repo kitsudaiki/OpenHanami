@@ -35,7 +35,7 @@ public:
     ValueContainer();
 
     void addValue(const float newValue);
-    Kitsunemimi::DataMap* toJson();
+    Hanami::DataMap* toJson();
 
 private:
     struct ValueSection
@@ -52,7 +52,7 @@ private:
     std::vector<ValueSection> m_valueSections;
 
     void addValue(const float newValue, const uint64_t sectionId);
-    Kitsunemimi::DataArray* appendSectionToJson(const uint64_t sectionId);
+    Hanami::DataArray* appendSectionToJson(const uint64_t sectionId);
 };
 
 #endif // HANAMI_VALUECONTAINER_H

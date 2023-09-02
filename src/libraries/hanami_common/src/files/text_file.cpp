@@ -14,7 +14,7 @@
 #include <hanami_common/methods/string_methods.h>
 #include <hanami_common/methods/file_methods.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 /**
@@ -204,7 +204,7 @@ replaceLine(const std::string &filePath,
 
     // split content into a vector of lines
     std::vector<std::string> splitedContent;
-    Kitsunemimi::splitStringByDelimiter(splitedContent, fileContent, '\n');
+    Hanami::splitStringByDelimiter(splitedContent, fileContent, '\n');
     if(splitedContent.size() <= lineNumber)
     {
         error.addMeesage("failed to replace line in file \""

@@ -30,14 +30,14 @@ namespace HanamiAI
 
 bool getCheckpoint(std::string &result,
                  const std::string &checkpointUuid,
-                 Kitsunemimi::ErrorContainer &error);
+                 Hanami::ErrorContainer &error);
 
 bool listCheckpoint(std::string &result,
-                  Kitsunemimi::ErrorContainer &error);
+                  Hanami::ErrorContainer &error);
 
 bool deleteCheckpoint(std::string &result,
                     const std::string &checkpointUuid,
-                    Kitsunemimi::ErrorContainer &error);
+                    Hanami::ErrorContainer &error);
 
 } // namespace HanamiAI
 

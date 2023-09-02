@@ -56,11 +56,11 @@ public:
     };
 
     TableDataSetFile(const std::string &filePath);
-    TableDataSetFile(Kitsunemimi::BinaryFile* file);
+    TableDataSetFile(Hanami::BinaryFile* file);
     ~TableDataSetFile();
-    bool updateHeader(Kitsunemimi::ErrorContainer &error);
-    bool getPayload(Kitsunemimi::DataBuffer &result,
-                    Kitsunemimi::ErrorContainer &error,
+    bool updateHeader(Hanami::ErrorContainer &error);
+    bool getPayload(Hanami::DataBuffer &result,
+                    Hanami::ErrorContainer &error,
                     const std::string &columnName = "");
 
     void print();

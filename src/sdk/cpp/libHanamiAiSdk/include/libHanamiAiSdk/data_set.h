@@ -31,33 +31,33 @@ namespace HanamiAI
 bool uploadCsvData(std::string &result,
                    const std::string &dataSetName,
                    const std::string &inputFilePath,
-                   Kitsunemimi::ErrorContainer &error);
+                   Hanami::ErrorContainer &error);
 
 bool uploadMnistData(std::string &result,
                      const std::string &dataSetName,
                      const std::string &inputFilePath,
                      const std::string &labelFilePath,
-                     Kitsunemimi::ErrorContainer &error);
+                     Hanami::ErrorContainer &error);
 
 bool checkDataset(std::string &result,
                   const std::string &dataUuid,
                   const std::string &resultUuid,
-                  Kitsunemimi::ErrorContainer &error);
+                  Hanami::ErrorContainer &error);
 
 bool getDataset(std::string &result,
                 const std::string &dataUuid,
-                Kitsunemimi::ErrorContainer &error);
+                Hanami::ErrorContainer &error);
 
 bool listDatasets(std::string &result,
-                  Kitsunemimi::ErrorContainer &error);
+                  Hanami::ErrorContainer &error);
 
 bool deleteDataset(std::string &result,
                    const std::string &dataUuid,
-                   Kitsunemimi::ErrorContainer &error);
+                   Hanami::ErrorContainer &error);
 
 bool getDatasetProgress(std::string &result,
                    const std::string &dataUuid,
-                   Kitsunemimi::ErrorContainer &error);
+                   Hanami::ErrorContainer &error);
 
 } // namespace HanamiAI
 

@@ -12,11 +12,11 @@
 #include <hanami_common/test_helper/compare_test_helper.h>
 #include <hanami_common/items/table_item.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 class TableItem_test
-        : public Kitsunemimi::CompareTestHelper
+        : public Hanami::CompareTestHelper
 {
 public:
     TableItem_test();

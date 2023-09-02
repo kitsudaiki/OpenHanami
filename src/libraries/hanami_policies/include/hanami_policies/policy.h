@@ -29,11 +29,11 @@
 
 #include <hanami_common/logger.h>
 
-namespace Kitsunemimi {
+namespace Hanami {
 class DataMap;
 }
 
-namespace Kitsunemimi::Hanami
+namespace Hanami
 {
 class Policy_Test;
 

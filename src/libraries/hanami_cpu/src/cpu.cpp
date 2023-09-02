@@ -25,7 +25,7 @@
 #include <hanami_common/methods/string_methods.h>
 #include <hanami_common/methods/file_methods.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 /**
@@ -58,7 +58,7 @@ getInfo(const std::string &filePath,
 
     // make content clean
     std::string content = strStream.str();
-    Kitsunemimi::trim(content);
+    Hanami::trim(content);
 
     return content;
 }
@@ -84,7 +84,7 @@ getRangeInfo(uint64_t &result,
 
     // process content
     std::vector<std::string> numberRange;
-    Kitsunemimi::splitStringByDelimiter(numberRange, info, '-');
+    Hanami::splitStringByDelimiter(numberRange, info, '-');
     if(numberRange.size() < 2) {
         return false;
     }
@@ -439,7 +439,7 @@ getCpuSiblingId(uint64_t &result,
 
     // process content
     std::vector<std::string> siblings;
-    Kitsunemimi::splitStringByDelimiter(siblings, info, ',');
+    Hanami::splitStringByDelimiter(siblings, info, ',');
     if(siblings.size() < 2)
     {
         error.addMeesage("Failed to get sibling-id of the cpu-thread with id: '"

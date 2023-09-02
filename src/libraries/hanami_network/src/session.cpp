@@ -46,7 +46,7 @@ enum statemachineItems {
     STOP_SESSION = 10,
 };
 
-namespace Kitsunemimi::Sakura
+namespace Hanami
 {
 
 /**

@@ -29,14 +29,14 @@
 #include <abstract_socket.h>
 #include <hanami_common/logger.h>
 
-namespace Kitsunemimi::Sakura
+namespace Hanami
 {
 
 /**
  * @brief constructor
  */
 ReplyHandler::ReplyHandler()
-    : Kitsunemimi::Thread("ReplyHandler")
+    : Hanami::Thread("ReplyHandler")
 {
     m_messageList.reserve(10);
 }

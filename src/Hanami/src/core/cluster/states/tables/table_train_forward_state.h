@@ -28,7 +28,7 @@
 class Cluster;
 
 class TableTrainForward_State
-        : public Kitsunemimi::Event
+        : public Hanami::Event
 {
 public:
     TableTrainForward_State(Cluster* cluster);

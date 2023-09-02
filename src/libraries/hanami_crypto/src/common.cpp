@@ -25,7 +25,7 @@
 #include <cryptopp/hex.h>
 #include <hanami_common/buffer/data_buffer.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 void

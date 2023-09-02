@@ -33,21 +33,21 @@ bool createTask(std::string &result,
                 const std::string &type,
                 const std::string &clusterUuid,
                 const std::string &dataSetUuid,
-                Kitsunemimi::ErrorContainer &error);
+                Hanami::ErrorContainer &error);
 
 bool getTask(std::string &result,
              const std::string &taskUuid,
              const std::string &clusterUuid,
-             Kitsunemimi::ErrorContainer &error);
+             Hanami::ErrorContainer &error);
 
 bool listTask(std::string &result,
               const std::string &clusterUuid,
-              Kitsunemimi::ErrorContainer &error);
+              Hanami::ErrorContainer &error);
 
 bool deleteTask(std::string &result,
                 const std::string &taskUuid,
                 const std::string &clusterUuid,
-                Kitsunemimi::ErrorContainer &error);
+                Hanami::ErrorContainer &error);
 
 } // namespace HanamiAI
 

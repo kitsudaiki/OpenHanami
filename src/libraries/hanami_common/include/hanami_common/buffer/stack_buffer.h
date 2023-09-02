@@ -33,7 +33,7 @@
 #include <hanami_common/buffer/data_buffer.h>
 #include <hanami_common/buffer/stack_buffer_reserve.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 struct StackBuffer

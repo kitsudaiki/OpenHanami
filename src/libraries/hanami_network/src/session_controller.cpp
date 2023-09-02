@@ -39,7 +39,7 @@
 
 #include <hanami_common/logger.h>
 
-namespace Kitsunemimi::Sakura
+namespace Hanami
 {
 
 SessionController* SessionController::m_sessionController = nullptr;

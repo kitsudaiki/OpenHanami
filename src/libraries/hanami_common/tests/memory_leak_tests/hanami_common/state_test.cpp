@@ -10,11 +10,11 @@
 
 #include <state.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 State_Test::State_Test()
-    : Kitsunemimi::MemoryLeakTestHelpter("State_Test")
+    : Hanami::MemoryLeakTestHelpter("State_Test")
 {
     create_delete_test();
 }

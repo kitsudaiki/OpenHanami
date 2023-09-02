@@ -33,9 +33,9 @@ public:
 
 protected:
     bool runTask(BlossomIO &blossomIO,
-                 const Kitsunemimi::DataMap &context,
+                 const Hanami::DataMap &context,
                  BlossomStatus &status,
-                 Kitsunemimi::ErrorContainer &error);
+                 Hanami::ErrorContainer &error);
 };
 
 #endif // HANAMI_LIST_USER_PROJECTS_H

@@ -25,11 +25,11 @@
 #include <hanami_crypto/common.h>
 #include <hanami_common/buffer/data_buffer.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 Common_Test::Common_Test()
-    : Kitsunemimi::CompareTestHelper("Common_Test")
+    : Hanami::CompareTestHelper("Common_Test")
 {
     hexEncode_test();
 

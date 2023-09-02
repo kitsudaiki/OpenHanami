@@ -24,7 +24,7 @@
 
 int main()
 {
-    Kitsunemimi::Hanami::Policy_Test();
+    Hanami::Policy_Test();
 
     return 0;
 }

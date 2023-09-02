@@ -10,11 +10,11 @@
 
 #include <hanami_common/files/text_file.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 TextFile_Test::TextFile_Test()
-    : Kitsunemimi::CompareTestHelper("TextFile_Test")
+    : Hanami::CompareTestHelper("TextFile_Test")
 {
     initTest();
     writeFile_test();

@@ -14,11 +14,11 @@
 #include <hanami_common/test_helper/compare_test_helper.h>
 #include <hanami_common/threading/thread.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 class ThreadHandler_Test
-        : public Kitsunemimi::CompareTestHelper
+        : public Hanami::CompareTestHelper
 {
 public:
     ThreadHandler_Test();
@@ -31,7 +31,7 @@ private:
 // DummyThread for testing
 //==================================================================================================
 class DummyThread
-        : public Kitsunemimi::Thread
+        : public Hanami::Thread
 {
 public:
     DummyThread();

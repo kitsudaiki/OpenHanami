@@ -18,7 +18,7 @@
 
 #include <tcp/tcp_socket.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 class UnixDomainServer;
 class TcpServer;

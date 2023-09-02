@@ -46,12 +46,12 @@ GetSystemInfo::GetSystemInfo()
  */
 bool
 GetSystemInfo::runTask(BlossomIO &blossomIO,
-                       const Kitsunemimi::DataMap &,
+                       const Hanami::DataMap &,
                        BlossomStatus &,
-                       Kitsunemimi::ErrorContainer &)
+                       Hanami::ErrorContainer &)
 {
     // creat output
-    blossomIO.output.insert("info", Kitsunemimi::Sakura::Host::getInstance()->toJson());
+    blossomIO.output.insert("info", Hanami::Host::getInstance()->toJson());
 
     return true;
 }

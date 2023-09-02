@@ -32,7 +32,7 @@
 
 #include <hanami_common/memory_counter.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 struct DataBuffer;
@@ -211,7 +211,7 @@ alignedMalloc(const uint16_t blockSize,
     }
 
     // update memory-counter in case of memory-leak-tests
-    Kitsunemimi::increaseGlobalMemoryCounter(numberOfBytes);
+    Hanami::increaseGlobalMemoryCounter(numberOfBytes);
 
     // init memory
     memset(ptr, 0, numberOfBytes);
@@ -238,7 +238,7 @@ alignedFree(void* ptr,
     }
 
     // update memory-counter in case of memory-leak-tests
-    Kitsunemimi::decreaseGlobalMemoryCounter(numberOfBytes);
+    Hanami::decreaseGlobalMemoryCounter(numberOfBytes);
 
     // free data
     free(ptr);

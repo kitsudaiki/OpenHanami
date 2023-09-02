@@ -90,9 +90,9 @@ CreateCheckpoint::CreateCheckpoint()
  */
 bool
 CreateCheckpoint::runTask(BlossomIO &blossomIO,
-                          const Kitsunemimi::DataMap &,
+                          const Hanami::DataMap &,
                           BlossomStatus &status,
-                          Kitsunemimi::ErrorContainer &error)
+                          Hanami::ErrorContainer &error)
 {
     const std::string uuid = blossomIO.input.get("uuid").getString();
     const std::string name = blossomIO.input.get("name").getString();
@@ -141,8 +141,8 @@ CreateCheckpoint::runTask(BlossomIO &blossomIO,
     blossomIO.output.insert("visibility", "private");
 
     // init placeholder for temp-file progress to database
-    Kitsunemimi::JsonItem tempFiles;
-    tempFiles.insert(tempFileUuid, Kitsunemimi::JsonItem(0.0f));
+    Hanami::JsonItem tempFiles;
+    tempFiles.insert(tempFileUuid, Hanami::JsonItem(0.0f));
     blossomIO.output.insert("temp_files", tempFiles);
 
     // add to database

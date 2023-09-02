@@ -28,12 +28,12 @@
 
 #include <hanami_common/threading/thread.h>
 
-namespace Kitsunemimi::Sakura
+namespace Hanami
 {
 class Session;
 
 class MessageBlockerHandler
-        : public Kitsunemimi::Thread
+        : public Hanami::Thread
 {
 public:
     MessageBlockerHandler();

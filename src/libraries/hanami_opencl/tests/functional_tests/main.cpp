@@ -29,7 +29,7 @@
 
 int main()
 {
-    Kitsunemimi::initConsoleLogger(true);
+    Hanami::initConsoleLogger(true);
 
-    Kitsunemimi::SimpleTest();
+    Hanami::SimpleTest();
 }

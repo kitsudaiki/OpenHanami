@@ -45,18 +45,18 @@ struct BlossomIO
     std::string blossomGroupType = "";
     std::vector<std::string> nameHirarchie;
 
-    Kitsunemimi::JsonItem output;
-    Kitsunemimi::JsonItem input;
+    Hanami::JsonItem output;
+    Hanami::JsonItem input;
 
-    Kitsunemimi::DataMap* parentValues = nullptr;
+    Hanami::DataMap* parentValues = nullptr;
 
     std::string terminalOutput = "";
 
     BlossomIO()
     {
-        std::map<std::string, Kitsunemimi::JsonItem> temp;
-        output = Kitsunemimi::JsonItem(temp);
-        input = Kitsunemimi::JsonItem(temp);
+        std::map<std::string, Hanami::JsonItem> temp;
+        output = Hanami::JsonItem(temp);
+        input = Hanami::JsonItem(temp);
     }
 };
 
@@ -88,8 +88,8 @@ struct FieldDef
     const FieldType fieldType;
     bool isRequired = true;
     std::string comment = "";
-    Kitsunemimi::DataItem* match = nullptr;
-    Kitsunemimi::DataItem* defaultVal = nullptr;
+    Hanami::DataItem* match = nullptr;
+    Hanami::DataItem* defaultVal = nullptr;
     std::string regex = "";
     long lowerLimit = 0;
     long upperLimit = 0;
@@ -105,13 +105,13 @@ struct FieldDef
         return *this;
     }
 
-    FieldDef& setMatch(Kitsunemimi::DataItem* match)
+    FieldDef& setMatch(Hanami::DataItem* match)
     {
         this->match = match;
         return *this;
     }
 
-    FieldDef& setDefault(Kitsunemimi::DataItem* defaultValue)
+    FieldDef& setDefault(Hanami::DataItem* defaultValue)
     {
         this->defaultVal = defaultValue;
         this->isRequired = false;
@@ -149,9 +149,9 @@ public:
 
 protected:
     virtual bool runTask(BlossomIO &blossomIO,
-                         const Kitsunemimi::DataMap &context,
+                         const Hanami::DataMap &context,
                          BlossomStatus &status,
-                         Kitsunemimi::ErrorContainer &error) = 0;
+                         Hanami::ErrorContainer &error) = 0;
     bool allowUnmatched = false;
 
     FieldDef& registerInputField(const std::string &name,
@@ -168,20 +168,20 @@ private:
     std::map<std::string, FieldDef> m_outputValidationMap;
 
     bool growBlossom(BlossomIO &blossomIO,
-                     const Kitsunemimi::DataMap* context,
+                     const Hanami::DataMap* context,
                      BlossomStatus &status,
-                     Kitsunemimi::ErrorContainer &error);
-    bool validateFieldsCompleteness(const Kitsunemimi::DataMap &input,
+                     Hanami::ErrorContainer &error);
+    bool validateFieldsCompleteness(const Hanami::DataMap &input,
                                     const std::map<std::string, FieldDef> &validationMap,
                                     const FieldDef::IO_ValueType valueType,
                                     std::string &errorMessage);
     bool validateInput(BlossomItem &blossomItem,
                        const std::map<std::string, FieldDef> &validationMap,
                        const std::string &filePath,
-                       Kitsunemimi::ErrorContainer &error);
+                       Hanami::ErrorContainer &error);
     void getCompareMap(std::map<std::string, FieldDef::IO_ValueType> &compareMap,
                        const ValueItemMap &valueMap);
-    void fillDefaultValues(Kitsunemimi::DataMap &values);
+    void fillDefaultValues(Hanami::DataMap &values);
 };
 
 #endif // KITSUNEMIMI_SAKURA_LANG_BLOSSOM_H

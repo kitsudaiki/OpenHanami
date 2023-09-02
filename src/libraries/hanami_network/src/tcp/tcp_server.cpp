@@ -8,7 +8,7 @@
 
 #include <tcp/tcp_server.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 /**

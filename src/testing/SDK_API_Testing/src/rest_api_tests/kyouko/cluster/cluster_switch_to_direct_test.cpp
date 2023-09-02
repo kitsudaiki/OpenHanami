@@ -39,8 +39,8 @@ ClusterSwitchToDirectTest::ClusterSwitchToDirectTest(const bool expectSuccess)
 }
 
 bool
-ClusterSwitchToDirectTest::runTest(Kitsunemimi::JsonItem &inputData,
-                                   Kitsunemimi::ErrorContainer &error)
+ClusterSwitchToDirectTest::runTest(Hanami::JsonItem &inputData,
+                                   Hanami::ErrorContainer &error)
 {
     // create new cluster
     std::string result;

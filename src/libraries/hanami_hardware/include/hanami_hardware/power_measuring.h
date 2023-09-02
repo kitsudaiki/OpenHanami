@@ -31,14 +31,14 @@
 #include <hanami_common/logger.h>
 #include <hanami_common/items/data_items.h>
 
-namespace Kitsunemimi::Hanami {
+namespace Hanami {
 struct RequestMessage;
 }
 
 class ValueContainer;
 
 class PowerMeasuring
-        : public Kitsunemimi::Thread
+        : public Hanami::Thread
 {
 public:
     static PowerMeasuring* getInstance()
@@ -50,7 +50,7 @@ public:
     }
     ~PowerMeasuring();
 
-    Kitsunemimi::DataMap* getJson();
+    Hanami::DataMap* getJson();
 
 protected:
     void run();

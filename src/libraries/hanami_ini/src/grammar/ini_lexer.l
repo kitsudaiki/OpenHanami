@@ -22,10 +22,10 @@
 # undef YY_DECL
 # endif
 # define YY_DECL \
-    Kitsunemimi::IniParser::symbol_type inilex (Kitsunemimi::IniParserInterface& driver)
+    Hanami::IniParser::symbol_type inilex (Hanami::IniParserInterface& driver)
 YY_DECL;
 
-Kitsunemimi::location iniloc;
+Hanami::location iniloc;
 %}
 
 
@@ -47,17 +47,17 @@ blank [ \t]
 
 #.*$        iniloc.step();
 {blank}+    iniloc.step();
-[\n]        {iniloc.lines(1); return Kitsunemimi::IniParser::make_LINEBREAK (iniloc); }
-"true"      return Kitsunemimi::IniParser::make_BOOL_TRUE (iniloc);
-"false"     return Kitsunemimi::IniParser::make_BOOL_FALSE (iniloc);
-"True"      return Kitsunemimi::IniParser::make_BOOL_TRUE (iniloc);
-"False"     return Kitsunemimi::IniParser::make_BOOL_FALSE (iniloc);
-"="         return Kitsunemimi::IniParser::make_EQUAL (iniloc);
-"["         return Kitsunemimi::IniParser::make_BRACKOPEN (iniloc);
-"]"         return Kitsunemimi::IniParser::make_BRACKCLOSE (iniloc);
-","         return Kitsunemimi::IniParser::make_COMMA (iniloc);
+[\n]        {iniloc.lines(1); return Hanami::IniParser::make_LINEBREAK (iniloc); }
+"true"      return Hanami::IniParser::make_BOOL_TRUE (iniloc);
+"false"     return Hanami::IniParser::make_BOOL_FALSE (iniloc);
+"True"      return Hanami::IniParser::make_BOOL_TRUE (iniloc);
+"False"     return Hanami::IniParser::make_BOOL_FALSE (iniloc);
+"="         return Hanami::IniParser::make_EQUAL (iniloc);
+"["         return Hanami::IniParser::make_BRACKOPEN (iniloc);
+"]"         return Hanami::IniParser::make_BRACKCLOSE (iniloc);
+","         return Hanami::IniParser::make_COMMA (iniloc);
 \"(\\.|[^"\\])*\" {
-            return Kitsunemimi::IniParser::make_STRING(yytext, iniloc);
+            return Hanami::IniParser::make_STRING(yytext, iniloc);
 }
 
 
@@ -70,36 +70,36 @@ blank [ \t]
     {
         driver.error(iniloc, "integer is out of range");
     }
-    return Kitsunemimi::IniParser::make_NUMBER (length, iniloc);
+    return Hanami::IniParser::make_NUMBER (length, iniloc);
 }
 
 {double}	{
     double value = strtod( yytext , NULL );
-    return Kitsunemimi::IniParser::make_FLOAT(value, iniloc);
+    return Hanami::IniParser::make_FLOAT(value, iniloc);
 }
 
-{id} return Kitsunemimi::IniParser::make_IDENTIFIER(yytext, iniloc);
+{id} return Hanami::IniParser::make_IDENTIFIER(yytext, iniloc);
 
 
 [a-zA-Z_0-9|\-|.]* {
-    return Kitsunemimi::IniParser::make_STRING_PLN(yytext, iniloc);
+    return Hanami::IniParser::make_STRING_PLN(yytext, iniloc);
 }
 
 .          driver.error(iniloc, "invalid character");
-<<EOF>>    return Kitsunemimi::IniParser::make_END(iniloc);
+<<EOF>>    return Hanami::IniParser::make_END(iniloc);
 
 %%
 
 
-void Kitsunemimi::IniParserInterface::scan_begin(const std::string &inputString)
+void Hanami::IniParserInterface::scan_begin(const std::string &inputString)
 {
-    Kitsunemimi::location newLoc;
+    Hanami::location newLoc;
     iniloc = newLoc;
     yy_flex_debug = m_traceParsing;
     yy_scan_string(inputString.c_str());
 }
 
-void Kitsunemimi::IniParserInterface::scan_end()
+void Hanami::IniParserInterface::scan_end()
 {
     yy_delete_buffer(YY_CURRENT_BUFFER);
 }

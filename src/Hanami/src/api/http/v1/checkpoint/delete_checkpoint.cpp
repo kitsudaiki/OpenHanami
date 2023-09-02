@@ -51,15 +51,15 @@ DeleteCheckpoint::DeleteCheckpoint()
  */
 bool
 DeleteCheckpoint::runTask(BlossomIO &blossomIO,
-                          const Kitsunemimi::DataMap &context,
+                          const Hanami::DataMap &context,
                           BlossomStatus &status,
-                          Kitsunemimi::ErrorContainer &error)
+                          Hanami::ErrorContainer &error)
 {
     const std::string checkpointUuid = blossomIO.input.get("uuid").getString();
     const UserContext userContext(context);
 
     // get location from database
-    Kitsunemimi::JsonItem result;
+    Hanami::JsonItem result;
     if(CheckpointTable::getInstance()->getCheckpoint(result,
                                                      checkpointUuid,
                                                      userContext,
@@ -92,7 +92,7 @@ DeleteCheckpoint::runTask(BlossomIO &blossomIO,
     }
 
     // delete local files
-    if(Kitsunemimi::deleteFileOrDir(location, error) == false)
+    if(Hanami::deleteFileOrDir(location, error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;

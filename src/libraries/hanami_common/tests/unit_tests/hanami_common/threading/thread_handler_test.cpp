@@ -10,11 +10,11 @@
 
 #include <hanami_common/threading/thread_handler.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 ThreadHandler_Test::ThreadHandler_Test()
-    : Kitsunemimi::CompareTestHelper("ThreadHandler_Test")
+    : Hanami::CompareTestHelper("ThreadHandler_Test")
 {
     all_test();
 }
@@ -64,7 +64,7 @@ ThreadHandler_Test::all_test()
 // DummyThread for testing
 //==================================================================================================
 DummyThread::DummyThread()
-    : Kitsunemimi::Thread("DummyThread")
+    : Hanami::Thread("DummyThread")
 {}
 
 void DummyThread::run()

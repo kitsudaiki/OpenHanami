@@ -50,7 +50,7 @@ struct ResponseMessage
 
 struct RequestMessage
 {
-    Kitsunemimi::Hanami::HttpRequestType httpType = Kitsunemimi::Hanami::GET_TYPE;
+    Hanami::HttpRequestType httpType = Hanami::GET_TYPE;
     std::string id = "";
     std::string inputValues = "{}";
 };
@@ -65,7 +65,7 @@ struct UserContext
 
     UserContext() {}
 
-    UserContext(const Kitsunemimi::DataMap &inputContext)
+    UserContext(const Hanami::DataMap &inputContext)
     {
         userId = inputContext.getStringByKey("id");
         projectId = inputContext.getStringByKey("project_id");

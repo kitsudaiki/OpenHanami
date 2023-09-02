@@ -9,11 +9,11 @@
 #include "data_items_DataMap_test.h"
 #include <hanami_common/items/data_items.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 DataItems_DataMap_Test::DataItems_DataMap_Test()
-    : Kitsunemimi::CompareTestHelper("DataItems_DataMap_Test")
+    : Hanami::CompareTestHelper("DataItems_DataMap_Test")
 {
     copy_assingment_constructor_test();
     copy_assingment_operator_test();

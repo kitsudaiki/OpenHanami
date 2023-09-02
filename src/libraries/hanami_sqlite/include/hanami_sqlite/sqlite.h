@@ -25,7 +25,7 @@
 #include <sqlite3.h>
 #include <hanami_common/logger.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 class TableItem;
 

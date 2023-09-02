@@ -34,7 +34,7 @@ ListCluster::ListCluster()
 
     registerOutputField("header", SAKURA_ARRAY_TYPE)
             .setComment("Array with the names all columns of the table.")
-            .setMatch(new Kitsunemimi::DataValue("[\"uuid\","
+            .setMatch(new Hanami::DataValue("[\"uuid\","
                                                  "\"project_id\","
                                                  "\"owner_id\","
                                                  "\"visibility\","
@@ -53,14 +53,14 @@ ListCluster::ListCluster()
  */
 bool
 ListCluster::runTask(BlossomIO &blossomIO,
-                     const Kitsunemimi::DataMap &context,
+                     const Hanami::DataMap &context,
                      BlossomStatus &status,
-                     Kitsunemimi::ErrorContainer &error)
+                     Hanami::ErrorContainer &error)
 {
     const UserContext userContext(context);
 
     // get data from table
-    Kitsunemimi::TableItem table;
+    Hanami::TableItem table;
     if(ClusterTable::getInstance()->getAllCluster(table, userContext, error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -69,7 +69,7 @@ ListCluster::runTask(BlossomIO &blossomIO,
     }
 
     // create output
-    Kitsunemimi::DataArray* headerInfo = table.getInnerHeader();
+    Hanami::DataArray* headerInfo = table.getInnerHeader();
     blossomIO.output.insert("header", headerInfo);
     blossomIO.output.insert("body", table.getBody());
     delete headerInfo;

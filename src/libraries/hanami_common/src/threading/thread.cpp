@@ -26,7 +26,7 @@
 #include <hanami_common/threading/thread_handler.h>
 #include <hanami_common/threading/cleanup_thread.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 /**

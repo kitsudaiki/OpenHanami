@@ -42,7 +42,7 @@ initClient(const std::string &host,
            const std::string &port,
            const std::string &user,
            const std::string &password,
-           Kitsunemimi::ErrorContainer &error)
+           Hanami::ErrorContainer &error)
 {
     HanamiRequest* request = HanamiRequest::getInstance();
     if(request->init(host, port, user, password) == false)

@@ -94,7 +94,7 @@ ValueItemMap::operator=(const ValueItemMap &other)
  */
 bool
 ValueItemMap::insert(const std::string &key,
-                     Kitsunemimi::DataItem* value,
+                     Hanami::DataItem* value,
                      bool force)
 {
     ValueItem valueItem;
@@ -237,7 +237,7 @@ ValueItemMap::getValueAsString(const std::string &key)
  *
  * @return pointer to the data-item, if found, else a nullptr
  */
-Kitsunemimi::DataItem*
+Hanami::DataItem*
 ValueItemMap::get(const std::string &key)
 {
     const auto it = m_valueMap.find(key);
@@ -286,7 +286,7 @@ const std::string
 ValueItemMap::toString()
 {
     // init table output
-    Kitsunemimi::TableItem table;
+    Hanami::TableItem table;
     table.addColumn("key");
     table.addColumn("value");
 

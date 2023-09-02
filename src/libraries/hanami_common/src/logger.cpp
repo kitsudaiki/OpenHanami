@@ -10,10 +10,10 @@
 
 #include <hanami_common/logger.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
-Kitsunemimi::Logger* Logger::m_logger = new Kitsunemimi::Logger();
+Hanami::Logger* Logger::m_logger = new Hanami::Logger();
 
 /**
  * @brief initialize file logger
@@ -106,7 +106,7 @@ LOG_error(ErrorContainer &container)
 bool
 LOG_info(const std::string &message, const std::string &color)
 {
-    return Kitsunemimi::Logger::m_logger->logData(message, "INFO", color);
+    return Hanami::Logger::m_logger->logData(message, "INFO", color);
 }
 
 /**

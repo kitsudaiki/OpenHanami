@@ -11,7 +11,7 @@
 
 #include <hanami_common/test_helper/memory_leak_test_helper.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 struct RingBuffer;
 struct DataBuffer;
@@ -28,7 +28,7 @@ template<class>
 class TemplateServer;
 
 class Tcp_Test
-        : public Kitsunemimi::MemoryLeakTestHelpter
+        : public Hanami::MemoryLeakTestHelpter
 {
 public:
     Tcp_Test();

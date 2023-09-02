@@ -10,11 +10,11 @@
 
 #include <hanami_common/buffer/ring_buffer.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 RingBuffer_Test::RingBuffer_Test()
-    : Kitsunemimi::MemoryLeakTestHelpter("RingBuffer_Test")
+    : Hanami::MemoryLeakTestHelpter("RingBuffer_Test")
 {
     create_delete_test();
 }

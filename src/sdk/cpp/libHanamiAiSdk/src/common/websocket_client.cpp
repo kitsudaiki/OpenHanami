@@ -63,7 +63,7 @@ WebsocketClient::initClient(std::string &socketUuid,
                             const std::string &host,
                             const std::string &port,
                             const std::string &targetUuid,
-                            Kitsunemimi::ErrorContainer &error)
+                            Hanami::ErrorContainer &error)
 {
     try
     {
@@ -127,7 +127,7 @@ WebsocketClient::initClient(std::string &socketUuid,
                                       buffer.data().size());
 
         // parse response
-        Kitsunemimi::JsonItem response;
+        Hanami::JsonItem response;
         if(response.parse(responseMsg, error) == false)
         {
             error.addMeesage("Failed to parse response-message from Websocket-init");
@@ -160,7 +160,7 @@ WebsocketClient::initClient(std::string &socketUuid,
 bool
 WebsocketClient::sendMessage(const void* data,
                              const uint64_t dataSize,
-                             Kitsunemimi::ErrorContainer &error)
+                             Hanami::ErrorContainer &error)
 {
     try
     {
@@ -189,7 +189,7 @@ WebsocketClient::sendMessage(const void* data,
  */
 uint8_t*
 WebsocketClient::readMessage(uint64_t &numberOfByes,
-                             Kitsunemimi::ErrorContainer &error)
+                             Hanami::ErrorContainer &error)
 {
     try
     {

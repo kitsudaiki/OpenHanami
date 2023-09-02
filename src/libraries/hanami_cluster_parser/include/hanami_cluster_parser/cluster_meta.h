@@ -31,7 +31,7 @@
 #include <hanami_common/logger.h>
 #include <hanami_common/structs.h>
 
-namespace Kitsunemimi::Hanami
+namespace Hanami
 {
 
 enum BrickType

@@ -34,13 +34,13 @@
 #include <hanami_common/buffer/data_buffer.h>
 #include <hanami_common/buffer/stack_buffer.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 struct DataBuffer;
 class AbstractSocket;
 }
 
-namespace Kitsunemimi::Sakura
+namespace Hanami
 {
 class SessionHandler;
 class SessionController;
@@ -104,7 +104,7 @@ public:
     //=====================================================================
     Session(AbstractSocket* socket);
 
-    Kitsunemimi::Statemachine m_statemachine;
+    Hanami::Statemachine m_statemachine;
     AbstractSocket* m_socket = nullptr;
     MultiblockIO* m_multiblockIo = nullptr;
     uint32_t m_sessionId = 0;

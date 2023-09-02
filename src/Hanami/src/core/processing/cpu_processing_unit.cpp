@@ -70,7 +70,7 @@ uint32_t counter = 0;
  * @brief constructor
  */
 CpuProcessingUnit::CpuProcessingUnit()
-    : Kitsunemimi::Thread("CpuProcessingUnit") {}
+    : Hanami::Thread("CpuProcessingUnit") {}
 
 /**
  * @brief destructor
@@ -85,7 +85,7 @@ CpuProcessingUnit::~CpuProcessingUnit() {}
 void
 CpuProcessingUnit::trainSegmentForward(Cluster* cluster)
 {
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
 
     cluster->clusterSettings->doTrain = 1;
     if(HanamiRoot::useCuda)
@@ -118,7 +118,7 @@ CpuProcessingUnit::trainSegmentForward(Cluster* cluster)
 void
 CpuProcessingUnit::trainSegmentBackward(Cluster* cluster)
 {
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
 
     if(HanamiRoot::useCuda)
     {
@@ -165,7 +165,7 @@ CpuProcessingUnit::trainSegmentBackward(Cluster* cluster)
 void
 CpuProcessingUnit::processSegment(Cluster* cluster)
 {
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     if(HanamiRoot::useCuda)
     {
         processing_CUDA(&cluster->gpuPointer,
@@ -196,7 +196,7 @@ CpuProcessingUnit::processSegment(Cluster* cluster)
         {
             // TODO: check for cluster-state instead of client
             const uint32_t hightest = getHighestOutput(*cluster);
-            Kitsunemimi::DataValue* value = actualTask->resultData.get(cycle).getItemContent()->toValue();
+            Hanami::DataValue* value = actualTask->resultData.get(cycle).getItemContent()->toValue();
             value->setValue(static_cast<long>(hightest));
         }
         else if(actualTask->type == TABLE_REQUEST_TASK)
@@ -204,7 +204,7 @@ CpuProcessingUnit::processSegment(Cluster* cluster)
             float val = 0.0f;
             for(uint64_t i = 0; i < cluster->clusterHeader->outputValues.count; i++)
             {
-                Kitsunemimi::DataValue* value = actualTask->resultData.get(cycle).getItemContent()->toValue();
+                Hanami::DataValue* value = actualTask->resultData.get(cycle).getItemContent()->toValue();
                 val = value->getFloat() + cluster->outputValues[i];
                 value->setValue(val);
             }

@@ -50,7 +50,7 @@ copyToDevice_CUDA(PointerHandler* gpuPointer,
  */
 Cluster::Cluster()
 {
-    stateMachine = new Kitsunemimi::Statemachine();
+    stateMachine = new Hanami::Statemachine();
     taskHandleState = new TaskHandle_State(this);
 
     initStatemachine(*stateMachine, this, taskHandleState);
@@ -113,7 +113,7 @@ Cluster::initCuda()
  * @return true, if successful, else false
  */
 bool
-Cluster::init(const Kitsunemimi::Hanami::ClusterMeta &clusterTemplate,
+Cluster::init(const Hanami::ClusterMeta &clusterTemplate,
               const std::string &uuid)
 {
     return initNewCluster(this, clusterTemplate, uuid);

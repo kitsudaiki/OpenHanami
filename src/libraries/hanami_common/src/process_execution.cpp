@@ -23,7 +23,7 @@
 #include <hanami_common/process_execution.h>
 #include <hanami_common/methods/string_methods.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 /**

@@ -32,7 +32,7 @@
 #include <cryptopp/files.h>
 #include <cryptopp/modes.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 //--------------------------------------------------------------------------------------------------
@@ -41,12 +41,12 @@ namespace Kitsunemimi
 bool encrypt_AES_256_CBC(std::string &result,
                          const std::string &input,
                          const CryptoPP::SecByteBlock &key,
-                         Kitsunemimi::ErrorContainer &error);
+                         Hanami::ErrorContainer &error);
 
 bool decrypt_AES_256_CBC(std::string &result,
                          const std::string &input,
                          const CryptoPP::SecByteBlock &key,
-                         Kitsunemimi::ErrorContainer &error);
+                         Hanami::ErrorContainer &error);
 
 }
 

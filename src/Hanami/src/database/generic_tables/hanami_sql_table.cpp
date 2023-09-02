@@ -34,7 +34,7 @@
  *
  * @param db pointer to database
  */
-HanamiSqlTable::HanamiSqlTable(Kitsunemimi::Sakura::SqlDatabase* db)
+HanamiSqlTable::HanamiSqlTable(Hanami::SqlDatabase* db)
     : SqlTable(db)
 {
     DbHeaderEntry uuid;
@@ -79,9 +79,9 @@ HanamiSqlTable::~HanamiSqlTable() {}
  * @return true, if successful, else false
  */
 bool
-HanamiSqlTable::add(Kitsunemimi::JsonItem &values,
+HanamiSqlTable::add(Hanami::JsonItem &values,
                     const UserContext &userContext,
-                    Kitsunemimi::ErrorContainer &error)
+                    Hanami::ErrorContainer &error)
 {
     // generate new uuid if the is no predefined
     if(values.contains("uuid") == false)
@@ -94,7 +94,7 @@ HanamiSqlTable::add(Kitsunemimi::JsonItem &values,
 
         // fill into string, but must be reduced by 1 to remove the escate-character
         std::string uuidString = std::string(uuid, UUID_STR_LEN - 1);
-        Kitsunemimi::toLowerCase(uuidString);
+        Hanami::toLowerCase(uuidString);
         values.insert("uuid", uuidString);
     }
 
@@ -117,10 +117,10 @@ HanamiSqlTable::add(Kitsunemimi::JsonItem &values,
  * @return true, if successful, else false
  */
 bool
-HanamiSqlTable::get(Kitsunemimi::JsonItem &result,
+HanamiSqlTable::get(Hanami::JsonItem &result,
                     const UserContext &userContext,
                     std::vector<RequestCondition> &conditions,
-                    Kitsunemimi::ErrorContainer &error,
+                    Hanami::ErrorContainer &error,
                     const bool showHiddenValues)
 {
     fillCondition(conditions, userContext);
@@ -138,10 +138,10 @@ HanamiSqlTable::get(Kitsunemimi::JsonItem &result,
  * @return true, if successful, else false
  */
 bool
-HanamiSqlTable::update(Kitsunemimi::JsonItem &values,
+HanamiSqlTable::update(Hanami::JsonItem &values,
                        const UserContext &userContext,
                        std::vector<RequestCondition> &conditions,
-                       Kitsunemimi::ErrorContainer &error)
+                       Hanami::ErrorContainer &error)
 {
     fillCondition(conditions, userContext);
     return updateInDb(conditions, values, error);
@@ -159,10 +159,10 @@ HanamiSqlTable::update(Kitsunemimi::JsonItem &values,
  * @return true, if successful, else false
  */
 bool
-HanamiSqlTable::getAll(Kitsunemimi::TableItem &result,
+HanamiSqlTable::getAll(Hanami::TableItem &result,
                        const UserContext &userContext,
                        std::vector<RequestCondition> &conditions,
-                       Kitsunemimi::ErrorContainer &error,
+                       Hanami::ErrorContainer &error,
                        const bool showHiddenValues)
 {
     fillCondition(conditions, userContext);
@@ -181,7 +181,7 @@ HanamiSqlTable::getAll(Kitsunemimi::TableItem &result,
 bool
 HanamiSqlTable::del(std::vector<RequestCondition> &conditions,
                     const UserContext &userContext,
-                    Kitsunemimi::ErrorContainer &error)
+                    Hanami::ErrorContainer &error)
 {
     fillCondition(conditions, userContext);
     return deleteFromDb(conditions, error);

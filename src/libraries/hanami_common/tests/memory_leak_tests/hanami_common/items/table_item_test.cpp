@@ -9,11 +9,11 @@
 #include "table_item_test.h"
 #include <hanami_common/items/table_item.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 TableItem_test::TableItem_test()
-    : Kitsunemimi::MemoryLeakTestHelpter("TableItem_test")
+    : Hanami::MemoryLeakTestHelpter("TableItem_test")
 {
     create_delete_test();
     add_delete_col_test();

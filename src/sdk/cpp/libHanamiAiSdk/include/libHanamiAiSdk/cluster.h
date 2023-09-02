@@ -33,36 +33,36 @@ class WebsocketClient;
 bool createCluster(std::string &result,
                    const std::string &clusterName,
                    const std::string &clusterTemplate,
-                   Kitsunemimi::ErrorContainer &error);
+                   Hanami::ErrorContainer &error);
 
 bool getCluster(std::string &result,
                 const std::string &clusterUuid,
-                Kitsunemimi::ErrorContainer &error);
+                Hanami::ErrorContainer &error);
 
 bool listCluster(std::string &result,
-                 Kitsunemimi::ErrorContainer &error);
+                 Hanami::ErrorContainer &error);
 
 bool deleteCluster(std::string &result,
                    const std::string &clusterUuid,
-                   Kitsunemimi::ErrorContainer &error);
+                   Hanami::ErrorContainer &error);
 
 bool saveCluster(std::string &result,
                  const std::string &clusterUuid,
                  const std::string &checkpointName,
-                 Kitsunemimi::ErrorContainer &error);
+                 Hanami::ErrorContainer &error);
 
 bool restoreCluster(std::string &result,
                     const std::string &clusterUuid,
                     const std::string &checkpointUuid,
-                    Kitsunemimi::ErrorContainer &error);
+                    Hanami::ErrorContainer &error);
 
 bool switchToTaskMode(std::string &result,
                       const std::string &clusterUuid,
-                      Kitsunemimi::ErrorContainer &error);
+                      Hanami::ErrorContainer &error);
 
 WebsocketClient* switchToDirectMode(std::string &result,
                                     const std::string &clusterUuid,
-                                    Kitsunemimi::ErrorContainer &error);
+                                    Hanami::ErrorContainer &error);
 
 } // namespace HanamiAI
 

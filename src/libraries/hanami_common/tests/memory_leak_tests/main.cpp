@@ -24,17 +24,17 @@
 
 int main()
 {
-    Kitsunemimi::DataBuffer_Test();
-    Kitsunemimi::ItemBuffer_Test();
-    Kitsunemimi::RingBuffer_Test();
-    Kitsunemimi::StackBufferReserve_Test();
-    Kitsunemimi::StackBuffer_Test();
+    Hanami::DataBuffer_Test();
+    Hanami::ItemBuffer_Test();
+    Hanami::RingBuffer_Test();
+    Hanami::StackBufferReserve_Test();
+    Hanami::StackBuffer_Test();
 
-    Kitsunemimi::State_Test();
-    Kitsunemimi::Statemachine_Test();
+    Hanami::State_Test();
+    Hanami::Statemachine_Test();
 
-    Kitsunemimi::DataItems_Test();
-    Kitsunemimi::TableItem_test();
+    Hanami::DataItems_Test();
+    Hanami::TableItem_test();
 
-    Kitsunemimi::Thread_Test();
+    Hanami::Thread_Test();
 }

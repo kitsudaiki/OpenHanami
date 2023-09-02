@@ -27,7 +27,7 @@
 #include <thread>
 #include <stdint.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 //===================================================================

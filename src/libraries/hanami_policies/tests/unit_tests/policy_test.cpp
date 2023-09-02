@@ -25,11 +25,11 @@
 #include <hanami_policies/policy.h>
 #include <hanami_common/items/data_items.h>
 
-namespace Kitsunemimi::Hanami
+namespace Hanami
 {
 
 Policy_Test::Policy_Test()
-    : Kitsunemimi::CompareTestHelper("Policy_Test")
+    : Hanami::CompareTestHelper("Policy_Test")
 {
     parse_test();
     checkUserAgainstPolicy();
@@ -42,7 +42,7 @@ void
 Policy_Test::parse_test()
 {
     const std::string testInput = getTestString();
-    Kitsunemimi::Hanami::Policy policy;
+    Hanami::Policy policy;
     ErrorContainer error;
 
     TEST_EQUAL(policy.parse(testInput, error), true);
@@ -55,7 +55,7 @@ void
 Policy_Test::checkUserAgainstPolicy()
 {
     const std::string testInput = getTestString();
-    Kitsunemimi::Hanami::Policy policy;
+    Hanami::Policy policy;
     ErrorContainer error;
     policy.parse(testInput, error);
 

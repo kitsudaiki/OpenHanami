@@ -79,16 +79,16 @@ CreateCluster::CreateCluster()
  */
 bool
 CreateCluster::runTask(BlossomIO &blossomIO,
-                       const Kitsunemimi::DataMap &context,
+                       const Hanami::DataMap &context,
                        BlossomStatus &status,
-                       Kitsunemimi::ErrorContainer &error)
+                       Hanami::ErrorContainer &error)
 {
     const std::string clusterName = blossomIO.input.get("name").getString();
     const std::string base64Template = blossomIO.input.get("template").getString();
     const UserContext userContext(context);
 
     // check if user already exist within the table
-    Kitsunemimi::JsonItem getResult;
+    Hanami::JsonItem getResult;
     if(ClusterTable::getInstance()->getClusterByName(getResult, clusterName, userContext, error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -104,12 +104,12 @@ CreateCluster::runTask(BlossomIO &blossomIO,
         return false;
     }
 
-    Kitsunemimi::Hanami::ClusterMeta parsedCluster;
+    Hanami::ClusterMeta parsedCluster;
     if(base64Template != "")
     {
         // decode base64 formated template to check if valid base64-string
-        Kitsunemimi::DataBuffer convertedTemplate;
-        if(Kitsunemimi::decodeBase64(convertedTemplate, base64Template) == false)
+        Hanami::DataBuffer convertedTemplate;
+        if(Hanami::decodeBase64(convertedTemplate, base64Template) == false)
         {
             status.errorMessage = "Uploaded template is not a valid base64-String.";
             status.statusCode = BAD_REQUEST_RTYPE;
@@ -120,7 +120,7 @@ CreateCluster::runTask(BlossomIO &blossomIO,
         // parse cluster-template to validate syntax
         const std::string convertedTemplateStr(static_cast<const char*>(convertedTemplate.data),
                                                convertedTemplate.usedBufferSize);
-        if(Kitsunemimi::Hanami::parseCluster(&parsedCluster, convertedTemplateStr, error) == false)
+        if(Hanami::parseCluster(&parsedCluster, convertedTemplateStr, error) == false)
         {
             status.errorMessage = "Uploaded template is not a valid cluster-template: \n";
             status.errorMessage += error.toString();
@@ -131,7 +131,7 @@ CreateCluster::runTask(BlossomIO &blossomIO,
     }
 
     // convert values
-    Kitsunemimi::JsonItem clusterData;
+    Hanami::JsonItem clusterData;
     clusterData.insert("name", clusterName);
     clusterData.insert("project_id", userContext.projectId);
     clusterData.insert("owner_id", userContext.userId);

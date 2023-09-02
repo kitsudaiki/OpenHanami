@@ -22,7 +22,7 @@
 
 #include <hanami_cpu/memory.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 /**

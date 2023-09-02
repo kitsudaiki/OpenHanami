@@ -22,7 +22,7 @@
 
 #include <hanami_common/threading/event.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 //==================================================================================================

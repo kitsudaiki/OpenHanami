@@ -8,7 +8,7 @@
 
 #include "obj_creator.h"
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 /**

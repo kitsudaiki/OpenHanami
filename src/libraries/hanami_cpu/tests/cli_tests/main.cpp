@@ -7,13 +7,13 @@
 #include <hanami_common/logger.h>
 #include <hanami_common/threading/thread.h>
 
-using namespace Kitsunemimi;
+using namespace Hanami;
 
 int main()
 {
-    Kitsunemimi::initConsoleLogger(true);
+    Hanami::initConsoleLogger(true);
 
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
 
     std::cout<<"hyperthreading active: "<<isHyperthreadingEnabled(error)<<std::endl;
     std::cout<<"hyperthreading set to false: "<<changeHyperthreadingState(false, error)<<std::endl;

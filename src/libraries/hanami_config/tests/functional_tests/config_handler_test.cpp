@@ -26,11 +26,11 @@
 #include <hanami_common/files/text_file.h>
 #include <hanami_common/methods/file_methods.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 ConfigHandler_Test::ConfigHandler_Test()
-    : Kitsunemimi::CompareTestHelper("ConfigHandler_Test")
+    : Hanami::CompareTestHelper("ConfigHandler_Test")
 {
     runTest();
 }
@@ -42,7 +42,7 @@ void
 ConfigHandler_Test::runTest()
 {
     ErrorContainer error;
-    Kitsunemimi::writeFile(m_testFilePath, getTestString(), error, true);
+    Hanami::writeFile(m_testFilePath, getTestString(), error, true);
 
     REGISTER_STRING_CONFIG("DEFAULT", "string_val", "", error, "");
     REGISTER_INT_CONFIG("DEFAULT", "int_val", "", error, 42);
@@ -61,7 +61,7 @@ ConfigHandler_Test::runTest()
     TEST_EQUAL(GET_STRING_CONFIG("DEFAULT", "fail", success), "");
     TEST_EQUAL(success, false);
 
-    Kitsunemimi::deleteFileOrDir(m_testFilePath, error);
+    Hanami::deleteFileOrDir(m_testFilePath, error);
 
 }
 

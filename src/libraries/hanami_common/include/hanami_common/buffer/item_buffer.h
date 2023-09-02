@@ -27,7 +27,7 @@
 
 #define ITEM_BUFFER_UNDEFINE_POS 0xFFFFFFFFFFFFFFFF
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 class ItemBuffer;

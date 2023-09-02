@@ -25,11 +25,11 @@
 
 #include <hanami_common/test_helper/compare_test_helper.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 class Symmetric_Encryption_Test
-        : public Kitsunemimi::CompareTestHelper
+        : public Hanami::CompareTestHelper
 {
 public:
     Symmetric_Encryption_Test();

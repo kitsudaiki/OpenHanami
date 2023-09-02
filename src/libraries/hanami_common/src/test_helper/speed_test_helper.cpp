@@ -22,7 +22,7 @@
 
 #include <hanami_common/test_helper/speed_test_helper.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 SpeedTestHelper::SpeedTestHelper()

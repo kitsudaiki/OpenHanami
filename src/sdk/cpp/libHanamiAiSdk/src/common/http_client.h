@@ -63,24 +63,24 @@ public:
     bool sendGetRequest(std::string &response,
                         const std::string &path,
                         const std::string &vars,
-                        Kitsunemimi::ErrorContainer &error);
+                        Hanami::ErrorContainer &error);
 
     bool sendPostRequest(std::string &response,
                          const std::string &path,
                          const std::string &vars,
                          const std::string &body,
-                         Kitsunemimi::ErrorContainer &error);
+                         Hanami::ErrorContainer &error);
 
     bool sendPutRequest(std::string &response,
                         const std::string &path,
                         const std::string &vars,
                         const std::string &body,
-                        Kitsunemimi::ErrorContainer &error);
+                        Hanami::ErrorContainer &error);
 
     bool sendDeleteRequest(std::string &response,
                            const std::string &path,
                            const std::string &vars,
-                           Kitsunemimi::ErrorContainer &error);
+                           Hanami::ErrorContainer &error);
 
     const std::string& getToken() const;
     const std::string& getPort() const;
@@ -99,18 +99,18 @@ private:
     std::string m_userId = "";
     std::string m_password = "";
 
-    bool requestToken(Kitsunemimi::ErrorContainer &error);
+    bool requestToken(Hanami::ErrorContainer &error);
     bool makeRequest(std::string &response,
                      const http::verb type,
                      const std::string &path,
                      const std::string &vars,
                      const std::string &jsonBody,
-                     Kitsunemimi::ErrorContainer &error);
+                     Hanami::ErrorContainer &error);
     uint16_t makeSingleRequest(std::string &response,
                                const http::verb type,
                                const std::string &target,
                                const std::string &jsonBody,
-                               Kitsunemimi::ErrorContainer &error);
+                               Hanami::ErrorContainer &error);
     bool getEnvVar(std::string &content,
                    const std::string &key) const;
 };

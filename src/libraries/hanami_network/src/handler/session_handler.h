@@ -29,11 +29,11 @@
 #include <atomic>
 #include <message_definitions.h>
 
-namespace Kitsunemimi {
+namespace Hanami {
 class AbstractServer;
 }
 
-namespace Kitsunemimi::Sakura
+namespace Hanami
 {
 class Session;
 class ReplyHandler;
@@ -44,9 +44,9 @@ class SessionHandler
 {
 public:
 
-    static Kitsunemimi::Sakura::ReplyHandler* m_replyHandler;
-    static Kitsunemimi::Sakura::MessageBlockerHandler* m_blockerHandler;
-    static Kitsunemimi::Sakura::SessionHandler* m_sessionHandler;
+    static Hanami::ReplyHandler* m_replyHandler;
+    static Hanami::MessageBlockerHandler* m_blockerHandler;
+    static Hanami::SessionHandler* m_sessionHandler;
 
     SessionHandler(void (*processCreateSession)(Session*, const std::string),
                    void (*processCloseSession)(Session*, const std::string),

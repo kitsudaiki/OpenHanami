@@ -30,11 +30,11 @@
 #include <hanami_common/items/data_items.h>
 #include <hanami_common/logger.h>
 
-namespace Kitsunemimi {
+namespace Hanami {
 class JsonItem;
 }
 
-namespace Kitsunemimi::Sakura
+namespace Hanami
 {
 class SqlDatabase;
 

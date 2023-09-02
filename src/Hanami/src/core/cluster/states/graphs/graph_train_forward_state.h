@@ -28,7 +28,7 @@
 class Cluster;
 
 class GraphTrainForward_State
-        : public Kitsunemimi::Event
+        : public Hanami::Event
 {
 public:
     GraphTrainForward_State(Cluster* cluster);

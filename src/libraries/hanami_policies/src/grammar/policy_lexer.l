@@ -37,9 +37,9 @@
 # undef YY_DECL
 # endif
 # define YY_DECL \
-    Kitsunemimi::Hanami::PolicyParser::symbol_type policylex (Kitsunemimi::Hanami::PolicyParserInterface& driver)
+    Hanami::PolicyParser::symbol_type policylex (Hanami::PolicyParserInterface& driver)
 YY_DECL;
-Kitsunemimi::Hanami::location policyloc;
+Hanami::location policyloc;
 
 %}
 
@@ -63,34 +63,34 @@ blank [ \t]
 
 {blank}+  policyloc.step();
 [\n]      {policyloc.lines(1); policyloc.step(); }
-"["       return Kitsunemimi::Hanami::PolicyParser::make_BRAKET_OPEN (policyloc);
-"]"       return Kitsunemimi::Hanami::PolicyParser::make_BRAKET_CLOSE (policyloc);
-"-"       return Kitsunemimi::Hanami::PolicyParser::make_MINUS (policyloc);
-","       return Kitsunemimi::Hanami::PolicyParser::make_COMMA (policyloc);
-":"       return Kitsunemimi::Hanami::PolicyParser::make_ASSIGN (policyloc);
-"GET"     return Kitsunemimi::Hanami::PolicyParser::make_GET (policyloc);
-"PUT"     return Kitsunemimi::Hanami::PolicyParser::make_PUT (policyloc);
-"POST"    return Kitsunemimi::Hanami::PolicyParser::make_POST (policyloc);
-"DELETE"  return Kitsunemimi::Hanami::PolicyParser::make_DELETE (policyloc);
+"["       return Hanami::PolicyParser::make_BRAKET_OPEN (policyloc);
+"]"       return Hanami::PolicyParser::make_BRAKET_CLOSE (policyloc);
+"-"       return Hanami::PolicyParser::make_MINUS (policyloc);
+","       return Hanami::PolicyParser::make_COMMA (policyloc);
+":"       return Hanami::PolicyParser::make_ASSIGN (policyloc);
+"GET"     return Hanami::PolicyParser::make_GET (policyloc);
+"PUT"     return Hanami::PolicyParser::make_PUT (policyloc);
+"POST"    return Hanami::PolicyParser::make_POST (policyloc);
+"DELETE"  return Hanami::PolicyParser::make_DELETE (policyloc);
 
-{id}      return Kitsunemimi::Hanami::PolicyParser::make_IDENTIFIER(yytext, policyloc);
-{path}    return Kitsunemimi::Hanami::PolicyParser::make_PATH(yytext, policyloc);
+{id}      return Hanami::PolicyParser::make_IDENTIFIER(yytext, policyloc);
+{path}    return Hanami::PolicyParser::make_PATH(yytext, policyloc);
 
 .          driver.error(policyloc, "invalid character");
-<<EOF>>    return Kitsunemimi::Hanami::PolicyParser::make_END(policyloc);
+<<EOF>>    return Hanami::PolicyParser::make_END(policyloc);
 
 %%
 
 
-void Kitsunemimi::Hanami::PolicyParserInterface::scan_begin(const std::string &inputString)
+void Hanami::PolicyParserInterface::scan_begin(const std::string &inputString)
 {
-    Kitsunemimi::Hanami::location newPolicyloc;
+    Hanami::location newPolicyloc;
     policyloc = newPolicyloc;
     yy_flex_debug = m_traceParsing;
     yy_scan_string(inputString.c_str());
 }
 
-void Kitsunemimi::Hanami::PolicyParserInterface::scan_end()
+void Hanami::PolicyParserInterface::scan_end()
 {
     yy_delete_buffer(YY_CURRENT_BUFFER);
 }

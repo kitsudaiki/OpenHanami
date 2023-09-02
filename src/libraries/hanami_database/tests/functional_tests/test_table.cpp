@@ -3,10 +3,10 @@
 #include <hanami_database/sql_table.h>
 #include <hanami_database/sql_database.h>
 
-namespace Kitsunemimi::Sakura
+namespace Hanami
 {
 
-TestTable::TestTable(Kitsunemimi::Sakura::SqlDatabase* db)
+TestTable::TestTable(Hanami::SqlDatabase* db)
     : SqlTable(db)
 {
     m_tableName = "users";

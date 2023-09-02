@@ -34,8 +34,8 @@
  * @return true if successful, else false
  */
 bool
-registerArguments(Kitsunemimi::ArgParser* argparser,
-                  Kitsunemimi::ErrorContainer &error)
+registerArguments(Hanami::ArgParser* argparser,
+                  Hanami::ErrorContainer &error)
 {
     std::string helpText = "";
 

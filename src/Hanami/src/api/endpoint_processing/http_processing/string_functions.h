@@ -66,12 +66,12 @@ inline bool
 parseUri(const std::string &token,
          RequestMessage &request,
          const std::string &uri,
-         Kitsunemimi::ErrorContainer &error)
+         Hanami::ErrorContainer &error)
 {
     // first split of uri
-    Kitsunemimi::JsonItem parsedInputValues;
+    Hanami::JsonItem parsedInputValues;
     std::vector<std::string> parts;
-    Kitsunemimi::splitStringByDelimiter(parts, uri, '?');
+    Hanami::splitStringByDelimiter(parts, uri, '?');
 
     // check split-result
     if(parts.size() == 0)
@@ -98,7 +98,7 @@ parseUri(const std::string &token,
     if(parts.size() > 1)
     {
         std::vector<std::string> kvPairs;
-        Kitsunemimi::splitStringByDelimiter(kvPairs, parts[1], '&');
+        Hanami::splitStringByDelimiter(kvPairs, parts[1], '&');
 
         for(const std::string &kvPair : kvPairs)
         {

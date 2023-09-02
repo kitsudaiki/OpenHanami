@@ -16,12 +16,12 @@
 #include <hanami_common/items/data_items.h>
 #include <hanami_common/logger.h>
 
-using Kitsunemimi::DataItem;
+using Hanami::DataItem;
 using std::string;
 using std::map;
 using std::pair;
 
-namespace Kitsunemimi
+namespace Hanami
 {
 class location;
 
@@ -41,7 +41,7 @@ public:
     void setOutput(DataItem* output);
 
     // Error handling.
-    void error(const Kitsunemimi::location &location,
+    void error(const Hanami::location &location,
                const std::string& message);
 
     // static variables, which are used in lexer and parser

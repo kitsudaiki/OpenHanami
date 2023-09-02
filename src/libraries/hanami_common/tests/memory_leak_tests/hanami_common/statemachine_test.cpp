@@ -11,11 +11,11 @@
 #include <hanami_common/statemachine.h>
 #include <hanami_common/threading/event.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 Statemachine_Test::Statemachine_Test()
-    : Kitsunemimi::MemoryLeakTestHelpter("Statemachine_Test")
+    : Hanami::MemoryLeakTestHelpter("Statemachine_Test")
 {
     create_delete_test();
 }

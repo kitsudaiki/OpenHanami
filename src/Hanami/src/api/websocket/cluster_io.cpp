@@ -56,14 +56,14 @@ sendClusterOutputMessage(Cluster* cluster)
     const uint64_t size = msg.ByteSizeLong();
     if(msg.SerializeToArray(buffer, size) == false)
     {
-        Kitsunemimi::ErrorContainer error;
+        Hanami::ErrorContainer error;
         error.addMeesage("Failed to serialize request-message");
         return;
     }
 
     // send message
     HttpWebsocketThread* client = cluster->msgClient;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     client->sendData(buffer, size);
 }
 
@@ -88,14 +88,14 @@ sendProtobufGotInputMessage(Cluster* cluster)
     const uint64_t size = msg.ByteSizeLong();
     if(msg.SerializeToArray(buffer, size) == false)
     {
-        Kitsunemimi::ErrorContainer error;
+        Hanami::ErrorContainer error;
         error.addMeesage("Failed to serialize request-message");
         LOG_ERROR(error);
         return;
     }
 
     // send message
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     cluster->msgClient->sendData(buffer, size);
 }
 
@@ -126,13 +126,13 @@ sendClusterNormalEndMessage(Cluster* cluster)
     const uint64_t size = msg.ByteSizeLong();
     if(msg.SerializeToArray(buffer, size) == false)
     {
-        Kitsunemimi::ErrorContainer error;
+        Hanami::ErrorContainer error;
         error.addMeesage("Failed to serialize request-message");
         return;
     }
 
     // send message
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     cluster->msgClient->sendData(buffer, size);
 }
 
@@ -160,13 +160,13 @@ sendClusterTrainEndMessage(Cluster* cluster)
     const uint64_t size = msg.ByteSizeLong();
     if(msg.SerializeToArray(buffer, size) == false)
     {
-        Kitsunemimi::ErrorContainer error;
+        Hanami::ErrorContainer error;
         error.addMeesage("Failed to serialize request-message");
         return;
     }
 
     // send message
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     cluster->msgClient->sendData(buffer, size);
 }
 
@@ -188,7 +188,7 @@ recvClusterInputMessage(Cluster* cluster,
     ClusterIO_Message msg;
     if(msg.ParseFromArray(data, dataSize) == false)
     {
-        Kitsunemimi::ErrorContainer error;
+        Hanami::ErrorContainer error;
         error.addMeesage("Got invalid Protobuf-ClusterIO-Message");
         LOG_ERROR(error);
         return false;

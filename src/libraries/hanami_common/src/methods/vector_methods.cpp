@@ -22,7 +22,7 @@
 
 #include <hanami_common/methods/vector_methods.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 /**

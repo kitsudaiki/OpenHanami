@@ -12,21 +12,21 @@
 #include <hanami_common/methods/string_methods.h>
 #include <hanami_common/items/data_items.h>
 
-using Kitsunemimi::DataItem;
-using Kitsunemimi::DataArray;
-using Kitsunemimi::DataValue;
-using Kitsunemimi::DataMap;
+using Hanami::DataItem;
+using Hanami::DataArray;
+using Hanami::DataValue;
+using Hanami::DataMap;
 
 # define YY_DECL \
-    Kitsunemimi::JsonParser::symbol_type jsonlex (Kitsunemimi::JsonParserInterface& driver)
+    Hanami::JsonParser::symbol_type jsonlex (Hanami::JsonParserInterface& driver)
 YY_DECL;
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
-Kitsunemimi::JsonParserInterface* JsonParserInterface::m_instance = nullptr;
+Hanami::JsonParserInterface* JsonParserInterface::m_instance = nullptr;
 
-using Kitsunemimi::splitStringByDelimiter;
+using Hanami::splitStringByDelimiter;
 
 /**
  * @brief The class is the interface for the bison-generated parser.
@@ -85,7 +85,7 @@ JsonParserInterface::parse(const std::string &inputString,
     m_inputString = inputString;
     m_errorMessage = "";
     int parserResult = 0;
-    Kitsunemimi::JsonParser parser(*this);
+    Hanami::JsonParser parser(*this);
 
     // 1. dry-run to check syntax
     dryRun = true;
@@ -164,7 +164,7 @@ JsonParserInterface::setOutput(DataItem* output)
  * @param message error-specific message from the parser
  */
 void
-JsonParserInterface::error(const Kitsunemimi::location& location,
+JsonParserInterface::error(const Hanami::location& location,
                            const std::string& message)
 {
     if(m_errorMessage.size() > 0) {

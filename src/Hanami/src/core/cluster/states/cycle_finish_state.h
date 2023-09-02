@@ -28,7 +28,7 @@
 class Cluster;
 
 class CycleFinish_State
-        : public Kitsunemimi::Event
+        : public Hanami::Event
 {
 public:
     CycleFinish_State(Cluster* cluster);

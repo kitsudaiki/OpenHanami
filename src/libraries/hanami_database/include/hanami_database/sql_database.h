@@ -26,11 +26,11 @@
 #include <mutex>
 #include <hanami_sqlite/sqlite.h>
 
-namespace Kitsunemimi {
+namespace Hanami {
 class Sqlite;
 }
 
-namespace Kitsunemimi::Sakura
+namespace Hanami
 {
 
 class SqlDatabase
@@ -47,7 +47,7 @@ public:
     ~SqlDatabase();
 
     bool initDatabase(const std::string &path,
-                      Kitsunemimi::ErrorContainer &error);
+                      Hanami::ErrorContainer &error);
     bool closeDatabase();
 
 
@@ -63,7 +63,7 @@ private:
     bool m_isOpen = false;
     std::string m_path = "";
 
-    Kitsunemimi::Sqlite m_db;
+    Hanami::Sqlite m_db;
 };
 
 }

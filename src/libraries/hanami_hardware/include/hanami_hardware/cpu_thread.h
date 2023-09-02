@@ -30,7 +30,7 @@
 #include <hanami_cpu/rapl.h>
 #include <hanami_common/logger.h>
 
-namespace Kitsunemimi::Sakura
+namespace Hanami
 {
 class Host;
 

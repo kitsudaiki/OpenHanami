@@ -22,7 +22,7 @@
 
 #include <hanami_common/methods/string_methods.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 /**

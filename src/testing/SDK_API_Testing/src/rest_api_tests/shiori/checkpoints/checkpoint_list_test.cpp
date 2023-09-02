@@ -36,8 +36,8 @@ CheckpointListTest::CheckpointListTest(const bool expectSuccess)
 }
 
 bool
-CheckpointListTest::runTest(Kitsunemimi::JsonItem &inputData,
-                          Kitsunemimi::ErrorContainer &error)
+CheckpointListTest::runTest(Hanami::JsonItem &inputData,
+                          Hanami::ErrorContainer &error)
 {
     // list all data
     std::string result;
@@ -50,7 +50,7 @@ CheckpointListTest::runTest(Kitsunemimi::JsonItem &inputData,
     }
 
     // parse output
-    Kitsunemimi::JsonItem jsonItem;
+    Hanami::JsonItem jsonItem;
     if(jsonItem.parse(result, error) == false) {
         return false;
     }

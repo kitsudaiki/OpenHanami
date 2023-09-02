@@ -25,11 +25,11 @@
 #include <hanami_opencl/gpu_interface.h>
 #include <hanami_opencl/gpu_handler.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 SimpleTest::SimpleTest()
-    : Kitsunemimi::SpeedTestHelper()
+    : Hanami::SpeedTestHelper()
 {
     m_copyToDeviceTimeSlot.unitName = "ms";
     m_copyToDeviceTimeSlot.name = "copy to device";
@@ -49,7 +49,7 @@ SimpleTest::SimpleTest()
     m_cleanupTimeSlot.unitName = "ms";
     m_cleanupTimeSlot.name = "cleanup";
 
-    m_oclHandler = new Kitsunemimi::GpuHandler();
+    m_oclHandler = new Hanami::GpuHandler();
     assert(m_oclHandler->m_interfaces.size() != 0);
 
     chooseDevice();
@@ -113,12 +113,12 @@ SimpleTest::simple_test()
         "    }\n"
         "}\n";
 
-    Kitsunemimi::GpuHandler oclHandler;
+    Hanami::GpuHandler oclHandler;
     assert(oclHandler.initDevice(error));
-    Kitsunemimi::GpuInterface* ocl = oclHandler.m_interfaces.at(m_id);
+    Hanami::GpuInterface* ocl = oclHandler.m_interfaces.at(m_id);
 
     // create data-object
-    Kitsunemimi::GpuData data;
+    Hanami::GpuData data;
 
     data.numberOfWg.x = testSize / 512;
     data.numberOfWg.y = 2;

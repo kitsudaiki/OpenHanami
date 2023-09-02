@@ -29,7 +29,7 @@
  * @brief define all available entries in the config file with default-values
  */
 inline void
-registerConfigs(Kitsunemimi::ErrorContainer &error)
+registerConfigs(Hanami::ErrorContainer &error)
 {
     // DEFAULT-section
     REGISTER_BOOL_CONFIG(   "DEFAULT",

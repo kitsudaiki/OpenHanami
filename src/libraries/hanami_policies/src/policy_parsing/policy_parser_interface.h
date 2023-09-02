@@ -30,7 +30,7 @@
 #include <vector>
 #include <hanami_policies/policy.h>
 
-namespace Kitsunemimi::Hanami
+namespace Hanami
 {
 class location;
 

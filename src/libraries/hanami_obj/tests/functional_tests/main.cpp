@@ -12,7 +12,7 @@
 
 int main()
 {
-    Kitsunemimi::initConsoleLogger(true);
+    Hanami::initConsoleLogger(true);
 
     ObjItem_Test test1;
 }

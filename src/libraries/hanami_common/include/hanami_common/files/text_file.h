@@ -20,7 +20,7 @@
 
 #include <hanami_common/logger.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 bool

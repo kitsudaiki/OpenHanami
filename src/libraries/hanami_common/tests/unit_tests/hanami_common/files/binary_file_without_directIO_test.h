@@ -12,11 +12,11 @@
 #include <hanami_common/test_helper/compare_test_helper.h>
 #include <filesystem>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 class BinaryFile_withoutDirectIO_Test
-        : public Kitsunemimi::CompareTestHelper
+        : public Hanami::CompareTestHelper
 {
 public:
     BinaryFile_withoutDirectIO_Test();

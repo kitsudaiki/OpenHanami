@@ -26,18 +26,18 @@
 #include <hanami_common/logger.h>
 #include <hanami_common/buffer/data_buffer.h>
 
-namespace Kitsunemimi {
+namespace Hanami {
 class JsonItem;
 }
 
 bool
-getDataSetPayload(Kitsunemimi::DataBuffer &result,
+getDataSetPayload(Hanami::DataBuffer &result,
                   const std::string &location,
-                  Kitsunemimi::ErrorContainer &error,
+                  Hanami::ErrorContainer &error,
                   const std::string &columnName = "");
 
-bool getHeaderInformation(Kitsunemimi::JsonItem &result,
+bool getHeaderInformation(Hanami::JsonItem &result,
                           const std::string &location,
-                          Kitsunemimi::ErrorContainer &error);
+                          Hanami::ErrorContainer &error);
 
 #endif // HANAMI_DATA_SET_FUNCTIONS_H

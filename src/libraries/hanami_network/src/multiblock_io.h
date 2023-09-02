@@ -34,7 +34,7 @@
 #include <hanami_common/buffer/data_buffer.h>
 #include <hanami_common/logger.h>
 
-namespace Kitsunemimi::Sakura
+namespace Hanami
 {
 class Session;
 
@@ -50,7 +50,7 @@ public:
         uint32_t numberOfPackages = 0;
         uint32_t courrentPackage = 0;
 
-        Kitsunemimi::DataBuffer* incomingData = nullptr;
+        Hanami::DataBuffer* incomingData = nullptr;
     };
 
     MultiblockIO(Session* session);

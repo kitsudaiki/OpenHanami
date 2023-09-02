@@ -31,7 +31,7 @@
 #include <atomic>
 #include <deque>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 struct DataBuffer;
 class Event;

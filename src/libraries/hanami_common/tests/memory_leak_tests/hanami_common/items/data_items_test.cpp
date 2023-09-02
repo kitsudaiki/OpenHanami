@@ -9,11 +9,11 @@
 #include "data_items_test.h"
 #include <hanami_common/items/data_items.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 DataItems_Test::DataItems_Test()
-    : Kitsunemimi::MemoryLeakTestHelpter("DataItems_Test")
+    : Hanami::MemoryLeakTestHelpter("DataItems_Test")
 {
     map_create_delete_test();
     map_insert_remove_test();

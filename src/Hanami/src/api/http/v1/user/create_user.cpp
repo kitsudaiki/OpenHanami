@@ -58,7 +58,7 @@ CreateUser::CreateUser()
 
     registerInputField("is_admin", SAKURA_BOOL_TYPE)
             .setComment("Set this to 1 to register the new user as admin.")
-            .setDefault(new Kitsunemimi::DataValue(false));
+            .setDefault(new Hanami::DataValue(false));
 
     //----------------------------------------------------------------------------------------------
     // output
@@ -90,9 +90,9 @@ CreateUser::CreateUser()
  */
 bool
 CreateUser::runTask(BlossomIO &blossomIO,
-                    const Kitsunemimi::DataMap &context,
+                    const Hanami::DataMap &context,
                     BlossomStatus &status,
-                    Kitsunemimi::ErrorContainer &error)
+                    Hanami::ErrorContainer &error)
 {
     // check if admin
     if(context.getBoolByKey("is_admin") == false)
@@ -105,7 +105,7 @@ CreateUser::runTask(BlossomIO &blossomIO,
     const std::string creatorId = context.getStringByKey("id");
 
     // check if user already exist within the table
-    Kitsunemimi::JsonItem getResult;
+    Hanami::JsonItem getResult;
     if(UsersTable::getInstance()->getUser(getResult, newUserId, error, false) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -125,14 +125,14 @@ CreateUser::runTask(BlossomIO &blossomIO,
     std::string pwHash;
     const std::string salt = generateUuid().toString();
     const std::string saltedPw = blossomIO.input.get("password").getString() + salt;
-    Kitsunemimi::generate_SHA_256(pwHash, saltedPw);
+    Hanami::generate_SHA_256(pwHash, saltedPw);
 
     // convert values
-    std::vector<Kitsunemimi::JsonItem> projects;
-    Kitsunemimi::JsonItem userData;
+    std::vector<Hanami::JsonItem> projects;
+    Hanami::JsonItem userData;
     userData.insert("id", newUserId);
     userData.insert("name", blossomIO.input.get("name").getString());
-    userData.insert("projects", Kitsunemimi::JsonItem(projects));
+    userData.insert("projects", Hanami::JsonItem(projects));
     userData.insert("pw_hash", pwHash);
     userData.insert("is_admin", blossomIO.input.get("is_admin").getBool());
     userData.insert("creator_id", creatorId);

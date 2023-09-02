@@ -30,11 +30,11 @@
 
 #include <hanami_network/session.h>
 
-namespace Kitsunemimi {
+namespace Hanami {
 class AbstractServer;
 }
 
-namespace Kitsunemimi::Sakura
+namespace Hanami
 {
 
 class SessionController
@@ -45,7 +45,7 @@ public:
                       void (*processError)(Session*, const uint8_t, const std::string));
     ~SessionController();
 
-    static Kitsunemimi::Sakura::SessionController* m_sessionController;
+    static Hanami::SessionController* m_sessionController;
 
     // server
     uint32_t addUnixDomainServer(const std::string &socketFile,

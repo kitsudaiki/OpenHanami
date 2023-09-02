@@ -10,11 +10,11 @@
 
 #include <state.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 State_Test::State_Test()
-    : Kitsunemimi::CompareTestHelper("State_Test")
+    : Hanami::CompareTestHelper("State_Test")
 {
     addTransition_test();
     next_test();

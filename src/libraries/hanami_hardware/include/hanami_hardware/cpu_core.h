@@ -27,11 +27,11 @@
 #include <iostream>
 #include <vector>
 
-namespace Kitsunemimi {
+namespace Hanami {
 class DataMap;
 }
 
-namespace Kitsunemimi::Sakura
+namespace Hanami
 {
 class CpuThread;
 
@@ -51,7 +51,7 @@ public:
     double getTotalPackagePower();
 
     const std::string toJsonString();
-    Kitsunemimi::DataMap* toJson();
+    Hanami::DataMap* toJson();
 
     std::vector<CpuThread*> cpuThreads;
 };

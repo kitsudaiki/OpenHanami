@@ -24,11 +24,11 @@
 
 #include <hanami_cluster_parser/cluster_meta.h>
 
-namespace Kitsunemimi::Hanami
+namespace Hanami
 {
 
 Cluster_ParseString_Test::Cluster_ParseString_Test()
-    : Kitsunemimi::MemoryLeakTestHelpter("Cluster_ParseString_Test")
+    : Hanami::MemoryLeakTestHelpter("Cluster_ParseString_Test")
 {
     parseString_test();
 }

@@ -33,7 +33,7 @@
 
 #include <hanami_common/logger.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 //--------------------------------------------------------------------------------------------------
@@ -42,7 +42,7 @@ namespace Kitsunemimi
 bool create_HMAC_SHA256(std::string &result,
                         const std::string &input,
                         const CryptoPP::SecByteBlock &key,
-                        Kitsunemimi::ErrorContainer &error);
+                        Hanami::ErrorContainer &error);
 
 bool verify_HMAC_SHA256(const std::string &input,
                         const std::string &hmac,

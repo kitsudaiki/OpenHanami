@@ -10,11 +10,11 @@
 #include <hanami_ini/ini_item.h>
 #include <hanami_common/items/data_items.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 IniItem_Test::IniItem_Test()
-    : Kitsunemimi::CompareTestHelper("IniItem_Test")
+    : Hanami::CompareTestHelper("IniItem_Test")
 {
     parse_test();
     get_test();

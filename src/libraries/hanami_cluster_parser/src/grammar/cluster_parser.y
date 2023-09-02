@@ -29,7 +29,7 @@
 %define api.parser.class {ClusterParser}
 
 %define api.prefix {cluster}
-%define api.namespace {Kitsunemimi::Hanami}
+%define api.namespace {Hanami}
 %define api.token.constructor
 %define api.value.type variant
 %define parse.assert
@@ -44,7 +44,7 @@
 #include <hanami_cluster_parser/cluster_meta.h>
 #include <hanami_common/structs.h>
 
-namespace Kitsunemimi::Hanami
+namespace Hanami
 {
 
 class ClusterParserInterface;
@@ -53,7 +53,7 @@ class ClusterParserInterface;
 }
 
 // The parsing context.
-%param { Kitsunemimi::Hanami::ClusterParserInterface& driver }
+%param { Hanami::ClusterParserInterface& driver }
 
 %locations
 
@@ -62,7 +62,7 @@ class ClusterParserInterface;
 #include <cluster_parsing/cluster_parser_interface.h>
 # undef YY_DECL
 # define YY_DECL \
-    Kitsunemimi::Hanami::ClusterParser::symbol_type clusterlex (Kitsunemimi::Hanami::ClusterParserInterface& driver)
+    Hanami::ClusterParser::symbol_type clusterlex (Hanami::ClusterParserInterface& driver)
 YY_DECL;
 }
 
@@ -83,8 +83,8 @@ YY_DECL;
 %token <long> NUMBER "number"
 %token <double> FLOAT "float"
 
-%type  <Kitsunemimi::Position> position
-%type  <Kitsunemimi::Hanami::BrickMeta> brick_settings
+%type  <Hanami::Position> position
+%type  <Hanami::BrickMeta> brick_settings
 
 %%
 %start startpoint;
@@ -226,7 +226,7 @@ brick_settings:
 |
     "identifier" ":" "identifier" linebreaks
     {
-        Kitsunemimi::Hanami::BrickMeta brickMeta;
+        Hanami::BrickMeta brickMeta;
 
         if($1 == "input")
         {
@@ -249,7 +249,7 @@ brick_settings:
 |
     "identifier" ":" "number" linebreaks
     {
-        Kitsunemimi::Hanami::BrickMeta brickMeta;
+        Hanami::BrickMeta brickMeta;
 
         if($1 == "number_of_neurons")
         {
@@ -267,7 +267,7 @@ brick_settings:
 position:
     "number" "," "number" "," "number"
     {
-        Kitsunemimi::Position pos;
+        Hanami::Position pos;
         pos.x = $1;
         pos.y = $3;
         pos.z = $5;
@@ -292,7 +292,7 @@ linebreaks_eno:
     {}
 %%
 
-void Kitsunemimi::Hanami::ClusterParser::error(const Kitsunemimi::Hanami::location& location,
+void Hanami::ClusterParser::error(const Hanami::location& location,
                                                const std::string& message)
 {
     driver.error(location, message);

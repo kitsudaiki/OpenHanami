@@ -86,9 +86,9 @@ GetDataSet::GetDataSet()
  */
 bool
 GetDataSet::runTask(BlossomIO &blossomIO,
-                      const Kitsunemimi::DataMap &context,
+                      const Hanami::DataMap &context,
                       BlossomStatus &status,
-                      Kitsunemimi::ErrorContainer &error)
+                      Hanami::ErrorContainer &error)
 {
     const std::string dataUuid = blossomIO.input.get("uuid").getString();
     if(DataSetTable::getInstance()->getDateSetInfo(blossomIO.output,

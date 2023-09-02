@@ -37,9 +37,9 @@ public:
 
 protected:
     bool runTask(BlossomIO &blossomIO,
-                 const Kitsunemimi::DataMap &context,
+                 const Hanami::DataMap &context,
                  BlossomStatus &status,
-                 Kitsunemimi::ErrorContainer &error);
+                 Hanami::ErrorContainer &error);
 
 private:
     bool imageTask(std::string &taskUuid,
@@ -47,18 +47,18 @@ private:
                    const std::string &taskType,
                    const UserContext &userContext,
                    Cluster* cluster,
-                   Kitsunemimi::JsonItem &dataSetInfo,
+                   Hanami::JsonItem &dataSetInfo,
                    BlossomStatus &status,
-                   Kitsunemimi::ErrorContainer &error);
+                   Hanami::ErrorContainer &error);
 
     bool tableTask(std::string &taskUuid,
                    const std::string &name,
                    const std::string &taskType,
                    const UserContext &userContext,
                    Cluster* cluster,
-                   Kitsunemimi::JsonItem &dataSetInfo,
+                   Hanami::JsonItem &dataSetInfo,
                    BlossomStatus &status,
-                   Kitsunemimi::ErrorContainer &error);
+                   Hanami::ErrorContainer &error);
 };
 
 #endif // HANAMI_CREATE_IMAGE_TRAINTASK_H

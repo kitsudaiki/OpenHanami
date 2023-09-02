@@ -26,7 +26,7 @@
 #include <hanami_common/methods/string_methods.h>
 #include <hanami_json/json_item.h>
 
-namespace Kitsunemimi::Sakura
+namespace Hanami
 {
 
 /**
@@ -130,7 +130,7 @@ bool
 SqlTable::insertToDb(JsonItem &values,
                      ErrorContainer &error)
 {
-    Kitsunemimi::TableItem resultItem;
+    Hanami::TableItem resultItem;
 
     // get values from input to check if all required values are set
     std::vector<std::string> dbValues;
@@ -180,7 +180,7 @@ SqlTable::updateInDb(const std::vector<RequestCondition> &conditions,
         return false;
     }
 
-    Kitsunemimi::TableItem resultItem;
+    Hanami::TableItem resultItem;
     return m_db->execSqlCommand(&resultItem, createUpdateQuery(conditions, updates), error);
 }
 
@@ -360,7 +360,7 @@ SqlTable::getFromDb(JsonItem &result,
 long
 SqlTable::getNumberOfRows(ErrorContainer &error)
 {
-    Kitsunemimi::TableItem resultItem;
+    Hanami::TableItem resultItem;
     if(m_db->execSqlCommand(&resultItem, createCountQuery(), error) == false) {
         return -1;
     }
@@ -379,7 +379,7 @@ bool
 SqlTable::deleteAllFromDb(ErrorContainer &error)
 {
     const std::vector<RequestCondition> conditions;
-    Kitsunemimi::TableItem resultItem;
+    Hanami::TableItem resultItem;
     return m_db->execSqlCommand(&resultItem, createDeleteQuery(conditions), error);
 }
 
@@ -403,7 +403,7 @@ SqlTable::deleteFromDb(const std::vector<RequestCondition> &conditions,
         return false;
     }
 
-    Kitsunemimi::TableItem resultItem;
+    Hanami::TableItem resultItem;
     return m_db->execSqlCommand(&resultItem, createDeleteQuery(conditions), error);
 }
 
@@ -674,7 +674,7 @@ SqlTable::processGetResult(JsonItem &result,
     }
 
     // prepare result
-    const Kitsunemimi::DataItem* firstRow = tableContent.getBody()->get(0);
+    const Hanami::DataItem* firstRow = tableContent.getBody()->get(0);
 
     for(uint32_t i = 0; i < m_tableHeader.size(); i++) {
         result.insert(m_tableHeader.at(i).name, firstRow->get(i));

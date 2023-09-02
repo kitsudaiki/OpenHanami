@@ -25,10 +25,10 @@
 #include <hanami_common/threading/event.h>
 #include <hanami_common/threading/thread.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
-Kitsunemimi::ThreadHandler* ThreadHandler::m_instance = new ThreadHandler();
+Hanami::ThreadHandler* ThreadHandler::m_instance = new ThreadHandler();
 
 ThreadHandler::ThreadHandler() {}
 

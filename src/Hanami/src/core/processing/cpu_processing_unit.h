@@ -29,7 +29,7 @@
 class Cluster;
 
 class CpuProcessingUnit
-        : public Kitsunemimi::Thread
+        : public Hanami::Thread
 {
 public:
     CpuProcessingUnit();

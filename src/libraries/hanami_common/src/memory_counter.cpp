@@ -24,12 +24,12 @@
 
 #include <stdio.h>
 
-Kitsunemimi::MemoryCounter Kitsunemimi::MemoryCounter::globalMemoryCounter;
+Hanami::MemoryCounter Hanami::MemoryCounter::globalMemoryCounter;
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
-using Kitsunemimi::MemoryCounter;
+using Hanami::MemoryCounter;
 
 /**
  * @brief increase global memory-counter

@@ -15,7 +15,7 @@
 %define api.parser.class {IniParser}
 
 %define api.prefix {ini}
-%define api.namespace {Kitsunemimi}
+%define api.namespace {Hanami}
 %define api.token.constructor
 %define api.value.type variant
 %define parse.assert
@@ -29,19 +29,19 @@
 #include <vector>
 #include <hanami_common/items/data_items.h>
 
-using Kitsunemimi::DataItem;
-using Kitsunemimi::DataArray;
-using Kitsunemimi::DataValue;
-using Kitsunemimi::DataMap;
+using Hanami::DataItem;
+using Hanami::DataArray;
+using Hanami::DataValue;
+using Hanami::DataMap;
 
-namespace Kitsunemimi
+namespace Hanami
 {
 class IniParserInterface;
 }
 }
 
 // The parsing context.
-%param { Kitsunemimi::IniParserInterface& driver }
+%param { Hanami::IniParserInterface& driver }
 
 %locations
 
@@ -50,7 +50,7 @@ class IniParserInterface;
 #include <ini_parsing/ini_parser_interface.h>
 # undef YY_DECL
 # define YY_DECL \
-    Kitsunemimi::IniParser::symbol_type inilex (Kitsunemimi::IniParserInterface& driver)
+    Hanami::IniParser::symbol_type inilex (Hanami::IniParserInterface& driver)
 YY_DECL;
 }
 
@@ -243,7 +243,7 @@ linebreaks:
 
 %%
 
-void Kitsunemimi::IniParser::error(const Kitsunemimi::location& location,
+void Hanami::IniParser::error(const Hanami::location& location,
                                    const std::string& message)
 {
     driver.error(location, message);

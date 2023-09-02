@@ -12,7 +12,7 @@
 #include <hanami_common/methods/vector_methods.h>
 #include <hanami_common/logger.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 /**
@@ -36,11 +36,11 @@ ObjParser::parse(ObjItem &result,
 {
     // copy and prepare input string
     std::string preparedString = inputString;
-    Kitsunemimi::replaceSubstring(preparedString, "\t", " ");
+    Hanami::replaceSubstring(preparedString, "\t", " ");
 
     // split string into the single lines
     std::vector<std::string> splittedContent;
-    Kitsunemimi::splitStringByDelimiter(splittedContent, preparedString, '\n');
+    Hanami::splitStringByDelimiter(splittedContent, preparedString, '\n');
 
     // iterate of the lines of the input
     for(uint64_t i = 0; i < splittedContent.size(); i++)
@@ -52,8 +52,8 @@ ObjParser::parse(ObjItem &result,
 
         // split line into the single parts
         std::vector<std::string> splittedLine;
-        Kitsunemimi::splitStringByDelimiter(splittedLine, splittedContent.at(i), ' ');
-        Kitsunemimi::removeEmptyStrings(splittedLine);
+        Hanami::splitStringByDelimiter(splittedLine, splittedContent.at(i), ' ');
+        Hanami::removeEmptyStrings(splittedLine);
 
         bool state = false;
 
@@ -203,7 +203,7 @@ ObjParser::parseIndexList(std::vector<Index> &result,
     {
         // split index-entry into its parts
         std::vector<std::string> indexList;
-        Kitsunemimi::splitStringByDelimiter(indexList, lineContent.at(i), '/');
+        Hanami::splitStringByDelimiter(indexList, lineContent.at(i), '/');
 
         // converts the parts into an index-item
         Index newIndex;

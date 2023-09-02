@@ -28,7 +28,7 @@
 class Cluster;
 
 class ImageIdentify_State
-        : public Kitsunemimi::Event
+        : public Hanami::Event
 {
 public:
     ImageIdentify_State(Cluster* cluster);

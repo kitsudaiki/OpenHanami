@@ -9,11 +9,11 @@
 #include "stack_buffer_test.h"
 #include <hanami_common/buffer/stack_buffer.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 StackBuffer_Test::StackBuffer_Test()
-    : Kitsunemimi::MemoryLeakTestHelpter("StackBuffer_Test")
+    : Hanami::MemoryLeakTestHelpter("StackBuffer_Test")
 {
     create_delete_test();
 }

@@ -9,11 +9,11 @@
 #include "table_item_test.h"
 #include <hanami_common/items/data_items.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 TableItem_test::TableItem_test()
-    : Kitsunemimi::CompareTestHelper("TableItem_test")
+    : Hanami::CompareTestHelper("TableItem_test")
 {
     copy_contructor_test();
     assignment_operator_test();

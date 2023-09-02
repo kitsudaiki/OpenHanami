@@ -24,7 +24,7 @@
 
 int main()
 {
-    Kitsunemimi::ArgParser_Test argParserTest;
+    Hanami::ArgParser_Test argParserTest;
 
     return 0;
 }

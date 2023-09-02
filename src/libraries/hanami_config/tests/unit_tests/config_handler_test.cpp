@@ -27,11 +27,11 @@
 #include <hanami_common/items/data_items.h>
 #include <hanami_common/methods/file_methods.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 ConfigHandler_Test::ConfigHandler_Test()
-    : Kitsunemimi::CompareTestHelper("ConfigHandler_Test")
+    : Hanami::CompareTestHelper("ConfigHandler_Test")
 {
     initTestCase();
 
@@ -65,7 +65,7 @@ void
 ConfigHandler_Test::initTestCase()
 {
     ErrorContainer error;
-    Kitsunemimi::writeFile(m_testFilePath, getTestString(), error, true);
+    Hanami::writeFile(m_testFilePath, getTestString(), error, true);
 }
 
 /**
@@ -88,7 +88,7 @@ void
 ConfigHandler_Test::registerType_test()
 {
     ConfigHandler configHandler;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     std::string groupName = "groupName";
 
     TEST_EQUAL(configHandler.registerValue(groupName, "key1", "", ConfigHandler::ConfigType::STRING_TYPE, false, nullptr, error), true);
@@ -103,7 +103,7 @@ void
 ConfigHandler_Test::isRegistered_test()
 {
     ConfigHandler configHandler;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     std::string groupName = "groupName";
 
     configHandler.registerValue(groupName, "key1", "", ConfigHandler::ConfigType::STRING_TYPE, false, nullptr, error);
@@ -119,7 +119,7 @@ void
 ConfigHandler_Test::getRegisteredType_test()
 {
     ConfigHandler configHandler;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     std::string groupName = "groupName";
     DataValue value("");
 
@@ -325,7 +325,7 @@ void
 ConfigHandler_Test::cleanupTestCase()
 {
     ErrorContainer error;
-    Kitsunemimi::deleteFileOrDir(m_testFilePath, error);
+    Hanami::deleteFileOrDir(m_testFilePath, error);
 }
 
 /**

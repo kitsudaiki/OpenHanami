@@ -28,12 +28,12 @@
 #include <hanami_common/logger.h>
 #include <hanami_common/buffer/ring_buffer.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 struct RingBuffer;
 
 class AbstractSocket
-        : public Kitsunemimi::Thread
+        : public Hanami::Thread
 {
 public:
     AbstractSocket(const std::string &threadName);
@@ -41,10 +41,10 @@ public:
 
     void setMessageCallback(void *target,
                             uint64_t (*processMessage)(void*,
-                                                       Kitsunemimi::RingBuffer*,
+                                                       Hanami::RingBuffer*,
                                                        AbstractSocket*));
 
-    virtual bool initConnection(Kitsunemimi::ErrorContainer &error) = 0;
+    virtual bool initConnection(Hanami::ErrorContainer &error) = 0;
     virtual bool isClientSide() = 0;
     virtual uint32_t getType() = 0;
     virtual bool sendMessage(const std::string &message, ErrorContainer &error) = 0;

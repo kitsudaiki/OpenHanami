@@ -11,16 +11,16 @@
 #include <hanami_common/methods/file_methods.h>
 #include <hanami_common/process_execution.h>
 
-using Kitsunemimi::runSyncProcess;
+using Hanami::runSyncProcess;
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 /**
  * @brief constructor
  */
 FileMethods_Test::FileMethods_Test()
-    : Kitsunemimi::CompareTestHelper("FileMethods_Test")
+    : Hanami::CompareTestHelper("FileMethods_Test")
 {
     listFiles_test();
     renameFileOrDir_test();

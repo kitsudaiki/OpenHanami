@@ -34,7 +34,7 @@ ListDataSet::ListDataSet()
 
     registerOutputField("header", SAKURA_ARRAY_TYPE)
             .setComment("Array with the namings all columns of the table.")
-            .setMatch(new Kitsunemimi::DataValue("[\"uuid\","
+            .setMatch(new Hanami::DataValue("[\"uuid\","
                                                  "\"project_id\","
                                                  "\"owner_id\","
                                                  "\"visibility\","
@@ -54,14 +54,14 @@ ListDataSet::ListDataSet()
  */
 bool
 ListDataSet::runTask(BlossomIO &blossomIO,
-                       const Kitsunemimi::DataMap &context,
+                       const Hanami::DataMap &context,
                        BlossomStatus &status,
-                       Kitsunemimi::ErrorContainer &error)
+                       Hanami::ErrorContainer &error)
 {
     const UserContext userContext(context);
 
     // get data from table
-    Kitsunemimi::TableItem table;
+    Hanami::TableItem table;
     if(DataSetTable::getInstance()->getAllDataSet(table, userContext, error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -69,7 +69,7 @@ ListDataSet::runTask(BlossomIO &blossomIO,
     }
 
     // create output
-    Kitsunemimi::DataArray* headerInfo = table.getInnerHeader();
+    Hanami::DataArray* headerInfo = table.getInnerHeader();
     blossomIO.output.insert("header", headerInfo);
     blossomIO.output.insert("body", table.getBody());
     delete headerInfo;

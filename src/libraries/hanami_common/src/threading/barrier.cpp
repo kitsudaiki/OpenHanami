@@ -21,7 +21,7 @@
  */
 #include <hanami_common/threading/barrier.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 /**

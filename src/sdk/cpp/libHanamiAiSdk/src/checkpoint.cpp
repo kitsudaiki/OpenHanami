@@ -38,7 +38,7 @@ namespace HanamiAI
 bool
 getCheckpoint(std::string &result,
             const std::string &checkpointUuid,
-            Kitsunemimi::ErrorContainer &error)
+            Hanami::ErrorContainer &error)
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
@@ -66,7 +66,7 @@ getCheckpoint(std::string &result,
  */
 bool
 listCheckpoint(std::string &result,
-             Kitsunemimi::ErrorContainer &error)
+             Hanami::ErrorContainer &error)
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
@@ -95,7 +95,7 @@ listCheckpoint(std::string &result,
 bool
 deleteCheckpoint(std::string &result,
                const std::string &checkpointUuid,
-               Kitsunemimi::ErrorContainer &error)
+               Hanami::ErrorContainer &error)
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();

@@ -36,7 +36,7 @@ RequestResultTable* RequestResultTable::instance = nullptr;
  * @param db pointer to database
  */
 RequestResultTable::RequestResultTable()
-    : HanamiSqlTable(Kitsunemimi::Sakura::SqlDatabase::getInstance())
+    : HanamiSqlTable(Hanami::SqlDatabase::getInstance())
 {
     m_tableName = "request_result";
 
@@ -61,9 +61,9 @@ RequestResultTable::~RequestResultTable() {}
  * @return true, if successful, else false
  */
 bool
-RequestResultTable::addRequestResult(Kitsunemimi::JsonItem &data,
+RequestResultTable::addRequestResult(Hanami::JsonItem &data,
                                      const UserContext &userContext,
-                                     Kitsunemimi::ErrorContainer &error)
+                                     Hanami::ErrorContainer &error)
 {
     if(add(data, userContext, error) == false)
     {
@@ -86,10 +86,10 @@ RequestResultTable::addRequestResult(Kitsunemimi::JsonItem &data,
  * @return true, if successful, else false
  */
 bool
-RequestResultTable::getRequestResult(Kitsunemimi::JsonItem &result,
+RequestResultTable::getRequestResult(Hanami::JsonItem &result,
                                      const std::string &resultUuid,
                                      const UserContext &userContext,
-                                     Kitsunemimi::ErrorContainer &error,
+                                     Hanami::ErrorContainer &error,
                                      const bool showHiddenValues)
 {
     // get user from db
@@ -119,9 +119,9 @@ RequestResultTable::getRequestResult(Kitsunemimi::JsonItem &result,
  * @return true, if successful, else false
  */
 bool
-RequestResultTable::getAllRequestResult(Kitsunemimi::TableItem &result,
+RequestResultTable::getAllRequestResult(Hanami::TableItem &result,
                                         const UserContext &userContext,
-                                        Kitsunemimi::ErrorContainer &error)
+                                        Hanami::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
     if(getAll(result, userContext, conditions, error) == false)
@@ -145,7 +145,7 @@ RequestResultTable::getAllRequestResult(Kitsunemimi::TableItem &result,
 bool
 RequestResultTable::deleteRequestResult(const std::string &resultUuid,
                                         const UserContext &userContext,
-                                        Kitsunemimi::ErrorContainer &error)
+                                        Hanami::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", resultUuid);

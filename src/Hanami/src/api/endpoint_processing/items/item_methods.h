@@ -33,7 +33,7 @@
 
 struct BlossomIO;
 
-using Kitsunemimi::DataMap;
+using Hanami::DataMap;
 
 // override functions
 enum OverrideType
@@ -51,11 +51,11 @@ void overrideItems(DataMap &original,
 void createError(const BlossomItem &blossomItem,
                  const std::string &blossomPath,
                  const std::string &errorLocation,
-                 Kitsunemimi::ErrorContainer &error,
+                 Hanami::ErrorContainer &error,
                  const std::string &possibleSolution = "");
 void createError(const BlossomIO &blossomIO,
                  const std::string &errorLocation,
-                 Kitsunemimi::ErrorContainer &error,
+                 Hanami::ErrorContainer &error,
                  const std::string &possibleSolution = "");
 
 #endif // KITSUNEMIMI_SAKURA_LANG_ITEM_METHODS_H

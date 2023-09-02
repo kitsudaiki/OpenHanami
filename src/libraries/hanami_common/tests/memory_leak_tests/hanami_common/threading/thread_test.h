@@ -12,11 +12,11 @@
 #include <unistd.h>
 #include <hanami_common/test_helper/memory_leak_test_helper.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 class Thread_Test
-        : public Kitsunemimi::MemoryLeakTestHelpter
+        : public Hanami::MemoryLeakTestHelpter
 {
 public:
     Thread_Test();

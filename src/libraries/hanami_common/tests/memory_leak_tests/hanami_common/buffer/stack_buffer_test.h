@@ -11,11 +11,11 @@
 
 #include <hanami_common/test_helper/memory_leak_test_helper.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 class StackBuffer_Test
-        : public Kitsunemimi::MemoryLeakTestHelpter
+        : public Hanami::MemoryLeakTestHelpter
 {
 public:
     StackBuffer_Test();

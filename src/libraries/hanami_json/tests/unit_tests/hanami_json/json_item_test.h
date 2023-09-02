@@ -14,10 +14,10 @@
 #include <hanami_common/test_helper/compare_test_helper.h>
 #include <hanami_json/json_item.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 class JsonItem_Test
-        : public Kitsunemimi::CompareTestHelper
+        : public Hanami::CompareTestHelper
 {
 public:
     JsonItem_Test();

@@ -18,7 +18,7 @@
 #include <hanami_common/buffer/ring_buffer.h>
 #include <hanami_common/threading/cleanup_thread.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 struct RingBuffer;
 
@@ -59,7 +59,7 @@ public:
      *
      * @return true, if successful, else false
      */
-    bool initConnection(Kitsunemimi::ErrorContainer &error)
+    bool initConnection(Hanami::ErrorContainer &error)
     {
         return m_socket.initClientSide(error);
     }
@@ -171,7 +171,7 @@ public:
     }
 
 private:
-    Kitsunemimi::RingBuffer m_recvBuffer;
+    Hanami::RingBuffer m_recvBuffer;
     std::atomic_flag m_lock = ATOMIC_FLAG_INIT;
     T m_socket;
 
@@ -188,8 +188,8 @@ private:
         }
 
         // calulate buffer-part for recv message
-        const uint64_t writePosition = Kitsunemimi::getWritePosition_RingBuffer(m_recvBuffer);
-        const uint64_t spaceToEnd = Kitsunemimi::getSpaceToEnd_RingBuffer(m_recvBuffer);
+        const uint64_t writePosition = Hanami::getWritePosition_RingBuffer(m_recvBuffer);
+        const uint64_t spaceToEnd = Hanami::getSpaceToEnd_RingBuffer(m_recvBuffer);
 
         // wait for incoming message
         const long recvSize = m_socket.recvData(m_socket.getSocketFd(),

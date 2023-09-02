@@ -26,12 +26,12 @@
 #include <assert.h>
 #include <hanami_common/test_helper/compare_test_helper.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 class ArgParser;
 
 class ArgParser_Test
-        : public Kitsunemimi::CompareTestHelper
+        : public Hanami::CompareTestHelper
 {
 public:
     ArgParser_Test();

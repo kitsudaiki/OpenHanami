@@ -10,7 +10,7 @@
 #include <hanami_obj/obj_item.h>
 
 ObjItem_Test::ObjItem_Test()
-    : Kitsunemimi::CompareTestHelper("ObjItem_Test")
+    : Hanami::CompareTestHelper("ObjItem_Test")
 {
     parse_test();
     converter_test();
@@ -22,10 +22,10 @@ ObjItem_Test::ObjItem_Test()
 void
 ObjItem_Test::parse_test()
 {
-    Kitsunemimi::ObjItem result;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ObjItem result;
+    Hanami::ErrorContainer error;
 
-    bool ret = Kitsunemimi::parseString(result, getTestString(), error);
+    bool ret = Hanami::parseString(result, getTestString(), error);
     TEST_EQUAL(ret, true);
 
     TEST_EQUAL(result.vertizes.at(0).x, 2.0f);
@@ -44,13 +44,13 @@ ObjItem_Test::parse_test()
 void
 ObjItem_Test::converter_test()
 {
-    Kitsunemimi::ObjItem result;
-    Kitsunemimi::ErrorContainer error;
-    bool ret = Kitsunemimi::parseString(result, getTestString(), error);
+    Hanami::ObjItem result;
+    Hanami::ErrorContainer error;
+    bool ret = Hanami::parseString(result, getTestString(), error);
     TEST_EQUAL(ret, true);
 
     std::string convertedString = "";
-    ret = Kitsunemimi::convertToString(convertedString, result);
+    ret = Hanami::convertToString(convertedString, result);
     //std::cout<<convertedString<<std::endl;
     TEST_EQUAL(convertedString, getCompareString());
 }

@@ -68,9 +68,9 @@ GetProject::GetProject()
  */
 bool
 GetProject::runTask(BlossomIO &blossomIO,
-                    const Kitsunemimi::DataMap &context,
+                    const Hanami::DataMap &context,
                     BlossomStatus &status,
-                    Kitsunemimi::ErrorContainer &error)
+                    Hanami::ErrorContainer &error)
 {
     // check if admin
     if(context.getBoolByKey("is_admin") == false)

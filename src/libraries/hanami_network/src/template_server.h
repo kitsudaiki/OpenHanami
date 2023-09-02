@@ -21,7 +21,7 @@
 #include <unix/unix_domain_server.h>
 #include <tcp/tcp_server.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 struct RingBuffer;
 
@@ -140,7 +140,7 @@ protected:
      *
      * @return true, if successful, else false
      */
-    bool waitForIncomingConnections(Kitsunemimi::ErrorContainer &error)
+    bool waitForIncomingConnections(Hanami::ErrorContainer &error)
     {
         uint32_t length = sizeof(struct sockaddr_in);
 

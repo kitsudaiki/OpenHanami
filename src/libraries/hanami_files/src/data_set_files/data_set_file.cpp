@@ -34,7 +34,7 @@
  */
 DataSetFile::DataSetFile(const std::string &filePath)
 {
-    m_targetFile = new Kitsunemimi::BinaryFile(filePath);
+    m_targetFile = new Hanami::BinaryFile(filePath);
 }
 
 /**
@@ -42,7 +42,7 @@ DataSetFile::DataSetFile(const std::string &filePath)
  *
  * @param file pointer to binary-file object
  */
-DataSetFile::DataSetFile(Kitsunemimi::BinaryFile* file)
+DataSetFile::DataSetFile(Hanami::BinaryFile* file)
 {
     m_targetFile = file;
 }
@@ -63,7 +63,7 @@ DataSetFile::~DataSetFile()
  * @return true, if successful, else false
  */
 bool
-DataSetFile::initNewFile(Kitsunemimi::ErrorContainer &error)
+DataSetFile::initNewFile(Hanami::ErrorContainer &error)
 {
     initHeader();
 
@@ -104,10 +104,10 @@ DataSetFile::initNewFile(Kitsunemimi::ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-DataSetFile::readFromFile(Kitsunemimi::ErrorContainer &error)
+DataSetFile::readFromFile(Hanami::ErrorContainer &error)
 {
     // create complete file
-    Kitsunemimi::DataBuffer buffer;
+    Hanami::DataBuffer buffer;
     if(m_targetFile->readCompleteFile(buffer, error) == false)
     {
         error.addMeesage("Faile to read data of data-set from disc");
@@ -142,7 +142,7 @@ bool
 DataSetFile::addBlock(const uint64_t pos,
                       const float* data,
                       const u_int64_t numberOfValues,
-                      Kitsunemimi::ErrorContainer &error)
+                      Hanami::ErrorContainer &error)
 {
     // check size to not write over the end of the file
     if(m_headerSize + ((pos + numberOfValues) * sizeof(float)) > m_totalFileSize)
@@ -174,10 +174,10 @@ DataSetFile::addBlock(const uint64_t pos,
  */
 DataSetFile*
 readDataSetFile(const std::string &filePath,
-                Kitsunemimi::ErrorContainer &error)
+                Hanami::ErrorContainer &error)
 {
     // read header of file to identify type
-    Kitsunemimi::BinaryFile* targetFile = new Kitsunemimi::BinaryFile(filePath);
+    Hanami::BinaryFile* targetFile = new Hanami::BinaryFile(filePath);
     DataSetFile::DataSetHeader header;
     if(targetFile->readDataFromFile(&header, 0 , sizeof(DataSetFile::DataSetHeader), error) == false)
     {

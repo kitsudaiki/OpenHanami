@@ -31,8 +31,8 @@ class DataSetCreateCsvTest
 public:
     DataSetCreateCsvTest(const bool expectSuccess);
 
-    bool runTest(Kitsunemimi::JsonItem &inputData,
-                 Kitsunemimi::ErrorContainer &error);
+    bool runTest(Hanami::JsonItem &inputData,
+                 Hanami::ErrorContainer &error);
 };
 
 #endif // TSUGUMITESTER_DATASETCREATE_CSV_TEST_H

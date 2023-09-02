@@ -32,8 +32,8 @@ public:
     RequestResultGetTest(const bool expectSuccess,
                          const std::string &uuidOverride = "");
 
-    bool runTest(Kitsunemimi::JsonItem &inputData,
-                 Kitsunemimi::ErrorContainer &error);
+    bool runTest(Hanami::JsonItem &inputData,
+                 Hanami::ErrorContainer &error);
 
 private:
     std::string m_uuid = "";

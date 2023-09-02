@@ -37,9 +37,9 @@
  * @return
  */
 bool
-getDataSetPayload(Kitsunemimi::DataBuffer &result,
+getDataSetPayload(Hanami::DataBuffer &result,
                   const std::string &location,
-                  Kitsunemimi::ErrorContainer &error,
+                  Hanami::ErrorContainer &error,
                   const std::string &columnName)
 {
     // init file
@@ -70,9 +70,9 @@ getDataSetPayload(Kitsunemimi::DataBuffer &result,
  * @return true, if successful, else false
  */
 bool
-getHeaderInformation(Kitsunemimi::JsonItem &result,
+getHeaderInformation(Hanami::JsonItem &result,
                      const std::string &location,
-                     Kitsunemimi::ErrorContainer &error)
+                     Hanami::ErrorContainer &error)
 {
     bool ret = false;
 

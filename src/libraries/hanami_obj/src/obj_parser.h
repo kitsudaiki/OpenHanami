@@ -12,7 +12,7 @@
 #include <hanami_obj/obj_item.h>
 #include <hanami_common/logger.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 class ObjParser

@@ -25,7 +25,7 @@
 
 #include <tls_tcp/tls_tcp_socket.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 template <class>

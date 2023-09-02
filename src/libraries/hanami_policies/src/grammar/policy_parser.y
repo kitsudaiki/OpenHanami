@@ -28,7 +28,7 @@
 %define api.parser.class {PolicyParser}
 
 %define api.prefix {policy}
-%define api.namespace {Kitsunemimi::Hanami}
+%define api.namespace {Hanami}
 %define api.token.constructor
 %define api.value.type variant
 %define parse.assert
@@ -42,19 +42,16 @@
 
 #include <hanami_policies/policy.h>
 
-namespace Kitsunemimi::Hanami
+namespace Hanami
 {
 
 class PolicyParserInterface;
-
-
-
 
 }
 }
 
 // The parsing context.
-%param { Kitsunemimi::Hanami::PolicyParserInterface& driver }
+%param { Hanami::PolicyParserInterface& driver }
 
 %locations
 
@@ -64,10 +61,10 @@ class PolicyParserInterface;
 
 # undef YY_DECL
 # define YY_DECL \
-    Kitsunemimi::Hanami::PolicyParser::symbol_type policylex (Kitsunemimi::Hanami::PolicyParserInterface& driver)
+    Hanami::PolicyParser::symbol_type policylex (Hanami::PolicyParserInterface& driver)
 YY_DECL;
 
-Kitsunemimi::Hanami::PolicyEntry tempPolicyEntry;
+Hanami::PolicyEntry tempPolicyEntry;
 std::vector<std::string> tempRules;
 }
 
@@ -89,7 +86,7 @@ std::vector<std::string> tempRules;
 %token <std::string> IDENTIFIER "identifier"
 %token <std::string> PATH "path"
 
-%type  <Kitsunemimi::Hanami::HttpRequestType> request_type
+%type  <Hanami::HttpRequestType> request_type
 %type  <std::string> endpoint;
 
 %%
@@ -109,16 +106,16 @@ component_policy_content:
 policy_entry:
     policy_entry "-" request_type ":" rule_list
     {
-        if($3 == Kitsunemimi::Hanami::HttpRequestType::GET_TYPE) {
+        if($3 == HttpRequestType::GET_TYPE) {
             tempPolicyEntry.getRules = tempRules;
         }
-        if($3 == Kitsunemimi::Hanami::HttpRequestType::POST_TYPE) {
+        if($3 == HttpRequestType::POST_TYPE) {
             tempPolicyEntry.postRules = tempRules;
         }
-        if($3 == Kitsunemimi::Hanami::HttpRequestType::PUT_TYPE) {
+        if($3 == HttpRequestType::PUT_TYPE) {
             tempPolicyEntry.putRules = tempRules;
         }
-        if($3 == Kitsunemimi::Hanami::HttpRequestType::DELETE_TYPE) {
+        if($3 == HttpRequestType::DELETE_TYPE) {
             tempPolicyEntry.deleteRules = tempRules;
         }
     }
@@ -130,16 +127,16 @@ policy_entry:
         tempPolicyEntry.putRules.clear();
         tempPolicyEntry.deleteRules.clear();
 
-        if($2 == Kitsunemimi::Hanami::HttpRequestType::GET_TYPE) {
+        if($2 == Hanami::HttpRequestType::GET_TYPE) {
             tempPolicyEntry.getRules = tempRules;
         }
-        if($2 == Kitsunemimi::Hanami::HttpRequestType::POST_TYPE) {
+        if($2 == Hanami::HttpRequestType::POST_TYPE) {
             tempPolicyEntry.postRules = tempRules;
         }
-        if($2 == Kitsunemimi::Hanami::HttpRequestType::PUT_TYPE) {
+        if($2 == Hanami::HttpRequestType::PUT_TYPE) {
             tempPolicyEntry.putRules = tempRules;
         }
-        if($2 == Kitsunemimi::Hanami::HttpRequestType::DELETE_TYPE) {
+        if($2 == Hanami::HttpRequestType::DELETE_TYPE) {
             tempPolicyEntry.deleteRules = tempRules;
         }
     }
@@ -171,27 +168,27 @@ endpoint:
 request_type:
     "GET"
     {
-        $$ = Kitsunemimi::Hanami::HttpRequestType::GET_TYPE;
+        $$ = Hanami::HttpRequestType::GET_TYPE;
     }
 |
     "POST"
     {
-        $$ = Kitsunemimi::Hanami::HttpRequestType::POST_TYPE;
+        $$ = Hanami::HttpRequestType::POST_TYPE;
     }
 |
     "PUT"
     {
-        $$ = Kitsunemimi::Hanami::HttpRequestType::PUT_TYPE;
+        $$ = Hanami::HttpRequestType::PUT_TYPE;
     }
 |
     "DELETE"
     {
-        $$ = Kitsunemimi::Hanami::HttpRequestType::DELETE_TYPE;
+        $$ = Hanami::HttpRequestType::DELETE_TYPE;
     }
 
 %%
 
-void Kitsunemimi::Hanami::PolicyParser::error(const Kitsunemimi::Hanami::location& location,
+void Hanami::PolicyParser::error(const Hanami::location& location,
                                               const std::string& message)
 {
     driver.error(location, message);

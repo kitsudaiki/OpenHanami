@@ -38,9 +38,9 @@ const std::string getResponseType(const std::string &ext);
 bool sendFileFromLocalLocation(http::response<http::dynamic_body> &response,
                                const std::string &dir,
                                const std::string &relativePath,
-                               Kitsunemimi::ErrorContainer &error);
+                               Hanami::ErrorContainer &error);
 bool processClientRequest(http::response<http::dynamic_body> &response,
                           const std::string &path,
-                          Kitsunemimi::ErrorContainer &error);
+                          Hanami::ErrorContainer &error);
 
 #endif // TORIIGATEWAY_FILE_SEND_H

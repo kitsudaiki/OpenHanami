@@ -45,7 +45,7 @@ createUser(std::string &result,
            const std::string &userName,
            const std::string &password,
            const bool isAdmin,
-           Kitsunemimi::ErrorContainer &error)
+           Hanami::ErrorContainer &error)
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
@@ -84,7 +84,7 @@ createUser(std::string &result,
 bool
 getUser(std::string &result,
         const std::string &userId,
-        Kitsunemimi::ErrorContainer &error)
+        Hanami::ErrorContainer &error)
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
@@ -111,7 +111,7 @@ getUser(std::string &result,
  */
 bool
 listUser(std::string &result,
-         Kitsunemimi::ErrorContainer &error)
+         Hanami::ErrorContainer &error)
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
@@ -140,7 +140,7 @@ listUser(std::string &result,
 bool
 deleteUser(std::string &result,
            const std::string &userId,
-           Kitsunemimi::ErrorContainer &error)
+           Hanami::ErrorContainer &error)
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
@@ -176,7 +176,7 @@ addProjectToUser(std::string &result,
                  const std::string &projectId,
                  const std::string &role,
                  const bool isProjectAdmin,
-                 Kitsunemimi::ErrorContainer &error)
+                 Hanami::ErrorContainer &error)
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
@@ -217,7 +217,7 @@ bool
 removeProjectFromUser(std::string &result,
                       const std::string &userId,
                       const std::string &projectId,
-                      Kitsunemimi::ErrorContainer &error)
+                      Hanami::ErrorContainer &error)
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
@@ -249,7 +249,7 @@ removeProjectFromUser(std::string &result,
  */
 bool
 listProjectsOfUser(std::string &result,
-                   Kitsunemimi::ErrorContainer &error)
+                   Hanami::ErrorContainer &error)
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
@@ -279,7 +279,7 @@ listProjectsOfUser(std::string &result,
 bool
 switchProject(std::string &result,
               const std::string &projectId,
-              Kitsunemimi::ErrorContainer &error)
+              Hanami::ErrorContainer &error)
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
@@ -296,7 +296,7 @@ switchProject(std::string &result,
     }
 
     // try to parse response
-    Kitsunemimi::JsonItem item;
+    Hanami::JsonItem item;
     if(item.parse(result, error) == false)
     {
         error.addMeesage("Failed to parse token-response");

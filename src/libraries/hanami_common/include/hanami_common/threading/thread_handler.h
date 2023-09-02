@@ -29,7 +29,7 @@
 #include <mutex>
 #include <thread>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 class Thread;
 class Event;
@@ -44,7 +44,7 @@ public:
     uint64_t getNewId();
 
 private:
-    friend Kitsunemimi::Thread;
+    friend Hanami::Thread;
 
     ThreadHandler();
 

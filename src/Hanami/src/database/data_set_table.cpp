@@ -38,7 +38,7 @@ DataSetTable* DataSetTable::instance = nullptr;
  * @param db pointer to database
  */
 DataSetTable::DataSetTable()
-    : HanamiSqlTable(Kitsunemimi::Sakura::SqlDatabase::getInstance())
+    : HanamiSqlTable(Hanami::SqlDatabase::getInstance())
 {
     m_tableName = "data_set";
 
@@ -73,9 +73,9 @@ DataSetTable::~DataSetTable() {}
  * @return true, if successful, else false
  */
 bool
-DataSetTable::addDataSet(Kitsunemimi::JsonItem &data,
+DataSetTable::addDataSet(Hanami::JsonItem &data,
                          const UserContext &userContext,
-                         Kitsunemimi::ErrorContainer &error)
+                         Hanami::ErrorContainer &error)
 {
     if(add(data, userContext, error) == false)
     {
@@ -98,10 +98,10 @@ DataSetTable::addDataSet(Kitsunemimi::JsonItem &data,
  * @return true, if successful, else false
  */
 bool
-DataSetTable::getDataSet(Kitsunemimi::JsonItem &result,
+DataSetTable::getDataSet(Hanami::JsonItem &result,
                          const std::string &datasetUuid,
                          const UserContext &userContext,
-                         Kitsunemimi::ErrorContainer &error,
+                         Hanami::ErrorContainer &error,
                          const bool showHiddenValues)
 {
     // get user from db
@@ -131,9 +131,9 @@ DataSetTable::getDataSet(Kitsunemimi::JsonItem &result,
  * @return true, if successful, else false
  */
 bool
-DataSetTable::getAllDataSet(Kitsunemimi::TableItem &result,
+DataSetTable::getAllDataSet(Hanami::TableItem &result,
                             const UserContext &userContext,
-                            Kitsunemimi::ErrorContainer &error)
+                            Hanami::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
     if(getAll(result, userContext, conditions, error) == false)
@@ -157,7 +157,7 @@ DataSetTable::getAllDataSet(Kitsunemimi::TableItem &result,
 bool
 DataSetTable::deleteDataSet(const std::string &datasetUuid,
                             const UserContext &userContext,
-                            Kitsunemimi::ErrorContainer &error)
+                            Hanami::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", datasetUuid);
@@ -184,11 +184,11 @@ DataSetTable::deleteDataSet(const std::string &datasetUuid,
 bool
 DataSetTable::setUploadFinish(const std::string &uuid,
                               const std::string &fileUuid,
-                              Kitsunemimi::ErrorContainer &error)
+                              Hanami::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", uuid);
-    Kitsunemimi::JsonItem result;
+    Hanami::JsonItem result;
 
     UserContext userContext;
     userContext.isAdmin = true;
@@ -211,7 +211,7 @@ DataSetTable::setUploadFinish(const std::string &uuid,
 
     // update temp-files entry to 100%
     const std::string tempFilesStr = result.get("temp_files").toString();
-    Kitsunemimi::JsonItem tempFiles;
+    Hanami::JsonItem tempFiles;
     if(tempFiles.parse(tempFilesStr, error) == false)
     {
         error.addMeesage("Failed to parse temp_files entry of dataset with UUID '"
@@ -220,11 +220,11 @@ DataSetTable::setUploadFinish(const std::string &uuid,
         LOG_ERROR(error);
         return false;
     }
-    tempFiles.insert(fileUuid, Kitsunemimi::JsonItem(1.0f), true);
+    tempFiles.insert(fileUuid, Hanami::JsonItem(1.0f), true);
 
     // update new entry within the database
-    Kitsunemimi::JsonItem newValues;
-    newValues.insert("temp_files", Kitsunemimi::JsonItem(tempFiles.toString()));
+    Hanami::JsonItem newValues;
+    newValues.insert("temp_files", Hanami::JsonItem(tempFiles.toString()));
     if(update(newValues, userContext, conditions, error) == false)
     {
         error.addMeesage("Failed to update entry of dataset with UUID '" + uuid + "' in database");
@@ -242,10 +242,10 @@ DataSetTable::setUploadFinish(const std::string &uuid,
  * @return
  */
 bool
-DataSetTable::getDateSetInfo(Kitsunemimi::JsonItem &result,
+DataSetTable::getDateSetInfo(Hanami::JsonItem &result,
                              const std::string &dataUuid,
-                             const Kitsunemimi::DataMap &context,
-                             Kitsunemimi::ErrorContainer &error)
+                             const Hanami::DataMap &context,
+                             Hanami::ErrorContainer &error)
 {
     const UserContext userContext(context);
 

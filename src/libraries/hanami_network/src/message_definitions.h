@@ -33,7 +33,7 @@
 #include <handler/reply_handler.h>
 #include <handler/message_blocker_handler.h>
 
-namespace Kitsunemimi::Sakura
+namespace Hanami
 {
 
 #define PROTOCOL_IDENTIFIER 0x6e79616e

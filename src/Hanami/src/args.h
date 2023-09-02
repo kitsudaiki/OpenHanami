@@ -33,8 +33,8 @@
  * @return false, if registering argument failed, else true
  */
 bool
-registerArguments(Kitsunemimi::ArgParser* argparser,
-                  Kitsunemimi::ErrorContainer &error)
+registerArguments(Hanami::ArgParser* argparser,
+                  Hanami::ErrorContainer &error)
 {
     std::string helpText = "";
 

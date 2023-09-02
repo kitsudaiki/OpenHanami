@@ -31,8 +31,8 @@ class RequestResultDeleteTest
 public:
     RequestResultDeleteTest(const bool expectSuccess);
 
-    bool runTest(Kitsunemimi::JsonItem &inputData,
-                 Kitsunemimi::ErrorContainer &error);
+    bool runTest(Hanami::JsonItem &inputData,
+                 Hanami::ErrorContainer &error);
 };
 
 #endif // TSUGUMITESTER_REQUEST_RESULT_DELETE_TEST_H

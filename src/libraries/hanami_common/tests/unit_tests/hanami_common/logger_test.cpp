@@ -11,11 +11,11 @@
 #include <hanami_common/logger.h>
 #include <hanami_common/files/text_file.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 Logger_Test::Logger_Test()
-    : Kitsunemimi::CompareTestHelper("Logger_Test")
+    : Hanami::CompareTestHelper("Logger_Test")
 {
     logger_test();
 }

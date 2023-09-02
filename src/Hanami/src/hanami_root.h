@@ -42,13 +42,10 @@ class PowerMeasuring;
 class TemperatureMeasuring;
 class Blossom;
 
-using namespace Kitsunemimi::Hanami;
+using namespace Hanami;
 
-namespace Kitsunemimi::Sakura {
+namespace Hanami {
 class Host;
-}
-
-namespace Kitsunemimi {
 class GpuInterface;
 }
 
@@ -59,17 +56,17 @@ public:
     HanamiRoot();
     ~HanamiRoot();
 
-    bool init(Kitsunemimi::ErrorContainer &error);
+    bool init(Hanami::ErrorContainer &error);
     bool initThreads();
 
     // blossoms
-    bool triggerBlossom(Kitsunemimi::DataMap& result,
+    bool triggerBlossom(Hanami::DataMap& result,
                         const std::string &blossomName,
                         const std::string &blossomGroupName,
-                        const Kitsunemimi::DataMap &context,
-                        const Kitsunemimi::DataMap &initialValues,
+                        const Hanami::DataMap &context,
+                        const Hanami::DataMap &initialValues,
                         BlossomStatus &status,
-                        Kitsunemimi::ErrorContainer &error);
+                        Hanami::ErrorContainer &error);
     bool doesBlossomExist(const std::string &groupName,
                           const std::string &itemName);
     bool addBlossom(const std::string &groupName,
@@ -81,9 +78,9 @@ public:
     // endpoints
     bool mapEndpoint(EndpointEntry &result,
                      const std::string &id,
-                     const Kitsunemimi::Hanami::HttpRequestType type);
+                     const Hanami::HttpRequestType type);
     bool addEndpoint(const std::string &id,
-                     const Kitsunemimi::Hanami::HttpRequestType &httpType,
+                     const Hanami::HttpRequestType &httpType,
                      const SakuraObjectType &sakuraType,
                      const std::string &group,
                      const std::string &name);
@@ -91,7 +88,7 @@ public:
 
     WebSocketServer* websocketServer = nullptr;
 
-    static Kitsunemimi::GpuInterface* gpuInterface;
+    static Hanami::GpuInterface* gpuInterface;
     static HttpServer* httpServer;
     static HanamiRoot* root;
     static uint32_t* m_randomValues;
@@ -108,16 +105,16 @@ private:
 
     bool initHttpServer();
     bool initSakuraServer();
-    bool initDatabase(Kitsunemimi::ErrorContainer &error);
-    bool initPolicies(Kitsunemimi::ErrorContainer &error);
-    bool initJwt(Kitsunemimi::ErrorContainer &error);
+    bool initDatabase(Hanami::ErrorContainer &error);
+    bool initPolicies(Hanami::ErrorContainer &error);
+    bool initJwt(Hanami::ErrorContainer &error);
 
-    void clearCluster(Kitsunemimi::ErrorContainer &error);
+    void clearCluster(Hanami::ErrorContainer &error);
     void checkStatusCode(Blossom* blossom,
                          const std::string &blossomName,
                          const std::string &blossomGroupName,
                          BlossomStatus &status,
-                         Kitsunemimi::ErrorContainer &error);
+                         Hanami::ErrorContainer &error);
 };
 
 #endif //HANAMI_HANAMI_ROOT_H

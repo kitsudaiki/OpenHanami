@@ -10,7 +10,7 @@
 #include <abstract_socket.h>
 #include <hanami_common/logger.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 /**
@@ -19,7 +19,7 @@ namespace Kitsunemimi
 AbstractServer::AbstractServer(void* target,
                                void (*processConnection)(void*, AbstractSocket*),
                                const std::string &threadName)
-    : Kitsunemimi::Thread(threadName)
+    : Hanami::Thread(threadName)
 {
     m_target = target;
     m_processConnection = processConnection;

@@ -61,7 +61,7 @@ AddProjectToUser::AddProjectToUser()
     registerInputField("is_project_admin", SAKURA_BOOL_TYPE)
             .setComment("Set this to true, if the user should be an admin "
                         "within the assigned project.")
-            .setDefault(new Kitsunemimi::DataValue(false));
+            .setDefault(new Hanami::DataValue(false));
 
     //----------------------------------------------------------------------------------------------
     // output
@@ -93,9 +93,9 @@ AddProjectToUser::AddProjectToUser()
  */
 bool
 AddProjectToUser::runTask(BlossomIO &blossomIO,
-                          const Kitsunemimi::DataMap &context,
+                          const Hanami::DataMap &context,
                           BlossomStatus &status,
-                          Kitsunemimi::ErrorContainer &error)
+                          Hanami::ErrorContainer &error)
 {
     // check if admin
     if(context.getBoolByKey("is_admin") == false)
@@ -111,7 +111,7 @@ AddProjectToUser::runTask(BlossomIO &blossomIO,
     const std::string creatorId = context.getStringByKey("id");
 
     // check if user already exist within the table
-    Kitsunemimi::JsonItem getResult;
+    Hanami::JsonItem getResult;
     if(UsersTable::getInstance()->getUser(getResult, userId, error, false) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -128,7 +128,7 @@ AddProjectToUser::runTask(BlossomIO &blossomIO,
     }
 
     // check if project is already assigned to user
-    Kitsunemimi::JsonItem parsedProjects = getResult.get("projects");
+    Hanami::JsonItem parsedProjects = getResult.get("projects");
     for(uint64_t i = 0; i < parsedProjects.size(); i++)
     {
         if(parsedProjects.get(i).get("project_id").getString() == projectId)
@@ -145,7 +145,7 @@ AddProjectToUser::runTask(BlossomIO &blossomIO,
     }
 
     // create new entry
-    Kitsunemimi::JsonItem newEntry;
+    Hanami::JsonItem newEntry;
     newEntry.insert("project_id", projectId);
     newEntry.insert("role", role);
     newEntry.insert("is_project_admin", isProjectAdmin);

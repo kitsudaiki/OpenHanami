@@ -38,8 +38,8 @@ CheckpointGetTest::CheckpointGetTest(const bool expectSuccess,
 }
 
 bool
-CheckpointGetTest::runTest(Kitsunemimi::JsonItem &inputData,
-                         Kitsunemimi::ErrorContainer &error)
+CheckpointGetTest::runTest(Hanami::JsonItem &inputData,
+                         Hanami::ErrorContainer &error)
 {
     if(m_uuid == "") {
         m_uuid = inputData.get("checkpoint_uuid").getString();
@@ -56,7 +56,7 @@ CheckpointGetTest::runTest(Kitsunemimi::JsonItem &inputData,
     }
 
     // parse output
-    Kitsunemimi::JsonItem jsonItem;
+    Hanami::JsonItem jsonItem;
     if(jsonItem.parse(result, error) == false) {
         return false;
     }

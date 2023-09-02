@@ -36,14 +36,14 @@ public:
 
 protected:
     bool runTask(BlossomIO &blossomIO,
-                 const Kitsunemimi::DataMap &context,
+                 const Hanami::DataMap &context,
                  BlossomStatus &status,
-                 Kitsunemimi::ErrorContainer &error);
+                 Hanami::ErrorContainer &error);
 
 private:
     bool convertCsvData(const std::string &filePath,
                         const std::string &name,
-                        const Kitsunemimi::DataBuffer &inputBuffer);
+                        const Hanami::DataBuffer &inputBuffer);
     void convertField(float* segmentPos,
                       const std::string &cell,
                       const float lastVal);

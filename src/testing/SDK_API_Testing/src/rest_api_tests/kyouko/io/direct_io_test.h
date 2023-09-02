@@ -31,8 +31,8 @@ class DirectIoTest
 public:
     DirectIoTest(const bool expectSuccess);
 
-    bool runTest(Kitsunemimi::JsonItem &,
-                 Kitsunemimi::ErrorContainer &);
+    bool runTest(Hanami::JsonItem &,
+                 Hanami::ErrorContainer &);
 
 private:
     void fillInputValues(float* inputValues);

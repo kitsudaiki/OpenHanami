@@ -21,7 +21,7 @@
 #include <hanami_common/logger.h>
 #include <unix/unix_domain_socket.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 template<class>
 class TemplateSocket;

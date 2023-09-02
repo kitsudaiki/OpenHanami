@@ -44,9 +44,9 @@ PowerConsumption::PowerConsumption()
  */
 bool
 PowerConsumption::runTask(BlossomIO &blossomIO,
-                          const Kitsunemimi::DataMap &,
+                          const Hanami::DataMap &,
                           BlossomStatus &,
-                          Kitsunemimi::ErrorContainer &)
+                          Hanami::ErrorContainer &)
 {
     blossomIO.output.insert("power", PowerMeasuring::getInstance()->getJson());
 

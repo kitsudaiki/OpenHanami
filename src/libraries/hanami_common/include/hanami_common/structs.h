@@ -5,7 +5,7 @@
 
 #define UNINTI_POINT_32 0x0FFFFFFF
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 struct Position

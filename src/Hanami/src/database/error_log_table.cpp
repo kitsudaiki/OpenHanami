@@ -37,7 +37,7 @@ ErrorLogTable* ErrorLogTable::instance = nullptr;
  * @param db pointer to database
  */
 ErrorLogTable::ErrorLogTable()
-    : HanamiSqlLogTable(Kitsunemimi::Sakura::SqlDatabase::getInstance())
+    : HanamiSqlLogTable(Hanami::SqlDatabase::getInstance())
 {
     m_tableName = "error_log";
 
@@ -89,9 +89,9 @@ ErrorLogTable::addErrorLogEntry(const std::string &timestamp,
                                 const std::string &context,
                                 const std::string &values,
                                 const std::string &message,
-                                Kitsunemimi::ErrorContainer &error)
+                                Hanami::ErrorContainer &error)
 {
-    Kitsunemimi::JsonItem data;
+    Hanami::JsonItem data;
     data.insert("timestamp", timestamp);
     data.insert("user_id", userid);
     data.insert("component", component);
@@ -99,7 +99,7 @@ ErrorLogTable::addErrorLogEntry(const std::string &timestamp,
     data.insert("input_values", values);
 
     std::string base64Msg;
-    Kitsunemimi::encodeBase64(base64Msg, message.c_str(), message.size());
+    Hanami::encodeBase64(base64Msg, message.c_str(), message.size());
     data.insert("message", base64Msg);
 
     if(insertToDb(data, error) == false)
@@ -122,10 +122,10 @@ ErrorLogTable::addErrorLogEntry(const std::string &timestamp,
  * @return true, if successful, else false
  */
 bool
-ErrorLogTable::getAllErrorLogEntries(Kitsunemimi::TableItem &result,
+ErrorLogTable::getAllErrorLogEntries(Hanami::TableItem &result,
                                      const std::string &userId,
                                      const uint64_t page,
-                                     Kitsunemimi::ErrorContainer &error)
+                                     Hanami::ErrorContainer &error)
 {
     if(getPageFromDb(result, userId, page, error) == false)
     {

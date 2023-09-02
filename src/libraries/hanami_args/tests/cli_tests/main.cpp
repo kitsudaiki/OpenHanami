@@ -26,11 +26,11 @@
 int main(int argc, char *argv[])
 {
     // error messages of the parser are printed via logger
-    Kitsunemimi::initConsoleLogger(true);
+    Hanami::initConsoleLogger(true);
 
-    Kitsunemimi::ArgParser parser("0.1.0");
+    Hanami::ArgParser parser("0.1.0");
 
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
 
     // register flags without value
     parser.registerPlain("debug,d",

@@ -35,7 +35,7 @@ GetErrorLog::GetErrorLog()
     //----------------------------------------------------------------------------------------------
     registerInputField("user_id", SAKURA_STRING_TYPE)
             .setComment("ID of the user, whos entries are requested.")
-            .setDefault(new Kitsunemimi::DataValue(""))
+            .setDefault(new Hanami::DataValue(""))
             .setLimit(4, 256)
             .setRegex(ID_EXT_REGEX);
 
@@ -50,7 +50,7 @@ GetErrorLog::GetErrorLog()
 
     registerOutputField("header", SAKURA_ARRAY_TYPE)
             .setComment("Array with the namings all columns of the table.")
-            .setMatch(new Kitsunemimi::DataValue("[\"timestamp\","
+            .setMatch(new Hanami::DataValue("[\"timestamp\","
                                                  "\"user_id\","
                                                  "\"component\","
                                                  "\"context\","
@@ -70,9 +70,9 @@ GetErrorLog::GetErrorLog()
  */
 bool
 GetErrorLog::runTask(BlossomIO &blossomIO,
-                     const Kitsunemimi::DataMap &context,
+                     const Hanami::DataMap &context,
                      BlossomStatus &status,
-                     Kitsunemimi::ErrorContainer &error)
+                     Hanami::ErrorContainer &error)
 {
     const UserContext userContext(context);
     const uint64_t page = blossomIO.input.get("page").getLong();
@@ -88,7 +88,7 @@ GetErrorLog::runTask(BlossomIO &blossomIO,
     const std::string userId = blossomIO.input.get("user_id").getString();
 
     // get data from table
-    Kitsunemimi::TableItem table;
+    Hanami::TableItem table;
     if(ErrorLogTable::getInstance()->getAllErrorLogEntries(table, userId, page, error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -96,7 +96,7 @@ GetErrorLog::runTask(BlossomIO &blossomIO,
     }
 
     // create output
-    Kitsunemimi::DataArray* headerInfo = table.getInnerHeader();
+    Hanami::DataArray* headerInfo = table.getInnerHeader();
     blossomIO.output.insert("header", headerInfo);
     blossomIO.output.insert("body", table.getBody());
     delete headerInfo;

@@ -14,7 +14,7 @@
 %define api.parser.class {JsonParser}
 
 %define api.prefix {json}
-%define api.namespace {Kitsunemimi}
+%define api.namespace {Hanami}
 %define api.token.constructor
 %define api.value.type variant
 %define parse.assert
@@ -26,13 +26,13 @@
 #include <cmath>
 #include <hanami_common/items/data_items.h>
 
-using Kitsunemimi::DataItem;
-using Kitsunemimi::DataArray;
-using Kitsunemimi::DataValue;
-using Kitsunemimi::DataMap;
+using Hanami::DataItem;
+using Hanami::DataArray;
+using Hanami::DataValue;
+using Hanami::DataMap;
 
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 class JsonParserInterface;
@@ -41,7 +41,7 @@ class JsonParserInterface;
 }
 
 // The parsing context.
-%param { Kitsunemimi::JsonParserInterface& driver }
+%param { Hanami::JsonParserInterface& driver }
 
 %locations
 
@@ -50,7 +50,7 @@ class JsonParserInterface;
 #include <json_parsing/json_parser_interface.h>
 # undef YY_DECL
 # define YY_DECL \
-    Kitsunemimi::JsonParser::symbol_type jsonlex (Kitsunemimi::JsonParserInterface& driver)
+    Hanami::JsonParser::symbol_type jsonlex (Hanami::JsonParserInterface& driver)
 YY_DECL;
 }
 
@@ -284,7 +284,7 @@ json_value:
 
 %%
 
-void Kitsunemimi::JsonParser::error(const Kitsunemimi::location& location,
+void Hanami::JsonParser::error(const Hanami::location& location,
                                           const std::string& message)
 {
     driver.error(location, message);

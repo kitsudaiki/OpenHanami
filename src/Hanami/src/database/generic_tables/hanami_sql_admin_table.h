@@ -34,10 +34,10 @@
 class SqlDatabase;
 
 class HanamiSqlAdminTable
-        : public Kitsunemimi::Sakura::SqlTable
+        : public Hanami::SqlTable
 {
 public:
-    HanamiSqlAdminTable(Kitsunemimi::Sakura::SqlDatabase* db);
+    HanamiSqlAdminTable(Hanami::SqlDatabase* db);
     virtual ~HanamiSqlAdminTable();
 };
 

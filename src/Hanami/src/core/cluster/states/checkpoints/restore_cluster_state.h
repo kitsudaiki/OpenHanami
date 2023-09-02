@@ -28,12 +28,12 @@
 
 class Cluster;
 
-namespace Kitsunemimi::Hanami {
+namespace Hanami {
 class HanamiMessagingClient;
 }
 
 class RestoreCluster_State
-        : public Kitsunemimi::Event
+        : public Hanami::Event
 {
 public:
     RestoreCluster_State(Cluster* cluster);
@@ -43,7 +43,7 @@ public:
 
 private:
     Cluster* m_cluster = nullptr;
-    Kitsunemimi::Hanami::HanamiMessagingClient* m_client = nullptr;
+    Hanami::HanamiMessagingClient* m_client = nullptr;
 };
 
 #endif // HANAMI_RESTORECLUSTERSTATE_H

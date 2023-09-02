@@ -9,11 +9,11 @@
 #include "json_item_test.h"
 #include <hanami_common/items/data_items.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 JsonItem_Test::JsonItem_Test()
-    : Kitsunemimi::MemoryLeakTestHelpter("JsonItem_Test")
+    : Hanami::MemoryLeakTestHelpter("JsonItem_Test")
 {
     constructor_test();
     assigmentOperator_test();

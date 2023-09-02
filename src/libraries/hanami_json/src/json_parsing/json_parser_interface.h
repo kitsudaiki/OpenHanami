@@ -14,7 +14,7 @@
 
 #include <hanami_common/logger.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 class DataItem;
 class location;
@@ -36,7 +36,7 @@ public:
     void setOutput(DataItem* output);
 
     // Error handling.
-    void error(const Kitsunemimi::location &location,
+    void error(const Hanami::location &location,
                const std::string& message);
 
     bool dryRun = false;

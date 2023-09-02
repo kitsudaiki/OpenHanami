@@ -1,6 +1,6 @@
 #include <hanami_common/buffer/stack_buffer_reserve.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 StackBufferReserve* StackBufferReserve::m_stackBufferReserve = new StackBufferReserve();

@@ -34,11 +34,11 @@
 class TestStep;
 
 class TestThread
-        : public Kitsunemimi::Thread
+        : public Hanami::Thread
 {
 public:
     TestThread(const std::string &name,
-               Kitsunemimi::JsonItem &inputData);
+               Hanami::JsonItem &inputData);
     ~TestThread();
 
     void addTest(TestStep* newStep);
@@ -52,7 +52,7 @@ protected:
 private:
     std::deque<TestStep*> m_taskQueue;
     std::mutex m_queueLock;
-    Kitsunemimi::JsonItem m_inputData;
+    Hanami::JsonItem m_inputData;
 
     TestStep* getTest();
 };

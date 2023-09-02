@@ -10,7 +10,7 @@
 #include <hanami_common/threading/cleanup_thread.h>
 #include <hanami_common/logger.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 /**

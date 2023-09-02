@@ -44,7 +44,7 @@ recvFileUploadPackage(const void* data,
     FileUpload_Message msg;
     if(msg.ParseFromArray(data, dataSize) == false)
     {
-        Kitsunemimi::ErrorContainer error;
+        Hanami::ErrorContainer error;
         error.addMeesage("Got invalid FileUpload-Message");
         LOG_ERROR(error);
         return false;
@@ -64,7 +64,7 @@ recvFileUploadPackage(const void* data,
         return false;
     }
 
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
 
     if(msg.type() == UploadDataType::DATASET_TYPE)
     {

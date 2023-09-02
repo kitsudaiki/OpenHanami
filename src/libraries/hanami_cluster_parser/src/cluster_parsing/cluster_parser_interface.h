@@ -28,7 +28,7 @@
 
 #include <hanami_common/logger.h>
 
-namespace Kitsunemimi::Hanami
+namespace Hanami
 {
 struct ClusterMeta;
 class location;
@@ -49,7 +49,7 @@ public:
     const std::string removeQuotes(const std::string &input);
 
     // Error handling.
-    void error(const Kitsunemimi::Hanami::location &location,
+    void error(const Hanami::location &location,
                const std::string& message);
 
     ClusterMeta* output = nullptr;

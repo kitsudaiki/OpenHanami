@@ -30,7 +30,7 @@
 #include <hanami_common/items/data_items.h>
 
 class ThreadBinder
-        : public Kitsunemimi::Thread
+        : public Hanami::Thread
 {
 public:
     static ThreadBinder* getInstance()
@@ -41,7 +41,7 @@ public:
         return instance;
     }
 
-    Kitsunemimi::DataMap* getMapping();
+    Hanami::DataMap* getMapping();
 
 protected:
     void run();
@@ -52,10 +52,10 @@ private:
 
     bool fillCoreIds(std::vector<uint64_t> &coreIds,
                      std::vector<uint64_t> &processingCoreIds,
-                     Kitsunemimi::ErrorContainer &error);
+                     Hanami::ErrorContainer &error);
 
     std::mutex m_mapLock;
-    Kitsunemimi::DataMap m_completeMap;
+    Hanami::DataMap m_completeMap;
 
     std::vector<uint64_t> m_controlCoreIds;
     std::vector<uint64_t> m_processingCoreIds;

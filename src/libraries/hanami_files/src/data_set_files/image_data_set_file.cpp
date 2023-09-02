@@ -37,7 +37,7 @@ ImageDataSetFile::ImageDataSetFile(const std::string &filePath)
  *
  * @param file pointer to binary-file object
  */
-ImageDataSetFile::ImageDataSetFile(Kitsunemimi::BinaryFile* file)
+ImageDataSetFile::ImageDataSetFile(Hanami::BinaryFile* file)
     : DataSetFile(file) {}
 
 /**
@@ -84,7 +84,7 @@ ImageDataSetFile::readHeader(const uint8_t* u8buffer)
  * @return true, if successful, else false
  */
 bool
-ImageDataSetFile::updateHeader(Kitsunemimi::ErrorContainer &error)
+ImageDataSetFile::updateHeader(Hanami::ErrorContainer &error)
 {
     // write image-header to file
     if(m_targetFile->writeDataIntoFile(&imageHeader,
@@ -108,12 +108,12 @@ ImageDataSetFile::updateHeader(Kitsunemimi::ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-ImageDataSetFile::getPayload(Kitsunemimi::DataBuffer &result,
-                             Kitsunemimi::ErrorContainer &error,
+ImageDataSetFile::getPayload(Hanami::DataBuffer &result,
+                             Hanami::ErrorContainer &error,
                              const std::string &)
 {
     const uint64_t payloadSize = m_totalFileSize - m_headerSize;
-    Kitsunemimi::allocateBlocks_DataBuffer(result, Kitsunemimi::calcBytesToBlocks(payloadSize));
+    Hanami::allocateBlocks_DataBuffer(result, Hanami::calcBytesToBlocks(payloadSize));
     if(m_targetFile->readDataFromFile(result.data,
                                       m_headerSize,
                                       payloadSize,

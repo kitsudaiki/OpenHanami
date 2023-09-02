@@ -13,14 +13,14 @@
 #include <template_socket.h>
 #include <template_server.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 /**
  * processMessageTcp-callback
  */
 uint64_t processMessageTcp(void* target,
-                           Kitsunemimi::RingBuffer* recvBuffer,
+                           Hanami::RingBuffer* recvBuffer,
                            AbstractSocket*)
 {
     Tcp_Test* targetTest = static_cast<Tcp_Test*>(target);
@@ -47,7 +47,7 @@ void processConnectionTcp(void* target,
 
 
 Tcp_Test::Tcp_Test()
-    : Kitsunemimi::MemoryLeakTestHelpter("Tcp_Test")
+    : Hanami::MemoryLeakTestHelpter("Tcp_Test")
 {
     ErrorContainer* error = new ErrorContainer();
 

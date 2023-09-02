@@ -29,11 +29,11 @@
 
 #include <hanami_common/items/data_items.h>
 
-namespace Kitsunemimi {
+namespace Hanami {
 class DataMap;
 }
 
-namespace Kitsunemimi::Sakura
+namespace Hanami
 {
 class CpuCore;
 
@@ -52,7 +52,7 @@ public:
     double getTotalPackagePower();
 
     const std::string toJsonString();
-    Kitsunemimi::DataMap* toJson();
+    Hanami::DataMap* toJson();
 
     std::vector<CpuCore*> cpuCores;
 };

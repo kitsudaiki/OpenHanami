@@ -28,12 +28,12 @@
 
 #include <hanami_common/threading/thread.h>
 
-namespace Kitsunemimi::Sakura
+namespace Hanami
 {
 class Session;
 
 class ReplyHandler
-        : public Kitsunemimi::Thread
+        : public Hanami::Thread
 {
 public:
     ReplyHandler();

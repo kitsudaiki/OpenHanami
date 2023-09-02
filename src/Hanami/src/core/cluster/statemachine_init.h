@@ -33,7 +33,7 @@ class ImageTrainBackward_State;
 class ImageTrainForward_State;
 class Cluster;
 
-namespace Kitsunemimi {
+namespace Hanami {
 class EventQueue;
 class Statemachine;
 }
@@ -79,7 +79,7 @@ enum ClusterTransitions
     SWITCH_TO_TASK_MODE = 112,
 };
 
-void initStatemachine(Kitsunemimi::Statemachine &sm,
+void initStatemachine(Hanami::Statemachine &sm,
                       Cluster* cluster,
                       TaskHandle_State* taskState);
 

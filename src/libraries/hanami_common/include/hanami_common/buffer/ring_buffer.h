@@ -26,7 +26,7 @@
 #include <string.h>
 #include <hanami_common/buffer/data_buffer.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 // if this buffer is too big, it doesn't fit into the cpu-cache anymore and this makes the buffer

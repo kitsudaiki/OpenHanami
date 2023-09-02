@@ -10,7 +10,7 @@
 
 #include <hanami_common/buffer/item_buffer.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 struct TestStruct
@@ -22,7 +22,7 @@ struct TestStruct
 } __attribute__((packed));
 
 ItemBuffer_Test::ItemBuffer_Test()
-    : Kitsunemimi::CompareTestHelper("ItemBuffer_Test")
+    : Hanami::CompareTestHelper("ItemBuffer_Test")
 {
     initBuffer_test();
     deleteItem_test();

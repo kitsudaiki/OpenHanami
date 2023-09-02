@@ -32,11 +32,11 @@
 
 #include <hanami_common/test_helper/memory_leak_test_helper.h>
 
-namespace Kitsunemimi::Sakura
+namespace Hanami
 {
 
 class Session_Test
-        : public Kitsunemimi::MemoryLeakTestHelpter
+        : public Hanami::MemoryLeakTestHelpter
 {
 public:
     Session_Test();

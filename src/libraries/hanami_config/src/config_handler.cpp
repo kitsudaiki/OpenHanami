@@ -26,7 +26,7 @@
 #include <hanami_common/files/text_file.h>
 #include <hanami_ini/ini_item.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 ConfigHandler* ConfigHandler::instance = nullptr;

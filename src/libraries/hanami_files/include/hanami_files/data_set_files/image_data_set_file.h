@@ -40,11 +40,11 @@ public:
     };
 
     ImageDataSetFile(const std::string &filePath);
-    ImageDataSetFile(Kitsunemimi::BinaryFile* file);
+    ImageDataSetFile(Hanami::BinaryFile* file);
     ~ImageDataSetFile();
-    bool updateHeader(Kitsunemimi::ErrorContainer &error);
-    bool getPayload(Kitsunemimi::DataBuffer &result,
-                    Kitsunemimi::ErrorContainer &error,
+    bool updateHeader(Hanami::ErrorContainer &error);
+    bool getPayload(Hanami::DataBuffer &result,
+                    Hanami::ErrorContainer &error,
                     const std::string &columnName = "");
 
     ImageTypeHeader imageHeader;

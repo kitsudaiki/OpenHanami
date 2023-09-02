@@ -10,11 +10,11 @@
 
 #include <hanami_common/methods/vector_methods.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 VectorMethods_Test::VectorMethods_Test()
-    : Kitsunemimi::CompareTestHelper("VectorMethods_Test")
+    : Hanami::CompareTestHelper("VectorMethods_Test")
 {
     removeEmptyStrings_test();
 }

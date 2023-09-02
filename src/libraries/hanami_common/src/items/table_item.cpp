@@ -26,7 +26,7 @@
 
 #include <hanami_common/methods/string_methods.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 /**
@@ -532,7 +532,7 @@ TableItem::toJsonString()
     result.append(", body: ");
     result.append(m_body->toString());
     result.append("}");
-    Kitsunemimi::replaceSubstring(result, "\n", "\\n");
+    Hanami::replaceSubstring(result, "\n", "\\n");
     return result;
 }
 

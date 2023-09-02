@@ -23,7 +23,7 @@
 #include <hanami_crypto/symmetric_encryption.h>
 #include <hanami_common/logger.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 /**

@@ -75,9 +75,9 @@ FinalizeCheckpoint::FinalizeCheckpoint()
  */
 bool
 FinalizeCheckpoint::runTask(BlossomIO &blossomIO,
-                            const Kitsunemimi::DataMap &,
+                            const Hanami::DataMap &,
                             BlossomStatus &status,
-                            Kitsunemimi::ErrorContainer &error)
+                            Hanami::ErrorContainer &error)
 {
     const std::string uuid = blossomIO.input.get("uuid").getString();
     const std::string inputUuid = blossomIO.input.get("uuid_input_file").getString();
@@ -91,7 +91,7 @@ FinalizeCheckpoint::runTask(BlossomIO &blossomIO,
     userContext.projectId = projectId;
 
     // get location from database
-    Kitsunemimi::JsonItem result;
+    Hanami::JsonItem result;
     if(CheckpointTable::getInstance()->getCheckpoint(result,
                                                      uuid,
                                                      userContext,
@@ -104,7 +104,7 @@ FinalizeCheckpoint::runTask(BlossomIO &blossomIO,
     }
 
     // read input-data from temp-file
-    Kitsunemimi::DataBuffer inputBuffer;
+    Hanami::DataBuffer inputBuffer;
     if(TempFileHandler::getInstance()->getData(inputBuffer, inputUuid) == false)
     {
         status.errorMessage = "Input-data with uuid '" + inputUuid + "' not found.";

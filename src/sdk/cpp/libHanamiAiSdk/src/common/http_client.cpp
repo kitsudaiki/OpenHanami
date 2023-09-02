@@ -147,7 +147,7 @@ bool
 HanamiRequest::sendGetRequest(std::string &response,
                               const std::string &path,
                               const std::string &vars,
-                              Kitsunemimi::ErrorContainer &error)
+                              Hanami::ErrorContainer &error)
 {
     return makeRequest(response, http::verb::get, path, vars, "", error);
 }
@@ -168,7 +168,7 @@ HanamiRequest::sendPostRequest(std::string &response,
                                const std::string &path,
                                const std::string &vars,
                                const std::string &body,
-                               Kitsunemimi::ErrorContainer &error)
+                               Hanami::ErrorContainer &error)
 {
     return makeRequest(response, http::verb::post, path, vars, body, error);
 }
@@ -189,7 +189,7 @@ HanamiRequest::sendPutRequest(std::string &response,
                               const std::string &path,
                               const std::string &vars,
                               const std::string &body,
-                              Kitsunemimi::ErrorContainer &error)
+                              Hanami::ErrorContainer &error)
 {
     return makeRequest(response, http::verb::put, path, vars, body, error);
 }
@@ -208,7 +208,7 @@ bool
 HanamiRequest::sendDeleteRequest(std::string &response,
                                  const std::string &path,
                                  const std::string &vars,
-                                 Kitsunemimi::ErrorContainer &error)
+                                 Hanami::ErrorContainer &error)
 {
     return makeRequest(response, http::verb::delete_, path, vars, "", error);
 }
@@ -242,7 +242,7 @@ HanamiRequest::getEnvVar(std::string &content,
  * @return false, if something failed, else true
  */
 bool
-HanamiRequest::requestToken(Kitsunemimi::ErrorContainer &error)
+HanamiRequest::requestToken(Hanami::ErrorContainer &error)
 {
     // get user for access
     if(m_userId == ""
@@ -280,7 +280,7 @@ HanamiRequest::requestToken(Kitsunemimi::ErrorContainer &error)
     }
 
     // try to parse response
-    Kitsunemimi::JsonItem item;
+    Hanami::JsonItem item;
     if(item.parse(response, error) == false)
     {
         error.addMeesage("Failed to parse token-response");
@@ -318,7 +318,7 @@ HanamiRequest::makeRequest(std::string &response,
                            const std::string &path,
                            const std::string &vars,
                            const std::string &jsonBody,
-                           Kitsunemimi::ErrorContainer &error)
+                           Hanami::ErrorContainer &error)
 {
     // get token if necessary
     if(m_token == "")
@@ -381,7 +381,7 @@ HanamiRequest::makeSingleRequest(std::string &response,
                                  const http::verb type,
                                  const std::string &target,
                                  const std::string &jsonBody,
-                                 Kitsunemimi::ErrorContainer &error)
+                                 Hanami::ErrorContainer &error)
 {
     u_int16_t statusCode = 0;
 

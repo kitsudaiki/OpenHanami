@@ -11,11 +11,11 @@
 
 #include <hanami_common/test_helper/compare_test_helper.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 class RingBuffer_Test
-        : public Kitsunemimi::CompareTestHelper
+        : public Hanami::CompareTestHelper
 {
 public:
     RingBuffer_Test();

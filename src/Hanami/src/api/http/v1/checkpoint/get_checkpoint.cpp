@@ -62,9 +62,9 @@ GetCheckpoint::GetCheckpoint()
  */
 bool
 GetCheckpoint::runTask(BlossomIO &blossomIO,
-                       const Kitsunemimi::DataMap &context,
+                       const Hanami::DataMap &context,
                        BlossomStatus &status,
-                       Kitsunemimi::ErrorContainer &error)
+                       Hanami::ErrorContainer &error)
 {
     const std::string checkpointUuid = blossomIO.input.get("uuid").getString();
     const UserContext userContext(context);

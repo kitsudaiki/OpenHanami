@@ -23,7 +23,7 @@
 #include <hanami_cluster_parser/cluster_meta.h>
 #include <cluster_parsing/cluster_parser_interface.h>
 
-namespace Kitsunemimi::Hanami
+namespace Hanami
 {
 
 /**

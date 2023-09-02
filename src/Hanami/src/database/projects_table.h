@@ -26,7 +26,7 @@
 #include <hanami_common/logger.h>
 #include <database/generic_tables/hanami_sql_admin_table.h>
 
-namespace Kitsunemimi {
+namespace Hanami {
 namespace Json {
 class JsonItem;
 }
@@ -45,16 +45,16 @@ public:
 
     ~ProjectsTable();
 
-    bool addProject(Kitsunemimi::JsonItem &userData,
-                    Kitsunemimi::ErrorContainer &error);
-    bool getProject(Kitsunemimi::JsonItem &result,
+    bool addProject(Hanami::JsonItem &userData,
+                    Hanami::ErrorContainer &error);
+    bool getProject(Hanami::JsonItem &result,
                     const std::string &projectName,
-                    Kitsunemimi::ErrorContainer &error,
+                    Hanami::ErrorContainer &error,
                     const bool showHiddenValues = false);
-    bool getAllProjects(Kitsunemimi::TableItem &result,
-                       Kitsunemimi::ErrorContainer &error);
+    bool getAllProjects(Hanami::TableItem &result,
+                       Hanami::ErrorContainer &error);
     bool deleteProject(const std::string &projectName,
-                       Kitsunemimi::ErrorContainer &error);
+                       Hanami::ErrorContainer &error);
 
 private:
     ProjectsTable();

@@ -10,11 +10,11 @@
 #include <hanami_json/json_item.h>
 #include <hanami_common/items/data_items.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 JsonItem_ParseString_Test::JsonItem_ParseString_Test()
-    : Kitsunemimi::MemoryLeakTestHelpter("JsonItems_ParseString_Test")
+    : Hanami::MemoryLeakTestHelpter("JsonItems_ParseString_Test")
 {
     parseString_test();
 }

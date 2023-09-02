@@ -27,11 +27,11 @@
 
 #include <hanami_common/threading/thread.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 class CleanupThread
-        : public Kitsunemimi::Thread
+        : public Hanami::Thread
 {
 public:
     static CleanupThread* getInstance();

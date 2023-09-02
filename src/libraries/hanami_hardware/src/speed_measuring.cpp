@@ -34,7 +34,7 @@
 SpeedMeasuring* SpeedMeasuring::instance = nullptr;
 
 SpeedMeasuring::SpeedMeasuring()
-    : Kitsunemimi::Thread("SpeedMeasuring") {}
+    : Hanami::Thread("SpeedMeasuring") {}
 
 SpeedMeasuring::~SpeedMeasuring() {}
 
@@ -43,7 +43,7 @@ SpeedMeasuring::~SpeedMeasuring() {}
  *
  * @return json-output
  */
-Kitsunemimi::DataMap*
+Hanami::DataMap*
 SpeedMeasuring::getJson()
 {
     return m_valueContainer.toJson();
@@ -55,14 +55,14 @@ SpeedMeasuring::getJson()
 void
 SpeedMeasuring::run()
 {
-    Kitsunemimi::ErrorContainer error;
-    Kitsunemimi::Sakura::CpuThread* thread = nullptr;
+    Hanami::ErrorContainer error;
+    Hanami::CpuThread* thread = nullptr;
 
     while(m_abort == false)
     {
         uint64_t currentSpeed = 0;
         uint64_t numberOfValues = 0;
-        Kitsunemimi::Sakura::Host* host = Kitsunemimi::Sakura::Host::getInstance();
+        Hanami::Host* host = Hanami::Host::getInstance();
 
         for(uint64_t i = 0; i < host->cpuPackages.size(); i++)
         {

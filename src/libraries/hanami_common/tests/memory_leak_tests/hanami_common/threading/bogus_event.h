@@ -11,11 +11,11 @@
 
 #include <hanami_common/threading/event.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 class BogusEvent
-        : public Kitsunemimi::Event
+        : public Hanami::Event
 {
 public:
     BogusEvent();

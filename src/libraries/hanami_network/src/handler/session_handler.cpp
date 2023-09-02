@@ -32,7 +32,7 @@
 #include <hanami_common/logger.h>
 #include <abstract_socket.h>
 
-namespace Kitsunemimi::Sakura
+namespace Hanami
 {
 
 // init static variables

@@ -20,12 +20,12 @@
 #include <hanami_common/items/data_items.h>
 #include <hanami_json/json_item.h>
 
-using Kitsunemimi::DataItem;
-using Kitsunemimi::DataMap;
-using Kitsunemimi::DataArray;
-using Kitsunemimi::DataValue;
+using Hanami::DataItem;
+using Hanami::DataMap;
+using Hanami::DataArray;
+using Hanami::DataValue;
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 /**
@@ -141,7 +141,7 @@ callback(void* data,
             else if(value.size() > 0
                     && value.at(0) == '{')
             {
-                Kitsunemimi::JsonItem json;
+                Hanami::JsonItem json;
                 if(json.parse(value, error) == false) {
                     row->append(new DataValue(value));
                 }
@@ -152,7 +152,7 @@ callback(void* data,
             else if(value.size() > 0
                     && value.at(0) == '[')
             {
-                Kitsunemimi::JsonItem json;
+                Hanami::JsonItem json;
                 if(json.parse(value, error) == false) {
                     row->append(new DataValue(value));
                 }

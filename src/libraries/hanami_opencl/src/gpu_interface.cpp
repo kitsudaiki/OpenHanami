@@ -24,7 +24,7 @@
 
 #include <hanami_common/logger.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 
 /**
@@ -489,7 +489,7 @@ GpuInterface::closeDevice(GpuData &data)
         if(workerBuffer.data != nullptr
                 && workerBuffer.allowBufferDeleteAfterClose)
         {
-            Kitsunemimi::alignedFree(workerBuffer.data, workerBuffer.numberOfBytes);
+            Hanami::alignedFree(workerBuffer.data, workerBuffer.numberOfBytes);
         }
     }
 
