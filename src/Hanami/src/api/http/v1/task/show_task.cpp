@@ -75,16 +75,16 @@ ShowTask::ShowTask()
  */
 bool
 ShowTask::runTask(BlossomIO &blossomIO,
-                  const Kitsunemimi::DataMap &context,
+                  const Hanami::DataMap &context,
                   BlossomStatus &status,
-                  Kitsunemimi::ErrorContainer &error)
+                  Hanami::ErrorContainer &error)
 {
     const std::string clusterUuid = blossomIO.input.get("cluster_uuid").getString();
     const std::string taskUuid = blossomIO.input.get("uuid").getString();
     const UserContext userContext(context);
 
     // check if user exist within the table
-    Kitsunemimi::JsonItem getResult;
+    Hanami::JsonItem getResult;
     if(ClusterTable::getInstance()->getCluster(getResult,
                                                clusterUuid,
                                                userContext,

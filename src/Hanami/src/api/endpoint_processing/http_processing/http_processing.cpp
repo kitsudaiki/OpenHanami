@@ -29,8 +29,8 @@
 #include <api/endpoint_processing/http_processing/string_functions.h>
 #include <api/endpoint_processing/http_server.h>
 
-#include <libKitsunemimiJson/json_item.h>
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_json/json_item.h>
+#include <hanami_common/logger.h>
 
 #include <jwt-cpp/jwt.h>
 //#include <jwt-cpp/traits/nlohmann-json/defaults.h>
@@ -41,7 +41,7 @@
 bool
 processRequest(http::request<http::string_body> &httpRequest,
                http::response<http::dynamic_body> &httpResponse,
-               Kitsunemimi::ErrorContainer &error)
+               Hanami::ErrorContainer &error)
 {
     // build default-header for response
     httpResponse.version(httpRequest.version());
@@ -134,20 +134,20 @@ processRequest(http::request<http::string_body> &httpRequest,
 bool
 requestToken(http::response<http::dynamic_body> &httpResponse,
              const RequestMessage &hanamiRequest,
-             Kitsunemimi::ErrorContainer &error)
+             Hanami::ErrorContainer &error)
 {
-    Kitsunemimi::JsonItem inputValues;
+    Hanami::JsonItem inputValues;
     if(inputValues.parse(hanamiRequest.inputValues, error) == false) {
         // TODO: error-message
     }
 
-    Kitsunemimi::DataMap result;
+    Hanami::DataMap result;
     BlossomStatus status;
     inputValues.remove("token");
     if(HanamiRoot::root->triggerBlossom(result,
                                         "create",
                                         "Token",
-                                        Kitsunemimi::DataMap(),
+                                        Hanami::DataMap(),
                                         *inputValues.getItemContent()->toMap(),
                                         status,
                                         error) == false)
@@ -172,11 +172,11 @@ requestToken(http::response<http::dynamic_body> &httpResponse,
  * @return true, if successful, else false
  */
 bool
-checkPermission(Kitsunemimi::JsonItem &tokenData,
+checkPermission(Hanami::JsonItem &tokenData,
                 const std::string &token,
                 const RequestMessage &hanamiRequest,
                 ResponseMessage &responseMsg,
-                Kitsunemimi::ErrorContainer &error)
+                Hanami::ErrorContainer &error)
 {
     RequestMessage requestMsg;
 
@@ -254,8 +254,8 @@ processControlRequest(http::response<http::dynamic_body> &httpResponse,
                       const std::string &uri,
                       const std::string &token,
                       const std::string &inputValues,
-                      const Kitsunemimi::Hanami::HttpRequestType httpType,
-                      Kitsunemimi::ErrorContainer &error)
+                      const Hanami::HttpRequestType httpType,
+                      Hanami::ErrorContainer &error)
 {
     RequestMessage hanamiRequest;
     ResponseMessage hanamiResponse;
@@ -269,13 +269,13 @@ processControlRequest(http::response<http::dynamic_body> &httpResponse,
 
     // handle token-request
     if(uri == "v1/token"
-            && hanamiRequest.httpType == Kitsunemimi::Hanami::POST_TYPE)
+            && hanamiRequest.httpType == Hanami::POST_TYPE)
     {
         return requestToken(httpResponse, hanamiRequest, error);
     }
 
     // check authentication
-    Kitsunemimi::JsonItem tokenData;
+    Hanami::JsonItem tokenData;
     if(checkPermission(tokenData, token, hanamiRequest, hanamiResponse, error) == false) {
         return internalError_ResponseBuild(httpResponse, error);
     }
@@ -291,19 +291,19 @@ processControlRequest(http::response<http::dynamic_body> &httpResponse,
 
     // convert http-type to string
     std::string httpTypeStr = "GET";
-    if(hanamiRequest.httpType == Kitsunemimi::Hanami::DELETE_TYPE) {
+    if(hanamiRequest.httpType == Hanami::DELETE_TYPE) {
         httpTypeStr = "DELETE";
     }
-    if(hanamiRequest.httpType == Kitsunemimi::Hanami::GET_TYPE) {
+    if(hanamiRequest.httpType == Hanami::GET_TYPE) {
         httpTypeStr = "GET";
     }
-    if(hanamiRequest.httpType == Kitsunemimi::Hanami::HEAD_TYPE) {
+    if(hanamiRequest.httpType == Hanami::HEAD_TYPE) {
         httpTypeStr = "HEAD";
     }
-    if(hanamiRequest.httpType == Kitsunemimi::Hanami::POST_TYPE) {
+    if(hanamiRequest.httpType == Hanami::POST_TYPE) {
         httpTypeStr = "POST";
     }
-    if(hanamiRequest.httpType == Kitsunemimi::Hanami::PUT_TYPE) {
+    if(hanamiRequest.httpType == Hanami::PUT_TYPE) {
         httpTypeStr = "PUT";
     }
 
@@ -319,7 +319,7 @@ processControlRequest(http::response<http::dynamic_body> &httpResponse,
         LOG_ERROR(error);
     }
 
-    Kitsunemimi::JsonItem inputValuesJson;
+    Hanami::JsonItem inputValuesJson;
     if(inputValuesJson.parse(hanamiRequest.inputValues, error) == false) {
         // TODO: error-message
     }
@@ -334,7 +334,7 @@ processControlRequest(http::response<http::dynamic_body> &httpResponse,
     }
 
     // make real request
-    Kitsunemimi::DataMap result;
+    Hanami::DataMap result;
     BlossomStatus status;
     if(HanamiRoot::root->triggerBlossom(result,
                                         endpoint.name,

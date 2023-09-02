@@ -22,7 +22,7 @@
 
 #include "project_create_test.h"
 
-#include <libHanamiAiSdk/project.h>
+#include <hanami_sdk/project.h>
 
 ProjectCreateTest::ProjectCreateTest(const bool expectSuccess)
     : TestStep(expectSuccess)
@@ -36,8 +36,8 @@ ProjectCreateTest::ProjectCreateTest(const bool expectSuccess)
 }
 
 bool
-ProjectCreateTest::runTest(Kitsunemimi::JsonItem &inputData,
-                           Kitsunemimi::ErrorContainer &error)
+ProjectCreateTest::runTest(Hanami::JsonItem &inputData,
+                           Hanami::ErrorContainer &error)
 {
     // create new user
     std::string result;
@@ -54,7 +54,7 @@ ProjectCreateTest::runTest(Kitsunemimi::JsonItem &inputData,
     }
 
     // parse output
-    Kitsunemimi::JsonItem jsonItem;
+    Hanami::JsonItem jsonItem;
     if(jsonItem.parse(result, error) == false) {
         return false;
     }

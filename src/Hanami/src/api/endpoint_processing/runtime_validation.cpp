@@ -69,7 +69,7 @@ createErrorMessage(const std::string &name,
  */
 bool
 checkBlossomValues(const std::map<std::string, FieldDef> &defs,
-                   const Kitsunemimi::DataMap &values,
+                   const Hanami::DataMap &values,
                    const FieldDef::IO_ValueType ioType,
                    std::string &errorMessage)
 {
@@ -79,7 +79,7 @@ checkBlossomValues(const std::map<std::string, FieldDef> &defs,
             continue;
         }
 
-        Kitsunemimi::DataItem* item = values.get(name);
+        Hanami::DataItem* item = values.get(name);
 
         if(item != nullptr)
         {
@@ -185,40 +185,40 @@ checkBlossomValues(const std::map<std::string, FieldDef> &defs,
  * @return true, if match, else false
  */
 bool
-checkType(Kitsunemimi::DataItem* item,
+checkType(Hanami::DataItem* item,
           const FieldType fieldType)
 {
-    if(item->getType() == Kitsunemimi::DataItem::ARRAY_TYPE
+    if(item->getType() == Hanami::DataItem::ARRAY_TYPE
             && fieldType == SAKURA_ARRAY_TYPE)
     {
         return true;
     }
 
-    if(item->getType() == Kitsunemimi::DataItem::MAP_TYPE
+    if(item->getType() == Hanami::DataItem::MAP_TYPE
             && fieldType == SAKURA_MAP_TYPE)
     {
         return true;
     }
 
-    if(item->getType() == Kitsunemimi::DataItem::VALUE_TYPE)
+    if(item->getType() == Hanami::DataItem::VALUE_TYPE)
     {
-        Kitsunemimi::DataValue* value = item->toValue();
-        if(value->getValueType() == Kitsunemimi::DataItem::INT_TYPE
+        Hanami::DataValue* value = item->toValue();
+        if(value->getValueType() == Hanami::DataItem::INT_TYPE
                 && fieldType == SAKURA_INT_TYPE)
         {
             return true;
         }
-        if(value->getValueType() == Kitsunemimi::DataItem::FLOAT_TYPE
+        if(value->getValueType() == Hanami::DataItem::FLOAT_TYPE
                 && fieldType == SAKURA_FLOAT_TYPE)
         {
             return true;
         }
-        if(value->getValueType() == Kitsunemimi::DataItem::BOOL_TYPE
+        if(value->getValueType() == Hanami::DataItem::BOOL_TYPE
                 && fieldType == SAKURA_BOOL_TYPE)
         {
             return true;
         }
-        if(value->getValueType() == Kitsunemimi::DataItem::STRING_TYPE
+        if(value->getValueType() == Hanami::DataItem::STRING_TYPE
                 && fieldType == SAKURA_STRING_TYPE)
         {
             return true;

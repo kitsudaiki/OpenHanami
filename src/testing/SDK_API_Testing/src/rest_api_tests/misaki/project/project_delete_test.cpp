@@ -22,7 +22,7 @@
 
 #include "project_delete_test.h"
 
-#include <libHanamiAiSdk/project.h>
+#include <hanami_sdk/project.h>
 
 ProjectDeleteTest::ProjectDeleteTest(const bool expectSuccess,
                                      const std::string &nameOverride)
@@ -38,8 +38,8 @@ ProjectDeleteTest::ProjectDeleteTest(const bool expectSuccess,
 }
 
 bool
-ProjectDeleteTest::runTest(Kitsunemimi::JsonItem &inputData,
-                           Kitsunemimi::ErrorContainer &error)
+ProjectDeleteTest::runTest(Hanami::JsonItem &inputData,
+                           Hanami::ErrorContainer &error)
 {
     // delete user by name
     std::string result;
@@ -67,7 +67,7 @@ ProjectDeleteTest::runTest(Kitsunemimi::JsonItem &inputData,
     }
 
     // parse output
-    Kitsunemimi::JsonItem jsonItem;
+    Hanami::JsonItem jsonItem;
     if(jsonItem.parse(result, error) == false) {
         return false;
     }

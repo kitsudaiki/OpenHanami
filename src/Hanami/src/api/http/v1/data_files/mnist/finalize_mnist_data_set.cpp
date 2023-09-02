@@ -26,13 +26,13 @@
 #include <database/data_set_table.h>
 #include <core/temp_file_handler.h>
 
-#include <libKitsunemimiHanamiFiles/data_set_files/data_set_file.h>
-#include <libKitsunemimiHanamiFiles/data_set_files/image_data_set_file.h>
+#include <hanami_files/data_set_files/data_set_file.h>
+#include <hanami_files/data_set_files/image_data_set_file.h>
 
-#include <libKitsunemimiCrypto/common.h>
-#include <libKitsunemimiJson/json_item.h>
-#include <libKitsunemimiCommon/files/binary_file.h>
-#include <libKitsunemimiCommon/methods/file_methods.h>
+#include <hanami_crypto/common.h>
+#include <hanami_json/json_item.h>
+#include <hanami_common/files/binary_file.h>
+#include <hanami_common/methods/file_methods.h>
 
 FinalizeMnistDataSet::FinalizeMnistDataSet()
     : Blossom("Finalize uploaded data-set by checking completeness of the "
@@ -73,9 +73,9 @@ FinalizeMnistDataSet::FinalizeMnistDataSet()
  */
 bool
 FinalizeMnistDataSet::runTask(BlossomIO &blossomIO,
-                              const Kitsunemimi::DataMap &context,
+                              const Hanami::DataMap &context,
                               BlossomStatus &status,
-                              Kitsunemimi::ErrorContainer &error)
+                              Hanami::ErrorContainer &error)
 {
     const std::string uuid = blossomIO.input.get("uuid").getString();
     const std::string inputUuid = blossomIO.input.get("uuid_input_file").getString();
@@ -83,7 +83,7 @@ FinalizeMnistDataSet::runTask(BlossomIO &blossomIO,
     const UserContext userContext(context);
 
     // get location from database
-    Kitsunemimi::JsonItem result;
+    Hanami::JsonItem result;
     if(DataSetTable::getInstance()->getDataSet(result, uuid, userContext, error, true) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -100,7 +100,7 @@ FinalizeMnistDataSet::runTask(BlossomIO &blossomIO,
     }
 
     // read input-data from temp-file
-    Kitsunemimi::DataBuffer inputBuffer;
+    Hanami::DataBuffer inputBuffer;
     if(TempFileHandler::getInstance()->getData(inputBuffer, inputUuid) == false)
     {
         status.errorMessage = "Input-data with uuid '" + inputUuid + "' not found.";
@@ -109,7 +109,7 @@ FinalizeMnistDataSet::runTask(BlossomIO &blossomIO,
     }
 
     // read label from temp-file
-    Kitsunemimi::DataBuffer labelBuffer;
+    Hanami::DataBuffer labelBuffer;
     if(TempFileHandler::getInstance()->getData(labelBuffer, labelUuid) == false)
     {
         status.errorMessage = "Label-data with uuid '" + inputUuid + "' not found.";
@@ -151,10 +151,10 @@ FinalizeMnistDataSet::runTask(BlossomIO &blossomIO,
 bool
 FinalizeMnistDataSet::convertMnistData(const std::string &filePath,
                                        const std::string &name,
-                                       const Kitsunemimi::DataBuffer &inputBuffer,
-                                       const Kitsunemimi::DataBuffer &labelBuffer)
+                                       const Hanami::DataBuffer &inputBuffer,
+                                       const Hanami::DataBuffer &labelBuffer)
 {
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     ImageDataSetFile file(filePath);
     file.type = DataSetFile::IMAGE_TYPE;
     file.name = name;

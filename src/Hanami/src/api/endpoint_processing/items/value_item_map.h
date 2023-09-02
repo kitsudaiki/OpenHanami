@@ -32,7 +32,7 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 class DataItem;
 class DataMap;
@@ -47,7 +47,7 @@ public:
     ValueItemMap &operator=(const ValueItemMap &other);
 
     // add and remove
-    bool insert(const std::string &key, Kitsunemimi::DataItem* value, bool force = true);
+    bool insert(const std::string &key, Hanami::DataItem* value, bool force = true);
     bool insert(const std::string &key, ValueItem &value, bool force = true);
     bool insert(const std::string &key, ValueItemMap* value, bool force = true);
     bool remove(const std::string &key);
@@ -55,7 +55,7 @@ public:
     // getter
     bool contains(const std::string &key);
     std::string getValueAsString(const std::string &key);
-    Kitsunemimi::DataItem* get(const std::string &key);
+    Hanami::DataItem* get(const std::string &key);
     ValueItem getValueItem(const std::string &key);
     uint64_t size();
     const std::string toString();

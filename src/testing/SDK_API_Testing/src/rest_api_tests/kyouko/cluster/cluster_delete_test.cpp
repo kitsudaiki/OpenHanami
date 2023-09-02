@@ -22,7 +22,7 @@
 
 #include "cluster_delete_test.h"
 
-#include <libHanamiAiSdk/cluster.h>
+#include <hanami_sdk/cluster.h>
 
 ClusterDeleteTest::ClusterDeleteTest(const bool expectSuccess)
           : TestStep(expectSuccess)
@@ -36,8 +36,8 @@ ClusterDeleteTest::ClusterDeleteTest(const bool expectSuccess)
 }
 
 bool
-ClusterDeleteTest::runTest(Kitsunemimi::JsonItem &inputData,
-                           Kitsunemimi::ErrorContainer &error)
+ClusterDeleteTest::runTest(Hanami::JsonItem &inputData,
+                           Hanami::ErrorContainer &error)
 {
     // delete cluster
     std::string result;
@@ -53,7 +53,7 @@ ClusterDeleteTest::runTest(Kitsunemimi::JsonItem &inputData,
     }
 
     // parse output
-    Kitsunemimi::JsonItem jsonItem;
+    Hanami::JsonItem jsonItem;
     if(jsonItem.parse(result, error) == false) {
         return false;
     }

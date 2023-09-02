@@ -22,8 +22,8 @@
 
 #include "cluster_load_test.h"
 
-#include <libHanamiAiSdk/cluster.h>
-#include <libHanamiAiSdk/task.h>
+#include <hanami_sdk/cluster.h>
+#include <hanami_sdk/task.h>
 
 ClusterLoadTest::ClusterLoadTest(const bool expectSuccess)
           : TestStep(expectSuccess)
@@ -37,8 +37,8 @@ ClusterLoadTest::ClusterLoadTest(const bool expectSuccess)
 }
 
 bool
-ClusterLoadTest::runTest(Kitsunemimi::JsonItem &inputData,
-                         Kitsunemimi::ErrorContainer &error)
+ClusterLoadTest::runTest(Hanami::JsonItem &inputData,
+                         Hanami::ErrorContainer &error)
 {
     // create new cluster
     std::string result;
@@ -55,7 +55,7 @@ ClusterLoadTest::runTest(Kitsunemimi::JsonItem &inputData,
     }
 
     // parse output
-    Kitsunemimi::JsonItem jsonItem;
+    Hanami::JsonItem jsonItem;
     if(jsonItem.parse(result, error) == false) {
         return false;
     }

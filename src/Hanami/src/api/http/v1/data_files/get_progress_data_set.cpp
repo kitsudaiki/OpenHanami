@@ -25,12 +25,12 @@
 #include <hanami_root.h>
 #include <database/data_set_table.h>
 
-#include <libKitsunemimiHanamiFiles/data_set_files/data_set_file.h>
-#include <libKitsunemimiHanamiFiles/data_set_files/image_data_set_file.h>
-#include <libKitsunemimiHanamiFiles/data_set_files/table_data_set_file.h>
+#include <hanami_files/data_set_files/data_set_file.h>
+#include <hanami_files/data_set_files/image_data_set_file.h>
+#include <hanami_files/data_set_files/table_data_set_file.h>
 
-#include <libKitsunemimiCrypto/common.h>
-#include <libKitsunemimiJson/json_item.h>
+#include <hanami_crypto/common.h>
+#include <hanami_json/json_item.h>
 
 GetProgressDataSet::GetProgressDataSet()
     : Blossom("Get upload progress of a specific data-set.")
@@ -68,14 +68,14 @@ GetProgressDataSet::GetProgressDataSet()
  */
 bool
 GetProgressDataSet::runTask(BlossomIO &blossomIO,
-                            const Kitsunemimi::DataMap &context,
+                            const Hanami::DataMap &context,
                             BlossomStatus &status,
-                            Kitsunemimi::ErrorContainer &error)
+                            Hanami::ErrorContainer &error)
 {
     const std::string dataUuid = blossomIO.input.get("uuid").getString();
     const UserContext userContext(context);
 
-    Kitsunemimi::JsonItem databaseOutput;
+    Hanami::JsonItem databaseOutput;
     if(DataSetTable::getInstance()->getDataSet(databaseOutput,
                                                dataUuid,
                                                userContext,
@@ -100,7 +100,7 @@ GetProgressDataSet::runTask(BlossomIO &blossomIO,
 
     // parse and add temp-file-information
     const std::string tempFilesStr = databaseOutput.get("temp_files").toString();
-    Kitsunemimi::JsonItem tempFiles;
+    Hanami::JsonItem tempFiles;
     if(tempFiles.parse(tempFilesStr, error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;

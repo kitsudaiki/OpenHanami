@@ -26,7 +26,7 @@
 #include <core/cluster/states/task_handle_state.h>
 #include <core/cluster/statemachine_init.h>
 
-#include <libKitsunemimiCommon/statemachine.h>
+#include <hanami_common/statemachine.h>
 
 /**
  * @brief create a train-task and add it to the task-queue

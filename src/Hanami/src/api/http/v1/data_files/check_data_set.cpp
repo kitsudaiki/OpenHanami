@@ -26,15 +26,15 @@
 #include <database/request_result_table.h>
 #include <database/data_set_table.h>
 
-#include <libKitsunemimiHanamiFiles/data_set_files/data_set_file.h>
-#include <libKitsunemimiHanamiFiles/data_set_files/image_data_set_file.h>
+#include <hanami_files/data_set_files/data_set_file.h>
+#include <hanami_files/data_set_files/image_data_set_file.h>
 
-#include <libKitsunemimiJson/json_item.h>
-#include <libKitsunemimiCommon/methods/file_methods.h>
-#include <libKitsunemimiCommon/buffer/data_buffer.h>
-#include <libKitsunemimiCommon/files/text_file.h>
-#include <libKitsunemimiCommon/files/binary_file.h>
-#include <libKitsunemimiConfig/config_handler.h>
+#include <hanami_json/json_item.h>
+#include <hanami_common/methods/file_methods.h>
+#include <hanami_common/buffer/data_buffer.h>
+#include <hanami_common/files/text_file.h>
+#include <hanami_common/files/binary_file.h>
+#include <hanami_config/config_handler.h>
 
 CheckDataSet::CheckDataSet()
     : Blossom("Compare a list of values with a data-set to check correctness.")
@@ -70,9 +70,9 @@ CheckDataSet::CheckDataSet()
  */
 bool
 CheckDataSet::runTask(BlossomIO &blossomIO,
-                      const Kitsunemimi::DataMap &context,
+                      const Hanami::DataMap &context,
                       BlossomStatus &status,
-                      Kitsunemimi::ErrorContainer &error)
+                      Hanami::ErrorContainer &error)
 {
     const std::string resultUuid = blossomIO.input.get("result_uuid").getString();
     const std::string dataUuid = blossomIO.input.get("data_set_uuid").getString();
@@ -80,7 +80,7 @@ CheckDataSet::runTask(BlossomIO &blossomIO,
 
     // get result
     // check if request-result exist within the table
-    Kitsunemimi::JsonItem result;
+    Hanami::JsonItem result;
     if(RequestResultTable::getInstance()->getRequestResult(result,
                                                            resultUuid,
                                                            userContext,
@@ -114,10 +114,10 @@ CheckDataSet::runTask(BlossomIO &blossomIO,
     // get file information
     const std::string location = blossomIO.output.get("location").getString();
 
-    Kitsunemimi::DataBuffer buffer;
+    Hanami::DataBuffer buffer;
     DataSetFile::DataSetHeader dataSetHeader;
     ImageDataSetFile::ImageTypeHeader imageTypeHeader;
-    Kitsunemimi::BinaryFile file(location);
+    Hanami::BinaryFile file(location);
 
     // read data-set-header
     if(file.readCompleteFile(buffer, error) == false)
@@ -140,7 +140,7 @@ CheckDataSet::runTask(BlossomIO &blossomIO,
     const float* content = reinterpret_cast<const float*>(&u8Data[dataPos]);
 
     // iterate over all values and check
-    Kitsunemimi::DataArray* compareData = result.get("data").getItemContent()->toArray();
+    Hanami::DataArray* compareData = result.get("data").getItemContent()->toArray();
     for(uint64_t i = 0; i < compareData->size(); i++)
     {
         const uint64_t actualPos = (i * lineSize) + lineOffset;

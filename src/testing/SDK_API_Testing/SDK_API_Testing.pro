@@ -4,40 +4,40 @@ TARGET = SDK_API_Testing
 CONFIG += console c++17
 CONFIG -= app_bundle
 
-LIBS += -L../../sdk/cpp/libHanamiAiSdk/src -lHanamiAiSdk
-LIBS += -L../../sdk/cpp/libHanamiAiSdk/src/debug -lHanamiAiSdk
-LIBS += -L../../sdk/cpp/libHanamiAiSdk/src/release -lHanamiAiSdk
-INCLUDEPATH += ../../sdk/cpp/libHanamiAiSdk/include
+LIBS += -L../../sdk/cpp/hanami_sdk/src -lhanami_sdk
+LIBS += -L../../sdk/cpp/hanami_sdk/src/debug -lhanami_sdk
+LIBS += -L../../sdk/cpp/hanami_sdk/src/release -lhanami_sdk
+INCLUDEPATH += ../../sdk/cpp/hanami_sdk/include
 
-LIBS += -L../../libraries/libKitsunemimiConfig/src -lKitsunemimiConfig
-LIBS += -L../../libraries/libKitsunemimiConfig/src/debug -lKitsunemimiConfig
-LIBS += -L../../libraries/libKitsunemimiConfig/src/release -lKitsunemimiConfig
-INCLUDEPATH += ../../libraries/libKitsunemimiConfig/include
+LIBS += -L../../libraries/hanami_config/src -lhanami_config
+LIBS += -L../../libraries/hanami_config/src/debug -lhanami_config
+LIBS += -L../../libraries/hanami_config/src/release -lhanami_config
+INCLUDEPATH += ../../libraries/hanami_config/include
 
-LIBS += -L../../libraries/libKitsunemimiJson/src -lKitsunemimiJson
-LIBS += -L../../libraries/libKitsunemimiJson/src/debug -lKitsunemimiJson
-LIBS += -L../../libraries/libKitsunemimiJson/src/release -lKitsunemimiJson
-INCLUDEPATH += ../../libraries/libKitsunemimiJson/include
+LIBS += -L../../libraries/hanami_json/src -lhanami_json
+LIBS += -L../../libraries/hanami_json/src/debug -lhanami_json
+LIBS += -L../../libraries/hanami_json/src/release -lhanami_json
+INCLUDEPATH += ../../libraries/hanami_json/include
 
-LIBS += -L../../libraries/libKitsunemimiIni/src -lKitsunemimiIni
-LIBS += -L../../libraries/libKitsunemimiIni/src/debug -lKitsunemimiIni
-LIBS += -L../../libraries/libKitsunemimiIni/src/release -lKitsunemimiIni
-INCLUDEPATH += ../../libraries/libKitsunemimiIni/include
+LIBS += -L../../libraries/hanami_ini/src -lhanami_ini
+LIBS += -L../../libraries/hanami_ini/src/debug -lhanami_ini
+LIBS += -L../../libraries/hanami_ini/src/release -lhanami_ini
+INCLUDEPATH += ../../libraries/hanami_ini/include
 
-LIBS += -L../../libraries/libKitsunemimiArgs/src -lKitsunemimiArgs
-LIBS += -L../../libraries/libKitsunemimiArgs/src/debug -lKitsunemimiArgs
-LIBS += -L../../libraries/libKitsunemimiArgs/src/release -lKitsunemimiArgs
-INCLUDEPATH += ../../libraries/libKitsunemimiArgs/include
+LIBS += -L../../libraries/hanami_args/src -lhanami_args
+LIBS += -L../../libraries/hanami_args/src/debug -lhanami_args
+LIBS += -L../../libraries/hanami_args/src/release -lhanami_args
+INCLUDEPATH += ../../libraries/hanami_args/include
 
-LIBS += -L../../libraries/libKitsunemimiCrypto/src -lKitsunemimiCrypto
-LIBS += -L../../libraries/libKitsunemimiCrypto/src/debug -lKitsunemimiCrypto
-LIBS += -L../../libraries/libKitsunemimiCrypto/src/release -lKitsunemimiCrypto
-INCLUDEPATH += ../../libraries/libKitsunemimiCrypto/include
+LIBS += -L../../libraries/hanami_crypto/src -lhanami_crypto
+LIBS += -L../../libraries/hanami_crypto/src/debug -lhanami_crypto
+LIBS += -L../../libraries/hanami_crypto/src/release -lhanami_crypto
+INCLUDEPATH += ../../libraries/hanami_crypto/include
 
-LIBS += -L../../libraries/libKitsunemimiCommon/src -lKitsunemimiCommon
-LIBS += -L../../libraries/libKitsunemimiCommon/src/debug -lKitsunemimiCommon
-LIBS += -L../../libraries/libKitsunemimiCommon/src/release -lKitsunemimiCommon
-INCLUDEPATH += ../../libraries/libKitsunemimiCommon/include
+LIBS += -L../../libraries/hanami_common/src -lhanami_common
+LIBS += -L../../libraries/hanami_common/src/debug -lhanami_common
+LIBS += -L../../libraries/hanami_common/src/release -lhanami_common
+INCLUDEPATH += ../../libraries/hanami_common/include
 
 LIBS += -lcryptopp -lssl -luuid -lcrypto -pthread -lprotobuf
 

@@ -22,7 +22,7 @@
 
 #include "dataset_list_test.h"
 
-#include <libHanamiAiSdk/data_set.h>
+#include <hanami_sdk/data_set.h>
 
 DataSetListTest::DataSetListTest(const bool expectSuccess)
       : TestStep(expectSuccess)
@@ -36,8 +36,8 @@ DataSetListTest::DataSetListTest(const bool expectSuccess)
 }
 
 bool
-DataSetListTest::runTest(Kitsunemimi::JsonItem &inputData,
-                         Kitsunemimi::ErrorContainer &error)
+DataSetListTest::runTest(Hanami::JsonItem &inputData,
+                         Hanami::ErrorContainer &error)
 {
     // list all data
     std::string result;
@@ -50,7 +50,7 @@ DataSetListTest::runTest(Kitsunemimi::JsonItem &inputData,
     }
 
     // parse output
-    Kitsunemimi::JsonItem jsonItem;
+    Hanami::JsonItem jsonItem;
     if(jsonItem.parse(result, error) == false) {
         return false;
     }

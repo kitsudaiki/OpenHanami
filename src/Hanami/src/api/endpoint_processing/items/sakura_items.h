@@ -28,7 +28,7 @@
 
 #include <api/endpoint_processing/items/value_item_map.h>
 
-namespace Kitsunemimi
+namespace Hanami
 {
 class DataItem;
 class DataMap;
@@ -132,7 +132,7 @@ public:
     SakuraItem* copy();
 
     std::string nameOrPath = "";
-    Kitsunemimi::DataMap* parentValues = nullptr;
+    Hanami::DataMap* parentValues = nullptr;
 
     // result
     std::vector<std::string> nameHirarchie;

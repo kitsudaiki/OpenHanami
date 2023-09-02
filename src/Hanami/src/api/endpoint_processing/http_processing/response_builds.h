@@ -30,7 +30,7 @@
 
 #include <common/enums.h>
 
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_common/logger.h>
 
 namespace beast = boost::beast;         // from <boost/beast.hpp>
 namespace http = beast::http;           // from <boost/beast/http.hpp>
@@ -59,7 +59,7 @@ success_ResponseBuild(http::response<http::dynamic_body> &httpResp,
  */
 bool
 invalid_ResponseBuild(http::response<http::dynamic_body> &httpResp,
-                      Kitsunemimi::ErrorContainer &error)
+                      Hanami::ErrorContainer &error)
 {
     httpResp.result(http::status::bad_request);
     httpResp.set(http::field::content_type, "text/plain");
@@ -75,7 +75,7 @@ invalid_ResponseBuild(http::response<http::dynamic_body> &httpResp,
  */
 bool
 internalError_ResponseBuild(http::response<http::dynamic_body> &httpResp,
-                            Kitsunemimi::ErrorContainer &error)
+                            Hanami::ErrorContainer &error)
 {
     httpResp.result(http::status::internal_server_error);
     httpResp.set(http::field::content_type, "text/plain");
@@ -99,7 +99,7 @@ genericError_ResponseBuild(http::response<http::dynamic_body> &httpResp,
     httpResp.set(http::field::content_type, "text/plain");
     beast::ostream(httpResp.body()) << errorMessage;
 
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     error.addMeesage(errorMessage);
     LOG_ERROR(error);
     return false;

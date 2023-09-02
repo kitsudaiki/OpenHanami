@@ -22,7 +22,7 @@
 
 #include "table_request_task_test.h"
 
-#include <libHanamiAiSdk/task.h>
+#include <hanami_sdk/task.h>
 
 TableRequestTaskTest::TableRequestTaskTest(const bool expectSuccess)
       : TestStep(expectSuccess)
@@ -36,8 +36,8 @@ TableRequestTaskTest::TableRequestTaskTest(const bool expectSuccess)
 }
 
 bool
-TableRequestTaskTest::runTest(Kitsunemimi::JsonItem &inputData,
-                              Kitsunemimi::ErrorContainer &error)
+TableRequestTaskTest::runTest(Hanami::JsonItem &inputData,
+                              Hanami::ErrorContainer &error)
 {
     // create new user
     std::string result;
@@ -56,7 +56,7 @@ TableRequestTaskTest::runTest(Kitsunemimi::JsonItem &inputData,
     }
 
     // parse output
-    Kitsunemimi::JsonItem jsonItem;
+    Hanami::JsonItem jsonItem;
     if(jsonItem.parse(result, error) == false) {
         return false;
     }
@@ -81,7 +81,7 @@ TableRequestTaskTest::runTest(Kitsunemimi::JsonItem &inputData,
     while(jsonItem.get("state").getString() != "finished");
 
     // get task-result
-    //Kitsunemimi::Hanami::getTask(result, m_taskUuid, m_clusterUuid, true, error);
+    //Hanami::getTask(result, m_taskUuid, m_clusterUuid, true, error);
 
     // parse output
     //if(jsonItem.parse(result, error) == false) {

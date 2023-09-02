@@ -46,7 +46,7 @@ ListTask::ListTask()
 
     registerOutputField("header", SAKURA_ARRAY_TYPE)
             .setComment("Array with the namings all columns of the table.")
-            .setMatch(new Kitsunemimi::DataValue("[\"uuid\","
+            .setMatch(new Hanami::DataValue("[\"uuid\","
                                                  "\"state\","
                                                  "\"percentage\","
                                                  "\"queued\","
@@ -66,15 +66,15 @@ ListTask::ListTask()
  */
 bool
 ListTask::runTask(BlossomIO &blossomIO,
-                  const Kitsunemimi::DataMap &context,
+                  const Hanami::DataMap &context,
                   BlossomStatus &status,
-                  Kitsunemimi::ErrorContainer &error)
+                  Hanami::ErrorContainer &error)
 {
     const UserContext userContext(context);
     const std::string clusterUuid = blossomIO.input.get("cluster_uuid").getString();
 
     // check if user exist within the table
-    Kitsunemimi::JsonItem getResult;
+    Hanami::JsonItem getResult;
     if(ClusterTable::getInstance()->getCluster(getResult,
                                                clusterUuid,
                                                userContext,
@@ -108,7 +108,7 @@ ListTask::runTask(BlossomIO &blossomIO,
     cluster->getAllProgress(progressOverview);
 
     // init table-header
-    Kitsunemimi::TableItem result;
+    Hanami::TableItem result;
     result.addColumn("uuid");
     result.addColumn("state");
     result.addColumn("percentage");
@@ -166,7 +166,7 @@ ListTask::runTask(BlossomIO &blossomIO,
     }
 
     // create output
-    Kitsunemimi::DataArray* headerInfo = result.getInnerHeader();
+    Hanami::DataArray* headerInfo = result.getInnerHeader();
     blossomIO.output.insert("header", headerInfo);
     blossomIO.output.insert("body", result.getBody());
     delete headerInfo;

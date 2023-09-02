@@ -31,8 +31,8 @@ class ImageTrainTaskTest
 public:
     ImageTrainTaskTest(const bool expectSuccess);
 
-    bool runTest(Kitsunemimi::JsonItem &inputData,
-                 Kitsunemimi::ErrorContainer &error);
+    bool runTest(Hanami::JsonItem &inputData,
+                 Hanami::ErrorContainer &error);
 };
 
 #endif // TSUGUMITESTER_TRAINTASKTEST_H

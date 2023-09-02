@@ -26,8 +26,8 @@
 #include <vector>
 #include <unistd.h>
 
-#include <libKitsunemimiJson/json_item.h>
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_json/json_item.h>
+#include <hanami_common/logger.h>
 #include <unistd.h>
 
 class TestStep
@@ -38,8 +38,8 @@ public:
 
     const std::string getTestName() const;
 
-    virtual bool runTest(Kitsunemimi::JsonItem &inputData,
-                         Kitsunemimi::ErrorContainer &error) = 0;
+    virtual bool runTest(Hanami::JsonItem &inputData,
+                         Hanami::ErrorContainer &error) = 0;
 
 protected:
     const bool m_expectSuccess;

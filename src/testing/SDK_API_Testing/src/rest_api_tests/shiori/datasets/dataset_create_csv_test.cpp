@@ -22,8 +22,8 @@
 
 #include "dataset_create_csv_test.h"
 
-#include <libKitsunemimiConfig/config_handler.h>
-#include <libHanamiAiSdk/data_set.h>
+#include <hanami_config/config_handler.h>
+#include <hanami_sdk/data_set.h>
 
 DataSetCreateCsvTest::DataSetCreateCsvTest(const bool expectSuccess)
           : TestStep(expectSuccess)
@@ -37,8 +37,8 @@ DataSetCreateCsvTest::DataSetCreateCsvTest(const bool expectSuccess)
 }
 
 bool
-DataSetCreateCsvTest::runTest(Kitsunemimi::JsonItem &inputData,
-                              Kitsunemimi::ErrorContainer &error)
+DataSetCreateCsvTest::runTest(Hanami::JsonItem &inputData,
+                              Hanami::ErrorContainer &error)
 {
     std::string result;
     if(HanamiAI::uploadCsvData(result,
@@ -54,7 +54,7 @@ DataSetCreateCsvTest::runTest(Kitsunemimi::JsonItem &inputData,
     }
 
     // parse output
-    Kitsunemimi::JsonItem jsonItem;
+    Hanami::JsonItem jsonItem;
     if(jsonItem.parse(result, error) == false) {
         return false;
     }

@@ -28,15 +28,15 @@
 
 #include <rest_api_tests/rest_api_tests.h>
 
-#include <libHanamiAiSdk/common/websocket_client.h>
+#include <hanami_sdk/common/websocket_client.h>
 
 int main(int argc, char *argv[])
 {
-    Kitsunemimi::ErrorContainer error;   
-    Kitsunemimi::initConsoleLogger(true);
+    Hanami::ErrorContainer error;   
+    Hanami::initConsoleLogger(true);
 
     // create and init argument-parser
-    Kitsunemimi::ArgParser argParser;
+    Hanami::ArgParser argParser;
     registerArguments(&argParser, error);
 
     // parse cli-input
@@ -71,8 +71,8 @@ int main(int argc, char *argv[])
     }
 
     // init logger
-    Kitsunemimi::initConsoleLogger(enableDebug);
-    Kitsunemimi::initFileLogger(logPath, "hanami_testing", enableDebug);
+    Hanami::initConsoleLogger(enableDebug);
+    Hanami::initFileLogger(logPath, "hanami_testing", enableDebug);
 
     runRestApiTests();
 

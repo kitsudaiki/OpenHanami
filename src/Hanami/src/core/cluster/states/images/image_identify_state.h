@@ -23,12 +23,12 @@
 #ifndef HANAMI_IMAGEIDENTIFY_STATE_H
 #define HANAMI_IMAGEIDENTIFY_STATE_H
 
-#include <libKitsunemimiCommon/threading/event.h>
+#include <hanami_common/threading/event.h>
 
 class Cluster;
 
 class ImageIdentify_State
-        : public Kitsunemimi::Event
+        : public Hanami::Event
 {
 public:
     ImageIdentify_State(Cluster* cluster);

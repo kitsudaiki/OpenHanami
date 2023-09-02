@@ -23,7 +23,7 @@
 #ifndef HANAMI_ARGS_H
 #define HANAMI_ARGS_H
 
-#include <libKitsunemimiArgs/arg_parser.h>
+#include <hanami_args/arg_parser.h>
 
 /**
  * @brief register all available arguments for the CLI input
@@ -33,8 +33,8 @@
  * @return false, if registering argument failed, else true
  */
 bool
-registerArguments(Kitsunemimi::ArgParser* argparser,
-                  Kitsunemimi::ErrorContainer &error)
+registerArguments(Hanami::ArgParser* argparser,
+                  Hanami::ErrorContainer &error)
 {
     std::string helpText = "";
 

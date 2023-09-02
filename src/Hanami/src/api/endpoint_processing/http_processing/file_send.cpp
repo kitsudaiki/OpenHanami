@@ -22,10 +22,10 @@
 
 #include "file_send.h"
 
-#include <libKitsunemimiCommon/methods/string_methods.h>
-#include <libKitsunemimiCommon/files/text_file.h>
-#include <libKitsunemimiCommon/logger.h>
-#include <libKitsunemimiConfig/config_handler.h>
+#include <hanami_common/methods/string_methods.h>
+#include <hanami_common/files/text_file.h>
+#include <hanami_common/logger.h>
+#include <hanami_config/config_handler.h>
 
 /**
  * @brief get response-type for the requested file
@@ -71,7 +71,7 @@ bool
 sendFileFromLocalLocation(http::response<http::dynamic_body> &response,
                           const std::string &dir,
                           const std::string &relativePath,
-                          Kitsunemimi::ErrorContainer &error)
+                          Hanami::ErrorContainer &error)
 {
     // create file-path
     std::string path = dir;
@@ -94,7 +94,7 @@ sendFileFromLocalLocation(http::response<http::dynamic_body> &response,
 
     // read file and send content back
     std::string fileContent = "";
-    if(Kitsunemimi::readFile(fileContent, path, error))
+    if(Hanami::readFile(fileContent, path, error))
     {
         beast::ostream(response.body()) << fileContent;
         return true;
@@ -116,7 +116,7 @@ sendFileFromLocalLocation(http::response<http::dynamic_body> &response,
 bool
 processClientRequest(http::response<http::dynamic_body> &response,
                      const std::string &path,
-                     Kitsunemimi::ErrorContainer &error)
+                     Hanami::ErrorContainer &error)
 {
     bool success = false;
     const std::string fileLocation = GET_STRING_CONFIG("http", "dashboard_files", success);

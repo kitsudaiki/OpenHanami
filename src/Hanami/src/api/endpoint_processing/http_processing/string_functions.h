@@ -27,9 +27,9 @@
 #include <regex>
 #include <common/structs.h>
 
-#include <libKitsunemimiCommon/logger.h>
-#include <libKitsunemimiCommon/methods/string_methods.h>
-#include <libKitsunemimiJson/json_item.h>
+#include <hanami_common/logger.h>
+#include <hanami_common/methods/string_methods.h>
+#include <hanami_json/json_item.h>
 
 /**
  * @brief precheck path
@@ -66,12 +66,12 @@ inline bool
 parseUri(const std::string &token,
          RequestMessage &request,
          const std::string &uri,
-         Kitsunemimi::ErrorContainer &error)
+         Hanami::ErrorContainer &error)
 {
     // first split of uri
-    Kitsunemimi::JsonItem parsedInputValues;
+    Hanami::JsonItem parsedInputValues;
     std::vector<std::string> parts;
-    Kitsunemimi::splitStringByDelimiter(parts, uri, '?');
+    Hanami::splitStringByDelimiter(parts, uri, '?');
 
     // check split-result
     if(parts.size() == 0)
@@ -98,7 +98,7 @@ parseUri(const std::string &token,
     if(parts.size() > 1)
     {
         std::vector<std::string> kvPairs;
-        Kitsunemimi::splitStringByDelimiter(kvPairs, parts[1], '&');
+        Hanami::splitStringByDelimiter(kvPairs, parts[1], '&');
 
         for(const std::string &kvPair : kvPairs)
         {

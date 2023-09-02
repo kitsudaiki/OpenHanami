@@ -25,9 +25,9 @@
 #include <hanami_root.h>
 #include <database/users_table.h>
 
-#include <libKitsunemimiCrypto/hashes.h>
-#include <libKitsunemimiCommon/methods/string_methods.h>
-#include <libKitsunemimiJson/json_item.h>
+#include <hanami_crypto/hashes.h>
+#include <hanami_common/methods/string_methods.h>
+#include <hanami_json/json_item.h>
 
 /**
  * @brief constructor
@@ -82,9 +82,9 @@ RemoveProjectFromUser::RemoveProjectFromUser()
  */
 bool
 RemoveProjectFromUser::runTask(BlossomIO &blossomIO,
-                               const Kitsunemimi::DataMap &context,
+                               const Hanami::DataMap &context,
                                BlossomStatus &status,
-                               Kitsunemimi::ErrorContainer &error)
+                               Hanami::ErrorContainer &error)
 {
     // check if admin
     if(context.getBoolByKey("is_admin") == false)
@@ -98,7 +98,7 @@ RemoveProjectFromUser::runTask(BlossomIO &blossomIO,
     const std::string creatorId = context.getStringByKey("id");
 
     // check if user already exist within the table
-    Kitsunemimi::JsonItem getResult;
+    Hanami::JsonItem getResult;
     if(UsersTable::getInstance()->getUser(getResult, userId, error, false) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -116,7 +116,7 @@ RemoveProjectFromUser::runTask(BlossomIO &blossomIO,
 
     // check if project is assigned to user and remove it if found
     bool found = false;
-    Kitsunemimi::JsonItem parsedProjects = getResult.get("projects");
+    Hanami::JsonItem parsedProjects = getResult.get("projects");
     for(uint64_t i = 0; i < parsedProjects.size(); i++)
     {
         if(parsedProjects.get(i).get("project_id").getString() == projectId)

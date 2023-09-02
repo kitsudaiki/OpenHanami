@@ -23,17 +23,17 @@
 #ifndef HANAMI_SAVECLUSTERSTATE_H
 #define HANAMI_SAVECLUSTERSTATE_H
 
-#include <libKitsunemimiCommon/threading/event.h>
-#include <libKitsunemimiJson/json_item.h>
+#include <hanami_common/threading/event.h>
+#include <hanami_json/json_item.h>
 
 class Cluster;
 
-namespace Kitsunemimi::Hanami {
+namespace Hanami {
 class HanamiMessagingClient;
 }
 
 class SaveCluster_State
-        : public Kitsunemimi::Event
+        : public Hanami::Event
 {
 public:
     SaveCluster_State(Cluster* cluster);
@@ -46,7 +46,7 @@ private:
 
     bool writeData(const std::string &filePath,
                    const uint64_t fileSize,
-                   Kitsunemimi::ErrorContainer &error);
+                   Hanami::ErrorContainer &error);
 };
 
 #endif // HANAMI_SAVECLUSTERSTATE_H

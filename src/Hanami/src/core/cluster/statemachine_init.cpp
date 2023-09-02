@@ -33,7 +33,7 @@
 
 #include <core/cluster/cluster.h>
 
-#include <libKitsunemimiCommon/statemachine.h>
+#include <hanami_common/statemachine.h>
 
 /**
  * @brief initialize all possible states of the statemachine
@@ -41,7 +41,7 @@
  * @param sm reference to the statemachine, which should be initialized
  */
 void
-initStates(Kitsunemimi::Statemachine &sm)
+initStates(Hanami::Statemachine &sm)
 {
     sm.createNewState(TASK_STATE,                       "Task-handling mode");
     sm.createNewState(TRAIN_STATE,                      "Train-State");
@@ -73,7 +73,7 @@ initStates(Kitsunemimi::Statemachine &sm)
  * @param taskState pointer the the cluster-specific task-handling-state
  */
 void
-initEvents(Kitsunemimi::Statemachine &sm,
+initEvents(Hanami::Statemachine &sm,
            Cluster* cluster,
            TaskHandle_State* taskState)
 {
@@ -96,7 +96,7 @@ initEvents(Kitsunemimi::Statemachine &sm,
  * @param sm reference to the statemachine, which should be initialized
  */
 void
-initChildStates(Kitsunemimi::Statemachine &sm)
+initChildStates(Hanami::Statemachine &sm)
 {
     // child states image train
     sm.addChildState(TRAIN_STATE,       IMAGE_TRAIN_STATE);
@@ -130,7 +130,7 @@ initChildStates(Kitsunemimi::Statemachine &sm)
  * @param sm reference to the statemachine, which should be initialized
  */
 void
-initInitialChildStates(Kitsunemimi::Statemachine &sm)
+initInitialChildStates(Hanami::Statemachine &sm)
 {
     sm.setInitialChildState(IMAGE_TRAIN_STATE,   IMAGE_TRAIN_FORWARD_STATE);
     sm.setInitialChildState(TABLE_TRAIN_STATE,   TABLE_TRAIN_FORWARD_STATE);
@@ -144,7 +144,7 @@ initInitialChildStates(Kitsunemimi::Statemachine &sm)
  * @param sm reference to the statemachine, which should be initialized
  */
 void
-initTransitions(Kitsunemimi::Statemachine &sm)
+initTransitions(Hanami::Statemachine &sm)
 {
     // transtions train init
     sm.addTransition(TASK_STATE,  TRAIN, TRAIN_STATE);
@@ -197,7 +197,7 @@ initTransitions(Kitsunemimi::Statemachine &sm)
  * @param taskState pointer the the cluster-specific task-handling-state
  */
 void
-initStatemachine(Kitsunemimi::Statemachine &sm,
+initStatemachine(Hanami::Statemachine &sm,
                  Cluster* cluster,
                  TaskHandle_State* taskState)
 {

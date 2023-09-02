@@ -25,9 +25,9 @@
 #include <hanami_root.h>
 #include <database/data_set_table.h>
 
-#include <libKitsunemimiHanamiFiles/data_set_files/data_set_functions.h>
+#include <hanami_files/data_set_files/data_set_functions.h>
 
-#include <libKitsunemimiJson/json_item.h>
+#include <hanami_json/json_item.h>
 
 GetDataSet::GetDataSet()
     : Blossom("Get information of a specific data-set.")
@@ -86,9 +86,9 @@ GetDataSet::GetDataSet()
  */
 bool
 GetDataSet::runTask(BlossomIO &blossomIO,
-                      const Kitsunemimi::DataMap &context,
+                      const Hanami::DataMap &context,
                       BlossomStatus &status,
-                      Kitsunemimi::ErrorContainer &error)
+                      Hanami::ErrorContainer &error)
 {
     const std::string dataUuid = blossomIO.input.get("uuid").getString();
     if(DataSetTable::getInstance()->getDateSetInfo(blossomIO.output,

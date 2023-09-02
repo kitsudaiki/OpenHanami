@@ -22,7 +22,7 @@
 
 #include "cluster_switch_to_task_test.h"
 
-#include <libHanamiAiSdk/cluster.h>
+#include <hanami_sdk/cluster.h>
 
 ClusterSwitchToTaskTest::ClusterSwitchToTaskTest(const bool expectSuccess)
     : TestStep(expectSuccess)
@@ -36,8 +36,8 @@ ClusterSwitchToTaskTest::ClusterSwitchToTaskTest(const bool expectSuccess)
 }
 
 bool
-ClusterSwitchToTaskTest::runTest(Kitsunemimi::JsonItem &inputData,
-                                 Kitsunemimi::ErrorContainer &error)
+ClusterSwitchToTaskTest::runTest(Hanami::JsonItem &inputData,
+                                 Hanami::ErrorContainer &error)
 {
     // create new cluster
     std::string result;

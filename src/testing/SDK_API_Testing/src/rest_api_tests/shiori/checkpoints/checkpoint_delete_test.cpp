@@ -22,7 +22,7 @@
 
 #include "checkpoint_delete_test.h"
 
-#include <libHanamiAiSdk/checkpoint.h>
+#include <hanami_sdk/checkpoint.h>
 
 CheckpointDeleteTest::CheckpointDeleteTest(const bool expectSuccess)
           : TestStep(expectSuccess)
@@ -36,8 +36,8 @@ CheckpointDeleteTest::CheckpointDeleteTest(const bool expectSuccess)
 }
 
 bool
-CheckpointDeleteTest::runTest(Kitsunemimi::JsonItem &inputData,
-                            Kitsunemimi::ErrorContainer &error)
+CheckpointDeleteTest::runTest(Hanami::JsonItem &inputData,
+                            Hanami::ErrorContainer &error)
 {
     const std::string uuid = inputData.get("checkpoint_uuid").getString();
 
@@ -52,7 +52,7 @@ CheckpointDeleteTest::runTest(Kitsunemimi::JsonItem &inputData,
     }
 
     // parse output
-    Kitsunemimi::JsonItem jsonItem;
+    Hanami::JsonItem jsonItem;
     if(jsonItem.parse(result, error) == false) {
         return false;
     }

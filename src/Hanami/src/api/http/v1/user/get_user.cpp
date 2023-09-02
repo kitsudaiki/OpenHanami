@@ -25,7 +25,7 @@
 #include <hanami_root.h>
 #include <database/users_table.h>
 
-#include <libKitsunemimiJson/json_item.h>
+#include <hanami_json/json_item.h>
 
 /**
  * @brief constructor
@@ -75,9 +75,9 @@ GetUser::GetUser()
  */
 bool
 GetUser::runTask(BlossomIO &blossomIO,
-                 const Kitsunemimi::DataMap &context,
+                 const Hanami::DataMap &context,
                  BlossomStatus &status,
-                 Kitsunemimi::ErrorContainer &error)
+                 Hanami::ErrorContainer &error)
 {
     // check if admin
     if(context.getBoolByKey("is_admin") == false)

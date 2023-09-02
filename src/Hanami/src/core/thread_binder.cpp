@@ -23,19 +23,19 @@
 #include "thread_binder.h"
 #include <hanami_root.h>
 
-#include <libKitsunemimiSakuraHardware/host.h>
-#include <libKitsunemimiSakuraHardware/cpu_core.h>
-#include <libKitsunemimiSakuraHardware/cpu_package.h>
-#include <libKitsunemimiSakuraHardware/cpu_thread.h>
+#include <hanami_hardware/host.h>
+#include <hanami_hardware/cpu_core.h>
+#include <hanami_hardware/cpu_package.h>
+#include <hanami_hardware/cpu_thread.h>
 
-#include <libKitsunemimiJson/json_item.h>
-#include <libKitsunemimiCommon/threading/thread.h>
-#include <libKitsunemimiCommon/threading/thread_handler.h>
+#include <hanami_json/json_item.h>
+#include <hanami_common/threading/thread.h>
+#include <hanami_common/threading/thread_handler.h>
 
 ThreadBinder* ThreadBinder::instance = nullptr;
 
 ThreadBinder::ThreadBinder()
-    : Kitsunemimi::Thread("ThreadBinder")
+    : Hanami::Thread("ThreadBinder")
 {
 }
 
@@ -43,7 +43,7 @@ ThreadBinder::ThreadBinder()
  * @brief ThreadBinder::getMappingString
  * @return
  */
-Kitsunemimi::DataMap*
+Hanami::DataMap*
 ThreadBinder::getMapping()
 {
     std::lock_guard<std::mutex> guard(m_mapLock);
@@ -62,10 +62,10 @@ ThreadBinder::getMapping()
 bool
 ThreadBinder::fillCoreIds(std::vector<uint64_t> &controlCoreIds,
                           std::vector<uint64_t> &processingCoreIds,
-                          Kitsunemimi::ErrorContainer &error)
+                          Hanami::ErrorContainer &error)
 {
-    Kitsunemimi::Sakura::CpuCore* phyCore = nullptr;
-    Kitsunemimi::Sakura::Host* host = Kitsunemimi::Sakura::Host::getInstance();
+    Hanami::CpuCore* phyCore = nullptr;
+    Hanami::Host* host = Hanami::Host::getInstance();
 
     if(host->cpuPackages.size() == 0)
     {
@@ -81,7 +81,7 @@ ThreadBinder::fillCoreIds(std::vector<uint64_t> &controlCoreIds,
 
     // control-cores
     phyCore = host->cpuPackages[0]->cpuCores[0];
-    for(Kitsunemimi::Sakura::CpuThread* singleThread : phyCore->cpuThreads) {
+    for(Hanami::CpuThread* singleThread : phyCore->cpuThreads) {
         controlCoreIds.push_back(singleThread->threadId);
     }
 
@@ -89,7 +89,7 @@ ThreadBinder::fillCoreIds(std::vector<uint64_t> &controlCoreIds,
     for(uint64_t i = 1; i < host->cpuPackages[0]->cpuCores.size(); i++)
     {
         phyCore = host->cpuPackages[0]->cpuCores[i];
-        for(Kitsunemimi::Sakura::CpuThread* singleThread : phyCore->cpuThreads) {
+        for(Hanami::CpuThread* singleThread : phyCore->cpuThreads) {
             processingCoreIds.push_back(singleThread->threadId);
         }
     }
@@ -103,7 +103,7 @@ ThreadBinder::fillCoreIds(std::vector<uint64_t> &controlCoreIds,
 void
 ThreadBinder::run()
 {
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     if(fillCoreIds(m_controlCoreIds, m_processingCoreIds, error) == false)
     {
         error.addMeesage("Failed to initialize cpu-thread-lists for thread-binder.");
@@ -111,7 +111,7 @@ ThreadBinder::run()
         return;
     }
 
-    Kitsunemimi::ThreadHandler* threadHandler = Kitsunemimi::ThreadHandler::getInstance();
+    Hanami::ThreadHandler* threadHandler = Hanami::ThreadHandler::getInstance();
 
     while(m_abort == false)
     {
@@ -122,13 +122,13 @@ ThreadBinder::run()
         m_completeMap.clear();
         const std::vector<std::string> threadNames = threadHandler->getRegisteredNames();
 
-        Kitsunemimi::ErrorContainer error;
+        Hanami::ErrorContainer error;
 
         for(const std::string &name : threadNames)
         {
             // update thread-binding
-            const std::vector<Kitsunemimi::Thread*> threads = threadHandler->getThreads(name);
-            for(Kitsunemimi::Thread* thread : threads)
+            const std::vector<Hanami::Thread*> threads = threadHandler->getThreads(name);
+            for(Hanami::Thread* thread : threads)
             {
                 if(name == "CpuProcessingUnit")
                 {
@@ -145,17 +145,17 @@ ThreadBinder::run()
             }
 
             // update list for output
-            Kitsunemimi::DataArray* idList = new Kitsunemimi::DataArray();
+            Hanami::DataArray* idList = new Hanami::DataArray();
             if(name == "CpuProcessingUnit")
             {
                 for(const uint64_t id : m_processingCoreIds) {
-                    idList->append(new Kitsunemimi::DataValue((long)id));
+                    idList->append(new Hanami::DataValue((long)id));
                 }
             }
             else
             {
                 for(const uint64_t id : m_controlCoreIds) {
-                    idList->append(new Kitsunemimi::DataValue((long)id));
+                    idList->append(new Hanami::DataValue((long)id));
                 }
             }
             m_completeMap.insert(name, idList, true);

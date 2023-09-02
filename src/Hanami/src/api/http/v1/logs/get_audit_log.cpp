@@ -37,7 +37,7 @@ GetAuditLog::GetAuditLog()
             .setComment("ID of the user, whos entries are requested. Only an admin is allowed to "
                         "set this values. Any other user get only its own log output based on the "
                         "token-context.")
-            .setDefault(new Kitsunemimi::DataValue(""))
+            .setDefault(new Hanami::DataValue(""))
             .setLimit(4, 256)
             .setRegex(ID_EXT_REGEX);
 
@@ -52,7 +52,7 @@ GetAuditLog::GetAuditLog()
 
     registerOutputField("header", SAKURA_ARRAY_TYPE)
             .setComment("Array with the namings all columns of the table.")
-            .setMatch(new Kitsunemimi::DataValue("[\"timestamp\","
+            .setMatch(new Hanami::DataValue("[\"timestamp\","
                                                  "\"user_id\","
                                                  "\"component\","
                                                  "\"endpoint\","
@@ -71,9 +71,9 @@ GetAuditLog::GetAuditLog()
  */
 bool
 GetAuditLog::runTask(BlossomIO &blossomIO,
-                     const Kitsunemimi::DataMap &context,
+                     const Hanami::DataMap &context,
                      BlossomStatus &status,
-                     Kitsunemimi::ErrorContainer &error)
+                     Hanami::ErrorContainer &error)
 {
     const UserContext userContext(context);
     std::string userId = blossomIO.input.get("user_id").getString();
@@ -94,7 +94,7 @@ GetAuditLog::runTask(BlossomIO &blossomIO,
     }
 
     // get data from table
-    Kitsunemimi::TableItem table;
+    Hanami::TableItem table;
     if(AuditLogTable::getInstance()->getAllAuditLogEntries(table, userId, page, error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -102,7 +102,7 @@ GetAuditLog::runTask(BlossomIO &blossomIO,
     }
 
     // create output
-    Kitsunemimi::DataArray* headerInfo = table.getInnerHeader();
+    Hanami::DataArray* headerInfo = table.getInnerHeader();
     blossomIO.output.insert("header", headerInfo);
     blossomIO.output.insert("body", table.getBody());
     delete headerInfo;

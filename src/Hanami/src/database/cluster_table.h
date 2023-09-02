@@ -23,10 +23,10 @@
 #ifndef HANAMI_CLUSTERTABLE_H
 #define HANAMI_CLUSTERTABLE_H
 
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_common/logger.h>
 #include <database/generic_tables/hanami_sql_table.h>
 
-namespace Kitsunemimi {
+namespace Hanami {
 class JsonItem;
 }
 class ClusterTable
@@ -43,26 +43,26 @@ public:
 
     ~ClusterTable();
 
-    bool addCluster(Kitsunemimi::JsonItem &clusterData,
+    bool addCluster(Hanami::JsonItem &clusterData,
                     const UserContext &userContext,
-                    Kitsunemimi::ErrorContainer &error);
-    bool getCluster(Kitsunemimi::JsonItem &result,
+                    Hanami::ErrorContainer &error);
+    bool getCluster(Hanami::JsonItem &result,
                     const std::string &clusterUuid,
                     const UserContext &userContext,
-                    Kitsunemimi::ErrorContainer &error,
+                    Hanami::ErrorContainer &error,
                     const bool showHiddenValues = false);
-    bool getClusterByName(Kitsunemimi::JsonItem &result,
+    bool getClusterByName(Hanami::JsonItem &result,
                           const std::string &clusterName,
                           const UserContext &userContext,
-                          Kitsunemimi::ErrorContainer &error,
+                          Hanami::ErrorContainer &error,
                           const bool showHiddenValues = false);
-    bool getAllCluster(Kitsunemimi::TableItem &result,
+    bool getAllCluster(Hanami::TableItem &result,
                        const UserContext &userContext,
-                       Kitsunemimi::ErrorContainer &error);
+                       Hanami::ErrorContainer &error);
     bool deleteCluster(const std::string &clusterUuid,
                        const UserContext &userContext,
-                       Kitsunemimi::ErrorContainer &error);
-    bool deleteAllCluster(Kitsunemimi::ErrorContainer &error);
+                       Hanami::ErrorContainer &error);
+    bool deleteAllCluster(Hanami::ErrorContainer &error);
 private:
     ClusterTable();
     static ClusterTable* instance;

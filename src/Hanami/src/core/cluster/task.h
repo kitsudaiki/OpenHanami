@@ -25,8 +25,8 @@
 
 #include <common.h>
 
-#include <libKitsunemimiJson/json_item.h>
-#include <libKitsunemimiCommon/items/data_items.h>
+#include <hanami_json/json_item.h>
+#include <hanami_common/items/data_items.h>
 
 enum TaskType
 {
@@ -70,7 +70,7 @@ struct Task
     // data-buffer
     float* inputData = nullptr;
     float* outputData = nullptr;
-    Kitsunemimi::JsonItem resultData;
+    Hanami::JsonItem resultData;
 
     // train-request-task meta
     uint64_t numberOfCycles = 0;

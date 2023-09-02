@@ -22,7 +22,7 @@
 
 #include "speed.h"
 #include <hanami_root.h>
-#include <libKitsunemimiHanamiHardware/speed_measuring.h>
+#include <hanami_hardware/speed_measuring.h>
 
 Speed::Speed()
     : Blossom("Request the speed of the CPU")
@@ -44,9 +44,9 @@ Speed::Speed()
  */
 bool
 Speed::runTask(BlossomIO &blossomIO,
-               const Kitsunemimi::DataMap &,
+               const Hanami::DataMap &,
                BlossomStatus &,
-               Kitsunemimi::ErrorContainer &)
+               Hanami::ErrorContainer &)
 {
     blossomIO.output.insert("current_speed", SpeedMeasuring::getInstance()->getJson());
 

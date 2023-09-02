@@ -27,17 +27,17 @@
 #include <string>
 #include <uuid/uuid.h>
 
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_common/logger.h>
 
-#include <libKitsunemimiSakuraDatabase/sql_table.h>
+#include <hanami_database/sql_table.h>
 
 class SqlDatabase;
 
 class HanamiSqlAdminTable
-        : public Kitsunemimi::Sakura::SqlTable
+        : public Hanami::SqlTable
 {
 public:
-    HanamiSqlAdminTable(Kitsunemimi::Sakura::SqlDatabase* db);
+    HanamiSqlAdminTable(Hanami::SqlDatabase* db);
     virtual ~HanamiSqlAdminTable();
 };
 

@@ -22,11 +22,11 @@
 
 #include "cluster_table.h"
 
-#include <libKitsunemimiCommon/items/table_item.h>
-#include <libKitsunemimiCommon/methods/string_methods.h>
-#include <libKitsunemimiJson/json_item.h>
+#include <hanami_common/items/table_item.h>
+#include <hanami_common/methods/string_methods.h>
+#include <hanami_json/json_item.h>
 
-#include <libKitsunemimiSakuraDatabase/sql_database.h>
+#include <hanami_database/sql_database.h>
 
 ClusterTable* ClusterTable::instance = nullptr;
 
@@ -34,7 +34,7 @@ ClusterTable* ClusterTable::instance = nullptr;
  * @brief constructor
  */
 ClusterTable::ClusterTable()
-    : HanamiSqlTable(Kitsunemimi::Sakura::SqlDatabase::getInstance())
+    : HanamiSqlTable(Hanami::SqlDatabase::getInstance())
 {
     m_tableName = "clusters";
 }
@@ -54,9 +54,9 @@ ClusterTable::~ClusterTable() {}
  * @return true, if successful, else false
  */
 bool
-ClusterTable::addCluster(Kitsunemimi::JsonItem &clusterData,
+ClusterTable::addCluster(Hanami::JsonItem &clusterData,
                          const UserContext &userContext,
-                         Kitsunemimi::ErrorContainer &error)
+                         Hanami::ErrorContainer &error)
 {
     if(add(clusterData, userContext, error) == false)
     {
@@ -79,10 +79,10 @@ ClusterTable::addCluster(Kitsunemimi::JsonItem &clusterData,
  * @return true, if successful, else false
  */
 bool
-ClusterTable::getCluster(Kitsunemimi::JsonItem &result,
+ClusterTable::getCluster(Hanami::JsonItem &result,
                          const std::string &clusterUuid,
                          const UserContext &userContext,
-                         Kitsunemimi::ErrorContainer &error,
+                         Hanami::ErrorContainer &error,
                          const bool showHiddenValues)
 {
     std::vector<RequestCondition> conditions;
@@ -112,10 +112,10 @@ ClusterTable::getCluster(Kitsunemimi::JsonItem &result,
  * @return true, if successful, else false
  */
 bool
-ClusterTable::getClusterByName(Kitsunemimi::JsonItem &result,
+ClusterTable::getClusterByName(Hanami::JsonItem &result,
                                const std::string &clusterName,
                                const UserContext &userContext,
-                               Kitsunemimi::ErrorContainer &error,
+                               Hanami::ErrorContainer &error,
                                const bool showHiddenValues)
 {
     std::vector<RequestCondition> conditions;
@@ -141,9 +141,9 @@ ClusterTable::getClusterByName(Kitsunemimi::JsonItem &result,
  * @return true, if successful, else false
  */
 bool
-ClusterTable::getAllCluster(Kitsunemimi::TableItem &result,
+ClusterTable::getAllCluster(Hanami::TableItem &result,
                             const UserContext &userContext,
-                            Kitsunemimi::ErrorContainer &error)
+                            Hanami::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
     if(getAll(result, userContext, conditions, error) == false)
@@ -167,7 +167,7 @@ ClusterTable::getAllCluster(Kitsunemimi::TableItem &result,
 bool
 ClusterTable::deleteCluster(const std::string &clusterUuid,
                             const UserContext &userContext,
-                            Kitsunemimi::ErrorContainer &error)
+                            Hanami::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", clusterUuid);
@@ -192,7 +192,7 @@ ClusterTable::deleteCluster(const std::string &clusterUuid,
  * @return true, if successful, else false
  */
 bool
-ClusterTable::deleteAllCluster(Kitsunemimi::ErrorContainer &error)
+ClusterTable::deleteAllCluster(Hanami::ErrorContainer &error)
 {
     return deleteAllFromDb(error);
 }

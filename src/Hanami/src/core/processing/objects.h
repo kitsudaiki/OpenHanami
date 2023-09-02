@@ -29,7 +29,7 @@
 #include <algorithm>
 #include <uuid/uuid.h>
 
-#include <libKitsunemimiCommon/structs.h>
+#include <hanami_common/structs.h>
 
 // const predefined values
 #define UNINIT_STATE_64 0xFFFFFFFFFFFFFFFF
@@ -125,7 +125,7 @@ struct Brick
     uint32_t numberOfNeurons = 0;
     uint32_t numberOfNeuronBlocks = 0;
 
-    Kitsunemimi::Position brickPos;
+    Hanami::Position brickPos;
     uint32_t neighbors[12];
     uint32_t possibleTargetNeuronBrickIds[1000];
 };

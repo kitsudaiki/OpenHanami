@@ -1,7 +1,7 @@
-# Hanami-AI
+# Hanami
 
-![Github workfloat status](https://img.shields.io/github/actions/workflow/status/kitsudaiki/Hanami-AI/build_test.yml?branch=develop&style=flat-square&label=build%20and%20test)
-![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/kitsudaiki/Hanami-AI?label=version&style=flat-square)
+![Github workfloat status](https://img.shields.io/github/actions/workflow/status/kitsudaiki/Hanami/build_test.yml?branch=develop&style=flat-square&label=build%20and%20test)
+![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/kitsudaiki/Hanami?label=version&style=flat-square)
 ![GitHub](https://img.shields.io/github/license/kitsudaiki/Hanami-AI?style=flat-square)
 ![Platform](https://img.shields.io/badge/platform-Linux--x64-lightgrey?style=flat-square)
 
@@ -13,7 +13,7 @@ There is still a huge bunch of known bugs and missing validations, which can bre
 
 ## Intro
 
-Hanami-AI is an AI-as-a-Service project, based on a concept created by myself. It is written from scratch with a Backend in C++ with Web-frontend.
+Hanami is an AI-as-a-Service project, based on a concept created by myself. It is written from scratch with a Backend in C++ with Web-frontend.
 
 The actual prototype consists of:
 
@@ -49,38 +49,11 @@ https://docs.hanami-ai.com
 
     https://docs.hanami-ai.com/other/1_dependencies/
 
-## Roadmap
-
-- **0.1.0**
-    - first prototype with basic feature-set
-
-- **0.2.0**
-    - merge all involved repositories into the main-repository
-    - internal restructures, primary for the GPU-support
-    - experimental GPU-support wiht CUDA and OpenCL (disabled at the moment)
-    - general minor improvements
-
-- **0.3.0**
-    - *desired date*: Q3 2023
-    - *content*: 
-        - complete implementation of the core-concept and further evaluation and improvement of the learning-process:
-            - allow to use it as spiking-neuronal-network
-            - remove strict layer-structure, which is still enforced by hard configuration at the moment
-            - build 3-dimensional networks
-            - re-add the old reduction-process again
-        - further evaluation and improving of the core-process
-        - make GPU-support usable
-
-- **0.4.0**
-    - *desired date*: Q4 2023
-    - *content*: 
-        - first Multi-Node-Setup
-        - rework dashboard
 
 
 ## Issue-Overview
 
-[Hanami-AI-Project](https://github.com/users/kitsudaiki/projects/9/views/4)
+[Hanami-Project](https://github.com/users/kitsudaiki/projects/9/views/4)
 
 ## This repository
 
@@ -122,7 +95,7 @@ eMail: tobias.anker@kitsunemimi.moe
 
 ## License
 
-The complete project is under [Apache 2 license](https://github.com/kitsudaiki/Hanami-AI/blob/develop/LICENSE).
+The complete project is under [Apache 2 license](https://github.com/kitsudaiki/Hanami/blob/develop/LICENSE).
 
 ## Contributing
 

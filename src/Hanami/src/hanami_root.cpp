@@ -27,21 +27,21 @@
 #include <core/cluster/cluster.h>
 #include <core/cluster/cluster_init.h>
 
-#include <libKitsunemimiCommon/logger.h>
-#include <libKitsunemimiCommon/files/text_file.h>
-#include <libKitsunemimiConfig/config_handler.h>
+#include <hanami_common/logger.h>
+#include <hanami_common/files/text_file.h>
+#include <hanami_config/config_handler.h>
 
 #include <api/endpoint_processing/http_server.h>
 #include <api/endpoint_processing/http_websocket_thread.h>
 #include <api/endpoint_processing/blossom.h>
 #include <api/endpoint_processing/items/item_methods.h>
 
-#include <libKitsunemimiHanamiHardware/power_measuring.h>
-#include <libKitsunemimiHanamiHardware/speed_measuring.h>
-#include <libKitsunemimiHanamiHardware/temperature_measuring.h>
+#include <hanami_hardware/power_measuring.h>
+#include <hanami_hardware/speed_measuring.h>
+#include <hanami_hardware/temperature_measuring.h>
 
-#include <libKitsunemimiSakuraHardware/host.h>
-#include <libKitsunemimiSakuraDatabase/sql_database.h>
+#include <hanami_hardware/host.h>
+#include <hanami_database/sql_database.h>
 
 #include <database/cluster_table.h>
 #include <database/users_table.h>
@@ -56,7 +56,7 @@
 
 // init static variables
 uint32_t* HanamiRoot::m_randomValues = nullptr;
-Kitsunemimi::GpuInterface* HanamiRoot::gpuInterface = nullptr;
+Hanami::GpuInterface* HanamiRoot::gpuInterface = nullptr;
 HanamiRoot* HanamiRoot::root = nullptr;
 HttpServer* HanamiRoot::httpServer = nullptr;
 CryptoPP::SecByteBlock HanamiRoot::tokenKey{};
@@ -86,11 +86,11 @@ HanamiRoot::~HanamiRoot() {}
  * @return true, if successful, else false
  */
 bool
-HanamiRoot::init(Kitsunemimi::ErrorContainer &error)
+HanamiRoot::init(Hanami::ErrorContainer &error)
 {
     /*if(useOpencl)
     {
-        Kitsunemimi::GpuHandler oclHandler;
+        Hanami::GpuHandler oclHandler;
         assert(oclHandler.initDevice(error));
         assert(oclHandler.m_interfaces.size() == 1);
         gpuInterface = oclHandler.m_interfaces.at(0);
@@ -130,7 +130,7 @@ HanamiRoot::init(Kitsunemimi::ErrorContainer &error)
         return false;
     }
 
-    Kitsunemimi::Sakura::Host* host = Kitsunemimi::Sakura::Host::getInstance();
+    Hanami::Host* host = Hanami::Host::getInstance();
     if(host->initHost(error) == false)
     {
         error.addMeesage("Failed to initialize host-information.");
@@ -173,12 +173,12 @@ HanamiRoot::initThreads()
  * @return true, if successful, else false
  */
 bool
-HanamiRoot::initDatabase(Kitsunemimi::ErrorContainer &error)
+HanamiRoot::initDatabase(Hanami::ErrorContainer &error)
 {
     bool success = false;
 
     // read database-path from config
-    Kitsunemimi::Sakura::SqlDatabase* database = Kitsunemimi::Sakura::SqlDatabase::getInstance();
+    Hanami::SqlDatabase* database = Hanami::SqlDatabase::getInstance();
     const std::string databasePath = GET_STRING_CONFIG("DEFAULT", "database", success);
     LOG_DEBUG("database-path: '" + databasePath + "'");
     if(success == false)
@@ -320,7 +320,7 @@ HanamiRoot::initHttpServer()
  * @return true, if successful, else false
  */
 bool
-HanamiRoot::initPolicies(Kitsunemimi::ErrorContainer &error)
+HanamiRoot::initPolicies(Hanami::ErrorContainer &error)
 {
     bool success = false;
 
@@ -334,14 +334,14 @@ HanamiRoot::initPolicies(Kitsunemimi::ErrorContainer &error)
 
     // read policy-file
     std::string policyFileContent;
-    if(Kitsunemimi::readFile(policyFileContent, policyFilePath, error) == false)
+    if(Hanami::readFile(policyFileContent, policyFilePath, error) == false)
     {
         error.addMeesage("Failed to read policy-file");
         return false;
     }
 
     // parse policy-file
-    Kitsunemimi::Hanami::Policy* policies = Kitsunemimi::Hanami::Policy::getInstance();
+    Hanami::Policy* policies = Hanami::Policy::getInstance();
     if(policies->parse(policyFileContent, error) == false)
     {
         error.addMeesage("Failed to parser policy-file");
@@ -359,7 +359,7 @@ HanamiRoot::initPolicies(Kitsunemimi::ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-HanamiRoot::initJwt(Kitsunemimi::ErrorContainer &error)
+HanamiRoot::initJwt(Hanami::ErrorContainer &error)
 {
     bool success = false;
 
@@ -372,7 +372,7 @@ HanamiRoot::initJwt(Kitsunemimi::ErrorContainer &error)
     }
 
     std::string tokenKeyString;
-    if(Kitsunemimi::readFile(tokenKeyString, tokenKeyPath, error) == false)
+    if(Hanami::readFile(tokenKeyString, tokenKeyPath, error) == false)
     {
         error.addMeesage("Failed to read token-file '" + tokenKeyPath + "'");
         return false;
@@ -388,7 +388,7 @@ HanamiRoot::initJwt(Kitsunemimi::ErrorContainer &error)
  * @brief delete all clusters, because after a restart these are broken
  */
 void
-HanamiRoot::clearCluster(Kitsunemimi::ErrorContainer &error)
+HanamiRoot::clearCluster(Hanami::ErrorContainer &error)
 {
     ClusterTable::getInstance()->deleteAllCluster(error);
     // TODO: if a checkpoint exist for a broken cluster, then the cluster should be
@@ -493,13 +493,13 @@ HanamiRoot::getBlossom(const std::string &groupName,
  * @return true, if successfule, else false
  */
 bool
-HanamiRoot::triggerBlossom(Kitsunemimi::DataMap &result,
+HanamiRoot::triggerBlossom(Hanami::DataMap &result,
                            const std::string &blossomName,
                            const std::string &blossomGroupName,
-                           const Kitsunemimi::DataMap &context,
-                           const Kitsunemimi::DataMap &initialValues,
+                           const Hanami::DataMap &context,
+                           const Hanami::DataMap &initialValues,
                            BlossomStatus &status,
-                           Kitsunemimi::ErrorContainer &error)
+                           Hanami::ErrorContainer &error)
 {
     LOG_DEBUG("trigger blossom");
 
@@ -553,7 +553,7 @@ HanamiRoot::triggerBlossom(Kitsunemimi::DataMap &result,
         }
 
         // check output to be complete
-        Kitsunemimi::DataMap* output = blossomIO.output.getItemContent()->toMap();
+        Hanami::DataMap* output = blossomIO.output.getItemContent()->toMap();
         if(blossom->validateFieldsCompleteness(*output,
                                                *blossom->getOutputValidationMap(),
                                                FieldDef::OUTPUT_TYPE,
@@ -601,7 +601,7 @@ HanamiRoot::checkStatusCode(Blossom* blossom,
                             const std::string &blossomName,
                             const std::string &blossomGroupName,
                             BlossomStatus &status,
-                            Kitsunemimi::ErrorContainer &error)
+                            Hanami::ErrorContainer &error)
 {
     if(status.statusCode)
     {

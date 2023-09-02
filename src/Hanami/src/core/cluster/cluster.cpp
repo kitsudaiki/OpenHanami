@@ -29,9 +29,9 @@
 #include <core/processing/cluster_queue.h>
 #include <api/websocket/cluster_io.h>
 
-#include <libKitsunemimiCommon/logger.h>
-#include <libKitsunemimiCommon/statemachine.h>
-#include <libKitsunemimiCommon/threading/thread.h>
+#include <hanami_common/logger.h>
+#include <hanami_common/statemachine.h>
+#include <hanami_common/threading/thread.h>
 
 extern "C"
 void
@@ -50,7 +50,7 @@ copyToDevice_CUDA(PointerHandler* gpuPointer,
  */
 Cluster::Cluster()
 {
-    stateMachine = new Kitsunemimi::Statemachine();
+    stateMachine = new Hanami::Statemachine();
     taskHandleState = new TaskHandle_State(this);
 
     initStatemachine(*stateMachine, this, taskHandleState);
@@ -113,7 +113,7 @@ Cluster::initCuda()
  * @return true, if successful, else false
  */
 bool
-Cluster::init(const Kitsunemimi::Hanami::ClusterMeta &clusterTemplate,
+Cluster::init(const Hanami::ClusterMeta &clusterTemplate,
               const std::string &uuid)
 {
     return initNewCluster(this, clusterTemplate, uuid);

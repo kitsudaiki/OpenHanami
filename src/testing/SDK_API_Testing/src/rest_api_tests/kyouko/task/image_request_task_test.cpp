@@ -23,7 +23,7 @@
 #include "image_request_task_test.h"
 #include <chrono>
 
-#include <libHanamiAiSdk/task.h>
+#include <hanami_sdk/task.h>
 
 typedef std::chrono::milliseconds chronoMilliSec;
 typedef std::chrono::microseconds chronoMicroSec;
@@ -45,8 +45,8 @@ ImageRequestTaskTest::ImageRequestTaskTest(const bool expectSuccess)
 }
 
 bool
-ImageRequestTaskTest::runTest(Kitsunemimi::JsonItem &inputData,
-                              Kitsunemimi::ErrorContainer &error)
+ImageRequestTaskTest::runTest(Hanami::JsonItem &inputData,
+                              Hanami::ErrorContainer &error)
 {
     // create new user
     std::string result;
@@ -65,7 +65,7 @@ ImageRequestTaskTest::runTest(Kitsunemimi::JsonItem &inputData,
     }
 
     // parse output
-    Kitsunemimi::JsonItem jsonItem;
+    Hanami::JsonItem jsonItem;
     if(jsonItem.parse(result, error) == false) {
         return false;
     }
@@ -101,7 +101,7 @@ ImageRequestTaskTest::runTest(Kitsunemimi::JsonItem &inputData,
     std::cout<<"#######################################################################"<<std::endl;
 
     // get task-result
-    //Kitsunemimi::Hanami::getTask(result, m_taskUuid, m_clusterUuid, true, error);
+    //Hanami::getTask(result, m_taskUuid, m_clusterUuid, true, error);
 
     // parse output
     //if(jsonItem.parse(result, error) == false) {

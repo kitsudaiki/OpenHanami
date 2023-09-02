@@ -22,14 +22,14 @@
 
 #include "rest_api_tests.h"
 
-#include <libKitsunemimiConfig/config_handler.h>
-#include <libKitsunemimiJson/json_item.h>
-#include <libHanamiAiSdk/init.h>
+#include <hanami_config/config_handler.h>
+#include <hanami_json/json_item.h>
+#include <hanami_sdk/init.h>
 
 #include <common/test_thread.h>
-#include <libHanamiAiSdk/cluster.h>
-#include <libHanamiAiSdk/user.h>
-#include <libHanamiAiSdk/project.h>
+#include <hanami_sdk/cluster.h>
+#include <hanami_sdk/user.h>
+#include <hanami_sdk/project.h>
 
 #include <rest_api_tests/misaki/project/project_create_test.h>
 #include <rest_api_tests/misaki/project/project_delete_test.h>
@@ -78,7 +78,7 @@
 bool
 initClient()
 {
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
 
     bool success = false;
     const std::string host = GET_STRING_CONFIG("connection", "host", success);
@@ -102,13 +102,13 @@ void
 deleteAllClusters()
 {
     std::string result = "";
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     HanamiAI::listCluster(result, error);
 
-    Kitsunemimi::JsonItem parsedList;
+    Hanami::JsonItem parsedList;
     parsedList.parse(result, error);
 
-    Kitsunemimi::JsonItem body = parsedList.get("body");
+    Hanami::JsonItem body = parsedList.get("body");
     for(uint64_t i = 0; i < body.size(); i++)
     {
         const std::string uuid = body.get(i).get(0).getString();
@@ -123,13 +123,13 @@ void
 deleteAllProjects()
 {
     std::string result = "";
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     HanamiAI::listProject(result, error);
 
-    Kitsunemimi::JsonItem parsedList;
+    Hanami::JsonItem parsedList;
     parsedList.parse(result, error);
 
-    Kitsunemimi::JsonItem body = parsedList.get("body");
+    Hanami::JsonItem body = parsedList.get("body");
     for(uint64_t i = 0; i < body.size(); i++)
     {
         const std::string uuid = body.get(i).get(0).getString();
@@ -144,13 +144,13 @@ void
 deleteAllUsers()
 {
     std::string result = "";
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     HanamiAI::listUser(result, error);
 
-    Kitsunemimi::JsonItem parsedList;
+    Hanami::JsonItem parsedList;
     parsedList.parse(result, error);
 
-    Kitsunemimi::JsonItem body = parsedList.get("body");
+    Hanami::JsonItem body = parsedList.get("body");
     for(uint64_t i = 0; i < body.size(); i++)
     {
         const std::string uuid = body.get(i).get(0).getString();
@@ -164,7 +164,7 @@ deleteAllUsers()
  * @param inputData json-item with names and other predefined values for the tests
  */
 void
-runImageTest(Kitsunemimi::JsonItem &inputData)
+runImageTest(Hanami::JsonItem &inputData)
 {
     deleteAllClusters();
     deleteAllProjects();
@@ -172,7 +172,7 @@ runImageTest(Kitsunemimi::JsonItem &inputData)
 
     TestThread testThread("test_thread", inputData);
 
-    Kitsunemimi::JsonItem overrideData;
+    Hanami::JsonItem overrideData;
 
     // test project in misaki
     testThread.addTest(new ProjectCreateTest(true));
@@ -281,7 +281,7 @@ runRestApiTests()
                                         "        output: test_output\n"
                                         "        number_of_neurons: 10");
 
-    Kitsunemimi::JsonItem inputData;
+    Hanami::JsonItem inputData;
 
     // add data for the test-user to create
     inputData.insert("user_id", "tsugumi");

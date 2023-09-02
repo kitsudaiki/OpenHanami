@@ -27,8 +27,8 @@
 #include <core/cluster/cluster_init.h>
 #include <core/cluster/statemachine_init.h>
 
-#include <libKitsunemimiCommon/files/binary_file.h>
-#include <libKitsunemimiCrypto/hashes.h>
+#include <hanami_common/files/binary_file.h>
+#include <hanami_crypto/hashes.h>
 
 /**
  * @brief constructor
@@ -54,11 +54,11 @@ bool
 RestoreCluster_State::processEvent()
 {
     Task* actualTask = m_cluster->getActualTask();
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string originalUuid = m_cluster->getUuid();
 
     // get meta-infos of data-set from shiori
-    Kitsunemimi::JsonItem parsedCheckpointInfo;
+    Hanami::JsonItem parsedCheckpointInfo;
     parsedCheckpointInfo.parse(actualTask->checkpointInfo, error);
 
     // get other information
@@ -66,7 +66,7 @@ RestoreCluster_State::processEvent()
 
     // get header
     const std::string header = parsedCheckpointInfo.get("header").toString();
-    Kitsunemimi::JsonItem parsedHeader;
+    Hanami::JsonItem parsedHeader;
     if(parsedHeader.parse(header, error) == false)
     {
         m_cluster->goToNextState(FINISH_TASK);
@@ -74,8 +74,8 @@ RestoreCluster_State::processEvent()
     }
 
     // get checkpoint-data
-    Kitsunemimi::BinaryFile checkpointFile(location);
-    Kitsunemimi::DataBuffer checkpointBuffer;
+    Hanami::BinaryFile checkpointFile(location);
+    Hanami::DataBuffer checkpointBuffer;
     if(checkpointFile.readCompleteFile(checkpointBuffer, error) == false)
     {
         error.addMeesage("failed to load checkpoint-data");

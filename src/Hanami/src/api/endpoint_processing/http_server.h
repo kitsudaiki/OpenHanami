@@ -38,15 +38,15 @@
 #include <mutex>
 #include <deque>
 
-#include <libKitsunemimiCommon/threading/thread.h>
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_common/threading/thread.h>
+#include <hanami_common/logger.h>
 
 using tcp = boost::asio::ip::tcp;
 
 class HttpWebsocketThread;
 
 class HttpServer
-        : public Kitsunemimi::Thread
+        : public Hanami::Thread
 {
 public:
     HttpServer(const std::string &address,
@@ -72,7 +72,7 @@ private:
     std::mutex m_queueMutex;
 
     bool loadCertificates(boost::asio::ssl::context &ctx,
-                          Kitsunemimi::ErrorContainer &error);
+                          Hanami::ErrorContainer &error);
 };
 
 #endif // TORIIGATEWAY_HTTP_SERVER_H

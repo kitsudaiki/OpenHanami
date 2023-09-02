@@ -64,16 +64,16 @@ LoadCluster::LoadCluster()
  */
 bool
 LoadCluster::runTask(BlossomIO &blossomIO,
-                     const Kitsunemimi::DataMap &context,
+                     const Hanami::DataMap &context,
                      BlossomStatus &status,
-                     Kitsunemimi::ErrorContainer &error)
+                     Hanami::ErrorContainer &error)
 {
     const std::string clusterUuid = blossomIO.input.get("cluster_uuid").getString();
     const std::string checkpointUuid = blossomIO.input.get("checkpoint_uuid").getString();
     const UserContext userContext(context);
 
     // get data from table
-    Kitsunemimi::JsonItem clusterInfo;
+    Hanami::JsonItem clusterInfo;
     if(ClusterTable::getInstance()->getCluster(clusterInfo,
                                                clusterUuid,
                                                userContext,
@@ -104,7 +104,7 @@ LoadCluster::runTask(BlossomIO &blossomIO,
     }
 
     // get meta-infos of data-set from shiori
-    Kitsunemimi::JsonItem parsedCheckpointInfo;
+    Hanami::JsonItem parsedCheckpointInfo;
     if(CheckpointTable::getInstance()->getCheckpoint(parsedCheckpointInfo,
                                                      checkpointUuid,
                                                      userContext,

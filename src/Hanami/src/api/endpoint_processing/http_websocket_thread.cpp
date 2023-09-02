@@ -30,10 +30,10 @@
 #include <core/cluster/cluster.h>
 #include <core/cluster/cluster_handler.h>
 
-#include <libKitsunemimiCommon/threading/event.h>
-#include <libKitsunemimiJson/json_item.h>
+#include <hanami_common/threading/event.h>
+#include <hanami_json/json_item.h>
 
-using namespace Kitsunemimi;
+using namespace Hanami;
 
 /**
  * @brief constructor
@@ -353,7 +353,7 @@ HttpWebsocketThread::processInitialMessage(const std::string &message,
     m_target = content.get("target").getString();
 
     // check authentication
-    Kitsunemimi::JsonItem tokenData;
+    Hanami::JsonItem tokenData;
     if(checkPermission(tokenData,
                        content.get("token").getString(),
                        requestMsg,

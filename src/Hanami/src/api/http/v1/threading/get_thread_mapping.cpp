@@ -46,9 +46,9 @@ GetThreadMapping::GetThreadMapping()
  */
 bool
 GetThreadMapping::runTask(BlossomIO &blossomIO,
-                          const Kitsunemimi::DataMap &,
+                          const Hanami::DataMap &,
                           BlossomStatus &,
-                          Kitsunemimi::ErrorContainer &)
+                          Hanami::ErrorContainer &)
 {
     blossomIO.output.insert("thread_map", ThreadBinder::getInstance()->getMapping());
 

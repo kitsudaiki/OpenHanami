@@ -22,7 +22,7 @@
 
 #include "project_list_test.h"
 
-#include <libHanamiAiSdk/project.h>
+#include <hanami_sdk/project.h>
 
 ProjectListTest::ProjectListTest(const bool expectSuccess)
     : TestStep(expectSuccess)
@@ -36,8 +36,8 @@ ProjectListTest::ProjectListTest(const bool expectSuccess)
 }
 
 bool
-ProjectListTest::runTest(Kitsunemimi::JsonItem &inputData,
-                         Kitsunemimi::ErrorContainer &error)
+ProjectListTest::runTest(Hanami::JsonItem &inputData,
+                         Hanami::ErrorContainer &error)
 {
     // list all users
     std::string result;
@@ -50,7 +50,7 @@ ProjectListTest::runTest(Kitsunemimi::JsonItem &inputData,
     }
 
     // parse output
-    Kitsunemimi::JsonItem jsonItem;
+    Hanami::JsonItem jsonItem;
     if(jsonItem.parse(result, error) == false) {
         return false;
     }

@@ -22,7 +22,7 @@
 
 #include "direct_io_test.h"
 
-#include <libHanamiAiSdk/io.h>
+#include <hanami_sdk/io.h>
 #include <common/test_thread.h>
 
 DirectIoTest::DirectIoTest(const bool expectSuccess)
@@ -37,8 +37,8 @@ DirectIoTest::DirectIoTest(const bool expectSuccess)
 }
 
 bool
-DirectIoTest::runTest(Kitsunemimi::JsonItem &,
-                      Kitsunemimi::ErrorContainer &)
+DirectIoTest::runTest(Hanami::JsonItem &,
+                      Hanami::ErrorContainer &)
 {
     if(trainTest() == false) {
         return false;
@@ -54,7 +54,7 @@ DirectIoTest::runTest(Kitsunemimi::JsonItem &,
 bool
 DirectIoTest::trainTest()
 {
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
 
     // create input
     float inputValues[784];
@@ -85,7 +85,7 @@ DirectIoTest::trainTest()
 bool
 DirectIoTest::requestTest()
 {
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
 
     // send request
     float inputValues[784];

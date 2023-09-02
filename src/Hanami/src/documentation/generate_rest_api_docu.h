@@ -26,20 +26,20 @@
 #include <string>
 #include <map>
 
-namespace Kitsunemimi {
+namespace Hanami {
 class JsonItem;
 }
 struct FieldDef;
 
 void createOpenApiDocumentation(std::string &docu);
 
-void generateEndpointDocu_openapi(Kitsunemimi::JsonItem &result);
-void createBodyParams_openapi(Kitsunemimi::JsonItem &schema,
+void generateEndpointDocu_openapi(Hanami::JsonItem &result);
+void createBodyParams_openapi(Hanami::JsonItem &schema,
                               const std::map<std::string, FieldDef>* defMap,
                               const bool isRequest);
-void createQueryParams_openapi(Kitsunemimi::JsonItem &parameters,
+void createQueryParams_openapi(Hanami::JsonItem &parameters,
                                const std::map<std::string, FieldDef>* defMap);
-void addTokenRequirement(Kitsunemimi::JsonItem &parameters);
+void addTokenRequirement(Hanami::JsonItem &parameters);
 
 
 #endif // HANAMI_GENERATERESTAPIDOCU_H

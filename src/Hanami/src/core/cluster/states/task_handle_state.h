@@ -30,12 +30,12 @@
 
 #include <core/cluster/task.h>
 
-#include <libKitsunemimiCommon/threading/event.h>
+#include <hanami_common/threading/event.h>
 
 class Cluster;
 
 class TaskHandle_State
-        : public Kitsunemimi::Event
+        : public Hanami::Event
 {
 public:
     TaskHandle_State(Cluster* cluster);

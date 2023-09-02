@@ -26,7 +26,7 @@
 #include <string>
 #include <vector>
 
-#include <libKitsunemimiCommon/items/data_items.h>
+#include <hanami_common/items/data_items.h>
 #include <api/endpoint_processing/blossom.h>
 
 //==================================================================================================
@@ -54,7 +54,7 @@ struct ValueItem
         COMPARE_UNEQUAL_PAIR_TYPE = 4,
     };
 
-    Kitsunemimi::DataItem* item = nullptr;
+    Hanami::DataItem* item = nullptr;
     ValueType type = INPUT_PAIR_TYPE;
     bool isIdentifier = false;
     std::string comment = "";

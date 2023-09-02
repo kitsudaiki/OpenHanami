@@ -22,10 +22,10 @@
 
 #include "hanami_sql_log_table.h"
 
-#include <libKitsunemimiSakuraDatabase/sql_database.h>
+#include <hanami_database/sql_database.h>
 
-#include <libKitsunemimiCommon/methods/string_methods.h>
-#include <libKitsunemimiJson/json_item.h>
+#include <hanami_common/methods/string_methods.h>
+#include <hanami_json/json_item.h>
 
 #include <uuid/uuid.h>
 
@@ -34,7 +34,7 @@
  *
  * @param db pointer to database
  */
-HanamiSqlLogTable::HanamiSqlLogTable(Kitsunemimi::Sakura::SqlDatabase* db)
+HanamiSqlLogTable::HanamiSqlLogTable(Hanami::SqlDatabase* db)
     : SqlTable(db)
 {
     DbHeaderEntry id;
@@ -56,7 +56,7 @@ HanamiSqlLogTable::~HanamiSqlLogTable() {}
  * @return -1 if request against database failed, else number of rows
  */
 long
-HanamiSqlLogTable::getNumberOfPages(Kitsunemimi::ErrorContainer &error)
+HanamiSqlLogTable::getNumberOfPages(Hanami::ErrorContainer &error)
 {
     const long numberOfRows = getNumberOfRows(error);
     if(numberOfRows == -1) {
@@ -77,10 +77,10 @@ HanamiSqlLogTable::getNumberOfPages(Kitsunemimi::ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-HanamiSqlLogTable::getPageFromDb(Kitsunemimi::TableItem &resultTable,
+HanamiSqlLogTable::getPageFromDb(Hanami::TableItem &resultTable,
                                  const std::string &userId,
                                  const uint64_t page,
-                                 Kitsunemimi::ErrorContainer &error)
+                                 Hanami::ErrorContainer &error)
 {
     // get number of pages of the log-table
     const long numberOfPages = getNumberOfPages(error);

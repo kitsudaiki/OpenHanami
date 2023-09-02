@@ -22,11 +22,11 @@
 
 #include <database/audit_log_table.h>
 
-#include <libKitsunemimiCommon/items/table_item.h>
-#include <libKitsunemimiCommon/methods/string_methods.h>
-#include <libKitsunemimiJson/json_item.h>
+#include <hanami_common/items/table_item.h>
+#include <hanami_common/methods/string_methods.h>
+#include <hanami_json/json_item.h>
 
-#include <libKitsunemimiSakuraDatabase/sql_database.h>
+#include <hanami_database/sql_database.h>
 
 AuditLogTable* AuditLogTable::instance = nullptr;
 
@@ -36,7 +36,7 @@ AuditLogTable* AuditLogTable::instance = nullptr;
  * @param db pointer to database
  */
 AuditLogTable::AuditLogTable()
-    : HanamiSqlLogTable(Kitsunemimi::Sakura::SqlDatabase::getInstance())
+    : HanamiSqlLogTable(Hanami::SqlDatabase::getInstance())
 {
     m_tableName = "audit_log";
 
@@ -77,9 +77,9 @@ AuditLogTable::addAuditLogEntry(const std::string &timestamp,
                                 const std::string &userId,
                                 const std::string &endpoint,
                                 const std::string &requestType,
-                                Kitsunemimi::ErrorContainer &error)
+                                Hanami::ErrorContainer &error)
 {
-    Kitsunemimi::JsonItem data;
+    Hanami::JsonItem data;
     data.insert("timestamp", timestamp);
     data.insert("user_id", userId);
     data.insert("endpoint", endpoint);
@@ -105,10 +105,10 @@ AuditLogTable::addAuditLogEntry(const std::string &timestamp,
  * @return true, if successful, else false
  */
 bool
-AuditLogTable::getAllAuditLogEntries(Kitsunemimi::TableItem &result,
+AuditLogTable::getAllAuditLogEntries(Hanami::TableItem &result,
                                      const std::string &userId,
                                      const uint64_t page,
-                                     Kitsunemimi::ErrorContainer &error)
+                                     Hanami::ErrorContainer &error)
 {
     if(getPageFromDb(result, userId, page, error) == false)
     {

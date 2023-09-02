@@ -25,7 +25,7 @@
 #include <hanami_root.h>
 #include <database/projects_table.h>
 
-#include <libKitsunemimiJson/json_item.h>
+#include <hanami_json/json_item.h>
 
 /**
  * @brief constructor
@@ -55,9 +55,9 @@ DeleteProject::DeleteProject()
  */
 bool
 DeleteProject::runTask(BlossomIO &blossomIO,
-                       const Kitsunemimi::DataMap &context,
+                       const Hanami::DataMap &context,
                        BlossomStatus &status,
-                       Kitsunemimi::ErrorContainer &error)
+                       Hanami::ErrorContainer &error)
 {
     // check if admin
     if(context.getBoolByKey("is_admin") == false)
@@ -70,7 +70,7 @@ DeleteProject::runTask(BlossomIO &blossomIO,
     const std::string projectId = blossomIO.input.get("id").getString();
 
     // check if user exist within the table
-    Kitsunemimi::JsonItem result;
+    Hanami::JsonItem result;
     if(ProjectsTable::getInstance()->getProject(result, projectId, error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;

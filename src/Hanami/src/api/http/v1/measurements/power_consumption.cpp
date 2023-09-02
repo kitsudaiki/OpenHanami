@@ -22,7 +22,7 @@
 
 #include "power_consumption.h"
 #include <hanami_root.h>
-#include <libKitsunemimiHanamiHardware/power_measuring.h>
+#include <hanami_hardware/power_measuring.h>
 
 PowerConsumption::PowerConsumption()
     : Blossom("Request the power-measurement of the CPU")
@@ -44,9 +44,9 @@ PowerConsumption::PowerConsumption()
  */
 bool
 PowerConsumption::runTask(BlossomIO &blossomIO,
-                          const Kitsunemimi::DataMap &,
+                          const Hanami::DataMap &,
                           BlossomStatus &,
-                          Kitsunemimi::ErrorContainer &)
+                          Hanami::ErrorContainer &)
 {
     blossomIO.output.insert("power", PowerMeasuring::getInstance()->getJson());
 

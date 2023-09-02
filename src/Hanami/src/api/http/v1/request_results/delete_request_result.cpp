@@ -48,15 +48,15 @@ DeleteRequestResult::DeleteRequestResult()
  */
 bool
 DeleteRequestResult::runTask(BlossomIO &blossomIO,
-                             const Kitsunemimi::DataMap &context,
+                             const Hanami::DataMap &context,
                              BlossomStatus &status,
-                             Kitsunemimi::ErrorContainer &error)
+                             Hanami::ErrorContainer &error)
 {
     const std::string uuid = blossomIO.input.get("uuid").getString();
     const UserContext userContext(context);
 
     // check if request-result exist within the table
-    Kitsunemimi::JsonItem result;
+    Hanami::JsonItem result;
     if(RequestResultTable::getInstance()->getRequestResult(result,
                                                            uuid,
                                                            userContext,

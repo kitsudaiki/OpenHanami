@@ -27,8 +27,8 @@
 #include <api/endpoint_processing/http_processing/http_processing.h>
 #include <api/endpoint_processing/http_websocket_thread.h>
 
-#include <libKitsunemimiCommon/logger.h>
-#include <libKitsunemimiCommon/files/text_file.h>
+#include <hanami_common/logger.h>
+#include <hanami_common/files/text_file.h>
 
 /**
  * @brief constructor
@@ -42,7 +42,7 @@ HttpServer::HttpServer(const std::string &address,
                        const uint16_t port,
                        const std::string &certFilePath,
                        const std::string &keyFilePath)
-    : Kitsunemimi::Thread("HttpServer"),
+    : Hanami::Thread("HttpServer"),
       m_ctx{boost::asio::ssl::context::tlsv13_server},
       m_address(address),
       m_port(port),
@@ -60,7 +60,7 @@ HttpServer::HttpServer(const std::string &address,
  */
 bool
 HttpServer::loadCertificates(boost::asio::ssl::context &ctx,
-                             Kitsunemimi::ErrorContainer &error)
+                             Hanami::ErrorContainer &error)
 {
     std::string errorMessage = "";
     std::string cert = "";
@@ -68,7 +68,7 @@ HttpServer::loadCertificates(boost::asio::ssl::context &ctx,
     bool ret = false;
 
     // read certificate
-    ret = Kitsunemimi::readFile(cert, m_certFilePath, error);
+    ret = Hanami::readFile(cert, m_certFilePath, error);
     if(ret == false)
     {
         error.addMeesage("failed to read certificate-file: '" + m_certFilePath + "'");
@@ -76,7 +76,7 @@ HttpServer::loadCertificates(boost::asio::ssl::context &ctx,
     }
 
     // read key
-    ret = Kitsunemimi::readFile(key, m_keyFilePath, error);
+    ret = Hanami::readFile(key, m_keyFilePath, error);
     if(ret == false)
     {
         error.addMeesage("failed to read key-file: '" + m_certFilePath + "'");
@@ -114,7 +114,7 @@ HttpServer::loadCertificates(boost::asio::ssl::context &ctx,
 void
 HttpServer::run()
 {
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
 
     LOG_INFO("start HTTP-server on address "
              + m_address

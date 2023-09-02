@@ -23,10 +23,10 @@
 #ifndef HANAMI_CLUSTER_CHECKPOINT_TABLE_H
 #define HANAMI_CLUSTER_CHECKPOINT_TABLE_H
 
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_common/logger.h>
 #include <database/generic_tables/hanami_sql_table.h>
 
-namespace Kitsunemimi {
+namespace Hanami {
 class JsonItem;
 }
 
@@ -44,23 +44,23 @@ public:
 
     ~CheckpointTable();
 
-    bool addCheckpoint(Kitsunemimi::JsonItem &data,
+    bool addCheckpoint(Hanami::JsonItem &data,
                             const UserContext &userContext,
-                            Kitsunemimi::ErrorContainer &error);
-    bool getCheckpoint(Kitsunemimi::JsonItem &result,
+                            Hanami::ErrorContainer &error);
+    bool getCheckpoint(Hanami::JsonItem &result,
                             const std::string &checkpointUuid,
                             const UserContext &userContext,
-                            Kitsunemimi::ErrorContainer &error,
+                            Hanami::ErrorContainer &error,
                             const bool showHiddenValues);
-    bool getAllCheckpoint(Kitsunemimi::TableItem &result,
+    bool getAllCheckpoint(Hanami::TableItem &result,
                                const UserContext &userContext,
-                               Kitsunemimi::ErrorContainer &error);
+                               Hanami::ErrorContainer &error);
     bool deleteCheckpoint(const std::string &checkpointUuid,
                                const UserContext &userContext,
-                               Kitsunemimi::ErrorContainer &error);
+                               Hanami::ErrorContainer &error);
     bool setUploadFinish(const std::string &uuid,
                          const std::string &fileUuid,
-                         Kitsunemimi::ErrorContainer &error);
+                         Hanami::ErrorContainer &error);
 
 private:
     CheckpointTable();

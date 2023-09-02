@@ -66,16 +66,16 @@ SaveCluster::SaveCluster()
  */
 bool
 SaveCluster::runTask(BlossomIO &blossomIO,
-                     const Kitsunemimi::DataMap &context,
+                     const Hanami::DataMap &context,
                      BlossomStatus &status,
-                     Kitsunemimi::ErrorContainer &error)
+                     Hanami::ErrorContainer &error)
 {
     const std::string clusterUuid = blossomIO.input.get("cluster_uuid").getString();
     const std::string name = blossomIO.input.get("name").getString();
     const UserContext userContext(context);
 
     // get data from table
-    Kitsunemimi::JsonItem clusterResult;
+    Hanami::JsonItem clusterResult;
     if(ClusterTable::getInstance()->getCluster(clusterResult,
                                                clusterUuid,
                                                userContext,

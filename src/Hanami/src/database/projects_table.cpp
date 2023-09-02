@@ -22,12 +22,12 @@
 
 #include <database/projects_table.h>
 
-#include <libKitsunemimiCommon/items/table_item.h>
-#include <libKitsunemimiCommon/methods/string_methods.h>
-#include <libKitsunemimiJson/json_item.h>
-#include <libKitsunemimiCrypto/hashes.h>
+#include <hanami_common/items/table_item.h>
+#include <hanami_common/methods/string_methods.h>
+#include <hanami_json/json_item.h>
+#include <hanami_crypto/hashes.h>
 
-#include <libKitsunemimiSakuraDatabase/sql_database.h>
+#include <hanami_database/sql_database.h>
 
 ProjectsTable* ProjectsTable::instance = nullptr;
 
@@ -35,7 +35,7 @@ ProjectsTable* ProjectsTable::instance = nullptr;
  * @brief constructor
  */
 ProjectsTable::ProjectsTable()
-    : HanamiSqlAdminTable(Kitsunemimi::Sakura::SqlDatabase::getInstance())
+    : HanamiSqlAdminTable(Hanami::SqlDatabase::getInstance())
 {
     m_tableName = "projects";
 }
@@ -54,8 +54,8 @@ ProjectsTable::~ProjectsTable() {}
  * @return true, if successful, else false
  */
 bool
-ProjectsTable::addProject(Kitsunemimi::JsonItem &userData,
-                          Kitsunemimi::ErrorContainer &error)
+ProjectsTable::addProject(Hanami::JsonItem &userData,
+                          Hanami::ErrorContainer &error)
 {
     if(insertToDb(userData, error) == false)
     {
@@ -77,9 +77,9 @@ ProjectsTable::addProject(Kitsunemimi::JsonItem &userData,
  * @return true, if successful, else false
  */
 bool
-ProjectsTable::getProject(Kitsunemimi::JsonItem &result,
+ProjectsTable::getProject(Hanami::JsonItem &result,
                           const std::string &projectId,
-                          Kitsunemimi::ErrorContainer &error,
+                          Hanami::ErrorContainer &error,
                           const bool showHiddenValues)
 {
     std::vector<RequestCondition> conditions;
@@ -106,8 +106,8 @@ ProjectsTable::getProject(Kitsunemimi::JsonItem &result,
  * @return true, if successful, else false
  */
 bool
-ProjectsTable::getAllProjects(Kitsunemimi::TableItem &result,
-                              Kitsunemimi::ErrorContainer &error)
+ProjectsTable::getAllProjects(Hanami::TableItem &result,
+                              Hanami::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
     if(getFromDb(result, conditions, error, false) == false)
@@ -129,7 +129,7 @@ ProjectsTable::getAllProjects(Kitsunemimi::TableItem &result,
  */
 bool
 ProjectsTable::deleteProject(const std::string &projectId,
-                             Kitsunemimi::ErrorContainer &error)
+                             Hanami::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("id", projectId);

@@ -39,8 +39,8 @@
 #include <common/structs.h>
 #include <common/enums.h>
 
-#include <libKitsunemimiHanamiPolicies/policy.h>
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_policies/policy.h>
+#include <hanami_common/logger.h>
 
 namespace beast = boost::beast;         // from <boost/beast.hpp>
 namespace http = beast::http;           // from <boost/beast/http.hpp>
@@ -49,27 +49,27 @@ using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 namespace websocket = beast::websocket; // from <boost/beast/websocket.hpp>
 namespace ssl = boost::asio::ssl;       // from <boost/asio/ssl.hpp>
 
-namespace Kitsunemimi {
+namespace Hanami {
 class JsonItem;
 }
 
 bool processRequest(http::request<http::string_body> &httpRequest,
                     http::response<http::dynamic_body> &httpResponse,
-                    Kitsunemimi::ErrorContainer &error);
+                    Hanami::ErrorContainer &error);
 
 bool requestToken(http::response<http::dynamic_body> &httpResponse,
                   const RequestMessage &hanamiRequest,
-                  Kitsunemimi::ErrorContainer &error);
-bool checkPermission(Kitsunemimi::JsonItem &tokenData,
+                  Hanami::ErrorContainer &error);
+bool checkPermission(Hanami::JsonItem &tokenData,
                      const std::string &token,
                      const RequestMessage &hanamiRequest,
                      ResponseMessage &responseMsg,
-                     Kitsunemimi::ErrorContainer &error);
+                     Hanami::ErrorContainer &error);
 bool processControlRequest(http::response<http::dynamic_body> &httpResponse,
                            const std::string &uri,
                            const std::string &token,
                            const std::string &inputValues,
-                           const Kitsunemimi::Hanami::HttpRequestType httpType,
-                           Kitsunemimi::ErrorContainer &error);
+                           const Hanami::HttpRequestType httpType,
+                           Hanami::ErrorContainer &error);
 
 #endif // TORIIGATEWAY_HTTP_PROCESSING_H

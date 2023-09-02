@@ -25,9 +25,9 @@
 
 #include <string>
 #include <map>
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_common/logger.h>
 
-namespace Kitsunemimi {
+namespace Hanami {
 class BinaryFile;
 struct DataBuffer;
 }
@@ -50,18 +50,18 @@ public:
                       const uint64_t pos,
                       const void* data,
                       const uint64_t size);
-    bool getData(Kitsunemimi::DataBuffer &result,
+    bool getData(Hanami::DataBuffer &result,
                  const std::string &uuid);
     bool removeData(const std::string &id);
     bool moveData(const std::string &uuid,
                   const std::string &targetLocation,
-                  Kitsunemimi::ErrorContainer &error);
+                  Hanami::ErrorContainer &error);
 
 private:
     TempFileHandler();
     static TempFileHandler* instance;
 
-    std::map<std::string, Kitsunemimi::BinaryFile*> m_tempFiles;
+    std::map<std::string, Hanami::BinaryFile*> m_tempFiles;
 };
 
 #endif // HANAMI_TEMPFILEHANDLER_H

@@ -25,9 +25,9 @@
 #include <hanami_root.h>
 #include <database/users_table.h>
 
-#include <libKitsunemimiCrypto/hashes.h>
-#include <libKitsunemimiJson/json_item.h>
-#include <libKitsunemimiConfig/config_handler.h>
+#include <hanami_crypto/hashes.h>
+#include <hanami_json/json_item.h>
+#include <hanami_config/config_handler.h>
 
 #include <jwt-cpp/jwt.h>
 //#include <jwt-cpp/traits/nlohmann-json/defaults.h>
@@ -75,15 +75,15 @@ RenewToken::RenewToken()
  */
 bool
 RenewToken::runTask(BlossomIO &blossomIO,
-                    const Kitsunemimi::DataMap &context,
+                    const Hanami::DataMap &context,
                     BlossomStatus &status,
-                    Kitsunemimi::ErrorContainer &error)
+                    Hanami::ErrorContainer &error)
 {
     const UserContext userContext(context);
     const std::string projectId = blossomIO.input.get("project_id").getString();
 
     // get data from table
-    Kitsunemimi::JsonItem userData;
+    Hanami::JsonItem userData;
     if(UsersTable::getInstance()->getUser(userData, userContext.userId, error, false) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -100,16 +100,16 @@ RenewToken::runTask(BlossomIO &blossomIO,
         return false;
     }
 
-    Kitsunemimi::JsonItem parsedProjects = userData.get("projects");
+    Hanami::JsonItem parsedProjects = userData.get("projects");
 
     // if user is global admin, add the admin-project to the list of choosable projects
     const bool isAdmin = userData.get("is_admin").getBool();
     if(isAdmin)
     {
-        Kitsunemimi::DataMap* adminProject = new Kitsunemimi::DataMap();
-        adminProject->insert("project_id", new Kitsunemimi::DataValue("admin"));
-        adminProject->insert("role", new Kitsunemimi::DataValue("admin"));
-        adminProject->insert("is_project_admin", new Kitsunemimi::DataValue(true));
+        Hanami::DataMap* adminProject = new Hanami::DataMap();
+        adminProject->insert("project_id", new Hanami::DataValue("admin"));
+        adminProject->insert("role", new Hanami::DataValue("admin"));
+        adminProject->insert("is_project_admin", new Hanami::DataValue(true));
         parsedProjects.append(adminProject);
     }
 
@@ -164,8 +164,8 @@ RenewToken::runTask(BlossomIO &blossomIO,
  * @return true, if selectedProjectId is available for the user, else false
  */
 bool
-RenewToken::chooseProject(Kitsunemimi::JsonItem &userData,
-                          Kitsunemimi::JsonItem &parsedProjects,
+RenewToken::chooseProject(Hanami::JsonItem &userData,
+                          Hanami::JsonItem &parsedProjects,
                           const std::string selectedProjectId)
 {
     for(uint64_t i = 0; i < parsedProjects.size(); i++)

@@ -72,9 +72,9 @@ SetClusterMode::SetClusterMode()
  */
 bool
 SetClusterMode::runTask(BlossomIO &blossomIO,
-                        const Kitsunemimi::DataMap &context,
+                        const Hanami::DataMap &context,
                         BlossomStatus &status,
-                        Kitsunemimi::ErrorContainer &error)
+                        Hanami::ErrorContainer &error)
 {
     const std::string clusterUuid = blossomIO.input.get("uuid").getString();
     const std::string connectionUuid = blossomIO.input.get("connection_uuid").getString();

@@ -25,7 +25,7 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-#include <libKitsunemimiHanamiClusterParser/cluster_meta.h>
+#include <hanami_cluster_parser/cluster_meta.h>
 
 class Cluster;
 
@@ -37,9 +37,9 @@ public:
 
 protected:
     bool runTask(BlossomIO &blossomIO,
-                 const Kitsunemimi::DataMap &context,
+                 const Hanami::DataMap &context,
                  BlossomStatus &status,
-                 Kitsunemimi::ErrorContainer &error);
+                 Hanami::ErrorContainer &error);
 };
 
 #endif // HANAMI_CREATECLUSTER_H

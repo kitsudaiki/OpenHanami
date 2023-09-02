@@ -25,7 +25,7 @@
 
 #include <stdint.h>
 #include <common.h>
-#include <libKitsunemimiHanamiClusterParser/cluster_meta.h>
+#include <hanami_cluster_parser/cluster_meta.h>
 
 /**
  * @brief get neighbor-position for a specific side in the hexagon-grid
@@ -35,10 +35,10 @@
  *
  * @return position of the object, which is connected to this side
  */
-inline Kitsunemimi::Position
-getNeighborPos(const Kitsunemimi::Position sourcePos, const uint8_t side)
+inline Hanami::Position
+getNeighborPos(const Hanami::Position sourcePos, const uint8_t side)
 {
-    Kitsunemimi::Position result;
+    Hanami::Position result;
 
     switch(side)
     {

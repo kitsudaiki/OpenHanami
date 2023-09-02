@@ -27,24 +27,24 @@
 #include <string>
 #include <uuid/uuid.h>
 
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_common/logger.h>
 
-#include <libKitsunemimiSakuraDatabase/sql_table.h>
+#include <hanami_database/sql_table.h>
 
 class SqlDatabase;
 
 class HanamiSqlLogTable
-        : public Kitsunemimi::Sakura::SqlTable
+        : public Hanami::SqlTable
 {
 public:
-    HanamiSqlLogTable(Kitsunemimi::Sakura::SqlDatabase* db);
+    HanamiSqlLogTable(Hanami::SqlDatabase* db);
     virtual ~HanamiSqlLogTable();
 
-    long getNumberOfPages(Kitsunemimi::ErrorContainer &error);
-    bool getPageFromDb(Kitsunemimi::TableItem &resultTable,
+    long getNumberOfPages(Hanami::ErrorContainer &error);
+    bool getPageFromDb(Hanami::TableItem &resultTable,
                        const std::string &userId,
                        const uint64_t page,
-                       Kitsunemimi::ErrorContainer &error);
+                       Hanami::ErrorContainer &error);
 };
 
 #endif // HANAMI_DATABASE_SQL_LOG_TABLE_H

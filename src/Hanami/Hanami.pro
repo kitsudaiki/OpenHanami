@@ -4,82 +4,77 @@ TARGET = Hanami
 CONFIG += console
 CONFIG += c++17
 
-INCLUDEPATH += ../libraries/libKitsunemimiHanamiMessages/protobuffers
+INCLUDEPATH += ../libraries/hanami_messages/protobuffers
 
-LIBS += -L../libraries/libKitsunemimiHanamiHardware/src -lKitsunemimiHanamiHardware
-LIBS += -L../libraries/libKitsunemimiHanamiHardware/src/debug -lKitsunemimiHanamiHardware
-LIBS += -L../libraries/libKitsunemimiHanamiHardware/src/release -lKitsunemimiHanamiHardware
-INCLUDEPATH += ../libraries/libKitsunemimiHanamiHardware/include
+LIBS += -L../libraries/hanami_hardware/src -lhanami_hardware
+LIBS += -L../libraries/hanami_hardware/src/debug -lhanami_hardware
+LIBS += -L../libraries/hanami_hardware/src/release -lhanami_hardware
+INCLUDEPATH += ../libraries/hanami_hardware/include
 
-LIBS += -L../libraries/libKitsunemimiHanamiFiles/src -lKitsunemimiHanamiFiles
-LIBS += -L../libraries/libKitsunemimiHanamiFiles/src/debug -lKitsunemimiHanamiFiles
-LIBS += -L../libraries/libKitsunemimiHanamiFiles/src/release -lKitsunemimiHanamiFiles
-INCLUDEPATH += ../libraries/libKitsunemimiHanamiFiles/include
+LIBS += -L../libraries/hanami_files/src -lhanami_files
+LIBS += -L../libraries/hanami_files/src/debug -lhanami_files
+LIBS += -L../libraries/hanami_files/src/release -lhanami_files
+INCLUDEPATH += ../libraries/hanami_files/include
 
-LIBS += -L../libraries/libKitsunemimiHanamiClusterParser/src -lKitsunemimiHanamiClusterParser
-LIBS += -L../libraries/libKitsunemimiHanamiClusterParser/src/debug -lKitsunemimiHanamiClusterParser
-LIBS += -L../libraries/libKitsunemimiHanamiClusterParser/src/release -lKitsunemimiHanamiClusterParser
-INCLUDEPATH += ../libraries/libKitsunemimiHanamiClusterParser/include
+LIBS += -L../libraries/hanami_cluster_parser/src -lhanami_cluster_parser
+LIBS += -L../libraries/hanami_cluster_parser/src/debug -lhanami_cluster_parser
+LIBS += -L../libraries/hanami_cluster_parser/src/release -lhanami_cluster_parser
+INCLUDEPATH += ../libraries/hanami_cluster_parser/include
 
-LIBS += -L../libraries/libKitsunemimiHanamiPolicies/src -lKitsunemimiHanamiPolicies
-LIBS += -L../libraries/libKitsunemimiHanamiPolicies/src/debug -lKitsunemimiHanamiPolicies
-LIBS += -L../libraries/libKitsunemimiHanamiPolicies/src/release -lKitsunemimiHanamiPolicies
-INCLUDEPATH += ../libraries/libKitsunemimiHanamiPolicies/include
+LIBS += -L../libraries/hanami_policies/src -lhanami_policies
+LIBS += -L../libraries/hanami_policies/src/debug -lhanami_policies
+LIBS += -L../libraries/hanami_policies/src/release -lhanami_policies
+INCLUDEPATH += ../libraries/hanami_policies/include
 
-LIBS += -L../libraries/libKitsunemimiArgs/src -lKitsunemimiArgs
-LIBS += -L../libraries/libKitsunemimiArgs/src/debug -lKitsunemimiArgs
-LIBS += -L../libraries/libKitsunemimiArgs/src/release -lKitsunemimiArgs
-INCLUDEPATH += ../libraries/libKitsunemimiArgs/include
+LIBS += -L../libraries/hanami_args/src -lhanami_args
+LIBS += -L../libraries/hanami_args/src/debug -lhanami_args
+LIBS += -L../libraries/hanami_args/src/release -lhanami_args
+INCLUDEPATH += ../libraries/hanami_args/include
 
-LIBS += -L../libraries/libKitsunemimiConfig/src -lKitsunemimiConfig
-LIBS += -L../libraries/libKitsunemimiConfig/src/debug -lKitsunemimiConfig
-LIBS += -L../libraries/libKitsunemimiConfig/src/release -lKitsunemimiConfig
-INCLUDEPATH += ../libraries/libKitsunemimiConfig/include
+LIBS += -L../libraries/hanami_config/src -lhanami_config
+LIBS += -L../libraries/hanami_config/src/debug -lhanami_config
+LIBS += -L../libraries/hanami_config/src/release -lhanami_config
+INCLUDEPATH += ../libraries/hanami_config/include
 
-LIBS += -L../libraries/../libraries/libKitsunemimiSakuraHardware/src -lKitsunemimiSakuraHardware
-LIBS += -L../libraries/../libraries/libKitsunemimiSakuraHardware/src/debug -lKitsunemimiSakuraHardware
-LIBS += -L../libraries/../libraries/libKitsunemimiSakuraHardware/src/release -lKitsunemimiSakuraHardware
-INCLUDEPATH += ../libraries/libKitsunemimiSakuraHardware/include
+LIBS += -L../libraries/hanami_database/src -lhanami_database
+LIBS += -L../libraries/hanami_database/src/debug -lhanami_database
+LIBS += -L../libraries/hanami_database/src/release -lhanami_database
+INCLUDEPATH += ../libraries/hanami_database/include
 
-LIBS += -L../libraries/libKitsunemimiSakuraDatabase/src -lKitsunemimiSakuraDatabase
-LIBS += -L../libraries/libKitsunemimiSakuraDatabase/src/debug -lKitsunemimiSakuraDatabase
-LIBS += -L../libraries/libKitsunemimiSakuraDatabase/src/release -lKitsunemimiSakuraDatabase
-INCLUDEPATH += ../libraries/libKitsunemimiSakuraDatabase/include
+LIBS += -L../libraries/hanami_common/src -lhanami_common
+LIBS += -L../libraries/hanami_common/src/debug -lhanami_common
+LIBS += -L../libraries/hanami_common/src/release -lhanami_common
+INCLUDEPATH += ../libraries/hanami_common/include
 
-LIBS += -L../libraries/libKitsunemimiCommon/src -lKitsunemimiCommon
-LIBS += -L../libraries/libKitsunemimiCommon/src/debug -lKitsunemimiCommon
-LIBS += -L../libraries/libKitsunemimiCommon/src/release -lKitsunemimiCommon
-INCLUDEPATH += ../libraries/libKitsunemimiCommon/include
+LIBS += -L../libraries/hanami_sqlite/src -lhanami_sqlite
+LIBS += -L../libraries/hanami_sqlite/src/debug -lhanami_sqlite
+LIBS += -L../libraries/hanami_sqlite/src/release -lhanami_sqlite
+INCLUDEPATH += ../libraries/hanami_sqlite/include
 
-LIBS += -L../libraries/libKitsunemimiSqlite/src -lKitsunemimiSqlite
-LIBS += -L../libraries/libKitsunemimiSqlite/src/debug -lKitsunemimiSqlite
-LIBS += -L../libraries/libKitsunemimiSqlite/src/release -lKitsunemimiSqlite
-INCLUDEPATH += ../libraries/libKitsunemimiSqlite/include
+LIBS += -L../libraries/hanami_ini/src -lhanami_ini
+LIBS += -L../libraries/hanami_ini/src/debug -lhanami_ini
+LIBS += -L../libraries/hanami_ini/src/release -lhanami_ini
+INCLUDEPATH += ../libraries/hanami_ini/include
 
-LIBS += -L../libraries/libKitsunemimiIni/src -lKitsunemimiIni
-LIBS += -L../libraries/libKitsunemimiIni/src/debug -lKitsunemimiIni
-LIBS += -L../libraries/libKitsunemimiIni/src/release -lKitsunemimiIni
-INCLUDEPATH += ../libraries/libKitsunemimiIni/include
+LIBS += -L../libraries/hanami_json/src -lhanami_json
+LIBS += -L../libraries/hanami_json/src/debug -lhanami_json
+LIBS += -L../libraries/hanami_json/src/release -lhanami_json
+INCLUDEPATH += ../libraries/hanami_json/include
 
-LIBS += -L../libraries/libKitsunemimiJson/src -lKitsunemimiJson
-LIBS += -L../libraries/libKitsunemimiJson/src/debug -lKitsunemimiJson
-LIBS += -L../libraries/libKitsunemimiJson/src/release -lKitsunemimiJson
-INCLUDEPATH += ../libraries/libKitsunemimiJson/include
+LIBS += -L../libraries/hanami_crypto/src -lhanami_crypto
+LIBS += -L../libraries/hanami_crypto/src/debug -lhanami_crypto
+LIBS += -L../libraries/hanami_crypto/src/release -lhanami_crypto
+INCLUDEPATH += ../libraries/hanami_crypto/include
 
-LIBS += -L../libraries/libKitsunemimiCrypto/src -lKitsunemimiCrypto
-LIBS += -L../libraries/libKitsunemimiCrypto/src/debug -lKitsunemimiCrypto
-LIBS += -L../libraries/libKitsunemimiCrypto/src/release -lKitsunemimiCrypto
-INCLUDEPATH += ../libraries/libKitsunemimiCrypto/include
+LIBS += -L../libraries/../libraries/hanami_cpu/src -lhanami_cpu
+LIBS += -L../libraries/../libraries/hanami_cpu/src/debug -lhanami_cpu
+LIBS += -L../libraries/../libraries/hanami_cpu/src/release -lhanami_cpu
+INCLUDEPATH += ../libraries/hanami_cpu/include
 
-LIBS += -L../libraries/../libraries/libKitsunemimiCpu/src -lKitsunemimiCpu
-LIBS += -L../libraries/../libraries/libKitsunemimiCpu/src/debug -lKitsunemimiCpu
-LIBS += -L../libraries/../libraries/libKitsunemimiCpu/src/release -lKitsunemimiCpu
-INCLUDEPATH += ../libraries/libKitsunemimiCpu/include
-
-LIBS += -L../sdk/cpp/libHanamiAiSdk/src -lHanamiAiSdk
-LIBS += -L../sdk/cpp/libHanamiAiSdk/src/debug -lHanamiAiSdk
-LIBS += -L../sdk/cpp/libHanamiAiSdk/src/release -lHanamiAiSdk
-INCLUDEPATH += ../sdk/cpp/libHanamiAiSdk/include
+LIBS += -L../sdk/cpp/hanami_sdk/src -lhanami_sdk
+LIBS += -L../sdk/cpp/hanami_sdk/src/debug -lhanami_sdk
+LIBS += -L../sdk/cpp/hanami_sdk/src/release -lhanami_sdk
+INCLUDEPATH += ../sdk/cpp/hanami_sdk/include
 
 INCLUDEPATH += ../third-party-libs/jwt-cpp/include
 
@@ -89,7 +84,7 @@ LIBS +=  -L"/usr/local/cuda-12.1/targets/x86_64-linux/lib"  -L"/usr/local/cuda-1
 INCLUDEPATH += $$PWD \
                src
 
-HANAMI_PROTO_BUFFER = ../libraries/libKitsunemimiHanamiMessages/protobuffers/hanami_messages.proto3
+HANAMI_PROTO_BUFFER = ../libraries/hanami_messages/protobuffers/hanami_messages.proto3
 GPU_KERNEL = src/core/processing/opencl/gpu_kernel.cl
 CUDA_SOURCES = src/core/processing/cuda/gpu_kernel.cu
 
@@ -98,9 +93,9 @@ OTHER_FILES += \
 
 cudaKernel.input = CUDA_SOURCES
 cudaKernel.output = ${QMAKE_FILE_BASE}.o
-cudaKernel.commands = /usr/local/cuda-12.1/bin/nvcc -O3 -c -I$$PWD/../libraries/libKitsunemimiCommon/include -o ${QMAKE_FILE_BASE}.o ${QMAKE_FILE_IN} \
-                      || /usr/local/cuda-12.2/bin/nvcc -O3 -c -I$$PWD/../libraries/libKitsunemimiCommon/include -o ${QMAKE_FILE_BASE}.o ${QMAKE_FILE_IN} \
-                      || nvcc -O3 -c -I$$PWD/../libraries/libKitsunemimiCommon/include -o ${QMAKE_FILE_BASE}.o ${QMAKE_FILE_IN}
+cudaKernel.commands = /usr/local/cuda-12.1/bin/nvcc -O3 -c -I$$PWD/../libraries/hanami_common/include -o ${QMAKE_FILE_BASE}.o ${QMAKE_FILE_IN} \
+                      || /usr/local/cuda-12.2/bin/nvcc -O3 -c -I$$PWD/../libraries/hanami_common/include -o ${QMAKE_FILE_BASE}.o ${QMAKE_FILE_IN} \
+                      || nvcc -O3 -c -I$$PWD/../libraries/hanami_common/include -o ${QMAKE_FILE_BASE}.o ${QMAKE_FILE_IN}
 cudaKernel.CONFIG += target_predeps
 QMAKE_EXTRA_COMPILERS += cudaKernel
 

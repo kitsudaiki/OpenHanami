@@ -26,19 +26,19 @@
 #include <deque>
 #include <mutex>
 
-#include <libHanamiAiSdk/common/websocket_client.h>
+#include <hanami_sdk/common/websocket_client.h>
 
-#include <libKitsunemimiCommon/threading/thread.h>
-#include <libKitsunemimiJson/json_item.h>
+#include <hanami_common/threading/thread.h>
+#include <hanami_json/json_item.h>
 
 class TestStep;
 
 class TestThread
-        : public Kitsunemimi::Thread
+        : public Hanami::Thread
 {
 public:
     TestThread(const std::string &name,
-               Kitsunemimi::JsonItem &inputData);
+               Hanami::JsonItem &inputData);
     ~TestThread();
 
     void addTest(TestStep* newStep);
@@ -52,7 +52,7 @@ protected:
 private:
     std::deque<TestStep*> m_taskQueue;
     std::mutex m_queueLock;
-    Kitsunemimi::JsonItem m_inputData;
+    Hanami::JsonItem m_inputData;
 
     TestStep* getTest();
 };

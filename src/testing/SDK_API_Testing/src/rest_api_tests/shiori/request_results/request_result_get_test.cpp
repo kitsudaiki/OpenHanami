@@ -22,7 +22,7 @@
 
 #include "request_result_get_test.h"
 
-#include <libHanamiAiSdk/request_result.h>
+#include <hanami_sdk/request_result.h>
 
 RequestResultGetTest::RequestResultGetTest(const bool expectSuccess,
                                            const std::string &uuidOverride)
@@ -38,8 +38,8 @@ RequestResultGetTest::RequestResultGetTest(const bool expectSuccess,
 }
 
 bool
-RequestResultGetTest::runTest(Kitsunemimi::JsonItem &inputData,
-                              Kitsunemimi::ErrorContainer &error)
+RequestResultGetTest::runTest(Hanami::JsonItem &inputData,
+                              Hanami::ErrorContainer &error)
 {
     if(m_uuid == "") {
         m_uuid = inputData.get("request_task_uuid").getString();
@@ -56,7 +56,7 @@ RequestResultGetTest::runTest(Kitsunemimi::JsonItem &inputData,
     }
 
     // parse output
-    Kitsunemimi::JsonItem jsonItem;
+    Hanami::JsonItem jsonItem;
     if(jsonItem.parse(result, error) == false) {
         return false;
     }

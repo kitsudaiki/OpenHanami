@@ -26,7 +26,7 @@
 #include <regex>
 #include <api/endpoint_processing/blossom.h>
 
-#include <libKitsunemimiCommon/buffer/data_buffer.h>
+#include <hanami_common/buffer/data_buffer.h>
 
 class FinalizeCsvDataSet
         : public Blossom
@@ -36,14 +36,14 @@ public:
 
 protected:
     bool runTask(BlossomIO &blossomIO,
-                 const Kitsunemimi::DataMap &context,
+                 const Hanami::DataMap &context,
                  BlossomStatus &status,
-                 Kitsunemimi::ErrorContainer &error);
+                 Hanami::ErrorContainer &error);
 
 private:
     bool convertCsvData(const std::string &filePath,
                         const std::string &name,
-                        const Kitsunemimi::DataBuffer &inputBuffer);
+                        const Hanami::DataBuffer &inputBuffer);
     void convertField(float* segmentPos,
                       const std::string &cell,
                       const float lastVal);

@@ -52,42 +52,42 @@ jobs:
           path: /build_result
       - name: "Check target-directory"
         run: ls -l /build_result
-      - name: "Run test: libKitsunemimiCommon"
+      - name: "Run test: hanami_common"
         run: |
-          chmod +x /build_result/libraries/libKitsunemimiCommon/tests/unit_tests/unit_tests
-          /build_result/libraries/libKitsunemimiCommon/tests/unit_tests/unit_tests
-      - name: "Run test: libKitsunemimiJson"
+          chmod +x /build_result/libraries/hanami_common/tests/unit_tests/unit_tests
+          /build_result/libraries/hanami_common/tests/unit_tests/unit_tests
+      - name: "Run test: hanami_json"
         run: |
-          chmod +x /build_result/libraries/libKitsunemimiJson/tests/unit_tests/unit_tests
-          /build_result/libraries/libKitsunemimiJson/tests/unit_tests/unit_tests
-      - name: "Run test: libKitsunemimiConfig"
+          chmod +x /build_result/libraries/hanami_json/tests/unit_tests/unit_tests
+          /build_result/libraries/hanami_json/tests/unit_tests/unit_tests
+      - name: "Run test: hanami_config"
         run: |
-          chmod +x /build_result/libraries/libKitsunemimiConfig/tests/unit_tests/unit_tests
-          /build_result/libraries/libKitsunemimiConfig/tests/unit_tests/unit_tests
-      - name: "Run test: libKitsunemimiArgs"
+          chmod +x /build_result/libraries/hanami_config/tests/unit_tests/unit_tests
+          /build_result/libraries/hanami_config/tests/unit_tests/unit_tests
+      - name: "Run test: hanami_args"
         run: |
-          chmod +x /build_result/libraries/libKitsunemimiArgs/tests/unit_tests/unit_tests
-          /build_result/libraries/libKitsunemimiArgs/tests/unit_tests/unit_tests
-      - name: "Run test: libKitsunemimiCrypto"
+          chmod +x /build_result/libraries/hanami_args/tests/unit_tests/unit_tests
+          /build_result/libraries/hanami_args/tests/unit_tests/unit_tests
+      - name: "Run test: hanami_crypto"
         run: |
-          chmod +x /build_result/libraries/libKitsunemimiCrypto/tests/unit_tests/unit_tests
-          /build_result/libraries/libKitsunemimiCrypto/tests/unit_tests/unit_tests
-      - name: "Run test: libKitsunemimiIni"
+          chmod +x /build_result/libraries/hanami_crypto/tests/unit_tests/unit_tests
+          /build_result/libraries/hanami_crypto/tests/unit_tests/unit_tests
+      - name: "Run test: hanami_ini"
         run: |
-          chmod +x /build_result/libraries/libKitsunemimiIni/tests/unit_tests/unit_tests
-          /build_result/libraries/libKitsunemimiIni/tests/unit_tests/unit_tests
-      - name: "Run test: libKitsunemimiSqlite"
+          chmod +x /build_result/libraries/hanami_ini/tests/unit_tests/unit_tests
+          /build_result/libraries/hanami_ini/tests/unit_tests/unit_tests
+      - name: "Run test: hanami_sqlite"
         run: |
-          chmod +x /build_result/libraries/libKitsunemimiSqlite/tests/unit_tests/unit_tests
-          /build_result/libraries/libKitsunemimiSqlite/tests/unit_tests/unit_tests
-      - name: "Run test: libKitsunemimiHanamiClusterParser"
+          chmod +x /build_result/libraries/hanami_sqlite/tests/unit_tests/unit_tests
+          /build_result/libraries/hanami_sqlite/tests/unit_tests/unit_tests
+      - name: "Run test: hanami_cluster_parser"
         run: |
-          chmod +x /build_result/libraries/libKitsunemimiHanamiClusterParser/tests/unit_tests/unit_tests
-          /build_result/libraries/libKitsunemimiHanamiClusterParser/tests/unit_tests/unit_tests
-      - name: "Run test: libKitsunemimiHanamiPolicies"
+          chmod +x /build_result/libraries/hanami_cluster_parser/tests/unit_tests/unit_tests
+          /build_result/libraries/hanami_cluster_parser/tests/unit_tests/unit_tests
+      - name: "Run test: hanami_policies"
         run: |
-          chmod +x /build_result/libraries/libKitsunemimiHanamiPolicies/tests/unit_tests/unit_tests
-          /build_result/libraries/libKitsunemimiHanamiPolicies/tests/unit_tests/unit_tests
+          chmod +x /build_result/libraries/hanami_policies/tests/unit_tests/unit_tests
+          /build_result/libraries/hanami_policies/tests/unit_tests/unit_tests
 
   memory_leak_tests:
     needs: build
@@ -103,22 +103,18 @@ jobs:
           path: /build_result
       - name: "Check target-directory"
         run: ls -l /build_result
-      - name: "Run test: libKitsunemimiCommon"
+      - name: "Run test: hanami_common"
         run: |
-          chmod +x /build_result/libraries/libKitsunemimiCommon/tests/memory_leak_tests/memory_leak_tests
-          /build_result/libraries/libKitsunemimiCommon/tests/memory_leak_tests/memory_leak_tests
-      - name: "Run test: libKitsunemimiJson"
+          chmod +x /build_result/libraries/hanami_common/tests/memory_leak_tests/memory_leak_tests
+          /build_result/libraries/hanami_common/tests/memory_leak_tests/memory_leak_tests
+      - name: "Run test: hanami_json"
         run: |
-          chmod +x /build_result/libraries/libKitsunemimiJson/tests/memory_leak_tests/memory_leak_tests
-          /build_result/libraries/libKitsunemimiJson/tests/memory_leak_tests/memory_leak_tests
-      # - name: "Run test: libKitsunemimiNetwork"
-      #   run: |
-      #     chmod +x /build_result/libraries/libKitsunemimiNetwork/tests/memory_leak_tests/memory_leak_tests
-      #     /build_result/libraries/libKitsunemimiNetwork/tests/memory_leak_tests/memory_leak_tests
-      - name: "Run test: libKitsunemimiHanamiClusterParser"
+          chmod +x /build_result/libraries/hanami_json/tests/memory_leak_tests/memory_leak_tests
+          /build_result/libraries/hanami_json/tests/memory_leak_tests/memory_leak_tests
+      - name: "Run test: hanami_cluster_parser"
         run: |
-          chmod +x /build_result/libraries/libKitsunemimiHanamiClusterParser/tests/memory_leak_tests/memory_leak_tests
-          /build_result/libraries/libKitsunemimiHanamiClusterParser/tests/memory_leak_tests/memory_leak_tests
+          chmod +x /build_result/libraries/hanami_cluster_parser/tests/memory_leak_tests/memory_leak_tests
+          /build_result/libraries/hanami_cluster_parser/tests/memory_leak_tests/memory_leak_tests
 
 
   functional_tests:
@@ -135,26 +131,22 @@ jobs:
           path: /build_result
       - name: "Check target-directory"
         run: ls -l /build_result
-      - name: "Run test: libKitsunemimiConfig"
+      - name: "Run test: hanami_config"
         run: |
-          chmod +x /build_result/libraries/libKitsunemimiConfig/tests/functional_tests/functional_tests
-          /build_result/libraries/libKitsunemimiConfig/tests/functional_tests/functional_tests
-      # - name: "Run test: libKitsunemimiNetwork"
+          chmod +x /build_result/libraries/hanami_config/tests/functional_tests/functional_tests
+          /build_result/libraries/hanami_config/tests/functional_tests/functional_tests
+      # - name: "Run test: hanami_obj"
       #   run: |
-      #     chmod +x /build_result/libraries/libKitsunemimiNetwork/tests/functional_tests/functional_tests
-      #     /build_result/libraries/libKitsunemimiNetwork/tests/functional_tests/functional_tests
-      # - name: "Run test: libKitsunemimiObj"
-      #   run: |
-      #     chmod +x /build_result/libraries/libKitsunemimiObj/tests/functional_tests/functional_tests
-      #     /build_result/libraries/libKitsunemimiObj/tests/functional_tests/functional_tests
-      - name: "Run test: libKitsunemimiSakuraDatabase"
+      #     chmod +x /build_result/libraries/hanami_obj/tests/functional_tests/functional_tests
+      #     /build_result/libraries/hanami_obj/tests/functional_tests/functional_tests
+      - name: "Run test: hanami_database"
         run: |
-          chmod +x /build_result/libraries/libKitsunemimiSakuraDatabase/tests/functional_tests/functional_tests
-          /build_result/libraries/libKitsunemimiSakuraDatabase/tests/functional_tests/functional_tests
-      # - name: "Run test: libKitsunemimiSakuraNetwork"
+          chmod +x /build_result/libraries/hanami_database/tests/functional_tests/functional_tests
+          /build_result/libraries/hanami_database/tests/functional_tests/functional_tests
+      # - name: "Run test: hanami_network"
       #   run: |
-      #     chmod +x /build_result/libraries/libKitsunemimiSakuraNetwork/tests/functional_tests/functional_tests
-      #     /build_result/libraries/libKitsunemimiSakuraNetwork/tests/functional_tests/functional_tests
+      #     chmod +x /build_result/libraries/hanami_network/tests/functional_tests/functional_tests
+      #     /build_result/libraries/hanami_network/tests/functional_tests/functional_tests
 
   cleanup:
     needs: [ unit_tests, memory_leak_tests, functional_tests ]

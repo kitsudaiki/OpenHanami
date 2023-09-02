@@ -24,8 +24,8 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-#include <libKitsunemimiCommon/items/data_items.h>
-#include <libKitsunemimiCommon/items/table_item.h>
+#include <hanami_common/items/data_items.h>
+#include <hanami_common/items/table_item.h>
 
 /**
  * @brief override data of a data-map with new incoming information
@@ -79,14 +79,14 @@ overrideItems(DataMap &original,
  */
 void
 createError(const std::string &errorLocation,
-            Kitsunemimi::ErrorContainer &error,
+            Hanami::ErrorContainer &error,
             const std::string &possibleSolution,
             const std::string &blossomType,
             const std::string &blossomGroupType,
             const std::string &blossomName,
             const std::string &blossomFilePath)
 {
-    Kitsunemimi::TableItem errorOutput;
+    Hanami::TableItem errorOutput;
     // initialize error-output
     errorOutput.addColumn("Field");
     errorOutput.addColumn("Value");
@@ -127,7 +127,7 @@ void
 createError(const BlossomItem &blossomItem,
             const std::string &blossomPath,
             const std::string &errorLocation,
-            Kitsunemimi::ErrorContainer &error,
+            Hanami::ErrorContainer &error,
             const std::string &possibleSolution)
 {
     return createError(errorLocation,
@@ -150,7 +150,7 @@ createError(const BlossomItem &blossomItem,
 void
 createError(const BlossomIO &blossomIO,
             const std::string &errorLocation,
-            Kitsunemimi::ErrorContainer &error,
+            Hanami::ErrorContainer &error,
             const std::string &possibleSolution)
 {
     return createError(errorLocation,

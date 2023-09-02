@@ -25,10 +25,10 @@
 #include <hanami_root.h>
 #include <api/endpoint_processing/blossom.h>
 
-#include <libKitsunemimiCrypto/common.h>
-#include <libKitsunemimiCommon/methods/string_methods.h>
-#include <libKitsunemimiCommon/methods/file_methods.h>
-#include <libKitsunemimiJson/json_item.h>
+#include <hanami_crypto/common.h>
+#include <hanami_common/methods/string_methods.h>
+#include <hanami_common/methods/file_methods.h>
+#include <hanami_json/json_item.h>
 
 std::map<HttpResponseTypes, std::string> responseMessage =
 {
@@ -48,25 +48,25 @@ std::map<HttpResponseTypes, std::string> responseMessage =
 void
 createOpenApiDocumentation(std::string &docu)
 {
-    Kitsunemimi::JsonItem result;
+    Hanami::JsonItem result;
     result.insert("openapi", "3.0.0");
 
-    Kitsunemimi::JsonItem info;
+    Hanami::JsonItem info;
     info.insert("title", "API documentation");
     info.insert("version", "unreleased");
     result.insert("info", info);
 
-    Kitsunemimi::JsonItem contact;
+    Hanami::JsonItem contact;
     info.insert("name", "Tobias Anker");
     info.insert("email", "tobias.anker@kitsunemimi.moe");
     result.insert("contact", contact);
 
-    Kitsunemimi::JsonItem license;
+    Hanami::JsonItem license;
     license.insert("name", "Apache 2.0");
     license.insert("url", "https://www.apache.org/licenses/LICENSE-2.0.html");
     result.insert("license", license);
 
-    Kitsunemimi::JsonItem paths;
+    Hanami::JsonItem paths;
     generateEndpointDocu_openapi(paths);
     result.insert("paths", paths);
 
@@ -79,14 +79,14 @@ createOpenApiDocumentation(std::string &docu)
  * @param allowedErrorCodes
  */
 void
-addResponsess(Kitsunemimi::JsonItem &responses,
+addResponsess(Hanami::JsonItem &responses,
               Blossom* blossom)
 {
-    Kitsunemimi::JsonItem resp200;
+    Hanami::JsonItem resp200;
     resp200.insert("description", responseMessage[OK_RTYPE]);
-    Kitsunemimi::JsonItem content;
-    Kitsunemimi::JsonItem jsonApplication;
-    Kitsunemimi::JsonItem schema;
+    Hanami::JsonItem content;
+    Hanami::JsonItem jsonApplication;
+    Hanami::JsonItem schema;
     schema.insert("type", "object");
     createBodyParams_openapi(schema, blossom->getOutputValidationMap(), false);
     jsonApplication.insert("schema", schema);
@@ -96,11 +96,11 @@ addResponsess(Kitsunemimi::JsonItem &responses,
 
     for(const HttpResponseTypes code : blossom->errorCodes)
     {
-        Kitsunemimi::JsonItem errorResponse;
+        Hanami::JsonItem errorResponse;
         errorResponse.insert("description", responseMessage[code]);
-        Kitsunemimi::JsonItem content;
-        Kitsunemimi::JsonItem jsonApplication;
-        Kitsunemimi::JsonItem schema;
+        Hanami::JsonItem content;
+        Hanami::JsonItem jsonApplication;
+        Hanami::JsonItem schema;
         schema.insert("type", "string");
         jsonApplication.insert("schema", schema);
         content.insert("text/plain", jsonApplication);
@@ -114,15 +114,15 @@ addResponsess(Kitsunemimi::JsonItem &responses,
  * @param parameters
  */
 void
-addTokenRequirement(Kitsunemimi::JsonItem &parameters)
+addTokenRequirement(Hanami::JsonItem &parameters)
 {
-    Kitsunemimi::JsonItem param;
+    Hanami::JsonItem param;
     param.insert("in", "header");
     param.insert("description", "JWT-Token for authentication");
     param.insert("name", "X-Auth-Token");
     param.insert("required", true);
 
-    Kitsunemimi::JsonItem schema;
+    Hanami::JsonItem schema;
     schema.insert("type","string");
 
     param.insert("schema", schema);
@@ -136,7 +136,7 @@ addTokenRequirement(Kitsunemimi::JsonItem &parameters)
  * @param isRequest
  */
 void
-createQueryParams_openapi(Kitsunemimi::JsonItem &parameters,
+createQueryParams_openapi(Hanami::JsonItem &parameters,
                           const std::map<std::string, FieldDef>* defMap)
 {
     for(const auto& [field, fieldDef] : *defMap)
@@ -144,13 +144,13 @@ createQueryParams_openapi(Kitsunemimi::JsonItem &parameters,
         const FieldType fieldType = fieldDef.fieldType;
         const std::string comment = fieldDef.comment;
         const bool isRequired = fieldDef.isRequired;
-        const Kitsunemimi::DataItem* defaultVal = fieldDef.defaultVal;
-        const Kitsunemimi::DataItem* matchVal = fieldDef.match;
+        const Hanami::DataItem* defaultVal = fieldDef.defaultVal;
+        const Hanami::DataItem* matchVal = fieldDef.match;
         std::string regexVal = fieldDef.regex;
         const long lowerLimit = fieldDef.lowerLimit;
         const long upperLimit = fieldDef.upperLimit;
 
-        Kitsunemimi::JsonItem param;
+        Hanami::JsonItem param;
         param.insert("in", "query");
         param.insert("name", field);
 
@@ -164,7 +164,7 @@ createQueryParams_openapi(Kitsunemimi::JsonItem &parameters,
             param.insert("description", comment);
         }
 
-        Kitsunemimi::JsonItem schema;
+        Hanami::JsonItem schema;
 
         // type
         if(fieldType == SAKURA_MAP_TYPE) {
@@ -191,7 +191,7 @@ createQueryParams_openapi(Kitsunemimi::JsonItem &parameters,
         // match
         if(regexVal != "")
         {
-            Kitsunemimi::replaceSubstring(regexVal, "\\", "\\\\");
+            Hanami::replaceSubstring(regexVal, "\\", "\\\\");
             schema.insert("pattern", regexVal);
         }
 
@@ -214,9 +214,9 @@ createQueryParams_openapi(Kitsunemimi::JsonItem &parameters,
         // match
         if(matchVal != nullptr)
         {
-            Kitsunemimi::JsonItem match;
+            Hanami::JsonItem match;
             std::string content = matchVal->toString();
-            Kitsunemimi::replaceSubstring(content, "\"", "\\\"");
+            Hanami::replaceSubstring(content, "\"", "\\\"");
             match.append(content);
             schema.insert("enum", match);
         }
@@ -234,23 +234,23 @@ createQueryParams_openapi(Kitsunemimi::JsonItem &parameters,
  * @param isRequest true to say that the actual field is a request-field
  */
 void
-createBodyParams_openapi(Kitsunemimi::JsonItem &schema,
+createBodyParams_openapi(Hanami::JsonItem &schema,
                          const std::map<std::string, FieldDef>* defMap,
                          const bool isRequest)
 {
     std::vector<std::string> requiredFields;
 
-    Kitsunemimi::JsonItem properties;
+    Hanami::JsonItem properties;
     for(const auto& [id, fieldDef] : *defMap)
     {
-        Kitsunemimi::JsonItem temp;
+        Hanami::JsonItem temp;
 
         const std::string field = id;
         const FieldType fieldType = fieldDef.fieldType;
         const std::string comment = fieldDef.comment;
         const bool isRequired = fieldDef.isRequired;
-        const Kitsunemimi::DataItem* defaultVal = fieldDef.defaultVal;
-        const Kitsunemimi::DataItem* matchVal = fieldDef.match;
+        const Hanami::DataItem* defaultVal = fieldDef.defaultVal;
+        const Hanami::DataItem* matchVal = fieldDef.match;
         std::string regexVal = fieldDef.regex;
         const long lowerLimit = fieldDef.lowerLimit;
         const long upperLimit = fieldDef.upperLimit;
@@ -260,14 +260,14 @@ createBodyParams_openapi(Kitsunemimi::JsonItem &schema,
             temp.insert("type","object");
         } else if(fieldType == SAKURA_ARRAY_TYPE) {
             temp.insert("type","array");
-            Kitsunemimi::JsonItem array;
+            Hanami::JsonItem array;
             array.insert("type", "string");
 
             // match
             if(matchVal != nullptr)
             {
-                Kitsunemimi::JsonItem match;
-                Kitsunemimi::ErrorContainer error;
+                Hanami::JsonItem match;
+                Hanami::ErrorContainer error;
                 match.parse(matchVal->toString(), error);
                 array.insert("enum", match);
             }
@@ -305,7 +305,7 @@ createBodyParams_openapi(Kitsunemimi::JsonItem &schema,
             // match
             if(regexVal != "")
             {
-                Kitsunemimi::replaceSubstring(regexVal, "\\", "\\\\");
+                Hanami::replaceSubstring(regexVal, "\\", "\\\\");
                 temp.insert("pattern", regexVal);
             }
 
@@ -328,9 +328,9 @@ createBodyParams_openapi(Kitsunemimi::JsonItem &schema,
             // match
             if(matchVal != nullptr)
             {
-                Kitsunemimi::JsonItem match;
+                Hanami::JsonItem match;
                 std::string content = matchVal->toString();
-                Kitsunemimi::replaceSubstring(content, "\"", "\\\"");
+                Hanami::replaceSubstring(content, "\"", "\\\"");
                 match.append(content);
                 temp.insert("enum", match);
             }
@@ -344,7 +344,7 @@ createBodyParams_openapi(Kitsunemimi::JsonItem &schema,
 
     if(isRequest)
     {
-        Kitsunemimi::JsonItem required;
+        Hanami::JsonItem required;
         for(const std::string& field : requiredFields) {
             required.append(field);
         }
@@ -358,16 +358,16 @@ createBodyParams_openapi(Kitsunemimi::JsonItem &schema,
  * @param docu reference to the complete document
  */
 void
-generateEndpointDocu_openapi(Kitsunemimi::JsonItem &result)
+generateEndpointDocu_openapi(Hanami::JsonItem &result)
 {
     for(const auto& [endpointPath, httpDef] : HanamiRoot::root->endpointRules)
     {
         // add endpoint
-        Kitsunemimi::JsonItem endpoint;
+        Hanami::JsonItem endpoint;
 
         for(const auto& [type, endpointEntry] : httpDef)
         {
-            Kitsunemimi::JsonItem endpointType;
+            Hanami::JsonItem endpointType;
 
             Blossom* blossom = HanamiRoot::root->getBlossom(endpointEntry.group,
                                                             endpointEntry.name);
@@ -379,11 +379,11 @@ generateEndpointDocu_openapi(Kitsunemimi::JsonItem &result)
             // add comment/describtion
             endpointType.insert("summary", blossom->comment);
 
-            Kitsunemimi::JsonItem tags;
+            Hanami::JsonItem tags;
             tags.append(endpointEntry.group);
             endpointType.insert("tags", tags);
 
-            Kitsunemimi::JsonItem parameters;
+            Hanami::JsonItem parameters;
 
             if(blossom->requiresAuthToken) {
                 addTokenRequirement(parameters);
@@ -392,11 +392,11 @@ generateEndpointDocu_openapi(Kitsunemimi::JsonItem &result)
             if(type == POST_TYPE
                     || type == PUT_TYPE)
             {
-                Kitsunemimi::JsonItem requestBody;
+                Hanami::JsonItem requestBody;
                 requestBody.insert("required", true);
-                Kitsunemimi::JsonItem content;
-                Kitsunemimi::JsonItem jsonApplication;
-                Kitsunemimi::JsonItem schema;
+                Hanami::JsonItem content;
+                Hanami::JsonItem jsonApplication;
+                Hanami::JsonItem schema;
                 schema.insert("type", "object");
                 createBodyParams_openapi(schema, blossom->getInputValidationMap(), true);
                 jsonApplication.insert("schema", schema);
@@ -413,7 +413,7 @@ generateEndpointDocu_openapi(Kitsunemimi::JsonItem &result)
             endpointType.insert("parameters", parameters);
 
             // add response-codes
-            Kitsunemimi::JsonItem responses;
+            Hanami::JsonItem responses;
             addResponsess(responses, blossom);
             endpointType.insert("responses", responses);
 

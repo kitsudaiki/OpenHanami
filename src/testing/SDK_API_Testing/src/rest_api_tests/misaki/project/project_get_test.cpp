@@ -22,7 +22,7 @@
 
 #include "project_get_test.h"
 
-#include <libHanamiAiSdk/project.h>
+#include <hanami_sdk/project.h>
 
 ProjectGetTest::ProjectGetTest(const bool expectSuccess,
                                const std::string &nameOverride)
@@ -38,8 +38,8 @@ ProjectGetTest::ProjectGetTest(const bool expectSuccess,
 }
 
 bool
-ProjectGetTest::runTest(Kitsunemimi::JsonItem &inputData,
-                        Kitsunemimi::ErrorContainer &error)
+ProjectGetTest::runTest(Hanami::JsonItem &inputData,
+                        Hanami::ErrorContainer &error)
 {
     if(m_name == "") {
         m_name = inputData.get("project_id").getString();
@@ -56,7 +56,7 @@ ProjectGetTest::runTest(Kitsunemimi::JsonItem &inputData,
     }
 
     // parse output
-    Kitsunemimi::JsonItem jsonItem;
+    Hanami::JsonItem jsonItem;
     if(jsonItem.parse(result, error) == false) {
         return false;
     }

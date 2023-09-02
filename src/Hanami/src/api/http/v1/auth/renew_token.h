@@ -34,12 +34,12 @@ public:
 
 protected:
     bool runTask(BlossomIO &blossomIO,
-                 const Kitsunemimi::DataMap &context,
+                 const Hanami::DataMap &context,
                  BlossomStatus &status,
-                 Kitsunemimi::ErrorContainer &error);
+                 Hanami::ErrorContainer &error);
 private:
-    bool chooseProject(Kitsunemimi::JsonItem &userData,
-                       Kitsunemimi::JsonItem &parsedProjects,
+    bool chooseProject(Hanami::JsonItem &userData,
+                       Hanami::JsonItem &parsedProjects,
                        const std::string selectedProjectId);
 };
 

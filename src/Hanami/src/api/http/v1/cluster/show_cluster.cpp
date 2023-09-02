@@ -25,7 +25,7 @@
 #include <hanami_root.h>
 #include <database/cluster_table.h>
 
-#include <libKitsunemimiJson/json_item.h>
+#include <hanami_json/json_item.h>
 
 ShowCluster::ShowCluster()
     : Blossom("Show information of a specific cluster.")
@@ -69,9 +69,9 @@ ShowCluster::ShowCluster()
  */
 bool
 ShowCluster::runTask(BlossomIO &blossomIO,
-                     const Kitsunemimi::DataMap &context,
+                     const Hanami::DataMap &context,
                      BlossomStatus &status,
-                     Kitsunemimi::ErrorContainer &error)
+                     Hanami::ErrorContainer &error)
 {
     const UserContext userContext(context);
     const std::string clusterUuid = blossomIO.input.get("uuid").getString();

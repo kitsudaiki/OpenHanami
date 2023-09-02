@@ -22,8 +22,8 @@
 
 #include "dataset_check_test.h"
 
-#include <libKitsunemimiConfig/config_handler.h>
-#include <libHanamiAiSdk/data_set.h>
+#include <hanami_config/config_handler.h>
+#include <hanami_sdk/data_set.h>
 
 DataSetCheckTest::DataSetCheckTest(const bool expectSuccess)
           : TestStep(expectSuccess)
@@ -37,8 +37,8 @@ DataSetCheckTest::DataSetCheckTest(const bool expectSuccess)
 }
 
 bool
-DataSetCheckTest::runTest(Kitsunemimi::JsonItem &inputData,
-                          Kitsunemimi::ErrorContainer &error)
+DataSetCheckTest::runTest(Hanami::JsonItem &inputData,
+                          Hanami::ErrorContainer &error)
 {
     // get template by name
     std::string result;
@@ -55,7 +55,7 @@ DataSetCheckTest::runTest(Kitsunemimi::JsonItem &inputData,
     }
 
     // parse output
-    Kitsunemimi::JsonItem jsonItem;
+    Hanami::JsonItem jsonItem;
     if(jsonItem.parse(result, error) == false) {
         return false;
     }

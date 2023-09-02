@@ -23,7 +23,7 @@
 #include "get_system_info.h"
 #include <hanami_root.h>
 
-#include <libKitsunemimiSakuraHardware/host.h>
+#include <hanami_hardware/host.h>
 
 GetSystemInfo::GetSystemInfo()
     : Blossom("Get all available information of the local system, like "
@@ -46,12 +46,12 @@ GetSystemInfo::GetSystemInfo()
  */
 bool
 GetSystemInfo::runTask(BlossomIO &blossomIO,
-                       const Kitsunemimi::DataMap &,
+                       const Hanami::DataMap &,
                        BlossomStatus &,
-                       Kitsunemimi::ErrorContainer &)
+                       Hanami::ErrorContainer &)
 {
     // creat output
-    blossomIO.output.insert("info", Kitsunemimi::Sakura::Host::getInstance()->toJson());
+    blossomIO.output.insert("info", Hanami::Host::getInstance()->toJson());
 
     return true;
 }

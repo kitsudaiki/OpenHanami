@@ -23,17 +23,17 @@
 #ifndef HANAMI_RESTORECLUSTERSTATE_H
 #define HANAMI_RESTORECLUSTERSTATE_H
 
-#include <libKitsunemimiCommon/threading/event.h>
-#include <libKitsunemimiJson/json_item.h>
+#include <hanami_common/threading/event.h>
+#include <hanami_json/json_item.h>
 
 class Cluster;
 
-namespace Kitsunemimi::Hanami {
+namespace Hanami {
 class HanamiMessagingClient;
 }
 
 class RestoreCluster_State
-        : public Kitsunemimi::Event
+        : public Hanami::Event
 {
 public:
     RestoreCluster_State(Cluster* cluster);
@@ -43,7 +43,7 @@ public:
 
 private:
     Cluster* m_cluster = nullptr;
-    Kitsunemimi::Hanami::HanamiMessagingClient* m_client = nullptr;
+    Hanami::HanamiMessagingClient* m_client = nullptr;
 };
 
 #endif // HANAMI_RESTORECLUSTERSTATE_H

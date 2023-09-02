@@ -23,8 +23,8 @@
 #ifndef TSUGUMITESTER_ARGS_H
 #define TSUGUMITESTER_ARGS_H
 
-#include <libKitsunemimiArgs/arg_parser.h>
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_args/arg_parser.h>
+#include <hanami_common/logger.h>
 
 /**
  * @brief register cli-arguments
@@ -34,8 +34,8 @@
  * @return true if successful, else false
  */
 bool
-registerArguments(Kitsunemimi::ArgParser* argparser,
-                  Kitsunemimi::ErrorContainer &error)
+registerArguments(Hanami::ArgParser* argparser,
+                  Hanami::ErrorContainer &error)
 {
     std::string helpText = "";
 

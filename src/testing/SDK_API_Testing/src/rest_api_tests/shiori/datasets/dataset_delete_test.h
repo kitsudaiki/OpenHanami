@@ -32,8 +32,8 @@ public:
     DataSetDeleteTest(const bool expectSuccess,
                       const std::string &type);
 
-    bool runTest(Kitsunemimi::JsonItem &inputData,
-                 Kitsunemimi::ErrorContainer &error);
+    bool runTest(Hanami::JsonItem &inputData,
+                 Hanami::ErrorContainer &error);
 
 private:
     std::string m_type = "";

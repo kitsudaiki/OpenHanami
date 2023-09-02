@@ -26,14 +26,14 @@
 #include <vector>
 #include <string>
 
-#include <libKitsunemimiCommon/items/data_items.h>
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_common/items/data_items.h>
+#include <hanami_common/logger.h>
 
 #include <api/endpoint_processing/items/sakura_items.h>
 
 struct BlossomIO;
 
-using Kitsunemimi::DataMap;
+using Hanami::DataMap;
 
 // override functions
 enum OverrideType
@@ -51,11 +51,11 @@ void overrideItems(DataMap &original,
 void createError(const BlossomItem &blossomItem,
                  const std::string &blossomPath,
                  const std::string &errorLocation,
-                 Kitsunemimi::ErrorContainer &error,
+                 Hanami::ErrorContainer &error,
                  const std::string &possibleSolution = "");
 void createError(const BlossomIO &blossomIO,
                  const std::string &errorLocation,
-                 Kitsunemimi::ErrorContainer &error,
+                 Hanami::ErrorContainer &error,
                  const std::string &possibleSolution = "");
 
 #endif // KITSUNEMIMI_SAKURA_LANG_ITEM_METHODS_H

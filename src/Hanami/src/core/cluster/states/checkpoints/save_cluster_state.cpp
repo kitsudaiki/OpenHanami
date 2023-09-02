@@ -29,8 +29,8 @@
 #include <core/cluster/cluster.h>
 #include <core/cluster/statemachine_init.h>
 
-#include <libKitsunemimiCrypto/hashes.h>
-#include <libKitsunemimiCommon/files/binary_file.h>
+#include <hanami_crypto/hashes.h>
+#include <hanami_common/files/binary_file.h>
 
 
 extern "C"
@@ -65,7 +65,7 @@ bool
 SaveCluster_State::processEvent()
 {
     bool result = false;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
 
     do
     {
@@ -96,7 +96,7 @@ SaveCluster_State::processEvent()
         targetFilePath.append(actualTask->uuid.toString() + "_checkpoint_" + actualTask->userId);
 
         // register in database
-        Kitsunemimi::JsonItem dbEntry;
+        Hanami::JsonItem dbEntry;
         dbEntry.insert("uuid", actualTask->uuid.toString());
         dbEntry.insert("name", actualTask->checkpointName);
         dbEntry.insert("location", targetFilePath);
@@ -146,7 +146,7 @@ SaveCluster_State::processEvent()
 bool
 SaveCluster_State::writeData(const std::string &filePath,
                              const uint64_t fileSize,
-                             Kitsunemimi::ErrorContainer &error)
+                             Hanami::ErrorContainer &error)
 {
     if(HanamiRoot::useCuda)
     {
@@ -157,7 +157,7 @@ SaveCluster_State::writeData(const std::string &filePath,
                          m_cluster->clusterHeader->synapseBlocks.count);
     }
 
-    Kitsunemimi::BinaryFile checkpointFile(filePath);
+    Hanami::BinaryFile checkpointFile(filePath);
     if(checkpointFile.allocateStorage(fileSize, error) == false)
     {
         error.addMeesage("Failed to allocate '"
@@ -169,7 +169,7 @@ SaveCluster_State::writeData(const std::string &filePath,
     }
 
     // global byte-counter to identifiy the position within the complete checkpoint
-    Kitsunemimi::DataBuffer* buffer = &m_cluster->clusterData.buffer;
+    Hanami::DataBuffer* buffer = &m_cluster->clusterData.buffer;
     if(checkpointFile.writeDataIntoFile(buffer->data, 0, buffer->usedBufferSize, error) == false)
     {
         error.addMeesage("Failed to write cluster for checkpoint into file '"

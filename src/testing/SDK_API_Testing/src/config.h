@@ -23,14 +23,14 @@
 #ifndef TSUGUMITESTER_CONFIG_H
 #define TSUGUMITESTER_CONFIG_H
 
-#include <libKitsunemimiConfig/config_handler.h>
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_config/config_handler.h>
+#include <hanami_common/logger.h>
 
 /**
  * @brief register configs
  */
 void
-registerConfigs(Kitsunemimi::ErrorContainer &error)
+registerConfigs(Hanami::ErrorContainer &error)
 {
     // DEFAULT-section
     REGISTER_BOOL_CONFIG(   "DEFAULT",

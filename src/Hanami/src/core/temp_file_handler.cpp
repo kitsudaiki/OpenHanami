@@ -22,9 +22,9 @@
 
 #include "temp_file_handler.h"
 
-#include <libKitsunemimiCommon/methods/file_methods.h>
-#include <libKitsunemimiCommon/files/binary_file.h>
-#include <libKitsunemimiConfig/config_handler.h>
+#include <hanami_common/methods/file_methods.h>
+#include <hanami_common/files/binary_file.h>
+#include <hanami_config/config_handler.h>
 
 TempFileHandler* TempFileHandler::instance = nullptr;
 
@@ -39,19 +39,19 @@ TempFileHandler::TempFileHandler() {}
 TempFileHandler::~TempFileHandler()
 {
     bool success = false;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     const std::string targetFilePath = GET_STRING_CONFIG("storage", "data_set_location", success);
 
     std::vector<std::string> result;
     auto it = m_tempFiles.begin();
     for( ; it != m_tempFiles.end(); it++)
     {
-        Kitsunemimi::BinaryFile* ptr = it->second;
+        Hanami::BinaryFile* ptr = it->second;
         if(ptr->closeFile(error) == false) {
             //TODO: handle error
         }
         delete ptr;
-        Kitsunemimi::deleteFileOrDir(targetFilePath + "/" + it->first, error);
+        Hanami::deleteFileOrDir(targetFilePath + "/" + it->first, error);
         m_tempFiles.erase(it);
     }
 }
@@ -75,8 +75,8 @@ TempFileHandler::initNewFile(const std::string &id, const uint64_t size)
     std::string targetFilePath = GET_STRING_CONFIG("storage", "data_set_location", success);
     targetFilePath += "/" + id;
 
-    Kitsunemimi::ErrorContainer error;
-    Kitsunemimi::BinaryFile* tempfile = new Kitsunemimi::BinaryFile(targetFilePath);
+    Hanami::ErrorContainer error;
+    Hanami::BinaryFile* tempfile = new Hanami::BinaryFile(targetFilePath);
     if(tempfile->allocateStorage(size, error) == false)
     {
         LOG_ERROR(error);
@@ -111,12 +111,12 @@ TempFileHandler::addDataToPos(const std::string &uuid,
                               const void* data,
                               const uint64_t size)
 {
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
 
     const auto it = m_tempFiles.find(uuid);
     if(it != m_tempFiles.end())
     {
-        Kitsunemimi::BinaryFile* ptr = it->second;
+        Hanami::BinaryFile* ptr = it->second;
         if(ptr->writeDataIntoFile(data, pos, size, error) == false)
         {
             LOG_ERROR(error);
@@ -140,14 +140,14 @@ TempFileHandler::addDataToPos(const std::string &uuid,
  * @return false, if id not found, else true
  */
 bool
-TempFileHandler::getData(Kitsunemimi::DataBuffer &result, const std::string &uuid)
+TempFileHandler::getData(Hanami::DataBuffer &result, const std::string &uuid)
 {
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
 
     const auto it = m_tempFiles.find(uuid);
     if(it != m_tempFiles.end())
     {
-        Kitsunemimi::BinaryFile* ptr = it->second;
+        Hanami::BinaryFile* ptr = it->second;
         return ptr->readCompleteFile(result, error);
     }
 
@@ -165,18 +165,18 @@ bool
 TempFileHandler::removeData(const std::string &id)
 {
     bool success = false;
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ErrorContainer error;
     std::string targetFilePath = GET_STRING_CONFIG("storage", "data_set_location", success);
 
     const auto it = m_tempFiles.find(id);
     if(it != m_tempFiles.end())
     {
-        Kitsunemimi::BinaryFile* ptr = it->second;
+        Hanami::BinaryFile* ptr = it->second;
         if(ptr->closeFile(error) == false) {
             //TODO: handle error
         }
         delete ptr;
-        Kitsunemimi::deleteFileOrDir(targetFilePath + "/" + it->first, error);
+        Hanami::deleteFileOrDir(targetFilePath + "/" + it->first, error);
         m_tempFiles.erase(it);
 
         return true;
@@ -197,7 +197,7 @@ TempFileHandler::removeData(const std::string &id)
 bool
 TempFileHandler::moveData(const std::string &uuid,
                           const std::string &targetLocation,
-                          Kitsunemimi::ErrorContainer &error)
+                          Hanami::ErrorContainer &error)
 {
     bool success = false;
     std::string targetFilePath = GET_STRING_CONFIG("storage", "data_set_location", success);
@@ -205,14 +205,14 @@ TempFileHandler::moveData(const std::string &uuid,
     const auto it = m_tempFiles.find(uuid);
     if(it != m_tempFiles.end())
     {
-        Kitsunemimi::BinaryFile* ptr = it->second;
+        Hanami::BinaryFile* ptr = it->second;
         if(ptr->closeFile(error) == false)
         {
             LOG_ERROR(error);
             return false;
         }
 
-        if(Kitsunemimi::renameFileOrDir(targetFilePath + "/" + it->first,
+        if(Hanami::renameFileOrDir(targetFilePath + "/" + it->first,
                                         targetLocation,
                                         error) == false)
         {

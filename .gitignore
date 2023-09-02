@@ -5,3 +5,4 @@ gitIdentityChange.sh
 *.pb.cc
 *.pb.h
 *.drawio.bkp
+*.png~

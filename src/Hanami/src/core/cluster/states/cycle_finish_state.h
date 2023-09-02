@@ -23,12 +23,12 @@
 #ifndef HANAMI_CYCLEFINISH_STATE_H
 #define HANAMI_CYCLEFINISH_STATE_H
 
-#include <libKitsunemimiCommon/threading/event.h>
+#include <hanami_common/threading/event.h>
 
 class Cluster;
 
 class CycleFinish_State
-        : public Kitsunemimi::Event
+        : public Hanami::Event
 {
 public:
     CycleFinish_State(Cluster* cluster);
