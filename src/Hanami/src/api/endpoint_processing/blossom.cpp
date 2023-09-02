@@ -23,8 +23,10 @@
 #include <api/endpoint_processing/blossom.h>
 
 #include <api/endpoint_processing/items/item_methods.h>
-#include <libKitsunemimiCommon/logger.h>
 #include <api/endpoint_processing/runtime_validation.h>
+#include <common.h>
+
+#include <libKitsunemimiCommon/logger.h>
 
 /**
  * @brief constructor
@@ -51,6 +53,7 @@ FieldDef&
 Blossom::registerInputField(const std::string &name,
                             const FieldType fieldType)
 {
+    errorCodes.push_back(BAD_REQUEST_RTYPE);
     auto ret = m_inputValidationMap.try_emplace(name, FieldDef(FieldDef::INPUT_TYPE, fieldType));
     return ret.first->second;
 }

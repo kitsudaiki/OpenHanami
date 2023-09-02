@@ -34,6 +34,8 @@
 CreateCheckpoint::CreateCheckpoint()
     : Blossom("Init new checkpoint of a cluster.")
 {
+    errorCodes.push_back(UNAUTHORIZED_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------

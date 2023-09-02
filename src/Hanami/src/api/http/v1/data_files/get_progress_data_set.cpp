@@ -35,6 +35,8 @@
 GetProgressDataSet::GetProgressDataSet()
     : Blossom("Get upload progress of a specific data-set.")
 {
+    errorCodes.push_back(NOT_FOUND_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------

@@ -28,6 +28,8 @@
 GetErrorLog::GetErrorLog()
     : Blossom("Get error-log of a user. Only an admin is allowed to request the error-log.")
 {
+    errorCodes.push_back(UNAUTHORIZED_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------

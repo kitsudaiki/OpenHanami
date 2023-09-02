@@ -32,6 +32,8 @@
 LoadCluster::LoadCluster()
     : Blossom("Load a checkpoint from shiori into an existing cluster and override the old data.")
 {
+    errorCodes.push_back(NOT_FOUND_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------

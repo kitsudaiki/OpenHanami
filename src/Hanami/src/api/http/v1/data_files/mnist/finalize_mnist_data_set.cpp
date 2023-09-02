@@ -38,6 +38,8 @@ FinalizeMnistDataSet::FinalizeMnistDataSet()
     : Blossom("Finalize uploaded data-set by checking completeness of the "
               "uploaded and convert into generic format.")
 {
+    errorCodes.push_back(NOT_FOUND_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------

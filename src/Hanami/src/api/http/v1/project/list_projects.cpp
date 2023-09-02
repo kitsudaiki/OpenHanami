@@ -31,6 +31,8 @@
 ListProjects::ListProjects()
     : Blossom("Get information of all registered user as table.")
 {
+    errorCodes.push_back(UNAUTHORIZED_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------

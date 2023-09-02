@@ -39,6 +39,8 @@
 CheckDataSet::CheckDataSet()
     : Blossom("Compare a list of values with a data-set to check correctness.")
 {
+    errorCodes.push_back(NOT_FOUND_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------

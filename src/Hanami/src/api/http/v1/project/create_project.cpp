@@ -35,6 +35,9 @@
 CreateProject::CreateProject()
     : Blossom("Register a new project within Misaki.")
 {
+    errorCodes.push_back(UNAUTHORIZED_RTYPE);
+    errorCodes.push_back(CONFLICT_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------

@@ -36,6 +36,8 @@
 CreateTask::CreateTask()
     : Blossom("Add new task to the task-queue of a cluster.")
 {
+    errorCodes.push_back(NOT_FOUND_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------
@@ -124,9 +126,16 @@ CreateTask::runTask(BlossomIO &blossomIO,
                                                    context,
                                                    error) == false)
     {
-        error.addMeesage("Failed to get information from shiori for UUID '" + dataSetUuid + "'");
-        // TODO: add status-error from response from shiori
-        status.statusCode = UNAUTHORIZED_RTYPE;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // handle not found
+    if(dataSetInfo.size() == 0)
+    {
+        status.errorMessage = "Data-set with uuid '" + dataSetUuid + "' not found";
+        status.statusCode = NOT_FOUND_RTYPE;
+        error.addMeesage(status.errorMessage);
         return false;
     }
 

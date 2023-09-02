@@ -113,6 +113,11 @@ private:
     bool initJwt(Kitsunemimi::ErrorContainer &error);
 
     void clearCluster(Kitsunemimi::ErrorContainer &error);
+    void checkStatusCode(Blossom* blossom,
+                         const std::string &blossomName,
+                         const std::string &blossomGroupName,
+                         BlossomStatus &status,
+                         Kitsunemimi::ErrorContainer &error);
 };
 
 #endif //HANAMI_HANAMI_ROOT_H

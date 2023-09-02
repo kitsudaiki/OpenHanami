@@ -35,6 +35,10 @@
 AddProjectToUser::AddProjectToUser()
     : Blossom("Add a project to a specific user.")
 {
+    errorCodes.push_back(UNAUTHORIZED_RTYPE);
+    errorCodes.push_back(CONFLICT_RTYPE);
+    errorCodes.push_back(NOT_FOUND_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------

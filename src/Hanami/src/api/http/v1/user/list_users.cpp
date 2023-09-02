@@ -31,6 +31,8 @@
 ListUsers::ListUsers()
     : Blossom("Get information of all registered users.")
 {
+    errorCodes.push_back(UNAUTHORIZED_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------

@@ -30,6 +30,8 @@
 DeleteTask::DeleteTask()
     : Blossom("Delete a task or abort a task, if it is actually running.")
 {
+    errorCodes.push_back(NOT_FOUND_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------

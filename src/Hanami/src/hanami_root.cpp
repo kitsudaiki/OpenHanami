@@ -508,70 +508,127 @@ HanamiRoot::triggerBlossom(Kitsunemimi::DataMap &result,
     if(blossom == nullptr)
     {
         error.addMeesage("No blosom found for the id " + blossomName);
-        return false;
-    }
-
-    // inialize a new blossom-leaf for processing
-    BlossomIO blossomIO;
-    blossomIO.blossomName = blossomName;
-    blossomIO.blossomPath = blossomName;
-    blossomIO.blossomGroupType = blossomGroupName;
-    blossomIO.input = &initialValues;
-    blossomIO.parentValues = blossomIO.input.getItemContent()->toMap();
-    blossomIO.nameHirarchie.push_back("BLOSSOM: " + blossomName);
-
-    // check input to be complete
-    std::string errorMessage;
-    if(blossom->validateFieldsCompleteness(initialValues,
-                                           *blossom->getInputValidationMap(),
-                                           FieldDef::INPUT_TYPE,
-                                           errorMessage) == false)
-    {
-        error.addMeesage(errorMessage);
-        error.addMeesage("check of completeness of input-fields failed");
-        error.addMeesage("Check of blossom '"
-                         + blossomName
-                         + " in group '"
-                         + blossomGroupName
-                         + "' failed.");
-        status.statusCode = BAD_REQUEST_RTYPE;
-        status.errorMessage = errorMessage;
-        LOG_ERROR(error);
-        return false;
-    }
-
-    // process blossom
-    if(blossom->growBlossom(blossomIO, &context, status, error) == false)
-    {
-        error.addMeesage("trigger blossom failed.");
-        LOG_ERROR(error);
-        return false;
-    }
-
-    // check output to be complete
-    Kitsunemimi::DataMap* output = blossomIO.output.getItemContent()->toMap();
-    if(blossom->validateFieldsCompleteness(*output,
-                                           *blossom->getOutputValidationMap(),
-                                           FieldDef::OUTPUT_TYPE,
-                                           errorMessage) == false)
-    {
-        error.addMeesage(errorMessage);
-        error.addMeesage("check of completeness of output-fields failed");
-        error.addMeesage("Check of blossom '"
-                         + blossomName
-                         + " in group '"
-                         + blossomGroupName
-                         + "' failed.");
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         LOG_ERROR(error);
         return false;
     }
 
-    // TODO: override only with the output-values to avoid unnecessary conflicts
-    result.clear();
-    overrideItems(result, *output, ALL);
+    bool success = false;
 
-    return true;
+    do
+    {
+        // inialize a new blossom-leaf for processing
+        BlossomIO blossomIO;
+        blossomIO.blossomName = blossomName;
+        blossomIO.blossomPath = blossomName;
+        blossomIO.blossomGroupType = blossomGroupName;
+        blossomIO.input = &initialValues;
+        blossomIO.parentValues = blossomIO.input.getItemContent()->toMap();
+        blossomIO.nameHirarchie.push_back("BLOSSOM: " + blossomName);
+
+        // check input to be complete
+        std::string errorMessage;
+        if(blossom->validateFieldsCompleteness(initialValues,
+                                               *blossom->getInputValidationMap(),
+                                               FieldDef::INPUT_TYPE,
+                                               errorMessage) == false)
+        {
+            error.addMeesage(errorMessage);
+            error.addMeesage("check of completeness of input-fields failed");
+            error.addMeesage("Check of blossom '"
+                             + blossomName
+                             + " in group '"
+                             + blossomGroupName
+                             + "' failed.");
+            status.statusCode = BAD_REQUEST_RTYPE;
+            status.errorMessage = errorMessage;
+            break;
+        }
+
+        // process blossom
+        if(blossom->growBlossom(blossomIO, &context, status, error) == false)
+        {
+            error.addMeesage("trigger blossom failed.");
+            break;
+        }
+
+        // check output to be complete
+        Kitsunemimi::DataMap* output = blossomIO.output.getItemContent()->toMap();
+        if(blossom->validateFieldsCompleteness(*output,
+                                               *blossom->getOutputValidationMap(),
+                                               FieldDef::OUTPUT_TYPE,
+                                               errorMessage) == false)
+        {
+            error.addMeesage(errorMessage);
+            error.addMeesage("check of completeness of output-fields failed");
+            error.addMeesage("Check of blossom '"
+                             + blossomName
+                             + " in group '"
+                             + blossomGroupName
+                             + "' failed.");
+            status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+            break;
+        }
+
+        // TODO: override only with the output-values to avoid unnecessary conflicts
+        result.clear();
+        overrideItems(result, *output, ALL);
+
+        success = true;
+    }
+    while(false);
+
+    if(success == false) {
+        LOG_ERROR(error);
+    }
+
+    checkStatusCode(blossom, blossomName, blossomGroupName, status, error);
+
+    return success;
+}
+
+/**
+ * @brief check if the given status-code is allowed for the endpoint
+ *
+ * @param blossom pointer to related blossom
+ * @param blossomName name of blossom for error-message
+ * @param blossomGroupName group of the blossom for error-message
+ * @param status status to check
+ * @param error reference for error-output
+ */
+void
+HanamiRoot::checkStatusCode(Blossom* blossom,
+                            const std::string &blossomName,
+                            const std::string &blossomGroupName,
+                            BlossomStatus &status,
+                            Kitsunemimi::ErrorContainer &error)
+{
+    if(status.statusCode)
+    {
+        bool found = false;
+        for(const uint32_t allowed : blossom->errorCodes)
+        {
+            if(allowed == status.statusCode) {
+                found = true;
+            }
+        }
+
+        // if given status-code is unexprected, then override it and clear the message
+        // to avoid leaking unwanted information
+        if(found == false)
+        {
+            error.addMeesage("Status-code '"
+                             + std::to_string(status.statusCode)
+                             + "' is not allowed as output for blossom '"
+                             + blossomName
+                             + "' in group '"
+                             + blossomGroupName
+                             + "'");
+            status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+            status.errorMessage = "";
+        }
+    }
+
 }
 
 /**

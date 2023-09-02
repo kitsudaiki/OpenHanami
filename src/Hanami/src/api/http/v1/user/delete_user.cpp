@@ -33,6 +33,9 @@
 DeleteUser::DeleteUser()
     : Blossom("Delete a specific user from the database.")
 {
+    errorCodes.push_back(UNAUTHORIZED_RTYPE);
+    errorCodes.push_back(NOT_FOUND_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------

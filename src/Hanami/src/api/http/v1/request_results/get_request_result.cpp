@@ -28,6 +28,8 @@
 GetRequestResult::GetRequestResult()
     : Blossom("Get a specific request-result")
 {
+    errorCodes.push_back(NOT_FOUND_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------

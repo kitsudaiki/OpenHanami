@@ -35,6 +35,9 @@
 RemoveProjectFromUser::RemoveProjectFromUser()
     : Blossom("Remove a project from a specific user")
 {
+    errorCodes.push_back(UNAUTHORIZED_RTYPE);
+    errorCodes.push_back(NOT_FOUND_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------

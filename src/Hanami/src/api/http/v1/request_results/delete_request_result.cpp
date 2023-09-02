@@ -28,6 +28,8 @@
 DeleteRequestResult::DeleteRequestResult()
     : Blossom("Delete a request-result from shiori.")
 {
+    errorCodes.push_back(NOT_FOUND_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------

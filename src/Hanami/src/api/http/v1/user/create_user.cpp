@@ -35,6 +35,9 @@
 CreateUser::CreateUser()
     : Blossom("Register a new user within Misaki.")
 {
+    errorCodes.push_back(UNAUTHORIZED_RTYPE);
+    errorCodes.push_back(CONFLICT_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------

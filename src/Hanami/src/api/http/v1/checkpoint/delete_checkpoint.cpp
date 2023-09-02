@@ -31,6 +31,8 @@
 DeleteCheckpoint::DeleteCheckpoint()
     : Blossom("Delete a result-set from shiori.")
 {
+    errorCodes.push_back(NOT_FOUND_RTYPE);
+
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------
