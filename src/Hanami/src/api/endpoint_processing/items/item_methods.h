@@ -26,8 +26,8 @@
 #include <vector>
 #include <string>
 
-#include <libKitsunemimiCommon/items/data_items.h>
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_common/items/data_items.h>
+#include <hanami_common/logger.h>
 
 #include <api/endpoint_processing/items/sakura_items.h>
 

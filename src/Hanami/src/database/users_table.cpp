@@ -22,12 +22,12 @@
 
 #include <database/users_table.h>
 
-#include <libKitsunemimiCommon/items/table_item.h>
-#include <libKitsunemimiCommon/methods/string_methods.h>
-#include <libKitsunemimiJson/json_item.h>
-#include <libKitsunemimiCrypto/hashes.h>
+#include <hanami_common/items/table_item.h>
+#include <hanami_common/methods/string_methods.h>
+#include <hanami_json/json_item.h>
+#include <hanami_crypto/hashes.h>
 
-#include <libKitsunemimiSakuraDatabase/sql_database.h>
+#include <hanami_database/sql_database.h>
 
 UsersTable* UsersTable::instance = nullptr;
 

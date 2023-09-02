@@ -23,7 +23,7 @@
 #include "get_system_info.h"
 #include <hanami_root.h>
 
-#include <libKitsunemimiSakuraHardware/host.h>
+#include <hanami_hardware/host.h>
 
 GetSystemInfo::GetSystemInfo()
     : Blossom("Get all available information of the local system, like "

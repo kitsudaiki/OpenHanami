@@ -38,8 +38,8 @@
 #include <filesystem>
 
 #include <hanami_messages.proto3.pb.h>
-#include <libKitsunemimiCommon/threading/thread.h>
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_common/threading/thread.h>
+#include <hanami_common/logger.h>
 
 namespace beast = boost::beast;         // from <boost/beast.hpp>
 namespace http = beast::http;           // from <boost/beast/http.hpp>

@@ -25,7 +25,7 @@
 
 #include <string>
 #include <map>
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_common/logger.h>
 
 namespace Kitsunemimi {
 class BinaryFile;

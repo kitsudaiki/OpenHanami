@@ -25,9 +25,9 @@
 
 #include <common/structs.h>
 
-#include <libKitsunemimiCommon/items/data_items.h>
-#include <libKitsunemimiCommon/logger.h>
-#include <libKitsunemimiJson/json_item.h>
+#include <hanami_common/items/data_items.h>
+#include <hanami_common/logger.h>
+#include <hanami_json/json_item.h>
 
 class BlossomItem;
 class SakuraThread;

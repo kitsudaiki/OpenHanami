@@ -28,8 +28,8 @@
 
 #include <libHanamiAiSdk/common/websocket_client.h>
 
-#include <libKitsunemimiCommon/threading/thread.h>
-#include <libKitsunemimiJson/json_item.h>
+#include <hanami_common/threading/thread.h>
+#include <hanami_json/json_item.h>
 
 class TestStep;
 

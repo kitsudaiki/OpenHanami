@@ -23,7 +23,7 @@
 #ifndef HANAMI_ARGS_H
 #define HANAMI_ARGS_H
 
-#include <libKitsunemimiArgs/arg_parser.h>
+#include <hanami_args/arg_parser.h>
 
 /**
  * @brief register all available arguments for the CLI input

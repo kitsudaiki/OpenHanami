@@ -22,7 +22,7 @@
 
 #include "dataset_check_test.h"
 
-#include <libKitsunemimiConfig/config_handler.h>
+#include <hanami_config/config_handler.h>
 #include <libHanamiAiSdk/data_set.h>
 
 DataSetCheckTest::DataSetCheckTest(const bool expectSuccess)

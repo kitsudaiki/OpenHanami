@@ -22,7 +22,7 @@
 
 #include "dataset_create_csv_test.h"
 
-#include <libKitsunemimiConfig/config_handler.h>
+#include <hanami_config/config_handler.h>
 #include <libHanamiAiSdk/data_set.h>
 
 DataSetCreateCsvTest::DataSetCreateCsvTest(const bool expectSuccess)

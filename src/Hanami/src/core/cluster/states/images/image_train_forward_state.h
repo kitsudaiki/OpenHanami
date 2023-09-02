@@ -23,7 +23,7 @@
 #ifndef HANAMI_IMAGETRAINFORWARD_STATE_H
 #define HANAMI_IMAGETRAINFORWARD_STATE_H
 
-#include <libKitsunemimiCommon/threading/event.h>
+#include <hanami_common/threading/event.h>
 
 class Cluster;
 

@@ -25,8 +25,8 @@
 
 #include <regex>
 
-#include <libKitsunemimiCommon/items/data_items.h>
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_common/items/data_items.h>
+#include <hanami_common/logger.h>
 
 #include <api/endpoint_processing/items/value_items.h>
 #include <api/endpoint_processing//blossom.h>

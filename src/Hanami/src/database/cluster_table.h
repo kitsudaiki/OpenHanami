@@ -23,7 +23,7 @@
 #ifndef HANAMI_CLUSTERTABLE_H
 #define HANAMI_CLUSTERTABLE_H
 
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_common/logger.h>
 #include <database/generic_tables/hanami_sql_table.h>
 
 namespace Kitsunemimi {

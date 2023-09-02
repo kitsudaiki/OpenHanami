@@ -26,9 +26,9 @@
 #include <core/cluster/cluster.h>
 #include <database/cluster_table.h>
 
-#include <libKitsunemimiCrypto/common.h>
-#include <libKitsunemimiCommon/buffer/data_buffer.h>
-#include <libKitsunemimiJson/json_item.h>
+#include <hanami_crypto/common.h>
+#include <hanami_common/buffer/data_buffer.h>
+#include <hanami_json/json_item.h>
 
 #include <hanami_root.h>
 

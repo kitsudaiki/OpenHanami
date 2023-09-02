@@ -23,7 +23,7 @@
 #include "cluster_io.h"
 
 #include <core/cluster/cluster.h>
-#include <../../libraries/libKitsunemimiHanamiMessages/protobuffers/hanami_messages.proto3.pb.h>
+#include <../../libraries/hanami_messages/protobuffers/hanami_messages.proto3.pb.h>
 
 /**
  * @brief send output of a cluster as protobuf-message

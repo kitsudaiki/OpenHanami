@@ -25,7 +25,7 @@
 
 #include <common.h>
 
-#include <libKitsunemimiHanamiClusterParser/cluster_meta.h>
+#include <hanami_cluster_parser/cluster_meta.h>
 #include <core/processing/objects.h>
 
 class CoreSegment;

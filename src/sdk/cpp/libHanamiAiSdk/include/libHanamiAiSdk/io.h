@@ -28,7 +28,7 @@
 #include <stdint.h>
 #include <chrono>
 
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_common/logger.h>
 
 namespace HanamiAI
 {

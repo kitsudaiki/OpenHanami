@@ -27,9 +27,9 @@
 #include <regex>
 #include <common/structs.h>
 
-#include <libKitsunemimiCommon/logger.h>
-#include <libKitsunemimiCommon/methods/string_methods.h>
-#include <libKitsunemimiJson/json_item.h>
+#include <hanami_common/logger.h>
+#include <hanami_common/methods/string_methods.h>
+#include <hanami_json/json_item.h>
 
 /**
  * @brief precheck path

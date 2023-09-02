@@ -25,9 +25,9 @@
 #include <hanami_root.h>
 #include <database/users_table.h>
 
-#include <libKitsunemimiCommon/methods/string_methods.h>
-#include <libKitsunemimiCrypto/hashes.h>
-#include <libKitsunemimiJson/json_item.h>
+#include <hanami_common/methods/string_methods.h>
+#include <hanami_crypto/hashes.h>
+#include <hanami_json/json_item.h>
 
 /**
  * @brief constructor

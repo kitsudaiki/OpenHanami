@@ -24,7 +24,7 @@
 #define HANAMI_CPU_PROCESSING_UNIT_H
 
 #include <common.h>
-#include <libKitsunemimiCommon/threading/thread.h>
+#include <hanami_common/threading/thread.h>
 
 class Cluster;
 

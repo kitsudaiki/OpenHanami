@@ -29,8 +29,8 @@
 #include <api/endpoint_processing/http_processing/string_functions.h>
 #include <api/endpoint_processing/http_server.h>
 
-#include <libKitsunemimiJson/json_item.h>
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_json/json_item.h>
+#include <hanami_common/logger.h>
 
 #include <jwt-cpp/jwt.h>
 //#include <jwt-cpp/traits/nlohmann-json/defaults.h>

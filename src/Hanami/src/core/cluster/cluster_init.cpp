@@ -31,9 +31,9 @@
 #include <core/routing_functions.h>
 #include <core/cluster/cluster_init.h>
 
-#include <libKitsunemimiConfig/config_handler.h>
-#include <libKitsunemimiCommon/logger.h>
-#include <libKitsunemimiJson/json_item.h>
+#include <hanami_config/config_handler.h>
+#include <hanami_common/logger.h>
+#include <hanami_json/json_item.h>
 
 /**
  * @brief getNumberOfNeuronSections

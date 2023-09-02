@@ -27,8 +27,8 @@
 #include <api/endpoint_processing/http_processing/http_processing.h>
 #include <api/endpoint_processing/http_websocket_thread.h>
 
-#include <libKitsunemimiCommon/logger.h>
-#include <libKitsunemimiCommon/files/text_file.h>
+#include <hanami_common/logger.h>
+#include <hanami_common/files/text_file.h>
 
 /**
  * @brief constructor

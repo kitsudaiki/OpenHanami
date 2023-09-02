@@ -25,7 +25,7 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-#include <libKitsunemimiCommon/buffer/data_buffer.h>
+#include <hanami_common/buffer/data_buffer.h>
 
 class FinalizeMnistDataSet
         : public Blossom

@@ -43,7 +43,7 @@ namespace net = boost::asio;    // from <boost/asio.hpp>
 namespace ssl = net::ssl;       // from <boost/asio/ssl.hpp>
 using tcp = net::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_common/logger.h>
 
 namespace HanamiAI
 {

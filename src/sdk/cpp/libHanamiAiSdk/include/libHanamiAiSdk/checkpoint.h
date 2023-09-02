@@ -23,7 +23,7 @@
 #ifndef KITSUNEMIMI_HANAMISDK_CHECKPOINT_H
 #define KITSUNEMIMI_HANAMISDK_CHECKPOINT_H
 
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_common/logger.h>
 
 namespace HanamiAI
 {

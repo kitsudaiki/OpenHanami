@@ -26,10 +26,10 @@
 #include <database/checkpoint_table.h>
 #include <core/temp_file_handler.h>
 
-#include <libKitsunemimiCrypto/common.h>
-#include <libKitsunemimiConfig/config_handler.h>
-#include <libKitsunemimiJson/json_item.h>
-#include <libKitsunemimiCommon/files/binary_file.h>
+#include <hanami_crypto/common.h>
+#include <hanami_config/config_handler.h>
+#include <hanami_json/json_item.h>
+#include <hanami_common/files/binary_file.h>
 
 CreateCheckpoint::CreateCheckpoint()
     : Blossom("Init new checkpoint of a cluster.")

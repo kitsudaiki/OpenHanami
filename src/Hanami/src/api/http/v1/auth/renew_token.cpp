@@ -25,9 +25,9 @@
 #include <hanami_root.h>
 #include <database/users_table.h>
 
-#include <libKitsunemimiCrypto/hashes.h>
-#include <libKitsunemimiJson/json_item.h>
-#include <libKitsunemimiConfig/config_handler.h>
+#include <hanami_crypto/hashes.h>
+#include <hanami_json/json_item.h>
+#include <hanami_config/config_handler.h>
 
 #include <jwt-cpp/jwt.h>
 //#include <jwt-cpp/traits/nlohmann-json/defaults.h>

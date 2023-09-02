@@ -26,15 +26,15 @@
 #include <database/request_result_table.h>
 #include <database/data_set_table.h>
 
-#include <libKitsunemimiHanamiFiles/data_set_files/data_set_file.h>
-#include <libKitsunemimiHanamiFiles/data_set_files/image_data_set_file.h>
+#include <hanami_files/data_set_files/data_set_file.h>
+#include <hanami_files/data_set_files/image_data_set_file.h>
 
-#include <libKitsunemimiJson/json_item.h>
-#include <libKitsunemimiCommon/methods/file_methods.h>
-#include <libKitsunemimiCommon/buffer/data_buffer.h>
-#include <libKitsunemimiCommon/files/text_file.h>
-#include <libKitsunemimiCommon/files/binary_file.h>
-#include <libKitsunemimiConfig/config_handler.h>
+#include <hanami_json/json_item.h>
+#include <hanami_common/methods/file_methods.h>
+#include <hanami_common/buffer/data_buffer.h>
+#include <hanami_common/files/text_file.h>
+#include <hanami_common/files/binary_file.h>
+#include <hanami_config/config_handler.h>
 
 CheckDataSet::CheckDataSet()
     : Blossom("Compare a list of values with a data-set to check correctness.")

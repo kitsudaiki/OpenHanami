@@ -26,7 +26,7 @@
 #include <api/endpoint_processing/runtime_validation.h>
 #include <common.h>
 
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_common/logger.h>
 
 /**
  * @brief constructor

@@ -23,7 +23,7 @@
 #ifndef KITSUNEMIMI_HANAMISDK_REQUEST_RESULT_H
 #define KITSUNEMIMI_HANAMISDK_REQUEST_RESULT_H
 
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_common/logger.h>
 
 namespace HanamiAI
 {

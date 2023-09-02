@@ -25,7 +25,7 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-#include <libKitsunemimiHanamiClusterParser/cluster_meta.h>
+#include <hanami_cluster_parser/cluster_meta.h>
 
 class Cluster;
 

@@ -26,13 +26,13 @@
 #include <database/data_set_table.h>
 #include <core/temp_file_handler.h>
 
-#include <libKitsunemimiHanamiFiles/data_set_files/data_set_file.h>
-#include <libKitsunemimiHanamiFiles/data_set_files/image_data_set_file.h>
+#include <hanami_files/data_set_files/data_set_file.h>
+#include <hanami_files/data_set_files/image_data_set_file.h>
 
-#include <libKitsunemimiCrypto/common.h>
-#include <libKitsunemimiJson/json_item.h>
-#include <libKitsunemimiCommon/files/binary_file.h>
-#include <libKitsunemimiCommon/methods/file_methods.h>
+#include <hanami_crypto/common.h>
+#include <hanami_json/json_item.h>
+#include <hanami_common/files/binary_file.h>
+#include <hanami_common/methods/file_methods.h>
 
 FinalizeMnistDataSet::FinalizeMnistDataSet()
     : Blossom("Finalize uploaded data-set by checking completeness of the "

@@ -22,7 +22,7 @@
 
 #include <common/http_client.h>
 
-#include <libKitsunemimiJson/json_item.h>
+#include <hanami_json/json_item.h>
 
 namespace HanamiAI
 {

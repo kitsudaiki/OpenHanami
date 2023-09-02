@@ -22,8 +22,8 @@
 
 #include "rest_api_tests.h"
 
-#include <libKitsunemimiConfig/config_handler.h>
-#include <libKitsunemimiJson/json_item.h>
+#include <hanami_config/config_handler.h>
+#include <hanami_json/json_item.h>
 #include <libHanamiAiSdk/init.h>
 
 #include <common/test_thread.h>

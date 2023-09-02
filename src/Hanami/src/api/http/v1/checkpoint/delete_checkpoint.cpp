@@ -25,8 +25,8 @@
 #include <hanami_root.h>
 #include <database/checkpoint_table.h>
 
-#include <libKitsunemimiJson/json_item.h>
-#include <libKitsunemimiCommon/methods/file_methods.h>
+#include <hanami_json/json_item.h>
+#include <hanami_common/methods/file_methods.h>
 
 DeleteCheckpoint::DeleteCheckpoint()
     : Blossom("Delete a result-set from shiori.")

@@ -23,14 +23,14 @@
 #include "thread_binder.h"
 #include <hanami_root.h>
 
-#include <libKitsunemimiSakuraHardware/host.h>
-#include <libKitsunemimiSakuraHardware/cpu_core.h>
-#include <libKitsunemimiSakuraHardware/cpu_package.h>
-#include <libKitsunemimiSakuraHardware/cpu_thread.h>
+#include <hanami_hardware/host.h>
+#include <hanami_hardware/cpu_core.h>
+#include <hanami_hardware/cpu_package.h>
+#include <hanami_hardware/cpu_thread.h>
 
-#include <libKitsunemimiJson/json_item.h>
-#include <libKitsunemimiCommon/threading/thread.h>
-#include <libKitsunemimiCommon/threading/thread_handler.h>
+#include <hanami_json/json_item.h>
+#include <hanami_common/threading/thread.h>
+#include <hanami_common/threading/thread_handler.h>
 
 ThreadBinder* ThreadBinder::instance = nullptr;
 

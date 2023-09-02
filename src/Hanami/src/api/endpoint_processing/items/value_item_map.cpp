@@ -22,8 +22,8 @@
 
 #include <api/endpoint_processing/items/value_item_map.h>
 
-#include <libKitsunemimiCommon/items/table_item.h>
-#include <libKitsunemimiCommon/items/data_items.h>
+#include <hanami_common/items/table_item.h>
+#include <hanami_common/items/data_items.h>
 
 /**
  * @brief constructor

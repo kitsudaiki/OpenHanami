@@ -27,21 +27,21 @@
 #include <core/cluster/cluster.h>
 #include <core/cluster/cluster_init.h>
 
-#include <libKitsunemimiCommon/logger.h>
-#include <libKitsunemimiCommon/files/text_file.h>
-#include <libKitsunemimiConfig/config_handler.h>
+#include <hanami_common/logger.h>
+#include <hanami_common/files/text_file.h>
+#include <hanami_config/config_handler.h>
 
 #include <api/endpoint_processing/http_server.h>
 #include <api/endpoint_processing/http_websocket_thread.h>
 #include <api/endpoint_processing/blossom.h>
 #include <api/endpoint_processing/items/item_methods.h>
 
-#include <libKitsunemimiHanamiHardware/power_measuring.h>
-#include <libKitsunemimiHanamiHardware/speed_measuring.h>
-#include <libKitsunemimiHanamiHardware/temperature_measuring.h>
+#include <hanami_hardware/power_measuring.h>
+#include <hanami_hardware/speed_measuring.h>
+#include <hanami_hardware/temperature_measuring.h>
 
-#include <libKitsunemimiSakuraHardware/host.h>
-#include <libKitsunemimiSakuraDatabase/sql_database.h>
+#include <hanami_hardware/host.h>
+#include <hanami_database/sql_database.h>
 
 #include <database/cluster_table.h>
 #include <database/users_table.h>

@@ -29,7 +29,7 @@
 #include <algorithm>
 #include <uuid/uuid.h>
 
-#include <libKitsunemimiCommon/structs.h>
+#include <hanami_common/structs.h>
 
 // const predefined values
 #define UNINIT_STATE_64 0xFFFFFFFFFFFFFFFF

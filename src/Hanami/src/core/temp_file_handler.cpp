@@ -22,9 +22,9 @@
 
 #include "temp_file_handler.h"
 
-#include <libKitsunemimiCommon/methods/file_methods.h>
-#include <libKitsunemimiCommon/files/binary_file.h>
-#include <libKitsunemimiConfig/config_handler.h>
+#include <hanami_common/methods/file_methods.h>
+#include <hanami_common/files/binary_file.h>
+#include <hanami_config/config_handler.h>
 
 TempFileHandler* TempFileHandler::instance = nullptr;
 

@@ -24,8 +24,8 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-#include <libKitsunemimiCommon/items/data_items.h>
-#include <libKitsunemimiCommon/items/table_item.h>
+#include <hanami_common/items/data_items.h>
+#include <hanami_common/items/table_item.h>
 
 /**
  * @brief override data of a data-map with new incoming information

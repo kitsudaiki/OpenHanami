@@ -25,9 +25,9 @@
 
 #include <mutex>
 
-#include <libKitsunemimiCommon/threading/thread.h>
-#include <libKitsunemimiCommon/logger.h>
-#include <libKitsunemimiCommon/items/data_items.h>
+#include <hanami_common/threading/thread.h>
+#include <hanami_common/logger.h>
+#include <hanami_common/items/data_items.h>
 
 class ThreadBinder
         : public Kitsunemimi::Thread

@@ -22,11 +22,11 @@
 
 #include "validate_access.h"
 
-#include <libKitsunemimiCommon/items/data_items.h>
-#include <libKitsunemimiCommon/methods/string_methods.h>
-#include <libKitsunemimiJson/json_item.h>
+#include <hanami_common/items/data_items.h>
+#include <hanami_common/methods/string_methods.h>
+#include <hanami_json/json_item.h>
 
-#include <libKitsunemimiHanamiPolicies/policy.h>
+#include <hanami_policies/policy.h>
 #include <hanami_root.h>
 
 #include <jwt-cpp/jwt.h>

@@ -23,7 +23,7 @@
 #ifndef HANAMI_CONFIG_H
 #define HANAMI_CONFIG_H
 
-#include <libKitsunemimiConfig/config_handler.h>
+#include <hanami_config/config_handler.h>
 
 /**
  * @brief define all available entries in the config file with default-values

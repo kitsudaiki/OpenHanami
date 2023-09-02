@@ -27,7 +27,7 @@
 #include <core/cluster/cluster.h>
 #include <core/cluster/statemachine_init.h>
 
-#include <libKitsunemimiJson/json_item.h>
+#include <hanami_json/json_item.h>
 
 /**
  * @brief constructor

@@ -39,8 +39,8 @@
 #include <common/structs.h>
 #include <common/enums.h>
 
-#include <libKitsunemimiHanamiPolicies/policy.h>
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_policies/policy.h>
+#include <hanami_common/logger.h>
 
 namespace beast = boost::beast;         // from <boost/beast.hpp>
 namespace http = beast::http;           // from <boost/beast/http.hpp>

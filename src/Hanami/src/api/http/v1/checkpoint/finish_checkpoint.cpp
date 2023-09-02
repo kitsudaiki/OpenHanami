@@ -26,7 +26,7 @@
 #include <database/checkpoint_table.h>
 #include <core/temp_file_handler.h>
 
-#include <libKitsunemimiCommon/files/binary_file.h>
+#include <hanami_common/files/binary_file.h>
 
 FinalizeCheckpoint::FinalizeCheckpoint()
     : Blossom("Finish checkpoint of a cluster.")

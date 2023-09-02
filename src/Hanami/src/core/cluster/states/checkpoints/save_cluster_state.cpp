@@ -29,8 +29,8 @@
 #include <core/cluster/cluster.h>
 #include <core/cluster/statemachine_init.h>
 
-#include <libKitsunemimiCrypto/hashes.h>
-#include <libKitsunemimiCommon/files/binary_file.h>
+#include <hanami_crypto/hashes.h>
+#include <hanami_common/files/binary_file.h>
 
 
 extern "C"

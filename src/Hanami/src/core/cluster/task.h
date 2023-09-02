@@ -25,8 +25,8 @@
 
 #include <common.h>
 
-#include <libKitsunemimiJson/json_item.h>
-#include <libKitsunemimiCommon/items/data_items.h>
+#include <hanami_json/json_item.h>
+#include <hanami_common/items/data_items.h>
 
 enum TaskType
 {

@@ -25,10 +25,10 @@
 #include <hanami_root.h>
 #include <api/endpoint_processing/blossom.h>
 
-#include <libKitsunemimiCrypto/common.h>
-#include <libKitsunemimiCommon/methods/string_methods.h>
-#include <libKitsunemimiCommon/methods/file_methods.h>
-#include <libKitsunemimiJson/json_item.h>
+#include <hanami_crypto/common.h>
+#include <hanami_common/methods/string_methods.h>
+#include <hanami_common/methods/file_methods.h>
+#include <hanami_json/json_item.h>
 
 std::map<HttpResponseTypes, std::string> responseMessage =
 {

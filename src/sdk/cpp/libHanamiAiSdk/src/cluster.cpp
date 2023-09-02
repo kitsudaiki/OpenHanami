@@ -23,7 +23,7 @@
 #include <libHanamiAiSdk/cluster.h>
 #include <common/http_client.h>
 #include <libHanamiAiSdk/common/websocket_client.h>
-#include <libKitsunemimiCrypto/common.h>
+#include <hanami_crypto/common.h>
 
 namespace HanamiAI
 {

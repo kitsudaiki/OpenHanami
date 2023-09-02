@@ -28,9 +28,9 @@
 #include <uuid/uuid.h>
 #include <common/structs.h>
 
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_common/logger.h>
 
-#include <libKitsunemimiSakuraDatabase/sql_table.h>
+#include <hanami_database/sql_table.h>
 
 class SqlDatabase;
 

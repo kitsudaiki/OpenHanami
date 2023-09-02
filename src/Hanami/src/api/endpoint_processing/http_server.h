@@ -38,8 +38,8 @@
 #include <mutex>
 #include <deque>
 
-#include <libKitsunemimiCommon/threading/thread.h>
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_common/threading/thread.h>
+#include <hanami_common/logger.h>
 
 using tcp = boost::asio::ip::tcp;
 

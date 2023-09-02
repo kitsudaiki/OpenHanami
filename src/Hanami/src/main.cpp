@@ -32,10 +32,10 @@
 
 #include <documentation/generate_rest_api_docu.h>
 
-#include <libKitsunemimiArgs/arg_parser.h>
-#include <libKitsunemimiCommon/logger.h>
-#include <libKitsunemimiCommon/files/text_file.h>
-#include <libKitsunemimiConfig/config_handler.h>
+#include <hanami_args/arg_parser.h>
+#include <hanami_common/logger.h>
+#include <hanami_common/files/text_file.h>
+#include <hanami_config/config_handler.h>
 
 #include <database/cluster_table.h>
 #include <database/users_table.h>

@@ -26,8 +26,8 @@
 #include <vector>
 #include <unistd.h>
 
-#include <libKitsunemimiJson/json_item.h>
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_json/json_item.h>
+#include <hanami_common/logger.h>
 #include <unistd.h>
 
 class TestStep

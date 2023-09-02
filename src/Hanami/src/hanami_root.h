@@ -25,7 +25,7 @@
 
 #include <common.h>
 
-#include <libKitsunemimiHanamiPolicies/policy.h>
+#include <hanami_policies/policy.h>
 
 #include <cryptopp/secblock.h>
 

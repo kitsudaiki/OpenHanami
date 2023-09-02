@@ -22,13 +22,13 @@
 
 #include <database/data_set_table.h>
 
-#include <libKitsunemimiHanamiFiles/data_set_files/data_set_functions.h>
+#include <hanami_files/data_set_files/data_set_functions.h>
 
-#include <libKitsunemimiSakuraDatabase/sql_database.h>
+#include <hanami_database/sql_database.h>
 
-#include <libKitsunemimiCommon/items/table_item.h>
-#include <libKitsunemimiCommon/methods/string_methods.h>
-#include <libKitsunemimiJson/json_item.h>
+#include <hanami_common/items/table_item.h>
+#include <hanami_common/methods/string_methods.h>
+#include <hanami_json/json_item.h>
 
 DataSetTable* DataSetTable::instance = nullptr;
 

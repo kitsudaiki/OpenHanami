@@ -22,10 +22,10 @@
 
 #include "file_send.h"
 
-#include <libKitsunemimiCommon/methods/string_methods.h>
-#include <libKitsunemimiCommon/files/text_file.h>
-#include <libKitsunemimiCommon/logger.h>
-#include <libKitsunemimiConfig/config_handler.h>
+#include <hanami_common/methods/string_methods.h>
+#include <hanami_common/files/text_file.h>
+#include <hanami_common/logger.h>
+#include <hanami_config/config_handler.h>
 
 /**
  * @brief get response-type for the requested file

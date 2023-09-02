@@ -23,8 +23,8 @@
 #ifndef HANAMI_RESTORECLUSTERSTATE_H
 #define HANAMI_RESTORECLUSTERSTATE_H
 
-#include <libKitsunemimiCommon/threading/event.h>
-#include <libKitsunemimiJson/json_item.h>
+#include <hanami_common/threading/event.h>
+#include <hanami_json/json_item.h>
 
 class Cluster;
 

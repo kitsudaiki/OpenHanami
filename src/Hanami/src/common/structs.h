@@ -30,9 +30,9 @@
 #include <common/defines.h>
 #include <common/enums.h>
 
-#include <libKitsunemimiHanamiPolicies/policy.h>
+#include <hanami_policies/policy.h>
 
-#include <libKitsunemimiCommon/items/data_items.h>
+#include <hanami_common/items/data_items.h>
 
 #define UNINTI_POINT_32 0x0FFFFFFF
 

@@ -24,12 +24,12 @@
 #include <libHanamiAiSdk/common/websocket_client.h>
 #include <common/http_client.h>
 
-#include <libKitsunemimiCrypto/common.h>
-#include <libKitsunemimiJson/json_item.h>
-#include <libKitsunemimiCommon/items/data_items.h>
-#include <libKitsunemimiCommon/files/binary_file.h>
+#include <hanami_crypto/common.h>
+#include <hanami_json/json_item.h>
+#include <hanami_common/items/data_items.h>
+#include <hanami_common/files/binary_file.h>
 
-#include <../../../libraries/libKitsunemimiHanamiMessages/protobuffers/hanami_messages.proto3.pb.h>
+#include <../../../libraries/hanami_messages/protobuffers/hanami_messages.proto3.pb.h>
 
 namespace HanamiAI
 {

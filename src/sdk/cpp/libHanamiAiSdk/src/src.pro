@@ -5,20 +5,20 @@ CONFIG += c++17
 TEMPLATE = lib
 VERSION = 0.3.1
 
-LIBS += -L../../../../libraries/libKitsunemimiCommon/src -lKitsunemimiCommon
-LIBS += -L../../../../libraries/libKitsunemimiCommon/src/debug -lKitsunemimiCommon
-LIBS += -L../../../../libraries/libKitsunemimiCommon/src/release -lKitsunemimiCommon
-INCLUDEPATH += ../../../../libraries/libKitsunemimiCommon/include
+LIBS += -L../../../../libraries/hanami_common/src -lhanami_common
+LIBS += -L../../../../libraries/hanami_common/src/debug -lhanami_common
+LIBS += -L../../../../libraries/hanami_common/src/release -lhanami_common
+INCLUDEPATH += ../../../../libraries/hanami_common/include
 
-LIBS += -L../../../../libraries/libKitsunemimiJson/src -lKitsunemimiJson
-LIBS += -L../../../../libraries/libKitsunemimiJson/src/debug -lKitsunemimiJson
-LIBS += -L../../../../libraries/libKitsunemimiJson/src/release -lKitsunemimiJson
-INCLUDEPATH += ../../../../libraries/libKitsunemimiJson/include
+LIBS += -L../../../../libraries/hanami_json/src -lhanami_json
+LIBS += -L../../../../libraries/hanami_json/src/debug -lhanami_json
+LIBS += -L../../../../libraries/hanami_json/src/release -lhanami_json
+INCLUDEPATH += ../../../../libraries/hanami_json/include
 
-LIBS += -L../../../../libraries/libKitsunemimiCrypto/src -lKitsunemimiCrypto
-LIBS += -L../../../../libraries/libKitsunemimiCrypto/src/debug -lKitsunemimiCrypto
-LIBS += -L../../../../libraries/libKitsunemimiCrypto/src/release -lKitsunemimiCrypto
-INCLUDEPATH += ../../../../libraries/libKitsunemimiCrypto/include
+LIBS += -L../../../../libraries/hanami_crypto/src -lhanami_crypto
+LIBS += -L../../../../libraries/hanami_crypto/src/debug -lhanami_crypto
+LIBS += -L../../../../libraries/hanami_crypto/src/release -lhanami_crypto
+INCLUDEPATH += ../../../../libraries/hanami_crypto/include
 
 LIBS += -lssl -lcryptopp -lcrypt
 
@@ -52,7 +52,7 @@ SOURCES += \
     user.cpp
 
 
-HANAMI_PROTO_BUFFER = ../../../../libraries/libKitsunemimiHanamiMessages/protobuffers/hanami_messages.proto3
+HANAMI_PROTO_BUFFER = ../../../../libraries/hanami_messages/protobuffers/hanami_messages.proto3
 
 OTHER_FILES += $$HANAMI_PROTO_BUFFER
 

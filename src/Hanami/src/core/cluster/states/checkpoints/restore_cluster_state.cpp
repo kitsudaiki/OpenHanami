@@ -27,8 +27,8 @@
 #include <core/cluster/cluster_init.h>
 #include <core/cluster/statemachine_init.h>
 
-#include <libKitsunemimiCommon/files/binary_file.h>
-#include <libKitsunemimiCrypto/hashes.h>
+#include <hanami_common/files/binary_file.h>
+#include <hanami_crypto/hashes.h>
 
 /**
  * @brief constructor

@@ -25,7 +25,7 @@
 #include <hanami_root.h>
 #include <database/cluster_table.h>
 
-#include <libKitsunemimiJson/json_item.h>
+#include <hanami_json/json_item.h>
 
 ShowCluster::ShowCluster()
     : Blossom("Show information of a specific cluster.")

@@ -30,8 +30,8 @@
 #include <core/cluster/cluster.h>
 #include <core/cluster/cluster_handler.h>
 
-#include <libKitsunemimiCommon/threading/event.h>
-#include <libKitsunemimiJson/json_item.h>
+#include <hanami_common/threading/event.h>
+#include <hanami_json/json_item.h>
 
 using namespace Kitsunemimi;
 

@@ -33,7 +33,7 @@
 
 #include <core/cluster/cluster.h>
 
-#include <libKitsunemimiCommon/statemachine.h>
+#include <hanami_common/statemachine.h>
 
 /**
  * @brief initialize all possible states of the statemachine
