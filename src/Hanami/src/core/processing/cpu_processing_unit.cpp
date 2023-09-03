@@ -54,7 +54,7 @@ backpropagation_CUDA(PointerHandler* gpuPointer,
                      const uint32_t numberOfBricks,
                      NeuronBlock* neuronBlocks,
                      const uint32_t numberOfNeuronBlocks,
-                     SegmentSettings* settings);
+                     ClusterSettings* settings);
 
 extern "C"
 void

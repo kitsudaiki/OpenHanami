@@ -87,7 +87,7 @@ initNewCluster(Cluster* cluster,
     }
 
     // create segment metadata
-    const SegmentSettings settings = initSettings(clusterMeta);
+    const ClusterSettings settings = initSettings(clusterMeta);
     ClusterHeader header = createNewHeader(clusterMeta.bricks.size(),
                                            cluster->numberOfBrickBlocks,
                                            settings.maxSynapseSections,
@@ -140,8 +140,8 @@ reinitPointer(Cluster* cluster,
     ClusterHeader* clusterHeader = cluster->clusterHeader;
 
     pos = clusterHeader->settings.bytePos;
-    cluster->clusterSettings = reinterpret_cast<SegmentSettings*>(dataPtr + pos);
-    byteCounter += sizeof(SegmentSettings);
+    cluster->clusterSettings = reinterpret_cast<ClusterSettings*>(dataPtr + pos);
+    byteCounter += sizeof(ClusterSettings);
 
     pos = clusterHeader->inputValues.bytePos;
     cluster->inputValues = reinterpret_cast<float*>(dataPtr + pos);
@@ -247,10 +247,10 @@ initializeNeurons(Cluster* cluster,
  *
  * @return settings-object
  */
-SegmentSettings
+ClusterSettings
 initSettings(const Hanami::ClusterMeta &clusterMeta)
 {
-    SegmentSettings settings;
+    ClusterSettings settings;
 
     // parse settings
     settings.synapseSegmentation = clusterMeta.synapseSegmentation;
@@ -285,7 +285,7 @@ createNewHeader(const uint32_t numberOfBricks,
     // init settings
     clusterHeader.settings.count = 1;
     clusterHeader.settings.bytePos = clusterDataPos;
-    clusterDataPos += sizeof(SegmentSettings);
+    clusterDataPos += sizeof(ClusterSettings);
 
     // init inputTransfers
     clusterHeader.inputValues.count = numberOfInputs;
@@ -350,7 +350,7 @@ initSegmentPointer(Cluster* cluster,
     ClusterHeader* clusterHeader = cluster->clusterHeader;
 
     pos = clusterHeader->settings.bytePos;
-    cluster->clusterSettings = reinterpret_cast<SegmentSettings*>(dataPtr + pos);
+    cluster->clusterSettings = reinterpret_cast<ClusterSettings*>(dataPtr + pos);
 
     pos = clusterHeader->inputValues.bytePos;
     cluster->inputValues = reinterpret_cast<float*>(dataPtr + pos);

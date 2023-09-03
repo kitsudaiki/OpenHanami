@@ -232,7 +232,7 @@ static_assert(sizeof(SynapseConnection) == 1292);
 
 //==================================================================================================
 
-struct SegmentSettings
+struct ClusterSettings
 {
     uint64_t maxSynapseSections = 0;
     float synapseDeleteBorder = 1.0f;
@@ -251,7 +251,7 @@ struct SegmentSettings
 
     uint8_t padding[209];
 };
-static_assert(sizeof(SegmentSettings) == 256);
+static_assert(sizeof(ClusterSettings) == 256);
 
 //==================================================================================================
 
@@ -261,7 +261,7 @@ struct PointerHandler
     SynapseBlock* synapseBlocks = nullptr;
     SynapseConnection* synapseConnections = nullptr;
 
-    SegmentSettings* segmentSettings = nullptr;
+    ClusterSettings* clusterSettings = nullptr;
     uint32_t* randomValues = nullptr;
 };
 
