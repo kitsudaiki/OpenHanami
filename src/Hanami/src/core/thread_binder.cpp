@@ -22,6 +22,7 @@
 
 #include "thread_binder.h"
 #include <hanami_root.h>
+#include <core/processing/processing_unit_handler.h>
 
 #include <hanami_hardware/host.h>
 #include <hanami_hardware/cpu_core.h>
@@ -35,19 +36,46 @@
 ThreadBinder* ThreadBinder::instance = nullptr;
 
 ThreadBinder::ThreadBinder()
-    : Hanami::Thread("ThreadBinder")
+    : Hanami::Thread("ThreadBinder") {}
+
+/**
+ * @brief init by selecting threads
+ *
+ * @param error reference for error-output
+ *
+ * @return
+ */
+bool
+ThreadBinder::init(Hanami::ErrorContainer &error)
 {
+    if(fillCoreIds(m_controlCoreIds, m_processingCoreIds, error) == false)
+    {
+        error.addMeesage("Failed to initialize cpu-thread-lists for thread-binder.");
+        return false;
+    }
+
+    return true;
 }
 
 /**
- * @brief ThreadBinder::getMappingString
- * @return
+ * @brief get actual mapping as json
  */
 Hanami::DataMap*
 ThreadBinder::getMapping()
 {
     std::lock_guard<std::mutex> guard(m_mapLock);
     return m_completeMap.copy()->toMap();
+}
+
+/**
+ * @brief get number of physical threads, which are defined for
+ *        the core-processing
+ */
+uint64_t
+ThreadBinder::getNumberOfProcessingThreads()
+{
+    std::lock_guard<std::mutex> guard(m_mapLock);
+    return m_processingCoreIds.size();
 }
 
 /**
@@ -64,6 +92,8 @@ ThreadBinder::fillCoreIds(std::vector<uint64_t> &controlCoreIds,
                           std::vector<uint64_t> &processingCoreIds,
                           Hanami::ErrorContainer &error)
 {
+    std::lock_guard<std::mutex> guard(m_mapLock);
+
     Hanami::CpuCore* phyCore = nullptr;
     Hanami::Host* host = Hanami::Host::getInstance();
 
@@ -89,7 +119,10 @@ ThreadBinder::fillCoreIds(std::vector<uint64_t> &controlCoreIds,
     for(uint64_t i = 1; i < host->cpuPackages[0]->cpuCores.size(); i++)
     {
         phyCore = host->cpuPackages[0]->cpuCores[i];
-        for(Hanami::CpuThread* singleThread : phyCore->cpuThreads) {
+        ProcessingUnitHandler* processingUnitHandler = ProcessingUnitHandler::getInstance();
+        for(Hanami::CpuThread* singleThread : phyCore->cpuThreads)
+        {
+            processingUnitHandler->addProcessingUnit(singleThread->threadId);
             processingCoreIds.push_back(singleThread->threadId);
         }
     }
@@ -103,69 +136,63 @@ ThreadBinder::fillCoreIds(std::vector<uint64_t> &controlCoreIds,
 void
 ThreadBinder::run()
 {
-    Hanami::ErrorContainer error;
-    if(fillCoreIds(m_controlCoreIds, m_processingCoreIds, error) == false)
-    {
-        error.addMeesage("Failed to initialize cpu-thread-lists for thread-binder.");
-        LOG_ERROR(error);
-        return;
-    }
-
     Hanami::ThreadHandler* threadHandler = Hanami::ThreadHandler::getInstance();
 
     while(m_abort == false)
     {
-        sleep(10);
-
         m_mapLock.lock();
 
-        m_completeMap.clear();
-        const std::vector<std::string> threadNames = threadHandler->getRegisteredNames();
-
-        Hanami::ErrorContainer error;
-
-        for(const std::string &name : threadNames)
+        do
         {
-            // update thread-binding
-            const std::vector<Hanami::Thread*> threads = threadHandler->getThreads(name);
-            for(Hanami::Thread* thread : threads)
+            m_completeMap.clear();
+            const std::vector<std::string> threadNames = threadHandler->getRegisteredNames();
+
+            for(const std::string &name : threadNames)
             {
-                if(name == "CpuProcessingUnit")
+                // update thread-binding
+                const std::vector<Hanami::Thread*> threads = threadHandler->getThreads(name);
+                for(Hanami::Thread* thread : threads)
                 {
-                    if(thread->bindThreadToCores(m_processingCoreIds) == false) {
-                        continue;
+                    if(name != "CpuProcessingUnit")
+                    {
+                        if(thread->bindThreadToCores(m_controlCoreIds) == false) {
+                            break;
+                        }
                     }
                 }
-                else
+
+                // update list for output
+                if(name != "CpuProcessingUnit")
                 {
-                    if(thread->bindThreadToCores(m_controlCoreIds) == false) {
-                        continue;
+                    Hanami::DataArray* idList = new Hanami::DataArray();
+                    for(const uint64_t id : m_controlCoreIds) {
+                        idList->append(new Hanami::DataValue((long)id));
                     }
+                    m_completeMap.insert(name, idList, true);
                 }
             }
 
-            // update list for output
-            Hanami::DataArray* idList = new Hanami::DataArray();
-            if(name == "CpuProcessingUnit")
+            // add initially defined core-ids to output
+            ThreadHandler* threadHandler = ThreadHandler::getInstance();
+            const std::vector<Thread*> coreThreads = threadHandler->getThreads("CpuProcessingUnit");
+            for(const Thread* thread : coreThreads)
             {
-                for(const uint64_t id : m_processingCoreIds) {
-                    idList->append(new Hanami::DataValue((long)id));
-                }
+                const std::string entry = "CpuProcessingUnit_" + std::to_string(thread->getThreadId());
+                const uint64_t coreId = thread->getCoreIds().at(0);
+                Hanami::DataArray* idList = new Hanami::DataArray();
+                idList->append(new Hanami::DataValue((long)coreId));
+                m_completeMap.insert(entry, idList, true);
             }
-            else
-            {
-                for(const uint64_t id : m_controlCoreIds) {
-                    idList->append(new Hanami::DataValue((long)id));
-                }
-            }
-            m_completeMap.insert(name, idList, true);
+
+            // debug-output
+            // std::cout<<"#############################################################"<<std::endl;
+            // std::cout<<m_completeMap.toString(true)<<std::endl;
+            // std::cout<<"#############################################################"<<std::endl;
+            //LOG_DEBUG(newMapping.toString(true));
         }
+        while(false);
 
-        // debug-output
-        // std::cout<<"#############################################################"<<std::endl;
-        // std::cout<<m_completeMap.toString(true)<<std::endl;
-        // std::cout<<"#############################################################"<<std::endl;
-        //LOG_DEBUG(newMapping.toString(true));
+        sleep(10);
 
         m_mapLock.unlock();
     }

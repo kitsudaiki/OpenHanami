@@ -36,6 +36,20 @@ ProcessingUnitHandler::ProcessingUnitHandler() {}
 ProcessingUnitHandler::~ProcessingUnitHandler() {}
 
 /**
+ * @brief create new processing-thread and bind it to a cpu-thread
+ *
+ * @param threadId cpu-thread where the processing-thread should be connected to
+ */
+void
+ProcessingUnitHandler::addProcessingUnit(const uint64_t threadId)
+{
+    CpuProcessingUnit* newUnit = new CpuProcessingUnit();
+    m_processingUnits.push_back(newUnit);
+    newUnit->startThread();
+    newUnit->bindThreadToCore(threadId);
+}
+
+/**
  * @brief init processing-threads
  *
  * @param numberOfThreads number of threads to create

@@ -147,8 +147,8 @@ CpuProcessingUnit::trainSegmentBackward(Cluster* cluster)
     }
     //reweightCoreSegment(*cluster);
 
-    std::cout<<"counter: "<<counter<<std::endl;
-    counter++;
+    //std::cout<<"counter: "<<counter<<std::endl;
+    //counter++;
 
     if(reductionCounter == 100) {
         //reduceNeurons(*seg);
