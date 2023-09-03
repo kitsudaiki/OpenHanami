@@ -114,7 +114,12 @@ struct FieldDef
     FieldDef& setDefault(Hanami::DataItem* defaultValue)
     {
         this->defaultVal = defaultValue;
-        this->isRequired = false;
+        return *this;
+    }
+
+    FieldDef& setRequired(const bool required)
+    {
+        this->isRequired = required;
         return *this;
     }
 

@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hanami-ai
+  name: hanami
   labels:
     app: hanami
 spec:
@@ -14,16 +14,6 @@ spec:
       labels:
         app: hanami
     spec:
-      initContainers:
-      - name: dashboard-container
-        image: {{ .Values.docker.registry }}/hanami_ai_dashboard:{{ .Values.docker.tag }}
-        imagePullPolicy: Always
-        securityContext:
-          runAsUser: 0
-        command: ["cp", "-r", "/etc/Hanami-AI-Dashboard", "/etc/hanami/"]
-        volumeMounts:
-        - name: dashboard-volume
-          mountPath: /etc/hanami/Hanami-AI-Dashboard
       containers:
       - name: hanami
         image: {{ .Values.docker.registry }}/hanami:{{ .Values.docker.tag }}
@@ -47,8 +37,6 @@ spec:
           subPath: token_key
         - name: hanami-sockets-volume
           mountPath: /tmp/hanami
-        - name: dashboard-volume
-          mountPath: /etc/hanami/Hanami-AI-Dashboard
         ports:
         - containerPort: 1337
           name: hanami-port
@@ -65,6 +53,4 @@ spec:
         - name: files-volume
           emptyDir: {}
         - name: hanami-sockets-volume
-          emptyDir: {}
-        - name: dashboard-volume
           emptyDir: {}

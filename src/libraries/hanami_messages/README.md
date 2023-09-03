@@ -1,1 +1,1 @@
-# libKitsunemimiHanamiMessages
+# hanami_messages
