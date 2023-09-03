@@ -99,7 +99,7 @@ backpropagateOutput(const Brick* brick,
                     NeuronBlock* neuronBlocks,
                     float* outputValues,
                     float* expectedValues,
-                    SegmentSettings* settings)
+                    ClusterSettings* settings)
 {
     Neuron* neuron = nullptr;
     NeuronBlock* block = nullptr;

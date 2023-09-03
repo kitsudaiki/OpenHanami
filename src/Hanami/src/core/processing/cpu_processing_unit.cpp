@@ -54,7 +54,7 @@ backpropagation_CUDA(PointerHandler* gpuPointer,
                      const uint32_t numberOfBricks,
                      NeuronBlock* neuronBlocks,
                      const uint32_t numberOfNeuronBlocks,
-                     SegmentSettings* settings);
+                     ClusterSettings* settings);
 
 extern "C"
 void
@@ -147,8 +147,8 @@ CpuProcessingUnit::trainSegmentBackward(Cluster* cluster)
     }
     //reweightCoreSegment(*cluster);
 
-    std::cout<<"counter: "<<counter<<std::endl;
-    counter++;
+    //std::cout<<"counter: "<<counter<<std::endl;
+    //counter++;
 
     if(reductionCounter == 100) {
         //reduceNeurons(*seg);

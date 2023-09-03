@@ -142,6 +142,11 @@ HanamiRoot::init(Hanami::ErrorContainer &error)
     assert(success);
 
     // create thread-binder
+    if(ThreadBinder::getInstance()->init(error) == false)
+    {
+        error.addMeesage("failed to init thread-binder");
+        return false;
+    }
     ThreadBinder::getInstance()->startThread();
 
     // start monitoring

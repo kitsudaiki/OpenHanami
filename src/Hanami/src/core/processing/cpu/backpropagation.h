@@ -66,10 +66,15 @@ backpropagateSection(const Cluster &cluster,
         }
 
         // update weight
-        trainValue = static_cast<float>(126 - synapse->activeCounter) * 0.0002f;
-        trainValue += 0.05f;
+        //trainValue = static_cast<float>(126 - synapse->activeCounter) * 0.0002f;
+        // trainValue += 0.05f;
+        trainValue = 0.05f;
         targetNeuron = &neuronBlock->neurons[synapse->targetNeuronId];
-        sourceNeuron->delta += targetNeuron->delta * synapse->weight;
+        if(counter > synapse->border) {
+            sourceNeuron->delta += targetNeuron->delta * synapse->weight;
+        } else {
+            sourceNeuron->delta += targetNeuron->delta * synapse->weight * ((1.0f / synapse->border) * counter);
+        }
         synapse->weight -= trainValue * targetNeuron->delta;
 
         counter -= synapse->border;

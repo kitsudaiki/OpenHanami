@@ -41,7 +41,9 @@ public:
         return instance;
     }
 
+    bool init(Hanami::ErrorContainer &error);
     Hanami::DataMap* getMapping();
+    uint64_t getNumberOfProcessingThreads();
 
 protected:
     void run();

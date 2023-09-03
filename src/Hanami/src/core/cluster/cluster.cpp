@@ -36,7 +36,7 @@
 extern "C"
 void
 copyToDevice_CUDA(PointerHandler* gpuPointer,
-                  SegmentSettings* segmentSettings,
+                  ClusterSettings* clusterSettings,
                   NeuronBlock* neuronBlocks,
                   const uint32_t numberOfNeuronBlocks,
                   SynapseBlock* synapseBlocks,

@@ -54,7 +54,7 @@ public:
     void initCuda();
 
     ClusterHeader* clusterHeader = nullptr;
-    SegmentSettings* clusterSettings = nullptr;
+    ClusterSettings* clusterSettings = nullptr;
     float* inputValues = nullptr;
     float* outputValues = nullptr;
     float* expectedValues = nullptr;

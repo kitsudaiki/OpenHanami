@@ -51,7 +51,7 @@ bool connectBorderBuffer(Cluster* cluster);
 void allocateSegment(Cluster* cluster,
                      ClusterHeader &header);
 //void initOpencl(Hanami::GpuData &data);
-SegmentSettings initSettings(const Hanami::ClusterMeta &clusterMeta);
+ClusterSettings initSettings(const Hanami::ClusterMeta &clusterMeta);
 
 void addBricksToSegment(Cluster* cluster,
                         const Hanami::ClusterMeta &clusterMeta);

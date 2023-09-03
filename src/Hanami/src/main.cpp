@@ -155,7 +155,6 @@ main(int argc, char *argv[])
         LOG_ERROR(error);
         return 1;
     }
-    rootObj.initThreads();
 
     // sleep forever
     std::this_thread::sleep_until(std::chrono::time_point<std::chrono::system_clock>::max());

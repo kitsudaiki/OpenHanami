@@ -37,7 +37,7 @@
 __device__ __forceinline__ void
 createNewSynapse(NeuronBlock* block,
                  Synapse* synapse,
-                 const SegmentSettings* segmentSettings,
+                 const ClusterSettings* clusterSettings,
                  const float remainingW,
                  const uint* randomValues)
 {
@@ -56,7 +56,7 @@ createNewSynapse(NeuronBlock* block,
     // update weight with sign
     block->randomPos = (block->randomPos + 1) % NUMBER_OF_RAND_VALUES;
     const uint signRand = randomValues[block->randomPos] % 1000;
-    synapse->weight *= (float)(1.0f - (1000.0f * segmentSettings->signNeg > signRand) * 2);
+    synapse->weight *= (float)(1.0f - (1000.0f * clusterSettings->signNeg > signRand) * 2);
 
     synapse->activeCounter = 1;
 }
@@ -68,7 +68,7 @@ synapseProcessingBackward(Synapse* section,
                           SynapseConnection* connection,
                           NeuronBlock* currentNeuronBlock,
                           NeuronBlock* neuronBlocks,
-                          SegmentSettings* segmentSettings,
+                          ClusterSettings* clusterSettings,
                           const uint* randomValues,
                           float* localMem)
 {
@@ -86,7 +86,7 @@ synapseProcessingBackward(Synapse* section,
 
             // create new synapse if necesarry and training is active
             if(synapse->targetNeuronId == UNINIT_STATE_16) {
-                createNewSynapse(currentNeuronBlock, synapse, segmentSettings, counter, randomValues);
+                createNewSynapse(currentNeuronBlock, synapse, clusterSettings, counter, randomValues);
             }
 
             if(synapse->border > 2.0f * counter
@@ -124,7 +124,7 @@ __global__ void
 prcessCoreSegmentKernel(NeuronBlock* neuronBlocks,
                         SynapseBlock* synapseBlocks,
                         SynapseConnection* synapseConnections,
-                        SegmentSettings* segmentSettings,
+                        ClusterSettings* clusterSettings,
                         const uint32_t* randomValues,
                         const uint32_t neuronBlockPos,
                         const bool isOutputBrick)
@@ -149,7 +149,7 @@ prcessCoreSegmentKernel(NeuronBlock* neuronBlocks,
                                   connection,
                                   currentNeuronBlock,
                                   neuronBlocks,
-                                  segmentSettings,
+                                  clusterSettings,
                                   randomValues,
                                   tempVal[threadIdx.x]);
         __syncthreads();
@@ -175,13 +175,13 @@ prcessCoreSegmentKernel(NeuronBlock* neuronBlocks,
         {
             Neuron* neuron = &currentNeuronBlock->neurons[threadIdx.x];
 
-            neuron->potential /= segmentSettings->neuronCooldown;
+            neuron->potential /= clusterSettings->neuronCooldown;
             neuron->refractionTime = neuron->refractionTime >> 1;
 
             if(neuron->refractionTime == 0)
             {
-                neuron->potential = segmentSettings->potentialOverflow * neuron->input;
-                neuron->refractionTime = segmentSettings->refractionTime;
+                neuron->potential = clusterSettings->potentialOverflow * neuron->input;
+                neuron->refractionTime = clusterSettings->refractionTime;
             }
 
             // update neuron
@@ -246,7 +246,7 @@ __global__ void
 reweightCoreSegmentKernel(NeuronBlock* neuronBlocks,
                            SynapseBlock* synapseBlocks,
                            SynapseConnection* synapseConnections,
-                          SegmentSettings* segmentSettings,
+                          ClusterSettings* clusterSettings,
                           const uint32_t neuronSectionPos)
 {
     __shared__ float tempVal[64];
@@ -293,7 +293,7 @@ reweightCoreSegmentKernel(NeuronBlock* neuronBlocks,
 extern "C"
 void
 copyToDevice_CUDA(PointerHandler* gpuPointer,
-                  SegmentSettings* segmentSettings,
+                  ClusterSettings* clusterSettings,
                   NeuronBlock* neuronBlocks,
                   const uint32_t numberOfNeuronBlocks,
                   SynapseBlock* synapseBlocks,
@@ -302,13 +302,13 @@ copyToDevice_CUDA(PointerHandler* gpuPointer,
                   const uint32_t numberOfSynapseConnections,
                   uint32_t* randomValues)
 {
-    cudaMalloc(&gpuPointer->segmentSettings,    1                          * sizeof(SegmentSettings));
+    cudaMalloc(&gpuPointer->clusterSettings,    1                          * sizeof(ClusterSettings));
     cudaMalloc(&gpuPointer->neuronBlocks,       numberOfNeuronBlocks       * sizeof(NeuronBlock));
     cudaMalloc(&gpuPointer->synapseBlocks,      numberOfSynapseBlocks      * sizeof(SynapseBlock));
     cudaMalloc(&gpuPointer->synapseConnections, numberOfSynapseConnections * sizeof(SynapseConnection));
     cudaMalloc(&gpuPointer->randomValues,       NUMBER_OF_RAND_VALUES      * sizeof(uint32_t));
 
-    cudaMemcpy(gpuPointer->segmentSettings,    segmentSettings,    1                          * sizeof(SegmentSettings),   cudaMemcpyHostToDevice);
+    cudaMemcpy(gpuPointer->clusterSettings,    clusterSettings,    1                          * sizeof(ClusterSettings),   cudaMemcpyHostToDevice);
     cudaMemcpy(gpuPointer->neuronBlocks,       neuronBlocks,       numberOfNeuronBlocks       * sizeof(NeuronBlock),       cudaMemcpyHostToDevice);
     cudaMemcpy(gpuPointer->synapseBlocks,      synapseBlocks,      numberOfSynapseBlocks      * sizeof(SynapseBlock),      cudaMemcpyHostToDevice);
     cudaMemcpy(gpuPointer->synapseConnections, synapseConnections, numberOfSynapseConnections * sizeof(SynapseConnection), cudaMemcpyHostToDevice);
@@ -352,7 +352,7 @@ processing_CUDA(PointerHandler* gpuPointer,
                 gpuPointer->neuronBlocks,
                 gpuPointer->synapseBlocks,
                 gpuPointer->synapseConnections,
-                gpuPointer->segmentSettings,
+                gpuPointer->clusterSettings,
                 gpuPointer->randomValues,
                 brick->brickBlockPos,
                 brick->isOutputBrick);
@@ -385,7 +385,7 @@ backpropagation_CUDA(PointerHandler* gpuPointer,
                      const uint32_t numberOfBricks,
                      NeuronBlock* neuronBlocks,
                      const uint32_t numberOfNeuronBlocks,
-                     SegmentSettings* settings)
+                     ClusterSettings* settings)
 {
     for(uint32_t pos = 0; pos < numberOfBricks; pos++)
     {
@@ -415,7 +415,7 @@ backpropagation_CUDA(PointerHandler* gpuPointer,
                 gpuPointer->neuronBlocks,
                 gpuPointer->synapseBlocks,
                 gpuPointer->synapseConnections,
-                gpuPointer->segmentSettings,
+                gpuPointer->clusterSettings,
                 brick->brickBlockPos);
     }
 

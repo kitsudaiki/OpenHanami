@@ -69,13 +69,13 @@ getHighestOutput(const Cluster &cluster)
 inline void
 createNewSynapse(NeuronBlock* block,
                  Synapse* synapse,
-                 const SegmentSettings* segmentSettings,
+                 const ClusterSettings* clusterSettings,
                  const float remainingW)
 {
     const uint32_t* randomValues = HanamiRoot::m_randomValues;
     const float randMax = static_cast<float>(RAND_MAX);
     uint32_t signRand = 0;
-    const float sigNeg = segmentSettings->signNeg;
+    const float sigNeg = clusterSettings->signNeg;
 
     // set activation-border
     synapse->border = remainingW;
@@ -109,12 +109,12 @@ synapseProcessing(Cluster &cluster,
                   NeuronBlock* neuronBlocks,
                   SynapseBlock* synapseBlocks,
                   SynapseConnection* synapseConnections,
-                  SegmentSettings* segmentSettings)
+                  ClusterSettings* clusterSettings)
 {
     uint32_t pos = 0;
     Synapse* synapse = nullptr;
     Neuron* targetNeuron = nullptr;
-    uint8_t active = 0;
+    // uint8_t active = 0;
     float counter = outH - connection->offset[currentLocation->sectionId];
     NeuronBlock* neuronBlock = &neuronBlocks[connection->targetNeuronBlockId];
 
@@ -124,9 +124,10 @@ synapseProcessing(Cluster &cluster,
     {
         synapse = &section[pos];
 
+#ifndef DONT_DO_TRAINING
         // create new synapse if necesarry and training is active
         if(synapse->targetNeuronId == UNINIT_STATE_16) {
-            createNewSynapse(neuronBlock, synapse, segmentSettings, counter);
+            createNewSynapse(neuronBlock, synapse, clusterSettings, counter);
         }
 
         if(synapse->border > 2.0f * counter
@@ -136,14 +137,22 @@ synapseProcessing(Cluster &cluster,
             section[pos + 1].border += val;
             synapse->border -= val;
         }
+#endif
 
-        // update target-neuron
-        targetNeuron = &neuronBlock->neurons[synapse->targetNeuronId];
-        targetNeuron->input += synapse->weight;
+        if(synapse->targetNeuronId != UNINIT_STATE_16)
+        {
+            // update target-neuron
+            targetNeuron = &neuronBlock->neurons[synapse->targetNeuronId];
+            if(counter > synapse->border) {
+                targetNeuron->input += synapse->weight;
+            } else {
+                targetNeuron->input += synapse->weight * ((1.0f / synapse->border) * counter);
+            }
 
-        // update active-counter
-        active = (synapse->weight > 0) == (targetNeuron->potential > targetNeuron->border);
-        synapse->activeCounter += active * static_cast<uint8_t>(synapse->activeCounter < 126);
+            // update active-counter
+            //active = (synapse->weight > 0) == (targetNeuron->potential > targetNeuron->border);
+            //synapse->activeCounter += active * static_cast<uint8_t>(synapse->activeCounter < 126);
+        }
 
         // update loop-counter
         counter -= synapse->border;
@@ -151,6 +160,7 @@ synapseProcessing(Cluster &cluster,
     }
 
     LocationPtr* targetLocation = &connection->next[currentLocation->sectionId];
+#ifndef DONT_DO_TRAINING
     if(counter > 0.01f
             && targetLocation->sectionId == UNINIT_STATE_16)
     {
@@ -158,8 +168,9 @@ synapseProcessing(Cluster &cluster,
         createNewSection(cluster, connection->origin[currentLocation->sectionId], newOffset);
         targetLocation = &connection->next[currentLocation->sectionId];
     }
+#endif
 
-    if(targetLocation->sectionId != UNINIT_STATE_16)
+    if(targetLocation->blockId != UNINIT_STATE_32)
     {
         Synapse* nextSection = synapseBlocks[targetLocation->blockId].synapses[targetLocation->sectionId];
         SynapseConnection* nextConnection = &synapseConnections[targetLocation->blockId];
@@ -171,7 +182,7 @@ synapseProcessing(Cluster &cluster,
                           neuronBlocks,
                           synapseBlocks,
                           synapseConnections,
-                          segmentSettings);
+                          clusterSettings);
     }
 }
 
@@ -186,7 +197,7 @@ processSingleNeuron(Cluster &cluster,
                     NeuronBlock* neuronBlocks,
                     SynapseBlock* synapseBlocks,
                     SynapseConnection* synapseConnections,
-                    SegmentSettings* segmentSettings)
+                    ClusterSettings* clusterSettings)
 {
     // handle active-state
     if(neuron->active == 0) {
@@ -194,6 +205,7 @@ processSingleNeuron(Cluster &cluster,
     }
 
     LocationPtr* targetLocation = &neuron->target;
+#ifndef DONT_DO_TRAINING
     if(targetLocation->blockId == UNINIT_STATE_32)
     {
         LocationPtr sourceLocation;
@@ -204,18 +216,22 @@ processSingleNeuron(Cluster &cluster,
         }
         targetLocation = &neuron->target;
     }
+#endif
 
-    Synapse* nextSection = synapseBlocks[targetLocation->blockId].synapses[targetLocation->sectionId];
-    SynapseConnection* nextConnection = &synapseConnections[targetLocation->blockId];
-    synapseProcessing(cluster,
-                      nextSection,
-                      nextConnection,
-                      targetLocation,
-                      neuron->potential,
-                      neuronBlocks,
-                      synapseBlocks,
-                      synapseConnections,
-                      segmentSettings);
+    if(targetLocation->blockId != UNINIT_STATE_32)
+    {
+        Synapse* nextSection = synapseBlocks[targetLocation->blockId].synapses[targetLocation->sectionId];
+        SynapseConnection* nextConnection = &synapseConnections[targetLocation->blockId];
+        synapseProcessing(cluster,
+                          nextSection,
+                          nextConnection,
+                          targetLocation,
+                          neuron->potential,
+                          neuronBlocks,
+                          synapseBlocks,
+                          synapseConnections,
+                          clusterSettings);
+    }
 }
 
 /**
@@ -228,7 +244,7 @@ processNeuronsOfInputBrick(Cluster &cluster,
                            NeuronBlock* neuronBlocks,
                            SynapseBlock* synapseBlocks,
                            SynapseConnection* synapseConnections,
-                           SegmentSettings* segmentSettings)
+                           ClusterSettings* clusterSettings)
 {
     Neuron* neuron = nullptr;
     NeuronBlock* block = nullptr;
@@ -248,14 +264,30 @@ processNeuronsOfInputBrick(Cluster &cluster,
             neuron->potential = inputValues[counter];
             neuron->active = neuron->potential > 0.0f;
 
-            processSingleNeuron(cluster,
-                                neuron,
-                                blockId,
-                                neuronIdInBlock,
-                                neuronBlocks,
-                                synapseBlocks,
-                                synapseConnections,
-                                segmentSettings);
+            if(clusterSettings->doTrain)
+            {
+                processSingleNeuron(cluster,
+                                    neuron,
+                                    blockId,
+                                    neuronIdInBlock,
+                                    neuronBlocks,
+                                    synapseBlocks,
+                                    synapseConnections,
+                                    clusterSettings);
+            }
+            else
+            {
+                #define DONT_DO_TRAINING
+                processSingleNeuron(cluster,
+                                    neuron,
+                                    blockId,
+                                    neuronIdInBlock,
+                                    neuronBlocks,
+                                    synapseBlocks,
+                                    synapseConnections,
+                                    clusterSettings);
+                #undef DONT_DO_TRAINING
+            }
 
             counter++;
         }
@@ -271,7 +303,7 @@ processNeuronsOfNormalBrick(Cluster &cluster,
                             NeuronBlock* neuronBlocks,
                             SynapseBlock* synapseBlocks,
                             SynapseConnection* synapseConnections,
-                            SegmentSettings* segmentSettings)
+                            ClusterSettings* clusterSettings)
 {
     Neuron* neuron = nullptr;
     NeuronBlock* blocks = nullptr;
@@ -288,13 +320,13 @@ processNeuronsOfNormalBrick(Cluster &cluster,
         {
             neuron = &blocks->neurons[neuronIdInBlock];
 
-            neuron->potential /= segmentSettings->neuronCooldown;
+            neuron->potential /= clusterSettings->neuronCooldown;
             neuron->refractionTime = neuron->refractionTime >> 1;
 
             if(neuron->refractionTime == 0)
             {
-                neuron->potential = segmentSettings->potentialOverflow * neuron->input;
-                neuron->refractionTime = segmentSettings->refractionTime;
+                neuron->potential = clusterSettings->potentialOverflow * neuron->input;
+                neuron->refractionTime = clusterSettings->refractionTime;
             }
 
             // update neuron
@@ -310,7 +342,7 @@ processNeuronsOfNormalBrick(Cluster &cluster,
                                 neuronBlocks,
                                 synapseBlocks,
                                 synapseConnections,
-                                segmentSettings);
+                                clusterSettings);
         }
     }
 }
@@ -326,7 +358,7 @@ prcessCoreSegment(Cluster &cluster)
     NeuronBlock* neuronBlocks = cluster.neuronBlocks;
     SynapseConnection* synapseConnections = cluster.synapseConnections;
     SynapseBlock* synapseBlocks = cluster.synapseBlocks;
-    SegmentSettings* segmentSettings = cluster.clusterSettings;
+    ClusterSettings* clusterSettings = cluster.clusterSettings;
 
     const uint32_t numberOfBricks = cluster.clusterHeader->bricks.count;
     for(uint32_t pos = 0; pos < numberOfBricks; pos++)
@@ -341,7 +373,7 @@ prcessCoreSegment(Cluster &cluster)
                                        neuronBlocks,
                                        synapseBlocks,
                                        synapseConnections,
-                                       segmentSettings);
+                                       clusterSettings);
         }
         else if(brick->isOutputBrick)
         {
@@ -356,7 +388,7 @@ prcessCoreSegment(Cluster &cluster)
                                         neuronBlocks,
                                         synapseBlocks,
                                         synapseConnections,
-                                        segmentSettings);
+                                        clusterSettings);
         }
     }
 }

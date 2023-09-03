@@ -40,6 +40,7 @@ public:
     }
     ~ProcessingUnitHandler();
 
+    void addProcessingUnit(const uint64_t threadId);
     bool initProcessingUnits(const uint16_t numberOfThreads);
 
 private:
