@@ -20,12 +20,12 @@
  *      limitations under the License.
  */
 
-#ifndef KITSUNEMIMI_HANAMISDK_PROJECT_H
-#define KITSUNEMIMI_HANAMISDK_PROJECT_H
+#ifndef HANAMISDK_PROJECT_H
+#define HANAMISDK_PROJECT_H
 
 #include <hanami_common/logger.h>
 
-namespace HanamiAI
+namespace Hanami
 {
 
 bool createProject(std::string &result,
@@ -44,6 +44,6 @@ bool deleteProject(std::string &result,
                    const std::string &projectId,
                    Hanami::ErrorContainer &error);
 
-} // namespace HanamiAI
+} // namespace Hanami
 
-#endif // KITSUNEMIMI_HANAMISDK_PROJECT_H
+#endif // HANAMISDK_PROJECT_H

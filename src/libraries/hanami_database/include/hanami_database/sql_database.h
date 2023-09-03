@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef KITSUNEMIMI_SAKURA_DATABASE_SQL_DATABASE_H
-#define KITSUNEMIMI_SAKURA_DATABASE_SQL_DATABASE_H
+#ifndef HANAMI_DATABASE_SQL_DATABASE_H
+#define HANAMI_DATABASE_SQL_DATABASE_H
 
 #include <mutex>
 #include <hanami_sqlite/sqlite.h>
@@ -68,4 +68,4 @@ private:
 
 }
 
-#endif // KITSUNEMIMI_SAKURA_DATABASE_SQL_DATABASE_H
+#endif // HANAMI_DATABASE_SQL_DATABASE_H

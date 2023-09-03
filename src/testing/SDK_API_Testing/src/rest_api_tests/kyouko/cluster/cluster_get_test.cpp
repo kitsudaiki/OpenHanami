@@ -47,7 +47,7 @@ ClusterGetTest::runTest(Hanami::JsonItem &inputData,
 
     // get cluster-infos
     std::string result;
-    if(HanamiAI::getCluster(result, m_uuid, error) != m_expectSuccess) {
+    if(Hanami::getCluster(result, m_uuid, error) != m_expectSuccess) {
         return false;
     }
 

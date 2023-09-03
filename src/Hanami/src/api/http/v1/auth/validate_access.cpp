@@ -56,17 +56,20 @@ ValidateAccess::ValidateAccess()
             .setComment("Requested component-name of the request. If this is not set, then only "
                         "the token in itself will be validated.")
             .setLimit(4, 256)
-            .setRegex("[a-zA-Z][a-zA-Z_0-9]*");
+            .setRegex("[a-zA-Z][a-zA-Z_0-9]*")
+            .setRequired(false);
 
     registerInputField("endpoint", SAKURA_STRING_TYPE)
             .setComment("Requesed endpoint within the component.")
             .setLimit(4, 256)
-            .setRegex("[a-zA-Z][a-zA-Z_/0-9]*");
+            .setRegex("[a-zA-Z][a-zA-Z_/0-9]*")
+            .setRequired(false);
 
     registerInputField("http_type", SAKURA_INT_TYPE)
             .setComment("Type of the HTTP-request as enum "
                         "(DELETE = 1, GET = 2, HEAD = 3, POST = 4, PUT = 5).")
-            .setLimit(1, 5);
+            .setLimit(1, 5)
+            .setRequired(false);
 
     //----------------------------------------------------------------------------------------------
     // output

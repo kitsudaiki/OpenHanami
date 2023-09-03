@@ -42,7 +42,7 @@ namespace net = boost::asio;            // from <boost/asio.hpp>
 namespace ssl = boost::asio::ssl;       // from <boost/asio/ssl.hpp>
 using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 
-namespace HanamiAI
+namespace Hanami
 {
 
 class WebsocketClient
@@ -70,6 +70,6 @@ private:
     bool loadCertificates(boost::asio::ssl::context &ctx);
 };
 
-}  // namespace HanamiAI
+}  // namespace Hanami
 
 #endif // WEBSOCKETCLIENT_H

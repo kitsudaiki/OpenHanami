@@ -1,6 +1,24 @@
 FROM ubuntu:22.04
 
-RUN apt-get update && apt-get install -y gcc g++ gcc-12 g++-12 make qt5-qmake bison flex xxd git ssh libssl-dev libcrypto++-dev libboost1.74-dev uuid-dev  libsqlite3-dev protobuf-compiler protobuf-compiler nano ocl-icd-opencl-dev opencl-headers
+RUN apt-get update && \
+    apt-get install -y gcc \
+                       g++ \
+                       gcc-12 \
+                       g++-12 \
+                       make \
+                       qt5-qmake \
+                       bison \
+                       flex \
+                       git \
+                       ssh \
+                       libssl-dev \
+                       libcrypto++-dev \
+                       libboost1.74-dev \
+                       uuid-dev  \
+                       libsqlite3-dev \
+                       protobuf-compiler \
+                       nano 
+                       
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y apt-transport-https ca-certificates curl software-properties-common && \ 
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg && \
@@ -15,10 +33,9 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y cuda
 
 RUN mkdir /dockerbuilder
-COPY files/build_components.sh /dockerbuilder 
-COPY files/Dockerfile_base /dockerbuilder
+COPY files/build_hanami.sh /dockerbuilder 
 COPY files/Dockerfile_hanami /dockerbuilder
+COPY files/Dockerfile_hanami_base /dockerbuilder
 COPY files/hanami_run.sh /dockerbuilder
-COPY files/Dockerfile_dashboard /dockerbuilder
 
 WORKDIR /dockerbuilder

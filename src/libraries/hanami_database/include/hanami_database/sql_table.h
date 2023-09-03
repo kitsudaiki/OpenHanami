@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef KITSUNEMIMI_SAKURA_DATABASE_SQL_TABLE_H
-#define KITSUNEMIMI_SAKURA_DATABASE_SQL_TABLE_H
+#ifndef HANAMI_DATABASE_SQL_TABLE_H
+#define HANAMI_DATABASE_SQL_TABLE_H
 
 #include <vector>
 #include <string>
@@ -127,4 +127,4 @@ private:
 
 }
 
-#endif // KITSUNEMIMI_SAKURA_DATABASE_SQL_TABLE_H
+#endif // HANAMI_DATABASE_SQL_TABLE_H

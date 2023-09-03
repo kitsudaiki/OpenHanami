@@ -43,7 +43,7 @@ SetClusterMode::SetClusterMode()
     registerInputField("connection_uuid", SAKURA_STRING_TYPE)
             .setComment("UUID of the connection for input and output.")
             .setRegex(UUID_REGEX)
-            .setDefault(nullptr);
+            .setRequired(false);
 
     registerInputField("new_state", SAKURA_STRING_TYPE)
             .setComment("New desired state for the cluster.")

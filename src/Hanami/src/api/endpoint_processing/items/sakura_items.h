@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef KITSUNEMIMI_SAKURA_LANG_SAKURA_ITEMS_H
-#define KITSUNEMIMI_SAKURA_LANG_SAKURA_ITEMS_H
+#ifndef HANAMI_LANG_SAKURA_ITEMS_H
+#define HANAMI_LANG_SAKURA_ITEMS_H
 
 #include <vector>
 #include <string>
@@ -226,4 +226,4 @@ public:
     SakuraItem* childs;
 };
 
-#endif // KITSUNEMIMI_SAKURA_LANG_SAKURA_ITEMS_H
+#endif // HANAMI_LANG_SAKURA_ITEMS_H

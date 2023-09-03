@@ -48,7 +48,7 @@ CreateCluster::CreateCluster()
 
     registerInputField("template", SAKURA_STRING_TYPE)
             .setComment("Cluster-template as base64-string.")
-            .setDefault(nullptr);
+            .setRequired(false);
 
     //----------------------------------------------------------------------------------------------
     // output

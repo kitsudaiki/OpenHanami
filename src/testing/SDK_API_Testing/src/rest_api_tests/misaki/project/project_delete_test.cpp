@@ -45,7 +45,7 @@ ProjectDeleteTest::runTest(Hanami::JsonItem &inputData,
     std::string result;
     if(m_nameOverride != "")
     {
-        if(HanamiAI::deleteProject(result,
+        if(Hanami::deleteProject(result,
                                    m_nameOverride,
                                    error) != m_expectSuccess)
         {
@@ -54,7 +54,7 @@ ProjectDeleteTest::runTest(Hanami::JsonItem &inputData,
     }
     else
     {
-        if(HanamiAI::deleteProject(result,
+        if(Hanami::deleteProject(result,
                                    inputData.get("project_id").getString(),
                                    error) != m_expectSuccess)
         {

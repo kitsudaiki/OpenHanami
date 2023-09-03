@@ -20,12 +20,12 @@
  *      limitations under the License.
  */
 
-#ifndef KITSUNEMIMI_HANAMISDK_USER_H
-#define KITSUNEMIMI_HANAMISDK_USER_H
+#ifndef HANAMISDK_USER_H
+#define HANAMISDK_USER_H
 
 #include <hanami_common/logger.h>
 
-namespace HanamiAI
+namespace Hanami
 {
 
 bool createUser(std::string &result,
@@ -65,6 +65,6 @@ bool switchProject(std::string &result,
                    const std::string &projectId,
                    Hanami::ErrorContainer &error);
 
-} // namespace HanamiAI
+} // namespace Hanami
 
-#endif // KITSUNEMIMI_HANAMISDK_USER_H
+#endif // HANAMISDK_USER_H

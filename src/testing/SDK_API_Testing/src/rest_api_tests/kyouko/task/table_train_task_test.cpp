@@ -41,7 +41,7 @@ TableTrainTaskTest::runTest(Hanami::JsonItem &inputData,
 {
     // create new user
     std::string result;
-    if(HanamiAI::createTask(result,
+    if(Hanami::createTask(result,
                             inputData.get("generic_task_name").getString(),
                             "train",
                             inputData.get("cluster_uuid").getString(),
@@ -68,7 +68,7 @@ TableTrainTaskTest::runTest(Hanami::JsonItem &inputData,
     {
         sleep(1);
 
-        HanamiAI::getTask(result,
+        Hanami::getTask(result,
                           inputData.get("train_task_uuid").getString(),
                           inputData.get("cluster_uuid").getString(),
                           error);

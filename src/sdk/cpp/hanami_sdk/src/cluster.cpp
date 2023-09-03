@@ -25,7 +25,7 @@
 #include <hanami_sdk/common/websocket_client.h>
 #include <hanami_crypto/common.h>
 
-namespace HanamiAI
+namespace Hanami
 {
 
 /**
@@ -44,7 +44,7 @@ createCluster(std::string &result,
               const std::string &clusterTemplate,
               Hanami::ErrorContainer &error)
 {
-    HanamiRequest* request = HanamiAI::HanamiRequest::getInstance();
+    HanamiRequest* request = Hanami::HanamiRequest::getInstance();
 
     // convert template into base64-string
     std::string clusterTemplateB64;
@@ -322,4 +322,4 @@ switchToDirectMode(std::string &result,
     return wsClient;
 }
 
-} // namespace HanamiAI
+} // namespace Hanami

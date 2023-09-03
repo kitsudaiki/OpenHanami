@@ -86,7 +86,7 @@ BinaryFileDirect::allocateStorage(const uint64_t numberOfBlocks,
     if(blockSize % m_blockSize != 0
             || m_fileDescriptor < 0)
     {
-        error.addMeesage("Failed to read segment of binary file for path '"
+        error.addMeesage("Failed to read cluster of binary file for path '"
                          + m_filePath
                          + "', because the precheck failed. Either the buffer is incompatible "
                            "or the file is not open.");
@@ -268,7 +268,7 @@ BinaryFileDirect::writeCompleteFile(DataBuffer &buffer,
 }
 
 /**
- * @brief read a segment of the file to a data-buffer
+ * @brief read a cluster of the file to a data-buffer
  *
  * @param buffer data-buffer-reference where the data should be written to
  * @param startBlockInFile block-number within the file where to start to read
@@ -300,7 +300,7 @@ BinaryFileDirect::readSegment(DataBuffer &buffer,
             || startBytesInBuffer + numberOfBytes > buffer.numberOfBlocks * buffer.blockSize
             || m_fileDescriptor < 0)
     {
-        error.addMeesage("Failed to read segment of binary file for path '"
+        error.addMeesage("Failed to read cluster of binary file for path '"
                          + m_filePath
                          + "', because the precheck failed. Either the buffer is incompatible "
                            "or the file is not open.");
@@ -326,7 +326,7 @@ BinaryFileDirect::readSegment(DataBuffer &buffer,
     if(ret == -1)
     {
         // TODO: process errno
-        error.addMeesage("Failed to read segment of binary file for path '"
+        error.addMeesage("Failed to read cluster of binary file for path '"
                          + m_filePath
                          + "'");
         return false;
@@ -336,7 +336,7 @@ BinaryFileDirect::readSegment(DataBuffer &buffer,
 }
 
 /**
- * @brief write a segment to the file
+ * @brief write a cluster to the file
  *
  * @param buffer data-buffer-reference where the data coming from
  * @param startBlockInFile block-number within the file where to start to write
@@ -368,7 +368,7 @@ BinaryFileDirect::writeSegment(DataBuffer &buffer,
             || startBytesInBuffer + numberOfBytes > buffer.numberOfBlocks * buffer.blockSize
             || m_fileDescriptor < 0)
     {
-        error.addMeesage("Failed to write segment to binary file for path '"
+        error.addMeesage("Failed to write cluster to binary file for path '"
                          + m_filePath
                          + "', because the precheck failed. Either the buffer is incompatible "
                            "or the file is not open.");
@@ -395,7 +395,7 @@ BinaryFileDirect::writeSegment(DataBuffer &buffer,
     if(ret == -1)
     {
         // TODO: process errno
-        error.addMeesage("Failed to write segment to binary file for path '"
+        error.addMeesage("Failed to write cluster to binary file for path '"
                          + m_filePath
                          + "'");
         return false;

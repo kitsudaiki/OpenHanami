@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_DATABASE_SQL_TABLE_H
-#define HANAMI_DATABASE_SQL_TABLE_H
+#ifndef HANAMI_SQL_TABLE_H
+#define HANAMI_SQL_TABLE_H
 
 #include <vector>
 #include <string>
@@ -67,4 +67,4 @@ private:
                        const UserContext &userContext);
 };
 
-#endif // HANAMI_DATABASE_SQL_TABLE_H
+#endif // HANAMI_SQL_TABLE_H

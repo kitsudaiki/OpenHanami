@@ -1,7 +1,16 @@
-FROM kitsudaiki/hanami_ai_base:develop
+FROM kitsudaiki/hanami_base:develop
 
-RUN mkdir -p /etc/hanami && apt-get update && apt-get install -y libcudart11.0 libcudart11.0
-COPY Hanami-AI/src/core/Hanami/Hanami /usr/bin/Hanami
+COPY Hanami/src/frontend/Hanami-Dashboard /etc/Hanami-Dashboard
+
+# Remove symlinks in order to replace them by the real repos
+RUN rm /etc/Hanami-Dashboard/src/sdk /etc/Hanami-Dashboard/src/hanami_messages /etc/Hanami-Dashboard/src/Hanami-Dashboard-Dependencies
+
+# Dashboard
+COPY Hanami/src/sdk /etc/Hanami-Dashboard/src/sdk
+COPY Hanami/src/libraries/hanami_messages /etc/Hanami-Dashboard/src/hanami_messages
+COPY Hanami/src/frontend/Hanami-Dashboard-Dependencies /etc/Hanami-Dashboard/src/Hanami-Dashboard-Dependencies
+
+# Hanami
+COPY Hanami/src/Hanami/Hanami /usr/bin/Hanami
 Copy hanami_run.sh /
 CMD /hanami_run.sh
-

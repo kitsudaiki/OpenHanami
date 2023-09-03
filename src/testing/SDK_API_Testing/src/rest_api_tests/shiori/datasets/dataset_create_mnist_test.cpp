@@ -45,7 +45,7 @@ DataSetCreateMnistTest::runTest(Hanami::JsonItem &inputData,
     std::string result;
     if(m_type == "train")
     {
-        if(HanamiAI::uploadMnistData(result,
+        if(Hanami::uploadMnistData(result,
                                      inputData.get("train_dataset_name").getString(),
                                      inputData.get("train_inputs").getString(),
                                      inputData.get("train_labels").getString(),
@@ -56,7 +56,7 @@ DataSetCreateMnistTest::runTest(Hanami::JsonItem &inputData,
     }
     else
     {
-        if(HanamiAI::uploadMnistData(result,
+        if(Hanami::uploadMnistData(result,
                                      inputData.get("request_dataset_name").getString(),
                                      inputData.get("request_inputs").getString(),
                                      inputData.get("request_labels").getString(),

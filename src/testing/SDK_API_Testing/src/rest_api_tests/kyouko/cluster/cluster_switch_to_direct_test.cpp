@@ -44,8 +44,8 @@ ClusterSwitchToDirectTest::runTest(Hanami::JsonItem &inputData,
 {
     // create new cluster
     std::string result;
-    HanamiAI::WebsocketClient* client = nullptr;
-    client = HanamiAI::switchToDirectMode(result,
+    Hanami::WebsocketClient* client = nullptr;
+    client = Hanami::switchToDirectMode(result,
                                           inputData.get("cluster_uuid").getString(),
                                           error);
     bool success = client != nullptr;

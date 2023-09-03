@@ -37,7 +37,7 @@
 /**
  * @brief get position of the highest output-position
  *
- * @param segment output-segment to check
+ * @param cluster output-cluster to check
  *
  * @return position of the highest output.
  */
@@ -348,7 +348,7 @@ processNeuronsOfNormalBrick(Cluster &cluster,
 }
 
 /**
- * @brief process all neurons within a segment
+ * @brief process all neurons within a cluster
  */
 inline void
 prcessCoreSegment(Cluster &cluster)

@@ -201,7 +201,7 @@ Cluster::setClusterState(const std::string &newState)
 }
 
 /**
- * @brief update state of the cluster, which is caled for each finalized segment
+ * @brief update state of the cluster, which is caled for each finalized cluster
  */
 void
 Cluster::updateClusterState()

@@ -194,7 +194,7 @@ recvClusterInputMessage(Cluster* cluster,
         return false;
     }
 
-    // fill given data into the target-segment
+    // fill given data into the target-cluster
     if(msg.datatype() == ClusterDataType::INPUT_TYPE)
     {
         for(uint64_t i = 0; i < msg.numberofvalues(); i++) {

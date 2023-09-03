@@ -23,7 +23,7 @@
 #include <hanami_sdk/request_result.h>
 #include <common/http_client.h>
 
-namespace HanamiAI
+namespace Hanami
 {
 
 /**
@@ -112,4 +112,4 @@ deleteRequestResult(std::string &result,
     return true;
 }
 
-} // namespace HanamiAI
+} // namespace Hanami

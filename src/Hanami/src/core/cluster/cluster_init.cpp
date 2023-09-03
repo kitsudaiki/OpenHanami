@@ -86,7 +86,7 @@ initNewCluster(Cluster* cluster,
         cluster->numberOfBrickBlocks += getNumberOfNeuronSections(neuronsInBrick);
     }
 
-    // create segment metadata
+    // create cluster metadata
     const ClusterSettings settings = initSettings(clusterMeta);
     ClusterHeader header = createNewHeader(clusterMeta.bricks.size(),
                                            cluster->numberOfBrickBlocks,
@@ -94,7 +94,7 @@ initNewCluster(Cluster* cluster,
                                            numberOfInputs,
                                            numberOfOutputs);
 
-    // initialize segment itself
+    // initialize cluster itself
     allocateSegment(cluster, header);
     initSegmentPointer(cluster, header);
     strncpy(header.uuid.uuid, uuid.c_str(), uuid.size());
@@ -241,9 +241,9 @@ initializeNeurons(Cluster* cluster,
 }
 
 /**
- * @brief init sttings-block for the segment
+ * @brief init sttings-block for the cluster
  *
- * @param parsedContent json-object with the segment-description
+ * @param parsedContent json-object with the cluster-description
  *
  * @return settings-object
  */
@@ -261,13 +261,13 @@ initSettings(const Hanami::ClusterMeta &clusterMeta)
 }
 
 /**
- * @brief create new segment-header with size and position information
+ * @brief create new cluster-header with size and position information
  *
  * @param numberOfBricks number of bricks
  * @param numberOfNeurons number of neurons
  * @param borderbufferSize size of border-buffer
  *
- * @return new segment-header
+ * @return new cluster-header
  */
 ClusterHeader
 createNewHeader(const uint32_t numberOfBricks,
@@ -333,9 +333,9 @@ createNewHeader(const uint32_t numberOfBricks,
 }
 
 /**
- * @brief init pointer within the segment-header
+ * @brief init pointer within the cluster-header
  *
- * @param header segment-header
+ * @param header cluster-header
  */
 void
 initSegmentPointer(Cluster* cluster,
@@ -388,7 +388,7 @@ initSegmentPointer(Cluster* cluster,
 }
 
 /**
- * @brief allocate memory for the segment
+ * @brief allocate memory for the cluster
  *
  * @param header header with the size-information
  */
@@ -457,7 +457,7 @@ addBricksToSegment(Cluster* cluster,
             }
         }
 
-        // copy new brick to segment
+        // copy new brick to cluster
         cluster->bricks[neuronBrickIdCounter] = newBrick;
         assert(neuronBrickIdCounter == newBrick.brickId);
         neuronBrickIdCounter++;
@@ -497,7 +497,7 @@ connectBrick(Cluster* cluster,
 }
 
 /**
- * @brief connect all breaks of the segment
+ * @brief connect all breaks of the cluster
  */
 void
 connectAllBricks(Cluster* cluster)

@@ -193,7 +193,7 @@ FinalizeCsvDataSet::convertCsvData(const std::string &filePath,
 
     // buffer for values to reduce write-access to file
     const uint32_t segmentSize = 10000000;
-    std::vector<float> segment(segmentSize, 0.0f);
+    std::vector<float> cluster(segmentSize, 0.0f);
     std::vector<float> lastLine;
     uint64_t segmentPos = 0;
     uint64_t segmentCounter = 0;
@@ -249,20 +249,20 @@ FinalizeCsvDataSet::convertCsvData(const std::string &filePath,
                 if(lastLine.size() > 0)
                 {
                     const float lastVal = lastLine[colNum];
-                    convertField(&segment[segmentPos], *cell, lastVal);
+                    convertField(&cluster[segmentPos], *cell, lastVal);
                 }
                 else
                 {
-                    convertField(&segment[segmentPos], *cell, 0.0f);
+                    convertField(&cluster[segmentPos], *cell, 0.0f);
                 }
 
-                lastLine[colNum] = segment[segmentPos];
+                lastLine[colNum] = cluster[segmentPos];
 
-                // write next segment to file
+                // write next cluster to file
                 segmentPos++;
                 if(segmentPos == segmentSize)
                 {
-                    if(file.addBlock(segmentCounter, &segment[0], segmentSize, error) == false) {
+                    if(file.addBlock(segmentCounter, &cluster[0], segmentSize, error) == false) {
                         return false;
                     }
                     segmentPos = 0;
@@ -274,10 +274,10 @@ FinalizeCsvDataSet::convertCsvData(const std::string &filePath,
         }
     }
 
-    // write last incomplete segment to file
+    // write last incomplete cluster to file
     if(segmentPos != 0)
     {
-        if(file.addBlock(segmentCounter, &segment[0], segmentPos, error) == false) {
+        if(file.addBlock(segmentCounter, &cluster[0], segmentPos, error) == false) {
             return false;
         }
     }

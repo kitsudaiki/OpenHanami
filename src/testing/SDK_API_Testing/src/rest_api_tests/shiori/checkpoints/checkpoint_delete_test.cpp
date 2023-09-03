@@ -43,7 +43,7 @@ CheckpointDeleteTest::runTest(Hanami::JsonItem &inputData,
 
     // delete user by name
     std::string result;
-    if(HanamiAI::deleteCheckpoint(result, uuid, error) != m_expectSuccess) {
+    if(Hanami::deleteCheckpoint(result, uuid, error) != m_expectSuccess) {
         return false;
     }
 

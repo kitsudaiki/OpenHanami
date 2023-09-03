@@ -109,6 +109,12 @@ UsersTable::getAllAdminUser(Hanami::ErrorContainer &error)
         return false;
     }
 
+    if(users.size() == 0)
+    {
+        LOG_WARNING("No admin-user found in database");
+        return false;
+    }
+
     return true;
 }
 
@@ -161,6 +167,7 @@ UsersTable::initNewAdminUser(Hanami::ErrorContainer &error)
 
     // generate hash from password
     std::string pwHash;
+    // TODO: replace by random salt
     const std::string salt = "e307bee0-9286-49bd-9273-6f644c12da1d";
     const std::string saltedPw = pw + salt;
     Hanami::generate_SHA_256(pwHash, saltedPw);

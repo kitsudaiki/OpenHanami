@@ -240,7 +240,7 @@ backpropagateSection(Synapse* section,
 //==================================================================================================
 
 /**
- * @brief correct weight of synapses within a segment
+ * @brief correct weight of synapses within a cluster
  */
 __global__ void
 reweightCoreSegmentKernel(NeuronBlock* neuronBlocks,

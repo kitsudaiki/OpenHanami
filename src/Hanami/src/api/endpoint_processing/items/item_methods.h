@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef KITSUNEMIMI_SAKURA_LANG_ITEM_METHODS_H
-#define KITSUNEMIMI_SAKURA_LANG_ITEM_METHODS_H
+#ifndef HANAMI_LANG_ITEM_METHODS_H
+#define HANAMI_LANG_ITEM_METHODS_H
 
 #include <vector>
 #include <string>
@@ -58,4 +58,4 @@ void createError(const BlossomIO &blossomIO,
                  Hanami::ErrorContainer &error,
                  const std::string &possibleSolution = "");
 
-#endif // KITSUNEMIMI_SAKURA_LANG_ITEM_METHODS_H
+#endif // HANAMI_LANG_ITEM_METHODS_H

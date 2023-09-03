@@ -41,7 +41,7 @@ DataSetCreateCsvTest::runTest(Hanami::JsonItem &inputData,
                               Hanami::ErrorContainer &error)
 {
     std::string result;
-    if(HanamiAI::uploadCsvData(result,
+    if(Hanami::uploadCsvData(result,
                                inputData.get("base_dataset_name").getString(),
                                inputData.get("base_inputs").getString(),
                                error) != m_expectSuccess)

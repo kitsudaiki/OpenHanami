@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef KITSUNEMIMI_SAKURA_LANG_VALUE_ITEM_MAP_H
-#define KITSUNEMIMI_SAKURA_LANG_VALUE_ITEM_MAP_H
+#ifndef HANAMI_LANG_VALUE_ITEM_MAP_H
+#define HANAMI_LANG_VALUE_ITEM_MAP_H
 
 #include <string>
 #include <map>
@@ -68,4 +68,4 @@ private:
     void clearChildMap();
 };
 
-#endif // KITSUNEMIMI_SAKURA_LANG_VALUE_ITEM_MAP_H
+#endif // HANAMI_LANG_VALUE_ITEM_MAP_H

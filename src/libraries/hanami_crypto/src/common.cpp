@@ -75,7 +75,7 @@ convertValueToBase64(const char val)
 }
 
 /**
- * @brief convert one segment of 3 bytes into a Base64 segment of 4 characters
+ * @brief convert one cluster of 3 bytes into a Base64 cluster of 4 characters
  *
  * @param result pointer at the specific position inside the char-arrary for the Base64 result
  * @param buf buffer with 3 Bytes to convert
@@ -205,7 +205,7 @@ convertValueFromBase64(const uint8_t val)
 }
 
 /**
- * @brief convert one segment of 4 characters of a Base64 segment of 3 bytes
+ * @brief convert one cluster of 4 characters of a Base64 cluster of 3 bytes
  *
  * @param result pointer to the output buffer
  * @param buf buffer with 4 Bytes to convert

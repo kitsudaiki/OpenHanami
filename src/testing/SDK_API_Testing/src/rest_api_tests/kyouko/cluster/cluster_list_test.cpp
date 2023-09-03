@@ -41,7 +41,7 @@ ClusterListTest::runTest(Hanami::JsonItem &inputData,
 {
     // list clusters
     std::string result;
-    if(HanamiAI::listCluster(result, error) != m_expectSuccess) {
+    if(Hanami::listCluster(result, error) != m_expectSuccess) {
         return false;
     }
 

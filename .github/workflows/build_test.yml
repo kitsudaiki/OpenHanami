@@ -5,7 +5,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: kitsudaiki/hanami_ai_builder:0.4.0
+      image: kitsudaiki/hanami_builder:0.4.0
     name: build-job
     steps:
       - name: "Checkout repository"
@@ -42,7 +42,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     container:
-      image: kitsudaiki/hanami_ai_base:develop
+      image: kitsudaiki/hanami_base:develop
     name: "Unit-Tests"
     steps:
       - name: Get artifact
@@ -93,7 +93,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     container:
-      image: kitsudaiki/hanami_ai_base:develop
+      image: kitsudaiki/hanami_base:develop
     name: "Memory-Leak-Tests"
     steps:
       - name: Get artifact
@@ -121,7 +121,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     container:
-      image: kitsudaiki/hanami_ai_base:develop
+      image: kitsudaiki/hanami_base:develop
     name: "Functional-Tests"
     steps:
       - name: Get artifact

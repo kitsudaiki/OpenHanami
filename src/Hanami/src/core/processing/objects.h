@@ -94,7 +94,7 @@ struct ClusterHeader
     kuuid uuid;
     char name[1024];
 
-    // synapse-segment
+    // synapse-cluster
     HeaderEntry settings;
     HeaderEntry slotList;
     HeaderEntry inputValues;

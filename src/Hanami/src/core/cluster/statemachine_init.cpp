@@ -58,10 +58,10 @@ initStates(Hanami::Statemachine &sm)
     sm.createNewState(TABLE_REQUEST_STATE,              "Table-request state");
     sm.createNewState(TABLE_REQUEST_FORWARD_STATE,      "Table-request state: forward-propagation");
     sm.createNewState(TABLE_REQUEST_CYCLE_FINISH_STATE, "Table-request state: finish-cycle");
-    sm.createNewState(CHECKPOINT_STATE,                   "Checkpoint state");
-    sm.createNewState(CLUSTER_CHECKPOINT_STATE,           "Cluster-checkpoint state");
-    sm.createNewState(CLUSTER_CHECKPOINT_SAVE_STATE,      "Cluster-checkpoint state: save");
-    sm.createNewState(CLUSTER_CHECKPOINT_RESTORE_STATE,   "Cluster-checkpoint state: restore");
+    sm.createNewState(CHECKPOINT_STATE,                 "Checkpoint state");
+    sm.createNewState(CLUSTER_CHECKPOINT_STATE,         "Cluster-checkpoint state");
+    sm.createNewState(CLUSTER_CHECKPOINT_SAVE_STATE,    "Cluster-checkpoint state: save");
+    sm.createNewState(CLUSTER_CHECKPOINT_RESTORE_STATE, "Cluster-checkpoint state: restore");
     sm.createNewState(DIRECT_STATE,                     "Direct mode");
 }
 
@@ -86,8 +86,8 @@ initEvents(Hanami::Statemachine &sm,
     sm.addEventToState(TABLE_TRAIN_CYCLE_FINISH_STATE,   new CycleFinish_State(cluster));
     sm.addEventToState(IMAGE_REQUEST_CYCLE_FINISH_STATE, new CycleFinish_State(cluster));
     sm.addEventToState(TABLE_REQUEST_CYCLE_FINISH_STATE, new CycleFinish_State(cluster));
-    sm.addEventToState(CLUSTER_CHECKPOINT_SAVE_STATE,      new SaveCluster_State(cluster));
-    sm.addEventToState(CLUSTER_CHECKPOINT_RESTORE_STATE,   new RestoreCluster_State(cluster));
+    sm.addEventToState(CLUSTER_CHECKPOINT_SAVE_STATE,    new SaveCluster_State(cluster));
+    sm.addEventToState(CLUSTER_CHECKPOINT_RESTORE_STATE, new RestoreCluster_State(cluster));
 }
 
 /**
@@ -157,10 +157,10 @@ initTransitions(Hanami::Statemachine &sm)
     sm.addTransition(REQUEST_STATE, TABLE,   TABLE_REQUEST_STATE);
 
     // transitions checkpoint init
-    sm.addTransition(TASK_STATE,             CHECKPOINT, CHECKPOINT_STATE);
-    sm.addTransition(CHECKPOINT_STATE,         CLUSTER,  CLUSTER_CHECKPOINT_STATE);
-    sm.addTransition(CLUSTER_CHECKPOINT_STATE, SAVE,     CLUSTER_CHECKPOINT_SAVE_STATE);
-    sm.addTransition(CLUSTER_CHECKPOINT_STATE, RESTORE,  CLUSTER_CHECKPOINT_RESTORE_STATE);
+    sm.addTransition(TASK_STATE,               CHECKPOINT, CHECKPOINT_STATE);
+    sm.addTransition(CHECKPOINT_STATE,         CLUSTER,    CLUSTER_CHECKPOINT_STATE);
+    sm.addTransition(CLUSTER_CHECKPOINT_STATE, SAVE,       CLUSTER_CHECKPOINT_SAVE_STATE);
+    sm.addTransition(CLUSTER_CHECKPOINT_STATE, RESTORE,    CLUSTER_CHECKPOINT_RESTORE_STATE);
 
     // trainsition train-internal
     sm.addTransition(IMAGE_TRAIN_FORWARD_STATE,      NEXT, IMAGE_TRAIN_CYCLE_FINISH_STATE );
@@ -175,8 +175,8 @@ initTransitions(Hanami::Statemachine &sm)
     sm.addTransition(TABLE_REQUEST_CYCLE_FINISH_STATE, NEXT, TABLE_REQUEST_FORWARD_STATE      );
 
     // transition finish back to task-state
-    sm.addTransition(TRAIN_STATE,                    FINISH_TASK, TASK_STATE);
-    sm.addTransition(REQUEST_STATE,                  FINISH_TASK, TASK_STATE);
+    sm.addTransition(TRAIN_STATE,                      FINISH_TASK, TASK_STATE);
+    sm.addTransition(REQUEST_STATE,                    FINISH_TASK, TASK_STATE);
     sm.addTransition(CHECKPOINT_STATE,                 FINISH_TASK, TASK_STATE);
     sm.addTransition(CLUSTER_CHECKPOINT_SAVE_STATE,    FINISH_TASK, TASK_STATE);
     sm.addTransition(CLUSTER_CHECKPOINT_RESTORE_STATE, FINISH_TASK, TASK_STATE);

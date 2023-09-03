@@ -78,9 +78,9 @@ CpuProcessingUnit::CpuProcessingUnit()
 CpuProcessingUnit::~CpuProcessingUnit() {}
 
 /**
- * @brief run forward-propagation on a segment
+ * @brief run forward-propagation on a cluster
  *
- * @param segment segment to process
+ * @param cluster cluster to process
  */
 void
 CpuProcessingUnit::trainSegmentForward(Cluster* cluster)
@@ -111,9 +111,9 @@ CpuProcessingUnit::trainSegmentForward(Cluster* cluster)
 }
 
 /**
- * @brief run back-propagation on a segment
+ * @brief run back-propagation on a cluster
  *
- * @param segment segment to process
+ * @param cluster cluster to process
  */
 void
 CpuProcessingUnit::trainSegmentBackward(Cluster* cluster)
@@ -160,7 +160,7 @@ CpuProcessingUnit::trainSegmentBackward(Cluster* cluster)
 /**
  * @brief process segments
  *
- * @param segment segment to process
+ * @param cluster cluster to process
  */
 void
 CpuProcessingUnit::processSegment(Cluster* cluster)

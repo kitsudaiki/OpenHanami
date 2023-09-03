@@ -37,7 +37,7 @@ GetAuditLog::GetAuditLog()
             .setComment("ID of the user, whos entries are requested. Only an admin is allowed to "
                         "set this values. Any other user get only its own log output based on the "
                         "token-context.")
-            .setDefault(new Hanami::DataValue(""))
+            .setRequired(false)
             .setLimit(4, 256)
             .setRegex(ID_EXT_REGEX);
 

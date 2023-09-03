@@ -24,7 +24,7 @@
 
 #include <hanami_json/json_item.h>
 
-namespace HanamiAI
+namespace Hanami
 {
 
 /**
@@ -251,4 +251,4 @@ WebsocketClient::loadCertificates(boost::asio::ssl::context& ctx)
     return true;
 }
 
-}  // namespace HanamiAI
+}  // namespace Hanami

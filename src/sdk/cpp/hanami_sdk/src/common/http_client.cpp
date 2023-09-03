@@ -24,10 +24,10 @@
 
 #include <hanami_json/json_item.h>
 
-namespace HanamiAI
+namespace Hanami
 {
 
-HanamiAI::HanamiRequest* HanamiRequest::m_instance = nullptr;
+Hanami::HanamiRequest* HanamiRequest::m_instance = nullptr;
 
 /**
  * @brief constructor
@@ -478,4 +478,4 @@ HanamiRequest::makeSingleRequest(std::string &response,
     return statusCode;
 }
 
-} // namespace HanamiAI
+} // namespace Hanami

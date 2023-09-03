@@ -106,7 +106,7 @@ echo ""
 echo "###########################################################################################################"
 echo ""
 get_required_kitsune_lib_repo "libKitsunemimiHanamiCommon" "develop" 8
-download_repo_github "libKitsunemimiHanamiMessages" "develop"
+download_repo_github "hanami_messages" "develop"
 echo ""
 echo "###########################################################################################################"
 
