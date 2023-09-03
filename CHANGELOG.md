@@ -4,18 +4,54 @@
 
 ### Breaking-Changes
 
-#### API-breaking / Config-breaking
+#### All breaking
 
-- Move the entire project from a microservice architecture to a monolithic architecture, to reduce unnecessary complexity and increase performance and reliability of the program. Also it makes the developing process easier and faster, with is necessary in regard of my limited time-resources.
+- Move the entire project from a micro-service architecture to a more monolithic architecture with only one executable but still multiple libraries, to reduce unnecessary complexity and increase performance and reliability of the program. Also it makes the developing process easier and faster, with is necessary in regard of my limited time-resources.
+- Removed entire segment-layer between the clusters and bricks from core structure. This layer was originally intended for the separation of multiple threads, but now there is another strategy planed 
+
+#### API-Breaking
+
+- REST-API endpoint for the generation of the documentation was removed
+- Renamed `snapshot` to `checkpoint` and `learn` to `train`
 
 #### Checkpoint-Breaking
 
-- List with update-positions in no longer written into the checkpoint, because it contains only temporary information, which doesn't have to be saved
+- Bigger rework of the core structs to get rid of the update-positions struct
+
+### Added
+
+- documentation of config-entries and database-schemas can now also be generated as marddown-documents
+- error-codes are now also written into the REST-API documentation
+- new config-entry to enable the extremely experimental CUDA-processing
+- more then one thread is now created for the core-processing, to be able to process multiple clusters in parallel
+- the CUDA-version now also works with Checkpoints (create and read)
 
 ### Changed
 
-- In the core-datastructures: Update-positions are merged into the neuron-connections to avoid holding an additional list
-- The cpu-path of the processing of the core-structure doesn't use the update-positions anymore
+- Rename repository/project from `Hanami-AI` to `Hanami`
+- Renamed libraries to `hanami_...` and namespaces of the libraries to `Hanami`, because the originally naming and structure was from the time, when they were separate repositores and desired also for other projects. The new naming makes the names shorter and easier.
+- replace custom jwt lib by `jwt-cpp` (https://github.com/Thalhammer/jwt-cpp)
+- REST-API documentation is now generated as OpenAPI-specification and added to the documentation via swagger-ui
+- merged networking-libraries in context of the renaming
+- config-handler was internally restructured for the new generator of the config-documentation
+- registration of fields in API-endpoints was updated for cleaner code
+- Button in dashboard for the geneartion of the Documentation was removed and is now done by a new CLI flag.
+- merged entire code into one single docker-image
+- better segmentation of the synapses
+
+### Fixed
+
+- solved all compiler-warnings
+- fixed stupid memory leaks in API and task-handling
+- fixed handling in database-requests to separate correctly between an internal-error and a not-found to give the correct HTTP response to the user
+- after a restart of the backend, all clusters are not removed from database at the start to avoid broken clusters, because cluster are in-memory and don't survive a restart
+- positioning of header-texts in dashboard was fixed
+- fixed sizes of some database-columns for user- and project-id's
+
+### Removed
+
+- Removed OpenCL-kernel for the moment. The CUDA-variant is enough for testing and easier to update.
+
 
 
 ## [0.2.0] - 2023-03-15
@@ -60,7 +96,7 @@
 ### Removed
 
 - Removed additional namespaces of the libraries in the common-layer
-- Disabled reduction-process of the neural-networkds for the moment. Will be re-added in 0.3.0
+- Disabled reduction-process of the neural-networkds for the moment. 
 
 
 
