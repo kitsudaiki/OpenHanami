@@ -12,33 +12,13 @@ In this process were also 2 attempts in the past to bring this on a GPU with Ope
 
 ## Basic internal structure
 
-This is a short overview of the actual Inner_Workings.
+This is a short overview of the actual inner workings.
 
 ![Workflow-library](../img/Kyouko_base.drawio)
 
-The graphic shows a simple Cluster. Clusters consists of multiple Segment-types:
+The graphic shows a simple Cluster, consist of input, output and a bunch of bricks.
 
-- **Input-Segments**: The gateway for the data into the network.
-- **Output-Segments**: Post-processing of data and forwarding them to the output.
-- **Core-Segments**: Consists of Bricks (Hexagons in the graphic), which holding the artificial neurons and synapses. Futher infos see [below](/Inner_Workings/3_kyouko/#core-segment).
-
-Segments have a fixed connection between each other and each segment is only processed by one cpu-thread at the same time, but different segments can be processed by different CPU-threads at the same time, as long as they don't depend on each other. Each segment has in input- and output-buffer, to share data with the connected segments. The size of these buffers is fixed. Older versions had flexible buffers, which were too slow. 
-
-Even a segment consists of multiple different data-types (arrays of different types, configurations, etc.), each segment is in memory only one single binary-object, which can simply be written from the memory to the disc, without serialization. When reading a checkpoint of a segment into the memory again, only the pointers within the structure have to be re-initialized.
-
-!!! warning
-
-    It is intended, that a Cluster can have multiple input-, output- and core-segments. But the actual implementation only supports one single input- and output-segment per cluster at the moment and multiple core-clusters care not tested at the moment, as long as ther is only a single input. Comes with version 0.3.0.
-
-### Input-Segment
-
-Input-segments are quite boring. In older versions, they had functionality to normalize data, which is not necessary now. At the moment they only take input-data and push them into the output-buffer of the segment, in order to forward them to the next core-segment.
-
-### Core-Segment
-
-Core-Segments are obviously the main-part of the structure. 
-
-#### Brick-processing
+### Brick-processing
 
 ![Workflow-library](../img/Kyouko_node_processing.drawio)
 
@@ -48,11 +28,7 @@ This chain is only processed, if the input of a neuron is greater then 0. The in
 
 Synapses can not only create or adjusted, but also deleted again for various reasons. One reason is a activation-counter. If a synapse is not used at least 100 time (hard-coded at the moment), then it becomes weaker and will eventually deleted again. So you could say the network can basically forget things again, if it wasn't learned enough. With the MNIST-Dataset with its 60000 images, which effect not really triggered and tables in form of CSV are not long enough implemented to find the time to test this feature better
 
-!!! info
-    
-    The hole thing is still quite experimental and at the moment also limited because of some hard-coded restrictions. The implemented base-structure also allows 3-dimensional constructs of bricks, but this is not supported by the input and not tested. Will be further evaluated while working on version `0.3.0`.
-
-#### Activation-function
+### Activation-function
 
 The activation-function of the neurons doesn't use the classical sigmoid function. The requirements of a function for this part were:
 
@@ -67,34 +43,32 @@ The following function was selected based on these criteria:
 
 
 
-### Output-Segment
+### Output
 
-Output-Segments are similar to the Input-Segments.
+The o utput are similar to the input.
 
 ![Workflow-library](../img/Kyouko_output_segment.drawio)
 
-They have like the Input-Segments a 1:1 connection between in output-nodes and the segment-buffer. In additional they normalize the outgoing values to the range of 0.0-1.0 with the help of the classical sigmoid function:
+They have like the input a 1:1 connection between in output-nodes and the output-buffer. In additional they normalize the outgoing values to the range of 0.0-1.0 with the help of the classical sigmoid function:
 
 ![Workflow-library](../img/output_segment_function.png)
 
 ![Workflow-library](../img/output_segment_graph.png)
 
-The `x` are the values coming from the segment-buffer and the `f(x)` is the output of the network.
+The `x` are the values coming from the output-buffer and the `f(x)` is the output of the network.
 
 ## Templates
 
-At the moment the order and configuration of the Bricks and Segments of a Cluster are defined by strings in json-format. 
+At the moment the order and configuration of the Bricks of a Cluster are defined by strings in a custom format. 
 
 
-### Segment-Templates
+### Cluster-Templates
 
 ```
 version: 1
-segment_type: dynamic_segment
 settings:
-    max_synapse_sections: 100000
-    sign_neg: 0.5
-        
+    max_synapse_sections: 1000
+
 bricks:
     1,1,1
         input: test_input
@@ -108,11 +82,11 @@ bricks:
 
 #### Bricks
 
-The `bricks` defining, which the bricks are ordered within the segment. 
+The `bricks` defining, which the bricks are ordered within the cluster. 
 
-- `input` and `output` defining, if the brick works as input of output for the segment. This type-identifier is followed by a name, which is later used to identify the brick while connecting the segments in the [Cluster-templates](/internal/3_kyouko/#cluster-templates).
+- This type-identifier is followed by a name, which is later used to identify the brick while connecting the bricks in the [Cluster-templates](/internal/3_kyouko/#cluster-templates).
 
-- positions like `1,1,1` defining with `x`, `y` and `z` value the position of the brick within the segment. In this example, it only defines a row of 3 bricks. Together with the hard-coded limitation, that bricks can actuall only connect to neighbors, this enforce the network to grow in a classical layer-structure.
+- positions like `1,1,1` defining with `x`, `y` and `z` value the position of the brick within the cluster. In this example, it only defines a row of 3 bricks. Together with the hard-coded limitation, that bricks can actuall only connect to neighbors, this enforce the network to grow in a classical layer-structure.
 
 #### Settings
 
@@ -120,54 +94,3 @@ The `bricks` defining, which the bricks are ordered within the segment.
 
 - `sign_neg`: average relation of negative synapses to positive synapses in the network (1.0 = all negative, 0.0 = nothing negative)
 
-### Cluster-Templates
-
-Cluster-templates describing, how the segments should be connected with each other.
-
-```
-version: 1
-segments:
-    input
-        name: input
-        out: -> central : test_input
-
-    example_segment
-        name: central
-        out: test_output -> output1
-
-    output
-        name: output1
-```
-
-Each segment has to following form:
-
-```
-TYPE
-    name: NAME
-    out: SOURCE_BRICK -> TARGET_SEGMENT : TARGET_BRICK
-```
-
-`TYPE`
-
-The type can either be `input` or `output`, which are predefined types for the input and output-data of the network. Inputs and outputs can not be directly connected with each other. The type can also have the name of a segment-templates. In this case the template with the name of the type is used to create the segment. There can be multiple segments with the same type.
-The number of available input- and output-neurons in the input- and output-brick depending of the number in the derectly connected segments.
-
-`NAME`
-
-The name is for identification while connecting the bricks, so the name must be unique within the cluster.
-
-Outputs `out`
-
-Connect bricks of two segments with each other. Output-bricks don't have outgoing connections
-
-`SOURCE_BRICK`
-
-Name of an output-brick within the actual segment. If the current bricks is an input-brick, which value don't have to be set.
-
-`TARGET_SEGMENT`
-
-Name of the target-segment within the cluster.
-
-`TARGET_BRICK`
-
-Name of the target input-brick within the `TARGET_SEGMENT`. If the `TARGET_SEGMENT` is an output-segment, a `TARGET_BRICK` don't have to be set.
