@@ -37,7 +37,6 @@
                         "in": "query",
                         "name": "user_id",
                         "schema": {
-                            "default": "",
                             "maxLength": "256",
                             "minLength": "4",
                             "pattern": "[a-zA-Z][a-zA-Z_0-9@]*",
@@ -123,7 +122,6 @@
                         "description": "Requested component-name of the request. If this is not set, then only the token in itself will be validated.",
                         "in": "query",
                         "name": "component",
-                        "required": true,
                         "schema": {
                             "maxLength": "256",
                             "minLength": "4",
@@ -135,7 +133,6 @@
                         "description": "Requesed endpoint within the component.",
                         "in": "query",
                         "name": "endpoint",
-                        "required": true,
                         "schema": {
                             "maxLength": "256",
                             "minLength": "4",
@@ -147,7 +144,6 @@
                         "description": "Type of the HTTP-request as enum (DELETE = 1, GET = 2, HEAD = 3, POST = 4, PUT = 5).",
                         "in": "query",
                         "name": "http_type",
-                        "required": true,
                         "schema": {
                             "maximum": "5",
                             "minimum": "1",
@@ -2155,7 +2151,6 @@
                         "in": "query",
                         "name": "user_id",
                         "schema": {
-                            "default": "",
                             "maxLength": "256",
                             "minLength": "4",
                             "pattern": "[a-zA-Z][a-zA-Z_0-9@]*",
@@ -4219,7 +4214,6 @@
                                         "type": "string"
                                     },
                                     "is_admin": {
-                                        "default": "false",
                                         "description": "Set this to 1 to register the new user as admin.",
                                         "type": "boolean"
                                     },
@@ -4239,6 +4233,7 @@
                                 },
                                 "required": [
                                     "id",
+                                    "is_admin",
                                     "name",
                                     "password"
                                 ],
@@ -4629,7 +4624,6 @@
                                         "type": "string"
                                     },
                                     "is_project_admin": {
-                                        "default": "false",
                                         "description": "Set this to true, if the user should be an admin within the assigned project.",
                                         "type": "boolean"
                                     },
@@ -4650,6 +4644,7 @@
                                 },
                                 "required": [
                                     "id",
+                                    "is_project_admin",
                                     "project_id",
                                     "role"
                                 ],
