@@ -14,6 +14,10 @@
 - REST-API endpoint for the generation of the documentation was removed
 - Renamed `snapshot` to `checkpoint` and `learn` to `train`
 
+#### Database-Breaking
+
+- fixed sizes of some database-columns for user- and project-id's
+
 #### Checkpoint-Breaking
 
 - Bigger rework of the core structs to get rid of the update-positions struct
@@ -41,12 +45,11 @@
 
 ### Fixed
 
-- solved all compiler-warnings
+- solved all compiler-warnings (disabled libraries not included)
 - fixed stupid memory leaks in API and task-handling
 - fixed handling in database-requests to separate correctly between an internal-error and a not-found to give the correct HTTP response to the user
 - after a restart of the backend, all clusters are not removed from database at the start to avoid broken clusters, because cluster are in-memory and don't survive a restart
 - positioning of header-texts in dashboard was fixed
-- fixed sizes of some database-columns for user- and project-id's
 
 ### Removed
 
