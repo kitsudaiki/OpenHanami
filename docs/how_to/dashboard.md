@@ -2,23 +2,19 @@
 
 ## General
 
-The dashboard is one way to interact with Hanami-AI. It is client-only and the files are provided by the [Torii](/Inner_Workings/7_torii/).
+The dashboard is one way to interact with Hanami.
 
 !!! warning
 
-    The current dashboard is only a first prototypical implementation with many minor bugs and problems. There is a rework planned for version 0.4.0.
+    The current dashboard is only a first prototypical implementation with many minor bugs and problems. There is a complete refactoring and maybe a complete re-implementation 
 
 !!! warning
 
-    This documentation is not up-to-date at the moment, because there are a bunch of bigger changes at the moment and to reduce the amount of workload, the dashboard-docu here gets an update, when these chnages are done together.
+    This documentation is not up-to-date at the moment, I'm very sorry, but it should be still enough to give a basic impression of the current state and workflow.
 
 !!! warning
 
     Only tested on Firefox at the moment.
-
-!!! info
-
-    Repository with source-code of the dashboard: https://github.com/kitsudaiki/Hanami-AI-Dashboard
 
 ## Example workflow
 

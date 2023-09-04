@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## Unreleased
 
 ### Breaking-Changes
 
@@ -54,7 +54,9 @@
 
 
 
-## [0.2.0] - 2023-03-15
+## v0.2.0 
+
+- **Date**: 2023-03-15
 
 ### Breaking-Changes
 
@@ -100,9 +102,11 @@
 
 
 
-## [0.1.0] - 2022-10-18
+## v0.1.0
 
-### Added:
+- **Date**: 2022-10-18
+
+### Added
 
 - First experimental prototype version with **very basic implementation** of following features:
     - first incomplete implementation of the core-concept of a dynamic network with:

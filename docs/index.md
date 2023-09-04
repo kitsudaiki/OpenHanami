@@ -1,6 +1,8 @@
 # Hanami
 
-![Logo](img/hanami-logo-with-text.png)
+<p align="center">
+  <img src="img/hanami-logo-with-text.png" width="500" height="594" />
+</p>
 
 
 !!! danger "IMPORTANT"
