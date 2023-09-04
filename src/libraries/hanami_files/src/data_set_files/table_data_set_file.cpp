@@ -139,7 +139,7 @@ TableDataSetFile::getPayload(Hanami::DataBuffer &result,
                              const std::string &columnName)
 {
     Hanami::DataBuffer readBuffer;
-    const uint64_t bufferSize = (m_totalFileSize - m_headerSize) / sizeof(float);
+    const uint64_t bufferSize = m_totalFileSize - m_headerSize;
     Hanami::allocateBlocks_DataBuffer(readBuffer, Hanami::calcBytesToBlocks(bufferSize));
 
     if(m_targetFile->readDataFromFile(readBuffer.data,

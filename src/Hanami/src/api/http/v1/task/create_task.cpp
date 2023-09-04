@@ -283,7 +283,7 @@ CreateTask::tableTask(std::string &taskUuid,
     const std::string inputColumnName = "input";
     const std::string dataSetLocation = dataSetInfo.get("location").getString();
     Hanami::DataBuffer inputBuffer;
-    if(getDataSetPayload(inputBuffer, dataSetLocation, error) == false)
+    if(getDataSetPayload(inputBuffer, dataSetLocation, error, inputColumnName) == false)
     {
         error.addMeesage("Failed to get data of data-set from location '"
                          + dataSetLocation
@@ -311,7 +311,7 @@ CreateTask::tableTask(std::string &taskUuid,
         // get output-data
         const std::string outputColumnName = "output";
         Hanami::DataBuffer outputBuffer;
-        if(getDataSetPayload(outputBuffer, dataSetLocation, error) == false)
+        if(getDataSetPayload(outputBuffer, dataSetLocation, error, outputColumnName) == false)
         {
             error.addMeesage("Failed to get data of data-set from location '"
                              + dataSetLocation
