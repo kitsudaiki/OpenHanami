@@ -191,9 +191,8 @@ ThreadBinder::run()
             //LOG_DEBUG(newMapping.toString(true));
         }
         while(false);
+        m_mapLock.unlock();
 
         sleep(10);
-
-        m_mapLock.unlock();
     }
 }

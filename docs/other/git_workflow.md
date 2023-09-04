@@ -1,9 +1,5 @@
 # Git-Workflow
 
-!!! info
-
-    This workflow starts with version 0.2.0 ... at least I hope so
-
 Generial workflow for all components like KyoukoMind and so on.
 
 ![Workflow-component](../img/workflow_component.drawio)

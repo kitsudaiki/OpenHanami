@@ -1,4 +1,4 @@
-# API documentation
+# OpenAPI documentation
 
 !!! info
 

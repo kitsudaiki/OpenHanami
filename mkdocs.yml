@@ -1,4 +1,10 @@
-site_name: Hanami-AI-Documentation
+site_name: Hanami
+site_author: Tobias Anker
+site_url: https://docs.hanami-ai.com
+
+repo_name: kitsudaiki/Hanami
+repo_url: https://github.com/kitsudaiki/Hanami
+
 theme:
   name: material
   language: en
@@ -11,6 +17,32 @@ theme:
     - navigation.top
     - content.code.annotate 
     - content.tabs.link
+
+nav:
+  - Home:
+    - index.md
+    - home/license.md
+    - home/CHANGELOG.md
+  - API:
+    - api/rest_api_documentation.md
+    - api/sdk_library.md
+    - api/websocket_workflow.md
+  - How To:
+    - how_to/installation.md
+    - how_to/dashboard.md
+  - Inner workings:
+    - Configs:
+      - inner_workings/config.md
+      - inner_workings/db.md
+    - inner_workings/core.md
+    - inner_workings/input_processing.md
+    - inner_workings/monitoring.md
+    - inner_workings/storage.md
+    - inner_workings/user_and_projects.md
+  - Other:
+    - other/dependencies.md
+    - other/git_workflow.md
+    - other/glossar.md
 
 plugins:
     - swagger-ui-tag
@@ -66,4 +98,4 @@ extra:
     - icon: fontawesome/brands/github
       link: https://github.com/kitsudaiki
     - icon: fontawesome/brands/linkedin
-      link: https://www.linkedin.com/in/tobias-anker
+      link: https://www.linkedin.com/in/tobiasanker42

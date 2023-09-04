@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## Unreleased
 
 ### Breaking-Changes
 
@@ -13,6 +13,10 @@
 
 - REST-API endpoint for the generation of the documentation was removed
 - Renamed `snapshot` to `checkpoint` and `learn` to `train`
+
+#### Database-Breaking
+
+- fixed sizes of some database-columns for user- and project-id's
 
 #### Checkpoint-Breaking
 
@@ -41,12 +45,11 @@
 
 ### Fixed
 
-- solved all compiler-warnings
+- solved all compiler-warnings (disabled libraries not included)
 - fixed stupid memory leaks in API and task-handling
 - fixed handling in database-requests to separate correctly between an internal-error and a not-found to give the correct HTTP response to the user
 - after a restart of the backend, all clusters are not removed from database at the start to avoid broken clusters, because cluster are in-memory and don't survive a restart
 - positioning of header-texts in dashboard was fixed
-- fixed sizes of some database-columns for user- and project-id's
 
 ### Removed
 
@@ -54,7 +57,9 @@
 
 
 
-## [0.2.0] - 2023-03-15
+## v0.2.0 
+
+- **Date**: 2023-03-15
 
 ### Breaking-Changes
 
@@ -100,9 +105,11 @@
 
 
 
-## [0.1.0] - 2022-10-18
+## v0.1.0
 
-### Added:
+- **Date**: 2022-10-18
+
+### Added
 
 - First experimental prototype version with **very basic implementation** of following features:
     - first incomplete implementation of the core-concept of a dynamic network with:
