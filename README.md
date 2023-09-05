@@ -29,6 +29,30 @@ The actual prototype consists of:
 - Websocket-connection to directly interact with the artificial neuronal networks
 - CI-pipelines, Test-Tool, Docker-build-process and basic helm-chart to deploy the project on Kubernetes
 
+## First benchmark
+
+Test-case:
+
+- Dataset: MNIST handwritten letters
+- Hardware: Intel i7-1165G7 and 16GB RAM with 3200MT/s
+- Settings: 
+    - **CPU** with **one processing thread** 
+    - **no batches**, so each of image is processed one after the other
+    - values are pushed directly into the network without normalization between 0 and 1
+    - average of 10 measurements
+
+
+|             |      average result        |
+| ----------- | ------------------------------------ |
+| time for train-dataset (60000 Images); 1. epoch  | 1.9 s |
+| time for test-dataset (10000 Images)       |  0.1 s |
+| accuracy of test-dataset after 1. epoch   |  94.21 % |
+| accuracy of test-dataset after 10. epoch   |  96.43 % |
+
+## Possible use-case
+
+Because the normalization of input is not necessary, together with the good performance of training single inputs (based on the benchmark) and the direct interaction remotely over websockets, could make this project useful for processing measurement-data of sensors of different machines, especially for new sensors, where the exact maximum output-values are unknown. So continuous training of the network right from the beginning would be possible, without collecting a bunch of data at first.
+
 ## Documentation
 
 All of this page and more in the documentation on: 

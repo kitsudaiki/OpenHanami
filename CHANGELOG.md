@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased
+## ## v0.3.0 
+
+- **Date**: 2023-09-05
 
 ### Breaking-Changes
 
