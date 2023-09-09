@@ -62,11 +62,11 @@ GetCheckpoint::GetCheckpoint()
  */
 bool
 GetCheckpoint::runTask(BlossomIO &blossomIO,
-                       const Hanami::DataMap &context,
+                       const json &context,
                        BlossomStatus &status,
                        Hanami::ErrorContainer &error)
 {
-    const std::string checkpointUuid = blossomIO.input.get("uuid").getString();
+    const std::string checkpointUuid = blossomIO.input["uuid"];
     const UserContext userContext(context);
 
     // get checkpoint-info from database
@@ -90,10 +90,10 @@ GetCheckpoint::runTask(BlossomIO &blossomIO,
     }
 
     // remove irrelevant fields
-    blossomIO.output.remove("owner_id");
-    blossomIO.output.remove("project_id");
-    blossomIO.output.remove("visibility");
-    blossomIO.output.remove("temp_files");
+    blossomIO.output.erase("owner_id");
+    blossomIO.output.erase("project_id");
+    blossomIO.output.erase("visibility");
+    blossomIO.output.erase("temp_files");
 
     return true;
 }

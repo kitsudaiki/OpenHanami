@@ -41,15 +41,15 @@ public:
     HanamiSqlTable(Hanami::SqlDatabase* db);
     virtual ~HanamiSqlTable();
 
-    bool add(Hanami::JsonItem &values,
+    bool add(json &values,
              const UserContext &userContext,
              Hanami::ErrorContainer &error);
-    bool get(Hanami::JsonItem &result,
+    bool get(json &result,
              const UserContext &userContext,
              std::vector<RequestCondition> &conditions,
              Hanami::ErrorContainer &error,
              const bool showHiddenValues = false);
-    bool update(Hanami::JsonItem &values,
+    bool update(json &values,
                 const UserContext &userContext,
                 std::vector<RequestCondition> &conditions,
                 Hanami::ErrorContainer &error);

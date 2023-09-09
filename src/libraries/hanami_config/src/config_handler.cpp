@@ -22,7 +22,6 @@
 
 #include <hanami_config/config_handler.h>
 
-#include <hanami_common/items/data_items.h>
 #include <hanami_common/files/text_file.h>
 #include <hanami_ini/ini_item.h>
 
@@ -115,14 +114,14 @@ ConfigHandler::registerString(const std::string &groupName,
                               const std::string &defaultValue,
                               const bool required)
 {
-    DataValue convertedDefault(defaultValue);
+    json convertedDefault(defaultValue);
     std::string finalGroupName = groupName;
     return registerValue(finalGroupName,
                          itemName,
                          comment,
                          STRING_TYPE,
                          required,
-                         &convertedDefault,
+                         convertedDefault,
                          error);
 }
 
@@ -146,14 +145,14 @@ ConfigHandler::registerInteger(const std::string &groupName,
                                const long defaultValue,
                                const bool required)
 {
-    DataValue convertedDefault(defaultValue);
+    json convertedDefault(defaultValue);
     std::string finalGroupName = groupName;
     return registerValue(finalGroupName,
                          itemName,
                          comment,
                          INT_TYPE,
                          required,
-                         &convertedDefault,
+                         convertedDefault,
                          error);
 }
 
@@ -177,14 +176,14 @@ ConfigHandler::registerFloat(const std::string &groupName,
                              const double defaultValue,
                              const bool required)
 {
-    DataValue convertedDefault(defaultValue);
+    json convertedDefault(defaultValue);
     std::string finalGroupName = groupName;
     return registerValue(finalGroupName,
                          itemName,
                          comment,
                          FLOAT_TYPE,
                          required,
-                         &convertedDefault,
+                         convertedDefault,
                          error);
 }
 
@@ -208,14 +207,14 @@ ConfigHandler::registerBoolean(const std::string &groupName,
                                const bool defaultValue,
                                const bool required)
 {
-    DataValue convertedDefault(defaultValue);
+    json convertedDefault(defaultValue);
     std::string finalGroupName = groupName;
     return registerValue(finalGroupName,
                          itemName,
                          comment,
                          BOOL_TYPE,
                          required,
-                         &convertedDefault,
+                         convertedDefault,
                          error);
 }
 
@@ -238,9 +237,9 @@ ConfigHandler::registerStringArray(const std::string &groupName,
                                    const std::vector<std::string> &defaultValue,
                                    const bool required)
 {
-    DataArray convertedDefault;
+    json convertedDefault;
     for(const std::string &value : defaultValue) {
-        convertedDefault.append(new DataValue(value));
+        convertedDefault.push_back(value);
     }
 
     std::string finalGroupName = groupName;
@@ -249,7 +248,7 @@ ConfigHandler::registerStringArray(const std::string &groupName,
                          comment,
                          STRING_ARRAY_TYPE,
                          required,
-                         &convertedDefault,
+                         convertedDefault,
                          error);
 }
 
@@ -279,7 +278,7 @@ ConfigHandler::getString(const std::string &groupName,
     }
 
     // get value from config
-    return m_registeredConfigs[groupName][itemName].value->getString();
+    return m_registeredConfigs[groupName][itemName].value;
 }
 
 /**
@@ -308,7 +307,7 @@ ConfigHandler::getInteger(const std::string &groupName,
     }
 
     // get value from config
-    return m_registeredConfigs[groupName][itemName].value->getLong();
+    return m_registeredConfigs[groupName][itemName].value;
 }
 
 /**
@@ -337,7 +336,7 @@ ConfigHandler::getFloat(const std::string &groupName,
     }
 
     // get value from config
-    return m_registeredConfigs[groupName][itemName].value->getDouble();
+    return m_registeredConfigs[groupName][itemName].value;
 }
 
 /**
@@ -366,7 +365,7 @@ ConfigHandler::getBoolean(const std::string &groupName,
     }
 
     // get value from config
-    return m_registeredConfigs[groupName][itemName].value->getBool();
+    return m_registeredConfigs[groupName][itemName].value;
 }
 
 /**
@@ -396,10 +395,9 @@ ConfigHandler::getStringArray(const std::string &groupName,
     }
 
     // get and transform result from the config-file
-    DataArray* array = m_registeredConfigs[groupName][itemName].value->toArray();
-    for(uint32_t i = 0; i < array->size(); i++)
-    {
-        result.push_back(array->get(i)->toValue()->getString());
+    json array = m_registeredConfigs[groupName][itemName].value;
+    for(uint32_t i = 0; i < array.size(); i++) {
+        result.push_back(array[i]);
     }
 
     return result;
@@ -432,9 +430,10 @@ ConfigHandler::checkEntry(const std::string &groupName,
     }
 
     // check if value is required
-    DataItem* currentVal = m_iniItem->get(groupName, itemName);
+    json currentVal;
+    const bool found = m_iniItem->get(currentVal, groupName, itemName);
     if(entry.isRequired
-            && currentVal == nullptr)
+            && found == false)
     {
         error.addMeesage("Config registration failed because required "
                          "value was not set in the config: \n"
@@ -444,12 +443,8 @@ ConfigHandler::checkEntry(const std::string &groupName,
     }
 
     // overwrite the registered default-value with the value of the config
-    if(currentVal != nullptr)
-    {
-        if(entry.value != nullptr) {
-            delete entry.value;
-        }
-        entry.value = currentVal->copy();
+    if(currentVal.size() != 0) {
+        entry.value = currentVal;
     }
 
     return true;
@@ -470,7 +465,8 @@ ConfigHandler::checkType(const std::string &groupName,
                          const ConfigType type)
 {
     // get value from config-file
-    DataItem* currentItem = m_iniItem->get(groupName, itemName);
+    json currentItem;
+    const bool found = m_iniItem->get(currentItem, groupName, itemName);
 
     // precheck
     if(currentItem == nullptr) {
@@ -478,40 +474,39 @@ ConfigHandler::checkType(const std::string &groupName,
     }
 
     // check for array
-    if(currentItem->getType() == DataItem::ARRAY_TYPE
+    if(currentItem.is_array()
             && type == ConfigType::STRING_ARRAY_TYPE)
     {
         return true;
     }
 
     // check value
-    if(currentItem->getType() == DataItem::VALUE_TYPE)
+    if(currentItem.is_array() == false
+            && currentItem.is_object() == false)
     {
-        DataValue* value = currentItem->toValue();
-
         // check string
-        if(value->getValueType() == DataValue::STRING_TYPE
+        if(currentItem.is_string()
                 && type == ConfigType::STRING_TYPE)
         {
             return true;
         }
 
         // check integer
-        if(value->getValueType() == DataValue::INT_TYPE
+        if(currentItem.is_number_integer()
                 && type == ConfigType::INT_TYPE)
         {
             return true;
         }
 
         // check float
-        if(value->getValueType() == DataValue::FLOAT_TYPE
+        if(currentItem.is_number_float()
                 && type == ConfigType::FLOAT_TYPE)
         {
             return true;
         }
 
         // check boolean
-        if(value->getValueType() == DataValue::BOOL_TYPE
+        if(currentItem.is_boolean()
                 && type == ConfigType::BOOL_TYPE)
         {
             return true;
@@ -594,7 +589,7 @@ ConfigHandler::registerValue(std::string &groupName,
                              const std::string &comment,
                              const ConfigType type,
                              const bool required,
-                             DataItem* defaultValue,
+                             const json &defaultValue,
                              ErrorContainer &error)
 {
     // if group-name is empty, then use the default-group
@@ -625,9 +620,7 @@ ConfigHandler::registerValue(std::string &groupName,
     entry.type = type;
     entry.isRequired = required;
     entry.comment = comment;
-    if(defaultValue != nullptr) {
-        entry.value = defaultValue->copy();
-    }
+    entry.value = defaultValue;
     outerIt->second.emplace(itemName, entry);
 
     return true;
@@ -659,7 +652,8 @@ ConfigHandler::createDocumentation(std::string &docu)
             if(entry.value != nullptr
                     && entry.isRequired == false)
             {
-                docu.append("**Default**: " + entry.value->toString() + "<br>");
+                const std::string value = entry.value.dump();
+                docu.append("**Default**: " + value + "<br>");
             }
             docu.append(" |\n");
         }

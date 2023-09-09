@@ -26,7 +26,6 @@
 #include <hanami_files/data_set_files/image_data_set_file.h>
 #include <hanami_files/data_set_files/table_data_set_file.h>
 
-#include <hanami_json/json_item.h>
 #include <hanami_common/files/binary_file.h>
 
 /**
@@ -70,7 +69,7 @@ getDataSetPayload(Hanami::DataBuffer &result,
  * @return true, if successful, else false
  */
 bool
-getHeaderInformation(Hanami::JsonItem &result,
+getHeaderInformation(json &result,
                      const std::string &location,
                      Hanami::ErrorContainer &error)
 {
@@ -99,9 +98,9 @@ getHeaderInformation(Hanami::JsonItem &result,
 
             // write information to result
             const uint64_t size = imgF->imageHeader.numberOfInputsX * imgF->imageHeader.numberOfInputsY;
-            result.insert("inputs", static_cast<long>(size));
-            result.insert("outputs", static_cast<long>(imgF->imageHeader.numberOfOutputs));
-            result.insert("lines", static_cast<long>(imgF->imageHeader.numberOfImages));
+            result["inputs"] = static_cast<long>(size);
+            result["outputs"] = static_cast<long>(imgF->imageHeader.numberOfOutputs);
+            result["lines"] = static_cast<long>(imgF->imageHeader.numberOfImages);
             // result.insert("average_value", static_cast<float>(imgF->imageHeader.avgValue));
             // result.insert("max_value", static_cast<float>(imgF->imageHeader.maxValue));
 
@@ -129,9 +128,9 @@ getHeaderInformation(Hanami::JsonItem &result,
                 }
             }
 
-            result.insert("inputs", inputs);
-            result.insert("outputs", outputs);
-            result.insert("lines", static_cast<long>(imgT->tableHeader.numberOfLines));
+            result["inputs"] = inputs;
+            result["outputs"] = outputs;
+            result["lines"] = static_cast<long>(imgT->tableHeader.numberOfLines);
             // result.insert("average_value", 0.0f);
             // result.insert("max_value", 0.0f);
 

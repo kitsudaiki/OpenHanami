@@ -109,7 +109,7 @@ addImageRequestTask(Cluster &cluster,
     newTask.projectId = projectId;
     newTask.inputData = inputData;
     for(uint64_t i = 0; i < numberOfCycles; i++) {
-        newTask.resultData.append(0);
+        newTask.resultData.push_back(0);
     }
     newTask.type = IMAGE_REQUEST_TASK;
     newTask.progress.state = QUEUED_TASK_STATE;
@@ -213,7 +213,7 @@ addTableRequestTask(Cluster &cluster,
     newTask.projectId = projectId;
     newTask.inputData = inputData;
     for(uint64_t i = 0; i < numberOfCycles; i++) {
-        newTask.resultData.append(0.0f);
+        newTask.resultData.push_back(0.0f);
     }
     newTask.type = TABLE_REQUEST_TASK;
     newTask.progress.state = QUEUED_TASK_STATE;

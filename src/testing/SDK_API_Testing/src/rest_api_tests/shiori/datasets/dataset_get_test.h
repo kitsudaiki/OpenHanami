@@ -33,7 +33,7 @@ public:
                    const std::string &type,
                    const std::string &uuidOverride = "");
 
-    bool runTest(Hanami::JsonItem &inputData,
+    bool runTest(json &inputData,
                  Hanami::ErrorContainer &error);
 
 private:

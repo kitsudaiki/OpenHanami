@@ -30,7 +30,6 @@
 #include <hanami_files/data_set_files/table_data_set_file.h>
 
 #include <hanami_crypto/common.h>
-#include <hanami_json/json_item.h>
 #include <hanami_common/files/binary_file.h>
 #include <hanami_common/methods/file_methods.h>
 #include <hanami_common/methods/string_methods.h>
@@ -71,16 +70,16 @@ FinalizeCsvDataSet::FinalizeCsvDataSet()
  */
 bool
 FinalizeCsvDataSet::runTask(BlossomIO &blossomIO,
-                            const Hanami::DataMap &context,
+                            const json &context,
                             BlossomStatus &status,
                             Hanami::ErrorContainer &error)
 {
-    const std::string uuid = blossomIO.input.get("uuid").getString();
-    const std::string inputUuid = blossomIO.input.get("uuid_input_file").getString();
+    const std::string uuid = blossomIO.input["uuid"];
+    const std::string inputUuid = blossomIO.input["uuid_input_file"];
     const UserContext userContext(context);
 
     // get location from database
-    Hanami::JsonItem result;
+    json result;
     if(DataSetTable::getInstance()->getDataSet(result, uuid, userContext, error, true) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -106,8 +105,8 @@ FinalizeCsvDataSet::runTask(BlossomIO &blossomIO,
     }
 
     // write data to file
-    if(convertCsvData(result.get("location").getString(),
-                      result.get("name").getString().c_str(),
+    if(convertCsvData(result["location"],
+                      result["name"],
                       inputBuffer) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -119,7 +118,7 @@ FinalizeCsvDataSet::runTask(BlossomIO &blossomIO,
     TempFileHandler::getInstance()->removeData(inputUuid);
 
     // create output
-    blossomIO.output.insert("uuid", uuid);
+    blossomIO.output["uuid"] = uuid;
 
     return true;
 }

@@ -28,7 +28,6 @@
 
 #include <hanami_crypto/common.h>
 #include <hanami_config/config_handler.h>
-#include <hanami_json/json_item.h>
 #include <hanami_common/files/binary_file.h>
 
 CreateMnistDataSet::CreateMnistDataSet()
@@ -86,13 +85,13 @@ CreateMnistDataSet::CreateMnistDataSet()
 
 bool
 CreateMnistDataSet::runTask(BlossomIO &blossomIO,
-                            const Hanami::DataMap &context,
+                            const json &context,
                             BlossomStatus &status,
                             Hanami::ErrorContainer &error)
 {
-    const std::string name = blossomIO.input.get("name").getString();
-    const long inputDataSize = blossomIO.input.get("input_data_size").getLong();
-    const long labelDataSize = blossomIO.input.get("label_data_size").getLong();
+    const std::string name = blossomIO.input["name"];
+    const long inputDataSize = blossomIO.input["input_data_size"];
+    const long labelDataSize = blossomIO.input["label_data_size"];
     const std::string uuid = generateUuid().toString();
     const UserContext userContext(context);
 
@@ -131,19 +130,19 @@ CreateMnistDataSet::runTask(BlossomIO &blossomIO,
     targetFilePath.append(uuid + "_mnist_" + userContext.userId);
 
     // register in database
-    blossomIO.output.insert("uuid", uuid);
-    blossomIO.output.insert("name", name);
-    blossomIO.output.insert("type", "mnist");
-    blossomIO.output.insert("location", targetFilePath);
-    blossomIO.output.insert("project_id", userContext.projectId);
-    blossomIO.output.insert("owner_id", userContext.userId);
-    blossomIO.output.insert("visibility", "private");
+    blossomIO.output["uuid"] = uuid;
+    blossomIO.output["name"] = name;
+    blossomIO.output["type"] = "mnist";
+    blossomIO.output["location"] = targetFilePath;
+    blossomIO.output["project_id"] = userContext.projectId;
+    blossomIO.output["owner_id"] = userContext.userId;
+    blossomIO.output["visibility"] = "private";
 
     // init placeholder for temp-file progress to database
-    Hanami::JsonItem tempFiles;
-    tempFiles.insert(inputUuid, Hanami::JsonItem(0.0f));
-    tempFiles.insert(labelUuid, Hanami::JsonItem(0.0f));
-    blossomIO.output.insert("temp_files", tempFiles);
+    json tempFiles;
+    tempFiles[inputUuid] = json(0.0f);
+    tempFiles[labelUuid] = json(0.0f);
+    blossomIO.output["temp_files"] = tempFiles;
 
     // add to database
     if(DataSetTable::getInstance()->addDataSet(blossomIO.output, userContext, error) == false)
@@ -153,12 +152,12 @@ CreateMnistDataSet::runTask(BlossomIO &blossomIO,
     }
 
     // add values to output
-    blossomIO.output.insert("uuid_input_file", inputUuid);
-    blossomIO.output.insert("uuid_label_file", labelUuid);
+    blossomIO.output["uuid_input_file"] = inputUuid;
+    blossomIO.output["uuid_label_file"] = labelUuid;
 
     // remove blocked values from output
-    blossomIO.output.remove("location");
-    blossomIO.output.remove("temp_files");
+    blossomIO.output.erase("location");
+    blossomIO.output.erase("temp_files");
 
     return true;
 }

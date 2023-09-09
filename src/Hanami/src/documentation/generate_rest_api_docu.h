@@ -26,20 +26,19 @@
 #include <string>
 #include <map>
 
-namespace Hanami {
-class JsonItem;
-}
+#include <common.h>
+
 struct FieldDef;
 
 void createOpenApiDocumentation(std::string &docu);
 
-void generateEndpointDocu_openapi(Hanami::JsonItem &result);
-void createBodyParams_openapi(Hanami::JsonItem &schema,
+void generateEndpointDocu_openapi(json &result);
+void createBodyParams_openapi(json &schema,
                               const std::map<std::string, FieldDef>* defMap,
                               const bool isRequest);
-void createQueryParams_openapi(Hanami::JsonItem &parameters,
+void createQueryParams_openapi(json &parameters,
                                const std::map<std::string, FieldDef>* defMap);
-void addTokenRequirement(Hanami::JsonItem &parameters);
+void addTokenRequirement(json &parameters);
 
 
 #endif // HANAMI_GENERATERESTAPIDOCU_H

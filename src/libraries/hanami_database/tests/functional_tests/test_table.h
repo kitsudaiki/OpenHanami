@@ -15,13 +15,13 @@ public:
     TestTable(Hanami::SqlDatabase* db);
     ~TestTable();
 
-    bool addUser(JsonItem &data,
+    bool addUser(json &data,
                  ErrorContainer &error);
     bool getUser(TableItem &resultTable,
                  const std::string &userID,
                  ErrorContainer &error,
                  const bool withHideValues = false);
-    bool getUser(JsonItem &resultItem,
+    bool getUser(json &resultItem,
                  const std::string &userID,
                  ErrorContainer &error,
                  const bool showHiddenValues = false);
@@ -33,7 +33,7 @@ public:
     bool deleteUser(const std::string &userID,
                     ErrorContainer &error);
     bool updateUser(const std::string &userID,
-                    const JsonItem &values,
+                    const json &values,
                     ErrorContainer &error);
     long getNumberOfUsers(ErrorContainer &error);
 };

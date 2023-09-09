@@ -7,7 +7,6 @@
  */
 
 #include "table_item_test.h"
-#include <hanami_common/items/data_items.h>
 
 namespace Hanami
 {
@@ -91,18 +90,16 @@ TableItem_test::stealContent_test()
 {
     TableItem testItem = getTestTableItem();
 
-    DataMap* data = testItem.stealContent();
+    json data = testItem.stealContent();
 
-    TEST_EQUAL(data->contains("header"), true);
-    TEST_EQUAL(data->contains("body"), true);
+    TEST_EQUAL(data.contains("header"), true);
+    TEST_EQUAL(data.contains("body"), true);
 
-    TEST_EQUAL(data->get("header")->size(), 2);
-    TEST_EQUAL(data->get("body")->size(), 2);
+    TEST_EQUAL(data["header"].size(), 2);
+    TEST_EQUAL(data["body"].size(), 2);
 
-    TEST_EQUAL(testItem.getNumberOfRows(), 0);
-    TEST_EQUAL(testItem.getNumberOfColums(), 0);
-
-    delete data;
+    TEST_EQUAL(testItem.getNumberOfRows(), 2);
+    TEST_EQUAL(testItem.getNumberOfColums(), 2);
 }
 
 /**
@@ -172,13 +169,13 @@ TableItem_test::addRow_Test()
     testItem.addColumn("asdf", "ASDF");
     testItem.addColumn("poipoipoi");
 
-    TEST_EQUAL(testItem.addRow(std::vector<std::string>{"this is a test", "k"}), true);
-    TEST_EQUAL(testItem.addRow(std::vector<std::string>{"asdf"}), false);
+    TEST_EQUAL(testItem.addRowVec(std::vector<std::string>{"this is a test", "k"}), true);
+    TEST_EQUAL(testItem.addRowVec(std::vector<std::string>{"asdf"}), false);
 
-    DataArray* newRow = new DataArray();
-    newRow->append(new DataValue("asdf"));
+    json newRow = json::array();
+    newRow.push_back("asdf");
     TEST_EQUAL(testItem.addRow(newRow), false);
-    newRow->append(new DataValue(42));
+    newRow.push_back(42);
     TEST_EQUAL(testItem.addRow(newRow), true);
 
 
@@ -201,19 +198,19 @@ void
 TableItem_test::getRow_Test()
 {
     TableItem testItem = getTestTableItem();
-    DataArray* result = nullptr;
+    json result;
 
     // additional multiline test
-    testItem.addRow(std::vector<std::string>{"x\ny\nz", " "});
-    testItem.addRow(std::vector<std::string>{"y", "abcdefghijklmnopqrst"});
+    testItem.addRowVec(std::vector<std::string>{"x\ny\nz", " "});
+    testItem.addRowVec(std::vector<std::string>{"y", "abcdefghijklmnopqrst"});
 
-    result = testItem.getRow(42, false);
-    const bool isNullptr = result == nullptr;
+    result = testItem.getRow(42);
+    const bool isNullptr = result.is_null();
     TEST_EQUAL(isNullptr, true);
 
-    result = testItem.getRow(1, false);
+    result = testItem.getRow(1);
     const std::string compare = "[\"asdf\",\"qwert\"]";
-    TEST_EQUAL(result->toString(), compare);
+    TEST_EQUAL(result.dump(), compare);
 }
 
 /**
@@ -330,12 +327,10 @@ TableItem_test::getInnerHeader_test()
 {
     TableItem testItem = getTestTableItem();
 
-    DataArray* innerHader = testItem.getInnerHeader();
-    TEST_EQUAL(innerHader->size(), 2);
-    TEST_EQUAL(innerHader->get(0)->toValue()->getString(), "asdf");
-    TEST_EQUAL(innerHader->get(1)->toValue()->getString(), "poipoipoi");
-
-    delete innerHader;
+    json innerHader = testItem.getInnerHeader();
+    TEST_EQUAL(innerHader.size(), 2);
+    TEST_EQUAL(innerHader[0], "asdf");
+    TEST_EQUAL(innerHader[1], "poipoipoi");
 }
 
 /**
@@ -347,8 +342,8 @@ TableItem_test::toString_test()
     TableItem testItem = getTestTableItem();
 
     // additional multiline test
-    testItem.addRow(std::vector<std::string>{"x\ny\nz", " "});
-    testItem.addRow(std::vector<std::string>{"y", "abcdefghijklmnopqrst"});
+    testItem.addRowVec(std::vector<std::string>{"x\ny\nz", " "});
+    testItem.addRowVec(std::vector<std::string>{"y", "abcdefghijklmnopqrst"});
 
 
     const std::string compare =
@@ -401,8 +396,8 @@ TableItem_test::toJsonString_test()
     TableItem testItem = getTestTableItem();
 
     // additional multiline test
-    testItem.addRow(std::vector<std::string>{"x\ny\nz", " "});
-    testItem.addRow(std::vector<std::string>{"y", "abcdefghijklmnopqrst"});
+    testItem.addRowVec(std::vector<std::string>{"x\ny\nz", " "});
+    testItem.addRowVec(std::vector<std::string>{"y", "abcdefghijklmnopqrst"});
 
     // check json-formated output
     const std::string compareJson = "{ header: [{\"inner\":\"asdf\",\"outer\":\"ASDF\"},"
@@ -426,8 +421,8 @@ TableItem_test::getTestTableItem()
     testItem.addColumn("asdf", "ASDF");
     testItem.addColumn("poipoipoi");
 
-    testItem.addRow(std::vector<std::string>{"this is a test", "k"});
-    testItem.addRow(std::vector<std::string>{"asdf", "qwert"});
+    testItem.addRowVec(std::vector<std::string>{"this is a test", "k"});
+    testItem.addRowVec(std::vector<std::string>{"asdf", "qwert"});
     return testItem;
 }
 

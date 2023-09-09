@@ -17,7 +17,6 @@
 #include <hanami_common/state_test.h>
 #include <hanami_common/statemachine_test.h>
 
-#include <hanami_common/items/data_items_test.h>
 #include <hanami_common/items/table_item_test.h>
 
 #include <hanami_common/threading/thread_test.h>
@@ -33,7 +32,6 @@ int main()
     Hanami::State_Test();
     Hanami::Statemachine_Test();
 
-    Hanami::DataItems_Test();
     Hanami::TableItem_test();
 
     Hanami::Thread_Test();

@@ -26,7 +26,6 @@
 #include <hanami_hardware/cpu_thread.h>
 
 #include <hanami_cpu/cpu.h>
-#include <hanami_common/items/data_items.h>
 
 namespace Hanami
 {
@@ -175,21 +174,21 @@ Host::toJsonString() const
 
  * @return json-like item-tree with the information
  */
-DataMap*
+json
 Host::toJson() const
 {
-    Hanami::DataMap* result = new DataMap();
+    json result = json::object();
 
     // convert host-specific information
-    result->insert("hostname", new DataValue(hostName));
-    result->insert("has_hyperthreading", new DataValue(hasHyperThrading));
+    result["hostname"] = hostName;
+    result["has_hyperthreading"] = hasHyperThrading;
 
     // convert cpu-specific information
-    DataArray* packages = new DataArray();
+    json packages = json::array();
     for(uint32_t i = 0; i < cpuPackages.size(); i++) {
-        packages->append(cpuPackages.at(i)->toJson());
+        packages.push_back(cpuPackages.at(i)->toJson());
     }
-    result->insert("packages", packages);
+    result["packages"] = packages;
 
     return result;
 }

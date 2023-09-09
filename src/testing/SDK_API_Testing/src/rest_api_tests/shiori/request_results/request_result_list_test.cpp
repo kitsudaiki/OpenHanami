@@ -36,7 +36,7 @@ RequestResultListTest::RequestResultListTest(const bool expectSuccess)
 }
 
 bool
-RequestResultListTest::runTest(Hanami::JsonItem &inputData,
+RequestResultListTest::runTest(json &inputData,
                                Hanami::ErrorContainer &error)
 {
     // list all data
@@ -50,12 +50,14 @@ RequestResultListTest::runTest(Hanami::JsonItem &inputData,
     }
 
     // parse output
-    Hanami::JsonItem jsonItem;
-    if(jsonItem.parse(result, error) == false) {
+    json jsonItem = json::parse(result, nullptr, false);
+    if (jsonItem.is_discarded())
+    {
+        std::cerr << "parse error" << std::endl;
         return false;
     }
 
-    inputData.insert("number_of_request_results", static_cast<long>(jsonItem.size()), true);
+    inputData["number_of_request_results"] = static_cast<long>(jsonItem.size());
 
     return true;
 }

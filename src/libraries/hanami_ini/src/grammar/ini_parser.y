@@ -27,12 +27,9 @@
 #include <utility>
 #include <iostream>
 #include <vector>
-#include <hanami_common/items/data_items.h>
+#include <nlohmann/json.hpp>
 
-using Hanami::DataItem;
-using Hanami::DataArray;
-using Hanami::DataValue;
-using Hanami::DataMap;
+using json = nlohmann::json;
 
 namespace Hanami
 {
@@ -73,11 +70,11 @@ YY_DECL;
 %token <long> NUMBER "number"
 %token <double> FLOAT "float"
 
-%type <DataMap*> grouplist
+%type <json> grouplist
 %type <std::string> groupheader
-%type <DataMap*> itemlist
-%type <DataItem*> itemValue
-%type <DataItem*> identifierlist
+%type <json> itemlist
+%type <json> itemValue
+%type <json> identifierlist
 
 %%
 %start startpoint;
@@ -91,27 +88,27 @@ startpoint:
 grouplist:
     grouplist groupheader itemlist
     {
-        $1->insert($2, $3);
+        $1[$2] = $3;
         $$ = $1;
     }
 |
     grouplist groupheader
     {
-        $1->insert($2, new DataMap());
+        $1[$2] = json::object();
         $$ = $1;
     }
 |
     groupheader itemlist
     {
-        DataMap* newMap = new DataMap();
-        newMap->insert($1, $2);
+        json newMap = json::object();
+        newMap[$1] = $2;
         $$ = newMap;
     }
 |
     groupheader
     {
-        DataMap* newMap = new DataMap();
-        newMap->insert($1, new DataMap());
+        json newMap = json::object();
+        newMap[$1] = json::object();
         $$ = newMap;
     }
 
@@ -124,14 +121,14 @@ groupheader:
 itemlist:
     itemlist "identifier" "=" itemValue linebreaks
     {
-        $1->insert($2, $4);
+        $1[$2] = $4;
         $$ = $1;
     }
 |
     "identifier" "=" itemValue linebreaks
     {
-        DataMap* newMap = new DataMap();
-        newMap->insert($1, $3);
+        json newMap = json::object();
+        newMap[$1] = $3;
         $$ = newMap;
     }
 
@@ -139,7 +136,7 @@ itemValue:
     "identifier" "=" "identifier"
     {
         std::string temp = $1 + "=" + $3;
-        $$ = new DataValue(temp);
+        $$ = json(temp);
     }
 |
     identifierlist
@@ -149,88 +146,85 @@ itemValue:
 |
     "identifier"
     {
-        $$ = new DataValue($1);
+        $$ = json($1);
     }
 |
     "string_pln"
     {
-        $$ = new DataValue($1);
+        $$ = json($1);
     }
 |
     "string"
     {
-        $$ = new DataValue(driver.removeQuotes($1));
+        $$ = json(driver.removeQuotes($1));
     }
  |
     "number"
     {
-        $$ = new DataValue($1);
+        $$ = json($1);
     }
 |
     "float"
     {
-        $$ = new DataValue($1);
+        $$ = json($1);
     }
 |
     "true"
     {
-        $$ = new DataValue(true);
+        $$ = json(true);
     }
 |
     "false"
     {
-        $$ = new DataValue(false);
+        $$ = json(false);
     }
 |
     %empty
     {
-        $$ = new DataValue("");
+        $$ = json("");
     }
 
 
 identifierlist:
     identifierlist "," "string"
     {
-        DataArray* array = dynamic_cast<DataArray*>($1);
-        array->append(new DataValue(driver.removeQuotes($3)));
+        $1.push_back(driver.removeQuotes($3));
         $$ = $1;
     }
 |
     identifierlist "," "string_pln"
     {
-        DataArray* array = dynamic_cast<DataArray*>($1);
-        array->append(new DataValue($3));
+        $1.push_back($3);
         $$ = $1;
     }
 |
     identifierlist "," "identifier"
     {
-        DataArray* array = dynamic_cast<DataArray*>($1);
-        array->append(new DataValue($3));
+        $1.push_back($3);
         $$ = $1;
     }
 |
     "string" "," "string"
     {
-        DataArray* tempItem = new DataArray();
-        tempItem->append(new DataValue(driver.removeQuotes($1)));
-        tempItem->append(new DataValue(driver.removeQuotes($3)));
+        json tempItem = json::array();
+        tempItem.push_back(driver.removeQuotes($1));
+        tempItem.push_back(driver.removeQuotes($3));
         $$ = tempItem;
     }
 |
     "string_pln" "," "string_pln"
     {
-        DataArray* tempItem = new DataArray();
-        tempItem->append(new DataValue($1));
-        tempItem->append(new DataValue($3));
+        json tempItem = json::array();
+        tempItem.push_back($1);
+        tempItem.push_back($3);
         $$ = tempItem;
     }
 |
     "identifier" "," "identifier"
     {
-        DataArray* tempItem = new DataArray();
-        tempItem->append(new DataValue($1));
-        tempItem->append(new DataValue($3));
+        json tempItem = json::array();
+        tempItem.push_back($1);
+        tempItem.push_back($3);
         $$ = tempItem;
     }
 

@@ -26,11 +26,10 @@
 #include <database/users_table.h>
 
 #include <hanami_crypto/hashes.h>
-#include <hanami_json/json_item.h>
 #include <hanami_config/config_handler.h>
 
 #include <jwt-cpp/jwt.h>
-//#include <jwt-cpp/traits/nlohmann-json/defaults.h>
+// #include <jwt-cpp/traits/nlohmann-json/defaults.h>
 
 /**
  * @brief constructor
@@ -75,15 +74,15 @@ RenewToken::RenewToken()
  */
 bool
 RenewToken::runTask(BlossomIO &blossomIO,
-                    const Hanami::DataMap &context,
+                    const json &context,
                     BlossomStatus &status,
                     Hanami::ErrorContainer &error)
 {
     const UserContext userContext(context);
-    const std::string projectId = blossomIO.input.get("project_id").getString();
+    const std::string projectId = blossomIO.input["project_id"];
 
     // get data from table
-    Hanami::JsonItem userData;
+    json userData;
     if(UsersTable::getInstance()->getUser(userData, userContext.userId, error, false) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -100,17 +99,17 @@ RenewToken::runTask(BlossomIO &blossomIO,
         return false;
     }
 
-    Hanami::JsonItem parsedProjects = userData.get("projects");
+    json parsedProjects = userData["projects"];
 
     // if user is global admin, add the admin-project to the list of choosable projects
-    const bool isAdmin = userData.get("is_admin").getBool();
+    const bool isAdmin = userData["is_admin"];
     if(isAdmin)
     {
-        Hanami::DataMap* adminProject = new Hanami::DataMap();
-        adminProject->insert("project_id", new Hanami::DataValue("admin"));
-        adminProject->insert("role", new Hanami::DataValue("admin"));
-        adminProject->insert("is_project_admin", new Hanami::DataValue(true));
-        parsedProjects.append(adminProject);
+        json adminProject = json::object();
+        adminProject["project_id"] = "admin";
+        adminProject["role"] ="admin";
+        adminProject["is_project_admin"] = true;
+        parsedProjects.push_back(adminProject);
     }
 
     // select project
@@ -143,13 +142,13 @@ RenewToken::runTask(BlossomIO &blossomIO,
     const std::string jwtToken = jwt::create()
                                     .set_type("JWT")
                                     .set_expires_at(expireTimePoint)
-                                    .set_payload_claim("user", jwt::claim(userData.toString()))
+                                    .set_payload_claim("user", jwt::claim(userData.dump()))
                                     .sign(jwt::algorithm::hs256{(const char*)HanamiRoot::tokenKey.data()});
 
-    blossomIO.output.insert("id", userContext.userId);
-    blossomIO.output.insert("is_admin", isAdmin);
-    blossomIO.output.insert("name", userData.get("name").getString());
-    blossomIO.output.insert("token", jwtToken);
+    blossomIO.output["id"] = userContext.userId;
+    blossomIO.output["is_admin"] = isAdmin;
+    blossomIO.output["name"] = userData["name"];
+    blossomIO.output["token"] = jwtToken;
 
     return true;
 }
@@ -164,18 +163,18 @@ RenewToken::runTask(BlossomIO &blossomIO,
  * @return true, if selectedProjectId is available for the user, else false
  */
 bool
-RenewToken::chooseProject(Hanami::JsonItem &userData,
-                          Hanami::JsonItem &parsedProjects,
+RenewToken::chooseProject(json &userData,
+                          json &parsedProjects,
                           const std::string selectedProjectId)
 {
     for(uint64_t i = 0; i < parsedProjects.size(); i++)
     {
-        if(parsedProjects.get(i).get("project_id").getString() == selectedProjectId)
+        if(parsedProjects[i]["project_id"] == selectedProjectId)
         {
-            userData.insert("project_id", parsedProjects.get(i).get("project_id"));
-            userData.insert("role", parsedProjects.get(i).get("role"));
-            userData.insert("is_project_admin", parsedProjects.get(i).get("is_project_admin"));
-            userData.remove("projects");
+            userData["project_id"] = parsedProjects[i]["project_id"];
+            userData["role"] = parsedProjects[i]["role"];
+            userData["is_project_admin"] = parsedProjects[i]["is_project_admin"];
+            userData.erase("projects");
 
             return true;
         }

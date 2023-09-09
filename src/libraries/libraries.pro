@@ -4,7 +4,6 @@ QT -= qt core gui
 CONFIG += c++17
 
 SUBDIRS =  hanami_common
-SUBDIRS += hanami_json
 SUBDIRS += hanami_crypto
 SUBDIRS += hanami_ini
 SUBDIRS += hanami_args
@@ -21,7 +20,6 @@ SUBDIRS += hanami_files
 SUBDIRS += hanami_hardware
 
 
-hanami_json.depends = hanami_common
 hanami_crypto.depends = hanami_common
 hanami_ini.depends = hanami_common
 hanami_args.depends = hanami_common
@@ -36,4 +34,4 @@ hanami_database.depends = hanami_sqlite
 hanami_policies.depends = hanami_config hanami_args
 libKitsunemimiHanamiSegmentParser.depends = hanami_config hanami_args
 hanami_cluster_parser.depends = hanami_config hanami_args
-src/hanami_sdk.depends = hanami_crypto hanami_json
+src/hanami_sdk.depends = hanami_crypto

@@ -25,7 +25,6 @@
 #include <hanami_database/sql_database.h>
 
 #include <hanami_common/methods/string_methods.h>
-#include <hanami_json/json_item.h>
 
 #include <uuid/uuid.h>
 

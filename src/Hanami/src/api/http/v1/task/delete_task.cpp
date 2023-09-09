@@ -54,16 +54,16 @@ DeleteTask::DeleteTask()
  */
 bool
 DeleteTask::runTask(BlossomIO &blossomIO,
-                    const Hanami::DataMap &context,
+                    const json &context,
                     BlossomStatus &status,
                     Hanami::ErrorContainer &error)
 {
     const UserContext userContext(context);
-    const std::string taskUuid = blossomIO.input.get("uuid").getString();
-    const std::string clusterUuid = blossomIO.input.get("cluster_uuid").getString();
+    const std::string taskUuid = blossomIO.input["uuid"];
+    const std::string clusterUuid = blossomIO.input["cluster_uuid"];
 
     // check if user exist within the table
-    Hanami::JsonItem getResult;
+    json getResult;
     if(ClusterTable::getInstance()->getCluster(getResult,
                                                clusterUuid,
                                                userContext,

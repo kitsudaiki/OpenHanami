@@ -25,20 +25,19 @@
 
 #include <iostream>
 #include <vector>
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 namespace Hanami
 {
-class DataArray;
-class DataMap;
-class DataValue;
 
 class TableItem
 {
 public:
     TableItem();
     TableItem(const TableItem &other);
-    TableItem(DataArray* body,
-              DataArray* header = nullptr);
+    TableItem(const json &body, const json &header = json::array());
     ~TableItem();
     TableItem& operator=(const TableItem& other);
 
@@ -53,8 +52,8 @@ public:
     bool deleteColumn(const std::string &internalName);
 
     // row
-    bool addRow(DataArray* rowContent, const bool copy = false);
-    bool addRow(const std::vector<std::string> rowContent);
+    bool addRow(const json &rowContent);
+    bool addRowVec(const std::vector<std::string> rowContent);
     bool deleteRow(const uint64_t y);
 
     // cell
@@ -71,11 +70,11 @@ public:
     uint64_t getNumberOfRows();
 
     // getter complete
-    DataArray* getHeader() const;
-    DataArray* getInnerHeader() const;
-    DataArray* getBody(const bool copy = false) const;
-    DataMap* stealContent();
-    DataArray* getRow(const uint32_t row, const bool copy) const;
+    json getHeader() const;
+    json getInnerHeader() const;
+    json getBody() const;
+    json stealContent();
+    json getRow(const uint32_t row) const;
 
     // output
     const std::string toString(const uint32_t maxColumnWidth = 500,
@@ -83,8 +82,8 @@ public:
     const std::string toJsonString();
 
 private:
-    DataArray* m_body = nullptr;
-    DataArray* m_header = nullptr;
+    json m_body;
+    json m_header;
 
     // internal typedefs to make cleaner code
     typedef std::vector<std::string> TableCell;

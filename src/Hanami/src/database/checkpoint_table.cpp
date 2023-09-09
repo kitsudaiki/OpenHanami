@@ -24,7 +24,6 @@
 
 #include <hanami_common/items/table_item.h>
 #include <hanami_common/methods/string_methods.h>
-#include <hanami_json/json_item.h>
 
 #include <hanami_database/sql_database.h>
 
@@ -61,7 +60,7 @@ CheckpointTable::~CheckpointTable() {}
  * @return true, if successful, else false
  */
 bool
-CheckpointTable::addCheckpoint(Hanami::JsonItem &data,
+CheckpointTable::addCheckpoint(json &data,
                                const UserContext &userContext,
                                Hanami::ErrorContainer &error)
 {
@@ -86,7 +85,7 @@ CheckpointTable::addCheckpoint(Hanami::JsonItem &data,
  * @return true, if successful, else false
  */
 bool
-CheckpointTable::getCheckpoint(Hanami::JsonItem &result,
+CheckpointTable::getCheckpoint(json &result,
                                const std::string &checkpointUuid,
                                const UserContext &userContext,
                                Hanami::ErrorContainer &error,
@@ -176,7 +175,7 @@ CheckpointTable::setUploadFinish(const std::string &uuid,
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", uuid);
-    Hanami::JsonItem result;
+    json result;
 
     UserContext userContext;
     userContext.isAdmin = true;
@@ -198,9 +197,9 @@ CheckpointTable::setUploadFinish(const std::string &uuid,
     }
 
     // update temp-files entry to 100%
-    const std::string tempFilesStr = result.get("temp_files").toString();
-    Hanami::JsonItem tempFiles;
-    if(tempFiles.parse(tempFilesStr, error) == false)
+    const std::string tempFilesStr = result["temp_files"];
+    json tempFiles = json::parse(tempFilesStr, nullptr, false);
+    if (tempFiles.is_discarded())
     {
         error.addMeesage("Failed to parse temp_files entry of checkpoint with UUID '"
                          + uuid
@@ -208,11 +207,12 @@ CheckpointTable::setUploadFinish(const std::string &uuid,
         LOG_ERROR(error);
         return false;
     }
-    tempFiles.insert(fileUuid, Hanami::JsonItem(1.0f), true);
+
+    tempFiles[fileUuid] = 1.0f;
 
     // update new entry within the database
-    Hanami::JsonItem newValues;
-    newValues.insert("temp_files", Hanami::JsonItem(tempFiles.toString()));
+    json newValues;
+    newValues["temp_files"] = tempFiles.dump();
     if(update(newValues, userContext, conditions, error) == false)
     {
         error.addMeesage("Failed to update entry of checkpoint with UUID '" + uuid + "' in database");

@@ -18,8 +18,11 @@
 #include <ctime>
 #include <mutex>
 #include <filesystem>
+#include <nlohmann/json.hpp>
 
 #include <hanami_common/items/table_item.h>
+
+using json = nlohmann::json;
 
 #define LOG_DEBUG Hanami::LOG_debug
 #define LOG_INFO Hanami::LOG_info
@@ -70,7 +73,7 @@ struct ErrorContainer
 
         // add error-messages
         for(int32_t i = _errorMessages.size() - 1; i >= 0; i--) {
-            output.addRow({"Error-Message Nr. " + std::to_string(i), _errorMessages.at(i)});
+            output.addRowVec({"Error-Message Nr. " + std::to_string(i), _errorMessages.at(i)});
         }
 
         // build string with possible solutions
@@ -85,7 +88,7 @@ struct ErrorContainer
 
         // add possible solutions
         if(solutions.size() > 1) {
-            output.addRow({"Possible Solution", solutions});
+            output.addRowVec({"Possible Solution", solutions});
         }
 
         return output.toString(200, true);

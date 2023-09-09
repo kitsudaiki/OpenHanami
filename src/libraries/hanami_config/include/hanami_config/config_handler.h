@@ -27,6 +27,9 @@
 #include <vector>
 #include <map>
 #include <hanami_common/logger.h>
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 #define INIT_CONFIG Hanami::ConfigHandler::getInstance()->initConfig
 
@@ -44,7 +47,6 @@
 
 namespace Hanami
 {
-class DataItem;
 class IniItem;
 
 class ConfigHandler_Test;
@@ -138,7 +140,7 @@ private:
     {
         bool isRequired = false;
         ConfigType type = UNDEFINED_TYPE;
-        DataItem* value = nullptr;
+        json value;
         std::string comment = "";
     };
 
@@ -160,7 +162,7 @@ private:
                        const std::string &comment,
                        const ConfigType type,
                        const bool required,
-                       DataItem* defaultValue,
+                       const json &defaultValue,
                        ErrorContainer &error);
 
     std::string m_configFilePath = "";

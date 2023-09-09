@@ -29,7 +29,6 @@
 
 #include <hanami_common/threading/thread.h>
 #include <hanami_common/logger.h>
-#include <hanami_common/items/data_items.h>
 
 namespace Hanami {
 struct RequestMessage;
@@ -48,7 +47,7 @@ public:
     }
     ~TemperatureMeasuring();
 
-    Hanami::DataMap* getJson();
+    json getJson();
 
 protected:
     void run();

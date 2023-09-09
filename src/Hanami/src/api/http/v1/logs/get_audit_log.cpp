@@ -50,13 +50,16 @@ GetAuditLog::GetAuditLog()
     // output
     //----------------------------------------------------------------------------------------------
 
+    json headerMatch = json::array();
+    headerMatch.push_back("timestamp");
+    headerMatch.push_back("user_id");
+    headerMatch.push_back("component");
+    headerMatch.push_back("endpoint");
+    headerMatch.push_back("request_type");
+
     registerOutputField("header", SAKURA_ARRAY_TYPE)
             .setComment("Array with the namings all columns of the table.")
-            .setMatch(new Hanami::DataValue("[\"timestamp\","
-                                                 "\"user_id\","
-                                                 "\"component\","
-                                                 "\"endpoint\","
-                                                 "\"request_type\"]"));
+            .setMatch(headerMatch);
 
     registerOutputField("body", SAKURA_ARRAY_TYPE)
             .setComment("Array with all rows of the table, which array arrays too.");
@@ -71,13 +74,13 @@ GetAuditLog::GetAuditLog()
  */
 bool
 GetAuditLog::runTask(BlossomIO &blossomIO,
-                     const Hanami::DataMap &context,
+                     const json &context,
                      BlossomStatus &status,
                      Hanami::ErrorContainer &error)
 {
     const UserContext userContext(context);
-    std::string userId = blossomIO.input.get("user_id").getString();
-    const uint64_t page = blossomIO.input.get("page").getLong();
+    std::string userId = blossomIO.input["user_id"];
+    const uint64_t page = blossomIO.input["page"];
 
     // check that if user-id is set, that the user is also an admin
     if(userContext.isAdmin == false
@@ -102,10 +105,8 @@ GetAuditLog::runTask(BlossomIO &blossomIO,
     }
 
     // create output
-    Hanami::DataArray* headerInfo = table.getInnerHeader();
-    blossomIO.output.insert("header", headerInfo);
-    blossomIO.output.insert("body", table.getBody());
-    delete headerInfo;
+    blossomIO.output["header"] = table.getInnerHeader();
+    blossomIO.output["body"] = table.getBody();
 
     return true;
 }

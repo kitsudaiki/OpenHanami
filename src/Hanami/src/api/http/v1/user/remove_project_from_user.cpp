@@ -27,7 +27,6 @@
 
 #include <hanami_crypto/hashes.h>
 #include <hanami_common/methods/string_methods.h>
-#include <hanami_json/json_item.h>
 
 /**
  * @brief constructor
@@ -82,23 +81,23 @@ RemoveProjectFromUser::RemoveProjectFromUser()
  */
 bool
 RemoveProjectFromUser::runTask(BlossomIO &blossomIO,
-                               const Hanami::DataMap &context,
+                               const json &context,
                                BlossomStatus &status,
                                Hanami::ErrorContainer &error)
 {
     // check if admin
-    if(context.getBoolByKey("is_admin") == false)
+    if(context["is_admin"] == false)
     {
         status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
 
-    const std::string userId = blossomIO.input.get("id").getString();
-    const std::string projectId = blossomIO.input.get("project_id").getString();
-    const std::string creatorId = context.getStringByKey("id");
+    const std::string userId = blossomIO.input["id"];
+    const std::string projectId = blossomIO.input["project_id"];
+    const std::string creatorId = context["id"];
 
     // check if user already exist within the table
-    Hanami::JsonItem getResult;
+    json getResult;
     if(UsersTable::getInstance()->getUser(getResult, userId, error, false) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -116,12 +115,12 @@ RemoveProjectFromUser::runTask(BlossomIO &blossomIO,
 
     // check if project is assigned to user and remove it if found
     bool found = false;
-    Hanami::JsonItem parsedProjects = getResult.get("projects");
+    json parsedProjects = getResult["projects"];
     for(uint64_t i = 0; i < parsedProjects.size(); i++)
     {
-        if(parsedProjects.get(i).get("project_id").getString() == projectId)
+        if(parsedProjects[i]["project_id"] == projectId)
         {
-            parsedProjects.remove(i);
+            parsedProjects.erase(i);
             found = true;
             break;
         }
@@ -142,7 +141,7 @@ RemoveProjectFromUser::runTask(BlossomIO &blossomIO,
 
     // updated projects of user in database
     if(UsersTable::getInstance()->updateProjectsOfUser(userId,
-                                                       parsedProjects.toString(),
+                                                       parsedProjects.dump(),
                                                        error) == false)
     {
         error.addMeesage("Failed to update projects of user with id '"

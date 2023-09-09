@@ -36,14 +36,14 @@ ClusterDeleteTest::ClusterDeleteTest(const bool expectSuccess)
 }
 
 bool
-ClusterDeleteTest::runTest(Hanami::JsonItem &inputData,
+ClusterDeleteTest::runTest(json &inputData,
                            Hanami::ErrorContainer &error)
 {
     // delete cluster
     std::string result;
     if(Hanami::deleteCluster(result,
-                              inputData.get("cluster_uuid").getString(),
-                               error) != m_expectSuccess)
+                             inputData["cluster_uuid"],
+                             error) != m_expectSuccess)
     {
         return false;
     }
@@ -53,8 +53,10 @@ ClusterDeleteTest::runTest(Hanami::JsonItem &inputData,
     }
 
     // parse output
-    Hanami::JsonItem jsonItem;
-    if(jsonItem.parse(result, error) == false) {
+    json jsonItem = json::parse(result, nullptr, false);
+    if (jsonItem.is_discarded())
+    {
+        std::cerr << "parse error" << std::endl;
         return false;
     }
 

@@ -79,18 +79,18 @@ CreateTask::CreateTask()
  */
 bool
 CreateTask::runTask(BlossomIO &blossomIO,
-                              const Hanami::DataMap &context,
+                              const json &context,
                               BlossomStatus &status,
                               Hanami::ErrorContainer &error)
 {
-    const std::string name = blossomIO.input.get("name").getString();
-    const std::string clusterUuid = blossomIO.input.get("cluster_uuid").getString();
-    const std::string dataSetUuid = blossomIO.input.get("data_set_uuid").getString();
-    const std::string taskType = blossomIO.input.get("type").getString();
+    const std::string name = blossomIO.input["name"];
+    const std::string clusterUuid = blossomIO.input["cluster_uuid"];
+    const std::string dataSetUuid = blossomIO.input["data_set_uuid"];
+    const std::string taskType = blossomIO.input["type"];
     const UserContext userContext(context);
 
     // check if user exist within the table
-    Hanami::JsonItem getResult;
+    json getResult;
     if(ClusterTable::getInstance()->getCluster(getResult,
                                                clusterUuid,
                                                userContext,
@@ -120,7 +120,7 @@ CreateTask::runTask(BlossomIO &blossomIO,
     }
 
     // get meta-infos of data-set from shiori
-    Hanami::JsonItem dataSetInfo;
+    json dataSetInfo;
     if(DataSetTable::getInstance()->getDateSetInfo(dataSetInfo,
                                                    dataSetUuid,
                                                    context,
@@ -141,7 +141,7 @@ CreateTask::runTask(BlossomIO &blossomIO,
 
     // create task
     std::string taskUuid = "";
-    if(dataSetInfo.get("type").getString() == "mnist")
+    if(dataSetInfo["type"] == "mnist")
     {
         imageTask(taskUuid,
                   name,
@@ -152,7 +152,7 @@ CreateTask::runTask(BlossomIO &blossomIO,
                   status,
                   error);
     }
-    else if(dataSetInfo.get("type").getString() == "csv")
+    else if(dataSetInfo["type"] == "csv")
     {
         tableTask(taskUuid,
                   name,
@@ -166,7 +166,7 @@ CreateTask::runTask(BlossomIO &blossomIO,
     else
     {
         status.errorMessage = "Invalid dataset-type '"
-                              + dataSetInfo.get("type").getString()
+                              + std::string(dataSetInfo["type"])
                               + "' given for to create new task";
         status.statusCode = BAD_REQUEST_RTYPE;
         error.addMeesage(status.errorMessage);
@@ -174,8 +174,8 @@ CreateTask::runTask(BlossomIO &blossomIO,
     }
 
     // create output
-    blossomIO.output.insert("uuid", taskUuid);
-    blossomIO.output.insert("name", name);
+    blossomIO.output["uuid"] = taskUuid;
+    blossomIO.output["name"] = name;
 
     return true;
 }
@@ -200,12 +200,12 @@ CreateTask::imageTask(std::string &taskUuid,
                       const std::string &taskType,
                       const UserContext &userContext,
                       Cluster* cluster,
-                      Hanami::JsonItem &dataSetInfo,
+                      json &dataSetInfo,
                       BlossomStatus &status,
                       Hanami::ErrorContainer &error)
 {
     // get input-data
-    const std::string dataSetLocation = dataSetInfo.get("location").getString();
+    const std::string dataSetLocation = dataSetInfo["location"];
     Hanami::DataBuffer buffer;
     if(getDataSetPayload(buffer, dataSetLocation, error) == false)
     {
@@ -217,9 +217,9 @@ CreateTask::imageTask(std::string &taskUuid,
     }
 
     // get relevant information from output
-    const uint64_t numberOfInputs = dataSetInfo.get("inputs").getLong();
-    const uint64_t numberOfOutputs = dataSetInfo.get("outputs").getLong();
-    const uint64_t numberOfLines = dataSetInfo.get("lines").getLong();
+    const uint64_t numberOfInputs = dataSetInfo["inputs"];
+    const uint64_t numberOfOutputs = dataSetInfo["outputs"];
+    const uint64_t numberOfLines = dataSetInfo["lines"];
 
     if(taskType == "train")
     {
@@ -270,18 +270,18 @@ CreateTask::tableTask(std::string &taskUuid,
                       const std::string &taskType,
                       const UserContext &userContext,
                       Cluster* cluster,
-                      Hanami::JsonItem &dataSetInfo,
+                      json &dataSetInfo,
                       BlossomStatus &status,
                       Hanami::ErrorContainer &error)
 {
     // init request-task
     const uint64_t numberOfInputs = cluster->clusterHeader->inputValues.count;
     const uint64_t numberOfOutputs = cluster->clusterHeader->outputValues.count;
-    const uint64_t numberOfLines = dataSetInfo.get("lines").getLong();
+    const uint64_t numberOfLines = dataSetInfo["lines"];
 
     // get input-data
     const std::string inputColumnName = "input";
-    const std::string dataSetLocation = dataSetInfo.get("location").getString();
+    const std::string dataSetLocation = dataSetInfo["location"];
     Hanami::DataBuffer inputBuffer;
     if(getDataSetPayload(inputBuffer, dataSetLocation, error, inputColumnName) == false)
     {
@@ -323,7 +323,7 @@ CreateTask::tableTask(std::string &taskUuid,
         }
 
         // create task
-        const uint64_t numberOfLines = dataSetInfo.get("lines").getLong();
+        const uint64_t numberOfLines = dataSetInfo["lines"];
         taskUuid = addTableTrainTask(*cluster,
                                      name,
                                      userContext.userId,

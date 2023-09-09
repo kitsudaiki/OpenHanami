@@ -155,21 +155,21 @@ CpuPackage::toJsonString()
 
  * @return json-like item-tree with the information
  */
-DataMap*
+json
 CpuPackage::toJson()
 {
     // convert package-information
-    DataMap* result = new DataMap();
-    result->insert("id", new DataValue((long)packageId));
-    result->insert("thermal_spec", new DataValue(getThermalSpec()));
-    result->insert("power", new DataValue(getTotalPackagePower()));
+    json result = json::object();
+    result["id"] = (long)packageId;
+    result["thermal_spec"] = getThermalSpec();
+    result["power"] = getTotalPackagePower();
 
     // convert cores
-    DataArray* cores = new DataArray();
+    json cores = json::array();
     for(uint32_t i = 0; i < cpuCores.size(); i++) {
-        cores->append(cpuCores.at(i)->toJson());
+        cores.push_back(cpuCores.at(i)->toJson());
     }
-    result->insert("cores", cores);
+    result["cores"] = cores;
 
     return result;
 }

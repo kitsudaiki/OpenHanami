@@ -45,17 +45,17 @@ ImageTrainTaskTest::ImageTrainTaskTest(const bool expectSuccess)
 }
 
 bool
-ImageTrainTaskTest::runTest(Hanami::JsonItem &inputData,
+ImageTrainTaskTest::runTest(json &inputData,
                             Hanami::ErrorContainer &error)
 {
     // create new user
     std::string result;
     if(Hanami::createTask(result,
-                            inputData.get("generic_task_name").getString(),
-                            "train",
-                            inputData.get("cluster_uuid").getString(),
-                            inputData.get("train_dataset_uuid").getString(),
-                            error) != m_expectSuccess)
+                          inputData["generic_task_name"],
+                          "train",
+                          inputData["cluster_uuid"],
+                          inputData["train_dataset_uuid"],
+                          error) != m_expectSuccess)
     {
         return false;
     }
@@ -65,12 +65,14 @@ ImageTrainTaskTest::runTest(Hanami::JsonItem &inputData,
     }
 
     // parse output
-    Hanami::JsonItem jsonItem;
-    if(jsonItem.parse(result, error) == false) {
+    json jsonItem = json::parse(result, nullptr, false);
+    if (jsonItem.is_discarded())
+    {
+        std::cerr << "parse error" << std::endl;
         return false;
     }
 
-    inputData.insert("train_task_uuid", jsonItem.get("uuid").getString(), true);
+    inputData["train_task_uuid"] = jsonItem["uuid"];
 
     std::chrono::high_resolution_clock::time_point start;
     std::chrono::high_resolution_clock::time_point end;
@@ -83,17 +85,20 @@ ImageTrainTaskTest::runTest(Hanami::JsonItem &inputData,
         usleep(1000000);
 
         Hanami::getTask(result,
-                          inputData.get("train_task_uuid").getString(),
-                          inputData.get("cluster_uuid").getString(),
-                          error);
+                        inputData["train_task_uuid"],
+                        inputData["cluster_uuid"],
+                        error);
 
         // parse output
-        if(jsonItem.parse(result, error) == false) {
+        jsonItem = json::parse(result, nullptr, false);
+        if (jsonItem.is_discarded())
+        {
+            std::cerr << "parse error" << std::endl;
             return false;
         }
-        //std::cout<<jsonItem.toString(true)<<std::endl;
+        //std::cout<<jsonItem.dump(4)<<std::endl;
     }
-    while(jsonItem.get("state").getString() != "finished");
+    while(jsonItem["state"] != "finished");
     end = std::chrono::system_clock::now();
     const float time2 = std::chrono::duration_cast<chronoMilliSec>(end - start).count();
 

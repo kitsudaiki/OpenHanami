@@ -38,11 +38,11 @@ RequestResultGetTest::RequestResultGetTest(const bool expectSuccess,
 }
 
 bool
-RequestResultGetTest::runTest(Hanami::JsonItem &inputData,
+RequestResultGetTest::runTest(json &inputData,
                               Hanami::ErrorContainer &error)
 {
     if(m_uuid == "") {
-        m_uuid = inputData.get("request_task_uuid").getString();
+        m_uuid = inputData["request_task_uuid"];
     }
 
     // get user by name
@@ -56,8 +56,10 @@ RequestResultGetTest::runTest(Hanami::JsonItem &inputData,
     }
 
     // parse output
-    Hanami::JsonItem jsonItem;
-    if(jsonItem.parse(result, error) == false) {
+    json jsonItem = json::parse(result, nullptr, false);
+    if (jsonItem.is_discarded())
+    {
+        std::cerr << "parse error" << std::endl;
         return false;
     }
 

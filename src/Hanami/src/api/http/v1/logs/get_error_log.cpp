@@ -48,14 +48,17 @@ GetErrorLog::GetErrorLog()
     // output
     //----------------------------------------------------------------------------------------------
 
+    json headerMatch = json::array();
+    headerMatch.push_back("timestamp");
+    headerMatch.push_back("user_id");
+    headerMatch.push_back("component");
+    headerMatch.push_back("context");
+    headerMatch.push_back("input_values");
+    headerMatch.push_back("message");
+
     registerOutputField("header", SAKURA_ARRAY_TYPE)
             .setComment("Array with the namings all columns of the table.")
-            .setMatch(new Hanami::DataValue("[\"timestamp\","
-                                                 "\"user_id\","
-                                                 "\"component\","
-                                                 "\"context\","
-                                                 "\"input_values\","
-                                                 "\"message\"]"));
+            .setMatch(headerMatch);
 
     registerOutputField("body", SAKURA_ARRAY_TYPE)
             .setComment("Array with all rows of the table, which array arrays too.");
@@ -70,12 +73,12 @@ GetErrorLog::GetErrorLog()
  */
 bool
 GetErrorLog::runTask(BlossomIO &blossomIO,
-                     const Hanami::DataMap &context,
+                     const json &context,
                      BlossomStatus &status,
                      Hanami::ErrorContainer &error)
 {
     const UserContext userContext(context);
-    const uint64_t page = blossomIO.input.get("page").getLong();
+    const uint64_t page = blossomIO.input["page"];
 
     // check that the user is an admin
     if(userContext.isAdmin == false)
@@ -85,7 +88,7 @@ GetErrorLog::runTask(BlossomIO &blossomIO,
         return false;
     }
 
-    const std::string userId = blossomIO.input.get("user_id").getString();
+    const std::string userId = blossomIO.input["user_id"];
 
     // get data from table
     Hanami::TableItem table;
@@ -96,10 +99,8 @@ GetErrorLog::runTask(BlossomIO &blossomIO,
     }
 
     // create output
-    Hanami::DataArray* headerInfo = table.getInnerHeader();
-    blossomIO.output.insert("header", headerInfo);
-    blossomIO.output.insert("body", table.getBody());
-    delete headerInfo;
+    blossomIO.output["header"] = table.getInnerHeader();
+    blossomIO.output["body"] = table.getBody();
 
     return true;
 }

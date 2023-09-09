@@ -26,7 +26,6 @@
 #include <string>
 #include <vector>
 
-#include <hanami_common/items/data_items.h>
 #include <api/endpoint_processing/blossom.h>
 
 //==================================================================================================
@@ -54,7 +53,7 @@ struct ValueItem
         COMPARE_UNEQUAL_PAIR_TYPE = 4,
     };
 
-    Hanami::DataItem* item = nullptr;
+    json item = nullptr;
     ValueType type = INPUT_PAIR_TYPE;
     bool isIdentifier = false;
     std::string comment = "";
@@ -65,16 +64,7 @@ struct ValueItem
 
     ValueItem(const ValueItem &other)
     {
-        if(item != nullptr) {
-            delete item;
-        }
-
-        if(other.item != nullptr) {
-            item = other.item->copy();
-        } else {
-            item = nullptr;
-        }
-
+        item = other.item;
         type = other.type;
         isIdentifier = other.isIdentifier;
         functions = other.functions;
@@ -82,27 +72,13 @@ struct ValueItem
         comment = other.comment;
     }
 
-    ~ValueItem()
-    {
-        if(item != nullptr) {
-            delete item;
-        }
-    }
+    ~ValueItem() {}
 
     ValueItem &operator=(const ValueItem &other)
     {
         if(this != &other)
         {
-            if(this->item != nullptr) {
-                delete this->item;
-            }
-
-            if(other.item != nullptr) {
-                this->item = other.item->copy();
-            } else {
-                this->item = nullptr;
-            }
-
+            this->item = other.item;
             this->type = other.type;
             this->isIdentifier = other.isIdentifier;
             this->functions = other.functions;

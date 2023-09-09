@@ -17,13 +17,6 @@
 
 #include <hanami_sqlite/sqlite.h>
 #include <hanami_common/items/table_item.h>
-#include <hanami_common/items/data_items.h>
-#include <hanami_json/json_item.h>
-
-using Hanami::DataItem;
-using Hanami::DataMap;
-using Hanami::DataArray;
-using Hanami::DataValue;
 
 namespace Hanami
 {
@@ -104,7 +97,7 @@ callback(void* data,
     const std::regex floatVal("^-?([0-9]+)\\.([0-9]+)$");
 
     // collect row-data
-    DataArray* row = new DataArray();
+    json row = json::array();
     for(int i = 0; i < argc; i++)
     {
         if(argv[i])
@@ -116,58 +109,58 @@ callback(void* data,
                     || value == "true"
                     || value == "TRUE")
             {
-                row->append(new DataValue(true));
+                row.push_back(true);
             }
             // false
             else if(value == "False"
                     || value == "false"
                     || value == "FALSE")
             {
-                row->append(new DataValue(false));
+                row.push_back(false);
             }
             // int/long
             else if(regex_match(value, intVal))
             {
                 const long longVal = std::strtol(value.c_str(), NULL, 10);
-                row->append(new DataValue(longVal));
+                row.push_back(longVal);
             }
             // float/double
             else if(regex_match(value, floatVal))
             {
                 const double doubleVal = std::strtod(value.c_str(), NULL);
-                row->append(new DataValue(doubleVal));
+                row.push_back(doubleVal);
             }
             // json-map
             else if(value.size() > 0
                     && value.at(0) == '{')
             {
-                Hanami::JsonItem json;
-                if(json.parse(value, error) == false) {
-                    row->append(new DataValue(value));
+                json newJson = json::parse(value, nullptr, false);
+                if(newJson.is_discarded()) {
+                    row.push_back(value);
+                } else {
+                    row.push_back(newJson);
                 }
-
-                row->append(json.stealItemContent());
             }
             // json-array
             else if(value.size() > 0
                     && value.at(0) == '[')
             {
-                Hanami::JsonItem json;
-                if(json.parse(value, error) == false) {
-                    row->append(new DataValue(value));
+                json newJson = json::parse(value, nullptr, false);
+                if(newJson.is_discarded()) {
+                    row.push_back(value);
+                } else {
+                    row.push_back(newJson);
                 }
-
-                row->append(json.stealItemContent());
             }
             // string
             else
             {
-                row->append(new DataValue(value));
+                row.push_back(value);
             }
         }
         else
         {
-            row->append(new DataValue("NULL"));
+            row.push_back("NULL");
         }
     }
 

@@ -26,10 +26,6 @@
 #include <hanami_common/logger.h>
 #include <database/generic_tables/hanami_sql_log_table.h>
 
-namespace Hanami {
-class JsonItem;
-}
-
 class AuditLogTable
         : public HanamiSqlLogTable
 {

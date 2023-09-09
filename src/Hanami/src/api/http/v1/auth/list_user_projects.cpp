@@ -27,7 +27,6 @@
 
 #include <hanami_common/methods/string_methods.h>
 #include <hanami_crypto/hashes.h>
-#include <hanami_json/json_item.h>
 
 /**
  * @brief constructor
@@ -64,12 +63,12 @@ ListUserProjects::ListUserProjects()
  */
 bool
 ListUserProjects::runTask(BlossomIO &blossomIO,
-                          const Hanami::DataMap &context,
+                          const json &context,
                           BlossomStatus &status,
                           Hanami::ErrorContainer &error)
 {
     const UserContext userContext(context);
-    std::string userId = blossomIO.input.get("user_id").getString();
+    std::string userId = blossomIO.input["user_id"];
 
     // only admin is allowed to request the project-list of other users
     if(userId != ""
@@ -85,7 +84,7 @@ ListUserProjects::runTask(BlossomIO &blossomIO,
     }
 
     // get data from table
-    Hanami::JsonItem userData;
+    json userData;
     if(UsersTable::getInstance()->getUser(userData, userId, error, false) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -102,17 +101,17 @@ ListUserProjects::runTask(BlossomIO &blossomIO,
     }
 
     // if user is global admin, add the admin-project to the list of choosable projects
-    const bool isAdmin = userData.get("is_admin").getBool();
+    const bool isAdmin = userData["is_admin"];
     if(isAdmin)
     {
-        Hanami::DataMap* adminProject = new Hanami::DataMap();
-        adminProject->insert("project_id", new Hanami::DataValue("admin"));
-        adminProject->insert("role", new Hanami::DataValue("admin"));
-        adminProject->insert("is_project_admin", new Hanami::DataValue(true));
-        userData.get("projects").append(adminProject);
+        json adminProject = json::object();
+        adminProject["project_id"] = "admin";
+        adminProject["role"] = "admin";
+        adminProject["is_project_admin"] = true;
+        userData["projects"] = adminProject;
     }
 
-    blossomIO.output.insert("projects", userData.get("projects").stealItemContent());
+    blossomIO.output["projects"] = userData["projects"];
 
     return true;
 }

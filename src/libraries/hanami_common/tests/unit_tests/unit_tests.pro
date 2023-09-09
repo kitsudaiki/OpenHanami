@@ -7,6 +7,7 @@ CONFIG += c++17 console
 
 LIBS += -L../../src -lhanami_common
 INCLUDEPATH += $$PWD
+INCLUDEPATH += ../../../../third-party-libs/json/include
 
 HEADERS += \
     hanami_common/methods/file_methods_test.h \
@@ -19,10 +20,7 @@ HEADERS += \
     hanami_common/statemachine_test.h \
     hanami_common/methods/string_methods_test.h \
     hanami_common/methods/vector_methods_test.h \
-    hanami_common/items/data_items_DataArray_test.h \
-    hanami_common/items/data_items_DataValue_test.h \
     hanami_common/items/table_item_test.h \
-    hanami_common/items/data_items_DataMap_test.h \
     hanami_common/buffer/data_buffer_test.h \
     hanami_common/buffer/ring_buffer_test.h \
     hanami_common/buffer/stack_buffer_reserve_test.h \
@@ -43,10 +41,7 @@ SOURCES += \
     hanami_common/statemachine_test.cpp \
     hanami_common/methods/string_methods_test.cpp \
     hanami_common/methods/vector_methods_test.cpp \
-    hanami_common/items/data_items_DataArray_test.cpp \
-    hanami_common/items/data_items_DataValue_test.cpp \
     hanami_common/items/table_item_test.cpp \
-    hanami_common/items/data_items_DataMap_test.cpp \
     hanami_common/buffer/data_buffer_test.cpp \
     hanami_common/buffer/ring_buffer_test.cpp \
     hanami_common/buffer/stack_buffer_reserve_test.cpp \

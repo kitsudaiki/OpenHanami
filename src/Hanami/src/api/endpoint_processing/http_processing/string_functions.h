@@ -25,11 +25,10 @@
 
 #include <string>
 #include <regex>
-#include <common/structs.h>
+#include <common.h>
 
 #include <hanami_common/logger.h>
 #include <hanami_common/methods/string_methods.h>
-#include <hanami_json/json_item.h>
 
 /**
  * @brief precheck path
@@ -69,7 +68,7 @@ parseUri(const std::string &token,
          Hanami::ErrorContainer &error)
 {
     // first split of uri
-    Hanami::JsonItem parsedInputValues;
+    json parsedInputValues;
     std::vector<std::string> parts;
     Hanami::splitStringByDelimiter(parts, uri, '?');
 
@@ -85,7 +84,8 @@ parseUri(const std::string &token,
         return false;
     }
 
-    if(parsedInputValues.parse(request.inputValues, error) == false)
+    parsedInputValues = json::parse(request.inputValues, nullptr, false);
+    if(parsedInputValues.is_discarded())
     {
         error.addMeesage("Failed to parse input-values.");
         return false;
@@ -108,19 +108,19 @@ parseUri(const std::string &token,
 
             // convert result if number and add to resulting map
             if(regex_match(val, std::regex(INT_VALUE_REGEX))) {
-                parsedInputValues.insert(key, std::stoi(val.c_str(), NULL), true);
+                parsedInputValues[key] = std::stoi(val.c_str(), NULL);
             } else if(regex_match(val, std::regex(FLOAT_VALUE_REGEX))) {
-                parsedInputValues.insert(key, std::strtof(val.c_str(), NULL), true);
+                parsedInputValues[key] = std::strtof(val.c_str(), NULL);
             } else {
-                parsedInputValues.insert(key, val, true);
+                parsedInputValues[key] = val;
             }
         }
     }
 
     // add token to list of normal values
-    parsedInputValues.insert("token", token);
+    parsedInputValues["token"] = token;
 
-    request.inputValues = parsedInputValues.toString();
+    request.inputValues = parsedInputValues.dump();
 
     return true;
 }

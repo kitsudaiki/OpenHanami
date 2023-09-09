@@ -24,7 +24,7 @@
 #define HANAMI_SAVECLUSTERSTATE_H
 
 #include <hanami_common/threading/event.h>
-#include <hanami_json/json_item.h>
+#include <hanami_common/logger.h>
 
 class Cluster;
 

@@ -44,14 +44,17 @@ ListTask::ListTask()
     // output
     //----------------------------------------------------------------------------------------------
 
+    json headerMatch = json::array();
+    headerMatch.push_back("uuid");
+    headerMatch.push_back("state");
+    headerMatch.push_back("percentage");
+    headerMatch.push_back("queued");
+    headerMatch.push_back("start");
+    headerMatch.push_back("end");
+
     registerOutputField("header", SAKURA_ARRAY_TYPE)
             .setComment("Array with the namings all columns of the table.")
-            .setMatch(new Hanami::DataValue("[\"uuid\","
-                                                 "\"state\","
-                                                 "\"percentage\","
-                                                 "\"queued\","
-                                                 "\"start\","
-                                                 "\"end\"]"));
+            .setMatch(headerMatch);
 
     registerOutputField("body", SAKURA_ARRAY_TYPE)
             .setComment("Array with all rows of the table, which array arrays too.");
@@ -66,15 +69,15 @@ ListTask::ListTask()
  */
 bool
 ListTask::runTask(BlossomIO &blossomIO,
-                  const Hanami::DataMap &context,
+                  const json &context,
                   BlossomStatus &status,
                   Hanami::ErrorContainer &error)
 {
     const UserContext userContext(context);
-    const std::string clusterUuid = blossomIO.input.get("cluster_uuid").getString();
+    const std::string clusterUuid = blossomIO.input["cluster_uuid"];
 
     // check if user exist within the table
-    Hanami::JsonItem getResult;
+    json getResult;
     if(ClusterTable::getInstance()->getCluster(getResult,
                                                clusterUuid,
                                                userContext,
@@ -166,10 +169,8 @@ ListTask::runTask(BlossomIO &blossomIO,
     }
 
     // create output
-    Hanami::DataArray* headerInfo = result.getInnerHeader();
-    blossomIO.output.insert("header", headerInfo);
-    blossomIO.output.insert("body", result.getBody());
-    delete headerInfo;
+    blossomIO.output["header"] = result.getInnerHeader();
+    blossomIO.output["body"] = result.getBody();
 
     return true;
 }

@@ -24,7 +24,6 @@
 #include <hanami_database/sql_database.h>
 
 #include <hanami_common/methods/string_methods.h>
-#include <hanami_json/json_item.h>
 
 namespace Hanami
 {
@@ -127,7 +126,7 @@ SqlTable::createDocumentation(std::string &docu)
  * @return uuid of the new entry, if successful, else empty string
  */
 bool
-SqlTable::insertToDb(JsonItem &values,
+SqlTable::insertToDb(json &values,
                      ErrorContainer &error)
 {
     Hanami::TableItem resultItem;
@@ -145,7 +144,11 @@ SqlTable::insertToDb(JsonItem &values,
             LOG_ERROR(error);
             return false;
         }
-        dbValues.push_back(values.get(entry.name).toString());
+        if(values[entry.name].is_string()) {
+            dbValues.push_back(values[entry.name]);
+        } else {
+            dbValues.push_back(values[entry.name].dump());
+        }
     }
 
     // build and run insert-command
@@ -169,7 +172,7 @@ SqlTable::insertToDb(JsonItem &values,
  */
 bool
 SqlTable::updateInDb(const std::vector<RequestCondition> &conditions,
-                     const JsonItem &updates,
+                     const json &updates,
                      ErrorContainer &error)
 {
     // precheck
@@ -302,7 +305,7 @@ SqlTable::getFromDb(TableItem &resultTable,
  * @return true, if successful, else false
  */
 bool
-SqlTable::getFromDb(JsonItem &result,
+SqlTable::getFromDb(json &result,
                     const std::vector<RequestCondition> &conditions,
                     ErrorContainer &error,
                     const bool showHiddenValues,
@@ -342,7 +345,7 @@ SqlTable::getFromDb(JsonItem &result,
         for(const DbHeaderEntry &entry : m_tableHeader)
         {
             if(entry.hide) {
-                result.remove(entry.name);
+                result.erase(entry.name);
             }
         }
     }
@@ -365,7 +368,7 @@ SqlTable::getNumberOfRows(ErrorContainer &error)
         return -1;
     }
 
-    return resultItem.getBody()->get(0)->get(0)->toValue()->getLong();
+    return resultItem.getBody()[0][0];
 }
 
 /**
@@ -528,22 +531,28 @@ SqlTable::createSelectQuery(const std::vector<RequestCondition> &conditions,
  */
 const std::string
 SqlTable::createUpdateQuery(const std::vector<RequestCondition> &conditions,
-                            const JsonItem &updates)
+                            const json &updates)
 {
     std::string command  = "UPDATE ";
     command.append(m_tableName);
 
     // add set-section
     command.append(" SET ");
-    const std::vector<std::string> keys = updates.getKeys();
+    std::vector<std::string> keys;
+    for(const auto& [key, _] : updates.items()) {
+        keys.push_back(key);
+    }
     for(uint32_t i = 0; i < keys.size(); i++)
     {
         if(i > 0) {
             command.append(" , ");
         }
         command.append(keys.at(i));
-        JsonItem val = updates.get(keys.at(i));
-        command.append("='" + val.toString() + "' ");
+        if(updates[keys.at(i)].is_string()) {
+            command.append("='" + std::string(updates[keys.at(i)]) + "' ");
+        } else {
+            command.append("='" + updates[keys.at(i)].dump() + "' ");
+        }
     }
 
     // add where-section
@@ -666,7 +675,7 @@ SqlTable::createCountQuery()
  * @param tableContent table-input with at least one row
  */
 void
-SqlTable::processGetResult(JsonItem &result,
+SqlTable::processGetResult(json &result,
                            TableItem &tableContent)
 {
     if(tableContent.getNumberOfRows() == 0) {
@@ -674,10 +683,10 @@ SqlTable::processGetResult(JsonItem &result,
     }
 
     // prepare result
-    const Hanami::DataItem* firstRow = tableContent.getBody()->get(0);
+    const json firstRow = tableContent.getBody()[0];
 
     for(uint32_t i = 0; i < m_tableHeader.size(); i++) {
-        result.insert(m_tableHeader.at(i).name, firstRow->get(i));
+        result[m_tableHeader.at(i).name] = firstRow[i];
     }
 }
 

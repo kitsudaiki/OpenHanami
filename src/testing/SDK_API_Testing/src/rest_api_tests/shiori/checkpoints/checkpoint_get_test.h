@@ -32,7 +32,7 @@ public:
     CheckpointGetTest(const bool expectSuccess,
                     const std::string &uuidOverride = "");
 
-    bool runTest(Hanami::JsonItem &inputData,
+    bool runTest(json &inputData,
                  Hanami::ErrorContainer &error);
 
 private:

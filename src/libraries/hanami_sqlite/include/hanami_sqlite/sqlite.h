@@ -23,7 +23,11 @@
 #include <vector>
 #include <regex>
 #include <sqlite3.h>
+#include <nlohmann/json.hpp>
+
 #include <hanami_common/logger.h>
+
+using json = nlohmann::json;
 
 namespace Hanami
 {

@@ -27,7 +27,6 @@
 
 #include <hanami_crypto/hashes.h>
 #include <hanami_common/methods/string_methods.h>
-#include <hanami_json/json_item.h>
 
 /**
  * @brief constructor
@@ -61,7 +60,7 @@ AddProjectToUser::AddProjectToUser()
     registerInputField("is_project_admin", SAKURA_BOOL_TYPE)
             .setComment("Set this to true, if the user should be an admin "
                         "within the assigned project.")
-            .setDefault(new Hanami::DataValue(false));
+            .setDefault(false);
 
     //----------------------------------------------------------------------------------------------
     // output
@@ -93,25 +92,25 @@ AddProjectToUser::AddProjectToUser()
  */
 bool
 AddProjectToUser::runTask(BlossomIO &blossomIO,
-                          const Hanami::DataMap &context,
+                          const json &context,
                           BlossomStatus &status,
                           Hanami::ErrorContainer &error)
 {
     // check if admin
-    if(context.getBoolByKey("is_admin") == false)
+    if(context["is_admin"] == false)
     {
         status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
 
-    const std::string userId = blossomIO.input.get("id").getString();
-    const std::string projectId = blossomIO.input.get("project_id").getString();
-    const std::string role = blossomIO.input.get("role").getString();
-    const bool isProjectAdmin = blossomIO.input.get("is_project_admin").getBool();
-    const std::string creatorId = context.getStringByKey("id");
+    const std::string userId = blossomIO.input["id"];
+    const std::string projectId = blossomIO.input["project_id"];
+    const std::string role = blossomIO.input["role"];
+    const bool isProjectAdmin = blossomIO.input["is_project_admin"];
+    const std::string creatorId = context["id"];
 
     // check if user already exist within the table
-    Hanami::JsonItem getResult;
+    json getResult;
     if(UsersTable::getInstance()->getUser(getResult, userId, error, false) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -128,10 +127,10 @@ AddProjectToUser::runTask(BlossomIO &blossomIO,
     }
 
     // check if project is already assigned to user
-    Hanami::JsonItem parsedProjects = getResult.get("projects");
+    json parsedProjects = getResult["projects"];
     for(uint64_t i = 0; i < parsedProjects.size(); i++)
     {
-        if(parsedProjects.get(i).get("project_id").getString() == projectId)
+        if(parsedProjects[i]["project_id"] == projectId)
         {
             status.errorMessage = "Project with ID '"
                                   + projectId
@@ -145,15 +144,15 @@ AddProjectToUser::runTask(BlossomIO &blossomIO,
     }
 
     // create new entry
-    Hanami::JsonItem newEntry;
-    newEntry.insert("project_id", projectId);
-    newEntry.insert("role", role);
-    newEntry.insert("is_project_admin", isProjectAdmin);
-    parsedProjects.append(newEntry);
+    json newEntry;
+    newEntry["project_id"] = projectId;
+    newEntry["role"] = role;
+    newEntry["is_project_admin"] = isProjectAdmin;
+    parsedProjects.push_back(newEntry);
 
     // updated projects of user in database
     if(UsersTable::getInstance()->updateProjectsOfUser(userId,
-                                                       parsedProjects.toString(),
+                                                       parsedProjects.dump(),
                                                        error) == false)
     {
         error.addMeesage("Failed to update projects of user with id '" + userId + "'.");

@@ -29,7 +29,6 @@
 #include <hanami_files/data_set_files/data_set_file.h>
 #include <hanami_files/data_set_files/image_data_set_file.h>
 
-#include <hanami_json/json_item.h>
 #include <hanami_common/methods/file_methods.h>
 #include <hanami_common/buffer/data_buffer.h>
 #include <hanami_common/files/text_file.h>
@@ -70,18 +69,18 @@ CheckDataSet::CheckDataSet()
  */
 bool
 CheckDataSet::runTask(BlossomIO &blossomIO,
-                      const Hanami::DataMap &context,
+                      const json &context,
                       BlossomStatus &status,
                       Hanami::ErrorContainer &error)
 {
-    const std::string resultUuid = blossomIO.input.get("result_uuid").getString();
-    const std::string dataUuid = blossomIO.input.get("data_set_uuid").getString();
+    const std::string resultUuid = blossomIO.input["result_uuid"];
+    const std::string dataUuid = blossomIO.input["data_set_uuid"];
     const UserContext userContext(context);
 
     // get result
     // check if request-result exist within the table
-    Hanami::JsonItem result;
-    if(RequestResultTable::getInstance()->getRequestResult(result,
+    json requestResult;
+    if(RequestResultTable::getInstance()->getRequestResult(requestResult,
                                                            resultUuid,
                                                            userContext,
                                                            error,
@@ -92,7 +91,7 @@ CheckDataSet::runTask(BlossomIO &blossomIO,
     }
 
     // handle not found
-    if(result.size() == 0)
+    if(requestResult.size() == 0)
     {
         status.errorMessage = "Result with uuid '" + resultUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
@@ -101,7 +100,8 @@ CheckDataSet::runTask(BlossomIO &blossomIO,
     }
 
     // get data-info from database
-    if(DataSetTable::getInstance()->getDataSet(blossomIO.output,
+    json dbOutput;
+    if(DataSetTable::getInstance()->getDataSet(dbOutput,
                                                dataUuid,
                                                userContext,
                                                error,
@@ -112,7 +112,7 @@ CheckDataSet::runTask(BlossomIO &blossomIO,
     }
 
     // get file information
-    const std::string location = blossomIO.output.get("location").getString();
+    const std::string location = dbOutput["location"];
 
     Hanami::DataBuffer buffer;
     DataSetFile::DataSetHeader dataSetHeader;
@@ -140,21 +140,20 @@ CheckDataSet::runTask(BlossomIO &blossomIO,
     const float* content = reinterpret_cast<const float*>(&u8Data[dataPos]);
 
     // iterate over all values and check
-    Hanami::DataArray* compareData = result.get("data").getItemContent()->toArray();
-    for(uint64_t i = 0; i < compareData->size(); i++)
+    json compareData = requestResult["data"];
+    for(uint64_t i = 0; i < compareData.size(); i++)
     {
         const uint64_t actualPos = (i * lineSize) + lineOffset;
-        const uint64_t checkVal = compareData->get(i)->toValue()->getInt();
+        const uint64_t checkVal = compareData[i];
         if(content[actualPos + checkVal] > 0.0f) {
             correctValues++;
         }
     }
 
     // add result to output
-    const float correctness = (100.0f / static_cast<float>(compareData->size()))
+    const float correctness = (100.0f / static_cast<float>(compareData.size()))
                               * static_cast<float>(correctValues);
-    blossomIO.output.deleteContent();
-    blossomIO.output.insert("correctness", correctness);
+    blossomIO.output["correctness"] = correctness;
 
     return true;
 }

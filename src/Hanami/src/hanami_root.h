@@ -60,11 +60,11 @@ public:
     bool initThreads();
 
     // blossoms
-    bool triggerBlossom(Hanami::DataMap& result,
+    bool triggerBlossom(json& result,
                         const std::string &blossomName,
                         const std::string &blossomGroupName,
-                        const Hanami::DataMap &context,
-                        const Hanami::DataMap &initialValues,
+                        const json &context,
+                        const json &initialValues,
                         BlossomStatus &status,
                         Hanami::ErrorContainer &error);
     bool doesBlossomExist(const std::string &groupName,

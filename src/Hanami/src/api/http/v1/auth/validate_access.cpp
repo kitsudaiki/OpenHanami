@@ -22,15 +22,12 @@
 
 #include "validate_access.h"
 
-#include <hanami_common/items/data_items.h>
 #include <hanami_common/methods/string_methods.h>
-#include <hanami_json/json_item.h>
-
 #include <hanami_policies/policy.h>
 #include <hanami_root.h>
 
 #include <jwt-cpp/jwt.h>
-//#include <jwt-cpp/traits/nlohmann-json/defaults.h>
+// #include <jwt-cpp/traits/nlohmann-json/defaults.h>
 
 using Hanami::HttpRequestType;
 
@@ -103,14 +100,14 @@ ValidateAccess::ValidateAccess()
  */
 bool
 ValidateAccess::runTask(BlossomIO &blossomIO,
-                        const Hanami::DataMap &,
+                        const json &,
                         BlossomStatus &status,
                         Hanami::ErrorContainer &error)
 {
     // collect information from the input
-    const std::string token = blossomIO.input.get("token").getString();
-    const std::string component = blossomIO.input.get("component").getString();
-    const std::string endpoint = blossomIO.input.get("endpoint").getString();
+    const std::string token = blossomIO.input["token"];
+    const std::string component = blossomIO.input["component"];
+    const std::string endpoint = blossomIO.input["endpoint"];
 
     try
     {
@@ -121,8 +118,14 @@ ValidateAccess::runTask(BlossomIO &blossomIO,
         verifier.verify(decodedToken);
 
         // copy data of token into the output
-        for (const auto& e : decodedToken.get_payload_json()) {
-            blossomIO.output.parse(e.second.to_str(), error);
+        for(const auto& payload : decodedToken.get_payload_json())
+        {
+            json j = json::parse(payload.second.to_str(), nullptr, false);
+            if (j.is_discarded())
+            {
+                error.addMeesage("Error while parsing decoded token");
+                return false;
+            }
         }
     }
     catch (const std::exception& ex)
@@ -144,11 +147,11 @@ ValidateAccess::runTask(BlossomIO &blossomIO,
             return false;
         }
 
-        const uint32_t httpTypeValue = blossomIO.input.get("http_type").getInt();
+        const uint32_t httpTypeValue = blossomIO.input["http_type"];
         const HttpRequestType httpType = static_cast<HttpRequestType>(httpTypeValue);
 
         // check policy
-        const std::string role = blossomIO.output.get("role").getString();
+        const std::string role = blossomIO.output["role"];
         if(Policy::getInstance()->checkUserAgainstPolicy(endpoint, httpType, role) == false)
         {
             status.errorMessage = "Access denied by policy";
@@ -159,11 +162,11 @@ ValidateAccess::runTask(BlossomIO &blossomIO,
     }
 
     // remove irrelevant fields
-    blossomIO.output.remove("pw_hash");
-    blossomIO.output.remove("creator_id");
-    blossomIO.output.remove("exp");
-    blossomIO.output.remove("iat");
-    blossomIO.output.remove("nbf");
+    blossomIO.output.erase("pw_hash");
+    blossomIO.output.erase("creator_id");
+    blossomIO.output.erase("exp");
+    blossomIO.output.erase("iat");
+    blossomIO.output.erase("nbf");
 
     return true;
 }

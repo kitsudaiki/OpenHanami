@@ -72,13 +72,13 @@ SetClusterMode::SetClusterMode()
  */
 bool
 SetClusterMode::runTask(BlossomIO &blossomIO,
-                        const Hanami::DataMap &context,
+                        const json &context,
                         BlossomStatus &status,
                         Hanami::ErrorContainer &error)
 {
-    const std::string clusterUuid = blossomIO.input.get("uuid").getString();
-    const std::string connectionUuid = blossomIO.input.get("connection_uuid").getString();
-    const std::string newState = blossomIO.input.get("new_state").getString();
+    const std::string clusterUuid = blossomIO.input["uuid"];
+    //const std::string connectionUuid = blossomIO.input["connection_uuid"];
+    const std::string newState = blossomIO.input["new_state"];
     const UserContext userContext(context);
 
     // get data from table
@@ -146,12 +146,12 @@ SetClusterMode::runTask(BlossomIO &blossomIO,
         //
     }
 
-    blossomIO.output.insert("new_state", newState);
+    blossomIO.output["new_state"] = newState;
 
     // remove irrelevant fields
-    blossomIO.output.remove("owner_id");
-    blossomIO.output.remove("project_id");
-    blossomIO.output.remove("visibility");
+    blossomIO.output.erase("owner_id");
+    blossomIO.output.erase("project_id");
+    blossomIO.output.erase("visibility");
 
     return true;
 }

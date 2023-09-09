@@ -28,7 +28,6 @@
 
 #include <hanami_crypto/common.h>
 #include <hanami_config/config_handler.h>
-#include <hanami_json/json_item.h>
 #include <hanami_common/files/binary_file.h>
 
 CreateCheckpoint::CreateCheckpoint()
@@ -90,15 +89,15 @@ CreateCheckpoint::CreateCheckpoint()
  */
 bool
 CreateCheckpoint::runTask(BlossomIO &blossomIO,
-                          const Hanami::DataMap &,
+                          const json &,
                           BlossomStatus &status,
                           Hanami::ErrorContainer &error)
 {
-    const std::string uuid = blossomIO.input.get("uuid").getString();
-    const std::string name = blossomIO.input.get("name").getString();
-    const std::string userId = blossomIO.input.get("id").getString();
-    const std::string projectId = blossomIO.input.get("project_id").getString();
-    const long inputDataSize = blossomIO.input.get("input_data_size").getLong();
+    const std::string uuid = blossomIO.input["uuid"];
+    const std::string name = blossomIO.input["name"];
+    const std::string userId = blossomIO.input["id"];
+    const std::string projectId = blossomIO.input["project_id"];
+    const long inputDataSize = blossomIO.input["input_data_size"];
 
     // checkpoints are created by another internal process, which gives the id's not in the context
     // object, but as normal values
@@ -132,18 +131,18 @@ CreateCheckpoint::runTask(BlossomIO &blossomIO,
     targetFilePath.append(uuid + "_checkpoint_" + userId);
 
     // register in database
-    blossomIO.output.insert("uuid", uuid);
-    blossomIO.output.insert("name", name);
-    blossomIO.output.insert("location", targetFilePath);
-    blossomIO.output.insert("header", blossomIO.input.get("header"));
-    blossomIO.output.insert("project_id", projectId);
-    blossomIO.output.insert("owner_id", userId);
-    blossomIO.output.insert("visibility", "private");
+    blossomIO.output["uuid"] = uuid;
+    blossomIO.output["name"] = name;
+    blossomIO.output["location"] = targetFilePath;
+    blossomIO.output["header"] = blossomIO.input["header"];
+    blossomIO.output["project_id"] = projectId;
+    blossomIO.output["owner_id"] = userId;
+    blossomIO.output["visibility"] = "private";
 
     // init placeholder for temp-file progress to database
-    Hanami::JsonItem tempFiles;
-    tempFiles.insert(tempFileUuid, Hanami::JsonItem(0.0f));
-    blossomIO.output.insert("temp_files", tempFiles);
+    json tempFiles;
+    tempFiles[tempFileUuid] = json(0.0f);
+    blossomIO.output["temp_files"] = tempFiles;
 
     // add to database
     if(CheckpointTable::getInstance()->addCheckpoint(blossomIO.output,
@@ -155,15 +154,15 @@ CreateCheckpoint::runTask(BlossomIO &blossomIO,
     }
 
     // add values to output
-    blossomIO.output.insert("uuid_input_file", tempFileUuid);
+    blossomIO.output["uuid_input_file"] = tempFileUuid;
 
     // remove blocked values from output
-    blossomIO.output.remove("location");
-    blossomIO.output.remove("header");
-    blossomIO.output.remove("project_id");
-    blossomIO.output.remove("owner_id");
-    blossomIO.output.remove("visibility");
-    blossomIO.output.remove("temp_files");
+    blossomIO.output.erase("location");
+    blossomIO.output.erase("header");
+    blossomIO.output.erase("project_id");
+    blossomIO.output.erase("owner_id");
+    blossomIO.output.erase("visibility");
+    blossomIO.output.erase("temp_files");
 
     return true;
 }

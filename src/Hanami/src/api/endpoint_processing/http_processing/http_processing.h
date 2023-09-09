@@ -36,8 +36,7 @@
 #include <memory>
 #include <string>
 #include <filesystem>
-#include <common/structs.h>
-#include <common/enums.h>
+#include <common.h>
 
 #include <hanami_policies/policy.h>
 #include <hanami_common/logger.h>
@@ -49,10 +48,6 @@ using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 namespace websocket = beast::websocket; // from <boost/beast/websocket.hpp>
 namespace ssl = boost::asio::ssl;       // from <boost/asio/ssl.hpp>
 
-namespace Hanami {
-class JsonItem;
-}
-
 bool processRequest(http::request<http::string_body> &httpRequest,
                     http::response<http::dynamic_body> &httpResponse,
                     Hanami::ErrorContainer &error);
@@ -60,7 +55,7 @@ bool processRequest(http::request<http::string_body> &httpRequest,
 bool requestToken(http::response<http::dynamic_body> &httpResponse,
                   const RequestMessage &hanamiRequest,
                   Hanami::ErrorContainer &error);
-bool checkPermission(Hanami::JsonItem &tokenData,
+bool checkPermission(json &tokenData,
                      const std::string &token,
                      const RequestMessage &hanamiRequest,
                      ResponseMessage &responseMsg,

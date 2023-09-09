@@ -23,7 +23,6 @@
 #include <hanami_args/arg_parser.h>
 
 #include <hanami_common/methods/string_methods.h>
-#include <hanami_common/items/data_items.h>
 #include <hanami_common/items/table_item.h>
 
 #include <hanami_common/logger.h>
@@ -50,13 +49,7 @@ ArgParser::ArgParser(const std::string &version)
 /**
  * @brief destructor
  */
-ArgParser::~ArgParser()
-{
-    for(uint32_t i = 0; i < m_argumentList.size(); i++)
-    {
-        delete m_argumentList[i].results;
-    }
-}
+ArgParser::~ArgParser() {}
 
 /**
  * @brief register argument without value
@@ -306,7 +299,7 @@ ArgParser::registerArgument(const std::string &identifier,
     }
     newArgument.type = type;
     newArgument.helpText = helpText;
-    newArgument.results = new DataArray();
+    newArgument.results = json::array();
 
     m_argumentList.push_back(newArgument);
 
@@ -321,13 +314,13 @@ ArgParser::registerArgument(const std::string &identifier,
  *
  * @return nullptr, if converting failed, else data-item with the converted value
  */
-DataItem*
+json
 ArgParser::convertValue(const std::string &value,
                         const ArgParser::ArgType requiredType)
 {
     // string value
     if(requiredType == ArgType::STRING_TYPE) {
-        return new DataValue(value);
+        return (value);
     }
 
     // long/int value
@@ -342,7 +335,7 @@ ArgParser::convertValue(const std::string &value,
             return nullptr;
         }
 
-        return new DataValue(longValue);
+        return longValue;
     }
 
     // double/floag value
@@ -357,7 +350,7 @@ ArgParser::convertValue(const std::string &value,
             return nullptr;
         }
 
-        return new DataValue(doubleValue);
+        return doubleValue;
     }
 
     // bool value
@@ -368,7 +361,7 @@ ArgParser::convertValue(const std::string &value,
                 || value == "True"
                 || value == "1")
         {
-            return new DataValue(true);
+            return true;
         }
 
         // convert false
@@ -376,7 +369,7 @@ ArgParser::convertValue(const std::string &value,
                 || value == "False"
                 || value == "0")
         {
-            return new DataValue(false);
+            return false;
         }
 
         // if nothing match, it is no boolean
@@ -495,7 +488,7 @@ ArgParser::parse(const int argc,
                 const std::string currentValue(argv[i+1]);
 
                 // convert value
-                DataItem* convertedValue = convertValue(currentValue, argIdent->type);
+                json convertedValue = convertValue(currentValue, argIdent->type);
                 if(convertedValue == nullptr)
                 {
                     const std::string errMsg = "argument has the false type: "
@@ -512,7 +505,7 @@ ArgParser::parse(const int argc,
                 }
 
                 // add converted value to results
-                argIdent->results->append(convertedValue);
+                argIdent->results.push_back(convertedValue);
 
                 i += 2;
             }
@@ -534,7 +527,7 @@ ArgParser::parse(const int argc,
                     if(m_positionCounter == counter)
                     {
                         // convert value
-                        DataItem* convertedValue = convertValue(currentArgument, argIdent->type);
+                        json convertedValue = convertValue(currentArgument, argIdent->type);
                         if(convertedValue == nullptr)
                         {
                             const std::string errMsg = "argument has the false type: "
@@ -551,7 +544,7 @@ ArgParser::parse(const int argc,
                         }
 
                         // add converted value to results
-                        argIdent->results->append(convertedValue);
+                        argIdent->results.push_back(convertedValue);
 
                         // update counter
                         m_positionCounter++;
@@ -569,7 +562,7 @@ ArgParser::parse(const int argc,
     // check if all requirements are satisfied
     for(uint32_t i = 0; i < m_argumentList.size(); i++)
     {
-        if(m_argumentList[i].results->size() == 0
+        if(m_argumentList[i].results.size() == 0
                 && m_argumentList[i].required)
         {
             error.addMeesage("argument is required but was not set: "
@@ -598,7 +591,7 @@ ArgParser::getNumberOfValues(const std::string &identifier)
         return 0;
     }
 
-    return arg->results->size();
+    return arg->results.size();
 }
 
 /**
@@ -643,8 +636,8 @@ ArgParser::getStringValues(const std::string &identifier)
     }
 
     // build list with all results
-    for(uint32_t i = 0; i < arg->results->size(); i++) {
-        result.push_back(arg->results->get(i)->getString());
+    for(uint32_t i = 0; i < arg->results.size(); i++) {
+        result.push_back(arg->results[i]);
     }
 
     return result;
@@ -674,8 +667,8 @@ ArgParser::getIntValues(const std::string &identifier)
     }
 
     // build list with all results
-    for(uint32_t i = 0; i < arg->results->size(); i++) {
-        result.push_back(arg->results->get(i)->getLong());
+    for(uint32_t i = 0; i < arg->results.size(); i++) {
+        result.push_back(arg->results[i]);
     }
 
     return result;
@@ -705,8 +698,8 @@ ArgParser::getFloatValues(const std::string &identifier)
     }
 
     // build list with all results
-    for(uint32_t i = 0; i < arg->results->size(); i++) {
-        result.push_back(arg->results->get(i)->getDouble());
+    for(uint32_t i = 0; i < arg->results.size(); i++) {
+        result.push_back(arg->results[i]);
     }
 
     return result;
@@ -736,8 +729,8 @@ ArgParser::getBoolValues(const std::string &identifier)
     }
 
     // build list with all results
-    for(uint32_t i = 0; i < arg->results->size(); i++) {
-        result.push_back(arg->results->get(i)->getBool());
+    for(uint32_t i = 0; i < arg->results.size(); i++) {
+        result.push_back(arg->results[i]);
     }
 
     return result;
@@ -767,11 +760,11 @@ ArgParser::getStringValue(const std::string &identifier)
     }
 
     // check result not empty
-    if(arg->results->size() == 0) {
+    if(arg->results.size() == 0) {
         return "";
     }
 
-    return arg->results->get(0)->getString();
+    return arg->results[0];
 }
 
 /**
@@ -798,11 +791,11 @@ ArgParser::getIntValue(const std::string &identifier)
     }
 
     // check result not empty
-    if(arg->results->size() == 0) {
+    if(arg->results.size() == 0) {
         return 0l;
     }
 
-    return arg->results->get(0)->getLong();
+    return arg->results[0];
 }
 
 /**
@@ -829,11 +822,11 @@ ArgParser::getFloatValue(const std::string &identifier)
     }
 
     // check result not empty
-    if(arg->results->size() == 0) {
+    if(arg->results.size() == 0) {
         return 0.0;
     }
 
-    return arg->results->get(0)->getDouble();
+    return arg->results[0];
 }
 
 /**
@@ -860,11 +853,11 @@ ArgParser::getBoolValue(const std::string &identifier)
     }
 
     // check result not empty
-    if(arg->results->size() == 0) {
+    if(arg->results.size() == 0) {
         return false;
     }
 
-    return arg->results->get(0)->getBool();
+    return arg->results[0];
 }
 
 /**

@@ -31,7 +31,7 @@ class DirectIoTest
 public:
     DirectIoTest(const bool expectSuccess);
 
-    bool runTest(Hanami::JsonItem &,
+    bool runTest(json &,
                  Hanami::ErrorContainer &);
 
 private:

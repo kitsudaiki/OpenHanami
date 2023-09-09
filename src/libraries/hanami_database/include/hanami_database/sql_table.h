@@ -26,13 +26,11 @@
 #include <vector>
 #include <string>
 #include <uuid/uuid.h>
+#include <nlohmann/json.hpp>
 
-#include <hanami_common/items/data_items.h>
 #include <hanami_common/logger.h>
 
-namespace Hanami {
-class JsonItem;
-}
+using json = nlohmann::json;
 
 namespace Hanami
 {
@@ -82,10 +80,10 @@ protected:
     std::vector<DbHeaderEntry> m_tableHeader;
     std::string m_tableName = "";
 
-    bool insertToDb(JsonItem &values,
+    bool insertToDb(json &values,
                     ErrorContainer &error);
     bool updateInDb(const std::vector<RequestCondition> &conditions,
-                    const JsonItem &updates,
+                    const json &updates,
                     ErrorContainer &error);
     bool getAllFromDb(TableItem &resultTable,
                       ErrorContainer &error,
@@ -98,7 +96,7 @@ protected:
                    const bool showHiddenValues = false,
                    const uint64_t positionOffset = 0,
                    const uint64_t numberOfRows = 0);
-    bool getFromDb(JsonItem &result,
+    bool getFromDb(json &result,
                    const std::vector<RequestCondition> &conditions,
                    ErrorContainer &error,
                    const bool showHiddenValues = false,
@@ -116,12 +114,12 @@ private:
                                         const uint64_t positionOffset,
                                         const uint64_t numberOfRows);
     const std::string createUpdateQuery(const std::vector<RequestCondition> &conditions,
-                                        const JsonItem &updates);
+                                        const json &updates);
     const std::string createInsertQuery(const std::vector<std::string> &values);
     const std::string createDeleteQuery(const std::vector<RequestCondition> &conditions);
     const std::string createCountQuery();
 
-    void processGetResult(JsonItem &result,
+    void processGetResult(json &result,
                           TableItem &tableContent);
 };
 

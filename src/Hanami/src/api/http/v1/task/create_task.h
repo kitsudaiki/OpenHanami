@@ -37,7 +37,7 @@ public:
 
 protected:
     bool runTask(BlossomIO &blossomIO,
-                 const Hanami::DataMap &context,
+                 const json &context,
                  BlossomStatus &status,
                  Hanami::ErrorContainer &error);
 
@@ -47,7 +47,7 @@ private:
                    const std::string &taskType,
                    const UserContext &userContext,
                    Cluster* cluster,
-                   Hanami::JsonItem &dataSetInfo,
+                   json &dataSetInfo,
                    BlossomStatus &status,
                    Hanami::ErrorContainer &error);
 
@@ -56,7 +56,7 @@ private:
                    const std::string &taskType,
                    const UserContext &userContext,
                    Cluster* cluster,
-                   Hanami::JsonItem &dataSetInfo,
+                   json &dataSetInfo,
                    BlossomStatus &status,
                    Hanami::ErrorContainer &error);
 };

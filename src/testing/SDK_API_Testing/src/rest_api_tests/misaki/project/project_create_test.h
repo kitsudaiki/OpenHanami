@@ -31,7 +31,7 @@ class ProjectCreateTest
 public:
     ProjectCreateTest(const bool expectSuccess);
 
-    bool runTest(Hanami::JsonItem &inputData,
+    bool runTest(json &inputData,
                  Hanami::ErrorContainer &error);
 };
 

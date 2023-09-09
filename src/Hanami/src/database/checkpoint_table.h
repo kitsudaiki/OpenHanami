@@ -26,10 +26,6 @@
 #include <hanami_common/logger.h>
 #include <database/generic_tables/hanami_sql_table.h>
 
-namespace Hanami {
-class JsonItem;
-}
-
 class CheckpointTable
         : public HanamiSqlTable
 {
@@ -44,10 +40,10 @@ public:
 
     ~CheckpointTable();
 
-    bool addCheckpoint(Hanami::JsonItem &data,
+    bool addCheckpoint(json &data,
                             const UserContext &userContext,
                             Hanami::ErrorContainer &error);
-    bool getCheckpoint(Hanami::JsonItem &result,
+    bool getCheckpoint(json &result,
                             const std::string &checkpointUuid,
                             const UserContext &userContext,
                             Hanami::ErrorContainer &error,

@@ -23,12 +23,10 @@
 #ifndef HANAMI_USERS_TABLE_H
 #define HANAMI_USERS_TABLE_H
 
+#include <common.h>
 #include <hanami_common/logger.h>
 #include <database/generic_tables/hanami_sql_admin_table.h>
 
-namespace Hanami {
-class JsonItem;
-}
 class UsersTable
         : public HanamiSqlAdminTable
 {
@@ -45,9 +43,9 @@ public:
 
     bool initNewAdminUser(Hanami::ErrorContainer &error);
 
-    bool addUser(Hanami::JsonItem &userData,
+    bool addUser(json &userData,
                  Hanami::ErrorContainer &error);
-    bool getUser(Hanami::JsonItem &result,
+    bool getUser(json &result,
                  const std::string &userId,
                  Hanami::ErrorContainer &error,
                  const bool showHiddenValues);

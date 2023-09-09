@@ -24,7 +24,7 @@
 #define HANAMI_RESTORECLUSTERSTATE_H
 
 #include <hanami_common/threading/event.h>
-#include <hanami_json/json_item.h>
+#include <nlohmann/json.hpp>
 
 class Cluster;
 

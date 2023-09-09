@@ -25,8 +25,6 @@
 #include <hanami_root.h>
 #include <database/users_table.h>
 
-#include <hanami_json/json_item.h>
-
 /**
  * @brief constructor
  */
@@ -75,19 +73,19 @@ GetUser::GetUser()
  */
 bool
 GetUser::runTask(BlossomIO &blossomIO,
-                 const Hanami::DataMap &context,
+                 const json &context,
                  BlossomStatus &status,
                  Hanami::ErrorContainer &error)
 {
     // check if admin
-    if(context.getBoolByKey("is_admin") == false)
+    if(context["is_admin"] == false)
     {
         status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
 
     // get information from request
-    const std::string userId = blossomIO.input.get("id").getString();
+    const std::string userId = blossomIO.input["id"];
 
     // get data from table
     if(UsersTable::getInstance()->getUser(blossomIO.output, userId, error, false) == false)
