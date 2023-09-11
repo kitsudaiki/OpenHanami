@@ -29,10 +29,6 @@
 
 #include <hanami_common/logger.h>
 
-namespace Hanami {
-class DataMap;
-}
-
 namespace Hanami
 {
 class Policy_Test;

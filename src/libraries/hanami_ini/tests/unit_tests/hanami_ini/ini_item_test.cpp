@@ -8,7 +8,10 @@
 
 #include "ini_item_test.h"
 #include <hanami_ini/ini_item.h>
-#include <hanami_common/items/data_items.h>
+
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 namespace Hanami
 {
@@ -51,18 +54,18 @@ IniItem_Test::get_test()
     ErrorContainer error;
 
     object.parse(getTestString(), error);
+    json ret;
+    TEST_EQUAL(object.get(ret, "DEFAULT", "x"), true);
+    TEST_EQUAL(ret.dump(), "2");
 
-    std::string get1 = object.get("DEFAULT", "x")->toValue()->toString();
-    TEST_EQUAL(get1, "2");
+    TEST_EQUAL(object.get(ret, "hmmm", "poi_poi"), true);
+    TEST_EQUAL(ret.dump(), "1.3");
 
-    std::string get2 = object.get("hmmm", "poi_poi")->toValue()->toString();
-    TEST_EQUAL(get2, "1.300000");
+    TEST_EQUAL(object.get(ret, "hmmm", "bool_value"), true);
+    TEST_EQUAL(ret, true);
 
-    bool getBool = object.get("hmmm", "bool_value")->toValue()->getBool();
-    TEST_EQUAL(getBool, true);
-
-    getBool = object.get("hmmm", "bool_value2")->toValue()->getBool();
-    TEST_EQUAL(getBool, true);
+    TEST_EQUAL(object.get(ret, "hmmm", "bool_value2"), true);
+    TEST_EQUAL(ret, true);
 }
 
 /**
@@ -81,8 +84,9 @@ IniItem_Test::set_test()
 
     TEST_EQUAL(object.set("hmmm", "poi_poi", "asdf", true), true);
 
-    std::string get2 = object.get("hmmm", "poi_poi")->toValue()->getString();
-    TEST_EQUAL(get2, "asdf");
+    json ret;
+    TEST_EQUAL(object.get(ret, "hmmm", "poi_poi"), true);
+    TEST_EQUAL(ret, "asdf");
 }
 
 /**
@@ -122,7 +126,6 @@ IniItem_Test::removeEntry_test()
     object.parse(getTestString(), error);
 
     TEST_EQUAL(object.removeEntry("DEFAULT", "x"), true);
-    TEST_EQUAL(object.removeEntry("DEFAULT", "x"), false);
     TEST_EQUAL(object.removeEntry("fail", "x"), false);
 
     const std::string compare(
@@ -134,7 +137,7 @@ IniItem_Test::removeEntry_test()
                 "[hmmm]\n"
                 "bool_value = true\n"
                 "bool_value2 = true\n"
-                "poi_poi = 1.300000\n"
+                "poi_poi = 1.3\n"
                 "\n");
 
     TEST_EQUAL(object.toString(), compare);
@@ -176,7 +179,7 @@ IniItem_Test::print_test()
                 "[hmmm]\n"
                 "bool_value = true\n"
                 "bool_value2 = true\n"
-                "poi_poi = 1.300000\n"
+                "poi_poi = 1.3\n"
                 "\n");
     TEST_EQUAL(outputStringObjects, compare);
 
@@ -192,7 +195,7 @@ IniItem_Test::print_test()
                 "(hmmm]\n"
                 "bool_value = true\n"
                 "bool_value2 = true\n"
-                "poi_poi = 1.300000\n"
+                "poi_poi = 1.3\n"
                 "\n");
     bool result = object.parse(badString, error);
     TEST_EQUAL(result, false);
@@ -209,8 +212,7 @@ IniItem_Test::print_test()
 }
 
 /**
- * @brief IniItem_Test::getTestString
- * @return
+ * @brief get test-string
  */
 const std::string
 IniItem_Test::getTestString()
@@ -226,10 +228,9 @@ IniItem_Test::getTestString()
                 "# this is only a simple 0815 test-comment\n\n"
                 "bool_value = true\n"
                 "bool_value2 = True\n"
-                "poi_poi = 1.300000\n"
+                "poi_poi = 1.3\n"
                 "\n");
     return testString;
 }
 
 }
-

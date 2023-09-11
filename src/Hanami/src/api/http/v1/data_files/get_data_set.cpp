@@ -27,8 +27,6 @@
 
 #include <hanami_files/data_set_files/data_set_functions.h>
 
-#include <hanami_json/json_item.h>
-
 GetDataSet::GetDataSet()
     : Blossom("Get information of a specific data-set.")
 {
@@ -86,11 +84,11 @@ GetDataSet::GetDataSet()
  */
 bool
 GetDataSet::runTask(BlossomIO &blossomIO,
-                      const Hanami::DataMap &context,
+                      const json &context,
                       BlossomStatus &status,
                       Hanami::ErrorContainer &error)
 {
-    const std::string dataUuid = blossomIO.input.get("uuid").getString();
+    const std::string dataUuid = blossomIO.input["uuid"];
     if(DataSetTable::getInstance()->getDateSetInfo(blossomIO.output,
                                                    dataUuid,
                                                    context,

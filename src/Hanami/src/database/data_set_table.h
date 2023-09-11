@@ -26,10 +26,6 @@
 #include <hanami_common/logger.h>
 #include <database/generic_tables/hanami_sql_table.h>
 
-namespace Hanami {
-class JsonItem;
-}
-
 class DataSetTable
         : public HanamiSqlTable
 {
@@ -44,10 +40,10 @@ public:
 
     ~DataSetTable();
 
-    bool addDataSet(Hanami::JsonItem &data,
+    bool addDataSet(json &data,
                     const UserContext &userContext,
                     Hanami::ErrorContainer &error);
-    bool getDataSet(Hanami::JsonItem &result,
+    bool getDataSet(json &result,
                     const std::string &datasetUuid,
                     const UserContext &userContext,
                     Hanami::ErrorContainer &error,
@@ -63,9 +59,9 @@ public:
                          const std::string &fileUuid,
                          Hanami::ErrorContainer &error);
 
-    bool getDateSetInfo(Hanami::JsonItem &result,
+    bool getDateSetInfo(json &result,
                         const std::string &dataUuid,
-                        const Hanami::DataMap &context,
+                        const json &context,
                         Hanami::ErrorContainer &error);
 private:
     DataSetTable();

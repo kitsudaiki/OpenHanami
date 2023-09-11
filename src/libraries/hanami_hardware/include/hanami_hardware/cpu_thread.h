@@ -54,7 +54,7 @@ public:
     double getTotalPackagePower();
 
     const std::string toJsonString();
-    DataMap* toJson();
+    json toJson();
 
 private:
     Rapl m_rapl;

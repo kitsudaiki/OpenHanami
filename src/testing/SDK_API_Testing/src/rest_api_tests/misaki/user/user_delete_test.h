@@ -32,7 +32,7 @@ public:
     UserDeleteTest(const bool expectSuccess,
                    const std::string &nameOverride = "");
 
-    bool runTest(Hanami::JsonItem &inputData,
+    bool runTest(json &inputData,
                  Hanami::ErrorContainer &error);
 
 private:

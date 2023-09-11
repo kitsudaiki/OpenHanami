@@ -23,11 +23,9 @@
 #ifndef HANAMI_LANG_BLOSSOM_H
 #define HANAMI_LANG_BLOSSOM_H
 
-#include <common/structs.h>
+#include <common.h>
 
-#include <hanami_common/items/data_items.h>
 #include <hanami_common/logger.h>
-#include <hanami_json/json_item.h>
 
 class BlossomItem;
 class SakuraThread;
@@ -45,18 +43,17 @@ struct BlossomIO
     std::string blossomGroupType = "";
     std::vector<std::string> nameHirarchie;
 
-    Hanami::JsonItem output;
-    Hanami::JsonItem input;
+    json output;
+    json input;
 
-    Hanami::DataMap* parentValues = nullptr;
+    json parentValues = nullptr;
 
     std::string terminalOutput = "";
 
     BlossomIO()
     {
-        std::map<std::string, Hanami::JsonItem> temp;
-        output = Hanami::JsonItem(temp);
-        input = Hanami::JsonItem(temp);
+        output = json::object();
+        input = json::object();
     }
 };
 
@@ -88,8 +85,8 @@ struct FieldDef
     const FieldType fieldType;
     bool isRequired = true;
     std::string comment = "";
-    Hanami::DataItem* match = nullptr;
-    Hanami::DataItem* defaultVal = nullptr;
+    json match = nullptr;
+    json defaultVal = nullptr;
     std::string regex = "";
     long lowerLimit = 0;
     long upperLimit = 0;
@@ -105,13 +102,13 @@ struct FieldDef
         return *this;
     }
 
-    FieldDef& setMatch(Hanami::DataItem* match)
+    FieldDef& setMatch(const json &match)
     {
         this->match = match;
         return *this;
     }
 
-    FieldDef& setDefault(Hanami::DataItem* defaultValue)
+    FieldDef& setDefault(const json &defaultValue)
     {
         this->defaultVal = defaultValue;
         return *this;
@@ -154,7 +151,7 @@ public:
 
 protected:
     virtual bool runTask(BlossomIO &blossomIO,
-                         const Hanami::DataMap &context,
+                         const json &context,
                          BlossomStatus &status,
                          Hanami::ErrorContainer &error) = 0;
     bool allowUnmatched = false;
@@ -173,10 +170,10 @@ private:
     std::map<std::string, FieldDef> m_outputValidationMap;
 
     bool growBlossom(BlossomIO &blossomIO,
-                     const Hanami::DataMap* context,
+                     const json &context,
                      BlossomStatus &status,
                      Hanami::ErrorContainer &error);
-    bool validateFieldsCompleteness(const Hanami::DataMap &input,
+    bool validateFieldsCompleteness(const json &input,
                                     const std::map<std::string, FieldDef> &validationMap,
                                     const FieldDef::IO_ValueType valueType,
                                     std::string &errorMessage);
@@ -186,7 +183,7 @@ private:
                        Hanami::ErrorContainer &error);
     void getCompareMap(std::map<std::string, FieldDef::IO_ValueType> &compareMap,
                        const ValueItemMap &valueMap);
-    void fillDefaultValues(Hanami::DataMap &values);
+    void fillDefaultValues(json &values);
 };
 
 #endif // HANAMI_LANG_BLOSSOM_H

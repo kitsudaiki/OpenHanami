@@ -36,14 +36,14 @@ ClusterSwitchToTaskTest::ClusterSwitchToTaskTest(const bool expectSuccess)
 }
 
 bool
-ClusterSwitchToTaskTest::runTest(Hanami::JsonItem &inputData,
+ClusterSwitchToTaskTest::runTest(json &inputData,
                                  Hanami::ErrorContainer &error)
 {
     // create new cluster
     std::string result;
     if(Hanami::switchToTaskMode(result,
-                                  inputData.get("cluster_uuid").getString(),
-                                  error) != m_expectSuccess)
+                                inputData["cluster_uuid"],
+                                error) != m_expectSuccess)
     {
         return false;
     }

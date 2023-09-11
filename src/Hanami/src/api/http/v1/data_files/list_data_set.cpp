@@ -32,14 +32,17 @@ ListDataSet::ListDataSet()
     // output
     //----------------------------------------------------------------------------------------------
 
+    json headerMatch = json::array();
+    headerMatch.push_back("uuid");
+    headerMatch.push_back("project_id");
+    headerMatch.push_back("owner_id");
+    headerMatch.push_back("visibility");
+    headerMatch.push_back("name");
+    headerMatch.push_back("type");
+
     registerOutputField("header", SAKURA_ARRAY_TYPE)
             .setComment("Array with the namings all columns of the table.")
-            .setMatch(new Hanami::DataValue("[\"uuid\","
-                                                 "\"project_id\","
-                                                 "\"owner_id\","
-                                                 "\"visibility\","
-                                                 "\"name\","
-                                                 "\"type\"]"));
+            .setMatch(headerMatch);
 
     registerOutputField("body", SAKURA_ARRAY_TYPE)
             .setComment("Array with all rows of the table, which array arrays too.");
@@ -54,7 +57,7 @@ ListDataSet::ListDataSet()
  */
 bool
 ListDataSet::runTask(BlossomIO &blossomIO,
-                       const Hanami::DataMap &context,
+                       const json &context,
                        BlossomStatus &status,
                        Hanami::ErrorContainer &error)
 {
@@ -69,10 +72,8 @@ ListDataSet::runTask(BlossomIO &blossomIO,
     }
 
     // create output
-    Hanami::DataArray* headerInfo = table.getInnerHeader();
-    blossomIO.output.insert("header", headerInfo);
-    blossomIO.output.insert("body", table.getBody());
-    delete headerInfo;
+    blossomIO.output["header"] = table.getInnerHeader();
+    blossomIO.output["body"] = table.getBody();
 
     return true;
 }

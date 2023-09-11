@@ -25,9 +25,6 @@
 
 #include <hanami_common/threading/thread_handler_test.h>
 
-#include <hanami_common/items/data_items_DataArray_test.h>
-#include <hanami_common/items/data_items_DataMap_test.h>
-#include <hanami_common/items/data_items_DataValue_test.h>
 #include <hanami_common/items/table_item_test.h>
 
 #include <hanami_common/files/text_file_test.h>
@@ -52,10 +49,6 @@ int main()
     Hanami::Logger_Test();
 
     Hanami::ThreadHandler_Test();
-
-    Hanami::DataItems_DataValue_Test();
-    Hanami::DataItems_DataArray_Test();
-    Hanami::DataItems_DataMap_Test();
 
     Hanami::TextFile_Test();
     Hanami::BinaryFile_withDirectIO_Test();

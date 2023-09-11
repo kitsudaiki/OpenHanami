@@ -26,14 +26,11 @@
 #include <vector>
 #include <string>
 
-#include <hanami_common/items/data_items.h>
 #include <hanami_common/logger.h>
 
 #include <api/endpoint_processing/items/sakura_items.h>
 
 struct BlossomIO;
-
-using Hanami::DataMap;
 
 // override functions
 enum OverrideType
@@ -43,8 +40,8 @@ enum OverrideType
     ONLY_NON_EXISTING
 };
 
-void overrideItems(DataMap &original,
-                   const DataMap &override,
+void overrideItems(json &original,
+                   const json &override,
                    OverrideType type);
 
 // error-output

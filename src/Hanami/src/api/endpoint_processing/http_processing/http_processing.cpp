@@ -29,11 +29,10 @@
 #include <api/endpoint_processing/http_processing/string_functions.h>
 #include <api/endpoint_processing/http_server.h>
 
-#include <hanami_json/json_item.h>
 #include <hanami_common/logger.h>
 
 #include <jwt-cpp/jwt.h>
-//#include <jwt-cpp/traits/nlohmann-json/defaults.h>
+// #include <jwt-cpp/traits/nlohmann-json/defaults.h>
 
 /**
  * @brief process request and build response
@@ -136,19 +135,20 @@ requestToken(http::response<http::dynamic_body> &httpResponse,
              const RequestMessage &hanamiRequest,
              Hanami::ErrorContainer &error)
 {
-    Hanami::JsonItem inputValues;
-    if(inputValues.parse(hanamiRequest.inputValues, error) == false) {
-        // TODO: error-message
+    json inputValues = json::parse(hanamiRequest.inputValues, nullptr, false);
+    if (inputValues.is_discarded())
+    {
+        std::cerr << "parse error" << std::endl;
     }
 
-    Hanami::DataMap result;
+    json result;
     BlossomStatus status;
-    inputValues.remove("token");
+    inputValues.erase("token");
     if(HanamiRoot::root->triggerBlossom(result,
                                         "create",
                                         "Token",
-                                        Hanami::DataMap(),
-                                        *inputValues.getItemContent()->toMap(),
+                                        json::object(),
+                                        inputValues,
                                         status,
                                         error) == false)
     {
@@ -157,7 +157,7 @@ requestToken(http::response<http::dynamic_body> &httpResponse,
                                           status.errorMessage);
     }
 
-    return success_ResponseBuild(httpResponse, result.toString());
+    return success_ResponseBuild(httpResponse, result.dump());
 }
 
 /**
@@ -172,7 +172,7 @@ requestToken(http::response<http::dynamic_body> &httpResponse,
  * @return true, if successful, else false
  */
 bool
-checkPermission(Hanami::JsonItem &tokenData,
+checkPermission(json &tokenData,
                 const std::string &token,
                 const RequestMessage &hanamiRequest,
                 ResponseMessage &responseMsg,
@@ -202,8 +202,15 @@ checkPermission(Hanami::JsonItem &tokenData,
         verifier.verify(decodedToken);
 
         // copy data of token into the output
-        for (const auto& e : decodedToken.get_payload_json()) {
-            tokenData.parse(e.second.to_str(), error);
+        for(const auto& e : decodedToken.get_payload_json())
+        {
+            std::string tokenStr = e.second.to_str();
+            tokenData = json::parse(tokenStr, nullptr, false);
+            if(tokenData.is_discarded())
+            {
+                std::cerr << "parse error" << std::endl;
+            }
+
         }
     }
     catch (const std::exception& ex)
@@ -219,7 +226,7 @@ checkPermission(Hanami::JsonItem &tokenData,
     const HttpRequestType httpType = static_cast<HttpRequestType>(httpTypeValue);
 
     // process payload to get role of user
-    const std::string role = tokenData.get("role").getString();
+    const std::string role = tokenData["role"];
 
     // check policy
     if(Policy::getInstance()->checkUserAgainstPolicy(endpoint,
@@ -275,7 +282,7 @@ processControlRequest(http::response<http::dynamic_body> &httpResponse,
     }
 
     // check authentication
-    Hanami::JsonItem tokenData;
+    json tokenData = json::object();
     if(checkPermission(tokenData, token, hanamiRequest, hanamiResponse, error) == false) {
         return internalError_ResponseBuild(httpResponse, error);
     }
@@ -309,7 +316,7 @@ processControlRequest(http::response<http::dynamic_body> &httpResponse,
 
     // write new audit-entry to database
     if(AuditLogTable::getInstance()->addAuditLogEntry(getDatetime(),
-                                                      tokenData.get("id").getString(),
+                                                      tokenData["id"],
                                                       hanamiRequest.id,
                                                       httpTypeStr,
                                                       error) == false)
@@ -319,13 +326,14 @@ processControlRequest(http::response<http::dynamic_body> &httpResponse,
         LOG_ERROR(error);
     }
 
-    Hanami::JsonItem inputValuesJson;
-    if(inputValuesJson.parse(hanamiRequest.inputValues, error) == false) {
-        // TODO: error-message
+    json inputValuesJson = json::parse(hanamiRequest.inputValues, nullptr, false);
+    if (inputValuesJson.is_discarded())
+    {
+        std::cerr << "parse error" << std::endl;
     }
 
     if(hanamiRequest.id != "v1/auth") {
-        inputValuesJson.remove("token");
+        inputValuesJson.erase("token");
     }
 
     EndpointEntry endpoint;
@@ -334,13 +342,13 @@ processControlRequest(http::response<http::dynamic_body> &httpResponse,
     }
 
     // make real request
-    Hanami::DataMap result;
+    json result = json::object();
     BlossomStatus status;
     if(HanamiRoot::root->triggerBlossom(result,
                                         endpoint.name,
                                         endpoint.group,
-                                        *tokenData.getItemContent()->toMap(),
-                                        *inputValuesJson.getItemContent()->toMap(),
+                                        tokenData,
+                                        inputValuesJson,
                                         status,
                                         error) == false)
     {
@@ -358,7 +366,7 @@ processControlRequest(http::response<http::dynamic_body> &httpResponse,
     }
 
     hanamiResponse.type = OK_RTYPE;
-    hanamiResponse.responseContent = result.toString();
+    hanamiResponse.responseContent = result.dump();
 
     // handle success
     return success_ResponseBuild(httpResponse, hanamiResponse.responseContent);

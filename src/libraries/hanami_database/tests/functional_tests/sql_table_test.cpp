@@ -3,8 +3,6 @@
 #include <hanami_database/sql_database.h>
 #include <hanami_database/sql_table.h>
 
-#include <hanami_json/json_item.h>
-
 #include <test_table.h>
 
 namespace Hanami
@@ -66,18 +64,18 @@ SqlTable_Test::create_test()
 {
     ErrorContainer error;
 
-    JsonItem testData;
-    testData.insert("name", m_name1);
-    testData.insert("pw_hash", "secret");
-    testData.insert("is_admin", true);
+    json testData;
+    testData["name"] = m_name1;
+    testData["pw_hash"] = "secret";
+    testData["is_admin"] = true;
 
     TEST_EQUAL(m_table->addUser(testData, error), true);
 
 
-    JsonItem testData2;
-    testData2.insert("name", m_name2);
-    testData2.insert("pw_hash", "secret2");
-    testData2.insert("is_admin", false);
+    json testData2;
+    testData2["name"] = m_name2;
+    testData2["pw_hash"] = "secret2";
+    testData2["is_admin"] = false;
 
     m_table->addUser(testData2, error);
 }
@@ -88,12 +86,12 @@ SqlTable_Test::create_test()
 void
 SqlTable_Test::get_test()
 {
-    JsonItem resultItem;
+    json resultItem;
     TableItem resultTable;
     ErrorContainer error;
 
     TEST_EQUAL(m_table->getUser(resultItem, m_name1, error), true);
-    TEST_EQUAL(resultItem.toString(), std::string("{\"is_admin\":true,\"name\":\"user0815\"}"));
+    TEST_EQUAL(resultItem.dump(), std::string("{\"is_admin\":true,\"name\":\"user0815\"}"));
 
     TEST_EQUAL(m_table->getUser(resultTable, m_name1, error), true);
     std::string compare = "+----------+----------+\n"
@@ -138,16 +136,16 @@ SqlTable_Test::update_test()
 {
     ErrorContainer error;
 
-    JsonItem updateDate;
-    updateDate.insert("pw_hash", "secret2");
-    updateDate.insert("is_admin", false);
+    json updateDate;
+    updateDate["pw_hash"] = "secret2";
+    updateDate["is_admin"] = false;
     TEST_EQUAL(m_table->updateUser(m_name1, updateDate, error), true);
 
-    JsonItem resultItem;
+    json resultItem;
     TableItem resultTable;
 
     TEST_EQUAL(m_table->getUser(resultItem, m_name1, error, true), true);
-    TEST_EQUAL(resultItem.toString(),
+    TEST_EQUAL(resultItem.dump(),
                std::string("{\"is_admin\":false,\"name\":\"user0815\",\"pw_hash\":\"secret2\"}"));
 }
 
@@ -187,18 +185,18 @@ SqlTable_Test::getNumberOfRows_test()
 
     TEST_EQUAL(m_table->getNumberOfUsers(error), 0);
 
-    JsonItem testData;
-    testData.insert("name", m_name1);
-    testData.insert("pw_hash", "secret");
-    testData.insert("is_admin", true);
+    json testData;
+    testData["name"] = m_name1;
+    testData["pw_hash"] = "secret";
+    testData["is_admin"] = true;
     m_table->addUser(testData, error);
 
     TEST_EQUAL(m_table->getNumberOfUsers(error), 1);
 
-    JsonItem testData2;
-    testData2.insert("name", m_name2);
-    testData2.insert("pw_hash", "secret2");
-    testData2.insert("is_admin", false);
+    json testData2;
+    testData2["name"] = m_name2;
+    testData2["pw_hash"] = "secret2";
+    testData2["is_admin"] = false;
     m_table->addUser(testData2, error);
 
     TEST_EQUAL(m_table->getNumberOfUsers(error), 2);

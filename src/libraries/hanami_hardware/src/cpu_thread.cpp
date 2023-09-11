@@ -186,11 +186,11 @@ CpuThread::toJsonString()
 
  * @return json-like item-tree with the information
  */
-DataMap*
+json
 CpuThread::toJson()
 {
-    DataMap* result = new DataMap();
-    result->insert("id", new DataValue((long)threadId));
+    json result = json::object();
+    result["id"] = (long)threadId;
     return result;
 }
 

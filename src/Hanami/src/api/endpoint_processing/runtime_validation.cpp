@@ -69,7 +69,7 @@ createErrorMessage(const std::string &name,
  */
 bool
 checkBlossomValues(const std::map<std::string, FieldDef> &defs,
-                   const Hanami::DataMap &values,
+                   const json &values,
                    const FieldDef::IO_ValueType ioType,
                    std::string &errorMessage)
 {
@@ -79,10 +79,10 @@ checkBlossomValues(const std::map<std::string, FieldDef> &defs,
             continue;
         }
 
-        Hanami::DataItem* item = values.get(name);
-
-        if(item != nullptr)
+        if(values.contains(name))
         {
+            json item = values[name];
+
             // check type
             if(checkType(item, field.fieldType) == false)
             {
@@ -94,7 +94,7 @@ checkBlossomValues(const std::map<std::string, FieldDef> &defs,
             if(field.regex.size() > 0)
             {
                 const std::regex re("^" + field.regex + "$");
-                if(std::regex_match(item->toValue()->getString(), re) == false)
+                if(std::regex_match(std::string(values[name]), re) == false)
                 {
                     errorMessage= "Given item '"
                                   + name
@@ -109,9 +109,9 @@ checkBlossomValues(const std::map<std::string, FieldDef> &defs,
             if(field.upperLimit != 0
                     || field.lowerLimit != 0)
             {
-                if(item->isIntValue())
+                if(item.is_number_integer())
                 {
-                    const long value = item->toValue()->getLong();
+                    const long value = item;
                     if(value < field.lowerLimit)
                     {
                         errorMessage = "Given item '"
@@ -131,9 +131,10 @@ checkBlossomValues(const std::map<std::string, FieldDef> &defs,
                     }
                 }
 
-                if(item->isStringValue())
+                if(item.is_string())
                 {
-                    const long length = item->toValue()->getString().size();
+                    const std::string itemStr = item;
+                    const long length = itemStr.size();
                     if(length < field.lowerLimit)
                     {
                         errorMessage = "Given item '"
@@ -159,14 +160,14 @@ checkBlossomValues(const std::map<std::string, FieldDef> &defs,
             // check match
             if(field.match != nullptr)
             {
-                if(field.match->toString() != item->toString())
+                if(field.match != item)
                 {
                     errorMessage = "Item '"
                                    + name
                                    + "' doesn't match the the expected value:\n   ";
-                    errorMessage.append(field.match->toString());
+                    errorMessage.append(field.match.dump());
                     errorMessage.append("\nbut has value:\n   ");
-                    errorMessage.append(item->toString());
+                    errorMessage.append(item.dump());
                     return false;
                 }
             }
@@ -185,40 +186,39 @@ checkBlossomValues(const std::map<std::string, FieldDef> &defs,
  * @return true, if match, else false
  */
 bool
-checkType(Hanami::DataItem* item,
+checkType(const json &item,
           const FieldType fieldType)
 {
-    if(item->getType() == Hanami::DataItem::ARRAY_TYPE
+    if(item.is_array()
             && fieldType == SAKURA_ARRAY_TYPE)
     {
         return true;
     }
 
-    if(item->getType() == Hanami::DataItem::MAP_TYPE
+    if(item.is_object()
             && fieldType == SAKURA_MAP_TYPE)
     {
         return true;
     }
 
-    if(item->getType() == Hanami::DataItem::VALUE_TYPE)
+    if(item.is_primitive())
     {
-        Hanami::DataValue* value = item->toValue();
-        if(value->getValueType() == Hanami::DataItem::INT_TYPE
+        if(item.is_number_integer()
                 && fieldType == SAKURA_INT_TYPE)
         {
             return true;
         }
-        if(value->getValueType() == Hanami::DataItem::FLOAT_TYPE
+        if(item.is_number_float()
                 && fieldType == SAKURA_FLOAT_TYPE)
         {
             return true;
         }
-        if(value->getValueType() == Hanami::DataItem::BOOL_TYPE
+        if(item.is_boolean()
                 && fieldType == SAKURA_BOOL_TYPE)
         {
             return true;
         }
-        if(value->getValueType() == Hanami::DataItem::STRING_TYPE
+        if(item.is_string()
                 && fieldType == SAKURA_STRING_TYPE)
         {
             return true;

@@ -23,7 +23,6 @@
 #include <api/endpoint_processing/items/value_item_map.h>
 
 #include <hanami_common/items/table_item.h>
-#include <hanami_common/items/data_items.h>
 
 /**
  * @brief constructor
@@ -94,11 +93,11 @@ ValueItemMap::operator=(const ValueItemMap &other)
  */
 bool
 ValueItemMap::insert(const std::string &key,
-                     Hanami::DataItem* value,
+                     const json &value,
                      bool force)
 {
     ValueItem valueItem;
-    valueItem.item = value->copy();
+    valueItem.item = value;
     return insert(key, valueItem, force);
 }
 
@@ -224,7 +223,7 @@ ValueItemMap::getValueAsString(const std::string &key)
 {
     const auto it = m_valueMap.find(key);
     if(it != m_valueMap.end()) {
-        return it->second.item->toString();
+        return it->second.item;
     }
 
     return "";
@@ -237,7 +236,7 @@ ValueItemMap::getValueAsString(const std::string &key)
  *
  * @return pointer to the data-item, if found, else a nullptr
  */
-Hanami::DataItem*
+json
 ValueItemMap::get(const std::string &key)
 {
     const auto it = m_valueMap.find(key);
@@ -292,7 +291,7 @@ ValueItemMap::toString()
 
     // fill table
     for(const auto& [id, item] : m_valueMap) {
-        table.addRow(std::vector<std::string>{id, item.item->toString()});
+        table.addRow(std::vector<std::string>{id, item.item});
     }
 
     return table.toString();

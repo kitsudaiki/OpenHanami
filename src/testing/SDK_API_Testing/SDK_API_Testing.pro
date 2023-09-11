@@ -14,11 +14,6 @@ LIBS += -L../../libraries/hanami_config/src/debug -lhanami_config
 LIBS += -L../../libraries/hanami_config/src/release -lhanami_config
 INCLUDEPATH += ../../libraries/hanami_config/include
 
-LIBS += -L../../libraries/hanami_json/src -lhanami_json
-LIBS += -L../../libraries/hanami_json/src/debug -lhanami_json
-LIBS += -L../../libraries/hanami_json/src/release -lhanami_json
-INCLUDEPATH += ../../libraries/hanami_json/include
-
 LIBS += -L../../libraries/hanami_ini/src -lhanami_ini
 LIBS += -L../../libraries/hanami_ini/src/debug -lhanami_ini
 LIBS += -L../../libraries/hanami_ini/src/release -lhanami_ini
@@ -40,6 +35,8 @@ LIBS += -L../../libraries/hanami_common/src/release -lhanami_common
 INCLUDEPATH += ../../libraries/hanami_common/include
 
 LIBS += -lcryptopp -lssl -luuid -lcrypto -pthread -lprotobuf
+
+INCLUDEPATH += ../../third-party-libs/json/include
 
 INCLUDEPATH += $$PWD \
                src

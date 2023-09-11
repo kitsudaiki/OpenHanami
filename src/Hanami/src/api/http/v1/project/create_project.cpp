@@ -27,7 +27,6 @@
 
 #include <hanami_crypto/hashes.h>
 #include <hanami_common/methods/string_methods.h>
-#include <hanami_json/json_item.h>
 
 /**
  * @brief constructor
@@ -75,24 +74,24 @@ CreateProject::CreateProject()
  */
 bool
 CreateProject::runTask(BlossomIO &blossomIO,
-                       const Hanami::DataMap &context,
+                       const json &context,
                        BlossomStatus &status,
                        Hanami::ErrorContainer &error)
 {
     // check if admin
-    if(context.getBoolByKey("is_admin") == false)
+    if(context["is_admin"] == false)
     {
         status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
 
     // get information from request
-    const std::string projectId = blossomIO.input.get("id").getString();
-    const std::string projectName = blossomIO.input.get("name").getString();
-    const std::string creatorId = context.getStringByKey("id");
+    const std::string projectId = blossomIO.input["id"];
+    const std::string projectName = blossomIO.input["name"];
+    const std::string creatorId = context["id"];
 
     // check if user already exist within the table
-    Hanami::JsonItem getResult;
+    json getResult;
     if(ProjectsTable::getInstance()->getProject(getResult, projectId, error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -109,10 +108,10 @@ CreateProject::runTask(BlossomIO &blossomIO,
     }
 
     // convert values
-    Hanami::JsonItem userData;
-    userData.insert("id", projectId);
-    userData.insert("name", projectName);
-    userData.insert("creator_id", creatorId);
+    json userData;
+    userData["id"] = projectId;
+    userData["name"] = projectName;
+    userData["creator_id"] = creatorId;
 
     // add new user to table
     if(ProjectsTable::getInstance()->addProject(userData, error) == false)

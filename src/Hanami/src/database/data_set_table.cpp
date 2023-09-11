@@ -28,7 +28,6 @@
 
 #include <hanami_common/items/table_item.h>
 #include <hanami_common/methods/string_methods.h>
-#include <hanami_json/json_item.h>
 
 DataSetTable* DataSetTable::instance = nullptr;
 
@@ -73,7 +72,7 @@ DataSetTable::~DataSetTable() {}
  * @return true, if successful, else false
  */
 bool
-DataSetTable::addDataSet(Hanami::JsonItem &data,
+DataSetTable::addDataSet(json &data,
                          const UserContext &userContext,
                          Hanami::ErrorContainer &error)
 {
@@ -98,7 +97,7 @@ DataSetTable::addDataSet(Hanami::JsonItem &data,
  * @return true, if successful, else false
  */
 bool
-DataSetTable::getDataSet(Hanami::JsonItem &result,
+DataSetTable::getDataSet(json &result,
                          const std::string &datasetUuid,
                          const UserContext &userContext,
                          Hanami::ErrorContainer &error,
@@ -188,7 +187,7 @@ DataSetTable::setUploadFinish(const std::string &uuid,
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", uuid);
-    Hanami::JsonItem result;
+    json result;
 
     UserContext userContext;
     userContext.isAdmin = true;
@@ -210,22 +209,9 @@ DataSetTable::setUploadFinish(const std::string &uuid,
     }
 
     // update temp-files entry to 100%
-    const std::string tempFilesStr = result.get("temp_files").toString();
-    Hanami::JsonItem tempFiles;
-    if(tempFiles.parse(tempFilesStr, error) == false)
-    {
-        error.addMeesage("Failed to parse temp_files entry of dataset with UUID '"
-                         + uuid
-                         + "' from database");
-        LOG_ERROR(error);
-        return false;
-    }
-    tempFiles.insert(fileUuid, Hanami::JsonItem(1.0f), true);
+    result["temp_files"][fileUuid] = 1.0f;
 
-    // update new entry within the database
-    Hanami::JsonItem newValues;
-    newValues.insert("temp_files", Hanami::JsonItem(tempFiles.toString()));
-    if(update(newValues, userContext, conditions, error) == false)
+    if(update(result, userContext, conditions, error) == false)
     {
         error.addMeesage("Failed to update entry of dataset with UUID '" + uuid + "' in database");
         LOG_ERROR(error);
@@ -242,9 +228,9 @@ DataSetTable::setUploadFinish(const std::string &uuid,
  * @return
  */
 bool
-DataSetTable::getDateSetInfo(Hanami::JsonItem &result,
+DataSetTable::getDateSetInfo(json &result,
                              const std::string &dataUuid,
-                             const Hanami::DataMap &context,
+                             const json &context,
                              Hanami::ErrorContainer &error)
 {
     const UserContext userContext(context);
@@ -254,7 +240,7 @@ DataSetTable::getDateSetInfo(Hanami::JsonItem &result,
     }
 
     // get file information
-    const std::string location = result.get("location").getString();
+    const std::string location = result["location"];
     if(getHeaderInformation(result, location, error) == false)
     {
         error.addMeesage("Failed the read information from file '" + location + "'");
@@ -262,7 +248,7 @@ DataSetTable::getDateSetInfo(Hanami::JsonItem &result,
     }
 
     // remove irrelevant fields
-    result.remove("temp_files");
+    result.erase("temp_files");
 
     return true;
 }

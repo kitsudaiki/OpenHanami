@@ -28,7 +28,6 @@
 
 #include <hanami_crypto/common.h>
 #include <hanami_common/buffer/data_buffer.h>
-#include <hanami_json/json_item.h>
 
 #include <hanami_root.h>
 
@@ -79,16 +78,16 @@ CreateCluster::CreateCluster()
  */
 bool
 CreateCluster::runTask(BlossomIO &blossomIO,
-                       const Hanami::DataMap &context,
+                       const json &context,
                        BlossomStatus &status,
                        Hanami::ErrorContainer &error)
 {
-    const std::string clusterName = blossomIO.input.get("name").getString();
-    const std::string base64Template = blossomIO.input.get("template").getString();
+    const std::string clusterName = blossomIO.input["name"];
+    const std::string base64Template = blossomIO.input["template"];
     const UserContext userContext(context);
 
     // check if user already exist within the table
-    Hanami::JsonItem getResult;
+    json getResult;
     if(ClusterTable::getInstance()->getClusterByName(getResult, clusterName, userContext, error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -131,11 +130,11 @@ CreateCluster::runTask(BlossomIO &blossomIO,
     }
 
     // convert values
-    Hanami::JsonItem clusterData;
-    clusterData.insert("name", clusterName);
-    clusterData.insert("project_id", userContext.projectId);
-    clusterData.insert("owner_id", userContext.userId);
-    clusterData.insert("visibility", "private");
+    json clusterData;
+    clusterData["name"] = clusterName;
+    clusterData["project_id"] = userContext.projectId;
+    clusterData["owner_id"] = userContext.userId;
+    clusterData["visibility"] = "private";
 
     // add new user to table
     if(ClusterTable::getInstance()->addCluster(clusterData, userContext, error) == false)
@@ -156,7 +155,7 @@ CreateCluster::runTask(BlossomIO &blossomIO,
         return false;
     }
 
-    const std::string uuid = blossomIO.output.get("uuid").getString();
+    const std::string uuid = blossomIO.output["uuid"];
 
     // create new cluster
     Cluster* newCluster = new Cluster();

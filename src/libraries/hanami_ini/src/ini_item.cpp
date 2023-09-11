@@ -8,13 +8,7 @@
 
 #include <hanami_ini/ini_item.h>
 
-#include <hanami_common/items/data_items.h>
 #include <ini_parsing/ini_parser_interface.h>
-
-using Hanami::DataItem;
-using Hanami::DataArray;
-using Hanami::DataValue;
-using Hanami::DataMap;
 
 namespace Hanami
 {
@@ -24,18 +18,13 @@ namespace Hanami
  */
 IniItem::IniItem()
 {
-    m_content = new DataMap();
+    m_content = json::object();
 }
 
 /**
  * destructor
  */
-IniItem::~IniItem()
-{
-    if(m_content != nullptr) {
-        delete m_content;
-    }
-}
+IniItem::~IniItem() {}
 
 /**
  * @brief parse the content of an ini-file
@@ -51,14 +40,9 @@ IniItem::parse(const std::string &content,
 {
     IniParserInterface* parser = IniParserInterface::getInstance();
 
-    // clear acutal content to free memory
-    if(m_content != nullptr) {
-        delete m_content;
-    }
-
     // parse ini-template into a data-tree
     m_content = parser->parse(content, error);
-    if(m_content == nullptr)
+    if(m_content.size() == 0)
     {
         LOG_ERROR(error);
         return false;
@@ -75,15 +59,23 @@ IniItem::parse(const std::string &content,
  *
  * @return requested value as data-item, if found, else nullptr
  */
-DataItem*
-IniItem::get(const std::string &group,
+bool
+IniItem::get(json &result,
+             const std::string &group,
              const std::string &item)
 {
-    DataItem* groupContent = m_content->get(group);
-    if(groupContent == nullptr) {
-        return nullptr;
+    if(m_content.contains(group) == false) {
+        return false;
     }
-    return groupContent->get(item);
+
+    json groupContent = m_content[group];
+    if(groupContent.contains(item) == false) {
+        return false;
+    }
+
+    result = groupContent[item];
+
+    return true;
 }
 
 /**
@@ -99,10 +91,11 @@ IniItem::get(const std::string &group,
 bool
 IniItem::set(const std::string &group,
              const std::string &item,
-             const char *value,
+             const char* value,
              const bool force)
 {
-    return set(group, item, new DataValue(value), force);
+    const std::string stringVal = std::string(value);
+    return setVal(group, item, stringVal, force);
 }
 
 /**
@@ -121,7 +114,7 @@ IniItem::set(const std::string &group,
              const std::string value,
              const bool force)
 {
-    return set(group, item, new DataValue(value), force);
+    return setVal(group, item, value, force);
 }
 
 /**
@@ -140,7 +133,7 @@ IniItem::set(const std::string &group,
              const long value,
              const bool force)
 {
-    return set(group, item, new DataValue(value), force);
+    return setVal(group, item, value, force);
 }
 
 /**
@@ -159,7 +152,7 @@ IniItem::set(const std::string &group,
              const double value,
              const bool force)
 {
-    return set(group, item, new DataValue(value), force);
+    return setVal(group, item, value, force);
 }
 
 /**
@@ -178,7 +171,7 @@ IniItem::set(const std::string &group,
              const bool value,
              const bool force)
 {
-    return set(group, item, new DataValue(value), force);
+    return setVal(group, item, value, force);
 }
 
 /**
@@ -197,13 +190,12 @@ IniItem::set(const std::string &group,
              const std::vector<std::string> value,
              const bool force)
 {
-    DataArray* array = new DataArray();
-    for(uint64_t i = 0; i < value.size(); i++)
-    {
-        array->append(new DataValue(value.at(i)));
+    json array = json::array();
+    for(uint64_t i = 0; i < value.size(); i++) {
+        array.push_back(value.at(i));
     }
 
-    return set(group, item, array, force);
+    return setVal(group, item, array, force);
 }
 
 /**
@@ -216,7 +208,7 @@ IniItem::set(const std::string &group,
 bool
 IniItem::removeGroup(const std::string &group)
 {
-    return m_content->remove(group);
+    return m_content.erase(group);
 }
 
 /**
@@ -231,12 +223,12 @@ bool
 IniItem::removeEntry(const std::string &group,
                      const std::string &item)
 {
-    DataItem* groupItem = m_content->get(group);
-    if(groupItem == nullptr) {
+    if(m_content.contains(group) == false) {
         return false;
     }
 
-    return groupItem->remove(item);
+    m_content[group].erase(item);
+    return true;
 }
 
 /**
@@ -250,36 +242,27 @@ IniItem::removeEntry(const std::string &group,
  * @return false, if item already exist with value and force is false, else it returns true
  */
 bool
-IniItem::set(const std::string &group,
-             const std::string &item,
-             DataItem *value,
-             const bool force)
+IniItem::setVal(const std::string &group,
+                const std::string &item,
+                const json &value,
+                const bool force)
 {
-    DataItem* groupContent = m_content->get(group);
-
     // if group doesn't exist, create the group with the new content
-    if(groupContent == nullptr)
+    if(m_content.contains(group) == false)
     {
-        groupContent = new DataMap();
-        groupContent->toMap()->insert(item, value);
-        m_content->toMap()->insert(group, groupContent);
+        json groupContent = json::object();
+        groupContent[item] = value;
+        m_content[group] = groupContent;
         return true;
     }
-
-    DataItem* groupItem = groupContent->get(item);
 
     // item doesn't exist or should be overrided by force
-    if(groupItem == nullptr
+    if(m_content[group].contains(item) == false
             || force)
     {
-        groupContent->toMap()->insert(item, value, force);
+        m_content[group][item] = value;
         return true;
     }
-
-    // I delete the value here already to avoid too much redundant code in the other set-methods
-    // even this is not so nice. Thats why this is only a private methods with should be used only
-    // interally
-    delete value;
 
     return false;
 }
@@ -295,7 +278,7 @@ IniItem::toString()
     std::string output = "";
 
     // iterate over all groups
-    for(const auto& [name, globalItem] : m_content->toMap()->map)
+    for(const auto& [name, globalItem] : m_content.items())
     {
         // print group-header
         output.append("[");
@@ -303,28 +286,35 @@ IniItem::toString()
         output.append("]\n");
 
         // iterate over group-content
-        for(const auto& [name, groupItem] : globalItem->toMap()->map)
+        for(const auto& [name, groupItem] : globalItem.items())
         {
             // print line of group-content
             output.append(name);
             output.append(" = ");
 
-            if(groupItem->getType() == DataItem::ARRAY_TYPE)
+            if(groupItem.is_array())
             {
                 // print arrays
-                const std::vector<DataItem*> array = groupItem->toArray()->array;
-                for(uint64_t i = 0; i < array.size(); i++)
+                for(uint64_t i = 0; i < groupItem.size(); i++)
                 {
                     if(i != 0) {
                         output.append(", ");
                     }
-                    output.append(array.at(i)->toString());
+                    if(groupItem[i].is_string()) {
+                        output.append(groupItem[i]);
+                    } else {
+                        output.append(groupItem[i].dump());
+                    }
                 }
             }
             else
             {
                 // print simple items
-                groupItem->toString(false, &output);
+                if(groupItem.is_string()) {
+                    output.append(groupItem);
+                } else {
+                    output.append(groupItem.dump());
+                }
             }
 
             output.append("\n");

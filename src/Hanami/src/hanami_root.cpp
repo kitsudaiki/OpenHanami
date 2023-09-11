@@ -501,11 +501,11 @@ HanamiRoot::getBlossom(const std::string &groupName,
  * @return true, if successfule, else false
  */
 bool
-HanamiRoot::triggerBlossom(Hanami::DataMap &result,
+HanamiRoot::triggerBlossom(json &result,
                            const std::string &blossomName,
                            const std::string &blossomGroupName,
-                           const Hanami::DataMap &context,
-                           const Hanami::DataMap &initialValues,
+                           const json &context,
+                           const json &initialValues,
                            BlossomStatus &status,
                            Hanami::ErrorContainer &error)
 {
@@ -530,8 +530,8 @@ HanamiRoot::triggerBlossom(Hanami::DataMap &result,
         blossomIO.blossomName = blossomName;
         blossomIO.blossomPath = blossomName;
         blossomIO.blossomGroupType = blossomGroupName;
-        blossomIO.input = &initialValues;
-        blossomIO.parentValues = blossomIO.input.getItemContent()->toMap();
+        blossomIO.input = initialValues;
+        blossomIO.parentValues = blossomIO.input;
         blossomIO.nameHirarchie.push_back("BLOSSOM: " + blossomName);
 
         // check input to be complete
@@ -554,15 +554,14 @@ HanamiRoot::triggerBlossom(Hanami::DataMap &result,
         }
 
         // process blossom
-        if(blossom->growBlossom(blossomIO, &context, status, error) == false)
+        if(blossom->growBlossom(blossomIO, context, status, error) == false)
         {
             error.addMeesage("trigger blossom failed.");
             break;
         }
 
         // check output to be complete
-        Hanami::DataMap* output = blossomIO.output.getItemContent()->toMap();
-        if(blossom->validateFieldsCompleteness(*output,
+        if(blossom->validateFieldsCompleteness(blossomIO.output,
                                                *blossom->getOutputValidationMap(),
                                                FieldDef::OUTPUT_TYPE,
                                                errorMessage) == false)
@@ -580,7 +579,7 @@ HanamiRoot::triggerBlossom(Hanami::DataMap &result,
 
         // TODO: override only with the output-values to avoid unnecessary conflicts
         result.clear();
-        overrideItems(result, *output, ALL);
+        overrideItems(result, blossomIO.output, ALL);
 
         success = true;
     }

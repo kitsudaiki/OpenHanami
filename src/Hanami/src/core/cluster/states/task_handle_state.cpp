@@ -27,8 +27,6 @@
 #include <core/cluster/cluster.h>
 #include <core/cluster/statemachine_init.h>
 
-#include <hanami_json/json_item.h>
-
 /**
  * @brief constructor
  *
@@ -228,28 +226,26 @@ TaskHandle_State::finishTask()
     }
 
     // send results to shiori, if some are attached to the task
-    if(actualTask->resultData.isValid())
+    if(actualTask->resultData.size() != 0)
     {
         // results of tables a aggregated values, so they have to be fixed to its average value
         if(actualTask->type == TABLE_REQUEST_TASK)
         {
             const float numberOfOutputs = static_cast<float>(actualTask->numberOfOuputsPerCycle);
-            float val = 0.0f;
-            for(uint64_t i = 0; i < actualTask->resultData.getItemContent()->size(); i++)
+            for(uint64_t i = 0; i < actualTask->resultData.size(); i++)
             {
-                Hanami::DataValue* value = actualTask->resultData.get(i).getItemContent()->toValue();
-                val = value->getFloat() / numberOfOutputs;
-                value->setValue(val);
+                float value = actualTask->resultData[i];
+                actualTask->resultData[i] = value / numberOfOutputs;
             }
         }
 
         // write result to database
         Hanami::ErrorContainer error;
-        Hanami::JsonItem resultData;
-        resultData.insert("uuid", actualTask->uuid.toString());
-        resultData.insert("name", actualTask->name);
-        resultData.insert("data", actualTask->resultData);
-        resultData.insert("visibility", "private");
+        json resultData;
+        resultData["uuid"] = actualTask->uuid.toString();
+        resultData["name"] = actualTask->name;
+        resultData["data"] = actualTask->resultData;
+        resultData["visibility"] = "private";
 
         UserContext userContext;
         userContext.userId = actualTask->userId;

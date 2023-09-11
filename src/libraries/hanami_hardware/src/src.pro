@@ -10,15 +10,12 @@ LIBS += -L../../hanami_common/src/debug -lhanami_common
 LIBS += -L../../hanami_common/src/release -lhanami_common
 INCLUDEPATH += ../../hanami_common/include
 
-LIBS += -L../../hanami_json/src -lhanami_json
-LIBS += -L../../hanami_json/src/debug -lhanami_json
-LIBS += -L../../hanami_json/src/release -lhanami_json
-INCLUDEPATH += ../../hanami_json/include
-
 LIBS += -L../../hanami_cpu/src -lhanami_cpu
 LIBS += -L../../hanami_cpu/src/debug -lhanami_cpu
 LIBS += -L../../hanami_cpu/src/release -lhanami_cpu
 INCLUDEPATH += ../../hanami_cpu/include
+
+INCLUDEPATH += ../../../third-party-libs/json/include
 
 INCLUDEPATH += $$PWD \
                $$PWD/../include

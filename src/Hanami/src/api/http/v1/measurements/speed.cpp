@@ -44,11 +44,11 @@ Speed::Speed()
  */
 bool
 Speed::runTask(BlossomIO &blossomIO,
-               const Hanami::DataMap &,
+               const json &,
                BlossomStatus &,
                Hanami::ErrorContainer &)
 {
-    blossomIO.output.insert("current_speed", SpeedMeasuring::getInstance()->getJson());
+    blossomIO.output["current_speed"] = SpeedMeasuring::getInstance()->getJson();
 
     return true;
 }

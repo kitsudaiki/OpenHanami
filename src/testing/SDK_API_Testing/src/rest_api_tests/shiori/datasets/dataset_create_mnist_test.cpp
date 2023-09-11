@@ -39,16 +39,16 @@ DataSetCreateMnistTest::DataSetCreateMnistTest(const bool expectSuccess,
 }
 
 bool
-DataSetCreateMnistTest::runTest(Hanami::JsonItem &inputData,
+DataSetCreateMnistTest::runTest(json &inputData,
                                 Hanami::ErrorContainer &error)
 {
     std::string result;
     if(m_type == "train")
     {
         if(Hanami::uploadMnistData(result,
-                                     inputData.get("train_dataset_name").getString(),
-                                     inputData.get("train_inputs").getString(),
-                                     inputData.get("train_labels").getString(),
+                                     inputData["train_dataset_name"],
+                                     inputData["train_inputs"],
+                                     inputData["train_labels"],
                                      error) != m_expectSuccess)
         {
             return false;
@@ -57,9 +57,9 @@ DataSetCreateMnistTest::runTest(Hanami::JsonItem &inputData,
     else
     {
         if(Hanami::uploadMnistData(result,
-                                     inputData.get("request_dataset_name").getString(),
-                                     inputData.get("request_inputs").getString(),
-                                     inputData.get("request_labels").getString(),
+                                     inputData["request_dataset_name"],
+                                     inputData["request_inputs"],
+                                     inputData["request_labels"],
                                      error) != m_expectSuccess)
         {
             return false;
@@ -72,15 +72,17 @@ DataSetCreateMnistTest::runTest(Hanami::JsonItem &inputData,
     }
 
     // parse output
-    Hanami::JsonItem jsonItem;
-    if(jsonItem.parse(result, error) == false) {
+    json jsonItem = json::parse(result, nullptr, false);
+    if (jsonItem.is_discarded())
+    {
+        std::cerr << "parse error" << std::endl;
         return false;
     }
 
     if(m_type == "train") {
-        inputData.insert("train_dataset_uuid", jsonItem.get("uuid").getString(), true);
+        inputData["train_dataset_uuid"] = jsonItem["uuid"];
     } else {
-        inputData.insert("request_dataset_uuid", jsonItem.get("uuid").getString(), true);
+        inputData["request_dataset_uuid"] = jsonItem["uuid"];
     }
 
     return true;

@@ -4,3 +4,6 @@
 [submodule "src/frontend/Hanami-Dashboard-Dependencies"]
 	path = src/frontend/Hanami-Dashboard-Dependencies
 	url = https://github.com/kitsudaiki/Hanami-Dashboard-Dependencies.git
+[submodule "src/third-party-libs/json"]
+	path = src/third-party-libs/json
+	url = https://github.com/nlohmann/json.git

@@ -36,10 +36,10 @@ CheckpointDeleteTest::CheckpointDeleteTest(const bool expectSuccess)
 }
 
 bool
-CheckpointDeleteTest::runTest(Hanami::JsonItem &inputData,
+CheckpointDeleteTest::runTest(json &inputData,
                             Hanami::ErrorContainer &error)
 {
-    const std::string uuid = inputData.get("checkpoint_uuid").getString();
+    const std::string uuid = inputData["checkpoint_uuid"];
 
     // delete user by name
     std::string result;
@@ -52,8 +52,10 @@ CheckpointDeleteTest::runTest(Hanami::JsonItem &inputData,
     }
 
     // parse output
-    Hanami::JsonItem jsonItem;
-    if(jsonItem.parse(result, error) == false) {
+    json jsonItem = json::parse(result, nullptr, false);
+    if (jsonItem.is_discarded())
+    {
+        std::cerr << "parse error" << std::endl;
         return false;
     }
 

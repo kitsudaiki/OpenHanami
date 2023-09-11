@@ -96,13 +96,13 @@ SaveCluster_State::processEvent()
         targetFilePath.append(actualTask->uuid.toString() + "_checkpoint_" + actualTask->userId);
 
         // register in database
-        Hanami::JsonItem dbEntry;
-        dbEntry.insert("uuid", actualTask->uuid.toString());
-        dbEntry.insert("name", actualTask->checkpointName);
-        dbEntry.insert("location", targetFilePath);
-        dbEntry.insert("project_id", actualTask->projectId);
-        dbEntry.insert("owner_id", actualTask->userId);
-        dbEntry.insert("visibility", "private");
+        json dbEntry;
+        dbEntry["uuid"] = actualTask->uuid.toString();
+        dbEntry["name"] = actualTask->checkpointName;
+        dbEntry["location"] = targetFilePath;
+        dbEntry["project_id"] = actualTask->projectId;
+        dbEntry["owner_id"] = actualTask->userId;
+        dbEntry["visibility"] = "private";
 
         // add to database
         if(CheckpointTable::getInstance()->addCheckpoint(dbEntry,

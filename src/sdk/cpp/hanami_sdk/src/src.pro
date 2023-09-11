@@ -10,17 +10,14 @@ LIBS += -L../../../../libraries/hanami_common/src/debug -lhanami_common
 LIBS += -L../../../../libraries/hanami_common/src/release -lhanami_common
 INCLUDEPATH += ../../../../libraries/hanami_common/include
 
-LIBS += -L../../../../libraries/hanami_json/src -lhanami_json
-LIBS += -L../../../../libraries/hanami_json/src/debug -lhanami_json
-LIBS += -L../../../../libraries/hanami_json/src/release -lhanami_json
-INCLUDEPATH += ../../../../libraries/hanami_json/include
-
 LIBS += -L../../../../libraries/hanami_crypto/src -lhanami_crypto
 LIBS += -L../../../../libraries/hanami_crypto/src/debug -lhanami_crypto
 LIBS += -L../../../../libraries/hanami_crypto/src/release -lhanami_crypto
 INCLUDEPATH += ../../../../libraries/hanami_crypto/include
 
 LIBS += -lssl -lcryptopp -lcrypt
+
+INCLUDEPATH += ../../../../third-party-libs/json/include
 
 INCLUDEPATH += $$PWD \
                $$PWD/../include

@@ -26,11 +26,6 @@
 #include <hanami_common/logger.h>
 #include <database/generic_tables/hanami_sql_admin_table.h>
 
-namespace Hanami {
-namespace Json {
-class JsonItem;
-}
-}
 class ProjectsTable
         : public HanamiSqlAdminTable
 {
@@ -45,9 +40,9 @@ public:
 
     ~ProjectsTable();
 
-    bool addProject(Hanami::JsonItem &userData,
+    bool addProject(json &userData,
                     Hanami::ErrorContainer &error);
-    bool getProject(Hanami::JsonItem &result,
+    bool getProject(json &result,
                     const std::string &projectName,
                     Hanami::ErrorContainer &error,
                     const bool showHiddenValues = false);

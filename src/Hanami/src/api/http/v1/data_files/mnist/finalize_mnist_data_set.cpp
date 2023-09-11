@@ -30,7 +30,6 @@
 #include <hanami_files/data_set_files/image_data_set_file.h>
 
 #include <hanami_crypto/common.h>
-#include <hanami_json/json_item.h>
 #include <hanami_common/files/binary_file.h>
 #include <hanami_common/methods/file_methods.h>
 
@@ -73,17 +72,17 @@ FinalizeMnistDataSet::FinalizeMnistDataSet()
  */
 bool
 FinalizeMnistDataSet::runTask(BlossomIO &blossomIO,
-                              const Hanami::DataMap &context,
+                              const json &context,
                               BlossomStatus &status,
                               Hanami::ErrorContainer &error)
 {
-    const std::string uuid = blossomIO.input.get("uuid").getString();
-    const std::string inputUuid = blossomIO.input.get("uuid_input_file").getString();
-    const std::string labelUuid = blossomIO.input.get("uuid_label_file").getString();
+    const std::string uuid = blossomIO.input["uuid"];
+    const std::string inputUuid = blossomIO.input["uuid_input_file"];
+    const std::string labelUuid = blossomIO.input["uuid_label_file"];
     const UserContext userContext(context);
 
     // get location from database
-    Hanami::JsonItem result;
+    json result;
     if(DataSetTable::getInstance()->getDataSet(result, uuid, userContext, error, true) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -118,8 +117,8 @@ FinalizeMnistDataSet::runTask(BlossomIO &blossomIO,
     }
 
     // write data to file
-    if(convertMnistData(result.get("location").getString(),
-                        result.get("name").getString().c_str(),
+    if(convertMnistData(result["location"],
+                        result["name"],
                         inputBuffer,
                         labelBuffer) == false)
     {
@@ -133,7 +132,7 @@ FinalizeMnistDataSet::runTask(BlossomIO &blossomIO,
     TempFileHandler::getInstance()->removeData(labelUuid);
 
     // create output
-    blossomIO.output.insert("uuid", uuid);
+    blossomIO.output["uuid"] = uuid;
 
     return true;
 }

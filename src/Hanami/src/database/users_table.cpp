@@ -24,7 +24,6 @@
 
 #include <hanami_common/items/table_item.h>
 #include <hanami_common/methods/string_methods.h>
-#include <hanami_json/json_item.h>
 #include <hanami_crypto/hashes.h>
 
 #include <hanami_database/sql_database.h>
@@ -101,7 +100,7 @@ UsersTable::getAllAdminUser(Hanami::ErrorContainer &error)
     conditions.emplace_back("is_admin", "true");
 
     // get admin-user from db
-    Hanami::JsonItem users;
+    json users;
     if(getFromDb(users, conditions, error, false) == false)
     {
         error.addMeesage("Failed to get admin-users from database");
@@ -172,14 +171,14 @@ UsersTable::initNewAdminUser(Hanami::ErrorContainer &error)
     const std::string saltedPw = pw + salt;
     Hanami::generate_SHA_256(pwHash, saltedPw);
 
-    Hanami::JsonItem userData;
-    userData.insert("id", userId);
-    userData.insert("name", userName);
-    userData.insert("projects", "[]");
-    userData.insert("is_admin", true);
-    userData.insert("creator_id", "MISAKI");
-    userData.insert("pw_hash", pwHash);
-    userData.insert("salt", salt);
+    json userData;
+    userData["id"] = userId;
+    userData["name"] = userName;
+    userData["projects"] = "[]";
+    userData["is_admin"] = true;
+    userData["creator_id"] = "MISAKI";
+    userData["pw_hash"] = pwHash;
+    userData["salt"] = salt;
 
     // add new admin-user to db
     if(addUser(userData, error) == false)
@@ -201,7 +200,7 @@ UsersTable::initNewAdminUser(Hanami::ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-UsersTable::addUser(Hanami::JsonItem &userData,
+UsersTable::addUser(json &userData,
                     Hanami::ErrorContainer &error)
 {
     if(insertToDb(userData, error) == false)
@@ -224,7 +223,7 @@ UsersTable::addUser(Hanami::JsonItem &userData,
  * @return true, if successful, else false
  */
 bool
-UsersTable::getUser(Hanami::JsonItem &result,
+UsersTable::getUser(json &result,
                     const std::string &userId,
                     Hanami::ErrorContainer &error,
                     const bool showHiddenValues)
@@ -307,8 +306,8 @@ UsersTable::updateProjectsOfUser(const std::string &userId,
                                  const std::string &newProjects,
                                  Hanami::ErrorContainer &error)
 {
-    Hanami::JsonItem newValues;
-    newValues.insert("projects", Hanami::JsonItem(newProjects));
+    json newValues;
+    newValues["projects"] = json(newProjects);
 
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("id", userId);

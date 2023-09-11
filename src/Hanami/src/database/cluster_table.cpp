@@ -24,7 +24,6 @@
 
 #include <hanami_common/items/table_item.h>
 #include <hanami_common/methods/string_methods.h>
-#include <hanami_json/json_item.h>
 
 #include <hanami_database/sql_database.h>
 
@@ -54,7 +53,7 @@ ClusterTable::~ClusterTable() {}
  * @return true, if successful, else false
  */
 bool
-ClusterTable::addCluster(Hanami::JsonItem &clusterData,
+ClusterTable::addCluster(json &clusterData,
                          const UserContext &userContext,
                          Hanami::ErrorContainer &error)
 {
@@ -79,7 +78,7 @@ ClusterTable::addCluster(Hanami::JsonItem &clusterData,
  * @return true, if successful, else false
  */
 bool
-ClusterTable::getCluster(Hanami::JsonItem &result,
+ClusterTable::getCluster(json &result,
                          const std::string &clusterUuid,
                          const UserContext &userContext,
                          Hanami::ErrorContainer &error,
@@ -112,7 +111,7 @@ ClusterTable::getCluster(Hanami::JsonItem &result,
  * @return true, if successful, else false
  */
 bool
-ClusterTable::getClusterByName(Hanami::JsonItem &result,
+ClusterTable::getClusterByName(json &result,
                                const std::string &clusterName,
                                const UserContext &userContext,
                                Hanami::ErrorContainer &error,

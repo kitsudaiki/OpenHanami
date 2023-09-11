@@ -36,15 +36,15 @@ ProjectCreateTest::ProjectCreateTest(const bool expectSuccess)
 }
 
 bool
-ProjectCreateTest::runTest(Hanami::JsonItem &inputData,
+ProjectCreateTest::runTest(json &inputData,
                            Hanami::ErrorContainer &error)
 {
     // create new user
     std::string result;
     if(Hanami::createProject(result,
-                               inputData.get("project_id").getString(),
-                               inputData.get("project_name").getString(),
-                               error) != m_expectSuccess)
+                             inputData["project_id"],
+                             inputData["project_name"],
+                             error) != m_expectSuccess)
     {
         return false;
     }
@@ -54,12 +54,14 @@ ProjectCreateTest::runTest(Hanami::JsonItem &inputData,
     }
 
     // parse output
-    Hanami::JsonItem jsonItem;
-    if(jsonItem.parse(result, error) == false) {
+    json jsonItem = json::parse(result, nullptr, false);
+    if (jsonItem.is_discarded())
+    {
+        std::cerr << "parse error" << std::endl;
         return false;
     }
 
-    inputData.insert("project_id", jsonItem.get("id").getString(), true);
+    inputData["project_id"] = jsonItem["id"];
 
     return true;
 }

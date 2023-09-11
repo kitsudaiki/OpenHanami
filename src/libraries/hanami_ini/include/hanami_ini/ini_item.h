@@ -18,8 +18,6 @@
 
 namespace Hanami
 {
-class DataItem;
-
 class IniParserInterface;
 
 class IniItem
@@ -33,8 +31,9 @@ public:
                ErrorContainer &error);
 
     // get
-    DataItem* get(const std::string &group,
-                  const std::string &item);
+    bool get(json &result,
+             const std::string &group,
+             const std::string &item);
 
     // set
     bool set(const std::string &group,
@@ -70,13 +69,13 @@ public:
     // output
     const std::string toString();
 
-    DataItem* m_content = nullptr;
+    json m_content = nullptr;
 
 private:
-    bool set(const std::string& group,
-             const std::string& item,
-             DataItem* value,
-             bool force = false);
+    bool setVal(const std::string& group,
+                const std::string& item,
+                const json &value,
+                bool force = false);
 };
 
 }

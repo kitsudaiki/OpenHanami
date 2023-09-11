@@ -23,7 +23,6 @@
 #include "policy_test.h"
 
 #include <hanami_policies/policy.h>
-#include <hanami_common/items/data_items.h>
 
 namespace Hanami
 {

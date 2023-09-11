@@ -26,10 +26,6 @@
 #include <hanami_common/logger.h>
 #include <database/generic_tables/hanami_sql_table.h>
 
-namespace Hanami {
-class JsonItem;
-}
-
 class RequestResultTable
         : public HanamiSqlTable
 {
@@ -44,10 +40,10 @@ public:
 
     ~RequestResultTable();
 
-    bool addRequestResult(Hanami::JsonItem &data,
+    bool addRequestResult(json &data,
                           const UserContext &userContext,
                           Hanami::ErrorContainer &error);
-    bool getRequestResult(Hanami::JsonItem &result,
+    bool getRequestResult(json &result,
                           const std::string &resultUuid,
                           const UserContext &userContext,
                           Hanami::ErrorContainer &error,

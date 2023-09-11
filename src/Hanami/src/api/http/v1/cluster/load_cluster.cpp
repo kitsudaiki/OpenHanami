@@ -64,16 +64,16 @@ LoadCluster::LoadCluster()
  */
 bool
 LoadCluster::runTask(BlossomIO &blossomIO,
-                     const Hanami::DataMap &context,
+                     const json &context,
                      BlossomStatus &status,
                      Hanami::ErrorContainer &error)
 {
-    const std::string clusterUuid = blossomIO.input.get("cluster_uuid").getString();
-    const std::string checkpointUuid = blossomIO.input.get("checkpoint_uuid").getString();
+    const std::string clusterUuid = blossomIO.input["cluster_uuid"];
+    const std::string checkpointUuid = blossomIO.input["checkpoint_uuid"];
     const UserContext userContext(context);
 
     // get data from table
-    Hanami::JsonItem clusterInfo;
+    json clusterInfo;
     if(ClusterTable::getInstance()->getCluster(clusterInfo,
                                                clusterUuid,
                                                userContext,
@@ -104,7 +104,7 @@ LoadCluster::runTask(BlossomIO &blossomIO,
     }
 
     // get meta-infos of data-set from shiori
-    Hanami::JsonItem parsedCheckpointInfo;
+    json parsedCheckpointInfo;
     if(CheckpointTable::getInstance()->getCheckpoint(parsedCheckpointInfo,
                                                      checkpointUuid,
                                                      userContext,
@@ -126,13 +126,13 @@ LoadCluster::runTask(BlossomIO &blossomIO,
     }
 
     // init request-task
-    const std::string infoStr = parsedCheckpointInfo.toString();
+    const std::string infoStr = parsedCheckpointInfo.dump();
     const std::string taskUuid = addCheckpointRestoreTask(*cluster,
                                                           "",
                                                           infoStr,
                                                           userContext.userId,
                                                           userContext.projectId);
-    blossomIO.output.insert("uuid", taskUuid);
+    blossomIO.output["uuid"] = taskUuid;
 
     return true;
 }

@@ -28,7 +28,6 @@
 #include <hanami_crypto/common.h>
 #include <hanami_common/methods/string_methods.h>
 #include <hanami_common/methods/file_methods.h>
-#include <hanami_json/json_item.h>
 
 std::map<HttpResponseTypes, std::string> responseMessage =
 {
@@ -48,29 +47,29 @@ std::map<HttpResponseTypes, std::string> responseMessage =
 void
 createOpenApiDocumentation(std::string &docu)
 {
-    Hanami::JsonItem result;
-    result.insert("openapi", "3.0.0");
+    json result;
+    result["openapi"] = "3.0.0";
 
-    Hanami::JsonItem info;
-    info.insert("title", "API documentation");
-    info.insert("version", "unreleased");
-    result.insert("info", info);
+    json info;
+    info["title"] = "API documentation";
+    info["version"] = "unreleased";
+    result["info"] = info;
 
-    Hanami::JsonItem contact;
-    info.insert("name", "Tobias Anker");
-    info.insert("email", "tobias.anker@kitsunemimi.moe");
-    result.insert("contact", contact);
+    json contact;
+    contact["name"] = "Tobias Anker";
+    contact["email"] = "tobias.anker@kitsunemimi.moe";
+    result["contact"] = contact;
 
-    Hanami::JsonItem license;
-    license.insert("name", "Apache 2.0");
-    license.insert("url", "https://www.apache.org/licenses/LICENSE-2.0.html");
-    result.insert("license", license);
+    json license;
+    license["name"] = "Apache 2.0";
+    license["url"] = "https://www.apache.org/licenses/LICENSE-2.0.html";
+    result["license"] = license;
 
-    Hanami::JsonItem paths;
+    json paths;
     generateEndpointDocu_openapi(paths);
-    result.insert("paths", paths);
+    result["paths"] = paths;
 
-    docu = result.toString(true);
+    docu = result.dump(4, ' ');
 }
 
 /**
@@ -79,33 +78,33 @@ createOpenApiDocumentation(std::string &docu)
  * @param allowedErrorCodes
  */
 void
-addResponsess(Hanami::JsonItem &responses,
+addResponsess(json &responses,
               Blossom* blossom)
 {
-    Hanami::JsonItem resp200;
-    resp200.insert("description", responseMessage[OK_RTYPE]);
-    Hanami::JsonItem content;
-    Hanami::JsonItem jsonApplication;
-    Hanami::JsonItem schema;
-    schema.insert("type", "object");
+    json resp200;
+    resp200["description"] = responseMessage[OK_RTYPE];
+    json content;
+    json jsonApplication;
+    json schema;
+    schema["type"] = "object";
     createBodyParams_openapi(schema, blossom->getOutputValidationMap(), false);
-    jsonApplication.insert("schema", schema);
-    content.insert("application/json", jsonApplication);
-    resp200.insert("content", content);
-    responses.insert("200", resp200);
+    jsonApplication["schema"] = schema;
+    content["application/json"] = jsonApplication;
+    resp200["content"] = content;
+    responses["200"] = resp200;
 
     for(const HttpResponseTypes code : blossom->errorCodes)
     {
-        Hanami::JsonItem errorResponse;
-        errorResponse.insert("description", responseMessage[code]);
-        Hanami::JsonItem content;
-        Hanami::JsonItem jsonApplication;
-        Hanami::JsonItem schema;
-        schema.insert("type", "string");
-        jsonApplication.insert("schema", schema);
-        content.insert("text/plain", jsonApplication);
-        errorResponse.insert("content", content);
-        responses.insert(std::to_string(code), errorResponse);
+        json errorResponse;
+        errorResponse["description"] = responseMessage[code];
+        json content;
+        json jsonApplication;
+        json schema;
+        schema["type"] = "string";
+        jsonApplication["schema"] = schema;
+        content["text/plain"] = jsonApplication;
+        errorResponse["content"] = content;
+        responses[std::to_string(code)] = errorResponse;
     }
 }
 
@@ -114,19 +113,19 @@ addResponsess(Hanami::JsonItem &responses,
  * @param parameters
  */
 void
-addTokenRequirement(Hanami::JsonItem &parameters)
+addTokenRequirement(json &parameters)
 {
-    Hanami::JsonItem param;
-    param.insert("in", "header");
-    param.insert("description", "JWT-Token for authentication");
-    param.insert("name", "X-Auth-Token");
-    param.insert("required", true);
+    json param;
+    param["in"] = "header";
+    param["description"] = "JWT-Token for authentication";
+    param["name"] = "X-Auth-Token";
+    param["required"] = true;
 
-    Hanami::JsonItem schema;
-    schema.insert("type","string");
+    json schema;
+    schema["type"] = "string";
 
-    param.insert("schema", schema);
-    parameters.append(param);
+    param["schema"] = schema;
+    parameters.push_back(param);
 }
 
 /**
@@ -136,7 +135,7 @@ addTokenRequirement(Hanami::JsonItem &parameters)
  * @param isRequest
  */
 void
-createQueryParams_openapi(Hanami::JsonItem &parameters,
+createQueryParams_openapi(json &parameters,
                           const std::map<std::string, FieldDef>* defMap)
 {
     for(const auto& [field, fieldDef] : *defMap)
@@ -144,55 +143,53 @@ createQueryParams_openapi(Hanami::JsonItem &parameters,
         const FieldType fieldType = fieldDef.fieldType;
         const std::string comment = fieldDef.comment;
         const bool isRequired = fieldDef.isRequired;
-        const Hanami::DataItem* defaultVal = fieldDef.defaultVal;
-        const Hanami::DataItem* matchVal = fieldDef.match;
+        const json defaultVal = fieldDef.defaultVal;
+        const json matchVal = fieldDef.match;
         std::string regexVal = fieldDef.regex;
         const long lowerLimit = fieldDef.lowerLimit;
         const long upperLimit = fieldDef.upperLimit;
 
-        Hanami::JsonItem param;
-        param.insert("in", "query");
-        param.insert("name", field);
+        json param;
+        param["in"] = "query";
+        param["name"] = field;
 
         // required
         if(isRequired) {
-            param.insert("required", isRequired);
+            param["required"] = isRequired;
         }
 
         // comment
         if(comment != "") {
-            param.insert("description", comment);
+            param["description"] = comment;
         }
 
-        Hanami::JsonItem schema;
+        json schema;
 
         // type
         if(fieldType == SAKURA_MAP_TYPE) {
-            schema.insert("type","object");
+            schema["type"] = "object";
         } else if(fieldType == SAKURA_ARRAY_TYPE) {
-            schema.insert("type","array");
+            schema["type"] = "array";
         } else if(fieldType == SAKURA_BOOL_TYPE) {
-            schema.insert("type","boolean");
+            schema["type"] = "boolean";
         } else if(fieldType == SAKURA_INT_TYPE) {
-            schema.insert("type","integer");
+            schema["type"] = "integer";
         } else if(fieldType == SAKURA_FLOAT_TYPE) {
-            schema.insert("type","number");
+            schema["type"] = "number";
         } else if(fieldType == SAKURA_STRING_TYPE) {
-            schema.insert("type","string");
+            schema["type"] = "string";
         }
 
         // default
         if(defaultVal != nullptr
                 && isRequired == false)
         {
-            schema.insert("default", defaultVal->toString());
+            schema["default"] = defaultVal;
         }
 
         // match
-        if(regexVal != "")
-        {
-            Hanami::replaceSubstring(regexVal, "\\", "\\\\");
-            schema.insert("pattern", regexVal);
+        if(regexVal != "") {
+            schema["pattern"] = regexVal;
         }
 
         // border
@@ -201,28 +198,27 @@ createQueryParams_openapi(Hanami::JsonItem &parameters,
         {
             if(fieldType == SAKURA_INT_TYPE)
             {
-                schema.insert("minimum", std::to_string(lowerLimit));
-                schema.insert("maximum", std::to_string(upperLimit));
+                schema["minimum"] = std::to_string(lowerLimit);
+                schema["maximum"] = std::to_string(upperLimit);
             }
             if(fieldType == SAKURA_STRING_TYPE)
             {
-                schema.insert("minLength", std::to_string(lowerLimit));
-                schema.insert("maxLength", std::to_string(upperLimit));
+                schema["minLength"] = std::to_string(lowerLimit);
+                schema["maxLength"] = std::to_string(upperLimit);
             }
         }
 
         // match
         if(matchVal != nullptr)
         {
-            Hanami::JsonItem match;
-            std::string content = matchVal->toString();
-            Hanami::replaceSubstring(content, "\"", "\\\"");
-            match.append(content);
-            schema.insert("enum", match);
+            json match;
+            std::string content = matchVal;
+            match.push_back(content);
+            schema["enum"] = match;
         }
 
-        param.insert("schema", schema);
-        parameters.append(param);
+        param["schema"] = schema;
+        parameters.push_back(param);
     }
 }
 
@@ -234,58 +230,59 @@ createQueryParams_openapi(Hanami::JsonItem &parameters,
  * @param isRequest true to say that the actual field is a request-field
  */
 void
-createBodyParams_openapi(Hanami::JsonItem &schema,
+createBodyParams_openapi(json &schema,
                          const std::map<std::string, FieldDef>* defMap,
                          const bool isRequest)
 {
     std::vector<std::string> requiredFields;
 
-    Hanami::JsonItem properties;
+    json properties;
     for(const auto& [id, fieldDef] : *defMap)
     {
-        Hanami::JsonItem temp;
+        json temp;
 
         const std::string field = id;
         const FieldType fieldType = fieldDef.fieldType;
         const std::string comment = fieldDef.comment;
         const bool isRequired = fieldDef.isRequired;
-        const Hanami::DataItem* defaultVal = fieldDef.defaultVal;
-        const Hanami::DataItem* matchVal = fieldDef.match;
+        const json defaultVal = fieldDef.defaultVal;
+        const json matchVal = fieldDef.match;
         std::string regexVal = fieldDef.regex;
         const long lowerLimit = fieldDef.lowerLimit;
         const long upperLimit = fieldDef.upperLimit;
 
         // type
         if(fieldType == SAKURA_MAP_TYPE) {
-            temp.insert("type","object");
+            temp["type"] = "object";
         } else if(fieldType == SAKURA_ARRAY_TYPE) {
-            temp.insert("type","array");
-            Hanami::JsonItem array;
-            array.insert("type", "string");
+            temp["type"] = "array";
+            json array;
+            array["type"] = "string";
 
             // match
             if(matchVal != nullptr)
             {
-                Hanami::JsonItem match;
-                Hanami::ErrorContainer error;
-                match.parse(matchVal->toString(), error);
-                array.insert("enum", match);
+                json match = json::parse(matchVal.dump(), nullptr, false);
+                if(match.is_discarded()) {
+                    std::cerr << "parse error" << std::endl;
+                }
+                array["enum"] = match;
             }
 
-            temp.insert("items", array);
+            temp["items"] = array;
         } else if(fieldType == SAKURA_BOOL_TYPE) {
-            temp.insert("type","boolean");
+            temp["type"] = "boolean";
         } else if(fieldType == SAKURA_INT_TYPE) {
-            temp.insert("type","integer");
+            temp["type"] = "integer";
         } else if(fieldType == SAKURA_FLOAT_TYPE) {
-            temp.insert("type","number");
+            temp["type"] = "number";
         } else if(fieldType == SAKURA_STRING_TYPE) {
-            temp.insert("type","string");
+            temp["type"] = "string";
         }
 
         // comment
         if(comment != "") {
-            temp.insert("description", comment);
+            temp["description"] = comment;
         }
 
         if(isRequest)
@@ -299,14 +296,12 @@ createBodyParams_openapi(Hanami::JsonItem &schema,
             if(defaultVal != nullptr
                     && isRequired == false)
             {
-                temp.insert("default", defaultVal->toString());
+                temp["default"] = defaultVal;
             }
 
             // match
-            if(regexVal != "")
-            {
-                Hanami::replaceSubstring(regexVal, "\\", "\\\\");
-                temp.insert("pattern", regexVal);
+            if(regexVal != "") {
+                temp["pattern"] = regexVal;
             }
 
             // border
@@ -315,40 +310,42 @@ createBodyParams_openapi(Hanami::JsonItem &schema,
             {
                 if(fieldType == SAKURA_INT_TYPE)
                 {
-                    temp.insert("minimum", std::to_string(lowerLimit));
-                    temp.insert("maximum", std::to_string(upperLimit));
+                    temp["minimum"] = std::to_string(lowerLimit);
+                    temp["maximum"] = std::to_string(upperLimit);
                 }
                 if(fieldType == SAKURA_STRING_TYPE)
                 {
-                    temp.insert("minLength", std::to_string(lowerLimit));
-                    temp.insert("maxLength", std::to_string(upperLimit));
+                    temp["minLength"] = std::to_string(lowerLimit);
+                    temp["maxLength"] = std::to_string(upperLimit);
                 }
             }
 
             // match
             if(matchVal != nullptr)
             {
-                Hanami::JsonItem match;
-                std::string content = matchVal->toString();
+                json match;
+                std::string content = matchVal;
                 Hanami::replaceSubstring(content, "\"", "\\\"");
-                match.append(content);
-                temp.insert("enum", match);
+                match.push_back(content);
+                temp["enum"] = match;
             }
 
         }
 
-        properties.insert(field, temp);
+        properties[field] = temp;
     }
 
-    schema.insert("properties", properties);
+    if(properties.is_null() == false) {
+        schema["properties"] = properties;
+    }
 
     if(isRequest)
     {
-        Hanami::JsonItem required;
+        json required;
         for(const std::string& field : requiredFields) {
-            required.append(field);
+            required.push_back(field);
         }
-        schema.insert("required", required);
+        schema["required"] = required;
     }
 }
 
@@ -358,16 +355,16 @@ createBodyParams_openapi(Hanami::JsonItem &schema,
  * @param docu reference to the complete document
  */
 void
-generateEndpointDocu_openapi(Hanami::JsonItem &result)
+generateEndpointDocu_openapi(json &result)
 {
     for(const auto& [endpointPath, httpDef] : HanamiRoot::root->endpointRules)
     {
         // add endpoint
-        Hanami::JsonItem endpoint;
+        json endpoint;
 
         for(const auto& [type, endpointEntry] : httpDef)
         {
-            Hanami::JsonItem endpointType;
+            json endpointType;
 
             Blossom* blossom = HanamiRoot::root->getBlossom(endpointEntry.group,
                                                             endpointEntry.name);
@@ -377,13 +374,13 @@ generateEndpointDocu_openapi(Hanami::JsonItem &result)
             }
 
             // add comment/describtion
-            endpointType.insert("summary", blossom->comment);
+            endpointType["summary"] = blossom->comment;
 
-            Hanami::JsonItem tags;
-            tags.append(endpointEntry.group);
-            endpointType.insert("tags", tags);
+            json tags;
+            tags.push_back(endpointEntry.group);
+            endpointType["tags"] = tags;
 
-            Hanami::JsonItem parameters;
+            json parameters;
 
             if(blossom->requiresAuthToken) {
                 addTokenRequirement(parameters);
@@ -392,17 +389,17 @@ generateEndpointDocu_openapi(Hanami::JsonItem &result)
             if(type == POST_TYPE
                     || type == PUT_TYPE)
             {
-                Hanami::JsonItem requestBody;
-                requestBody.insert("required", true);
-                Hanami::JsonItem content;
-                Hanami::JsonItem jsonApplication;
-                Hanami::JsonItem schema;
-                schema.insert("type", "object");
+                json requestBody;
+                requestBody["required"] = true;
+                json content;
+                json jsonApplication;
+                json schema;
+                schema["type"] = "object";
                 createBodyParams_openapi(schema, blossom->getInputValidationMap(), true);
-                jsonApplication.insert("schema", schema);
-                content.insert("application/json", jsonApplication);
-                requestBody.insert("content", content);
-                endpointType.insert("requestBody", requestBody);
+                jsonApplication["schema"] = schema;
+                content["application/json"] = jsonApplication;
+                requestBody["content"] = content;
+                endpointType["requestBody"] = requestBody;
             }
 
             if(type == GET_TYPE
@@ -410,25 +407,28 @@ generateEndpointDocu_openapi(Hanami::JsonItem &result)
             {
                 createQueryParams_openapi(parameters, blossom->getInputValidationMap());
             }
-            endpointType.insert("parameters", parameters);
+
+            if(parameters.is_null() == false) {
+                endpointType["parameters"] = parameters;
+            }
 
             // add response-codes
-            Hanami::JsonItem responses;
+            json responses;
             addResponsess(responses, blossom);
-            endpointType.insert("responses", responses);
+            endpointType["responses"] = responses;
 
             // add http-type
             if(type == GET_TYPE) {
-                endpoint.insert("get", endpointType);
+                endpoint["get"] = endpointType;
             } else if(type == POST_TYPE) {
-                endpoint.insert("post", endpointType);
+                endpoint["post"] = endpointType;
             } else if(type == DELETE_TYPE) {
-                endpoint.insert("delete", endpointType);
+                endpoint["delete"] = endpointType;
             } else if(type == PUT_TYPE) {
-                endpoint.insert("put", endpointType);
+                endpoint["put"] = endpointType;
             }
         }
 
-        result.insert(endpointPath, endpoint);
+        result[endpointPath] = endpoint;
     }
 }

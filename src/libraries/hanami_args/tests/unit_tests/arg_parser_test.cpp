@@ -22,7 +22,6 @@
 
 #include "arg_parser_test.h"
 
-#include <hanami_common/items/data_items.h>
 #include <hanami_args/arg_parser.h>
 
 namespace Hanami
@@ -157,7 +156,7 @@ void
 ArgParser_Test::convertValue_test()
 {
     ArgParser parser;
-    DataItem* result = nullptr;
+    json result;
     bool isNullptr = false;
     ErrorContainer error;
 
@@ -170,8 +169,8 @@ ArgParser_Test::convertValue_test()
 
     // check result value
     result = parser.convertValue("asdf", ArgParser::ArgType::STRING_TYPE);
-    TEST_EQUAL(result->toValue()->getValueType(), DataValue::STRING_TYPE);
-    TEST_EQUAL(result->getString(), "asdf");
+    TEST_EQUAL(result.is_string(), true);
+    TEST_EQUAL(result, "asdf");
 
     // int-type
     // check if result is nullptr
@@ -182,8 +181,8 @@ ArgParser_Test::convertValue_test()
 
     // check result value
     result = parser.convertValue("42", ArgParser::ArgType::INT_TYPE);
-    TEST_EQUAL(result->toValue()->getValueType(), DataValue::INT_TYPE);
-    TEST_EQUAL(result->getInt(), 42);
+    TEST_EQUAL(result.is_number_integer(), true);
+    TEST_EQUAL(result, 42);
 
     // float-type
     // check if result is nullptr
@@ -196,8 +195,8 @@ ArgParser_Test::convertValue_test()
 
     // check result value
     result = parser.convertValue("42.25", ArgParser::ArgType::FLOAT_TYPE);
-    TEST_EQUAL(result->toValue()->getValueType(), DataValue::FLOAT_TYPE);
-    TEST_EQUAL(result->getDouble(), 42.25);
+    TEST_EQUAL(result.is_number_float(), true);
+    TEST_EQUAL(result, 42.25);
 
     // bool-type
     // check if result is nullptr
@@ -216,8 +215,8 @@ ArgParser_Test::convertValue_test()
 
     // check result value
     result = parser.convertValue("true", ArgParser::ArgType::BOOL_TYPE);
-    TEST_EQUAL(result->toValue()->getValueType(), DataValue::BOOL_TYPE);
-    TEST_EQUAL(result->getBool(), true);
+    TEST_EQUAL(result.is_boolean(), true);
+    TEST_EQUAL(result, true);
 }
 
 /**

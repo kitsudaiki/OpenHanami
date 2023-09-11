@@ -27,6 +27,8 @@ LIBS += -L../../../hanami_config/src/debug -lhanami_config
 LIBS += -L../../../hanami_config/src/release -lhanami_config
 INCLUDEPATH += ../../../hanami_config/include
 
+INCLUDEPATH += ../../../../third-party-libs/json/include
+
 INCLUDEPATH += $$PWD
 
 SOURCES += \

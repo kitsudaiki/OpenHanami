@@ -26,9 +26,7 @@
 #include <vector>
 #include <unistd.h>
 
-#include <hanami_json/json_item.h>
 #include <hanami_common/logger.h>
-#include <unistd.h>
 
 class TestStep
 {
@@ -38,7 +36,7 @@ public:
 
     const std::string getTestName() const;
 
-    virtual bool runTest(Hanami::JsonItem &inputData,
+    virtual bool runTest(json &inputData,
                          Hanami::ErrorContainer &error) = 0;
 
 protected:

@@ -1,4 +1,8 @@
 {
+    "contact": {
+        "email": "tobias.anker@kitsunemimi.moe",
+        "name": "Tobias Anker"
+    },
     "info": {
         "title": "API documentation",
         "version": "unreleased"

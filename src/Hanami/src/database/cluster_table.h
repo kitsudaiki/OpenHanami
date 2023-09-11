@@ -26,9 +26,6 @@
 #include <hanami_common/logger.h>
 #include <database/generic_tables/hanami_sql_table.h>
 
-namespace Hanami {
-class JsonItem;
-}
 class ClusterTable
         : public HanamiSqlTable
 {
@@ -43,15 +40,15 @@ public:
 
     ~ClusterTable();
 
-    bool addCluster(Hanami::JsonItem &clusterData,
+    bool addCluster(json &clusterData,
                     const UserContext &userContext,
                     Hanami::ErrorContainer &error);
-    bool getCluster(Hanami::JsonItem &result,
+    bool getCluster(json &result,
                     const std::string &clusterUuid,
                     const UserContext &userContext,
                     Hanami::ErrorContainer &error,
                     const bool showHiddenValues = false);
-    bool getClusterByName(Hanami::JsonItem &result,
+    bool getClusterByName(json &result,
                           const std::string &clusterName,
                           const UserContext &userContext,
                           Hanami::ErrorContainer &error,

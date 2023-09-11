@@ -31,7 +31,7 @@ class CheckpointDeleteTest
 public:
     CheckpointDeleteTest(const bool expectSuccess);
 
-    bool runTest(Hanami::JsonItem &inputData,
+    bool runTest(json &inputData,
                  Hanami::ErrorContainer &error);
 };
 

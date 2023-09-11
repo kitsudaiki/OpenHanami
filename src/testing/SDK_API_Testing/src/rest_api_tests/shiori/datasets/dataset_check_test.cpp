@@ -37,14 +37,14 @@ DataSetCheckTest::DataSetCheckTest(const bool expectSuccess)
 }
 
 bool
-DataSetCheckTest::runTest(Hanami::JsonItem &inputData,
+DataSetCheckTest::runTest(json &inputData,
                           Hanami::ErrorContainer &error)
 {
     // get template by name
     std::string result;
     if(Hanami::checkDataset(result,
-                              inputData.get("request_dataset_uuid").getString(),
-                              inputData.get("request_task_uuid").getString(),
+                              inputData["request_dataset_uuid"],
+                              inputData["request_task_uuid"],
                               error) != m_expectSuccess)
     {
         return false;
@@ -55,12 +55,14 @@ DataSetCheckTest::runTest(Hanami::JsonItem &inputData,
     }
 
     // parse output
-    Hanami::JsonItem jsonItem;
-    if(jsonItem.parse(result, error) == false) {
+    json jsonItem = json::parse(result, nullptr, false);
+    if (jsonItem.is_discarded())
+    {
+        std::cerr << "parse error" << std::endl;
         return false;
     }
 
-    std::cout<<jsonItem.toString(true)<<std::endl;
+    std::cout<<jsonItem.dump(4)<<std::endl;
 
     return true;
 }

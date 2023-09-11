@@ -31,7 +31,6 @@
 #include <core/cluster/cluster_handler.h>
 
 #include <hanami_common/threading/event.h>
-#include <hanami_json/json_item.h>
 
 using namespace Hanami;
 
@@ -337,8 +336,8 @@ HttpWebsocketThread::processInitialMessage(const std::string &message,
     }
 
     // parse incoming initializing message
-    JsonItem content;
-    if(content.parse(message, error) == false)
+    json content = json::parse(message, nullptr, false);
+    if (content.is_discarded())
     {
         error.addMeesage("Parsing of initial websocket-message failed");
         LOG_ERROR(error);
@@ -350,12 +349,12 @@ HttpWebsocketThread::processInitialMessage(const std::string &message,
 
     requestMsg.id = "v1/foreward";
     requestMsg.httpType = HttpRequestType::GET_TYPE;
-    m_target = content.get("target").getString();
+    m_target = content["target"];
 
     // check authentication
-    Hanami::JsonItem tokenData;
+    json tokenData;
     if(checkPermission(tokenData,
-                       content.get("token").getString(),
+                       content["token"],
                        requestMsg,
                        responseMsg,
                        error) == false)
@@ -377,7 +376,7 @@ HttpWebsocketThread::processInitialMessage(const std::string &message,
     // forward connection to shiori or hanami
     if(m_target == "kyouko")
     {
-        const std::string getClusterUuid = content.get("uuid").getString();
+        const std::string getClusterUuid = content["uuid"];
         m_targetCluster = ClusterHandler::getInstance()->getCluster(getClusterUuid);
         m_targetCluster->msgClient = this;
         m_clientInit = true;
@@ -456,16 +455,15 @@ HttpWebsocketThread::runWebsocket()
                 }
 
                 // build response-message
-                std::string response = "{\"success\":" + std::to_string(success);
-                if(success)
-                {
-                    response.append(",\"uuid\":\"");
-                    response.append(m_uuid);
+                json response = json::object();
+                response["success"] = success;
+                if(success) {
+                    response["uuid"] = m_uuid;
                 }
-                response.append("\"}");
 
+                const std::string responseMsg = response.dump();
                 m_webSocket->binary(true);
-                m_webSocket->write(net::buffer(response, response.size()));
+                m_webSocket->write(net::buffer(responseMsg, responseMsg.size()));
                 m_waitForInput = true;
             }
             else

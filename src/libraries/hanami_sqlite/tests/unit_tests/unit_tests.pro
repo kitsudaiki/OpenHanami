@@ -12,13 +12,9 @@ LIBS += -L../../../hanami_common/src/debug -lhanami_common
 LIBS += -L../../../hanami_common/src/release -lhanami_common
 INCLUDEPATH += ../../../hanami_common/include
 
-LIBS += -L../../../hanami_json/src -lhanami_json
-LIBS += -L../../../hanami_json/src/debug -lhanami_json
-LIBS += -L../../../hanami_json/src/release -lhanami_json
-INCLUDEPATH += ../../l../ibhanami_json/include
-
-
 LIBS += -lsqlite3
+
+INCLUDEPATH += ../../../../third-party-libs/json/include
 
 INCLUDEPATH += $$PWD
 

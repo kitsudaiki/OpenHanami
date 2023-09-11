@@ -75,14 +75,14 @@ FinalizeCheckpoint::FinalizeCheckpoint()
  */
 bool
 FinalizeCheckpoint::runTask(BlossomIO &blossomIO,
-                            const Hanami::DataMap &,
+                            const json &,
                             BlossomStatus &status,
                             Hanami::ErrorContainer &error)
 {
-    const std::string uuid = blossomIO.input.get("uuid").getString();
-    const std::string inputUuid = blossomIO.input.get("uuid_input_file").getString();
-    const std::string userId = blossomIO.input.get("id").getString();
-    const std::string projectId = blossomIO.input.get("project_id").getString();
+    const std::string uuid = blossomIO.input["uuid"];
+    const std::string inputUuid = blossomIO.input["uuid_input_file"];
+    const std::string userId = blossomIO.input["id"];
+    const std::string projectId = blossomIO.input["project_id"];
 
     // checkpoints are created by another internal process, which gives the id's not in the context
     // object, but as normal values
@@ -91,7 +91,7 @@ FinalizeCheckpoint::runTask(BlossomIO &blossomIO,
     userContext.projectId = projectId;
 
     // get location from database
-    Hanami::JsonItem result;
+    json result;
     if(CheckpointTable::getInstance()->getCheckpoint(result,
                                                      uuid,
                                                      userContext,
@@ -113,7 +113,7 @@ FinalizeCheckpoint::runTask(BlossomIO &blossomIO,
     }
 
     // move temp-file to target-location
-    const std::string targetLocation = result.get("location").getString();
+    const std::string targetLocation = result["location"];
     if(TempFileHandler::getInstance()->moveData(inputUuid, targetLocation, error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -121,7 +121,7 @@ FinalizeCheckpoint::runTask(BlossomIO &blossomIO,
     }
 
     // create output
-    blossomIO.output.insert("uuid", uuid);
+    blossomIO.output["uuid"] = uuid;
 
     return true;
 }

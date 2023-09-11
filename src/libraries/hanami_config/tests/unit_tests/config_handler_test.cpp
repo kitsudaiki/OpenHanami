@@ -24,7 +24,6 @@
 
 #include <hanami_config/config_handler.h>
 #include <hanami_common/files/text_file.h>
-#include <hanami_common/items/data_items.h>
 #include <hanami_common/methods/file_methods.h>
 
 namespace Hanami
@@ -121,10 +120,10 @@ ConfigHandler_Test::getRegisteredType_test()
     ConfigHandler configHandler;
     Hanami::ErrorContainer error;
     std::string groupName = "groupName";
-    DataValue value("");
+    json value("");
 
-    configHandler.registerValue(groupName, "key1", "", ConfigHandler::ConfigType::STRING_TYPE, false, &value, error);
-    configHandler.registerValue(groupName, "key2", "", ConfigHandler::ConfigType::INT_TYPE, false, &value, error);
+    configHandler.registerValue(groupName, "key1", "", ConfigHandler::ConfigType::STRING_TYPE, false, value, error);
+    configHandler.registerValue(groupName, "key2", "", ConfigHandler::ConfigType::INT_TYPE, false, value, error);
 
     TEST_EQUAL(configHandler.getRegisteredType("groupName", "key1"), ConfigHandler::ConfigType::STRING_TYPE);
     TEST_EQUAL(configHandler.getRegisteredType("groupName", "key2"), ConfigHandler::ConfigType::INT_TYPE);

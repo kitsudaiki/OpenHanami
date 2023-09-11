@@ -13,13 +13,15 @@
 #include <string>
 #include <map>
 #include <mutex>
-#include <hanami_common/items/data_items.h>
 #include <hanami_common/logger.h>
 
-using Hanami::DataItem;
 using std::string;
 using std::map;
 using std::pair;
+
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 namespace Hanami
 {
@@ -34,11 +36,11 @@ public:
     // connection the the scanner and parser
     void scan_begin(const std::string &inputString);
     void scan_end();
-    DataItem* parse(const std::string &inputString, ErrorContainer &error);
+    json parse(const std::string &inputString, ErrorContainer &error);
     const std::string removeQuotes(const std::string &input);
 
     // output-handling
-    void setOutput(DataItem* output);
+    void setOutput(json output);
 
     // Error handling.
     void error(const Hanami::location &location,
@@ -52,7 +54,7 @@ private:
 
     static IniParserInterface* m_instance;
 
-    DataItem* m_output = nullptr;
+    json m_output;
     std::string m_errorMessage = "";
     std::string m_inputString = "";
     std::mutex m_lock;

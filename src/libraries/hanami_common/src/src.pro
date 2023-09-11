@@ -5,6 +5,8 @@ TEMPLATE = lib
 CONFIG += c++17
 VERSION = 0.26.1
 
+INCLUDEPATH += ../../../third-party-libs/json/include
+
 INCLUDEPATH += $$PWD \
             ../include
 
@@ -17,7 +19,6 @@ SOURCES += \
     progress_bar.cpp \
     threading/thread.cpp \
     statemachine.cpp \
-    items/data_items.cpp \
     items/table_item.cpp \
     threading/barrier.cpp \
     process_execution.cpp \
@@ -45,7 +46,6 @@ HEADERS += \
     ../include/hanami_common/buffer/ring_buffer.h \
     ../include/hanami_common/methods/string_methods.h \
     ../include/hanami_common/methods/vector_methods.h \
-    ../include/hanami_common/items/data_items.h \
     ../include/hanami_common/statemachine.h \
     ../include/hanami_common/threading/thread.h \
     ../include/hanami_common/items/table_item.h \

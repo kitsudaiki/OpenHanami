@@ -37,7 +37,7 @@ DirectIoTest::DirectIoTest(const bool expectSuccess)
 }
 
 bool
-DirectIoTest::runTest(Hanami::JsonItem &,
+DirectIoTest::runTest(json &,
                       Hanami::ErrorContainer &)
 {
     if(trainTest() == false) {

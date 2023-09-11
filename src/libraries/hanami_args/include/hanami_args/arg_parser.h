@@ -31,8 +31,6 @@
 
 namespace Hanami
 {
-class DataItem;
-class DataArray;
 class ArgParser_Test;
 class SubCommand;
 
@@ -112,7 +110,7 @@ private:
         ArgType type = STRING_TYPE;
         std::string helpText = "";
 
-        DataArray* results = nullptr;
+        json results;
     };
 
     uint32_t m_positionCounter = 0;
@@ -132,8 +130,8 @@ private:
                           bool hasValue,
                           ErrorContainer &error);
 
-    DataItem* convertValue(const std::string &value,
-                           const ArgType requiredType);
+    json convertValue(const std::string &value,
+                      const ArgType requiredType);
 };
 
 }
