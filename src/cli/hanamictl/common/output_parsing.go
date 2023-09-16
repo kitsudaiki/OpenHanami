@@ -1,6 +1,4 @@
 /**
- * @file        output_parsing.go
-  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
  * @copyright   Apache License Version 2.0
@@ -20,7 +18,7 @@
  *      limitations under the License.
  */
 
- package hanami_cli_common
+package hanamictl_common
 
 import (
     "fmt"

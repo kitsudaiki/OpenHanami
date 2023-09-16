@@ -1,6 +1,4 @@
 /**
- * @file        main.go
-  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
  * @copyright   Apache License Version 2.0
@@ -20,19 +18,19 @@
  *      limitations under the License.
  */
 
- package main
+package main
 
 import (
     "fmt"
     "github.com/spf13/cobra"
     "os"
-    "hanamictl/user"
+    "hanamictl/resources"
 )
 
 var rootCmd = &cobra.Command{Use: "hanamictl"}
 
 func init() {
-    user_commands.Init_UserList_command(rootCmd);
+    hanami_user_commands.Init_User_Commands(rootCmd);
 }
 
 func main() {

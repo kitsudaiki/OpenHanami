@@ -26,17 +26,17 @@ import (
     "fmt"
 )
 
-func CreateUser_Request(user_name string, pw string, is_admin string, groups string) (bool, string) {
+func CreateUser_Request(id string, pw string, is_admin string, groups string) (bool, string) {
 	path := "control/v1/create_user"
 	vars := ""
-	jsonBody := fmt.Sprintf("{\"user_name\":\"%s\",\"pw\":\"%s\",\"is_admin\":%s,\"groups\":\"%s\"}", 
-	                        user_name, pw, is_admin, groups)
+	jsonBody := fmt.Sprintf("{\"id\":\"%s\",\"pw\":\"%s\",\"is_admin\":%s,\"groups\":\"%s\"}", 
+	                        id, pw, is_admin, groups)
     return SendPost_Request(path, vars, jsonBody)
 }
 
-func GetUser_Request(user_name string) (bool, string) {
+func GetUser_Request(id string) (bool, string) {
 	path := "control/v1/user"
-	vars := fmt.Sprintf("user_name=%s", user_name)
+	vars := fmt.Sprintf("id=%s", id)
     return SendGet_Request(path, vars)
 }
 
@@ -46,8 +46,8 @@ func ListUser_Request() (bool, string) {
     return SendGet_Request(path, vars)
 }
 
-func DeleteUser_Request(user_name string) (bool, string) {
+func DeleteUser_Request(id string) (bool, string) {
 	path := "control/v1/user"
-	vars := fmt.Sprintf("user_name=%s", user_name)
+	vars := fmt.Sprintf("id=%s", id)
     return SendDelete_Request(path, vars)
 }

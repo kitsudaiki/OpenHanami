@@ -1,6 +1,4 @@
 /**
- * @file        user_list.go
-  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
  * @copyright   Apache License Version 2.0
@@ -20,37 +18,58 @@
  *      limitations under the License.
  */
 
- package user_commands
+package hanami_user_commands
 
 import (
     "fmt"
-	"github.com/kitsudaiki/Hanami"
 	"hanamictl/common"
     "github.com/spf13/cobra"
+	"github.com/kitsudaiki/Hanami"
 )
 
-var listCmd = &cobra.Command{
-    Use:   "list",
-    Short: "List resources of one type",
-}
-
-var userListCmd = &cobra.Command{
-    Use:   "user",
-    Short: "List all users.",
-}
 
 func userListRun(cmd *cobra.Command, args []string) {
 	success, content := http_request.ListUser_Request()
 	if success {
-		hanami_cli_common.ParseList(content)
+		hanamictl_common.ParseList(content)
 	} else {
 		fmt.Println(content);
 	}
 }
 
-func Init_UserList_command(rootCmd *cobra.Command) {
-	rootCmd.AddCommand(listCmd)
-    listCmd.AddCommand(userListCmd)
+func userGetRun(cmd *cobra.Command, args []string) {
+	userId := args[0]
 
-    userListCmd.Run = userListRun
+	success, content := http_request.GetUser_Request(userId)
+	if success {
+		hanamictl_common.ParseSingle(content)
+	} else {
+		fmt.Println(content);
+	}
+}
+
+
+var listUserCmd = &cobra.Command {
+    Use:   "list",
+    Short: "List all user.",
+	Run: userListRun,
+}
+
+var getUserCmd = &cobra.Command {
+    Use:   "get <USER_ID>",
+    Short: "Get information of a specific user.",
+	Args:  cobra.ExactArgs(1),
+	Run: userGetRun,
+}
+
+var userCmd = &cobra.Command {
+    Use:   "user",
+    Short: "Manage user.",
+}
+
+
+func Init_User_Commands(rootCmd *cobra.Command) {
+	rootCmd.AddCommand(userCmd)
+    userCmd.AddCommand(listUserCmd)
+    userCmd.AddCommand(getUserCmd)
 }
