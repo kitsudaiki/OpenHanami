@@ -5,7 +5,7 @@
  *
  * @copyright   Apache License Version 2.0
  *
- *      Copyright 2021 Tobias Anker
+ *      Copyright 2022 Tobias Anker
  *
  *      Licensed under the Apache License, Version 2.0 (the "License");
  *      you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
  *      limitations under the License.
  */
 
- package http_request
+package http_request
 
 import (
     "fmt"
@@ -93,14 +93,14 @@ func parseJson(input string) map[string]interface{} {
     return outputMap
 }
 
+
 func requestToken() bool {
     var user = os.Getenv("HANAMI_USER")
 	var pw = os.Getenv("HANAMI_PW")
 
-    path := fmt.Sprintf("control/v1/token")
-    body := fmt.Sprintf("{\"id\":\"%s\",\"password\":\"%s\"}", user, pw)
+    path := fmt.Sprintf("control/v1/token?name=%s&pw=%s", user, pw)
 
-    success, content := sendGenericRequest("POST", "", path, body)
+    success, content := sendGenericRequest("GET", "", path, "")
     if success == false {
         return false
     }
@@ -120,6 +120,7 @@ func sendRequest(requestType string, token string, path string, vars string, jso
     
     return sendGenericRequest(requestType, token, completePath, jsonBody)
 }
+
 
 func sendGenericRequest(requestType string, token string, path string, jsonBody string) (bool, string) {
     // read environment-variables

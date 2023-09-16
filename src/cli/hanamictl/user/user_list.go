@@ -1,5 +1,5 @@
 /**
- * @file        main.go
+ * @file        user_list.go
   *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,33 +20,37 @@
  *      limitations under the License.
  */
 
- package main
+ package user_commands
 
 import (
-    "flag"
-    "context"
-    "os"
-    "./user"
-    "./train_data"
-    "./documentation"
-    "github.com/google/subcommands"
+    "fmt"
+	"github.com/kitsudaiki/Hanami"
+	"hanamictl/common"
+    "github.com/spf13/cobra"
 )
 
-func main() {
-    subcommands.Register(subcommands.HelpCommand(), "")
-    subcommands.Register(subcommands.FlagsCommand(), "")
-    subcommands.Register(subcommands.CommandsCommand(), "")
+var listCmd = &cobra.Command{
+    Use:   "list",
+    Short: "List resources of one type",
+}
 
-    user_commands.Init_UserShow_command();
-    user_commands.Init_UserList_command();
+var userListCmd = &cobra.Command{
+    Use:   "user",
+    Short: "List all users.",
+}
 
-    train_data_commands.Init_TrainDataCreate_command();
-    train_data_commands.Init_TrainDataShow_command();
-    train_data_commands.Init_TrainDataList_command();
+func userListRun(cmd *cobra.Command, args []string) {
+	success, content := http_request.ListUser_Request()
+	if success {
+		hanami_cli_common.ParseList(content)
+	} else {
+		fmt.Println(content);
+	}
+}
 
-    documenation_commands.Init_GenerateRestApiDocumentation_command();
+func Init_UserList_command(rootCmd *cobra.Command) {
+	rootCmd.AddCommand(listCmd)
+    listCmd.AddCommand(userListCmd)
 
-    flag.Parse()
-    ctx := context.Background()
-    os.Exit(int(subcommands.Execute(ctx)))
+    userListCmd.Run = userListRun
 }

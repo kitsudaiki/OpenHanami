@@ -74,8 +74,13 @@ func ParseList(input string) {
     for _, line := range bodyArray {
         lineData := []string{}
         for _, val := range line.([]interface{}) {
-            lineData = append(lineData, val.(string))
-        }
+            if strVal, ok := val.(string); ok {
+                lineData = append(lineData, strVal)
+            } else {
+                str := fmt.Sprintf("%v", val)
+                lineData = append(lineData, str)
+            }
+        }        
         table.Append(lineData)
     }
     
