@@ -3,7 +3,7 @@
  *
  * @copyright   Apache License Version 2.0
  *
- *      Copyright 2021 Tobias Anker
+ *      Copyright 2022 Tobias Anker
  *
  *      Licensed under the Apache License, Version 2.0 (the "License");
  *      you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import (
 var rootCmd = &cobra.Command{Use: "hanamictl"}
 
 func init() {
-    hanami_user_commands.Init_User_Commands(rootCmd);
+    hanami_resources.Init_User_Commands(rootCmd);
 }
 
 func main() {

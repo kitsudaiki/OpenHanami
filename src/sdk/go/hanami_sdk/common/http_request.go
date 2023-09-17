@@ -1,6 +1,4 @@
 /**
- * @file        http_request.go
-  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
  * @copyright   Apache License Version 2.0
@@ -20,7 +18,7 @@
  *      limitations under the License.
  */
 
-package http_request
+package hanami_sdk
 
 import (
     "fmt"

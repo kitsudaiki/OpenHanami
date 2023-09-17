@@ -18,13 +18,12 @@
  *      limitations under the License.
  */
 
-package hanami_sdk
+package hanami_resources
 
 import (
+    //"fmt"
+    //"hanamictl/common"
+    //"github.com/spf13/cobra"
+    //"github.com/kitsudaiki/Hanami"
 )
 
-func GetThreadMapping() (bool, string) {
-    path := "control/v1/threading"
-    vars := ""
-    return SendGet(path, vars)
-}

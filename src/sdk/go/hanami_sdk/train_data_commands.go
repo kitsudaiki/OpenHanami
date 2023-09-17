@@ -1,11 +1,9 @@
 /**
- * @file        train_data_commands.go
-  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
  * @copyright   Apache License Version 2.0
  *
- *      Copyright 2021 Tobias Anker
+ *      Copyright 2022 Tobias Anker
  *
  *      Licensed under the Apache License, Version 2.0 (the "License");
  *      you may not use this file except in compliance with the License.
@@ -20,32 +18,32 @@
  *      limitations under the License.
  */
 
- package http_request
+package hanami_sdk
 
 import (
     "fmt"
 )
 
-func UploadTrainData_Request(name string, dataType string, data string) (bool, string) {
-	path := "control/train_data"
-	vars := ""
-	jsonBody := fmt.Sprintf("{\"name\":%s,\"type\":%s,\"data\":%s}", name, dataType, data)
-    return SendPost_Request(path, vars, jsonBody)
+func UploadTrainData(name string, dataType string, data string) (bool, string) {
+    path := "control/train_data"
+    vars := ""
+    jsonBody := fmt.Sprintf("{\"name\":%s,\"type\":%s,\"data\":%s}", name, dataType, data)
+    return SendPost(path, vars, jsonBody)
 }
 
-func GetTrainData_Request(data_uuid string, with_data bool) (bool, string) {
-	path := "control/train_data"
-	vars := fmt.Sprintf("uuid=%s", data_uuid)
-	if with_data {
-		vars += "&with_data=true"
-	} else {
-		vars += "&with_data=false"
-	}
-    return SendGet_Request(path, vars)
+func GetTrainData(uuid string, withData bool) (bool, string) {
+    path := "control/train_data"
+    vars := fmt.Sprintf("uuid=%s", uuid)
+    if withData {
+        vars += "&with_data=true"
+    } else {
+        vars += "&with_data=false"
+    }
+    return SendGet(path, vars)
 }
 
-func ListTrainData_Request() (bool, string) {
-	path := fmt.Sprintf("control/train_datas")
-	vars := ""
-    return SendGet_Request(path, vars)
+func ListTrainData() (bool, string) {
+    path := fmt.Sprintf("control/train_datas")
+    vars := ""
+    return SendGet(path, vars)
 }

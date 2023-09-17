@@ -1,11 +1,9 @@
 /**
- * @file        user_commands.go
-  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
  * @copyright   Apache License Version 2.0
  *
- *      Copyright 2021 Tobias Anker
+ *      Copyright 2022 Tobias Anker
  *
  *      Licensed under the Apache License, Version 2.0 (the "License");
  *      you may not use this file except in compliance with the License.
@@ -20,34 +18,34 @@
  *      limitations under the License.
  */
 
-package http_request
+package hanami_sdk
 
 import (
     "fmt"
 )
 
-func CreateUser_Request(id string, pw string, is_admin string, groups string) (bool, string) {
-	path := "control/v1/create_user"
-	vars := ""
-	jsonBody := fmt.Sprintf("{\"id\":\"%s\",\"pw\":\"%s\",\"is_admin\":%s,\"groups\":\"%s\"}", 
-	                        id, pw, is_admin, groups)
-    return SendPost_Request(path, vars, jsonBody)
+func CreateUser(userId string, userName string, pw string, is_admin bool) (bool, string) {
+    path := "control/v1/user"
+    vars := ""
+    jsonBody := fmt.Sprintf("{\"id\":\"%s\",\"name\":\"%s\",\"password\":\"%s\",\"is_admin\":%v}", 
+                            userId, userName, pw, is_admin)
+    return SendPost(path, vars, jsonBody)
 }
 
-func GetUser_Request(id string) (bool, string) {
-	path := "control/v1/user"
-	vars := fmt.Sprintf("id=%s", id)
-    return SendGet_Request(path, vars)
+func GetUser(userId string) (bool, string) {
+    path := "control/v1/user"
+    vars := fmt.Sprintf("id=%s", userId)
+    return SendGet(path, vars)
 }
 
-func ListUser_Request() (bool, string) {
-	path := fmt.Sprintf("control/v1/user/all")
-	vars := ""
-    return SendGet_Request(path, vars)
+func ListUser() (bool, string) {
+    path := fmt.Sprintf("control/v1/user/all")
+    vars := ""
+    return SendGet(path, vars)
 }
 
-func DeleteUser_Request(id string) (bool, string) {
-	path := "control/v1/user"
-	vars := fmt.Sprintf("id=%s", id)
-    return SendDelete_Request(path, vars)
+func DeleteUser(userId string) (bool, string) {
+    path := "control/v1/user"
+    vars := fmt.Sprintf("id=%s", userId)
+    return SendDelete(path, vars)
 }

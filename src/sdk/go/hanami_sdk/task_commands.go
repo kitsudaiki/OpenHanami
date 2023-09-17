@@ -1,11 +1,9 @@
 /**
- * @file        run_commands.go
-  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
  * @copyright   Apache License Version 2.0
  *
- *      Copyright 2021 Tobias Anker
+ *      Copyright 2022 Tobias Anker
  *
  *      Licensed under the Apache License, Version 2.0 (the "License");
  *      you may not use this file except in compliance with the License.
@@ -20,13 +18,13 @@
  *      limitations under the License.
  */
 
- package http_request
+package hanami_sdk
 
 import (
     "fmt"
 )
 
-func RunLearn_Request(number_of_inputs_per_cycle string, number_of_outputs_per_cycle string, number_of_cycles string, cluster_uuid string, inputs string, label string) (bool, string) {
+func RunLearn(number_of_inputs_per_cycle string, number_of_outputs_per_cycle string, number_of_cycles string, cluster_uuid string, inputs string, label string) (bool, string) {
 	path := "control/v1/io"
 	vars := ""
 	jsonBody := fmt.Sprintf("{\"number_of_inputs_per_cycle\":%s, \"number_of_outputs_per_cycle\":%s, \"number_of_cycles\":%s, \"cluster_uuid\":\"%s\", \"inputs\":\"%s\", \"label\":\"%s\"}", 
@@ -36,10 +34,10 @@ func RunLearn_Request(number_of_inputs_per_cycle string, number_of_outputs_per_c
 							cluster_uuid, 
 							inputs, 
 							label)
-    return SendPost_Request(path, vars, jsonBody)
+    return SendPost(path, vars, jsonBody)
 }
 
-func RunAsk_Request(number_of_inputs_per_cycle string, number_of_cycles string, cluster_uuid string, inputs string) (bool, string) {
+func RunAsk(number_of_inputs_per_cycle string, number_of_cycles string, cluster_uuid string, inputs string) (bool, string) {
 	path := "control/v1/io"
 	vars := ""
 	jsonBody := fmt.Sprintf("{\"number_of_inputs_per_cycle\":%s, \"number_of_cycles\":%s, \"cluster_uuid\":\"%s\", \"inputs\":\"%s\"}", 
@@ -47,5 +45,5 @@ func RunAsk_Request(number_of_inputs_per_cycle string, number_of_cycles string, 
 				    		number_of_cycles, 
 					    	cluster_uuid, 
 					    	inputs)
-	return SendPost_Request(path, vars, jsonBody)
+	return SendPost(path, vars, jsonBody)
 }

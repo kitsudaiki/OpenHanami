@@ -1,11 +1,9 @@
 /**
- * @file        http_request.go
-  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
  * @copyright   Apache License Version 2.0
  *
- *      Copyright 2021 Tobias Anker
+ *      Copyright 2022 Tobias Anker
  *
  *      Licensed under the Apache License, Version 2.0 (the "License");
  *      you may not use this file except in compliance with the License.
@@ -20,32 +18,32 @@
  *      limitations under the License.
  */
 
- package http_request
+package hanami_sdk
 
 import (
     "fmt"
     "net/http"
     "io/ioutil"
     "crypto/tls"
-	"strings"
-	"strconv"
+    "strings"
+    "strconv"
     "os"
     "encoding/json"
 )
 
-func SendGet_Request(path string, vars string) (bool, string) {
+func SendGet(path string, vars string) (bool, string) {
     return sendHanamiRequest("GET", path, vars, "")
 }
 
-func SendPost_Request(path string, vars string, jsonBody string) (bool, string) {
+func SendPost(path string, vars string, jsonBody string) (bool, string) {
     return sendHanamiRequest("POST", path, vars, jsonBody)
 }
 
-func SendPut_Request(path string, vars string, jsonBody string) (bool, string) {
+func SendPut(path string, vars string, jsonBody string) (bool, string) {
     return sendHanamiRequest("PUT", path, vars, jsonBody)
 }
 
-func SendDelete_Request(path string, vars string) (bool, string) {
+func SendDelete(path string, vars string) (bool, string) {
     return sendHanamiRequest("DELETE", path, vars, "")
 }
 
@@ -95,7 +93,7 @@ func parseJson(input string) map[string]interface{} {
 
 func requestToken() bool {
     var user = os.Getenv("HANAMI_USER")
-	var pw = os.Getenv("HANAMI_PW")
+    var pw = os.Getenv("HANAMI_PW")
 
     path := fmt.Sprintf("control/v1/token")
     body := fmt.Sprintf("{\"id\":\"%s\",\"password\":\"%s\"}", user, pw)
@@ -123,16 +121,16 @@ func sendRequest(requestType string, token string, path string, vars string, jso
 
 func sendGenericRequest(requestType string, token string, path string, jsonBody string) (bool, string) {
     // read environment-variables
-	var address = os.Getenv("HANAMI_ADDRESS")
-	port, err := strconv.Atoi(os.Getenv("HANAMI_PORT"))
+    var address = os.Getenv("HANAMI_ADDRESS")
+    port, err := strconv.Atoi(os.Getenv("HANAMI_PORT"))
     if err != nil {
         return false, "err"
     }
 
     // check if https or not
-	if strings.Contains(address, "https") {
-		http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-	}
+    if strings.Contains(address, "https") {
+        http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+    }
 
     // build uri
     var reqBody = strings.NewReader(jsonBody)
