@@ -61,19 +61,19 @@ https://docs.hanami-ai.com
 
 - Installation-Guide to deploy HanamiAI on a kubernetes for testing:
 
-    [Installation on Kubernetes](https://docs.hanami-ai.com/How_To/1_installation/)
+    [Installation on Kubernetes](https://docs.hanami-ai.com/how_to/installation/)
 
 - Automatic generated OpenAPI documentation
 
-    [OpenAPI docu](https://docs.hanami-ai.com/How_To/3_rest_api_documentation/)
+    [OpenAPI docu](https://docs.hanami-ai.com/api/rest_api_documentation/)
 
 - To get a first impression there is a first example-workflow via the dashboard:
 
-    [Dashboard](https://docs.hanami-ai.com/How_To/2_dashboard/)
+    [Dashboard](https://docs.hanami-ai.com/how_to/dashboard/)
 
 - Many basic dependencies were created in context of this project. Here is an overview of all involved repositories:
 
-    [Dependency-Overview](https://docs.hanami-ai.com/other/1_dependencies/)
+    [Dependency-Overview](https://docs.hanami-ai.com/other/dependencies/)
 
 
 
