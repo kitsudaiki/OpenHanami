@@ -21,9 +21,105 @@
 package hanami_resources
 
 import (
-    //"fmt"
-    //"hanamictl/common"
-    //"github.com/spf13/cobra"
-    //"github.com/kitsudaiki/Hanami"
+    "fmt"
+    
+    "hanamictl/common"
+    "github.com/spf13/cobra"
+    "github.com/kitsudaiki/Hanami"
 )
 
+var (
+    taskName    string
+    clusterUuid string
+    datasetUuid string
+    taskType    string
+)
+
+var createTaskCmd = &cobra.Command {
+    Use:   "create TASK_ID",
+    Short: "Create a new task.",
+    Args:  cobra.ExactArgs(1),
+    Run:   func(cmd *cobra.Command, args []string) {
+        taskName := args[0]
+        success, content := hanami_sdk.CreateTask(taskName, taskType, clusterUuid, datasetUuid)
+        if success {
+            hanamictl_common.ParseSingle(content)
+        } else {
+            fmt.Println(content)
+        }
+    },
+}
+
+var getTaskCmd = &cobra.Command {
+    Use:   "get TASK_ID",
+    Short: "Get information of a specific task.",
+    Args:  cobra.ExactArgs(1),
+    Run:   func(cmd *cobra.Command, args []string) {
+        taskId := args[0]
+        success, content := hanami_sdk.GetTask(taskId, clusterUuid)
+        if success {
+            hanamictl_common.ParseSingle(content)
+        } else {
+            fmt.Println(content)
+        }
+    },
+}
+
+var listTaskCmd = &cobra.Command {
+    Use:   "list",
+    Short: "List all task.",
+    Run:   func(cmd *cobra.Command, args []string) {
+        success, content := hanami_sdk.ListTask(clusterUuid)
+        if success {
+            hanamictl_common.ParseList(content)
+        } else {
+            fmt.Println(content)
+        }
+    },
+}
+
+var deleteTaskCmd = &cobra.Command {
+    Use:   "delete TASK_ID",
+    Short: "Delete a specific task from the backend.",
+    Args:  cobra.ExactArgs(1),
+    Run:   func(cmd *cobra.Command, args []string) {
+        taskId := args[0]
+        success, content := hanami_sdk.DeleteTask(taskId, clusterUuid)
+        if success {
+            fmt.Println("successfully deleted task '%s'", taskId)
+        } else {
+            fmt.Println(content)
+        }
+    },
+}
+
+
+var taskCmd = &cobra.Command {
+    Use:   "task",
+    Short: "Manage task.",
+}
+
+
+func Init_Task_Commands(rootCmd *cobra.Command) {
+    rootCmd.AddCommand(taskCmd)
+
+    taskCmd.AddCommand(createTaskCmd)
+    createTaskCmd.Flags().StringVarP(&clusterUuid, "cluster", "c", "", "Cluster UUID (mandatory)")
+    createTaskCmd.Flags().StringVarP(&clusterUuid, "dataset", "d", "", "Data-Set UUID (mandatory)")
+    createTaskCmd.Flags().StringVarP(&clusterUuid, "type", "t", "", "Task type (mandatory)")
+    createTaskCmd.MarkFlagRequired("cluster")
+    createTaskCmd.MarkFlagRequired("dataset")
+    createTaskCmd.MarkFlagRequired("type")
+
+    taskCmd.AddCommand(getTaskCmd)
+    getTaskCmd.Flags().StringVarP(&clusterUuid, "cluster", "c", "", "Cluster UUID (mandatory)")
+    getTaskCmd.MarkFlagRequired("cluster")
+
+    taskCmd.AddCommand(listTaskCmd)
+    listTaskCmd.Flags().StringVarP(&clusterUuid, "cluster", "c", "", "Cluster UUID (mandatory)")
+    listTaskCmd.MarkFlagRequired("cluster")
+
+    taskCmd.AddCommand(deleteTaskCmd)
+    deleteTaskCmd.Flags().StringVarP(&clusterUuid, "cluster", "c", "", "Cluster UUID (mandatory)")
+    deleteTaskCmd.MarkFlagRequired("cluster")
+}

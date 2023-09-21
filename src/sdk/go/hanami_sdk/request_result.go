@@ -24,9 +24,20 @@ import (
     "fmt"
 )
 
-func CreateCluster(data string) (bool, string) {
-	jsonBody := fmt.Sprintf("{\"data\":\"%s\"}", data)
-	path := "control/v1/cluster"
-	vars := ""
-    return SendPost(path, vars, jsonBody)
+func GetRequestResult(requestResultUuid string) (bool, string) {
+    path := "control/v1/request_result"
+    vars := fmt.Sprintf("uuid=%s", requestResultUuid)
+    return SendGet(path, vars)
+}
+
+func ListRequestResult() (bool, string) {
+    path := fmt.Sprintf("control/v1/request_result/all")
+    vars := ""
+    return SendGet(path, vars)
+}
+
+func DeleteRequestResult(requestResultUuid string) (bool, string) {
+    path := "control/v1/request_result"
+    vars := fmt.Sprintf("uuid=%s", requestResultUuid)
+    return SendDelete(path, vars)
 }

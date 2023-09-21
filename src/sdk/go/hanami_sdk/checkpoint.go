@@ -18,29 +18,27 @@
  *      limitations under the License.
  */
 
-package main
+package hanami_sdk
 
 import (
     "fmt"
-    "github.com/spf13/cobra"
-    "os"
-    "hanamictl/resources"
 )
 
-var rootCmd = &cobra.Command{Use: "hanamictl"}
-
-func init() {
-    hanami_resources.Init_User_Commands(rootCmd);
-    hanami_resources.Init_Project_Commands(rootCmd);
-    hanami_resources.Init_Checkpoint_Commands(rootCmd);
-    hanami_resources.Init_RequestResult_Commands(rootCmd);
-    hanami_resources.Init_Task_Commands(rootCmd);
-    hanami_resources.Init_Cluster_Commands(rootCmd);
+func GetCheckpoint(checkpointUuid string) (bool, string) {
+    path := "control/v1/checkpoint"
+    vars := fmt.Sprintf("uuid=%s", checkpointUuid)
+    return SendGet(path, vars)
 }
 
-func main() {
-    if err := rootCmd.Execute(); err != nil {
-        fmt.Println(err)
-        os.Exit(1)
-    }
+func ListCheckpoint() (bool, string) {
+    path := fmt.Sprintf("control/v1/checkpoint/all")
+    vars := ""
+    return SendGet(path, vars)
 }
+
+func DeleteCheckpoint(checkpointUuid string) (bool, string) {
+    path := "control/v1/checkpoint"
+    vars := fmt.Sprintf("uuid=%s", checkpointUuid)
+    return SendDelete(path, vars)
+}
+ 

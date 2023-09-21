@@ -5,6 +5,7 @@ go 1.21.1
 replace github.com/kitsudaiki/Hanami => ../../sdk/go/hanami_sdk
 
 require (
+	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/kitsudaiki/Hanami v0.3.1-0.20230916184520-abb03e487e58 // indirect
 	github.com/mattn/go-runewidth v0.0.9 // indirect

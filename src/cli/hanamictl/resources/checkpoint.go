@@ -21,8 +21,70 @@
 package hanami_resources
 
 import (
-    //"fmt"
-    //"hanamictl/common"
-    //"github.com/spf13/cobra"
-    //"github.com/kitsudaiki/Hanami"
+    "fmt"
+    
+    "hanamictl/common"
+    "github.com/spf13/cobra"
+    "github.com/kitsudaiki/Hanami"
 )
+
+
+var getCheckpointCmd = &cobra.Command {
+    Use:   "get CHECKPOINT_UUID",
+    Short: "Get information of a specific checkpoint.",
+    Args:  cobra.ExactArgs(1),
+    Run:   func(cmd *cobra.Command, args []string) {
+        checkpointId := args[0]
+        success, content := hanami_sdk.GetCheckpoint(checkpointId)
+        if success {
+            hanamictl_common.ParseSingle(content)
+        } else {
+            fmt.Println(content)
+        }
+    },
+}
+
+var listCheckpointCmd = &cobra.Command {
+    Use:   "list",
+    Short: "List all checkpoint.",
+    Run:   func(cmd *cobra.Command, args []string) {
+        success, content := hanami_sdk.ListCheckpoint()
+        if success {
+            hanamictl_common.ParseList(content)
+        } else {
+            fmt.Println(content)
+        }
+    },
+}
+
+var deleteCheckpointCmd = &cobra.Command {
+    Use:   "delete CHECKPOINT_UUID",
+    Short: "Delete a specific checkpoint from the backend.",
+    Args:  cobra.ExactArgs(1),
+    Run:   func(cmd *cobra.Command, args []string) {
+        checkpointId := args[0]
+        success, content := hanami_sdk.DeleteCheckpoint(checkpointId)
+        if success {
+            fmt.Println("successfully deleted checkpoint '%s'", checkpointId)
+        } else {
+            fmt.Println(content)
+        }
+    },
+}
+
+
+var checkpointCmd = &cobra.Command {
+    Use:   "checkpoint",
+    Short: "Manage checkpoint.",
+}
+
+
+func Init_Checkpoint_Commands(rootCmd *cobra.Command) {
+    rootCmd.AddCommand(checkpointCmd)
+
+    checkpointCmd.AddCommand(getCheckpointCmd)
+
+    checkpointCmd.AddCommand(listCheckpointCmd)
+
+    checkpointCmd.AddCommand(deleteCheckpointCmd)
+}
