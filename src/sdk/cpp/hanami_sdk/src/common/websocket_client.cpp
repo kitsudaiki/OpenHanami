@@ -125,10 +125,14 @@ WebsocketClient::initClient(std::string &socketUuid,
                                       buffer.data().size());
 
         // parse response
-        json response = json::parse(responseMsg, nullptr, false);
-        if(response.is_discarded())
+        json response;
+        try {
+            response = json::parse(responseMsg);
+        }
+        catch(const json::parse_error& ex)
         {
             error.addMeesage("Failed to parse response-message from Websocket-init");
+            error.addMeesage("json-parser error: " + std::string(ex.what()));
             LOG_ERROR(error);
             return false;
         }

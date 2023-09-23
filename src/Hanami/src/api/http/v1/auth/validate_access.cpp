@@ -120,10 +120,11 @@ ValidateAccess::runTask(BlossomIO &blossomIO,
         // copy data of token into the output
         for(const auto& payload : decodedToken.get_payload_json())
         {
-            json j = json::parse(payload.second.to_str(), nullptr, false);
-            if (j.is_discarded())
-            {
+            try {
+                blossomIO.output = json::parse(payload.second.to_str());
+            } catch(const json::parse_error& ex) {
                 error.addMeesage("Error while parsing decoded token");
+                error.addMeesage("json-parser error: " + std::string(ex.what()));
                 return false;
             }
         }

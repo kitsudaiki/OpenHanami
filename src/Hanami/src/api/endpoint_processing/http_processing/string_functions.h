@@ -84,10 +84,12 @@ parseUri(const std::string &token,
         return false;
     }
 
-    parsedInputValues = json::parse(request.inputValues, nullptr, false);
-    if(parsedInputValues.is_discarded())
-    {
+    // parse body
+    try {
+        parsedInputValues = json::parse(request.inputValues);
+    } catch(const json::parse_error& ex) {
         error.addMeesage("Failed to parse input-values.");
+        error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
 
