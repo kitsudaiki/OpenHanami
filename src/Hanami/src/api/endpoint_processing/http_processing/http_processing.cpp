@@ -135,10 +135,12 @@ requestToken(http::response<http::dynamic_body> &httpResponse,
              const RequestMessage &hanamiRequest,
              Hanami::ErrorContainer &error)
 {
-    json inputValues = json::parse(hanamiRequest.inputValues, nullptr, false);
-    if (inputValues.is_discarded())
-    {
-        std::cerr << "parse error" << std::endl;
+    json inputValues;
+    try {
+        inputValues = json::parse(hanamiRequest.inputValues);
+    } catch(const json::parse_error& ex) {
+        error.addMeesage("json-parser error: " + std::string(ex.what()));
+        return false;
     }
 
     json result;
@@ -204,13 +206,13 @@ checkPermission(json &tokenData,
         // copy data of token into the output
         for(const auto& e : decodedToken.get_payload_json())
         {
-            std::string tokenStr = e.second.to_str();
-            tokenData = json::parse(tokenStr, nullptr, false);
-            if(tokenData.is_discarded())
-            {
-                std::cerr << "parse error" << std::endl;
+            const std::string tokenStr = e.second.to_str();
+            try {
+                tokenData = json::parse(tokenStr);
+            } catch(const json::parse_error& ex) {
+                error.addMeesage("json-parser error: " + std::string(ex.what()));
+                return false;
             }
-
         }
     }
     catch (const std::exception& ex)
@@ -323,13 +325,14 @@ processControlRequest(http::response<http::dynamic_body> &httpResponse,
     {
         error.addMeesage("ERROR: Failed to write audit-log into database");
         return internalError_ResponseBuild(httpResponse, error);
-        LOG_ERROR(error);
     }
 
-    json inputValuesJson = json::parse(hanamiRequest.inputValues, nullptr, false);
-    if (inputValuesJson.is_discarded())
-    {
-        std::cerr << "parse error" << std::endl;
+    json inputValuesJson;
+    try {
+        inputValuesJson = json::parse(hanamiRequest.inputValues);
+    } catch(const json::parse_error& ex) {
+        error.addMeesage("json-parser error: " + std::string(ex.what()));
+        return internalError_ResponseBuild(httpResponse, error);
     }
 
     if(hanamiRequest.id != "v1/auth") {

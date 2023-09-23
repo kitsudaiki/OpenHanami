@@ -336,10 +336,12 @@ HttpWebsocketThread::processInitialMessage(const std::string &message,
     }
 
     // parse incoming initializing message
-    json content = json::parse(message, nullptr, false);
-    if (content.is_discarded())
-    {
+    json content;
+    try {
+        content = json::parse(message);
+    } catch(const json::parse_error& ex) {
         error.addMeesage("Parsing of initial websocket-message failed");
+        error.addMeesage("json-parser error: " + std::string(ex.what()));
         LOG_ERROR(error);
         return false;
     }

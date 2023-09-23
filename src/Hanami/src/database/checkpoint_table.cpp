@@ -198,12 +198,16 @@ CheckpointTable::setUploadFinish(const std::string &uuid,
 
     // update temp-files entry to 100%
     const std::string tempFilesStr = result["temp_files"];
-    json tempFiles = json::parse(tempFilesStr, nullptr, false);
-    if (tempFiles.is_discarded())
+    json tempFiles;
+    try {
+        tempFiles = json::parse(tempFilesStr);
+    }
+    catch(const json::parse_error& ex)
     {
         error.addMeesage("Failed to parse temp_files entry of checkpoint with UUID '"
                          + uuid
                          + "' from database");
+        error.addMeesage("json-parser error: " + std::string(ex.what()));
         LOG_ERROR(error);
         return false;
     }

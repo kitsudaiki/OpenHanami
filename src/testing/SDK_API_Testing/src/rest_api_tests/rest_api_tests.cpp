@@ -104,14 +104,15 @@ deleteAllClusters()
     Hanami::ErrorContainer error;
     Hanami::listCluster(result, error);
 
-    json parsedList = json::parse(result, nullptr, false);
-    if (parsedList.is_discarded())
-    {
-        std::cerr << "parse error" << std::endl;
+    json jsonItem;
+    try {
+        jsonItem = json::parse(result);
+    } catch(const json::parse_error& ex) {
+        error.addMeesage("json-parser error: " + std::string(ex.what()));
         return;
     }
 
-    json body = parsedList["body"];
+    json body = jsonItem["body"];
     for(uint64_t i = 0; i < body.size(); i++)
     {
         const std::string uuid = body[i][0];
@@ -129,14 +130,15 @@ deleteAllProjects()
     Hanami::ErrorContainer error;
     Hanami::listProject(result, error);
 
-    json parsedList = json::parse(result, nullptr, false);
-    if (parsedList.is_discarded())
-    {
-        std::cerr << "parse error" << std::endl;
+    json jsonItem;
+    try {
+        jsonItem = json::parse(result);
+    } catch(const json::parse_error& ex) {
+        error.addMeesage("json-parser error: " + std::string(ex.what()));
         return;
     }
 
-    json body = parsedList["body"];
+    json body = jsonItem["body"];
     for(uint64_t i = 0; i < body.size(); i++)
     {
         const std::string uuid = body[i][0];
@@ -154,14 +156,15 @@ deleteAllUsers()
     Hanami::ErrorContainer error;
     Hanami::listUser(result, error);
 
-    json parsedList = json::parse(result, nullptr, false);
-    if (parsedList.is_discarded())
-    {
-        std::cerr << "parse error" << std::endl;
+    json jsonItem;
+    try {
+        jsonItem = json::parse(result);
+    } catch(const json::parse_error& ex) {
+        error.addMeesage("json-parser error: " + std::string(ex.what()));
         return;
     }
 
-    json body = parsedList["body"];
+    json body = jsonItem["body"];
     for(uint64_t i = 0; i < body.size(); i++)
     {
         const std::string uuid = body[i][0];

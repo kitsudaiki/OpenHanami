@@ -56,10 +56,11 @@ TableTrainTaskTest::runTest(json &inputData,
     }
 
     // parse output
-    json jsonItem = json::parse(result, nullptr, false);
-    if (jsonItem.is_discarded())
-    {
-        std::cerr << "parse error" << std::endl;
+    json jsonItem;
+    try {
+        jsonItem = json::parse(result);
+    } catch(const json::parse_error& ex) {
+        error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
 
@@ -76,10 +77,10 @@ TableTrainTaskTest::runTest(json &inputData,
                         error);
 
         // parse output
-        jsonItem = json::parse(result, nullptr, false);
-        if (jsonItem.is_discarded())
-        {
-            std::cerr << "parse error" << std::endl;
+        try {
+            jsonItem = json::parse(result);
+        } catch(const json::parse_error& ex) {
+            error.addMeesage("json-parser error: " + std::string(ex.what()));
             return false;
         }
         std::cout<<jsonItem.dump(4)<<std::endl;

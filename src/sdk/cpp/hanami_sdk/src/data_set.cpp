@@ -282,9 +282,11 @@ waitUntilFullyUploaded(const std::string &uuid,
             return false;
         }
 
-        json progress = json::parse(progressStr, nullptr, false);
-        if(progress.is_discarded())
-        {
+        json progress;
+        try {
+            progress = json::parse(progressStr);
+        } catch(const json::parse_error& ex) {
+            error.addMeesage("json-parser error: " + std::string(ex.what()));
             LOG_ERROR(error);
             return false;
         }
@@ -321,9 +323,11 @@ uploadCsvData(std::string &result,
     }
 
     // parse output to get the uuid
-    json jsonItem = json::parse(result, nullptr, false);
-    if(jsonItem.is_discarded())
-    {
+    json jsonItem;
+    try {
+        jsonItem = json::parse(result);
+    } catch(const json::parse_error& ex) {
+        error.addMeesage("json-parser error: " + std::string(ex.what()));
         LOG_ERROR(error);
         return false;
     }
@@ -401,9 +405,11 @@ uploadMnistData(std::string &result,
     }
 
     // parse output to get the uuid
-    json jsonItem = json::parse(result, nullptr, false);
-    if(jsonItem.is_discarded())
-    {
+    json jsonItem;
+    try {
+        jsonItem = json::parse(result);
+    } catch(const json::parse_error& ex) {
+        error.addMeesage("json-parser error: " + std::string(ex.what()));
         LOG_ERROR(error);
         return false;
     }

@@ -278,10 +278,12 @@ HanamiRequest::requestToken(Hanami::ErrorContainer &error)
     }
 
     // try to parse response
-    json item = json::parse(response, nullptr, false);
-    if(item.is_discarded())
-    {
+    json item;
+    try {
+        item = json::parse(response);
+    } catch(const json::parse_error& ex) {
         error.addMeesage("Failed to parse token-response");
+        error.addMeesage("json-parser error: " + std::string(ex.what()));
         LOG_ERROR(error);
         return false;
     }

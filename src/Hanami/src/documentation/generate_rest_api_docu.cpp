@@ -264,9 +264,10 @@ createBodyParams_openapi(json &schema,
             {
                 json match = json::parse(matchVal.dump(), nullptr, false);
                 if(match.is_discarded()) {
-                    std::cerr << "parse error" << std::endl;
+                    array["enum"] = json(match);
+                } else {
+                    array["enum"] = match;
                 }
-                array["enum"] = match;
             }
 
             temp["items"] = array;

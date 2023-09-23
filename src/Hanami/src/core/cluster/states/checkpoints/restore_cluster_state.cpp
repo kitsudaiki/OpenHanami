@@ -58,10 +58,12 @@ RestoreCluster_State::processEvent()
     const std::string originalUuid = m_cluster->getUuid();
 
     // get meta-infos of data-set from shiori
-    json parsedCheckpointInfo = json::parse(actualTask->checkpointInfo, nullptr, false);
-    if (parsedCheckpointInfo.is_discarded())
-    {
-        std::cerr << "parse error" << std::endl;
+    json parsedCheckpointInfo;
+    try {
+        parsedCheckpointInfo = json::parse(actualTask->checkpointInfo);
+    } catch(const json::parse_error& ex) {
+        error.addMeesage("json-parser error: " + std::string(ex.what()));
+        m_cluster->goToNextState(FINISH_TASK);
         return false;
     }
 
