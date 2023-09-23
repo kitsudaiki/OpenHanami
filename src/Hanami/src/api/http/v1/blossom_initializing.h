@@ -61,9 +61,7 @@
 #include <api/http/v1/data_files/csv/create_csv_data_set.h>
 #include <api/http/v1/data_files/csv/finalize_csv_data_set.h>
 
-#include <api/http/v1/checkpoint/create_checkpoint.h>
 #include <api/http/v1/checkpoint/delete_checkpoint.h>
-#include <api/http/v1/checkpoint/finish_checkpoint.h>
 #include <api/http/v1/checkpoint/get_checkpoint.h>
 #include <api/http/v1/checkpoint/list_checkpoint.h>
 
@@ -267,20 +265,6 @@ void
 clusterCheckpointBlossoms()
 {
     const std::string group = "Checkpoint";
-
-    assert(HanamiRoot::root->addBlossom(group, "create", new CreateCheckpoint()));
-    HanamiRoot::root->addEndpoint("v1/checkpoint",
-                                  Hanami::POST_TYPE,
-                                  BLOSSOM_TYPE,
-                                  group,
-                                  "create");
-
-    assert(HanamiRoot::root->addBlossom(group, "finalize", new FinalizeCheckpoint()));
-    HanamiRoot::root->addEndpoint("v1/checkpoint",
-                                  Hanami::PUT_TYPE,
-                                  BLOSSOM_TYPE,
-                                  group,
-                                  "finalize");
 
     assert(HanamiRoot::root->addBlossom(group, "get", new GetCheckpoint()));
     HanamiRoot::root->addEndpoint("v1/checkpoint",

@@ -149,9 +149,7 @@ HEADERS += \
     src/api/http/v1/cluster/save_cluster.h \
     src/api/http/v1/cluster/set_cluster_mode.h \
     src/api/http/v1/cluster/show_cluster.h \
-    src/api/http/v1/checkpoint/create_checkpoint.h \
     src/api/http/v1/checkpoint/delete_checkpoint.h \
-    src/api/http/v1/checkpoint/finish_checkpoint.h \
     src/api/http/v1/checkpoint/get_checkpoint.h \
     src/api/http/v1/checkpoint/list_checkpoint.h \
     src/api/http/v1/data_files/check_data_set.h \
@@ -261,9 +259,7 @@ SOURCES += \
     src/api/http/v1/cluster/save_cluster.cpp \
     src/api/http/v1/cluster/set_cluster_mode.cpp \
     src/api/http/v1/cluster/show_cluster.cpp \
-    src/api/http/v1/checkpoint/create_checkpoint.cpp \
     src/api/http/v1/checkpoint/delete_checkpoint.cpp \
-    src/api/http/v1/checkpoint/finish_checkpoint.cpp \
     src/api/http/v1/checkpoint/get_checkpoint.cpp \
     src/api/http/v1/checkpoint/list_checkpoint.cpp \
     src/api/http/v1/data_files/check_data_set.cpp \
