@@ -30,14 +30,8 @@ namespace Hanami
 ArgParser_Test::ArgParser_Test()
     : Hanami::CompareTestHelper("ArgParser_Test")
 {
-    registerArgument_test();
     getArgument_test();
     convertValue_test();
-
-    registerString_test();
-    registerInteger_test();
-    registerFloat_test();
-    registerBoolean_test();
 
     parse_test();
 
@@ -54,66 +48,6 @@ ArgParser_Test::ArgParser_Test()
 }
 
 /**
- * @brief registerArgument_test
- */
-void
-ArgParser_Test::registerArgument_test()
-{
-    ArgParser parser;
-    ErrorContainer error;
-
-    TEST_EQUAL(parser.registerArgument("",
-                                       "this is an example",
-                                       ArgParser::ArgType::INT_TYPE,
-                                       true,
-                                       false,
-                                       true,
-                                       error)
-               , false);
-    TEST_EQUAL(parser.registerArgument("xyz,",
-                                       "this is an example",
-                                       ArgParser::ArgType::INT_TYPE,
-                                       true,
-                                       false,
-                                       true,
-                                       error)
-               , true);
-    TEST_EQUAL(parser.registerArgument(",a",
-                                       "this is an example",
-                                       ArgParser::ArgType::INT_TYPE,
-                                       true,
-                                       false,
-                                       true,
-                                       error)
-               , false);
-    TEST_EQUAL(parser.registerArgument("asdf,asdf",
-                                       "this is an example",
-                                       ArgParser::ArgType::INT_TYPE,
-                                       true,
-                                       false,
-                                       true,
-                                       error)
-               , false);
-
-    TEST_EQUAL(parser.registerArgument("asdf,a",
-                                       "this is an example",
-                                       ArgParser::ArgType::INT_TYPE,
-                                       true,
-                                       false,
-                                       true,
-                                       error)
-               , true);
-    TEST_EQUAL(parser.registerArgument("asdf,a",
-                                       "this is an example",
-                                       ArgParser::ArgType::INT_TYPE,
-                                       true,
-                                       false,
-                                       true,
-                                       error)
-               , false);
-}
-
-/**
  * @brief getArgument_test
  */
 void
@@ -123,13 +57,9 @@ ArgParser_Test::getArgument_test()
     bool isNullptr = false;
     ErrorContainer error;
 
-    parser.registerArgument("asdf,a",
-                            "this is an example",
-                            ArgParser::ArgType::INT_TYPE,
-                            true,
-                            false,
-                            true,
-                            error);
+    parser.registerInteger("asdf", 'a')
+            .setHelpText("this is an example")
+            .setRequired(true);
 
     isNullptr = parser.getArgument("xyz") == nullptr;
     TEST_EQUAL(isNullptr, true);
@@ -140,10 +70,10 @@ ArgParser_Test::getArgument_test()
     isNullptr = parser.getArgument("-a") == nullptr;
     TEST_EQUAL(isNullptr, false);
 
-    ArgParser::ArgDefinition* ret = parser.getArgument("-a");
-    TEST_EQUAL(ret->type, ArgParser::ArgType::INT_TYPE);
+    ArgParser::ArgDef* ret = parser.getArgument("-a");
+    TEST_EQUAL(ret->type, ArgParser::ArgDef::INT_TYPE);
     TEST_EQUAL(ret->helpText, std::string("this is an example"));
-    TEST_EQUAL(ret->required, true);
+    TEST_EQUAL(ret->isRequired, true);
     TEST_EQUAL(ret->withoutFlag, false);
     TEST_EQUAL(ret->longIdentifier, "--asdf");
     TEST_EQUAL(ret->shortIdentifier, "-a");
@@ -162,113 +92,61 @@ ArgParser_Test::convertValue_test()
 
     // string-type
     // check if result is nullptr
-    isNullptr = parser.convertValue("asdf", ArgParser::ArgType::STRING_TYPE) == nullptr;
+    isNullptr = parser.convertValue("asdf", ArgParser::ArgDef::STRING_TYPE) == nullptr;
     TEST_EQUAL(isNullptr, false);
-    isNullptr = parser.convertValue("1", ArgParser::ArgType::STRING_TYPE) == nullptr;
+    isNullptr = parser.convertValue("1", ArgParser::ArgDef::STRING_TYPE) == nullptr;
     TEST_EQUAL(isNullptr, false);
 
     // check result value
-    result = parser.convertValue("asdf", ArgParser::ArgType::STRING_TYPE);
+    result = parser.convertValue("asdf", ArgParser::ArgDef::STRING_TYPE);
     TEST_EQUAL(result.is_string(), true);
     TEST_EQUAL(result, "asdf");
 
     // int-type
     // check if result is nullptr
-    isNullptr = parser.convertValue("1", ArgParser::ArgType::INT_TYPE) == nullptr;
+    isNullptr = parser.convertValue("1", ArgParser::ArgDef::INT_TYPE) == nullptr;
     TEST_EQUAL(isNullptr, false);
-    isNullptr = parser.convertValue("asdf", ArgParser::ArgType::INT_TYPE) == nullptr;
+    isNullptr = parser.convertValue("asdf", ArgParser::ArgDef::INT_TYPE) == nullptr;
     TEST_EQUAL(isNullptr, true);
 
     // check result value
-    result = parser.convertValue("42", ArgParser::ArgType::INT_TYPE);
+    result = parser.convertValue("42", ArgParser::ArgDef::INT_TYPE);
     TEST_EQUAL(result.is_number_integer(), true);
     TEST_EQUAL(result, 42);
 
     // float-type
     // check if result is nullptr
-    isNullptr = parser.convertValue("1.0", ArgParser::ArgType::FLOAT_TYPE) == nullptr;
+    isNullptr = parser.convertValue("1.0", ArgParser::ArgDef::FLOAT_TYPE) == nullptr;
     TEST_EQUAL(isNullptr, false);
-    isNullptr = parser.convertValue("1", ArgParser::ArgType::FLOAT_TYPE) == nullptr;
+    isNullptr = parser.convertValue("1", ArgParser::ArgDef::FLOAT_TYPE) == nullptr;
     TEST_EQUAL(isNullptr, false);
-    isNullptr = parser.convertValue("asdf", ArgParser::ArgType::FLOAT_TYPE) == nullptr;
+    isNullptr = parser.convertValue("asdf", ArgParser::ArgDef::FLOAT_TYPE) == nullptr;
     TEST_EQUAL(isNullptr, true);
 
     // check result value
-    result = parser.convertValue("42.25", ArgParser::ArgType::FLOAT_TYPE);
+    result = parser.convertValue("42.25", ArgParser::ArgDef::FLOAT_TYPE);
     TEST_EQUAL(result.is_number_float(), true);
     TEST_EQUAL(result, 42.25);
 
     // bool-type
     // check if result is nullptr
-    isNullptr = parser.convertValue("1", ArgParser::ArgType::BOOL_TYPE) == nullptr;
+    isNullptr = parser.convertValue("1", ArgParser::ArgDef::BOOL_TYPE) == nullptr;
     TEST_EQUAL(isNullptr, false);
-    isNullptr = parser.convertValue("true", ArgParser::ArgType::BOOL_TYPE) == nullptr;
+    isNullptr = parser.convertValue("true", ArgParser::ArgDef::BOOL_TYPE) == nullptr;
     TEST_EQUAL(isNullptr, false);
-    isNullptr = parser.convertValue("True", ArgParser::ArgType::BOOL_TYPE) == nullptr;
+    isNullptr = parser.convertValue("True", ArgParser::ArgDef::BOOL_TYPE) == nullptr;
     TEST_EQUAL(isNullptr, false);
-    isNullptr = parser.convertValue("0", ArgParser::ArgType::BOOL_TYPE) == nullptr;
+    isNullptr = parser.convertValue("0", ArgParser::ArgDef::BOOL_TYPE) == nullptr;
     TEST_EQUAL(isNullptr, false);
-    isNullptr = parser.convertValue("false", ArgParser::ArgType::BOOL_TYPE) == nullptr;
+    isNullptr = parser.convertValue("false", ArgParser::ArgDef::BOOL_TYPE) == nullptr;
     TEST_EQUAL(isNullptr, false);
-    isNullptr = parser.convertValue("False", ArgParser::ArgType::BOOL_TYPE) == nullptr;
+    isNullptr = parser.convertValue("False", ArgParser::ArgDef::BOOL_TYPE) == nullptr;
     TEST_EQUAL(isNullptr, false);
 
     // check result value
-    result = parser.convertValue("true", ArgParser::ArgType::BOOL_TYPE);
+    result = parser.convertValue("true", ArgParser::ArgDef::BOOL_TYPE);
     TEST_EQUAL(result.is_boolean(), true);
     TEST_EQUAL(result, true);
-}
-
-/**
- * @brief registerString_test
- */
-void
-ArgParser_Test::registerString_test()
-{
-    ArgParser parser;
-    ErrorContainer error;
-
-    TEST_EQUAL(parser.registerString("", "this is an example", error, true, false), false);
-    TEST_EQUAL(parser.registerString("asdf", "this is an example", error, true, false), true);
-}
-
-/**
- * @brief registerInteger_test
- */
-void
-ArgParser_Test::registerInteger_test()
-{
-    ArgParser parser;
-    ErrorContainer error;
-
-    TEST_EQUAL(parser.registerInteger("", "this is an example", error, true, false), false);
-    TEST_EQUAL(parser.registerInteger("asdf", "this is an example", error, true, false), true);
-}
-
-/**
- * @brief registerFloat_test
- */
-void
-ArgParser_Test::registerFloat_test()
-{
-    ArgParser parser;
-    ErrorContainer error;
-
-    TEST_EQUAL(parser.registerFloat("", "this is an example", error, true, false), false);
-    TEST_EQUAL(parser.registerFloat("asdf", "this is an example", error, true, false), true);
-}
-
-/**
- * @brief registerBoolean_test
- */
-void
-ArgParser_Test::registerBoolean_test()
-{
-    ArgParser parser;
-    ErrorContainer error;
-
-    TEST_EQUAL(parser.registerBoolean("", "this is an example", error, true, false), false);
-    TEST_EQUAL(parser.registerBoolean("asdf", "this is an example", error, true, false), true);
 }
 
 /**
@@ -298,14 +176,26 @@ ArgParser_Test::parse_test()
     argv[13] = "42.25";
     argv[14] = "false";
 
-    parser.registerString("test", " ", error);
-    parser.registerInteger("integer,i", " ", error);
-    parser.registerFloat("float,f", " ", error);
-    parser.registerBoolean("bool,b", " ", error);
-    parser.registerString("first_arg", "first argument", error, true, true);
-    parser.registerInteger("secondArg", "second argument", error, true, true);
-    parser.registerFloat("thirdArg", "third argument", error, true, true);
-    parser.registerBoolean("lastArg", "last argument", error, true, true);
+    parser.registerString("test");
+    parser.registerInteger("integer", 'i');
+    parser.registerFloat("float", 'f');
+    parser.registerBoolean("bool", 'b');
+    parser.registerString("first_arg")
+            .setHelpText("first argument")
+            .setRequired(true)
+            .setWithoutFlag();
+    parser.registerInteger("secondArg")
+            .setHelpText("second argument")
+            .setRequired(true)
+            .setWithoutFlag();
+    parser.registerFloat("thirdArg")
+            .setHelpText("third argument")
+            .setRequired(true)
+            .setWithoutFlag();
+    parser.registerBoolean("lastArg")
+            .setHelpText("last argument")
+            .setRequired(true)
+            .setWithoutFlag();
 
     TEST_EQUAL(parser.parse(argc, argv, error), true);
 
@@ -320,7 +210,9 @@ ArgParser_Test::parse_test()
      argv[12] = "42";
 
     // negative test: register a required value, which is not given in the arguments
-    parser.registerBoolean("fail", "this is a boolean", error, true);
+    parser.registerBoolean("fail")
+            .setHelpText("this is a boolean")
+            .setRequired(true);
     TEST_EQUAL(parser.parse(argc, argv, error), false);
 }
 
@@ -331,7 +223,7 @@ void
 ArgParser_Test::getNumberOfValues_test()
 {
     ArgParser parser;
-    prepareTest(&parser);
+    prepareTest(parser);
 
     TEST_EQUAL(parser.getNumberOfValues("test"), 2);
     TEST_EQUAL(parser.getNumberOfValues("bool"), 1);
@@ -345,7 +237,7 @@ void
 ArgParser_Test::getStringValues_test()
 {
     ArgParser parser;
-    prepareTest(&parser);
+    prepareTest(parser);
 
     const std::vector<std::string> ret = parser.getStringValues("test");
     TEST_EQUAL(ret.size(), 2);
@@ -364,7 +256,7 @@ void
 ArgParser_Test::getIntValues_test()
 {
     ArgParser parser;
-    prepareTest(&parser);
+    prepareTest(parser);
 
     const std::vector<long> ret = parser.getIntValues("integer");
     TEST_EQUAL(ret.size(), 1);
@@ -382,7 +274,7 @@ void
 ArgParser_Test::getFloatValues_test()
 {
     ArgParser parser;
-    prepareTest(&parser);
+    prepareTest(parser);
 
     const std::vector<double> ret = parser.getFloatValues("f");
     TEST_EQUAL(ret.size(), 1);
@@ -400,7 +292,7 @@ void
 ArgParser_Test::getBoolValues_test()
 {
     ArgParser parser;
-    prepareTest(&parser);
+    prepareTest(parser);
 
     const std::vector<bool> ret = parser.getBoolValues("bool");
     TEST_EQUAL(ret.size(), 1);
@@ -418,7 +310,7 @@ void
 ArgParser_Test::getStringValue_test()
 {
     ArgParser parser;
-    prepareTest(&parser);
+    prepareTest(parser);
 
     const std::string ret2 = parser.getStringValue("first_arg");
     TEST_EQUAL(ret2, "poi");
@@ -431,7 +323,7 @@ void
 ArgParser_Test::getIntValue_test()
 {
     ArgParser parser;
-    prepareTest(&parser);
+    prepareTest(parser);
 
     const long ret2 = parser.getIntValue("secondArg");
     TEST_EQUAL(ret2, 42);
@@ -444,7 +336,7 @@ void
 ArgParser_Test::getFloatValue_test()
 {
     ArgParser parser;
-    prepareTest(&parser);
+    prepareTest(parser);
 
     const double ret2 = parser.getFloatValue("thirdArg");
     TEST_EQUAL(ret2, 42.25);
@@ -457,7 +349,7 @@ void
 ArgParser_Test::getBoolValue_test()
 {
     ArgParser parser;
-    prepareTest(&parser);
+    prepareTest(parser);
 
     const bool ret2 = parser.getBoolValue("lastArg");
     TEST_EQUAL(ret2, false);
@@ -468,7 +360,7 @@ ArgParser_Test::getBoolValue_test()
  * @param parser
  */
 void
-ArgParser_Test::prepareTest(ArgParser *parser)
+ArgParser_Test::prepareTest(ArgParser &parser)
 {
     ErrorContainer error;
 
@@ -490,16 +382,28 @@ ArgParser_Test::prepareTest(ArgParser *parser)
     argv[13] = "42.25";
     argv[14] = "false";
 
-    parser->registerString("test", " ", error);
-    parser->registerInteger("integer,i", " ", error);
-    parser->registerFloat("float,f", " ", error);
-    parser->registerBoolean("bool,b", " ", error);
-    parser->registerString("first_arg", "first argument", error, true, true);
-    parser->registerInteger("secondArg", "second argument", error, true, true);
-    parser->registerFloat("thirdArg", "third argument", error, true, true);
-    parser->registerBoolean("lastArg", "last argument", error, true, true);
+    parser.registerString("test");
+    parser.registerInteger("integer", 'i');
+    parser.registerFloat("float", 'f');
+    parser.registerBoolean("bool", 'b');
+    parser.registerString("first_arg")
+            .setHelpText("first argument")
+            .setRequired(true)
+            .setWithoutFlag();
+    parser.registerInteger("secondArg")
+            .setHelpText("second argument")
+            .setRequired(true)
+            .setWithoutFlag();
+    parser.registerFloat("thirdArg")
+            .setHelpText("third argument")
+            .setRequired(true)
+            .setWithoutFlag();
+    parser.registerBoolean("lastArg")
+            .setHelpText("last argument")
+            .setRequired(true)
+            .setWithoutFlag();
 
-    assert(parser->parse(argc, argv, error));
+    assert(parser.parse(argc, argv, error));
 }
 
 }

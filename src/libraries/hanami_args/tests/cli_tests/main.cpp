@@ -33,32 +33,28 @@ int main(int argc, char *argv[])
     Hanami::ErrorContainer error;
 
     // register flags without value
-    parser.registerPlain("debug,d",
-                         "debug-flag to enable addtional debug output",
-                         error);
+    parser.registerPlain("debug", 'd')
+            .setHelpText("debug-flag to enable addtional debug output");
     // "registerPlain" allows it to register flags without any value, which says only true or flase
     //                 if they were set or not set
 
     // register flags
-    parser.registerString("source",
-                          "source-path",
-                          error,
-                          true);
-    parser.registerInteger("input,i",
-                           "additional parameter",
-                           error);
+    parser.registerString("source")
+            .setHelpText("source-path")
+            .setRequired(true);
+    parser.registerInteger("input", 'i')
+            .setHelpText("additional parameter");
 
     // register other values
-    parser.registerString("mode",
-                          "modus for converting",
-                          error,
-                          true,  // true to make it requried
-                          true); // true to register this without a "--"-flag
-    parser.registerString("destination",
-                          "destination path for output",
-                          error,
-                          true,
-                          true);
+    parser.registerString("mode")
+            .setHelpText("modus for converting")
+            .setRequired(true)
+            .setWithoutFlag();
+    parser.registerString("destination")
+            .setHelpText("destination path for output")
+            .setRequired(true)
+            .setWithoutFlag();
+
     // register types:
     //     registerString
     //     registerInteger

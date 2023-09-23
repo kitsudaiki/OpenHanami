@@ -36,14 +36,8 @@ class ArgParser_Test
 public:
     ArgParser_Test();
 
-    void registerArgument_test();
     void getArgument_test();
     void convertValue_test();
-
-    void registerString_test();
-    void registerInteger_test();
-    void registerFloat_test();
-    void registerBoolean_test();
 
     void parse_test();
 
@@ -59,7 +53,7 @@ public:
     void getBoolValue_test();
 
 private:
-    void prepareTest(ArgParser* parser);
+    void prepareTest(ArgParser &parser);
 };
 
 }
