@@ -99,30 +99,14 @@ ConfigHandler::initConfig(const std::string &configFilePath,
  *
  * @param groupName name of the group
  * @param itemName name of the item within the group
- * @prama comment comment for the docu about the config-entry
- * @param error reference for error-output
- * @param defaultValue default value, if nothing was set inside of the config
- * @param required if true, then the value must be in the config-file (default: false)
  *
  * @return false, if item-name and group-name are already registered, else true
  */
-bool
+ConfigHandler::ConfigDef&
 ConfigHandler::registerString(const std::string &groupName,
-                              const std::string &itemName,
-                              const std::string &comment,
-                              ErrorContainer &error,
-                              const std::string &defaultValue,
-                              const bool required)
+                              const std::string &itemName)
 {
-    json convertedDefault(defaultValue);
-    std::string finalGroupName = groupName;
-    return registerValue(finalGroupName,
-                         itemName,
-                         comment,
-                         STRING_TYPE,
-                         required,
-                         convertedDefault,
-                         error);
+    return registerValue(groupName, itemName, ConfigDef::STRING_TYPE).setDefault("");
 }
 
 /**
@@ -130,30 +114,14 @@ ConfigHandler::registerString(const std::string &groupName,
  *
  * @param groupName name of the group
  * @param itemName name of the item within the group
- * @prama comment comment for the docu about the config-entry
- * @param error reference for error-output
- * @param defaultValue default value, if nothing was set inside of the config
- * @param required if true, then the value must be in the config-file (default: false)
  *
  * @return false, if item-name and group-name are already registered, else true
  */
-bool
+ConfigHandler::ConfigDef&
 ConfigHandler::registerInteger(const std::string &groupName,
-                               const std::string &itemName,
-                               const std::string &comment,
-                               ErrorContainer &error,
-                               const long defaultValue,
-                               const bool required)
+                               const std::string &itemName)
 {
-    json convertedDefault(defaultValue);
-    std::string finalGroupName = groupName;
-    return registerValue(finalGroupName,
-                         itemName,
-                         comment,
-                         INT_TYPE,
-                         required,
-                         convertedDefault,
-                         error);
+    return registerValue(groupName, itemName, ConfigDef::INT_TYPE).setDefault(0);
 }
 
 /**
@@ -161,30 +129,14 @@ ConfigHandler::registerInteger(const std::string &groupName,
  *
  * @param groupName name of the group
  * @param itemName name of the item within the group
- * @prama comment comment for the docu about the config-entry
- * @param error reference for error-output
- * @param defaultValue default value, if nothing was set inside of the config
- * @param required if true, then the value must be in the config-file (default: false)
  *
  * @return false, if item-name and group-name are already registered, else true
  */
-bool
+ConfigHandler::ConfigDef&
 ConfigHandler::registerFloat(const std::string &groupName,
-                             const std::string &itemName,
-                             const std::string &comment,
-                             ErrorContainer &error,
-                             const double defaultValue,
-                             const bool required)
+                             const std::string &itemName)
 {
-    json convertedDefault(defaultValue);
-    std::string finalGroupName = groupName;
-    return registerValue(finalGroupName,
-                         itemName,
-                         comment,
-                         FLOAT_TYPE,
-                         required,
-                         convertedDefault,
-                         error);
+    return registerValue(groupName, itemName, ConfigDef::FLOAT_TYPE).setDefault(0.0f);
 }
 
 /**
@@ -192,30 +144,14 @@ ConfigHandler::registerFloat(const std::string &groupName,
  *
  * @param groupName name of the group
  * @param itemName name of the item within the group
- * @prama comment comment for the docu about the config-entry
- * @param error reference for error-output
- * @param defaultValue default value, if nothing was set inside of the config
- * @param required if true, then the value must be in the config-file (default: false)
  *
  * @return false, if item-name and group-name are already registered, else true
  */
-bool
+ConfigHandler::ConfigDef&
 ConfigHandler::registerBoolean(const std::string &groupName,
-                               const std::string &itemName,
-                               const std::string &comment,
-                               ErrorContainer &error,
-                               const bool defaultValue,
-                               const bool required)
+                               const std::string &itemName)
 {
-    json convertedDefault(defaultValue);
-    std::string finalGroupName = groupName;
-    return registerValue(finalGroupName,
-                         itemName,
-                         comment,
-                         BOOL_TYPE,
-                         required,
-                         convertedDefault,
-                         error);
+    return registerValue(groupName, itemName, ConfigDef::BOOL_TYPE).setDefault(false);
 }
 
 /**
@@ -223,33 +159,14 @@ ConfigHandler::registerBoolean(const std::string &groupName,
  *
  * @param groupName name of the group
  * @param itemName name of the item within the group
- * @prama comment comment for the docu about the config-entry
- * @param defaultValue default value, if nothing was set inside of the config
- * @param required if true, then the value must be in the config-file (default: false)
  *
  * @return false, if item-name and group-name are already registered, else true
  */
-bool
+ConfigHandler::ConfigDef&
 ConfigHandler::registerStringArray(const std::string &groupName,
-                                   const std::string &itemName,
-                                   const std::string &comment,
-                                   ErrorContainer &error,
-                                   const std::vector<std::string> &defaultValue,
-                                   const bool required)
+                                   const std::string &itemName)
 {
-    json convertedDefault;
-    for(const std::string &value : defaultValue) {
-        convertedDefault.push_back(value);
-    }
-
-    std::string finalGroupName = groupName;
-    return registerValue(finalGroupName,
-                         itemName,
-                         comment,
-                         STRING_ARRAY_TYPE,
-                         required,
-                         convertedDefault,
-                         error);
+    return registerValue(groupName, itemName, ConfigDef::STRING_ARRAY_TYPE);
 }
 
 /**
@@ -271,7 +188,7 @@ ConfigHandler::getString(const std::string &groupName,
     success = true;
 
     // compare with registered type
-    if(getRegisteredType(groupName, itemName) != ConfigType::STRING_TYPE)
+    if(getRegisteredType(groupName, itemName) != ConfigDef::STRING_TYPE)
     {
         success = false;
         return "";
@@ -300,7 +217,7 @@ ConfigHandler::getInteger(const std::string &groupName,
     success = true;
 
     // compare with registered type
-    if(getRegisteredType(groupName, itemName) != ConfigType::INT_TYPE)
+    if(getRegisteredType(groupName, itemName) != ConfigDef::INT_TYPE)
     {
         success = false;
         return 0l;
@@ -329,7 +246,7 @@ ConfigHandler::getFloat(const std::string &groupName,
     success = true;
 
     // compare with registered type
-    if(getRegisteredType(groupName, itemName) != ConfigType::FLOAT_TYPE)
+    if(getRegisteredType(groupName, itemName) != ConfigDef::FLOAT_TYPE)
     {
         success = false;
         return 0.0;
@@ -358,7 +275,7 @@ ConfigHandler::getBoolean(const std::string &groupName,
     success = true;
 
     // compare with registered type
-    if(getRegisteredType(groupName, itemName) != ConfigType::BOOL_TYPE)
+    if(getRegisteredType(groupName, itemName) != ConfigDef::BOOL_TYPE)
     {
         success = false;
         return false;
@@ -388,7 +305,7 @@ ConfigHandler::getStringArray(const std::string &groupName,
     success = true;
 
     // compare with registered type
-    if(getRegisteredType(groupName, itemName) != ConfigType::STRING_ARRAY_TYPE)
+    if(getRegisteredType(groupName, itemName) != ConfigDef::STRING_ARRAY_TYPE)
     {
         success = false;
         return result;
@@ -417,7 +334,7 @@ ConfigHandler::getStringArray(const std::string &groupName,
 bool
 ConfigHandler::checkEntry(const std::string &groupName,
                           const std::string &itemName,
-                          ConfigEntry &entry,
+                          ConfigDef &entry,
                           ErrorContainer &error)
 {
     // check type against config-file
@@ -462,11 +379,14 @@ ConfigHandler::checkEntry(const std::string &groupName,
 bool
 ConfigHandler::checkType(const std::string &groupName,
                          const std::string &itemName,
-                         const ConfigType type)
+                         const ConfigDef::ConfigType type)
 {
     // get value from config-file
     json currentItem;
     const bool found = m_iniItem->get(currentItem, groupName, itemName);
+    if(found == false) {
+        return true;
+    }
 
     // precheck
     if(currentItem == nullptr) {
@@ -475,7 +395,7 @@ ConfigHandler::checkType(const std::string &groupName,
 
     // check for array
     if(currentItem.is_array()
-            && type == ConfigType::STRING_ARRAY_TYPE)
+            && type == ConfigDef::STRING_ARRAY_TYPE)
     {
         return true;
     }
@@ -486,28 +406,28 @@ ConfigHandler::checkType(const std::string &groupName,
     {
         // check string
         if(currentItem.is_string()
-                && type == ConfigType::STRING_TYPE)
+                && type == ConfigDef::STRING_TYPE)
         {
             return true;
         }
 
         // check integer
         if(currentItem.is_number_integer()
-                && type == ConfigType::INT_TYPE)
+                && type == ConfigDef::INT_TYPE)
         {
             return true;
         }
 
         // check float
         if(currentItem.is_number_float()
-                && type == ConfigType::FLOAT_TYPE)
+                && type == ConfigDef::FLOAT_TYPE)
         {
             return true;
         }
 
         // check boolean
         if(currentItem.is_boolean()
-                && type == ConfigType::BOOL_TYPE)
+                && type == ConfigDef::BOOL_TYPE)
         {
             return true;
         }
@@ -549,7 +469,7 @@ ConfigHandler::isRegistered(const std::string &groupName,
  *
  * @return undefined-type, if item-name and group-name are not registered, else the registered type
  */
-ConfigHandler::ConfigType
+ConfigHandler::ConfigDef::ConfigType
 ConfigHandler::getRegisteredType(const std::string &groupName,
                                  const std::string &itemName)
 {
@@ -557,16 +477,12 @@ ConfigHandler::getRegisteredType(const std::string &groupName,
     if(outerIt != m_registeredConfigs.end())
     {
         const auto innerIt = outerIt->second.find(itemName);
-        if(innerIt != outerIt->second.end())
-        {
-            if(innerIt->second.value == nullptr) {
-                return UNDEFINED_TYPE;
-            }
+        if(innerIt != outerIt->second.end()) {
             return innerIt->second.type;
         }
     }
 
-    return UNDEFINED_TYPE;
+    return ConfigDef::UNDEFINED_TYPE;
 }
 
 /**
@@ -574,56 +490,48 @@ ConfigHandler::getRegisteredType(const std::string &groupName,
  *
  * @param groupName name of the group
  * @param itemName name of the item within the group
- * @prama comment comment for the docu about the config-entry
  * @param type type of the value to register
- * @param required if true, then the value must be in the config-file
- * @param defaultValue default-value of the item, for the case that
- *                     it is not set by the read config-file
  * @param error reference for error-output
  *
  * @return true, if successfull, else false
  */
-bool
-ConfigHandler::registerValue(std::string &groupName,
+ConfigHandler::ConfigDef&
+ConfigHandler::registerValue(const std::string &groupName,
                              const std::string &itemName,
-                             const std::string &comment,
-                             const ConfigType type,
-                             const bool required,
-                             const json &defaultValue,
-                             ErrorContainer &error)
+                             const ConfigDef::ConfigType type)
 {
+    std::string finalGroupName = groupName;
+
     // if group-name is empty, then use the default-group
-    if(groupName.size() == 0) {
-        groupName = "DEFAULT";
+    if(finalGroupName.size() == 0) {
+        finalGroupName = "DEFAULT";
     }
 
     // precheck if already exist
-    if(isRegistered(groupName, itemName) == true)
+    if(isRegistered(finalGroupName, itemName) == true)
     {
+        ErrorContainer error;
         error.addMeesage("Config registration failed because item is already registered: \n"
-                         "    group: \'" + groupName + "\'\n"
+                         "    group: \'" + finalGroupName + "\'\n"
                          "    item: \'" + itemName + "\'");
         LOG_ERROR(error);
-        return false;
+        assert(false);
     }
 
     // add groupName, if not exist
-    if(m_registeredConfigs.find(groupName) == m_registeredConfigs.end())
+    if(m_registeredConfigs.find(finalGroupName) == m_registeredConfigs.end())
     {
-        std::map<std::string, ConfigEntry> newEntry;
-        m_registeredConfigs.try_emplace(groupName, newEntry);
+        std::map<std::string, ConfigDef> newEntry;
+        m_registeredConfigs.try_emplace(finalGroupName, newEntry);
     }
 
     // add new value
-    auto outerIt = m_registeredConfigs.find(groupName);
-    ConfigEntry entry;
+    auto outerIt = m_registeredConfigs.find(finalGroupName);
+    ConfigDef entry;
     entry.type = type;
-    entry.isRequired = required;
-    entry.comment = comment;
-    entry.value = defaultValue;
-    outerIt->second.emplace(itemName, entry);
+    auto it = outerIt->second.try_emplace(itemName, entry);
 
-    return true;
+    return it.first->second;
 }
 
 /**

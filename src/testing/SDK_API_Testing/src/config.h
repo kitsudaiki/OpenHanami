@@ -30,85 +30,61 @@
  * @brief register configs
  */
 void
-registerConfigs(Hanami::ErrorContainer &error)
+registerConfigs()
 {
     // DEFAULT-section
-    REGISTER_BOOL_CONFIG(   "DEFAULT",
-                            "debug",
-                            "Flag to enable debug-output in logging.",
-                            error,
-                            false,
-                            false);
-    REGISTER_STRING_CONFIG( "DEFAULT",
-                            "log_path",
-                            "Path to the directory, where the log-files should be written into.",
-                            error,
-                            "/var/log",
-                            false);
+    const std::string defaultGroup = "DEFAULT";
 
-    REGISTER_STRING_CONFIG( "connection",
-                            "host",
-                            "IP-address where the hanami-instance is listening.",
-                            error,
-                            "",
-                            true);
-    REGISTER_INT_CONFIG(    "connection",
-                            "port",
-                            "Port where the hanami-instance is listening.",
-                            error,
-                            0,
-                            true);
-    REGISTER_STRING_CONFIG( "connection",
-                            "test_user",
-                            "Login-name of the user, which is used for testing.",
-                            error,
-                            "",
-                            true);
-    REGISTER_STRING_CONFIG( "connection",
-                            "test_pw",
-                            "Passphrase of the user, which is used for testing.",
-                            error,
-                            "",
-                            true);
+    REGISTER_BOOL_CONFIG(defaultGroup, "debug")
+            .setComment("Flag to enable debug-output in logging.")
+            .setDefault(false);
 
+    REGISTER_STRING_CONFIG(defaultGroup, "log_path")
+            .setComment("Path to the directory, where the log-files should be written into.")
+            .setDefault("/var/log");
+
+    // connection-section
+    const std::string connectionGroup = "connection";
+
+    REGISTER_STRING_CONFIG(connectionGroup, "host")
+            .setComment("IP-address where the hanami-instance is listening.")
+            .setRequired(true);
+
+    REGISTER_INT_CONFIG(connectionGroup, "port")
+            .setComment("Port where the hanami-instance is listening.")
+            .setRequired(true);
+
+    REGISTER_STRING_CONFIG(connectionGroup, "test_user")
+            .setComment("Login-name of the user, which is used for testing.")
+            .setRequired(true);
+
+    REGISTER_STRING_CONFIG(connectionGroup, "test_pw")
+            .setComment("Passphrase of the user, which is used for testing.")
+            .setRequired(true);
+
+    // test_data-section
     const std::string testDataGroup = "test_data";
-    REGISTER_STRING_CONFIG( testDataGroup,
-                            "type",
-                            "Type of the test ('mnist' or 'csv'). "
-                                "IMPORTANT: only the mnist-input is supported at the moment.",
-                            error,
-                            "mnist",
-                            false);
-    REGISTER_STRING_CONFIG( testDataGroup,
-                            "train_inputs",
-                            "Local path to the file with the mnist train inputs.",
-                            error,
-                            "",
-                            true);
-    REGISTER_STRING_CONFIG( testDataGroup,
-                            "train_labels",
-                            "Local path to the file with the mnist train lables.",
-                            error,
-                            "",
-                            true);
-    REGISTER_STRING_CONFIG( testDataGroup,
-                            "request_inputs",
-                            "Local path to the file with the mnist request inputs.",
-                            error,
-                            "",
-                            true);
-    REGISTER_STRING_CONFIG( testDataGroup,
-                            "request_labels",
-                            "Local path to the file with the mnist request labels.",
-                            error,
-                            "",
-                            true);
-    /*REGISTER_STRING_CONFIG( testDataGroup,
-                            "base_inputs",
-                            "Local path to the file with the csv-data.",
-                            error,
-                            "",
-                            true);*/
+
+    REGISTER_STRING_CONFIG( testDataGroup, "type")
+            .setComment("Type of the test ('mnist' or 'csv'). "
+                        "IMPORTANT: only the mnist-input is supported at the moment.")
+            .setDefault("mnist");
+
+    REGISTER_STRING_CONFIG(testDataGroup, "train_inputs")
+            .setComment("Local path to the file with the mnist train inputs.")
+            .setRequired(true);
+
+    REGISTER_STRING_CONFIG(testDataGroup, "train_labels")
+            .setComment("Local path to the file with the mnist train lables.")
+            .setRequired(true);
+
+    REGISTER_STRING_CONFIG(testDataGroup, "request_inputs")
+            .setComment("Local path to the file with the mnist request inputs.")
+            .setRequired(true);
+
+    REGISTER_STRING_CONFIG(testDataGroup, "request_labels")
+            .setComment("Local path to the file with the mnist request labels.")
+            .setRequired(true);
 }
 
 #endif // TSUGUMITESTER_CONFIG_H

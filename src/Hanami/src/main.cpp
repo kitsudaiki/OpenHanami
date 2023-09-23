@@ -58,7 +58,7 @@ main(int argc, char *argv[])
     // create and init argument-parser
     Hanami::ArgParser argParser;
     registerArguments(&argParser);
-    registerConfigs(error);
+    registerConfigs();
 
     // parse cli-input
     if(argParser.parse(argc, argv, error) == false)

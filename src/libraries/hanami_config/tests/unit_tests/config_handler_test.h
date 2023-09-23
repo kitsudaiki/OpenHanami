@@ -40,7 +40,6 @@ private:
     void readConfig_test();
 
     // private methods
-    void registerType_test();
     void isRegistered_test();
     void getRegisteredType_test();
     void checkType_test();

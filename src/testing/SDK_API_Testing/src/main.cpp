@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
     if(configPath == "") {
         configPath = "/etc/hanami/hanami_testing.conf";
     }
-    registerConfigs(error);
+    registerConfigs();
     if(INIT_CONFIG(configPath, error) == false)
     {
         LOG_ERROR(error);
