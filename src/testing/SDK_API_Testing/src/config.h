@@ -48,19 +48,19 @@ registerConfigs()
 
     REGISTER_STRING_CONFIG(connectionGroup, "host")
             .setComment("IP-address where the hanami-instance is listening.")
-            .setRequired(true);
+            .setRequired();
 
     REGISTER_INT_CONFIG(connectionGroup, "port")
             .setComment("Port where the hanami-instance is listening.")
-            .setRequired(true);
+            .setRequired();
 
     REGISTER_STRING_CONFIG(connectionGroup, "test_user")
             .setComment("Login-name of the user, which is used for testing.")
-            .setRequired(true);
+            .setRequired();
 
     REGISTER_STRING_CONFIG(connectionGroup, "test_pw")
             .setComment("Passphrase of the user, which is used for testing.")
-            .setRequired(true);
+            .setRequired();
 
     // test_data-section
     const std::string testDataGroup = "test_data";
@@ -72,19 +72,19 @@ registerConfigs()
 
     REGISTER_STRING_CONFIG(testDataGroup, "train_inputs")
             .setComment("Local path to the file with the mnist train inputs.")
-            .setRequired(true);
+            .setRequired();
 
     REGISTER_STRING_CONFIG(testDataGroup, "train_labels")
             .setComment("Local path to the file with the mnist train lables.")
-            .setRequired(true);
+            .setRequired();
 
     REGISTER_STRING_CONFIG(testDataGroup, "request_inputs")
             .setComment("Local path to the file with the mnist request inputs.")
-            .setRequired(true);
+            .setRequired();
 
     REGISTER_STRING_CONFIG(testDataGroup, "request_labels")
             .setComment("Local path to the file with the mnist request labels.")
-            .setRequired(true);
+            .setRequired();
 }
 
 #endif // TSUGUMITESTER_CONFIG_H

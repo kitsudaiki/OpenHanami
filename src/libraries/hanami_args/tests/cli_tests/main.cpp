@@ -41,18 +41,18 @@ int main(int argc, char *argv[])
     // register flags
     parser.registerString("source")
             .setHelpText("source-path")
-            .setRequired(true);
+            .setRequired();
     parser.registerInteger("input", 'i')
             .setHelpText("additional parameter");
 
     // register other values
     parser.registerString("mode")
             .setHelpText("modus for converting")
-            .setRequired(true)
+            .setRequired()
             .setWithoutFlag();
     parser.registerString("destination")
             .setHelpText("destination path for output")
-            .setRequired(true)
+            .setRequired()
             .setWithoutFlag();
 
     // register types:

@@ -72,9 +72,9 @@ public:
             return *this;
         }
 
-        ArgDef& setRequired(const bool required)
+        ArgDef& setRequired()
         {
-            this->isRequired = required;
+            this->isRequired = true;
             return *this;
         }
 

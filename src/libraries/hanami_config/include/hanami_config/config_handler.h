@@ -93,9 +93,9 @@ public:
             return *this;
         }
 
-        ConfigDef& setRequired(const bool required)
+        ConfigDef& setRequired()
         {
-            this->isRequired = required;
+            this->isRequired = true;
             return *this;
         }
     };

@@ -66,7 +66,7 @@ registerConfigs()
 
     REGISTER_STRING_CONFIG(authGroup, "token_key_path")
             .setComment("Local path to the file with the key for signing and validating the jwt-token.")
-            .setRequired(true);
+            .setRequired();
 
     REGISTER_INT_CONFIG(authGroup, "token_expire_time")
             .setComment("Number of seconds, until a jwt-token expired.")
@@ -89,15 +89,15 @@ registerConfigs()
 
     REGISTER_STRING_CONFIG(httpGroup, "dashboard_files")
             .setComment("Local path to the directory, which contains the files of the dashboard.")
-            .setRequired(true);
+            .setRequired();
 
     REGISTER_STRING_CONFIG(httpGroup, "certificate")
             .setComment("Local path to the file with the certificate for the https-connection.")
-            .setRequired(true);
+            .setRequired();
 
     REGISTER_STRING_CONFIG(httpGroup, "key")
             .setComment("Local path to the file with the key for the https-connection.")
-            .setRequired(true);
+            .setRequired();
 
     REGISTER_STRING_CONFIG(httpGroup, "ip")
             .setComment("IP-address, where the http-server should listen.")

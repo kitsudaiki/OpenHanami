@@ -59,7 +59,7 @@ ArgParser_Test::getArgument_test()
 
     parser.registerInteger("asdf", 'a')
             .setHelpText("this is an example")
-            .setRequired(true);
+            .setRequired();
 
     isNullptr = parser.getArgument("xyz") == nullptr;
     TEST_EQUAL(isNullptr, true);
@@ -182,19 +182,19 @@ ArgParser_Test::parse_test()
     parser.registerBoolean("bool", 'b');
     parser.registerString("first_arg")
             .setHelpText("first argument")
-            .setRequired(true)
+            .setRequired()
             .setWithoutFlag();
     parser.registerInteger("secondArg")
             .setHelpText("second argument")
-            .setRequired(true)
+            .setRequired()
             .setWithoutFlag();
     parser.registerFloat("thirdArg")
             .setHelpText("third argument")
-            .setRequired(true)
+            .setRequired()
             .setWithoutFlag();
     parser.registerBoolean("lastArg")
             .setHelpText("last argument")
-            .setRequired(true)
+            .setRequired()
             .setWithoutFlag();
 
     TEST_EQUAL(parser.parse(argc, argv, error), true);
@@ -212,7 +212,7 @@ ArgParser_Test::parse_test()
     // negative test: register a required value, which is not given in the arguments
     parser.registerBoolean("fail")
             .setHelpText("this is a boolean")
-            .setRequired(true);
+            .setRequired();
     TEST_EQUAL(parser.parse(argc, argv, error), false);
 }
 
@@ -388,19 +388,19 @@ ArgParser_Test::prepareTest(ArgParser &parser)
     parser.registerBoolean("bool", 'b');
     parser.registerString("first_arg")
             .setHelpText("first argument")
-            .setRequired(true)
+            .setRequired()
             .setWithoutFlag();
     parser.registerInteger("secondArg")
             .setHelpText("second argument")
-            .setRequired(true)
+            .setRequired()
             .setWithoutFlag();
     parser.registerFloat("thirdArg")
             .setHelpText("third argument")
-            .setRequired(true)
+            .setRequired()
             .setWithoutFlag();
     parser.registerBoolean("lastArg")
             .setHelpText("last argument")
-            .setRequired(true)
+            .setRequired()
             .setWithoutFlag();
 
     assert(parser.parse(argc, argv, error));
