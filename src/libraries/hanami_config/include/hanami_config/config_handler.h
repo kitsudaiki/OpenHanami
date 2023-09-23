@@ -64,41 +64,58 @@ public:
         return instance;
     }
 
+    struct ConfigDef
+    {
+        enum ConfigType
+        {
+            UNDEFINED_TYPE,
+            STRING_TYPE,
+            INT_TYPE,
+            FLOAT_TYPE,
+            BOOL_TYPE,
+            STRING_ARRAY_TYPE
+        };
+
+        bool isRequired = false;
+        ConfigType type = UNDEFINED_TYPE;
+        json value;
+        std::string comment = "";
+
+        ConfigDef& setComment(const std::string &comment)
+        {
+            this->comment = comment;
+            return *this;
+        }
+
+        ConfigDef& setDefault(const json &defaultValue)
+        {
+            this->value = defaultValue;
+            return *this;
+        }
+
+        ConfigDef& setRequired()
+        {
+            this->isRequired = true;
+            return *this;
+        }
+    };
+
+
     bool initConfig(const std::string &configFilePath,
                     ErrorContainer &error);
     void createDocumentation(std::string &docu);
 
     // register config-options
-    bool registerString(const std::string &groupName,
-                        const std::string &itemName,
-                        const std::string &comment,
-                        ErrorContainer &error,
-                        const std::string &defaultValue = "",
-                        const bool required = false);
-    bool registerInteger(const std::string &groupName,
-                         const std::string &itemName,
-                         const std::string &comment,
-                         ErrorContainer &error,
-                         const long defaultValue = 0,
-                         const bool required = false);
-    bool registerFloat(const std::string &groupName,
-                       const std::string &itemName,
-                       const std::string &comment,
-                       ErrorContainer &error,
-                       const double defaultValue = 0.0,
-                       const bool required = false);
-    bool registerBoolean(const std::string &groupName,
-                         const std::string &itemName,
-                         const std::string &comment,
-                         ErrorContainer &error,
-                         const bool defaultValue = false,
-                         const bool required = false);
-    bool registerStringArray(const std::string &groupName,
-                             const std::string &itemName,
-                             const std::string &comment,
-                             ErrorContainer &error,
-                             const std::vector<std::string> &defaultValue = {},
-                             const bool required = false);
+    ConfigDef& registerString(const std::string &groupName,
+                                const std::string &itemName);
+    ConfigDef& registerInteger(const std::string &groupName,
+                                 const std::string &itemName);
+    ConfigDef& registerFloat(const std::string &groupName,
+                               const std::string &itemName);
+    ConfigDef& registerBoolean(const std::string &groupName,
+                                 const std::string &itemName);
+    ConfigDef& registerStringArray(const std::string &groupName,
+                                     const std::string &itemName);
 
     // getter
     const std::string getString(const std::string &groupName,
@@ -126,51 +143,28 @@ private:
     ~ConfigHandler();
     static ConfigHandler* instance;
 
-    enum ConfigType
-    {
-        UNDEFINED_TYPE,
-        STRING_TYPE,
-        INT_TYPE,
-        FLOAT_TYPE,
-        BOOL_TYPE,
-        STRING_ARRAY_TYPE
-    };
-
-    struct ConfigEntry
-    {
-        bool isRequired = false;
-        ConfigType type = UNDEFINED_TYPE;
-        json value;
-        std::string comment = "";
-    };
-
     bool checkEntry(const std::string &groupName,
                     const std::string &itemName,
-                    ConfigEntry &entry,
+                    ConfigDef &entry,
                     ErrorContainer &error);
     bool checkType(const std::string &groupName,
                    const std::string &itemName,
-                   const ConfigType type);
+                   const ConfigDef::ConfigType type);
     bool isRegistered(const std::string &groupName,
                       const std::string &itemName);
 
-    ConfigType getRegisteredType(const std::string &groupName,
-                                 const std::string &itemName);
+    ConfigDef::ConfigType getRegisteredType(const std::string &groupName,
+                                              const std::string &itemName);
 
-    bool registerValue(std::string &groupName,
-                       const std::string &itemName,
-                       const std::string &comment,
-                       const ConfigType type,
-                       const bool required,
-                       const json &defaultValue,
-                       ErrorContainer &error);
+    ConfigDef& registerValue(const std::string &groupName,
+                               const std::string &itemName,
+                               const ConfigDef::ConfigType type);
 
     std::string m_configFilePath = "";
     IniItem* m_iniItem = nullptr;
-    std::map<std::string, std::map<std::string, ConfigEntry>> m_registeredConfigs;
+    std::map<std::string, std::map<std::string, ConfigDef>> m_registeredConfigs;
 };
 
 }
-
 
 #endif // CONFIG_HANDLER_H

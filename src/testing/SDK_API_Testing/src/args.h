@@ -34,22 +34,17 @@
  * @return true if successful, else false
  */
 bool
-registerArguments(Hanami::ArgParser* argparser,
-                  Hanami::ErrorContainer &error)
+registerArguments(Hanami::ArgParser* argparser)
 {
     std::string helpText = "";
 
     // config-flag
-    helpText = "absolute path to config-file";
-    if(argparser->registerString("config,c", helpText, error) == false) {
-        return false;
-    }
+    argparser->registerString("config", 'c')
+            .setHelpText("absolute path to config-file");
 
     // debug-flag
-    helpText = "enable debug-mode";
-    if(argparser->registerPlain("debug,d", helpText, error) == false) {
-        return false;
-    }
+    argparser->registerPlain("debug", 'd')
+            .setHelpText("enable debug-mode");
 
     return true;
 }
