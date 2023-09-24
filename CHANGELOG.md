@@ -1,6 +1,25 @@
 # Changelog
 
-## ## v0.3.0 
+## v0.3.1
+
+- **Date**: 2023-09-24
+
+### Changed
+
+- replaced json-parser by third-party library https://github.com/nlohmann/json
+- updated internal registration of config-values
+- updated internal registration of cli-arguments
+
+### Fixed
+
+- fixed bug in synapse-segmentation, which had impact in samller tests
+
+### Removed
+
+- Removed unused and deprecated checkpoint create and finalize endpoints
+
+
+## v0.3.0 
 
 - **Date**: 2023-09-05
 

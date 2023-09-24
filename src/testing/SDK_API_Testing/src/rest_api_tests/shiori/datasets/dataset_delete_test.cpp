@@ -38,16 +38,16 @@ DataSetDeleteTest::DataSetDeleteTest(const bool expectSuccess,
 }
 
 bool
-DataSetDeleteTest::runTest(Hanami::JsonItem &inputData,
+DataSetDeleteTest::runTest(json &inputData,
                            Hanami::ErrorContainer &error)
 {
     std::string uuid = "";
     if(m_type == "train") {
-        uuid = inputData.get("train_dataset_uuid").getString();
+        uuid = inputData["train_dataset_uuid"];
     } else if(m_type == "request") {
-        uuid = inputData.get("request_dataset_uuid").getString();
+        uuid = inputData["request_dataset_uuid"];
     } else {
-        uuid = inputData.get("base_dataset_uuid").getString();
+        uuid = inputData["base_dataset_uuid"];
     }
 
     // delete user by name
@@ -62,8 +62,11 @@ DataSetDeleteTest::runTest(Hanami::JsonItem &inputData,
     }
 
     // parse output
-    Hanami::JsonItem jsonItem;
-    if(jsonItem.parse(result, error) == false) {
+    json jsonItem;
+    try {
+        jsonItem = json::parse(result);
+    } catch(const json::parse_error& ex) {
+        error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
 

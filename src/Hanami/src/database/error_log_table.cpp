@@ -24,7 +24,6 @@
 
 #include <hanami_common/items/table_item.h>
 #include <hanami_common/methods/string_methods.h>
-#include <hanami_json/json_item.h>
 #include <hanami_crypto/common.h>
 
 #include <hanami_database/sql_database.h>
@@ -91,16 +90,16 @@ ErrorLogTable::addErrorLogEntry(const std::string &timestamp,
                                 const std::string &message,
                                 Hanami::ErrorContainer &error)
 {
-    Hanami::JsonItem data;
-    data.insert("timestamp", timestamp);
-    data.insert("user_id", userid);
-    data.insert("component", component);
-    data.insert("context", context);
-    data.insert("input_values", values);
+    json data;
+    data["timestamp"] = timestamp;
+    data["user_id"] = userid;
+    data["component"] = component;
+    data["context"] = context;
+    data["input_values"] = values;
 
     std::string base64Msg;
     Hanami::encodeBase64(base64Msg, message.c_str(), message.size());
-    data.insert("message", base64Msg);
+    data["message"] = base64Msg;
 
     if(insertToDb(data, error) == false)
     {

@@ -38,11 +38,11 @@ ProjectGetTest::ProjectGetTest(const bool expectSuccess,
 }
 
 bool
-ProjectGetTest::runTest(Hanami::JsonItem &inputData,
+ProjectGetTest::runTest(json &inputData,
                         Hanami::ErrorContainer &error)
 {
     if(m_name == "") {
-        m_name = inputData.get("project_id").getString();
+        m_name = inputData["project_id"];
     }
 
     // get user by name
@@ -56,12 +56,15 @@ ProjectGetTest::runTest(Hanami::JsonItem &inputData,
     }
 
     // parse output
-    Hanami::JsonItem jsonItem;
-    if(jsonItem.parse(result, error) == false) {
+    json jsonItem;
+    try {
+        jsonItem = json::parse(result);
+    } catch(const json::parse_error& ex) {
+        error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
 
-    inputData.insert("project_id", jsonItem.get("id").getString(), true);
+    inputData["project_id"] = jsonItem["id"];
 
     return true;
 }

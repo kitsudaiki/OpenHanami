@@ -45,16 +45,16 @@ ImageRequestTaskTest::ImageRequestTaskTest(const bool expectSuccess)
 }
 
 bool
-ImageRequestTaskTest::runTest(Hanami::JsonItem &inputData,
+ImageRequestTaskTest::runTest(json &inputData,
                               Hanami::ErrorContainer &error)
 {
     // create new user
     std::string result;
     if(Hanami::createTask(result,
-                            inputData.get("generic_task_name").getString(),
+                            inputData["generic_task_name"],
                             "request",
-                            inputData.get("cluster_uuid").getString(),
-                            inputData.get("request_dataset_uuid").getString(),
+                            inputData["cluster_uuid"],
+                            inputData["request_dataset_uuid"],
                             error) != m_expectSuccess)
     {
         return false;
@@ -65,12 +65,15 @@ ImageRequestTaskTest::runTest(Hanami::JsonItem &inputData,
     }
 
     // parse output
-    Hanami::JsonItem jsonItem;
-    if(jsonItem.parse(result, error) == false) {
+    json jsonItem;
+    try {
+        jsonItem = json::parse(result);
+    } catch(const json::parse_error& ex) {
+        error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
 
-    inputData.insert("request_task_uuid", jsonItem.get("uuid").getString(), true);
+    inputData["request_task_uuid"] = jsonItem["uuid"];
 
     std::chrono::high_resolution_clock::time_point start;
     std::chrono::high_resolution_clock::time_point end;
@@ -82,17 +85,20 @@ ImageRequestTaskTest::runTest(Hanami::JsonItem &inputData,
     {
         usleep(1000000);
         Hanami::getTask(result,
-                          inputData.get("request_task_uuid").getString(),
-                          inputData.get("cluster_uuid").getString(),
-                          error);
+                        inputData["request_task_uuid"],
+                        inputData["cluster_uuid"],
+                        error);
 
         // parse output
-        if(jsonItem.parse(result, error) == false) {
+        try {
+            jsonItem = json::parse(result);
+        } catch(const json::parse_error& ex) {
+            error.addMeesage("json-parser error: " + std::string(ex.what()));
             return false;
         }
-        //std::cout<<jsonItem.toString(true)<<std::endl;
+        //std::cout<<jsonItem.dump(4)<<std::endl;
     }
-    while(jsonItem.get("state").getString() != "finished");
+    while(jsonItem["state"] != "finished");
     end = std::chrono::system_clock::now();
     const float time2 = std::chrono::duration_cast<chronoMilliSec>(end - start).count();
 
@@ -107,7 +113,7 @@ ImageRequestTaskTest::runTest(Hanami::JsonItem &inputData,
     //if(jsonItem.parse(result, error) == false) {
     //    return false;
     //}
-    // std::cout<<jsonItem.toString(true)<<std::endl;
+    // std::cout<<jsonItem.dump(4)<<std::endl;
 
     return true;
 }

@@ -28,5 +28,6 @@
 #include <common/defines.h>
 #include <common/structs.h>
 #include <common/functions.h>
+#include <common/using.h>
 
 #endif // HANAMI_COMMON_H

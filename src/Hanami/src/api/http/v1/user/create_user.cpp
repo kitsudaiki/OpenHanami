@@ -27,7 +27,6 @@
 
 #include <hanami_crypto/hashes.h>
 #include <hanami_common/methods/string_methods.h>
-#include <hanami_json/json_item.h>
 
 /**
  * @brief constructor
@@ -58,7 +57,7 @@ CreateUser::CreateUser()
 
     registerInputField("is_admin", SAKURA_BOOL_TYPE)
             .setComment("Set this to 1 to register the new user as admin.")
-            .setDefault(new Hanami::DataValue(false));
+            .setDefault(false);
 
     //----------------------------------------------------------------------------------------------
     // output
@@ -90,22 +89,22 @@ CreateUser::CreateUser()
  */
 bool
 CreateUser::runTask(BlossomIO &blossomIO,
-                    const Hanami::DataMap &context,
+                    const json &context,
                     BlossomStatus &status,
                     Hanami::ErrorContainer &error)
 {
     // check if admin
-    if(context.getBoolByKey("is_admin") == false)
+    if(context["is_admin"] == false)
     {
         status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
 
-    const std::string newUserId = blossomIO.input.get("id").getString();
-    const std::string creatorId = context.getStringByKey("id");
+    const std::string newUserId = blossomIO.input["id"];
+    const std::string creatorId = context["id"];
 
     // check if user already exist within the table
-    Hanami::JsonItem getResult;
+    json getResult;
     if(UsersTable::getInstance()->getUser(getResult, newUserId, error, false) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -124,19 +123,19 @@ CreateUser::runTask(BlossomIO &blossomIO,
     // genreate hash from password and random salt
     std::string pwHash;
     const std::string salt = generateUuid().toString();
-    const std::string saltedPw = blossomIO.input.get("password").getString() + salt;
+    const std::string saltedPw = std::string(blossomIO.input["password"]) + salt;
     Hanami::generate_SHA_256(pwHash, saltedPw);
 
     // convert values
-    std::vector<Hanami::JsonItem> projects;
-    Hanami::JsonItem userData;
-    userData.insert("id", newUserId);
-    userData.insert("name", blossomIO.input.get("name").getString());
-    userData.insert("projects", Hanami::JsonItem(projects));
-    userData.insert("pw_hash", pwHash);
-    userData.insert("is_admin", blossomIO.input.get("is_admin").getBool());
-    userData.insert("creator_id", creatorId);
-    userData.insert("salt", salt);
+    std::vector<json> projects;
+    json userData;
+    userData["id"] = newUserId;
+    userData["name"] = blossomIO.input["name"];
+    userData["projects"] = json(projects);
+    userData["pw_hash"] = pwHash;
+    userData["is_admin"] = blossomIO.input["is_admin"];
+    userData["creator_id"] = creatorId;
+    userData["salt"] = salt;
 
     // add new user to table
     if(UsersTable::getInstance()->addUser(userData, error) == false)

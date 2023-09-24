@@ -33,7 +33,6 @@
 
 #include <hanami_config/config_handler.h>
 #include <hanami_common/logger.h>
-#include <hanami_json/json_item.h>
 
 /**
  * @brief getNumberOfNeuronSections

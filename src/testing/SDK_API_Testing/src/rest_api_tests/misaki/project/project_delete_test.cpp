@@ -38,7 +38,7 @@ ProjectDeleteTest::ProjectDeleteTest(const bool expectSuccess,
 }
 
 bool
-ProjectDeleteTest::runTest(Hanami::JsonItem &inputData,
+ProjectDeleteTest::runTest(json &inputData,
                            Hanami::ErrorContainer &error)
 {
     // delete user by name
@@ -55,7 +55,7 @@ ProjectDeleteTest::runTest(Hanami::JsonItem &inputData,
     else
     {
         if(Hanami::deleteProject(result,
-                                   inputData.get("project_id").getString(),
+                                   inputData["project_id"],
                                    error) != m_expectSuccess)
         {
             return false;
@@ -67,8 +67,11 @@ ProjectDeleteTest::runTest(Hanami::JsonItem &inputData,
     }
 
     // parse output
-    Hanami::JsonItem jsonItem;
-    if(jsonItem.parse(result, error) == false) {
+    json jsonItem;
+    try {
+        jsonItem = json::parse(result);
+    } catch(const json::parse_error& ex) {
+        error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
 

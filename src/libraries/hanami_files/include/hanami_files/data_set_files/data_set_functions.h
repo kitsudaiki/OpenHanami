@@ -26,9 +26,9 @@
 #include <hanami_common/logger.h>
 #include <hanami_common/buffer/data_buffer.h>
 
-namespace Hanami {
-class JsonItem;
-}
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 bool
 getDataSetPayload(Hanami::DataBuffer &result,
@@ -36,7 +36,7 @@ getDataSetPayload(Hanami::DataBuffer &result,
                   Hanami::ErrorContainer &error,
                   const std::string &columnName = "");
 
-bool getHeaderInformation(Hanami::JsonItem &result,
+bool getHeaderInformation(json &result,
                           const std::string &location,
                           Hanami::ErrorContainer &error);
 

@@ -36,7 +36,7 @@ ProjectListTest::ProjectListTest(const bool expectSuccess)
 }
 
 bool
-ProjectListTest::runTest(Hanami::JsonItem &inputData,
+ProjectListTest::runTest(json &inputData,
                          Hanami::ErrorContainer &error)
 {
     // list all users
@@ -50,12 +50,15 @@ ProjectListTest::runTest(Hanami::JsonItem &inputData,
     }
 
     // parse output
-    Hanami::JsonItem jsonItem;
-    if(jsonItem.parse(result, error) == false) {
+    json jsonItem;
+    try {
+        jsonItem = json::parse(result);
+    } catch(const json::parse_error& ex) {
+        error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
 
-    inputData.insert("number_of_projects", static_cast<long>(jsonItem.size()), true);
+    inputData["number_of_projects"] = static_cast<long>(jsonItem.size());
 
     return true;
 }

@@ -59,21 +59,15 @@ IniParserInterface::getInstance()
  *
  * @return resulting object
  */
-DataItem*
+json
 IniParserInterface::parse(const std::string &inputString,
                           ErrorContainer &error)
 {
-    DataItem* result = nullptr;
-
     std::lock_guard<std::mutex> guard(m_lock);
 
     // init global values
     m_inputString = inputString;
     m_errorMessage = "";
-    if(m_output != nullptr) {
-        delete m_output;
-    }
-    m_output = nullptr;
 
     // run parser-code
     this->scan_begin(inputString);
@@ -90,9 +84,7 @@ IniParserInterface::parse(const std::string &inputString,
         return nullptr;
     }
 
-    result = m_output->copy();
-
-    return result;
+    return m_output;
 }
 
 /**
@@ -131,7 +123,7 @@ IniParserInterface::removeQuotes(const std::string &input)
  * @param output parser-output as DataArray
  */
 void
-IniParserInterface::setOutput(DataItem *output)
+IniParserInterface::setOutput(json output)
 {
      m_output = output;
 }

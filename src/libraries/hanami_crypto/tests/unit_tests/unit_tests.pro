@@ -14,6 +14,8 @@ INCLUDEPATH += ../../../hanami_common/include
 
 LIBS +=  -lssl -lcrypto -lcryptopp
 
+INCLUDEPATH += ../../../../third-party-libs/json/include
+
 INCLUDEPATH += $$PWD
 
 SOURCES += \

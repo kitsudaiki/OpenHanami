@@ -25,8 +25,6 @@
 #include <common/http_client.h>
 
 #include <hanami_crypto/common.h>
-#include <hanami_json/json_item.h>
-#include <hanami_common/items/data_items.h>
 #include <hanami_common/files/binary_file.h>
 
 #include <../../../libraries/hanami_messages/protobuffers/hanami_messages.proto3.pb.h>
@@ -284,14 +282,16 @@ waitUntilFullyUploaded(const std::string &uuid,
             return false;
         }
 
-        Hanami::JsonItem progress;
-        if(progress.parse(progressStr, error) == false)
-        {
+        json progress;
+        try {
+            progress = json::parse(progressStr);
+        } catch(const json::parse_error& ex) {
+            error.addMeesage("json-parser error: " + std::string(ex.what()));
             LOG_ERROR(error);
             return false;
         }
 
-        completeUploaded = progress.get("complete").getBool();
+        completeUploaded = progress["complete"];
     }
 
     return true;
@@ -323,16 +323,18 @@ uploadCsvData(std::string &result,
     }
 
     // parse output to get the uuid
-    Hanami::JsonItem jsonItem;
-    if(jsonItem.parse(result, error) == false)
-    {
+    json jsonItem;
+    try {
+        jsonItem = json::parse(result);
+    } catch(const json::parse_error& ex) {
+        error.addMeesage("json-parser error: " + std::string(ex.what()));
         LOG_ERROR(error);
         return false;
     }
 
     // get ids from inital reponse to identify the file-transfer
-    const std::string uuid = jsonItem.get("uuid").getString();
-    const std::string inputUuid = jsonItem.get("uuid_input_file").getString();
+    const std::string uuid = jsonItem["uuid"];
+    const std::string inputUuid = jsonItem["uuid_input_file"];
 
     // init websocket to shiori
     WebsocketClient wsClient;
@@ -403,17 +405,19 @@ uploadMnistData(std::string &result,
     }
 
     // parse output to get the uuid
-    Hanami::JsonItem jsonItem;
-    if(jsonItem.parse(result, error) == false)
-    {
+    json jsonItem;
+    try {
+        jsonItem = json::parse(result);
+    } catch(const json::parse_error& ex) {
+        error.addMeesage("json-parser error: " + std::string(ex.what()));
         LOG_ERROR(error);
         return false;
     }
 
     // get ids from inital reponse to identify the file-transfer
-    const std::string uuid = jsonItem.get("uuid").getString();
-    const std::string inputUuid = jsonItem.get("uuid_input_file").getString();
-    const std::string labelUuid = jsonItem.get("uuid_label_file").getString();
+    const std::string uuid = jsonItem["uuid"];
+    const std::string inputUuid = jsonItem["uuid_input_file"];
+    const std::string labelUuid = jsonItem["uuid_label_file"];
 
     // init websocket to shiori
     WebsocketClient wsClient;

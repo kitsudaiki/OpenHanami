@@ -29,9 +29,6 @@
 #include <hanami_files/data_set_files/image_data_set_file.h>
 #include <hanami_files/data_set_files/table_data_set_file.h>
 
-#include <hanami_crypto/common.h>
-#include <hanami_json/json_item.h>
-
 GetProgressDataSet::GetProgressDataSet()
     : Blossom("Get upload progress of a specific data-set.")
 {
@@ -68,14 +65,14 @@ GetProgressDataSet::GetProgressDataSet()
  */
 bool
 GetProgressDataSet::runTask(BlossomIO &blossomIO,
-                            const Hanami::DataMap &context,
+                            const json &context,
                             BlossomStatus &status,
                             Hanami::ErrorContainer &error)
 {
-    const std::string dataUuid = blossomIO.input.get("uuid").getString();
+    const std::string dataUuid = blossomIO.input["uuid"];
     const UserContext userContext(context);
 
-    Hanami::JsonItem databaseOutput;
+    json databaseOutput;
     if(DataSetTable::getInstance()->getDataSet(databaseOutput,
                                                dataUuid,
                                                userContext,
@@ -95,29 +92,22 @@ GetProgressDataSet::runTask(BlossomIO &blossomIO,
         return false;
     }
 
-    // add uuid
-    blossomIO.output.insert("uuid", databaseOutput.get("uuid"));
-
     // parse and add temp-file-information
-    const std::string tempFilesStr = databaseOutput.get("temp_files").toString();
-    Hanami::JsonItem tempFiles;
-    if(tempFiles.parse(tempFilesStr, error) == false)
-    {
-        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        return false;
-    }
-    blossomIO.output.insert("temp_files", tempFiles);
+    const json tempFiles = databaseOutput["temp_files"];
 
     // check and add if complete
-    const std::vector<std::string> keys = tempFiles.getKeys();
     bool finishedAll = true;
-    for(uint32_t i = 0; i < keys.size(); i++)
+    for(const auto& [key, file] : tempFiles.items())
     {
-        if(tempFiles.get(keys.at(i)).getFloat() < 1.0f) {
+        if(file < 1.0f) {
             finishedAll = false;
         }
     }
-    blossomIO.output.insert("complete", finishedAll);
+
+    // create output
+    blossomIO.output["uuid"] = databaseOutput["uuid"];
+    blossomIO.output["temp_files"] = tempFiles;
+    blossomIO.output["complete"] = finishedAll;
 
     return true;
 }

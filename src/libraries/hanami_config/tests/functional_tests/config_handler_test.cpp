@@ -44,9 +44,9 @@ ConfigHandler_Test::runTest()
     ErrorContainer error;
     Hanami::writeFile(m_testFilePath, getTestString(), error, true);
 
-    REGISTER_STRING_CONFIG("DEFAULT", "string_val", "", error, "");
-    REGISTER_INT_CONFIG("DEFAULT", "int_val", "", error, 42);
-    REGISTER_INT_CONFIG("DEFAULT", "another_int_val", "", error, 42);
+    REGISTER_STRING_CONFIG("DEFAULT", "string_val");
+    REGISTER_INT_CONFIG("DEFAULT", "int_val").setDefault(42);
+    REGISTER_INT_CONFIG("DEFAULT", "another_int_val").setDefault(42);
 
     // init config
     TEST_EQUAL(INIT_CONFIG(m_testFilePath, error), true);

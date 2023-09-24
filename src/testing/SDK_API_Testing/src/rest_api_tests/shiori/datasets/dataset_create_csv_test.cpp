@@ -37,14 +37,14 @@ DataSetCreateCsvTest::DataSetCreateCsvTest(const bool expectSuccess)
 }
 
 bool
-DataSetCreateCsvTest::runTest(Hanami::JsonItem &inputData,
+DataSetCreateCsvTest::runTest(json &inputData,
                               Hanami::ErrorContainer &error)
 {
     std::string result;
     if(Hanami::uploadCsvData(result,
-                               inputData.get("base_dataset_name").getString(),
-                               inputData.get("base_inputs").getString(),
-                               error) != m_expectSuccess)
+                             inputData["base_dataset_name"],
+                             inputData["base_inputs"],
+                             error) != m_expectSuccess)
     {
         return false;
     }
@@ -54,12 +54,15 @@ DataSetCreateCsvTest::runTest(Hanami::JsonItem &inputData,
     }
 
     // parse output
-    Hanami::JsonItem jsonItem;
-    if(jsonItem.parse(result, error) == false) {
+    json jsonItem;
+    try {
+        jsonItem = json::parse(result);
+    } catch(const json::parse_error& ex) {
+        error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
 
-    inputData.insert("base_dataset_uuid", jsonItem.get("uuid").getString(), true);
+    inputData["base_dataset_uuid"] = jsonItem["uuid"];
 
     return true;
 }

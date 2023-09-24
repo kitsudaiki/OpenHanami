@@ -25,8 +25,6 @@
 #include <hanami_root.h>
 #include <database/cluster_table.h>
 
-#include <hanami_json/json_item.h>
-
 ShowCluster::ShowCluster()
     : Blossom("Show information of a specific cluster.")
 {
@@ -69,12 +67,12 @@ ShowCluster::ShowCluster()
  */
 bool
 ShowCluster::runTask(BlossomIO &blossomIO,
-                     const Hanami::DataMap &context,
+                     const json &context,
                      BlossomStatus &status,
                      Hanami::ErrorContainer &error)
 {
     const UserContext userContext(context);
-    const std::string clusterUuid = blossomIO.input.get("uuid").getString();
+    const std::string clusterUuid = blossomIO.input["uuid"];
 
     // get data from table
     if(ClusterTable::getInstance()->getCluster(blossomIO.output,

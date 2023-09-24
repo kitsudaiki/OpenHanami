@@ -24,7 +24,6 @@
 
 #include <hanami_common/items/table_item.h>
 #include <hanami_common/methods/string_methods.h>
-#include <hanami_json/json_item.h>
 
 #include <hanami_database/sql_database.h>
 
@@ -79,11 +78,11 @@ AuditLogTable::addAuditLogEntry(const std::string &timestamp,
                                 const std::string &requestType,
                                 Hanami::ErrorContainer &error)
 {
-    Hanami::JsonItem data;
-    data.insert("timestamp", timestamp);
-    data.insert("user_id", userId);
-    data.insert("endpoint", endpoint);
-    data.insert("request_type", requestType);
+    json data;
+    data["timestamp"] = timestamp;
+    data["user_id"] = userId;
+    data["endpoint"] = endpoint;
+    data["request_type"] = requestType;
 
     if(insertToDb(data, error) == false)
     {

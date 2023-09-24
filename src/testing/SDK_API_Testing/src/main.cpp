@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 
     // create and init argument-parser
     Hanami::ArgParser argParser;
-    registerArguments(&argParser, error);
+    registerArguments(&argParser);
 
     // parse cli-input
     if(argParser.parse(argc, argv, error) == false)
@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
     if(configPath == "") {
         configPath = "/etc/hanami/hanami_testing.conf";
     }
-    registerConfigs(error);
+    registerConfigs();
     if(INIT_CONFIG(configPath, error) == false)
     {
         LOG_ERROR(error);

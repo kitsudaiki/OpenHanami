@@ -56,11 +56,6 @@ LIBS += -L../libraries/hanami_ini/src/debug -lhanami_ini
 LIBS += -L../libraries/hanami_ini/src/release -lhanami_ini
 INCLUDEPATH += ../libraries/hanami_ini/include
 
-LIBS += -L../libraries/hanami_json/src -lhanami_json
-LIBS += -L../libraries/hanami_json/src/debug -lhanami_json
-LIBS += -L../libraries/hanami_json/src/release -lhanami_json
-INCLUDEPATH += ../libraries/hanami_json/include
-
 LIBS += -L../libraries/hanami_crypto/src -lhanami_crypto
 LIBS += -L../libraries/hanami_crypto/src/debug -lhanami_crypto
 LIBS += -L../libraries/hanami_crypto/src/release -lhanami_crypto
@@ -77,6 +72,7 @@ LIBS += -L../sdk/cpp/hanami_sdk/src/release -lhanami_sdk
 INCLUDEPATH += ../sdk/cpp/hanami_sdk/include
 
 INCLUDEPATH += ../third-party-libs/jwt-cpp/include
+INCLUDEPATH += ../third-party-libs/json/include
 
 LIBS += -lcryptopp -lcrypto -lssl -lsqlite3 -luuid -pthread -lprotobuf
 # LIBS += -lOpenCL
@@ -153,9 +149,7 @@ HEADERS += \
     src/api/http/v1/cluster/save_cluster.h \
     src/api/http/v1/cluster/set_cluster_mode.h \
     src/api/http/v1/cluster/show_cluster.h \
-    src/api/http/v1/checkpoint/create_checkpoint.h \
     src/api/http/v1/checkpoint/delete_checkpoint.h \
-    src/api/http/v1/checkpoint/finish_checkpoint.h \
     src/api/http/v1/checkpoint/get_checkpoint.h \
     src/api/http/v1/checkpoint/list_checkpoint.h \
     src/api/http/v1/data_files/check_data_set.h \
@@ -167,6 +161,7 @@ HEADERS += \
     src/api/http/v1/data_files/list_data_set.h \
     src/api/http/v1/data_files/mnist/create_mnist_data_set.h \
     src/api/http/v1/data_files/mnist/finalize_mnist_data_set.h \
+    src/common/using.h \
     src/documentation/generate_rest_api_docu.h \
     src/api/http/v1/logs/get_audit_log.h \
     src/api/http/v1/logs/get_error_log.h \
@@ -264,9 +259,7 @@ SOURCES += \
     src/api/http/v1/cluster/save_cluster.cpp \
     src/api/http/v1/cluster/set_cluster_mode.cpp \
     src/api/http/v1/cluster/show_cluster.cpp \
-    src/api/http/v1/checkpoint/create_checkpoint.cpp \
     src/api/http/v1/checkpoint/delete_checkpoint.cpp \
-    src/api/http/v1/checkpoint/finish_checkpoint.cpp \
     src/api/http/v1/checkpoint/get_checkpoint.cpp \
     src/api/http/v1/checkpoint/list_checkpoint.cpp \
     src/api/http/v1/data_files/check_data_set.cpp \

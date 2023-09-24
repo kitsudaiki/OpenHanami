@@ -20,9 +20,7 @@
  *      limitations under the License.
  */
 
-
 #include <hanami_common/items/table_item.h>
-#include <hanami_common/items/data_items.h>
 
 #include <hanami_common/methods/string_methods.h>
 
@@ -34,8 +32,8 @@ namespace Hanami
  */
 TableItem::TableItem()
 {
-    m_header = new DataArray();
-    m_body = new DataArray();
+    m_header = json::array();
+    m_body = json::array();
 }
 
 /**
@@ -43,8 +41,8 @@ TableItem::TableItem()
  */
 TableItem::TableItem(const TableItem &other)
 {
-    m_body = other.m_body->copy()->toArray();
-    m_header = other.m_header->copy()->toArray();
+    m_body = other.m_body;
+    m_header = other.m_header;
 }
 
 /**
@@ -53,33 +51,16 @@ TableItem::TableItem(const TableItem &other)
  * @param body body-content as data-array-item
  * @param header header-content as data-array-item
  */
-TableItem::TableItem(DataArray *body,
-                     DataArray *header)
+TableItem::TableItem(const json &body, const json &header)
 {
-    // init header
-    if(header == nullptr) {
-        m_header = new DataArray();
-    } else {
-        m_header = header->copy()->toArray();
-    }
-
-    // init body
-    if(body == nullptr) {
-        m_body = new DataArray();
-    } else {
-        m_body = body->copy()->toArray();
-    }
+    m_header = header;
+    m_body = body;
 }
 
 /**
  * @brief destructor
  */
-TableItem::~TableItem()
-{
-    // delete all data of the table
-    delete m_body;
-    delete m_header;
-}
+TableItem::~TableItem() {}
 
 /**
  * @brief assignment-constructor
@@ -92,11 +73,8 @@ TableItem::operator=(const TableItem& other)
         return *this;
     }
 
-    delete m_body;
-    delete m_header;
-
-    m_body = other.m_body->copy()->toArray();
-    m_header = other.m_header->copy()->toArray();
+    m_body = other.m_body;
+    m_header = other.m_header;
 
     return *this;
 }
@@ -107,11 +85,8 @@ TableItem::operator=(const TableItem& other)
 void
 TableItem::clearTable()
 {
-    delete m_body;
-    delete m_header;
-
-    m_header = new DataArray();
-    m_body = new DataArray();
+    m_header = json::array();
+    m_body = json::array();
 }
 
 /**
@@ -127,16 +102,17 @@ bool
 TableItem::addColumn(const std::string &internalName,
                      const std::string &shownName)
 {
-    DataMap* obj = new DataMap();
+    json obj = json::object();
 
-    obj->insert("inner", new DataValue(internalName));
+    obj["inner"] = internalName;
     if(shownName != "") {
-        obj->insert("outer", new DataValue(shownName));
+        obj["outer"] = shownName;
     } else {
-        obj->insert("outer", new DataValue(internalName));
+        obj["outer"] = internalName;
     }
 
-    m_header->append(obj);
+    m_header.push_back(obj);
+
     return true;
 }
 
@@ -152,13 +128,13 @@ bool
 TableItem::renameColume(const std::string &internalName,
                         const std::string &newShownName)
 {
-    const uint64_t size = m_header->size();
+    const uint64_t size = m_header.size();
 
     for(uint64_t x = 0; x < size; x++)
     {
-        if(m_header->get(x)->get("inner")->getString() == internalName)
+        if(m_header[x]["inner"] == internalName)
         {
-            m_header->get(x)->get("outer")->toValue()->setValue(newShownName);
+            m_header[x]["outer"] = newShownName;
             return true;
         }
     }
@@ -177,17 +153,17 @@ bool
 TableItem::deleteColumn(const uint64_t x)
 {
     // precheck
-    if(x >= m_header->size()) {
+    if(x >= m_header.size()) {
         return false;
     }
 
     // remove colume from header
-    m_header->remove(x);
+    m_header.erase(x);
 
     // remove data of the column
-    const uint64_t size = m_body->size();
+    const uint64_t size = m_body.size();
     for(uint64_t y = 0; y < size; y++) {
-        m_body->get(y)->remove(x);
+        m_body[y].erase(x);
     }
 
     return true;
@@ -203,12 +179,12 @@ TableItem::deleteColumn(const uint64_t x)
 bool
 TableItem::deleteColumn(const std::string &internalName)
 {
-    const uint64_t size = m_header->size();
+    const uint64_t size = m_header.size();
 
     // search in header
     for(uint64_t x = 0; x < size; x++)
     {
-        if(m_header->get(x)->get("inner")->getString() == internalName) {
+        if(m_header[x]["inner"] == internalName) {
             return deleteColumn(x);
         }
     }
@@ -220,24 +196,18 @@ TableItem::deleteColumn(const std::string &internalName)
  * @brief TableItem::addRow
  *
  * @param rowContent new table-row
- * @param copy true to make a copy of the new row-content (DEFAULT: false)
  *
  * @return false, if the new row has not the correct length to fit into the table, else true
  */
 bool
-TableItem::addRow(DataArray* rowContent, const bool copy)
+TableItem::addRow(const json &rowContent)
 {
     // check if the new row has the correct length
-    if(rowContent->size() != getNumberOfColums()) {
+    if(rowContent.size() != getNumberOfColums()) {
         return false;
     }
 
-    // add new row
-    if(copy) {
-        m_body->append(rowContent->copy());
-    } else {
-        m_body->append(rowContent);
-    }
+    m_body.push_back(rowContent);
 
     return true;
 }
@@ -250,7 +220,7 @@ TableItem::addRow(DataArray* rowContent, const bool copy)
  * @return false, if the new row has not the correct length to fit into the table, else true
  */
 bool
-TableItem::addRow(const std::vector<std::string> rowContent)
+TableItem::addRowVec(const std::vector<std::string> rowContent)
 {
     // check if the new row has the correct length
     if(rowContent.size() != getNumberOfColums()) {
@@ -258,12 +228,13 @@ TableItem::addRow(const std::vector<std::string> rowContent)
     }
 
     // add new row content to the table
-    DataArray* obj = new DataArray();
+    json obj = json::array();
     for(uint64_t x = 0; x < rowContent.size(); x++) {
-        obj->append(new DataValue(rowContent.at(x)));
+        obj.push_back(rowContent.at(x));
     }
 
-    m_body->append(obj);
+    m_body.push_back(obj);
+
     return true;
 }
 
@@ -278,11 +249,11 @@ bool
 TableItem::deleteRow(const uint64_t y)
 {
     // precheck
-    if(y >= m_body->size()) {
+    if(y >= m_body.size()) {
         return false;
     }
 
-    m_body->remove(y);
+    m_body.erase(y);
 
     return true;
 }
@@ -302,21 +273,14 @@ TableItem::setCell(const uint32_t column,
                    const std::string &newValue)
 {
     // precheck
-    if(column >= m_header->size()
-            || row >= m_body->size())
+    if(column >= m_header.size()
+            || row >= m_body.size())
     {
         return false;
     }
 
-    // get value at requested position
-    DataItem* value = m_body->get(row)->get(column);
-
     // set new value
-    if(value == nullptr) {
-        m_body->get(row)->toArray()->array[column] = new DataValue(newValue);
-    } else {
-        value->toValue()->setValue(newValue);
-    }
+    m_body[row][column] = newValue;
 
     return true;
 }
@@ -335,20 +299,22 @@ TableItem::getCell(const uint32_t column,
                    const uint32_t row)
 {
     // precheck
-    if(column >= m_header->size()
-            || row >= m_body->size())
+    if(column >= m_header.size()
+            || row >= m_body.size())
     {
         return "";
     }
 
-    // get value at requested position
-    DataItem* value = m_body->get(row)->get(column);
-    if(value == nullptr) {
+    json value = m_body[row][column];
+    if(value.is_null()) {
         return "";
     }
 
-    // return value-content as string
-    return value->toString();
+    if(value.is_string()) {
+        return value;
+    } else {
+        return value.dump();
+    }
 }
 
 /**
@@ -364,15 +330,13 @@ TableItem::deleteCell(const uint32_t column,
                       const uint32_t row)
 {
     // precheck
-    if(column >= m_header->size()
-            || row >= m_body->size())
+    if(column >= m_header.size()
+            || row >= m_body.size())
     {
         return false;
     }
 
-    // remove value if possible
-    delete m_body->get(row)->toArray()->array[column];
-    m_body->get(row)->toArray()->array[column] = nullptr;
+    m_body[row][column] = nullptr;
 
     return true;
 }
@@ -385,7 +349,7 @@ TableItem::deleteCell(const uint32_t column,
 uint64_t
 TableItem::getNumberOfColums()
 {
-    return m_header->size();
+    return m_header.size();
 }
 
 /**
@@ -396,7 +360,7 @@ TableItem::getNumberOfColums()
 uint64_t
 TableItem::getNumberOfRows()
 {
-    return m_body->size();
+    return m_body.size();
 }
 
 /**
@@ -404,10 +368,10 @@ TableItem::getNumberOfRows()
  *
  * @return copy of table-header
  */
-DataArray*
+json
 TableItem::getHeader() const
 {
-    return m_header->copy()->toArray();
+    return m_header;
 }
 
 /**
@@ -415,12 +379,12 @@ TableItem::getHeader() const
  *
  * @return copy of table-header
  */
-DataArray*
+json
 TableItem::getInnerHeader() const
 {
-    DataArray* newArray = new DataArray();
-    for(uint32_t i = 0; i < m_header->size(); i++) {
-        newArray->append(m_header->get(i)->get("inner")->copy());
+    json newArray = json::array();
+    for(uint32_t i = 0; i < m_header.size(); i++) {
+        newArray.push_back(m_header[i]["inner"]);
     }
 
     return newArray;
@@ -429,18 +393,12 @@ TableItem::getInnerHeader() const
 /**
  * @brief get table body
  *
- * @param copy set to true to create a copy (default: false)
- *
  * @return copy of table-body
  */
-DataArray*
-TableItem::getBody(const bool copy) const
+json
+TableItem::getBody() const
 {
-    if(copy) {
-        return m_body->copy()->toArray();
-    } else {
-        return m_body->toArray();
-    }
+    return m_body;
 }
 
 /**
@@ -448,16 +406,12 @@ TableItem::getBody(const bool copy) const
  *
  * @return stolen content
  */
-DataMap*
+json
 TableItem::stealContent()
 {
-    DataMap* content = new DataMap();
-    content->insert("header", m_header);
-    content->insert("body", m_body);
-
-    m_header = new DataArray();
-    m_body = new DataArray();
-
+    json content = json::object();
+    content["header"] = m_header;
+    content["body"] = m_body;
     return content;
 }
 
@@ -465,23 +419,18 @@ TableItem::stealContent()
  * @brief get a specific row of the table
  *
  * @param row number of requested row
- * @param copy true to make a copy, false to get only a pointer
  *
  * @return copy of the requested row
  */
-DataArray*
-TableItem::getRow(const uint32_t row, const bool copy) const
+json
+TableItem::getRow(const uint32_t row) const
 {
     // check if out of range
-    if(row >= m_body->size()) {
+    if(row >= m_body.size()) {
         return nullptr;
     }
 
-    if(copy) {
-        return m_body->get(row)->copy()->toArray();
-    } else {
-        return m_body->get(row)->toArray();
-    }
+    return m_body[row];
 }
 
 /**
@@ -528,9 +477,9 @@ const std::string
 TableItem::toJsonString()
 {
     std::string result = "{ header: ";
-    result.append(m_header->toString());
+    result.append(m_header.dump());
     result.append(", body: ");
-    result.append(m_body->toString());
+    result.append(m_body.dump());
     result.append("}");
     Hanami::replaceSubstring(result, "\n", "\\n");
     return result;
@@ -583,10 +532,10 @@ const std::vector<std::string>
 TableItem::getInnerName()
 {
     std::vector<std::string> result;
-    result.reserve(m_header->size());
+    result.reserve(m_header.size());
 
     for(uint64_t x = 0; x < getNumberOfColums(); x++) {
-        result.push_back(m_header->get(x)->get("inner")->getString());
+        result.push_back(m_header[x]["inner"]);
     }
 
     return result;
@@ -618,8 +567,8 @@ TableItem::convertCellForOutput(TableCell &convertedCell,
             // delete old entry and replace it with the splitted content
             convertedCell.erase(convertedCell.begin() + line);
             convertedCell.insert(convertedCell.begin() + line,
-                                  sub.begin(),
-                                  sub.end());
+                                 sub.begin(),
+                                 sub.end());
         }
 
         // check for a new maximum of the column-width
@@ -646,9 +595,9 @@ TableItem::convertHeaderForOutput(TableRow &convertedHeader,
         std::string cellContent = "";
 
         // get value at requested position
-        DataItem* value = m_header->get(x)->get("outer");
-        if(value != nullptr) {
-            cellContent = value->toValue()->getString();
+        json value = m_header[x]["outer"];
+        if(value.is_null() == false) {
+            cellContent = value;
         }
 
         // split cell content
@@ -683,11 +632,13 @@ TableItem::convertBodyForOutput(TableBodyAll &convertedBody,
         for(uint64_t x = 0; x < getNumberOfColums(); x++)
         {
             std::string cellContent = "";
-
-            // get cell content or use empty string, if cell not exist
-            DataItem* value = m_body->get(y)->get(x);
-            if(value != nullptr) {
-                cellContent = value->toString();
+            const json tempVal = m_body[y][x];
+            if(tempVal.is_null()) {
+                cellContent = "";
+            } else if(tempVal.is_string()) {
+                cellContent = tempVal;
+            } else {
+                cellContent = tempVal.dump();
             }
 
             // split cell content
@@ -752,10 +703,10 @@ TableItem::printHeaderLine(const std::vector<uint64_t> &xSizes)
 
     for(uint64_t i = 0; i < xSizes.size(); i++)
     {
+        const std::string value = m_header[i]["outer"];
         output.append("| ");
-        DataValue* value = m_header->get(i)->get("outer")->toValue();
-        output.append(value->getString());
-        output.append(std::string(xSizes.at(i) - value->size(), ' '));
+        output.append(value);
+        output.append(std::string(xSizes.at(i) - value.size(), ' '));
         output.append(" ");
     }
 

@@ -28,7 +28,6 @@
 
 #include <hanami_crypto/common.h>
 #include <hanami_config/config_handler.h>
-#include <hanami_json/json_item.h>
 #include <hanami_common/files/binary_file.h>
 
 CreateCsvDataSet::CreateCsvDataSet()
@@ -79,12 +78,12 @@ CreateCsvDataSet::CreateCsvDataSet()
 
 bool
 CreateCsvDataSet::runTask(BlossomIO &blossomIO,
-                          const Hanami::DataMap &context,
+                          const json &context,
                           BlossomStatus &status,
                           Hanami::ErrorContainer &error)
 {
-    const std::string name = blossomIO.input.get("name").getString();
-    const long inputDataSize = blossomIO.input.get("input_data_size").getLong();
+    const std::string name = blossomIO.input["name"];
+    const long inputDataSize = blossomIO.input["input_data_size"];
     const UserContext userContext(context);
 
     // get directory to store data from config
@@ -113,17 +112,17 @@ CreateCsvDataSet::runTask(BlossomIO &blossomIO,
     targetFilePath.append(name + "_csv_" +userContext. userId);
 
     // register in database
-    blossomIO.output.insert("name", name);
-    blossomIO.output.insert("type", "csv");
-    blossomIO.output.insert("location", targetFilePath);
-    blossomIO.output.insert("project_id", userContext.projectId);
-    blossomIO.output.insert("owner_id", userContext.userId);
-    blossomIO.output.insert("visibility", "private");
+    blossomIO.output["name"] = name;
+    blossomIO.output["type"] = "csv";
+    blossomIO.output["location"] = targetFilePath;
+    blossomIO.output["project_id"] = userContext.projectId;
+    blossomIO.output["owner_id"] = userContext.userId;
+    blossomIO.output["visibility"] = "private";
 
     // init placeholder for temp-file progress to database
-    Hanami::JsonItem tempFiles;
-    tempFiles.insert(inputUuid, Hanami::JsonItem(0.0f));
-    blossomIO.output.insert("temp_files", tempFiles);
+    json tempFiles;
+    tempFiles[inputUuid] = json(0.0f);
+    blossomIO.output["temp_files"] = tempFiles;
 
     // add to database
     if(DataSetTable::getInstance()->addDataSet(blossomIO.output, userContext, error) == false)
@@ -133,11 +132,11 @@ CreateCsvDataSet::runTask(BlossomIO &blossomIO,
     }
 
     // add values to output
-    blossomIO.output.insert("uuid_input_file", inputUuid);
+    blossomIO.output["uuid_input_file"] = inputUuid;
 
     // remove blocked values from output
-    blossomIO.output.remove("location");
-    blossomIO.output.remove("temp_files");
+    blossomIO.output.erase("location");
+    blossomIO.output.erase("temp_files");
 
     return true;
 }

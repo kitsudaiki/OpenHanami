@@ -25,7 +25,6 @@
 #include <hanami_root.h>
 #include <database/checkpoint_table.h>
 
-#include <hanami_json/json_item.h>
 #include <hanami_common/methods/file_methods.h>
 
 DeleteCheckpoint::DeleteCheckpoint()
@@ -51,15 +50,15 @@ DeleteCheckpoint::DeleteCheckpoint()
  */
 bool
 DeleteCheckpoint::runTask(BlossomIO &blossomIO,
-                          const Hanami::DataMap &context,
+                          const json &context,
                           BlossomStatus &status,
                           Hanami::ErrorContainer &error)
 {
-    const std::string checkpointUuid = blossomIO.input.get("uuid").getString();
+    const std::string checkpointUuid = blossomIO.input["uuid"];
     const UserContext userContext(context);
 
     // get location from database
-    Hanami::JsonItem result;
+    json result;
     if(CheckpointTable::getInstance()->getCheckpoint(result,
                                                      checkpointUuid,
                                                      userContext,
@@ -80,7 +79,7 @@ DeleteCheckpoint::runTask(BlossomIO &blossomIO,
     }
 
     // get location from response
-    const std::string location = result.get("location").getString();
+    const std::string location = result["location"];
 
     // delete entry from db
     if(CheckpointTable::getInstance()->deleteCheckpoint(checkpointUuid,

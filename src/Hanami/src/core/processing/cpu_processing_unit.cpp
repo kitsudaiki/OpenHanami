@@ -196,17 +196,17 @@ CpuProcessingUnit::processSegment(Cluster* cluster)
         {
             // TODO: check for cluster-state instead of client
             const uint32_t hightest = getHighestOutput(*cluster);
-            Hanami::DataValue* value = actualTask->resultData.get(cycle).getItemContent()->toValue();
-            value->setValue(static_cast<long>(hightest));
+            actualTask->resultData[cycle] = static_cast<long>(hightest);
         }
         else if(actualTask->type == TABLE_REQUEST_TASK)
         {
             float val = 0.0f;
             for(uint64_t i = 0; i < cluster->clusterHeader->outputValues.count; i++)
             {
-                Hanami::DataValue* value = actualTask->resultData.get(cycle).getItemContent()->toValue();
-                val = value->getFloat() + cluster->outputValues[i];
-                value->setValue(val);
+                const float temp = actualTask->resultData[cycle];
+                val = temp + cluster->outputValues[i];
+                actualTask->resultData[cycle] = val;
+
             }
         }
     }

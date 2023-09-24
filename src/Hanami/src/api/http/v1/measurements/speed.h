@@ -34,7 +34,7 @@ public:
 
 protected:
     bool runTask(BlossomIO &blossomIO,
-                 const Hanami::DataMap &,
+                 const json &,
                  BlossomStatus &,
                  Hanami::ErrorContainer &);
 };

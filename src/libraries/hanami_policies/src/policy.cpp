@@ -22,7 +22,6 @@
 
 #include <hanami_policies/policy.h>
 
-#include <hanami_common/items/data_items.h>
 #include <policy_parsing/policy_parser_interface.h>
 
 namespace Hanami

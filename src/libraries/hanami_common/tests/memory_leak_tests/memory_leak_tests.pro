@@ -7,6 +7,7 @@ CONFIG += c++17 console
 
 LIBS += -L../../src -lhanami_common
 INCLUDEPATH += $$PWD
+INCLUDEPATH += ../../../../third-party-libs/json/include
 
 HEADERS += \
     hanami_common/state_test.h \
@@ -16,7 +17,6 @@ HEADERS += \
     hanami_common/buffer/ring_buffer_test.h \
     hanami_common/buffer/stack_buffer_reserve_test.h \
     hanami_common/buffer/stack_buffer_test.h \
-    hanami_common/items/data_items_test.h \
     hanami_common/threading/thread_test.h \
     hanami_common/threading/bogus_event.h \
     hanami_common/threading/bogus_thread.h \
@@ -31,7 +31,6 @@ SOURCES += \
     hanami_common/buffer/ring_buffer_test.cpp \
     hanami_common/buffer/stack_buffer_reserve_test.cpp \
     hanami_common/buffer/stack_buffer_test.cpp \
-    hanami_common/items/data_items_test.cpp \
     hanami_common/threading/thread_test.cpp \
     hanami_common/threading/bogus_event.cpp \
     hanami_common/threading/bogus_thread.cpp \

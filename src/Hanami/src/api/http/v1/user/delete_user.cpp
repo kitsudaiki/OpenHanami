@@ -25,8 +25,6 @@
 #include <hanami_root.h>
 #include <database/users_table.h>
 
-#include <hanami_json/json_item.h>
-
 /**
  * @brief constructor
  */
@@ -55,23 +53,23 @@ DeleteUser::DeleteUser()
  */
 bool
 DeleteUser::runTask(BlossomIO &blossomIO,
-                    const Hanami::DataMap &context,
+                    const json &context,
                     BlossomStatus &status,
                     Hanami::ErrorContainer &error)
 {
     // check if admin
-    if(context.getBoolByKey("is_admin") == false)
+    if(context["is_admin"] == false)
     {
         status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
 
     // get information from request
-    const std::string deleterId = context.getStringByKey("id");
-    const std::string userId = blossomIO.input.get("id").getString();
+    const std::string deleterId = context["id"];
+    const std::string userId = blossomIO.input["id"];
 
     // check if user exist within the table
-    Hanami::JsonItem result;
+    json result;
     if(UsersTable::getInstance()->getUser(result, userId, error, false) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -88,7 +86,7 @@ DeleteUser::runTask(BlossomIO &blossomIO,
     }
 
     // prevent user from deleting himself
-    if(result.get("id").getString() == deleterId)
+    if(result["id"] == deleterId)
     {
         status.errorMessage = "User with id '"
                               + userId

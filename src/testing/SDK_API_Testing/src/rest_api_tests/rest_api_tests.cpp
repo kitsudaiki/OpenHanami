@@ -23,7 +23,6 @@
 #include "rest_api_tests.h"
 
 #include <hanami_config/config_handler.h>
-#include <hanami_json/json_item.h>
 #include <hanami_sdk/init.h>
 
 #include <common/test_thread.h>
@@ -105,13 +104,18 @@ deleteAllClusters()
     Hanami::ErrorContainer error;
     Hanami::listCluster(result, error);
 
-    Hanami::JsonItem parsedList;
-    parsedList.parse(result, error);
+    json jsonItem;
+    try {
+        jsonItem = json::parse(result);
+    } catch(const json::parse_error& ex) {
+        error.addMeesage("json-parser error: " + std::string(ex.what()));
+        return;
+    }
 
-    Hanami::JsonItem body = parsedList.get("body");
+    json body = jsonItem["body"];
     for(uint64_t i = 0; i < body.size(); i++)
     {
-        const std::string uuid = body.get(i).get(0).getString();
+        const std::string uuid = body[i][0];
         Hanami::deleteCluster(result, uuid, error);
     }
 }
@@ -126,13 +130,18 @@ deleteAllProjects()
     Hanami::ErrorContainer error;
     Hanami::listProject(result, error);
 
-    Hanami::JsonItem parsedList;
-    parsedList.parse(result, error);
+    json jsonItem;
+    try {
+        jsonItem = json::parse(result);
+    } catch(const json::parse_error& ex) {
+        error.addMeesage("json-parser error: " + std::string(ex.what()));
+        return;
+    }
 
-    Hanami::JsonItem body = parsedList.get("body");
+    json body = jsonItem["body"];
     for(uint64_t i = 0; i < body.size(); i++)
     {
-        const std::string uuid = body.get(i).get(0).getString();
+        const std::string uuid = body[i][0];
         Hanami::deleteProject(result, uuid, error);
     }
 }
@@ -147,13 +156,18 @@ deleteAllUsers()
     Hanami::ErrorContainer error;
     Hanami::listUser(result, error);
 
-    Hanami::JsonItem parsedList;
-    parsedList.parse(result, error);
+    json jsonItem;
+    try {
+        jsonItem = json::parse(result);
+    } catch(const json::parse_error& ex) {
+        error.addMeesage("json-parser error: " + std::string(ex.what()));
+        return;
+    }
 
-    Hanami::JsonItem body = parsedList.get("body");
+    json body = jsonItem["body"];
     for(uint64_t i = 0; i < body.size(); i++)
     {
-        const std::string uuid = body.get(i).get(0).getString();
+        const std::string uuid = body[i][0];
         Hanami::deleteUser(result, uuid, error);
     }
 }
@@ -164,7 +178,7 @@ deleteAllUsers()
  * @param inputData json-item with names and other predefined values for the tests
  */
 void
-runImageTest(Hanami::JsonItem &inputData)
+runImageTest(json &inputData)
 {
     deleteAllClusters();
     deleteAllProjects();
@@ -172,7 +186,7 @@ runImageTest(Hanami::JsonItem &inputData)
 
     TestThread testThread("test_thread", inputData);
 
-    Hanami::JsonItem overrideData;
+    json overrideData;
 
     // test project in misaki
     testThread.addTest(new ProjectCreateTest(true));
@@ -281,33 +295,33 @@ runRestApiTests()
                                         "        output: test_output\n"
                                         "        number_of_neurons: 10");
 
-    Hanami::JsonItem inputData;
+    json inputData;
 
     // add data for the test-user to create
-    inputData.insert("user_id", "tsugumi");
-    inputData.insert("user_name", "Tsugumi");
-    inputData.insert("password", "new password");
-    inputData.insert("admin", true);
-    inputData.insert("role", "tester");
-    inputData.insert("project_id", "test_project");
-    inputData.insert("project_name", "Test Project");
+    inputData["user_id"] = "tsugumi";
+    inputData["user_name"] = "Tsugumi";
+    inputData["password"] = "new password";
+    inputData["is_admin"] = true;
+    inputData["role"] = "tester";
+    inputData["project_id"] = "test_project";
+    inputData["project_name"] = "Test Project";
 
     // add data from config
-    inputData.insert("train_inputs", GET_STRING_CONFIG("test_data", "train_inputs", success)),
-    inputData.insert("train_labels", GET_STRING_CONFIG("test_data", "train_labels", success)),
-    inputData.insert("request_inputs", GET_STRING_CONFIG("test_data", "request_inputs", success)),
-    inputData.insert("request_labels", GET_STRING_CONFIG("test_data", "request_labels", success)),
-    inputData.insert("base_inputs", GET_STRING_CONFIG("test_data", "base_inputs", success)),
+    inputData["train_inputs"] = GET_STRING_CONFIG("test_data", "train_inputs", success),
+    inputData["train_labels"] = GET_STRING_CONFIG("test_data", "train_labels", success),
+    inputData["request_inputs"] = GET_STRING_CONFIG("test_data", "request_inputs", success),
+    inputData["request_labels"] = GET_STRING_CONFIG("test_data", "request_labels", success),
+    inputData["base_inputs"] = GET_STRING_CONFIG("test_data", "base_inputs", success),
 
     // add predefined names for the coming test-resources
-    inputData.insert("cluster_name", "test_cluster");
-    inputData.insert("checkpoint_name", "test_checkpoint");
-    inputData.insert("generic_task_name", "test_task");
-    inputData.insert("template_name", "dynamic");
-    inputData.insert("cluster_definition", clusterDefinition);
-    inputData.insert("request_dataset_name", "request_test_dataset");
-    inputData.insert("train_dataset_name", "train_test_dataset");
-    inputData.insert("base_dataset_name", "base_test_dataset");
+    inputData["cluster_name"] = "test_cluster";
+    inputData["checkpoint_name"] = "test_checkpoint";
+    inputData["generic_task_name"] = "test_task";
+    inputData["template_name"] = "dynamic";
+    inputData["cluster_definition"] = clusterDefinition;
+    inputData["request_dataset_name"] = "request_test_dataset";
+    inputData["train_dataset_name"] = "train_test_dataset";
+    inputData["base_dataset_name"] = "base_test_dataset";
 
     runImageTest(inputData);
 

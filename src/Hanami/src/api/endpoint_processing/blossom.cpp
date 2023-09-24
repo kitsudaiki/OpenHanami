@@ -107,15 +107,14 @@ Blossom::getOutputValidationMap() const
  * @param values input-values to fill
  */
 void
-Blossom::fillDefaultValues(Hanami::DataMap &values)
+Blossom::fillDefaultValues(json &values)
 {
     for(const auto& [name, field] : m_inputValidationMap)
     {
         if(field.defaultVal != nullptr)
         {
-            Hanami::DataItem* tempItem = field.defaultVal->copy();
-            if(values.insert(name, tempItem, false) == false) {
-                delete tempItem;
+            if(values.contains(name) == false) {
+                values[name] = field.defaultVal;
             }
         }
     }
@@ -133,19 +132,19 @@ Blossom::fillDefaultValues(Hanami::DataMap &values)
  */
 bool
 Blossom::growBlossom(BlossomIO &blossomIO,
-                     const Hanami::DataMap* context,
+                     const json &context,
                      BlossomStatus &status,
                      Hanami::ErrorContainer &error)
 {
     LOG_DEBUG("runTask " + blossomIO.blossomName);
 
     // set default-values
-    fillDefaultValues(*blossomIO.input.getItemContent()->toMap());
+    fillDefaultValues(blossomIO.input);
     std::string errorMessage;
 
     // validate input
     if(checkBlossomValues(m_inputValidationMap,
-                          *blossomIO.input.getItemContent()->toMap(),
+                          blossomIO.input,
                           FieldDef::INPUT_TYPE,
                           errorMessage) == false)
     {
@@ -156,7 +155,7 @@ Blossom::growBlossom(BlossomIO &blossomIO,
     }
 
     // handle result
-    if(runTask(blossomIO, *context, status, error) == false)
+    if(runTask(blossomIO, context, status, error) == false)
     {
         createError(blossomIO, "blossom execute", error);
         return false;
@@ -164,7 +163,7 @@ Blossom::growBlossom(BlossomIO &blossomIO,
 
     // validate output
     if(checkBlossomValues(m_outputValidationMap,
-                          *blossomIO.output.getItemContent()->toMap(),
+                          blossomIO.output,
                           FieldDef::OUTPUT_TYPE,
                           errorMessage) == false)
     {
@@ -187,7 +186,7 @@ Blossom::growBlossom(BlossomIO &blossomIO,
  * @return true, if successful, else false
  */
 bool
-Blossom::validateFieldsCompleteness(const DataMap &input,
+Blossom::validateFieldsCompleteness(const json &input,
                                     const std::map<std::string, FieldDef> &validationMap,
                                     const FieldDef::IO_ValueType valueType,
                                     std::string &errorMessage)
@@ -195,7 +194,7 @@ Blossom::validateFieldsCompleteness(const DataMap &input,
     if(allowUnmatched == false)
     {
         // check if all keys in the values of the blossom-item also exist in the required-key-list
-        for(const auto& [name, _] : input.map)
+        for(const auto& [name, _] : input.items())
         {
             if(validationMap.find(name) == validationMap.end())
             {
@@ -313,7 +312,7 @@ Blossom::getCompareMap(std::map<std::string, FieldDef::IO_ValueType> &compareMap
         }
 
         if(item.type == ValueItem::OUTPUT_PAIR_TYPE) {
-            compareMap.emplace(item.item->toString(), FieldDef::OUTPUT_TYPE);
+            compareMap.emplace(item.item.dump(), FieldDef::OUTPUT_TYPE);
         }
     }
 

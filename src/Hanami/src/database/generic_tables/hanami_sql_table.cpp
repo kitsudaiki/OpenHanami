@@ -25,7 +25,6 @@
 #include <hanami_database/sql_database.h>
 
 #include <hanami_common/methods/string_methods.h>
-#include <hanami_json/json_item.h>
 
 #include <uuid/uuid.h>
 
@@ -79,7 +78,7 @@ HanamiSqlTable::~HanamiSqlTable() {}
  * @return true, if successful, else false
  */
 bool
-HanamiSqlTable::add(Hanami::JsonItem &values,
+HanamiSqlTable::add(json &values,
                     const UserContext &userContext,
                     Hanami::ErrorContainer &error)
 {
@@ -95,12 +94,12 @@ HanamiSqlTable::add(Hanami::JsonItem &values,
         // fill into string, but must be reduced by 1 to remove the escate-character
         std::string uuidString = std::string(uuid, UUID_STR_LEN - 1);
         Hanami::toLowerCase(uuidString);
-        values.insert("uuid", uuidString);
+        values["uuid"] = uuidString;
     }
 
     // add user-ids
-    values.insert("owner_id", userContext.userId, true);
-    values.insert("project_id", userContext.projectId, true);
+    values["owner_id"] = userContext.userId;
+    values["project_id"] = userContext.projectId;
 
     return insertToDb(values, error);
 }
@@ -117,7 +116,7 @@ HanamiSqlTable::add(Hanami::JsonItem &values,
  * @return true, if successful, else false
  */
 bool
-HanamiSqlTable::get(Hanami::JsonItem &result,
+HanamiSqlTable::get(json &result,
                     const UserContext &userContext,
                     std::vector<RequestCondition> &conditions,
                     Hanami::ErrorContainer &error,
@@ -138,7 +137,7 @@ HanamiSqlTable::get(Hanami::JsonItem &result,
  * @return true, if successful, else false
  */
 bool
-HanamiSqlTable::update(Hanami::JsonItem &values,
+HanamiSqlTable::update(json &values,
                        const UserContext &userContext,
                        std::vector<RequestCondition> &conditions,
                        Hanami::ErrorContainer &error)

@@ -27,8 +27,6 @@
 #include <hanami_hardware/cpu_package.h>
 #include <hanami_hardware/cpu_thread.h>
 
-#include <hanami_json/json_item.h>
-
 PowerMeasuring* PowerMeasuring::instance = nullptr;
 
 PowerMeasuring::PowerMeasuring()
@@ -41,7 +39,7 @@ PowerMeasuring::~PowerMeasuring() {}
  *
  * @return json-output
  */
-Hanami::DataMap*
+json
 PowerMeasuring::getJson()
 {
     return m_valueContainer.toJson();

@@ -27,9 +27,7 @@
 #include <mutex>
 
 #include <hanami_sdk/common/websocket_client.h>
-
 #include <hanami_common/threading/thread.h>
-#include <hanami_json/json_item.h>
 
 class TestStep;
 
@@ -38,7 +36,7 @@ class TestThread
 {
 public:
     TestThread(const std::string &name,
-               Hanami::JsonItem &inputData);
+               json &inputData);
     ~TestThread();
 
     void addTest(TestStep* newStep);
@@ -52,7 +50,7 @@ protected:
 private:
     std::deque<TestStep*> m_taskQueue;
     std::mutex m_queueLock;
-    Hanami::JsonItem m_inputData;
+    json m_inputData;
 
     TestStep* getTest();
 };

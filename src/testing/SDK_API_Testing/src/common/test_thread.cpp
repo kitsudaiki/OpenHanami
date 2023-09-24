@@ -30,7 +30,7 @@ Hanami::WebsocketClient* TestThread::m_wsClient = nullptr;
  * @brief constructor
  */
 TestThread::TestThread(const std::string &name,
-                       Hanami::JsonItem &inputData)
+                       json &inputData)
     : Hanami::Thread(name)
 {
     m_inputData = inputData;

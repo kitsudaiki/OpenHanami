@@ -38,11 +38,11 @@ UserGetTest::UserGetTest(const bool expectSuccess,
 }
 
 bool
-UserGetTest::runTest(Hanami::JsonItem &inputData,
+UserGetTest::runTest(json &inputData,
                      Hanami::ErrorContainer &error)
 {
     if(m_id == "") {
-        m_id = inputData.get("user_id").getString();
+        m_id = inputData["user_id"];
     }
 
     // get user by name
@@ -56,12 +56,15 @@ UserGetTest::runTest(Hanami::JsonItem &inputData,
     }
 
     // parse output
-    Hanami::JsonItem jsonItem;
-    if(jsonItem.parse(result, error) == false) {
+    json jsonItem;
+    try {
+        jsonItem = json::parse(result);
+    } catch(const json::parse_error& ex) {
+        error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
 
-    inputData.insert("user_id", jsonItem.get("id").getString(), true);
+    inputData["user_id"] = jsonItem["id"];
 
     return true;
 }

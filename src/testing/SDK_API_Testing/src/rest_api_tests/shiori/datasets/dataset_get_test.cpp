@@ -40,15 +40,15 @@ DataSetGetTest::DataSetGetTest(const bool expectSuccess,
 }
 
 bool
-DataSetGetTest::runTest(Hanami::JsonItem &inputData,
+DataSetGetTest::runTest(json &inputData,
                         Hanami::ErrorContainer &error)
 {
     if(m_uuid == "")
     {
         if(m_type == "train") {
-            m_uuid = inputData.get("train_dataset_uuid").getString();
+            m_uuid = inputData["train_dataset_uuid"];
         } else {
-            m_uuid = inputData.get("request_dataset_uuid").getString();
+            m_uuid = inputData["request_dataset_uuid"];
         }
     }
 
@@ -63,8 +63,11 @@ DataSetGetTest::runTest(Hanami::JsonItem &inputData,
     }
 
     // parse output
-    Hanami::JsonItem jsonItem;
-    if(jsonItem.parse(result, error) == false) {
+    json jsonItem;
+    try {
+        jsonItem = json::parse(result);
+    } catch(const json::parse_error& ex) {
+        error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
 

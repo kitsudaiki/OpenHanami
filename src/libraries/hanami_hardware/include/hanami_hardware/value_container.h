@@ -27,7 +27,9 @@
 #include <string>
 #include <stdint.h>
 
-#include <hanami_common/items/data_items.h>
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 class ValueContainer
 {
@@ -35,7 +37,7 @@ public:
     ValueContainer();
 
     void addValue(const float newValue);
-    Hanami::DataMap* toJson();
+    json toJson();
 
 private:
     struct ValueSection
@@ -52,7 +54,7 @@ private:
     std::vector<ValueSection> m_valueSections;
 
     void addValue(const float newValue, const uint64_t sectionId);
-    Hanami::DataArray* appendSectionToJson(const uint64_t sectionId);
+    json appendSectionToJson(const uint64_t sectionId);
 };
 
 #endif // HANAMI_VALUECONTAINER_H

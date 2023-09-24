@@ -56,10 +56,6 @@ jobs:
         run: |
           chmod +x /build_result/libraries/hanami_common/tests/unit_tests/unit_tests
           /build_result/libraries/hanami_common/tests/unit_tests/unit_tests
-      - name: "Run test: hanami_json"
-        run: |
-          chmod +x /build_result/libraries/hanami_json/tests/unit_tests/unit_tests
-          /build_result/libraries/hanami_json/tests/unit_tests/unit_tests
       - name: "Run test: hanami_config"
         run: |
           chmod +x /build_result/libraries/hanami_config/tests/unit_tests/unit_tests
@@ -107,10 +103,6 @@ jobs:
         run: |
           chmod +x /build_result/libraries/hanami_common/tests/memory_leak_tests/memory_leak_tests
           /build_result/libraries/hanami_common/tests/memory_leak_tests/memory_leak_tests
-      - name: "Run test: hanami_json"
-        run: |
-          chmod +x /build_result/libraries/hanami_json/tests/memory_leak_tests/memory_leak_tests
-          /build_result/libraries/hanami_json/tests/memory_leak_tests/memory_leak_tests
       - name: "Run test: hanami_cluster_parser"
         run: |
           chmod +x /build_result/libraries/hanami_cluster_parser/tests/memory_leak_tests/memory_leak_tests

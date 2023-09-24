@@ -36,16 +36,16 @@ TableTrainTaskTest::TableTrainTaskTest(const bool expectSuccess)
 }
 
 bool
-TableTrainTaskTest::runTest(Hanami::JsonItem &inputData,
+TableTrainTaskTest::runTest(json &inputData,
                             Hanami::ErrorContainer &error)
 {
     // create new user
     std::string result;
     if(Hanami::createTask(result,
-                            inputData.get("generic_task_name").getString(),
+                            inputData["generic_task_name"],
                             "train",
-                            inputData.get("cluster_uuid").getString(),
-                            inputData.get("base_dataset_uuid").getString(),
+                            inputData["cluster_uuid"],
+                            inputData["base_dataset_uuid"],
                             error) != m_expectSuccess)
     {
         return false;
@@ -56,12 +56,15 @@ TableTrainTaskTest::runTest(Hanami::JsonItem &inputData,
     }
 
     // parse output
-    Hanami::JsonItem jsonItem;
-    if(jsonItem.parse(result, error) == false) {
+    json jsonItem;
+    try {
+        jsonItem = json::parse(result);
+    } catch(const json::parse_error& ex) {
+        error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
 
-    inputData.insert("train_task_uuid", jsonItem.get("uuid").getString(), true);
+    inputData["train_task_uuid"] = jsonItem["uuid"];
 
     // wait until task is finished
     do
@@ -69,17 +72,20 @@ TableTrainTaskTest::runTest(Hanami::JsonItem &inputData,
         sleep(1);
 
         Hanami::getTask(result,
-                          inputData.get("train_task_uuid").getString(),
-                          inputData.get("cluster_uuid").getString(),
-                          error);
+                        inputData["train_task_uuid"],
+                        inputData["cluster_uuid"],
+                        error);
 
         // parse output
-        if(jsonItem.parse(result, error) == false) {
+        try {
+            jsonItem = json::parse(result);
+        } catch(const json::parse_error& ex) {
+            error.addMeesage("json-parser error: " + std::string(ex.what()));
             return false;
         }
-        std::cout<<jsonItem.toString(true)<<std::endl;
+        std::cout<<jsonItem.dump(4)<<std::endl;
     }
-    while(jsonItem.get("state").getString() != "finished");
+    while(jsonItem["state"] != "finished");
 
     return true;
 }

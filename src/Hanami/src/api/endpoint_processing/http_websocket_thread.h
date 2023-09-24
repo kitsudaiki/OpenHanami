@@ -37,6 +37,7 @@
 #include <string>
 #include <filesystem>
 
+#include <common.h>
 #include <hanami_messages.proto3.pb.h>
 #include <hanami_common/threading/thread.h>
 #include <hanami_common/logger.h>

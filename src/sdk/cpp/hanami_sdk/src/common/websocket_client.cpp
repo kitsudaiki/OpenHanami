@@ -22,8 +22,6 @@
 
 #include <hanami_sdk/common/websocket_client.h>
 
-#include <hanami_json/json_item.h>
-
 namespace Hanami
 {
 
@@ -127,15 +125,20 @@ WebsocketClient::initClient(std::string &socketUuid,
                                       buffer.data().size());
 
         // parse response
-        Hanami::JsonItem response;
-        if(response.parse(responseMsg, error) == false)
+        json response;
+        try {
+            response = json::parse(responseMsg);
+        }
+        catch(const json::parse_error& ex)
         {
             error.addMeesage("Failed to parse response-message from Websocket-init");
+            error.addMeesage("json-parser error: " + std::string(ex.what()));
             LOG_ERROR(error);
+            return false;
         }
 
-        socketUuid = response.get("uuid").getString();
-        return response.get("success").getInt();
+        socketUuid = response["uuid"];
+        return response["success"];
     }
     catch(std::exception const& e)
     {

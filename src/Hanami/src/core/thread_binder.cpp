@@ -29,7 +29,6 @@
 #include <hanami_hardware/cpu_package.h>
 #include <hanami_hardware/cpu_thread.h>
 
-#include <hanami_json/json_item.h>
 #include <hanami_common/threading/thread.h>
 #include <hanami_common/threading/thread_handler.h>
 
@@ -60,11 +59,11 @@ ThreadBinder::init(Hanami::ErrorContainer &error)
 /**
  * @brief get actual mapping as json
  */
-Hanami::DataMap*
+json
 ThreadBinder::getMapping()
 {
     std::lock_guard<std::mutex> guard(m_mapLock);
-    return m_completeMap.copy()->toMap();
+    return m_completeMap;
 }
 
 /**
@@ -164,11 +163,11 @@ ThreadBinder::run()
                 // update list for output
                 if(name != "CpuProcessingUnit")
                 {
-                    Hanami::DataArray* idList = new Hanami::DataArray();
+                    json idList = json::array();
                     for(const uint64_t id : m_controlCoreIds) {
-                        idList->append(new Hanami::DataValue((long)id));
+                        idList.push_back((long)id);
                     }
-                    m_completeMap.insert(name, idList, true);
+                    m_completeMap[name] = idList;
                 }
             }
 
@@ -179,16 +178,16 @@ ThreadBinder::run()
             {
                 const std::string entry = "CpuProcessingUnit_" + std::to_string(thread->getThreadId());
                 const uint64_t coreId = thread->getCoreIds().at(0);
-                Hanami::DataArray* idList = new Hanami::DataArray();
-                idList->append(new Hanami::DataValue((long)coreId));
-                m_completeMap.insert(entry, idList, true);
+                json idList = json::array();
+                idList.push_back((long)coreId);
+                m_completeMap[entry] = idList;
             }
 
             // debug-output
             // std::cout<<"#############################################################"<<std::endl;
-            // std::cout<<m_completeMap.toString(true)<<std::endl;
+            // std::cout<<m_completeMap.dump(4)<<std::endl;
             // std::cout<<"#############################################################"<<std::endl;
-            //LOG_DEBUG(newMapping.toString(true));
+            //LOG_DEBUG(newMapping.dump(4));
         }
         while(false);
         m_mapLock.unlock();

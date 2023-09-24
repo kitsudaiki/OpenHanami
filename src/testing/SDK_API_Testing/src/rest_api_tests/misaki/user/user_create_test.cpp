@@ -36,17 +36,17 @@ UserCreateTest::UserCreateTest(const bool expectSuccess)
 }
 
 bool
-UserCreateTest::runTest(Hanami::JsonItem &inputData,
+UserCreateTest::runTest(json &inputData,
                         Hanami::ErrorContainer &error)
 {
     // create new user
     std::string result;
     if(Hanami::createUser(result,
-                            inputData.get("user_id").getString(),
-                            inputData.get("user_name").getString(),
-                            inputData.get("password").getString(),
-                            inputData.get("is_admin").getBool(),
-                            error) != m_expectSuccess)
+                          inputData["user_id"],
+                          inputData["user_name"],
+                          inputData["password"],
+                          inputData["is_admin"],
+                          error) != m_expectSuccess)
     {
         return false;
     }
@@ -56,12 +56,15 @@ UserCreateTest::runTest(Hanami::JsonItem &inputData,
     }
 
     // parse output
-    Hanami::JsonItem jsonItem;
-    if(jsonItem.parse(result, error) == false) {
+    json jsonItem;
+    try {
+        jsonItem = json::parse(result);
+    } catch(const json::parse_error& ex) {
+        error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
 
-    inputData.insert("user_id", jsonItem.get("id").getString(), true);
+    inputData["user_id"] = jsonItem["id"];
 
     return true;
 }

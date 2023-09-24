@@ -25,7 +25,6 @@
 
 #include <regex>
 
-#include <hanami_common/items/data_items.h>
 #include <hanami_common/logger.h>
 
 #include <api/endpoint_processing/items/value_items.h>
@@ -34,11 +33,11 @@
 class ValueItemMap;
 
 bool checkBlossomValues(const std::map<std::string, FieldDef> &defs,
-                        const Hanami::DataMap &values,
+                        const json &values,
                         const FieldDef::IO_ValueType ioType,
                         std::string &errorMessage);
 
-bool checkType(Hanami::DataItem* item,
+bool checkType(const json &item,
                const FieldType fieldType);
 
 #endif // HANAMI_LANG_RUNTIME_VALIDATION_H

@@ -88,14 +88,14 @@ ValueContainer::addValue(const float newValue, const uint64_t sectionId)
  *
  * @param result data-item with all information
  */
-Hanami::DataMap*
+json
 ValueContainer::toJson()
 {
-    Hanami::DataMap* result = new Hanami::DataMap();
-    result->insert("seconds",appendSectionToJson(0));
-    result->insert("minutes",appendSectionToJson(1));
-    result->insert("hours",appendSectionToJson(2));
-    result->insert("days",appendSectionToJson(3));
+    json result = json::object();
+    result["seconds"] = appendSectionToJson(0);
+    result["minutes"] = appendSectionToJson(1);
+    result["hours"] = appendSectionToJson(2);
+    result["days"] = appendSectionToJson(3);
     return result;
 }
 
@@ -106,7 +106,7 @@ ValueContainer::toJson()
  *
  * @return data-item with all value of the selected value-section
  */
-Hanami::DataArray*
+json
 ValueContainer::appendSectionToJson(const uint64_t sectionId)
 {
     // precheck
@@ -115,12 +115,12 @@ ValueContainer::appendSectionToJson(const uint64_t sectionId)
     }
 
     // fill value in a array
-    Hanami::DataArray* valueList = new Hanami::DataArray();
+    json valueList = json::array();
     ValueSection* tempValueSection = &m_valueSections[sectionId];
     uint64_t pos = tempValueSection->pos;
     for(uint64_t i = 0; i < tempValueSection->values.size(); i++)
     {
-        valueList->append(new Hanami::DataValue(tempValueSection->values.at(pos)));
+        valueList.push_back(tempValueSection->values.at(pos));
         pos = (pos + 1) % tempValueSection->values.size();
     }
 

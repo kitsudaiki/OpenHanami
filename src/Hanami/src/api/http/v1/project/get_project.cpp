@@ -25,8 +25,6 @@
 #include <hanami_root.h>
 #include <database/projects_table.h>
 
-#include <hanami_json/json_item.h>
-
 /**
  * @brief constructor
  */
@@ -68,19 +66,19 @@ GetProject::GetProject()
  */
 bool
 GetProject::runTask(BlossomIO &blossomIO,
-                    const Hanami::DataMap &context,
+                    const json &context,
                     BlossomStatus &status,
                     Hanami::ErrorContainer &error)
 {
     // check if admin
-    if(context.getBoolByKey("is_admin") == false)
+    if(context["is_admin"] == false)
     {
         status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
 
     // get information from request
-    const std::string projectId = blossomIO.input.get("id").getString();
+    const std::string projectId = blossomIO.input["id"];
 
     // get data from table
     if(ProjectsTable::getInstance()->getProject(blossomIO.output, projectId, error) == false)

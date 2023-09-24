@@ -22,7 +22,6 @@
 
 #include <hanami_sdk/user.h>
 #include <common/http_client.h>
-#include <hanami_json/json_item.h>
 
 namespace Hanami
 {
@@ -296,16 +295,17 @@ switchProject(std::string &result,
     }
 
     // try to parse response
-    Hanami::JsonItem item;
-    if(item.parse(result, error) == false)
-    {
-        error.addMeesage("Failed to parse token-response");
+    json jsonItem;
+    try {
+        jsonItem = json::parse(result);
+    } catch(const json::parse_error& ex) {
+        error.addMeesage("json-parser error: " + std::string(ex.what()));
         LOG_ERROR(error);
         return false;
     }
 
     // get token from parsed item
-    const std::string newToken = item["token"].getString();
+    const std::string newToken = jsonItem["token"];
     if(newToken == "")
     {
         error.addMeesage("Can not find token in token-response");

@@ -28,8 +28,6 @@
 #include <core/cluster/cluster_handler.h>
 #include <core/cluster/cluster.h>
 
-#include <hanami_json/json_item.h>
-
 DeleteCluster::DeleteCluster()
     : Blossom("Delete a cluster.")
 {
@@ -53,15 +51,15 @@ DeleteCluster::DeleteCluster()
  */
 bool
 DeleteCluster::runTask(BlossomIO &blossomIO,
-                       const Hanami::DataMap &context,
+                       const json &context,
                        BlossomStatus &status,
                        Hanami::ErrorContainer &error)
 {
     const UserContext userContext(context);
-    const std::string clusterUuid = blossomIO.input.get("uuid").getString();
+    const std::string clusterUuid = blossomIO.input["uuid"];
 
     // check if user exist within the table
-    Hanami::JsonItem getResult;
+    json getResult;
     if(ClusterTable::getInstance()->getCluster(getResult,
                                                clusterUuid,
                                                userContext,
@@ -89,7 +87,7 @@ DeleteCluster::runTask(BlossomIO &blossomIO,
     }
 
     // remove internal data
-    const std::string uuid = getResult.get("uuid").getString();
+    const std::string uuid = getResult["uuid"];
     if(ClusterHandler::getInstance()->removeCluster(uuid) == false)
     {
         // should never be false, because the uuid is already defined as unique by the database

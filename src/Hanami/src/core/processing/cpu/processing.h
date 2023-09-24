@@ -124,34 +124,31 @@ synapseProcessing(Cluster &cluster,
     {
         synapse = &section[pos];
 
-#ifndef DONT_DO_TRAINING
-        // create new synapse if necesarry and training is active
-        if(synapse->targetNeuronId == UNINIT_STATE_16) {
-            createNewSynapse(neuronBlock, synapse, clusterSettings, counter);
-        }
-
-        if(synapse->border > 2.0f * counter
-                && pos < SYNAPSES_PER_SYNAPSESECTION-2)
+        if(clusterSettings->doTrain)
         {
-            const float val = synapse->border / 2.0f;
-            section[pos + 1].border += val;
-            synapse->border -= val;
+            // create new synapse if necesarry and training is active
+            if(synapse->targetNeuronId == UNINIT_STATE_16) {
+                createNewSynapse(neuronBlock, synapse, clusterSettings, counter);
+            }
+
+            if(synapse->border > 2.0f * counter
+                    && pos < SYNAPSES_PER_SYNAPSESECTION-2)
+            {
+                const float val = synapse->border / 2.0f;
+                section[pos + 1].border += val;
+                synapse->border -= val;
+            }
         }
-#endif
 
         if(synapse->targetNeuronId != UNINIT_STATE_16)
         {
             // update target-neuron
             targetNeuron = &neuronBlock->neurons[synapse->targetNeuronId];
-            if(counter > synapse->border) {
+            if(counter >= synapse->border) {
                 targetNeuron->input += synapse->weight;
             } else {
                 targetNeuron->input += synapse->weight * ((1.0f / synapse->border) * counter);
             }
-
-            // update active-counter
-            //active = (synapse->weight > 0) == (targetNeuron->potential > targetNeuron->border);
-            //synapse->activeCounter += active * static_cast<uint8_t>(synapse->activeCounter < 126);
         }
 
         // update loop-counter
@@ -160,15 +157,15 @@ synapseProcessing(Cluster &cluster,
     }
 
     LocationPtr* targetLocation = &connection->next[currentLocation->sectionId];
-#ifndef DONT_DO_TRAINING
-    if(counter > 0.01f
+
+    if(clusterSettings->doTrain
+            && counter > 0.01f
             && targetLocation->sectionId == UNINIT_STATE_16)
     {
         const float newOffset = (outH - counter) + connection->offset[currentLocation->sectionId];
         createNewSection(cluster, connection->origin[currentLocation->sectionId], newOffset);
         targetLocation = &connection->next[currentLocation->sectionId];
     }
-#endif
 
     if(targetLocation->blockId != UNINIT_STATE_32)
     {
@@ -205,8 +202,9 @@ processSingleNeuron(Cluster &cluster,
     }
 
     LocationPtr* targetLocation = &neuron->target;
-#ifndef DONT_DO_TRAINING
-    if(targetLocation->blockId == UNINIT_STATE_32)
+
+    if(clusterSettings->doTrain
+            && targetLocation->blockId == UNINIT_STATE_32)
     {
         LocationPtr sourceLocation;
         sourceLocation.blockId = blockId;
@@ -216,7 +214,6 @@ processSingleNeuron(Cluster &cluster,
         }
         targetLocation = &neuron->target;
     }
-#endif
 
     if(targetLocation->blockId != UNINIT_STATE_32)
     {
@@ -264,30 +261,14 @@ processNeuronsOfInputBrick(Cluster &cluster,
             neuron->potential = inputValues[counter];
             neuron->active = neuron->potential > 0.0f;
 
-            if(clusterSettings->doTrain)
-            {
-                processSingleNeuron(cluster,
-                                    neuron,
-                                    blockId,
-                                    neuronIdInBlock,
-                                    neuronBlocks,
-                                    synapseBlocks,
-                                    synapseConnections,
-                                    clusterSettings);
-            }
-            else
-            {
-                #define DONT_DO_TRAINING
-                processSingleNeuron(cluster,
-                                    neuron,
-                                    blockId,
-                                    neuronIdInBlock,
-                                    neuronBlocks,
-                                    synapseBlocks,
-                                    synapseConnections,
-                                    clusterSettings);
-                #undef DONT_DO_TRAINING
-            }
+            processSingleNeuron(cluster,
+                                neuron,
+                                blockId,
+                                neuronIdInBlock,
+                                neuronBlocks,
+                                synapseBlocks,
+                                synapseConnections,
+                                clusterSettings);
 
             counter++;
         }

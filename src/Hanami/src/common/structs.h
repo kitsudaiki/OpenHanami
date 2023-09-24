@@ -32,8 +32,6 @@
 
 #include <hanami_policies/policy.h>
 
-#include <hanami_common/items/data_items.h>
-
 #define UNINTI_POINT_32 0x0FFFFFFF
 
 struct NextSides
@@ -65,13 +63,15 @@ struct UserContext
 
     UserContext() {}
 
-    UserContext(const Hanami::DataMap &inputContext)
+    UserContext(const json &inputContext)
     {
-        userId = inputContext.getStringByKey("id");
-        projectId = inputContext.getStringByKey("project_id");
-        isAdmin = inputContext.getBoolByKey("is_admin");
-        isProjectAdmin = inputContext.getBoolByKey("is_project_admin");
-        token = inputContext.getStringByKey("token");
+        userId = inputContext["id"];
+        projectId = inputContext["project_id"];
+        isAdmin = inputContext["is_admin"];
+        isProjectAdmin = inputContext["is_project_admin"];
+        if(inputContext.contains("token")) {
+            token = inputContext["token"];
+        }
     }
 };
 

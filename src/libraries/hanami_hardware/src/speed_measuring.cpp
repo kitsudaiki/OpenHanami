@@ -29,8 +29,6 @@
 #include <hanami_hardware/cpu_package.h>
 #include <hanami_hardware/cpu_thread.h>
 
-#include <hanami_json/json_item.h>
-
 SpeedMeasuring* SpeedMeasuring::instance = nullptr;
 
 SpeedMeasuring::SpeedMeasuring()
@@ -43,7 +41,7 @@ SpeedMeasuring::~SpeedMeasuring() {}
  *
  * @return json-output
  */
-Hanami::DataMap*
+json
 SpeedMeasuring::getJson()
 {
     return m_valueContainer.toJson();

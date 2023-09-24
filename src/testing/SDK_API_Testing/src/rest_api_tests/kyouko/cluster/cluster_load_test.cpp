@@ -37,15 +37,15 @@ ClusterLoadTest::ClusterLoadTest(const bool expectSuccess)
 }
 
 bool
-ClusterLoadTest::runTest(Hanami::JsonItem &inputData,
+ClusterLoadTest::runTest(json &inputData,
                          Hanami::ErrorContainer &error)
 {
     // create new cluster
     std::string result;
     if(Hanami::restoreCluster(result,
-                                inputData.get("cluster_uuid").getString(),
-                                inputData.get("checkpoint_uuid").getString(),
-                                error) != m_expectSuccess)
+                              inputData["cluster_uuid"],
+                              inputData["checkpoint_uuid"],
+                              error) != m_expectSuccess)
     {
         return false;
     }
@@ -55,8 +55,11 @@ ClusterLoadTest::runTest(Hanami::JsonItem &inputData,
     }
 
     // parse output
-    Hanami::JsonItem jsonItem;
-    if(jsonItem.parse(result, error) == false) {
+    json jsonItem;
+    try {
+        jsonItem = json::parse(result);
+    } catch(const json::parse_error& ex) {
+        error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
 
@@ -66,17 +69,20 @@ ClusterLoadTest::runTest(Hanami::JsonItem &inputData,
         sleep(1);
 
         Hanami::getTask(result,
-                          jsonItem.get("uuid").getString(),
-                          inputData.get("cluster_uuid").getString(),
-                          error);
+                        jsonItem["uuid"],
+                        inputData["cluster_uuid"],
+                        error);
 
         // parse output
-        if(jsonItem.parse(result, error) == false) {
+        try {
+            jsonItem = json::parse(result);
+        } catch(const json::parse_error& ex) {
+            error.addMeesage("json-parser error: " + std::string(ex.what()));
             return false;
         }
-        std::cout<<jsonItem.toString(true)<<std::endl;
+        std::cout<<jsonItem.dump(4)<<std::endl;
     }
-    while(jsonItem.get("state").getString() != "finished");
+    while(jsonItem["state"] != "finished");
 
 
     return true;

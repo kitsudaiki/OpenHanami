@@ -25,7 +25,6 @@
 #include <hanami_root.h>
 #include <database/data_set_table.h>
 
-#include <hanami_json/json_item.h>
 #include <hanami_common/methods/file_methods.h>
 
 DeleteDataSet::DeleteDataSet()
@@ -51,15 +50,15 @@ DeleteDataSet::DeleteDataSet()
  */
 bool
 DeleteDataSet::runTask(BlossomIO &blossomIO,
-                       const Hanami::DataMap &context,
+                       const json &context,
                        BlossomStatus &status,
                        Hanami::ErrorContainer &error)
 {
-    const std::string dataUuid = blossomIO.input.get("uuid").getString();
+    const std::string dataUuid = blossomIO.input["uuid"];
     const UserContext userContext(context);
 
     // get location from database
-    Hanami::JsonItem result;
+    json result;
     if(DataSetTable::getInstance()->getDataSet(result,
                                                dataUuid,
                                                userContext,
@@ -80,7 +79,7 @@ DeleteDataSet::runTask(BlossomIO &blossomIO,
     }
 
     // get location from response
-    const std::string location = result.get("location").getString();
+    const std::string location = result["location"];
 
     // delete entry from db
     if(DataSetTable::getInstance()->deleteDataSet(dataUuid, userContext, error) == false)

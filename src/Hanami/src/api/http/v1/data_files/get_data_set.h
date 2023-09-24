@@ -34,11 +34,11 @@ public:
 
 protected:
     bool runTask(BlossomIO &blossomIO,
-                 const Hanami::DataMap &,
+                 const json &,
                  BlossomStatus &status,
                  Hanami::ErrorContainer &error);
 private:
-    bool getHeaderInformation(Hanami::JsonItem &result,
+    bool getHeaderInformation(json &result,
                               const std::string &location,
                               Hanami::ErrorContainer &error);
 };

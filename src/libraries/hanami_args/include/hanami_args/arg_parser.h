@@ -1,4 +1,4 @@
-/**
+﻿/**
  *  @file       arg_parser.h
  *
  *  @author     Tobias Anker <tobias.anker@kitsunemimi.moe>
@@ -31,41 +31,74 @@
 
 namespace Hanami
 {
-class DataItem;
-class DataArray;
 class ArgParser_Test;
 class SubCommand;
 
 class ArgParser
 {
 public:
+
+    struct ArgDef
+    {
+        enum ArgType
+        {
+            NO_TYPE,
+            STRING_TYPE,
+            INT_TYPE,
+            FLOAT_TYPE,
+            BOOL_TYPE
+        };
+
+
+        const std::string longIdentifier;
+        const std::string shortIdentifier;
+        ArgType type = NO_TYPE;
+        std::string helpText = "";
+        bool withoutFlag = false;
+        bool isRequired = false;
+        bool hasValue = false;
+
+        json results = json::array();
+        bool wasSet = false;
+
+        ArgDef(const std::string &longIdent,
+               const char shortIdent = ' ')
+            : longIdentifier("--" + longIdent),
+              shortIdentifier("-" + std::string{shortIdent}) {}
+
+        ArgDef& setHelpText(const std::string &helpText)
+        {
+            this->helpText = helpText;
+            return *this;
+        }
+
+        ArgDef& setRequired()
+        {
+            this->isRequired = true;
+            return *this;
+        }
+
+        ArgDef& setWithoutFlag()
+        {
+            this->withoutFlag = true;
+            return *this;
+        }
+    };
+
     ArgParser(const std::string &version = "");
     ~ArgParser();
 
     // register
-    bool registerPlain(const std::string &identifier,
-                       const std::string &helpText,
-                       ErrorContainer &error);
-    bool registerString(const std::string &identifier,
-                        const std::string &helpText,
-                        ErrorContainer &error,
-                        bool required = false,
-                        bool withoutFlag = false);
-    bool registerInteger(const std::string &identifier,
-                         const std::string &helpText,
-                         ErrorContainer &error,
-                         bool required = false,
-                         bool withoutFlag = false);
-    bool registerFloat(const std::string &identifier,
-                       const std::string &helpText,
-                       ErrorContainer &error,
-                       bool required = false,
-                       bool withoutFlag = false);
-    bool registerBoolean(const std::string &identifier,
-                         const std::string &helpTex,
-                         ErrorContainer &errort,
-                         bool required = false,
-                         bool withoutFlag = false);
+    ArgDef& registerPlain(const std::string &longIdent,
+                          const char shortIdent = ' ');
+    ArgDef& registerString(const std::string &longIdent,
+                           const char shortIdent = ' ');
+    ArgDef& registerInteger(const std::string &longIdent,
+                            const char shortIdent = ' ');
+    ArgDef& registerFloat(const std::string &longIdent,
+                          const char shortIdent = ' ');
+    ArgDef& registerBoolean(const std::string &longIdent,
+                            const char shortIdent = ' ');
 
     // parse
     bool parse(const int argc,
@@ -92,48 +125,19 @@ private:
     friend ArgParser_Test;
     friend SubCommand;
 
-    enum ArgType
-    {
-        NO_TYPE,
-        STRING_TYPE,
-        INT_TYPE,
-        FLOAT_TYPE,
-        BOOL_TYPE
-    };
-
-    struct ArgDefinition
-    {
-        bool withoutFlag = false;
-        bool required = false;
-        bool hasValue = false;
-        bool wasSet = false;
-        std::string longIdentifier = "";
-        std::string shortIdentifier = "";
-        ArgType type = STRING_TYPE;
-        std::string helpText = "";
-
-        DataArray* results = nullptr;
-    };
-
     uint32_t m_positionCounter = 0;
     std::string m_version = "";
-    std::vector<ArgDefinition> m_argumentList;
+    std::vector<ArgDef> m_argumentList;
 
-    const std::string convertType(ArgType type);
+    const std::string convertType(ArgDef::ArgType type);
     void print(const std::string &commandName);
     bool precheckFlags(const int argc, const char* argv[]);
 
-    ArgDefinition* getArgument(const std::string &identifier);
-    bool registerArgument(const std::string &identifier,
-                          const std::string &helpText,
-                          const ArgType type,
-                          bool required,
-                          bool withoutFlag,
-                          bool hasValue,
-                          ErrorContainer &error);
+    ArgDef* getArgument(const std::string &identifier);
+    int32_t registerArgument(ArgDef &newArgument);
 
-    DataItem* convertValue(const std::string &value,
-                           const ArgType requiredType);
+    json convertValue(const std::string &value,
+                      const ArgDef::ArgType requiredType);
 };
 
 }

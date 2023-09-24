@@ -24,8 +24,6 @@
 
 #include <hanami_hardware/cpu_thread.h>
 
-#include <hanami_common/items/data_items.h>
-
 namespace Hanami
 {
 
@@ -176,12 +174,12 @@ CpuCore::toJsonString()
 
  * @return json-like item-tree with the information
  */
-DataMap*
+json
 CpuCore::toJson()
 {
-    DataMap* result = new DataMap();
+    json result = json::object();
 
-    result->insert("id", new DataValue((long)coreId));
+    result["id"] = (long)coreId;
 
     // get information of the core coming from the first thread of the core, because multiple
     // threads here means that hyperthreading is enabled, the all threads of the core have
@@ -189,19 +187,19 @@ CpuCore::toJson()
     if(cpuThreads.size() > 0)
     {
         const CpuThread* thread = cpuThreads.at(0);
-        result->insert("minimum_speed", new DataValue((long)thread->minSpeed));
-        result->insert("maximum_speed", new DataValue((long)thread->maxSpeed));
-        result->insert("current_minimum_speed", new DataValue((long)thread->currentMinSpeed));
-        result->insert("current_maximum_speed", new DataValue((long)thread->currentMaxSpeed));
-        result->insert("current_speed", new DataValue((long)thread->getCurrentThreadSpeed()));
+        result["minimum_speed"] = (long)thread->minSpeed;
+        result["maximum_speed"] = (long)thread->maxSpeed;
+        result["current_minimum_speed"] = (long)thread->currentMinSpeed;
+        result["current_maximum_speed"] = (long)thread->currentMaxSpeed;
+        result["current_speed"] = (long)thread->getCurrentThreadSpeed();
     }
 
     // print information of the threads
-    DataArray* threads = new DataArray();
+    json threads = json::array();
     for(uint32_t i = 0; i < cpuThreads.size(); i++) {
-        threads->append(cpuThreads.at(i)->toJson());
+        threads.push_back(cpuThreads.at(i)->toJson());
     }
-    result->insert("threads", threads);
+    result["threads"] = threads;
 
     return result;
 }

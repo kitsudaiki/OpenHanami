@@ -27,11 +27,9 @@
 #include <iostream>
 #include <vector>
 
-#include <hanami_common/items/data_items.h>
+#include <nlohmann/json.hpp>
 
-namespace Hanami {
-class DataMap;
-}
+using json = nlohmann::json;
 
 namespace Hanami
 {
@@ -52,7 +50,7 @@ public:
     double getTotalPackagePower();
 
     const std::string toJsonString();
-    Hanami::DataMap* toJson();
+    json toJson();
 
     std::vector<CpuCore*> cpuCores;
 };

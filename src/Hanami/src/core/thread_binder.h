@@ -27,7 +27,6 @@
 
 #include <hanami_common/threading/thread.h>
 #include <hanami_common/logger.h>
-#include <hanami_common/items/data_items.h>
 
 class ThreadBinder
         : public Hanami::Thread
@@ -42,7 +41,7 @@ public:
     }
 
     bool init(Hanami::ErrorContainer &error);
-    Hanami::DataMap* getMapping();
+    json getMapping();
     uint64_t getNumberOfProcessingThreads();
 
 protected:
@@ -57,7 +56,7 @@ private:
                      Hanami::ErrorContainer &error);
 
     std::mutex m_mapLock;
-    Hanami::DataMap m_completeMap;
+    json m_completeMap;
 
     std::vector<uint64_t> m_controlCoreIds;
     std::vector<uint64_t> m_processingCoreIds;

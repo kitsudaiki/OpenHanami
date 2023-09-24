@@ -36,7 +36,7 @@ ClusterListTest::ClusterListTest(const bool expectSuccess)
 }
 
 bool
-ClusterListTest::runTest(Hanami::JsonItem &inputData,
+ClusterListTest::runTest(json &inputData,
                          Hanami::ErrorContainer &error)
 {
     // list clusters
@@ -50,12 +50,15 @@ ClusterListTest::runTest(Hanami::JsonItem &inputData,
     }
 
     // parse output
-    Hanami::JsonItem jsonItem;
-    if(jsonItem.parse(result, error) == false) {
+    json jsonItem;
+    try {
+        jsonItem = json::parse(result);
+    } catch(const json::parse_error& ex) {
+        error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
 
-    inputData.insert("number_of_clusters", static_cast<long>(jsonItem.size()), true);
+    inputData["number_of_clusters"] = static_cast<long>(jsonItem.size());
 
     return true;
 }

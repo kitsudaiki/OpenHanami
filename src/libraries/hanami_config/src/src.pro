@@ -15,6 +15,8 @@ LIBS += -L../../hanami_ini/src/debug -lhanami_ini
 LIBS += -L../../hanami_ini/src/release -lhanami_ini
 INCLUDEPATH += ../../hanami_ini/include
 
+INCLUDEPATH += ../../../third-party-libs/json/include
+
 INCLUDEPATH += $$PWD \
                $$PWD/../include
 

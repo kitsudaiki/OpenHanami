@@ -24,7 +24,6 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-#include <hanami_common/items/data_items.h>
 #include <hanami_common/items/table_item.h>
 
 /**
@@ -36,32 +35,32 @@
  * @param type type of override
  */
 void
-overrideItems(DataMap &original,
-              const DataMap &override,
+overrideItems(json &original,
+              const json &override,
               OverrideType type)
 {
     if(type == ONLY_EXISTING)
     {
-        for(const auto& [name, item] : override.map)
+        for(const auto& [name, item] : override.items())
         {
-            if(original.map.find(name) != original.map.end()) {
-                original.insert(name, item->copy(), true);
+            if(original.contains(name)) {
+                original[name] = item;
             }
         }
     }
     if(type == ONLY_NON_EXISTING)
     {
-        for(const auto& [name, item] : override.map)
+        for(const auto& [name, item] : override.items())
         {
-            if(original.map.find(name) == original.map.end()) {
-                original.insert(name, item->copy(), true);
+            if(original.contains(name) == false) {
+                original[name] = item;
             }
         }
     }
     else if(type == ALL)
     {
-        for(const auto& [name, item] : override.map) {
-            original.insert(name, item->copy(), true);
+        for(const auto& [name, item] : override.items()) {
+            original[name] = item;
         }
     }
 }

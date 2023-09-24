@@ -36,15 +36,15 @@ ClusterCreateTest::ClusterCreateTest(const bool expectSuccess)
 }
 
 bool
-ClusterCreateTest::runTest(Hanami::JsonItem &inputData,
+ClusterCreateTest::runTest(json &inputData,
                            Hanami::ErrorContainer &error)
 {
     // create new cluster
     std::string result;
     if(Hanami::createCluster(result,
-                               inputData.get("cluster_name").getString(),
-                               inputData.get("cluster_definition").getString(),
-                               error) != m_expectSuccess)
+                             inputData["cluster_name"],
+                             inputData["cluster_definition"],
+                             error) != m_expectSuccess)
     {
         return false;
     }
@@ -54,12 +54,15 @@ ClusterCreateTest::runTest(Hanami::JsonItem &inputData,
     }
 
     // parse output
-    Hanami::JsonItem jsonItem;
-    if(jsonItem.parse(result, error) == false) {
+    json jsonItem;
+    try {
+        jsonItem = json::parse(result);
+    } catch(const json::parse_error& ex) {
+        error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
 
-    inputData.insert("cluster_uuid", jsonItem.get("uuid").getString(), true);
+    inputData["cluster_uuid"] = jsonItem["uuid"];
 
     return true;
 }

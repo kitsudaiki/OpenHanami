@@ -22,8 +22,6 @@
 
 #include <common/http_client.h>
 
-#include <hanami_json/json_item.h>
-
 namespace Hanami
 {
 
@@ -280,16 +278,18 @@ HanamiRequest::requestToken(Hanami::ErrorContainer &error)
     }
 
     // try to parse response
-    Hanami::JsonItem item;
-    if(item.parse(response, error) == false)
-    {
+    json item;
+    try {
+        item = json::parse(response);
+    } catch(const json::parse_error& ex) {
         error.addMeesage("Failed to parse token-response");
+        error.addMeesage("json-parser error: " + std::string(ex.what()));
         LOG_ERROR(error);
         return false;
     }
 
     // get token from parsed item
-    m_token = item["token"].getString();
+    m_token = item["token"];
     if(m_token == "")
     {
         error.addMeesage("Can not find token in token-response");

@@ -38,11 +38,11 @@ ClusterGetTest::ClusterGetTest(const bool expectSuccess,
 }
 
 bool
-ClusterGetTest::runTest(Hanami::JsonItem &inputData,
+ClusterGetTest::runTest(json &inputData,
                         Hanami::ErrorContainer &error)
 {
     if(m_uuid == "") {
-        m_uuid = inputData.get("cluster_uuid").getString();
+        m_uuid = inputData["cluster_uuid"];
     }
 
     // get cluster-infos
@@ -56,8 +56,11 @@ ClusterGetTest::runTest(Hanami::JsonItem &inputData,
     }
 
     // parse output
-    Hanami::JsonItem jsonItem;
-    if(jsonItem.parse(result, error) == false) {
+    json jsonItem;
+    try {
+        jsonItem = json::parse(result);
+    } catch(const json::parse_error& ex) {
+        error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
 

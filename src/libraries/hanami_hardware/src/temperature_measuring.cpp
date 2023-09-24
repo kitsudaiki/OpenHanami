@@ -27,8 +27,6 @@
 #include <hanami_hardware/cpu_package.h>
 #include <hanami_hardware/cpu_thread.h>
 
-#include <hanami_json/json_item.h>
-
 TemperatureMeasuring* TemperatureMeasuring::instance = nullptr;
 
 TemperatureMeasuring::TemperatureMeasuring()
@@ -41,7 +39,7 @@ TemperatureMeasuring::~TemperatureMeasuring() {}
  *
  * @return json-output
  */
-Hanami::DataMap*
+json
 TemperatureMeasuring::getJson()
 {
     return m_valueContainer.toJson();

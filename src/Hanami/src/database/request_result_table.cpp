@@ -24,8 +24,6 @@
 
 #include <hanami_common/items/table_item.h>
 #include <hanami_common/methods/string_methods.h>
-#include <hanami_json/json_item.h>
-
 #include <hanami_database/sql_database.h>
 
 RequestResultTable* RequestResultTable::instance = nullptr;
@@ -61,7 +59,7 @@ RequestResultTable::~RequestResultTable() {}
  * @return true, if successful, else false
  */
 bool
-RequestResultTable::addRequestResult(Hanami::JsonItem &data,
+RequestResultTable::addRequestResult(json &data,
                                      const UserContext &userContext,
                                      Hanami::ErrorContainer &error)
 {
@@ -86,7 +84,7 @@ RequestResultTable::addRequestResult(Hanami::JsonItem &data,
  * @return true, if successful, else false
  */
 bool
-RequestResultTable::getRequestResult(Hanami::JsonItem &result,
+RequestResultTable::getRequestResult(json &result,
                                      const std::string &resultUuid,
                                      const UserContext &userContext,
                                      Hanami::ErrorContainer &error,

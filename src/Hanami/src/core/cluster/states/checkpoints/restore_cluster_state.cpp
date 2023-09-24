@@ -58,20 +58,17 @@ RestoreCluster_State::processEvent()
     const std::string originalUuid = m_cluster->getUuid();
 
     // get meta-infos of data-set from shiori
-    Hanami::JsonItem parsedCheckpointInfo;
-    parsedCheckpointInfo.parse(actualTask->checkpointInfo, error);
-
-    // get other information
-    const std::string location = parsedCheckpointInfo.get("location").toString();
-
-    // get header
-    const std::string header = parsedCheckpointInfo.get("header").toString();
-    Hanami::JsonItem parsedHeader;
-    if(parsedHeader.parse(header, error) == false)
-    {
+    json parsedCheckpointInfo;
+    try {
+        parsedCheckpointInfo = json::parse(actualTask->checkpointInfo);
+    } catch(const json::parse_error& ex) {
+        error.addMeesage("json-parser error: " + std::string(ex.what()));
         m_cluster->goToNextState(FINISH_TASK);
         return false;
     }
+
+    // get other information
+    const std::string location = parsedCheckpointInfo["location"];
 
     // get checkpoint-data
     Hanami::BinaryFile checkpointFile(location);

@@ -44,11 +44,11 @@ ThermalProduction::ThermalProduction()
  */
 bool
 ThermalProduction::runTask(BlossomIO &blossomIO,
-                           const Hanami::DataMap &,
+                           const json &,
                            BlossomStatus &,
                            Hanami::ErrorContainer &)
 {
-    blossomIO.output.insert("temperature", TemperatureMeasuring::getInstance()->getJson());
+    blossomIO.output["temperature"] = TemperatureMeasuring::getInstance()->getJson();
 
     return true;
 }
