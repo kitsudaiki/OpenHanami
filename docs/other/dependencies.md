@@ -26,6 +26,13 @@ Installed packages under the actual used Ubuntu 23.04
 
     CUDA 12 is necessary, which is not in the standard apt-repositories below ubuntu 23.04. So in case it should be installed on 22.04, CUDA has to be installed manually with the manual: https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html
 
+### Submodules
+
+| name | License | Purpose |
+| --- | --- | --- |
+| Thalhammer/jwt-cpp | MIT | create and validate jwt-token |
+| nlohmann/json | MIT | json-parser |
+
 ### Runtime
 
 | apt-package | Purpose |
@@ -51,6 +58,7 @@ I know, this is not a valid UML-diagram or something like this. It should old vi
 | --- | --- |
 | **Hanami** | Core of the Project |
 | **Hanami-Dashboard** | Web-Client to directly interact with the Hanami-instance |
+| **hanamictl** | CLI-Client to directly interact with the Hanami-instance |
 | **SDK_API_Testing** | Functional tests for SDK-library and REST-API | 
 | **hanami_sdk** | SDK-library to provide functions for all supported actions to interact with the REST-API and automatic handling of the token-exchange. |
 | **hanami_cluster_parser** | Parser-library for cluster-templates |
@@ -67,5 +75,4 @@ I know, this is not a valid UML-diagram or something like this. It should old vi
 | **hanami_args** | Small and easy to use parser for CLI-arguments. |
 | **hanami_ini** | Parser for the content of ini-files. |
 | **hanami_crypto** | Wrapper-library for crypto-operation from other external libraries, to simplify the usage of basic operation like AES, HMAC, SHA256, etc.  |
-| **hanami_json** | Parser for the content of json-files. |
 | **hanami_common** | Simple C++ library with commenly used functions for memory-handling, thread-handling, data representation and testing.  |
