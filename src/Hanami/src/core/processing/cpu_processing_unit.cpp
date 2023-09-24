@@ -205,7 +205,7 @@ CpuProcessingUnit::processSegment(Cluster* cluster)
             {
                 const float temp = actualTask->resultData[cycle];
                 val = temp + cluster->outputValues[i];
-                actualTask->resultData[cycle] = static_cast<long>(val);
+                actualTask->resultData[cycle] = val;
 
             }
         }
