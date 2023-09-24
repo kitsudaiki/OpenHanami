@@ -53,7 +53,6 @@ GetAuditLog::GetAuditLog()
     json headerMatch = json::array();
     headerMatch.push_back("timestamp");
     headerMatch.push_back("user_id");
-    headerMatch.push_back("component");
     headerMatch.push_back("endpoint");
     headerMatch.push_back("request_type");
 
@@ -79,8 +78,12 @@ GetAuditLog::runTask(BlossomIO &blossomIO,
                      Hanami::ErrorContainer &error)
 {
     const UserContext userContext(context);
-    std::string userId = blossomIO.input["user_id"];
     const uint64_t page = blossomIO.input["page"];
+
+    std::string userId = "";
+    if(blossomIO.input.contains("user_id")) {
+        blossomIO.input["user_id"];
+    }
 
     // check that if user-id is set, that the user is also an admin
     if(userContext.isAdmin == false

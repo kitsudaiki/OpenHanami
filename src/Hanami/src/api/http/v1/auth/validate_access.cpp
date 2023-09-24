@@ -106,8 +106,16 @@ ValidateAccess::runTask(BlossomIO &blossomIO,
 {
     // collect information from the input
     const std::string token = blossomIO.input["token"];
-    const std::string component = blossomIO.input["component"];
-    const std::string endpoint = blossomIO.input["endpoint"];
+
+    std::string component = "";
+    if(blossomIO.input.contains("component")) {
+        blossomIO.input["component"];
+    }
+
+    std::string endpoint = "";
+    if(blossomIO.input.contains("endpoint")) {
+        blossomIO.input["endpoint"];
+    }
 
     try
     {

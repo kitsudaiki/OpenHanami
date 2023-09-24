@@ -301,8 +301,8 @@ function createMnistDataSet_request(outputFunc, name, inputFile, labelFile, toke
 function createCsvDataSet_request(outputFunc, name, inputFile, token)
 {
     const path = "/control/v1/csv/data_set";
-    let reqContent = "{name:\"" + name;
-    reqContent += "\",input_data_size:" + inputFile.size + "}";
+    let reqContent = "{\"name\":\"" + name;
+    reqContent += "\",\"input_data_size\":" + inputFile.size + "}";
     createObject_request(outputFunc, path, reqContent, token);
 }
 

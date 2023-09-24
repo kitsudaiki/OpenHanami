@@ -61,6 +61,7 @@ TableInterpolation_State::processEvent()
     // set input
     for(uint64_t i = 0; i < numberOfInputsPerCycle; i++) {
         m_cluster->inputValues[i] = actualTask->inputData[(offset - numberOfInputsPerCycle) + i];
+        std::cout<<"m_cluster->inputValues[i]: "<<m_cluster->inputValues[i]<<std::endl;
     }
 
     m_cluster->mode = ClusterProcessingMode::NORMAL_MODE;
