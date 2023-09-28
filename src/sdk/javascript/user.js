@@ -17,20 +17,20 @@
 function createUser_request(outputFunc, userId, name, password, isAdmin, token)
 {
     const path = "/control/v1/user";
-    let reqContent = "{id:\"" + userId;
-    reqContent += "\",name:\"" + name;
-    reqContent += "\",password:\"" + password;
-    reqContent += "\",is_admin:" + isAdmin + "}";
+    let reqContent = "{\"id\":\"" + userId;
+    reqContent += "\",\"name\":\"" + name;
+    reqContent += "\",\"password\":\"" + password;
+    reqContent += "\",\"is_admin\":" + isAdmin + "}";
     createObject_request(outputFunc, path, reqContent, token);
 }
 
 function addProjectToUser_request(outputFunc, userId, projectId, role, isProjectAdmin, token)
 {
     const path = "/control/v1/user/project";
-    let reqContent = "{id:\"" + userId;
-    reqContent += "\",project_id:\"" + projectId;
-    reqContent += "\",role:\"" + role;
-    reqContent += "\",is_project_admin:" + isProjectAdmin + "}";
+    let reqContent = "{\"id\":\"" + userId;
+    reqContent += "\",\"project_id\":\"" + projectId;
+    reqContent += "\",\"role\":\"" + role;
+    reqContent += "\",\"is_project_admin\":" + isProjectAdmin + "}";
     createObject_request(outputFunc, path, reqContent, token);
 }
 
