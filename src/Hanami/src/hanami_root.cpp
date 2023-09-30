@@ -300,12 +300,10 @@ HanamiRoot::initHttpServer()
     // get stuff from config
     const uint16_t port =            GET_INT_CONFIG(    "http", "port",              success);
     const std::string ip =           GET_STRING_CONFIG( "http", "ip",                success);
-    const std::string cert =         GET_STRING_CONFIG( "http", "certificate",       success);
-    const std::string key =          GET_STRING_CONFIG( "http", "key",               success);
     const uint32_t numberOfThreads = GET_INT_CONFIG(    "http", "number_of_threads", success);
 
     // create server
-    httpServer = new HttpServer(ip, port, cert, key);
+    httpServer = new HttpServer(ip, port);
     httpServer->startThread();
 
     // start threads
