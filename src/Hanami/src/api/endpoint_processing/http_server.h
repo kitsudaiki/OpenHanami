@@ -50,11 +50,9 @@ class HttpServer
 {
 public:
     HttpServer(const std::string &address,
-               const uint16_t port,
-               const std::string &cert,
-               const std::string &key);
+               const uint16_t port);
 
-    boost::asio::ssl::context m_ctx;
+    //boost::asio::ssl::context m_ctx;
 
     tcp::socket* getSocket();
     void addSocket(tcp::socket* socket);
@@ -65,14 +63,9 @@ protected:
 private:
     const std::string m_address = "";
     const uint16_t m_port = 0;
-    const std::string m_certFilePath = "";
-    const std::string m_keyFilePath = "";
 
     std::deque<tcp::socket*> m_queue;
     std::mutex m_queueMutex;
-
-    bool loadCertificates(boost::asio::ssl::context &ctx,
-                          Hanami::ErrorContainer &error);
 };
 
 #endif // TORIIGATEWAY_HTTP_SERVER_H

@@ -91,14 +91,6 @@ registerConfigs()
             .setComment("Local path to the directory, which contains the files of the dashboard.")
             .setRequired();
 
-    REGISTER_STRING_CONFIG(httpGroup, "certificate")
-            .setComment("Local path to the file with the certificate for the https-connection.")
-            .setRequired();
-
-    REGISTER_STRING_CONFIG(httpGroup, "key")
-            .setComment("Local path to the file with the key for the https-connection.")
-            .setRequired();
-
     REGISTER_STRING_CONFIG(httpGroup, "ip")
             .setComment("IP-address, where the http-server should listen.")
             .setDefault("0.0.0.0");

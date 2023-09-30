@@ -36,6 +36,5 @@ RUN mkdir /dockerbuilder
 COPY files/build_hanami.sh /dockerbuilder 
 COPY files/Dockerfile_hanami /dockerbuilder
 COPY files/Dockerfile_hanami_base /dockerbuilder
-COPY files/hanami_run.sh /dockerbuilder
 
 WORKDIR /dockerbuilder

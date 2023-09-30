@@ -6,7 +6,7 @@ For the installation on a kubernetes `helm` is used.
 
 !!! info
 
-    The installation process is also very only basic at the moment. Usage of statefulsets, cert-manager and node-labels coming in the near future.
+    The installation process is also very basic at the moment.
 
 ### Requirements
 
@@ -28,7 +28,18 @@ For the installation on a kubernetes `helm` is used.
 
     [official Installation-Guide](https://helm.sh/docs/intro/install/)
 
-3. If measuring of the cpu power consumption should be available, then the following requirements must be fulfilled on the hosts of the kubernetes-deployment:
+3. **Cert-Manager**
+
+    Installation:
+
+    ```
+    helm repo add jetstack https://charts.jetstack.io
+    helm repo update
+    kubectl create namespace cert-manager
+    helm install cert-manager jetstack/cert-manager --namespace cert-manager --set installCRDs=true
+    ```
+
+<!-- 3. If measuring of the cpu power consumption should be available, then the following requirements must be fulfilled on the hosts of the kubernetes-deployment:
 
     - Required specific CPU-architecture:
         - **Intel**: 
@@ -37,20 +48,23 @@ For the installation on a kubernetes `helm` is used.
             - Zen-Architecture or newer
             - for CPUs of AMD Zen/Zen2 Linux-Kernel of version `5.8` or newer must be used, for Zen3 Linux-Kernel of version `5.11` or newer
 
-    - the `msr`-kernel module has to be loaded with `modeprobe msr`.
+    - the `msr`-kernel module has to be loaded with `modeprobe msr`. -->
 
 ### Installation
 
 ```
 git clone https://github.com/kitsudaiki/Hanami.git
 
-cd Hanami-AI/deploy/k8s
+cd Hanami/deploy/k8s
 
-helm install ./hanami/ --generate-name \
+helm install \
     --set user.id=USER_ID  \
     --set user.name=USER_NAME  \
     --set user.pw=PASSWORD  \
-    --set token.pw=TOKEN_KEY
+    --set token.pw=TOKEN_KEY  \
+    --set api.domain=DOMAIN_NAME  \
+    hanami \
+    ./hanami/
 ```
 
 The `--set`-flag defining the login-information for the initial admin-user of the instance:
@@ -68,7 +82,11 @@ The `--set`-flag defining the login-information for the initial admin-user of th
     - String, with between `8` and `4096` characters length
 
 - `TOKEN_KEY`
-    - Key for the JWT-Tokens provided by Misaki
+    - Key for the JWT-Tokens
+    - String
+
+- `DOMAIN_NAME`
+    - Domain for https-access. Per default it is `local-hanami`
     - String
 
 After a successful installation the `USER_ID` and `PASSWORD` have to be used for login to the system.
@@ -77,27 +95,44 @@ After a successful installation the `USER_ID` and `PASSWORD` have to be used for
 
 - check if all pods are running
 
-    ```
-    kubectl get pods | grep hanami
-
-    svclb-hanami-service-hg7ht   1/1     Running   0          20m
-    hanami-fb996969f-5gd68       5/5     Running   2          20m
-    ```
-
-- get EXTERNAL-IP-address
-
-    ```
-    kubectl get service
+    !!! example
     
-    NAME             TYPE           CLUSTER-IP    EXTERNAL-IP       PORT(S)          AGE
-    kubernetes       ClusterIP      10.43.0.1     <none>            443/TCP          44d
-    hanami-service   LoadBalancer   10.43.23.42   192.168.178.110   1337:31128/TCP   28m
-    ```
+        ```
+        kubectl get pods
 
-- use the address in your browser: `https://EXTERNAL-IP:1337`
+        NAME                      READY   STATUS    RESTARTS   AGE
+        hanami-56fc87c8f5-6k77r   1/1     Running   0          14s
+        ```
 
-    - `https` MUST be used at the moment, because forwarding from http to https is missing at the moment
-    - port `1337` is hard configured at the moment
+- get IP-address
+
+    !!! example
+    
+        ```
+        kubectl get ingress
+
+        NAME                      CLASS     HOSTS          ADDRESS          PORTS     AGE
+        hanami-ingress-redirect   traefik   local-hanami   192.168.178.87   80        8s
+        hanami-ingress            traefik   local-hanami   192.168.178.87   80, 443   8s
+        ```
+
+- add domain with ip to `/etc/hosts`
+
+    !!! example
+
+        ```
+        192.168.178.87  local-hanami
+        ```
+
+- use the address in your browser: 
+
+    `https://DOMAIN_NAME`
+
+    !!! example
+    
+        ```
+        https://local-hanami/
+        ```
 
 - login with `USER_ID` and `PASSWORD`
 

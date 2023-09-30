@@ -77,22 +77,13 @@ bool
 HttpWebsocketThread::handleSocket(tcp::socket* socket,
                                   ErrorContainer &error)
 {
-    beast::ssl_stream<tcp::socket&> stream{*socket, std::ref(HanamiRoot::httpServer->m_ctx)};
     http::request<http::string_body> httpRequest;
     http::response<http::dynamic_body> httpResponse;
     bool processResult = true;
 
-    // perform the SSL handshake
-    beast::error_code ec;
-    stream.handshake(boost::asio::ssl::stream_base::server, ec);
-    if(ec.failed())
-    {
-        error.addMeesage("SSL-Handshake failed while receiving new http-connection");
-        return false;
-    }
 
     // read http-message
-    if(readMessage(stream, httpRequest, error) == false)
+    if(readMessage(*socket, httpRequest, error) == false)
     {
         error.addMeesage("Can read http-request");
         return false;
@@ -102,7 +93,7 @@ HttpWebsocketThread::handleSocket(tcp::socket* socket,
     if(websocket::is_upgrade(httpRequest))
     {
         // initialize new websocket-session
-        websocket::stream<beast::ssl_stream<tcp::socket&>> webSocket(std::move(stream));
+        websocket::stream<tcp::socket&> webSocket(*socket);
         m_webSocket = &webSocket;        
         if(initWebsocket(httpRequest) == false)
         {
@@ -122,21 +113,14 @@ HttpWebsocketThread::handleSocket(tcp::socket* socket,
             error.addMeesage("Failed to process http-request.");
             // IMPORANT: no return false here, because the reponse should retunred anyway
         }
-        if(sendResponse(stream, httpResponse, error) == false)
+        if(sendResponse(*socket, httpResponse, error) == false)
         {
             error.addMeesage("Can not send http-response.");
             return false;
         }
 
         // close socket gain
-        beast::error_code ec;
-        stream.shutdown(ec);
-
-        if(ec)
-        {
-            error.addMeesage("Error while closing http-stream: " + ec.message());
-            return false;
-        }
+        socket->close();
     }
 
     return processResult;
@@ -152,7 +136,7 @@ HttpWebsocketThread::handleSocket(tcp::socket* socket,
  * @return true, if successful, else false
  */
 bool
-HttpWebsocketThread::readMessage(beast::ssl_stream<tcp::socket&> &stream,
+HttpWebsocketThread::readMessage(tcp::socket &stream,
                                  http::request<http::string_body> &httpRequest,
                                  ErrorContainer &error)
 {
@@ -184,13 +168,13 @@ HttpWebsocketThread::readMessage(beast::ssl_stream<tcp::socket&> &stream,
  * @return true, if successful, else false
  */
 bool
-HttpWebsocketThread::sendResponse(beast::ssl_stream<tcp::socket&> &stream,
+HttpWebsocketThread::sendResponse(tcp::socket &socket,
                                   http::response<http::dynamic_body> &httpResponse,
                                   ErrorContainer &error)
 {
     beast::error_code ec;
     httpResponse.content_length(httpResponse.body().size());
-    http::write(stream, httpResponse, ec);
+    http::write(socket, httpResponse, ec);
 
     if(ec)
     {

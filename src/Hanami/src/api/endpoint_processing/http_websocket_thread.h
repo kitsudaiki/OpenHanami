@@ -67,10 +67,10 @@ protected:
 private:
     bool handleSocket(tcp::socket* socket,
                       Hanami::ErrorContainer &error);
-    bool readMessage(beast::ssl_stream<tcp::socket&> &stream,
+    bool readMessage(tcp::socket &stream,
                      http::request<http::string_body> &httpRequest,
                      Hanami::ErrorContainer &error);
-    bool sendResponse(beast::ssl_stream<tcp::socket&> &stream,
+    bool sendResponse(tcp::socket &socket,
                       http::response<http::dynamic_body> &httpResponse,
                       Hanami::ErrorContainer &error);
 
@@ -80,7 +80,7 @@ private:
     bool processInitialMessage(const std::string &message,
                                Hanami::ErrorContainer &error);
 
-    websocket::stream<beast::ssl_stream<tcp::socket&>>* m_webSocket = nullptr;
+    websocket::stream<tcp::socket&>* m_webSocket = nullptr;
     std::string m_uuid = "";
     std::string m_target = "";
     bool m_waitForInput = true;

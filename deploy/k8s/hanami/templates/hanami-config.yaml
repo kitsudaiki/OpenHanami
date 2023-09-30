@@ -20,11 +20,9 @@ data:
 
     [http]
     enable = True
-    ip = "0.0.0.0"
-    certificate = "/etc/hanami/cert.pem"
-    key = "/etc/hanami/key.pem"
+    ip = {{ .Values.api.ip }}
     dashboard_files = "/etc/Hanami-Dashboard/src"
-    port = 1337
+    port = {{ .Values.api.port }}
     enable_dashboard = True
 
 kind: ConfigMap
