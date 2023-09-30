@@ -1,15 +1,12 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: hanami-ingress
+  name: hanami-ingress-redirect
   annotations:
-    traefik.ingress.kubernetes.io/router.entrypoints: websecure
-    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+    #                                                 <NAMESPACE>-<MIDDLEWARENAME>@kubernetescrd
+    traefik.ingress.kubernetes.io/router.middlewares: default-hanami-ingress-redirect@kubernetescrd
 spec:
-  tls:
-    - hosts:
-        - {{ .Values.api.domain }}
-      secretName: hanami-selfsigned-secret
   rules:
   - host: {{ .Values.api.domain }}
     http:
