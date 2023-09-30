@@ -3,14 +3,18 @@ kind: Ingress
 metadata:
   name: hanami-ingress
 spec:
+  tls:
+    - hosts:
+        - local-hanami
+      secretName: hanami-selfsigned-secret
   rules:
-  - http:
+  - host: local-hanami
+    http:
       paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: hanami-service
-            port:
-              number: 1337
-
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: hanami-service
+              port:
+                number: 1337
