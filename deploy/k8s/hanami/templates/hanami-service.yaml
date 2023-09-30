@@ -10,5 +10,5 @@ spec:
   ports:
     - name: input
       protocol: TCP
-      port: 1337
-      targetPort: 1337
+      port: {{ .Values.api.port }}
+      targetPort: {{ .Values.api.port }}

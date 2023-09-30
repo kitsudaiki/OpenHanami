@@ -18,6 +18,7 @@ docker:
   registry: "kitsudaiki"
 
 api:
+  domain: local-hanami
   port: 1337
   ip: "0.0.0.0"
 

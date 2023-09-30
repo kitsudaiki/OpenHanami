@@ -5,10 +5,10 @@ metadata:
 spec:
   tls:
     - hosts:
-        - local-hanami
+        - {{ .Values.api.domain }}
       secretName: hanami-selfsigned-secret
   rules:
-  - host: local-hanami
+  - host: {{ .Values.api.domain }}
     http:
       paths:
         - path: /
@@ -17,4 +17,4 @@ spec:
             service:
               name: hanami-service
               port:
-                number: 1337
+                number: {{ .Values.api.port }}

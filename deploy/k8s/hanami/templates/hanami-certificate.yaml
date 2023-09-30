@@ -7,5 +7,5 @@ spec:
   issuerRef:
     name: selfsigned-issuer
   dnsNames:
-    - local-hanami
+    - {{ .Values.api.domain }}
 
