@@ -14,6 +14,24 @@ spec:
       labels:
         app: hanami
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: hanami-node
+                operator: In
+                values:
+                - "true"
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - hanami
+            topologyKey: kubernetes.io/hostname
       containers:
       - name: hanami
         image: {{ .Values.docker.registry }}/hanami:{{ .Values.docker.tag }}
