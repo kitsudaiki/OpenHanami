@@ -39,6 +39,18 @@ For the installation on a kubernetes `helm` is used.
     helm install cert-manager jetstack/cert-manager --namespace cert-manager --set installCRDs=true
     ```
 
+4. **Node label**
+
+    To all avaialbe nodes, where it is allowed to be deployed, the label `hanami-node` must be assigned
+
+    ```
+    kubectl label nodes NODE_NAME hanami-node=true
+    ```
+
+    !!! info
+
+        At the moment Hanami is only a single-node application. This will change in the near future, but at the moment it doesn't make sense to label more than one node.
+
 <!-- 3. If measuring of the cpu power consumption should be available, then the following requirements must be fulfilled on the hosts of the kubernetes-deployment:
 
     - Required specific CPU-architecture:
