@@ -38,7 +38,7 @@
 inline void
 backpropagateSection(const Cluster &cluster,
                      Synapse* section,
-                     Neuron* sourceNeuron,
+                     float &sourceDelta,
                      SynapseConnection* connection,
                      LocationPtr* sourceLocation,
                      const float outH,
@@ -61,24 +61,22 @@ backpropagateSection(const Cluster &cluster,
         synapse = &section[pos];
         if(synapse->targetNeuronId == UNINIT_STATE_16)
         {
-            pos++;
+            ++pos;
             continue;
         }
 
         // update weight
-        //trainValue = static_cast<float>(126 - synapse->activeCounter) * 0.0002f;
-        // trainValue += 0.05f;
         trainValue = 0.05f;
         targetNeuron = &neuronBlock->neurons[synapse->targetNeuronId];
         if(counter > synapse->border) {
-            sourceNeuron->delta += targetNeuron->delta * synapse->weight;
+            sourceDelta += targetNeuron->delta * synapse->weight;
         } else {
-            sourceNeuron->delta += targetNeuron->delta * synapse->weight * ((1.0f / synapse->border) * counter);
+            sourceDelta += targetNeuron->delta * synapse->weight * ((1.0f / synapse->border) * counter);
         }
         synapse->weight -= trainValue * targetNeuron->delta;
 
         counter -= synapse->border;
-        pos++;
+        ++pos;
     }
 
     LocationPtr* targetLocation = &connection->next[sourceLocation->sectionId];
@@ -88,7 +86,7 @@ backpropagateSection(const Cluster &cluster,
         SynapseConnection* nextConnection = &synapseConnections[targetLocation->blockId];
         backpropagateSection(cluster,
                              nextSection,
-                             sourceNeuron,
+                             sourceDelta,
                              nextConnection,
                              targetLocation,
                              outH,
@@ -108,48 +106,47 @@ backpropagateNeurons(const Cluster &cluster,
                      SynapseBlock* synapseBlocks,
                      SynapseConnection* synapseConnections)
 {
-    Neuron* sourceNeuron = nullptr;
-    NeuronBlock* block = nullptr;
+    Neuron* sourceNeuron;
+    NeuronBlock* block;
+    float sourceDelta;
 
     // iterate over all neurons within the brick
     for(uint32_t blockId = brick->brickBlockPos;
         blockId < brick->numberOfNeuronBlocks + brick->brickBlockPos;
-        blockId++)
+        ++blockId)
     {
         block = &neuronBlocks[blockId];
         for(uint32_t neuronIdInBlock = 0;
             neuronIdInBlock < block->numberOfNeurons;
-            neuronIdInBlock++)
+            ++neuronIdInBlock)
         {
             // skip section, if not active
             sourceNeuron = &block->neurons[neuronIdInBlock];
-            if(sourceNeuron->target.blockId == UNINIT_STATE_32) {
+            LocationPtr* targetLocation = &sourceNeuron->target;
+            sourceNeuron->delta = 0.0f;
+
+            if(targetLocation->blockId == UNINIT_STATE_32
+                    || sourceNeuron->active == 0)
+            {
                 continue;
             }
 
             // set start-values
-            sourceNeuron->delta = 0.0f;
-            if(sourceNeuron->active)
-            {
-                LocationPtr* targetLocation = &sourceNeuron->target;
-                if(targetLocation->blockId == UNINIT_STATE_32) {
-                    return;
-                }
+            sourceDelta = 0.0f;
+            Synapse* nextSection = synapseBlocks[targetLocation->blockId].synapses[targetLocation->sectionId];
+            SynapseConnection* nextConnection = &synapseConnections[targetLocation->blockId];
+            backpropagateSection(cluster,
+                                 nextSection,
+                                 sourceDelta,
+                                 nextConnection,
+                                 targetLocation,
+                                 sourceNeuron->potential,
+                                 neuronBlocks,
+                                 synapseBlocks,
+                                 synapseConnections);
 
-                Synapse* nextSection = synapseBlocks[targetLocation->blockId].synapses[targetLocation->sectionId];
-                SynapseConnection* nextConnection = &synapseConnections[targetLocation->blockId];
-                backpropagateSection(cluster,
-                                     nextSection,
-                                     sourceNeuron,
-                                     nextConnection,
-                                     targetLocation,
-                                     sourceNeuron->potential,
-                                     neuronBlocks,
-                                     synapseBlocks,
-                                     synapseConnections);
-
-                sourceNeuron->delta *= 1.4427f * pow(0.5f, sourceNeuron->potential);
-            }
+            sourceDelta *= 1.4427f * pow(0.5f, sourceNeuron->potential);
+            sourceNeuron->delta = sourceDelta;
         }
     }
 }
@@ -168,7 +165,7 @@ reweightCoreSegment(const Cluster &cluster)
 
     // run back-propagation over all internal neurons and synapses
     const uint32_t numberOfBricks = cluster.clusterHeader->bricks.count;
-    for(int32_t pos = numberOfBricks - 1; pos >= 0; pos--)
+    for(int32_t pos = numberOfBricks - 1; pos >= 0; --pos)
     {
         const uint32_t brickId = cluster.brickOrder[pos];
         Brick* brick = &cluster.bricks[brickId];
@@ -183,11 +180,14 @@ reweightCoreSegment(const Cluster &cluster)
                 return;
             }
         }
-        backpropagateNeurons(cluster,
-                             brick,
-                             neuronBlocks,
-                             synapseBlocks,
-                             synapseConnections);
+        else
+        {
+            backpropagateNeurons(cluster,
+                                 brick,
+                                 neuronBlocks,
+                                 synapseBlocks,
+                                 synapseConnections);
+        }
     }
 }
 
