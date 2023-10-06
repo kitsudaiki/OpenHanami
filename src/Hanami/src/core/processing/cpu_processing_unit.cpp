@@ -42,7 +42,8 @@ processing_CUDA(PointerHandler* gpuPointer,
                 NeuronBlock* neuronBlocks,
                 const uint32_t numberOfNeuronBlocks,
                 SynapseBlock* synapseBlocks,
-                const uint32_t numberOfSynapseBlocks);
+                const uint32_t numberOfSynapseBlocks,
+                const bool doTrain);
 
 extern "C"
 void
@@ -99,7 +100,8 @@ CpuProcessingUnit::trainSegmentForward(Cluster* cluster)
                         cluster->neuronBlocks,
                         cluster->numberOfBrickBlocks,
                         cluster->synapseBlocks,
-                        cluster->clusterHeader->synapseBlocks.count);
+                        cluster->clusterHeader->synapseBlocks.count,
+                        true);
     }
     else
     {
@@ -177,7 +179,8 @@ CpuProcessingUnit::processSegment(Cluster* cluster)
                         cluster->neuronBlocks,
                         cluster->numberOfBrickBlocks,
                         cluster->synapseBlocks,
-                        cluster->clusterHeader->synapseBlocks.count);
+                        cluster->clusterHeader->synapseBlocks.count,
+                        false);
     }
     else
     {

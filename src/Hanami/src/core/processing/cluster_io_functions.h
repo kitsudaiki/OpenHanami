@@ -30,6 +30,7 @@
 /**
  * @brief process input brick
  */
+template <bool doTrain>
 inline void
 processNeuronsOfInputBrickBackward(const Brick* brick,
                                    float* inputValues,
@@ -52,8 +53,10 @@ processNeuronsOfInputBrickBackward(const Brick* brick,
             neuron = &block->neurons[neuronIdInBlock];
             neuron->potential = inputValues[counter];
             neuron->active = neuron->potential > 0.0f;
-            neuron->isNew = neuron->active != 0 && neuron->target.blockId == UNINIT_STATE_32;
-            neuron->newOffset = 0.0f;
+            if constexpr (doTrain) {
+                neuron->isNew = neuron->active != 0 && neuron->target.blockId == UNINIT_STATE_32;
+                neuron->newOffset = 0.0f;
+            }
             counter++;
         }
     }
@@ -83,7 +86,6 @@ processNeuronsOfOutputBrick(const Brick* brick,
             if(neuron->potential != 0.0f) {
                 neuron->potential = 1.0f / (1.0f + exp(-1.0f * neuron->potential));
             }
-            //std::cout<<"neuron->potential: "<<neuron->potential<<std::endl;
             outputValues[counter] = neuron->potential;
             neuron->input = 0.0f;
             counter++;
@@ -119,7 +121,6 @@ backpropagateOutput(const Brick* brick,
             neuron = &block->neurons[neuronIdInBlock];
             neuron->delta = outputValues[counter] - expectedValues[counter];
             neuron->delta *= outputValues[counter] * (1.0f - outputValues[counter]);
-            //std::cout<<" expectedValues[counter] : "<< expectedValues[counter] <<"    outputValues[counter] : "<< outputValues[counter] <<std::endl;
             totalDelta += abs(neuron->delta);
             counter++;
         }

@@ -162,8 +162,11 @@ static_assert(sizeof(SynapseBlock) == 64*1024);
 
 struct LocationPtr
 {
-    uint32_t blockId = UNINIT_STATE_32;
-    uint16_t sectionId = UNINIT_STATE_16;
+    // HINT (kitsudaiki): not initialized here, because they are used in shared memory in cuda
+    //                    which doesn't support initializing of the values, when defining the
+    //                    shared-memory-object
+    uint32_t blockId;
+    uint16_t sectionId;
     uint8_t padding[2];
 };
 static_assert(sizeof(LocationPtr) == 8);
@@ -184,6 +187,11 @@ struct Neuron
     uint8_t active = 0;
     uint8_t padding[1];
     LocationPtr target;
+
+    Neuron() {
+        target.blockId = UNINIT_STATE_32;
+        target.sectionId = UNINIT_STATE_16;
+    }
 };
 static_assert(sizeof(Neuron) == 32);
 
@@ -226,6 +234,14 @@ struct SynapseConnection
         std::fill_n(next, NUMBER_OF_SYNAPSESECTION, LocationPtr());
         std::fill_n(origin, NUMBER_OF_SYNAPSESECTION, LocationPtr());
         std::fill_n(offset, NUMBER_OF_SYNAPSESECTION, 0.0f);
+
+        for(uint32_t i = 0; i < NUMBER_OF_SYNAPSESECTION; i++)
+        {
+            next[i].blockId = UNINIT_STATE_32;
+            next[i].sectionId = UNINIT_STATE_16;
+            origin[i].blockId = UNINIT_STATE_32;
+            origin[i].sectionId = UNINIT_STATE_16;
+        }
     }
 };
 static_assert(sizeof(SynapseConnection) == 1292);
