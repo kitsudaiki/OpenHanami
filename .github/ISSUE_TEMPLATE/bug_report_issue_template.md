@@ -1,21 +1,43 @@
 ---
-name: bug-report template
-about: Template to report bugs and problem, where the cause of the problem is unknown
-labels: Bug
+name: Bug Report
+about: Report bugs and problems
+title: '[BUG]: '
+labels: Bug, New issue
+projects: Hanami
+assignees: kitsudaiki
 ---
 
-## BUG-issue
+## BUG-report
 
-### What you wanted to do?
+<!-- Note: Please search to see if an issue already exists for the bug you encountered. -->
 
-### What was the actual behavior?
+### Current Behavior:
 
-### What was the expected behavior?
+<!-- A concise description of what you're experiencing. -->
 
-### Steps to Reproduce
+### Expected Behavior:
 
-1.
-2.
-3.
+<!-- A concise description of what you expected to happen. -->
 
-### Environment
+### Steps To Reproduce:
+
+<!--
+Example: steps to reproduce the behavior:
+1. In this environment...
+2. With this config...
+3. Run '...'
+4. See error...
+-->
+
+### Environment:
+
+<!--
+Example:
+- Hanami: Commit 2ff09fd
+- OS: Ubuntu 22.04
+- Kubernetes: 1.28.2
+-->
+
+### Anything else:
+
+<!-- Links? References? Anything that will give us more context about the issue that you are encountering. -->
