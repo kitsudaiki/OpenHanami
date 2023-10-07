@@ -1,4 +1,9 @@
-# libKitsunemimiObj
+# hanami_obj
+
+!!! warning
+
+    This documentation here is the archived version of the old readme-file of this library and is NOT up-to-date, but maybe it is still useful for some references.
+
 
 ## Description
 
@@ -54,22 +59,22 @@ f 5//6   1//6 4//6 8//6
 Example usage in code:
 
 ```cpp
-#include <libKitsunemimiObj/obj_item.h>
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_obj/obj_item.h>
+#include <hanami_common/logger.h>
 
 // parse string
-Kitsunemimi::ObjItem parsedItem;
+Hanami::ObjItem parsedItem;
 bool ret = false;
-Kitsunemimi::Error error;
+Hanami::Error error;
 
-ret = Kitsunemimi::parseString(parsedItem, input-string, error);
+ret = Hanami::parseString(parsedItem, input-string, error);
 // if ret is true, when it was successful
 // all parsed information are stored in the parsedItem-object
 // if failed the error can be printed with LOG_ERROR(error);
 
 // create a string again
 const std::string output_string = "";
-ret = Kitsunemimi::convertToString(output_string, parsedItem);
+ret = Hanami::convertToString(output_string, parsedItem);
 // if ret is true, when it was successful
 // output_string contains the now the string, which is generated from the parsedItem-object
 

@@ -1,4 +1,8 @@
-# libKitsunemimiArgs
+# hanami_args
+
+!!! warning
+
+    This documentation here is the archived version of the old readme-file of this library and is NOT up-to-date, but maybe it is still useful for some references.
 
 ## Description
 
@@ -12,18 +16,18 @@ HINT: The flags `--help` and `-h` for the help-output are hard coded and don't h
 
 
 ```cpp
-#include <libKitsunemimiArgs/arg_parser.h>
-#include <libKitsunemimiPersistence/logger/logger.h>
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_args/arg_parser.h>
+#include <hanami_common/logger/logger.h>
+#include <hanami_common/logger.h>
 
 int main(int argc, char *argv[])
 {
     // error messages of the parser are printed via logger
-    Kitsunemimi::initConsoleLogger(true);
+    Hanami::initConsoleLogger(true);
     // with "initFileLogger" the error-message of the argument-parser can also be written into a file
 
-    Kitsunemimi::ArgParser parser("0.1.0");
-    Kitsunemimi::ErrorContainer error;
+    Hanami::ArgParser parser("0.1.0");
+    Hanami::ErrorContainer error;
 
     // register flags without value
     parser.registerPlain("debug,d",

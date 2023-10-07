@@ -1,4 +1,9 @@
-# libKitsunemimiCpu
+# hanami_cpu
+
+!!! warning
+
+    This documentation here is the archived version of the old readme-file of this library and is NOT up-to-date, but maybe it is still useful for some references.
+
 
 ## Description
 
@@ -8,7 +13,7 @@ Simple library to read different information of the cpu, like topological inform
 
 ### Get and set cpu-information
 
-The functions of the header https://github.com/kitsudaiki/libKitsunemimiCpu/blob/develop/include/libKitsunemimiCpu/cpu.h should be quite self-explaining.
+The functions of the header https://github.com/kitsudaiki/hanami_cpu/blob/develop/include/hanami_cpu/cpu.h should be quite self-explaining.
 
 **Use it at your own risk**
 
@@ -30,13 +35,13 @@ The functions of the header https://github.com/kitsudaiki/libKitsunemimiCpu/blob
     - has to be run as root
 
 ```cpp
-#include <libKitsunemimiCpu/cpu.h>
-#include <libKitsunemimiCpu/rapl.h>
-#include <libKitsunemimiCpu/memory.h>
-#include <libKitsunemimiCommon/logger.h>
-#include <libKitsunemimiCommon/threading/thread.h>
+#include <hanami_cpu/cpu.h>
+#include <hanami_cpu/rapl.h>
+#include <hanami_cpu/memory.h>
+#include <hanami_common/logger.h>
+#include <hanami_common/threading/thread.h>
 
-Kitsunemimi::Rapl rapl(0);
+Hanami::Rapl rapl(0);
 rapl.initRapl(error);
 std::cout<<"info: "<<rapl.getInfo().toString()<<std::endl;
 

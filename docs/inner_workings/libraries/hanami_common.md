@@ -1,4 +1,8 @@
-# libKitsunemimiCommon
+# hanami_common
+
+!!! warning
+
+    This documentation here is the archived version of the old readme-file of this library and is NOT up-to-date, but maybe it is still useful for some references.
 
 ## Description
 
@@ -8,13 +12,13 @@ This library contains some functions, I need for my other projects. There are fu
 
 #### Data-Items
 
-*include-file:* `libKitsunemimiCommon/common_items/data_items.h`
+*include-file:* `hanami_common/common_items/data_items.h`
 
 These are classes for data-representation and comparable to the dict-objects of python. The data-items were originally the core data handling structure inside libKitsunemimiJson for representing json-trees. Thats why the string output of these items still have json-format. The table-items are for table styled output of information. Internally it use the data-items.
 
 #### Tables
 
-*include-file:* `libKitsunemimiCommon/common_items/table_item.h`
+*include-file:* `hanami_common/common_items/table_item.h`
 
 This is for printing tables. Internally it use the data-items for handling the content. For example you could parse the json-formated content of an http message via libKitsunemimiJson, use the the resulting data-item-tree together with a header definition and print is as table. The results looks for example like this:
 
@@ -34,79 +38,79 @@ This is for printing tables. Internally it use the data-items for handling the c
 
 #### Data buffer
 
-*include-file:* `libKitsunemimiCommon/buffer/data_buffer.h`
+*include-file:* `hanami_common/buffer/data_buffer.h`
 
 This is a simple buffer for binary-data. The primary advantage is the easier resizing when adding new data. Internally it uses alligned memory, because this is necessary for the direct read- and write-operations of the libKitsunemimiPersistence.
 
 #### Item buffer
 
-*include-file:* `libKitsunemimiCommon/buffer/item_buffer.h`
+*include-file:* `hanami_common/buffer/item_buffer.h`
 
 Buffer to store objects based on the data-buffer. It handles deleted objects inside of the buffer in a linked list to fast reallocate deleted objects at any position of the buffer. 
 
 #### Ring buffer
 
-*include-file:* `libKitsunemimiCommon/buffer/ring_buffer.h`
+*include-file:* `hanami_common/buffer/ring_buffer.h`
 
 Ring buffer to fast continuously read and write data. Its actually used as buffer for incoming messages in the network library libKitsunemimiNetwork for fast message-caching.
 
 #### Stack buffer
 
-*include-file:* `libKitsunemimiCommon/buffer/stack_buffer.h`
+*include-file:* `hanami_common/buffer/stack_buffer.h`
 
 Stack of multiple data-buffer together with a reserve-class to avoid unnecessary memory allocation.
 
 #### Threads
 
-*include-file:* `libKitsunemimiCommon/threading/thread.h`
+*include-file:* `hanami_common/threading/thread.h`
 
 This class is only a collection of some thread-function like blocking and so on which I often use. This makes the creation of threads more easy for me. Additionally this class provides the ability to bind a new one of this thread to a specific cpu-thread.
 
 #### Barrier
 
-*include-file:* `libKitsunemimiCommon/threading/barrier.h`
+*include-file:* `hanami_common/threading/barrier.h`
 
 This class can block a number of threads and release automatically, if all have reached the barrier. To avoid dead-lock, they can also released manually.
 
 #### Tests
 
-*include-file:* `libKitsunemimiCommon/test_helper/compare_test_helper.h`, `libKitsunemimiCommon/test_helper/speed_test_helper.h` and `libKitsunemimiCommon/test_helper/memory_leak_test_helper.h`
+*include-file:* `hanami_common/test_helper/compare_test_helper.h`, `hanami_common/test_helper/speed_test_helper.h` and `hanami_common/test_helper/memory_leak_test_helper.h`
 
 These are little test-helper classes which provides basic functionallity for unit-, benchmark-, and memory-leak-tests.
 
 #### Statemachine
 
-*include-file:* `libKitsunemimiCommon/statemachine.h`
+*include-file:* `hanami_common/statemachine.h`
 
 It's only a simple statemachine in the moment. Basically its only to change the state and check the current state. It doesn't trigger any events after changing the state.
 
 #### Progress-Bar
 
-*include-file:* `libKitsunemimiCommon/progress_bar.h`
+*include-file:* `hanami_common/progress_bar.h`
 
 Simple progress-bar for cli-output.
 
 #### Common methods
 
-*include-file:* `libKitsunemimiCommon/common_methods/string_methods.h`, `libKitsunemimiCommon/common_methods/vector_methods.h` and `libKitsunemimiCommon/common_methods/file_methods.h`
+*include-file:* `hanami_common/common_methods/string_methods.h`, `hanami_common/common_methods/vector_methods.h` and `hanami_common/common_methods/file_methods.h`
 
 These contains some commonly used mehtods for strings, vectors and objects, like for example replace substrings within a string.
 
 #### binary-files
 
-*include-file:* `libKitsunemimiCommon/files/binary_file.h`
+*include-file:* `hanami_common/files/binary_file.h`
 
-These are some functions to map the data-buffer of libKitsunemimiCommon to the storage to persist the data of the buffer and restore them. The functions use direct read- and write-oberations to make things faster, but this requires more custom control.
+These are some functions to map the data-buffer of hanami_common to the storage to persist the data of the buffer and restore them. The functions use direct read- and write-oberations to make things faster, but this requires more custom control.
 
 #### text-files
 
-*include-file:* `libKitsunemimiCommon/files/text_file.h`
+*include-file:* `hanami_common/files/text_file.h`
 
 Methods to read text files, write text files, append new text to an existing text-file, replace a line within an existing text-file identified by a line number and repace content within an existing text-file identified by matching the old content.
 
 #### log-writer
 
-*include-file:* `libKitsunemimiCommon/logger.h`
+*include-file:* `hanami_common/logger.h`
 
 Its a simple and really easy to use logger to wirte messages with timestamps to a log-file. 
 
@@ -142,7 +146,7 @@ IMPORTANT: all getter here only return a pointer to the internal object. If you 
 To see all offered possebilities, which are provided by the data-items, please see the header-file `common_items/data_items.h`. There is nearly all self-explaining, because there are basically only getter and setter. So the following is only a minimal example:
 
 ```cpp
-#include <libKitsunemimiCommon/common_items/data_items.h>
+#include <hanami_common/common_items/data_items.h>
 
 // init some value
 DataValue stringValue("test");
@@ -213,7 +217,7 @@ Its primary to print informations coming from a REST-API response in form a json
 - manual filling of the table:
 
 ```cpp
-#include <libKitsunemimiCommon/common_items/table_item.h>
+#include <hanami_common/common_items/table_item.h>
 
 
 TableItem testItem;
@@ -246,7 +250,7 @@ here ouput has nwo the content:
 - fill with predefined informations:
 
 ```cpp
-#include <libKitsunemimiCommon/common_items/table_item.h>
+#include <hanami_common/common_items/table_item.h>
 
 DataArray header;
 /**
@@ -338,7 +342,7 @@ One the first row is used here for the output
 The data-buffer is only a struct with some external functions for easier byte-buffer-handling. The internal byte-array is a alligned memory with a size of a multiple of the defined block-size. This is necessary for direct read- and write-operations to the storage. Beside this, the struct contains the current size of the buffer in number of bytes and number of allocated blocks. It is possible to use the `data` as mormal byte-array for read and write operations or use the `addData_DataBuffer` and `getBlock_DataBuffer` for access. The `addData` allocates automatically the required number of block, if the buffer is not big enough. 
 
 ```cpp
-#include <libKitsunemimiCommon/buffer/data_buffer.h>
+#include <hanami_common/buffer/data_buffer.h>
 
 // initialize new data-buffer with 10 x 4KiB
 DataBuffer testBuffer(10);
@@ -374,15 +378,15 @@ The usage can be explained with the following examples:
 ```cpp
 // demo_thead.h
 
-#include <libKitsunemimiCommon/thread.h>
+#include <hanami_common/thread.h>
 
 
 class DemoThread 
-    : public Kitsunemimi::Thread
+    : public Hanami::Thread
 {
 
 public:
-    DemoThread() : Kitsunemimi::Thread("DemoThread");
+    DemoThread() : Hanami::Thread("DemoThread");
     // each thread is given a name
     
     void run()
@@ -401,7 +405,7 @@ public:
 - It can be called like this for example:
 
 ```cpp
-#include <libKitsunemimiCommon/demo_thead.h>
+#include <hanami_common/demo_thead.h>
 
 int main()
 {
@@ -429,7 +433,7 @@ int main()
 
 ### Compare Tests
 
-For using the unit-tests your test-class have to inherit the class `Kitsunemimi::CompareTestHelper` and give the header fo the constructur a name for the test as string. Inside the single tests you can than call the two macros `TEST_EQUAL(<VARIABLE_TO_CHECK> , <EXPECTED_VALUE);` and `TEST_NOT_EQUAL(<VARIABLE_TO_CHECK> , <NOT_EXPECTED_VALUE);`. First is successful when equal and second one is successful, when unequal. 
+For using the unit-tests your test-class have to inherit the class `Hanami::CompareTestHelper` and give the header fo the constructur a name for the test as string. Inside the single tests you can than call the two macros `TEST_EQUAL(<VARIABLE_TO_CHECK> , <EXPECTED_VALUE);` and `TEST_NOT_EQUAL(<VARIABLE_TO_CHECK> , <NOT_EXPECTED_VALUE);`. First is successful when equal and second one is successful, when unequal. 
 
 - After a success the result would look like this:
 
@@ -463,10 +467,10 @@ Example:
 ```cpp
 // demo_test.h
 
-#include <libKitsunemimiCommon/test_helper/compare_test_helper.h>
+#include <hanami_common/test_helper/compare_test_helper.h>
 
 class Demo_Test 
-    : public Kitsunemimi::CompareTestHelper    // <-- connect with unit-tests
+    : public Hanami::CompareTestHelper    // <-- connect with unit-tests
 {
 public:
     Demo_Test();
@@ -482,7 +486,7 @@ private:
 #include "demo_test.h"
 
 Demo_Test::Demo_Test() 
-    : Kitsunemimi::CompareTestHelper("Demo_Test")    // <-- give the unit-test a name
+    : Hanami::CompareTestHelper("Demo_Test")    // <-- give the unit-test a name
 {
     some_test();    // <-- call the test-method
 }
@@ -521,7 +525,7 @@ For more examples you could also use the tests in the test-directory of this rep
 
 ### Memory-Leak Tests
 
-The memory-leak-tests can check, if there are some delete-calls are missing inside your code. The test-structure is really similar to the compare-tests. For using the memory-leak-tests your test-class have to inherit the class `Kitsunemimi::MemoryLeakTestHelpter` and give the header fo the constructur a name for the test as string. Inside the single tests you can than call the two macros `REINIT_TEST();` and `CHECK_MEMORY();`. The first one has to be called every time at the beginning of a test-case, after all required data-structures for the test are initialized. The other has to be called at the end of the test-case. If there were some memory-leaks since the REINIT_TEST-call, a error-message is printed.
+The memory-leak-tests can check, if there are some delete-calls are missing inside your code. The test-structure is really similar to the compare-tests. For using the memory-leak-tests your test-class have to inherit the class `Hanami::MemoryLeakTestHelpter` and give the header fo the constructur a name for the test as string. Inside the single tests you can than call the two macros `REINIT_TEST();` and `CHECK_MEMORY();`. The first one has to be called every time at the beginning of a test-case, after all required data-structures for the test are initialized. The other has to be called at the end of the test-case. If there were some memory-leaks since the REINIT_TEST-call, a error-message is printed.
 
 - After a success the result would look like this:
 
@@ -551,10 +555,10 @@ Example:
 ```cpp
 // demo_test.h
 
-#include <libKitsunemimiCommon/test_helper/memory_leak_test_helper.h>
+#include <hanami_common/test_helper/memory_leak_test_helper.h>
 
 class Demo_Test 
-    : public Kitsunemimi::MemoryLeakTestHelpter    // <-- connect with memory-leak-tests
+    : public Hanami::MemoryLeakTestHelpter    // <-- connect with memory-leak-tests
 {
 public:
     Demo_Test();
@@ -570,7 +574,7 @@ private:
 #include "demo_test.h"
 
 Demo_Test::Demo_Test() 
-    : Kitsunemimi::MemoryLeakTestHelpter("Demo_Test")    // <-- give the memory-leak-test a name
+    : Hanami::MemoryLeakTestHelpter("Demo_Test")    // <-- give the memory-leak-test a name
 {
     some_test();    // <-- call the test-method
 }
@@ -613,7 +617,7 @@ This is really a ultra simple statemachine, so the few functions can easily expl
 
 ```cpp
 
-#include <libKitsunemimiCommon/statemachine.h>
+#include <hanami_common/statemachine.h>
 
 enum states
 {
@@ -660,7 +664,7 @@ In the future there also should be triggered events after a state-change. Also f
 
 ```cpp
 
-#include <libKitsunemimiCommon/progress_bar.h>
+#include <hanami_common/progress_bar.h>
 
 float progress = 0.0f;
 
@@ -705,7 +709,7 @@ Example:
 
 ```cpp
 
-#include <libKitsunemimiCommon/common_methods/string_methods.h>
+#include <hanami_common/common_methods/string_methods.h>
 
 
 std::string testString = "this is a test-string";
@@ -749,7 +753,7 @@ Example:
 
 ```cpp
 
-#include <libKitsunemimiCommon/common_methods/vector_methods.h>
+#include <hanami_common/common_methods/vector_methods.h>
 
 
 std::vector<std::string> testVector{"x","","y","z",""};
@@ -762,9 +766,9 @@ removeEmptyStrings(&testVector);
 
 ### binary-files
 
-**Header-file:** `libKitsunemimiCommon/files/binary_file.h`
+**Header-file:** `hanami_common/files/binary_file.h`
 
-This file contains the class for read and write of binary-files. It use the data-buffer of libKitsunemimiCommon as cache for all operations. The operations using posix-method with direct-flag to skip the page-chache of the linux-kernel. This makes operations with big block a bit faster because the data are less often copied. This has the result, that all read and write operations are synchronized.
+This file contains the class for read and write of binary-files. It use the data-buffer of hanami_common as cache for all operations. The operations using posix-method with direct-flag to skip the page-chache of the linux-kernel. This makes operations with big block a bit faster because the data are less often copied. This has the result, that all read and write operations are synchronized.
 
 This results in the requirement, that segments to read from storage or write to storage should be as big as possible or else the latency makes the whole thing very very slow. The class should be run in an extra thread, with handle all operations and makes the whole sync asynchon again.
 
@@ -782,7 +786,7 @@ HINT: The data-buffer will be not be binded anymore in the next version.
 Example:
 
 ```cpp
-#include <libKitsunemimiCommon/files/binary_file.h>
+#include <hanami_common/files/binary_file.h>
 
 std::string filePath = "/tmp/testfile.bin";
 Common::DataBuffer buffer(2);
@@ -816,7 +820,7 @@ binaryFile.closeFile()
 
 ### text-files
 
-**Header-file:** `libKitsunemimiCommon/files/text_file.h`
+**Header-file:** `hanami_common/files/text_file.h`
 
 Every action open and close the text-file. With this I don't need to handle an additional object-instance and operations on a text-file are really rare compared to working on a binary-file, so the addional time consumption for open and close the file has no special meaning for the performance.
 
@@ -825,8 +829,8 @@ All methods return a pair of bool-value as first element and a string-value as s
 Little example:
 
 ```cpp
-#include <libKitsunemimiCommon/files/text_file.h>
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_common/files/text_file.h>
+#include <hanami_common/logger.h>
 
 std::string filePath = "/tmp/textfile.txt";
 
@@ -860,7 +864,7 @@ std::pair<bool, std::string> readResult = readFile(filePath, error);
 
 ### log-writer
 
-**Header-file:** `libKitsunemimiCommon/logger.h`
+**Header-file:** `hanami_common/logger.h`
 
 Its a simple class to write log-messages together with a timestamp one after another to a log-file. It only has to be initialized at the beginning of the program and can be used at every point in the same code. When want to add an entry to the log, you don't need to check, if the logger is initialized.
 
@@ -870,10 +874,10 @@ IMPORTANT: Adding entries to the log is thread-save, but initializing and closin
 Initializing at the anytime somewhere in your code.
 
 ```cpp
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_common/logger.h>
 
 // initializing logger to write into a file
-bool ret1 = Kitsunemimi::Persistence::initFileLogger("/tmp", "testlog", true);
+bool ret1 = Hanami::Persistence::initFileLogger("/tmp", "testlog", true);
 // arguments:
 //      first argument: directory-path
 //      second argument: base file name
@@ -883,7 +887,7 @@ bool ret1 = Kitsunemimi::Persistence::initFileLogger("/tmp", "testlog", true);
 //      true, if initializing was successfule, else false
 
 // initializing logger to write log-messages on the console output
-Kitsunemimi::Persistence::initConsoleLogger(true);
+Hanami::Persistence::initConsoleLogger(true);
 // argument: true to enable debug-output. if false only output of info, warning and error
 
 ```
@@ -891,7 +895,7 @@ Kitsunemimi::Persistence::initConsoleLogger(true);
 Using the logger somewhere else in your code. You only need to import the header and then call the log-methods. Like already mentioned, there is no check necessary, if the logger is initialized or not. See following example: 
 
 ```cpp
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_common/logger.h>
 
 LOG_DEBUG("debug-message");
 LOG_INFO("info-message");
@@ -899,7 +903,7 @@ LOG_WARNING("warning-message");
 
 // error-messages are handle by a container, which is printed as table which logging
 //     it also allows an additional field for a possible solution for easier debugging
-Kitsunemimi::ErrorContainer error;
+Hanami::ErrorContainer error;
 error.addMeesage("some error");
 error.addSolution("do nothing");
 LOG_ERROR("error-message");

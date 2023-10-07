@@ -1,4 +1,9 @@
-# libKitsunemimiIni
+# hanami_ini
+
+!!! warning
+
+    This documentation here is the archived version of the old readme-file of this library and is NOT up-to-date, but maybe it is still useful for some references.
+
 
 ## Description
 
@@ -6,13 +11,13 @@ This library provides the functionality to parse and handle the content of ini-f
 
 ## Usage
 
-**Header-file:** `libKitsunemimiIni/ini_item.h`
+**Header-file:** `hanami_ini/ini_item.h`
 
 The `IniItem`-class is the handler for the ini-file-content. The functions in the header should be really self-explaned, if something is unclear, see the following example or the comments in the cpp-file.
 
 ```cpp
-#include <libKitsunemimiIni/ini_item.h>
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_ini/ini_item.h>
+#include <hanami_common/logger.h>
 
 // short test-string for demonstration. 
 const std::string testString(
@@ -35,7 +40,7 @@ bool result = object.parse(testString, error);
 
 DataItem* value = object.get("DEFAULT", "x")
 // if value is a nullptr, then the group and/or item doesn't exist
-// the DataItem-class comes from my library libKitsunemimiCommon
+// the DataItem-class comes from my library hanami_common
 
 
 // get an item of the ini-file-content

@@ -1,4 +1,9 @@
-# libKitsunemimiSqlite
+# hanami_sqlite
+
+!!! warning
+
+    This documentation here is the archived version of the old readme-file of this library and is NOT up-to-date, but maybe it is still useful for some references.
+
 
 ## Description
 
@@ -7,12 +12,12 @@ Simple wrapper for Sqlite3-database. Primary for easier handling the output of S
 ## Usage by example
 
 ```cpp
-#include <libKitsunemimiSqlite/sqlite.h>
-#include <libKitsunemimiCommon/items/table_item.h>
+#include <hanami_sqlite/sqlite.h>
+#include <hanami_common/items/table_item.h>
 
 
-Kitsunemimi::Sqlite testDB;
-Kitsunemimi::ErrorContainer error;
+Hanami::Sqlite testDB;
+Hanami::ErrorContainer error;
 bool ret = false;
 std::string query = "";
 
@@ -50,7 +55,7 @@ ret = testDB.execSqlCommand(nullptr, query, error);
 
 query = "SELECT * from COMPANY";
 
-Kitsunemimi::TableItem resultItem;
+Hanami::TableItem resultItem;
 ret = testDB.execSqlCommand(&resultItem, sql, error);
 // for the SELECT-qurey a TableItem has to be given as reference. The result of the query will be written into this object
 

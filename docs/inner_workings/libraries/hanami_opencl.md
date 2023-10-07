@@ -1,4 +1,9 @@
-# libKitsunemimiOpencl
+# hanami_opencl
+
+!!! warning
+
+    This documentation here is the archived version of the old readme-file of this library and is NOT up-to-date, but maybe it is still useful for some references.
+
 
 ## Description
 
@@ -44,24 +49,24 @@ The copy process for the library from host to device copies always at first the 
 
 
 ```cpp
-#include <libKitsunemimiOpencl/gpu_handler.h>
-#include <libKitsunemimiOpencl/gpu_interface.h>
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_opencl/gpu_handler.h>
+#include <hanami_opencl/gpu_interface.h>
+#include <hanami_common/logger.h>
 
 // Optional  initialize the logger. This here initalize a console logger, 
 // which prints all error- and info-messages on the consol
-Kitsunemimi::initConsoleLogger(true);
-Kitsunemimi::ErrorContainer error;
+Hanami::initConsoleLogger(true);
+Hanami::ErrorContainer error;
 // in case of an error the message con be printed with LOG_ERROR(error)
 
 // init opencl-class of this library
-Kitsunemimi::GpuHandler oclHandler;
+Hanami::GpuHandler oclHandler;
 oclHandler.initDevice(error)
 // the GpuHandler collect all devices of the host and stores them 
 // into oclHandler.m_interfaces
 
 // get for example the first device
-Kitsunemimi::GpuInterface* ocl = oclHandler.m_interfaces.at(0);
+Hanami::GpuInterface* ocl = oclHandler.m_interfaces.at(0);
 // this ocl-object here will be used in all the following snippets
 ```
 
@@ -69,7 +74,7 @@ Prepare buffer for data-transfers between the host and the device.
 
 ```cpp
 // create data-object
-Kitsunemimi::GpuData data;
+Hanami::GpuData data;
 
 // init empty buffer
 // This prepare a buffer-object and allocate aligned memorey on the host.

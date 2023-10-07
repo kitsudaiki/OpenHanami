@@ -1,4 +1,9 @@
-# libKitsunemimiConfig
+# hanami_config
+
+!!! warning
+
+    This documentation here is the archived version of the old readme-file of this library and is NOT up-to-date, but maybe it is still useful for some references.
+
 
 ## Description
 
@@ -21,8 +26,8 @@ bool_value = true
 Example usage in code:
 
 ```cpp
-#include <libKitsunemimiConfig/config_handler.h>
-#include <libKitsunemimiCommon/logger.h>
+#include <hanami_config/config_handler.h>
+#include <hanami_common/logger.h>
 
 ErrorContainer error;
 
