@@ -51,6 +51,7 @@ nav:
       - inner_workings/libraries/hanami_sqlite.md
   - Other:
     - other/dependencies.md
+    - other/code_styling.md
     - other/git_workflow.md
     - other/glossar.md
 
