@@ -7,7 +7,7 @@ projects: Hanami
 assignees: kitsudaiki
 ---
 
-## BUG-report
+## Bug Report
 
 <!-- Note: Please search to see if an issue already exists for the bug you encountered. -->
 

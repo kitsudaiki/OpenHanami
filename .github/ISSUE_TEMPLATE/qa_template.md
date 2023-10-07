@@ -1,17 +1,17 @@
 ---
-name: Feature
-about: Use this template to request new features and improvements
-title: '[Feature]: '
-labels: new Feature / improvement, New issue
+name: Quality Assurance
+about: Use this template for qulity improvements in source-code and documentation and minor fixes like typos, missing comments and so on, or other improvements, which doesn't affect the program itself.
+title: '[QA]: '
+labels: QA, New issue
 projects: Hanami
 assignees: kitsudaiki
 ---
 
-## Feature
+## QA
 
 ### Description
 
-<!-- A concise description of the new feature or the improvement of an existing feature, which you have in mind. -->
+<!-- A concise description of what has to be changed. -->
 
 ### Acceptance Criteria
 
@@ -19,11 +19,9 @@ assignees: kitsudaiki
 List of cirteria, which have to be fullfilled in order to complete the ticket
 
 Example: 
-1. Added ... to ...
-2. The programm is capable of ...
-3. Unit-tests were written for the new feature 
-4. Documentation was updated in chapter ...
-5. Everthing was tested on ...
+1. Fixed styling in documenation in chapter ...
+2. Fixed typo in class ...
+3. Added missing comments in file ...
 -->
 
 ### Additional Information
