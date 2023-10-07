@@ -22,7 +22,7 @@
 
 #include <iostream>
 #include <chrono>
-#include <cuda_runtime.h>
+#include <math.h>
 
 #include "../objects.h"
 #include "../cluster_io_functions.h"
@@ -48,8 +48,8 @@ synapseProcessingBackward(Synapse* section,
     float counter = sourceNeuron->potential - connection->offset[tid];
     uint pos = 0;
     Synapse* synapse;
-    Neuron* targetNeuron;
-    float tempVal;
+    const uint32_t randomPos = (currentNeuronBlock->randomPos + (threadIdx.x * blockIdx.x) + 1)
+                               % (NUMBER_OF_RAND_VALUES - 3);
 
     // iterate over all synapses in the section
     while(pos < SYNAPSES_PER_SYNAPSESECTION
@@ -64,19 +64,10 @@ synapseProcessingBackward(Synapse* section,
             {
                 // set activation-border
                 synapse->border = counter;
-
-                // set target neuron
-                currentNeuronBlock->randomPos = (currentNeuronBlock->randomPos + 1) % NUMBER_OF_RAND_VALUES;
-                synapse->targetNeuronId = (ushort)(randomValues[currentNeuronBlock->randomPos]
+                synapse->targetNeuronId = (ushort)(randomValues[randomPos]
                                           % currentNeuronBlock->numberOfNeurons);
-
-
-                currentNeuronBlock->randomPos = (currentNeuronBlock->randomPos + 1) % NUMBER_OF_RAND_VALUES;
-                synapse->weight = ((float)(randomValues[currentNeuronBlock->randomPos]) / (float)(RAND_MAX)) / 10.0f;
-
-                // update weight with sign
-                currentNeuronBlock->randomPos = (currentNeuronBlock->randomPos + 1) % NUMBER_OF_RAND_VALUES;
-                const uint signRand = randomValues[currentNeuronBlock->randomPos] % 1000;
+                synapse->weight = ((float)(randomValues[randomPos + 1]) / (float)(RAND_MAX)) / 10.0f;
+                const uint signRand = randomValues[randomPos + 2] % 1000;
                 synapse->weight *= (float)(1.0f - (1000.0f * clusterSettings->signNeg > signRand) * 2);
             }
 
@@ -93,7 +84,6 @@ synapseProcessingBackward(Synapse* section,
         if(synapse->targetNeuronId != UNINIT_STATE_16)
         {
             // update target-neuron
-            targetNeuron = &currentNeuronBlock->neurons[synapse->targetNeuronId];
             if(counter >= synapse->border) {
                 localMem[synapse->targetNeuronId] += synapse->weight;
             } else {
@@ -119,25 +109,26 @@ synapseProcessingBackward(Synapse* section,
 
 template <bool doTrain>
 __global__ void
-prcessCoreSegmentKernel(NeuronBlock* neuronBlocks,
-                        SynapseBlock* synapseBlocks,
-                        SynapseConnection* synapseConnections,
-                        ClusterSettings* clusterSettings,
-                        const uint32_t* randomValues,
-                        const uint32_t neuronBlockPos,
-                        const bool isOutputBrick)
+processNeuronsOfNormalBrick(NeuronBlock* neuronBlocks,
+                            SynapseBlock* synapseBlocks,
+                            SynapseConnection* synapseConnections,
+                            ClusterSettings* clusterSettings,
+                            const uint32_t* randomValues,
+                            const uint32_t neuronBlockPos,
+                            const bool isOutputBrick)
 {
     const uint tid = threadIdx.x;
     __shared__ float tempVal[64][64];
+    for(uint i = 0; i < 64; ++i){
+        tempVal[tid][i] = 0.0f;
+    }
 
     NeuronBlock* currentNeuronBlock = &neuronBlocks[neuronBlockPos + blockIdx.x];
+    currentNeuronBlock->randomPos = (currentNeuronBlock->randomPos + blockIdx.x + 1) % NUMBER_OF_RAND_VALUES;
+
     uint32_t synapseBlockId = currentNeuronBlock->backwardNextId;
     while(synapseBlockId != UNINIT_STATE_32)
     {
-        for(uint i = 0; i < 64; ++i){
-            tempVal[tid][i] = 0.0f;
-        }
-
         // process synapse-sections
         Synapse* section = synapseBlocks[synapseBlockId].synapses[tid];
         SynapseConnection* connection = &synapseConnections[synapseBlockId];
@@ -153,17 +144,17 @@ prcessCoreSegmentKernel(NeuronBlock* neuronBlocks,
                                                tempVal[tid]);
         }
 
-        if(tid < currentNeuronBlock->numberOfNeurons)
-        {
-            Neuron* neuron = &currentNeuronBlock->neurons[tid];
-            for(uint i = 0; i < 64; ++i) {
-                neuron->input += tempVal[i][tid];
-            }
-        }
-
         __syncthreads();
 
         synapseBlockId = connection->backwardNextId;
+    }
+
+    if(tid < currentNeuronBlock->numberOfNeurons)
+    {
+        Neuron* neuron = &currentNeuronBlock->neurons[tid];
+        for(uint i = 0; i < 64; ++i) {
+            neuron->input += tempVal[i][tid];
+        }
     }
 
     if(isOutputBrick == false
@@ -326,7 +317,7 @@ processing_CUDA(PointerHandler* gpuPointer,
         {
             if(doTrain)
             {
-                prcessCoreSegmentKernel<true><<<brick->numberOfNeuronBlocks, 64>>>(
+                processNeuronsOfNormalBrick<true><<<brick->numberOfNeuronBlocks, 64>>>(
                     gpuPointer->neuronBlocks,
                     gpuPointer->synapseBlocks,
                     gpuPointer->synapseConnections,
@@ -337,7 +328,7 @@ processing_CUDA(PointerHandler* gpuPointer,
             }
             else
             {
-                prcessCoreSegmentKernel<false><<<brick->numberOfNeuronBlocks, 64>>>(
+                processNeuronsOfNormalBrick<false><<<brick->numberOfNeuronBlocks, 64>>>(
                     gpuPointer->neuronBlocks,
                     gpuPointer->synapseBlocks,
                     gpuPointer->synapseConnections,
