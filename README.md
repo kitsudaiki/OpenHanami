@@ -83,19 +83,10 @@ https://docs.hanami-ai.com
 
 ## This repository
 
-This repository requires `git-lfs` to be able to check out images and binary objects.
-
 Clone repo with:
 
 ```
 git clone --recurse-submodules git@github.com:kitsudaiki/Hanami-AI.git
-```
-
-In case `git-lfs` while cloning and installed afterwards:
-
-```
-git lfs fetch --all
-git lfs pull
 ```
 
 In case the repo was cloned without submodules initially:
