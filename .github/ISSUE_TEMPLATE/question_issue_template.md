@@ -1,11 +1,12 @@
 ---
-name: question template
+name: Question
 about: Use this template if you have any questions
-labels: Question
-assignees:
-  - kitsudaiki
+title: '[Question]: '
+labels: Question, New issue
+assignees: kitsudaiki
 ---
 
-### Question
+## Question
 
+<!-- What do you want to know. -->
 

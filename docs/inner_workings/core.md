@@ -37,9 +37,9 @@ The activation-function of the neurons doesn't use the classical sigmoid functio
 
 The following function was selected based on these criteria:
 
-![Workflow-library](../img/central_segment_function.png)
+![Workflow-library](../img/central_segment_function.jpg)
 
-![Workflow-library](../img/central_segment_graph.png)
+![Workflow-library](../img/central_segment_graph.jpg)
 
 
 
@@ -51,9 +51,9 @@ The o utput are similar to the input.
 
 They have like the input a 1:1 connection between in output-nodes and the output-buffer. In additional they normalize the outgoing values to the range of 0.0-1.0 with the help of the classical sigmoid function:
 
-![Workflow-library](../img/output_segment_function.png)
+![Workflow-library](../img/output_segment_function.jpg)
 
-![Workflow-library](../img/output_segment_graph.png)
+![Workflow-library](../img/output_segment_graph.jpg)
 
 The `x` are the values coming from the output-buffer and the `f(x)` is the output of the network.
 

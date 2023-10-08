@@ -1,6 +1,8 @@
 ---
-name: release template
+name: Release new version
 about: Release check-list
+title: '[Release]: '
+assignees: kitsudaiki
 ---
 
 ## Release
@@ -8,6 +10,6 @@ about: Release check-list
 ### Checklist
 
 - [ ] Update Changelog
-- [ ] Test with Tsugumi
+- [ ] Test with SDK-API-Tester
 - [ ] Create Docker-Images
 - [ ] Create Release-Tag
