@@ -75,7 +75,7 @@ https://docs.hanami-ai.com
 
     [Dependency-Overview](https://docs.hanami-ai.com/other/dependencies/)
 
-
+If you need help to setup things, have a question or something like this, feel free to contact me by eMail or use the `Question`-template in the issues.
 
 ## Issue-Overview
 
@@ -116,4 +116,4 @@ The complete project is under [Apache 2 license](https://github.com/kitsudaiki/H
 
 ## Contributing
 
-If you want to contribute things to this project, then I'm really happy about this. Please restrict this for the moment to bug-reports and feature-requests. Use the issue-templates for this. You can also place questions by these issues, if you want some information about parts of the project or if you want to try it out and need some help.
+If you want to help the project by contributing things, you can check the [Contributing guide](https://github.com/kitsudaiki/Hanami/blob/develop/CONTRIBUTING.md).
