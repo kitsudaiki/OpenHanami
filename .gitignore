@@ -6,4 +6,5 @@ gitIdentityChange.sh
 *.pb.h
 *.drawio.bkp
 *.png~
+*.dtmp
 src/cli/hanamictl/hanamictl
