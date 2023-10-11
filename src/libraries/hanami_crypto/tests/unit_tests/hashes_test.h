@@ -28,16 +28,15 @@
 namespace Hanami
 {
 
-class Hashes_Test
-        : public Hanami::CompareTestHelper
+class Hashes_Test : public Hanami::CompareTestHelper
 {
-public:
+   public:
     Hashes_Test();
 
-private:
+   private:
     void generate_SHA_256_test();
 };
 
-}
+}  // namespace Hanami
 
-#endif // HASHES_TEST_H
+#endif  // HASHES_TEST_H

@@ -25,18 +25,16 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-
-class SetClusterMode
-        : public Blossom
+class SetClusterMode : public Blossom
 {
-public:
+   public:
     SetClusterMode();
 
-protected:
+   protected:
     bool runTask(BlossomIO &blossomIO,
                  const json &context,
                  BlossomStatus &status,
                  Hanami::ErrorContainer &error);
 };
 
-#endif // HANAMI_SET_CLUSTER_MODE_H
+#endif  // HANAMI_SET_CLUSTER_MODE_H

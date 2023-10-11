@@ -33,17 +33,17 @@ namespace Hanami
  * @param delim delimiter to identify the points to split
  */
 void
-splitStringByDelimiter(std::vector<std::string> &result,
-                       const std::string &inputString,
+splitStringByDelimiter(std::vector<std::string>& result,
+                       const std::string& inputString,
                        const char delim)
 {
     // precheck
-    if(inputString.length() == 0) {
+    if (inputString.length() == 0) {
         return;
     }
 
     // clear list of results, if necessary
-    if(result.size() > 0) {
+    if (result.size() > 0) {
         result.clear();
     }
 
@@ -57,7 +57,7 @@ splitStringByDelimiter(std::vector<std::string> &result,
     std::string item;
 
     // split
-    while(std::getline(inputStream, item, delim)) {
+    while (std::getline(inputStream, item, delim)) {
         result.emplace_back(item);
     }
 
@@ -72,13 +72,12 @@ splitStringByDelimiter(std::vector<std::string> &result,
  * @param splitLength max length of the single substrings
  */
 void
-splitStringByLength(std::vector<std::string> &result,
-                    const std::string &inputString,
+splitStringByLength(std::vector<std::string>& result,
+                    const std::string& inputString,
                     const uint64_t splitLength)
 {
-
     // clear list of results, if necessary
-    if(result.size() > 0) {
+    if (result.size() > 0) {
         result.clear();
     }
 
@@ -89,7 +88,7 @@ splitStringByLength(std::vector<std::string> &result,
     result.reserve(numberOfSubstrings);
 
     // split string
-    for(uint64_t i = 0; i < numberOfSubstrings; i++) {
+    for (uint64_t i = 0; i < numberOfSubstrings; i++) {
         result.emplace_back(inputString.substr(i * splitLength, splitLength));
     }
 
@@ -109,8 +108,7 @@ replaceSubstring(std::string& original,
                  const std::string& newSubstring)
 {
     std::string::size_type pos = 0u;
-    while((pos = original.find(oldSubstring, pos)) != std::string::npos)
-    {
+    while ((pos = original.find(oldSubstring, pos)) != std::string::npos) {
         original.replace(pos, oldSubstring.length(), newSubstring);
         pos += newSubstring.length();
     }
@@ -124,8 +122,7 @@ replaceSubstring(std::string& original,
 void
 removeWhitespaces(std::string& input)
 {
-    input.erase(std::remove_if(input.begin(), input.end(), isspace),
-                               input.end());
+    input.erase(std::remove_if(input.begin(), input.end(), isspace), input.end());
 }
 
 /**
@@ -135,8 +132,7 @@ removeWhitespaces(std::string& input)
  * @param chars chars to remove
  */
 void
-ltrim(std::string& original,
-      const std::string &chars)
+ltrim(std::string& original, const std::string& chars)
 {
     original.erase(0, original.find_first_not_of(chars));
 }
@@ -148,8 +144,7 @@ ltrim(std::string& original,
  * @param chars chars to remove
  */
 void
-rtrim(std::string& original,
-      const std::string& chars)
+rtrim(std::string& original, const std::string& chars)
 {
     original.erase(original.find_last_not_of(chars) + 1);
 }
@@ -161,8 +156,7 @@ rtrim(std::string& original,
  * @param chars chars to remove
  */
 void
-trim(std::string& original,
-     const std::string& chars)
+trim(std::string& original, const std::string& chars)
 {
     ltrim(original, chars);
     rtrim(original, chars);
@@ -174,12 +168,11 @@ trim(std::string& original,
  * @param original reference to string, which have to be converted
  */
 void
-toUpperCase(std::string &original)
+toUpperCase(std::string& original)
 {
-    std::transform(original.begin(),
-                   original.end(),
-                   original.begin(),
-                   [](unsigned char c){ return std::toupper(c); });
+    std::transform(original.begin(), original.end(), original.begin(), [](unsigned char c) {
+        return std::toupper(c);
+    });
 }
 
 /**
@@ -188,12 +181,11 @@ toUpperCase(std::string &original)
  * @param original reference to string, which have to be converted
  */
 void
-toLowerCase(std::string &original)
+toLowerCase(std::string& original)
 {
-    std::transform(original.begin(),
-                   original.end(),
-                   original.begin(),
-                   [](unsigned char c){ return std::tolower(c); });
+    std::transform(original.begin(), original.end(), original.begin(), [](unsigned char c) {
+        return std::tolower(c);
+    });
 }
 
-}
+}  // namespace Hanami

@@ -27,17 +27,16 @@
 
 class Cluster;
 
-class ImageTrainForward_State
-        : public Hanami::Event
+class ImageTrainForward_State : public Hanami::Event
 {
-public:
+   public:
     ImageTrainForward_State(Cluster* cluster);
     ~ImageTrainForward_State();
 
     bool processEvent();
 
-private:
+   private:
     Cluster* m_cluster = nullptr;
 };
 
-#endif // HANAMI_IMAGETRAINFORWARD_STATE_H
+#endif  // HANAMI_IMAGETRAINFORWARD_STATE_H

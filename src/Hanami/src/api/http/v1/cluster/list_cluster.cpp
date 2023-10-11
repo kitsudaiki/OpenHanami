@@ -22,11 +22,10 @@
 
 #include "list_cluster.h"
 
-#include <hanami_root.h>
 #include <database/cluster_table.h>
+#include <hanami_root.h>
 
-ListCluster::ListCluster()
-    : Blossom("List all visible clusters.")
+ListCluster::ListCluster() : Blossom("List all visible clusters.")
 {
     //----------------------------------------------------------------------------------------------
     // output
@@ -40,11 +39,11 @@ ListCluster::ListCluster()
     headerMatch.push_back("name");
 
     registerOutputField("header", SAKURA_ARRAY_TYPE)
-            .setComment("Array with the names all columns of the table.")
-            .setMatch(headerMatch);
+        .setComment("Array with the names all columns of the table.")
+        .setMatch(headerMatch);
 
     registerOutputField("body", SAKURA_ARRAY_TYPE)
-            .setComment("Json-string with all information of all vilible clusters.");
+        .setComment("Json-string with all information of all vilible clusters.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -64,8 +63,7 @@ ListCluster::runTask(BlossomIO &blossomIO,
 
     // get data from table
     Hanami::TableItem table;
-    if(ClusterTable::getInstance()->getAllCluster(table, userContext, error) == false)
-    {
+    if (ClusterTable::getInstance()->getAllCluster(table, userContext, error) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Failed to get all clusters form database");
         return false;

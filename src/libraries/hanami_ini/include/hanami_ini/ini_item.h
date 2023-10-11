@@ -9,12 +9,12 @@
 #ifndef INIITEM_H
 #define INIITEM_H
 
-#include <utility>
-#include <string>
-#include <vector>
-#include <map>
-
 #include <hanami_common/logger.h>
+
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace Hanami
 {
@@ -22,23 +22,19 @@ class IniParserInterface;
 
 class IniItem
 {
-
-public:
+   public:
     IniItem();
     ~IniItem();
 
-    bool parse(const std::string &content,
-               ErrorContainer &error);
+    bool parse(const std::string &content, ErrorContainer &error);
 
     // get
-    bool get(json &result,
-             const std::string &group,
-             const std::string &item);
+    bool get(json &result, const std::string &group, const std::string &item);
 
     // set
     bool set(const std::string &group,
              const std::string &item,
-             const char* value,
+             const char *value,
              const bool force = false);
     bool set(const std::string &group,
              const std::string &item,
@@ -62,22 +58,21 @@ public:
              const bool force = false);
 
     // remove
-    bool removeGroup(const std::string& group);
-    bool removeEntry(const std::string& group,
-                     const std::string& item);
+    bool removeGroup(const std::string &group);
+    bool removeEntry(const std::string &group, const std::string &item);
 
     // output
     const std::string toString();
 
     json m_content = nullptr;
 
-private:
-    bool setVal(const std::string& group,
-                const std::string& item,
+   private:
+    bool setVal(const std::string &group,
+                const std::string &item,
                 const json &value,
                 bool force = false);
 };
 
-}
+}  // namespace Hanami
 
-#endif // INIITEM_H
+#endif  // INIITEM_H

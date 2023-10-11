@@ -39,29 +39,30 @@ Cluster_ParseString_Test::Cluster_ParseString_Test()
 void
 Cluster_ParseString_Test::parseString_test()
 {
-    std::string input("version: 1\n"
-                      "settings:\n"
-                      "    max_synapse_sections: 100000\n"
-                      "    synapse_clusteration: 10\n"
-                      "    sign_neg: 0.5\n"
-                      "        \n"
-                      "bricks:\n"
-                      "    1,1,1\n"
-                      "        input: test_input\n"
-                      "        number_of_neurons: 20\n"
-                      "         \n "
-                      "    2,1,1\n"
-                      "        number_of_neurons: 10\n"
-                      "          \n"
-                      "    3,1,1\n"
-                      "        output: test_output\n"
-                      "        number_of_neurons: 5");
+    std::string input(
+        "version: 1\n"
+        "settings:\n"
+        "    max_synapse_sections: 100000\n"
+        "    synapse_clusteration: 10\n"
+        "    sign_neg: 0.5\n"
+        "        \n"
+        "bricks:\n"
+        "    1,1,1\n"
+        "        input: test_input\n"
+        "        number_of_neurons: 20\n"
+        "         \n "
+        "    2,1,1\n"
+        "        number_of_neurons: 10\n"
+        "          \n"
+        "    3,1,1\n"
+        "        output: test_output\n"
+        "        number_of_neurons: 5");
 
     ClusterMeta result;
     ErrorContainer error;
     bool ret = parseCluster(&result, input, error);
     TEST_EQUAL(ret, true);
-    if(ret == false) {
+    if (ret == false) {
         LOG_ERROR(error);
     }
 
@@ -94,174 +95,181 @@ Cluster_ParseString_Test::parseString_test()
     TEST_EQUAL(result.bricks.at(2).name, "test_output");
     TEST_EQUAL(result.bricks.at(2).type, OUTPUT_BRICK_TYPE);
 
-
-    input = "version: 2\n"  // <-- error
-            "settings:\n"
-            "    max_synapse_sections: 100000\n"
-            "    synapse_clusteration: 10\n"
-            "    sign_neg: 0.5\n"
-            "        \n"
-            "bricks:\n"
-            "    1,1,1\n"
-            "        input: test_input\n"
-            "        number_of_neurons: 20\n"
-            "         \n "
-            "    2,1,1\n"
-            "        number_of_neurons: 10\n"
-            "          \n"
-            "    3,1,1\n"
-            "        output: test_output\n"
-            "        number_of_neurons: 5\n";
-
-    ret = parseCluster(&result, input, error);
-    TEST_EQUAL(ret, false);
-
-    input = "version: 1\n"
-            "settings:\n"
-            "    max_synapse_sections: 100000\n"  // <-- error
-            "    asdf_clusteration: 10\n"
-            "    sign_neg: 0.5\n"
-            "        \n"
-            "bricks:\n"
-            "    1,1,1\n"
-            "        input: test_input\n"
-            "        number_of_neurons: 20\n"
-            "         \n "
-            "    2,1,1\n"
-            "        number_of_neurons: 10\n"
-            "          \n"
-            "    3,1,1\n"
-            "        output: test_output\n"
-            "        number_of_neurons: 5\n";
+    input
+        = "version: 2\n"  // <-- error
+          "settings:\n"
+          "    max_synapse_sections: 100000\n"
+          "    synapse_clusteration: 10\n"
+          "    sign_neg: 0.5\n"
+          "        \n"
+          "bricks:\n"
+          "    1,1,1\n"
+          "        input: test_input\n"
+          "        number_of_neurons: 20\n"
+          "         \n "
+          "    2,1,1\n"
+          "        number_of_neurons: 10\n"
+          "          \n"
+          "    3,1,1\n"
+          "        output: test_output\n"
+          "        number_of_neurons: 5\n";
 
     ret = parseCluster(&result, input, error);
     TEST_EQUAL(ret, false);
 
-    input = "version: 1\n"
-            "settings:\n"
-            "    max_synapse_sections: 100000\n"
-            "    synapse_clusteration: 10\n"
-            "    sign_neg: 123\n"
-            "        \n"
-            "bricks:\n"
-            "    1,1,1\n"
-            "        input: test_input\n"
-            "        number_of_neurons: 20\n"
-            "         \n "
-            "    2,1,1\n"
-            "        number_of_neurons: 10\n"
-            "          \n"
-            "    3,1,1\n"
-            "        output: test_output\n"
-            "        number_of_neurons: 5\n";
+    input
+        = "version: 1\n"
+          "settings:\n"
+          "    max_synapse_sections: 100000\n"  // <-- error
+          "    asdf_clusteration: 10\n"
+          "    sign_neg: 0.5\n"
+          "        \n"
+          "bricks:\n"
+          "    1,1,1\n"
+          "        input: test_input\n"
+          "        number_of_neurons: 20\n"
+          "         \n "
+          "    2,1,1\n"
+          "        number_of_neurons: 10\n"
+          "          \n"
+          "    3,1,1\n"
+          "        output: test_output\n"
+          "        number_of_neurons: 5\n";
 
     ret = parseCluster(&result, input, error);
     TEST_EQUAL(ret, false);
 
-    input = "version: 1\n"
-            "settings:\n"
-            "    max_synapse_sections: 100000\n"
-            "    synapse_clusteration: 10\n"
-            "    sign_neg: 0.5\n"
-            "        \n"
-            "bricks:\n"
-            "    1,1,a\n"  // <-- error
-            "        input: test_input\n"
-            "        number_of_neurons: 20\n"
-            "         \n "
-            "    2,1,1\n"
-            "        number_of_neurons: 10\n"
-            "          \n"
-            "    3,1,1\n"
-            "        output: test_output\n"
-            "        number_of_neurons: 5\n";
+    input
+        = "version: 1\n"
+          "settings:\n"
+          "    max_synapse_sections: 100000\n"
+          "    synapse_clusteration: 10\n"
+          "    sign_neg: 123\n"
+          "        \n"
+          "bricks:\n"
+          "    1,1,1\n"
+          "        input: test_input\n"
+          "        number_of_neurons: 20\n"
+          "         \n "
+          "    2,1,1\n"
+          "        number_of_neurons: 10\n"
+          "          \n"
+          "    3,1,1\n"
+          "        output: test_output\n"
+          "        number_of_neurons: 5\n";
 
     ret = parseCluster(&result, input, error);
     TEST_EQUAL(ret, false);
 
-    input = "version: 1\n"
-            "settings:\n"
-            "    max_synapse_sections: 100000\n"
-            "    synapse_clusteration: 10\n"
-            "    sign_neg: 0.5\n"
-            "        \n"
-            "asdf:\n"  // <-- error
-            "    1,1,1\n"
-            "        input: test_input\n"
-            "        number_of_neurons: 20\n"
-            "         \n "
-            "    2,1,1\n"
-            "        number_of_neurons: 10\n"
-            "          \n"
-            "    3,1,1\n"
-            "        output: test_output\n"
-            "        number_of_neurons: 5\n";
+    input
+        = "version: 1\n"
+          "settings:\n"
+          "    max_synapse_sections: 100000\n"
+          "    synapse_clusteration: 10\n"
+          "    sign_neg: 0.5\n"
+          "        \n"
+          "bricks:\n"
+          "    1,1,a\n"  // <-- error
+          "        input: test_input\n"
+          "        number_of_neurons: 20\n"
+          "         \n "
+          "    2,1,1\n"
+          "        number_of_neurons: 10\n"
+          "          \n"
+          "    3,1,1\n"
+          "        output: test_output\n"
+          "        number_of_neurons: 5\n";
 
     ret = parseCluster(&result, input, error);
     TEST_EQUAL(ret, false);
 
-    input = "version: 1\n"
-            "settings:\n"
-            "    max_synapse_sections: 100000\n"
-            "    synapse_clusteration: 10\n"
-            "    sign_neg: 0.5\n"
-            "        \n"
-            "bricks:\n"
-            "    1,1,1\n"
-            "        asdf: test_input\n"  // <-- error
-            "        number_of_neurons: 20\n"
-            "         \n "
-            "    2,1,1\n"
-            "        number_of_neurons: 10\n"
-            "          \n"
-            "    3,1,1\n"
-            "        output: test_output\n"
-            "        number_of_neurons: 5\n";
+    input
+        = "version: 1\n"
+          "settings:\n"
+          "    max_synapse_sections: 100000\n"
+          "    synapse_clusteration: 10\n"
+          "    sign_neg: 0.5\n"
+          "        \n"
+          "asdf:\n"  // <-- error
+          "    1,1,1\n"
+          "        input: test_input\n"
+          "        number_of_neurons: 20\n"
+          "         \n "
+          "    2,1,1\n"
+          "        number_of_neurons: 10\n"
+          "          \n"
+          "    3,1,1\n"
+          "        output: test_output\n"
+          "        number_of_neurons: 5\n";
 
     ret = parseCluster(&result, input, error);
     TEST_EQUAL(ret, false);
 
-    input = "version: 1\n"
-            "settings:\n"
-            "    max_synapse_sections: 100000\n"
-            "    synapse_clusteration: 10\n"
-            "    sign_neg: 0.5\n"
-            "        \n"
-            "bricks:\n"
-            "    1,1,1\n"
-            "        input: test_input\n"
-            "        number_of_neurons: 20\n"
-            "         \n "
-            "    2,1,1\n"
-            "        number_of_neurons: 10\n"
-            "          \n"
-            "    3,1,1\n"
-            "        asdf: test_output\n"  // <-- error
-            "        number_of_neurons: 5\n";
+    input
+        = "version: 1\n"
+          "settings:\n"
+          "    max_synapse_sections: 100000\n"
+          "    synapse_clusteration: 10\n"
+          "    sign_neg: 0.5\n"
+          "        \n"
+          "bricks:\n"
+          "    1,1,1\n"
+          "        asdf: test_input\n"  // <-- error
+          "        number_of_neurons: 20\n"
+          "         \n "
+          "    2,1,1\n"
+          "        number_of_neurons: 10\n"
+          "          \n"
+          "    3,1,1\n"
+          "        output: test_output\n"
+          "        number_of_neurons: 5\n";
 
     ret = parseCluster(&result, input, error);
     TEST_EQUAL(ret, false);
 
-    input = "version: 1\n"
-            "settings:\n"
-            "    max_synapse_sections: 100000\n"
-            "    synapse_clusteration: 10\n"
-            "    sign_neg: 0.5\n"
-            "        \n"
-            "bricks:\n"
-            "    1,1,1\n"
-            "        input: test_input\n"
-            "        number_of_neurons: 20\n"
-            "         \n "
-            "    2,1,1\n"
-            "        number_of_neurons: a\n"  // <-- error
-            "          \n"
-            "    3,1,1\n"
-            "        output: test_output\n"
-            "        number_of_neurons: 5\n";
+    input
+        = "version: 1\n"
+          "settings:\n"
+          "    max_synapse_sections: 100000\n"
+          "    synapse_clusteration: 10\n"
+          "    sign_neg: 0.5\n"
+          "        \n"
+          "bricks:\n"
+          "    1,1,1\n"
+          "        input: test_input\n"
+          "        number_of_neurons: 20\n"
+          "         \n "
+          "    2,1,1\n"
+          "        number_of_neurons: 10\n"
+          "          \n"
+          "    3,1,1\n"
+          "        asdf: test_output\n"  // <-- error
+          "        number_of_neurons: 5\n";
+
+    ret = parseCluster(&result, input, error);
+    TEST_EQUAL(ret, false);
+
+    input
+        = "version: 1\n"
+          "settings:\n"
+          "    max_synapse_sections: 100000\n"
+          "    synapse_clusteration: 10\n"
+          "    sign_neg: 0.5\n"
+          "        \n"
+          "bricks:\n"
+          "    1,1,1\n"
+          "        input: test_input\n"
+          "        number_of_neurons: 20\n"
+          "         \n "
+          "    2,1,1\n"
+          "        number_of_neurons: a\n"  // <-- error
+          "          \n"
+          "    3,1,1\n"
+          "        output: test_output\n"
+          "        number_of_neurons: 5\n";
 
     ret = parseCluster(&result, input, error);
     TEST_EQUAL(ret, false);
 };
 
-}
+}  // namespace Hanami

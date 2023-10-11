@@ -25,22 +25,19 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-
-class RenewToken
-        : public Blossom
+class RenewToken : public Blossom
 {
-public:
+   public:
     RenewToken();
 
-protected:
+   protected:
     bool runTask(BlossomIO &blossomIO,
                  const json &context,
                  BlossomStatus &status,
                  Hanami::ErrorContainer &error);
-private:
-    bool chooseProject(json &userData,
-                       json &parsedProjects,
-                       const std::string selectedProjectId);
+
+   private:
+    bool chooseProject(json &userData, json &parsedProjects, const std::string selectedProjectId);
 };
 
-#endif // HANAMI_RENEW_TOKEN_H
+#endif  // HANAMI_RENEW_TOKEN_H

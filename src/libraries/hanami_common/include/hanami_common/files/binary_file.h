@@ -11,25 +11,25 @@
 #ifndef BINARY_FILE_H
 #define BINARY_FILE_H
 
-#include <deque>
-#include <sstream>
-#include <mutex>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <errno.h>
-#include <sys/stat.h>
-#include <unistd.h>
 #include <assert.h>
-
-#include <hanami_common/logger.h>
+#include <errno.h>
+#include <fcntl.h>
 #include <hanami_common/buffer/data_buffer.h>
+#include <hanami_common/logger.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+#include <deque>
+#include <mutex>
+#include <sstream>
 
 namespace Hanami
 {
 
 class BinaryFile
 {
-public:
+   public:
     BinaryFile(const std::string &filePath);
     ~BinaryFile();
 
@@ -39,7 +39,7 @@ public:
     bool readCompleteFile(DataBuffer &buffer, ErrorContainer &error);
     bool writeCompleteFile(DataBuffer &buffer, ErrorContainer &error);
 
-    bool writeDataIntoFile(const void* data,
+    bool writeDataIntoFile(const void *data,
                            const uint64_t startBytePosition,
                            const uint64_t numberOfBytes,
                            ErrorContainer &error);
@@ -54,12 +54,12 @@ public:
     uint64_t m_totalFileSize = 0;
     std::string m_filePath = "";
 
-private:
+   private:
     int m_fileDescriptor = -1;
 
     bool initFile(ErrorContainer &error);
 };
 
-}
+}  // namespace Hanami
 
-#endif // BINARY_FILE_H
+#endif  // BINARY_FILE_H

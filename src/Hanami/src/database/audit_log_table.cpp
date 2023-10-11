@@ -21,21 +21,18 @@
  */
 
 #include <database/audit_log_table.h>
-
 #include <hanami_common/items/table_item.h>
 #include <hanami_common/methods/string_methods.h>
-
 #include <hanami_database/sql_database.h>
 
-AuditLogTable* AuditLogTable::instance = nullptr;
+AuditLogTable *AuditLogTable::instance = nullptr;
 
 /**
  * @brief constructor
  *
  * @param db pointer to database
  */
-AuditLogTable::AuditLogTable()
-    : HanamiSqlLogTable(Hanami::SqlDatabase::getInstance())
+AuditLogTable::AuditLogTable() : HanamiSqlLogTable(Hanami::SqlDatabase::getInstance())
 {
     m_tableName = "audit_log";
 
@@ -84,8 +81,7 @@ AuditLogTable::addAuditLogEntry(const std::string &timestamp,
     data["endpoint"] = endpoint;
     data["request_type"] = requestType;
 
-    if(insertToDb(data, error) == false)
-    {
+    if (insertToDb(data, error) == false) {
         error.addMeesage("Failed to add audit-log-entry to database");
         return false;
     }
@@ -109,8 +105,7 @@ AuditLogTable::getAllAuditLogEntries(Hanami::TableItem &result,
                                      const uint64_t page,
                                      Hanami::ErrorContainer &error)
 {
-    if(getPageFromDb(result, userId, page, error) == false)
-    {
+    if (getPageFromDb(result, userId, page, error) == false) {
         error.addMeesage("Failed to get all audit-log-entries from database");
         return false;
     }

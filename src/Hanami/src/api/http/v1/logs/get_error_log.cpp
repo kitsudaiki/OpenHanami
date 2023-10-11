@@ -22,8 +22,8 @@
 
 #include "get_error_log.h"
 
-#include <hanami_root.h>
 #include <database/error_log_table.h>
+#include <hanami_root.h>
 
 GetErrorLog::GetErrorLog()
     : Blossom("Get error-log of a user. Only an admin is allowed to request the error-log.")
@@ -34,15 +34,16 @@ GetErrorLog::GetErrorLog()
     // input
     //----------------------------------------------------------------------------------------------
     registerInputField("user_id", SAKURA_STRING_TYPE)
-            .setComment("ID of the user, whos entries are requested.")
-            .setRequired(false)
-            .setLimit(4, 256)
-            .setRegex(ID_EXT_REGEX);
+        .setComment("ID of the user, whos entries are requested.")
+        .setRequired(false)
+        .setLimit(4, 256)
+        .setRegex(ID_EXT_REGEX);
 
     registerInputField("page", SAKURA_INT_TYPE)
-            .setComment("Page-number starting with 0 to access the logs. "
-                       "A page has up to 100 entries.")
-            .setLimit(0, 1000000000);
+        .setComment(
+            "Page-number starting with 0 to access the logs. "
+            "A page has up to 100 entries.")
+        .setLimit(0, 1000000000);
 
     //----------------------------------------------------------------------------------------------
     // output
@@ -57,11 +58,11 @@ GetErrorLog::GetErrorLog()
     headerMatch.push_back("message");
 
     registerOutputField("header", SAKURA_ARRAY_TYPE)
-            .setComment("Array with the namings all columns of the table.")
-            .setMatch(headerMatch);
+        .setComment("Array with the namings all columns of the table.")
+        .setMatch(headerMatch);
 
     registerOutputField("body", SAKURA_ARRAY_TYPE)
-            .setComment("Array with all rows of the table, which array arrays too.");
+        .setComment("Array with all rows of the table, which array arrays too.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -81,8 +82,7 @@ GetErrorLog::runTask(BlossomIO &blossomIO,
     const uint64_t page = blossomIO.input["page"];
 
     // check that the user is an admin
-    if(userContext.isAdmin == false)
-    {
+    if (userContext.isAdmin == false) {
         status.statusCode = UNAUTHORIZED_RTYPE;
         status.errorMessage = "only an admin is allowed to request error-logs";
         return false;
@@ -92,8 +92,7 @@ GetErrorLog::runTask(BlossomIO &blossomIO,
 
     // get data from table
     Hanami::TableItem table;
-    if(ErrorLogTable::getInstance()->getAllErrorLogEntries(table, userId, page, error) == false)
-    {
+    if (ErrorLogTable::getInstance()->getAllErrorLogEntries(table, userId, page, error) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

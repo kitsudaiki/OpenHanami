@@ -23,15 +23,15 @@
 #ifndef MEMORY_COUNTER_H
 #define MEMORY_COUNTER_H
 
-#include <stdlib.h>
-#include <atomic>
 #include <stdio.h>
+#include <stdlib.h>
+
+#include <atomic>
 
 namespace Hanami
 {
 
-struct MemoryCounter
-{
+struct MemoryCounter {
     int64_t actualAllocatedSize = 0;
     int64_t numberOfActiveAllocations = 0;
     std::atomic_flag lock = ATOMIC_FLAG_INIT;
@@ -42,10 +42,9 @@ struct MemoryCounter
     MemoryCounter() {}
 };
 
-
 void increaseGlobalMemoryCounter(const size_t size);
 void decreaseGlobalMemoryCounter(const size_t size);
 
-}
+}  // namespace Hanami
 
-#endif // MEMORY_COUNTER_H
+#endif  // MEMORY_COUNTER_H

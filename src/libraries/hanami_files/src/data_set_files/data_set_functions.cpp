@@ -20,13 +20,11 @@
  *      limitations under the License.
  */
 
-#include <hanami_files/data_set_files/data_set_functions.h>
-
+#include <hanami_common/files/binary_file.h>
 #include <hanami_files/data_set_files/data_set_file.h>
+#include <hanami_files/data_set_files/data_set_functions.h>
 #include <hanami_files/data_set_files/image_data_set_file.h>
 #include <hanami_files/data_set_files/table_data_set_file.h>
-
-#include <hanami_common/files/binary_file.h>
 
 /**
  * @brief getDataSetPayload
@@ -42,14 +40,13 @@ getDataSetPayload(Hanami::DataBuffer &result,
                   const std::string &columnName)
 {
     // init file
-    DataSetFile* file = readDataSetFile(location, error);
-    if(file == nullptr) {
+    DataSetFile *file = readDataSetFile(location, error);
+    if (file == nullptr) {
         return false;
     }
 
     // get payload
-    if(file->getPayload(result, error, columnName) == false)
-    {
+    if (file->getPayload(result, error, columnName) == false) {
         delete file;
         error.addMeesage("Failed to get payload.");
         return false;
@@ -69,35 +66,31 @@ getDataSetPayload(Hanami::DataBuffer &result,
  * @return true, if successful, else false
  */
 bool
-getHeaderInformation(json &result,
-                     const std::string &location,
-                     Hanami::ErrorContainer &error)
+getHeaderInformation(json &result, const std::string &location, Hanami::ErrorContainer &error)
 {
     bool ret = false;
 
-    DataSetFile* file = readDataSetFile(location, error);
-    if(file == nullptr) {
+    DataSetFile *file = readDataSetFile(location, error);
+    if (file == nullptr) {
         return ret;
     }
 
-    do
-    {
+    do {
         // read data-set-header
-        if(file->readFromFile(error) == false)
-        {
+        if (file->readFromFile(error) == false) {
             error.addMeesage("Failed to read header from file '" + location + "'");
             break;
         }
 
-        if(file->type == DataSetFile::IMAGE_TYPE)
-        {
-            ImageDataSetFile* imgF = dynamic_cast<ImageDataSetFile*>(file);
-            if(imgF == nullptr) {
+        if (file->type == DataSetFile::IMAGE_TYPE) {
+            ImageDataSetFile *imgF = dynamic_cast<ImageDataSetFile *>(file);
+            if (imgF == nullptr) {
                 break;
             }
 
             // write information to result
-            const uint64_t size = imgF->imageHeader.numberOfInputsX * imgF->imageHeader.numberOfInputsY;
+            const uint64_t size
+                = imgF->imageHeader.numberOfInputsX * imgF->imageHeader.numberOfInputsY;
             result["inputs"] = static_cast<long>(size);
             result["outputs"] = static_cast<long>(imgF->imageHeader.numberOfOutputs);
             result["lines"] = static_cast<long>(imgF->imageHeader.numberOfImages);
@@ -106,11 +99,9 @@ getHeaderInformation(json &result,
 
             ret = true;
             break;
-        }
-        else if(file->type == DataSetFile::TABLE_TYPE)
-        {
-            TableDataSetFile* imgT = dynamic_cast<TableDataSetFile*>(file);
-            if(imgT == nullptr) {
+        } else if (file->type == DataSetFile::TABLE_TYPE) {
+            TableDataSetFile *imgT = dynamic_cast<TableDataSetFile *>(file);
+            if (imgT == nullptr) {
                 break;
             }
 
@@ -118,12 +109,11 @@ getHeaderInformation(json &result,
             long outputs = 0;
 
             // get number of inputs and outputs
-            for(const TableDataSetFile::TableHeaderEntry &entry : imgT->tableColumns)
-            {
-                if(entry.isInput) {
+            for (const TableDataSetFile::TableHeaderEntry &entry : imgT->tableColumns) {
+                if (entry.isInput) {
                     inputs++;
                 }
-                if(entry.isOutput) {
+                if (entry.isOutput) {
                     outputs++;
                 }
             }
@@ -137,8 +127,7 @@ getHeaderInformation(json &result,
             ret = true;
             break;
         }
-    }
-    while(false);
+    } while (false);
 
     delete file;
 

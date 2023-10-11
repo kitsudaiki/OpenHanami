@@ -21,7 +21,6 @@
  */
 
 #include <hanami_hardware/cpu_core.h>
-
 #include <hanami_hardware/cpu_thread.h>
 
 namespace Hanami
@@ -32,15 +31,14 @@ namespace Hanami
  *
  * @param coreId id of the core
  */
-CpuCore::CpuCore(const uint32_t coreId)
-    : coreId(coreId) {}
+CpuCore::CpuCore(const uint32_t coreId) : coreId(coreId) {}
 
 /**
  * @brief destructor
  */
 CpuCore::~CpuCore()
 {
-    for(uint32_t i = 0; i < cpuThreads.size(); i++) {
+    for (uint32_t i = 0; i < cpuThreads.size(); i++) {
         delete cpuThreads[i];
     }
 
@@ -57,9 +55,8 @@ CpuCore::~CpuCore()
 CpuThread*
 CpuCore::getThread(const uint32_t threadId) const
 {
-    for(CpuThread* thread : cpuThreads)
-    {
-        if(thread->threadId == threadId) {
+    for (CpuThread* thread : cpuThreads) {
+        if (thread->threadId == threadId) {
             return thread;
         }
     }
@@ -80,8 +77,7 @@ CpuCore::addThread(const uint32_t threadId)
 {
     CpuThread* thread = getThread(threadId);
 
-    if(thread == nullptr)
-    {
+    if (thread == nullptr) {
         thread = new CpuThread(threadId);
         cpuThreads.push_back(thread);
     }
@@ -97,7 +93,7 @@ CpuCore::addThread(const uint32_t threadId)
 void
 CpuCore::addCpuThread(CpuThread* thread)
 {
-    if(getThread(thread->threadId) == nullptr) {
+    if (getThread(thread->threadId) == nullptr) {
         cpuThreads.push_back(thread);
     }
 }
@@ -110,7 +106,7 @@ CpuCore::addCpuThread(CpuThread* thread)
 double
 CpuCore::getThermalSpec() const
 {
-    if(cpuThreads.size() > 0) {
+    if (cpuThreads.size() > 0) {
         return cpuThreads.at(0)->getThermalSpec();
     }
 
@@ -125,7 +121,7 @@ CpuCore::getThermalSpec() const
 double
 CpuCore::getTotalPackagePower()
 {
-    if(cpuThreads.size() > 0) {
+    if (cpuThreads.size() > 0) {
         return cpuThreads.at(0)->getTotalPackagePower();
     }
 
@@ -145,8 +141,7 @@ CpuCore::toJsonString()
     // get information of the core coming from the first thread of the core, because multiple
     // threads here means that hyperthreading is enabled, the all threads of the core have
     // exactly the same information
-    if(cpuThreads.size() > 0)
-    {
+    if (cpuThreads.size() > 0) {
         const CpuThread* thread = cpuThreads.at(0);
         jsonString.append(",\"minimum_speed\":" + std::to_string(thread->minSpeed));
         jsonString.append(",\"maximum_speed\":" + std::to_string(thread->maxSpeed));
@@ -157,9 +152,8 @@ CpuCore::toJsonString()
 
     // print information of the threads
     jsonString.append(",\"threads\":[");
-    for(uint32_t i = 0; i < cpuThreads.size(); i++)
-    {
-        if(i > 0) {
+    for (uint32_t i = 0; i < cpuThreads.size(); i++) {
+        if (i > 0) {
             jsonString.append(",");
         }
         jsonString.append(cpuThreads.at(i)->toJsonString());
@@ -184,8 +178,7 @@ CpuCore::toJson()
     // get information of the core coming from the first thread of the core, because multiple
     // threads here means that hyperthreading is enabled, the all threads of the core have
     // exactly the same information
-    if(cpuThreads.size() > 0)
-    {
+    if (cpuThreads.size() > 0) {
         const CpuThread* thread = cpuThreads.at(0);
         result["minimum_speed"] = (long)thread->minSpeed;
         result["maximum_speed"] = (long)thread->maxSpeed;
@@ -196,7 +189,7 @@ CpuCore::toJson()
 
     // print information of the threads
     json threads = json::array();
-    for(uint32_t i = 0; i < cpuThreads.size(); i++) {
+    for (uint32_t i = 0; i < cpuThreads.size(); i++) {
         threads.push_back(cpuThreads.at(i)->toJson());
     }
     result["threads"] = threads;
@@ -204,4 +197,4 @@ CpuCore::toJson()
     return result;
 }
 
-}
+}  // namespace Hanami

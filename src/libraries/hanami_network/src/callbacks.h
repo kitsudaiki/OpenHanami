@@ -24,18 +24,15 @@
 #define KITSUNEMIMI_SAKURA_NETWORK_CALLBACKS_H
 
 #include <abstract_socket.h>
-#include <hanami_common/buffer/ring_buffer.h>
-
 #include <hanami_common/buffer/data_buffer.h>
-
+#include <hanami_common/buffer/ring_buffer.h>
 #include <hanami_network/session_controller.h>
-
-#include <messages_processing/session_processing.h>
-#include <messages_processing/heartbeat_processing.h>
 #include <messages_processing/error_processing.h>
-#include <messages_processing/stream_data_processing.h>
+#include <messages_processing/heartbeat_processing.h>
 #include <messages_processing/multiblock_data_processing.h>
+#include <messages_processing/session_processing.h>
 #include <messages_processing/singleblock_data_processing.h>
+#include <messages_processing/stream_data_processing.h>
 
 namespace Hanami
 {
@@ -49,18 +46,15 @@ namespace Hanami
  * @return hex-version of the input-object as string
  */
 void
-hexlify(std::string &outputString,
-        const void* object,
-        const uint64_t size)
+hexlify(std::string& outputString, const void* object, const uint64_t size)
 {
     const uint8_t* bytestream = static_cast<const uint8_t*>(object);
     std::stringstream stream;
 
     // iterate over all bytes of the object
-    for(uint64_t i = size; i != 0; i--)
-    {
+    for (uint64_t i = size; i != 0; i--) {
         // special rul to fix the length
-        if(bytestream[i - 1] < 16) {
+        if (bytestream[i - 1] < 16) {
             stream << "0";
         }
         stream << std::hex << static_cast<int>(bytestream[i - 1]);
@@ -74,8 +68,7 @@ hexlify(std::string &outputString,
  * @param header
  */
 void
-createHeaderError(const std::string &message,
-                  const CommonMessageHeader* header)
+createHeaderError(const std::string& message, const CommonMessageHeader* header)
 {
     std::string headerContent = "";
     hexlify(headerContent, &header, sizeof(header));
@@ -95,21 +88,19 @@ createHeaderError(const std::string &message,
  * @return number of bytes, which were taken from the buffer
  */
 inline uint64_t
-processMessage(void* target,
-               RingBuffer* recvBuffer)
+processMessage(void* target, RingBuffer* recvBuffer)
 {
     // gsession, which is related to the message
     Session* session = static_cast<Session*>(target);
 
     // et header of message and check if header was complete within the buffer
     const CommonMessageHeader* header = getObject_RingBuffer<CommonMessageHeader>(*recvBuffer);
-    if(header == nullptr) {
+    if (header == nullptr) {
         return 0;
     }
 
     // check for correct protocol
-    if(header->protocolIdentifier != PROTOCOL_IDENTIFIER)
-    {
+    if (header->protocolIdentifier != PROTOCOL_IDENTIFIER) {
         createHeaderError("invalid incoming protocol", header);
 
         // close session, because its an invalid incoming protocol
@@ -120,8 +111,7 @@ processMessage(void* target,
     }
 
     // check version in header
-    if(header->version != 0x1)
-    {
+    if (header->version != 0x1) {
         ErrorContainer error;
         send_ErrorMessage(session, Session::errorCodes::FALSE_VERSION, "", error);
         LOG_ERROR(error);
@@ -131,7 +121,7 @@ processMessage(void* target,
 
     // get complete message from the ringbuffer, if enough data are available
     const void* rawMessage = getDataPointer_RingBuffer(*recvBuffer, header->totalMessageSize);
-    if(rawMessage == nullptr) {
+    if (rawMessage == nullptr) {
         return 0;
     }
 
@@ -139,8 +129,7 @@ processMessage(void* target,
     //    devide by 4, because uint32_t has 4 bytes sizede
     const uint64_t endPosition = (header->totalMessageSize / 4) - 1;
     const uint32_t* end = static_cast<const uint32_t*>(rawMessage) + endPosition;
-    if(*end != MESSAGE_DELIMITER)
-    {
+    if (*end != MESSAGE_DELIMITER) {
         ErrorContainer error;
         send_ErrorMessage(session, Session::errorCodes::FALSE_VERSION, "", error);
         LOG_ERROR(error);
@@ -150,13 +139,12 @@ processMessage(void* target,
     }
 
     // remove from reply-handler if message is reply
-    if(header->flags & 0x2) {
+    if (header->flags & 0x2) {
         SessionHandler::m_replyHandler->removeMessage(header->sessionId, header->messageId);
     }
 
     // process message by type
-    switch(header->type)
-    {
+    switch (header->type) {
         case STREAM_DATA_TYPE:
             process_Stream_Data_Type(session, header, rawMessage);
             break;
@@ -192,9 +180,7 @@ processMessage(void* target,
  * @return number of bytes, which were taken from the buffer
  */
 uint64_t
-processMessage_callback(void* target,
-                        RingBuffer* recvBuffer,
-                        AbstractSocket*)
+processMessage_callback(void* target, RingBuffer* recvBuffer, AbstractSocket*)
 {
     return processMessage(target, recvBuffer);
 }
@@ -205,14 +191,13 @@ processMessage_callback(void* target,
  * @param socket socket for the new session
  */
 void
-processConnection_Callback(void*,
-                           AbstractSocket* socket)
+processConnection_Callback(void*, AbstractSocket* socket)
 {
     Session* newSession = new Session(socket);
     socket->setMessageCallback(newSession, &processMessage_callback);
     socket->startThread();
 }
 
-}
+}  // namespace Hanami
 
-#endif // KITSUNEMIMI_SAKURA_NETWORK_CALLBACKS_H
+#endif  // KITSUNEMIMI_SAKURA_NETWORK_CALLBACKS_H

@@ -23,11 +23,10 @@
 #ifndef HANAMI_HARDWARE_CPUPACKAGE_H
 #define HANAMI_HARDWARE_CPUPACKAGE_H
 
-#include <string>
 #include <iostream>
-#include <vector>
-
 #include <nlohmann/json.hpp>
+#include <string>
+#include <vector>
 
 using json = nlohmann::json;
 
@@ -37,7 +36,7 @@ class CpuCore;
 
 class CpuPackage
 {
-public:
+   public:
     CpuPackage(const uint32_t packageId);
     ~CpuPackage();
 
@@ -55,6 +54,6 @@ public:
     std::vector<CpuCore*> cpuCores;
 };
 
-}
+}  // namespace Hanami
 
-#endif // HANAMI_HARDWARE_CPUPACKAGE_H
+#endif  // HANAMI_HARDWARE_CPUPACKAGE_H

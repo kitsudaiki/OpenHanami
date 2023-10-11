@@ -21,9 +21,10 @@
  */
 
 #include "image_train_task_test.h"
-#include <chrono>
 
 #include <hanami_sdk/task.h>
+
+#include <chrono>
 
 typedef std::chrono::milliseconds chronoMilliSec;
 typedef std::chrono::microseconds chronoMicroSec;
@@ -32,12 +33,10 @@ typedef std::chrono::seconds chronoSec;
 typedef std::chrono::high_resolution_clock::time_point chronoTimePoint;
 typedef std::chrono::high_resolution_clock chronoClock;
 
-
-ImageTrainTaskTest::ImageTrainTaskTest(const bool expectSuccess)
-  : TestStep(expectSuccess)
+ImageTrainTaskTest::ImageTrainTaskTest(const bool expectSuccess) : TestStep(expectSuccess)
 {
     m_testName = "train-task";
-    if(expectSuccess) {
+    if (expectSuccess) {
         m_testName += " (success)";
     } else {
         m_testName += " (fail)";
@@ -45,22 +44,21 @@ ImageTrainTaskTest::ImageTrainTaskTest(const bool expectSuccess)
 }
 
 bool
-ImageTrainTaskTest::runTest(json &inputData,
-                            Hanami::ErrorContainer &error)
+ImageTrainTaskTest::runTest(json &inputData, Hanami::ErrorContainer &error)
 {
     // create new user
     std::string result;
-    if(Hanami::createTask(result,
-                          inputData["generic_task_name"],
-                          "train",
-                          inputData["cluster_uuid"],
-                          inputData["train_dataset_uuid"],
-                          error) != m_expectSuccess)
-    {
+    if (Hanami::createTask(result,
+                           inputData["generic_task_name"],
+                           "train",
+                           inputData["cluster_uuid"],
+                           inputData["train_dataset_uuid"],
+                           error)
+        != m_expectSuccess) {
         return false;
     }
 
-    if(m_expectSuccess == false) {
+    if (m_expectSuccess == false) {
         return true;
     }
 
@@ -68,7 +66,7 @@ ImageTrainTaskTest::runTest(json &inputData,
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch(const json::parse_error& ex) {
+    } catch (const json::parse_error &ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
@@ -81,31 +79,27 @@ ImageTrainTaskTest::runTest(json &inputData,
     start = std::chrono::system_clock::now();
 
     // wait until task is finished
-    do
-    {
+    do {
         usleep(1000000);
 
-        Hanami::getTask(result,
-                        inputData["train_task_uuid"],
-                        inputData["cluster_uuid"],
-                        error);
+        Hanami::getTask(result, inputData["train_task_uuid"], inputData["cluster_uuid"], error);
 
         // parse output
         jsonItem = json::parse(result, nullptr, false);
-        if (jsonItem.is_discarded())
-        {
+        if (jsonItem.is_discarded()) {
             std::cerr << "parse error" << std::endl;
             return false;
         }
-        //std::cout<<jsonItem.dump(4)<<std::endl;
-    }
-    while(jsonItem["state"] != "finished");
+        // std::cout<<jsonItem.dump(4)<<std::endl;
+    } while (jsonItem["state"] != "finished");
     end = std::chrono::system_clock::now();
     const float time2 = std::chrono::duration_cast<chronoMilliSec>(end - start).count();
 
-    std::cout<<"#######################################################################"<<std::endl;
-    std::cout<<"train_time: "<<time2<<" ms"<<std::endl;
-    std::cout<<"#######################################################################"<<std::endl;
+    std::cout << "#######################################################################"
+              << std::endl;
+    std::cout << "train_time: " << time2 << " ms" << std::endl;
+    std::cout << "#######################################################################"
+              << std::endl;
 
     return true;
 }

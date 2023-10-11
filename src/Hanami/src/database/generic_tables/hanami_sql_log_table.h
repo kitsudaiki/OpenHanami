@@ -23,21 +23,19 @@
 #ifndef HANAMI_DATABASE_SQL_LOG_TABLE_H
 #define HANAMI_DATABASE_SQL_LOG_TABLE_H
 
-#include <vector>
-#include <string>
+#include <hanami_common/logger.h>
+#include <hanami_database/sql_table.h>
 #include <uuid/uuid.h>
 
-#include <hanami_common/logger.h>
-
-#include <hanami_database/sql_table.h>
+#include <string>
+#include <vector>
 
 class SqlDatabase;
 
-class HanamiSqlLogTable
-        : public Hanami::SqlTable
+class HanamiSqlLogTable : public Hanami::SqlTable
 {
-public:
-    HanamiSqlLogTable(Hanami::SqlDatabase* db);
+   public:
+    HanamiSqlLogTable(Hanami::SqlDatabase *db);
     virtual ~HanamiSqlLogTable();
 
     long getNumberOfPages(Hanami::ErrorContainer &error);
@@ -47,4 +45,4 @@ public:
                        Hanami::ErrorContainer &error);
 };
 
-#endif // HANAMI_DATABASE_SQL_LOG_TABLE_H
+#endif  // HANAMI_DATABASE_SQL_LOG_TABLE_H

@@ -20,19 +20,18 @@
  *      limitations under the License.
  */
 
-#include <iostream>
-
-#include <config.h>
 #include <args.h>
-#include <thread>
-
+#include <config.h>
+#include <hanami_sdk/common/websocket_client.h>
 #include <rest_api_tests/rest_api_tests.h>
 
-#include <hanami_sdk/common/websocket_client.h>
+#include <iostream>
+#include <thread>
 
-int main(int argc, char *argv[])
+int
+main(int argc, char *argv[])
 {
-    Hanami::ErrorContainer error;   
+    Hanami::ErrorContainer error;
     Hanami::initConsoleLogger(true);
 
     // create and init argument-parser
@@ -40,20 +39,18 @@ int main(int argc, char *argv[])
     registerArguments(&argParser);
 
     // parse cli-input
-    if(argParser.parse(argc, argv, error) == false)
-    {
+    if (argParser.parse(argc, argv, error) == false) {
         LOG_ERROR(error);
         return 1;
     }
 
     // init and check config-file
     std::string configPath = argParser.getStringValue("config");
-    if(configPath == "") {
+    if (configPath == "") {
         configPath = "/etc/hanami/hanami_testing.conf";
     }
     registerConfigs();
-    if(INIT_CONFIG(configPath, error) == false)
-    {
+    if (INIT_CONFIG(configPath, error) == false) {
         LOG_ERROR(error);
         return 1;
     }
@@ -61,12 +58,12 @@ int main(int argc, char *argv[])
     // get config-parameter for logger
     bool success = false;
     const bool enableDebug = GET_BOOL_CONFIG("DEFAULT", "debug", success);
-    if(success == false) {
+    if (success == false) {
         return 1;
     }
 
     const std::string logPath = GET_STRING_CONFIG("DEFAULT", "log_path", success);
-    if(success == false) {
+    if (success == false) {
         return 1;
     }
 

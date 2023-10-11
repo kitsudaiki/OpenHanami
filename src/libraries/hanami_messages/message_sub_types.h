@@ -1,4 +1,4 @@
- /* Apache License Version 2.0
+/* Apache License Version 2.0
  *
  *      Copyright 2021 Tobias Anker
  *
@@ -15,8 +15,7 @@
  *      limitations under the License.
  */
 
-enum ShioriMessageTypes
-{
+enum ShioriMessageTypes {
     SHIORI_UNDEFINED_MESSAGE_TYPE = 0,
     SHIORI_DATASET_REQUEST_MESSAGE_TYPE = 1,
     SHIORI_RESULT_PUSH_MESSAGE_TYPE = 2,
@@ -26,9 +25,7 @@ enum ShioriMessageTypes
     SHIORI_CLUSTER_CHECKPOINT_PULL_MESSAGE_TYPE = 6,
 };
 
-
-enum AzukiMessageTypes
-{
+enum AzukiMessageTypes {
     AZUKI_UNDEFINED_MESSAGE_TYPE = 0,
     AZUKI_SPEED_SET_MESSAGE_TYPE = 1,
 };

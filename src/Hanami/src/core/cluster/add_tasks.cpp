@@ -23,9 +23,8 @@
 #include "add_tasks.h"
 
 #include <core/cluster/cluster.h>
-#include <core/cluster/states/task_handle_state.h>
 #include <core/cluster/statemachine_init.h>
-
+#include <core/cluster/states/task_handle_state.h>
 #include <hanami_common/statemachine.h>
 
 /**
@@ -47,7 +46,7 @@ addImageTrainTask(Cluster &cluster,
                   const std::string &name,
                   const std::string &userId,
                   const std::string &projectId,
-                  float* inputData,
+                  float *inputData,
                   const uint64_t numberOfInputsPerCycle,
                   const uint64_t numberOfOuputsPerCycle,
                   const uint64_t numberOfCycles)
@@ -96,7 +95,7 @@ addImageRequestTask(Cluster &cluster,
                     const std::string &name,
                     const std::string &userId,
                     const std::string &projectId,
-                    float* inputData,
+                    float *inputData,
                     const uint64_t numberOfInputsPerCycle,
                     const uint64_t numberOfOuputsPerCycle,
                     const uint64_t numberOfCycles)
@@ -108,7 +107,7 @@ addImageRequestTask(Cluster &cluster,
     newTask.userId = userId;
     newTask.projectId = projectId;
     newTask.inputData = inputData;
-    for(uint64_t i = 0; i < numberOfCycles; i++) {
+    for (uint64_t i = 0; i < numberOfCycles; i++) {
         newTask.resultData.push_back(0);
     }
     newTask.type = IMAGE_REQUEST_TASK;
@@ -149,8 +148,8 @@ addTableTrainTask(Cluster &cluster,
                   const std::string &name,
                   const std::string &userId,
                   const std::string &projectId,
-                  float* inputData,
-                  float* outputData,
+                  float *inputData,
+                  float *outputData,
                   const uint64_t numberOfInputs,
                   const uint64_t numberOfOutputs,
                   const uint64_t numberOfCycles)
@@ -200,7 +199,7 @@ addTableRequestTask(Cluster &cluster,
                     const std::string &name,
                     const std::string &userId,
                     const std::string &projectId,
-                    float* inputData,
+                    float *inputData,
                     const uint64_t numberOfInputs,
                     const uint64_t numberOfOutputs,
                     const uint64_t numberOfCycles)
@@ -212,7 +211,7 @@ addTableRequestTask(Cluster &cluster,
     newTask.userId = userId;
     newTask.projectId = projectId;
     newTask.inputData = inputData;
-    for(uint64_t i = 0; i < numberOfCycles; i++) {
+    for (uint64_t i = 0; i < numberOfCycles; i++) {
         newTask.resultData.push_back(0.0f);
     }
     newTask.type = TABLE_REQUEST_TASK;

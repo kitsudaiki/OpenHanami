@@ -28,21 +28,19 @@
 namespace Hanami
 {
 
-class EventQueue
-        : public Hanami::Thread
+class EventQueue : public Hanami::Thread
 {
-
-public:
+   public:
     EventQueue(const std::string &threadName, const bool deleteEventObj);
     ~EventQueue();
 
-protected:
+   protected:
     void run();
 
-private:
+   private:
     bool m_deleteEventObj = false;
 };
 
-}
+}  // namespace Hanami
 
-#endif // EVENTQUEUE_H
+#endif  // EVENTQUEUE_H

@@ -25,18 +25,16 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-
-class AddProjectToUser
-        : public Blossom
+class AddProjectToUser : public Blossom
 {
-public:
+   public:
     AddProjectToUser();
 
-protected:
+   protected:
     bool runTask(BlossomIO &blossomIO,
                  const json &context,
                  BlossomStatus &status,
                  Hanami::ErrorContainer &error);
 };
 
-#endif // HANAMI_ADD_PROJECT_TO_USER_H
+#endif  // HANAMI_ADD_PROJECT_TO_USER_H

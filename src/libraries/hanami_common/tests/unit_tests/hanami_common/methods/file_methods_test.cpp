@@ -19,8 +19,7 @@ namespace Hanami
 /**
  * @brief constructor
  */
-FileMethods_Test::FileMethods_Test()
-    : Hanami::CompareTestHelper("FileMethods_Test")
+FileMethods_Test::FileMethods_Test() : Hanami::CompareTestHelper("FileMethods_Test")
 {
     listFiles_test();
     renameFileOrDir_test();
@@ -190,4 +189,4 @@ FileMethods_Test::deleteFileOrDir_test()
     runSyncProcess(std::string("rm -r " + testDirPath).c_str());
 }
 
-}
+}  // namespace Hanami

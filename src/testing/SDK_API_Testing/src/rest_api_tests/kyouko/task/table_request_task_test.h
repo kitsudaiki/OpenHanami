@@ -25,14 +25,12 @@
 
 #include <common/test_step.h>
 
-class TableRequestTaskTest
-        : public TestStep
+class TableRequestTaskTest : public TestStep
 {
-public:
+   public:
     TableRequestTaskTest(const bool expectSuccess);
 
-    bool runTest(json &inputData,
-                 Hanami::ErrorContainer &error);
+    bool runTest(json &inputData, Hanami::ErrorContainer &error);
 };
 
-#endif // TSUGUMITESTER_TABLE_REQUESTTASKTEST_H
+#endif  // TSUGUMITESTER_TABLE_REQUESTTASKTEST_H

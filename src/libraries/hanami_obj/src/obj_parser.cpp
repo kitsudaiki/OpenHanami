@@ -8,9 +8,9 @@
 
 #include "obj_parser.h"
 
+#include <hanami_common/logger.h>
 #include <hanami_common/methods/string_methods.h>
 #include <hanami_common/methods/vector_methods.h>
-#include <hanami_common/logger.h>
 
 namespace Hanami
 {
@@ -30,9 +30,7 @@ ObjParser::ObjParser() {}
  * @return true, if successful, else false
  */
 bool
-ObjParser::parse(ObjItem &result,
-                 const std::string &inputString,
-                 ErrorContainer &error)
+ObjParser::parse(ObjItem &result, const std::string &inputString, ErrorContainer &error)
 {
     // copy and prepare input string
     std::string preparedString = inputString;
@@ -43,10 +41,9 @@ ObjParser::parse(ObjItem &result,
     Hanami::splitStringByDelimiter(splittedContent, preparedString, '\n');
 
     // iterate of the lines of the input
-    for(uint64_t i = 0; i < splittedContent.size(); i++)
-    {
+    for (uint64_t i = 0; i < splittedContent.size(); i++) {
         // skip empty lines
-        if(splittedContent.at(i).size() == 0) {
+        if (splittedContent.at(i).size() == 0) {
             continue;
         }
 
@@ -58,32 +55,28 @@ ObjParser::parse(ObjItem &result,
         bool state = false;
 
         // handle vertex
-        if(splittedLine.at(0) == "v")
-        {
+        if (splittedLine.at(0) == "v") {
             Vec4 vertex;
             state = parseVertex(vertex, splittedLine);
             result.vertizes.push_back(vertex);
         }
 
         // handle textures
-        if(splittedLine.at(0) == "vt")
-        {
+        if (splittedLine.at(0) == "vt") {
             Vec4 texture;
             state = parseVertex(texture, splittedLine);
             result.textures.push_back(texture);
         }
 
         // handle normals
-        if(splittedLine.at(0) == "vn")
-        {
+        if (splittedLine.at(0) == "vn") {
             Vec4 normale;
             state = parseVertex(normale, splittedLine);
             result.normals.push_back(normale);
         }
 
         // handle point
-        if(splittedLine.at(0) == "p")
-        {
+        if (splittedLine.at(0) == "p") {
             int32_t value = 0;
             state = parseInt(value, splittedLine.at(1));
             state = state && value > 0;
@@ -91,26 +84,22 @@ ObjParser::parse(ObjItem &result,
         }
 
         // handle line
-        if(splittedLine.at(0) == "l")
-        {
+        if (splittedLine.at(0) == "l") {
             std::vector<uint32_t> indizes;
             state = parseValueList(indizes, splittedLine);
             result.lines.push_back(indizes);
         }
 
         // handle face
-        if(splittedLine.at(0) == "f")
-        {
+        if (splittedLine.at(0) == "f") {
             std::vector<Index> indizes;
             state = parseIndexList(indizes, splittedLine);
             result.faces.push_back(indizes);
         }
 
         // check result
-        if(state == false)
-        {
-            error.addMeesage("ERROR while parsing obj-file content in line "
-                             + std::to_string(i));
+        if (state == false) {
+            error.addMeesage("ERROR while parsing obj-file content in line " + std::to_string(i));
             LOG_ERROR(error);
             return false;
         }
@@ -128,11 +117,10 @@ ObjParser::parse(ObjItem &result,
  * @return true, if successful, else false
  */
 bool
-ObjParser::parseVertex(Vec4 &result,
-                       const std::vector<std::string> &lineContent)
+ObjParser::parseVertex(Vec4 &result, const std::vector<std::string> &lineContent)
 {
     // precheck
-    if(lineContent.size() < 3) {
+    if (lineContent.size() < 3) {
         return false;
     }
 
@@ -141,7 +129,7 @@ ObjParser::parseVertex(Vec4 &result,
     // parse coordinates
     ret = ret && parseFloat(result.x, lineContent.at(1));
     ret = ret && parseFloat(result.y, lineContent.at(2));
-    if(lineContent.size() > 3) {
+    if (lineContent.size() > 3) {
         ret = ret && parseFloat(result.z, lineContent.at(3));
     }
 
@@ -161,17 +149,16 @@ ObjParser::parseValueList(std::vector<uint32_t> &result,
                           const std::vector<std::string> &lineContent)
 {
     // precheck
-    if(lineContent.size() < 4) {
+    if (lineContent.size() < 4) {
         return false;
     }
 
     // iterate over the line
-    for(uint32_t i = 1; i < lineContent.size(); i++)
-    {
+    for (uint32_t i = 1; i < lineContent.size(); i++) {
         // converts the parts into an index-item
         int32_t newIndex;
         bool ret = parseInt(newIndex, lineContent.at(i));
-        if(ret == false) {
+        if (ret == false) {
             return false;
         }
 
@@ -190,17 +177,15 @@ ObjParser::parseValueList(std::vector<uint32_t> &result,
  * @return true, if successful, else false
  */
 bool
-ObjParser::parseIndexList(std::vector<Index> &result,
-                          const std::vector<std::string> &lineContent)
+ObjParser::parseIndexList(std::vector<Index> &result, const std::vector<std::string> &lineContent)
 {
     // precheck
-    if(lineContent.size() < 4) {
+    if (lineContent.size() < 4) {
         return false;
     }
 
     // iterate over the line
-    for(uint32_t i = 1; i < lineContent.size(); i++)
-    {
+    for (uint32_t i = 1; i < lineContent.size(); i++) {
         // split index-entry into its parts
         std::vector<std::string> indexList;
         Hanami::splitStringByDelimiter(indexList, lineContent.at(i), '/');
@@ -208,7 +193,7 @@ ObjParser::parseIndexList(std::vector<Index> &result,
         // converts the parts into an index-item
         Index newIndex;
         bool ret = parseIndex(newIndex, indexList);
-        if(ret == false) {
+        if (ret == false) {
             return false;
         }
 
@@ -227,31 +212,27 @@ ObjParser::parseIndexList(std::vector<Index> &result,
  * @return true, if successful, else false
  */
 bool
-ObjParser::parseIndex(Index &result,
-                      const std::vector<std::string> &indexContent)
+ObjParser::parseIndex(Index &result, const std::vector<std::string> &indexContent)
 {
     bool ret = true;
 
     // convert v
-    if(indexContent.size() > 0)
-    {
-        if(indexContent.at(0).size() > 0) {
+    if (indexContent.size() > 0) {
+        if (indexContent.at(0).size() > 0) {
             ret = ret && parseInt(result.v, indexContent.at(0));
         }
     }
 
     // convert vt
-    if(indexContent.size() > 1)
-    {
-        if(indexContent.at(1).size() > 0) {
+    if (indexContent.size() > 1) {
+        if (indexContent.at(1).size() > 0) {
             ret = ret && parseInt(result.vt, indexContent.at(1));
         }
     }
 
     // convert vn
-    if(indexContent.size() > 2)
-    {
-        if(indexContent.at(2).size() > 0) {
+    if (indexContent.size() > 2) {
+        if (indexContent.at(2).size() > 0) {
             ret = ret && parseInt(result.vn, indexContent.at(2));
         }
     }
@@ -268,10 +249,9 @@ ObjParser::parseIndex(Index &result,
  * @return true, if successful, else false
  */
 bool
-ObjParser::parseFloat(float &result,
-                      const std::string &input)
+ObjParser::parseFloat(float &result, const std::string &input)
 {
-    char* err = nullptr;
+    char *err = nullptr;
     result = std::strtof(input.c_str(), &err);
     return std::string(err).size() == 0;
 }
@@ -285,12 +265,11 @@ ObjParser::parseFloat(float &result,
  * @return true, if successful, else false
  */
 bool
-ObjParser::parseInt(int &result,
-                    const std::string &input)
+ObjParser::parseInt(int &result, const std::string &input)
 {
-    char* err = nullptr;
+    char *err = nullptr;
     result = static_cast<int32_t>(std::strtol(input.c_str(), &err, 10));
     return std::string(err).size() == 0;
 }
 
-}
+}  // namespace Hanami

@@ -21,7 +21,6 @@
  */
 
 #include <api/endpoint_processing/items/value_item_map.h>
-
 #include <hanami_common/items/table_item.h>
 
 /**
@@ -32,10 +31,7 @@ ValueItemMap::ValueItemMap() {}
 /**
  * @brief destructor
  */
-ValueItemMap::~ValueItemMap()
-{
-    clearChildMap();
-}
+ValueItemMap::~ValueItemMap() { clearChildMap(); }
 
 /**
  * @brief copy-constructor
@@ -43,14 +39,13 @@ ValueItemMap::~ValueItemMap()
 ValueItemMap::ValueItemMap(const ValueItemMap &other)
 {
     // copy items
-    for(const auto& [id, item] : other.m_valueMap) {
+    for (const auto &[id, item] : other.m_valueMap) {
         m_valueMap.try_emplace(id, item);
     }
 
     // copy child-maps
-    for(const auto& [id, itemMap] : other.m_childMaps)
-    {
-        ValueItemMap* newValue = new ValueItemMap(*itemMap);
+    for (const auto &[id, itemMap] : other.m_childMaps) {
+        ValueItemMap *newValue = new ValueItemMap(*itemMap);
         m_childMaps.try_emplace(id, newValue);
     }
 }
@@ -58,23 +53,23 @@ ValueItemMap::ValueItemMap(const ValueItemMap &other)
 /**
  * @brief assignmet-operator
  */
-ValueItemMap&
+ValueItemMap &
 ValueItemMap::operator=(const ValueItemMap &other)
 {
-    if(this != &other)
-    {
+    if (this != &other) {
         // delet old items
         this->m_valueMap.clear();
 
         // copy items
-        for(const auto& [id, item] : other.m_valueMap) {;
+        for (const auto &[id, item] : other.m_valueMap) {
+            ;
             this->m_valueMap.try_emplace(id, item);
         }
 
         clearChildMap();
 
         // copy child-maps
-        for(const auto& [id, itemMap] : other.m_childMaps) {
+        for (const auto &[id, itemMap] : other.m_childMaps) {
             this->m_childMaps.try_emplace(id, new ValueItemMap(*itemMap));
         }
     }
@@ -92,9 +87,7 @@ ValueItemMap::operator=(const ValueItemMap &other)
  * @return true, if new pair was inserted, false, if already exist and force-flag was false
  */
 bool
-ValueItemMap::insert(const std::string &key,
-                     const json &value,
-                     bool force)
+ValueItemMap::insert(const std::string &key, const json &value, bool force)
 {
     ValueItem valueItem;
     valueItem.item = value;
@@ -111,18 +104,14 @@ ValueItemMap::insert(const std::string &key,
  * @return true, if new pair was inserted, false, if already exist and force-flag was false
  */
 bool
-ValueItemMap::insert(const std::string &key,
-                     ValueItem &value,
-                     bool force)
+ValueItemMap::insert(const std::string &key, ValueItem &value, bool force)
 {
     const auto it = m_valueMap.find(key);
-    if(it != m_valueMap.end()
-            && force == false)
-    {
+    if (it != m_valueMap.end() && force == false) {
         return false;
     }
 
-    if(it != m_valueMap.end()) {
+    if (it != m_valueMap.end()) {
         it->second = value;
     } else {
         auto ret = m_valueMap.try_emplace(key, value);
@@ -142,18 +131,14 @@ ValueItemMap::insert(const std::string &key,
  * @return true, if new pair was inserted, false, if already exist and force-flag was false
  */
 bool
-ValueItemMap::insert(const std::string &key,
-                     ValueItemMap* value,
-                     bool force)
+ValueItemMap::insert(const std::string &key, ValueItemMap *value, bool force)
 {
     const auto it = m_childMaps.find(key);
-    if(it != m_childMaps.end()
-            && force == false)
-    {
+    if (it != m_childMaps.end() && force == false) {
         return false;
     }
 
-    if(it != m_childMaps.end()) {
+    if (it != m_childMaps.end()) {
         it->second = value;
     } else {
         auto ret = m_childMaps.try_emplace(key, value);
@@ -173,11 +158,11 @@ ValueItemMap::insert(const std::string &key,
 bool
 ValueItemMap::contains(const std::string &key)
 {
-    if(m_valueMap.find(key) != m_valueMap.end()) {
+    if (m_valueMap.find(key) != m_valueMap.end()) {
         return true;
     }
 
-    if(m_childMaps.find(key) != m_childMaps.end()) {
+    if (m_childMaps.find(key) != m_childMaps.end()) {
         return true;
     }
 
@@ -195,15 +180,13 @@ bool
 ValueItemMap::remove(const std::string &key)
 {
     const auto it = m_valueMap.find(key);
-    if(m_valueMap.find(key) != m_valueMap.end())
-    {
+    if (m_valueMap.find(key) != m_valueMap.end()) {
         m_valueMap.erase(it);
         return true;
     }
 
     const auto childIt = m_childMaps.find(key);
-    if(childIt != m_childMaps.end())
-    {
+    if (childIt != m_childMaps.end()) {
         m_childMaps.erase(childIt);
         return true;
     }
@@ -222,7 +205,7 @@ std::string
 ValueItemMap::getValueAsString(const std::string &key)
 {
     const auto it = m_valueMap.find(key);
-    if(it != m_valueMap.end()) {
+    if (it != m_valueMap.end()) {
         return it->second.item;
     }
 
@@ -240,7 +223,7 @@ json
 ValueItemMap::get(const std::string &key)
 {
     const auto it = m_valueMap.find(key);
-    if(it != m_valueMap.end()) {
+    if (it != m_valueMap.end()) {
         return it->second.item;
     }
 
@@ -258,7 +241,7 @@ ValueItem
 ValueItemMap::getValueItem(const std::string &key)
 {
     auto it = m_valueMap.find(key);
-    if(it != m_valueMap.end()) {
+    if (it != m_valueMap.end()) {
         return it->second;
     }
 
@@ -290,7 +273,7 @@ ValueItemMap::toString()
     table.addColumn("value");
 
     // fill table
-    for(const auto& [id, item] : m_valueMap) {
+    for (const auto &[id, item] : m_valueMap) {
         table.addRow(std::vector<std::string>{id, item.item});
     }
 
@@ -304,7 +287,7 @@ void
 ValueItemMap::clearChildMap()
 {
     // clear old child map
-    for(auto & [id, itemMap] : m_childMaps) {
+    for (auto &[id, itemMap] : m_childMaps) {
         delete itemMap;
     }
 

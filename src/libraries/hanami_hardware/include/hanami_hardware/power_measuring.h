@@ -23,26 +23,25 @@
 #ifndef HANAMI_POWER_MEASURING_H
 #define HANAMI_POWER_MEASURING_H
 
-#include <mutex>
-
+#include <hanami_common/logger.h>
+#include <hanami_common/threading/thread.h>
 #include <hanami_hardware/value_container.h>
 
-#include <hanami_common/threading/thread.h>
-#include <hanami_common/logger.h>
+#include <mutex>
 
-namespace Hanami {
+namespace Hanami
+{
 struct RequestMessage;
 }
 
 class ValueContainer;
 
-class PowerMeasuring
-        : public Hanami::Thread
+class PowerMeasuring : public Hanami::Thread
 {
-public:
+   public:
     static PowerMeasuring* getInstance()
     {
-        if(instance == nullptr) {
+        if (instance == nullptr) {
             instance = new PowerMeasuring();
         }
         return instance;
@@ -51,14 +50,14 @@ public:
 
     json getJson();
 
-protected:
+   protected:
     void run();
 
-private:
+   private:
     PowerMeasuring();
     static PowerMeasuring* instance;
 
     ValueContainer m_valueContainer;
 };
 
-#endif // HANAMI_POWER_MEASURING_H
+#endif  // HANAMI_POWER_MEASURING_H

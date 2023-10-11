@@ -23,12 +23,12 @@
 #ifndef HANAMI_HARDWARE_CPUTHREAD_H
 #define HANAMI_HARDWARE_CPUTHREAD_H
 
-#include <string>
-#include <iostream>
-#include <vector>
-
-#include <hanami_cpu/rapl.h>
 #include <hanami_common/logger.h>
+#include <hanami_cpu/rapl.h>
+
+#include <iostream>
+#include <string>
+#include <vector>
 
 namespace Hanami
 {
@@ -36,7 +36,7 @@ class Host;
 
 class CpuThread
 {
-public:
+   public:
     CpuThread(const uint32_t threadId);
     ~CpuThread();
 
@@ -56,10 +56,10 @@ public:
     const std::string toJsonString();
     json toJson();
 
-private:
+   private:
     Rapl m_rapl;
 };
 
-}
+}  // namespace Hanami
 
-#endif // HANAMI_HARDWARE_CPUTHREAD_H
+#endif  // HANAMI_HARDWARE_CPUTHREAD_H

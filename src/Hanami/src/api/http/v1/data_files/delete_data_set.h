@@ -25,18 +25,16 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-
-class DeleteDataSet
-        : public Blossom
+class DeleteDataSet : public Blossom
 {
-public:
+   public:
     DeleteDataSet();
 
-protected:
+   protected:
     bool runTask(BlossomIO &blossomIO,
                  const json &context,
                  BlossomStatus &status,
                  Hanami::ErrorContainer &error);
 };
 
-#endif // HANAMI_DELETE_DATA_SET_H
+#endif  // HANAMI_DELETE_DATA_SET_H

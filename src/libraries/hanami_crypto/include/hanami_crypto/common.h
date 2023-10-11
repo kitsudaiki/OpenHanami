@@ -32,24 +32,18 @@ struct DataBuffer;
 //--------------------------------------------------------------------------------------------------
 // HEX
 //--------------------------------------------------------------------------------------------------
-void hexEncode(std::string &result,
-               const void* data,
-               const uint64_t dataSize);
+void hexEncode(std::string &result, const void *data, const uint64_t dataSize);
 
 //--------------------------------------------------------------------------------------------------
 // BASE64
 //--------------------------------------------------------------------------------------------------
-void encodeBase64(std::string &output,
-                  const void* data,
-                  const uint64_t dataSize);
-bool decodeBase64(DataBuffer &result,
-                  const std::string &input);
-bool decodeBase64(std::string &result,
-                  const std::string &input);
+void encodeBase64(std::string &output, const void *data, const uint64_t dataSize);
+bool decodeBase64(DataBuffer &result, const std::string &input);
+bool decodeBase64(std::string &result, const std::string &input);
 
 bool base64ToBase64Url(std::string &base64);
 bool base64UrlToBase64(std::string &base64Url);
 
-}
+}  // namespace Hanami
 
-#endif // CRYPTO_COMMON_H
+#endif  // CRYPTO_COMMON_H

@@ -35,16 +35,11 @@ bool createUser(std::string &result,
                 const bool isAdmin,
                 Hanami::ErrorContainer &error);
 
-bool getUser(std::string &result,
-             const std::string &userId,
-             Hanami::ErrorContainer &error);
+bool getUser(std::string &result, const std::string &userId, Hanami::ErrorContainer &error);
 
-bool listUser(std::string &result,
-              Hanami::ErrorContainer &error);
+bool listUser(std::string &result, Hanami::ErrorContainer &error);
 
-bool deleteUser(std::string &result,
-                const std::string &userId,
-                Hanami::ErrorContainer &error);
+bool deleteUser(std::string &result, const std::string &userId, Hanami::ErrorContainer &error);
 
 bool addProjectToUser(std::string &result,
                       const std::string &userId,
@@ -58,13 +53,12 @@ bool removeProjectFromUser(std::string &result,
                            const std::string &projectId,
                            Hanami::ErrorContainer &error);
 
-bool listProjectsOfUser(std::string &result,
-                        Hanami::ErrorContainer &error);
+bool listProjectsOfUser(std::string &result, Hanami::ErrorContainer &error);
 
 bool switchProject(std::string &result,
                    const std::string &projectId,
                    Hanami::ErrorContainer &error);
 
-} // namespace Hanami
+}  // namespace Hanami
 
-#endif // HANAMISDK_USER_H
+#endif  // HANAMISDK_USER_H

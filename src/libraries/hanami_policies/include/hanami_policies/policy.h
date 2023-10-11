@@ -23,18 +23,17 @@
 #ifndef POLICY_H
 #define POLICY_H
 
-#include <string>
-#include <map>
-#include <vector>
-
 #include <hanami_common/logger.h>
+
+#include <map>
+#include <string>
+#include <vector>
 
 namespace Hanami
 {
 class Policy_Test;
 
-enum HttpRequestType
-{
+enum HttpRequestType {
     UNKNOWN_HTTP_TYPE = 0,
     DELETE_TYPE = 1,
     GET_TYPE = 2,
@@ -43,8 +42,7 @@ enum HttpRequestType
     PUT_TYPE = 5,
 };
 
-struct PolicyEntry
-{
+struct PolicyEntry {
     std::vector<std::string> getRules;
     std::vector<std::string> postRules;
     std::vector<std::string> putRules;
@@ -53,10 +51,10 @@ struct PolicyEntry
 
 class Policy
 {
-public:
-    static Policy* getInstance()
+   public:
+    static Policy *getInstance()
     {
-        if(instance == nullptr) {
+        if (instance == nullptr) {
             instance = new Policy();
         }
         return instance;
@@ -69,21 +67,18 @@ public:
                                 const HttpRequestType type,
                                 const std::string &role);
 
-private:
+   private:
     Policy();
-    static Policy* instance;
+    static Policy *instance;
 
     std::map<std::string, PolicyEntry> m_policyRules;
 
-    bool checkEntry(const PolicyEntry &entry,
-                    const HttpRequestType type,
-                    const std::string &role);
-    bool checkRuleList(const std::vector<std::string> &rules,
-                       const std::string &compare);
+    bool checkEntry(const PolicyEntry &entry, const HttpRequestType type, const std::string &role);
+    bool checkRuleList(const std::vector<std::string> &rules, const std::string &compare);
 
     friend Policy_Test;
 };
 
-}
+}  // namespace Hanami
 
-#endif // POLICY_H
+#endif  // POLICY_H

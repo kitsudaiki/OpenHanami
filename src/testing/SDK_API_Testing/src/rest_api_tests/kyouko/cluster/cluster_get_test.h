@@ -25,18 +25,15 @@
 
 #include <common/test_step.h>
 
-class ClusterGetTest
-        : public TestStep
+class ClusterGetTest : public TestStep
 {
-public:
-    ClusterGetTest(const bool expectSuccess,
-                   const std::string &nameOverride = "");
+   public:
+    ClusterGetTest(const bool expectSuccess, const std::string &nameOverride = "");
 
-    bool runTest(json &inputData,
-                 Hanami::ErrorContainer &error);
+    bool runTest(json &inputData, Hanami::ErrorContainer &error);
 
-private:
+   private:
     std::string m_uuid = "";
 };
 
-#endif // TSUGUMITESTER_CLUSTERGETTEST_H
+#endif  // TSUGUMITESTER_CLUSTERGETTEST_H

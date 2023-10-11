@@ -27,8 +27,7 @@
 namespace Hanami
 {
 
-ArgParser_Test::ArgParser_Test()
-    : Hanami::CompareTestHelper("ArgParser_Test")
+ArgParser_Test::ArgParser_Test() : Hanami::CompareTestHelper("ArgParser_Test")
 {
     getArgument_test();
     convertValue_test();
@@ -57,9 +56,7 @@ ArgParser_Test::getArgument_test()
     bool isNullptr = false;
     ErrorContainer error;
 
-    parser.registerInteger("asdf", 'a')
-            .setHelpText("this is an example")
-            .setRequired();
+    parser.registerInteger("asdf", 'a').setHelpText("this is an example").setRequired();
 
     isNullptr = parser.getArgument("xyz") == nullptr;
     TEST_EQUAL(isNullptr, true);
@@ -180,22 +177,13 @@ ArgParser_Test::parse_test()
     parser.registerInteger("integer", 'i');
     parser.registerFloat("float", 'f');
     parser.registerBoolean("bool", 'b');
-    parser.registerString("first_arg")
-            .setHelpText("first argument")
-            .setRequired()
-            .setWithoutFlag();
+    parser.registerString("first_arg").setHelpText("first argument").setRequired().setWithoutFlag();
     parser.registerInteger("secondArg")
-            .setHelpText("second argument")
-            .setRequired()
-            .setWithoutFlag();
-    parser.registerFloat("thirdArg")
-            .setHelpText("third argument")
-            .setRequired()
-            .setWithoutFlag();
-    parser.registerBoolean("lastArg")
-            .setHelpText("last argument")
-            .setRequired()
-            .setWithoutFlag();
+        .setHelpText("second argument")
+        .setRequired()
+        .setWithoutFlag();
+    parser.registerFloat("thirdArg").setHelpText("third argument").setRequired().setWithoutFlag();
+    parser.registerBoolean("lastArg").setHelpText("last argument").setRequired().setWithoutFlag();
 
     TEST_EQUAL(parser.parse(argc, argv, error), true);
 
@@ -207,12 +195,10 @@ ArgParser_Test::parse_test()
     // negative test: set a value without flag to a false type
     argv[12] = "asdf";
     TEST_EQUAL(parser.parse(argc, argv, error), false);
-     argv[12] = "42";
+    argv[12] = "42";
 
     // negative test: register a required value, which is not given in the arguments
-    parser.registerBoolean("fail")
-            .setHelpText("this is a boolean")
-            .setRequired();
+    parser.registerBoolean("fail").setHelpText("this is a boolean").setRequired();
     TEST_EQUAL(parser.parse(argc, argv, error), false);
 }
 
@@ -360,7 +346,7 @@ ArgParser_Test::getBoolValue_test()
  * @param parser
  */
 void
-ArgParser_Test::prepareTest(ArgParser &parser)
+ArgParser_Test::prepareTest(ArgParser& parser)
 {
     ErrorContainer error;
 
@@ -386,24 +372,15 @@ ArgParser_Test::prepareTest(ArgParser &parser)
     parser.registerInteger("integer", 'i');
     parser.registerFloat("float", 'f');
     parser.registerBoolean("bool", 'b');
-    parser.registerString("first_arg")
-            .setHelpText("first argument")
-            .setRequired()
-            .setWithoutFlag();
+    parser.registerString("first_arg").setHelpText("first argument").setRequired().setWithoutFlag();
     parser.registerInteger("secondArg")
-            .setHelpText("second argument")
-            .setRequired()
-            .setWithoutFlag();
-    parser.registerFloat("thirdArg")
-            .setHelpText("third argument")
-            .setRequired()
-            .setWithoutFlag();
-    parser.registerBoolean("lastArg")
-            .setHelpText("last argument")
-            .setRequired()
-            .setWithoutFlag();
+        .setHelpText("second argument")
+        .setRequired()
+        .setWithoutFlag();
+    parser.registerFloat("thirdArg").setHelpText("third argument").setRequired().setWithoutFlag();
+    parser.registerBoolean("lastArg").setHelpText("last argument").setRequired().setWithoutFlag();
 
     assert(parser.parse(argc, argv, error));
 }
 
-}
+}  // namespace Hanami

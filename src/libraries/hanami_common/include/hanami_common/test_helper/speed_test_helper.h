@@ -23,15 +23,15 @@
 #ifndef SPEED_TEST_HELPER_H
 #define SPEED_TEST_HELPER_H
 
-#include <string>
-#include <iostream>
-#include <chrono>
-#include <map>
-#include <vector>
-#include <iomanip>
+#include <hanami_common/items/table_item.h>
 #include <math.h>
 
-#include <hanami_common/items/table_item.h>
+#include <chrono>
+#include <iomanip>
+#include <iostream>
+#include <map>
+#include <string>
+#include <vector>
 
 namespace Hanami
 {
@@ -45,8 +45,7 @@ typedef std::chrono::high_resolution_clock chronoClock;
 
 class SpeedTestHelper
 {
-
-public:
+   public:
     enum TIMETYPES {
         SECONDS,
         MILLI_SECONDS,
@@ -54,8 +53,7 @@ public:
         NANO_SECONDS,
     };
 
-    struct TimerSlot
-    {
+    struct TimerSlot {
         std::string name = "";
         std::string unitName = "";
         std::vector<double> values;
@@ -63,25 +61,21 @@ public:
         std::chrono::high_resolution_clock::time_point start;
         std::chrono::high_resolution_clock::time_point end;
 
-        void startTimer() {
-            start = std::chrono::system_clock::now();
-        }
-        void stopTimer() {
-            end = std::chrono::system_clock::now();
-        }
+        void startTimer() { start = std::chrono::system_clock::now(); }
+        void stopTimer() { end = std::chrono::system_clock::now(); }
 
         double getDuration(const TIMETYPES type)
         {
-            if(type == SECONDS) {
+            if (type == SECONDS) {
                 return std::chrono::duration_cast<chronoSec>(end - start).count();
             }
-            if(type == MILLI_SECONDS) {
+            if (type == MILLI_SECONDS) {
                 return std::chrono::duration_cast<chronoMilliSec>(end - start).count();
             }
-            if(type == MICRO_SECONDS) {
+            if (type == MICRO_SECONDS) {
                 return std::chrono::duration_cast<chronoMicroSec>(end - start).count();
             }
-            if(type == NANO_SECONDS) {
+            if (type == NANO_SECONDS) {
                 return std::chrono::duration_cast<chronoNanoSec>(end - start).count();
             }
 
@@ -94,12 +88,12 @@ public:
     void addToResult(const TimerSlot timeSlot);
     void printResult();
 
-private:
+   private:
     std::map<std::string, TimerSlot> m_timeslots;
 
     TableItem m_result;
 };
 
-}
+}  // namespace Hanami
 
-#endif // SPEED_TEST_HELPER_H
+#endif  // SPEED_TEST_HELPER_H

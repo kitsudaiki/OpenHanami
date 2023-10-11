@@ -13,8 +13,7 @@
 namespace Hanami
 {
 
-ThreadHandler_Test::ThreadHandler_Test()
-    : Hanami::CompareTestHelper("ThreadHandler_Test")
+ThreadHandler_Test::ThreadHandler_Test() : Hanami::CompareTestHelper("ThreadHandler_Test")
 {
     all_test();
 }
@@ -36,7 +35,7 @@ ThreadHandler_Test::all_test()
 
     keys = ThreadHandler::getInstance()->getRegisteredNames();
     TEST_EQUAL(keys.size(), 1);
-    if(keys.size() < 1) {
+    if (keys.size() < 1) {
         return;
     }
 
@@ -63,15 +62,14 @@ ThreadHandler_Test::all_test()
 //==================================================================================================
 // DummyThread for testing
 //==================================================================================================
-DummyThread::DummyThread()
-    : Hanami::Thread("DummyThread")
-{}
+DummyThread::DummyThread() : Hanami::Thread("DummyThread") {}
 
-void DummyThread::run()
+void
+DummyThread::run()
 {
-    while(m_abort == false) {
+    while (m_abort == false) {
         sleepThread(1000000);
     }
 }
 
-}
+}  // namespace Hanami

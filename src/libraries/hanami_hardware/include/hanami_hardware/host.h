@@ -23,12 +23,12 @@
 #ifndef HANAMI_HARDWARE_HOST_H
 #define HANAMI_HARDWARE_HOST_H
 
-#include <string>
-#include <iostream>
-#include <vector>
+#include <hanami_common/logger.h>
 #include <unistd.h>
 
-#include <hanami_common/logger.h>
+#include <iostream>
+#include <string>
+#include <vector>
 
 namespace Hanami
 {
@@ -36,10 +36,10 @@ class CpuPackage;
 
 class Host
 {
-public:
+   public:
     static Host* getInstance()
     {
-        if(instance == nullptr) {
+        if (instance == nullptr) {
             instance = new Host();
         }
         return instance;
@@ -47,7 +47,7 @@ public:
 
     ~Host();
 
-    bool initHost(ErrorContainer &error);
+    bool initHost(ErrorContainer& error);
 
     std::string hostName;
     bool hasHyperThrading;
@@ -56,19 +56,19 @@ public:
     CpuPackage* getPackage(const uint32_t packageId) const;
     CpuPackage* addPackage(const uint32_t packageId);
 
-    double getTotalTemperature(ErrorContainer &error);
+    double getTotalTemperature(ErrorContainer& error);
 
     const std::string toJsonString() const;
     json toJson() const;
 
-private:
+   private:
     Host();
     static Host* instance;
 
-    bool readHostName(ErrorContainer &error);
-    bool initCpuCoresAndThreads(ErrorContainer &error);
+    bool readHostName(ErrorContainer& error);
+    bool initCpuCoresAndThreads(ErrorContainer& error);
 };
 
-}
+}  // namespace Hanami
 
-#endif // HANAMI_HARDWARE_HOST_H
+#endif  // HANAMI_HARDWARE_HOST_H

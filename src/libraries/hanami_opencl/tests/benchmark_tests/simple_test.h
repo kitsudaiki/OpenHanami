@@ -23,21 +23,20 @@
 #ifndef TEST_RUN_H
 #define TEST_RUN_H
 
-#include <iostream>
-#include <vector>
-#include <string>
-#include <chrono>
-
 #include <hanami_common/test_helper/speed_test_helper.h>
+
+#include <chrono>
+#include <iostream>
+#include <string>
+#include <vector>
 
 namespace Hanami
 {
 class GpuHandler;
 
-class SimpleTest
-        : public Hanami::SpeedTestHelper
+class SimpleTest : public Hanami::SpeedTestHelper
 {
-public:
+   public:
     SimpleTest();
 
     void simple_test();
@@ -49,13 +48,13 @@ public:
     TimerSlot m_copyToHostTimeSlot;
     TimerSlot m_cleanupTimeSlot;
 
-private:
+   private:
     uint32_t m_id = 0xFFFFFFFF;
     Hanami::GpuHandler* m_oclHandler = nullptr;
 
     void chooseDevice();
 };
 
-}
+}  // namespace Hanami
 
-#endif // TEST_RUN_H
+#endif  // TEST_RUN_H

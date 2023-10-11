@@ -30,8 +30,7 @@ namespace Hanami
  *
  * @param maxBarWidth maximum number of character in weidth for displaying the progress-bar
  */
-ProgressBar::ProgressBar(const uint32_t maxBarWidth)
-    : m_maxBarWidth(maxBarWidth) {}
+ProgressBar::ProgressBar(const uint32_t maxBarWidth) : m_maxBarWidth(maxBarWidth) {}
 
 /**
  * @brief update the output of the progress-bar with a new progress-state
@@ -47,8 +46,7 @@ ProgressBar::updateProgress(const float newProgress)
     m_progress = newProgress;
 
     // check if 1.0 or more are reached and update result for finish
-    if(m_progress >= 1.0f)
-    {
+    if (m_progress >= 1.0f) {
         m_progress = 1.0f;
         result = true;
     }
@@ -56,11 +54,10 @@ ProgressBar::updateProgress(const float newProgress)
     // print progress
     std::cout << "[";
     const uint32_t pos = m_maxBarWidth * m_progress;
-    for(uint32_t i = 0; i < m_maxBarWidth; i++)
-    {
-        if(i < pos) {
+    for (uint32_t i = 0; i < m_maxBarWidth; i++) {
+        if (i < pos) {
             std::cout << "=";
-        } else if(i == pos) {
+        } else if (i == pos) {
             std::cout << ">";
         } else {
             std::cout << " ";
@@ -70,11 +67,11 @@ ProgressBar::updateProgress(const float newProgress)
     std::cout.flush();
 
     // in case that the progress is complete, then finish the line to avoid that it disappears
-    if(m_progress >= 1.0f) {
-        std::cout<<std::endl;
+    if (m_progress >= 1.0f) {
+        std::cout << std::endl;
     }
 
     return result;
 }
 
-}
+}  // namespace Hanami

@@ -20,12 +20,13 @@
  *      limitations under the License.
  */
 
-#include <iostream>
-
 #include <cluster_parsestring_test.h>
 #include <hanami_common/logger.h>
 
-int main()
+#include <iostream>
+
+int
+main()
 {
     Hanami::initConsoleLogger(true);
     Hanami::Cluster_ParseString_Test();

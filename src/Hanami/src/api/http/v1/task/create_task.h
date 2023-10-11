@@ -23,30 +23,28 @@
 #ifndef HANAMI_CREATE_IMAGE_TRAINTASK_H
 #define HANAMI_CREATE_IMAGE_TRAINTASK_H
 
-#include <common.h>
 #include <api/endpoint_processing/blossom.h>
-
+#include <common.h>
 
 class Cluster;
 
-class CreateTask
-        : public Blossom
+class CreateTask : public Blossom
 {
-public:
+   public:
     CreateTask();
 
-protected:
+   protected:
     bool runTask(BlossomIO &blossomIO,
                  const json &context,
                  BlossomStatus &status,
                  Hanami::ErrorContainer &error);
 
-private:
+   private:
     bool imageTask(std::string &taskUuid,
                    const std::string &name,
                    const std::string &taskType,
                    const UserContext &userContext,
-                   Cluster* cluster,
+                   Cluster *cluster,
                    json &dataSetInfo,
                    BlossomStatus &status,
                    Hanami::ErrorContainer &error);
@@ -55,10 +53,10 @@ private:
                    const std::string &name,
                    const std::string &taskType,
                    const UserContext &userContext,
-                   Cluster* cluster,
+                   Cluster *cluster,
                    json &dataSetInfo,
                    BlossomStatus &status,
                    Hanami::ErrorContainer &error);
 };
 
-#endif // HANAMI_CREATE_IMAGE_TRAINTASK_H
+#endif  // HANAMI_CREATE_IMAGE_TRAINTASK_H

@@ -42,18 +42,17 @@ Barrier::Barrier(const uint32_t numberOfThreads)
 void
 Barrier::triggerBarrier()
 {
-    while(m_spin_lock.test_and_set(std::memory_order_acquire))  { asm(""); }
+    while (m_spin_lock.test_and_set(std::memory_order_acquire)) {
+        asm("");
+    }
 
     m_counter--;
-    if(m_counter == 0)
-    {
+    if (m_counter == 0) {
         m_counter = m_numberOfThreads;
         m_spin_lock.clear(std::memory_order_release);
         usleep(1);
         m_cond.notify_all();
-    }
-    else
-    {
+    } else {
         std::unique_lock<std::mutex> lock(m_mutex);
         m_spin_lock.clear(std::memory_order_release);
         m_cond.wait(lock);
@@ -72,4 +71,4 @@ Barrier::releaseAll()
     m_counter = m_numberOfThreads;
 }
 
-}
+}  // namespace Hanami

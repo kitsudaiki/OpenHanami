@@ -22,9 +22,9 @@
 
 #include "file_send.h"
 
-#include <hanami_common/methods/string_methods.h>
 #include <hanami_common/files/text_file.h>
 #include <hanami_common/logger.h>
+#include <hanami_common/methods/string_methods.h>
 #include <hanami_config/config_handler.h>
 
 /**
@@ -37,27 +37,69 @@
 const std::string
 getResponseType(const std::string &ext)
 {
-    if(beast::iequals(ext, ".htm"))  { return "text/html"; }
-    if(beast::iequals(ext, ".html")) { return "text/html"; }
-    if(beast::iequals(ext, ".php"))  { return "text/html"; }
-    if(beast::iequals(ext, ".css"))  { return "text/css"; }
-    if(beast::iequals(ext, ".txt"))  { return "text/plain"; }
-    if(beast::iequals(ext, ".js"))   { return "application/javascript"; }
-    if(beast::iequals(ext, ".json")) { return "application/json"; }
-    if(beast::iequals(ext, ".xml"))  { return "application/xml"; }
-    if(beast::iequals(ext, ".swf"))  { return "application/x-shockwave-flash"; }
-    if(beast::iequals(ext, ".flv"))  { return "video/x-flv"; }
-    if(beast::iequals(ext, ".png"))  { return "image/png"; }
-    if(beast::iequals(ext, ".jpe"))  { return "image/jpeg"; }
-    if(beast::iequals(ext, ".jpeg")) { return "image/jpeg"; }
-    if(beast::iequals(ext, ".jpg"))  { return "image/jpeg"; }
-    if(beast::iequals(ext, ".gif"))  { return "image/gif"; }
-    if(beast::iequals(ext, ".bmp"))  { return "image/bmp"; }
-    if(beast::iequals(ext, ".ico"))  { return "image/vnd.microsoft.icon"; }
-    if(beast::iequals(ext, ".tiff")) { return "image/tiff"; }
-    if(beast::iequals(ext, ".tif"))  { return "image/tiff"; }
-    if(beast::iequals(ext, ".svg"))  { return "image/svg+xml"; }
-    if(beast::iequals(ext, ".svgz")) { return "image/svg+xml"; }
+    if (beast::iequals(ext, ".htm")) {
+        return "text/html";
+    }
+    if (beast::iequals(ext, ".html")) {
+        return "text/html";
+    }
+    if (beast::iequals(ext, ".php")) {
+        return "text/html";
+    }
+    if (beast::iequals(ext, ".css")) {
+        return "text/css";
+    }
+    if (beast::iequals(ext, ".txt")) {
+        return "text/plain";
+    }
+    if (beast::iequals(ext, ".js")) {
+        return "application/javascript";
+    }
+    if (beast::iequals(ext, ".json")) {
+        return "application/json";
+    }
+    if (beast::iequals(ext, ".xml")) {
+        return "application/xml";
+    }
+    if (beast::iequals(ext, ".swf")) {
+        return "application/x-shockwave-flash";
+    }
+    if (beast::iequals(ext, ".flv")) {
+        return "video/x-flv";
+    }
+    if (beast::iequals(ext, ".png")) {
+        return "image/png";
+    }
+    if (beast::iequals(ext, ".jpe")) {
+        return "image/jpeg";
+    }
+    if (beast::iequals(ext, ".jpeg")) {
+        return "image/jpeg";
+    }
+    if (beast::iequals(ext, ".jpg")) {
+        return "image/jpeg";
+    }
+    if (beast::iequals(ext, ".gif")) {
+        return "image/gif";
+    }
+    if (beast::iequals(ext, ".bmp")) {
+        return "image/bmp";
+    }
+    if (beast::iequals(ext, ".ico")) {
+        return "image/vnd.microsoft.icon";
+    }
+    if (beast::iequals(ext, ".tiff")) {
+        return "image/tiff";
+    }
+    if (beast::iequals(ext, ".tif")) {
+        return "image/tiff";
+    }
+    if (beast::iequals(ext, ".svg")) {
+        return "image/svg+xml";
+    }
+    if (beast::iequals(ext, ".svgz")) {
+        return "image/svg+xml";
+    }
 
     return "application/text";
 }
@@ -75,13 +117,9 @@ sendFileFromLocalLocation(http::response<http::dynamic_body> &response,
 {
     // create file-path
     std::string path = dir;
-    if(relativePath == "/"
-            || relativePath == "")
-    {
+    if (relativePath == "/" || relativePath == "") {
         path += "/index.html";
-    }
-    else
-    {
+    } else {
         path += relativePath;
     }
 
@@ -94,8 +132,7 @@ sendFileFromLocalLocation(http::response<http::dynamic_body> &response,
 
     // read file and send content back
     std::string fileContent = "";
-    if(Hanami::readFile(fileContent, path, error))
-    {
+    if (Hanami::readFile(fileContent, path, error)) {
         beast::ostream(response.body()) << fileContent;
         return true;
     }

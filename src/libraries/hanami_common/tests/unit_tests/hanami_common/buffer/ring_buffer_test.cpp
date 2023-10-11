@@ -13,8 +13,7 @@
 namespace Hanami
 {
 
-RingBuffer_Test::RingBuffer_Test()
-    : Hanami::CompareTestHelper("RingBuffer_Test")
+RingBuffer_Test::RingBuffer_Test() : Hanami::CompareTestHelper("RingBuffer_Test")
 {
     addData_RingBuffer_test();
     addObject_RingBuffer_test();
@@ -36,9 +35,9 @@ RingBuffer_Test::addData_RingBuffer_test()
     void* data = nullptr;
 
     // negative test
-    data = alignedMalloc(4096, ringBuffer.totalBufferSize+4096);
-    TEST_EQUAL(addData_RingBuffer(ringBuffer, data, ringBuffer.totalBufferSize+4096), false);
-    alignedFree(data, ringBuffer.totalBufferSize+4096);
+    data = alignedMalloc(4096, ringBuffer.totalBufferSize + 4096);
+    TEST_EQUAL(addData_RingBuffer(ringBuffer, data, ringBuffer.totalBufferSize + 4096), false);
+    alignedFree(data, ringBuffer.totalBufferSize + 4096);
 
     // normal test
     data = alignedMalloc(4096, 4096);
@@ -102,7 +101,7 @@ RingBuffer_Test::getSpaceToEnd_RingBuffer_test()
 
     // second test
     addData_RingBuffer(ringBuffer, data, 4096);
-    TEST_EQUAL(getSpaceToEnd_RingBuffer(ringBuffer), ringBuffer.totalBufferSize-4096);
+    TEST_EQUAL(getSpaceToEnd_RingBuffer(ringBuffer), ringBuffer.totalBufferSize - 4096);
 
     alignedFree(data, 4096);
 }
@@ -175,4 +174,4 @@ RingBuffer_Test::getObject_RingBuffer_test()
     TEST_EQUAL(*returnVal, testValue);
 }
 
-}
+}  // namespace Hanami

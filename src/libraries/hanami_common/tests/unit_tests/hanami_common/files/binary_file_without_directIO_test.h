@@ -10,18 +10,18 @@
 #define BINARY_FILE_WITHOUT_DIRECTIO_TEST_H
 
 #include <hanami_common/test_helper/compare_test_helper.h>
+
 #include <filesystem>
 
 namespace Hanami
 {
 
-class BinaryFile_withoutDirectIO_Test
-        : public Hanami::CompareTestHelper
+class BinaryFile_withoutDirectIO_Test : public Hanami::CompareTestHelper
 {
-public:
+   public:
     BinaryFile_withoutDirectIO_Test();
 
-private:
+   private:
     void initTest();
     void closeFile_test();
     void updateFileSize_test();
@@ -36,6 +36,6 @@ private:
     void deleteFile();
 };
 
-}
+}  // namespace Hanami
 
-#endif // BINARY_FILE_WITHOUT_DIRECTIO_TEST_H
+#endif  // BINARY_FILE_WITHOUT_DIRECTIO_TEST_H

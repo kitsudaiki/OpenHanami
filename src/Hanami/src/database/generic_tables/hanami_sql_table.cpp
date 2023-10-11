@@ -22,10 +22,8 @@
 
 #include "hanami_sql_table.h"
 
-#include <hanami_database/sql_database.h>
-
 #include <hanami_common/methods/string_methods.h>
-
+#include <hanami_database/sql_database.h>
 #include <uuid/uuid.h>
 
 /**
@@ -33,8 +31,7 @@
  *
  * @param db pointer to database
  */
-HanamiSqlTable::HanamiSqlTable(Hanami::SqlDatabase* db)
-    : SqlTable(db)
+HanamiSqlTable::HanamiSqlTable(Hanami::SqlDatabase *db) : SqlTable(db)
 {
     DbHeaderEntry uuid;
     uuid.name = "uuid";
@@ -78,13 +75,10 @@ HanamiSqlTable::~HanamiSqlTable() {}
  * @return true, if successful, else false
  */
 bool
-HanamiSqlTable::add(json &values,
-                    const UserContext &userContext,
-                    Hanami::ErrorContainer &error)
+HanamiSqlTable::add(json &values, const UserContext &userContext, Hanami::ErrorContainer &error)
 {
     // generate new uuid if the is no predefined
-    if(values.contains("uuid") == false)
-    {
+    if (values.contains("uuid") == false) {
         // create uuid
         char uuid[UUID_STR_LEN];
         uuid_t binaryUuid;
@@ -196,12 +190,11 @@ void
 HanamiSqlTable::fillCondition(std::vector<RequestCondition> &conditions,
                               const UserContext &userContext)
 {
-    if(userContext.isAdmin) {
+    if (userContext.isAdmin) {
         return;
     }
 
-    if(userContext.isProjectAdmin)
-    {
+    if (userContext.isProjectAdmin) {
         conditions.emplace_back("project_id", userContext.projectId);
         return;
     }

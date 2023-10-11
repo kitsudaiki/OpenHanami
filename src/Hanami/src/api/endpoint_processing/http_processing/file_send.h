@@ -23,16 +23,15 @@
 #ifndef TORIIGATEWAY_FILE_SEND_H
 #define TORIIGATEWAY_FILE_SEND_H
 
-#include <boost/beast/http.hpp>
-#include <boost/beast/core.hpp>
-
-#include <string>
-#include <filesystem>
-
 #include <hanami_common/logger.h>
 
-namespace beast = boost::beast;         // from <boost/beast.hpp>
-namespace http = beast::http;           // from <boost/beast/http.hpp>
+#include <boost/beast/core.hpp>
+#include <boost/beast/http.hpp>
+#include <filesystem>
+#include <string>
+
+namespace beast = boost::beast;  // from <boost/beast.hpp>
+namespace http = beast::http;    // from <boost/beast/http.hpp>
 
 const std::string getResponseType(const std::string &ext);
 bool sendFileFromLocalLocation(http::response<http::dynamic_body> &response,
@@ -43,4 +42,4 @@ bool processClientRequest(http::response<http::dynamic_body> &response,
                           const std::string &path,
                           Hanami::ErrorContainer &error);
 
-#endif // TORIIGATEWAY_FILE_SEND_H
+#endif  // TORIIGATEWAY_FILE_SEND_H

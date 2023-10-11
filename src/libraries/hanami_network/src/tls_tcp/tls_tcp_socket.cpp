@@ -6,9 +6,9 @@
  *  @copyright MIT License
  */
 
-#include <tls_tcp/tls_tcp_socket.h>
-#include <hanami_common/threading/cleanup_thread.h>
 #include <hanami_common/logger.h>
+#include <hanami_common/threading/cleanup_thread.h>
+#include <tls_tcp/tls_tcp_socket.h>
 
 namespace Hanami
 {
@@ -23,7 +23,7 @@ namespace Hanami
  * @param keyFile path to key-file
  * @param caFile path to ca-file
  */
-TlsTcpSocket::TlsTcpSocket(TcpSocket&& socket,
+TlsTcpSocket::TlsTcpSocket(TcpSocket &&socket,
                            const std::string &certFile,
                            const std::string &keyFile,
                            const std::string &caFile)
@@ -42,10 +42,7 @@ TlsTcpSocket::TlsTcpSocket() {}
 /**
  * @brief destructor
  */
-TlsTcpSocket::~TlsTcpSocket()
-{
-    cleanupOpenssl();
-}
+TlsTcpSocket::~TlsTcpSocket() { cleanupOpenssl(); }
 
 /**
  * @brief get file-descriptor
@@ -68,14 +65,13 @@ TlsTcpSocket::getSocketFd() const
 bool
 TlsTcpSocket::initClientSide(ErrorContainer &error)
 {
-    if(socket.socketFd == 0)
-    {
-        if(socket.initClientSide(error) == false) {
+    if (socket.socketFd == 0) {
+        if (socket.initClientSide(error) == false) {
             return false;
         }
     }
 
-    if(initOpenssl(error) == false) {
+    if (initOpenssl(error) == false) {
         return false;
     }
 
@@ -101,8 +97,8 @@ TlsTcpSocket::initOpenssl(ErrorContainer &error)
     SSL_library_init();
 
     // set ssl-type
-    const SSL_METHOD* method;
-    if(isClientSide()) {
+    const SSL_METHOD *method;
+    if (isClientSide()) {
         method = TLS_client_method();
     } else {
         method = TLS_server_method();
@@ -110,20 +106,17 @@ TlsTcpSocket::initOpenssl(ErrorContainer &error)
 
     // init ssl-context
     m_ctx = SSL_CTX_new(method);
-    if(m_ctx == nullptr)
-    {
-        error.addMeesage( "Failed to create ssl-context object");
+    if (m_ctx == nullptr) {
+        error.addMeesage("Failed to create ssl-context object");
         return false;
     }
     SSL_CTX_set_options(m_ctx, SSL_OP_SINGLE_DH_USE);
 
     // set certificate
     result = SSL_CTX_use_certificate_file(m_ctx, certFile.c_str(), SSL_FILETYPE_PEM);
-    if(result <= 0)
-    {
+    if (result <= 0) {
         error.addMeesage("Failed to load certificate file for ssl-encrytion. File path: \""
-                         + certFile
-                         + "\"");
+                         + certFile + "\"");
         error.addSolution("check if file \"" + certFile+ "\" exist and "
                            "contains a valid certificate");
         return false;
@@ -131,21 +124,18 @@ TlsTcpSocket::initOpenssl(ErrorContainer &error)
 
     // set key
     result = SSL_CTX_use_PrivateKey_file(m_ctx, keyFile.c_str(), SSL_FILETYPE_PEM);
-    if(result <= 0)
-    {
+    if (result <= 0) {
         error.addMeesage("Failed to load key file for ssl-encrytion. File path: " + keyFile);
-        error.addSolution("check if file \"" + keyFile+ "\" exist and contains a valid key");
+        error.addSolution("check if file \"" + keyFile + "\" exist and contains a valid key");
         return false;
     }
 
     // set CA-file if exist
-    if(caFile != "")
-    {
+    if (caFile != "") {
         result = SSL_CTX_load_verify_locations(m_ctx, caFile.c_str(), nullptr);
-        if(result <= 0)
-        {
+        if (result <= 0) {
             error.addMeesage("Failed to load CA file for ssl-encrytion. File path: " + caFile);
-            error.addSolution("check if file \"" + caFile+ "\" exist and contains a valid CA");
+            error.addSolution("check if file \"" + caFile + "\" exist and contains a valid CA");
             return false;
         }
 
@@ -155,16 +145,14 @@ TlsTcpSocket::initOpenssl(ErrorContainer &error)
 
     // init ssl-cennection
     m_ssl = SSL_new(m_ctx);
-    if (m_ssl == nullptr)
-    {
+    if (m_ssl == nullptr) {
         error.addMeesage("Failed to ini ssl");
         return false;
     }
     SSL_set_fd(m_ssl, socket.socketFd);
 
     // enable certificate validation, if ca-file was set
-    if(caFile != "")
-    {
+    if (caFile != "") {
         // SSL_VERIFY_PEER -> check cert if exist
         // SSL_VERIFY_FAIL_IF_NO_PEER_CERT -> server requires cert
         // SSL_VERIFY_CLIENT_ONCE -> check only on initial handshake
@@ -174,26 +162,22 @@ TlsTcpSocket::initOpenssl(ErrorContainer &error)
     }
 
     // process tls-handshake
-    if(isClientSide())
-    {
+    if (isClientSide()) {
         // try to connect to server
         result = SSL_connect(m_ssl);
-        if(result <= 0)
-        {
+        if (result <= 0) {
             error.addMeesage("Failed to perform ssl-handshake (client-side)");
             error.addSolution("Maybe the server is only plain TCP-server or doesn't support TLS");
             return false;
         }
-    }
-    else
-    {
+    } else {
         // try to accept incoming ssl-connection
         int result = SSL_accept(m_ssl);
-        if(result <= 0)
-        {
+        if (result <= 0) {
             error.addMeesage("Failed to perform ssl-handshake (client-side)");
-            error.addSolution("Maybe the incoming client is only plain TCP-client "
-                              "or doesn't support TLS");
+            error.addSolution(
+                "Maybe the incoming client is only plain TCP-client "
+                "or doesn't support TLS");
             return false;
         }
     }
@@ -218,10 +202,7 @@ TlsTcpSocket::isClientSide() const
  * @return number of read bytes
  */
 long
-TlsTcpSocket::recvData(int,
-                       void* bufferPosition,
-                       const size_t bufferSize,
-                       int)
+TlsTcpSocket::recvData(int, void *bufferPosition, const size_t bufferSize, int)
 {
     return SSL_read(m_ssl, bufferPosition, static_cast<int>(bufferSize));
 }
@@ -232,10 +213,7 @@ TlsTcpSocket::recvData(int,
  * @return number of written bytes
  */
 ssize_t
-TlsTcpSocket::sendData(int,
-                       const void* bufferPosition,
-                       const size_t bufferSize,
-                       int)
+TlsTcpSocket::sendData(int, const void *bufferPosition, const size_t bufferSize, int)
 {
     return SSL_write(m_ssl, bufferPosition, static_cast<int>(bufferSize));
 }
@@ -246,13 +224,12 @@ TlsTcpSocket::sendData(int,
 bool
 TlsTcpSocket::cleanupOpenssl()
 {
-    if(m_ssl != nullptr)
-    {
+    if (m_ssl != nullptr) {
         SSL_shutdown(m_ssl);
         SSL_free(m_ssl);
     }
 
-    if(m_ctx == nullptr) {
+    if (m_ctx == nullptr) {
         SSL_CTX_free(m_ctx);
     }
 
@@ -262,4 +239,4 @@ TlsTcpSocket::cleanupOpenssl()
     return true;
 }
 
-}
+}  // namespace Hanami

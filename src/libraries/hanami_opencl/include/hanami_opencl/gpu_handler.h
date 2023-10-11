@@ -23,12 +23,12 @@
 #ifndef GPU_HANDLER_H
 #define GPU_HANDLER_H
 
+#include <hanami_common/logger.h>
+
 #include <iostream>
-#include <vector>
 #include <map>
 #include <string>
-
-#include <hanami_common/logger.h>
+#include <vector>
 
 #define __CL_ENABLE_EXCEPTIONS
 #include <CL/cl2.hpp>
@@ -39,19 +39,19 @@ class GpuInterface;
 
 class GpuHandler
 {
-public:
+   public:
     GpuHandler();
     bool initDevice(ErrorContainer &error);
 
-    std::vector<GpuInterface*> m_interfaces;
+    std::vector<GpuInterface *> m_interfaces;
 
-private:
+   private:
     bool m_isInit = false;
     std::vector<cl::Platform> m_platform;
 
     void collectDevices();
 };
 
-}
+}  // namespace Hanami
 
-#endif // GPU_HANDLER_H
+#endif  // GPU_HANDLER_H

@@ -25,18 +25,13 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-
-class PowerConsumption
-        : public Blossom
+class PowerConsumption : public Blossom
 {
-public:
+   public:
     PowerConsumption();
 
-protected:
-    bool runTask(BlossomIO &blossomIO,
-                 const json &,
-                 BlossomStatus &,
-                 Hanami::ErrorContainer &);
+   protected:
+    bool runTask(BlossomIO &blossomIO, const json &, BlossomStatus &, Hanami::ErrorContainer &);
 };
 
-#endif // AZUKIHEART_POWER_CONSUMPTION_H
+#endif  // AZUKIHEART_POWER_CONSUMPTION_H

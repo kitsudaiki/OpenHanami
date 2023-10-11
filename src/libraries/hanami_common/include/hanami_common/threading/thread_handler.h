@@ -24,10 +24,10 @@
 #define THREAD_HANDLER_CPP
 
 #include <map>
-#include <string>
-#include <vector>
 #include <mutex>
+#include <string>
 #include <thread>
+#include <vector>
 
 namespace Hanami
 {
@@ -36,20 +36,20 @@ class Event;
 
 class ThreadHandler
 {
-public:
+   public:
     static ThreadHandler* getInstance();
 
     const std::vector<std::string> getRegisteredNames();
-    const std::vector<Thread*> getThreads(const std::string &threadName);
+    const std::vector<Thread*> getThreads(const std::string& threadName);
     uint64_t getNewId();
 
-private:
+   private:
     friend Hanami::Thread;
 
     ThreadHandler();
 
     void registerThread(Thread* thread);
-    bool unregisterThread(const std::string &threadName, const uint64_t threadId);
+    bool unregisterThread(const std::string& threadName, const uint64_t threadId);
 
     std::map<std::string, std::map<uint64_t, Thread*>> m_allThreads;
     std::mutex m_mutex;
@@ -58,6 +58,6 @@ private:
     static ThreadHandler* m_instance;
 };
 
-}
+}  // namespace Hanami
 
-#endif // THREAD_HANDLER_CPP
+#endif  // THREAD_HANDLER_CPP

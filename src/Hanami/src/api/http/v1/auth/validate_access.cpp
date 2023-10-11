@@ -25,7 +25,6 @@
 #include <hanami_common/methods/string_methods.h>
 #include <hanami_policies/policy.h>
 #include <hanami_root.h>
-
 #include <jwt-cpp/jwt.h>
 // #include <jwt-cpp/traits/nlohmann-json/defaults.h>
 
@@ -35,9 +34,11 @@ using Hanami::HttpRequestType;
  * @brief constructor
  */
 ValidateAccess::ValidateAccess()
-    : Blossom("Checks if a JWT-access-token of a user is valid or not "
-              "and optional check if the user is allowed by its roles "
-              "and the policy to access a specific endpoint.", false)
+    : Blossom(
+        "Checks if a JWT-access-token of a user is valid or not "
+        "and optional check if the user is allowed by its roles "
+        "and the policy to access a specific endpoint.",
+        false)
 {
     errorCodes.push_back(UNAUTHORIZED_RTYPE);
 
@@ -46,49 +47,49 @@ ValidateAccess::ValidateAccess()
     //----------------------------------------------------------------------------------------------
 
     registerInputField("token", SAKURA_STRING_TYPE)
-            .setComment("User specific JWT-access-token.")
-            .setRegex("[a-zA-Z_.\\-0-9]*");
+        .setComment("User specific JWT-access-token.")
+        .setRegex("[a-zA-Z_.\\-0-9]*");
 
     registerInputField("component", SAKURA_STRING_TYPE)
-            .setComment("Requested component-name of the request. If this is not set, then only "
-                        "the token in itself will be validated.")
-            .setLimit(4, 256)
-            .setRegex("[a-zA-Z][a-zA-Z_0-9]*")
-            .setRequired(false);
+        .setComment(
+            "Requested component-name of the request. If this is not set, then only "
+            "the token in itself will be validated.")
+        .setLimit(4, 256)
+        .setRegex("[a-zA-Z][a-zA-Z_0-9]*")
+        .setRequired(false);
 
     registerInputField("endpoint", SAKURA_STRING_TYPE)
-            .setComment("Requesed endpoint within the component.")
-            .setLimit(4, 256)
-            .setRegex("[a-zA-Z][a-zA-Z_/0-9]*")
-            .setRequired(false);
+        .setComment("Requesed endpoint within the component.")
+        .setLimit(4, 256)
+        .setRegex("[a-zA-Z][a-zA-Z_/0-9]*")
+        .setRequired(false);
 
     registerInputField("http_type", SAKURA_INT_TYPE)
-            .setComment("Type of the HTTP-request as enum "
-                        "(DELETE = 1, GET = 2, HEAD = 3, POST = 4, PUT = 5).")
-            .setLimit(1, 5)
-            .setRequired(false);
+        .setComment(
+            "Type of the HTTP-request as enum "
+            "(DELETE = 1, GET = 2, HEAD = 3, POST = 4, PUT = 5).")
+        .setLimit(1, 5)
+        .setRequired(false);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("id", SAKURA_STRING_TYPE)
-            .setComment("ID of the user.");
+    registerOutputField("id", SAKURA_STRING_TYPE).setComment("ID of the user.");
 
-    registerOutputField("name", SAKURA_STRING_TYPE)
-            .setComment("Name of the user.");
+    registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the user.");
 
     registerOutputField("is_admin", SAKURA_BOOL_TYPE)
-            .setComment("Show if the user is an admin or not.");
+        .setComment("Show if the user is an admin or not.");
 
     registerOutputField("project_id", SAKURA_STRING_TYPE)
-            .setComment("Selected project of the user.");
+        .setComment("Selected project of the user.");
 
     registerOutputField("role", SAKURA_STRING_TYPE)
-            .setComment("Role of the user within the project.");
+        .setComment("Role of the user within the project.");
 
     registerOutputField("is_project_admin", SAKURA_BOOL_TYPE)
-            .setComment("True, if the user is admin within the selected project.");
+        .setComment("True, if the user is admin within the selected project.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -108,37 +109,33 @@ ValidateAccess::runTask(BlossomIO &blossomIO,
     const std::string token = blossomIO.input["token"];
 
     std::string component = "";
-    if(blossomIO.input.contains("component")) {
+    if (blossomIO.input.contains("component")) {
         blossomIO.input["component"];
     }
 
     std::string endpoint = "";
-    if(blossomIO.input.contains("endpoint")) {
+    if (blossomIO.input.contains("endpoint")) {
         blossomIO.input["endpoint"];
     }
 
-    try
-    {
+    try {
         auto decodedToken = jwt::decode(token);
-        auto verifier = jwt::verify()
-            .allow_algorithm(jwt::algorithm::hs256{(const char*)HanamiRoot::tokenKey.data()});
+        auto verifier = jwt::verify().allow_algorithm(
+            jwt::algorithm::hs256{(const char *)HanamiRoot::tokenKey.data()});
 
         verifier.verify(decodedToken);
 
         // copy data of token into the output
-        for(const auto& payload : decodedToken.get_payload_json())
-        {
+        for (const auto &payload : decodedToken.get_payload_json()) {
             try {
                 blossomIO.output = json::parse(payload.second.to_str());
-            } catch(const json::parse_error& ex) {
+            } catch (const json::parse_error &ex) {
                 error.addMeesage("Error while parsing decoded token");
                 error.addMeesage("json-parser error: " + std::string(ex.what()));
                 return false;
             }
         }
-    }
-    catch (const std::exception& ex)
-    {
+    } catch (const std::exception &ex) {
         error.addMeesage("Failed to validate JWT-Token with error: " + std::string(ex.what()));
         status.errorMessage = "Failed to validate JWT-Token";
         status.statusCode = UNAUTHORIZED_RTYPE;
@@ -147,10 +144,8 @@ ValidateAccess::runTask(BlossomIO &blossomIO,
 
     // allow skipping policy-check
     // TODO: find better solution to make a difference, if policy should be checked or not
-    if(component != "")
-    {
-        if(blossomIO.input.contains("http_type") == false)
-        {
+    if (component != "") {
+        if (blossomIO.input.contains("http_type") == false) {
             error.addMeesage("http_type is missing in token-request");
             status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
             return false;
@@ -161,8 +156,7 @@ ValidateAccess::runTask(BlossomIO &blossomIO,
 
         // check policy
         const std::string role = blossomIO.output["role"];
-        if(Policy::getInstance()->checkUserAgainstPolicy(endpoint, httpType, role) == false)
-        {
+        if (Policy::getInstance()->checkUserAgainstPolicy(endpoint, httpType, role) == false) {
             status.errorMessage = "Access denied by policy";
             status.statusCode = UNAUTHORIZED_RTYPE;
             error.addMeesage(status.errorMessage);
@@ -179,4 +173,3 @@ ValidateAccess::runTask(BlossomIO &blossomIO,
 
     return true;
 }
-

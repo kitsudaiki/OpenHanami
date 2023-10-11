@@ -13,8 +13,7 @@
 namespace Hanami
 {
 
-State_Test::State_Test()
-    : Hanami::CompareTestHelper("State_Test")
+State_Test::State_Test() : Hanami::CompareTestHelper("State_Test")
 {
     addTransition_test();
     next_test();
@@ -87,4 +86,4 @@ State_Test::addChildState_test()
     TEST_EQUAL(childState.parent->id, SOURCE_STATE);
 }
 
-}
+}  // namespace Hanami

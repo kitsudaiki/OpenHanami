@@ -20,13 +20,12 @@
  *      limitations under the License.
  */
 
-#include <cluster_parsing/cluster_parser_interface.h>
 #include <cluster_parser.h>
-
+#include <cluster_parsing/cluster_parser_interface.h>
 #include <hanami_common/methods/string_methods.h>
 
-# define YY_DECL \
-    Hanami::ClusterParser::symbol_type clusterlex (Hanami::ClusterParserInterface& driver)
+#define YY_DECL \
+    Hanami::ClusterParser::symbol_type clusterlex(Hanami::ClusterParserInterface& driver)
 YY_DECL;
 
 namespace Hanami
@@ -56,7 +55,7 @@ ClusterParserInterface::ClusterParserInterface(const bool traceParsing)
 ClusterParserInterface*
 ClusterParserInterface::getInstance()
 {
-    if(m_instance == nullptr) {
+    if (m_instance == nullptr) {
         m_instance = new ClusterParserInterface();
     }
 
@@ -78,8 +77,8 @@ ClusterParserInterface::~ClusterParserInterface() {}
  */
 bool
 ClusterParserInterface::parse(ClusterMeta* result,
-                              const std::string &inputString,
-                              ErrorContainer &error)
+                              const std::string& inputString,
+                              ErrorContainer& error)
 {
     output = result;
 
@@ -98,9 +97,7 @@ ClusterParserInterface::parse(ClusterMeta* result,
     output = nullptr;
 
     // handle negative result
-    if(parserResult != 0
-            || m_errorMessage.size() > 0)
-    {
+    if (parserResult != 0 || m_errorMessage.size() > 0) {
         error.addMeesage(m_errorMessage);
         return false;
     }
@@ -116,19 +113,17 @@ ClusterParserInterface::parse(ClusterMeta* result,
  * @return cleared string
  */
 const std::string
-ClusterParserInterface::removeQuotes(const std::string &input)
+ClusterParserInterface::removeQuotes(const std::string& input)
 {
     // precheck
-    if(input.length() == 0) {
+    if (input.length() == 0) {
         return input;
     }
 
     // clear
-    if(input[0] == '\"'
-            && input[input.length()-1] == '\"')
-    {
+    if (input[0] == '\"' && input[input.length() - 1] == '\"') {
         std::string result = "";
-        for(uint32_t i = 1; i < input.length()-1; i++) {
+        for (uint32_t i = 1; i < input.length() - 1; i++) {
             result += input[i];
         }
 
@@ -147,10 +142,9 @@ ClusterParserInterface::removeQuotes(const std::string &input)
  * @param message error-specific message from the parser
  */
 void
-ClusterParserInterface::error(const Hanami::location& location,
-                              const std::string& message)
+ClusterParserInterface::error(const Hanami::location& location, const std::string& message)
 {
-    if(m_errorMessage.size() > 0) {
+    if (m_errorMessage.size() > 0) {
         return;
     }
 
@@ -163,21 +157,18 @@ ClusterParserInterface::error(const Hanami::location& location,
     splitStringByDelimiter(splittedContent, m_inputString, '\n');
 
     // build error-message
-    m_errorMessage =  "ERROR while parsing cluster-definition string \n";
+    m_errorMessage = "ERROR while parsing cluster-definition string \n";
     m_errorMessage += "parser-message: " + message + " \n";
     m_errorMessage += "line-number: " + std::to_string(linenumber) + " \n";
 
-    if(splittedContent[linenumber - 1].size() > errorStart - 1 + errorLength)
-    {
-        m_errorMessage.append("position in line: " +  std::to_string(location.begin.column) + "\n");
+    if (splittedContent[linenumber - 1].size() > errorStart - 1 + errorLength) {
+        m_errorMessage.append("position in line: " + std::to_string(location.begin.column) + "\n");
         m_errorMessage.append("broken part in string: \""
                               + splittedContent[linenumber - 1].substr(errorStart - 1, errorLength)
                               + "\"");
-    }
-    else
-    {
+    } else {
         m_errorMessage.append("position in line: UNKNOWN POSITION (maybe a string was not closed)");
     }
 }
 
-}
+}  // namespace Hanami

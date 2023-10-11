@@ -25,14 +25,12 @@ ObjCreator::ObjCreator() {}
  * @return resulting string
  */
 bool
-ObjCreator::create(std::string &convertedString,
-                   const ObjItem &input)
+ObjCreator::create(std::string &convertedString, const ObjItem &input)
 {
     convertedString = "";
 
     // convert vertizes
-    for(uint32_t i = 0; i < input.vertizes.size(); i++)
-    {
+    for (uint32_t i = 0; i < input.vertizes.size(); i++) {
         convertedString += "v ";
         convertedString += std::to_string(input.vertizes.at(i).x) + " ";
         convertedString += std::to_string(input.vertizes.at(i).y) + " ";
@@ -40,16 +38,14 @@ ObjCreator::create(std::string &convertedString,
     }
 
     // convert textures
-    for(uint32_t i = 0; i < input.textures.size(); i++)
-    {
+    for (uint32_t i = 0; i < input.textures.size(); i++) {
         convertedString += "vt ";
         convertedString += std::to_string(input.textures.at(i).x) + " ";
         convertedString += std::to_string(input.textures.at(i).y) + "\n";
     }
 
     // convert normals
-    for(uint32_t i = 0; i < input.normals.size(); i++)
-    {
+    for (uint32_t i = 0; i < input.normals.size(); i++) {
         convertedString += "vn ";
         convertedString += std::to_string(input.normals.at(i).x) + " ";
         convertedString += std::to_string(input.normals.at(i).y) + " ";
@@ -57,17 +53,14 @@ ObjCreator::create(std::string &convertedString,
     }
 
     // convert points
-    for(uint32_t i = 0; i < input.points.size(); i++)
-    {
+    for (uint32_t i = 0; i < input.points.size(); i++) {
         convertedString += "p " + std::to_string(input.points.at(i)) + "\n";
     }
 
     // convert lines
-    for(uint32_t i = 0; i < input.lines.size(); i++)
-    {
+    for (uint32_t i = 0; i < input.lines.size(); i++) {
         convertedString += "l";
-        for(uint32_t j = 0; j < input.lines.at(i).size(); j++)
-        {
+        for (uint32_t j = 0; j < input.lines.at(i).size(); j++) {
             const uint32_t id = input.lines.at(i).at(j);
             convertedString += " " + std::to_string(id);
         }
@@ -75,25 +68,22 @@ ObjCreator::create(std::string &convertedString,
     }
 
     // convert faces
-    for(uint32_t i = 0; i < input.faces.size(); i++)
-    {
+    for (uint32_t i = 0; i < input.faces.size(); i++) {
         convertedString += "f";
-        for(uint32_t j = 0; j < input.faces.at(i).size(); j++)
-        {
+        for (uint32_t j = 0; j < input.faces.at(i).size(); j++) {
             // v
             const int32_t v = input.faces.at(i).at(j).v;
             convertedString += " " + std::to_string(v) + "/";
 
             // vt
             const int32_t vt = input.faces.at(i).at(j).vt;
-            if(vt > 0) {
+            if (vt > 0) {
                 convertedString += std::to_string(vt);
             }
 
             // vn
             const int32_t vn = input.faces.at(i).at(j).vn;
-            if(vn > 0)
-            {
+            if (vn > 0) {
                 convertedString += "/";
                 convertedString += std::to_string(vn);
             }
@@ -104,4 +94,4 @@ ObjCreator::create(std::string &convertedString,
     return true;
 }
 
-}
+}  // namespace Hanami

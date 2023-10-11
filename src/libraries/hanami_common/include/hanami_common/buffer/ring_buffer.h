@@ -22,19 +22,19 @@
 #ifndef RING_BUFFER_H
 #define RING_BUFFER_H
 
-#include <cinttypes>
-#include <string.h>
 #include <hanami_common/buffer/data_buffer.h>
+#include <string.h>
+
+#include <cinttypes>
 
 namespace Hanami
 {
 
 // if this buffer is too big, it doesn't fit into the cpu-cache anymore and this makes the buffer
 // much slower
-#define DEFAULT_RING_BUFFER_SIZE 2*1024*1024
+#define DEFAULT_RING_BUFFER_SIZE 2 * 1024 * 1024
 
-struct RingBuffer
-{
+struct RingBuffer {
     uint8_t* data = nullptr;
     uint64_t totalBufferSize = DEFAULT_RING_BUFFER_SIZE;
     uint64_t readPosition = 0;
@@ -58,7 +58,6 @@ struct RingBuffer
     }
 };
 
-
 /**
  * @brief get position to append new data
  *
@@ -67,7 +66,7 @@ struct RingBuffer
  * @return position within the ring-buffer in bytes
  */
 inline uint64_t
-getWritePosition_RingBuffer(RingBuffer &ringBuffer)
+getWritePosition_RingBuffer(RingBuffer& ringBuffer)
 {
     return (ringBuffer.readPosition + ringBuffer.usedSize) % ringBuffer.totalBufferSize;
 }
@@ -81,12 +80,12 @@ getWritePosition_RingBuffer(RingBuffer &ringBuffer)
  * @return number of bytes until next blocker (end of array or read-position)
  */
 inline uint64_t
-getSpaceToEnd_RingBuffer(RingBuffer &ringBuffer)
+getSpaceToEnd_RingBuffer(RingBuffer& ringBuffer)
 {
     const uint64_t writePosition = getWritePosition_RingBuffer(ringBuffer);
 
     uint64_t spaceToEnd = ringBuffer.totalBufferSize - writePosition;
-    if(writePosition < ringBuffer.readPosition) {
+    if (writePosition < ringBuffer.readPosition) {
         spaceToEnd = ringBuffer.readPosition - writePosition;
     }
 
@@ -103,23 +102,18 @@ getSpaceToEnd_RingBuffer(RingBuffer &ringBuffer)
  * @return false, if data are bigger than the available space inside the buffer, else true
  */
 inline bool
-addData_RingBuffer(RingBuffer &ringBuffer,
-                   const void* data,
-                   const uint64_t dataSize)
+addData_RingBuffer(RingBuffer& ringBuffer, const void* data, const uint64_t dataSize)
 {
-    if(dataSize + ringBuffer.usedSize > ringBuffer.totalBufferSize) {
+    if (dataSize + ringBuffer.usedSize > ringBuffer.totalBufferSize) {
         return false;
     }
 
     const uint64_t writePosition = getWritePosition_RingBuffer(ringBuffer);
     const uint64_t spaceToEnd = getSpaceToEnd_RingBuffer(ringBuffer);
 
-    if(dataSize <= spaceToEnd)
-    {
+    if (dataSize <= spaceToEnd) {
         memcpy(&ringBuffer.data[writePosition], data, dataSize);
-    }
-    else
-    {
+    } else {
         const uint64_t remaining = dataSize - spaceToEnd;
         const uint8_t* dataPos = static_cast<const uint8_t*>(data);
 
@@ -142,7 +136,7 @@ addData_RingBuffer(RingBuffer &ringBuffer,
  */
 template <typename T>
 inline bool
-addObject_RingBuffer(RingBuffer &ringBuffer, T* data)
+addObject_RingBuffer(RingBuffer& ringBuffer, T* data)
 {
     return addData_RingBuffer(ringBuffer, data, sizeof(T));
 }
@@ -157,18 +151,16 @@ addObject_RingBuffer(RingBuffer &ringBuffer, T* data)
  *         block is too big
  */
 inline const uint8_t*
-getDataPointer_RingBuffer(const RingBuffer &ringBuffer,
-                          const uint64_t size)
+getDataPointer_RingBuffer(const RingBuffer& ringBuffer, const uint64_t size)
 {
-    if(ringBuffer.usedSize < size) {
+    if (ringBuffer.usedSize < size) {
         return nullptr;
     }
 
     const uint64_t startPosition = ringBuffer.readPosition % ringBuffer.totalBufferSize;
 
     // check if requested datablock is splitet
-    if(startPosition + size > ringBuffer.totalBufferSize)
-    {
+    if (startPosition + size > ringBuffer.totalBufferSize) {
         // copy the two parts of the requested block into the overflow-buffer
         const uint64_t firstPart = size - ((startPosition + size) % ringBuffer.totalBufferSize);
         memcpy(&ringBuffer.overflowBuffer[0], &ringBuffer.data[startPosition], firstPart);
@@ -186,11 +178,10 @@ getDataPointer_RingBuffer(const RingBuffer &ringBuffer,
  * @param numberOfBytes number of bytes to move forward
  */
 inline void
-moveForward_RingBuffer(RingBuffer &ringBuffer,
-                       const uint64_t numberOfBytes)
+moveForward_RingBuffer(RingBuffer& ringBuffer, const uint64_t numberOfBytes)
 {
-    ringBuffer.readPosition = (ringBuffer.readPosition + numberOfBytes)
-                               % ringBuffer.totalBufferSize;
+    ringBuffer.readPosition
+        = (ringBuffer.readPosition + numberOfBytes) % ringBuffer.totalBufferSize;
     ringBuffer.usedSize -= numberOfBytes;
 }
 
@@ -204,13 +195,13 @@ moveForward_RingBuffer(RingBuffer &ringBuffer,
  */
 template <typename T>
 inline const T*
-getObject_RingBuffer(const RingBuffer &ringBuffer)
+getObject_RingBuffer(const RingBuffer& ringBuffer)
 {
     const void* data = static_cast<const void*>(getDataPointer_RingBuffer(ringBuffer, sizeof(T)));
 
     return static_cast<const T*>(data);
 }
 
-}
+}  // namespace Hanami
 
-#endif // RING_BUFFER_H
+#endif  // RING_BUFFER_H

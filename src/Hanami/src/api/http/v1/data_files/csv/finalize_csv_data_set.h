@@ -23,30 +23,27 @@
 #ifndef HANAMI_CSV_FINALIZE_DATA_SET_H
 #define HANAMI_CSV_FINALIZE_DATA_SET_H
 
-#include <regex>
 #include <api/endpoint_processing/blossom.h>
-
 #include <hanami_common/buffer/data_buffer.h>
 
-class FinalizeCsvDataSet
-        : public Blossom
+#include <regex>
+
+class FinalizeCsvDataSet : public Blossom
 {
-public:
+   public:
     FinalizeCsvDataSet();
 
-protected:
+   protected:
     bool runTask(BlossomIO &blossomIO,
                  const json &context,
                  BlossomStatus &status,
                  Hanami::ErrorContainer &error);
 
-private:
+   private:
     bool convertCsvData(const std::string &filePath,
                         const std::string &name,
                         const Hanami::DataBuffer &inputBuffer);
-    void convertField(float* segmentPos,
-                      const std::string &cell,
-                      const float lastVal);
+    void convertField(float *segmentPos, const std::string &cell, const float lastVal);
 };
 
-#endif // HANAMI_CSV_FINALIZE_DATA_SET_H
+#endif  // HANAMI_CSV_FINALIZE_DATA_SET_H

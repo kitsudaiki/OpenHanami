@@ -22,13 +22,11 @@
 
 #include "get_data_set.h"
 
-#include <hanami_root.h>
 #include <database/data_set_table.h>
-
 #include <hanami_files/data_set_files/data_set_functions.h>
+#include <hanami_root.h>
 
-GetDataSet::GetDataSet()
-    : Blossom("Get information of a specific data-set.")
+GetDataSet::GetDataSet() : Blossom("Get information of a specific data-set.")
 {
     errorCodes.push_back(NOT_FOUND_RTYPE);
 
@@ -37,42 +35,37 @@ GetDataSet::GetDataSet()
     //----------------------------------------------------------------------------------------------
 
     registerInputField("uuid", SAKURA_STRING_TYPE)
-            .setComment("UUID of the data-set set to delete.")
-            .setRegex(UUID_REGEX);
+        .setComment("UUID of the data-set set to delete.")
+        .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid", SAKURA_STRING_TYPE)
-            .setComment("UUID of the data-set.");
+    registerOutputField("uuid", SAKURA_STRING_TYPE).setComment("UUID of the data-set.");
 
-    registerOutputField("name", SAKURA_STRING_TYPE)
-            .setComment("Name of the data-set.");
+    registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the data-set.");
 
     registerOutputField("owner_id", SAKURA_STRING_TYPE)
-            .setComment("ID of the user, who created the data-set.");
+        .setComment("ID of the user, who created the data-set.");
 
     registerOutputField("project_id", SAKURA_STRING_TYPE)
-            .setComment("ID of the project, where the data-set belongs to.");
+        .setComment("ID of the project, where the data-set belongs to.");
 
     registerOutputField("visibility", SAKURA_STRING_TYPE)
-            .setComment("Visibility of the data-set (private, shared, public).");
+        .setComment("Visibility of the data-set (private, shared, public).");
 
     registerOutputField("location", SAKURA_STRING_TYPE)
-            .setComment("Local file-path of the data-set.");
+        .setComment("Local file-path of the data-set.");
 
     registerOutputField("type", SAKURA_STRING_TYPE)
-            .setComment("Type of the new set (csv or mnist)");
+        .setComment("Type of the new set (csv or mnist)");
 
-    registerOutputField("inputs", SAKURA_INT_TYPE)
-            .setComment("Number of inputs.");
+    registerOutputField("inputs", SAKURA_INT_TYPE).setComment("Number of inputs.");
 
-    registerOutputField("outputs", SAKURA_INT_TYPE)
-            .setComment("Number of outputs.");
+    registerOutputField("outputs", SAKURA_INT_TYPE).setComment("Number of outputs.");
 
-    registerOutputField("lines", SAKURA_INT_TYPE)
-            .setComment("Number of lines.");
+    registerOutputField("lines", SAKURA_INT_TYPE).setComment("Number of lines.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -84,23 +77,19 @@ GetDataSet::GetDataSet()
  */
 bool
 GetDataSet::runTask(BlossomIO &blossomIO,
-                      const json &context,
-                      BlossomStatus &status,
-                      Hanami::ErrorContainer &error)
+                    const json &context,
+                    BlossomStatus &status,
+                    Hanami::ErrorContainer &error)
 {
     const std::string dataUuid = blossomIO.input["uuid"];
-    if(DataSetTable::getInstance()->getDateSetInfo(blossomIO.output,
-                                                   dataUuid,
-                                                   context,
-                                                   error) == false)
-    {
+    if (DataSetTable::getInstance()->getDateSetInfo(blossomIO.output, dataUuid, context, error)
+        == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // handle not found
-    if(blossomIO.output.size() == 0)
-    {
+    if (blossomIO.output.size() == 0) {
         status.errorMessage = "Data-set with uuid '" + dataUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);

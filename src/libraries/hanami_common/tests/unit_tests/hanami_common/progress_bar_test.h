@@ -14,16 +14,15 @@
 namespace Hanami
 {
 
-class ProgressBar_Test
-        : public Hanami::CompareTestHelper
+class ProgressBar_Test : public Hanami::CompareTestHelper
 {
-public:
+   public:
     ProgressBar_Test();
 
-private:
+   private:
     void progress_test();
 };
 
-}
+}  // namespace Hanami
 
-#endif // PROGRESSBAR_TEST_H
+#endif  // PROGRESSBAR_TEST_H

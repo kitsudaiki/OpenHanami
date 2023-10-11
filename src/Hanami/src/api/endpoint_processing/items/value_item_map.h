@@ -23,18 +23,17 @@
 #ifndef HANAMI_LANG_VALUE_ITEM_MAP_H
 #define HANAMI_LANG_VALUE_ITEM_MAP_H
 
-#include <string>
-#include <map>
-#include <vector>
-#include <utility>
-
+#include <api/endpoint_processing/blossom.h>
 #include <api/endpoint_processing/items/value_items.h>
 
-#include <api/endpoint_processing/blossom.h>
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
 
 class ValueItemMap
 {
-public:
+   public:
     ValueItemMap();
     ~ValueItemMap();
     ValueItemMap(const ValueItemMap &other);
@@ -43,7 +42,7 @@ public:
     // add and remove
     bool insert(const std::string &key, const json &value, bool force = true);
     bool insert(const std::string &key, ValueItem &value, bool force = true);
-    bool insert(const std::string &key, ValueItemMap* value, bool force = true);
+    bool insert(const std::string &key, ValueItemMap *value, bool force = true);
     bool remove(const std::string &key);
 
     // getter
@@ -56,10 +55,10 @@ public:
 
     // internal value-maps
     std::map<std::string, ValueItem> m_valueMap;
-    std::map<std::string, ValueItemMap*> m_childMaps;
+    std::map<std::string, ValueItemMap *> m_childMaps;
 
-private:
+   private:
     void clearChildMap();
 };
 
-#endif // HANAMI_LANG_VALUE_ITEM_MAP_H
+#endif  // HANAMI_LANG_VALUE_ITEM_MAP_H

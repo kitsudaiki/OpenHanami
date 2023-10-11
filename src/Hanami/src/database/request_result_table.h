@@ -23,16 +23,15 @@
 #ifndef HANAMI_REQUEST_RESULT_TABLE_H
 #define HANAMI_REQUEST_RESULT_TABLE_H
 
-#include <hanami_common/logger.h>
 #include <database/generic_tables/hanami_sql_table.h>
+#include <hanami_common/logger.h>
 
-class RequestResultTable
-        : public HanamiSqlTable
+class RequestResultTable : public HanamiSqlTable
 {
-public:
-    static RequestResultTable* getInstance()
+   public:
+    static RequestResultTable *getInstance()
     {
-        if(instance == nullptr) {
+        if (instance == nullptr) {
             instance = new RequestResultTable();
         }
         return instance;
@@ -55,9 +54,9 @@ public:
                              const UserContext &userContext,
                              Hanami::ErrorContainer &error);
 
-private:
+   private:
     RequestResultTable();
-    static RequestResultTable* instance;
+    static RequestResultTable *instance;
 };
 
-#endif // HANAMI_REQUEST_RESULT_TABLE_H
+#endif  // HANAMI_REQUEST_RESULT_TABLE_H

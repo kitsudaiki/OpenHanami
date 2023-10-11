@@ -20,19 +20,15 @@
  *      limitations under the License.
  */
 
-#include <hanami_hardware/speed_measuring.h>
-
-#include <hanami_hardware/cpu_thread.h>
-
-#include <hanami_hardware/host.h>
 #include <hanami_hardware/cpu_core.h>
 #include <hanami_hardware/cpu_package.h>
 #include <hanami_hardware/cpu_thread.h>
+#include <hanami_hardware/host.h>
+#include <hanami_hardware/speed_measuring.h>
 
 SpeedMeasuring* SpeedMeasuring::instance = nullptr;
 
-SpeedMeasuring::SpeedMeasuring()
-    : Hanami::Thread("SpeedMeasuring") {}
+SpeedMeasuring::SpeedMeasuring() : Hanami::Thread("SpeedMeasuring") {}
 
 SpeedMeasuring::~SpeedMeasuring() {}
 
@@ -56,31 +52,25 @@ SpeedMeasuring::run()
     Hanami::ErrorContainer error;
     Hanami::CpuThread* thread = nullptr;
 
-    while(m_abort == false)
-    {
+    while (m_abort == false) {
         uint64_t currentSpeed = 0;
         uint64_t numberOfValues = 0;
         Hanami::Host* host = Hanami::Host::getInstance();
 
-        for(uint64_t i = 0; i < host->cpuPackages.size(); i++)
-        {
-             for(uint64_t j = 0; j < host->getPackage(i)->cpuCores.size(); j++)
-             {
-                 numberOfValues++;
-                 thread = host->getPackage(i)->cpuCores.at(j)->cpuThreads.at(0);
-                 currentSpeed += thread->getCurrentThreadSpeed();
-             }
+        for (uint64_t i = 0; i < host->cpuPackages.size(); i++) {
+            for (uint64_t j = 0; j < host->getPackage(i)->cpuCores.size(); j++) {
+                numberOfValues++;
+                thread = host->getPackage(i)->cpuCores.at(j)->cpuThreads.at(0);
+                currentSpeed += thread->getCurrentThreadSpeed();
+            }
         }
 
-        if(currentSpeed != 0
-                && numberOfValues != 0)
-        {
-            double curSpeed = static_cast<double>(currentSpeed) / static_cast<double>(numberOfValues);
+        if (currentSpeed != 0 && numberOfValues != 0) {
+            double curSpeed
+                = static_cast<double>(currentSpeed) / static_cast<double>(numberOfValues);
             curSpeed /= 1000.0;  // convert from KHz to MHz
             m_valueContainer.addValue(curSpeed);
-        }
-        else
-        {
+        } else {
             m_valueContainer.addValue(0.0);
         }
 

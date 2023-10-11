@@ -1,13 +1,12 @@
 #include "test_table.h"
 
-#include <hanami_database/sql_table.h>
 #include <hanami_database/sql_database.h>
+#include <hanami_database/sql_table.h>
 
 namespace Hanami
 {
 
-TestTable::TestTable(Hanami::SqlDatabase* db)
-    : SqlTable(db)
+TestTable::TestTable(Hanami::SqlDatabase *db) : SqlTable(db)
 {
     m_tableName = "users";
 
@@ -34,8 +33,7 @@ TestTable::~TestTable() {}
  * @brief addUser
  */
 bool
-TestTable::addUser(json &data,
-                   ErrorContainer &error)
+TestTable::addUser(json &data, ErrorContainer &error)
 {
     return insertToDb(data, error);
 }
@@ -72,9 +70,7 @@ TestTable::getUser(json &resultItem,
  * @brief updateUser
  */
 bool
-TestTable::updateUser(const std::string &userID,
-                      const json &values,
-                      ErrorContainer &error)
+TestTable::updateUser(const std::string &userID, const json &values, ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("name", userID);
@@ -84,7 +80,8 @@ TestTable::updateUser(const std::string &userID,
 /**
  * @brief getNumberOfUsers
  */
-long TestTable::getNumberOfUsers(ErrorContainer &error)
+long
+TestTable::getNumberOfUsers(ErrorContainer &error)
 {
     return getNumberOfRows(error);
 }
@@ -106,12 +103,11 @@ TestTable::getAllUser(TableItem &resultItem,
  * @brief deleteUser
  */
 bool
-TestTable::deleteUser(const std::string &userID,
-                      ErrorContainer &error)
+TestTable::deleteUser(const std::string &userID, ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("name", userID);
     return deleteFromDb(conditions, error);
 }
 
-}
+}  // namespace Hanami

@@ -22,13 +22,11 @@
 
 #include "delete_checkpoint.h"
 
-#include <hanami_root.h>
 #include <database/checkpoint_table.h>
-
 #include <hanami_common/methods/file_methods.h>
+#include <hanami_root.h>
 
-DeleteCheckpoint::DeleteCheckpoint()
-    : Blossom("Delete a result-set from shiori.")
+DeleteCheckpoint::DeleteCheckpoint() : Blossom("Delete a result-set from shiori.")
 {
     errorCodes.push_back(NOT_FOUND_RTYPE);
 
@@ -37,8 +35,8 @@ DeleteCheckpoint::DeleteCheckpoint()
     //----------------------------------------------------------------------------------------------
 
     registerInputField("uuid", SAKURA_STRING_TYPE)
-            .setComment("UUID of the checkpoint to delete.")
-            .setRegex(UUID_REGEX);
+        .setComment("UUID of the checkpoint to delete.")
+        .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     //
@@ -59,19 +57,15 @@ DeleteCheckpoint::runTask(BlossomIO &blossomIO,
 
     // get location from database
     json result;
-    if(CheckpointTable::getInstance()->getCheckpoint(result,
-                                                     checkpointUuid,
-                                                     userContext,
-                                                     error,
-                                                     true) == false)
-    {
+    if (CheckpointTable::getInstance()->getCheckpoint(
+            result, checkpointUuid, userContext, error, true)
+        == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // handle not found
-    if(result.size() == 0)
-    {
+    if (result.size() == 0) {
         status.errorMessage = "Chekckpoint with uuid '" + checkpointUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
@@ -82,17 +76,14 @@ DeleteCheckpoint::runTask(BlossomIO &blossomIO,
     const std::string location = result["location"];
 
     // delete entry from db
-    if(CheckpointTable::getInstance()->deleteCheckpoint(checkpointUuid,
-                                                        userContext,
-                                                        error) == false)
-    {
+    if (CheckpointTable::getInstance()->deleteCheckpoint(checkpointUuid, userContext, error)
+        == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // delete local files
-    if(Hanami::deleteFileOrDir(location, error) == false)
-    {
+    if (Hanami::deleteFileOrDir(location, error) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

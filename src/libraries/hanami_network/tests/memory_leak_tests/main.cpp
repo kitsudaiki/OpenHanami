@@ -21,15 +21,14 @@
  */
 
 #include <hanami_common/logger.h>
-
+#include <session_test.h>
 #include <tcp/tcp_test.h>
 #include <unix/unix_domain_test.h>
 
-#include <session_test.h>
-
-int main()
+int
+main()
 {
-    //Hanami::initConsoleLogger(true);
+    // Hanami::initConsoleLogger(true);
 
     Hanami::UnixDomain_Test();
     Hanami::Tcp_Test();

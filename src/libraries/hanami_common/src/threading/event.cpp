@@ -30,7 +30,6 @@ namespace Hanami
 //==================================================================================================
 Event::~Event() {}
 
-
 //==================================================================================================
 // SleepEvent
 //==================================================================================================
@@ -39,10 +38,7 @@ Event::~Event() {}
  * @brief constructor
  * @param milliSeconds time in milli-seconds, which the event should sleep
  */
-SleepEvent::SleepEvent(const uint64_t milliSeconds)
-{
-    m_milliSeconds = milliSeconds;
-}
+SleepEvent::SleepEvent(const uint64_t milliSeconds) { m_milliSeconds = milliSeconds; }
 
 /**
  * @brief destructor
@@ -56,7 +52,7 @@ SleepEvent::~SleepEvent() {}
 bool
 SleepEvent::processEvent()
 {
-    if(m_milliSeconds == 0) {
+    if (m_milliSeconds == 0) {
         return false;
     }
 
@@ -65,4 +61,4 @@ SleepEvent::processEvent()
     return true;
 }
 
-}
+}  // namespace Hanami

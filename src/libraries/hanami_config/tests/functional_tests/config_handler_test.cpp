@@ -22,15 +22,14 @@
 
 #include "config_handler_test.h"
 
-#include <hanami_config/config_handler.h>
 #include <hanami_common/files/text_file.h>
 #include <hanami_common/methods/file_methods.h>
+#include <hanami_config/config_handler.h>
 
 namespace Hanami
 {
 
-ConfigHandler_Test::ConfigHandler_Test()
-    : Hanami::CompareTestHelper("ConfigHandler_Test")
+ConfigHandler_Test::ConfigHandler_Test() : Hanami::CompareTestHelper("ConfigHandler_Test")
 {
     runTest();
 }
@@ -62,7 +61,6 @@ ConfigHandler_Test::runTest()
     TEST_EQUAL(success, false);
 
     Hanami::deleteFileOrDir(m_testFilePath, error);
-
 }
 
 /**
@@ -73,14 +71,14 @@ const std::string
 ConfigHandler_Test::getTestString()
 {
     const std::string testString(
-                "[DEFAULT]\n"
-                "string_val = asdf.asdf\n"
-                "int_val = 2\n"
-                "float_val = 123.0\n"
-                "string_list = a,b,c\n"
-                "bool_value = true\n"
-                "\n");
+        "[DEFAULT]\n"
+        "string_val = asdf.asdf\n"
+        "int_val = 2\n"
+        "float_val = 123.0\n"
+        "string_list = a,b,c\n"
+        "bool_value = true\n"
+        "\n");
     return testString;
 }
 
-}
+}  // namespace Hanami

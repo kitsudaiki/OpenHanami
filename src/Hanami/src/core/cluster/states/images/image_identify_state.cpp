@@ -29,10 +29,7 @@
  *
  * @param cluster pointer to the cluster, where the event and the statemachine belongs to
  */
-ImageIdentify_State::ImageIdentify_State(Cluster* cluster)
-{
-    m_cluster = cluster;
-}
+ImageIdentify_State::ImageIdentify_State(Cluster* cluster) { m_cluster = cluster; }
 
 /**
  * @brief destructor
@@ -54,7 +51,7 @@ ImageIdentify_State::processEvent()
     const uint64_t offsetInput = entriesPerCycle * actualTask->actualCycle;
 
     // set input
-    for(uint64_t i = 0; i < actualTask->numberOfInputsPerCycle; i++) {
+    for (uint64_t i = 0; i < actualTask->numberOfInputsPerCycle; i++) {
         m_cluster->inputValues[i] = actualTask->inputData[offsetInput + i];
     }
 

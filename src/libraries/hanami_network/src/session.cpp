@@ -20,19 +20,16 @@
  *      limitations under the License.
  */
 
-#include <hanami_network/session.h>
 #include <abstract_socket.h>
-
-#include <messages_processing/session_processing.h>
-#include <messages_processing/heartbeat_processing.h>
-#include <messages_processing/stream_data_processing.h>
-#include <messages_processing/multiblock_data_processing.h>
-#include <messages_processing/singleblock_data_processing.h>
-
-#include <multiblock_io.h>
-#include <message_definitions.h>
-
 #include <hanami_common/logger.h>
+#include <hanami_network/session.h>
+#include <message_definitions.h>
+#include <messages_processing/heartbeat_processing.h>
+#include <messages_processing/multiblock_data_processing.h>
+#include <messages_processing/session_processing.h>
+#include <messages_processing/singleblock_data_processing.h>
+#include <messages_processing/stream_data_processing.h>
+#include <multiblock_io.h>
 
 enum statemachineItems {
     NOT_CONNECTED = 1,
@@ -54,7 +51,7 @@ namespace Hanami
  *
  * @param socket pointer to socket
  */
-Session::Session(AbstractSocket* socket)
+Session::Session(AbstractSocket *socket)
 {
     m_multiblockIo = new MultiblockIO(this);
     m_socket = socket;
@@ -73,8 +70,7 @@ Session::~Session()
     SessionHandler::m_sessionHandler->removeSession(m_sessionId);
     ErrorContainer error;
     closeSession(error, false);
-    if(m_socket != nullptr)
-    {
+    if (m_socket != nullptr) {
         m_socket->scheduleThreadForDeletion();
         m_socket = nullptr;
     }
@@ -92,18 +88,18 @@ Session::~Session()
  * @return false if session is NOT ready to send, send failed, or message is too big, else true
  */
 bool
-Session::sendStreamData(const void* data,
+Session::sendStreamData(const void *data,
                         const uint64_t size,
                         ErrorContainer &error,
                         const bool replyExpected)
 {
     // check size
-    if(size > MAX_SINGLE_MESSAGE_SIZE) {
+    if (size > MAX_SINGLE_MESSAGE_SIZE) {
         return false;
     }
 
     // check statemachine and try to send
-    if(m_statemachine.isInState(SESSION_READY)) {
+    if (m_statemachine.isInState(SESSION_READY)) {
         return send_Data_Stream(this, data, size, replyExpected, error);
     }
 
@@ -120,26 +116,21 @@ Session::sendStreamData(const void* data,
  * @return true, if successful, else false
  */
 bool
-Session::sendNormalMessage(const void* data,
-                           const uint64_t size,
-                           ErrorContainer &error)
+Session::sendNormalMessage(const void *data, const uint64_t size, ErrorContainer &error)
 {
-    if(m_statemachine.isInState(SESSION_READY))
-    {
+    if (m_statemachine.isInState(SESSION_READY)) {
         uint64_t id = 0;
 
-        if(size <= MAX_SINGLE_MESSAGE_SIZE)
-        {
+        if (size <= MAX_SINGLE_MESSAGE_SIZE) {
             // send as single-block-message, if small enough
             id = getRandId();
-            if(send_Data_SingleBlock(this, id, data, static_cast<uint32_t>(size), error) == false) {
+            if (send_Data_SingleBlock(this, id, data, static_cast<uint32_t>(size), error)
+                == false) {
                 return false;
             }
-        }
-        else
-        {
+        } else {
             // if too big for one message, send as multi-block-message
-            if(m_multiblockIo->sendOutgoingData(data, size, error) == 0) {
+            if (m_multiblockIo->sendOutgoingData(data, size, error) == 0) {
                 return false;
             }
         }
@@ -160,29 +151,26 @@ Session::sendNormalMessage(const void* data,
  *
  * @return content of the response message as data-buffer, or nullptr, if session is not active
  */
-DataBuffer*
-Session::sendRequest(const void* data,
+DataBuffer *
+Session::sendRequest(const void *data,
                      const uint64_t size,
                      const uint64_t timeout,
                      ErrorContainer &error)
 {
-    if(m_statemachine.isInState(SESSION_READY))
-    {
+    if (m_statemachine.isInState(SESSION_READY)) {
         uint64_t id = 0;
 
-        if(size <= MAX_SINGLE_MESSAGE_SIZE)
-        {
+        if (size <= MAX_SINGLE_MESSAGE_SIZE) {
             // send as single-block-message, if small enough
             id = getRandId();
-            if(send_Data_SingleBlock(this, id, data, static_cast<uint32_t>(size), error) == false) {
+            if (send_Data_SingleBlock(this, id, data, static_cast<uint32_t>(size), error)
+                == false) {
                 return nullptr;
             }
-        }
-        else
-        {
+        } else {
             // if too big for one message, send as multi-block-message
             id = m_multiblockIo->sendOutgoingData(data, size, error);
-            if(id == 0) {
+            if (id == 0) {
                 return nullptr;
             }
         }
@@ -204,27 +192,19 @@ Session::sendRequest(const void* data,
  * @return multiblock-id, or 0, if session is not active
  */
 uint64_t
-Session::sendResponse(const void* data,
+Session::sendResponse(const void *data,
                       const uint64_t size,
                       const uint64_t blockerId,
                       ErrorContainer &error)
 {
-    if(m_statemachine.isInState(SESSION_READY))
-    {
-        if(size < MAX_SINGLE_MESSAGE_SIZE)
-        {
+    if (m_statemachine.isInState(SESSION_READY)) {
+        if (size < MAX_SINGLE_MESSAGE_SIZE) {
             // send as single-block-message, if small enough
             const uint64_t singleblockId = getRandId();
-            send_Data_SingleBlock(this,
-                                  singleblockId,
-                                  data,
-                                  static_cast<uint32_t>(size),
-                                  error,
-                                  blockerId);
+            send_Data_SingleBlock(
+                this, singleblockId, data, static_cast<uint32_t>(size), error, blockerId);
             return singleblockId;
-        }
-        else
-        {
+        } else {
             // if too big for one message, send as multi-block-message
             return m_multiblockIo->sendOutgoingData(data, size, error, blockerId);
         }
@@ -237,8 +217,8 @@ Session::sendResponse(const void* data,
  * @brief set callback for stram-message
  */
 void
-Session::setStreamCallback(void* receiver,
-                           void (*processStream)(void*, Session*, const void*, const uint64_t))
+Session::setStreamCallback(void *receiver,
+                           void (*processStream)(void *, Session *, const void *, const uint64_t))
 {
     m_streamReceiver = receiver;
     m_processStreamData = processStream;
@@ -248,8 +228,8 @@ Session::setStreamCallback(void* receiver,
  * @brief set callback for requests
  */
 void
-Session::setRequestCallback(void* receiver,
-                            void (*processRequest)(void*, Session*, const uint64_t, DataBuffer*))
+Session::setRequestCallback(void *receiver,
+                            void (*processRequest)(void *, Session *, const uint64_t, DataBuffer *))
 {
     m_standaloneReceiver = receiver;
     m_processRequestData = processRequest;
@@ -259,7 +239,7 @@ Session::setRequestCallback(void* receiver,
  * @brief set callback for errors
  */
 void
-Session::setErrorCallback(void (*processError)(Session*, const uint8_t, const std::string))
+Session::setErrorCallback(void (*processError)(Session *, const uint8_t, const std::string))
 {
     m_processError = processError;
 }
@@ -273,20 +253,15 @@ Session::setErrorCallback(void (*processError)(Session*, const uint8_t, const st
  * @return true, if all was successful, else false
  */
 bool
-Session::closeSession(ErrorContainer &error,
-                      const bool replyExpected)
+Session::closeSession(ErrorContainer &error, const bool replyExpected)
 {
     LOG_DEBUG("close session with id " + std::to_string(m_sessionId));
-    if(m_statemachine.isInState(SESSION_READY))
-    {
+    if (m_statemachine.isInState(SESSION_READY)) {
         SessionHandler::m_replyHandler->removeAllOfSession(m_sessionId);
         m_multiblockIo->removeMultiblockBuffer(0);
-        if(replyExpected)
-        {
+        if (replyExpected) {
             return send_Session_Close_Start(this, true, error);
-        }
-        else
-        {
+        } else {
             send_Session_Close_Start(this, false, error);
             return endSession(error);
         }
@@ -325,7 +300,7 @@ Session::getMaximumSingleSize() const
 bool
 Session::isClientSide() const
 {
-    if(m_socket == nullptr) {
+    if (m_socket == nullptr) {
         return false;
     }
     return m_socket->isClientSide();
@@ -342,28 +317,24 @@ Session::isClientSide() const
  * @return false if session is already init or socker can not be connected, else true
  */
 bool
-Session::connectiSession(const uint32_t sessionId,
-                         ErrorContainer &error)
+Session::connectiSession(const uint32_t sessionId, ErrorContainer &error)
 {
     LOG_DEBUG("CALL session connect: " + std::to_string(m_sessionId));
 
     // check if already connected
-    if(m_statemachine.isInState(NOT_CONNECTED))
-    {
-        if(m_socket == nullptr) {
+    if (m_statemachine.isInState(NOT_CONNECTED)) {
+        if (m_socket == nullptr) {
             return false;
         }
 
         // connect socket
-        if(m_socket->initConnection(error) == false)
-        {
+        if (m_socket->initConnection(error) == false) {
             m_initState = -1;
             return false;
         }
 
         // git into connected state
-        if(m_statemachine.goToNextState(CONNECT) == false)
-        {
+        if (m_statemachine.goToNextState(CONNECT) == false) {
             m_initState = -1;
             return false;
         }
@@ -395,8 +366,7 @@ Session::makeSessionReady(const uint32_t sessionId,
 {
     LOG_DEBUG("CALL make session ready: " + std::to_string(m_sessionId));
 
-    if(m_statemachine.goToNextState(START_SESSION, SESSION_NOT_READY))
-    {
+    if (m_statemachine.goToNextState(START_SESSION, SESSION_NOT_READY)) {
         m_sessionId = sessionId;
         m_sessionIdentifier = sessionIdentifier;
 
@@ -429,8 +399,7 @@ Session::endSession(ErrorContainer &error)
     LOG_DEBUG("CALL session close: " + std::to_string(m_sessionId));
 
     // try to stop the session
-    if(m_statemachine.goToNextState(STOP_SESSION))
-    {
+    if (m_statemachine.goToNextState(STOP_SESSION)) {
         m_processCloseSession(this, m_sessionIdentifier);
         SessionHandler::m_sessionHandler->removeSession(m_sessionId);
         return disconnectSession(error);
@@ -450,14 +419,12 @@ Session::disconnectSession(ErrorContainer &error)
 {
     LOG_DEBUG("CALL session disconnect: " + std::to_string(m_sessionId));
 
-    if(m_statemachine.goToNextState(DISCONNECT))
-    {
-        if(m_socket == nullptr) {
+    if (m_statemachine.goToNextState(DISCONNECT)) {
+        if (m_socket == nullptr) {
             return false;
         }
 
-        if(m_socket->closeSocket() == false)
-        {
+        if (m_socket->closeSocket() == false) {
             error.addMeesage("Failed to close session");
             return false;
         }
@@ -482,20 +449,17 @@ Session::disconnectSession(ErrorContainer &error)
  */
 bool
 Session::sendMessage(const CommonMessageHeader &header,
-                     const void* data,
+                     const void *data,
                      const uint64_t size,
                      ErrorContainer &error)
 {
-    if(m_socket == nullptr) {
+    if (m_socket == nullptr) {
         return false;
     }
 
-    if(header.flags & 0x1)
-    {
-        SessionHandler::m_replyHandler->addMessage(header.type,
-                                                   header.sessionId,
-                                                   header.messageId,
-                                                   this);
+    if (header.flags & 0x1) {
+        SessionHandler::m_replyHandler->addMessage(
+            header.type, header.sessionId, header.messageId, this);
     }
 
     return m_socket->sendMessage(data, size, error);
@@ -509,11 +473,11 @@ Session::sendMessage(const CommonMessageHeader &header,
 bool
 Session::sendHeartbeat()
 {
-    if(m_socket == nullptr) {
+    if (m_socket == nullptr) {
         return false;
     }
 
-    if(m_statemachine.isInState(SESSION_READY)) {
+    if (m_statemachine.isInState(SESSION_READY)) {
         return send_Heartbeat_Start(this, sessionError);
     }
 
@@ -533,17 +497,17 @@ Session::initStatemachine()
     assert(m_statemachine.createNewState(SESSION_READY, "session ready"));
 
     // set child state
-    assert(m_statemachine.addChildState(CONNECTED,     SESSION_NOT_READY));
-    assert(m_statemachine.addChildState(CONNECTED,     SESSION_READY));
+    assert(m_statemachine.addChildState(CONNECTED, SESSION_NOT_READY));
+    assert(m_statemachine.addChildState(CONNECTED, SESSION_READY));
 
     // set initial states
-    assert(m_statemachine.setInitialChildState(CONNECTED,     SESSION_NOT_READY));
+    assert(m_statemachine.setInitialChildState(CONNECTED, SESSION_NOT_READY));
 
     // init transitions
-    assert(m_statemachine.addTransition(NOT_CONNECTED,     CONNECT,       CONNECTED));
-    assert(m_statemachine.addTransition(CONNECTED,         DISCONNECT,    NOT_CONNECTED));
+    assert(m_statemachine.addTransition(NOT_CONNECTED, CONNECT, CONNECTED));
+    assert(m_statemachine.addTransition(CONNECTED, DISCONNECT, NOT_CONNECTED));
     assert(m_statemachine.addTransition(SESSION_NOT_READY, START_SESSION, SESSION_READY));
-    assert(m_statemachine.addTransition(SESSION_READY,     STOP_SESSION,  SESSION_NOT_READY));
+    assert(m_statemachine.addTransition(SESSION_READY, STOP_SESSION, SESSION_NOT_READY));
 }
 
 /**
@@ -555,7 +519,9 @@ uint32_t
 Session::increaseMessageIdCounter()
 {
     uint32_t tempId = 0;
-    while (m_messageIdCounter_lock.test_and_set(std::memory_order_acquire)) { asm(""); }
+    while (m_messageIdCounter_lock.test_and_set(std::memory_order_acquire)) {
+        asm("");
+    }
 
     m_messageIdCounter++;
     tempId = m_messageIdCounter;
@@ -575,11 +541,11 @@ Session::getRandId()
     uint64_t newId = 0;
 
     // 0 is the undefined value and should never be allowed
-    while(newId == 0) {
+    while (newId == 0) {
         newId = (static_cast<uint64_t>(rand()) << 32) | static_cast<uint64_t>(rand());
     }
 
     return newId;
 }
 
-}
+}  // namespace Hanami

@@ -23,8 +23,8 @@
 #ifndef KITSUNEMIMI_CPU_MEMORY_H
 #define KITSUNEMIMI_CPU_MEMORY_H
 
-#include <unistd.h>
 #include <stdint.h>
+#include <unistd.h>
 
 namespace Hanami
 {
@@ -33,6 +33,6 @@ uint64_t getTotalMemory();
 uint64_t getFreeMemory();
 uint64_t getPageSize();
 
-}
+}  // namespace Hanami
 
-#endif // KITSUNEMIMI_CPU_MEMORY_H
+#endif  // KITSUNEMIMI_CPU_MEMORY_H

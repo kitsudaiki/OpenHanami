@@ -23,8 +23,8 @@
 #ifndef TSUGUMITESTER_CONFIG_H
 #define TSUGUMITESTER_CONFIG_H
 
-#include <hanami_config/config_handler.h>
 #include <hanami_common/logger.h>
+#include <hanami_config/config_handler.h>
 
 /**
  * @brief register configs
@@ -36,55 +36,56 @@ registerConfigs()
     const std::string defaultGroup = "DEFAULT";
 
     REGISTER_BOOL_CONFIG(defaultGroup, "debug")
-            .setComment("Flag to enable debug-output in logging.")
-            .setDefault(false);
+        .setComment("Flag to enable debug-output in logging.")
+        .setDefault(false);
 
     REGISTER_STRING_CONFIG(defaultGroup, "log_path")
-            .setComment("Path to the directory, where the log-files should be written into.")
-            .setDefault("/var/log");
+        .setComment("Path to the directory, where the log-files should be written into.")
+        .setDefault("/var/log");
 
     // connection-section
     const std::string connectionGroup = "connection";
 
     REGISTER_STRING_CONFIG(connectionGroup, "host")
-            .setComment("IP-address where the hanami-instance is listening.")
-            .setRequired();
+        .setComment("IP-address where the hanami-instance is listening.")
+        .setRequired();
 
     REGISTER_INT_CONFIG(connectionGroup, "port")
-            .setComment("Port where the hanami-instance is listening.")
-            .setRequired();
+        .setComment("Port where the hanami-instance is listening.")
+        .setRequired();
 
     REGISTER_STRING_CONFIG(connectionGroup, "test_user")
-            .setComment("Login-name of the user, which is used for testing.")
-            .setRequired();
+        .setComment("Login-name of the user, which is used for testing.")
+        .setRequired();
 
     REGISTER_STRING_CONFIG(connectionGroup, "test_pw")
-            .setComment("Passphrase of the user, which is used for testing.")
-            .setRequired();
+        .setComment("Passphrase of the user, which is used for testing.")
+        .setRequired();
 
     // test_data-section
     const std::string testDataGroup = "test_data";
 
-    REGISTER_STRING_CONFIG( testDataGroup, "type")
-            .setComment("Type of the test ('mnist' or 'csv'). "
-                        "IMPORTANT: only the mnist-input is supported at the moment.")
-            .setDefault("mnist");
+    REGISTER_STRING_CONFIG(testDataGroup, "type")
+        .setComment(
+            "Type of the test ('mnist' or 'csv'). "
+            "IMPORTANT: only the mnist-input is supported at the moment.")
+        .setDefault("mnist");
 
     REGISTER_STRING_CONFIG(testDataGroup, "train_inputs")
-            .setComment("Local path to the file with the mnist train inputs.")
-            .setRequired();
+        .setComment("Local path to the file with the mnist train inputs.")
+        .setRequired();
 
     REGISTER_STRING_CONFIG(testDataGroup, "train_labels")
-            .setComment("Local path to the file with the mnist train lables.")
-            .setRequired();
+        .setComment("Local path to the file with the mnist train lables.")
+        .setRequired();
 
     REGISTER_STRING_CONFIG(testDataGroup, "request_inputs")
-            .setComment("Local path to the file with the mnist request inputs.")
-            .setRequired();
+        .setComment("Local path to the file with the mnist request inputs.")
+        .setRequired();
 
     REGISTER_STRING_CONFIG(testDataGroup, "request_labels")
-            .setComment("Local path to the file with the mnist request labels.")
-            .setRequired();
+        .setComment("Local path to the file with the mnist request labels.")
+        .setRequired();
 }
 
-#endif // TSUGUMITESTER_CONFIG_H
+#endif  // TSUGUMITESTER_CONFIG_H

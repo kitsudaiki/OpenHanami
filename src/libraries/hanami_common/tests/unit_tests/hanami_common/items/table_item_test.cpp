@@ -11,8 +11,7 @@
 namespace Hanami
 {
 
-TableItem_test::TableItem_test()
-    : Hanami::CompareTestHelper("TableItem_test")
+TableItem_test::TableItem_test() : Hanami::CompareTestHelper("TableItem_test")
 {
     copy_contructor_test();
     assignment_operator_test();
@@ -72,7 +71,8 @@ TableItem_test::assignment_operator_test()
 /**
  * @brief clearTable_test
  */
-void TableItem_test::clearTable_test()
+void
+TableItem_test::clearTable_test()
 {
     TableItem testItem = getTestTableItem();
 
@@ -113,9 +113,10 @@ TableItem_test::addColumn_Test()
     TEST_EQUAL(testItem.addColumn("asdf", "ASDF"), true);
     TEST_EQUAL(testItem.addColumn("poi"), true);
 
-    const std::string compare = "+------+-----+\n"
-                                "| ASDF | poi |\n"
-                                "+======+=====+\n";
+    const std::string compare
+        = "+------+-----+\n"
+          "| ASDF | poi |\n"
+          "+======+=====+\n";
     TEST_EQUAL(testItem.toString(), compare);
 }
 
@@ -132,9 +133,10 @@ TableItem_test::renameColume_Test()
     TEST_EQUAL(testItem.renameColume("asdf", "XYZ"), true);
     TEST_EQUAL(testItem.renameColume("fail", "XYZ"), false);
 
-    const std::string compare = "+-----+\n"
-                                "| XYZ |\n"
-                                "+=====+\n";
+    const std::string compare
+        = "+-----+\n"
+          "| XYZ |\n"
+          "+=====+\n";
     TEST_EQUAL(testItem.toString(), compare);
 }
 
@@ -152,9 +154,10 @@ TableItem_test::deleteColumn_Test()
     TEST_EQUAL(testItem.deleteColumn("asdf"), true);
     TEST_EQUAL(testItem.deleteColumn("fail"), false);
 
-    const std::string compare = "+-----+\n"
-                                "| poi |\n"
-                                "+=====+\n";
+    const std::string compare
+        = "+-----+\n"
+          "| poi |\n"
+          "+=====+\n";
     TEST_EQUAL(testItem.toString(), compare);
 }
 
@@ -178,15 +181,14 @@ TableItem_test::addRow_Test()
     newRow.push_back(42);
     TEST_EQUAL(testItem.addRow(newRow), true);
 
-
-    const std::string compare =
-            "+----------------+-----------+\n"
-            "| ASDF           | poipoipoi |\n"
-            "+================+===========+\n"
-            "| this is a test | k         |\n"
-            "+----------------+-----------+\n"
-            "| asdf           | 42        |\n"
-            "+----------------+-----------+\n";
+    const std::string compare
+        = "+----------------+-----------+\n"
+          "| ASDF           | poipoipoi |\n"
+          "+================+===========+\n"
+          "| this is a test | k         |\n"
+          "+----------------+-----------+\n"
+          "| asdf           | 42        |\n"
+          "+----------------+-----------+\n";
 
     TEST_EQUAL(testItem.toString(), compare);
 }
@@ -224,12 +226,12 @@ TableItem_test::deleteRow_Test()
     TEST_EQUAL(testItem.deleteRow(0), true);
     TEST_EQUAL(testItem.deleteRow(1), false);
 
-    const std::string compare =
-            "+------+-----------+\n"
-            "| ASDF | poipoipoi |\n"
-            "+======+===========+\n"
-            "| asdf | qwert     |\n"
-            "+------+-----------+\n";
+    const std::string compare
+        = "+------+-----------+\n"
+          "| ASDF | poipoipoi |\n"
+          "+======+===========+\n"
+          "| asdf | qwert     |\n"
+          "+------+-----------+\n";
 
     TEST_EQUAL(testItem.toString(), compare);
 }
@@ -246,14 +248,14 @@ TableItem_test::setCell_Test()
     TEST_EQUAL(testItem.setCell(1, 10, "hmmm"), false);
     TEST_EQUAL(testItem.setCell(10, 1, "hmmm"), false);
 
-    const std::string compare =
-            "+----------------+-----------+\n"
-            "| ASDF           | poipoipoi |\n"
-            "+================+===========+\n"
-            "| this is a test | k         |\n"
-            "+----------------+-----------+\n"
-            "| asdf           | hmmm      |\n"
-            "+----------------+-----------+\n";
+    const std::string compare
+        = "+----------------+-----------+\n"
+          "| ASDF           | poipoipoi |\n"
+          "+================+===========+\n"
+          "| this is a test | k         |\n"
+          "+----------------+-----------+\n"
+          "| asdf           | hmmm      |\n"
+          "+----------------+-----------+\n";
 
     TEST_EQUAL(testItem.toString(), compare);
 }
@@ -283,14 +285,14 @@ TableItem_test::deleteCell_Test()
     TEST_EQUAL(testItem.deleteCell(10, 1), false);
     TEST_EQUAL(testItem.deleteCell(0, 10), false);
 
-    const std::string compare =
-            "+----------------+-----------+\n"
-            "| ASDF           | poipoipoi |\n"
-            "+================+===========+\n"
-            "| this is a test | k         |\n"
-            "+----------------+-----------+\n"
-            "|                | qwert     |\n"
-            "+----------------+-----------+\n";
+    const std::string compare
+        = "+----------------+-----------+\n"
+          "| ASDF           | poipoipoi |\n"
+          "+================+===========+\n"
+          "| this is a test | k         |\n"
+          "+----------------+-----------+\n"
+          "|                | qwert     |\n"
+          "+----------------+-----------+\n";
 
     TEST_EQUAL(testItem.toString(), compare);
 }
@@ -345,43 +347,42 @@ TableItem_test::toString_test()
     testItem.addRowVec(std::vector<std::string>{"x\ny\nz", " "});
     testItem.addRowVec(std::vector<std::string>{"y", "abcdefghijklmnopqrst"});
 
-
-    const std::string compare =
-            "+-----------+-----------+\n"
-            "| ASDF      | poipoipoi |\n"
-            "+===========+===========+\n"
-            "| this is a | k         |\n"
-            "|  test     |           |\n"
-            "+-----------+-----------+\n"
-            "| asdf      | qwert     |\n"
-            "+-----------+-----------+\n"
-            "| x         |           |\n"
-            "| y         |           |\n"
-            "| z         |           |\n"
-            "+-----------+-----------+\n"
-            "| y         | abcdefghi |\n"
-            "|           | jklmnopqr |\n"
-            "|           | st        |\n"
-            "+-----------+-----------+\n";
+    const std::string compare
+        = "+-----------+-----------+\n"
+          "| ASDF      | poipoipoi |\n"
+          "+===========+===========+\n"
+          "| this is a | k         |\n"
+          "|  test     |           |\n"
+          "+-----------+-----------+\n"
+          "| asdf      | qwert     |\n"
+          "+-----------+-----------+\n"
+          "| x         |           |\n"
+          "| y         |           |\n"
+          "| z         |           |\n"
+          "+-----------+-----------+\n"
+          "| y         | abcdefghi |\n"
+          "|           | jklmnopqr |\n"
+          "|           | st        |\n"
+          "+-----------+-----------+\n";
 
     // test with a maximum cell width of 9
     TEST_EQUAL(testItem.toString(9), compare);
 
-    const std::string compareWithoutHeader =
-            "+-----------+-----------+\n"
-            "| this is a | k         |\n"
-            "|  test     |           |\n"
-            "+-----------+-----------+\n"
-            "| asdf      | qwert     |\n"
-            "+-----------+-----------+\n"
-            "| x         |           |\n"
-            "| y         |           |\n"
-            "| z         |           |\n"
-            "+-----------+-----------+\n"
-            "| y         | abcdefghi |\n"
-            "|           | jklmnopqr |\n"
-            "|           | st        |\n"
-            "+-----------+-----------+\n";
+    const std::string compareWithoutHeader
+        = "+-----------+-----------+\n"
+          "| this is a | k         |\n"
+          "|  test     |           |\n"
+          "+-----------+-----------+\n"
+          "| asdf      | qwert     |\n"
+          "+-----------+-----------+\n"
+          "| x         |           |\n"
+          "| y         |           |\n"
+          "| z         |           |\n"
+          "+-----------+-----------+\n"
+          "| y         | abcdefghi |\n"
+          "|           | jklmnopqr |\n"
+          "|           | st        |\n"
+          "+-----------+-----------+\n";
 
     // test with a maximum cell width of 9
     TEST_EQUAL(testItem.toString(9, true), compareWithoutHeader);
@@ -400,12 +401,13 @@ TableItem_test::toJsonString_test()
     testItem.addRowVec(std::vector<std::string>{"y", "abcdefghijklmnopqrst"});
 
     // check json-formated output
-    const std::string compareJson = "{ header: [{\"inner\":\"asdf\",\"outer\":\"ASDF\"},"
-                                    "{\"inner\":\"poipoipoi\",\"outer\":\"poipoipoi\"}], "
-                                    "body: [[\"this is a test\",\"k\"],"
-                                    "[\"asdf\",\"qwert\"],"
-                                    "[\"x\\ny\\nz\",\" \"],"
-                                    "[\"y\",\"abcdefghijklmnopqrst\"]]}";
+    const std::string compareJson
+        = "{ header: [{\"inner\":\"asdf\",\"outer\":\"ASDF\"},"
+          "{\"inner\":\"poipoipoi\",\"outer\":\"poipoipoi\"}], "
+          "body: [[\"this is a test\",\"k\"],"
+          "[\"asdf\",\"qwert\"],"
+          "[\"x\\ny\\nz\",\" \"],"
+          "[\"y\",\"abcdefghijklmnopqrst\"]]}";
     TEST_EQUAL(testItem.toJsonString(), compareJson);
 }
 
@@ -426,4 +428,4 @@ TableItem_test::getTestTableItem()
     return testItem;
 }
 
-}
+}  // namespace Hanami

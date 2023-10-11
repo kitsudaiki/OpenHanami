@@ -21,9 +21,10 @@
  */
 
 #include "image_request_task_test.h"
-#include <chrono>
 
 #include <hanami_sdk/task.h>
+
+#include <chrono>
 
 typedef std::chrono::milliseconds chronoMilliSec;
 typedef std::chrono::microseconds chronoMicroSec;
@@ -32,12 +33,10 @@ typedef std::chrono::seconds chronoSec;
 typedef std::chrono::high_resolution_clock::time_point chronoTimePoint;
 typedef std::chrono::high_resolution_clock chronoClock;
 
-
-ImageRequestTaskTest::ImageRequestTaskTest(const bool expectSuccess)
-      : TestStep(expectSuccess)
+ImageRequestTaskTest::ImageRequestTaskTest(const bool expectSuccess) : TestStep(expectSuccess)
 {
     m_testName = "request-task";
-    if(expectSuccess) {
+    if (expectSuccess) {
         m_testName += " (success)";
     } else {
         m_testName += " (fail)";
@@ -45,22 +44,21 @@ ImageRequestTaskTest::ImageRequestTaskTest(const bool expectSuccess)
 }
 
 bool
-ImageRequestTaskTest::runTest(json &inputData,
-                              Hanami::ErrorContainer &error)
+ImageRequestTaskTest::runTest(json& inputData, Hanami::ErrorContainer& error)
 {
     // create new user
     std::string result;
-    if(Hanami::createTask(result,
-                            inputData["generic_task_name"],
-                            "request",
-                            inputData["cluster_uuid"],
-                            inputData["request_dataset_uuid"],
-                            error) != m_expectSuccess)
-    {
+    if (Hanami::createTask(result,
+                           inputData["generic_task_name"],
+                           "request",
+                           inputData["cluster_uuid"],
+                           inputData["request_dataset_uuid"],
+                           error)
+        != m_expectSuccess) {
         return false;
     }
 
-    if(m_expectSuccess == false) {
+    if (m_expectSuccess == false) {
         return true;
     }
 
@@ -68,7 +66,7 @@ ImageRequestTaskTest::runTest(json &inputData,
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch(const json::parse_error& ex) {
+    } catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
@@ -81,36 +79,33 @@ ImageRequestTaskTest::runTest(json &inputData,
     start = std::chrono::system_clock::now();
 
     // wait until task is finished
-    do
-    {
+    do {
         usleep(1000000);
-        Hanami::getTask(result,
-                        inputData["request_task_uuid"],
-                        inputData["cluster_uuid"],
-                        error);
+        Hanami::getTask(result, inputData["request_task_uuid"], inputData["cluster_uuid"], error);
 
         // parse output
         try {
             jsonItem = json::parse(result);
-        } catch(const json::parse_error& ex) {
+        } catch (const json::parse_error& ex) {
             error.addMeesage("json-parser error: " + std::string(ex.what()));
             return false;
         }
-        //std::cout<<jsonItem.dump(4)<<std::endl;
-    }
-    while(jsonItem["state"] != "finished");
+        // std::cout<<jsonItem.dump(4)<<std::endl;
+    } while (jsonItem["state"] != "finished");
     end = std::chrono::system_clock::now();
     const float time2 = std::chrono::duration_cast<chronoMilliSec>(end - start).count();
 
-    std::cout<<"#######################################################################"<<std::endl;
-    std::cout<<"reqzest_time: "<<time2<<" ms"<<std::endl;
-    std::cout<<"#######################################################################"<<std::endl;
+    std::cout << "#######################################################################"
+              << std::endl;
+    std::cout << "reqzest_time: " << time2 << " ms" << std::endl;
+    std::cout << "#######################################################################"
+              << std::endl;
 
     // get task-result
-    //Hanami::getTask(result, m_taskUuid, m_clusterUuid, true, error);
+    // Hanami::getTask(result, m_taskUuid, m_clusterUuid, true, error);
 
     // parse output
-    //if(jsonItem.parse(result, error) == false) {
+    // if(jsonItem.parse(result, error) == false) {
     //    return false;
     //}
     // std::cout<<jsonItem.dump(4)<<std::endl;

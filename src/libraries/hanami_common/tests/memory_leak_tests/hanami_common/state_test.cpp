@@ -13,11 +13,7 @@
 namespace Hanami
 {
 
-State_Test::State_Test()
-    : Hanami::MemoryLeakTestHelpter("State_Test")
-{
-    create_delete_test();
-}
+State_Test::State_Test() : Hanami::MemoryLeakTestHelpter("State_Test") { create_delete_test(); }
 
 /**
  * @brief create_delete_test
@@ -33,4 +29,4 @@ State_Test::create_delete_test()
     CHECK_MEMORY();
 }
 
-}
+}  // namespace Hanami

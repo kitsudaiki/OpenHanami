@@ -13,8 +13,7 @@
 namespace Hanami
 {
 
-ItemBuffer_Test::ItemBuffer_Test()
-    : Hanami::MemoryLeakTestHelpter("ItemBuffer_Test")
+ItemBuffer_Test::ItemBuffer_Test() : Hanami::MemoryLeakTestHelpter("ItemBuffer_Test")
 {
     create_delete_test();
 }
@@ -34,4 +33,4 @@ ItemBuffer_Test::create_delete_test()
     CHECK_MEMORY();
 }
 
-}
+}  // namespace Hanami

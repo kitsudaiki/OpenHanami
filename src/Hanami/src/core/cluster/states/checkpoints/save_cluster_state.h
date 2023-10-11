@@ -23,30 +23,30 @@
 #ifndef HANAMI_SAVECLUSTERSTATE_H
 #define HANAMI_SAVECLUSTERSTATE_H
 
-#include <hanami_common/threading/event.h>
 #include <hanami_common/logger.h>
+#include <hanami_common/threading/event.h>
 
 class Cluster;
 
-namespace Hanami {
+namespace Hanami
+{
 class HanamiMessagingClient;
 }
 
-class SaveCluster_State
-        : public Hanami::Event
+class SaveCluster_State : public Hanami::Event
 {
-public:
+   public:
     SaveCluster_State(Cluster* cluster);
     ~SaveCluster_State();
 
     bool processEvent();
 
-private:
+   private:
     Cluster* m_cluster = nullptr;
 
-    bool writeData(const std::string &filePath,
+    bool writeData(const std::string& filePath,
                    const uint64_t fileSize,
-                   Hanami::ErrorContainer &error);
+                   Hanami::ErrorContainer& error);
 };
 
-#endif // HANAMI_SAVECLUSTERSTATE_H
+#endif  // HANAMI_SAVECLUSTERSTATE_H

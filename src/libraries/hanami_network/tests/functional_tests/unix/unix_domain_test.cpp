@@ -7,10 +7,10 @@
  */
 
 #include "unix_domain_test.h"
-#include <hanami_common/buffer/ring_buffer.h>
 
-#include <template_socket.h>
+#include <hanami_common/buffer/ring_buffer.h>
 #include <template_server.h>
+#include <template_socket.h>
 
 namespace Hanami
 {
@@ -18,13 +18,12 @@ namespace Hanami
 /**
  * processMessageUnixDomain-callback
  */
-uint64_t processMessageUnixDomain(void* target,
-                                  Hanami::RingBuffer* recvBuffer,
-                                  AbstractSocket*)
+uint64_t
+processMessageUnixDomain(void* target, Hanami::RingBuffer* recvBuffer, AbstractSocket*)
 {
     UnixDomain_Test* targetTest = static_cast<UnixDomain_Test*>(target);
     const uint8_t* dataPointer = getDataPointer_RingBuffer(*recvBuffer, recvBuffer->usedSize);
-    if(dataPointer == nullptr) {
+    if (dataPointer == nullptr) {
         return 0;
     }
 
@@ -35,8 +34,8 @@ uint64_t processMessageUnixDomain(void* target,
 /**
  * processConnectionUnixDomain-callback
  */
-void processConnectionUnixDomain(void* target,
-                                 AbstractSocket* socket)
+void
+processConnectionUnixDomain(void* target, AbstractSocket* socket)
 {
     UnixDomain_Test* targetTest = static_cast<UnixDomain_Test*>(target);
     targetTest->m_socketServerSide = socket;
@@ -44,9 +43,7 @@ void processConnectionUnixDomain(void* target,
     socket->startThread();
 }
 
-
-UnixDomain_Test::UnixDomain_Test() :
-    Hanami::CompareTestHelper("UnixDomain_Test")
+UnixDomain_Test::UnixDomain_Test() : Hanami::CompareTestHelper("UnixDomain_Test")
 {
     initTestCase();
     checkConnectionInit();
@@ -73,10 +70,8 @@ UnixDomain_Test::checkConnectionInit()
     ErrorContainer error;
     // check too long path
     UnixDomainServer udsServer("/tmp/sock.uds");
-    m_server = new TemplateServer<UnixDomainServer>(std::move(udsServer),
-                                                    this,
-                                                    &processConnectionUnixDomain,
-                                                    "UnixDomain_Test");
+    m_server = new TemplateServer<UnixDomainServer>(
+        std::move(udsServer), this, &processConnectionUnixDomain, "UnixDomain_Test");
 
     // init server
     TEST_EQUAL(m_server->initServer(error), true);
@@ -87,8 +82,8 @@ UnixDomain_Test::checkConnectionInit()
 
     // init client
     UnixDomainSocket udsSocket("/tmp/sock.uds");
-    m_socketClientSide = new TemplateSocket<UnixDomainSocket>(std::move(udsSocket),
-                                                              "UnixDomain_Test_client");
+    m_socketClientSide
+        = new TemplateSocket<UnixDomainSocket>(std::move(udsSocket), "UnixDomain_Test_client");
     TEST_EQUAL(m_socketClientSide->initConnection(error), true);
     TEST_EQUAL(m_socketClientSide->initConnection(error), true);
     TEST_EQUAL(m_socketClientSide->getType(), 1);
@@ -110,8 +105,7 @@ UnixDomain_Test::checkLittleDataTransfer()
     usleep(100000);
     TEST_EQUAL(m_buffer->usedBufferSize, 9);
 
-    if(m_buffer->usedBufferSize == 9)
-    {
+    if (m_buffer->usedBufferSize == 9) {
         DataBuffer* buffer = m_buffer;
         uint64_t bufferSize = buffer->usedBufferSize;
         char recvMessage[bufferSize];
@@ -132,7 +126,7 @@ UnixDomain_Test::checkBigDataTransfer()
 
     std::string sendMessage = "poi";
     TEST_EQUAL(m_socketClientSide->sendMessage(sendMessage, error), true);
-    for(uint32_t i = 0; i < 99999; i++) {
+    for (uint32_t i = 0; i < 99999; i++) {
         m_socketClientSide->sendMessage(sendMessage, error);
     }
 
@@ -143,13 +137,10 @@ UnixDomain_Test::checkBigDataTransfer()
     TEST_EQUAL(dataBuffer->usedBufferSize, 300000);
 
     uint32_t numberOfPois = 0;
-    for(uint32_t i = 0; i < 300000; i=i+3)
-    {
+    for (uint32_t i = 0; i < 300000; i = i + 3) {
         uint8_t* dataBufferData = static_cast<uint8_t*>(dataBuffer->data);
-        if(dataBufferData[i] == 'p'
-                && dataBufferData[i+1] == 'o'
-                && dataBufferData[i+2] == 'i')
-        {
+        if (dataBufferData[i] == 'p' && dataBufferData[i + 1] == 'o'
+            && dataBufferData[i + 2] == 'i') {
             numberOfPois++;
         }
     }
@@ -171,4 +162,4 @@ UnixDomain_Test::cleanupTestCase()
     delete m_buffer;
 }
 
-}
+}  // namespace Hanami

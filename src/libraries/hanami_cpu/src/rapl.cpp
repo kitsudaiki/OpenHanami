@@ -32,7 +32,7 @@ typedef std::chrono::high_resolution_clock chronoClock;
 namespace Hanami
 {
 
-#define MSR_RAPL_POWER_UNIT            0x606
+#define MSR_RAPL_POWER_UNIT 0x606
 
 /*
  * Platform specific RAPL Domains.
@@ -40,49 +40,46 @@ namespace Hanami
  * And DRAM RAPL Domain is supported on 062D only
  */
 /* Package RAPL Domain */
-#define MSR_PKG_RAPL_POWER_LIMIT       0x610
-#define MSR_PKG_ENERGY_STATUS          0x611
-#define MSR_PKG_PERF_STATUS            0x13
-#define MSR_PKG_POWER_INFO             0x614
+#define MSR_PKG_RAPL_POWER_LIMIT 0x610
+#define MSR_PKG_ENERGY_STATUS 0x611
+#define MSR_PKG_PERF_STATUS 0x13
+#define MSR_PKG_POWER_INFO 0x614
 
 /* PP0 RAPL Domain */
-#define MSR_PP0_POWER_LIMIT            0x638
-#define MSR_PP0_ENERGY_STATUS          0x639
-#define MSR_PP0_POLICY                 0x63A
-#define MSR_PP0_PERF_STATUS            0x63B
+#define MSR_PP0_POWER_LIMIT 0x638
+#define MSR_PP0_ENERGY_STATUS 0x639
+#define MSR_PP0_POLICY 0x63A
+#define MSR_PP0_PERF_STATUS 0x63B
 
 /* PP1 RAPL Domain, may reflect to uncore devices */
-#define MSR_PP1_POWER_LIMIT            0x640
-#define MSR_PP1_ENERGY_STATUS          0x641
-#define MSR_PP1_POLICY                 0x642
+#define MSR_PP1_POWER_LIMIT 0x640
+#define MSR_PP1_ENERGY_STATUS 0x641
+#define MSR_PP1_POLICY 0x642
 
 /* DRAM RAPL Domain */
-#define MSR_DRAM_POWER_LIMIT           0x618
-#define MSR_DRAM_ENERGY_STATUS         0x619
-#define MSR_DRAM_PERF_STATUS           0x61B
-#define MSR_DRAM_POWER_INFO            0x61C
+#define MSR_DRAM_POWER_LIMIT 0x618
+#define MSR_DRAM_ENERGY_STATUS 0x619
+#define MSR_DRAM_PERF_STATUS 0x61B
+#define MSR_DRAM_POWER_INFO 0x61C
 
 /* RAPL UNIT BITMASK */
-#define POWER_UNIT_OFFSET              0
-#define POWER_UNIT_MASK                0x0F
+#define POWER_UNIT_OFFSET 0
+#define POWER_UNIT_MASK 0x0F
 
-#define ENERGY_UNIT_OFFSET             0x08
-#define ENERGY_UNIT_MASK               0x1F00
+#define ENERGY_UNIT_OFFSET 0x08
+#define ENERGY_UNIT_MASK 0x1F00
 
-#define TIME_UNIT_OFFSET               0x10
-#define TIME_UNIT_MASK                 0xF000
+#define TIME_UNIT_OFFSET 0x10
+#define TIME_UNIT_MASK 0xF000
 
-#define SIGNATURE_MASK                 0xFFFF0
-#define IVYBRIDGE_E                    0x306F0
-#define SANDYBRIDGE_E                  0x206D0
+#define SIGNATURE_MASK 0xFFFF0
+#define IVYBRIDGE_E 0x306F0
+#define SANDYBRIDGE_E 0x206D0
 
 /**
  * @brief constructor
  */
-Rapl::Rapl(const uint64_t threadId)
-{
-    m_threadId = threadId;
-}
+Rapl::Rapl(const uint64_t threadId) { m_threadId = threadId; }
 
 /**
  * @brief initalize rapl-class by open and reading msr-file
@@ -95,14 +92,13 @@ bool
 Rapl::initRapl(ErrorContainer &error)
 {
     // check if already initialized
-    if(m_isInit)
-    {
+    if (m_isInit) {
         LOG_WARNING("this rapl-class was already successfully initialized");
         return true;
     }
 
     // try to open msr-file
-    if(openMSR(error) == false) {
+    if (openMSR(error) == false) {
         return false;
     }
 
@@ -111,9 +107,9 @@ Rapl::initRapl(ErrorContainer &error)
 
     // read MSR_RAPL_POWER_UNIT Register
     uint64_t raw_value = readMSR(MSR_RAPL_POWER_UNIT);
-    m_info.power_units = pow(0.5, (double) (raw_value & 0xf));
-    m_info.energy_units = pow(0.5, (double) ((raw_value >> 8) & 0x1f));
-    m_info.time_units = pow(0.5, (double) ((raw_value >> 16) & 0xf));
+    m_info.power_units = pow(0.5, (double)(raw_value & 0xf));
+    m_info.energy_units = pow(0.5, (double)((raw_value >> 8) & 0x1f));
+    m_info.time_units = pow(0.5, (double)((raw_value >> 16) & 0xf));
 
     // read MSR_PKG_POWER_INFO Register
     raw_value = readMSR(MSR_PKG_POWER_INFO);
@@ -154,12 +150,10 @@ Rapl::checkPP1()
 {
     const uint32_t eax_input = 1;
     uint32_t eax;
-    __asm__("cpuid;" : "=a"(eax) : "0"(eax_input) : "%ebx","%ecx","%edx");
+    __asm__("cpuid;" : "=a"(eax) : "0"(eax_input) : "%ebx", "%ecx", "%edx");
 
     const uint32_t cpuType = eax & SIGNATURE_MASK;
-    if(cpuType == SANDYBRIDGE_E
-            || cpuType == IVYBRIDGE_E)
-    {
+    if (cpuType == SANDYBRIDGE_E || cpuType == IVYBRIDGE_E) {
         return false;
     }
 
@@ -178,11 +172,11 @@ Rapl::openMSR(ErrorContainer &error)
 {
     const std::string path = "/dev/cpu/" + std::to_string(m_threadId) + "/msr";
     m_fd = open(path.c_str(), O_RDONLY);
-    if(m_fd <= 0)
-    {
+    if (m_fd <= 0) {
         error.addMeesage("Failed to open path: \"" + path + "\"");
-        error.addSolution("Maybe the msr-kernel-module still have to be loaded with "
-                          "\"modporobe msr\" or \"modprobe intel_rapl_msr\"");
+        error.addSolution(
+            "Maybe the msr-kernel-module still have to be loaded with "
+            "\"modporobe msr\" or \"modprobe intel_rapl_msr\"");
         error.addSolution("Check if you have read-permissions to the path: \"" + path + "\"");
         return false;
     }
@@ -201,8 +195,7 @@ uint64_t
 Rapl::readMSR(const int32_t offset)
 {
     uint64_t data;
-    if(pread(m_fd, &data, sizeof(data), offset) != sizeof(data))
-    {
+    if (pread(m_fd, &data, sizeof(data), offset) != sizeof(data)) {
         ErrorContainer error;
         error.addMeesage("can not read MSR of cpu even the msr-file is open");
         LOG_ERROR(error);
@@ -226,7 +219,7 @@ Rapl::calculateDiff()
     state.pkg = readMSR(MSR_PKG_ENERGY_STATUS);
     state.pp0 = readMSR(MSR_PP0_ENERGY_STATUS);
     state.dram = readMSR(MSR_DRAM_ENERGY_STATUS);
-    if(m_info.supportPP1) {
+    if (m_info.supportPP1) {
         state.pp1 = readMSR(MSR_PP1_ENERGY_STATUS);
     }
     state.timeStamp = std::chrono::system_clock::now();
@@ -239,8 +232,9 @@ Rapl::calculateDiff()
     diff.dramDiff = m_info.energy_units * static_cast<double>(state.dram - m_lastState.dram);
 
     // calculate time-difference to last run and convert it into seconds
-    uint64_t nanoSec = std::chrono::duration_cast<chronoNanoSec>(state.timeStamp -
-                                                                 m_lastState.timeStamp).count();
+    uint64_t nanoSec
+        = std::chrono::duration_cast<chronoNanoSec>(state.timeStamp - m_lastState.timeStamp)
+              .count();
     const double nanoSecPerSec = 1000000000.0;
     diff.time = static_cast<double>(nanoSec) / nanoSecPerSec;
 
@@ -267,4 +261,4 @@ Rapl::getInfo() const
     return m_info;
 }
 
-}
+}  // namespace Hanami

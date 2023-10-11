@@ -22,17 +22,13 @@
 
 #include "simple_test.h"
 
-#include <hanami_opencl/gpu_interface.h>
 #include <hanami_opencl/gpu_handler.h>
+#include <hanami_opencl/gpu_interface.h>
 
 namespace Hanami
 {
 
-SimpleTest::SimpleTest()
-    : Hanami::CompareTestHelper("SimpleTest")
-{
-    simple_test();
-}
+SimpleTest::SimpleTest() : Hanami::CompareTestHelper("SimpleTest") { simple_test(); }
 
 void
 SimpleTest::simple_test()
@@ -41,26 +37,26 @@ SimpleTest::simple_test()
     ErrorContainer error;
 
     // example kernel for task: c = a + b.
-    const std::string kernelCode =
-        "__kernel void add(\n"
-        "       __global const float* a,\n"
-        "       __global const float* b,\n"
-        "       __global float* c,\n"
-        "       ulong size"
-        "       )\n"
-        "{\n"
-        "    size_t globalId_x = get_global_id(0);\n"
-        "    int localId_x = get_local_id(0);\n"
-        "    size_t globalSize_x = get_global_size(0);\n"
-        "    size_t globalSize_y = get_global_size(1);\n"
-        "    \n"
-        "    size_t globalId = get_global_id(0) + get_global_size(0) * get_global_id(1);\n"
-        "    if(get_global_id(0) == 0) { printf(\"################# size: %d\", size); }\n"
-        "    if (globalId < size)\n"
-        "    {\n"
-        "       c[globalId] = a[globalId] + b[globalId];"
-        "    }\n"
-        "}\n";
+    const std::string kernelCode
+        = "__kernel void add(\n"
+          "       __global const float* a,\n"
+          "       __global const float* b,\n"
+          "       __global float* c,\n"
+          "       ulong size"
+          "       )\n"
+          "{\n"
+          "    size_t globalId_x = get_global_id(0);\n"
+          "    int localId_x = get_local_id(0);\n"
+          "    size_t globalSize_x = get_global_size(0);\n"
+          "    size_t globalSize_y = get_global_size(1);\n"
+          "    \n"
+          "    size_t globalId = get_global_id(0) + get_global_size(0) * get_global_id(1);\n"
+          "    if(get_global_id(0) == 0) { printf(\"################# size: %d\", size); }\n"
+          "    if (globalId < size)\n"
+          "    {\n"
+          "       c[globalId] = a[globalId] + b[globalId];"
+          "    }\n"
+          "}\n";
 
     Hanami::GpuHandler oclHandler;
     assert(oclHandler.initDevice(error));
@@ -87,8 +83,7 @@ SimpleTest::simple_test()
     float* b = static_cast<float*>(data.getBufferData("y"));
 
     // write intput dat into buffer
-    for(uint32_t i = 0; i < testSize; i++)
-    {
+    for (uint32_t i = 0; i < testSize; i++) {
         a[i] = 1.0f;
         b[i] = 2.0f;
     }
@@ -100,8 +95,8 @@ SimpleTest::simple_test()
     TEST_EQUAL(ocl->bindKernelToBuffer(data, "add", "y", error), true)
     TEST_EQUAL(ocl->bindKernelToBuffer(data, "add", "z", error), true)
     TEST_EQUAL(ocl->bindKernelToBuffer(data, "add", "size", error), true)
-    std::cout<<"size outside: "<<testSize<<std::endl;
-    //TEST_EQUAL(ocl->setLocalMemory("add", 256*256), true);
+    std::cout << "size outside: " << testSize << std::endl;
+    // TEST_EQUAL(ocl->setLocalMemory("add", 256*256), true);
     TEST_EQUAL(ocl->run(data, "add", error), true)
     TEST_EQUAL(ocl->copyFromDevice(data, "z", error), true)
 
@@ -110,7 +105,7 @@ SimpleTest::simple_test()
     TEST_EQUAL(outputValues[42], 3.0f)
 
     // update data on host
-    for(uint32_t i = 0; i < testSize; i++) {
+    for (uint32_t i = 0; i < testSize; i++) {
         a[i] = 5.0f;
     }
 
@@ -142,4 +137,4 @@ SimpleTest::simple_test()
     TEST_EQUAL(ocl->closeDevice(data), true)
 }
 
-}
+}  // namespace Hanami

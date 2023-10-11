@@ -32,7 +32,7 @@ const std::string addImageTrainTask(Cluster &cluster,
                                     const std::string &name,
                                     const std::string &userId,
                                     const std::string &projectId,
-                                    float* inputData,
+                                    float *inputData,
                                     const uint64_t numberOfInputsPerCycle,
                                     const uint64_t numberOfOuputsPerCycle,
                                     const uint64_t numberOfCycle);
@@ -40,7 +40,7 @@ const std::string addImageRequestTask(Cluster &cluster,
                                       const std::string &name,
                                       const std::string &userId,
                                       const std::string &projectId,
-                                      float* inputData,
+                                      float *inputData,
                                       const uint64_t numberOfInputsPerCycle,
                                       const uint64_t numberOfOuputsPerCycle,
                                       const uint64_t numberOfCycle);
@@ -48,8 +48,8 @@ const std::string addTableTrainTask(Cluster &cluster,
                                     const std::string &name,
                                     const std::string &userId,
                                     const std::string &projectId,
-                                    float* inputData,
-                                    float* outputData,
+                                    float *inputData,
+                                    float *outputData,
                                     const uint64_t numberOfInputs,
                                     const uint64_t numberOfOutputs,
                                     const uint64_t numberOfCycle);
@@ -57,18 +57,18 @@ const std::string addTableRequestTask(Cluster &cluster,
                                       const std::string &name,
                                       const std::string &userId,
                                       const std::string &projectId,
-                                      float* inputData,
+                                      float *inputData,
                                       const uint64_t numberOfInputs,
                                       const uint64_t numberOfOutputs,
                                       const uint64_t numberOfCycle);
 const std::string addCheckpointSaveTask(Cluster &cluster,
-                                             const std::string &checkpointName,
-                                             const std::string &userId,
-                                             const std::string &projectId);
+                                        const std::string &checkpointName,
+                                        const std::string &userId,
+                                        const std::string &projectId);
 const std::string addCheckpointRestoreTask(Cluster &cluster,
-                                                const std::string &name,
-                                                const std::string &checkpointInfo,
-                                                const std::string &userId,
-                                                const std::string &projectId);
+                                           const std::string &name,
+                                           const std::string &checkpointInfo,
+                                           const std::string &userId,
+                                           const std::string &projectId);
 
-#endif // HANAMI_ADD_TASKS_H
+#endif  // HANAMI_ADD_TASKS_H

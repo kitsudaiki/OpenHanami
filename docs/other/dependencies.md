@@ -10,6 +10,7 @@ Installed packages under the actual used Ubuntu 23.04
 | --- | --- |
 | gcc | C-compiler |
 | g++  | C++-compiler |
+| clang-format-15  | Helper for styling the source-code |
 | make  | Build-Tool |
 | qt5-qmake  | Qt-specific build-tool, because pro-files are used |
 | bison  | Parser-Generator |

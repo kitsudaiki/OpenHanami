@@ -7,9 +7,8 @@
  */
 
 #include <hanami_obj/obj_item.h>
-
-#include <obj_parser.h>
 #include <obj_creator.h>
+#include <obj_parser.h>
 
 namespace Hanami
 {
@@ -24,9 +23,7 @@ namespace Hanami
  * @return true, if successful, else false
  */
 bool
-parseString(ObjItem &result,
-            const std::string &input,
-            ErrorContainer &error)
+parseString(ObjItem &result, const std::string &input, ErrorContainer &error)
 {
     ObjParser parser;
     return parser.parse(result, input, error);
@@ -42,11 +39,10 @@ parseString(ObjItem &result,
  */
 
 bool
-convertToString(std::string &convertedString,
-                const ObjItem &input)
+convertToString(std::string &convertedString, const ObjItem &input)
 {
     ObjCreator creator;
     return creator.create(convertedString, input);
 }
 
-}
+}  // namespace Hanami

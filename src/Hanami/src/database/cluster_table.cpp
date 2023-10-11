@@ -24,16 +24,14 @@
 
 #include <hanami_common/items/table_item.h>
 #include <hanami_common/methods/string_methods.h>
-
 #include <hanami_database/sql_database.h>
 
-ClusterTable* ClusterTable::instance = nullptr;
+ClusterTable *ClusterTable::instance = nullptr;
 
 /**
  * @brief constructor
  */
-ClusterTable::ClusterTable()
-    : HanamiSqlTable(Hanami::SqlDatabase::getInstance())
+ClusterTable::ClusterTable() : HanamiSqlTable(Hanami::SqlDatabase::getInstance())
 {
     m_tableName = "clusters";
 }
@@ -57,8 +55,7 @@ ClusterTable::addCluster(json &clusterData,
                          const UserContext &userContext,
                          Hanami::ErrorContainer &error)
 {
-    if(add(clusterData, userContext, error) == false)
-    {
+    if (add(clusterData, userContext, error) == false) {
         error.addMeesage("Failed to add cluster-meta to database");
         return false;
     }
@@ -88,10 +85,8 @@ ClusterTable::getCluster(json &result,
     conditions.emplace_back("uuid", clusterUuid);
 
     // get user from db
-    if(get(result, userContext, conditions, error, showHiddenValues) == false)
-    {
-        error.addMeesage("Failed to get cluster-meta with UUID '"
-                         + clusterUuid
+    if (get(result, userContext, conditions, error, showHiddenValues) == false) {
+        error.addMeesage("Failed to get cluster-meta with UUID '" + clusterUuid
                          + "' from database");
         return false;
     }
@@ -121,8 +116,7 @@ ClusterTable::getClusterByName(json &result,
     conditions.emplace_back("name", clusterName);
 
     // get user from db
-    if(get(result, userContext, conditions, error, showHiddenValues) == false)
-    {
+    if (get(result, userContext, conditions, error, showHiddenValues) == false) {
         error.addMeesage("Failed to get cluster-meta from database by name '" + clusterName + "'");
         return false;
     }
@@ -145,8 +139,7 @@ ClusterTable::getAllCluster(Hanami::TableItem &result,
                             Hanami::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
-    if(getAll(result, userContext, conditions, error) == false)
-    {
+    if (getAll(result, userContext, conditions, error) == false) {
         error.addMeesage("Failed to get all cluster-meta from database");
         return false;
     }
@@ -171,10 +164,8 @@ ClusterTable::deleteCluster(const std::string &clusterUuid,
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", clusterUuid);
 
-    if(del(conditions, userContext, error) == false)
-    {
-        error.addMeesage("Failed to delete cluster-meta with UUID '"
-                         + clusterUuid
+    if (del(conditions, userContext, error) == false) {
+        error.addMeesage("Failed to delete cluster-meta with UUID '" + clusterUuid
                          + "' from database");
         return false;
     }

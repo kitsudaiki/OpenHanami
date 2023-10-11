@@ -22,8 +22,8 @@
 
 #include "cluster_io.h"
 
-#include <core/cluster/cluster.h>
 #include <../../libraries/hanami_messages/protobuffers/hanami_messages.proto3.pb.h>
+#include <core/cluster/cluster.h>
 
 /**
  * @brief send output of a cluster as protobuf-message
@@ -33,7 +33,7 @@
 void
 sendClusterOutputMessage(Cluster* cluster)
 {
-    if(cluster->msgClient == nullptr) {
+    if (cluster->msgClient == nullptr) {
         return;
     }
 
@@ -44,18 +44,15 @@ sendClusterOutputMessage(Cluster* cluster)
     msg.set_datatype(ClusterDataType::OUTPUT_TYPE);
     msg.set_numberofvalues(cluster->clusterHeader->outputValues.count);
 
-    for(uint64_t outputNeuronId = 0;
-        outputNeuronId < cluster->clusterHeader->outputValues.count;
-        outputNeuronId++)
-    {
+    for (uint64_t outputNeuronId = 0; outputNeuronId < cluster->clusterHeader->outputValues.count;
+         outputNeuronId++) {
         msg.add_values(cluster->outputValues[outputNeuronId]);
     }
 
     // serialize message
-    uint8_t buffer[96*1024];
+    uint8_t buffer[96 * 1024];
     const uint64_t size = msg.ByteSizeLong();
-    if(msg.SerializeToArray(buffer, size) == false)
-    {
+    if (msg.SerializeToArray(buffer, size) == false) {
         Hanami::ErrorContainer error;
         error.addMeesage("Failed to serialize request-message");
         return;
@@ -70,7 +67,7 @@ sendClusterOutputMessage(Cluster* cluster)
 void
 sendProtobufGotInputMessage(Cluster* cluster)
 {
-    if(cluster->msgClient == nullptr) {
+    if (cluster->msgClient == nullptr) {
         return;
     }
 
@@ -84,10 +81,9 @@ sendProtobufGotInputMessage(Cluster* cluster)
     msg.add_values(0.0);
 
     // serialize message
-    uint8_t buffer[96*1024];
+    uint8_t buffer[96 * 1024];
     const uint64_t size = msg.ByteSizeLong();
-    if(msg.SerializeToArray(buffer, size) == false)
-    {
+    if (msg.SerializeToArray(buffer, size) == false) {
         Hanami::ErrorContainer error;
         error.addMeesage("Failed to serialize request-message");
         LOG_ERROR(error);
@@ -106,7 +102,7 @@ sendProtobufGotInputMessage(Cluster* cluster)
 void
 sendClusterNormalEndMessage(Cluster* cluster)
 {
-    if(cluster->msgClient == nullptr) {
+    if (cluster->msgClient == nullptr) {
         return;
     }
 
@@ -122,10 +118,9 @@ sendClusterNormalEndMessage(Cluster* cluster)
     msg.set_numberofvalues(1);
 
     // serialize message
-    uint8_t buffer[96*1024];
+    uint8_t buffer[96 * 1024];
     const uint64_t size = msg.ByteSizeLong();
-    if(msg.SerializeToArray(buffer, size) == false)
-    {
+    if (msg.SerializeToArray(buffer, size) == false) {
         Hanami::ErrorContainer error;
         error.addMeesage("Failed to serialize request-message");
         return;
@@ -143,7 +138,7 @@ sendClusterNormalEndMessage(Cluster* cluster)
 void
 sendClusterTrainEndMessage(Cluster* cluster)
 {
-    if(cluster->msgClient == nullptr) {
+    if (cluster->msgClient == nullptr) {
         return;
     }
 
@@ -156,10 +151,9 @@ sendClusterTrainEndMessage(Cluster* cluster)
     msg.set_numberofvalues(1);
 
     // serialize message
-    uint8_t buffer[96*1024];
+    uint8_t buffer[96 * 1024];
     const uint64_t size = msg.ByteSizeLong();
-    if(msg.SerializeToArray(buffer, size) == false)
-    {
+    if (msg.SerializeToArray(buffer, size) == false) {
         Hanami::ErrorContainer error;
         error.addMeesage("Failed to serialize request-message");
         return;
@@ -180,14 +174,11 @@ sendClusterTrainEndMessage(Cluster* cluster)
  * @return false, if message is broken, else true
  */
 bool
-recvClusterInputMessage(Cluster* cluster,
-                        const void* data,
-                        const uint64_t dataSize)
+recvClusterInputMessage(Cluster* cluster, const void* data, const uint64_t dataSize)
 {
     // parse incoming data
     ClusterIO_Message msg;
-    if(msg.ParseFromArray(data, dataSize) == false)
-    {
+    if (msg.ParseFromArray(data, dataSize) == false) {
         Hanami::ErrorContainer error;
         error.addMeesage("Got invalid Protobuf-ClusterIO-Message");
         LOG_ERROR(error);
@@ -195,37 +186,30 @@ recvClusterInputMessage(Cluster* cluster,
     }
 
     // fill given data into the target-cluster
-    if(msg.datatype() == ClusterDataType::INPUT_TYPE)
-    {
-        for(uint64_t i = 0; i < msg.numberofvalues(); i++) {
+    if (msg.datatype() == ClusterDataType::INPUT_TYPE) {
+        for (uint64_t i = 0; i < msg.numberofvalues(); i++) {
             cluster->inputValues[i] = msg.values(i);
         }
     }
-    if(msg.datatype() == ClusterDataType::SHOULD_TYPE)
-    {
-        for(uint64_t i = 0; i < msg.numberofvalues(); i++) {
+    if (msg.datatype() == ClusterDataType::SHOULD_TYPE) {
+        for (uint64_t i = 0; i < msg.numberofvalues(); i++) {
             cluster->expectedValues[i] = msg.values(i);
         }
     }
 
-    if(msg.islast())
-    {
+    if (msg.islast()) {
         // start request
-        if(msg.processtype() == ClusterProcessType::REQUEST_TYPE)
-        {
+        if (msg.processtype() == ClusterProcessType::REQUEST_TYPE) {
             cluster->mode = ClusterProcessingMode::NORMAL_MODE;
             cluster->startForwardCycle();
         }
 
         // start train
-        if(msg.processtype() == ClusterProcessType::TRAIN_TYPE)
-        {
+        if (msg.processtype() == ClusterProcessType::TRAIN_TYPE) {
             cluster->mode = ClusterProcessingMode::TRAIN_FORWARD_MODE;
             cluster->startForwardCycle();
         }
-    }
-    else
-    {
+    } else {
         sendProtobufGotInputMessage(cluster);
     }
 

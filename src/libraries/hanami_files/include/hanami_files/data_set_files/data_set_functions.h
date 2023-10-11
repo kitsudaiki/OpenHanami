@@ -23,21 +23,18 @@
 #ifndef HANAMI_DATA_SET_FUNCTIONS_H
 #define HANAMI_DATA_SET_FUNCTIONS_H
 
-#include <hanami_common/logger.h>
 #include <hanami_common/buffer/data_buffer.h>
+#include <hanami_common/logger.h>
 
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
 
-bool
-getDataSetPayload(Hanami::DataBuffer &result,
-                  const std::string &location,
-                  Hanami::ErrorContainer &error,
-                  const std::string &columnName = "");
+bool getDataSetPayload(Hanami::DataBuffer &result,
+                       const std::string &location,
+                       Hanami::ErrorContainer &error,
+                       const std::string &columnName = "");
 
-bool getHeaderInformation(json &result,
-                          const std::string &location,
-                          Hanami::ErrorContainer &error);
+bool getHeaderInformation(json &result, const std::string &location, Hanami::ErrorContainer &error);
 
-#endif // HANAMI_DATA_SET_FUNCTIONS_H
+#endif  // HANAMI_DATA_SET_FUNCTIONS_H

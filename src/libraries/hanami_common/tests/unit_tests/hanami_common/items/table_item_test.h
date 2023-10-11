@@ -9,8 +9,8 @@
 #ifndef TABLE_ITEM_TEST_H
 #define TABLE_ITEM_TEST_H
 
-#include <hanami_common/test_helper/compare_test_helper.h>
 #include <hanami_common/items/table_item.h>
+#include <hanami_common/test_helper/compare_test_helper.h>
 
 #include <nlohmann/json.hpp>
 
@@ -19,13 +19,12 @@ using json = nlohmann::json;
 namespace Hanami
 {
 
-class TableItem_test
-        : public Hanami::CompareTestHelper
+class TableItem_test : public Hanami::CompareTestHelper
 {
-public:
+   public:
     TableItem_test();
 
-private:
+   private:
     void copy_contructor_test();
     void assignment_operator_test();
     void clearTable_test();
@@ -58,6 +57,6 @@ private:
     TableItem getTestTableItem();
 };
 
-}
+}  // namespace Hanami
 
-#endif // TABLE_ITEM_TEST_H
+#endif  // TABLE_ITEM_TEST_H

@@ -24,11 +24,10 @@
 
 #include <hanami_sdk/cluster.h>
 
-ClusterCreateTest::ClusterCreateTest(const bool expectSuccess)
-          : TestStep(expectSuccess)
+ClusterCreateTest::ClusterCreateTest(const bool expectSuccess) : TestStep(expectSuccess)
 {
     m_testName = "create cluster";
-    if(expectSuccess) {
+    if (expectSuccess) {
         m_testName += " (success)";
     } else {
         m_testName += " (fail)";
@@ -36,20 +35,17 @@ ClusterCreateTest::ClusterCreateTest(const bool expectSuccess)
 }
 
 bool
-ClusterCreateTest::runTest(json &inputData,
-                           Hanami::ErrorContainer &error)
+ClusterCreateTest::runTest(json &inputData, Hanami::ErrorContainer &error)
 {
     // create new cluster
     std::string result;
-    if(Hanami::createCluster(result,
-                             inputData["cluster_name"],
-                             inputData["cluster_definition"],
-                             error) != m_expectSuccess)
-    {
+    if (Hanami::createCluster(
+            result, inputData["cluster_name"], inputData["cluster_definition"], error)
+        != m_expectSuccess) {
         return false;
     }
 
-    if(m_expectSuccess == false) {
+    if (m_expectSuccess == false) {
         return true;
     }
 
@@ -57,7 +53,7 @@ ClusterCreateTest::runTest(json &inputData,
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch(const json::parse_error& ex) {
+    } catch (const json::parse_error &ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }

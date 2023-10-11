@@ -28,16 +28,15 @@
 namespace Hanami
 {
 
-class Symmetric_Encryption_Test
-        : public Hanami::CompareTestHelper
+class Symmetric_Encryption_Test : public Hanami::CompareTestHelper
 {
-public:
+   public:
     Symmetric_Encryption_Test();
 
-private:
+   private:
     void encrypt_decrypt_AES_256();
 };
 
-}
+}  // namespace Hanami
 
-#endif // SYMMETRIC_ENCRYPTION_TEST_H
+#endif  // SYMMETRIC_ENCRYPTION_TEST_H

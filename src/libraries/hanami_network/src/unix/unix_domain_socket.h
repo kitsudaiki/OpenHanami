@@ -25,12 +25,11 @@ class TemplateServer;
 
 class UnixDomainSocket
 {
-
-public:
+   public:
     UnixDomainSocket(const std::string &socketFile);
     ~UnixDomainSocket();
 
-private:
+   private:
     friend TemplateSocket<UnixDomainSocket>;
     friend TemplateServer<UnixDomainServer>;
     friend TemplateServer<TcpServer>;
@@ -43,24 +42,19 @@ private:
     bool isConnected = false;
     bool m_isClientSide = false;
     int socketFd = 0;
-    uint32_t type = 0;;
+    uint32_t type = 0;
+    ;
 
     bool initClientSide(ErrorContainer &error);
     bool initSocket(ErrorContainer &error);
     int getSocketFd() const;
     bool isClientSide() const;
-    long recvData(int socket,
-                  void* bufferPosition,
-                  const size_t bufferSize,
-                  int flags);
-    ssize_t sendData(int socket,
-                     const void* bufferPosition,
-                     const size_t bufferSize,
-                     int flags);
+    long recvData(int socket, void *bufferPosition, const size_t bufferSize, int flags);
+    ssize_t sendData(int socket, const void *bufferPosition, const size_t bufferSize, int flags);
 
     std::string m_socketFile = "";
 };
 
-}
+}  // namespace Hanami
 
-#endif // UNIX_DOMAIN_SOCKET_H
+#endif  // UNIX_DOMAIN_SOCKET_H

@@ -6,9 +6,9 @@
  *  @copyright MIT License
  */
 
-#include <tcp/tcp_socket.h>
-#include <hanami_common/threading/cleanup_thread.h>
 #include <hanami_common/logger.h>
+#include <hanami_common/threading/cleanup_thread.h>
+#include <tcp/tcp_socket.h>
 
 namespace Hanami
 {
@@ -19,8 +19,7 @@ namespace Hanami
  * @param address ipv4-adress of the server
  * @param port port where the server is listen
  */
-TcpSocket::TcpSocket(const std::string &address,
-                     const uint16_t port)
+TcpSocket::TcpSocket(const std::string& address, const uint16_t port)
 {
     m_address = address;
     m_port = port;
@@ -38,7 +37,8 @@ TcpSocket::TcpSocket() {}
  */
 TcpSocket::~TcpSocket() {}
 
-int TcpSocket::getSocketFd() const
+int
+TcpSocket::getSocketFd() const
 {
     return socketFd;
 }
@@ -51,13 +51,13 @@ int TcpSocket::getSocketFd() const
  * @return true, if successful, else false
  */
 bool
-TcpSocket::initClientSide(ErrorContainer &error)
+TcpSocket::initClientSide(ErrorContainer& error)
 {
-    if(socketFd > 0) {
+    if (socketFd > 0) {
         return true;
     }
 
-    if(initSocket(error) == false) {
+    if (initSocket(error) == false) {
         return false;
     }
 
@@ -89,7 +89,7 @@ TcpSocket::TcpSocket(const int socketFd)
  * @return false, if socket-creation or connection to the server failed, else true
  */
 bool
-TcpSocket::initSocket(ErrorContainer &error)
+TcpSocket::initSocket(ErrorContainer& error)
 {
     struct sockaddr_in address;
     struct hostent* hostInfo;
@@ -97,8 +97,7 @@ TcpSocket::initSocket(ErrorContainer &error)
 
     // create socket
     socketFd = socket(AF_INET, SOCK_STREAM, 0);
-    if(socketFd < 0)
-    {
+    if (socketFd < 0) {
         error.addMeesage("Failed to create a tcp-socket");
         error.addSolution("Maybe no permissions to create a tcp-socket on the system");
         return false;
@@ -106,24 +105,19 @@ TcpSocket::initSocket(ErrorContainer &error)
 
     // set TCP_NODELAY for sure
     int optval = 1;
-    if(setsockopt(socketFd, IPPROTO_TCP, TCP_NODELAY, &optval, sizeof(int)) < 0)
-    {
+    if (setsockopt(socketFd, IPPROTO_TCP, TCP_NODELAY, &optval, sizeof(int)) < 0) {
         error.addMeesage("'setsockopt'-function failed");
         return false;
     }
 
     // set server-address
     memset(&address, 0, sizeof(address));
-    if((addr = inet_addr(m_address.c_str())) != INADDR_NONE)
-    {
+    if ((addr = inet_addr(m_address.c_str())) != INADDR_NONE) {
         memcpy(reinterpret_cast<char*>(&address.sin_addr), &addr, sizeof(addr));
-    }
-    else
-    {
+    } else {
         // get server-connection via host-name instead of ip-address
         hostInfo = gethostbyname(m_address.c_str());
-        if(hostInfo == nullptr)
-        {
+        if (hostInfo == nullptr) {
             error.addMeesage("Failed to get host by address: " + m_address);
             error.addSolution("Check DNS, which is necessary to resolve the address");
             return false;
@@ -139,8 +133,7 @@ TcpSocket::initSocket(ErrorContainer &error)
     address.sin_port = htons(m_port);
 
     // create connection
-    if(connect(socketFd, reinterpret_cast<struct sockaddr*>(&address), sizeof(address)) < 0)
-    {
+    if (connect(socketFd, reinterpret_cast<struct sockaddr*>(&address), sizeof(address)) < 0) {
         error.addMeesage("Failed to initialized tcp-socket client to target: " + m_address);
         error.addSolution("Check if the target-server is running and reable");
         return false;
@@ -168,10 +161,7 @@ TcpSocket::isClientSide() const
  * @return number of read bytes
  */
 long
-TcpSocket::recvData(int socket,
-                    void* bufferPosition,
-                    const size_t bufferSize,
-                    int flags)
+TcpSocket::recvData(int socket, void* bufferPosition, const size_t bufferSize, int flags)
 {
     return recv(socket, bufferPosition, bufferSize, flags);
 }
@@ -182,10 +172,7 @@ TcpSocket::recvData(int socket,
  * @return number of written bytes
  */
 ssize_t
-TcpSocket::sendData(int socket,
-                    const void* bufferPosition,
-                    const size_t bufferSize,
-                    int flags)
+TcpSocket::sendData(int socket, const void* bufferPosition, const size_t bufferSize, int flags)
 {
     return send(socket, bufferPosition, bufferSize, flags);
 }
@@ -201,4 +188,4 @@ TcpSocket::getAddress() const
     return m_address;
 }
 
-}
+}  // namespace Hanami

@@ -20,14 +20,12 @@
  *      limitations under the License.
  */
 
-#include <hanami_crypto/hashes.h>
-#include <hanami_crypto/common.h>
-
-#include <cryptopp/modes.h>
 #include <cryptopp/filters.h>
+#include <cryptopp/modes.h>
 #include <cryptopp/sha.h>
-
 #include <hanami_common/methods/string_methods.h>
+#include <hanami_crypto/common.h>
+#include <hanami_crypto/hashes.h>
 
 namespace Hanami
 {
@@ -45,8 +43,7 @@ namespace Hanami
  * @return false, if input is empty-string, else true
  */
 bool
-generate_SHA_256(std::string &result,
-                 const std::string &input)
+generate_SHA_256(std::string &result, const std::string &input)
 {
     return generate_SHA_256(result, &input[0], input.size());
 }
@@ -61,13 +58,9 @@ generate_SHA_256(std::string &result,
  * @return false, if input is invalid, else true
  */
 bool
-generate_SHA_256(std::string &result,
-                 const void* input,
-                 const uint64_t inputSize)
+generate_SHA_256(std::string &result, const void *input, const uint64_t inputSize)
 {
-    if(input == nullptr
-            || inputSize == 0)
-    {
+    if (input == nullptr || inputSize == 0) {
         return false;
     }
 
@@ -77,11 +70,11 @@ generate_SHA_256(std::string &result,
     CryptoPP::SHA256 hash;
     CryptoPP::byte digest[CryptoPP::SHA256::DIGESTSIZE];
 
-    hash.CalculateDigest(digest, (CryptoPP::byte*)input, inputSize);
+    hash.CalculateDigest(digest, (CryptoPP::byte *)input, inputSize);
     hexEncode(result, digest, sizeof(digest));
     Hanami::toLowerCase(result);
 
     return true;
 }
 
-}
+}  // namespace Hanami

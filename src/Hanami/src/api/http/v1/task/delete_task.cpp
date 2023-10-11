@@ -22,13 +22,12 @@
 
 #include "delete_task.h"
 
-#include <core/cluster/cluster_handler.h>
 #include <core/cluster/cluster.h>
+#include <core/cluster/cluster_handler.h>
 #include <database/cluster_table.h>
 #include <hanami_root.h>
 
-DeleteTask::DeleteTask()
-    : Blossom("Delete a task or abort a task, if it is actually running.")
+DeleteTask::DeleteTask() : Blossom("Delete a task or abort a task, if it is actually running.")
 {
     errorCodes.push_back(NOT_FOUND_RTYPE);
 
@@ -37,12 +36,12 @@ DeleteTask::DeleteTask()
     //----------------------------------------------------------------------------------------------
 
     registerInputField("uuid", SAKURA_STRING_TYPE)
-            .setComment("UUID of the task, which should be deleted")
-            .setRegex(UUID_REGEX);
+        .setComment("UUID of the task, which should be deleted")
+        .setRegex(UUID_REGEX);
 
     registerInputField("cluster_uuid", SAKURA_STRING_TYPE)
-            .setComment("UUID of the cluster, which contains the task in its queue")
-            .setRegex(UUID_REGEX);
+        .setComment("UUID of the cluster, which contains the task in its queue")
+        .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     //
@@ -64,18 +63,14 @@ DeleteTask::runTask(BlossomIO &blossomIO,
 
     // check if user exist within the table
     json getResult;
-    if(ClusterTable::getInstance()->getCluster(getResult,
-                                               clusterUuid,
-                                               userContext,
-                                               error) == false)
-    {
+    if (ClusterTable::getInstance()->getCluster(getResult, clusterUuid, userContext, error)
+        == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // handle not found
-    if(getResult.size() == 0)
-    {
+    if (getResult.size() == 0) {
         status.errorMessage = "Cluster with uuid '" + clusterUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
@@ -83,9 +78,8 @@ DeleteTask::runTask(BlossomIO &blossomIO,
     }
 
     // get cluster
-    Cluster* cluster = ClusterHandler::getInstance()->getCluster(clusterUuid);
-    if(cluster == nullptr)
-    {
+    Cluster *cluster = ClusterHandler::getInstance()->getCluster(clusterUuid);
+    if (cluster == nullptr) {
         status.errorMessage = "Cluster with UUID '" + clusterUuid + "'not found";
         status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
@@ -93,8 +87,7 @@ DeleteTask::runTask(BlossomIO &blossomIO,
     }
 
     // delete task
-    if(cluster->removeTask(taskUuid) == false)
-    {
+    if (cluster->removeTask(taskUuid) == false) {
         status.errorMessage = "Task with UUID '" + clusterUuid + "'not found in "
                               "Cluster with UUID '" + clusterUuid;
         status.statusCode = NOT_FOUND_RTYPE;

@@ -25,18 +25,15 @@
 
 #include <common/test_step.h>
 
-class RequestResultGetTest
-        : public TestStep
+class RequestResultGetTest : public TestStep
 {
-public:
-    RequestResultGetTest(const bool expectSuccess,
-                         const std::string &uuidOverride = "");
+   public:
+    RequestResultGetTest(const bool expectSuccess, const std::string &uuidOverride = "");
 
-    bool runTest(json &inputData,
-                 Hanami::ErrorContainer &error);
+    bool runTest(json &inputData, Hanami::ErrorContainer &error);
 
-private:
+   private:
     std::string m_uuid = "";
 };
 
-#endif // TSUGUMITESTER_REQUEST_RESULT_GET_TEST_H
+#endif  // TSUGUMITESTER_REQUEST_RESULT_GET_TEST_H

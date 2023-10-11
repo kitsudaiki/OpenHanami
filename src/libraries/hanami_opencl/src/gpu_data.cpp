@@ -45,10 +45,10 @@ GpuData::addBuffer(const std::string &name,
                    const uint64_t numberOfObjects,
                    const uint64_t objectSize,
                    const bool useHostPtr,
-                   void* data)
+                   void *data)
 {
     // precheck
-    if(containsBuffer(name)) {
+    if (containsBuffer(name)) {
         return false;
     }
 
@@ -59,17 +59,14 @@ GpuData::addBuffer(const std::string &name,
     newBuffer.useHostPtr = useHostPtr;
 
     // allocate or set memory
-    if(data == nullptr)
-    {
+    if (data == nullptr) {
         // fix size of the bytes to allocate, if necessary by round up to a multiple of 4096 bytes
-        if(newBuffer.numberOfBytes % 4096 != 0) {
+        if (newBuffer.numberOfBytes % 4096 != 0) {
             newBuffer.numberOfBytes += 4096 - (newBuffer.numberOfBytes % 4096);
         }
 
         newBuffer.data = Hanami::alignedMalloc(4096, newBuffer.numberOfBytes);
-    }
-    else
-    {
+    } else {
         newBuffer.data = data;
         newBuffer.allowBufferDeleteAfterClose = false;
     }
@@ -88,8 +85,7 @@ GpuData::addBuffer(const std::string &name,
  * @return false, if name already is registered, else true
  */
 bool
-GpuData::addValue(const std::string &name,
-                  const uint64_t value)
+GpuData::addValue(const std::string &name, const uint64_t value)
 {
     // prepare worker-buffer
     WorkerBuffer newBuffer;
@@ -109,11 +105,11 @@ GpuData::addValue(const std::string &name,
  *
  * @return pointer to worker-buffer, if name found, else nullptr
  */
-GpuData::WorkerBuffer*
+GpuData::WorkerBuffer *
 GpuData::getBuffer(const std::string &name)
 {
     const auto it = m_buffer.find(name);
-    if(it != m_buffer.end()) {
+    if (it != m_buffer.end()) {
         return &it->second;
     }
 
@@ -130,7 +126,7 @@ GpuData::getBuffer(const std::string &name)
 bool
 GpuData::containsBuffer(const std::string &name)
 {
-    if(m_buffer.find(name) != m_buffer.end()) {
+    if (m_buffer.find(name) != m_buffer.end()) {
         return true;
     }
 
@@ -144,11 +140,11 @@ GpuData::containsBuffer(const std::string &name)
  *
  * @return pointer to data, if name found, else nullptr
  */
-void*
+void *
 GpuData::getBufferData(const std::string &name)
 {
     const auto it = m_buffer.find(name);
-    if(it != m_buffer.end()) {
+    if (it != m_buffer.end()) {
         return it->second.data;
     }
 
@@ -165,7 +161,7 @@ GpuData::getBufferData(const std::string &name)
 bool
 GpuData::containsKernel(const std::string &name)
 {
-    if(m_kernel.find(name) != m_kernel.end()) {
+    if (m_kernel.find(name) != m_kernel.end()) {
         return true;
     }
 
@@ -179,11 +175,11 @@ GpuData::containsKernel(const std::string &name)
  *
  * @return nullptr if name not exist, else pointer to requested object
  */
-GpuData::KernelDef*
+GpuData::KernelDef *
 GpuData::getKernel(const std::string &name)
 {
     const auto it = m_kernel.find(name);
-    if(it != m_kernel.end()) {
+    if (it != m_kernel.end()) {
         return &it->second;
     }
 
@@ -199,15 +195,14 @@ GpuData::getKernel(const std::string &name)
  * @return position of the argument
  */
 uint32_t
-GpuData::getArgPosition(KernelDef* kernelDef,
-                        const std::string &bufferName)
+GpuData::getArgPosition(KernelDef *kernelDef, const std::string &bufferName)
 {
     const auto it = kernelDef->arguments.find(bufferName);
-    if(it != kernelDef->arguments.end()) {
+    if (it != kernelDef->arguments.end()) {
         return it->second;
     }
 
     return 0;
 }
 
-}
+}  // namespace Hanami

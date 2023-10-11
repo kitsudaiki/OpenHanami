@@ -14,18 +14,17 @@
 namespace Hanami
 {
 
-class StackBufferReserve_Test
-        : public Hanami::CompareTestHelper
+class StackBufferReserve_Test : public Hanami::CompareTestHelper
 {
-public:
+   public:
     StackBufferReserve_Test();
 
-private:
+   private:
     void addBuffer_test();
     void getNumberOfBuffers_test();
     void getBuffer_test();
 };
 
-}
+}  // namespace Hanami
 
-#endif // STACK_BUFFER_RESERVE_TEST_H
+#endif  // STACK_BUFFER_RESERVE_TEST_H

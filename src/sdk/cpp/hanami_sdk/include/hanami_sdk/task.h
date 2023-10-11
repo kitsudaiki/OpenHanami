@@ -40,15 +40,13 @@ bool getTask(std::string &result,
              const std::string &clusterUuid,
              Hanami::ErrorContainer &error);
 
-bool listTask(std::string &result,
-              const std::string &clusterUuid,
-              Hanami::ErrorContainer &error);
+bool listTask(std::string &result, const std::string &clusterUuid, Hanami::ErrorContainer &error);
 
 bool deleteTask(std::string &result,
                 const std::string &taskUuid,
                 const std::string &clusterUuid,
                 Hanami::ErrorContainer &error);
 
-} // namespace Hanami
+}  // namespace Hanami
 
-#endif // HANAMISDK_TASK_H
+#endif  // HANAMISDK_TASK_H

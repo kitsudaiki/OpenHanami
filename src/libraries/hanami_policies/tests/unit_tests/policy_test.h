@@ -28,19 +28,18 @@
 namespace Hanami
 {
 
-class Policy_Test
-        : public Hanami::CompareTestHelper
+class Policy_Test : public Hanami::CompareTestHelper
 {
-public:
+   public:
     Policy_Test();
 
-private:
+   private:
     void parse_test();
     void checkUserAgainstPolicy();
 
     const std::string getTestString();
 };
 
-}
+}  // namespace Hanami
 
-#endif // POLICY_TEST_H
+#endif  // POLICY_TEST_H

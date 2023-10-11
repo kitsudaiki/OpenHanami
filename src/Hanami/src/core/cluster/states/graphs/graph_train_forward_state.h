@@ -27,17 +27,16 @@
 
 class Cluster;
 
-class GraphTrainForward_State
-        : public Hanami::Event
+class GraphTrainForward_State : public Hanami::Event
 {
-public:
+   public:
     GraphTrainForward_State(Cluster* cluster);
     ~GraphTrainForward_State();
 
     bool processEvent();
 
-private:
+   private:
     Cluster* m_cluster = nullptr;
 };
 
-#endif // HANAMI_GRAPHTRAINFORWARD_STATE_H
+#endif  // HANAMI_GRAPHTRAINFORWARD_STATE_H

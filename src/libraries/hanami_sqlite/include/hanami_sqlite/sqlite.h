@@ -18,14 +18,14 @@
 #ifndef SQLITE_H
 #define SQLITE_H
 
+#include <hanami_common/logger.h>
+#include <sqlite3.h>
+
 #include <iostream>
+#include <nlohmann/json.hpp>
+#include <regex>
 #include <utility>
 #include <vector>
-#include <regex>
-#include <sqlite3.h>
-#include <nlohmann/json.hpp>
-
-#include <hanami_common/logger.h>
 
 using json = nlohmann::json;
 
@@ -35,24 +35,21 @@ class TableItem;
 
 class Sqlite
 {
-public:
+   public:
     Sqlite();
     ~Sqlite();
 
-    bool initDB(const std::string &path,
-                ErrorContainer &error);
+    bool initDB(const std::string &path, ErrorContainer &error);
 
-    bool execSqlCommand(TableItem* resultTable,
-                        const std::string &command,
-                        ErrorContainer &error);
+    bool execSqlCommand(TableItem *resultTable, const std::string &command, ErrorContainer &error);
 
     bool closeDB();
 
-private:
-    sqlite3* m_db = nullptr;
+   private:
+    sqlite3 *m_db = nullptr;
     int m_rc = 0;
 };
 
-}
+}  // namespace Hanami
 
-#endif // SQLITE_H
+#endif  // SQLITE_H

@@ -23,65 +23,60 @@
 #ifndef HANAMI_DATASETFILE_H
 #define HANAMI_DATASETFILE_H
 
+#include <hanami_common/buffer/data_buffer.h>
+#include <hanami_common/logger.h>
+#include <stdint.h>
+
+#include <cstring>
 #include <string>
 #include <vector>
-#include <stdint.h>
-#include <cstring>
 
-#include <hanami_common/logger.h>
-#include <hanami_common/buffer/data_buffer.h>
-
-namespace Hanami {
+namespace Hanami
+{
 struct DataBuffer;
 class BinaryFile;
-}
+}  // namespace Hanami
 
 class DataSetFile
 {
-public:
-    enum DataSetType
-    {
-        UNDEFINED_TYPE = 0,
-        IMAGE_TYPE = 1,
-        TABLE_TYPE = 2
-    };
+   public:
+    enum DataSetType { UNDEFINED_TYPE = 0, IMAGE_TYPE = 1, TABLE_TYPE = 2 };
 
-    struct DataSetHeader
-    {
+    struct DataSetHeader {
         uint8_t type = UNDEFINED_TYPE;
         char name[256];
     };
 
     DataSetFile(const std::string &filePath);
-    DataSetFile(Hanami::BinaryFile* file);
+    DataSetFile(Hanami::BinaryFile *file);
     virtual ~DataSetFile();
 
     bool initNewFile(Hanami::ErrorContainer &error);
     bool readFromFile(Hanami::ErrorContainer &error);
 
     bool addBlock(const uint64_t pos,
-                  const float* data,
+                  const float *data,
                   const u_int64_t numberOfValues,
                   Hanami::ErrorContainer &error);
     virtual bool getPayload(Hanami::DataBuffer &result,
                             Hanami::ErrorContainer &error,
-                            const std::string &columnName = "") = 0;
+                            const std::string &columnName = "")
+        = 0;
     virtual bool updateHeader(Hanami::ErrorContainer &error) = 0;
 
     DataSetType type = UNDEFINED_TYPE;
     std::string name = "";
 
-protected:
+   protected:
     virtual void initHeader() = 0;
-    virtual void readHeader(const uint8_t* u8buffer) = 0;
+    virtual void readHeader(const uint8_t *u8buffer) = 0;
 
-    Hanami::BinaryFile* m_targetFile = nullptr;
+    Hanami::BinaryFile *m_targetFile = nullptr;
 
     uint64_t m_headerSize = 0;
     uint64_t m_totalFileSize = 0;
 };
 
-DataSetFile* readDataSetFile(const std::string &filePath,
-                             Hanami::ErrorContainer &error);
+DataSetFile *readDataSetFile(const std::string &filePath, Hanami::ErrorContainer &error);
 
-#endif // HANAMI_DATASETFILE_H
+#endif  // HANAMI_DATASETFILE_H

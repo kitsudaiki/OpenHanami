@@ -25,18 +25,15 @@
 
 #include <common/test_step.h>
 
-class DataSetCreateMnistTest
-        : public TestStep
+class DataSetCreateMnistTest : public TestStep
 {
-public:
-    DataSetCreateMnistTest(const bool expectSuccess,
-                           const std::string &type);
+   public:
+    DataSetCreateMnistTest(const bool expectSuccess, const std::string &type);
 
-    bool runTest(json &inputData,
-                 Hanami::ErrorContainer &error);
+    bool runTest(json &inputData, Hanami::ErrorContainer &error);
 
-private:
+   private:
     std::string m_type = "";
 };
 
-#endif // TSUGUMITESTER_DATASETCREATE_MNIST_TEST_H
+#endif  // TSUGUMITESTER_DATASETCREATE_MNIST_TEST_H

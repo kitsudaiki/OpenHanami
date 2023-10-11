@@ -25,12 +25,10 @@
 
 #include <hanami_files/data_set_files/data_set_file.h>
 
-class ImageDataSetFile
-        : public DataSetFile
+class ImageDataSetFile : public DataSetFile
 {
-public:
-    struct ImageTypeHeader
-    {
+   public:
+    struct ImageTypeHeader {
         uint64_t numberOfInputsX = 0;
         uint64_t numberOfInputsY = 0;
         uint64_t numberOfOutputs = 0;
@@ -40,7 +38,7 @@ public:
     };
 
     ImageDataSetFile(const std::string &filePath);
-    ImageDataSetFile(Hanami::BinaryFile* file);
+    ImageDataSetFile(Hanami::BinaryFile *file);
     ~ImageDataSetFile();
     bool updateHeader(Hanami::ErrorContainer &error);
     bool getPayload(Hanami::DataBuffer &result,
@@ -49,9 +47,9 @@ public:
 
     ImageTypeHeader imageHeader;
 
-protected:
+   protected:
     void initHeader();
-    void readHeader(const uint8_t* u8buffer);
+    void readHeader(const uint8_t *u8buffer);
 };
 
-#endif // HANAMI_IMAGEDATASETFILE_H
+#endif  // HANAMI_IMAGEDATASETFILE_H

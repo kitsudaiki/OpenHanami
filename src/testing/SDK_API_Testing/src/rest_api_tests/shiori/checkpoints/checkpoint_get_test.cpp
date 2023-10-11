@@ -24,12 +24,11 @@
 
 #include <hanami_sdk/checkpoint.h>
 
-CheckpointGetTest::CheckpointGetTest(const bool expectSuccess,
-                                 const std::string &uuidOverride)
+CheckpointGetTest::CheckpointGetTest(const bool expectSuccess, const std::string &uuidOverride)
     : TestStep(expectSuccess)
 {
     m_testName = "get checkpoint";
-    if(expectSuccess) {
+    if (expectSuccess) {
         m_testName += " (success)";
     } else {
         m_testName += " (fail)";
@@ -38,20 +37,19 @@ CheckpointGetTest::CheckpointGetTest(const bool expectSuccess,
 }
 
 bool
-CheckpointGetTest::runTest(json &inputData,
-                         Hanami::ErrorContainer &error)
+CheckpointGetTest::runTest(json &inputData, Hanami::ErrorContainer &error)
 {
-    if(m_uuid == "") {
+    if (m_uuid == "") {
         m_uuid = inputData["checkpoint_uuid"];
     }
 
     // get user by name
     std::string result;
-    if(Hanami::getCheckpoint(result, m_uuid, error) != m_expectSuccess) {
+    if (Hanami::getCheckpoint(result, m_uuid, error) != m_expectSuccess) {
         return false;
     }
 
-    if(m_expectSuccess == false) {
+    if (m_expectSuccess == false) {
         return true;
     }
 
@@ -59,11 +57,10 @@ CheckpointGetTest::runTest(json &inputData,
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch(const json::parse_error& ex) {
+    } catch (const json::parse_error &ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
 
     return true;
 }
-

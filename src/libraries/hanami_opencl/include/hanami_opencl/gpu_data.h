@@ -23,12 +23,12 @@
 #ifndef GPU_DATA_H
 #define GPU_DATA_H
 
+#include <hanami_common/buffer/data_buffer.h>
+
 #include <iostream>
-#include <vector>
 #include <map>
 #include <string>
-
-#include <hanami_common/buffer/data_buffer.h>
+#include <vector>
 
 #define __CL_ENABLE_EXCEPTIONS
 #include <CL/cl2.hpp>
@@ -37,8 +37,7 @@ namespace Hanami
 {
 class GpuInterface;
 
-struct WorkerDim
-{
+struct WorkerDim {
     uint64_t x = 1;
     uint64_t y = 1;
     uint64_t z = 1;
@@ -46,7 +45,7 @@ struct WorkerDim
 
 class GpuData
 {
-public:
+   public:
     WorkerDim numberOfWg;
     WorkerDim threadsPerWg;
 
@@ -56,21 +55,19 @@ public:
                    const uint64_t numberOfObjects,
                    const uint64_t objectSize,
                    const bool useHostPtr = false,
-                   void* data = nullptr);
-    bool addValue(const std::string &name,
-                  const uint64_t value);
+                   void *data = nullptr);
+    bool addValue(const std::string &name, const uint64_t value);
 
     bool containsBuffer(const std::string &name);
-    void* getBufferData(const std::string &name);
+    void *getBufferData(const std::string &name);
 
-private:
+   private:
     friend GpuInterface;
 
-    struct WorkerBuffer
-    {
+    struct WorkerBuffer {
         bool isValue = false;
         uint64_t value = 0;
-        void* data = nullptr;
+        void *data = nullptr;
         uint64_t numberOfBytes = 0;
         uint64_t numberOfObjects = 0;
         bool useHostPtr = false;
@@ -78,8 +75,7 @@ private:
         cl::Buffer clBuffer;
     };
 
-    struct KernelDef
-    {
+    struct KernelDef {
         std::string id = "";
         std::string kernelCode = "";
         cl::Kernel kernel;
@@ -91,15 +87,14 @@ private:
     std::map<std::string, WorkerBuffer> m_buffer;
     std::map<std::string, KernelDef> m_kernel;
 
-    WorkerBuffer* getBuffer(const std::string &name);
+    WorkerBuffer *getBuffer(const std::string &name);
 
     bool containsKernel(const std::string &name);
-    KernelDef* getKernel(const std::string &name);
+    KernelDef *getKernel(const std::string &name);
 
-    uint32_t getArgPosition(KernelDef* kernelDef,
-                            const std::string &bufferName);
+    uint32_t getArgPosition(KernelDef *kernelDef, const std::string &bufferName);
 };
 
-}
+}  // namespace Hanami
 
-#endif // GPU_DATA_H
+#endif  // GPU_DATA_H

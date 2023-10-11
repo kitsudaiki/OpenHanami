@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#include <core/processing/processing_unit_handler.h>
 #include <core/processing/cpu_processing_unit.h>
+#include <core/processing/processing_unit_handler.h>
 
 ProcessingUnitHandler* ProcessingUnitHandler::instance = nullptr;
 
@@ -60,8 +60,7 @@ bool
 ProcessingUnitHandler::initProcessingUnits(const uint16_t numberOfThreads)
 {
     // init cpu
-    for(uint16_t i = 0; i < numberOfThreads; i++)
-    {
+    for (uint16_t i = 0; i < numberOfThreads; i++) {
         CpuProcessingUnit* newUnit = new CpuProcessingUnit();
         m_processingUnits.push_back(newUnit);
         newUnit->startThread();

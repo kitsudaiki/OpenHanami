@@ -24,26 +24,24 @@
 #define HANAMI_MNIST_FINALIZE_DATA_SET_H
 
 #include <api/endpoint_processing/blossom.h>
-
 #include <hanami_common/buffer/data_buffer.h>
 
-class FinalizeMnistDataSet
-        : public Blossom
+class FinalizeMnistDataSet : public Blossom
 {
-public:
+   public:
     FinalizeMnistDataSet();
 
-protected:
+   protected:
     bool runTask(BlossomIO &blossomIO,
                  const json &context,
                  BlossomStatus &status,
                  Hanami::ErrorContainer &error);
 
-private:
+   private:
     bool convertMnistData(const std::string &filePath,
                           const std::string &name,
                           const Hanami::DataBuffer &inputBuffer,
                           const Hanami::DataBuffer &labelBuffer);
 };
 
-#endif // HANAMI_MNIST_FINALIZE_DATA_SET_H
+#endif  // HANAMI_MNIST_FINALIZE_DATA_SET_H

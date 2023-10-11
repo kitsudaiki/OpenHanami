@@ -25,18 +25,15 @@
 
 #include <common/test_step.h>
 
-class ProjectGetTest
-        : public TestStep
+class ProjectGetTest : public TestStep
 {
-public:
-    ProjectGetTest(const bool expectSuccess,
-                const std::string &nameOverride = "");
+   public:
+    ProjectGetTest(const bool expectSuccess, const std::string &nameOverride = "");
 
-    bool runTest(json &inputData,
-                 Hanami::ErrorContainer &error);
+    bool runTest(json &inputData, Hanami::ErrorContainer &error);
 
-private:
+   private:
     std::string m_name = "";
 };
 
-#endif // TSUGUMITESTER_PROJECTGETSTEP_H
+#endif  // TSUGUMITESTER_PROJECTGETSTEP_H

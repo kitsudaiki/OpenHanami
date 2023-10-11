@@ -8,7 +8,8 @@
 
 #include <hanami_ini/ini_item_test.h>
 
-int main()
+int
+main()
 {
     Hanami::IniItem_Test iniItem_test;
     return 0;

@@ -25,18 +25,16 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-
-class RemoveProjectFromUser
-        : public Blossom
+class RemoveProjectFromUser : public Blossom
 {
-public:
+   public:
     RemoveProjectFromUser();
 
-protected:
+   protected:
     bool runTask(BlossomIO &blossomIO,
                  const json &context,
                  BlossomStatus &status,
                  Hanami::ErrorContainer &error);
 };
 
-#endif // HANAMI_REMOVE_PROJECT_FROM_USER_H
+#endif  // HANAMI_REMOVE_PROJECT_FROM_USER_H

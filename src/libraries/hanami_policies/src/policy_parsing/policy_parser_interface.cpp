@@ -20,13 +20,11 @@
  *      limitations under the License.
  */
 
-#include <policy_parsing/policy_parser_interface.h>
-#include <policy_parser.h>
-
 #include <hanami_common/methods/string_methods.h>
+#include <policy_parser.h>
+#include <policy_parsing/policy_parser_interface.h>
 
-# define YY_DECL \
-    Hanami::PolicyParser::symbol_type policylex (Hanami::PolicyParserInterface& driver)
+#define YY_DECL Hanami::PolicyParser::symbol_type policylex(Hanami::PolicyParserInterface& driver)
 YY_DECL;
 
 namespace Hanami
@@ -56,7 +54,7 @@ PolicyParserInterface::PolicyParserInterface(const bool traceParsing)
 PolicyParserInterface*
 PolicyParserInterface::getInstance()
 {
-    if(m_instance == nullptr) {
+    if (m_instance == nullptr) {
         m_instance = new PolicyParserInterface();
     }
 
@@ -66,9 +64,7 @@ PolicyParserInterface::getInstance()
 /**
  * @brief destructor
  */
-PolicyParserInterface::~PolicyParserInterface()
-{
-}
+PolicyParserInterface::~PolicyParserInterface() {}
 
 /**
  * @brief parse string
@@ -81,8 +77,8 @@ PolicyParserInterface::~PolicyParserInterface()
  */
 bool
 PolicyParserInterface::parse(std::map<std::string, PolicyEntry>* result,
-                             const std::string &inputString,
-                             ErrorContainer &error)
+                             const std::string& inputString,
+                             ErrorContainer& error)
 {
     std::lock_guard<std::mutex> guard(m_lock);
 
@@ -98,9 +94,7 @@ PolicyParserInterface::parse(std::map<std::string, PolicyEntry>* result,
     this->scan_end();
 
     // handle negative result
-    if(res != 0
-            || m_errorMessage.size() > 0)
-    {
+    if (res != 0 || m_errorMessage.size() > 0) {
         error.addMeesage(m_errorMessage);
         LOG_ERROR(error);
         return false;
@@ -117,19 +111,17 @@ PolicyParserInterface::parse(std::map<std::string, PolicyEntry>* result,
  * @return cleared string
  */
 const std::string
-PolicyParserInterface::removeQuotes(const std::string &input)
+PolicyParserInterface::removeQuotes(const std::string& input)
 {
     // precheck
-    if(input.length() == 0) {
+    if (input.length() == 0) {
         return input;
     }
 
     // clear
-    if(input[0] == '\"'
-            && input[input.length()-1] == '\"')
-    {
+    if (input[0] == '\"' && input[input.length() - 1] == '\"') {
         std::string result = "";
-        for(uint32_t i = 1; i < input.length()-1; i++) {
+        for (uint32_t i = 1; i < input.length() - 1; i++) {
             result += input[i];
         }
 
@@ -148,10 +140,9 @@ PolicyParserInterface::removeQuotes(const std::string &input)
  * @param message error-specific message from the parser
  */
 void
-PolicyParserInterface::error(const Hanami::location& location,
-                             const std::string& message)
+PolicyParserInterface::error(const Hanami::location& location, const std::string& message)
 {
-    if(m_errorMessage.size() > 0) {
+    if (m_errorMessage.size() > 0) {
         return;
     }
 
@@ -164,21 +155,18 @@ PolicyParserInterface::error(const Hanami::location& location,
     splitStringByDelimiter(splittedContent, m_inputString, '\n');
 
     // build error-message
-    m_errorMessage =  "ERROR while parsing policy-file content \n";
+    m_errorMessage = "ERROR while parsing policy-file content \n";
     m_errorMessage += "parser-message: " + message + " \n";
     m_errorMessage += "line-number: " + std::to_string(linenumber) + " \n";
 
-    if(splittedContent[linenumber - 1].size() > errorStart - 1 + errorLength)
-    {
-        m_errorMessage.append("position in line: " +  std::to_string(location.begin.column) + "\n");
+    if (splittedContent[linenumber - 1].size() > errorStart - 1 + errorLength) {
+        m_errorMessage.append("position in line: " + std::to_string(location.begin.column) + "\n");
         m_errorMessage.append("broken part in string: \""
                               + splittedContent[linenumber - 1].substr(errorStart - 1, errorLength)
                               + "\"");
-    }
-    else
-    {
+    } else {
         m_errorMessage.append("position in line: UNKNOWN POSITION (maybe a string was not closed)");
     }
 }
 
-}
+}  // namespace Hanami

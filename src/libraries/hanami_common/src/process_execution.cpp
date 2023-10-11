@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#include <hanami_common/process_execution.h>
 #include <hanami_common/methods/string_methods.h>
+#include <hanami_common/process_execution.h>
 
 namespace Hanami
 {
@@ -55,37 +55,32 @@ runSyncProcess(std::string command)
  * @return result with all information like exit-status and std-output
  */
 ProcessResult
-runSyncProcess(const std::string &programm,
-               const std::vector<std::string> &args)
+runSyncProcess(const std::string &programm, const std::vector<std::string> &args)
 {
     ProcessResult result;
 
     // prepare command
     std::string call = programm;
-    for(uint32_t i = 0; i < args.size(); i++) {
+    for (uint32_t i = 0; i < args.size(); i++) {
         call += " " + args[i];
     }
     call.append(" 2>&1");
 
     // prepare buffer
-    FILE* stream = nullptr;
+    FILE *stream = nullptr;
     const uint32_t max_buffer = 256;
     char buffer[max_buffer];
 
     // start execution
     stream = popen(call.c_str(), "r");
-    if(stream)
-    {
-        while(!feof(stream))
-        {
-            if(fgets(buffer, max_buffer, stream) != nullptr) {
+    if (stream) {
+        while (!feof(stream)) {
+            if (fgets(buffer, max_buffer, stream) != nullptr) {
                 result.processOutput.append(buffer);
             }
         }
         result.exitStatus = pclose(stream);
-    }
-    else
-    {
+    } else {
         result.errorMessage = "can not execute programm: " + programm;
         result.success = false;
 
@@ -93,7 +88,7 @@ runSyncProcess(const std::string &programm,
     }
 
     // check exit-status of the external process
-    if(result.exitStatus != 0) {
+    if (result.exitStatus != 0) {
         result.success = false;
     } else {
         result.success = true;
@@ -102,4 +97,4 @@ runSyncProcess(const std::string &programm,
     return result;
 }
 
-}
+}  // namespace Hanami
