@@ -23,38 +23,33 @@
 #ifndef HANAMI_STRUCTS_H
 #define HANAMI_STRUCTS_H
 
-#include <stdint.h>
-#include <string>
-#include <uuid/uuid.h>
-
 #include <common/defines.h>
 #include <common/enums.h>
-
 #include <hanami_policies/policy.h>
+#include <stdint.h>
+#include <uuid/uuid.h>
+
+#include <string>
 
 #define UNINTI_POINT_32 0x0FFFFFFF
 
-struct NextSides
-{
+struct NextSides {
     uint8_t sides[5];
 };
 
-struct ResponseMessage
-{
+struct ResponseMessage {
     bool success = false;
     HttpResponseTypes type = NO_CONTENT_RTYPE;
     std::string responseContent = "";
 };
 
-struct RequestMessage
-{
+struct RequestMessage {
     Hanami::HttpRequestType httpType = Hanami::GET_TYPE;
     std::string id = "";
     std::string inputValues = "{}";
 };
 
-struct UserContext
-{
+struct UserContext {
     std::string userId = "";
     std::string projectId = "";
     bool isAdmin = false;
@@ -69,24 +64,21 @@ struct UserContext
         projectId = inputContext["project_id"];
         isAdmin = inputContext["is_admin"];
         isProjectAdmin = inputContext["is_project_admin"];
-        if(inputContext.contains("token")) {
+        if (inputContext.contains("token")) {
             token = inputContext["token"];
         }
     }
 };
 
-struct EndpointEntry
-{
+struct EndpointEntry {
     SakuraObjectType type = BLOSSOM_TYPE;
     std::string group = "-";
     std::string name = "";
 };
 
-
-struct BlossomStatus
-{
+struct BlossomStatus {
     uint64_t statusCode = 0;
     std::string errorMessage = "";
 };
 
-#endif // HANAMI_STRUCTS_H
+#endif  // HANAMI_STRUCTS_H

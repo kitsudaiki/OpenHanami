@@ -23,50 +23,47 @@
 #ifndef TORIIGATEWAY_HTTP_THREAD_H
 #define TORIIGATEWAY_HTTP_THREAD_H
 
+#include <common.h>
+#include <hanami_common/logger.h>
+#include <hanami_common/threading/thread.h>
+#include <hanami_messages.proto3.pb.h>
+
+#include <boost/asio/ip/tcp.hpp>
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
-#include <boost/beast/version.hpp>
 #include <boost/beast/ssl.hpp>
-#include <boost/asio/ip/tcp.hpp>
-#include <boost/config.hpp>
+#include <boost/beast/version.hpp>
 #include <boost/beast/websocket.hpp>
-
+#include <boost/config.hpp>
 #include <cstdlib>
+#include <filesystem>
 #include <iostream>
 #include <memory>
 #include <string>
-#include <filesystem>
 
-#include <common.h>
-#include <hanami_messages.proto3.pb.h>
-#include <hanami_common/threading/thread.h>
-#include <hanami_common/logger.h>
-
-namespace beast = boost::beast;         // from <boost/beast.hpp>
-namespace http = beast::http;           // from <boost/beast/http.hpp>
-namespace net = boost::asio;            // from <boost/asio.hpp>
-using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
-namespace websocket = beast::websocket; // from <boost/beast/websocket.hpp>
-namespace ssl = boost::asio::ssl;       // from <boost/asio/ssl.hpp>
+namespace beast = boost::beast;          // from <boost/beast.hpp>
+namespace http = beast::http;            // from <boost/beast/http.hpp>
+namespace net = boost::asio;             // from <boost/asio.hpp>
+using tcp = boost::asio::ip::tcp;        // from <boost/asio/ip/tcp.hpp>
+namespace websocket = beast::websocket;  // from <boost/beast/websocket.hpp>
+namespace ssl = boost::asio::ssl;        // from <boost/asio/ssl.hpp>
 
 class Cluster;
 
-class HttpWebsocketThread
-        : public Hanami::Thread
+class HttpWebsocketThread : public Hanami::Thread
 {
-public:
+   public:
     HttpWebsocketThread(const std::string &threadName);
 
-    bool sendData(const void* data, const uint64_t dataSize);
-    Cluster* m_targetCluster = nullptr;
+    bool sendData(const void *data, const uint64_t dataSize);
+    Cluster *m_targetCluster = nullptr;
     void closeClient(Hanami::ErrorContainer &);
 
-protected:
+   protected:
     void run();
 
-private:
-    bool handleSocket(tcp::socket* socket,
-                      Hanami::ErrorContainer &error);
+   private:
+    bool handleSocket(tcp::socket *socket, Hanami::ErrorContainer &error);
     bool readMessage(tcp::socket &stream,
                      http::request<http::string_body> &httpRequest,
                      Hanami::ErrorContainer &error);
@@ -77,10 +74,9 @@ private:
     // websocket-functions and variables
     bool initWebsocket(http::request<http::string_body> &httpRequest);
     void runWebsocket();
-    bool processInitialMessage(const std::string &message,
-                               Hanami::ErrorContainer &error);
+    bool processInitialMessage(const std::string &message, Hanami::ErrorContainer &error);
 
-    websocket::stream<tcp::socket&>* m_webSocket = nullptr;
+    websocket::stream<tcp::socket &> *m_webSocket = nullptr;
     std::string m_uuid = "";
     std::string m_target = "";
     bool m_waitForInput = true;
@@ -90,4 +86,4 @@ private:
     bool m_clusterConnection = false;
 };
 
-#endif // TORIIGATEWAY_HTTP_THREAD_H
+#endif  // TORIIGATEWAY_HTTP_THREAD_H

@@ -41,30 +41,22 @@ getFilesInDir(std::vector<std::string> &fileList,
               const std::vector<std::string> &exceptions)
 {
     std::filesystem::directory_iterator end_itr;
-    for(std::filesystem::directory_iterator itr(directory);
-        itr != end_itr;
-        ++itr)
-    {
-        if(is_directory(itr->path()))
-        {
-            if(withSubdirs == true)
-            {
+    for (std::filesystem::directory_iterator itr(directory); itr != end_itr; ++itr) {
+        if (is_directory(itr->path())) {
+            if (withSubdirs == true) {
                 bool foundInExceptions = false;
 
-                for(const std::string& exception : exceptions)
-                {
-                    if(itr->path().filename().string() == exception) {
+                for (const std::string &exception : exceptions) {
+                    if (itr->path().filename().string() == exception) {
                         foundInExceptions = true;
                     }
                 }
 
-                if(foundInExceptions == false) {
+                if (foundInExceptions == false) {
                     getFilesInDir(fileList, itr->path(), withSubdirs, exceptions);
                 }
             }
-        }
-        else
-        {
+        } else {
             fileList.push_back(itr->path().string());
         }
     }
@@ -89,11 +81,11 @@ listFiles(std::vector<std::string> &fileList,
           const std::vector<std::string> &exceptions)
 {
     std::filesystem::path pathObj(path);
-    if(std::filesystem::exists(pathObj) == false) {
+    if (std::filesystem::exists(pathObj) == false) {
         return false;
     }
 
-    if(is_directory(pathObj)) {
+    if (is_directory(pathObj)) {
         getFilesInDir(fileList, pathObj, withSubdirs, exceptions);
     } else {
         fileList.push_back(path);
@@ -135,15 +127,13 @@ renameFileOrDir(const std::filesystem::path &oldPath,
                 ErrorContainer &error)
 {
     // check source
-    if(std::filesystem::exists(oldPath) == false)
-    {
+    if (std::filesystem::exists(oldPath) == false) {
         error.addMeesage("Source-path \"" + oldPath.string() + "\" doesn't exist.");
         return false;
     }
 
     // check target
-    if(std::filesystem::exists(newPath))
-    {
+    if (std::filesystem::exists(newPath)) {
         error.addMeesage("Target-path \"" + newPath.string() + "\" already exist.");
         return false;
     }
@@ -151,8 +141,7 @@ renameFileOrDir(const std::filesystem::path &oldPath,
     // try to rename
     std::error_code errorCode;
     std::filesystem::rename(oldPath, newPath, errorCode);
-    if(errorCode.value() != 0)
-    {
+    if (errorCode.value() != 0) {
         error.addMeesage(errorCode.message());
         return false;
     }
@@ -177,19 +166,17 @@ copyPath(const std::filesystem::path &sourcePath,
          ErrorContainer &error,
          const bool force)
 {
-    if(std::filesystem::exists(sourcePath) == false)
-    {
+    if (std::filesystem::exists(sourcePath) == false) {
         error.addMeesage("Source-path \"" + sourcePath.string() + "\" doesn't exist.");
         return false;
     }
 
     std::error_code errorCode;
-    if(force) {
+    if (force) {
         std::filesystem::remove_all(targetPath);
     }
     std::filesystem::copy(sourcePath, targetPath, errorCode);
-    if(errorCode.value() != 0)
-    {
+    if (errorCode.value() != 0) {
         error.addMeesage(errorCode.message());
         return false;
     }
@@ -206,28 +193,23 @@ copyPath(const std::filesystem::path &sourcePath,
  * @return true, if successful, else false
  */
 bool
-createDirectory(const std::filesystem::path &path,
-                ErrorContainer &error)
+createDirectory(const std::filesystem::path &path, ErrorContainer &error)
 {
     // check desired path
-    if(std::filesystem::exists(path)
-            && std::filesystem::is_directory(path) == false)
-    {
+    if (std::filesystem::exists(path) && std::filesystem::is_directory(path) == false) {
         error.addMeesage("Under path \"" + path.string() + "\" there already exist another"
                          "object, which is not a directory.");
         return false;
     }
 
     // if target-directory already exist, it is basically a success
-    if(std::filesystem::exists(path)
-            && std::filesystem::is_directory(path))
-    {
+    if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
         return true;
     }
 
     std::error_code errorCode;
     const bool result = std::filesystem::create_directories(path, errorCode);
-    if(result == false) {
+    if (result == false) {
         error.addMeesage(errorCode.message());
     }
 
@@ -243,21 +225,20 @@ createDirectory(const std::filesystem::path &path,
  * @return true, if successful, else false. Also return true, if path is already deleted.
  */
 bool
-deleteFileOrDir(const std::filesystem::path &path,
-                ErrorContainer &error)
+deleteFileOrDir(const std::filesystem::path &path, ErrorContainer &error)
 {
     // if the object is already deleted, then it is basically a success
-    if(std::filesystem::exists(path) == false) {
+    if (std::filesystem::exists(path) == false) {
         return true;
     }
 
     std::error_code errorCode;
     const bool result = std::filesystem::remove_all(path, errorCode);
-    if(result == false) {
+    if (result == false) {
         error.addMeesage(errorCode.message());
     }
 
     return result;
 }
 
-}
+}  // namespace Hanami

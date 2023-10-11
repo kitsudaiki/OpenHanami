@@ -33,37 +33,36 @@ class ImageTrainBackward_State;
 class ImageTrainForward_State;
 class Cluster;
 
-namespace Hanami {
+namespace Hanami
+{
 class EventQueue;
 class Statemachine;
-}
+}  // namespace Hanami
 
-enum ClusterStates
-{
+enum ClusterStates {
     TASK_STATE = 0,
     TRAIN_STATE = 1,
-        IMAGE_TRAIN_STATE = 2,
-            IMAGE_TRAIN_FORWARD_STATE = 3,
-            IMAGE_TRAIN_CYCLE_FINISH_STATE = 5,
-        TABLE_TRAIN_STATE = 6,
-            TABLE_TRAIN_FORWARD_STATE = 7,
-            TABLE_TRAIN_CYCLE_FINISH_STATE = 9,
+    IMAGE_TRAIN_STATE = 2,
+    IMAGE_TRAIN_FORWARD_STATE = 3,
+    IMAGE_TRAIN_CYCLE_FINISH_STATE = 5,
+    TABLE_TRAIN_STATE = 6,
+    TABLE_TRAIN_FORWARD_STATE = 7,
+    TABLE_TRAIN_CYCLE_FINISH_STATE = 9,
     REQUEST_STATE = 10,
-        IMAGE_REQUEST_STATE = 11,
-            IMAGE_REQUEST_FORWARD_STATE = 12,
-            IMAGE_REQUEST_CYCLE_FINISH_STATE = 13,
-        TABLE_REQUEST_STATE = 14,
-            TABLE_REQUEST_FORWARD_STATE = 15,
-            TABLE_REQUEST_CYCLE_FINISH_STATE = 16,
+    IMAGE_REQUEST_STATE = 11,
+    IMAGE_REQUEST_FORWARD_STATE = 12,
+    IMAGE_REQUEST_CYCLE_FINISH_STATE = 13,
+    TABLE_REQUEST_STATE = 14,
+    TABLE_REQUEST_FORWARD_STATE = 15,
+    TABLE_REQUEST_CYCLE_FINISH_STATE = 16,
     CHECKPOINT_STATE = 17,
-        CLUSTER_CHECKPOINT_STATE = 18,
-            CLUSTER_CHECKPOINT_SAVE_STATE = 19,
-            CLUSTER_CHECKPOINT_RESTORE_STATE = 20,
+    CLUSTER_CHECKPOINT_STATE = 18,
+    CLUSTER_CHECKPOINT_SAVE_STATE = 19,
+    CLUSTER_CHECKPOINT_RESTORE_STATE = 20,
     DIRECT_STATE = 21,
 };
 
-enum ClusterTransitions
-{
+enum ClusterTransitions {
     TRAIN = 100,
     REQUEST = 101,
     CHECKPOINT = 102,
@@ -79,8 +78,6 @@ enum ClusterTransitions
     SWITCH_TO_TASK_MODE = 112,
 };
 
-void initStatemachine(Hanami::Statemachine &sm,
-                      Cluster* cluster,
-                      TaskHandle_State* taskState);
+void initStatemachine(Hanami::Statemachine& sm, Cluster* cluster, TaskHandle_State* taskState);
 
-#endif // HANAMI_STATEMACHINE_INIT_H
+#endif  // HANAMI_STATEMACHINE_INIT_H

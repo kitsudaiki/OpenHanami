@@ -11,16 +11,16 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
+#include <hanami_common/items/table_item.h>
+
+#include <ctime>
+#include <filesystem>
+#include <fstream>
 #include <iostream>
+#include <mutex>
+#include <nlohmann/json.hpp>
 #include <sstream>
 #include <string>
-#include <fstream>
-#include <ctime>
-#include <mutex>
-#include <filesystem>
-#include <nlohmann/json.hpp>
-
-#include <hanami_common/items/table_item.h>
 
 using json = nlohmann::json;
 
@@ -48,8 +48,7 @@ using json = nlohmann::json;
 namespace Hanami
 {
 
-struct ErrorContainer
-{
+struct ErrorContainer {
     bool _alreadyPrinted = false;
     std::vector<std::string> _errorMessages;
     std::vector<std::string> _possibleSolution;
@@ -72,22 +71,21 @@ struct ErrorContainer
         output.addColumn("value");
 
         // add error-messages
-        for(int32_t i = _errorMessages.size() - 1; i >= 0; i--) {
+        for (int32_t i = _errorMessages.size() - 1; i >= 0; i--) {
             output.addRowVec({"Error-Message Nr. " + std::to_string(i), _errorMessages.at(i)});
         }
 
         // build string with possible solutions
         std::string solutions = "";
-        for(uint32_t i = 0; i < _possibleSolution.size(); i++)
-        {
-            if(i != 0) {
+        for (uint32_t i = 0; i < _possibleSolution.size(); i++) {
+            if (i != 0) {
                 solutions += "\n-----\n";
             }
             solutions += _possibleSolution.at(i);
         }
 
         // add possible solutions
-        if(solutions.size() > 1) {
+        if (solutions.size() > 1) {
             output.addRowVec({"Possible Solution", solutions});
         }
 
@@ -104,8 +102,7 @@ bool setDebugFlag(const bool debugLog);
 bool LOG_debug(const std::string &message);
 bool LOG_warning(const std::string &message);
 bool LOG_error(ErrorContainer &container);
-bool LOG_info(const std::string &message,
-              const std::string &color = WHITE_COLOR);
+bool LOG_info(const std::string &message, const std::string &color = WHITE_COLOR);
 
 void closeLogFile();
 
@@ -115,7 +112,7 @@ void setErrorLogCallback(void (*handleError)(const std::string &));
 
 class Logger
 {
-public:
+   public:
     Logger();
     ~Logger();
 
@@ -137,9 +134,9 @@ public:
     bool m_debugLog = false;
     void (*m_handleError)(const std::string &);
 
-    static Hanami::Logger* m_logger;
+    static Hanami::Logger *m_logger;
 
-private:
+   private:
     bool m_enableConsoleLog = false;
     bool m_consoleDebugLog = false;
 
@@ -154,6 +151,6 @@ private:
     const std::string getDatetime();
 };
 
-}
+}  // namespace Hanami
 
-#endif // LOGGER_H
+#endif  // LOGGER_H

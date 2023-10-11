@@ -23,48 +23,43 @@
 #ifndef HANAMI_SEGMENT_PARSER_ITEM_H
 #define HANAMI_SEGMENT_PARSER_ITEM_H
 
-#include <string>
-#include <vector>
-#include <map>
-#include <any>
-
 #include <hanami_common/logger.h>
 #include <hanami_common/structs.h>
+
+#include <any>
+#include <map>
+#include <string>
+#include <vector>
 
 namespace Hanami
 {
 
-enum BrickType
-{
+enum BrickType {
     CENTRAL_BRICK_TYPE = 0,
     INPUT_BRICK_TYPE = 1,
     OUTPUT_BRICK_TYPE = 2,
 };
 
-struct BrickMeta
-{
+struct BrickMeta {
     Position position;
     std::string name = "";
     BrickType type = CENTRAL_BRICK_TYPE;
     uint64_t numberOfNeurons = 0;
 };
 
-struct ClusterMeta
-{
+struct ClusterMeta {
     uint32_t version = 0;
     uint32_t maxSynapseSections = 0;
     float synapseSegmentation = 0;
     float signNeg = 0.0;
     std::vector<BrickMeta> bricks;
 
-    BrickMeta*
-    getBrick(const std::string &name)
+    BrickMeta* getBrick(const std::string& name)
     {
         BrickMeta* tempBrick = nullptr;
-        for(uint64_t i = 0; i < bricks.size(); i++)
-        {
+        for (uint64_t i = 0; i < bricks.size(); i++) {
             tempBrick = &bricks[i];
-            if(tempBrick->name == name) {
+            if (tempBrick->name == name) {
                 return tempBrick;
             }
         }
@@ -72,11 +67,8 @@ struct ClusterMeta
     }
 };
 
-bool
-parseCluster(ClusterMeta* result,
-             const std::string &input,
-             ErrorContainer &error);
+bool parseCluster(ClusterMeta* result, const std::string& input, ErrorContainer& error);
 
-}
+}  // namespace Hanami
 
-#endif // HANAMI_SEGMENT_PARSER_ITEM_H
+#endif  // HANAMI_SEGMENT_PARSER_ITEM_H

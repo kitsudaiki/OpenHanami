@@ -25,14 +25,12 @@
 
 #include <common/test_step.h>
 
-class DataSetCreateCsvTest
-        : public TestStep
+class DataSetCreateCsvTest : public TestStep
 {
-public:
+   public:
     DataSetCreateCsvTest(const bool expectSuccess);
 
-    bool runTest(json &inputData,
-                 Hanami::ErrorContainer &error);
+    bool runTest(json &inputData, Hanami::ErrorContainer &error);
 };
 
-#endif // TSUGUMITESTER_DATASETCREATE_CSV_TEST_H
+#endif  // TSUGUMITESTER_DATASETCREATE_CSV_TEST_H

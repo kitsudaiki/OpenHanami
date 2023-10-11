@@ -20,17 +20,15 @@
  *      limitations under the License.
  */
 
-#include <hanami_hardware/power_measuring.h>
-
-#include <hanami_hardware/host.h>
 #include <hanami_hardware/cpu_core.h>
 #include <hanami_hardware/cpu_package.h>
 #include <hanami_hardware/cpu_thread.h>
+#include <hanami_hardware/host.h>
+#include <hanami_hardware/power_measuring.h>
 
 PowerMeasuring* PowerMeasuring::instance = nullptr;
 
-PowerMeasuring::PowerMeasuring()
-    : Hanami::Thread("PowerMeasuring") {}
+PowerMeasuring::PowerMeasuring() : Hanami::Thread("PowerMeasuring") {}
 
 PowerMeasuring::~PowerMeasuring() {}
 
@@ -52,11 +50,10 @@ void
 PowerMeasuring::run()
 {
     Hanami::ErrorContainer error;
-    while(m_abort == false)
-    {
+    while (m_abort == false) {
         double power = 0.0;
         Hanami::Host* host = Hanami::Host::getInstance();
-        for(uint64_t i = 0; i < host->cpuPackages.size(); i++) {
+        for (uint64_t i = 0; i < host->cpuPackages.size(); i++) {
             power += host->getPackage(i)->getTotalPackagePower();
         }
 
@@ -64,7 +61,7 @@ PowerMeasuring::run()
         // standby, then there was a single extremly high value, which broke the outout.
         // So this is only a workaround for this edge-case. I this there is no node,
         // which takes more then 1MW per node and so this workaround shouldn't break any setup.
-        if(power > 1000000.0) {
+        if (power > 1000000.0) {
             power = 0.0f;
         }
 

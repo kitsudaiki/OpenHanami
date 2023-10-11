@@ -14,15 +14,14 @@
 namespace Hanami
 {
 
-class BogusEvent
-        : public Hanami::Event
+class BogusEvent : public Hanami::Event
 {
-public:
+   public:
     BogusEvent();
 
     bool processEvent();
 };
 
-}
+}  // namespace Hanami
 
-#endif // BOGUS_EVENT_H
+#endif  // BOGUS_EVENT_H

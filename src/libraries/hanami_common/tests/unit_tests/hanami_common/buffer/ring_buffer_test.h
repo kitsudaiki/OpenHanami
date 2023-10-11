@@ -14,13 +14,12 @@
 namespace Hanami
 {
 
-class RingBuffer_Test
-        : public Hanami::CompareTestHelper
+class RingBuffer_Test : public Hanami::CompareTestHelper
 {
-public:
+   public:
     RingBuffer_Test();
 
-private:
+   private:
     void addData_RingBuffer_test();
     void addObject_RingBuffer_test();
     void getWritePosition_RingBuffer_test();
@@ -30,6 +29,6 @@ private:
     void getObject_RingBuffer_test();
 };
 
-}
+}  // namespace Hanami
 
-#endif // RING_BUFFER_TEST_H
+#endif  // RING_BUFFER_TEST_H

@@ -14,13 +14,12 @@
 namespace Hanami
 {
 
-class StringMethods_Test
-        : public Hanami::CompareTestHelper
+class StringMethods_Test : public Hanami::CompareTestHelper
 {
-public:
+   public:
     StringMethods_Test();
 
-private:
+   private:
     void splitStringByDelimiter_test();
     void splitStringByLength_test();
     void replaceSubstring_test();
@@ -34,6 +33,6 @@ private:
     void toLowerCase_test();
 };
 
-}
+}  // namespace Hanami
 
-#endif // STRINGMETHODS_TEST_H
+#endif  // STRINGMETHODS_TEST_H

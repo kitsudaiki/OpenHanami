@@ -27,11 +27,7 @@
 namespace Hanami
 {
 
-Hashes_Test::Hashes_Test()
-    : Hanami::CompareTestHelper("Hashes_Test")
-{
-    generate_SHA_256_test();
-}
+Hashes_Test::Hashes_Test() : Hanami::CompareTestHelper("Hashes_Test") { generate_SHA_256_test(); }
 
 /**
  * @brief generateSha256_test
@@ -47,4 +43,4 @@ Hashes_Test::generate_SHA_256_test()
     TEST_EQUAL(result, "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08");
 }
 
-}
+}  // namespace Hanami

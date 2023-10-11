@@ -23,19 +23,18 @@
 #ifndef KITSUNEMIMI_SAKURA_NETWORK_REPLY_HANDLER_H
 #define KITSUNEMIMI_SAKURA_NETWORK_REPLY_HANDLER_H
 
-#include <vector>
-#include <iostream>
-
 #include <hanami_common/threading/thread.h>
+
+#include <iostream>
+#include <vector>
 
 namespace Hanami
 {
 class Session;
 
-class ReplyHandler
-        : public Hanami::Thread
+class ReplyHandler : public Hanami::Thread
 {
-public:
+   public:
     ReplyHandler();
     ~ReplyHandler();
 
@@ -44,22 +43,18 @@ public:
                     const uint32_t sessionId,
                     const uint64_t messageId,
                     Session* session);
-    void addMessage(const uint8_t messageType,
-                    const uint64_t completeMessageId,
-                    Session* session);
+    void addMessage(const uint8_t messageType, const uint64_t completeMessageId, Session* session);
 
     // remove
-    bool removeMessage(const uint32_t sessionId,
-                       const uint64_t messageId);
+    bool removeMessage(const uint32_t sessionId, const uint64_t messageId);
     bool removeMessage(const uint64_t completeMessageId);
     void removeAllOfSession(const uint32_t sessionId);
 
-protected:
+   protected:
     void run();
 
-private:
-    struct MessageTime
-    {
+   private:
+    struct MessageTime {
         uint64_t completeMessageId = 0;
         float timer = 0.0f;
         uint8_t messageType = 0;
@@ -74,6 +69,6 @@ private:
     bool removeMessageFromList(const uint64_t completeMessageId);
 };
 
-}
+}  // namespace Hanami
 
-#endif // KITSUNEMIMI_SAKURA_NETWORK_REPLY_HANDLER_H
+#endif  // KITSUNEMIMI_SAKURA_NETWORK_REPLY_HANDLER_H

@@ -23,21 +23,20 @@
 #ifndef STACK_BUFFER_H
 #define STACK_BUFFER_H
 
-#include <stdint.h>
-#include <atomic>
-#include <iostream>
-#include <vector>
-#include <queue>
-#include <deque>
-
 #include <hanami_common/buffer/data_buffer.h>
 #include <hanami_common/buffer/stack_buffer_reserve.h>
+#include <stdint.h>
+
+#include <atomic>
+#include <deque>
+#include <iostream>
+#include <queue>
+#include <vector>
 
 namespace Hanami
 {
 
-struct StackBuffer
-{
+struct StackBuffer {
     uint32_t preOffset = 0;
     uint32_t postOffset = 0;
     uint32_t effectiveBlockSize = 0;
@@ -52,8 +51,7 @@ struct StackBuffer
      * @param preOffset offset at the beginning of the buffer
      * @param postOffset offset at the end of the buffer
      */
-    StackBuffer(const uint32_t preOffset = 0,
-                const uint32_t postOffset = 0)
+    StackBuffer(const uint32_t preOffset = 0, const uint32_t postOffset = 0)
     {
         this->preOffset = preOffset;
         this->postOffset = postOffset;
@@ -67,14 +65,13 @@ struct StackBuffer
     {
         // add all buffer within the current stack-buffer to the stack-buffer-reserve
         auto it = blocks.begin();
-        for( ; it != blocks.end(); it++)
-        {
+        for (; it != blocks.end(); it++) {
             DataBuffer* temp = *it;
             StackBufferReserve::getInstance()->addBuffer(temp);
         }
 
         // move local reserve to central stack-buffer-reserve
-        if(localReserve != nullptr) {
+        if (localReserve != nullptr) {
             StackBufferReserve::getInstance()->addBuffer(localReserve);
         }
     }
@@ -86,18 +83,15 @@ struct StackBuffer
  * @param stackBuffer reference to stack-buffer-object
  */
 inline void
-extendBuffer_StackBuffer(StackBuffer &stackBuffer)
+extendBuffer_StackBuffer(StackBuffer& stackBuffer)
 {
     DataBuffer* newBlock = nullptr;
 
     // get new buffer from the local reserve or the central stack reserve
-    if(stackBuffer.localReserve != nullptr)
-    {
+    if (stackBuffer.localReserve != nullptr) {
         newBlock = stackBuffer.localReserve;
         stackBuffer.localReserve = nullptr;
-    }
-    else
-    {
+    } else {
         newBlock = StackBufferReserve::getInstance()->getBuffer();
     }
 
@@ -116,35 +110,28 @@ extendBuffer_StackBuffer(StackBuffer &stackBuffer)
  * @return false, if data ore too big, else true
  */
 inline bool
-addData_StackBuffer(StackBuffer &stackBuffer,
-                    const void* data,
-                    const uint64_t dataSize)
+addData_StackBuffer(StackBuffer& stackBuffer, const void* data, const uint64_t dataSize)
 {
     // precheck
-    if(dataSize > stackBuffer.effectiveBlockSize) {
+    if (dataSize > stackBuffer.effectiveBlockSize) {
         return false;
     }
     assert(dataSize <= stackBuffer.effectiveBlockSize);
 
     DataBuffer* currentBlock = nullptr;
 
-    if(stackBuffer.blocks.size() == 0)
-    {
+    if (stackBuffer.blocks.size() == 0) {
         // init first buffer on the stack
         extendBuffer_StackBuffer(stackBuffer);
         currentBlock = stackBuffer.blocks.back();
-    }
-    else
-    {
+    } else {
         // get current buffer from the stack and calculate estimated size after writing the new data
         currentBlock = stackBuffer.blocks.back();
-        const uint64_t estimatedSize = currentBlock->usedBufferSize
-                                       + stackBuffer.postOffset
-                                       + dataSize;
+        const uint64_t estimatedSize
+            = currentBlock->usedBufferSize + stackBuffer.postOffset + dataSize;
 
         // if estimated size is to big for the current buffer, add a new empty buffer to the stack
-        if(estimatedSize > stackBuffer.effectiveBlockSize)
-        {
+        if (estimatedSize > stackBuffer.effectiveBlockSize) {
             extendBuffer_StackBuffer(stackBuffer);
             currentBlock = stackBuffer.blocks.back();
         }
@@ -168,7 +155,7 @@ addData_StackBuffer(StackBuffer &stackBuffer,
  */
 template <typename T>
 inline bool
-addObject_StackBuffer(StackBuffer &stackBuffer, T* data)
+addObject_StackBuffer(StackBuffer& stackBuffer, T* data)
 {
     return addData_StackBuffer(stackBuffer, data, sizeof(T));
 }
@@ -181,10 +168,10 @@ addObject_StackBuffer(StackBuffer &stackBuffer, T* data)
  * @return pointer to the first buffer of the stack
  */
 inline DataBuffer*
-getFirstElement_StackBuffer(StackBuffer &stackBuffer)
+getFirstElement_StackBuffer(StackBuffer& stackBuffer)
 {
     // precheck
-    if(stackBuffer.blocks.size() == 0) {
+    if (stackBuffer.blocks.size() == 0) {
         return nullptr;
     }
 
@@ -202,10 +189,10 @@ getFirstElement_StackBuffer(StackBuffer &stackBuffer)
  * @return false, if stack is empty, else true
  */
 inline bool
-removeFirst_StackBuffer(StackBuffer &stackBuffer)
+removeFirst_StackBuffer(StackBuffer& stackBuffer)
 {
     // precheck
-    if(stackBuffer.blocks.size() == 0) {
+    if (stackBuffer.blocks.size() == 0) {
         return false;
     }
 
@@ -215,7 +202,7 @@ removeFirst_StackBuffer(StackBuffer &stackBuffer)
     stackBuffer.blocks.pop_front();
 
     // add to local reserve, if there is no one is set or else add to central stack-buffer-reserve
-    if(stackBuffer.localReserve == nullptr) {
+    if (stackBuffer.localReserve == nullptr) {
         stackBuffer.localReserve = temp;
     } else {
         StackBufferReserve::getInstance()->addBuffer(temp);
@@ -230,18 +217,17 @@ removeFirst_StackBuffer(StackBuffer &stackBuffer)
  * @param stackBuffer reference to stack-buffer-object
  */
 inline void
-reset_StackBuffer(StackBuffer &stackBuffer)
+reset_StackBuffer(StackBuffer& stackBuffer)
 {
     // add all buffer within the current stack-buffer to the stack-buffer-reserve
     auto it = stackBuffer.blocks.begin();
-    for( ; it != stackBuffer.blocks.end(); it++)
-    {
+    for (; it != stackBuffer.blocks.end(); it++) {
         DataBuffer* temp = *it;
         temp->usedBufferSize = 0;
         *it = nullptr;
 
         // move local reserve to central stack-buffer-reserve
-        if(stackBuffer.localReserve == nullptr) {
+        if (stackBuffer.localReserve == nullptr) {
             stackBuffer.localReserve = temp;
         } else {
             StackBufferReserve::getInstance()->addBuffer(temp);
@@ -251,6 +237,6 @@ reset_StackBuffer(StackBuffer &stackBuffer)
     stackBuffer.blocks.clear();
 }
 
-}
+}  // namespace Hanami
 
-#endif // STACK_BUFFER_H
+#endif  // STACK_BUFFER_H

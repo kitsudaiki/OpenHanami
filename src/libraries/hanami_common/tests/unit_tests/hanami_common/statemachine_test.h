@@ -14,16 +14,13 @@
 namespace Hanami
 {
 
-class Statemachine_Test
-        : public Hanami::CompareTestHelper
+class Statemachine_Test : public Hanami::CompareTestHelper
 {
-public:
+   public:
     Statemachine_Test();
 
-private:
-
-    enum states
-    {
+   private:
+    enum states {
         SOURCE_STATE = 1,
         TARGET_STATE = 2,
         CHILD_STATE = 3,
@@ -44,6 +41,6 @@ private:
     void isInState_test();
 };
 
-}
+}  // namespace Hanami
 
-#endif // STATEMACHINE_TEST_H
+#endif  // STATEMACHINE_TEST_H

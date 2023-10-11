@@ -25,18 +25,16 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-
-class DeleteCheckpoint
-        : public Blossom
+class DeleteCheckpoint : public Blossom
 {
-public:
+   public:
     DeleteCheckpoint();
 
-protected:
+   protected:
     bool runTask(BlossomIO &blossomIO,
                  const json &context,
                  BlossomStatus &status,
                  Hanami::ErrorContainer &error);
 };
 
-#endif // DELETE_CLUSTER_CHECKPOINT_H
+#endif  // DELETE_CLUSTER_CHECKPOINT_H

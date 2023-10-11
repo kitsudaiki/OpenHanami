@@ -23,16 +23,15 @@
 #ifndef HANAMI_AUDIT_LOG_TABLE_H
 #define HANAMI_AUDIT_LOG_TABLE_H
 
-#include <hanami_common/logger.h>
 #include <database/generic_tables/hanami_sql_log_table.h>
+#include <hanami_common/logger.h>
 
-class AuditLogTable
-        : public HanamiSqlLogTable
+class AuditLogTable : public HanamiSqlLogTable
 {
-public:
-    static AuditLogTable* getInstance()
+   public:
+    static AuditLogTable *getInstance()
     {
-        if(instance == nullptr) {
+        if (instance == nullptr) {
             instance = new AuditLogTable();
         }
         return instance;
@@ -50,9 +49,9 @@ public:
                                const uint64_t page,
                                Hanami::ErrorContainer &error);
 
-private:
+   private:
     AuditLogTable();
-    static AuditLogTable* instance;
+    static AuditLogTable *instance;
 };
 
-#endif // HANAMI_AUDIT_LOG_TABLE_H
+#endif  // HANAMI_AUDIT_LOG_TABLE_H

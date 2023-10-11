@@ -23,17 +23,17 @@
 #ifndef HANAMI_CLUSTERHANDLER_H
 #define HANAMI_CLUSTERHANDLER_H
 
-#include <string>
 #include <map>
+#include <string>
 
 class Cluster;
 
 class ClusterHandler
 {
-public:
+   public:
     static ClusterHandler* getInstance()
     {
-        if(instance == nullptr) {
+        if (instance == nullptr) {
             instance = new ClusterHandler();
         }
         return instance;
@@ -43,11 +43,11 @@ public:
     bool removeCluster(const std::string uuid);
     Cluster* getCluster(const std::string uuid);
 
-private:
+   private:
     ClusterHandler();
     static ClusterHandler* instance;
 
     std::map<std::string, Cluster*> m_allCluster;
 };
 
-#endif // HANAMI_CLUSTERHANDLER_H
+#endif  // HANAMI_CLUSTERHANDLER_H

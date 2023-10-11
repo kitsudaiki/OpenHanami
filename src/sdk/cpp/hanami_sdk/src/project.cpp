@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#include <hanami_sdk/project.h>
 #include <common/http_client.h>
+#include <hanami_sdk/project.h>
 
 namespace Hanami
 {
@@ -43,18 +43,13 @@ createProject(std::string &result,
               Hanami::ErrorContainer &error)
 {
     // create request
-    HanamiRequest* request = HanamiRequest::getInstance();
+    HanamiRequest *request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/project";
     const std::string vars = "";
-    const std::string jsonBody = "{\"id\":\""
-                                 + projectId
-                                 + "\",\"name\":\""
-                                 + projectName
-                                 + "\"}";
+    const std::string jsonBody = "{\"id\":\"" + projectId + "\",\"name\":\"" + projectName + "\"}";
 
     // send request
-    if(request->sendPostRequest(result, path, vars, jsonBody, error) == false)
-    {
+    if (request->sendPostRequest(result, path, vars, jsonBody, error) == false) {
         error.addMeesage("Failed to create project with id '" + projectId + "'");
         LOG_ERROR(error);
         return false;
@@ -73,17 +68,14 @@ createProject(std::string &result,
  * @return true, if successful, else false
  */
 bool
-getProject(std::string &result,
-           const std::string &projectId,
-           Hanami::ErrorContainer &error)
+getProject(std::string &result, const std::string &projectId, Hanami::ErrorContainer &error)
 {
     // create request
-    HanamiRequest* request = HanamiRequest::getInstance();
+    HanamiRequest *request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/project";
     const std::string vars = "id=" + projectId;
 
-    if(request->sendGetRequest(result, path, vars, error) == false)
-    {
+    if (request->sendGetRequest(result, path, vars, error) == false) {
         error.addMeesage("Failed to get project with name '" + projectId + "'");
         LOG_ERROR(error);
         return false;
@@ -101,16 +93,14 @@ getProject(std::string &result,
  * @return true, if successful, else false
  */
 bool
-listProject(std::string &result,
-            Hanami::ErrorContainer &error)
+listProject(std::string &result, Hanami::ErrorContainer &error)
 {
     // create request
-    HanamiRequest* request = HanamiRequest::getInstance();
+    HanamiRequest *request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/project/all";
 
     // send request
-    if(request->sendGetRequest(result, path, "", error) == false)
-    {
+    if (request->sendGetRequest(result, path, "", error) == false) {
         error.addMeesage("Failed to list projects");
         LOG_ERROR(error);
         return false;
@@ -129,18 +119,15 @@ listProject(std::string &result,
  * @return true, if successful, else false
  */
 bool
-deleteProject(std::string &result,
-              const std::string &projectId,
-              Hanami::ErrorContainer &error)
+deleteProject(std::string &result, const std::string &projectId, Hanami::ErrorContainer &error)
 {
     // create request
-    HanamiRequest* request = HanamiRequest::getInstance();
+    HanamiRequest *request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/project";
     const std::string vars = "id=" + projectId;
 
     // send request
-    if(request->sendDeleteRequest(result, path, vars, error) == false)
-    {
+    if (request->sendDeleteRequest(result, path, vars, error) == false) {
         error.addMeesage("Failed to delete project with id '" + projectId + "'");
         LOG_ERROR(error);
         return false;
@@ -149,4 +136,4 @@ deleteProject(std::string &result,
     return true;
 }
 
-} // namespace Hanami
+}  // namespace Hanami

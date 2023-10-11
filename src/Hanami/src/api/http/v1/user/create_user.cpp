@@ -22,17 +22,15 @@
 
 #include "create_user.h"
 
-#include <hanami_root.h>
 #include <database/users_table.h>
-
-#include <hanami_crypto/hashes.h>
 #include <hanami_common/methods/string_methods.h>
+#include <hanami_crypto/hashes.h>
+#include <hanami_root.h>
 
 /**
  * @brief constructor
  */
-CreateUser::CreateUser()
-    : Blossom("Register a new user within Misaki.")
+CreateUser::CreateUser() : Blossom("Register a new user within Misaki.")
 {
     errorCodes.push_back(UNAUTHORIZED_RTYPE);
     errorCodes.push_back(CONFLICT_RTYPE);
@@ -42,42 +40,40 @@ CreateUser::CreateUser()
     //----------------------------------------------------------------------------------------------
 
     registerInputField("id", SAKURA_STRING_TYPE)
-            .setComment("ID of the new user.")
-            .setLimit(4, 256)
-            .setRegex(ID_EXT_REGEX);
+        .setComment("ID of the new user.")
+        .setLimit(4, 256)
+        .setRegex(ID_EXT_REGEX);
 
     registerInputField("name", SAKURA_STRING_TYPE)
-            .setComment("Name of the new user.")
-            .setLimit(4, 256)
-            .setRegex(NAME_REGEX);
+        .setComment("Name of the new user.")
+        .setLimit(4, 256)
+        .setRegex(NAME_REGEX);
 
     registerInputField("password", SAKURA_STRING_TYPE)
-            .setComment("Passphrase of the user.")
-            .setLimit(8, 4096);
+        .setComment("Passphrase of the user.")
+        .setLimit(8, 4096);
 
     registerInputField("is_admin", SAKURA_BOOL_TYPE)
-            .setComment("Set this to 1 to register the new user as admin.")
-            .setDefault(false);
+        .setComment("Set this to 1 to register the new user as admin.")
+        .setDefault(false);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("id", SAKURA_STRING_TYPE)
-            .setComment("ID of the new user.");
+    registerOutputField("id", SAKURA_STRING_TYPE).setComment("ID of the new user.");
 
-    registerOutputField("name", SAKURA_STRING_TYPE)
-            .setComment("Name of the new user.");
+    registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the new user.");
 
-    registerOutputField("is_admin", SAKURA_BOOL_TYPE)
-            .setComment("True, if user is an admin.");
+    registerOutputField("is_admin", SAKURA_BOOL_TYPE).setComment("True, if user is an admin.");
 
     registerOutputField("creator_id", SAKURA_STRING_TYPE)
-            .setComment("Id of the creator of the user.");
+        .setComment("Id of the creator of the user.");
 
     registerOutputField("projects", SAKURA_ARRAY_TYPE)
-            .setComment("Json-array with all assigned projects "
-                        "together with role and project-admin-status.");
+        .setComment(
+            "Json-array with all assigned projects "
+            "together with role and project-admin-status.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -94,8 +90,7 @@ CreateUser::runTask(BlossomIO &blossomIO,
                     Hanami::ErrorContainer &error)
 {
     // check if admin
-    if(context["is_admin"] == false)
-    {
+    if (context["is_admin"] == false) {
         status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
@@ -105,15 +100,13 @@ CreateUser::runTask(BlossomIO &blossomIO,
 
     // check if user already exist within the table
     json getResult;
-    if(UsersTable::getInstance()->getUser(getResult, newUserId, error, false) == false)
-    {
+    if (UsersTable::getInstance()->getUser(getResult, newUserId, error, false) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // handle not found
-    if(getResult.size() != 0)
-    {
+    if (getResult.size() != 0) {
         status.errorMessage = "User with id '" + newUserId + "' already exist.";
         status.statusCode = CONFLICT_RTYPE;
         error.addMeesage(status.errorMessage);
@@ -138,19 +131,14 @@ CreateUser::runTask(BlossomIO &blossomIO,
     userData["salt"] = salt;
 
     // add new user to table
-    if(UsersTable::getInstance()->addUser(userData, error) == false)
-    {
+    if (UsersTable::getInstance()->addUser(userData, error) == false) {
         status.errorMessage = error.toString();
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // get new created user from database
-    if(UsersTable::getInstance()->getUser(blossomIO.output,
-                                          newUserId,
-                                          error,
-                                          false) == false)
-    {
+    if (UsersTable::getInstance()->getUser(blossomIO.output, newUserId, error, false) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

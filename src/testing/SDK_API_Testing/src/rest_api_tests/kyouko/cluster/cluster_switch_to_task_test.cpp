@@ -24,11 +24,10 @@
 
 #include <hanami_sdk/cluster.h>
 
-ClusterSwitchToTaskTest::ClusterSwitchToTaskTest(const bool expectSuccess)
-    : TestStep(expectSuccess)
+ClusterSwitchToTaskTest::ClusterSwitchToTaskTest(const bool expectSuccess) : TestStep(expectSuccess)
 {
     m_testName = "switch cluster to task mode";
-    if(expectSuccess) {
+    if (expectSuccess) {
         m_testName += " (success)";
     } else {
         m_testName += " (fail)";
@@ -36,15 +35,11 @@ ClusterSwitchToTaskTest::ClusterSwitchToTaskTest(const bool expectSuccess)
 }
 
 bool
-ClusterSwitchToTaskTest::runTest(json &inputData,
-                                 Hanami::ErrorContainer &error)
+ClusterSwitchToTaskTest::runTest(json &inputData, Hanami::ErrorContainer &error)
 {
     // create new cluster
     std::string result;
-    if(Hanami::switchToTaskMode(result,
-                                inputData["cluster_uuid"],
-                                error) != m_expectSuccess)
-    {
+    if (Hanami::switchToTaskMode(result, inputData["cluster_uuid"], error) != m_expectSuccess) {
         return false;
     }
 

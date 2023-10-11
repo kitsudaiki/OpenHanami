@@ -22,14 +22,13 @@
 
 #include "get_user.h"
 
-#include <hanami_root.h>
 #include <database/users_table.h>
+#include <hanami_root.h>
 
 /**
  * @brief constructor
  */
-GetUser::GetUser()
-    : Blossom("Show information of a specific user.")
+GetUser::GetUser() : Blossom("Show information of a specific user.")
 {
     errorCodes.push_back(UNAUTHORIZED_RTYPE);
     errorCodes.push_back(NOT_FOUND_RTYPE);
@@ -39,29 +38,28 @@ GetUser::GetUser()
     //----------------------------------------------------------------------------------------------
 
     registerInputField("id", SAKURA_STRING_TYPE)
-            .setComment("Id of the user.")
-            .setLimit(4, 256)
-            .setRegex(ID_EXT_REGEX);
+        .setComment("Id of the user.")
+        .setLimit(4, 256)
+        .setRegex(ID_EXT_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("id", SAKURA_STRING_TYPE)
-            .setComment("ID of the user.");
+    registerOutputField("id", SAKURA_STRING_TYPE).setComment("ID of the user.");
 
-    registerOutputField("name", SAKURA_STRING_TYPE)
-            .setComment("Name of the user.");
+    registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the user.");
 
     registerOutputField("creator_id", SAKURA_STRING_TYPE)
-            .setComment("Id of the creator of the user.");
+        .setComment("Id of the creator of the user.");
 
     registerOutputField("is_admin", SAKURA_BOOL_TYPE)
-            .setComment("Set this to true to register the new user as admin.");
+        .setComment("Set this to true to register the new user as admin.");
 
     registerOutputField("projects", SAKURA_ARRAY_TYPE)
-            .setComment("Json-array with all assigned projects "
-                        "together with role and project-admin-status.");
+        .setComment(
+            "Json-array with all assigned projects "
+            "together with role and project-admin-status.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -78,8 +76,7 @@ GetUser::runTask(BlossomIO &blossomIO,
                  Hanami::ErrorContainer &error)
 {
     // check if admin
-    if(context["is_admin"] == false)
-    {
+    if (context["is_admin"] == false) {
         status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
@@ -88,15 +85,13 @@ GetUser::runTask(BlossomIO &blossomIO,
     const std::string userId = blossomIO.input["id"];
 
     // get data from table
-    if(UsersTable::getInstance()->getUser(blossomIO.output, userId, error, false) == false)
-    {
+    if (UsersTable::getInstance()->getUser(blossomIO.output, userId, error, false) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // handle not found
-    if(blossomIO.output.size() == 0)
-    {
+    if (blossomIO.output.size() == 0) {
         status.errorMessage = "User with id '" + userId + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);

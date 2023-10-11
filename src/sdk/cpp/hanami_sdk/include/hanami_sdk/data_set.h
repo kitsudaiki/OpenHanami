@@ -44,21 +44,16 @@ bool checkDataset(std::string &result,
                   const std::string &resultUuid,
                   Hanami::ErrorContainer &error);
 
-bool getDataset(std::string &result,
-                const std::string &dataUuid,
-                Hanami::ErrorContainer &error);
+bool getDataset(std::string &result, const std::string &dataUuid, Hanami::ErrorContainer &error);
 
-bool listDatasets(std::string &result,
-                  Hanami::ErrorContainer &error);
+bool listDatasets(std::string &result, Hanami::ErrorContainer &error);
 
-bool deleteDataset(std::string &result,
-                   const std::string &dataUuid,
-                   Hanami::ErrorContainer &error);
+bool deleteDataset(std::string &result, const std::string &dataUuid, Hanami::ErrorContainer &error);
 
 bool getDatasetProgress(std::string &result,
-                   const std::string &dataUuid,
-                   Hanami::ErrorContainer &error);
+                        const std::string &dataUuid,
+                        Hanami::ErrorContainer &error);
 
-} // namespace Hanami
+}  // namespace Hanami
 
-#endif // HANAMISDK_DATA_SET_H
+#endif  // HANAMISDK_DATA_SET_H

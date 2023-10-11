@@ -30,7 +30,7 @@ DataSetGetTest::DataSetGetTest(const bool expectSuccess,
     : TestStep(expectSuccess)
 {
     m_testName = "get data-set";
-    if(expectSuccess) {
+    if (expectSuccess) {
         m_testName += " (success)";
     } else {
         m_testName += " (fail)";
@@ -40,12 +40,10 @@ DataSetGetTest::DataSetGetTest(const bool expectSuccess,
 }
 
 bool
-DataSetGetTest::runTest(json &inputData,
-                        Hanami::ErrorContainer &error)
+DataSetGetTest::runTest(json &inputData, Hanami::ErrorContainer &error)
 {
-    if(m_uuid == "")
-    {
-        if(m_type == "train") {
+    if (m_uuid == "") {
+        if (m_type == "train") {
             m_uuid = inputData["train_dataset_uuid"];
         } else {
             m_uuid = inputData["request_dataset_uuid"];
@@ -54,11 +52,11 @@ DataSetGetTest::runTest(json &inputData,
 
     // get user by name
     std::string result;
-    if(Hanami::getDataset(result, m_uuid, error) != m_expectSuccess) {
+    if (Hanami::getDataset(result, m_uuid, error) != m_expectSuccess) {
         return false;
     }
 
-    if(m_expectSuccess == false) {
+    if (m_expectSuccess == false) {
         return true;
     }
 
@@ -66,11 +64,10 @@ DataSetGetTest::runTest(json &inputData,
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch(const json::parse_error& ex) {
+    } catch (const json::parse_error &ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
 
     return true;
 }
-

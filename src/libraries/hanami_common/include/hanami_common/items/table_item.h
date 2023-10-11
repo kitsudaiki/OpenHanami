@@ -24,8 +24,8 @@
 #define TABLE_ITEM_H
 
 #include <iostream>
-#include <vector>
 #include <nlohmann/json.hpp>
+#include <vector>
 
 using json = nlohmann::json;
 
@@ -34,20 +34,18 @@ namespace Hanami
 
 class TableItem
 {
-public:
+   public:
     TableItem();
     TableItem(const TableItem &other);
     TableItem(const json &body, const json &header = json::array());
     ~TableItem();
-    TableItem& operator=(const TableItem& other);
+    TableItem &operator=(const TableItem &other);
 
     void clearTable();
 
     // column
-    bool addColumn(const std::string &internalName,
-                   const std::string &shownName = "");
-    bool renameColume(const std::string &internalName,
-                      const std::string &newShownName);
+    bool addColumn(const std::string &internalName, const std::string &shownName = "");
+    bool renameColume(const std::string &internalName, const std::string &newShownName);
     bool deleteColumn(const uint64_t x);
     bool deleteColumn(const std::string &internalName);
 
@@ -57,13 +55,9 @@ public:
     bool deleteRow(const uint64_t y);
 
     // cell
-    bool setCell(const uint32_t column,
-                 const uint32_t row,
-                 const std::string &newValue);
-    const std::string getCell(const uint32_t column,
-                              const uint32_t row);
-    bool deleteCell(const uint32_t column,
-                    const uint32_t row);
+    bool setCell(const uint32_t column, const uint32_t row, const std::string &newValue);
+    const std::string getCell(const uint32_t column, const uint32_t row);
+    bool deleteCell(const uint32_t column, const uint32_t row);
 
     // size
     uint64_t getNumberOfColums();
@@ -81,7 +75,7 @@ public:
                                const bool withoutHeader = false);
     const std::string toJsonString();
 
-private:
+   private:
     json m_body;
     json m_header;
 
@@ -92,8 +86,7 @@ private:
 
     // helper functions for the output
     const std::vector<std::string> getInnerName();
-    const std::string getLimitLine(const std::vector<uint64_t> &sizes,
-                                   const bool bigLine = false);
+    const std::string getLimitLine(const std::vector<uint64_t> &sizes, const bool bigLine = false);
 
     // content-converter for easier output-handline
     void convertCellForOutput(TableCell &convertedCell,
@@ -126,6 +119,6 @@ private:
                                        const bool withoutHeader);
 };
 
-}
+}  // namespace Hanami
 
-#endif // TABLE_ITEM_H
+#endif  // TABLE_ITEM_H

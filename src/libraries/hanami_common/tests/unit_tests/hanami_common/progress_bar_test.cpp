@@ -13,8 +13,7 @@
 namespace Hanami
 {
 
-ProgressBar_Test::ProgressBar_Test()
-    : Hanami::CompareTestHelper("ProgressBar_Test")
+ProgressBar_Test::ProgressBar_Test() : Hanami::CompareTestHelper("ProgressBar_Test")
 {
     progress_test();
 }
@@ -42,4 +41,4 @@ ProgressBar_Test::progress_test()
     delete progressBar;
 }
 
-}
+}  // namespace Hanami

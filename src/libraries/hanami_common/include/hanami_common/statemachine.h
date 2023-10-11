@@ -23,11 +23,11 @@
 #ifndef STATEMACHINE_H
 #define STATEMACHINE_H
 
-#include <vector>
+#include <atomic>
 #include <iostream>
 #include <map>
 #include <utility>
-#include <atomic>
+#include <vector>
 
 namespace Hanami
 {
@@ -37,33 +37,26 @@ class EventQueue;
 
 class Statemachine
 {
-public:
+   public:
     Statemachine(EventQueue* eventQueue = nullptr);
     ~Statemachine();
 
     // init
-    bool createNewState(const uint32_t stateId,
-                        const std::string &stateName = "");
+    bool createNewState(const uint32_t stateId, const std::string& stateName = "");
     bool setCurrentState(const uint32_t stateId);
-    bool addTransition(const uint32_t stateId,
-                       const uint32_t key,
-                       const uint32_t nextStateId);
-    bool setInitialChildState(const uint32_t stateId,
-                              const uint32_t initialChildStateId);
-    bool addChildState(const uint32_t stateId,
-                       const uint32_t childStateId);
+    bool addTransition(const uint32_t stateId, const uint32_t key, const uint32_t nextStateId);
+    bool setInitialChildState(const uint32_t stateId, const uint32_t initialChildStateId);
+    bool addChildState(const uint32_t stateId, const uint32_t childStateId);
 
-    bool addEventToState(const uint32_t stateId,
-                         Event* event);
+    bool addEventToState(const uint32_t stateId, Event* event);
 
     // runtime
-    bool goToNextState(const uint32_t nextStateId,
-                       const uint32_t requiredPreState = 0);
+    bool goToNextState(const uint32_t nextStateId, const uint32_t requiredPreState = 0);
     uint32_t getCurrentStateId();
     const std::string getCurrentStateName();
     bool isInState(const uint32_t stateId);
 
-private:
+   private:
     std::map<uint32_t, State*> m_allStates;
     State* m_currentState = nullptr;
     EventQueue* m_eventQueue = nullptr;
@@ -72,6 +65,6 @@ private:
     State* getState(const uint32_t stateId);
 };
 
-}
+}  // namespace Hanami
 
-#endif // STATEMACHINE_H
+#endif  // STATEMACHINE_H

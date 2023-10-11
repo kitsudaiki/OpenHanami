@@ -23,25 +23,24 @@
 #ifndef HANAMI_VALUECONTAINER_H
 #define HANAMI_VALUECONTAINER_H
 
-#include <vector>
-#include <string>
 #include <stdint.h>
 
 #include <nlohmann/json.hpp>
+#include <string>
+#include <vector>
 
 using json = nlohmann::json;
 
 class ValueContainer
 {
-public:
+   public:
     ValueContainer();
 
     void addValue(const float newValue);
     json toJson();
 
-private:
-    struct ValueSection
-    {
+   private:
+    struct ValueSection {
         std::vector<float> values;
         uint64_t pos = 0;
 
@@ -57,4 +56,4 @@ private:
     json appendSectionToJson(const uint64_t sectionId);
 };
 
-#endif // HANAMI_VALUECONTAINER_H
+#endif  // HANAMI_VALUECONTAINER_H

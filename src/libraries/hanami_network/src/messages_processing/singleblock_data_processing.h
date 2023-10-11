@@ -23,17 +23,14 @@
 #ifndef KITSUNEMIMI_SAKURA_NETWORK_SINGLE_DATA_PROCESSING_H
 #define KITSUNEMIMI_SAKURA_NETWORK_SINGLE_DATA_PROCESSING_H
 
-#include <message_definitions.h>
-#include <handler/session_handler.h>
-#include <multiblock_io.h>
-
 #include <abstract_socket.h>
 #include <hanami_common/buffer/ring_buffer.h>
-
-#include <hanami_network/session_controller.h>
-#include <hanami_network/session.h>
-
 #include <hanami_common/logger.h>
+#include <hanami_network/session.h>
+#include <hanami_network/session_controller.h>
+#include <handler/session_handler.h>
+#include <message_definitions.h>
+#include <multiblock_io.h>
 
 namespace Hanami
 {
@@ -46,14 +43,13 @@ send_Data_SingleBlock(Session* session,
                       const uint64_t multiblockId,
                       const void* data,
                       uint32_t size,
-                      ErrorContainer &error,
+                      ErrorContainer& error,
                       const uint64_t blockerId = 0)
 {
     uint8_t messageBuffer[MESSAGE_CACHE_SIZE];
 
     // bring message-size to a multiple of 8
-    const uint32_t totalMessageSize = sizeof(Data_SingleBlock_Header)
-                                      + size
+    const uint32_t totalMessageSize = sizeof(Data_SingleBlock_Header) + size
                                       + (8 - (size % 8)) % 8  // fill up to a multiple of 8
                                       + sizeof(CommonMessageFooter);
 
@@ -69,7 +65,7 @@ send_Data_SingleBlock(Session* session,
     header.multiblockId = multiblockId;
 
     // set flag to await response-message for blocker-id
-    if(blockerId != 0) {
+    if (blockerId != 0) {
         header.commonHeader.flags |= 0x8;
     }
 
@@ -88,9 +84,7 @@ send_Data_SingleBlock(Session* session,
  * @brief send_Data_SingleBlock_Reply
  */
 inline bool
-send_Data_SingleBlock_Reply(Session* session,
-                            const uint32_t messageId,
-                            ErrorContainer &error)
+send_Data_SingleBlock_Reply(Session* session, const uint32_t messageId, ErrorContainer& error)
 {
     Data_SingleBlockReply_Message message;
 
@@ -113,30 +107,24 @@ process_Data_SingleBlock(Session* session,
     DataBuffer* buffer = new DataBuffer(Hanami::calcBytesToBlocks(payloadSize));
 
     // get pointer to the beginning of the payload
-    const uint8_t* payloadData = static_cast<const uint8_t*>(rawMessage)
-                                 + sizeof(Data_SingleBlock_Header);
+    const uint8_t* payloadData
+        = static_cast<const uint8_t*>(rawMessage) + sizeof(Data_SingleBlock_Header);
 
     // copy messagy-payload into buffer
     addData_DataBuffer(*buffer, payloadData, header->commonHeader.payloadSize);
 
     // check if normal standalone-message or if message is response
-    if(header->commonHeader.flags & 0x8)
-    {
+    if (header->commonHeader.flags & 0x8) {
         // release thread, which is related to the blocker-id
-        SessionHandler::m_blockerHandler->releaseMessage(header->blockerId,
-                                                         buffer);
-    }
-    else
-    {
+        SessionHandler::m_blockerHandler->releaseMessage(header->blockerId, buffer);
+    } else {
         // trigger callback
-        session->m_processRequestData(session->m_standaloneReceiver,
-                                      session,
-                                      header->multiblockId,
-                                      buffer);
+        session->m_processRequestData(
+            session->m_standaloneReceiver, session, header->multiblockId, buffer);
     }
 
     // send reply, if requested
-    if(header->commonHeader.flags & 0x1) {
+    if (header->commonHeader.flags & 0x1) {
         send_Data_SingleBlock_Reply(session, header->commonHeader.messageId, session->sessionError);
     }
 }
@@ -145,8 +133,7 @@ process_Data_SingleBlock(Session* session,
  * @brief process_Data_SingleBlock_Reply
  */
 inline void
-process_Data_SingleBlock_Reply(Session*,
-                               const Data_SingleBlockReply_Message*)
+process_Data_SingleBlock_Reply(Session*, const Data_SingleBlockReply_Message*)
 {
     return;
 }
@@ -163,30 +150,27 @@ process_SingleBlock_Data_Type(Session* session,
                               const CommonMessageHeader* header,
                               const void* rawMessage)
 {
-    switch(header->subType)
-    {
+    switch (header->subType) {
         //------------------------------------------------------------------------------------------
-        case DATA_SINGLE_DATA_SUBTYPE:
-            {
-                const Data_SingleBlock_Header* message =
-                    static_cast<const Data_SingleBlock_Header*>(rawMessage);
-                process_Data_SingleBlock(session, message, rawMessage);
-                break;
-            }
+        case DATA_SINGLE_DATA_SUBTYPE: {
+            const Data_SingleBlock_Header* message
+                = static_cast<const Data_SingleBlock_Header*>(rawMessage);
+            process_Data_SingleBlock(session, message, rawMessage);
+            break;
+        }
         //------------------------------------------------------------------------------------------
-        case DATA_SINGLE_REPLY_SUBTYPE:
-            {
-                const Data_SingleBlockReply_Message* message =
-                    static_cast<const Data_SingleBlockReply_Message*>(rawMessage);
-                process_Data_SingleBlock_Reply(session, message);
-                break;
-            }
+        case DATA_SINGLE_REPLY_SUBTYPE: {
+            const Data_SingleBlockReply_Message* message
+                = static_cast<const Data_SingleBlockReply_Message*>(rawMessage);
+            process_Data_SingleBlock_Reply(session, message);
+            break;
+        }
         //------------------------------------------------------------------------------------------
         default:
             break;
     }
 }
 
-}
+}  // namespace Hanami
 
-#endif // KITSUNEMIMI_SAKURA_NETWORK_SINGLE_DATA_PROCESSING_H
+#endif  // KITSUNEMIMI_SAKURA_NETWORK_SINGLE_DATA_PROCESSING_H

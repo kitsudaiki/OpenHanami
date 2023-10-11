@@ -13,16 +13,14 @@
 namespace Hanami
 {
 
-struct TestStruct
-{
+struct TestStruct {
     uint8_t itemStatus = ItemBuffer::ACTIVE_SECTION;
     uint8_t a = 0;
     uint8_t b = 0;
     uint64_t c = 0;
 } __attribute__((packed));
 
-ItemBuffer_Test::ItemBuffer_Test()
-    : Hanami::CompareTestHelper("ItemBuffer_Test")
+ItemBuffer_Test::ItemBuffer_Test() : Hanami::CompareTestHelper("ItemBuffer_Test")
 {
     initBuffer_test();
     deleteItem_test();
@@ -157,8 +155,9 @@ ItemBuffer_Test::backup_restore_test()
     testBufferBase.addNewItem(testStruct);
 
     ItemBuffer restoredBuffer;
-    TEST_EQUAL(restoredBuffer.initBuffer(testBufferBase.buffer.data,
-                                         testBufferBase.buffer.usedBufferSize), true);
+    TEST_EQUAL(
+        restoredBuffer.initBuffer(testBufferBase.buffer.data, testBufferBase.buffer.usedBufferSize),
+        true);
 
     // test metadata of restored buffer
     TEST_EQUAL(testBufferBase.metaData->itemSize, restoredBuffer.metaData->itemSize);
@@ -177,4 +176,4 @@ ItemBuffer_Test::backup_restore_test()
     TEST_EQUAL(structs[44].c, 1111);
 }
 
-}
+}  // namespace Hanami

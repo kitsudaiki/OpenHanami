@@ -22,7 +22,8 @@
 
 #include <arg_parser_test.h>
 
-int main()
+int
+main()
 {
     Hanami::ArgParser_Test argParserTest;
 

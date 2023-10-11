@@ -14,13 +14,12 @@
 namespace Hanami
 {
 
-class DataBuffer_Test
-        : public Hanami::CompareTestHelper
+class DataBuffer_Test : public Hanami::CompareTestHelper
 {
-public:
+   public:
     DataBuffer_Test();
 
-private:
+   private:
     void constructor_test();
     void structSize_test();
     void copy_assingment_constructor_test();
@@ -33,6 +32,6 @@ private:
     void allocateBlocks_DataBuffer_test();
 };
 
-}
+}  // namespace Hanami
 
-#endif // DATABUFFER_TEST_H
+#endif  // DATABUFFER_TEST_H

@@ -23,34 +23,31 @@
 #ifndef KITSUNEMIMI_SAKURA_NETWORK_MESSAGE_BLOCKER_HANDLER_H
 #define KITSUNEMIMI_SAKURA_NETWORK_MESSAGE_BLOCKER_HANDLER_H
 
-#include <vector>
-#include <iostream>
-
 #include <hanami_common/threading/thread.h>
+
+#include <iostream>
+#include <vector>
 
 namespace Hanami
 {
 class Session;
 
-class MessageBlockerHandler
-        : public Hanami::Thread
+class MessageBlockerHandler : public Hanami::Thread
 {
-public:
+   public:
     MessageBlockerHandler();
     ~MessageBlockerHandler();
 
     DataBuffer* blockMessage(const uint64_t blockerId,
                              const uint64_t blockerTimeout,
                              Session* session);
-    bool releaseMessage(const uint64_t blockerId,
-                        DataBuffer* data);
+    bool releaseMessage(const uint64_t blockerId, DataBuffer* data);
 
-protected:
+   protected:
     void run();
 
-private:
-    struct MessageBlocker
-    {
+   private:
+    struct MessageBlocker {
         Session* session = nullptr;
         uint64_t blockerId = 0;
         uint64_t timer = 0;
@@ -61,13 +58,12 @@ private:
 
     std::vector<MessageBlocker*> m_messageList;
 
-    bool releaseMessageInList(const uint64_t blockerId,
-                              DataBuffer* data);
+    bool releaseMessageInList(const uint64_t blockerId, DataBuffer* data);
     DataBuffer* removeMessageFromList(const uint64_t blockerId);
     void clearList();
     void makeTimerStep();
 };
 
-}
+}  // namespace Hanami
 
-#endif // KITSUNEMIMI_SAKURA_NETWORK_MESSAGE_BLOCKER_HANDLER_H
+#endif  // KITSUNEMIMI_SAKURA_NETWORK_MESSAGE_BLOCKER_HANDLER_H

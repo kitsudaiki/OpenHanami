@@ -25,17 +25,14 @@
 #ifndef KITSUNEMIMI_SAKURA_NETWORK_HEARTBEAT_PROCESSING_H
 #define KITSUNEMIMI_SAKURA_NETWORK_HEARTBEAT_PROCESSING_H
 
-#include <message_definitions.h>
-#include <handler/session_handler.h>
-#include <multiblock_io.h>
-
 #include <abstract_socket.h>
 #include <hanami_common/buffer/ring_buffer.h>
-
-#include <hanami_network/session_controller.h>
-#include <hanami_network/session.h>
-
 #include <hanami_common/logger.h>
+#include <hanami_network/session.h>
+#include <hanami_network/session_controller.h>
+#include <handler/session_handler.h>
+#include <message_definitions.h>
+#include <multiblock_io.h>
 
 namespace Hanami
 {
@@ -46,8 +43,7 @@ namespace Hanami
  * @param session pointer to the session
  */
 inline bool
-send_Heartbeat_Start(Session* session,
-                     ErrorContainer &error)
+send_Heartbeat_Start(Session* session, ErrorContainer& error)
 {
     Heartbeat_Start_Message message;
 
@@ -64,9 +60,7 @@ send_Heartbeat_Start(Session* session,
  * @param id of the message of the initial heartbeat
  */
 inline bool
-send_Heartbeat_Reply(Session* session,
-                     const uint32_t messageId,
-                     ErrorContainer &error)
+send_Heartbeat_Reply(Session* session, const uint32_t messageId, ErrorContainer& error)
 {
     Heartbeat_Reply_Message message;
 
@@ -83,8 +77,7 @@ send_Heartbeat_Reply(Session* session,
  * @param message incoming message
  */
 inline bool
-process_Heartbeat_Start(Session* session,
-                        const Heartbeat_Start_Message* message)
+process_Heartbeat_Start(Session* session, const Heartbeat_Start_Message* message)
 {
     return send_Heartbeat_Reply(session, message->commonHeader.messageId, session->sessionError);
 }
@@ -107,34 +100,29 @@ process_Heartbeat_Reply(Session*, const Heartbeat_Reply_Message*)
  * @param rawMessage pointer to the raw data of the complete message (header + payload + end)
  */
 inline void
-process_Heartbeat_Type(Session* session,
-                       const CommonMessageHeader* header,
-                       const void* rawMessage)
+process_Heartbeat_Type(Session* session, const CommonMessageHeader* header, const void* rawMessage)
 {
-    switch(header->subType)
-    {
+    switch (header->subType) {
         //------------------------------------------------------------------------------------------
-        case HEARTBEAT_START_SUBTYPE:
-            {
-                const Heartbeat_Start_Message* message =
-                    static_cast<const Heartbeat_Start_Message*>(rawMessage);
-                process_Heartbeat_Start(session, message);
-                break;
-            }
+        case HEARTBEAT_START_SUBTYPE: {
+            const Heartbeat_Start_Message* message
+                = static_cast<const Heartbeat_Start_Message*>(rawMessage);
+            process_Heartbeat_Start(session, message);
+            break;
+        }
         //------------------------------------------------------------------------------------------
-        case HEARTBEAT_REPLY_SUBTYPE:
-            {
-                const Heartbeat_Reply_Message* message =
-                    static_cast<const Heartbeat_Reply_Message*>(rawMessage);
-                process_Heartbeat_Reply(session, message);
-                break;
-            }
+        case HEARTBEAT_REPLY_SUBTYPE: {
+            const Heartbeat_Reply_Message* message
+                = static_cast<const Heartbeat_Reply_Message*>(rawMessage);
+            process_Heartbeat_Reply(session, message);
+            break;
+        }
         //------------------------------------------------------------------------------------------
         default:
             break;
     }
 }
 
-}
+}  // namespace Hanami
 
-#endif // KITSUNEMIMI_SAKURA_NETWORK_HEARTBEAT_PROCESSING_H
+#endif  // KITSUNEMIMI_SAKURA_NETWORK_HEARTBEAT_PROCESSING_H

@@ -22,22 +22,21 @@
 
 #include "generate_rest_api_docu.h"
 
-#include <hanami_root.h>
 #include <api/endpoint_processing/blossom.h>
-
-#include <hanami_crypto/common.h>
-#include <hanami_common/methods/string_methods.h>
 #include <hanami_common/methods/file_methods.h>
+#include <hanami_common/methods/string_methods.h>
+#include <hanami_crypto/common.h>
+#include <hanami_root.h>
 
-std::map<HttpResponseTypes, std::string> responseMessage =
-{
+std::map<HttpResponseTypes, std::string> responseMessage = {
     {OK_RTYPE, "Successful response."},
     {CONFLICT_RTYPE, "Resource with name or id already exist."},
     {BAD_REQUEST_RTYPE, "Request has invalid syntax."},
     {UNAUTHORIZED_RTYPE, "Information for authentication are missing or are invalid"},
     {NOT_FOUND_RTYPE, "The requested resource was not found."},
-    {INTERNAL_SERVER_ERROR_RTYPE, "Something internally went wrong. "
-                                  "Check the server-internal logs for more information."},
+    {INTERNAL_SERVER_ERROR_RTYPE,
+     "Something internally went wrong. "
+     "Check the server-internal logs for more information."},
 };
 
 /**
@@ -45,7 +44,7 @@ std::map<HttpResponseTypes, std::string> responseMessage =
  * @param docu
  */
 void
-createOpenApiDocumentation(std::string &docu)
+createOpenApiDocumentation(std::string& docu)
 {
     json result;
     result["openapi"] = "3.0.0";
@@ -78,8 +77,7 @@ createOpenApiDocumentation(std::string &docu)
  * @param allowedErrorCodes
  */
 void
-addResponsess(json &responses,
-              Blossom* blossom)
+addResponsess(json& responses, Blossom* blossom)
 {
     json resp200;
     resp200["description"] = responseMessage[OK_RTYPE];
@@ -93,8 +91,7 @@ addResponsess(json &responses,
     resp200["content"] = content;
     responses["200"] = resp200;
 
-    for(const HttpResponseTypes code : blossom->errorCodes)
-    {
+    for (const HttpResponseTypes code : blossom->errorCodes) {
         json errorResponse;
         errorResponse["description"] = responseMessage[code];
         json content;
@@ -113,7 +110,7 @@ addResponsess(json &responses,
  * @param parameters
  */
 void
-addTokenRequirement(json &parameters)
+addTokenRequirement(json& parameters)
 {
     json param;
     param["in"] = "header";
@@ -135,11 +132,9 @@ addTokenRequirement(json &parameters)
  * @param isRequest
  */
 void
-createQueryParams_openapi(json &parameters,
-                          const std::map<std::string, FieldDef>* defMap)
+createQueryParams_openapi(json& parameters, const std::map<std::string, FieldDef>* defMap)
 {
-    for(const auto& [field, fieldDef] : *defMap)
-    {
+    for (const auto& [field, fieldDef] : *defMap) {
         const FieldType fieldType = fieldDef.fieldType;
         const std::string comment = fieldDef.comment;
         const bool isRequired = fieldDef.isRequired;
@@ -154,63 +149,56 @@ createQueryParams_openapi(json &parameters,
         param["name"] = field;
 
         // required
-        if(isRequired) {
+        if (isRequired) {
             param["required"] = isRequired;
         }
 
         // comment
-        if(comment != "") {
+        if (comment != "") {
             param["description"] = comment;
         }
 
         json schema;
 
         // type
-        if(fieldType == SAKURA_MAP_TYPE) {
+        if (fieldType == SAKURA_MAP_TYPE) {
             schema["type"] = "object";
-        } else if(fieldType == SAKURA_ARRAY_TYPE) {
+        } else if (fieldType == SAKURA_ARRAY_TYPE) {
             schema["type"] = "array";
-        } else if(fieldType == SAKURA_BOOL_TYPE) {
+        } else if (fieldType == SAKURA_BOOL_TYPE) {
             schema["type"] = "boolean";
-        } else if(fieldType == SAKURA_INT_TYPE) {
+        } else if (fieldType == SAKURA_INT_TYPE) {
             schema["type"] = "integer";
-        } else if(fieldType == SAKURA_FLOAT_TYPE) {
+        } else if (fieldType == SAKURA_FLOAT_TYPE) {
             schema["type"] = "number";
-        } else if(fieldType == SAKURA_STRING_TYPE) {
+        } else if (fieldType == SAKURA_STRING_TYPE) {
             schema["type"] = "string";
         }
 
         // default
-        if(defaultVal != nullptr
-                && isRequired == false)
-        {
+        if (defaultVal != nullptr && isRequired == false) {
             schema["default"] = defaultVal;
         }
 
         // match
-        if(regexVal != "") {
+        if (regexVal != "") {
             schema["pattern"] = regexVal;
         }
 
         // border
-        if(lowerLimit != 0
-                || upperLimit != 0)
-        {
-            if(fieldType == SAKURA_INT_TYPE)
-            {
+        if (lowerLimit != 0 || upperLimit != 0) {
+            if (fieldType == SAKURA_INT_TYPE) {
                 schema["minimum"] = std::to_string(lowerLimit);
                 schema["maximum"] = std::to_string(upperLimit);
             }
-            if(fieldType == SAKURA_STRING_TYPE)
-            {
+            if (fieldType == SAKURA_STRING_TYPE) {
                 schema["minLength"] = std::to_string(lowerLimit);
                 schema["maxLength"] = std::to_string(upperLimit);
             }
         }
 
         // match
-        if(matchVal != nullptr)
-        {
+        if (matchVal != nullptr) {
             json match;
             std::string content = matchVal;
             match.push_back(content);
@@ -230,15 +218,14 @@ createQueryParams_openapi(json &parameters,
  * @param isRequest true to say that the actual field is a request-field
  */
 void
-createBodyParams_openapi(json &schema,
+createBodyParams_openapi(json& schema,
                          const std::map<std::string, FieldDef>* defMap,
                          const bool isRequest)
 {
     std::vector<std::string> requiredFields;
 
     json properties;
-    for(const auto& [id, fieldDef] : *defMap)
-    {
+    for (const auto& [id, fieldDef] : *defMap) {
         json temp;
 
         const std::string field = id;
@@ -252,18 +239,17 @@ createBodyParams_openapi(json &schema,
         const long upperLimit = fieldDef.upperLimit;
 
         // type
-        if(fieldType == SAKURA_MAP_TYPE) {
+        if (fieldType == SAKURA_MAP_TYPE) {
             temp["type"] = "object";
-        } else if(fieldType == SAKURA_ARRAY_TYPE) {
+        } else if (fieldType == SAKURA_ARRAY_TYPE) {
             temp["type"] = "array";
             json array;
             array["type"] = "string";
 
             // match
-            if(matchVal != nullptr)
-            {
+            if (matchVal != nullptr) {
                 json match = json::parse(matchVal.dump(), nullptr, false);
-                if(match.is_discarded()) {
+                if (match.is_discarded()) {
                     array["enum"] = json(match);
                 } else {
                     array["enum"] = match;
@@ -271,79 +257,69 @@ createBodyParams_openapi(json &schema,
             }
 
             temp["items"] = array;
-        } else if(fieldType == SAKURA_BOOL_TYPE) {
+        } else if (fieldType == SAKURA_BOOL_TYPE) {
             temp["type"] = "boolean";
-        } else if(fieldType == SAKURA_INT_TYPE) {
+        } else if (fieldType == SAKURA_INT_TYPE) {
             temp["type"] = "integer";
-        } else if(fieldType == SAKURA_FLOAT_TYPE) {
+        } else if (fieldType == SAKURA_FLOAT_TYPE) {
             temp["type"] = "number";
-        } else if(fieldType == SAKURA_STRING_TYPE) {
+        } else if (fieldType == SAKURA_STRING_TYPE) {
             temp["type"] = "string";
         }
 
         // comment
-        if(comment != "") {
+        if (comment != "") {
             temp["description"] = comment;
         }
 
-        if(isRequest)
-        {
+        if (isRequest) {
             // required
-            if(isRequired) {
+            if (isRequired) {
                 requiredFields.push_back(field);
             }
 
             // default
-            if(defaultVal != nullptr
-                    && isRequired == false)
-            {
+            if (defaultVal != nullptr && isRequired == false) {
                 temp["default"] = defaultVal;
             }
 
             // match
-            if(regexVal != "") {
+            if (regexVal != "") {
                 temp["pattern"] = regexVal;
             }
 
             // border
-            if(lowerLimit != 0
-                    || upperLimit != 0)
-            {
-                if(fieldType == SAKURA_INT_TYPE)
-                {
+            if (lowerLimit != 0 || upperLimit != 0) {
+                if (fieldType == SAKURA_INT_TYPE) {
                     temp["minimum"] = std::to_string(lowerLimit);
                     temp["maximum"] = std::to_string(upperLimit);
                 }
-                if(fieldType == SAKURA_STRING_TYPE)
-                {
+                if (fieldType == SAKURA_STRING_TYPE) {
                     temp["minLength"] = std::to_string(lowerLimit);
                     temp["maxLength"] = std::to_string(upperLimit);
                 }
             }
 
             // match
-            if(matchVal != nullptr)
-            {
+            if (matchVal != nullptr) {
                 json match;
                 std::string content = matchVal;
                 Hanami::replaceSubstring(content, "\"", "\\\"");
                 match.push_back(content);
                 temp["enum"] = match;
             }
-
         }
 
         properties[field] = temp;
     }
 
-    if(properties.is_null() == false) {
+    if (properties.is_null() == false) {
         schema["properties"] = properties;
     }
 
-    if(isRequest)
-    {
+    if (isRequest) {
         json required;
-        for(const std::string& field : requiredFields) {
+        for (const std::string& field : requiredFields) {
             required.push_back(field);
         }
         schema["required"] = required;
@@ -356,20 +332,18 @@ createBodyParams_openapi(json &schema,
  * @param docu reference to the complete document
  */
 void
-generateEndpointDocu_openapi(json &result)
+generateEndpointDocu_openapi(json& result)
 {
-    for(const auto& [endpointPath, httpDef] : HanamiRoot::root->endpointRules)
-    {
+    for (const auto& [endpointPath, httpDef] : HanamiRoot::root->endpointRules) {
         // add endpoint
         json endpoint;
 
-        for(const auto& [type, endpointEntry] : httpDef)
-        {
+        for (const auto& [type, endpointEntry] : httpDef) {
             json endpointType;
 
-            Blossom* blossom = HanamiRoot::root->getBlossom(endpointEntry.group,
-                                                            endpointEntry.name);
-            if(blossom == nullptr) {
+            Blossom* blossom
+                = HanamiRoot::root->getBlossom(endpointEntry.group, endpointEntry.name);
+            if (blossom == nullptr) {
                 // TODO: handle error
                 return;
             }
@@ -383,13 +357,11 @@ generateEndpointDocu_openapi(json &result)
 
             json parameters;
 
-            if(blossom->requiresAuthToken) {
+            if (blossom->requiresAuthToken) {
                 addTokenRequirement(parameters);
             }
 
-            if(type == POST_TYPE
-                    || type == PUT_TYPE)
-            {
+            if (type == POST_TYPE || type == PUT_TYPE) {
                 json requestBody;
                 requestBody["required"] = true;
                 json content;
@@ -403,13 +375,11 @@ generateEndpointDocu_openapi(json &result)
                 endpointType["requestBody"] = requestBody;
             }
 
-            if(type == GET_TYPE
-                    || type == DELETE_TYPE)
-            {
+            if (type == GET_TYPE || type == DELETE_TYPE) {
                 createQueryParams_openapi(parameters, blossom->getInputValidationMap());
             }
 
-            if(parameters.is_null() == false) {
+            if (parameters.is_null() == false) {
                 endpointType["parameters"] = parameters;
             }
 
@@ -419,13 +389,13 @@ generateEndpointDocu_openapi(json &result)
             endpointType["responses"] = responses;
 
             // add http-type
-            if(type == GET_TYPE) {
+            if (type == GET_TYPE) {
                 endpoint["get"] = endpointType;
-            } else if(type == POST_TYPE) {
+            } else if (type == POST_TYPE) {
                 endpoint["post"] = endpointType;
-            } else if(type == DELETE_TYPE) {
+            } else if (type == DELETE_TYPE) {
                 endpoint["delete"] = endpointType;
-            } else if(type == PUT_TYPE) {
+            } else if (type == PUT_TYPE) {
                 endpoint["put"] = endpointType;
             }
         }

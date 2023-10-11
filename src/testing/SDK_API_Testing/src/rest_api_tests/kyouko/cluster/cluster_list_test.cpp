@@ -24,11 +24,10 @@
 
 #include <hanami_sdk/cluster.h>
 
-ClusterListTest::ClusterListTest(const bool expectSuccess)
-      : TestStep(expectSuccess)
+ClusterListTest::ClusterListTest(const bool expectSuccess) : TestStep(expectSuccess)
 {
     m_testName = "list cluster";
-    if(expectSuccess) {
+    if (expectSuccess) {
         m_testName += " (success)";
     } else {
         m_testName += " (fail)";
@@ -36,16 +35,15 @@ ClusterListTest::ClusterListTest(const bool expectSuccess)
 }
 
 bool
-ClusterListTest::runTest(json &inputData,
-                         Hanami::ErrorContainer &error)
+ClusterListTest::runTest(json &inputData, Hanami::ErrorContainer &error)
 {
     // list clusters
     std::string result;
-    if(Hanami::listCluster(result, error) != m_expectSuccess) {
+    if (Hanami::listCluster(result, error) != m_expectSuccess) {
         return false;
     }
 
-    if(m_expectSuccess == false) {
+    if (m_expectSuccess == false) {
         return true;
     }
 
@@ -53,7 +51,7 @@ ClusterListTest::runTest(json &inputData,
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch(const json::parse_error& ex) {
+    } catch (const json::parse_error &ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }

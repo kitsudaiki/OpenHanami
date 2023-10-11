@@ -23,13 +23,13 @@
 #ifndef HANAMI_CORE_SEGMENT_OBJECTS_H
 #define HANAMI_CORE_SEGMENT_OBJECTS_H
 
+#include <hanami_common/structs.h>
 #include <stdint.h>
-#include <cstdlib>
-#include <string>
-#include <algorithm>
 #include <uuid/uuid.h>
 
-#include <hanami_common/structs.h>
+#include <algorithm>
+#include <cstdlib>
+#include <string>
 
 // const predefined values
 #define UNINIT_STATE_64 0xFFFFFFFFFFFFFFFF
@@ -53,8 +53,7 @@
 
 //==================================================================================================
 
-enum ClusterProcessingMode
-{
+enum ClusterProcessingMode {
     NORMAL_MODE = 0,
     TRAIN_FORWARD_MODE = 1,
     TRAIN_BACKWARD_MODE = 2,
@@ -62,21 +61,17 @@ enum ClusterProcessingMode
 
 //==================================================================================================
 
-struct kuuid
-{
+struct kuuid {
     char uuid[UUID_STR_LEN];
     uint8_t padding[3];
 
-    const std::string toString() const {
-        return std::string(uuid, UUID_STR_LEN - 1);
-    }
+    const std::string toString() const { return std::string(uuid, UUID_STR_LEN - 1); }
 };
 static_assert(sizeof(kuuid) == 40);
 
 //==================================================================================================
 
-struct HeaderEntry
-{
+struct HeaderEntry {
     uint64_t bytePos = 0;
     uint64_t count = 0;
 };
@@ -84,8 +79,7 @@ static_assert(sizeof(HeaderEntry) == 16);
 
 //==================================================================================================
 
-struct ClusterHeader
-{
+struct ClusterHeader {
     uint8_t objectType = 0;
     uint8_t version = 1;
     uint8_t padding[6];
@@ -113,8 +107,7 @@ static_assert(sizeof(ClusterHeader) == 2048);
 
 //==================================================================================================
 
-struct Brick
-{
+struct Brick {
     // common
     uint32_t brickId = UNINIT_STATE_32;
     bool isOutputBrick = false;
@@ -133,8 +126,7 @@ static_assert(sizeof(Brick) == 4096);
 
 //==================================================================================================
 
-struct Synapse
-{
+struct Synapse {
     float weight = 0.0f;
     float border = 0.0f;
     uint16_t targetNeuronId = UNINIT_STATE_16;
@@ -145,23 +137,21 @@ static_assert(sizeof(Synapse) == 16);
 
 //==================================================================================================
 
-struct SynapseBlock
-{
+struct SynapseBlock {
     Synapse synapses[NUMBER_OF_SYNAPSESECTION][SYNAPSES_PER_SYNAPSESECTION];
 
     SynapseBlock()
     {
-        for(uint32_t i = 0; i < NUMBER_OF_SYNAPSESECTION; i++) {
+        for (uint32_t i = 0; i < NUMBER_OF_SYNAPSESECTION; i++) {
             std::fill_n(synapses[i], SYNAPSES_PER_SYNAPSESECTION, Synapse());
         }
     }
 };
-static_assert(sizeof(SynapseBlock) == 64*1024);
+static_assert(sizeof(SynapseBlock) == 64 * 1024);
 
 //==================================================================================================
 
-struct LocationPtr
-{
+struct LocationPtr {
     // HINT (kitsudaiki): not initialized here, because they are used in shared memory in cuda
     //                    which doesn't support initializing of the values, when defining the
     //                    shared-memory-object
@@ -173,8 +163,7 @@ static_assert(sizeof(LocationPtr) == 8);
 
 //==================================================================================================
 
-struct Neuron
-{
+struct Neuron {
     float input = 0.0f;
     float border = 100.0f;
     float potential = 0.0f;
@@ -188,7 +177,8 @@ struct Neuron
     uint8_t padding[1];
     LocationPtr target;
 
-    Neuron() {
+    Neuron()
+    {
         target.blockId = UNINIT_STATE_32;
         target.sectionId = UNINIT_STATE_16;
     }
@@ -197,8 +187,7 @@ static_assert(sizeof(Neuron) == 32);
 
 //==================================================================================================
 
-struct NeuronBlock
-{
+struct NeuronBlock {
     uint64_t triggerMap;
     uint64_t triggerCompare;
     uint32_t numberOfNeurons = 0;
@@ -218,8 +207,7 @@ static_assert(sizeof(NeuronBlock) == 2048);
 
 //==================================================================================================
 
-struct SynapseConnection
-{
+struct SynapseConnection {
     uint8_t active = 1;
     uint8_t padding[3];
     uint32_t targetNeuronBlockId = UNINIT_STATE_32;
@@ -235,8 +223,7 @@ struct SynapseConnection
         std::fill_n(origin, NUMBER_OF_SYNAPSESECTION, LocationPtr());
         std::fill_n(offset, NUMBER_OF_SYNAPSESECTION, 0.0f);
 
-        for(uint32_t i = 0; i < NUMBER_OF_SYNAPSESECTION; i++)
-        {
+        for (uint32_t i = 0; i < NUMBER_OF_SYNAPSESECTION; i++) {
             next[i].blockId = UNINIT_STATE_32;
             next[i].sectionId = UNINIT_STATE_16;
             origin[i].blockId = UNINIT_STATE_32;
@@ -248,8 +235,7 @@ static_assert(sizeof(SynapseConnection) == 1292);
 
 //==================================================================================================
 
-struct ClusterSettings
-{
+struct ClusterSettings {
     uint64_t maxSynapseSections = 0;
     float synapseDeleteBorder = 1.0f;
     float neuronCooldown = 100.0f;
@@ -271,8 +257,7 @@ static_assert(sizeof(ClusterSettings) == 256);
 
 //==================================================================================================
 
-struct PointerHandler
-{
+struct PointerHandler {
     NeuronBlock* neuronBlocks = nullptr;
     SynapseBlock* synapseBlocks = nullptr;
     SynapseConnection* synapseConnections = nullptr;
@@ -283,4 +268,4 @@ struct PointerHandler
 
 //==================================================================================================
 
-#endif // HANAMI_CORE_SEGMENT_OBJECTS_H
+#endif  // HANAMI_CORE_SEGMENT_OBJECTS_H

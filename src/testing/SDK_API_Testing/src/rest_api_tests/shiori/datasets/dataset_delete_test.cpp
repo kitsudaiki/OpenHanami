@@ -24,12 +24,11 @@
 
 #include <hanami_sdk/data_set.h>
 
-DataSetDeleteTest::DataSetDeleteTest(const bool expectSuccess,
-                                     const std::string &type)
-          : TestStep(expectSuccess)
+DataSetDeleteTest::DataSetDeleteTest(const bool expectSuccess, const std::string &type)
+    : TestStep(expectSuccess)
 {
     m_testName = "delete data-set";
-    if(expectSuccess) {
+    if (expectSuccess) {
         m_testName += " (success)";
     } else {
         m_testName += " (fail)";
@@ -38,13 +37,12 @@ DataSetDeleteTest::DataSetDeleteTest(const bool expectSuccess,
 }
 
 bool
-DataSetDeleteTest::runTest(json &inputData,
-                           Hanami::ErrorContainer &error)
+DataSetDeleteTest::runTest(json &inputData, Hanami::ErrorContainer &error)
 {
     std::string uuid = "";
-    if(m_type == "train") {
+    if (m_type == "train") {
         uuid = inputData["train_dataset_uuid"];
-    } else if(m_type == "request") {
+    } else if (m_type == "request") {
         uuid = inputData["request_dataset_uuid"];
     } else {
         uuid = inputData["base_dataset_uuid"];
@@ -52,12 +50,11 @@ DataSetDeleteTest::runTest(json &inputData,
 
     // delete user by name
     std::string result;
-    if(Hanami::deleteDataset(result, uuid, error) != m_expectSuccess)
-    {
+    if (Hanami::deleteDataset(result, uuid, error) != m_expectSuccess) {
         return false;
     }
 
-    if(m_expectSuccess == false) {
+    if (m_expectSuccess == false) {
         return true;
     }
 
@@ -65,11 +62,10 @@ DataSetDeleteTest::runTest(json &inputData,
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch(const json::parse_error& ex) {
+    } catch (const json::parse_error &ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
 
     return true;
 }
-

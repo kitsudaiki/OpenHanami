@@ -25,17 +25,16 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-class ValidateAccess
-        : public Blossom
+class ValidateAccess : public Blossom
 {
-public:
+   public:
     ValidateAccess();
 
-protected:
+   protected:
     bool runTask(BlossomIO &blossomIO,
                  const json &,
                  BlossomStatus &status,
                  Hanami::ErrorContainer &error);
 };
 
-#endif // HANAMI_VALIDATE_ACCESS_H
+#endif  // HANAMI_VALIDATE_ACCESS_H

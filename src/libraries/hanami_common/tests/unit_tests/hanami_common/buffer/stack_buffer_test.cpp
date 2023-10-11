@@ -7,13 +7,13 @@
  */
 
 #include "stack_buffer_test.h"
+
 #include <hanami_common/buffer/stack_buffer.h>
 
 namespace Hanami
 {
 
-StackBuffer_Test::StackBuffer_Test()
-    : Hanami::CompareTestHelper("StackBuffer_Test")
+StackBuffer_Test::StackBuffer_Test() : Hanami::CompareTestHelper("StackBuffer_Test")
 {
     constructor_test();
     extendBuffer_StackBuffer_test();
@@ -37,7 +37,7 @@ StackBuffer_Test::constructor_test()
     StackBuffer stackBuffer(10, 20);
     TEST_EQUAL(stackBuffer.preOffset, 10);
     TEST_EQUAL(stackBuffer.postOffset, 20);
-    TEST_EQUAL(stackBuffer.effectiveBlockSize, STACK_BUFFER_BLOCK_SIZE-30);
+    TEST_EQUAL(stackBuffer.effectiveBlockSize, STACK_BUFFER_BLOCK_SIZE - 30);
     TEST_EQUAL(stackBuffer.blockSize, STACK_BUFFER_BLOCK_SIZE);
 
     // test if m_stackBufferReserve is correctly set after first buffer-creation
@@ -68,7 +68,7 @@ StackBuffer_Test::addData_StackBuffer_test()
 {
     // init
     StackBuffer stackBuffer;
-    DataBuffer buffer(STACK_BUFFER_BLOCK_SIZE/4096);
+    DataBuffer buffer(STACK_BUFFER_BLOCK_SIZE / 4096);
 
     // run test
     addData_StackBuffer(stackBuffer, buffer.data, 1000);
@@ -102,7 +102,7 @@ StackBuffer_Test::getFirstElement_StackBuffer_test()
 {
     // init
     StackBuffer stackBuffer;
-    DataBuffer buffer(STACK_BUFFER_BLOCK_SIZE/4096);
+    DataBuffer buffer(STACK_BUFFER_BLOCK_SIZE / 4096);
     bool isNullptr = false;
     DataBuffer* result = nullptr;
 
@@ -135,7 +135,7 @@ StackBuffer_Test::removeFirst_StackBuffer_test()
 {
     // init
     StackBuffer stackBuffer;
-    DataBuffer buffer(STACK_BUFFER_BLOCK_SIZE/4096);
+    DataBuffer buffer(STACK_BUFFER_BLOCK_SIZE / 4096);
 
     // prepare test-buffer
     addData_StackBuffer(stackBuffer, buffer.data, buffer.totalBufferSize);
@@ -158,7 +158,7 @@ StackBuffer_Test::reset_StackBuffer_test()
 {
     // init
     StackBuffer stackBuffer;
-    DataBuffer buffer(STACK_BUFFER_BLOCK_SIZE/4096);
+    DataBuffer buffer(STACK_BUFFER_BLOCK_SIZE / 4096);
 
     // prepare test-buffer
     addData_StackBuffer(stackBuffer, buffer.data, buffer.totalBufferSize);
@@ -173,4 +173,4 @@ StackBuffer_Test::reset_StackBuffer_test()
     TEST_EQUAL(isNullptr, false);
 }
 
-}
+}  // namespace Hanami

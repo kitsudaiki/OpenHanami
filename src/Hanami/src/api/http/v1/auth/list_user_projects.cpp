@@ -22,11 +22,10 @@
 
 #include "list_user_projects.h"
 
-#include <hanami_root.h>
 #include <database/users_table.h>
-
 #include <hanami_common/methods/string_methods.h>
 #include <hanami_crypto/hashes.h>
+#include <hanami_root.h>
 
 /**
  * @brief constructor
@@ -41,17 +40,18 @@ ListUserProjects::ListUserProjects()
     //----------------------------------------------------------------------------------------------
 
     registerInputField("user_id", SAKURA_STRING_TYPE)
-            .setComment("ID of the user.")
-            .setLimit(4, 256)
-            .setRegex(ID_EXT_REGEX);
+        .setComment("ID of the user.")
+        .setLimit(4, 256)
+        .setRegex(ID_EXT_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
     registerOutputField("projects", SAKURA_ARRAY_TYPE)
-            .setComment("Json-array with all assigned projects "
-                        "together with role and project-admin-status.");
+        .setComment(
+            "Json-array with all assigned projects "
+            "together with role and project-admin-status.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -71,29 +71,25 @@ ListUserProjects::runTask(BlossomIO &blossomIO,
     std::string userId = blossomIO.input["user_id"];
 
     // only admin is allowed to request the project-list of other users
-    if(userId != ""
-            && userContext.isAdmin == false)
-    {
+    if (userId != "" && userContext.isAdmin == false) {
         status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
 
     // if no other user defined, use the user, who made this request
-    if(userId == "") {
+    if (userId == "") {
         userId = userContext.userId;
     }
 
     // get data from table
     json userData;
-    if(UsersTable::getInstance()->getUser(userData, userId, error, false) == false)
-    {
+    if (UsersTable::getInstance()->getUser(userData, userId, error, false) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // handle not found
-    if(userData.size() == 0)
-    {
+    if (userData.size() == 0) {
         status.errorMessage = "User with id '" + userId + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
@@ -102,8 +98,7 @@ ListUserProjects::runTask(BlossomIO &blossomIO,
 
     // if user is global admin, add the admin-project to the list of choosable projects
     const bool isAdmin = userData["is_admin"];
-    if(isAdmin)
-    {
+    if (isAdmin) {
         json adminProject = json::object();
         adminProject["project_id"] = "admin";
         adminProject["role"] = "admin";

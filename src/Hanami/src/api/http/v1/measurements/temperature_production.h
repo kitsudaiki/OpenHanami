@@ -25,18 +25,13 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-
-class ThermalProduction
-        : public Blossom
+class ThermalProduction : public Blossom
 {
-public:
+   public:
     ThermalProduction();
 
-protected:
-    bool runTask(BlossomIO &blossomIO,
-                 const json &,
-                 BlossomStatus &,
-                 Hanami::ErrorContainer &);
+   protected:
+    bool runTask(BlossomIO &blossomIO, const json &, BlossomStatus &, Hanami::ErrorContainer &);
 };
 
-#endif // AZUKIHEART_TEMPERATURE_PRODUCTION_H
+#endif  // AZUKIHEART_TEMPERATURE_PRODUCTION_H

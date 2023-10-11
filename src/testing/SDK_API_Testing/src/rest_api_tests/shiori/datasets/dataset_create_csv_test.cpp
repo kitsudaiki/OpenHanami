@@ -25,11 +25,10 @@
 #include <hanami_config/config_handler.h>
 #include <hanami_sdk/data_set.h>
 
-DataSetCreateCsvTest::DataSetCreateCsvTest(const bool expectSuccess)
-          : TestStep(expectSuccess)
+DataSetCreateCsvTest::DataSetCreateCsvTest(const bool expectSuccess) : TestStep(expectSuccess)
 {
     m_testName = "create csv data-set";
-    if(expectSuccess) {
+    if (expectSuccess) {
         m_testName += " (success)";
     } else {
         m_testName += " (fail)";
@@ -37,19 +36,16 @@ DataSetCreateCsvTest::DataSetCreateCsvTest(const bool expectSuccess)
 }
 
 bool
-DataSetCreateCsvTest::runTest(json &inputData,
-                              Hanami::ErrorContainer &error)
+DataSetCreateCsvTest::runTest(json &inputData, Hanami::ErrorContainer &error)
 {
     std::string result;
-    if(Hanami::uploadCsvData(result,
-                             inputData["base_dataset_name"],
-                             inputData["base_inputs"],
-                             error) != m_expectSuccess)
-    {
+    if (Hanami::uploadCsvData(
+            result, inputData["base_dataset_name"], inputData["base_inputs"], error)
+        != m_expectSuccess) {
         return false;
     }
 
-    if(m_expectSuccess == false) {
+    if (m_expectSuccess == false) {
         return true;
     }
 
@@ -57,7 +53,7 @@ DataSetCreateCsvTest::runTest(json &inputData,
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch(const json::parse_error& ex) {
+    } catch (const json::parse_error &ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }

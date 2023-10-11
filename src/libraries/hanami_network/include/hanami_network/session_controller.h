@@ -23,14 +23,15 @@
 #ifndef KITSUNEMIMI_SAKURA_NETWORK_SESSION_HANDLER_H
 #define KITSUNEMIMI_SAKURA_NETWORK_SESSION_HANDLER_H
 
-#include <iostream>
-#include <vector>
-#include <map>
-#include <atomic>
-
 #include <hanami_network/session.h>
 
-namespace Hanami {
+#include <atomic>
+#include <iostream>
+#include <map>
+#include <vector>
+
+namespace Hanami
+{
 class AbstractServer;
 }
 
@@ -39,13 +40,13 @@ namespace Hanami
 
 class SessionController
 {
-public:
-    SessionController(void (*processCreateSession)(Session*, const std::string),
-                      void (*processCloseSession)(Session*, const std::string),
-                      void (*processError)(Session*, const uint8_t, const std::string));
+   public:
+    SessionController(void (*processCreateSession)(Session *, const std::string),
+                      void (*processCloseSession)(Session *, const std::string),
+                      void (*processError)(Session *, const uint8_t, const std::string));
     ~SessionController();
 
-    static Hanami::SessionController* m_sessionController;
+    static Hanami::SessionController *m_sessionController;
 
     // server
     uint32_t addUnixDomainServer(const std::string &socketFile,
@@ -63,16 +64,16 @@ public:
     void cloesAllServers();
 
     // session
-    Session* startUnixDomainSession(const std::string &socketFile,
+    Session *startUnixDomainSession(const std::string &socketFile,
                                     const std::string &sessionIdentifier,
                                     const std::string &threadName,
                                     ErrorContainer &error);
-    Session* startTcpSession(const std::string &address,
+    Session *startTcpSession(const std::string &address,
                              const uint16_t port,
                              const std::string &sessionIdentifier,
                              const std::string &threadName,
                              ErrorContainer &error);
-    Session* startTlsTcpSession(const std::string &address,
+    Session *startTlsTcpSession(const std::string &address,
                                 const uint16_t port,
                                 const std::string &certFile,
                                 const std::string &keyFile,
@@ -80,14 +81,14 @@ public:
                                 const std::string &threadName,
                                 ErrorContainer &error);
 
-private:
+   private:
     uint32_t m_serverIdCounter = 0;
 
-    Session* startSession(AbstractSocket* socket,
+    Session *startSession(AbstractSocket *socket,
                           const std::string &sessionIdentifier,
                           ErrorContainer &error);
 };
 
-}
+}  // namespace Hanami
 
-#endif // KITSUNEMIMI_SAKURA_NETWORK_SESSION_HANDLER_H
+#endif  // KITSUNEMIMI_SAKURA_NETWORK_SESSION_HANDLER_H

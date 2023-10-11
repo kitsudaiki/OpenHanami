@@ -11,25 +11,25 @@
 #ifndef BINARY_FILE_DIRECT_H
 #define BINARY_FILE_DIRECT_H
 
-#include <deque>
-#include <sstream>
-#include <mutex>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <errno.h>
-#include <sys/stat.h>
-#include <unistd.h>
 #include <assert.h>
-
+#include <errno.h>
+#include <fcntl.h>
 #include <hanami_common/buffer/data_buffer.h>
 #include <hanami_common/logger.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+#include <deque>
+#include <mutex>
+#include <sstream>
 
 namespace Hanami
 {
 
 class BinaryFileDirect
 {
-public:
+   public:
     BinaryFileDirect(const std::string &filePath);
     ~BinaryFileDirect();
 
@@ -58,7 +58,7 @@ public:
     uint64_t m_totalFileSize = 0;
     std::string m_filePath = "";
 
-private:
+   private:
     int m_fileDescriptor = -1;
     uint16_t m_blockSize = 512;
 
@@ -66,6 +66,6 @@ private:
     bool allocateStorage(const uint64_t numberOfBytes, ErrorContainer &error);
 };
 
-}
+}  // namespace Hanami
 
-#endif // BINARY_FILE_DIRECT_H
+#endif  // BINARY_FILE_DIRECT_H

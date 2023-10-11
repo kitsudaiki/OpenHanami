@@ -23,17 +23,14 @@
 #ifndef KITSUNEMIMI_SAKURA_NETWORK_MULTIBLOCK_DATA_PROCESSING_H
 #define KITSUNEMIMI_SAKURA_NETWORK_MULTIBLOCK_DATA_PROCESSING_H
 
-#include <message_definitions.h>
-#include <handler/session_handler.h>
-#include <multiblock_io.h>
-
 #include <abstract_socket.h>
 #include <hanami_common/buffer/ring_buffer.h>
-
-#include <hanami_network/session_controller.h>
-#include <hanami_network/session.h>
-
 #include <hanami_common/logger.h>
+#include <hanami_network/session.h>
+#include <hanami_network/session_controller.h>
+#include <handler/session_handler.h>
+#include <message_definitions.h>
+#include <multiblock_io.h>
 
 namespace Hanami
 {
@@ -49,14 +46,13 @@ send_Data_Multi_Static(Session* session,
                        const uint32_t partId,
                        const void* data,
                        const uint32_t size,
-                       ErrorContainer &error,
+                       ErrorContainer& error,
                        const uint64_t blockerId = 0)
 {
     uint8_t messageBuffer[MESSAGE_CACHE_SIZE];
 
     // bring message-size to a multiple of 8
-    const uint32_t totalMessageSize = sizeof(Data_MultiBlock_Header)
-                                      + size
+    const uint32_t totalMessageSize = sizeof(Data_MultiBlock_Header) + size
                                       + (8 - (size % 8)) % 8  // fill up to a multiple of 8
                                       + sizeof(CommonMessageFooter);
 
@@ -74,7 +70,7 @@ send_Data_Multi_Static(Session* session,
     header.totalSize = totalSize;
 
     // set flag to await response-message for blocker-id
-    if(blockerId != 0) {
+    if (blockerId != 0) {
         header.commonHeader.flags |= 0x8;
     }
 
@@ -95,7 +91,7 @@ inline bool
 send_Data_Multi_Finish(Session* session,
                        const uint64_t multiblockId,
                        const uint64_t blockerId,
-                       ErrorContainer &error)
+                       ErrorContainer& error)
 {
     Data_MultiFinish_Message message;
 
@@ -103,7 +99,7 @@ send_Data_Multi_Finish(Session* session,
     message.commonHeader.messageId = session->increaseMessageIdCounter();
     message.multiblockId = multiblockId;
     message.blockerId = blockerId;
-    if(blockerId != 0) {
+    if (blockerId != 0) {
         message.commonHeader.flags |= 0x8;
     }
 
@@ -118,45 +114,37 @@ process_Data_Multiblock(Session* session,
                         const Data_MultiBlock_Header* message,
                         const void* rawMessage)
 {
-    if(message->partId == 0)
-    {
+    if (message->partId == 0) {
         const bool ret = session->m_multiblockIo->createIncomingBuffer(message->multiblockId,
                                                                        message->totalSize);
-        if(ret) {
+        if (ret) {
             // TODO: send error
         }
     }
 
-    const uint8_t* payloadData = static_cast<const uint8_t*>(rawMessage)
-                                 + sizeof(Data_MultiBlock_Header);
-    session->m_multiblockIo->writeIntoIncomingBuffer(message->multiblockId,
-                                                     payloadData,
-                                                     message->commonHeader.payloadSize);
+    const uint8_t* payloadData
+        = static_cast<const uint8_t*>(rawMessage) + sizeof(Data_MultiBlock_Header);
+    session->m_multiblockIo->writeIntoIncomingBuffer(
+        message->multiblockId, payloadData, message->commonHeader.payloadSize);
 }
 
 /**
  * @brief process_Data_Multi_Finish
  */
 inline void
-process_Data_Multi_Finish(Session* session,
-                          const Data_MultiFinish_Message* message)
+process_Data_Multi_Finish(Session* session, const Data_MultiFinish_Message* message)
 {
-    MultiblockIO::MultiblockBuffer buffer =
-            session->m_multiblockIo->getIncomingBuffer(message->multiblockId);
+    MultiblockIO::MultiblockBuffer buffer
+        = session->m_multiblockIo->getIncomingBuffer(message->multiblockId);
 
     // check if normal standalone-message or if message is response
-    if(message->commonHeader.flags & 0x8)
-    {
+    if (message->commonHeader.flags & 0x8) {
         // release thread, which is related to the blocker-id
         SessionHandler::m_blockerHandler->releaseMessage(message->blockerId, buffer.incomingData);
-    }
-    else
-    {
+    } else {
         // trigger callback
-        session->m_processRequestData(session->m_standaloneReceiver,
-                                      session,
-                                      message->multiblockId,
-                                      buffer.incomingData);
+        session->m_processRequestData(
+            session->m_standaloneReceiver, session, message->multiblockId, buffer.incomingData);
     }
 
     session->m_multiblockIo->removeMultiblockBuffer(message->multiblockId);
@@ -174,30 +162,27 @@ process_MultiBlock_Data_Type(Session* session,
                              const CommonMessageHeader* header,
                              const void* rawMessage)
 {
-    switch(header->subType)
-    {
+    switch (header->subType) {
         //------------------------------------------------------------------------------------------
-        case DATA_MULTI_STATIC_SUBTYPE:
-            {
-                const Data_MultiBlock_Header* message =
-                    static_cast<const Data_MultiBlock_Header*>(rawMessage);
-                process_Data_Multiblock(session, message, rawMessage);
-                break;
-            }
+        case DATA_MULTI_STATIC_SUBTYPE: {
+            const Data_MultiBlock_Header* message
+                = static_cast<const Data_MultiBlock_Header*>(rawMessage);
+            process_Data_Multiblock(session, message, rawMessage);
+            break;
+        }
         //------------------------------------------------------------------------------------------
-        case DATA_MULTI_FINISH_SUBTYPE:
-            {
-                const Data_MultiFinish_Message* message =
-                    static_cast<const Data_MultiFinish_Message*>(rawMessage);
-                process_Data_Multi_Finish(session, message);
-                break;
-            }
+        case DATA_MULTI_FINISH_SUBTYPE: {
+            const Data_MultiFinish_Message* message
+                = static_cast<const Data_MultiFinish_Message*>(rawMessage);
+            process_Data_Multi_Finish(session, message);
+            break;
+        }
         //------------------------------------------------------------------------------------------
         default:
             break;
     }
 }
 
-}
+}  // namespace Hanami
 
-#endif // KITSUNEMIMI_SAKURA_NETWORK_MULTIBLOCK_DATA_PROCESSING_H
+#endif  // KITSUNEMIMI_SAKURA_NETWORK_MULTIBLOCK_DATA_PROCESSING_H

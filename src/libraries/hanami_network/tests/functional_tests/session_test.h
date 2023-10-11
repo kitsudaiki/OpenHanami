@@ -23,28 +23,27 @@
 #ifndef SESSION_TEST_H
 #define SESSION_TEST_H
 
-#include <iostream>
+#include <abstract_socket.h>
 #include <hanami_common/logger.h>
+#include <hanami_common/test_helper/compare_test_helper.h>
+#include <hanami_network/session.h>
 #include <hanami_network/session_controller.h>
 #include <handler/session_handler.h>
-#include <hanami_network/session.h>
-#include <abstract_socket.h>
 
-#include <hanami_common/test_helper/compare_test_helper.h>
+#include <iostream>
 
 namespace Hanami
 {
 
-class Session_Test
-        : public Hanami::CompareTestHelper
+class Session_Test : public Hanami::CompareTestHelper
 {
-public:
+   public:
     Session_Test();
 
     void initTestCase();
     void runTest();
 
-    template<typename  T>
+    template <typename T>
     void compare(T isValue, T shouldValue)
     {
         TEST_EQUAL(isValue, shouldValue);
@@ -62,10 +61,10 @@ public:
 
     Session* m_testSession = nullptr;
 
-private:
-    void sendTestMessages(Session *session);
+   private:
+    void sendTestMessages(Session* session);
 };
 
-}
+}  // namespace Hanami
 
-#endif // SESSION_TEST_H
+#endif  // SESSION_TEST_H

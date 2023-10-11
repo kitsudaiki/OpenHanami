@@ -16,13 +16,12 @@ namespace Hanami
 
 class ObjCreator
 {
-public:
+   public:
     ObjCreator();
 
-    bool create(std::string &convertedString,
-                const ObjItem &input);
+    bool create(std::string &convertedString, const ObjItem &input);
 };
 
-}
+}  // namespace Hanami
 
-#endif // OBJ_CREATOR_H
+#endif  // OBJ_CREATOR_H

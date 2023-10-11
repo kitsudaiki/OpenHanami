@@ -16,10 +16,7 @@ namespace Hanami
 /**
  * @brief AbstractSocket::AbstractSocket
  */
-AbstractSocket::AbstractSocket(const std::string &threadName)
-    : Hanami::Thread(threadName)
-{
-}
+AbstractSocket::AbstractSocket(const std::string& threadName) : Hanami::Thread(threadName) {}
 
 /**
  * @brief destructor, which close the socket before deletion
@@ -44,4 +41,4 @@ AbstractSocket::setMessageCallback(void* target,
     m_processMessage = processMessage;
 }
 
-}
+}  // namespace Hanami

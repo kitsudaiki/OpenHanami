@@ -29,10 +29,7 @@
  *
  * @param cluster pointer to the cluster, where the event and the statemachine belongs to
  */
-TableInterpolation_State::TableInterpolation_State(Cluster* cluster)
-{
-    m_cluster = cluster;
-}
+TableInterpolation_State::TableInterpolation_State(Cluster* cluster) { m_cluster = cluster; }
 
 /**
  * @brief destructor
@@ -47,21 +44,20 @@ TableInterpolation_State::~TableInterpolation_State() {}
 bool
 TableInterpolation_State::processEvent()
 {
-
     Task* actualTask = m_cluster->getActualTask();
     const uint64_t numberOfInputsPerCycle = actualTask->numberOfInputsPerCycle;
     const uint64_t numberOfOuputsPerCycle = actualTask->numberOfOuputsPerCycle;
     uint64_t offset = actualTask->actualCycle;
-    if(numberOfInputsPerCycle > numberOfOuputsPerCycle) {
+    if (numberOfInputsPerCycle > numberOfOuputsPerCycle) {
         offset += numberOfInputsPerCycle;
     } else {
         offset += numberOfOuputsPerCycle;
     }
 
     // set input
-    for(uint64_t i = 0; i < numberOfInputsPerCycle; i++) {
+    for (uint64_t i = 0; i < numberOfInputsPerCycle; i++) {
         m_cluster->inputValues[i] = actualTask->inputData[(offset - numberOfInputsPerCycle) + i];
-        std::cout<<"m_cluster->inputValues[i]: "<<m_cluster->inputValues[i]<<std::endl;
+        std::cout << "m_cluster->inputValues[i]: " << m_cluster->inputValues[i] << std::endl;
     }
 
     m_cluster->mode = ClusterProcessingMode::NORMAL_MODE;

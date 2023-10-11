@@ -22,20 +22,19 @@
 
 #include "finalize_mnist_data_set.h"
 
-#include <hanami_root.h>
-#include <database/data_set_table.h>
 #include <core/temp_file_handler.h>
-
-#include <hanami_files/data_set_files/data_set_file.h>
-#include <hanami_files/data_set_files/image_data_set_file.h>
-
-#include <hanami_crypto/common.h>
+#include <database/data_set_table.h>
 #include <hanami_common/files/binary_file.h>
 #include <hanami_common/methods/file_methods.h>
+#include <hanami_crypto/common.h>
+#include <hanami_files/data_set_files/data_set_file.h>
+#include <hanami_files/data_set_files/image_data_set_file.h>
+#include <hanami_root.h>
 
 FinalizeMnistDataSet::FinalizeMnistDataSet()
-    : Blossom("Finalize uploaded data-set by checking completeness of the "
-              "uploaded and convert into generic format.")
+    : Blossom(
+        "Finalize uploaded data-set by checking completeness of the "
+        "uploaded and convert into generic format.")
 {
     errorCodes.push_back(NOT_FOUND_RTYPE);
 
@@ -44,23 +43,22 @@ FinalizeMnistDataSet::FinalizeMnistDataSet()
     //----------------------------------------------------------------------------------------------
 
     registerInputField("uuid", SAKURA_STRING_TYPE)
-            .setComment("UUID of the new data-set.")
-            .setRegex(UUID_REGEX);
+        .setComment("UUID of the new data-set.")
+        .setRegex(UUID_REGEX);
 
     registerInputField("uuid_input_file", SAKURA_STRING_TYPE)
-            .setComment("UUID to identify the file for date upload of input-data.")
-            .setRegex(UUID_REGEX);
+        .setComment("UUID to identify the file for date upload of input-data.")
+        .setRegex(UUID_REGEX);
 
     registerInputField("uuid_label_file", SAKURA_STRING_TYPE)
-            .setComment("UUID to identify the file for date upload of label-data.")
-            .setRegex(UUID_REGEX);
+        .setComment("UUID to identify the file for date upload of label-data.")
+        .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid", SAKURA_STRING_TYPE)
-            .setComment("UUID of the new data-set.");
+    registerOutputField("uuid", SAKURA_STRING_TYPE).setComment("UUID of the new data-set.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -83,15 +81,13 @@ FinalizeMnistDataSet::runTask(BlossomIO &blossomIO,
 
     // get location from database
     json result;
-    if(DataSetTable::getInstance()->getDataSet(result, uuid, userContext, error, true) == false)
-    {
+    if (DataSetTable::getInstance()->getDataSet(result, uuid, userContext, error, true) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // handle not found
-    if(result.size() == 0)
-    {
+    if (result.size() == 0) {
         status.errorMessage = "Data-set with uuid '" + uuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
@@ -100,8 +96,7 @@ FinalizeMnistDataSet::runTask(BlossomIO &blossomIO,
 
     // read input-data from temp-file
     Hanami::DataBuffer inputBuffer;
-    if(TempFileHandler::getInstance()->getData(inputBuffer, inputUuid) == false)
-    {
+    if (TempFileHandler::getInstance()->getData(inputBuffer, inputUuid) == false) {
         status.errorMessage = "Input-data with uuid '" + inputUuid + "' not found.";
         status.statusCode = NOT_FOUND_RTYPE;
         return false;
@@ -109,19 +104,14 @@ FinalizeMnistDataSet::runTask(BlossomIO &blossomIO,
 
     // read label from temp-file
     Hanami::DataBuffer labelBuffer;
-    if(TempFileHandler::getInstance()->getData(labelBuffer, labelUuid) == false)
-    {
+    if (TempFileHandler::getInstance()->getData(labelBuffer, labelUuid) == false) {
         status.errorMessage = "Label-data with uuid '" + inputUuid + "' not found.";
         status.statusCode = NOT_FOUND_RTYPE;
         return false;
     }
 
     // write data to file
-    if(convertMnistData(result["location"],
-                        result["name"],
-                        inputBuffer,
-                        labelBuffer) == false)
-    {
+    if (convertMnistData(result["location"], result["name"], inputBuffer, labelBuffer) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Failed to convert mnist-data");
         return false;
@@ -161,8 +151,8 @@ FinalizeMnistDataSet::convertMnistData(const std::string &filePath,
     // source-data
     const uint64_t dataOffset = 16;
     const uint64_t labelOffset = 8;
-    const uint8_t* dataBufferPtr = static_cast<uint8_t*>(inputBuffer.data);
-    const uint8_t* labelBufferPtr = static_cast<uint8_t*>(labelBuffer.data);
+    const uint8_t *dataBufferPtr = static_cast<uint8_t *>(inputBuffer.data);
+    const uint8_t *labelBufferPtr = static_cast<uint8_t *>(labelBuffer.data);
 
     // get number of images
     uint32_t numberOfImages = 0;
@@ -200,7 +190,7 @@ FinalizeMnistDataSet::convertMnistData(const std::string &filePath,
     uint64_t segmentCounter = 0;
 
     // init file
-    if(file.initNewFile(error) == false) {
+    if (file.initNewFile(error) == false) {
         return false;
     }
 
@@ -211,18 +201,16 @@ FinalizeMnistDataSet::convertMnistData(const std::string &filePath,
     float maxVal = 0.0f;
 
     // copy values of each pixel into the resulting file
-    for(uint32_t pic = 0; pic < numberOfImages; pic++)
-    {
+    for (uint32_t pic = 0; pic < numberOfImages; pic++) {
         // input
-        for(uint32_t i = 0; i < pictureSize; i++)
-        {
+        for (uint32_t i = 0; i < pictureSize; i++) {
             const uint32_t pos = pic * pictureSize + i + dataOffset;
             cluster[segmentPos] = static_cast<float>(dataBufferPtr[pos]);
 
             // update values for metadata
             averageVal += cluster[segmentPos];
             valueCounter++;
-            if(maxVal < cluster[segmentPos]) {
+            if (maxVal < cluster[segmentPos]) {
                 maxVal = cluster[segmentPos];
             }
 
@@ -230,8 +218,7 @@ FinalizeMnistDataSet::convertMnistData(const std::string &filePath,
         }
 
         // label
-        for(uint32_t i = 0; i < 10; i++)
-        {
+        for (uint32_t i = 0; i < 10; i++) {
             cluster[segmentPos] = 0.0f;
             segmentPos++;
         }
@@ -239,9 +226,9 @@ FinalizeMnistDataSet::convertMnistData(const std::string &filePath,
         cluster[(segmentPos - 10) + label] = 1;
 
         // write line to file, if cluster is full
-        if(segmentPos == segmentSize)
-        {
-            if(file.addBlock(segmentCounter * segmentSize, &cluster[0], segmentSize, error) == false) {
+        if (segmentPos == segmentSize) {
+            if (file.addBlock(segmentCounter * segmentSize, &cluster[0], segmentSize, error)
+                == false) {
                 return false;
             }
             segmentPos = 0;
@@ -250,9 +237,8 @@ FinalizeMnistDataSet::convertMnistData(const std::string &filePath,
     }
 
     // write last incomplete cluster to file
-    if(segmentPos != 0)
-    {
-        if(file.addBlock(segmentCounter * segmentSize, &cluster[0], segmentPos, error) == false) {
+    if (segmentPos != 0) {
+        if (file.addBlock(segmentCounter * segmentSize, &cluster[0], segmentPos, error) == false) {
             return false;
         }
     }
@@ -263,10 +249,9 @@ FinalizeMnistDataSet::convertMnistData(const std::string &filePath,
 
     // update header in file for the final number of lines for the case,
     // that there were invalid lines
-    if(file.updateHeader(error) == false) {
+    if (file.updateHeader(error) == false) {
         return false;
     }
 
     return true;
 }
-

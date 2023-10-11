@@ -6,9 +6,9 @@
  *  @copyright MIT License
  */
 
+#include <hanami_common/logger.h>
 #include <tls_tcp/tls_tcp_server.h>
 #include <tls_tcp/tls_tcp_socket.h>
-#include <hanami_common/logger.h>
 
 namespace Hanami
 {
@@ -16,7 +16,7 @@ namespace Hanami
 /**
  * @brief constructor
  */
-TlsTcpServer::TlsTcpServer(TcpServer&& server,
+TlsTcpServer::TlsTcpServer(TcpServer &&server,
                            const std::string &certFile,
                            const std::string &keyFile,
                            const std::string &caFile)
@@ -61,4 +61,4 @@ TlsTcpServer::getServerFd() const
     return server.getServerFd();
 }
 
-}
+}  // namespace Hanami

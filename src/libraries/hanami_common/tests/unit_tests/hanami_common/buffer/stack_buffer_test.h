@@ -14,13 +14,12 @@
 namespace Hanami
 {
 
-class StackBuffer_Test
-        : public Hanami::CompareTestHelper
+class StackBuffer_Test : public Hanami::CompareTestHelper
 {
-public:
+   public:
     StackBuffer_Test();
 
-private:
+   private:
     void constructor_test();
     void extendBuffer_StackBuffer_test();
     void addData_StackBuffer_test();
@@ -30,6 +29,6 @@ private:
     void reset_StackBuffer_test();
 };
 
-}
+}  // namespace Hanami
 
-#endif // STACK_BUFFER_TEST_H
+#endif  // STACK_BUFFER_TEST_H

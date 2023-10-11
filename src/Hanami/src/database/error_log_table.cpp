@@ -21,22 +21,19 @@
  */
 
 #include <database/error_log_table.h>
-
 #include <hanami_common/items/table_item.h>
 #include <hanami_common/methods/string_methods.h>
 #include <hanami_crypto/common.h>
-
 #include <hanami_database/sql_database.h>
 
-ErrorLogTable* ErrorLogTable::instance = nullptr;
+ErrorLogTable *ErrorLogTable::instance = nullptr;
 
 /**
  * @brief constructor
  *
  * @param db pointer to database
  */
-ErrorLogTable::ErrorLogTable()
-    : HanamiSqlLogTable(Hanami::SqlDatabase::getInstance())
+ErrorLogTable::ErrorLogTable() : HanamiSqlLogTable(Hanami::SqlDatabase::getInstance())
 {
     m_tableName = "error_log";
 
@@ -101,8 +98,7 @@ ErrorLogTable::addErrorLogEntry(const std::string &timestamp,
     Hanami::encodeBase64(base64Msg, message.c_str(), message.size());
     data["message"] = base64Msg;
 
-    if(insertToDb(data, error) == false)
-    {
+    if (insertToDb(data, error) == false) {
         error.addMeesage("Failed to add error-log-entry to database");
         return false;
     }
@@ -126,8 +122,7 @@ ErrorLogTable::getAllErrorLogEntries(Hanami::TableItem &result,
                                      const uint64_t page,
                                      Hanami::ErrorContainer &error)
 {
-    if(getPageFromDb(result, userId, page, error) == false)
-    {
+    if (getPageFromDb(result, userId, page, error) == false) {
         error.addMeesage("Failed to get all error-log-entries from database");
         return false;
     }

@@ -25,14 +25,12 @@
 
 #include <common/test_step.h>
 
-class ProjectCreateTest
-        : public TestStep
+class ProjectCreateTest : public TestStep
 {
-public:
+   public:
     ProjectCreateTest(const bool expectSuccess);
 
-    bool runTest(json &inputData,
-                 Hanami::ErrorContainer &error);
+    bool runTest(json &inputData, Hanami::ErrorContainer &error);
 };
 
-#endif // TSUGUMITESTER_PROJECTCREATESTEP_H
+#endif  // TSUGUMITESTER_PROJECTCREATESTEP_H

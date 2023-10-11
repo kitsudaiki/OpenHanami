@@ -24,22 +24,20 @@
 #define HANAMI_CREATECLUSTER_H
 
 #include <api/endpoint_processing/blossom.h>
-
 #include <hanami_cluster_parser/cluster_meta.h>
 
 class Cluster;
 
-class CreateCluster
-        : public Blossom
+class CreateCluster : public Blossom
 {
-public:
+   public:
     CreateCluster();
 
-protected:
+   protected:
     bool runTask(BlossomIO &blossomIO,
                  const json &context,
                  BlossomStatus &status,
                  Hanami::ErrorContainer &error);
 };
 
-#endif // HANAMI_CREATECLUSTER_H
+#endif  // HANAMI_CREATECLUSTER_H

@@ -13,8 +13,7 @@
 namespace Hanami
 {
 
-Statemachine_Test::Statemachine_Test()
-    : Hanami::CompareTestHelper("Statemachine_Test")
+Statemachine_Test::Statemachine_Test() : Hanami::CompareTestHelper("Statemachine_Test")
 {
     createNewState_test();
     addTransition_test();
@@ -216,4 +215,4 @@ Statemachine_Test::isInState_test()
     TEST_EQUAL(statemachine.isInState(SOURCE_STATE), false);
 }
 
-}
+}  // namespace Hanami

@@ -23,22 +23,22 @@
 #ifndef KITSUNEMIMI_SAKURA_NETWORK_SESSION_H
 #define KITSUNEMIMI_SAKURA_NETWORK_SESSION_H
 
-#include <iostream>
 #include <assert.h>
-#include <atomic>
-#include <mutex>
-#include <condition_variable>
-
-#include <hanami_common/logger.h>
-#include <hanami_common/statemachine.h>
 #include <hanami_common/buffer/data_buffer.h>
 #include <hanami_common/buffer/stack_buffer.h>
+#include <hanami_common/logger.h>
+#include <hanami_common/statemachine.h>
+
+#include <atomic>
+#include <condition_variable>
+#include <iostream>
+#include <mutex>
 
 namespace Hanami
 {
 struct DataBuffer;
 class AbstractSocket;
-}
+}  // namespace Hanami
 
 namespace Hanami
 {
@@ -50,42 +50,39 @@ struct CommonMessageHeader;
 
 class Session
 {
-public:
-    ~Session(); 
+   public:
+    ~Session();
 
     // send-messages
-    bool sendStreamData(const void* data,
+    bool sendStreamData(const void *data,
                         const uint64_t size,
                         ErrorContainer &error,
                         const bool replyExpected = false);
-    bool sendNormalMessage(const void* data,
-                           const uint64_t size,
-                           ErrorContainer &error);
-    DataBuffer* sendRequest(const void* data,
+    bool sendNormalMessage(const void *data, const uint64_t size, ErrorContainer &error);
+    DataBuffer *sendRequest(const void *data,
                             const uint64_t size,
                             const uint64_t timeout,
                             ErrorContainer &error);
-    uint64_t sendResponse(const void* data,
+    uint64_t sendResponse(const void *data,
                           const uint64_t size,
                           const uint64_t blockerId,
                           ErrorContainer &error);
 
     // setter for changing callbacks
-    void setStreamCallback(void* receiver,
-                           void (*processStream)(void*, Session*, const void*, const uint64_t));
-    void setRequestCallback(void* receiver,
-                            void (*processRequest)(void*, Session*, const uint64_t, DataBuffer*));
-    void setErrorCallback(void (*processError)(Session*,  const uint8_t, const std::string));
+    void setStreamCallback(void *receiver,
+                           void (*processStream)(void *, Session *, const void *, const uint64_t));
+    void setRequestCallback(
+        void *receiver,
+        void (*processRequest)(void *, Session *, const uint64_t, DataBuffer *));
+    void setErrorCallback(void (*processError)(Session *, const uint8_t, const std::string));
 
     // session-controlling functions
-    bool closeSession(ErrorContainer &error,
-                      bool replyExpected = false);
+    bool closeSession(ErrorContainer &error, bool replyExpected = false);
     uint32_t sessionId() const;
     uint32_t getMaximumSingleSize() const;
     bool isClientSide() const;
 
-    enum errorCodes
-    {
+    enum errorCodes {
         UNDEFINED_ERROR = 0,
         FALSE_VERSION = 1,
         UNKNOWN_SESSION = 2,
@@ -96,17 +93,14 @@ public:
 
     uint32_t increaseMessageIdCounter();
 
-
-
-
     //=====================================================================
     // ALL BELOW IS INTERNAL AND SHOULD NEVER BE USED BY EXTERNAL METHODS!
     //=====================================================================
-    Session(AbstractSocket* socket);
+    Session(AbstractSocket *socket);
 
     Hanami::Statemachine m_statemachine;
-    AbstractSocket* m_socket = nullptr;
-    MultiblockIO* m_multiblockIo = nullptr;
+    AbstractSocket *m_socket = nullptr;
+    MultiblockIO *m_multiblockIo = nullptr;
     uint32_t m_sessionId = 0;
     std::string m_sessionIdentifier = "";
     ErrorContainer sessionError;
@@ -114,8 +108,7 @@ public:
     int m_initState = 0;
 
     // init session
-    bool connectiSession(const uint32_t sessionId,
-                         ErrorContainer &error);
+    bool connectiSession(const uint32_t sessionId, ErrorContainer &error);
     bool makeSessionReady(const uint32_t sessionId,
                           const std::string &sessionIdentifier,
                           ErrorContainer &error);
@@ -128,32 +121,31 @@ public:
     void initStatemachine();
     uint64_t getRandId();
 
-    template<typename T>
-    bool sendMessage(const T &message,
-                     ErrorContainer &error)
+    template <typename T>
+    bool sendMessage(const T &message, ErrorContainer &error)
     {
-        return sendMessage(message.commonHeader,  &message, sizeof(message), error);
+        return sendMessage(message.commonHeader, &message, sizeof(message), error);
     }
 
     bool sendMessage(const CommonMessageHeader &header,
-                     const void* data,
+                     const void *data,
                      const uint64_t size,
                      ErrorContainer &error);
 
     // callbacks
-    void (*m_processCreateSession)(Session*, const std::string);
-    void (*m_processCloseSession)(Session*, const std::string);
-    void (*m_processStreamData)(void*, Session*, const void*, const uint64_t);
-    void (*m_processRequestData)(void*, Session*, const uint64_t, DataBuffer*);
-    void (*m_processError)(Session*, const uint8_t, const std::string);
-    void* m_streamReceiver = nullptr;
-    void* m_standaloneReceiver = nullptr;
+    void (*m_processCreateSession)(Session *, const std::string);
+    void (*m_processCloseSession)(Session *, const std::string);
+    void (*m_processStreamData)(void *, Session *, const void *, const uint64_t);
+    void (*m_processRequestData)(void *, Session *, const uint64_t, DataBuffer *);
+    void (*m_processError)(Session *, const uint8_t, const std::string);
+    void *m_streamReceiver = nullptr;
+    void *m_standaloneReceiver = nullptr;
 
     // counter
     std::atomic_flag m_messageIdCounter_lock = ATOMIC_FLAG_INIT;
     uint32_t m_messageIdCounter = 0;
 };
 
-}
+}  // namespace Hanami
 
-#endif // KITSUNEMIMI_SAKURA_NETWORK_SESSION_H
+#endif  // KITSUNEMIMI_SAKURA_NETWORK_SESSION_H

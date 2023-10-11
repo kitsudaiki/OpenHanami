@@ -24,12 +24,11 @@
 
 #include <hanami_sdk/cluster.h>
 
-ClusterGetTest::ClusterGetTest(const bool expectSuccess,
-                               const std::string &nameOverride)
+ClusterGetTest::ClusterGetTest(const bool expectSuccess, const std::string &nameOverride)
     : TestStep(expectSuccess)
 {
     m_testName = "get cluster";
-    if(expectSuccess) {
+    if (expectSuccess) {
         m_testName += " (success)";
     } else {
         m_testName += " (fail)";
@@ -38,20 +37,19 @@ ClusterGetTest::ClusterGetTest(const bool expectSuccess,
 }
 
 bool
-ClusterGetTest::runTest(json &inputData,
-                        Hanami::ErrorContainer &error)
+ClusterGetTest::runTest(json &inputData, Hanami::ErrorContainer &error)
 {
-    if(m_uuid == "") {
+    if (m_uuid == "") {
         m_uuid = inputData["cluster_uuid"];
     }
 
     // get cluster-infos
     std::string result;
-    if(Hanami::getCluster(result, m_uuid, error) != m_expectSuccess) {
+    if (Hanami::getCluster(result, m_uuid, error) != m_expectSuccess) {
         return false;
     }
 
-    if(m_expectSuccess == false) {
+    if (m_expectSuccess == false) {
         return true;
     }
 
@@ -59,7 +57,7 @@ ClusterGetTest::runTest(json &inputData,
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch(const json::parse_error& ex) {
+    } catch (const json::parse_error &ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }

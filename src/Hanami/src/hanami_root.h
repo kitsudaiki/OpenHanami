@@ -24,10 +24,8 @@
 #define HANAMI_HANAMI_ROOT_H
 
 #include <common.h>
-
-#include <hanami_policies/policy.h>
-
 #include <cryptopp/secblock.h>
+#include <hanami_policies/policy.h>
 
 class ClusterHandler;
 class ClusterQueue;
@@ -44,15 +42,15 @@ class Blossom;
 
 using namespace Hanami;
 
-namespace Hanami {
+namespace Hanami
+{
 class Host;
 class GpuInterface;
-}
+}  // namespace Hanami
 
 class HanamiRoot
 {
-
-public:
+   public:
     HanamiRoot();
     ~HanamiRoot();
 
@@ -60,20 +58,16 @@ public:
     bool initThreads();
 
     // blossoms
-    bool triggerBlossom(json& result,
+    bool triggerBlossom(json &result,
                         const std::string &blossomName,
                         const std::string &blossomGroupName,
                         const json &context,
                         const json &initialValues,
                         BlossomStatus &status,
                         Hanami::ErrorContainer &error);
-    bool doesBlossomExist(const std::string &groupName,
-                          const std::string &itemName);
-    bool addBlossom(const std::string &groupName,
-                    const std::string &itemName,
-                    Blossom *newBlossom);
-    Blossom* getBlossom(const std::string &groupName,
-                        const std::string &itemName);
+    bool doesBlossomExist(const std::string &groupName, const std::string &itemName);
+    bool addBlossom(const std::string &groupName, const std::string &itemName, Blossom *newBlossom);
+    Blossom *getBlossom(const std::string &groupName, const std::string &itemName);
 
     // endpoints
     bool mapEndpoint(EndpointEntry &result,
@@ -85,22 +79,21 @@ public:
                      const std::string &group,
                      const std::string &name);
 
+    WebSocketServer *websocketServer = nullptr;
 
-    WebSocketServer* websocketServer = nullptr;
-
-    static Hanami::GpuInterface* gpuInterface;
-    static HttpServer* httpServer;
-    static HanamiRoot* root;
-    static uint32_t* m_randomValues;
+    static Hanami::GpuInterface *gpuInterface;
+    static HttpServer *httpServer;
+    static HanamiRoot *root;
+    static uint32_t *m_randomValues;
     static CryptoPP::SecByteBlock tokenKey;
     static bool useCuda;
 
     std::map<std::string, std::map<HttpRequestType, EndpointEntry>> endpointRules;
 
-private:
+   private:
     uint32_t m_serverId = 0;
-    std::vector<HttpWebsocketThread*> m_threads;
-    std::map<std::string, std::map<std::string, Blossom*>> m_registeredBlossoms;
+    std::vector<HttpWebsocketThread *> m_threads;
+    std::map<std::string, std::map<std::string, Blossom *>> m_registeredBlossoms;
 
     bool initHttpServer();
     bool initSakuraServer();
@@ -109,11 +102,11 @@ private:
     bool initJwt(Hanami::ErrorContainer &error);
 
     void clearCluster(Hanami::ErrorContainer &error);
-    void checkStatusCode(Blossom* blossom,
+    void checkStatusCode(Blossom *blossom,
                          const std::string &blossomName,
                          const std::string &blossomGroupName,
                          BlossomStatus &status,
                          Hanami::ErrorContainer &error);
 };
 
-#endif //HANAMI_HANAMI_ROOT_H
+#endif  // HANAMI_HANAMI_ROOT_H

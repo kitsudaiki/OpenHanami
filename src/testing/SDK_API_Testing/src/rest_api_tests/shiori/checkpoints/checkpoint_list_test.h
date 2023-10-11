@@ -25,14 +25,12 @@
 
 #include <common/test_step.h>
 
-class CheckpointListTest
-        : public TestStep
+class CheckpointListTest : public TestStep
 {
-public:
+   public:
     CheckpointListTest(const bool expectSuccess);
 
-    bool runTest(json &inputData,
-                 Hanami::ErrorContainer &error);
+    bool runTest(json &inputData, Hanami::ErrorContainer &error);
 };
 
-#endif // TSUGUMITESTER_CHECKPOINTLISTTEST_H
+#endif  // TSUGUMITESTER_CHECKPOINTLISTTEST_H

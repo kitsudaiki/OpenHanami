@@ -23,13 +23,15 @@
 #ifndef KITSUNEMIMI_SAKURA_NETWORK_RESSOURCE_HANDLER_H
 #define KITSUNEMIMI_SAKURA_NETWORK_RESSOURCE_HANDLER_H
 
-#include <iostream>
-#include <vector>
-#include <map>
-#include <atomic>
 #include <message_definitions.h>
 
-namespace Hanami {
+#include <atomic>
+#include <iostream>
+#include <map>
+#include <vector>
+
+namespace Hanami
+{
 class AbstractServer;
 }
 
@@ -42,8 +44,7 @@ class SessionController;
 
 class SessionHandler
 {
-public:
-
+   public:
     static Hanami::ReplyHandler* m_replyHandler;
     static Hanami::MessageBlockerHandler* m_blockerHandler;
     static Hanami::SessionHandler* m_sessionHandler;
@@ -70,7 +71,7 @@ public:
     std::map<uint32_t, Session*> m_sessions;
     std::map<uint32_t, AbstractServer*> m_servers;
 
-private:
+   private:
     // counter
     uint16_t m_sessionIdCounter = 0;
     std::atomic_flag m_sessionMap_lock = ATOMIC_FLAG_INIT;
@@ -83,6 +84,6 @@ private:
     void (*m_processError)(Session*, const uint8_t, const std::string);
 };
 
-}
+}  // namespace Hanami
 
-#endif // KITSUNEMIMI_SAKURA_NETWORK_RESSOURCE_HANDLER_H
+#endif  // KITSUNEMIMI_SAKURA_NETWORK_RESSOURCE_HANDLER_H

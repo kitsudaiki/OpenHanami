@@ -25,18 +25,16 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-
-class GetProject
-        : public Blossom
+class GetProject : public Blossom
 {
-public:
+   public:
     GetProject();
 
-protected:
+   protected:
     bool runTask(BlossomIO &blossomIO,
                  const json &context,
                  BlossomStatus &status,
                  Hanami::ErrorContainer &error);
 };
 
-#endif // HANAMI_GETPROJECT_H
+#endif  // HANAMI_GETPROJECT_H

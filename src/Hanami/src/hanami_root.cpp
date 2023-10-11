@@ -20,45 +20,39 @@
  *      limitations under the License.
  */
 
-#include <hanami_root.h>
-
-#include <core/processing/processing_unit_handler.h>
-#include <core/cluster/cluster_handler.h>
-#include <core/cluster/cluster.h>
-#include <core/cluster/cluster_init.h>
-
-#include <hanami_common/logger.h>
-#include <hanami_common/files/text_file.h>
-#include <hanami_config/config_handler.h>
-
+#include <api/endpoint_processing/blossom.h>
 #include <api/endpoint_processing/http_server.h>
 #include <api/endpoint_processing/http_websocket_thread.h>
-#include <api/endpoint_processing/blossom.h>
 #include <api/endpoint_processing/items/item_methods.h>
-
+#include <core/cluster/cluster.h>
+#include <core/cluster/cluster_handler.h>
+#include <core/cluster/cluster_init.h>
+#include <core/processing/processing_unit_handler.h>
+#include <core/temp_file_handler.h>
+#include <core/thread_binder.h>
+#include <database/audit_log_table.h>
+#include <database/checkpoint_table.h>
+#include <database/cluster_table.h>
+#include <database/data_set_table.h>
+#include <database/error_log_table.h>
+#include <database/projects_table.h>
+#include <database/request_result_table.h>
+#include <database/users_table.h>
+#include <hanami_common/files/text_file.h>
+#include <hanami_common/logger.h>
+#include <hanami_config/config_handler.h>
+#include <hanami_database/sql_database.h>
+#include <hanami_hardware/host.h>
 #include <hanami_hardware/power_measuring.h>
 #include <hanami_hardware/speed_measuring.h>
 #include <hanami_hardware/temperature_measuring.h>
-
-#include <hanami_hardware/host.h>
-#include <hanami_database/sql_database.h>
-
-#include <database/cluster_table.h>
-#include <database/users_table.h>
-#include <database/projects_table.h>
-#include <database/data_set_table.h>
-#include <database/checkpoint_table.h>
-#include <database/request_result_table.h>
-#include <database/error_log_table.h>
-#include <database/audit_log_table.h>
-#include <core/temp_file_handler.h>
-#include <core/thread_binder.h>
+#include <hanami_root.h>
 
 // init static variables
-uint32_t* HanamiRoot::m_randomValues = nullptr;
-Hanami::GpuInterface* HanamiRoot::gpuInterface = nullptr;
-HanamiRoot* HanamiRoot::root = nullptr;
-HttpServer* HanamiRoot::httpServer = nullptr;
+uint32_t *HanamiRoot::m_randomValues = nullptr;
+Hanami::GpuInterface *HanamiRoot::gpuInterface = nullptr;
+HanamiRoot *HanamiRoot::root = nullptr;
+HttpServer *HanamiRoot::httpServer = nullptr;
 CryptoPP::SecByteBlock HanamiRoot::tokenKey{};
 
 // static flag to switch to experimental gpu-support (see issue #44 and #76)
@@ -67,10 +61,7 @@ bool HanamiRoot::useCuda = false;
 /**
  * @brief constructor
  */
-HanamiRoot::HanamiRoot()
-{
-    root = this;
-}
+HanamiRoot::HanamiRoot() { root = this; }
 
 /**
  * @brief destructor
@@ -98,40 +89,35 @@ HanamiRoot::init(Hanami::ErrorContainer &error)
     // init predefinde random-values
     m_randomValues = new uint32_t[NUMBER_OF_RAND_VALUES];
     srand(time(NULL));
-    for(uint32_t i = 0; i < NUMBER_OF_RAND_VALUES; i++) {
+    for (uint32_t i = 0; i < NUMBER_OF_RAND_VALUES; i++) {
         m_randomValues[i] = static_cast<uint32_t>(rand());
     }
 
-    if(initDatabase(error) == false)
-    {
+    if (initDatabase(error) == false) {
         error.addMeesage("Failed to initialize database");
         return false;
     }
 
     clearCluster(error);
 
-    if(initJwt(error) == false)
-    {
+    if (initJwt(error) == false) {
         error.addMeesage("Failed to initialize jwt");
         return false;
     }
 
-    if(initPolicies(error) == false)
-    {
+    if (initPolicies(error) == false) {
         error.addMeesage("Failed to initialize policies");
         return false;
     }
 
-    if(initHttpServer() == false)
-    {
+    if (initHttpServer() == false) {
         error.addMeesage("initializing http-server failed");
         LOG_ERROR(error);
         return false;
     }
 
-    Hanami::Host* host = Hanami::Host::getInstance();
-    if(host->initHost(error) == false)
-    {
+    Hanami::Host *host = Hanami::Host::getInstance();
+    if (host->initHost(error) == false) {
         error.addMeesage("Failed to initialize host-information.");
         LOG_ERROR(error);
         return false;
@@ -142,8 +128,7 @@ HanamiRoot::init(Hanami::ErrorContainer &error)
     assert(success);
 
     // create thread-binder
-    if(ThreadBinder::getInstance()->init(error) == false)
-    {
+    if (ThreadBinder::getInstance()->init(error) == false) {
         error.addMeesage("failed to init thread-binder");
         return false;
     }
@@ -165,8 +150,8 @@ HanamiRoot::init(Hanami::ErrorContainer &error)
 bool
 HanamiRoot::initThreads()
 {
-    ProcessingUnitHandler* processingUnitHandler = ProcessingUnitHandler::getInstance();
-    if(processingUnitHandler->initProcessingUnits(1) == false) {
+    ProcessingUnitHandler *processingUnitHandler = ProcessingUnitHandler::getInstance();
+    if (processingUnitHandler->initProcessingUnits(1) == false) {
         return false;
     }
 
@@ -186,94 +171,83 @@ HanamiRoot::initDatabase(Hanami::ErrorContainer &error)
     bool success = false;
 
     // read database-path from config
-    Hanami::SqlDatabase* database = Hanami::SqlDatabase::getInstance();
+    Hanami::SqlDatabase *database = Hanami::SqlDatabase::getInstance();
     const std::string databasePath = GET_STRING_CONFIG("DEFAULT", "database", success);
     LOG_DEBUG("database-path: '" + databasePath + "'");
-    if(success == false)
-    {
+    if (success == false) {
         error.addMeesage("No database-path defined in config.");
         LOG_ERROR(error);
         return false;
     }
 
     // initalize database
-    if(database->initDatabase(databasePath, error) == false)
-    {
+    if (database->initDatabase(databasePath, error) == false) {
         error.addMeesage("Failed to initialize sql-database.");
         LOG_ERROR(error);
         return false;
     }
 
     // initialize cluster-table
-    ClusterTable* clustersTable = ClusterTable::getInstance();
-    if(clustersTable->initTable(error) == false)
-    {
+    ClusterTable *clustersTable = ClusterTable::getInstance();
+    if (clustersTable->initTable(error) == false) {
         error.addMeesage("Failed to initialize cluster-table in database.");
         LOG_ERROR(error);
         return false;
     }
 
     // initialize projects-table
-    ProjectsTable* projectsTable = ProjectsTable::getInstance();
-    if(projectsTable->initTable(error) == false)
-    {
+    ProjectsTable *projectsTable = ProjectsTable::getInstance();
+    if (projectsTable->initTable(error) == false) {
         error.addMeesage("Failed to initialize project-table in database.");
         return false;
     }
 
     // initialize users-table
-    UsersTable* usersTable = UsersTable::getInstance();
-    if(usersTable->initTable(error) == false)
-    {
+    UsersTable *usersTable = UsersTable::getInstance();
+    if (usersTable->initTable(error) == false) {
         error.addMeesage("Failed to initialize user-table in database.");
         return false;
     }
-    if(usersTable->initNewAdminUser(error) == false)
-    {
+    if (usersTable->initNewAdminUser(error) == false) {
         error.addMeesage("Failed to initialize new admin-user even this is necessary.");
         return false;
     }
 
     // initialize dataset-table
-    DataSetTable* dataSetTable = DataSetTable::getInstance();
-    if(dataSetTable->initTable(error) == false)
-    {
+    DataSetTable *dataSetTable = DataSetTable::getInstance();
+    if (dataSetTable->initTable(error) == false) {
         error.addMeesage("Failed to initialize dataset-table in database.");
         LOG_ERROR(error);
         return false;
     }
 
     // initialize request-result-table
-    RequestResultTable* requestResultTable = RequestResultTable::getInstance();
-    if(requestResultTable->initTable(error) == false)
-    {
+    RequestResultTable *requestResultTable = RequestResultTable::getInstance();
+    if (requestResultTable->initTable(error) == false) {
         error.addMeesage("Failed to initialize request-result-table in database.");
         LOG_ERROR(error);
         return false;
     }
 
     // initialize checkpoint-table
-    CheckpointTable* clusterCheckpointTable = CheckpointTable::getInstance();
-    if(clusterCheckpointTable->initTable(error) == false)
-    {
+    CheckpointTable *clusterCheckpointTable = CheckpointTable::getInstance();
+    if (clusterCheckpointTable->initTable(error) == false) {
         error.addMeesage("Failed to initialize checkpoint-table in database.");
         LOG_ERROR(error);
         return false;
     }
 
     // initialize error-log-table
-    ErrorLogTable* errorLogTable = ErrorLogTable::getInstance();
-    if(errorLogTable->initTable(error) == false)
-    {
+    ErrorLogTable *errorLogTable = ErrorLogTable::getInstance();
+    if (errorLogTable->initTable(error) == false) {
         error.addMeesage("Failed to initialize error-log-table in database.");
         LOG_ERROR(error);
         return false;
     }
 
     // initialize audit-log-table
-    AuditLogTable* auditLogTable = AuditLogTable::getInstance();
-    if(auditLogTable->initTable(error) == false)
-    {
+    AuditLogTable *auditLogTable = AuditLogTable::getInstance();
+    if (auditLogTable->initTable(error) == false) {
         error.addMeesage("Failed to initialize audit-log-table in database.");
         LOG_ERROR(error);
         return false;
@@ -293,24 +267,23 @@ HanamiRoot::initHttpServer()
     bool success = false;
 
     // check if http is enabled
-    if(GET_BOOL_CONFIG("http", "enable", success) == false) {
+    if (GET_BOOL_CONFIG("http", "enable", success) == false) {
         return true;
     }
 
     // get stuff from config
-    const uint16_t port =            GET_INT_CONFIG(    "http", "port",              success);
-    const std::string ip =           GET_STRING_CONFIG( "http", "ip",                success);
-    const uint32_t numberOfThreads = GET_INT_CONFIG(    "http", "number_of_threads", success);
+    const uint16_t port = GET_INT_CONFIG("http", "port", success);
+    const std::string ip = GET_STRING_CONFIG("http", "ip", success);
+    const uint32_t numberOfThreads = GET_INT_CONFIG("http", "number_of_threads", success);
 
     // create server
     httpServer = new HttpServer(ip, port);
     httpServer->startThread();
 
     // start threads
-    for(uint32_t i = 0; i < numberOfThreads; i++)
-    {
+    for (uint32_t i = 0; i < numberOfThreads; i++) {
         const std::string name = "HttpWebsocketThread";
-        HttpWebsocketThread* httpWebsocketThread = new HttpWebsocketThread(name);
+        HttpWebsocketThread *httpWebsocketThread = new HttpWebsocketThread(name);
         httpWebsocketThread->startThread();
         m_threads.push_back(httpWebsocketThread);
     }
@@ -332,24 +305,21 @@ HanamiRoot::initPolicies(Hanami::ErrorContainer &error)
 
     // read policy-file-path from config
     const std::string policyFilePath = GET_STRING_CONFIG("auth", "policies", success);
-    if(success == false)
-    {
+    if (success == false) {
         error.addMeesage("No policy-file defined in config.");
         return false;
     }
 
     // read policy-file
     std::string policyFileContent;
-    if(Hanami::readFile(policyFileContent, policyFilePath, error) == false)
-    {
+    if (Hanami::readFile(policyFileContent, policyFilePath, error) == false) {
         error.addMeesage("Failed to read policy-file");
         return false;
     }
 
     // parse policy-file
-    Hanami::Policy* policies = Hanami::Policy::getInstance();
-    if(policies->parse(policyFileContent, error) == false)
-    {
+    Hanami::Policy *policies = Hanami::Policy::getInstance();
+    if (policies->parse(policyFileContent, error) == false) {
         error.addMeesage("Failed to parser policy-file");
         return false;
     }
@@ -371,21 +341,20 @@ HanamiRoot::initJwt(Hanami::ErrorContainer &error)
 
     // read jwt-token-key from config
     const std::string tokenKeyPath = GET_STRING_CONFIG("auth", "token_key_path", success);
-    if(success == false)
-    {
+    if (success == false) {
         error.addMeesage("No token_key_path defined in config.");
         return false;
     }
 
     std::string tokenKeyString;
-    if(Hanami::readFile(tokenKeyString, tokenKeyPath, error) == false)
-    {
+    if (Hanami::readFile(tokenKeyString, tokenKeyPath, error) == false) {
         error.addMeesage("Failed to read token-file '" + tokenKeyPath + "'");
         return false;
     }
 
     // init jwt for token create and sign
-    tokenKey = CryptoPP::SecByteBlock((unsigned char*)tokenKeyString.c_str(), tokenKeyString.size());
+    tokenKey
+        = CryptoPP::SecByteBlock((unsigned char *)tokenKeyString.c_str(), tokenKeyString.size());
 
     return true;
 }
@@ -410,13 +379,11 @@ HanamiRoot::clearCluster(Hanami::ErrorContainer &error)
  * @return true, if blossom with the given group- and item-name exist, else false
  */
 bool
-HanamiRoot::doesBlossomExist(const std::string &groupName,
-                             const std::string &itemName)
+HanamiRoot::doesBlossomExist(const std::string &groupName, const std::string &itemName)
 {
     auto groupIt = m_registeredBlossoms.find(groupName);
-    if(groupIt != m_registeredBlossoms.end())
-    {
-        if(groupIt->second.find(itemName) != groupIt->second.end()) {
+    if (groupIt != m_registeredBlossoms.end()) {
+        if (groupIt->second.find(itemName) != groupIt->second.end()) {
             return true;
         }
     }
@@ -437,18 +404,17 @@ HanamiRoot::doesBlossomExist(const std::string &groupName,
 bool
 HanamiRoot::addBlossom(const std::string &groupName,
                        const std::string &itemName,
-                       Blossom* newBlossom)
+                       Blossom *newBlossom)
 {
     // check if already used
-    if(doesBlossomExist(groupName, itemName) == true) {
+    if (doesBlossomExist(groupName, itemName) == true) {
         return false;
     }
 
     // create internal group-map, if not already exist
     auto groupIt = m_registeredBlossoms.find(groupName);
-    if(groupIt == m_registeredBlossoms.end())
-    {
-        std::map<std::string, Blossom*> newMap;
+    if (groupIt == m_registeredBlossoms.end()) {
+        std::map<std::string, Blossom *> newMap;
         m_registeredBlossoms.try_emplace(groupName, newMap);
     }
 
@@ -468,17 +434,15 @@ HanamiRoot::addBlossom(const std::string &groupName,
  * @return pointer to the blossom or
  *         nullptr, if blossom the given group- and item-name was not found
  */
-Blossom*
-HanamiRoot::getBlossom(const std::string &groupName,
-                       const std::string &itemName)
+Blossom *
+HanamiRoot::getBlossom(const std::string &groupName, const std::string &itemName)
 {
     // search for group
     auto groupIt = m_registeredBlossoms.find(groupName);
-    if(groupIt != m_registeredBlossoms.end())
-    {
+    if (groupIt != m_registeredBlossoms.end()) {
         // search for item within group
         auto itemIt = groupIt->second.find(itemName);
-        if(itemIt != groupIt->second.end()) {
+        if (itemIt != groupIt->second.end()) {
             return itemIt->second;
         }
     }
@@ -510,9 +474,8 @@ HanamiRoot::triggerBlossom(json &result,
     LOG_DEBUG("trigger blossom");
 
     // get initial blossom-item
-    Blossom* blossom = getBlossom(blossomGroupName, blossomName);
-    if(blossom == nullptr)
-    {
+    Blossom *blossom = getBlossom(blossomGroupName, blossomName);
+    if (blossom == nullptr) {
         error.addMeesage("No blosom found for the id " + blossomName);
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         LOG_ERROR(error);
@@ -521,8 +484,7 @@ HanamiRoot::triggerBlossom(json &result,
 
     bool success = false;
 
-    do
-    {
+    do {
         // inialize a new blossom-leaf for processing
         BlossomIO blossomIO;
         blossomIO.blossomName = blossomName;
@@ -534,17 +496,14 @@ HanamiRoot::triggerBlossom(json &result,
 
         // check input to be complete
         std::string errorMessage;
-        if(blossom->validateFieldsCompleteness(initialValues,
-                                               *blossom->getInputValidationMap(),
-                                               FieldDef::INPUT_TYPE,
-                                               errorMessage) == false)
-        {
+        if (blossom->validateFieldsCompleteness(initialValues,
+                                                *blossom->getInputValidationMap(),
+                                                FieldDef::INPUT_TYPE,
+                                                errorMessage)
+            == false) {
             error.addMeesage(errorMessage);
             error.addMeesage("check of completeness of input-fields failed");
-            error.addMeesage("Check of blossom '"
-                             + blossomName
-                             + " in group '"
-                             + blossomGroupName
+            error.addMeesage("Check of blossom '" + blossomName + " in group '" + blossomGroupName
                              + "' failed.");
             status.statusCode = BAD_REQUEST_RTYPE;
             status.errorMessage = errorMessage;
@@ -552,24 +511,20 @@ HanamiRoot::triggerBlossom(json &result,
         }
 
         // process blossom
-        if(blossom->growBlossom(blossomIO, context, status, error) == false)
-        {
+        if (blossom->growBlossom(blossomIO, context, status, error) == false) {
             error.addMeesage("trigger blossom failed.");
             break;
         }
 
         // check output to be complete
-        if(blossom->validateFieldsCompleteness(blossomIO.output,
-                                               *blossom->getOutputValidationMap(),
-                                               FieldDef::OUTPUT_TYPE,
-                                               errorMessage) == false)
-        {
+        if (blossom->validateFieldsCompleteness(blossomIO.output,
+                                                *blossom->getOutputValidationMap(),
+                                                FieldDef::OUTPUT_TYPE,
+                                                errorMessage)
+            == false) {
             error.addMeesage(errorMessage);
             error.addMeesage("check of completeness of output-fields failed");
-            error.addMeesage("Check of blossom '"
-                             + blossomName
-                             + " in group '"
-                             + blossomGroupName
+            error.addMeesage("Check of blossom '" + blossomName + " in group '" + blossomGroupName
                              + "' failed.");
             status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
             break;
@@ -580,10 +535,9 @@ HanamiRoot::triggerBlossom(json &result,
         overrideItems(result, blossomIO.output, ALL);
 
         success = true;
-    }
-    while(false);
+    } while (false);
 
-    if(success == false) {
+    if (success == false) {
         LOG_ERROR(error);
     }
 
@@ -602,38 +556,30 @@ HanamiRoot::triggerBlossom(json &result,
  * @param error reference for error-output
  */
 void
-HanamiRoot::checkStatusCode(Blossom* blossom,
+HanamiRoot::checkStatusCode(Blossom *blossom,
                             const std::string &blossomName,
                             const std::string &blossomGroupName,
                             BlossomStatus &status,
                             Hanami::ErrorContainer &error)
 {
-    if(status.statusCode)
-    {
+    if (status.statusCode) {
         bool found = false;
-        for(const uint32_t allowed : blossom->errorCodes)
-        {
-            if(allowed == status.statusCode) {
+        for (const uint32_t allowed : blossom->errorCodes) {
+            if (allowed == status.statusCode) {
                 found = true;
             }
         }
 
         // if given status-code is unexprected, then override it and clear the message
         // to avoid leaking unwanted information
-        if(found == false)
-        {
-            error.addMeesage("Status-code '"
-                             + std::to_string(status.statusCode)
-                             + "' is not allowed as output for blossom '"
-                             + blossomName
-                             + "' in group '"
-                             + blossomGroupName
-                             + "'");
+        if (found == false) {
+            error.addMeesage("Status-code '" + std::to_string(status.statusCode)
+                             + "' is not allowed as output for blossom '" + blossomName
+                             + "' in group '" + blossomGroupName + "'");
             status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
             status.errorMessage = "";
         }
     }
-
 }
 
 /**
@@ -646,16 +592,12 @@ HanamiRoot::checkStatusCode(Blossom* blossom,
  * @return false, if mapping failes, else true
  */
 bool
-HanamiRoot::mapEndpoint(EndpointEntry &result,
-                        const std::string &id,
-                        const HttpRequestType type)
+HanamiRoot::mapEndpoint(EndpointEntry &result, const std::string &id, const HttpRequestType type)
 {
     const auto id_it = endpointRules.find(id);
-    if(id_it != endpointRules.end())
-    {
+    if (id_it != endpointRules.end()) {
         auto type_it = id_it->second.find(type);
-        if(type_it != id_it->second.end())
-        {
+        if (type_it != id_it->second.end()) {
             result.type = type_it->second.type;
             result.group = type_it->second.group;
             result.name = type_it->second.name;
@@ -692,18 +634,15 @@ HanamiRoot::addEndpoint(const std::string &id,
 
     // search for id
     auto id_it = endpointRules.find(id);
-    if(id_it != endpointRules.end())
-    {
+    if (id_it != endpointRules.end()) {
         // search for http-type
-        if(id_it->second.find(httpType) != id_it->second.end()) {
+        if (id_it->second.find(httpType) != id_it->second.end()) {
             return false;
         }
 
         // add new
         id_it->second.emplace(httpType, newEntry);
-    }
-    else
-    {
+    } else {
         // add new
         std::map<HttpRequestType, EndpointEntry> typeEntry;
         typeEntry.emplace(httpType, newEntry);

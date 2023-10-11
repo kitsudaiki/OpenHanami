@@ -21,20 +21,18 @@
  */
 
 #include <database/request_result_table.h>
-
 #include <hanami_common/items/table_item.h>
 #include <hanami_common/methods/string_methods.h>
 #include <hanami_database/sql_database.h>
 
-RequestResultTable* RequestResultTable::instance = nullptr;
+RequestResultTable *RequestResultTable::instance = nullptr;
 
 /**
  * @brief constructor
  *
  * @param db pointer to database
  */
-RequestResultTable::RequestResultTable()
-    : HanamiSqlTable(Hanami::SqlDatabase::getInstance())
+RequestResultTable::RequestResultTable() : HanamiSqlTable(Hanami::SqlDatabase::getInstance())
 {
     m_tableName = "request_result";
 
@@ -63,8 +61,7 @@ RequestResultTable::addRequestResult(json &data,
                                      const UserContext &userContext,
                                      Hanami::ErrorContainer &error)
 {
-    if(add(data, userContext, error) == false)
-    {
+    if (add(data, userContext, error) == false) {
         error.addMeesage("Failed to add checkpoint to database");
         return false;
     }
@@ -95,10 +92,8 @@ RequestResultTable::getRequestResult(json &result,
     conditions.emplace_back("uuid", resultUuid);
 
     // get dataset from db
-    if(get(result, userContext, conditions, error, showHiddenValues) == false)
-    {
-        error.addMeesage("Failed to get request-result with UUID '"
-                         + resultUuid
+    if (get(result, userContext, conditions, error, showHiddenValues) == false) {
+        error.addMeesage("Failed to get request-result with UUID '" + resultUuid
                          + "' from database");
         LOG_ERROR(error);
         return false;
@@ -122,8 +117,7 @@ RequestResultTable::getAllRequestResult(Hanami::TableItem &result,
                                         Hanami::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
-    if(getAll(result, userContext, conditions, error) == false)
-    {
+    if (getAll(result, userContext, conditions, error) == false) {
         error.addMeesage("Failed to get all request-results from database");
         return false;
     }
@@ -147,10 +141,8 @@ RequestResultTable::deleteRequestResult(const std::string &resultUuid,
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", resultUuid);
-    if(del(conditions, userContext, error) == false)
-    {
-        error.addMeesage("Failed to delete request-result with UUID '"
-                         + resultUuid
+    if (del(conditions, userContext, error) == false) {
+        error.addMeesage("Failed to delete request-result with UUID '" + resultUuid
                          + "' from database");
         return false;
     }

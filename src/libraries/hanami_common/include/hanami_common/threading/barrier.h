@@ -23,26 +23,27 @@
 #ifndef BARRIER_H
 #define BARRIER_H
 
-#include <mutex>
-#include <condition_variable>
-#include <thread>
 #include <pthread.h>
-#include <vector>
-#include <atomic>
 #include <unistd.h>
+
+#include <atomic>
+#include <condition_variable>
+#include <mutex>
+#include <thread>
+#include <vector>
 
 namespace Hanami
 {
 
 class Barrier
 {
-public:
+   public:
     Barrier(const uint32_t numberOfThreads);
 
     void triggerBarrier();
     void releaseAll();
 
-private:
+   private:
     std::mutex m_mutex;
     std::condition_variable m_cond;
     std::atomic_flag m_spin_lock = ATOMIC_FLAG_INIT;
@@ -52,6 +53,6 @@ private:
     bool m_abort = false;
 };
 
-}
+}  // namespace Hanami
 
-#endif // BARRIER_H
+#endif  // BARRIER_H

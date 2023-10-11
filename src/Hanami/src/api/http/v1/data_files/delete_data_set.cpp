@@ -22,13 +22,11 @@
 
 #include "delete_data_set.h"
 
-#include <hanami_root.h>
 #include <database/data_set_table.h>
-
 #include <hanami_common/methods/file_methods.h>
+#include <hanami_root.h>
 
-DeleteDataSet::DeleteDataSet()
-    : Blossom("Delete a speific data-set.")
+DeleteDataSet::DeleteDataSet() : Blossom("Delete a speific data-set.")
 {
     errorCodes.push_back(NOT_FOUND_RTYPE);
 
@@ -37,8 +35,8 @@ DeleteDataSet::DeleteDataSet()
     //----------------------------------------------------------------------------------------------
 
     registerInputField("uuid", SAKURA_STRING_TYPE)
-            .setComment("UUID of the data-set to delete.")
-            .setRegex(UUID_REGEX);
+        .setComment("UUID of the data-set to delete.")
+        .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     //
@@ -59,19 +57,14 @@ DeleteDataSet::runTask(BlossomIO &blossomIO,
 
     // get location from database
     json result;
-    if(DataSetTable::getInstance()->getDataSet(result,
-                                               dataUuid,
-                                               userContext,
-                                               error,
-                                               true) == false)
-    {
+    if (DataSetTable::getInstance()->getDataSet(result, dataUuid, userContext, error, true)
+        == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // handle not found
-    if(result.size() == 0)
-    {
+    if (result.size() == 0) {
         status.errorMessage = "Data-set with uuid '" + dataUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
@@ -82,15 +75,13 @@ DeleteDataSet::runTask(BlossomIO &blossomIO,
     const std::string location = result["location"];
 
     // delete entry from db
-    if(DataSetTable::getInstance()->deleteDataSet(dataUuid, userContext, error) == false)
-    {
+    if (DataSetTable::getInstance()->deleteDataSet(dataUuid, userContext, error) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // delete local files
-    if(Hanami::deleteFileOrDir(location, error) == false)
-    {
+    if (Hanami::deleteFileOrDir(location, error) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

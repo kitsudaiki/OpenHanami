@@ -9,17 +9,15 @@
 #ifndef KITSUNEMIMI_NETWORK_TEMPLATE_SERVER_H
 #define KITSUNEMIMI_NETWORK_TEMPLATE_SERVER_H
 
-#include <sys/types.h>
-#include <sys/socket.h>
-
-#include <hanami_common/threading/thread.h>
-#include <hanami_common/logger.h>
-
 #include <abstract_server.h>
+#include <hanami_common/logger.h>
+#include <hanami_common/threading/thread.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <tcp/tcp_server.h>
 #include <template_socket.h>
 #include <tls_tcp/tls_tcp_server.h>
 #include <unix/unix_domain_server.h>
-#include <tcp/tcp_server.h>
 
 namespace Hanami
 {
@@ -33,15 +31,13 @@ class TcpServer;
 class UnixDomainServer;
 class TlsTcpServer;
 
-template<class>
+template <class>
 class TemplateSocket;
 
-template<class T>
-class TemplateServer
-        : public AbstractServer
+template <class T>
+class TemplateServer : public AbstractServer
 {
-public:
-
+   public:
     /**
      * @brief constructor for template of a server
      *
@@ -53,10 +49,8 @@ public:
     TemplateServer(T&& server,
                    void* target,
                    void (*processConnection)(void*, AbstractSocket*),
-                   const std::string &threadName)
-        : AbstractServer(target,
-                         processConnection,
-                         threadName)
+                   const std::string& threadName)
+        : AbstractServer(target, processConnection, threadName)
     {
         m_server = std::move(server);
     }
@@ -64,20 +58,14 @@ public:
     /**
      * @brief destructor
      */
-    ~TemplateServer()
-    {
-        closeServer();
-    }
+    ~TemplateServer() { closeServer(); }
 
     /**
      * @brief get type of the server
      *
      * @return type-id (1=UDS, 2=TCP, 3=TLS_TCP)
      */
-    uint32_t getType()
-    {
-        return m_server.type;
-    }
+    uint32_t getType() { return m_server.type; }
 
     /**
      * @brief initialize server
@@ -86,10 +74,7 @@ public:
      *
      * @return true, if successful, else false
      */
-    bool initServer(ErrorContainer &error)
-    {
-        return m_server.initServer(error);
-    }
+    bool initServer(ErrorContainer& error) { return m_server.initServer(error); }
 
     /**
      * @brief close-server
@@ -99,19 +84,18 @@ public:
     bool closeServer()
     {
         // precheck
-        if(m_abort == true) {
+        if (m_abort == true) {
             return false;
         }
 
         m_abort = true;
 
         // close server-socket
-        if(m_server.getServerFd() >= 0)
-        {
+        if (m_server.getServerFd() >= 0) {
             // close server itself
             shutdown(m_server.getServerFd(), SHUT_RDWR);
             close(m_server.getServerFd());
-            //m_server.serverFd = 0;
+            // m_server.serverFd = 0;
         }
 
         LOG_INFO("Successfully closed server");
@@ -119,14 +103,12 @@ public:
         return true;
     }
 
-protected:
+   protected:
     void run()
     {
         ErrorContainer error;
-        while(m_abort == false)
-        {
-            if(waitForIncomingConnections(error) == false)
-            {
+        while (m_abort == false) {
+            if (waitForIncomingConnections(error) == false) {
                 LOG_ERROR(error);
                 error._alreadyPrinted = false;
             }
@@ -140,23 +122,21 @@ protected:
      *
      * @return true, if successful, else false
      */
-    bool waitForIncomingConnections(Hanami::ErrorContainer &error)
+    bool waitForIncomingConnections(Hanami::ErrorContainer& error)
     {
         uint32_t length = sizeof(struct sockaddr_in);
 
-        //make new connection
+        // make new connection
         const int fd = accept(m_server.getServerFd(),
                               reinterpret_cast<struct sockaddr*>(&m_server.socketAddr),
                               &length);
 
-        if(m_abort)
-        {
+        if (m_abort) {
             // TODO: close connection if fd > 0
             return true;
         }
 
-        if(fd < 0)
-        {
+        if (fd < 0) {
             error.addMeesage("Failed accept incoming connection on net-server");
             return false;
         }
@@ -164,34 +144,27 @@ protected:
         LOG_INFO("Successfully accepted incoming connection on net-server");
 
         // create new socket-object from file-descriptor
-        if(std::is_same<T, TcpServer>::value)
-        {
+        if (std::is_same<T, TcpServer>::value) {
             const std::string name = "TCP_socket";
             TcpSocket tcpSocket(fd);
-            TemplateSocket<TcpSocket>* netSocket =
-                    new TemplateSocket<TcpSocket>(std::move(tcpSocket), name);
+            TemplateSocket<TcpSocket>* netSocket
+                = new TemplateSocket<TcpSocket>(std::move(tcpSocket), name);
             netSocket->initConnection(error);
             m_processConnection(m_target, netSocket);
-        }
-        else if(std::is_same<T, UnixDomainServer>::value)
-        {
+        } else if (std::is_same<T, UnixDomainServer>::value) {
             const std::string name = "UDS_socket";
             UnixDomainSocket unixSocket(fd);
-            TemplateSocket<UnixDomainSocket>* netSocket =
-                    new TemplateSocket<UnixDomainSocket>(std::move(unixSocket), name);
+            TemplateSocket<UnixDomainSocket>* netSocket
+                = new TemplateSocket<UnixDomainSocket>(std::move(unixSocket), name);
             netSocket->initConnection(error);
             m_processConnection(m_target, netSocket);
-        }
-        else if(std::is_same<T, TlsTcpServer>::value)
-        {
+        } else if (std::is_same<T, TlsTcpServer>::value) {
             const std::string name = "TLS_TCP_socket";
             TcpSocket tcpSocket(fd);
-            TlsTcpSocket tlsTcpSocket(std::move(tcpSocket),
-                                      m_server.certFile,
-                                      m_server.keyFile,
-                                      m_server.caFile);
-            TemplateSocket<TlsTcpSocket>* netSocket =
-                    new TemplateSocket<TlsTcpSocket>(std::move(tlsTcpSocket), name);
+            TlsTcpSocket tlsTcpSocket(
+                std::move(tcpSocket), m_server.certFile, m_server.keyFile, m_server.caFile);
+            TemplateSocket<TlsTcpSocket>* netSocket
+                = new TemplateSocket<TlsTcpSocket>(std::move(tlsTcpSocket), name);
             netSocket->initConnection(error);
             m_processConnection(m_target, netSocket);
         }
@@ -202,6 +175,6 @@ protected:
     T m_server;
 };
 
-}
+}  // namespace Hanami
 
-#endif // KITSUNEMIMI_NETWORK_TEMPLATE_SERVER_H
+#endif  // KITSUNEMIMI_NETWORK_TEMPLATE_SERVER_H

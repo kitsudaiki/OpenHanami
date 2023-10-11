@@ -23,16 +23,13 @@
 #ifndef KITSUNEMIMI_SAKURA_NETWORK_SESSION_PROCESSING_H
 #define KITSUNEMIMI_SAKURA_NETWORK_SESSION_PROCESSING_H
 
-#include <message_definitions.h>
-#include <handler/session_handler.h>
-#include <multiblock_io.h>
-
 #include <abstract_socket.h>
-
-#include <hanami_network/session_controller.h>
-#include <hanami_network/session.h>
-
 #include <hanami_common/logger.h>
+#include <hanami_network/session.h>
+#include <hanami_network/session_controller.h>
+#include <handler/session_handler.h>
+#include <message_definitions.h>
+#include <multiblock_io.h>
 
 namespace Hanami
 {
@@ -46,8 +43,8 @@ namespace Hanami
  */
 inline bool
 send_Session_Init_Start(Session* session,
-                        const std::string &sessionIdentifier,
-                        ErrorContainer &error)
+                        const std::string& sessionIdentifier,
+                        ErrorContainer& error)
 {
     LOG_DEBUG("SEND session init start");
 
@@ -78,8 +75,8 @@ send_Session_Init_Reply(Session* session,
                         const uint32_t initialSessionId,
                         const uint32_t messageId,
                         const uint32_t completeSessionId,
-                        const std::string &sessionIdentifier,
-                        ErrorContainer &error)
+                        const std::string& sessionIdentifier,
+                        ErrorContainer& error)
 {
     LOG_DEBUG("SEND session init reply");
 
@@ -103,9 +100,7 @@ send_Session_Init_Reply(Session* session,
  * @param replyExpected set to true to get a reply-message for the session-close-message
  */
 inline bool
-send_Session_Close_Start(Session* session,
-                         const bool replyExpected,
-                         ErrorContainer &error)
+send_Session_Close_Start(Session* session, const bool replyExpected, ErrorContainer& error)
 {
     LOG_DEBUG("SEND session close start");
 
@@ -113,7 +108,7 @@ send_Session_Close_Start(Session* session,
 
     message.commonHeader.sessionId = session->sessionId();
     message.commonHeader.messageId = session->increaseMessageIdCounter();
-    if(replyExpected) {
+    if (replyExpected) {
         message.commonHeader.flags = 0x1;
     }
 
@@ -127,9 +122,7 @@ send_Session_Close_Start(Session* session,
  * @param messageId id of the original incoming message
  */
 inline bool
-send_Session_Close_Reply(Session* session,
-                         const uint32_t messageId,
-                         ErrorContainer &error)
+send_Session_Close_Reply(Session* session, const uint32_t messageId, ErrorContainer& error)
 {
     LOG_DEBUG("SEND session close reply");
 
@@ -148,8 +141,7 @@ send_Session_Close_Reply(Session* session,
  * @param message pointer to the complete message within the message-ring-buffer
  */
 inline void
-process_Session_Init_Start(Session* session,
-                           const Session_Init_Start_Message* message)
+process_Session_Init_Start(Session* session, const Session_Init_Start_Message* message)
 {
     LOG_DEBUG("process session init start");
 
@@ -180,8 +172,7 @@ process_Session_Init_Start(Session* session,
  * @param message pointer to the complete message within the message-ring-buffer
  */
 inline void
-process_Session_Init_Reply(Session* session,
-                           const Session_Init_Reply_Message* message)
+process_Session_Init_Reply(Session* session, const Session_Init_Reply_Message* message)
 {
     LOG_DEBUG("process session init reply");
 
@@ -203,8 +194,7 @@ process_Session_Init_Reply(Session* session,
  * @param message pointer to the complete message within the message-ring-buffer
  */
 inline void
-process_Session_Close_Start(Session* session,
-                            const Session_Close_Start_Message* message)
+process_Session_Close_Start(Session* session, const Session_Close_Start_Message* message)
 {
     LOG_DEBUG("process session close start");
 
@@ -222,8 +212,7 @@ process_Session_Close_Start(Session* session,
  * @param message pointer to the complete message within the message-ring-buffer
  */
 inline void
-process_Session_Close_Reply(Session* session,
-                            const Session_Close_Reply_Message* message)
+process_Session_Close_Reply(Session* session, const Session_Close_Reply_Message* message)
 {
     LOG_DEBUG("process session close reply");
 
@@ -240,54 +229,47 @@ process_Session_Close_Reply(Session* session,
  * @param rawMessage pointer to the raw data of the complete message (header + payload + end)
  */
 inline void
-process_Session_Type(Session* session,
-                     const CommonMessageHeader* header,
-                     const void* rawMessage)
+process_Session_Type(Session* session, const CommonMessageHeader* header, const void* rawMessage)
 {
-    if(DEBUG_MODE) {
+    if (DEBUG_MODE) {
         LOG_DEBUG("process session-type");
     }
 
-    switch(header->subType)
-    {
+    switch (header->subType) {
         //------------------------------------------------------------------------------------------
-        case SESSION_INIT_START_SUBTYPE:
-            {
-                const Session_Init_Start_Message* message =
-                    static_cast<const Session_Init_Start_Message*>(rawMessage);
-                process_Session_Init_Start(session, message);
-                break;
-            }
+        case SESSION_INIT_START_SUBTYPE: {
+            const Session_Init_Start_Message* message
+                = static_cast<const Session_Init_Start_Message*>(rawMessage);
+            process_Session_Init_Start(session, message);
+            break;
+        }
         //------------------------------------------------------------------------------------------
-        case SESSION_INIT_REPLY_SUBTYPE:
-            {
-                const Session_Init_Reply_Message* message =
-                    static_cast<const Session_Init_Reply_Message*>(rawMessage);
-                process_Session_Init_Reply(session, message);
-                break;
-            }
+        case SESSION_INIT_REPLY_SUBTYPE: {
+            const Session_Init_Reply_Message* message
+                = static_cast<const Session_Init_Reply_Message*>(rawMessage);
+            process_Session_Init_Reply(session, message);
+            break;
+        }
         //------------------------------------------------------------------------------------------
-        case SESSION_CLOSE_START_SUBTYPE:
-            {
-                const Session_Close_Start_Message* message =
-                    static_cast<const Session_Close_Start_Message*>(rawMessage);
-                process_Session_Close_Start(session, message);
-                break;
-            }
+        case SESSION_CLOSE_START_SUBTYPE: {
+            const Session_Close_Start_Message* message
+                = static_cast<const Session_Close_Start_Message*>(rawMessage);
+            process_Session_Close_Start(session, message);
+            break;
+        }
         //------------------------------------------------------------------------------------------
-        case SESSION_CLOSE_REPLY_SUBTYPE:
-            {
-                const Session_Close_Reply_Message* message =
-                    static_cast<const Session_Close_Reply_Message*>(rawMessage);
-                process_Session_Close_Reply(session, message);
-                break;
-            }
+        case SESSION_CLOSE_REPLY_SUBTYPE: {
+            const Session_Close_Reply_Message* message
+                = static_cast<const Session_Close_Reply_Message*>(rawMessage);
+            process_Session_Close_Reply(session, message);
+            break;
+        }
         //------------------------------------------------------------------------------------------
         default:
             break;
     }
 }
 
-}
+}  // namespace Hanami
 
-#endif // KITSUNEMIMI_SAKURA_NETWORK_SESSION_PROCESSING_H
+#endif  // KITSUNEMIMI_SAKURA_NETWORK_SESSION_PROCESSING_H

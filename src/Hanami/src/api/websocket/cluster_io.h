@@ -29,9 +29,6 @@ void sendClusterOutputMessage(Cluster* cluster);
 void sendClusterNormalEndMessage(Cluster* cluster);
 void sendClusterTrainEndMessage(Cluster* cluster);
 
-bool recvClusterInputMessage(Cluster* cluster,
-                              const void* data,
-                              const uint64_t dataSize);
+bool recvClusterInputMessage(Cluster* cluster, const void* data, const uint64_t dataSize);
 
-
-#endif // HANAMI_PROTOBUF_MESSAGES_H
+#endif  // HANAMI_PROTOBUF_MESSAGES_H

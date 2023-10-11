@@ -23,7 +23,6 @@
 #include "item_methods.h"
 
 #include <api/endpoint_processing/blossom.h>
-
 #include <hanami_common/items/table_item.h>
 
 /**
@@ -35,31 +34,23 @@
  * @param type type of override
  */
 void
-overrideItems(json &original,
-              const json &override,
-              OverrideType type)
+overrideItems(json &original, const json &override, OverrideType type)
 {
-    if(type == ONLY_EXISTING)
-    {
-        for(const auto& [name, item] : override.items())
-        {
-            if(original.contains(name)) {
+    if (type == ONLY_EXISTING) {
+        for (const auto &[name, item] : override.items()) {
+            if (original.contains(name)) {
                 original[name] = item;
             }
         }
     }
-    if(type == ONLY_NON_EXISTING)
-    {
-        for(const auto& [name, item] : override.items())
-        {
-            if(original.contains(name) == false) {
+    if (type == ONLY_NON_EXISTING) {
+        for (const auto &[name, item] : override.items()) {
+            if (original.contains(name) == false) {
                 original[name] = item;
             }
         }
-    }
-    else if(type == ALL)
-    {
-        for(const auto& [name, item] : override.items()) {
+    } else if (type == ALL) {
+        for (const auto &[name, item] : override.items()) {
             original[name] = item;
         }
     }
@@ -90,23 +81,23 @@ createError(const std::string &errorLocation,
     errorOutput.addColumn("Field");
     errorOutput.addColumn("Value");
 
-    if(errorLocation.size() > 0) {
+    if (errorLocation.size() > 0) {
         errorOutput.addRow(std::vector<std::string>{"location", errorLocation});
     }
 
-    if(possibleSolution.size() > 0) {
+    if (possibleSolution.size() > 0) {
         errorOutput.addRow(std::vector<std::string>{"possible solution", possibleSolution});
     }
-    if(blossomType.size() > 0) {
+    if (blossomType.size() > 0) {
         errorOutput.addRow(std::vector<std::string>{"blossom-type", blossomType});
     }
-    if(blossomGroupType.size() > 0) {
+    if (blossomGroupType.size() > 0) {
         errorOutput.addRow(std::vector<std::string>{"blossom-group-type", blossomGroupType});
     }
-    if(blossomName.size() > 0) {
+    if (blossomName.size() > 0) {
         errorOutput.addRow(std::vector<std::string>{"blossom-name", blossomName});
     }
-    if(blossomFilePath.size() > 0) {
+    if (blossomFilePath.size() > 0) {
         errorOutput.addRow(std::vector<std::string>{"blossom-file-path", blossomFilePath});
     }
 

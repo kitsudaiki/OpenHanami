@@ -24,26 +24,27 @@
 #define HANAMI_RESTORECLUSTERSTATE_H
 
 #include <hanami_common/threading/event.h>
+
 #include <nlohmann/json.hpp>
 
 class Cluster;
 
-namespace Hanami {
+namespace Hanami
+{
 class HanamiMessagingClient;
 }
 
-class RestoreCluster_State
-        : public Hanami::Event
+class RestoreCluster_State : public Hanami::Event
 {
-public:
+   public:
     RestoreCluster_State(Cluster* cluster);
     ~RestoreCluster_State();
 
     bool processEvent();
 
-private:
+   private:
     Cluster* m_cluster = nullptr;
     Hanami::HanamiMessagingClient* m_client = nullptr;
 };
 
-#endif // HANAMI_RESTORECLUSTERSTATE_H
+#endif  // HANAMI_RESTORECLUSTERSTATE_H

@@ -23,22 +23,20 @@
 #ifndef HANAMI_DATABASE_SQL_ADMIN_TABLE_H
 #define HANAMI_DATABASE_SQL_ADMIN_TABLE_H
 
-#include <vector>
-#include <string>
+#include <hanami_common/logger.h>
+#include <hanami_database/sql_table.h>
 #include <uuid/uuid.h>
 
-#include <hanami_common/logger.h>
-
-#include <hanami_database/sql_table.h>
+#include <string>
+#include <vector>
 
 class SqlDatabase;
 
-class HanamiSqlAdminTable
-        : public Hanami::SqlTable
+class HanamiSqlAdminTable : public Hanami::SqlTable
 {
-public:
+   public:
     HanamiSqlAdminTable(Hanami::SqlDatabase* db);
     virtual ~HanamiSqlAdminTable();
 };
 
-#endif // HANAMI_DATABASE_SQL_ADMIN_TABLE_H
+#endif  // HANAMI_DATABASE_SQL_ADMIN_TABLE_H

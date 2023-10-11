@@ -21,6 +21,7 @@
  */
 
 #include "message_blocker_handler.h"
+
 #include <hanami_network/session.h>
 
 namespace Hanami
@@ -29,16 +30,12 @@ namespace Hanami
 /**
  * @brief constructor
  */
-MessageBlockerHandler::MessageBlockerHandler()
-    : Hanami::Thread("MessageBlockerHandler") {}
+MessageBlockerHandler::MessageBlockerHandler() : Hanami::Thread("MessageBlockerHandler") {}
 
 /**
  * @brief destructor
  */
-MessageBlockerHandler::~MessageBlockerHandler()
-{
-    clearList();
-}
+MessageBlockerHandler::~MessageBlockerHandler() { clearList(); }
 
 /**
  * @brief MessageBlockerHandler::blockMessage
@@ -85,8 +82,7 @@ MessageBlockerHandler::blockMessage(const uint64_t blockerId,
  * @return true, if blocker-id was found in the list of blocked threads
  */
 bool
-MessageBlockerHandler::releaseMessage(const uint64_t blockerId,
-                                      DataBuffer* data)
+MessageBlockerHandler::releaseMessage(const uint64_t blockerId, DataBuffer* data)
 {
     bool result = false;
 
@@ -103,8 +99,7 @@ MessageBlockerHandler::releaseMessage(const uint64_t blockerId,
 void
 MessageBlockerHandler::run()
 {
-    while(m_abort == false)
-    {
+    while (m_abort == false) {
         makeTimerStep();
 
         // sleep for 1 second
@@ -121,13 +116,10 @@ MessageBlockerHandler::run()
  * @return
  */
 bool
-MessageBlockerHandler::releaseMessageInList(const uint64_t blockerId,
-                                            DataBuffer* data)
+MessageBlockerHandler::releaseMessageInList(const uint64_t blockerId, DataBuffer* data)
 {
-    for(MessageBlocker* blocker : m_messageList)
-    {
-        if(blocker->blockerId == blockerId)
-        {
+    for (MessageBlocker* blocker : m_messageList) {
+        if (blocker->blockerId == blockerId) {
             blocker->responseData = data;
             blocker->cv.notify_one();
             return true;
@@ -146,22 +138,15 @@ DataBuffer*
 MessageBlockerHandler::removeMessageFromList(const uint64_t blockerId)
 {
     std::vector<MessageBlocker*>::iterator it;
-    for(it = m_messageList.begin();
-        it != m_messageList.end();
-        it++)
-    {
+    for (it = m_messageList.begin(); it != m_messageList.end(); it++) {
         MessageBlocker* tempItem = *it;
-        if(tempItem->blockerId == blockerId)
-        {
-            if(m_messageList.size() > 1)
-            {
+        if (tempItem->blockerId == blockerId) {
+            if (m_messageList.size() > 1) {
                 // swap with last and remove the last instead of erase the element direct
                 // because this was is faster
                 std::iter_swap(it, m_messageList.end() - 1);
                 m_messageList.pop_back();
-            }
-            else
-            {
+            } else {
                 m_messageList.clear();
             }
 
@@ -186,8 +171,7 @@ MessageBlockerHandler::clearList()
     spinLock();
 
     // release all threads
-    for(MessageBlocker* blocker : m_messageList)
-    {
+    for (MessageBlocker* blocker : m_messageList) {
         blocker->cv.notify_one();
         delete blocker;
     }
@@ -205,23 +189,20 @@ void
 MessageBlockerHandler::makeTimerStep()
 {
     spinLock();
-    for(MessageBlocker* blocker : m_messageList)
-    {
+    for (MessageBlocker* blocker : m_messageList) {
         blocker->timer -= 1;
 
-        if(blocker->timer == 0)
-        {
+        if (blocker->timer == 0) {
             removeMessageFromList(blocker->blockerId);
             releaseMessageInList(blocker->blockerId, nullptr);
 
             const std::string err = "TIMEOUT of request: " + std::to_string(blocker->blockerId);
-            blocker->session->m_processError(blocker->session,
-                                             Session::errorCodes::MESSAGE_TIMEOUT,
-                                             err);
+            blocker->session->m_processError(
+                blocker->session, Session::errorCodes::MESSAGE_TIMEOUT, err);
         }
     }
 
     spinUnlock();
 }
 
-}
+}  // namespace Hanami

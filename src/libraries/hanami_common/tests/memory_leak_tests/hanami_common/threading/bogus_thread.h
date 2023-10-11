@@ -14,16 +14,15 @@
 namespace Hanami
 {
 
-class BogusThread
-        : public Hanami::Thread
+class BogusThread : public Hanami::Thread
 {
-public:
+   public:
     BogusThread();
 
-protected:
+   protected:
     void run();
 };
 
-}
+}  // namespace Hanami
 
-#endif // BOGUS_THREAD_H
+#endif  // BOGUS_THREAD_H

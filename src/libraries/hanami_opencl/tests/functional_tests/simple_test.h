@@ -23,25 +23,24 @@
 #ifndef TEST_RUN_H
 #define TEST_RUN_H
 
-#include <iostream>
-#include <vector>
-#include <string>
-#include <chrono>
-
 #include <hanami_common/test_helper/compare_test_helper.h>
+
+#include <chrono>
+#include <iostream>
+#include <string>
+#include <vector>
 
 namespace Hanami
 {
 
-class SimpleTest
-        : public Hanami::CompareTestHelper
+class SimpleTest : public Hanami::CompareTestHelper
 {
-public:
+   public:
     SimpleTest();
 
     void simple_test();
 };
 
-}
+}  // namespace Hanami
 
-#endif // TEST_RUN_H
+#endif  // TEST_RUN_H

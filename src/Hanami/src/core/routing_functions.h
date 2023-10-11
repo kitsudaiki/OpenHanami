@@ -23,9 +23,9 @@
 #ifndef HANAMI_ROUTING_FUNCTIONS_H
 #define HANAMI_ROUTING_FUNCTIONS_H
 
-#include <stdint.h>
 #include <common.h>
 #include <hanami_cluster_parser/cluster_meta.h>
+#include <stdint.h>
 
 /**
  * @brief get neighbor-position for a specific side in the hexagon-grid
@@ -40,11 +40,9 @@ getNeighborPos(const Hanami::Position sourcePos, const uint8_t side)
 {
     Hanami::Position result;
 
-    switch(side)
-    {
-        case 0:
-        {
-            if(sourcePos.y % 2 == 0) {
+    switch (side) {
+        case 0: {
+            if (sourcePos.y % 2 == 0) {
                 result.x = sourcePos.x - 1;
             } else {
                 result.x = sourcePos.x;
@@ -53,9 +51,8 @@ getNeighborPos(const Hanami::Position sourcePos, const uint8_t side)
             result.z = sourcePos.z - 1;
             break;
         }
-        case 1:
-        {
-            if(sourcePos.y % 2 == 0) {
+        case 1: {
+            if (sourcePos.y % 2 == 0) {
                 result.x = sourcePos.x;
             } else {
                 result.x = sourcePos.x + 1;
@@ -64,16 +61,14 @@ getNeighborPos(const Hanami::Position sourcePos, const uint8_t side)
             result.z = sourcePos.z - 1;
             break;
         }
-        case 2:
-        {
+        case 2: {
             result.x = sourcePos.x;
             result.y = sourcePos.y;
             result.z = sourcePos.z - 1;
             break;
         }
-        case 3:
-        {
-            if(sourcePos.y % 2 == 0) {
+        case 3: {
+            if (sourcePos.y % 2 == 0) {
                 result.x = sourcePos.x;
             } else {
                 result.x = sourcePos.x + 1;
@@ -82,16 +77,14 @@ getNeighborPos(const Hanami::Position sourcePos, const uint8_t side)
             result.z = sourcePos.z;
             break;
         }
-        case 4:
-        {
+        case 4: {
             result.x = sourcePos.x + 1;
             result.y = sourcePos.y;
             result.z = sourcePos.z;
             break;
         }
-        case 5:
-        {
-            if(sourcePos.y % 2 == 0) {
+        case 5: {
+            if (sourcePos.y % 2 == 0) {
                 result.x = sourcePos.x;
             } else {
                 result.x = sourcePos.x + 1;
@@ -100,9 +93,8 @@ getNeighborPos(const Hanami::Position sourcePos, const uint8_t side)
             result.z = sourcePos.z;
             break;
         }
-        case 8:
-        {
-            if(sourcePos.y % 2 == 0) {
+        case 8: {
+            if (sourcePos.y % 2 == 0) {
                 result.x = sourcePos.x - 1;
             } else {
                 result.x = sourcePos.x;
@@ -111,16 +103,14 @@ getNeighborPos(const Hanami::Position sourcePos, const uint8_t side)
             result.z = sourcePos.z;
             break;
         }
-        case 7:
-        {
+        case 7: {
             result.x = sourcePos.x - 1;
             result.y = sourcePos.y;
             result.z = sourcePos.z;
             break;
         }
-        case 6:
-        {
-            if(sourcePos.y % 2 == 0) {
+        case 6: {
+            if (sourcePos.y % 2 == 0) {
                 result.x = sourcePos.x - 1;
             } else {
                 result.x = sourcePos.x;
@@ -129,16 +119,14 @@ getNeighborPos(const Hanami::Position sourcePos, const uint8_t side)
             result.z = sourcePos.z;
             break;
         }
-        case 9:
-        {
+        case 9: {
             result.x = sourcePos.x;
             result.y = sourcePos.y;
             result.z = sourcePos.z + 1;
             break;
         }
-        case 10:
-        {
-            if(sourcePos.y % 2 == 0) {
+        case 10: {
+            if (sourcePos.y % 2 == 0) {
                 result.x = sourcePos.x - 1;
             } else {
                 result.x = sourcePos.x;
@@ -147,9 +135,8 @@ getNeighborPos(const Hanami::Position sourcePos, const uint8_t side)
             result.z = sourcePos.z + 1;
             break;
         }
-        case 11:
-        {
-            if(sourcePos.y % 2 == 0) {
+        case 11: {
+            if (sourcePos.y % 2 == 0) {
                 result.x = sourcePos.x;
             } else {
                 result.x = sourcePos.x + 1;
@@ -179,10 +166,8 @@ getNextSides(const uint8_t side)
 {
     NextSides nextSides;
 
-    switch (side)
-    {
-        case 0:
-        {
+    switch (side) {
+        case 0: {
             nextSides.sides[0] = 1;
             nextSides.sides[1] = 4;
             nextSides.sides[2] = 11;
@@ -190,8 +175,7 @@ getNextSides(const uint8_t side)
             nextSides.sides[4] = 2;
             break;
         }
-        case 1:
-        {
+        case 1: {
             nextSides.sides[0] = 2;
             nextSides.sides[1] = 8;
             nextSides.sides[2] = 10;
@@ -199,8 +183,7 @@ getNextSides(const uint8_t side)
             nextSides.sides[4] = 0;
             break;
         }
-        case 2:
-        {
+        case 2: {
             nextSides.sides[0] = 0;
             nextSides.sides[1] = 6;
             nextSides.sides[2] = 9;
@@ -208,8 +191,7 @@ getNextSides(const uint8_t side)
             nextSides.sides[4] = 1;
             break;
         }
-        case 3:
-        {
+        case 3: {
             nextSides.sides[0] = 5;
             nextSides.sides[1] = 2;
             nextSides.sides[2] = 8;
@@ -217,8 +199,7 @@ getNextSides(const uint8_t side)
             nextSides.sides[4] = 7;
             break;
         }
-        case 4:
-        {
+        case 4: {
             nextSides.sides[0] = 8;
             nextSides.sides[1] = 10;
             nextSides.sides[2] = 7;
@@ -226,8 +207,7 @@ getNextSides(const uint8_t side)
             nextSides.sides[4] = 6;
             break;
         }
-        case 5:
-        {
+        case 5: {
             nextSides.sides[0] = 7;
             nextSides.sides[1] = 0;
             nextSides.sides[2] = 6;
@@ -235,8 +215,7 @@ getNextSides(const uint8_t side)
             nextSides.sides[4] = 3;
             break;
         }
-        case 8:
-        {
+        case 8: {
             nextSides.sides[0] = 6;
             nextSides.sides[1] = 9;
             nextSides.sides[2] = 3;
@@ -244,8 +223,7 @@ getNextSides(const uint8_t side)
             nextSides.sides[4] = 4;
             break;
         }
-        case 7:
-        {
+        case 7: {
             nextSides.sides[0] = 3;
             nextSides.sides[1] = 1;
             nextSides.sides[2] = 4;
@@ -253,8 +231,7 @@ getNextSides(const uint8_t side)
             nextSides.sides[4] = 5;
             break;
         }
-        case 6:
-        {
+        case 6: {
             nextSides.sides[0] = 4;
             nextSides.sides[1] = 11;
             nextSides.sides[2] = 5;
@@ -262,8 +239,7 @@ getNextSides(const uint8_t side)
             nextSides.sides[4] = 8;
             break;
         }
-        case 9:
-        {
+        case 9: {
             nextSides.sides[0] = 11;
             nextSides.sides[1] = 5;
             nextSides.sides[2] = 2;
@@ -271,8 +247,7 @@ getNextSides(const uint8_t side)
             nextSides.sides[4] = 10;
             break;
         }
-        case 10:
-        {
+        case 10: {
             nextSides.sides[0] = 9;
             nextSides.sides[1] = 3;
             nextSides.sides[2] = 1;
@@ -280,8 +255,7 @@ getNextSides(const uint8_t side)
             nextSides.sides[4] = 11;
             break;
         }
-        case 11:
-        {
+        case 11: {
             nextSides.sides[0] = 10;
             nextSides.sides[1] = 7;
             nextSides.sides[2] = 0;
@@ -298,4 +272,4 @@ getNextSides(const uint8_t side)
     return nextSides;
 }
 
-#endif // HANAMI_ROUTING_FUNCTIONS_H
+#endif  // HANAMI_ROUTING_FUNCTIONS_H

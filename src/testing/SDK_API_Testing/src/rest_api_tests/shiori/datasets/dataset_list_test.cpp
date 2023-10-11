@@ -24,11 +24,10 @@
 
 #include <hanami_sdk/data_set.h>
 
-DataSetListTest::DataSetListTest(const bool expectSuccess)
-      : TestStep(expectSuccess)
+DataSetListTest::DataSetListTest(const bool expectSuccess) : TestStep(expectSuccess)
 {
     m_testName = "list data-set";
-    if(expectSuccess) {
+    if (expectSuccess) {
         m_testName += " (success)";
     } else {
         m_testName += " (fail)";
@@ -36,16 +35,15 @@ DataSetListTest::DataSetListTest(const bool expectSuccess)
 }
 
 bool
-DataSetListTest::runTest(json &inputData,
-                         Hanami::ErrorContainer &error)
+DataSetListTest::runTest(json &inputData, Hanami::ErrorContainer &error)
 {
     // list all data
     std::string result;
-    if(Hanami::listDatasets(result, error) != m_expectSuccess) {
+    if (Hanami::listDatasets(result, error) != m_expectSuccess) {
         return false;
     }
 
-    if(m_expectSuccess == false) {
+    if (m_expectSuccess == false) {
         return true;
     }
 
@@ -53,7 +51,7 @@ DataSetListTest::runTest(json &inputData,
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch(const json::parse_error& ex) {
+    } catch (const json::parse_error &ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
@@ -62,4 +60,3 @@ DataSetListTest::runTest(json &inputData,
 
     return true;
 }
-

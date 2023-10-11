@@ -29,10 +29,7 @@
  *
  * @param cluster pointer to the cluster, where the event and the statemachine belongs to
  */
-ImageTrainForward_State::ImageTrainForward_State(Cluster* cluster)
-{
-    m_cluster = cluster;
-}
+ImageTrainForward_State::ImageTrainForward_State(Cluster* cluster) { m_cluster = cluster; }
 
 /**
  * @brief destructor
@@ -54,13 +51,12 @@ ImageTrainForward_State::processEvent()
     const uint64_t offsetInput = entriesPerCycle * actualTask->actualCycle;
 
     // set input
-    for(uint64_t i = 0; i < numberOfInputsPerCycle; i++) {
+    for (uint64_t i = 0; i < numberOfInputsPerCycle; i++) {
         m_cluster->inputValues[i] = actualTask->inputData[offsetInput + i];
     }
 
     // set exprected output
-    for(uint64_t i = 0; i < numberOfOuputsPerCycle; i++)
-    {
+    for (uint64_t i = 0; i < numberOfOuputsPerCycle; i++) {
         const uint64_t numberOfCycles = numberOfInputsPerCycle;
         m_cluster->expectedValues[i] = actualTask->inputData[offsetInput + numberOfCycles + i];
     }

@@ -27,17 +27,16 @@
 
 class Cluster;
 
-class TableTrainForward_State
-        : public Hanami::Event
+class TableTrainForward_State : public Hanami::Event
 {
-public:
+   public:
     TableTrainForward_State(Cluster* cluster);
     ~TableTrainForward_State();
 
     bool processEvent();
 
-private:
+   private:
     Cluster* m_cluster = nullptr;
 };
 
-#endif // TABLETRAINFORWARD_STATE_H
+#endif  // TABLETRAINFORWARD_STATE_H

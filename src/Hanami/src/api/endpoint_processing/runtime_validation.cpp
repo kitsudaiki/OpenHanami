@@ -22,16 +22,14 @@
 
 #include "runtime_validation.h"
 
-#include <api/endpoint_processing/items/item_methods.h>
 #include <api/endpoint_processing/blossom.h>
+#include <api/endpoint_processing/items/item_methods.h>
 
 const std::string
-createErrorMessage(const std::string &name,
-                   const FieldType fieldType)
+createErrorMessage(const std::string &name, const FieldType fieldType)
 {
     std::string err = "Value-validation failed, because a item '" + name + "'  has the false type:";
-    switch(fieldType)
-    {
+    switch (fieldType) {
         case SAKURA_UNDEFINED_TYPE:
             break;
         case SAKURA_INT_TYPE:
@@ -73,98 +71,68 @@ checkBlossomValues(const std::map<std::string, FieldDef> &defs,
                    const FieldDef::IO_ValueType ioType,
                    std::string &errorMessage)
 {
-    for(const auto& [name, field] : defs)
-    {
-        if(field.ioType != ioType) {
+    for (const auto &[name, field] : defs) {
+        if (field.ioType != ioType) {
             continue;
         }
 
-        if(values.contains(name))
-        {
+        if (values.contains(name)) {
             json item = values[name];
 
             // check type
-            if(checkType(item, field.fieldType) == false)
-            {
+            if (checkType(item, field.fieldType) == false) {
                 errorMessage = createErrorMessage(name, field.fieldType);
                 return false;
             }
 
             // check regex
-            if(field.regex.size() > 0)
-            {
+            if (field.regex.size() > 0) {
                 const std::regex re("^" + field.regex + "$");
-                if(std::regex_match(std::string(values[name]), re) == false)
-                {
-                    errorMessage= "Given item '"
-                                  + name
-                                  + "' doesn't match with regex \"^"
-                                  + field.regex
-                                  + "$\"";
+                if (std::regex_match(std::string(values[name]), re) == false) {
+                    errorMessage = "Given item '" + name + "' doesn't match with regex \"^"
+                                   + field.regex + "$\"";
                     return false;
                 }
             }
 
             // check value border
-            if(field.upperLimit != 0
-                    || field.lowerLimit != 0)
-            {
-                if(item.is_number_integer())
-                {
+            if (field.upperLimit != 0 || field.lowerLimit != 0) {
+                if (item.is_number_integer()) {
                     const long value = item;
-                    if(value < field.lowerLimit)
-                    {
-                        errorMessage = "Given item '"
-                                       + name
-                                       + "' is smaller than "
+                    if (value < field.lowerLimit) {
+                        errorMessage = "Given item '" + name + "' is smaller than "
                                        + std::to_string(field.lowerLimit);
                         return false;
                     }
 
-                    if(value > field.upperLimit)
-                    {
-                        errorMessage = "Given item '"
-                                       + name
-                                       + "' is bigger than "
+                    if (value > field.upperLimit) {
+                        errorMessage = "Given item '" + name + "' is bigger than "
                                        + std::to_string(field.upperLimit);
                         return false;
                     }
                 }
 
-                if(item.is_string())
-                {
+                if (item.is_string()) {
                     const std::string itemStr = item;
                     const long length = itemStr.size();
-                    if(length < field.lowerLimit)
-                    {
-                        errorMessage = "Given item '"
-                                       + name
-                                       + "' is shorter than "
-                                       + std::to_string(field.lowerLimit)
-                                       + " characters";
+                    if (length < field.lowerLimit) {
+                        errorMessage = "Given item '" + name + "' is shorter than "
+                                       + std::to_string(field.lowerLimit) + " characters";
                         return false;
                     }
 
-                    if(length > field.upperLimit)
-                    {
-                        errorMessage = "Given item '"
-                                       + name
-                                       + "' is longer than "
-                                       + std::to_string(field.upperLimit)
-                                       + " characters";
+                    if (length > field.upperLimit) {
+                        errorMessage = "Given item '" + name + "' is longer than "
+                                       + std::to_string(field.upperLimit) + " characters";
                         return false;
                     }
                 }
             }
 
             // check match
-            if(field.match != nullptr)
-            {
-                if(field.match != item)
-                {
-                    errorMessage = "Item '"
-                                   + name
-                                   + "' doesn't match the the expected value:\n   ";
+            if (field.match != nullptr) {
+                if (field.match != item) {
+                    errorMessage = "Item '" + name + "' doesn't match the the expected value:\n   ";
                     errorMessage.append(field.match.dump());
                     errorMessage.append("\nbut has value:\n   ");
                     errorMessage.append(item.dump());
@@ -186,45 +154,30 @@ checkBlossomValues(const std::map<std::string, FieldDef> &defs,
  * @return true, if match, else false
  */
 bool
-checkType(const json &item,
-          const FieldType fieldType)
+checkType(const json &item, const FieldType fieldType)
 {
-    if(item.is_array()
-            && fieldType == SAKURA_ARRAY_TYPE)
-    {
+    if (item.is_array() && fieldType == SAKURA_ARRAY_TYPE) {
         return true;
     }
 
-    if(item.is_object()
-            && fieldType == SAKURA_MAP_TYPE)
-    {
+    if (item.is_object() && fieldType == SAKURA_MAP_TYPE) {
         return true;
     }
 
-    if(item.is_primitive())
-    {
-        if(item.is_number_integer()
-                && fieldType == SAKURA_INT_TYPE)
-        {
+    if (item.is_primitive()) {
+        if (item.is_number_integer() && fieldType == SAKURA_INT_TYPE) {
             return true;
         }
-        if(item.is_number_float()
-                && fieldType == SAKURA_FLOAT_TYPE)
-        {
+        if (item.is_number_float() && fieldType == SAKURA_FLOAT_TYPE) {
             return true;
         }
-        if(item.is_boolean()
-                && fieldType == SAKURA_BOOL_TYPE)
-        {
+        if (item.is_boolean() && fieldType == SAKURA_BOOL_TYPE) {
             return true;
         }
-        if(item.is_string()
-                && fieldType == SAKURA_STRING_TYPE)
-        {
+        if (item.is_string() && fieldType == SAKURA_STRING_TYPE) {
             return true;
         }
     }
 
     return false;
 }
-

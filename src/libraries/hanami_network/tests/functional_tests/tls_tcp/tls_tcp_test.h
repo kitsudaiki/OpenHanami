@@ -23,22 +23,21 @@ class TcpSocket;
 class TlsTcpServer;
 class TlsTcpSocket;
 
-template<class>
+template <class>
 class TemplateSocket;
 
-template<class>
+template <class>
 class TemplateServer;
 
-class TlsTcp_Test
-        : public Hanami::CompareTestHelper
+class TlsTcp_Test : public Hanami::CompareTestHelper
 {
-public:
+   public:
     TlsTcp_Test();
 
     DataBuffer* m_buffer = nullptr;
     AbstractSocket* m_socketServerSide = nullptr;
 
-private:
+   private:
     void initTestCase();
     void checkConnectionInit();
     void checkLittleDataTransfer();
@@ -49,6 +48,6 @@ private:
     TemplateSocket<TlsTcpSocket>* m_socketClientSide = nullptr;
 };
 
-}
+}  // namespace Hanami
 
-#endif // TLSTCPSOCKET_TLSTCPSERVER_TEST_H
+#endif  // TLSTCPSOCKET_TLSTCPSERVER_TEST_H

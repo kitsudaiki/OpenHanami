@@ -22,14 +22,13 @@
 
 #include "delete_project.h"
 
-#include <hanami_root.h>
 #include <database/projects_table.h>
+#include <hanami_root.h>
 
 /**
  * @brief constructor
  */
-DeleteProject::DeleteProject()
-    : Blossom("Delete a specific user from the database.")
+DeleteProject::DeleteProject() : Blossom("Delete a specific user from the database.")
 {
     errorCodes.push_back(UNAUTHORIZED_RTYPE);
     errorCodes.push_back(NOT_FOUND_RTYPE);
@@ -39,9 +38,9 @@ DeleteProject::DeleteProject()
     //----------------------------------------------------------------------------------------------
 
     registerInputField("id", SAKURA_STRING_TYPE)
-            .setComment("ID of the project.")
-            .setLimit(4, 256)
-            .setRegex(ID_REGEX);
+        .setComment("ID of the project.")
+        .setLimit(4, 256)
+        .setRegex(ID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     //
@@ -58,8 +57,7 @@ DeleteProject::runTask(BlossomIO &blossomIO,
                        Hanami::ErrorContainer &error)
 {
     // check if admin
-    if(context["is_admin"] == false)
-    {
+    if (context["is_admin"] == false) {
         status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
@@ -69,15 +67,13 @@ DeleteProject::runTask(BlossomIO &blossomIO,
 
     // check if user exist within the table
     json result;
-    if(ProjectsTable::getInstance()->getProject(result, projectId, error) == false)
-    {
+    if (ProjectsTable::getInstance()->getProject(result, projectId, error) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // handle not found
-    if(result.size() == 0)
-    {
+    if (result.size() == 0) {
         status.errorMessage = "Project with id '" + projectId + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);
@@ -85,8 +81,7 @@ DeleteProject::runTask(BlossomIO &blossomIO,
     }
 
     // get data from table
-    if(ProjectsTable::getInstance()->deleteProject(projectId, error) == false)
-    {
+    if (ProjectsTable::getInstance()->deleteProject(projectId, error) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

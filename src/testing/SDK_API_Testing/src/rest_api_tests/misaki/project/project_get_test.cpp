@@ -24,12 +24,11 @@
 
 #include <hanami_sdk/project.h>
 
-ProjectGetTest::ProjectGetTest(const bool expectSuccess,
-                               const std::string &nameOverride)
+ProjectGetTest::ProjectGetTest(const bool expectSuccess, const std::string &nameOverride)
     : TestStep(expectSuccess)
 {
     m_testName = "get project";
-    if(expectSuccess) {
+    if (expectSuccess) {
         m_testName += " (success)";
     } else {
         m_testName += " (fail)";
@@ -38,20 +37,19 @@ ProjectGetTest::ProjectGetTest(const bool expectSuccess,
 }
 
 bool
-ProjectGetTest::runTest(json &inputData,
-                        Hanami::ErrorContainer &error)
+ProjectGetTest::runTest(json &inputData, Hanami::ErrorContainer &error)
 {
-    if(m_name == "") {
+    if (m_name == "") {
         m_name = inputData["project_id"];
     }
 
     // get user by name
     std::string result;
-    if(Hanami::getProject(result, m_name, error) != m_expectSuccess) {
+    if (Hanami::getProject(result, m_name, error) != m_expectSuccess) {
         return false;
     }
 
-    if(m_expectSuccess == false) {
+    if (m_expectSuccess == false) {
         return true;
     }
 
@@ -59,7 +57,7 @@ ProjectGetTest::runTest(json &inputData,
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch(const json::parse_error& ex) {
+    } catch (const json::parse_error &ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }

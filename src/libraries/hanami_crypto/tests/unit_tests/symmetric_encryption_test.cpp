@@ -53,4 +53,4 @@ Symmetric_Encryption_Test::encrypt_decrypt_AES_256()
     TEST_EQUAL(decryptionResult, testData);
 }
 
-}
+}  // namespace Hanami

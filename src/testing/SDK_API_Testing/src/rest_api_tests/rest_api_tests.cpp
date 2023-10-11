@@ -22,54 +22,45 @@
 
 #include "rest_api_tests.h"
 
-#include <hanami_config/config_handler.h>
-#include <hanami_sdk/init.h>
-
 #include <common/test_thread.h>
+#include <hanami_config/config_handler.h>
 #include <hanami_sdk/cluster.h>
-#include <hanami_sdk/user.h>
+#include <hanami_sdk/init.h>
 #include <hanami_sdk/project.h>
-
-#include <rest_api_tests/misaki/project/project_create_test.h>
-#include <rest_api_tests/misaki/project/project_delete_test.h>
-#include <rest_api_tests/misaki/project/project_get_test.h>
-#include <rest_api_tests/misaki/project/project_list_test.h>
-
-#include <rest_api_tests/misaki/user/user_create_test.h>
-#include <rest_api_tests/misaki/user/user_delete_test.h>
-#include <rest_api_tests/misaki/user/user_get_test.h>
-#include <rest_api_tests/misaki/user/user_list_test.h>
-
-#include <rest_api_tests/shiori/datasets/dataset_create_mnist_test.h>
-#include <rest_api_tests/shiori/datasets/dataset_create_csv_test.h>
-#include <rest_api_tests/shiori/datasets/dataset_delete_test.h>
-#include <rest_api_tests/shiori/datasets/dataset_get_test.h>
-#include <rest_api_tests/shiori/datasets/dataset_list_test.h>
-#include <rest_api_tests/shiori/datasets/dataset_check_test.h>
-
-#include <rest_api_tests/shiori/checkpoints/checkpoint_delete_test.h>
-#include <rest_api_tests/shiori/checkpoints/checkpoint_get_test.h>
-#include <rest_api_tests/shiori/checkpoints/checkpoint_list_test.h>
-
-#include <rest_api_tests/shiori/request_results/request_result_get_test.h>
-#include <rest_api_tests/shiori/request_results/request_result_list_test.h>
-#include <rest_api_tests/shiori/request_results/request_result_delete_test.h>
-
+#include <hanami_sdk/user.h>
 #include <rest_api_tests/kyouko/cluster/cluster_create_test.h>
 #include <rest_api_tests/kyouko/cluster/cluster_delete_test.h>
 #include <rest_api_tests/kyouko/cluster/cluster_get_test.h>
 #include <rest_api_tests/kyouko/cluster/cluster_list_test.h>
-#include <rest_api_tests/kyouko/cluster/cluster_save_test.h>
 #include <rest_api_tests/kyouko/cluster/cluster_load_test.h>
+#include <rest_api_tests/kyouko/cluster/cluster_save_test.h>
 #include <rest_api_tests/kyouko/cluster/cluster_switch_to_direct_test.h>
 #include <rest_api_tests/kyouko/cluster/cluster_switch_to_task_test.h>
-
 #include <rest_api_tests/kyouko/io/direct_io_test.h>
-
-#include <rest_api_tests/kyouko/task/image_train_task_test.h>
 #include <rest_api_tests/kyouko/task/image_request_task_test.h>
-#include <rest_api_tests/kyouko/task/table_train_task_test.h>
+#include <rest_api_tests/kyouko/task/image_train_task_test.h>
 #include <rest_api_tests/kyouko/task/table_request_task_test.h>
+#include <rest_api_tests/kyouko/task/table_train_task_test.h>
+#include <rest_api_tests/misaki/project/project_create_test.h>
+#include <rest_api_tests/misaki/project/project_delete_test.h>
+#include <rest_api_tests/misaki/project/project_get_test.h>
+#include <rest_api_tests/misaki/project/project_list_test.h>
+#include <rest_api_tests/misaki/user/user_create_test.h>
+#include <rest_api_tests/misaki/user/user_delete_test.h>
+#include <rest_api_tests/misaki/user/user_get_test.h>
+#include <rest_api_tests/misaki/user/user_list_test.h>
+#include <rest_api_tests/shiori/checkpoints/checkpoint_delete_test.h>
+#include <rest_api_tests/shiori/checkpoints/checkpoint_get_test.h>
+#include <rest_api_tests/shiori/checkpoints/checkpoint_list_test.h>
+#include <rest_api_tests/shiori/datasets/dataset_check_test.h>
+#include <rest_api_tests/shiori/datasets/dataset_create_csv_test.h>
+#include <rest_api_tests/shiori/datasets/dataset_create_mnist_test.h>
+#include <rest_api_tests/shiori/datasets/dataset_delete_test.h>
+#include <rest_api_tests/shiori/datasets/dataset_get_test.h>
+#include <rest_api_tests/shiori/datasets/dataset_list_test.h>
+#include <rest_api_tests/shiori/request_results/request_result_delete_test.h>
+#include <rest_api_tests/shiori/request_results/request_result_get_test.h>
+#include <rest_api_tests/shiori/request_results/request_result_list_test.h>
 
 /**
  * @brief initialize client by requesting a token, which is used for all tests
@@ -85,8 +76,7 @@ initClient()
     const std::string user = GET_STRING_CONFIG("connection", "test_user", success);
     const std::string pw = GET_STRING_CONFIG("connection", "test_pw", success);
 
-    if(Hanami::initClient(host, port, user, pw, error) == false)
-    {
+    if (Hanami::initClient(host, port, user, pw, error) == false) {
         LOG_ERROR(error);
         return false;
     }
@@ -107,14 +97,13 @@ deleteAllClusters()
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch(const json::parse_error& ex) {
+    } catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return;
     }
 
     json body = jsonItem["body"];
-    for(uint64_t i = 0; i < body.size(); i++)
-    {
+    for (uint64_t i = 0; i < body.size(); i++) {
         const std::string uuid = body[i][0];
         Hanami::deleteCluster(result, uuid, error);
     }
@@ -133,14 +122,13 @@ deleteAllProjects()
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch(const json::parse_error& ex) {
+    } catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return;
     }
 
     json body = jsonItem["body"];
-    for(uint64_t i = 0; i < body.size(); i++)
-    {
+    for (uint64_t i = 0; i < body.size(); i++) {
         const std::string uuid = body[i][0];
         Hanami::deleteProject(result, uuid, error);
     }
@@ -159,14 +147,13 @@ deleteAllUsers()
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch(const json::parse_error& ex) {
+    } catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return;
     }
 
     json body = jsonItem["body"];
-    for(uint64_t i = 0; i < body.size(); i++)
-    {
+    for (uint64_t i = 0; i < body.size(); i++) {
         const std::string uuid = body[i][0];
         Hanami::deleteUser(result, uuid, error);
     }
@@ -178,7 +165,7 @@ deleteAllUsers()
  * @param inputData json-item with names and other predefined values for the tests
  */
 void
-runImageTest(json &inputData)
+runImageTest(json& inputData)
 {
     deleteAllClusters();
     deleteAllProjects();
@@ -215,7 +202,7 @@ runImageTest(json &inputData)
     testThread.addTest(new ClusterListTest(true));
 
     // test training-tasks of kyouko
-    for(int i = 0; i < 1; i++) {
+    for (int i = 0; i < 1; i++) {
         testThread.addTest(new ImageTrainTaskTest(true));
     }
 
@@ -263,7 +250,7 @@ runImageTest(json &inputData)
 
     testThread.startThread();
 
-    while(testThread.isFinished == false) {
+    while (testThread.isFinished == false) {
         usleep(100000);
     }
 }
@@ -276,24 +263,25 @@ runRestApiTests()
 {
     bool success = false;
 
-    if(initClient() == false) {
+    if (initClient() == false) {
         return false;
     }
 
-    const std::string clusterDefinition("version: 1\n"
-                                        "settings:\n"
-                                        "    max_synapse_sections: 1000\n"
-                                        "    sign_neg: 0.5\n"
-                                        "        \n"
-                                        "bricks:\n"
-                                        "    1,1,1\n"
-                                        "        input: test_input\n"
-                                        "        number_of_neurons: 784\n"
-                                        "    2,1,1\n"
-                                        "        number_of_neurons: 400\n"
-                                        "    3,1,1\n"
-                                        "        output: test_output\n"
-                                        "        number_of_neurons: 10");
+    const std::string clusterDefinition(
+        "version: 1\n"
+        "settings:\n"
+        "    max_synapse_sections: 1000\n"
+        "    sign_neg: 0.5\n"
+        "        \n"
+        "bricks:\n"
+        "    1,1,1\n"
+        "        input: test_input\n"
+        "        number_of_neurons: 784\n"
+        "    2,1,1\n"
+        "        number_of_neurons: 400\n"
+        "    3,1,1\n"
+        "        output: test_output\n"
+        "        number_of_neurons: 10");
 
     json inputData;
 
@@ -314,7 +302,7 @@ runRestApiTests()
     inputData["base_inputs"] = GET_STRING_CONFIG("test_data", "base_inputs", success),
 
     // add predefined names for the coming test-resources
-    inputData["cluster_name"] = "test_cluster";
+        inputData["cluster_name"] = "test_cluster";
     inputData["checkpoint_name"] = "test_checkpoint";
     inputData["generic_task_name"] = "test_task";
     inputData["template_name"] = "dynamic";
@@ -327,4 +315,3 @@ runRestApiTests()
 
     return true;
 }
-

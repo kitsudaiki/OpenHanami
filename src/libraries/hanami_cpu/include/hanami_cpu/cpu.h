@@ -23,12 +23,12 @@
 #ifndef KITSUNEMIMI_CPU_CPU_H
 #define KITSUNEMIMI_CPU_CPU_H
 
+#include <hanami_common/logger.h>
 #include <stdint.h>
-#include <string>
-#include <fstream>
 #include <stdlib.h>
 
-#include <hanami_common/logger.h>
+#include <fstream>
+#include <string>
 
 namespace Hanami
 {
@@ -61,6 +61,6 @@ bool resetSpeed(const uint64_t threadId, ErrorContainer &error);
 bool getPkgTemperatureIds(std::vector<uint64_t> &ids, ErrorContainer &error);
 double getPkgTemperature(const uint64_t pkgFileId, ErrorContainer &error);
 
-}
+}  // namespace Hanami
 
-#endif // KITSUNEMIMI_CPU_CPU_H
+#endif  // KITSUNEMIMI_CPU_CPU_H

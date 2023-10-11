@@ -22,20 +22,17 @@
 
 #include "task_handle_state.h"
 
-#include <hanami_root.h>
-#include <database/request_result_table.h>
 #include <core/cluster/cluster.h>
 #include <core/cluster/statemachine_init.h>
+#include <database/request_result_table.h>
+#include <hanami_root.h>
 
 /**
  * @brief constructor
  *
  * @param cluster pointer to the cluster, where the event and the statemachine belongs to
  */
-TaskHandle_State::TaskHandle_State(Cluster* cluster)
-{
-    m_cluster = cluster;
-}
+TaskHandle_State::TaskHandle_State(Cluster *cluster) { m_cluster = cluster; }
 
 /**
  * @brief destructor
@@ -57,17 +54,14 @@ TaskHandle_State::processEvent()
     m_task_mutex.unlock();
 
     // handle empty queue
-    if(hasNextState == false)
-    {   
+    if (hasNextState == false) {
         // Azuki::setSpeedToMinimum(error);
         return true;
     }
 
-    switch(actualTask->type)
-    {
-        case IMAGE_TRAIN_TASK:
-        {
-            if(m_cluster->goToNextState(TRAIN)) {
+    switch (actualTask->type) {
+        case IMAGE_TRAIN_TASK: {
+            if (m_cluster->goToNextState(TRAIN)) {
                 m_cluster->goToNextState(IMAGE);
                 // Azuki::setSpeedToAutomatic(error);
             } else {
@@ -76,9 +70,8 @@ TaskHandle_State::processEvent()
             }
             break;
         }
-        case IMAGE_REQUEST_TASK:
-        {
-            if(m_cluster->goToNextState(REQUEST)) {
+        case IMAGE_REQUEST_TASK: {
+            if (m_cluster->goToNextState(REQUEST)) {
                 m_cluster->goToNextState(IMAGE);
                 // Azuki::setSpeedToAutomatic(error);
             } else {
@@ -87,9 +80,8 @@ TaskHandle_State::processEvent()
             }
             break;
         }
-        case TABLE_TRAIN_TASK:
-        {
-            if(m_cluster->goToNextState(TRAIN)) {
+        case TABLE_TRAIN_TASK: {
+            if (m_cluster->goToNextState(TRAIN)) {
                 m_cluster->goToNextState(TABLE);
                 // Azuki::setSpeedToAutomatic(error);
             } else {
@@ -98,9 +90,8 @@ TaskHandle_State::processEvent()
             }
             break;
         }
-        case TABLE_REQUEST_TASK:
-        {
-            if(m_cluster->goToNextState(REQUEST)) {
+        case TABLE_REQUEST_TASK: {
+            if (m_cluster->goToNextState(REQUEST)) {
                 m_cluster->goToNextState(TABLE);
                 // Azuki::setSpeedToAutomatic(error);
             } else {
@@ -109,10 +100,9 @@ TaskHandle_State::processEvent()
             }
             break;
         }
-        case CLUSTER_CHECKPOINT_SAVE_TASK:
-        {
-            if(m_cluster->goToNextState(CHECKPOINT)) {
-                if(m_cluster->goToNextState(CLUSTER)) {
+        case CLUSTER_CHECKPOINT_SAVE_TASK: {
+            if (m_cluster->goToNextState(CHECKPOINT)) {
+                if (m_cluster->goToNextState(CLUSTER)) {
                     m_cluster->goToNextState(SAVE);
                     // Azuki::setSpeedToAutomatic(error);
                 } else {
@@ -125,10 +115,9 @@ TaskHandle_State::processEvent()
             }
             break;
         }
-        case CLUSTER_CHECKPOINT_RESTORE_TASK:
-        {
-            if(m_cluster->goToNextState(CHECKPOINT)) {
-                if(m_cluster->goToNextState(CLUSTER)) {
+        case CLUSTER_CHECKPOINT_RESTORE_TASK: {
+            if (m_cluster->goToNextState(CHECKPOINT)) {
+                if (m_cluster->goToNextState(CLUSTER)) {
                     m_cluster->goToNextState(RESTORE);
                     // Azuki::setSpeedToAutomatic(error);
                 } else {
@@ -160,13 +149,12 @@ TaskHandle_State::processEvent()
  * @return false, if uuid already exist, else true
  */
 bool
-TaskHandle_State::addTask(const std::string &uuid,
-                          const Task &task)
+TaskHandle_State::addTask(const std::string &uuid, const Task &task)
 {
     std::lock_guard<std::mutex> guard(m_task_mutex);
 
     auto ret = m_taskMap.try_emplace(uuid, task);
-    if(ret.second == false) {
+    if (ret.second == false) {
         return false;
     }
 
@@ -180,7 +168,7 @@ TaskHandle_State::addTask(const std::string &uuid,
  *
  * @return pointer to the actual task of nullptr, if no task is active at the moment
  */
-Task*
+Task *
 TaskHandle_State::getActualTask()
 {
     std::lock_guard<std::mutex> guard(m_task_mutex);
@@ -197,7 +185,7 @@ bool
 TaskHandle_State::getNextTask()
 {
     // check number of tasks in queue
-    if(m_taskQueue.size() == 0) {
+    if (m_taskQueue.size() == 0) {
         return false;
     }
 
@@ -221,19 +209,16 @@ void
 TaskHandle_State::finishTask()
 {
     // precheck
-    if(actualTask == nullptr) {
+    if (actualTask == nullptr) {
         return;
     }
 
     // send results to shiori, if some are attached to the task
-    if(actualTask->resultData.size() != 0)
-    {
+    if (actualTask->resultData.size() != 0) {
         // results of tables a aggregated values, so they have to be fixed to its average value
-        if(actualTask->type == TABLE_REQUEST_TASK)
-        {
+        if (actualTask->type == TABLE_REQUEST_TASK) {
             const float numberOfOutputs = static_cast<float>(actualTask->numberOfOuputsPerCycle);
-            for(uint64_t i = 0; i < actualTask->resultData.size(); i++)
-            {
+            for (uint64_t i = 0; i < actualTask->resultData.size(); i++) {
                 float value = actualTask->resultData[i];
                 actualTask->resultData[i] = value / numberOfOutputs;
             }
@@ -249,10 +234,10 @@ TaskHandle_State::finishTask()
 
         UserContext userContext;
         userContext.userId = actualTask->userId;
-        userContext.projectId =actualTask->projectId;
+        userContext.projectId = actualTask->projectId;
 
-        if(RequestResultTable::getInstance()->addRequestResult(resultData, userContext, error) == false)
-        {
+        if (RequestResultTable::getInstance()->addRequestResult(resultData, userContext, error)
+            == false) {
             LOG_ERROR(error);
             return;
         }
@@ -262,8 +247,7 @@ TaskHandle_State::finishTask()
 
     // remove task from map and free its data
     auto it = m_taskMap.find(actualTask->uuid.toString());
-    if(it != m_taskMap.end())
-    {
+    if (it != m_taskMap.end()) {
         delete[] it->second.inputData;
         it->second.progress.state = FINISHED_TASK_STATE;
         it->second.progress.endActiveTimeStamp = std::chrono::system_clock::now();
@@ -285,7 +269,7 @@ TaskHandle_State::getProgress(const std::string &taskUuid)
     std::lock_guard<std::mutex> guard(m_task_mutex);
 
     const auto it = m_taskMap.find(taskUuid);
-    if(it != m_taskMap.end()) {
+    if (it != m_taskMap.end()) {
         return it->second.progress;
     }
 
@@ -306,7 +290,7 @@ TaskHandle_State::getTaskState(const std::string &taskUuid)
     TaskState state = UNDEFINED_TASK_STATE;
 
     const auto it = m_taskMap.find(taskUuid);
-    if(it != m_taskMap.end()) {
+    if (it != m_taskMap.end()) {
         state = it->second.progress.state;
     }
 
@@ -320,7 +304,7 @@ TaskHandle_State::getTaskState(const std::string &taskUuid)
 void
 TaskHandle_State::getAllProgress(std::map<std::string, TaskProgress> &result)
 {
-    for(const auto& [name, task] : m_taskMap) {
+    for (const auto &[name, task] : m_taskMap) {
         result.emplace(task.uuid.toString(), task.progress);
     }
 }
@@ -341,19 +325,17 @@ TaskHandle_State::removeTask(const std::string &taskUuid)
 
     // check and update map
     auto itMap = m_taskMap.find(taskUuid);
-    if(itMap != m_taskMap.end())
-    {
+    if (itMap != m_taskMap.end()) {
         state = itMap->second.progress.state;
 
         // if only queue but not activly processed at the moment, it can easily deleted
-        if(state == QUEUED_TASK_STATE)
-        {
+        if (state == QUEUED_TASK_STATE) {
             delete itMap->second.inputData;
             m_taskMap.erase(itMap);
 
             // update queue
             const auto itQueue = std::find(m_taskQueue.begin(), m_taskQueue.end(), taskUuid);
-            if(itQueue != m_taskQueue.end()) {
+            if (itQueue != m_taskQueue.end()) {
                 m_taskQueue.erase(itQueue);
             }
 
@@ -361,16 +343,13 @@ TaskHandle_State::removeTask(const std::string &taskUuid)
         }
 
         // if task is active at the moment, then only mark it as aborted
-        if(state == ACTIVE_TASK_STATE)
-        {
+        if (state == ACTIVE_TASK_STATE) {
             itMap->second.progress.state = ABORTED_TASK_STATE;
             return true;
         }
 
         // handle finished and aborted state
-        if(state == FINISHED_TASK_STATE
-                || state == ABORTED_TASK_STATE)
-        {
+        if (state == FINISHED_TASK_STATE || state == ABORTED_TASK_STATE) {
             // input-data are automatically deleted, when the task was finished,
             // so removing from the list is enough
             m_taskMap.erase(itMap);

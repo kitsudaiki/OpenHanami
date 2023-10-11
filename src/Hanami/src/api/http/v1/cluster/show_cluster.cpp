@@ -22,11 +22,10 @@
 
 #include "show_cluster.h"
 
-#include <hanami_root.h>
 #include <database/cluster_table.h>
+#include <hanami_root.h>
 
-ShowCluster::ShowCluster()
-    : Blossom("Show information of a specific cluster.")
+ShowCluster::ShowCluster() : Blossom("Show information of a specific cluster.")
 {
     errorCodes.push_back(NOT_FOUND_RTYPE);
 
@@ -35,27 +34,25 @@ ShowCluster::ShowCluster()
     //----------------------------------------------------------------------------------------------
 
     registerInputField("uuid", SAKURA_STRING_TYPE)
-            .setComment("uuid of the cluster.")
-            .setRegex(UUID_REGEX);
+        .setComment("uuid of the cluster.")
+        .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid", SAKURA_STRING_TYPE)
-            .setComment("UUID of the cluster.");
+    registerOutputField("uuid", SAKURA_STRING_TYPE).setComment("UUID of the cluster.");
 
-    registerOutputField("name", SAKURA_STRING_TYPE)
-            .setComment("Name of the cluster.");
+    registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the cluster.");
 
     registerOutputField("owner_id", SAKURA_STRING_TYPE)
-            .setComment("ID of the user, who created the cluster.");
+        .setComment("ID of the user, who created the cluster.");
 
     registerOutputField("project_id", SAKURA_STRING_TYPE)
-            .setComment("ID of the project, where the cluster belongs to.");
+        .setComment("ID of the project, where the cluster belongs to.");
 
     registerOutputField("visibility", SAKURA_STRING_TYPE)
-            .setComment("Visibility of the cluster (private, shared, public).");
+        .setComment("Visibility of the cluster (private, shared, public).");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -75,18 +72,14 @@ ShowCluster::runTask(BlossomIO &blossomIO,
     const std::string clusterUuid = blossomIO.input["uuid"];
 
     // get data from table
-    if(ClusterTable::getInstance()->getCluster(blossomIO.output,
-                                               clusterUuid,
-                                               userContext,
-                                               error) == false)
-    {
+    if (ClusterTable::getInstance()->getCluster(blossomIO.output, clusterUuid, userContext, error)
+        == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // handle not found
-    if(blossomIO.output.size() == 0)
-    {
+    if (blossomIO.output.size() == 0) {
         status.errorMessage = "Cluster with uuid '" + clusterUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         error.addMeesage(status.errorMessage);

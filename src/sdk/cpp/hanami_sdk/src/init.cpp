@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#include <hanami_sdk/init.h>
 #include <common/http_client.h>
+#include <hanami_sdk/init.h>
 
 namespace Hanami
 {
@@ -44,9 +44,8 @@ initClient(const std::string &host,
            const std::string &password,
            Hanami::ErrorContainer &error)
 {
-    HanamiRequest* request = HanamiRequest::getInstance();
-    if(request->init(host, port, user, password) == false)
-    {
+    HanamiRequest *request = HanamiRequest::getInstance();
+    if (request->init(host, port, user, password) == false) {
         error.addMeesage("Failed to initialize hanami-client");
         LOG_ERROR(error);
         return false;
@@ -55,4 +54,4 @@ initClient(const std::string &host,
     return true;
 }
 
-} // namespace Hanami
+}  // namespace Hanami

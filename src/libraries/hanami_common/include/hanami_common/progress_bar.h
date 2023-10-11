@@ -25,6 +25,7 @@
 
 #include <stdint.h>
 #include <unistd.h>
+
 #include <iostream>
 
 class ProgressBar_Test;
@@ -34,17 +35,17 @@ namespace Hanami
 
 class ProgressBar
 {
-public:
+   public:
     ProgressBar(const uint32_t maxBarWidth = 80);
     bool updateProgress(const float newProgress);
 
-private:
+   private:
     const uint32_t m_maxBarWidth = 80;
     float m_progress = 0.0;
 
     friend ProgressBar_Test;
 };
 
-}
+}  // namespace Hanami
 
-#endif // PROGRESS_BAR_H
+#endif  // PROGRESS_BAR_H

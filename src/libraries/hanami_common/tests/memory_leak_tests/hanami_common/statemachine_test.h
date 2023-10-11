@@ -14,16 +14,15 @@
 namespace Hanami
 {
 
-class Statemachine_Test
-        : public Hanami::MemoryLeakTestHelpter
+class Statemachine_Test : public Hanami::MemoryLeakTestHelpter
 {
-public:
+   public:
     Statemachine_Test();
 
-private:
+   private:
     void create_delete_test();
 };
 
-}
+}  // namespace Hanami
 
-#endif // STATEMACHINE_TEST_H
+#endif  // STATEMACHINE_TEST_H

@@ -20,46 +20,41 @@
  *      limitations under the License.
  */
 
-#include <hanami_network/session_controller.h>
-
-#include <handler/reply_handler.h>
-#include <handler/message_blocker_handler.h>
-#include <handler/session_handler.h>
 #include <callbacks.h>
+#include <hanami_common/logger.h>
+#include <hanami_network/session_controller.h>
+#include <handler/message_blocker_handler.h>
+#include <handler/reply_handler.h>
+#include <handler/session_handler.h>
 #include <messages_processing/session_processing.h>
-
 #include <tcp/tcp_server.h>
 #include <tcp/tcp_socket.h>
-#include <unix/unix_domain_server.h>
-#include <unix/unix_domain_socket.h>
+#include <template_server.h>
+#include <template_socket.h>
 #include <tls_tcp/tls_tcp_server.h>
 #include <tls_tcp/tls_tcp_socket.h>
-#include <template_socket.h>
-#include <template_server.h>
-
-#include <hanami_common/logger.h>
+#include <unix/unix_domain_server.h>
+#include <unix/unix_domain_socket.h>
 
 namespace Hanami
 {
 
-SessionController* SessionController::m_sessionController = nullptr;
+SessionController *SessionController::m_sessionController = nullptr;
 
 /**
  * @brief constructor
  */
-SessionController::SessionController(void (*processCreateSession)(Session*, const std::string),
-                                     void (*processCloseSession)(Session*, const std::string),
-                                     void (*processError)(Session*,
+SessionController::SessionController(void (*processCreateSession)(Session *, const std::string),
+                                     void (*processCloseSession)(Session *, const std::string),
+                                     void (*processError)(Session *,
                                                           const uint8_t,
                                                           const std::string))
 {
     m_sessionController = this;
 
-    if(SessionHandler::m_sessionHandler == nullptr)
-    {
-        SessionHandler::m_sessionHandler = new SessionHandler(processCreateSession,
-                                                              processCloseSession,
-                                                              processError);
+    if (SessionHandler::m_sessionHandler == nullptr) {
+        SessionHandler::m_sessionHandler
+            = new SessionHandler(processCreateSession, processCloseSession, processError);
     }
 }
 
@@ -70,8 +65,7 @@ SessionController::~SessionController()
 {
     cloesAllServers();
 
-    if(SessionHandler::m_sessionHandler != nullptr)
-    {
+    if (SessionHandler::m_sessionHandler != nullptr) {
         delete SessionHandler::m_sessionHandler;
         SessionHandler::m_sessionHandler = nullptr;
     }
@@ -93,18 +87,16 @@ SessionController::addUnixDomainServer(const std::string &socketFile,
                                        const std::string &threadName)
 {
     UnixDomainServer udsServer(socketFile);
-    TemplateServer<UnixDomainServer>* server;
-    server = new TemplateServer<UnixDomainServer>(std::move(udsServer),
-                                                                    this,
-                                                                    &processConnection_Callback,
-                                                                    threadName);
+    TemplateServer<UnixDomainServer> *server;
+    server = new TemplateServer<UnixDomainServer>(
+        std::move(udsServer), this, &processConnection_Callback, threadName);
 
-    if(server->initServer(error) == false) {
+    if (server->initServer(error) == false) {
         return 0;
     }
     server->startThread();
 
-    SessionHandler* sessionHandler = SessionHandler::m_sessionHandler;
+    SessionHandler *sessionHandler = SessionHandler::m_sessionHandler;
     m_serverIdCounter++;
     sessionHandler->lockServerMap();
     sessionHandler->m_servers.insert(std::make_pair(m_serverIdCounter, server));
@@ -127,18 +119,16 @@ SessionController::addTcpServer(const uint16_t port,
                                 const std::string &threadName)
 {
     TcpServer tcpServer(port);
-    TemplateServer<TcpServer>* server = nullptr;
-    server = new TemplateServer<TcpServer>(std::move(tcpServer),
-                                                             this,
-                                                             &processConnection_Callback,
-                                                             threadName);
+    TemplateServer<TcpServer> *server = nullptr;
+    server = new TemplateServer<TcpServer>(
+        std::move(tcpServer), this, &processConnection_Callback, threadName);
 
-    if(server->initServer(error) == false) {
+    if (server->initServer(error) == false) {
         return 0;
     }
     server->startThread();
 
-    SessionHandler* sessionHandler = SessionHandler::m_sessionHandler;
+    SessionHandler *sessionHandler = SessionHandler::m_sessionHandler;
     m_serverIdCounter++;
     sessionHandler->lockServerMap();
     sessionHandler->m_servers.insert(std::make_pair(m_serverIdCounter, server));
@@ -166,25 +156,21 @@ SessionController::addTlsTcpServer(const uint16_t port,
 {
     TcpServer tcpServer(port);
 
-    TlsTcpServer tlsTcpServer(std::move(tcpServer),
-                                       certFile,
-                                       keyFile);
-    TemplateServer<TlsTcpServer>* server = nullptr;
-    server = new TemplateServer<TlsTcpServer>(std::move(tlsTcpServer),
-                                                                this,
-                                                                &processConnection_Callback,
-                                                                threadName);
+    TlsTcpServer tlsTcpServer(std::move(tcpServer), certFile, keyFile);
+    TemplateServer<TlsTcpServer> *server = nullptr;
+    server = new TemplateServer<TlsTcpServer>(
+        std::move(tlsTcpServer), this, &processConnection_Callback, threadName);
 
-    if(server->initServer(error) == false) {
+    if (server->initServer(error) == false) {
         return 0;
     }
     server->startThread();
 
-    SessionHandler* sessionHandler = SessionHandler::m_sessionHandler;
+    SessionHandler *sessionHandler = SessionHandler::m_sessionHandler;
     m_serverIdCounter++;
     sessionHandler->lockServerMap();
-    sessionHandler->m_servers.insert(std::pair<uint32_t, AbstractServer*>(
-                                     m_serverIdCounter, server));
+    sessionHandler->m_servers.insert(
+        std::pair<uint32_t, AbstractServer *>(m_serverIdCounter, server));
     sessionHandler->unlockServerMap();
 
     return m_serverIdCounter;
@@ -200,17 +186,16 @@ SessionController::addTlsTcpServer(const uint16_t port,
 bool
 SessionController::closeServer(const uint32_t id)
 {
-    SessionHandler* sessionHandler = SessionHandler::m_sessionHandler;
+    SessionHandler *sessionHandler = SessionHandler::m_sessionHandler;
     sessionHandler->lockServerMap();
 
-    std::map<uint32_t, AbstractServer*>::iterator it;
+    std::map<uint32_t, AbstractServer *>::iterator it;
     it = sessionHandler->m_servers.find(id);
 
-    if(it != sessionHandler->m_servers.end())
-    {
-        AbstractServer* server = it->second;
+    if (it != sessionHandler->m_servers.end()) {
+        AbstractServer *server = it->second;
         const bool ret = server->closeServer();
-        if(ret == false) {
+        if (ret == false) {
             return false;
         }
 
@@ -232,10 +217,10 @@ SessionController::closeServer(const uint32_t id)
 void
 SessionController::cloesAllServers()
 {
-    SessionHandler* sessionHandler = SessionHandler::m_sessionHandler;
+    SessionHandler *sessionHandler = SessionHandler::m_sessionHandler;
     sessionHandler->lockServerMap();
 
-    for(auto const& [id, server] : sessionHandler->m_servers) {
+    for (auto const &[id, server] : sessionHandler->m_servers) {
         server->closeServer();
     }
 
@@ -252,16 +237,15 @@ SessionController::cloesAllServers()
  *
  * @return true, if session was successfully created and connected, else false
  */
-Session*
+Session *
 SessionController::startUnixDomainSession(const std::string &socketFile,
                                           const std::string &sessionIdentifier,
                                           const std::string &threadName,
                                           ErrorContainer &error)
 {
     UnixDomainSocket udsSocket(socketFile);
-    TemplateSocket<UnixDomainSocket>* unixDomainSocket = nullptr;
-    unixDomainSocket = new TemplateSocket<UnixDomainSocket>(std::move(udsSocket),
-                                                                              threadName);
+    TemplateSocket<UnixDomainSocket> *unixDomainSocket = nullptr;
+    unixDomainSocket = new TemplateSocket<UnixDomainSocket>(std::move(udsSocket), threadName);
 
     return startSession(unixDomainSocket, sessionIdentifier, error);
 }
@@ -275,7 +259,7 @@ SessionController::startUnixDomainSession(const std::string &socketFile,
  *
  * @return true, if session was successfully created and connected, else false
  */
-Session*
+Session *
 SessionController::startTcpSession(const std::string &address,
                                    const uint16_t port,
                                    const std::string &sessionIdentifier,
@@ -283,9 +267,8 @@ SessionController::startTcpSession(const std::string &address,
                                    ErrorContainer &error)
 {
     TcpSocket tcpSocket(address, port);
-    TemplateSocket<TcpSocket>* tcpTemplateSocket = nullptr;
-    tcpTemplateSocket = new TemplateSocket<TcpSocket>(std::move(tcpSocket),
-                                                                        threadName);
+    TemplateSocket<TcpSocket> *tcpTemplateSocket = nullptr;
+    tcpTemplateSocket = new TemplateSocket<TcpSocket>(std::move(tcpSocket), threadName);
     return startSession(tcpTemplateSocket, sessionIdentifier, error);
 }
 
@@ -300,7 +283,7 @@ SessionController::startTcpSession(const std::string &address,
  *
  * @return true, if session was successfully created and connected, else false
  */
-Session*
+Session *
 SessionController::startTlsTcpSession(const std::string &address,
                                       const uint16_t port,
                                       const std::string &certFile,
@@ -310,12 +293,9 @@ SessionController::startTlsTcpSession(const std::string &address,
                                       ErrorContainer &error)
 {
     TcpSocket tcpSocket(address, port);
-    TlsTcpSocket tlsTcpSocket(std::move(tcpSocket),
-                                       certFile,
-                                       keyFile);
-    TemplateSocket<TlsTcpSocket>* tlsTcpTemplSocket = nullptr;
-    tlsTcpTemplSocket = new TemplateSocket<TlsTcpSocket>(std::move(tlsTcpSocket),
-                                                                           threadName);
+    TlsTcpSocket tlsTcpSocket(std::move(tcpSocket), certFile, keyFile);
+    TemplateSocket<TlsTcpSocket> *tlsTcpTemplSocket = nullptr;
+    tlsTcpTemplSocket = new TemplateSocket<TlsTcpSocket>(std::move(tlsTcpSocket), threadName);
     return startSession(tlsTcpTemplSocket, sessionIdentifier, error);
 }
 
@@ -327,35 +307,32 @@ SessionController::startTlsTcpSession(const std::string &address,
  *
  * @return true, if session was successfully created and connected, else false
  */
-Session*
-SessionController::startSession(AbstractSocket* socket,
+Session *
+SessionController::startSession(AbstractSocket *socket,
                                 const std::string &sessionIdentifier,
                                 ErrorContainer &error)
 {
     // precheck
-    if(sessionIdentifier.size() > 64000)
-    {
+    if (sessionIdentifier.size() > 64000) {
         delete socket;
         return nullptr;
     }
 
     // create new session
-    Session* newSession = new Session(socket);
+    Session *newSession = new Session(socket);
     const uint32_t newId = SessionHandler::m_sessionHandler->increaseSessionIdCounter();
     socket->setMessageCallback(newSession, &processMessage_callback);
 
     // connect session
-    if(newSession->connectiSession(newId, error))
-    {
+    if (newSession->connectiSession(newId, error)) {
         SessionHandler::m_sessionHandler->addSession(newId, newSession);
         send_Session_Init_Start(newSession, sessionIdentifier, error);
 
-        while(newSession->m_initState == 0) {
+        while (newSession->m_initState == 0) {
             usleep(10000);
         }
 
-        if(newSession->m_initState == -1)
-        {
+        if (newSession->m_initState == -1) {
             newSession->closeSession(error);
             sleep(1);
             delete newSession;
@@ -375,4 +352,4 @@ SessionController::startSession(AbstractSocket* socket,
 
 //==================================================================================================
 
-}
+}  // namespace Hanami

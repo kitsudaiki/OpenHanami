@@ -29,16 +29,15 @@ namespace Hanami
 {
 
 bool getCheckpoint(std::string &result,
-                 const std::string &checkpointUuid,
-                 Hanami::ErrorContainer &error);
+                   const std::string &checkpointUuid,
+                   Hanami::ErrorContainer &error);
 
-bool listCheckpoint(std::string &result,
-                  Hanami::ErrorContainer &error);
+bool listCheckpoint(std::string &result, Hanami::ErrorContainer &error);
 
 bool deleteCheckpoint(std::string &result,
-                    const std::string &checkpointUuid,
-                    Hanami::ErrorContainer &error);
+                      const std::string &checkpointUuid,
+                      Hanami::ErrorContainer &error);
 
-} // namespace Hanami
+}  // namespace Hanami
 
-#endif // HANAMISDK_CHECKPOINT_H
+#endif  // HANAMISDK_CHECKPOINT_H

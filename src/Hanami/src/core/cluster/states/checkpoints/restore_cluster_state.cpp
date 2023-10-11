@@ -21,24 +21,21 @@
  */
 
 #include "restore_cluster_state.h"
-#include <hanami_root.h>
-#include <core/cluster/task.h>
+
 #include <core/cluster/cluster.h>
 #include <core/cluster/cluster_init.h>
 #include <core/cluster/statemachine_init.h>
-
+#include <core/cluster/task.h>
 #include <hanami_common/files/binary_file.h>
 #include <hanami_crypto/hashes.h>
+#include <hanami_root.h>
 
 /**
  * @brief constructor
  *
  * @param cluster pointer to the cluster, where the event and the statemachine belongs to
  */
-RestoreCluster_State::RestoreCluster_State(Cluster* cluster)
-{
-    m_cluster = cluster;
-}
+RestoreCluster_State::RestoreCluster_State(Cluster* cluster) { m_cluster = cluster; }
 
 /**
  * @brief destructor
@@ -61,7 +58,7 @@ RestoreCluster_State::processEvent()
     json parsedCheckpointInfo;
     try {
         parsedCheckpointInfo = json::parse(actualTask->checkpointInfo);
-    } catch(const json::parse_error& ex) {
+    } catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         m_cluster->goToNextState(FINISH_TASK);
         return false;
@@ -73,8 +70,7 @@ RestoreCluster_State::processEvent()
     // get checkpoint-data
     Hanami::BinaryFile checkpointFile(location);
     Hanami::DataBuffer checkpointBuffer;
-    if(checkpointFile.readCompleteFile(checkpointBuffer, error) == false)
-    {
+    if (checkpointFile.readCompleteFile(checkpointBuffer, error) == false) {
         error.addMeesage("failed to load checkpoint-data");
         m_cluster->goToNextState(FINISH_TASK);
         return false;
@@ -83,16 +79,13 @@ RestoreCluster_State::processEvent()
     // copy data of cluster
     const uint8_t* u8Data = static_cast<const uint8_t*>(checkpointBuffer.data);
     m_cluster->clusterData.initBuffer(u8Data, checkpointBuffer.usedBufferSize);
-    if(reinitPointer(m_cluster, checkpointBuffer.usedBufferSize) == false)
-    {
+    if (reinitPointer(m_cluster, checkpointBuffer.usedBufferSize) == false) {
         error.addMeesage("failed to re-init pointer in cluster");
         m_cluster->goToNextState(FINISH_TASK);
         return false;
     }
 
-    strncpy(m_cluster->clusterHeader->uuid.uuid,
-            originalUuid.c_str(),
-            originalUuid.size());
+    strncpy(m_cluster->clusterHeader->uuid.uuid, originalUuid.c_str(), originalUuid.size());
     m_cluster->goToNextState(FINISH_TASK);
 
     return true;

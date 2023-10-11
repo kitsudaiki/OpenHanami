@@ -23,26 +23,18 @@
 #ifndef HANAMI_LANG_ITEM_METHODS_H
 #define HANAMI_LANG_ITEM_METHODS_H
 
-#include <vector>
-#include <string>
-
+#include <api/endpoint_processing/items/sakura_items.h>
 #include <hanami_common/logger.h>
 
-#include <api/endpoint_processing/items/sakura_items.h>
+#include <string>
+#include <vector>
 
 struct BlossomIO;
 
 // override functions
-enum OverrideType
-{
-    ALL,
-    ONLY_EXISTING,
-    ONLY_NON_EXISTING
-};
+enum OverrideType { ALL, ONLY_EXISTING, ONLY_NON_EXISTING };
 
-void overrideItems(json &original,
-                   const json &override,
-                   OverrideType type);
+void overrideItems(json &original, const json &override, OverrideType type);
 
 // error-output
 void createError(const BlossomItem &blossomItem,
@@ -55,4 +47,4 @@ void createError(const BlossomIO &blossomIO,
                  Hanami::ErrorContainer &error,
                  const std::string &possibleSolution = "");
 
-#endif // HANAMI_LANG_ITEM_METHODS_H
+#endif  // HANAMI_LANG_ITEM_METHODS_H

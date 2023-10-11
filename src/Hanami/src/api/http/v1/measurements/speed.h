@@ -25,18 +25,13 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-
-class Speed
-        : public Blossom
+class Speed : public Blossom
 {
-public:
+   public:
     Speed();
 
-protected:
-    bool runTask(BlossomIO &blossomIO,
-                 const json &,
-                 BlossomStatus &,
-                 Hanami::ErrorContainer &);
+   protected:
+    bool runTask(BlossomIO &blossomIO, const json &, BlossomStatus &, Hanami::ErrorContainer &);
 };
 
-#endif // AZUKIHEART_SPEED_H
+#endif  // AZUKIHEART_SPEED_H

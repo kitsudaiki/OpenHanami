@@ -6,9 +6,9 @@
  *  @copyright MIT License
  */
 
-#include <unix/unix_domain_socket.h>
-#include <hanami_common/threading/cleanup_thread.h>
 #include <hanami_common/logger.h>
+#include <hanami_common/threading/cleanup_thread.h>
+#include <unix/unix_domain_socket.h>
 
 namespace Hanami
 {
@@ -45,12 +45,12 @@ UnixDomainSocket::~UnixDomainSocket() {}
 bool
 UnixDomainSocket::initClientSide(ErrorContainer &error)
 {
-    if(socketFd > 0) {
+    if (socketFd > 0) {
         return true;
     }
 
     bool result = initSocket(error);
-    if(result == false) {
+    if (result == false) {
         return false;
     }
 
@@ -98,20 +98,18 @@ UnixDomainSocket::initSocket(ErrorContainer &error)
     struct sockaddr_un address;
 
     // check file-path length to avoid conflics, when copy to the address
-    if(m_socketFile.size() > 100)
-    {
-        error.addMeesage("Failed to create a unix-socket, "
-                         "because the filename is longer then 100 characters: \""
-                         + m_socketFile
-                         + "\"");
+    if (m_socketFile.size() > 100) {
+        error.addMeesage(
+            "Failed to create a unix-socket, "
+            "because the filename is longer then 100 characters: \""
+            + m_socketFile + "\"");
         error.addMeesage("use a shorter name for the unix-domain-socket.");
         return false;
     }
 
     // create socket
     socketFd = socket(PF_LOCAL, SOCK_STREAM, 0);
-    if(socketFd < 0)
-    {
+    if (socketFd < 0) {
         error.addMeesage("Failed to create a unix-socket");
         error.addSolution("Maybe no permissions to create a unix-socket on the system");
         return false;
@@ -123,14 +121,10 @@ UnixDomainSocket::initSocket(ErrorContainer &error)
     address.sun_path[m_socketFile.size()] = '\0';
 
     // create connection
-    if(connect(socketFd, reinterpret_cast<struct sockaddr*>(&address), sizeof(address)) < 0)
-    {
-        error.addMeesage("Failed to connect unix-socket to server with addresse: \""
-                         + m_socketFile
+    if (connect(socketFd, reinterpret_cast<struct sockaddr *>(&address), sizeof(address)) < 0) {
+        error.addMeesage("Failed to connect unix-socket to server with addresse: \"" + m_socketFile
                          + "\"");
-        error.addSolution("check your write-permissions for the location \""
-                          + m_socketFile
-                          + "\"");
+        error.addSolution("check your write-permissions for the location \"" + m_socketFile + "\"");
         return false;
     }
 
@@ -157,10 +151,7 @@ UnixDomainSocket::isClientSide() const
  * @return number of read bytes
  */
 long
-UnixDomainSocket::recvData(int socket,
-                           void* bufferPosition,
-                           const size_t bufferSize,
-                           int flags)
+UnixDomainSocket::recvData(int socket, void *bufferPosition, const size_t bufferSize, int flags)
 {
     return recv(socket, bufferPosition, bufferSize, flags);
 }
@@ -172,11 +163,11 @@ UnixDomainSocket::recvData(int socket,
  */
 ssize_t
 UnixDomainSocket::sendData(int socket,
-                           const void* bufferPosition,
+                           const void *bufferPosition,
                            const size_t bufferSize,
                            int flags)
 {
     return send(socket, bufferPosition, bufferSize, flags);
 }
 
-}
+}  // namespace Hanami

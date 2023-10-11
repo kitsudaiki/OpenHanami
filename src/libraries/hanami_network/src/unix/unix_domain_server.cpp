@@ -6,8 +6,8 @@
  *  @copyright MIT License
  */
 
-#include <unix/unix_domain_server.h>
 #include <hanami_common/logger.h>
+#include <unix/unix_domain_server.h>
 
 namespace Hanami
 {
@@ -44,20 +44,18 @@ bool
 UnixDomainServer::initServer(ErrorContainer &error)
 {
     // check file-path length to avoid conflics, when copy to the sockaddr_un-object
-    if(m_socketFile.size() > 100)
-    {
-        error.addMeesage("Failed to create a unix-server, "
-                         "because the filename is longer then 100 characters: \""
-                         + m_socketFile
-                         + "\"");
+    if (m_socketFile.size() > 100) {
+        error.addMeesage(
+            "Failed to create a unix-server, "
+            "because the filename is longer then 100 characters: \""
+            + m_socketFile + "\"");
         error.addSolution("use a shorter name for the unix-domain-socket");
         return false;
     }
 
     // create socket
     serverFd = socket(AF_LOCAL, SOCK_STREAM, 0);
-    if(serverFd < 0)
-    {
+    if (serverFd < 0) {
         error.addMeesage("Failed to create a unix-socket");
         error.addSolution("Maybe no permissions to create a unix-socket on the system");
         return false;
@@ -69,15 +67,13 @@ UnixDomainServer::initServer(ErrorContainer &error)
     socketAddr.sun_path[m_socketFile.size()] = '\0';
 
     // bind to port
-    if(bind(serverFd, reinterpret_cast<struct sockaddr*>(&socketAddr), sizeof(socketAddr)) < 0)
-    {
+    if (bind(serverFd, reinterpret_cast<struct sockaddr *>(&socketAddr), sizeof(socketAddr)) < 0) {
         error.addMeesage("Failed to bind unix-socket to addresse: \"" + m_socketFile + "\"");
         return false;
     }
 
     // start listening for incoming connections
-    if(listen(serverFd, 5) == -1)
-    {
+    if (listen(serverFd, 5) == -1) {
         error.addMeesage("Failed listen on unix-socket on addresse: \"" + m_socketFile + "\"");
         return false;
     }
@@ -98,5 +94,4 @@ UnixDomainServer::getServerFd() const
     return serverFd;
 }
 
-}
-
+}  // namespace Hanami

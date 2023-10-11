@@ -23,44 +23,41 @@
 #ifndef TORIIGATEWAY_HTTP_SERVER_H
 #define TORIIGATEWAY_HTTP_SERVER_H
 
+#include <hanami_common/logger.h>
+#include <hanami_common/threading/thread.h>
+
+#include <boost/asio/ip/tcp.hpp>
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
-#include <boost/beast/version.hpp>
 #include <boost/beast/ssl.hpp>
-#include <boost/asio/ip/tcp.hpp>
-
+#include <boost/beast/version.hpp>
 #include <chrono>
 #include <cstdlib>
 #include <ctime>
+#include <deque>
 #include <iostream>
 #include <memory>
-#include <string>
 #include <mutex>
-#include <deque>
-
-#include <hanami_common/threading/thread.h>
-#include <hanami_common/logger.h>
+#include <string>
 
 using tcp = boost::asio::ip::tcp;
 
 class HttpWebsocketThread;
 
-class HttpServer
-        : public Hanami::Thread
+class HttpServer : public Hanami::Thread
 {
-public:
-    HttpServer(const std::string &address,
-               const uint16_t port);
+   public:
+    HttpServer(const std::string& address, const uint16_t port);
 
-    //boost::asio::ssl::context m_ctx;
+    // boost::asio::ssl::context m_ctx;
 
     tcp::socket* getSocket();
     void addSocket(tcp::socket* socket);
 
-protected:
+   protected:
     void run();
 
-private:
+   private:
     const std::string m_address = "";
     const uint16_t m_port = 0;
 
@@ -68,4 +65,4 @@ private:
     std::mutex m_queueMutex;
 };
 
-#endif // TORIIGATEWAY_HTTP_SERVER_H
+#endif  // TORIIGATEWAY_HTTP_SERVER_H

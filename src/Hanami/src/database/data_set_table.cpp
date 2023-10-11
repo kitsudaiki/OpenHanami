@@ -21,23 +21,19 @@
  */
 
 #include <database/data_set_table.h>
-
-#include <hanami_files/data_set_files/data_set_functions.h>
-
-#include <hanami_database/sql_database.h>
-
 #include <hanami_common/items/table_item.h>
 #include <hanami_common/methods/string_methods.h>
+#include <hanami_database/sql_database.h>
+#include <hanami_files/data_set_files/data_set_functions.h>
 
-DataSetTable* DataSetTable::instance = nullptr;
+DataSetTable *DataSetTable::instance = nullptr;
 
 /**
  * @brief constructor
  *
  * @param db pointer to database
  */
-DataSetTable::DataSetTable()
-    : HanamiSqlTable(Hanami::SqlDatabase::getInstance())
+DataSetTable::DataSetTable() : HanamiSqlTable(Hanami::SqlDatabase::getInstance())
 {
     m_tableName = "data_set";
 
@@ -49,7 +45,7 @@ DataSetTable::DataSetTable()
     DbHeaderEntry location;
     location.name = "location";
     location.hide = true;
-    m_tableHeader.push_back(location);  
+    m_tableHeader.push_back(location);
 
     DbHeaderEntry tempFiles;
     tempFiles.name = "temp_files";
@@ -72,12 +68,9 @@ DataSetTable::~DataSetTable() {}
  * @return true, if successful, else false
  */
 bool
-DataSetTable::addDataSet(json &data,
-                         const UserContext &userContext,
-                         Hanami::ErrorContainer &error)
+DataSetTable::addDataSet(json &data, const UserContext &userContext, Hanami::ErrorContainer &error)
 {
-    if(add(data, userContext, error) == false)
-    {
+    if (add(data, userContext, error) == false) {
         error.addMeesage("Failed to add checkpoint to database");
         return false;
     }
@@ -108,11 +101,8 @@ DataSetTable::getDataSet(json &result,
     conditions.emplace_back("uuid", datasetUuid);
 
     // get dataset from db
-    if(get(result, userContext, conditions, error, showHiddenValues) == false)
-    {
-        error.addMeesage("Failed to get dataset with UUID '"
-                         + datasetUuid
-                         + "' from database");
+    if (get(result, userContext, conditions, error, showHiddenValues) == false) {
+        error.addMeesage("Failed to get dataset with UUID '" + datasetUuid + "' from database");
         LOG_ERROR(error);
         return false;
     }
@@ -135,8 +125,7 @@ DataSetTable::getAllDataSet(Hanami::TableItem &result,
                             Hanami::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
-    if(getAll(result, userContext, conditions, error) == false)
-    {
+    if (getAll(result, userContext, conditions, error) == false) {
         error.addMeesage("Failed to get all datasets from database");
         return false;
     }
@@ -160,11 +149,8 @@ DataSetTable::deleteDataSet(const std::string &datasetUuid,
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", datasetUuid);
-    if(del(conditions, userContext, error) == false)
-    {
-        error.addMeesage("Failed to delete dataset with UUID '"
-                         + datasetUuid
-                         + "' from database");
+    if (del(conditions, userContext, error) == false) {
+        error.addMeesage("Failed to delete dataset with UUID '" + datasetUuid + "' from database");
         return false;
     }
 
@@ -193,16 +179,14 @@ DataSetTable::setUploadFinish(const std::string &uuid,
     userContext.isAdmin = true;
 
     // get dataset from db
-    if(get(result, userContext, conditions, error, true) == false)
-    {
+    if (get(result, userContext, conditions, error, true) == false) {
         error.addMeesage("Failed to get dataset with UUID '" + uuid + "' from database");
         LOG_ERROR(error);
         return false;
     }
 
     // check response from database
-    if(result.contains("temp_files") == false)
-    {
+    if (result.contains("temp_files") == false) {
         error.addMeesage("Entry get for the dataset with UUID '" + uuid + "' is broken");
         LOG_ERROR(error);
         return false;
@@ -211,8 +195,7 @@ DataSetTable::setUploadFinish(const std::string &uuid,
     // update temp-files entry to 100%
     result["temp_files"][fileUuid] = 1.0f;
 
-    if(update(result, userContext, conditions, error) == false)
-    {
+    if (update(result, userContext, conditions, error) == false) {
         error.addMeesage("Failed to update entry of dataset with UUID '" + uuid + "' in database");
         LOG_ERROR(error);
         return false;
@@ -235,14 +218,13 @@ DataSetTable::getDateSetInfo(json &result,
 {
     const UserContext userContext(context);
 
-    if(getDataSet(result, dataUuid, userContext, error, true) == false) {
+    if (getDataSet(result, dataUuid, userContext, error, true) == false) {
         return false;
     }
 
     // get file information
     const std::string location = result["location"];
-    if(getHeaderInformation(result, location, error) == false)
-    {
+    if (getHeaderInformation(result, location, error) == false) {
         error.addMeesage("Failed the read information from file '" + location + "'");
         return false;
     }

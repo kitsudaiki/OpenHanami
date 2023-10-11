@@ -23,8 +23,10 @@
 #ifndef HANAMI_CORE_CLUSTER_IO_FUNCTIONS_H
 #define HANAMI_CORE_CLUSTER_IO_FUNCTIONS_H
 
-#include <iostream>
 #include <math.h>
+
+#include <iostream>
+
 #include "objects.h"
 
 /**
@@ -41,15 +43,12 @@ processNeuronsOfInputBrickBackward(const Brick* brick,
     uint32_t counter = 0;
 
     // iterate over all neurons within the brick
-    for(uint32_t blockId = brick->brickBlockPos;
-        blockId < brick->numberOfNeuronBlocks + brick->brickBlockPos;
-        blockId++)
-    {
+    for (uint32_t blockId = brick->brickBlockPos;
+         blockId < brick->numberOfNeuronBlocks + brick->brickBlockPos;
+         blockId++) {
         block = &neuronBlocks[blockId];
-        for(uint32_t neuronIdInBlock = 0;
-            neuronIdInBlock < block->numberOfNeurons;
-            neuronIdInBlock++)
-        {
+        for (uint32_t neuronIdInBlock = 0; neuronIdInBlock < block->numberOfNeurons;
+             neuronIdInBlock++) {
             neuron = &block->neurons[neuronIdInBlock];
             neuron->potential = inputValues[counter];
             neuron->active = neuron->potential > 0.0f;
@@ -63,27 +62,22 @@ processNeuronsOfInputBrickBackward(const Brick* brick,
 }
 
 inline void
-processNeuronsOfOutputBrick(const Brick* brick,
-                            float* outputValues,
-                            NeuronBlock* neuronBlocks)
+processNeuronsOfOutputBrick(const Brick* brick, float* outputValues, NeuronBlock* neuronBlocks)
 {
     Neuron* neuron = nullptr;
     NeuronBlock* block = nullptr;
     uint32_t counter = 0;
 
     // iterate over all neurons within the brick
-    for(uint32_t blockId = brick->brickBlockPos;
-        blockId < brick->numberOfNeuronBlocks + brick->brickBlockPos;
-        blockId++)
-    {
+    for (uint32_t blockId = brick->brickBlockPos;
+         blockId < brick->numberOfNeuronBlocks + brick->brickBlockPos;
+         blockId++) {
         block = &neuronBlocks[blockId];
-        for(uint32_t neuronIdInBlock = 0;
-            neuronIdInBlock < block->numberOfNeurons;
-            neuronIdInBlock++)
-        {
+        for (uint32_t neuronIdInBlock = 0; neuronIdInBlock < block->numberOfNeurons;
+             neuronIdInBlock++) {
             neuron = &block->neurons[neuronIdInBlock];
             neuron->potential = neuron->input;
-            if(neuron->potential != 0.0f) {
+            if (neuron->potential != 0.0f) {
                 neuron->potential = 1.0f / (1.0f + exp(-1.0f * neuron->potential));
             }
             outputValues[counter] = neuron->potential;
@@ -109,15 +103,12 @@ backpropagateOutput(const Brick* brick,
     uint32_t counter = 0;
 
     // iterate over all neurons within the brick
-    for(uint32_t neuronSectionId = brick->brickBlockPos;
-        neuronSectionId < brick->numberOfNeuronBlocks + brick->brickBlockPos;
-        neuronSectionId++)
-    {
+    for (uint32_t neuronSectionId = brick->brickBlockPos;
+         neuronSectionId < brick->numberOfNeuronBlocks + brick->brickBlockPos;
+         neuronSectionId++) {
         block = &neuronBlocks[neuronSectionId];
-        for(uint32_t neuronIdInBlock = 0;
-            neuronIdInBlock < block->numberOfNeurons;
-            neuronIdInBlock++)
-        {
+        for (uint32_t neuronIdInBlock = 0; neuronIdInBlock < block->numberOfNeurons;
+             neuronIdInBlock++) {
             neuron = &block->neurons[neuronIdInBlock];
             neuron->delta = outputValues[counter] - expectedValues[counter];
             neuron->delta *= outputValues[counter] * (1.0f - outputValues[counter]);
@@ -128,4 +119,4 @@ backpropagateOutput(const Brick* brick,
     return totalDelta > settings->backpropagationBorder;
 }
 
-#endif // HANAMI_CORE_CLUSTER_IO_FUNCTIONS_H
+#endif  // HANAMI_CORE_CLUSTER_IO_FUNCTIONS_H

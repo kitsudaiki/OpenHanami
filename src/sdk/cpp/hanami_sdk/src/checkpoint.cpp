@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#include <hanami_sdk/checkpoint.h>
 #include <common/http_client.h>
+#include <hanami_sdk/checkpoint.h>
 
 namespace Hanami
 {
@@ -36,18 +36,15 @@ namespace Hanami
  * @return true, if successful, else false
  */
 bool
-getCheckpoint(std::string &result,
-              const std::string &checkpointUuid,
-              Hanami::ErrorContainer &error)
+getCheckpoint(std::string &result, const std::string &checkpointUuid, Hanami::ErrorContainer &error)
 {
     // create request
-    HanamiRequest* request = HanamiRequest::getInstance();
+    HanamiRequest *request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/checkpoint";
     const std::string vars = "uuid=" + checkpointUuid;
 
     // send request
-    if(request->sendGetRequest(result, path, vars, error) == false)
-    {
+    if (request->sendGetRequest(result, path, vars, error) == false) {
         error.addMeesage("Failed to get checkpoint with UUID '" + checkpointUuid + "'");
         LOG_ERROR(error);
         return false;
@@ -65,16 +62,14 @@ getCheckpoint(std::string &result,
  * @return true, if successful, else false
  */
 bool
-listCheckpoint(std::string &result,
-               Hanami::ErrorContainer &error)
+listCheckpoint(std::string &result, Hanami::ErrorContainer &error)
 {
     // create request
-    HanamiRequest* request = HanamiRequest::getInstance();
+    HanamiRequest *request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/checkpoint/all";
 
     // send request
-    if(request->sendGetRequest(result, path, "", error) == false)
-    {
+    if (request->sendGetRequest(result, path, "", error) == false) {
         error.addMeesage("Failed to list checkpoints");
         LOG_ERROR(error);
         return false;
@@ -98,13 +93,12 @@ deleteCheckpoint(std::string &result,
                  Hanami::ErrorContainer &error)
 {
     // create request
-    HanamiRequest* request = HanamiRequest::getInstance();
+    HanamiRequest *request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/checkpoint";
     const std::string vars = "uuid=" + checkpointUuid;
 
     // send request
-    if(request->sendDeleteRequest(result, path, vars, error) == false)
-    {
+    if (request->sendDeleteRequest(result, path, vars, error) == false) {
         error.addMeesage("Failed to delete checkpoint with UUID '" + checkpointUuid + "'");
         LOG_ERROR(error);
         return false;
@@ -113,4 +107,4 @@ deleteCheckpoint(std::string &result,
     return true;
 }
 
-} // namespace Hanami
+}  // namespace Hanami

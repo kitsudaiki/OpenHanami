@@ -20,31 +20,27 @@
  *      limitations under the License.
  */
 
-#include <thread>
-
-#include <common.h>
-
-#include <hanami_root.h>
-#include <args.h>
-#include <config.h>
-#include <api/websocket/cluster_io.h>
 #include <api/http/v1/blossom_initializing.h>
-
-#include <documentation/generate_rest_api_docu.h>
-
-#include <hanami_args/arg_parser.h>
-#include <hanami_common/logger.h>
-#include <hanami_common/files/text_file.h>
-#include <hanami_config/config_handler.h>
-
-#include <database/cluster_table.h>
-#include <database/users_table.h>
-#include <database/projects_table.h>
-#include <database/data_set_table.h>
-#include <database/checkpoint_table.h>
-#include <database/request_result_table.h>
-#include <database/error_log_table.h>
+#include <api/websocket/cluster_io.h>
+#include <args.h>
+#include <common.h>
+#include <config.h>
 #include <database/audit_log_table.h>
+#include <database/checkpoint_table.h>
+#include <database/cluster_table.h>
+#include <database/data_set_table.h>
+#include <database/error_log_table.h>
+#include <database/projects_table.h>
+#include <database/request_result_table.h>
+#include <database/users_table.h>
+#include <documentation/generate_rest_api_docu.h>
+#include <hanami_args/arg_parser.h>
+#include <hanami_common/files/text_file.h>
+#include <hanami_common/logger.h>
+#include <hanami_config/config_handler.h>
+#include <hanami_root.h>
+
+#include <thread>
 
 int
 main(int argc, char *argv[])
@@ -61,15 +57,13 @@ main(int argc, char *argv[])
     registerConfigs();
 
     // parse cli-input
-    if(argParser.parse(argc, argv, error) == false)
-    {
+    if (argParser.parse(argc, argv, error) == false) {
         LOG_ERROR(error);
         return 1;
     }
 
     // generate api-, config- and database-docu, if requested
-    if(argParser.wasSet("generate_docu"))
-    {
+    if (argParser.wasSet("generate_docu")) {
         namespace fs = std::filesystem;
 
         Hanami::ErrorContainer error;
@@ -79,24 +73,22 @@ main(int argc, char *argv[])
         std::string openApiDocu = "";
         createOpenApiDocumentation(openApiDocu);
         fs::path complete = fs::current_path() / fs::path{"open_api_docu.json"};
-        if(writeFile(complete.generic_string(), openApiDocu, error, true) == false)
-        {
+        if (writeFile(complete.generic_string(), openApiDocu, error, true) == false) {
             LOG_ERROR(error);
             return 1;
         }
-        std::cout<<"Written OpenAPI-docu to "<<complete<<std::endl;
+        std::cout << "Written OpenAPI-docu to " << complete << std::endl;
 
         //-------------------------------------------------------------------------
 
         std::string configDocu = "# Configs of Hanami\n\n";
         Hanami::ConfigHandler::getInstance()->createDocumentation(configDocu);
         complete = fs::current_path() / fs::path{"config.md"};
-        if(writeFile(complete.generic_string(), configDocu, error, true) == false)
-        {
+        if (writeFile(complete.generic_string(), configDocu, error, true) == false) {
             LOG_ERROR(error);
             return 1;
         }
-        std::cout<<"Written Config-docu to "<<complete<<std::endl;
+        std::cout << "Written Config-docu to " << complete << std::endl;
 
         //-------------------------------------------------------------------------
 
@@ -110,12 +102,11 @@ main(int argc, char *argv[])
         ErrorLogTable::getInstance()->createDocumentation(dbDocu);
         AuditLogTable::getInstance()->createDocumentation(dbDocu);
         complete = fs::current_path() / fs::path{"db.md"};
-        if(writeFile(complete.generic_string(), dbDocu, error, true) == false)
-        {
+        if (writeFile(complete.generic_string(), dbDocu, error, true) == false) {
             LOG_ERROR(error);
             return 1;
         }
-        std::cout<<"Written Database-docu to "<<complete<<std::endl;
+        std::cout << "Written Database-docu to " << complete << std::endl;
 
         //-------------------------------------------------------------------------
 
@@ -124,11 +115,10 @@ main(int argc, char *argv[])
 
     // init and check config-file
     std::string configPath = argParser.getStringValue("config");
-    if(configPath == "") {
+    if (configPath == "") {
         configPath = "/etc/hanami/hanami.conf";
     }
-    if(INIT_CONFIG(configPath, error) == false)
-    {
+    if (INIT_CONFIG(configPath, error) == false) {
         LOG_ERROR(error);
         return 1;
     }
@@ -136,12 +126,12 @@ main(int argc, char *argv[])
     // get config-parameter for logger
     bool success = false;
     const bool enableDebug = GET_BOOL_CONFIG("DEFAULT", "debug", success);
-    if(success == false) {
+    if (success == false) {
         return 1;
     }
 
     const std::string logPath = GET_STRING_CONFIG("DEFAULT", "log_path", success);
-    if(success == false) {
+    if (success == false) {
         return 1;
     }
 
@@ -150,8 +140,7 @@ main(int argc, char *argv[])
     Hanami::initFileLogger(logPath, "hanami", enableDebug);
 
     // init root-object
-    if(rootObj.init(error) == false)
-    {
+    if (rootObj.init(error) == false) {
         LOG_ERROR(error);
         return 1;
     }

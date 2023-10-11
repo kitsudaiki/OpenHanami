@@ -24,11 +24,10 @@
 
 #include <hanami_sdk/task.h>
 
-TableTrainTaskTest::TableTrainTaskTest(const bool expectSuccess)
-  : TestStep(expectSuccess)
+TableTrainTaskTest::TableTrainTaskTest(const bool expectSuccess) : TestStep(expectSuccess)
 {
     m_testName = "table-train-task";
-    if(expectSuccess) {
+    if (expectSuccess) {
         m_testName += " (success)";
     } else {
         m_testName += " (fail)";
@@ -36,22 +35,21 @@ TableTrainTaskTest::TableTrainTaskTest(const bool expectSuccess)
 }
 
 bool
-TableTrainTaskTest::runTest(json &inputData,
-                            Hanami::ErrorContainer &error)
+TableTrainTaskTest::runTest(json& inputData, Hanami::ErrorContainer& error)
 {
     // create new user
     std::string result;
-    if(Hanami::createTask(result,
-                            inputData["generic_task_name"],
-                            "train",
-                            inputData["cluster_uuid"],
-                            inputData["base_dataset_uuid"],
-                            error) != m_expectSuccess)
-    {
+    if (Hanami::createTask(result,
+                           inputData["generic_task_name"],
+                           "train",
+                           inputData["cluster_uuid"],
+                           inputData["base_dataset_uuid"],
+                           error)
+        != m_expectSuccess) {
         return false;
     }
 
-    if(m_expectSuccess == false) {
+    if (m_expectSuccess == false) {
         return true;
     }
 
@@ -59,7 +57,7 @@ TableTrainTaskTest::runTest(json &inputData,
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch(const json::parse_error& ex) {
+    } catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
@@ -67,25 +65,20 @@ TableTrainTaskTest::runTest(json &inputData,
     inputData["train_task_uuid"] = jsonItem["uuid"];
 
     // wait until task is finished
-    do
-    {
+    do {
         sleep(1);
 
-        Hanami::getTask(result,
-                        inputData["train_task_uuid"],
-                        inputData["cluster_uuid"],
-                        error);
+        Hanami::getTask(result, inputData["train_task_uuid"], inputData["cluster_uuid"], error);
 
         // parse output
         try {
             jsonItem = json::parse(result);
-        } catch(const json::parse_error& ex) {
+        } catch (const json::parse_error& ex) {
             error.addMeesage("json-parser error: " + std::string(ex.what()));
             return false;
         }
-        std::cout<<jsonItem.dump(4)<<std::endl;
-    }
-    while(jsonItem["state"] != "finished");
+        std::cout << jsonItem.dump(4) << std::endl;
+    } while (jsonItem["state"] != "finished");
 
     return true;
 }

@@ -9,20 +9,19 @@
 #ifndef SQLITE_TEST_H
 #define SQLITE_TEST_H
 
-#include <filesystem>
-
 #include <hanami_common/test_helper/compare_test_helper.h>
+
+#include <filesystem>
 
 namespace Hanami
 {
 
-class Sqlite_Test
-        : public Hanami::CompareTestHelper
+class Sqlite_Test : public Hanami::CompareTestHelper
 {
-public:
+   public:
     Sqlite_Test();
 
-private:
+   private:
     void initTest();
     void initDB_test();
     void execSqlCommand_test();
@@ -33,6 +32,6 @@ private:
     void deleteFile();
 };
 
-}
+}  // namespace Hanami
 
-#endif // SQLITE_TEST_H
+#endif  // SQLITE_TEST_H

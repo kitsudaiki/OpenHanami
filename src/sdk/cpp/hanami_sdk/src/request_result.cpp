@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#include <hanami_sdk/request_result.h>
 #include <common/http_client.h>
+#include <hanami_sdk/request_result.h>
 
 namespace Hanami
 {
@@ -41,12 +41,11 @@ getRequestResult(std::string &result,
                  Hanami::ErrorContainer &error)
 {
     // create request
-    HanamiRequest* request = HanamiRequest::getInstance();
+    HanamiRequest *request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/request_result";
     const std::string vars = "uuid=" + requestResultUuid;
 
-    if(request->sendGetRequest(result, path, vars, error) == false)
-    {
+    if (request->sendGetRequest(result, path, vars, error) == false) {
         error.addMeesage("Failed to get request-result with uuid '" + requestResultUuid + "'");
         LOG_ERROR(error);
         return false;
@@ -64,16 +63,14 @@ getRequestResult(std::string &result,
  * @return true, if successful, else false
  */
 bool
-listRequestResult(std::string &result,
-                  Hanami::ErrorContainer &error)
+listRequestResult(std::string &result, Hanami::ErrorContainer &error)
 {
     // create request
-    HanamiRequest* request = HanamiRequest::getInstance();
+    HanamiRequest *request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/request_result/all";
 
     // send request
-    if(request->sendGetRequest(result, path, "", error) == false)
-    {
+    if (request->sendGetRequest(result, path, "", error) == false) {
         error.addMeesage("Failed to list request-results");
         LOG_ERROR(error);
         return false;
@@ -97,13 +94,12 @@ deleteRequestResult(std::string &result,
                     Hanami::ErrorContainer &error)
 {
     // create request
-    HanamiRequest* request = HanamiRequest::getInstance();
+    HanamiRequest *request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/request_result";
     const std::string vars = "uuid=" + requestResultUuid;
 
     // send request
-    if(request->sendDeleteRequest(result, path, vars, error) == false)
-    {
+    if (request->sendDeleteRequest(result, path, vars, error) == false) {
         error.addMeesage("Failed to delete request-result with uuid '" + requestResultUuid + "'");
         LOG_ERROR(error);
         return false;
@@ -112,4 +108,4 @@ deleteRequestResult(std::string &result,
     return true;
 }
 
-} // namespace Hanami
+}  // namespace Hanami

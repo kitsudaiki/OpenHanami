@@ -22,15 +22,13 @@
 
 #include "http_processing.h"
 
-#include <hanami_root.h>
-#include <database/audit_log_table.h>
 #include <api/endpoint_processing/http_processing/file_send.h>
 #include <api/endpoint_processing/http_processing/response_builds.h>
 #include <api/endpoint_processing/http_processing/string_functions.h>
 #include <api/endpoint_processing/http_server.h>
-
+#include <database/audit_log_table.h>
 #include <hanami_common/logger.h>
-
+#include <hanami_root.h>
 #include <jwt-cpp/jwt.h>
 // #include <jwt-cpp/traits/nlohmann-json/defaults.h>
 
@@ -55,33 +53,25 @@ processRequest(http::request<http::string_body> &httpRequest,
     std::string payload = "{}";
 
     // Request path must be absolute and not contain "..".
-    if(checkPath(path) == false)
-    {
+    if (checkPath(path) == false) {
         error.addMeesage("Path '" + path + "' is not valid");
         httpResponse.result(http::status::bad_request);
         return false;
     }
 
     // check if http-type is supported
-    if(messageType != http::verb::get
-            && messageType != http::verb::post
-            && messageType != http::verb::put
-            && messageType != http::verb::delete_)
-    {
+    if (messageType != http::verb::get && messageType != http::verb::post
+        && messageType != http::verb::put && messageType != http::verb::delete_) {
         httpResponse.result(http::status::bad_request);
-        error.addMeesage("Invalid request-method '"
-                         + std::string(httpRequest.method_string())
+        error.addMeesage("Invalid request-method '" + std::string(httpRequest.method_string())
                          + "'");
         beast::ostream(httpResponse.body()) << error.toString();
         return false;
     }
 
     // check for dashboard-client-request
-    if(messageType == http::verb::get
-            && path.compare(0, 8, "/control") != 0)
-    {
-        if(processClientRequest(httpResponse, path, error) == false)
-        {
+    if (messageType == http::verb::get && path.compare(0, 8, "/control") != 0) {
+        if (processClientRequest(httpResponse, path, error) == false) {
             error.addMeesage("Failed to send dashboard-files");
             return false;
         }
@@ -89,24 +79,20 @@ processRequest(http::request<http::string_body> &httpRequest,
     }
 
     // get payload of message
-    if(messageType == http::verb::post
-            || messageType == http::verb::put)
-    {
+    if (messageType == http::verb::post || messageType == http::verb::put) {
         payload = httpRequest.body().data();
     }
 
     // get token from request-header
     std::string token = "";
-    if(httpRequest.count("X-Auth-Token") > 0) {
+    if (httpRequest.count("X-Auth-Token") > 0) {
         token = httpRequest.at("X-Auth-Token").to_string();
     }
 
     // handle control-messages
-    if(cutPath(path, "/control/"))
-    {
+    if (cutPath(path, "/control/")) {
         HttpRequestType hType = static_cast<HttpRequestType>(messageType);
-        if(processControlRequest(httpResponse, path, token, payload, hType, error) == false)
-        {
+        if (processControlRequest(httpResponse, path, token, payload, hType, error) == false) {
             error.addMeesage("Failed to process control-request");
             return false;
         }
@@ -115,9 +101,7 @@ processRequest(http::request<http::string_body> &httpRequest,
 
     // handle default, if nothing was found
     error.addMeesage("no matching endpoint found for path '" + path + "'");
-    genericError_ResponseBuild(httpResponse,
-                               HttpResponseTypes::NOT_FOUND_RTYPE,
-                               error.toString());
+    genericError_ResponseBuild(httpResponse, HttpResponseTypes::NOT_FOUND_RTYPE, error.toString());
 
     return false;
 }
@@ -138,7 +122,7 @@ requestToken(http::response<http::dynamic_body> &httpResponse,
     json inputValues;
     try {
         inputValues = json::parse(hanamiRequest.inputValues);
-    } catch(const json::parse_error& ex) {
+    } catch (const json::parse_error &ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
@@ -146,17 +130,11 @@ requestToken(http::response<http::dynamic_body> &httpResponse,
     json result;
     BlossomStatus status;
     inputValues.erase("token");
-    if(HanamiRoot::root->triggerBlossom(result,
-                                        "create",
-                                        "Token",
-                                        json::object(),
-                                        inputValues,
-                                        status,
-                                        error) == false)
-    {
-        return genericError_ResponseBuild(httpResponse,
-                                          static_cast<HttpResponseTypes>(status.statusCode),
-                                          status.errorMessage);
+    if (HanamiRoot::root->triggerBlossom(
+            result, "create", "Token", json::object(), inputValues, status, error)
+        == false) {
+        return genericError_ResponseBuild(
+            httpResponse, static_cast<HttpResponseTypes>(status.statusCode), status.errorMessage);
     }
 
     return success_ResponseBuild(httpResponse, result.dump());
@@ -186,8 +164,7 @@ checkPermission(json &tokenData,
     const std::string endpoint = hanamiRequest.id;
 
     // handle empty token
-    if(token.empty())
-    {
+    if (token.empty()) {
         error.addMeesage("Failed to validate JWT-Token, because token is missing");
         responseMsg.success = false;
         responseMsg.type = UNAUTHORIZED_RTYPE;
@@ -196,27 +173,23 @@ checkPermission(json &tokenData,
     }
 
     // validate token
-    try
-    {
+    try {
         auto decodedToken = jwt::decode(token);
-        auto verifier = jwt::verify()
-            .allow_algorithm(jwt::algorithm::hs256{(const char*)HanamiRoot::tokenKey.data()});
+        auto verifier = jwt::verify().allow_algorithm(
+            jwt::algorithm::hs256{(const char *)HanamiRoot::tokenKey.data()});
         verifier.verify(decodedToken);
 
         // copy data of token into the output
-        for(const auto& e : decodedToken.get_payload_json())
-        {
+        for (const auto &e : decodedToken.get_payload_json()) {
             const std::string tokenStr = e.second.to_str();
             try {
                 tokenData = json::parse(tokenStr);
-            } catch(const json::parse_error& ex) {
+            } catch (const json::parse_error &ex) {
                 error.addMeesage("json-parser error: " + std::string(ex.what()));
                 return false;
             }
         }
-    }
-    catch (const std::exception& ex)
-    {
+    } catch (const std::exception &ex) {
         error.addMeesage("Failed to validate JWT-Token with error: " + std::string(ex.what()));
         responseMsg.success = false;
         responseMsg.type = UNAUTHORIZED_RTYPE;
@@ -231,10 +204,7 @@ checkPermission(json &tokenData,
     const std::string role = tokenData["role"];
 
     // check policy
-    if(Policy::getInstance()->checkUserAgainstPolicy(endpoint,
-                                                     httpType,
-                                                     role) == false)
-    {
+    if (Policy::getInstance()->checkUserAgainstPolicy(endpoint, httpType, role) == false) {
         responseMsg.success = false;
         responseMsg.type = UNAUTHORIZED_RTYPE;
         responseMsg.responseContent = "Access denied by policy";
@@ -272,57 +242,49 @@ processControlRequest(http::response<http::dynamic_body> &httpResponse,
     // parse uri
     hanamiRequest.httpType = httpType;
     hanamiRequest.inputValues = inputValues;
-    if(parseUri(token, hanamiRequest, uri, error) == false) {
+    if (parseUri(token, hanamiRequest, uri, error) == false) {
         return invalid_ResponseBuild(httpResponse, error);
     }
 
     // handle token-request
-    if(uri == "v1/token"
-            && hanamiRequest.httpType == Hanami::POST_TYPE)
-    {
+    if (uri == "v1/token" && hanamiRequest.httpType == Hanami::POST_TYPE) {
         return requestToken(httpResponse, hanamiRequest, error);
     }
 
     // check authentication
     json tokenData = json::object();
-    if(checkPermission(tokenData, token, hanamiRequest, hanamiResponse, error) == false) {
+    if (checkPermission(tokenData, token, hanamiRequest, hanamiResponse, error) == false) {
         return internalError_ResponseBuild(httpResponse, error);
     }
 
     // handle failed authentication
-    if(hanamiResponse.type == UNAUTHORIZED_RTYPE
-            || hanamiResponse.success == false)
-    {
-        return genericError_ResponseBuild(httpResponse,
-                                          hanamiResponse.type,
-                                          hanamiResponse.responseContent);
+    if (hanamiResponse.type == UNAUTHORIZED_RTYPE || hanamiResponse.success == false) {
+        return genericError_ResponseBuild(
+            httpResponse, hanamiResponse.type, hanamiResponse.responseContent);
     }
 
     // convert http-type to string
     std::string httpTypeStr = "GET";
-    if(hanamiRequest.httpType == Hanami::DELETE_TYPE) {
+    if (hanamiRequest.httpType == Hanami::DELETE_TYPE) {
         httpTypeStr = "DELETE";
     }
-    if(hanamiRequest.httpType == Hanami::GET_TYPE) {
+    if (hanamiRequest.httpType == Hanami::GET_TYPE) {
         httpTypeStr = "GET";
     }
-    if(hanamiRequest.httpType == Hanami::HEAD_TYPE) {
+    if (hanamiRequest.httpType == Hanami::HEAD_TYPE) {
         httpTypeStr = "HEAD";
     }
-    if(hanamiRequest.httpType == Hanami::POST_TYPE) {
+    if (hanamiRequest.httpType == Hanami::POST_TYPE) {
         httpTypeStr = "POST";
     }
-    if(hanamiRequest.httpType == Hanami::PUT_TYPE) {
+    if (hanamiRequest.httpType == Hanami::PUT_TYPE) {
         httpTypeStr = "PUT";
     }
 
     // write new audit-entry to database
-    if(AuditLogTable::getInstance()->addAuditLogEntry(getDatetime(),
-                                                      tokenData["id"],
-                                                      hanamiRequest.id,
-                                                      httpTypeStr,
-                                                      error) == false)
-    {
+    if (AuditLogTable::getInstance()->addAuditLogEntry(
+            getDatetime(), tokenData["id"], hanamiRequest.id, httpTypeStr, error)
+        == false) {
         error.addMeesage("ERROR: Failed to write audit-log into database");
         return internalError_ResponseBuild(httpResponse, error);
     }
@@ -330,42 +292,35 @@ processControlRequest(http::response<http::dynamic_body> &httpResponse,
     json inputValuesJson;
     try {
         inputValuesJson = json::parse(hanamiRequest.inputValues);
-    } catch(const json::parse_error& ex) {
+    } catch (const json::parse_error &ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return internalError_ResponseBuild(httpResponse, error);
     }
 
-    if(hanamiRequest.id != "v1/auth") {
+    if (hanamiRequest.id != "v1/auth") {
         inputValuesJson.erase("token");
     }
 
     EndpointEntry endpoint;
-    if(HanamiRoot::root->mapEndpoint(endpoint, hanamiRequest.id, hanamiRequest.httpType) == false) {
+    if (HanamiRoot::root->mapEndpoint(endpoint, hanamiRequest.id, hanamiRequest.httpType)
+        == false) {
         assert(false);
     }
 
     // make real request
     json result = json::object();
     BlossomStatus status;
-    if(HanamiRoot::root->triggerBlossom(result,
-                                        endpoint.name,
-                                        endpoint.group,
-                                        tokenData,
-                                        inputValuesJson,
-                                        status,
-                                        error) == false)
-    {
-        return genericError_ResponseBuild(httpResponse,
-                                          static_cast<HttpResponseTypes>(status.statusCode),
-                                          status.errorMessage);
+    if (HanamiRoot::root->triggerBlossom(
+            result, endpoint.name, endpoint.group, tokenData, inputValuesJson, status, error)
+        == false) {
+        return genericError_ResponseBuild(
+            httpResponse, static_cast<HttpResponseTypes>(status.statusCode), status.errorMessage);
     }
 
     // handle error-response
-    if(hanamiResponse.success == false)
-    {
-        return genericError_ResponseBuild(httpResponse,
-                                          hanamiResponse.type,
-                                          hanamiResponse.responseContent);
+    if (hanamiResponse.success == false) {
+        return genericError_ResponseBuild(
+            httpResponse, hanamiResponse.type, hanamiResponse.responseContent);
     }
 
     hanamiResponse.type = OK_RTYPE;

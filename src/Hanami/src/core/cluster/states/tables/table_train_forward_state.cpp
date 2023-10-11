@@ -29,10 +29,7 @@
  *
  * @param cluster pointer to the cluster, where the event and the statemachine belongs to
  */
-TableTrainForward_State::TableTrainForward_State(Cluster* cluster)
-{
-    m_cluster = cluster;
-}
+TableTrainForward_State::TableTrainForward_State(Cluster* cluster) { m_cluster = cluster; }
 
 /**
  * @brief destructor
@@ -51,20 +48,21 @@ TableTrainForward_State::processEvent()
     const uint64_t numberOfInputsPerCycle = actualTask->numberOfInputsPerCycle;
     const uint64_t numberOfOuputsPerCycle = actualTask->numberOfOuputsPerCycle;
     uint64_t offset = actualTask->actualCycle;
-    if(numberOfInputsPerCycle > numberOfOuputsPerCycle) {
+    if (numberOfInputsPerCycle > numberOfOuputsPerCycle) {
         offset += numberOfInputsPerCycle;
     } else {
         offset += numberOfOuputsPerCycle;
     }
 
     // set input
-    for(uint64_t i = 0; i < numberOfInputsPerCycle; i++) {
+    for (uint64_t i = 0; i < numberOfInputsPerCycle; i++) {
         m_cluster->inputValues[i] = actualTask->inputData[(offset - numberOfInputsPerCycle) + i];
     }
 
     // set exprected output
-    for(uint64_t i = 0; i < numberOfOuputsPerCycle; i++) {
-        m_cluster->expectedValues[i] = actualTask->outputData[(offset - numberOfOuputsPerCycle) + i];
+    for (uint64_t i = 0; i < numberOfOuputsPerCycle; i++) {
+        m_cluster->expectedValues[i]
+            = actualTask->outputData[(offset - numberOfOuputsPerCycle) + i];
     }
 
     m_cluster->mode = ClusterProcessingMode::TRAIN_FORWARD_MODE;

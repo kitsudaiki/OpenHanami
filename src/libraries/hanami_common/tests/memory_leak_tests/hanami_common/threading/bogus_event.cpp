@@ -19,4 +19,4 @@ BogusEvent::processEvent()
     return true;
 }
 
-}
+}  // namespace Hanami

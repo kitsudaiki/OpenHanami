@@ -23,16 +23,15 @@
 #ifndef HANAMI_CLUSTERTABLE_H
 #define HANAMI_CLUSTERTABLE_H
 
-#include <hanami_common/logger.h>
 #include <database/generic_tables/hanami_sql_table.h>
+#include <hanami_common/logger.h>
 
-class ClusterTable
-        : public HanamiSqlTable
+class ClusterTable : public HanamiSqlTable
 {
-public:
-    static ClusterTable* getInstance()
+   public:
+    static ClusterTable *getInstance()
     {
-        if(instance == nullptr) {
+        if (instance == nullptr) {
             instance = new ClusterTable();
         }
         return instance;
@@ -60,9 +59,10 @@ public:
                        const UserContext &userContext,
                        Hanami::ErrorContainer &error);
     bool deleteAllCluster(Hanami::ErrorContainer &error);
-private:
+
+   private:
     ClusterTable();
-    static ClusterTable* instance;
+    static ClusterTable *instance;
 };
 
-#endif // HANAMI_CLUSTERTABLE_H
+#endif  // HANAMI_CLUSTERTABLE_H

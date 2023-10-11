@@ -25,18 +25,16 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-
-class DeleteCluster
-        : public Blossom
+class DeleteCluster : public Blossom
 {
-public:
+   public:
     DeleteCluster();
 
-protected:
+   protected:
     bool runTask(BlossomIO &blossomIO,
                  const json &context,
                  BlossomStatus &status,
                  Hanami::ErrorContainer &error);
 };
 
-#endif // HANAMI_DELETECLUSTER_H
+#endif  // HANAMI_DELETECLUSTER_H

@@ -22,13 +22,11 @@
 
 #include "http_server.h"
 
-#include <hanami_root.h>
-
 #include <api/endpoint_processing/http_processing/http_processing.h>
 #include <api/endpoint_processing/http_websocket_thread.h>
-
-#include <hanami_common/logger.h>
 #include <hanami_common/files/text_file.h>
+#include <hanami_common/logger.h>
+#include <hanami_root.h>
 
 /**
  * @brief constructor
@@ -38,13 +36,13 @@
  * @param certFilePath path to cert-file
  * @param keyFilePath path to key-file
  */
-HttpServer::HttpServer(const std::string &address,
-                       const uint16_t port)
+HttpServer::HttpServer(const std::string& address, const uint16_t port)
     : Hanami::Thread("HttpServer"),
-      //m_ctx{boost::asio::ssl::context::tlsv13_server},
+      // m_ctx{boost::asio::ssl::context::tlsv13_server},
       m_address(address),
       m_port(port)
-{}
+{
+}
 
 /**
  * @brief run server-thread
@@ -54,29 +52,21 @@ HttpServer::run()
 {
     Hanami::ErrorContainer error;
 
-    LOG_INFO("start HTTP-server on address "
-             + m_address
-             + " and port "
-             + std::to_string(m_port));
-    try
-    {
+    LOG_INFO("start HTTP-server on address " + m_address + " and port " + std::to_string(m_port));
+    try {
         // create server
         const net::ip::address address = net::ip::make_address(m_address);
         net::io_context ioc{1};
         tcp::acceptor acceptor{ioc, {address, m_port}};
 
-        while(m_abort == false)
-        {
+        while (m_abort == false) {
             // create socket-object for incoming connection
             tcp::socket* socket = new tcp::socket{ioc};
             acceptor.accept(*socket);
             addSocket(socket);
         }
-    }
-    catch (const std::exception& e)
-    {
-        error.addMeesage("Error-message while running http-server: '"
-                         + std::string(e.what())
+    } catch (const std::exception& e) {
+        error.addMeesage("Error-message while running http-server: '" + std::string(e.what())
                          + "'");
         LOG_ERROR(error);
     }
@@ -93,8 +83,7 @@ HttpServer::getSocket()
     std::lock_guard<std::mutex> guard(m_queueMutex);
 
     tcp::socket* result = nullptr;
-    if(m_queue.size() > 0)
-    {
+    if (m_queue.size() > 0) {
         result = m_queue.front();
         m_queue.pop_front();
     }

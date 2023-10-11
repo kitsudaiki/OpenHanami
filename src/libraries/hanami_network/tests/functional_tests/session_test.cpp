@@ -33,10 +33,8 @@ Hanami::Session_Test* Session_Test::m_instance = nullptr;
  * @param data
  * @param dataSize
  */
-void streamDataCallback(void* target,
-                        Session*,
-                        const void* data,
-                        const uint64_t dataSize)
+void
+streamDataCallback(void* target, Session*, const void* data, const uint64_t dataSize)
 {
     LOG_DEBUG("TEST: streamDataCallback");
     Session_Test* instance = static_cast<Session_Test*>(target);
@@ -45,19 +43,17 @@ void streamDataCallback(void* target,
 
     bool ret = false;
 
-    if(dataSize == instance->m_staticMessage.size())
-    {
+    if (dataSize == instance->m_staticMessage.size()) {
         ret = true;
         instance->compare(receivedMessage, instance->m_staticMessage);
     }
 
-    if(dataSize == instance->m_dynamicMessage.size())
-    {
+    if (dataSize == instance->m_dynamicMessage.size()) {
         ret = true;
         instance->compare(receivedMessage, instance->m_dynamicMessage);
     }
 
-    instance->compare(ret,  true);
+    instance->compare(ret, true);
 }
 
 /**
@@ -66,26 +62,22 @@ void streamDataCallback(void* target,
  * @param data
  * @param dataSize
  */
-void standaloneDataCallback(void* target,
-                            Session* session,
-                            const uint64_t blockerId,
-                            DataBuffer* data)
+void
+standaloneDataCallback(void* target, Session* session, const uint64_t blockerId, DataBuffer* data)
 {
     std::string receivedMessage(static_cast<const char*>(data->data), data->usedBufferSize);
     Session_Test* instance = static_cast<Session_Test*>(target);
     LOG_DEBUG("TEST: receive request with size: " + std::to_string(receivedMessage.size()));
 
-    if(receivedMessage.size() < 1024) {
+    if (receivedMessage.size() < 1024) {
         instance->compare(receivedMessage, instance->m_singleBlockMessage);
     } else {
         instance->compare(receivedMessage, instance->m_multiBlockMessage);
     }
 
     const std::string responseMessage = receivedMessage + "_response";
-    session->sendResponse(responseMessage.c_str(),
-                          responseMessage.size(),
-                          blockerId,
-                          session->sessionError);
+    session->sendResponse(
+        responseMessage.c_str(), responseMessage.size(), blockerId, session->sessionError);
 
     delete data;
 }
@@ -93,11 +85,10 @@ void standaloneDataCallback(void* target,
 /**
  * @brief errorCallback
  */
-void errorCallback(Hanami::Session*,
-                   const uint8_t,
-                   const std::string message)
+void
+errorCallback(Hanami::Session*, const uint8_t, const std::string message)
 {
-    std::cout<<"ERROR: "<<message<<std::endl;
+    std::cout << "ERROR: " << message << std::endl;
 }
 
 /**
@@ -105,8 +96,8 @@ void errorCallback(Hanami::Session*,
  * @param session
  * @param sessionIdentifier
  */
-void sessionCreateCallback(Hanami::Session* session,
-                           const std::string sessionIdentifier)
+void
+sessionCreateCallback(Hanami::Session* session, const std::string sessionIdentifier)
 {
     session->setStreamCallback(Session_Test::m_instance, &streamDataCallback);
     session->setRequestCallback(Session_Test::m_instance, &standaloneDataCallback);
@@ -117,8 +108,8 @@ void sessionCreateCallback(Hanami::Session* session,
     Session_Test::m_instance->m_testSession = session;
 }
 
-void sessionCloseCallback(Hanami::Session*,
-                          const std::string)
+void
+sessionCloseCallback(Hanami::Session*, const std::string)
 {
     Session_Test::m_instance->m_numberOfEndSessions++;
 }
@@ -126,8 +117,7 @@ void sessionCloseCallback(Hanami::Session*,
 /**
  * @brief Session_Test::Session_Test
  */
-Session_Test::Session_Test() :
-    Hanami::CompareTestHelper("Session_Test")
+Session_Test::Session_Test() : Hanami::CompareTestHelper("Session_Test")
 {
     Session_Test::m_instance = this;
 
@@ -143,63 +133,65 @@ Session_Test::initTestCase()
 {
     m_staticMessage = "hello!!! (static)";
     m_dynamicMessage = "hello!!! (dynamic)";
-    m_singleBlockMessage ="------------------------------------------------------------------------"
-                          "-------------------------------------#----------------------------------"
-                          "------------------------------------------------------------------------"
-                          "---#--------------------------------------------------------------------"
-                          "-----------------------------------------#------------------------------"
-                          "------------------------------------------------------------------------"
-                          "-------#----------------------------------------------------------------"
-                          "---------------------------------------------#--------------------------"
-                          "------------------------------------------------------------------------"
-                          "-----------#------------------------------------------------------------"
-                          "-------------------------------------------------#----------------------"
-                          "-----#";
-    m_multiBlockMessage = "------------------------------------------------------------------------"
-                          "-------------------------------------#----------------------------------"
-                          "------------------------------------------------------------------------"
-                          "---#--------------------------------------------------------------------"
-                          "-----------------------------------------#------------------------------"
-                          "------------------------------------------------------------------------"
-                          "-------#----------------------------------------------------------------"
-                          "---------------------------------------------#--------------------------"
-                          "------------------------------------------------------------------------"
-                          "-----------#------------------------------------------------------------"
-                          "-------------------------------------------------#----------------------"
-                          "------------------------------------------------------------------------"
-                          "-------------------------------------#----------------------------------"
-                          "------------------------------------------------------------------------"
-                          "---#--------------------------------------------------------------------"
-                          "-----------------------------------------#------------------------------"
-                          "------------------------------------------------------------------------"
-                          "-------#----------------------------------------------------------------"
-                          "---------------------------------------------#--------------------------"
-                          "------------------------------------------------------------------------"
-                          "-----------#------------------------------------------------------------"
-                          "-------------------------------------------------#----------------------"
-                          "------------------------------------------------------------------------"
-                          "-------------------------------------#----------------------------------"
-                          "------------------------------------------------------------------------"
-                          "---#--------------------------------------------------------------------"
-                          "-----------------------------------------#------------------------------"
-                          "------------------------------------------------------------------------"
-                          "-------#----------------------------------------------------------------"
-                          "---------------------------------------------#--------------------------"
-                          "------------------------------------------------------------------------"
-                          "-----------#------------------------------------------------------------"
-                          "-------------------------------------------------#----------------------"
-                          "------------------------------------------------------------------------"
-                          "-------------------------------------#----------------------------------"
-                          "------------------------------------------------------------------------"
-                          "---#--------------------------------------------------------------------"
-                          "-----------------------------------------#------------------------------"
-                          "------------------------------------------------------------------------"
-                          "-------#----------------------------------------------------------------"
-                          "---------------------------------------------#--------------------------"
-                          "------------------------------------------------------------------------"
-                          "-----------#------------------------------------------------------------"
-                          "-------------------------------------------------#----------------------"
-                          "-----#";
+    m_singleBlockMessage
+        = "------------------------------------------------------------------------"
+          "-------------------------------------#----------------------------------"
+          "------------------------------------------------------------------------"
+          "---#--------------------------------------------------------------------"
+          "-----------------------------------------#------------------------------"
+          "------------------------------------------------------------------------"
+          "-------#----------------------------------------------------------------"
+          "---------------------------------------------#--------------------------"
+          "------------------------------------------------------------------------"
+          "-----------#------------------------------------------------------------"
+          "-------------------------------------------------#----------------------"
+          "-----#";
+    m_multiBlockMessage
+        = "------------------------------------------------------------------------"
+          "-------------------------------------#----------------------------------"
+          "------------------------------------------------------------------------"
+          "---#--------------------------------------------------------------------"
+          "-----------------------------------------#------------------------------"
+          "------------------------------------------------------------------------"
+          "-------#----------------------------------------------------------------"
+          "---------------------------------------------#--------------------------"
+          "------------------------------------------------------------------------"
+          "-----------#------------------------------------------------------------"
+          "-------------------------------------------------#----------------------"
+          "------------------------------------------------------------------------"
+          "-------------------------------------#----------------------------------"
+          "------------------------------------------------------------------------"
+          "---#--------------------------------------------------------------------"
+          "-----------------------------------------#------------------------------"
+          "------------------------------------------------------------------------"
+          "-------#----------------------------------------------------------------"
+          "---------------------------------------------#--------------------------"
+          "------------------------------------------------------------------------"
+          "-----------#------------------------------------------------------------"
+          "-------------------------------------------------#----------------------"
+          "------------------------------------------------------------------------"
+          "-------------------------------------#----------------------------------"
+          "------------------------------------------------------------------------"
+          "---#--------------------------------------------------------------------"
+          "-----------------------------------------#------------------------------"
+          "------------------------------------------------------------------------"
+          "-------#----------------------------------------------------------------"
+          "---------------------------------------------#--------------------------"
+          "------------------------------------------------------------------------"
+          "-----------#------------------------------------------------------------"
+          "-------------------------------------------------#----------------------"
+          "------------------------------------------------------------------------"
+          "-------------------------------------#----------------------------------"
+          "------------------------------------------------------------------------"
+          "---#--------------------------------------------------------------------"
+          "-----------------------------------------#------------------------------"
+          "------------------------------------------------------------------------"
+          "-------#----------------------------------------------------------------"
+          "---------------------------------------------#--------------------------"
+          "------------------------------------------------------------------------"
+          "-----------#------------------------------------------------------------"
+          "-------------------------------------------------#----------------------"
+          "-----#";
 }
 
 /**
@@ -214,11 +206,8 @@ Session_Test::sendTestMessages(Session* session)
 
     // stream-message
     const std::string staticTestString = Session_Test::m_instance->m_staticMessage;
-    ret = session->sendStreamData(staticTestString.c_str(),
-                                  staticTestString.size(),
-                                  error,
-                                  true);
-    Session_Test::m_instance->compare(ret,  true);
+    ret = session->sendStreamData(staticTestString.c_str(), staticTestString.size(), error, true);
+    Session_Test::m_instance->compare(ret, true);
 
     // singleblock-message
 }
@@ -231,22 +220,18 @@ Session_Test::runTest()
 {
     ErrorContainer error;
 
-    SessionController* m_controller = new SessionController(&sessionCreateCallback,
-                                                            &sessionCloseCallback,
-                                                            &errorCallback);
+    SessionController* m_controller
+        = new SessionController(&sessionCreateCallback, &sessionCloseCallback, &errorCallback);
 
     TEST_EQUAL(m_controller->addUnixDomainServer("/tmp/sock.uds", error), 1);
-    bool isNullptr = m_controller->startUnixDomainSession("/tmp/sock.uds",
-                                                          "test",
-                                                          "test",
-                                                          error) == nullptr;
+    bool isNullptr
+        = m_controller->startUnixDomainSession("/tmp/sock.uds", "test", "test", error) == nullptr;
     TEST_EQUAL(isNullptr, false);
-
 
     isNullptr = m_testSession == nullptr;
     TEST_EQUAL(isNullptr, false);
 
-    if(isNullptr) {
+    if (isNullptr) {
         return;
     }
 
@@ -256,26 +241,21 @@ Session_Test::runTest()
     usleep(100000);
 
     // test normal message with single-block
-    bool ret = m_testSession->sendNormalMessage(m_singleBlockMessage.c_str(),
-                                                m_singleBlockMessage.size(),
-                                                error);
+    bool ret = m_testSession->sendNormalMessage(
+        m_singleBlockMessage.c_str(), m_singleBlockMessage.size(), error);
     TEST_EQUAL(ret, true);
     usleep(100000);
 
     // test request with single-block
-    DataBuffer* resp = m_testSession->sendRequest(m_singleBlockMessage.c_str(),
-                                                  m_singleBlockMessage.size(),
-                                                  10,
-                                                  error);
+    DataBuffer* resp = m_testSession->sendRequest(
+        m_singleBlockMessage.c_str(), m_singleBlockMessage.size(), 10, error);
     const std::string expectedReponse1 = m_singleBlockMessage + "_response";
     const std::string response1(static_cast<const char*>(resp->data), resp->usedBufferSize);
     TEST_EQUAL(response1, expectedReponse1);
 
     // test request with multi-block
-    resp = m_testSession->sendRequest(m_multiBlockMessage.c_str(),
-                                      m_multiBlockMessage.size(),
-                                      10,
-                                      error);
+    resp = m_testSession->sendRequest(
+        m_multiBlockMessage.c_str(), m_multiBlockMessage.size(), 10, error);
     const std::string expectedReponse2 = m_multiBlockMessage + "_response";
     const std::string response2(static_cast<const char*>(resp->data), resp->usedBufferSize);
     TEST_EQUAL(response2, expectedReponse2);
@@ -293,4 +273,4 @@ Session_Test::runTest()
     delete m_controller;
 }
 
-}
+}  // namespace Hanami

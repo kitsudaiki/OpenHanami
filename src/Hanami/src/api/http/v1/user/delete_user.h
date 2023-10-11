@@ -25,18 +25,16 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-
-class DeleteUser
-        : public Blossom
+class DeleteUser : public Blossom
 {
-public:
+   public:
     DeleteUser();
 
-protected:
+   protected:
     bool runTask(BlossomIO &blossomIO,
                  const json &context,
                  BlossomStatus &status,
                  Hanami::ErrorContainer &error);
 };
 
-#endif // HANAMI_DELETEUSER_H
+#endif  // HANAMI_DELETEUSER_H

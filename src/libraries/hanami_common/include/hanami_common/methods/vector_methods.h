@@ -23,10 +23,10 @@
 #ifndef VECTOR_METHODS_H
 #define VECTOR_METHODS_H
 
+#include <algorithm>
+#include <iostream>
 #include <string>
 #include <vector>
-#include <iostream>
-#include <algorithm>
 
 namespace Hanami
 {
@@ -35,4 +35,4 @@ void removeEmptyStrings(std::vector<std::string> &inputVector);
 
 }
 
-#endif // VECTORMETHODS_H
+#endif  // VECTORMETHODS_H

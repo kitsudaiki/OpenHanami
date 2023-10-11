@@ -24,11 +24,10 @@
 
 #include <hanami_sdk/user.h>
 
-UserCreateTest::UserCreateTest(const bool expectSuccess)
-    : TestStep(expectSuccess)
+UserCreateTest::UserCreateTest(const bool expectSuccess) : TestStep(expectSuccess)
 {
     m_testName = "create user";
-    if(expectSuccess) {
+    if (expectSuccess) {
         m_testName += " (success)";
     } else {
         m_testName += " (fail)";
@@ -36,22 +35,21 @@ UserCreateTest::UserCreateTest(const bool expectSuccess)
 }
 
 bool
-UserCreateTest::runTest(json &inputData,
-                        Hanami::ErrorContainer &error)
+UserCreateTest::runTest(json &inputData, Hanami::ErrorContainer &error)
 {
     // create new user
     std::string result;
-    if(Hanami::createUser(result,
-                          inputData["user_id"],
-                          inputData["user_name"],
-                          inputData["password"],
-                          inputData["is_admin"],
-                          error) != m_expectSuccess)
-    {
+    if (Hanami::createUser(result,
+                           inputData["user_id"],
+                           inputData["user_name"],
+                           inputData["password"],
+                           inputData["is_admin"],
+                           error)
+        != m_expectSuccess) {
         return false;
     }
 
-    if(m_expectSuccess == false) {
+    if (m_expectSuccess == false) {
         return true;
     }
 
@@ -59,7 +57,7 @@ UserCreateTest::runTest(json &inputData,
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch(const json::parse_error& ex) {
+    } catch (const json::parse_error &ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }

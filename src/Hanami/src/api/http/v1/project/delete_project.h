@@ -25,18 +25,16 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-
-class DeleteProject
-        : public Blossom
+class DeleteProject : public Blossom
 {
-public:
+   public:
     DeleteProject();
 
-protected:
+   protected:
     bool runTask(BlossomIO &blossomIO,
                  const json &context,
                  BlossomStatus &status,
                  Hanami::ErrorContainer &error);
 };
 
-#endif // HANAMI_DELETEPROJECT_H
+#endif  // HANAMI_DELETEPROJECT_H

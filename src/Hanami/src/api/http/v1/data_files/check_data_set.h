@@ -25,18 +25,16 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-
-class CheckDataSet
-        : public Blossom
+class CheckDataSet : public Blossom
 {
-public:
+   public:
     CheckDataSet();
 
-protected:
+   protected:
     bool runTask(BlossomIO &blossomIO,
                  const json &context,
                  BlossomStatus &status,
                  Hanami::ErrorContainer &error);
 };
 
-#endif // HANAMI_CHECKDATASET_H
+#endif  // HANAMI_CHECKDATASET_H

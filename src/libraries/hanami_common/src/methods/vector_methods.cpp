@@ -32,10 +32,10 @@ void
 removeEmptyStrings(std::vector<std::string> &inputVector)
 {
     // remove items
-    inputVector.erase(std::remove_if(inputVector.begin(),
-                                     inputVector.end(),
-                                     std::mem_fun_ref(&std::string::empty)),
-                      inputVector.end());
+    inputVector.erase(
+        std::remove_if(
+            inputVector.begin(), inputVector.end(), std::mem_fun_ref(&std::string::empty)),
+        inputVector.end());
 }
 
-}
+}  // namespace Hanami

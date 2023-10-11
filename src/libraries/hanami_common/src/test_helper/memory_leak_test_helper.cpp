@@ -22,7 +22,6 @@
 
 #include <hanami_common/test_helper/memory_leak_test_helper.h>
 
-
 //==================================================================================================
 // Overrides for new and delete
 //==================================================================================================
@@ -64,13 +63,15 @@ operator delete[](void* ptr) noexcept
     Hanami::decreaseGlobalMemoryCounter(0);
 }
 
-void  operator delete(void* ptr, std::size_t)  noexcept
+void
+operator delete(void* ptr, std::size_t) noexcept
 {
     free(ptr);
     Hanami::decreaseGlobalMemoryCounter(0);
 }
 
-void  operator delete[](void* ptr, std::size_t)  noexcept
+void
+operator delete[](void* ptr, std::size_t) noexcept
 {
     free(ptr);
     Hanami::decreaseGlobalMemoryCounter(0);
@@ -86,7 +87,7 @@ namespace Hanami
  *
  * @param testName name for output to identify the test within the output
  */
-MemoryLeakTestHelpter::MemoryLeakTestHelpter(const std::string &testName)
+MemoryLeakTestHelpter::MemoryLeakTestHelpter(const std::string& testName)
 {
     m_currentAllocations = MemoryCounter::globalMemoryCounter.numberOfActiveAllocations;
 
@@ -99,13 +100,13 @@ MemoryLeakTestHelpter::MemoryLeakTestHelpter(const std::string &testName)
  */
 MemoryLeakTestHelpter::~MemoryLeakTestHelpter()
 {
-    std::cout << "tests succeeded: " << m_successfulTests <<std::endl;
+    std::cout << "tests succeeded: " << m_successfulTests << std::endl;
     std::cout << "tests failed: " << m_failedTests << std::endl;
     std::cout << "------------------------------" << std::endl << std::endl;
 
-    if(m_failedTests > 0) {
+    if (m_failedTests > 0) {
         exit(1);
     }
 }
 
-}
+}  // namespace Hanami

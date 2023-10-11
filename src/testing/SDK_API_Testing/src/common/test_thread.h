@@ -23,20 +23,18 @@
 #ifndef TSUGUMI_TESTTHREAD_H
 #define TSUGUMI_TESTTHREAD_H
 
+#include <hanami_common/threading/thread.h>
+#include <hanami_sdk/common/websocket_client.h>
+
 #include <deque>
 #include <mutex>
 
-#include <hanami_sdk/common/websocket_client.h>
-#include <hanami_common/threading/thread.h>
-
 class TestStep;
 
-class TestThread
-        : public Hanami::Thread
+class TestThread : public Hanami::Thread
 {
-public:
-    TestThread(const std::string &name,
-               json &inputData);
+   public:
+    TestThread(const std::string& name, json& inputData);
     ~TestThread();
 
     void addTest(TestStep* newStep);
@@ -44,10 +42,10 @@ public:
     bool isFinished = false;
     static Hanami::WebsocketClient* m_wsClient;
 
-protected:
+   protected:
     void run();
 
-private:
+   private:
     std::deque<TestStep*> m_taskQueue;
     std::mutex m_queueLock;
     json m_inputData;
@@ -55,4 +53,4 @@ private:
     TestStep* getTest();
 };
 
-#endif // TSUGUMI_TESTTHREAD_H
+#endif  // TSUGUMI_TESTTHREAD_H

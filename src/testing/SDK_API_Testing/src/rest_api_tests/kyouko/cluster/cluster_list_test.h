@@ -25,14 +25,12 @@
 
 #include <common/test_step.h>
 
-class ClusterListTest
-        : public TestStep
+class ClusterListTest : public TestStep
 {
-public:
+   public:
     ClusterListTest(const bool expectSuccess);
 
-    bool runTest(json &inputData,
-                 Hanami::ErrorContainer &error);
+    bool runTest(json &inputData, Hanami::ErrorContainer &error);
 };
 
-#endif // TSUGUMITESTER_CLUSTERLISTTEST_H
+#endif  // TSUGUMITESTER_CLUSTERLISTTEST_H

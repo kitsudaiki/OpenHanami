@@ -22,19 +22,16 @@
 
 #include "cycle_finish_state.h"
 
-#include <core/cluster/task.h>
 #include <core/cluster/cluster.h>
 #include <core/cluster/statemachine_init.h>
+#include <core/cluster/task.h>
 
 /**
  * @brief constructor
  *
  * @param cluster pointer to the cluster, where the event and the statemachine belongs to
  */
-CycleFinish_State::CycleFinish_State(Cluster* cluster)
-{
-    m_cluster = cluster;
-}
+CycleFinish_State::CycleFinish_State(Cluster* cluster) { m_cluster = cluster; }
 
 /**
  * @brief destructor
@@ -59,7 +56,7 @@ CycleFinish_State::processEvent()
     actualTask->progress.percentageFinished = actualF / shouldF;
 
     // to go next state of finish the task to goal is reached
-    if(actualTask->actualCycle == numberOfCycles) {
+    if (actualTask->actualCycle == numberOfCycles) {
         m_cluster->goToNextState(FINISH_TASK);
     } else {
         m_cluster->goToNextState(NEXT);

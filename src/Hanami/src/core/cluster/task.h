@@ -27,8 +27,7 @@
 
 #include <nlohmann/json.hpp>
 
-enum TaskType
-{
+enum TaskType {
     UNDEFINED_TASK = 0,
     IMAGE_TRAIN_TASK = 1,
     IMAGE_REQUEST_TASK = 2,
@@ -38,8 +37,7 @@ enum TaskType
     CLUSTER_CHECKPOINT_RESTORE_TASK = 6,
 };
 
-enum TaskState
-{
+enum TaskState {
     UNDEFINED_TASK_STATE = 0,
     QUEUED_TASK_STATE = 1,
     ACTIVE_TASK_STATE = 2,
@@ -47,8 +45,7 @@ enum TaskState
     FINISHED_TASK_STATE = 4,
 };
 
-struct TaskProgress
-{
+struct TaskProgress {
     TaskState state = UNDEFINED_TASK_STATE;
     float percentageFinished = 0.0f;
     std::chrono::high_resolution_clock::time_point queuedTimeStamp;
@@ -57,8 +54,7 @@ struct TaskProgress
     uint64_t estimatedRemaningTime = 0;
 };
 
-struct Task
-{
+struct Task {
     // task-identification
     kuuid uuid;
     TaskType type = UNDEFINED_TASK;
@@ -85,4 +81,4 @@ struct Task
     TaskProgress progress;
 };
 
-#endif // HANAMI_TASK_H
+#endif  // HANAMI_TASK_H

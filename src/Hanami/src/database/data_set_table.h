@@ -23,16 +23,15 @@
 #ifndef HANAMI_DATA_SET_TABLE_H
 #define HANAMI_DATA_SET_TABLE_H
 
-#include <hanami_common/logger.h>
 #include <database/generic_tables/hanami_sql_table.h>
+#include <hanami_common/logger.h>
 
-class DataSetTable
-        : public HanamiSqlTable
+class DataSetTable : public HanamiSqlTable
 {
-public:
-    static DataSetTable* getInstance()
+   public:
+    static DataSetTable *getInstance()
     {
-        if(instance == nullptr) {
+        if (instance == nullptr) {
             instance = new DataSetTable();
         }
         return instance;
@@ -40,9 +39,7 @@ public:
 
     ~DataSetTable();
 
-    bool addDataSet(json &data,
-                    const UserContext &userContext,
-                    Hanami::ErrorContainer &error);
+    bool addDataSet(json &data, const UserContext &userContext, Hanami::ErrorContainer &error);
     bool getDataSet(json &result,
                     const std::string &datasetUuid,
                     const UserContext &userContext,
@@ -63,9 +60,10 @@ public:
                         const std::string &dataUuid,
                         const json &context,
                         Hanami::ErrorContainer &error);
-private:
+
+   private:
     DataSetTable();
-    static DataSetTable* instance;
+    static DataSetTable *instance;
 };
 
-#endif // HANAMI_DATA_SET_TABLE_H
+#endif  // HANAMI_DATA_SET_TABLE_H

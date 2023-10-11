@@ -20,13 +20,14 @@
  *      limitations under the License.
  */
 
-#include <cstdint>
-#include <string>
-#include <unistd.h>
-#include <cmath>
-#include <chrono>
 #include <fcntl.h>
 #include <hanami_common/logger.h>
+#include <unistd.h>
+
+#include <chrono>
+#include <cmath>
+#include <cstdint>
+#include <string>
 
 #ifndef KITSUNEMIMI_CPU_RAPL_H
 #define KITSUNEMIMI_CPU_RAPL_H
@@ -34,8 +35,7 @@
 namespace Hanami
 {
 
-struct RaplDiff
-{
+struct RaplDiff {
     // info: pp0 = cores
     //       pp1 = graphics
 
@@ -54,21 +54,20 @@ struct RaplDiff
     const std::string toString()
     {
         std::string content = "";
-        content += "pkgDiff:  " + std::to_string(pkgDiff)  + " Ws\n";
-        content += "pp0Diff:  " + std::to_string(pp0Diff)  + " Ws\n";
-        content += "pp1Diff:  " + std::to_string(pp1Diff)  + " Ws\n";
+        content += "pkgDiff:  " + std::to_string(pkgDiff) + " Ws\n";
+        content += "pp0Diff:  " + std::to_string(pp0Diff) + " Ws\n";
+        content += "pp1Diff:  " + std::to_string(pp1Diff) + " Ws\n";
         content += "dramDiff: " + std::to_string(dramDiff) + " Ws\n";
-        content +=  "---\n";
-        content += "pkgAvg:  " + std::to_string(pkgAvg)  + " W\n";
-        content += "pp0Avg:  " + std::to_string(pp0Avg)  + " W\n";
-        content += "pp1Avg:  " + std::to_string(pp1Avg)  + " W\n";
+        content += "---\n";
+        content += "pkgAvg:  " + std::to_string(pkgAvg) + " W\n";
+        content += "pp0Avg:  " + std::to_string(pp0Avg) + " W\n";
+        content += "pp1Avg:  " + std::to_string(pp1Avg) + " W\n";
         content += "dramAvg: " + std::to_string(dramAvg) + " W\n";
         return content;
     }
 };
 
-struct RaplInfo
-{
+struct RaplInfo {
     double power_units = 0.0;
     double energy_units = 0.0;
     double time_units = 0.0;
@@ -81,9 +80,9 @@ struct RaplInfo
     const std::string toString()
     {
         std::string content = "";
-        content += "Power units:                   " + std::to_string(power_units)        + " W\n";
-        content += "Energy units:                  " + std::to_string(energy_units)       + " J\n";
-        content += "Time units:                    " + std::to_string(time_units)         + " s\n";
+        content += "Power units:                   " + std::to_string(power_units) + " W\n";
+        content += "Energy units:                  " + std::to_string(energy_units) + " J\n";
+        content += "Time units:                    " + std::to_string(time_units) + " s\n";
         content += "Package thermal specification: " + std::to_string(thermal_spec_power) + " W\n";
         return content;
     }
@@ -91,7 +90,7 @@ struct RaplInfo
 
 class Rapl
 {
-public:
+   public:
     Rapl(const uint64_t threadId);
     bool initRapl(ErrorContainer &error);
     bool isActive() const;
@@ -99,9 +98,8 @@ public:
     RaplDiff calculateDiff();
     RaplInfo getInfo() const;
 
-private:
-    struct RaplState
-    {
+   private:
+    struct RaplState {
         uint64_t pkg = 0;
         uint64_t pp0 = 0;
         uint64_t pp1 = 0;
@@ -121,6 +119,6 @@ private:
     uint64_t readMSR(const int32_t offset);
 };
 
-}
+}  // namespace Hanami
 
-#endif // KITSUNEMIMI_CPU_RAPL_H
+#endif  // KITSUNEMIMI_CPU_RAPL_H

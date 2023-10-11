@@ -32,13 +32,12 @@ bool getRequestResult(std::string &result,
                       const std::string &userId,
                       Hanami::ErrorContainer &error);
 
-bool listRequestResult(std::string &result,
-                       Hanami::ErrorContainer &error);
+bool listRequestResult(std::string &result, Hanami::ErrorContainer &error);
 
 bool deleteRequestResult(std::string &result,
                          const std::string &userId,
                          Hanami::ErrorContainer &error);
 
-} // namespace Hanami
+}  // namespace Hanami
 
-#endif // HANAMISDK_REQUEST_RESULT_H
+#endif  // HANAMISDK_REQUEST_RESULT_H

@@ -23,16 +23,15 @@
 #ifndef PROCESS_HANDLING_H
 #define PROCESS_HANDLING_H
 
-#include <vector>
 #include <iostream>
 #include <map>
 #include <utility>
+#include <vector>
 
 namespace Hanami
 {
 
-struct ProcessResult
-{
+struct ProcessResult {
     bool success = true;
     int exitStatus = 0;
     std::string processOutput = "";
@@ -40,9 +39,8 @@ struct ProcessResult
 };
 
 ProcessResult runSyncProcess(std::string command);
-ProcessResult runSyncProcess(const std::string &programm,
-                             const std::vector<std::string> &args);
+ProcessResult runSyncProcess(const std::string &programm, const std::vector<std::string> &args);
 
-}
+}  // namespace Hanami
 
-#endif // PROCESS_HANDLING_H
+#endif  // PROCESS_HANDLING_H

@@ -25,18 +25,15 @@
 
 #include <hanami_files/data_set_files/data_set_file.h>
 
-class TableDataSetFile
-        : public DataSetFile
+class TableDataSetFile : public DataSetFile
 {
-public:
-    struct TableTypeHeader
-    {
+   public:
+    struct TableTypeHeader {
         uint64_t numberOfColumns = 0;
         uint64_t numberOfLines = 0;
     };
 
-    struct TableHeaderEntry
-    {
+    struct TableHeaderEntry {
         char name[256];
         bool isInput = false;
         bool isOutput = false;
@@ -47,7 +44,7 @@ public:
         void setName(const std::string &name)
         {
             uint32_t nameSize = name.size();
-            if(nameSize > 255) {
+            if (nameSize > 255) {
                 nameSize = 255;
             }
             memcpy(this->name, name.c_str(), nameSize);
@@ -56,7 +53,7 @@ public:
     };
 
     TableDataSetFile(const std::string &filePath);
-    TableDataSetFile(Hanami::BinaryFile* file);
+    TableDataSetFile(Hanami::BinaryFile *file);
     ~TableDataSetFile();
     bool updateHeader(Hanami::ErrorContainer &error);
     bool getPayload(Hanami::DataBuffer &result,
@@ -68,9 +65,9 @@ public:
     TableTypeHeader tableHeader;
     std::vector<TableHeaderEntry> tableColumns;
 
-protected:
+   protected:
     void initHeader();
-    void readHeader(const uint8_t* u8buffer);
+    void readHeader(const uint8_t *u8buffer);
 };
 
-#endif // HANAMI_TABLEDATASETFILE_H
+#endif  // HANAMI_TABLEDATASETFILE_H

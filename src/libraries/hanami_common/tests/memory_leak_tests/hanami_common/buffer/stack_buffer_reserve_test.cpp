@@ -7,6 +7,7 @@
  */
 
 #include "stack_buffer_reserve_test.h"
+
 #include <hanami_common/buffer/stack_buffer_reserve.h>
 
 namespace Hanami
@@ -34,4 +35,4 @@ StackBufferReserve_Test::create_delete_test()
     CHECK_MEMORY();
 }
 
-}
+}  // namespace Hanami
