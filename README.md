@@ -83,20 +83,40 @@ If you need help to setup things, have a question or something like this, feel f
 
 ## This repository
 
-Clone repo with:
+**Required packages:**
+
+- Ubuntu 22.04:
 
 ```
-git clone --recurse-submodules git@github.com:kitsudaiki/Hanami-AI.git
+sudo apt-get install -y git ssh gcc g++ gcc-12 g++-12 clang-format-15 make qt5-qmake bison flex libssl-dev libcrypto++-dev libboost1.74-dev uuid-dev  libsqlite3-dev protobuf-compiler 
 ```
 
-In case the repo was cloned without submodules initially:
+CUDA 12 is necessary, which is not in the standard apt-repositories below ubuntu 23.04. So in case it should be installed on 22.04, CUDA has to be installed manually with the manual: https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html
+
+- Ubuntu 23.04
+
+```
+sudo apt-get install -y git ssh gcc g++ gcc-12 g++-12 clang-format-15 make qt5-qmake bison flex libssl-dev libcrypto++-dev libboost1.74-dev uuid-dev  libsqlite3-dev protobuf-compiler nvidia-cuda-toolkit
+```
+
+**Clone repo with:**
+
+```
+git clone --recurse-submodules git@github.com:kitsudaiki/Hanami.git
+cd Hanami
+
+# load pre-commit hook
+git config core.hooksPath .git-hooks
+```
+
+**In case the repo was cloned without submodules initially:**
 
 ```
 git submodule init
 git submodule update --recursive
 ```
 
-Mkdocs and plugins:
+**Mkdocs and plugins:**
 
 ```
 pip3 install mkdocs-material mkdocs-swagger-ui-tag mkdocs-drawio-exporter
