@@ -91,6 +91,7 @@ HttpWebsocketThread::handleSocket(tcp::socket *socket, ErrorContainer &error)
         }
 
         runWebsocket();
+        m_webSocket = nullptr;
         m_uuid = "";
     } else {
         // process request
