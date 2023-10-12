@@ -36,24 +36,7 @@ TempFileHandler::TempFileHandler() {}
 /**
  * @brief destructor and delete all registered temporary files
  */
-TempFileHandler::~TempFileHandler()
-{
-    bool success = false;
-    Hanami::ErrorContainer error;
-    const std::string targetFilePath = GET_STRING_CONFIG("storage", "data_set_location", success);
-
-    std::vector<std::string> result;
-    auto it = m_tempFiles.begin();
-    for (; it != m_tempFiles.end(); it++) {
-        Hanami::BinaryFile* ptr = it->second;
-        if (ptr->closeFile(error) == false) {
-            // TODO: handle error
-        }
-        delete ptr;
-        Hanami::deleteFileOrDir(targetFilePath + "/" + it->first, error);
-        m_tempFiles.erase(it);
-    }
-}
+TempFileHandler::~TempFileHandler() {}
 
 /**
  * @brief initialize new temporary file

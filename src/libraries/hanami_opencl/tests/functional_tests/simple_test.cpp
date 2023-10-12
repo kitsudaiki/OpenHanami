@@ -61,7 +61,7 @@ SimpleTest::simple_test()
     Hanami::GpuHandler oclHandler;
     assert(oclHandler.initDevice(error));
 
-    TEST_NOT_EQUAL(oclHandler.m_interfaces.size(), 0)
+    TEST_NOT_EQUAL(oclHandler.m_interfaces.size(), 0);
 
     Hanami::GpuInterface* ocl = oclHandler.m_interfaces.at(0);
 
@@ -89,20 +89,20 @@ SimpleTest::simple_test()
     }
 
     // run
-    TEST_EQUAL(ocl->initCopyToDevice(data, error), true)
-    TEST_EQUAL(ocl->addKernel(data, "add", kernelCode, error), true)
-    TEST_EQUAL(ocl->bindKernelToBuffer(data, "add", "x", error), true)
-    TEST_EQUAL(ocl->bindKernelToBuffer(data, "add", "y", error), true)
-    TEST_EQUAL(ocl->bindKernelToBuffer(data, "add", "z", error), true)
-    TEST_EQUAL(ocl->bindKernelToBuffer(data, "add", "size", error), true)
+    TEST_EQUAL(ocl->initCopyToDevice(data, error), true);
+    TEST_EQUAL(ocl->addKernel(data, "add", kernelCode, error), true);
+    TEST_EQUAL(ocl->bindKernelToBuffer(data, "add", "x", error), true);
+    TEST_EQUAL(ocl->bindKernelToBuffer(data, "add", "y", error), true);
+    TEST_EQUAL(ocl->bindKernelToBuffer(data, "add", "z", error), true);
+    TEST_EQUAL(ocl->bindKernelToBuffer(data, "add", "size", error), true);
     std::cout << "size outside: " << testSize << std::endl;
     // TEST_EQUAL(ocl->setLocalMemory("add", 256*256), true);
-    TEST_EQUAL(ocl->run(data, "add", error), true)
-    TEST_EQUAL(ocl->copyFromDevice(data, "z", error), true)
+    TEST_EQUAL(ocl->run(data, "add", error), true);
+    TEST_EQUAL(ocl->copyFromDevice(data, "z", error), true);
 
     // check result
     float* outputValues = static_cast<float*>(data.getBufferData("z"));
-    TEST_EQUAL(outputValues[42], 3.0f)
+    TEST_EQUAL(outputValues[42], 3.0f);
 
     // update data on host
     for (uint32_t i = 0; i < testSize; i++) {
@@ -110,31 +110,31 @@ SimpleTest::simple_test()
     }
 
     // update data on device
-    TEST_EQUAL(ocl->updateBufferOnDevice(data, "x", error), true)
+    TEST_EQUAL(ocl->updateBufferOnDevice(data, "x", error), true);
 
     // second run
-    TEST_EQUAL(ocl->run(data, "add", error), true)
+    TEST_EQUAL(ocl->run(data, "add", error), true);
     // copy new output back
-    TEST_EQUAL(ocl->copyFromDevice(data, "z", error), true)
+    TEST_EQUAL(ocl->copyFromDevice(data, "z", error), true);
 
     // check new result
     outputValues = static_cast<float*>(data.getBufferData("z"));
-    TEST_EQUAL(outputValues[42], 7.0f)
+    TEST_EQUAL(outputValues[42], 7.0f);
 
     // test memory getter
-    TEST_NOT_EQUAL(ocl->getLocalMemorySize(), 0)
-    TEST_NOT_EQUAL(ocl->getGlobalMemorySize(), 0)
-    TEST_NOT_EQUAL(ocl->getMaxMemAllocSize(), 0)
+    TEST_NOT_EQUAL(ocl->getLocalMemorySize(), 0);
+    TEST_NOT_EQUAL(ocl->getGlobalMemorySize(), 0);
+    TEST_NOT_EQUAL(ocl->getMaxMemAllocSize(), 0);
 
     // test work group getter
-    TEST_NOT_EQUAL(ocl->getMaxWorkGroupSize(), 0)
-    TEST_NOT_EQUAL(ocl->getMaxWorkItemDimension(), 0)
-    TEST_NOT_EQUAL(ocl->getMaxWorkItemSize().x, 0)
-    TEST_NOT_EQUAL(ocl->getMaxWorkItemSize().y, 0)
-    TEST_NOT_EQUAL(ocl->getMaxWorkItemSize().z, 0)
+    TEST_NOT_EQUAL(ocl->getMaxWorkGroupSize(), 0);
+    TEST_NOT_EQUAL(ocl->getMaxWorkItemDimension(), 0);
+    TEST_NOT_EQUAL(ocl->getMaxWorkItemSize().x, 0);
+    TEST_NOT_EQUAL(ocl->getMaxWorkItemSize().y, 0);
+    TEST_NOT_EQUAL(ocl->getMaxWorkItemSize().z, 0);
 
     // test close
-    TEST_EQUAL(ocl->closeDevice(data), true)
+    TEST_EQUAL(ocl->closeDevice(data), true);
 }
 
 }  // namespace Hanami
