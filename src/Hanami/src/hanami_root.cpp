@@ -120,7 +120,8 @@ HanamiRoot::init(Hanami::ErrorContainer& error)
     if (host->initHost(error) == false) {
         error.addMeesage("Failed to initialize host-information.");
         LOG_ERROR(error);
-        return false;
+        // can fail because it runs within a virtual machine for example, but this should
+        // not prevent the process from starting
     }
 
     bool success = false;
@@ -130,6 +131,7 @@ HanamiRoot::init(Hanami::ErrorContainer& error)
     // create thread-binder
     if (ThreadBinder::getInstance()->init(error) == false) {
         error.addMeesage("failed to init thread-binder");
+        LOG_ERROR(error);
         return false;
     }
     ThreadBinder::getInstance()->startThread();

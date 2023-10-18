@@ -1,0 +1,26 @@
+[DEFAULT] 
+debug = {{debug}} 
+log_path = {{log_dir}} 
+database = "/etc/hanami/hanami_db" 
+socket_path = "/tmp/hanami"
+
+[storage] 
+data_set_location = {{data_set_location}} 
+checkpoint_location = {{checkpoint_location}}
+
+[auth] 
+policies = "/etc/hanami/policies" 
+token_key_path = {{token_key_path}} 
+token_expire_time = 3600
+
+[http] 
+enable = True 
+ip = {{listen_address}}
+certificate = {{ssl_cert_path}} 
+key = {{ssl_key_path}} 
+dashboard_files = "/etc/Hanami-Dashboard/src" 
+port = 1337 
+enable_dashboard = True
+
+[azuki] 
+enable = False

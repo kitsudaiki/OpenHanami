@@ -64,6 +64,13 @@ struct ErrorContainer {
         _possibleSolution.push_back(possibleSolution);
     }
 
+    void reset()
+    {
+        _errorMessages.clear();
+        _possibleSolution.clear();
+        _alreadyPrinted = false;
+    }
+
     const std::string toString()
     {
         TableItem output;

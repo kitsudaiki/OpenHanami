@@ -1,0 +1,12 @@
+---
+debug: true
+
+docker_tag: "develop"
+listen_address: "0.0.0.0"
+log_dir: "/var/log/hanami"
+
+data_set_location: "/etc/hanami/datasets"
+checkpoint_location: "/etc/hanami/checkpoints"
+token_key_path: "/etc/hanami/token_key"
+ssl_cert_path: "/etc/hanami/cert.pem"
+ssl_key_path: "/etc/hanami/key.pem"
