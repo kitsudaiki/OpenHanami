@@ -5,6 +5,9 @@ CONFIG += c++17
 TEMPLATE = lib
 VERSION = 0.3.1
 
+QMAKE_CXX = clang++-15
+QMAKE_LINK = clang++-15
+
 LIBS += -L../../../../libraries/hanami_common/src -lhanami_common
 LIBS += -L../../../../libraries/hanami_common/src/debug -lhanami_common
 LIBS += -L../../../../libraries/hanami_common/src/release -lhanami_common

@@ -5,6 +5,9 @@ TEMPLATE = lib
 CONFIG += c++17
 VERSION = 0.26.1
 
+QMAKE_CXX = clang++-15
+QMAKE_LINK = clang++-15
+
 INCLUDEPATH += ../../../third-party-libs/json/include
 
 INCLUDEPATH += $$PWD \

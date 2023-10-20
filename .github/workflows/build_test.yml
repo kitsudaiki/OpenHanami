@@ -44,7 +44,7 @@ jobs:
     needs: [ cpp-check, clang-format-check ]
     runs-on: ubuntu-latest
     container:
-      image: kitsudaiki/hanami_builder:0.4.0
+      image: kitsudaiki/hanami_builder:0.6.0
     name: "build repository"
     steps:
       - name: "Checkout repository"
