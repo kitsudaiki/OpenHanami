@@ -4,6 +4,9 @@ TARGET = Hanami
 CONFIG += console
 CONFIG += c++17
 
+QMAKE_CXX = clang++-15
+QMAKE_LINK = clang++-15
+
 INCLUDEPATH += ../libraries/hanami_messages/protobuffers
 
 LIBS += -L../libraries/hanami_hardware/src -lhanami_hardware

@@ -8,8 +8,7 @@ Installed packages under the actual used Ubuntu 23.04
 
 | apt-package | Purpose |
 | --- | --- |
-| gcc | C-compiler |
-| g++  | C++-compiler |
+| clang-15 | C++-compiler |
 | clang-format-15  | Helper for styling the source-code |
 | make  | Build-Tool |
 | qt5-qmake  | Qt-specific build-tool, because pro-files are used |
@@ -21,6 +20,8 @@ Installed packages under the actual used Ubuntu 23.04
 | uuid-dev  | Generate UUID's within the code |
 | libsqlite3-dev | Library to interact with the SQLite3 databases |
 | protobuf-compiler | Convert protobuf-files into source-code |
+| gcc | C-compiler |
+| g++  | C++-compiler |
 | nvidia-cuda-toolkit | Libraries and compiler for the CUDA-Kernel |
 
 !!! info

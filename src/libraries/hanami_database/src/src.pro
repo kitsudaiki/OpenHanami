@@ -5,6 +5,9 @@ TEMPLATE = lib
 CONFIG += c++17
 VERSION = 0.5.0
 
+QMAKE_CXX = clang++-15
+QMAKE_LINK = clang++-15
+
 LIBS += -L../../hanami_sqlite/src -lhanami_sqlite
 LIBS += -L../../hanami_sqlite/src/debug -lhanami_sqlite
 LIBS += -L../../hanami_sqlite/src/release -lhanami_sqlite

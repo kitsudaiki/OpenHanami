@@ -1,10 +1,9 @@
-FROM ubuntu:22.04
+FROM ubuntu:23.04
 
 RUN apt-get update && \
-    apt-get install -y gcc \
+    apt-get install -y clang-15 \
+                       gcc \
                        g++ \
-                       gcc-12 \
-                       g++-12 \
                        make \
                        qt5-qmake \
                        bison \
@@ -17,21 +16,21 @@ RUN apt-get update && \
                        uuid-dev  \
                        libsqlite3-dev \
                        protobuf-compiler \
-                       nano 
-                       
-RUN export DEBIAN_FRONTEND=noninteractive && \
+                       nvidia-cuda-toolkit \
+                       nano \
+    && \
+    export DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y apt-transport-https ca-certificates curl software-properties-common && \ 
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg && \
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null && \
     apt-get update  && \
-    apt-get install -y docker-ce
+    apt-get install -y docker-ce \
+    && \
+    apt-get clean autoclean &&\
+    apt-get autoremove --yes
 
-RUN export DEBIAN_FRONTEND=noninteractive && \
-    wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb && \
-    dpkg -i cuda-keyring_1.1-1_all.deb  && \
-    apt-get update && \
-    apt-get install -y cuda
-
+RUN ln -s /usr/bin/clang++-15 /usr/bin/clang++ && \
+    ln -s /usr/bin/clang-15 /usr/bin/clang
 RUN mkdir /dockerbuilder
 COPY files/build_hanami.sh /dockerbuilder 
 COPY files/Dockerfile_hanami /dockerbuilder
