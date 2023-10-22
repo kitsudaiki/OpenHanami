@@ -34,7 +34,11 @@ namespace Hanami
  *
  * @param threadId id of the physical cpu thread, which belongs to this thread
  */
+#if (defined(__i386__)) || (defined(__x86_64__))
 CpuThread::CpuThread(const uint32_t threadId) : threadId(threadId), m_rapl(threadId) {}
+#else
+CpuThread::CpuThread(const uint32_t threadId) : threadId(threadId) {}
+#endif
 
 /**
  * @brief destructor
@@ -91,10 +95,12 @@ CpuThread::initThread(Host* host)
         return false;
     }
 
+#if (defined(__i386__)) || (defined(__x86_64__))
     // try to init rapl
     if (m_rapl.initRapl(error) == false) {
         LOG_ERROR(error);
     }
+#endif
 
     // add thread to the topological overview
     CpuPackage* package = host->addPackage(packageId);
@@ -131,12 +137,16 @@ CpuThread::getCurrentThreadSpeed() const
 double
 CpuThread::getThermalSpec() const
 {
+#if (defined(__i386__)) || (defined(__x86_64__))
     // check if RAPL was successfully initialized
     if (m_rapl.isActive() == false) {
         return 0.0;
     }
 
     return m_rapl.getInfo().thermal_spec_power;
+#else
+    return 0.0f;
+#endif
 }
 
 /**
@@ -147,12 +157,16 @@ CpuThread::getThermalSpec() const
 double
 CpuThread::getTotalPackagePower()
 {
+#if (defined(__i386__)) || (defined(__x86_64__))
     // check if RAPL was successfully initialized
     if (m_rapl.isActive() == false) {
         return 0.0;
     }
 
     return m_rapl.calculateDiff().pkgAvg;
+#else
+    return 0.0f;
+#endif
 }
 
 /**
