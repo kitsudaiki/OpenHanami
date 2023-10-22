@@ -24,10 +24,6 @@ Installed packages under the actual used Ubuntu 23.04
 | g++  | C++-compiler |
 | nvidia-cuda-toolkit | Libraries and compiler for the CUDA-Kernel |
 
-!!! info
-
-    CUDA 12 is necessary, which is not in the standard apt-repositories below ubuntu 23.04. So in case it should be installed on 22.04, CUDA has to be installed manually with the manual: https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html
-
 ### Submodules
 
 | name | License | Purpose |
@@ -45,7 +41,7 @@ Installed packages under the actual used Ubuntu 23.04
 | libsqlite3-0  | Library to interact with the SQLite3 databases | 
 | libprotobuf23 | Runtime-library for protobuffers | 
 | libboost1.74 | Provides the Beast-library of Boost, which is used for the REST-API within the Torii |
-| libcudart12.0 | Runtime-library for CUDA | 
+| libcudart11.0 | Runtime-library for CUDA | 
 
 ## Overview
 
