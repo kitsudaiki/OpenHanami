@@ -85,18 +85,8 @@ If you need help to setup things, have a question or something like this, feel f
 
 **Required packages:**
 
-- Ubuntu 22.04:
-
 ```
-sudo apt-get install -y git ssh gcc g++ clang-format-15 make qt5-qmake bison flex libssl-dev libcrypto++-dev libboost1.74-dev uuid-dev  libsqlite3-dev protobuf-compiler 
-```
-
-CUDA 12 is necessary, which is not in the standard apt-repositories below ubuntu 23.04. So in case it should be installed on 22.04, CUDA has to be installed manually with the manual: https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html
-
-- Ubuntu 23.04
-
-```
-sudo apt-get install -y git ssh clang++-15 clang-format-15 make qt5-qmake bison flex libssl-dev libcrypto++-dev libboost1.74-dev uuid-dev  libsqlite3-dev protobuf-compiler nvidia-cuda-toolkit
+sudo apt-get install -y git ssh gcc g++ clang-15 clang-format-15 make qt5-qmake bison flex libssl-dev libcrypto++-dev libboost1.74-dev uuid-dev  libsqlite3-dev protobuf-compiler nvidia-cuda-toolkit
 ```
 
 **Clone repo with:**

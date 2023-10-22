@@ -27,7 +27,6 @@
 #include <stdint.h>
 #include <uuid/uuid.h>
 
-#include <algorithm>
 #include <cstdlib>
 #include <string>
 
