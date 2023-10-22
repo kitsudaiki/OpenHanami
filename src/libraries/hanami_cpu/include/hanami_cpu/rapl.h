@@ -20,6 +20,8 @@
  *      limitations under the License.
  */
 
+#if (defined(__i386__)) || (defined(__x86_64__))
+
 #include <fcntl.h>
 #include <hanami_common/logger.h>
 #include <unistd.h>
@@ -122,3 +124,5 @@ class Rapl
 }  // namespace Hanami
 
 #endif  // KITSUNEMIMI_CPU_RAPL_H
+
+#endif

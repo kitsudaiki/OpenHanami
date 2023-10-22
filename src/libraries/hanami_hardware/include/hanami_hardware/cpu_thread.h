@@ -24,7 +24,9 @@
 #define HANAMI_HARDWARE_CPUTHREAD_H
 
 #include <hanami_common/logger.h>
+#if (defined(__i386__)) || (defined(__x86_64__))
 #include <hanami_cpu/rapl.h>
+#endif
 
 #include <iostream>
 #include <string>
@@ -57,7 +59,9 @@ class CpuThread
     json toJson();
 
    private:
+#if (defined(__i386__)) || (defined(__x86_64__))
     Rapl m_rapl;
+#endif
 };
 
 }  // namespace Hanami

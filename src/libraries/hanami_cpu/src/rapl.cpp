@@ -20,6 +20,8 @@
  *      limitations under the License.
  */
 
+#if (defined(__i386__)) || (defined(__x86_64__))
+
 #include <hanami_cpu/rapl.h>
 
 typedef std::chrono::milliseconds chronoMilliSec;
@@ -262,3 +264,5 @@ Rapl::getInfo() const
 }
 
 }  // namespace Hanami
+
+#endif
