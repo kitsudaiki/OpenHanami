@@ -92,7 +92,7 @@ sudo apt-get install -y git ssh gcc g++ clang-15 clang-format-15 make qt5-qmake 
 **Clone repo with:**
 
 ```
-git clone --recurse-submodules git@github.com:kitsudaiki/Hanami.git
+git clone --recurse-submodules https://github.com/kitsudaiki/Hanami.git
 cd Hanami
 
 # load pre-commit hook
