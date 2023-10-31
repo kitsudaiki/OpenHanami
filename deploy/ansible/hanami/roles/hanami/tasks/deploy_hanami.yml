@@ -1,0 +1,71 @@
+---
+- name: Create base-directory
+  become: yes
+  file:
+    path: /etc/hanami
+    state: directory
+    mode: 0777
+
+- name: Create checkpoint-directory
+  file:
+    path: "{{ checkpoint_location }}"
+    state: directory
+    mode: 0777
+
+- name: Create dataset-directory
+  file:
+    path: "{{ data_set_location }}"
+    state: directory
+    mode: 0777
+
+
+- name: Create log-directory
+  become: yes
+  file:
+    path: "{{ log_dir }}"
+    state: directory
+    mode: 0777
+
+
+- name: Copy policies
+  copy:
+    src: policies
+    dest: /etc/hanami/policies
+    mode: 0777
+
+- name: Create hanami-config from template
+  template:
+    src: hanami.conf.j2
+    dest: /etc/hanami/hanami.conf
+    mode: 0777
+
+- name: Create a token-file
+  copy:
+    dest: "{{ token_key_path }}"
+    content: "{{ lookup('env','TOKEN_KEY') }}"
+    
+
+- name: Create Hanami docker-container
+  become: yes
+  community.docker.docker_container:
+    name: Hanami
+    image: kitsudaiki/hanami:{{ docker_tag }}
+    state: started
+    pull: yes
+    detach: true
+    command: "Hanami"
+    env:
+      HANAMI_ADMIN_USER_ID: "{{ lookup('env','ADMIN_USER_ID') }}"
+      HANAMI_ADMIN_USER_NAME: "{{ lookup('env','ADMIN_USER_NAME') }}"
+      HANAMI_ADMIN_PASSWORD: "{{ lookup('env','ADMIN_PASSWORD') }}"
+    ports: 
+      - "1337:1337"
+    mounts:
+      - source: /etc/hanami
+        target: /etc/hanami
+        type: bind
+        read_only: false
+      - source: "{{ log_dir }}"
+        target: "{{ log_dir }}"
+        type: bind
+        read_only: false

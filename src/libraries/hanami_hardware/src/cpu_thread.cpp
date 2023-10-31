@@ -59,26 +59,26 @@ CpuThread::initThread(Host* host)
 
     // min-speed
     if (getMinimumSpeed(minSpeed, threadId, error) == false) {
-        LOG_ERROR(error);
-        return false;
+        LOG_WARNING(error.toString());
+        error.reset();
     }
 
     // max-speed
     if (getMaximumSpeed(maxSpeed, threadId, error) == false) {
-        LOG_ERROR(error);
-        return false;
+        LOG_WARNING(error.toString());
+        error.reset();
     }
 
     // current-min-speed
     if (getCurrentMinimumSpeed(currentMinSpeed, threadId, error) == false) {
-        LOG_ERROR(error);
-        return false;
+        LOG_WARNING(error.toString());
+        error.reset();
     }
 
     // current-max-speed
     if (getCurrentMaximumSpeed(currentMaxSpeed, threadId, error) == false) {
-        LOG_ERROR(error);
-        return false;
+        LOG_WARNING(error.toString());
+        error.reset();
     }
 
     // core-id
@@ -98,7 +98,8 @@ CpuThread::initThread(Host* host)
 #if (defined(__i386__)) || (defined(__x86_64__))
     // try to init rapl
     if (m_rapl.initRapl(error) == false) {
-        LOG_ERROR(error);
+        LOG_WARNING(error.toString());
+        error.reset();
     }
 #endif
 

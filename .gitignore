@@ -8,3 +8,4 @@ gitIdentityChange.sh
 *.png~
 *.dtmp
 src/cli/hanamictl/hanamictl
+testing/ansible_deploy/.vagrant/
