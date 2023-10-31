@@ -30,7 +30,7 @@ class ClusterSwitchToDirectTest : public TestStep
    public:
     ClusterSwitchToDirectTest(const bool expectSuccess);
 
-    bool runTest(json &inputData, Hanami::ErrorContainer &error);
+    bool runTest(json& inputData, Hanami::ErrorContainer& error);
 };
 
 #endif  // TSUGUMITESTER_CLUSTERSWITCHTODIRECTTEST_H

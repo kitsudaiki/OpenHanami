@@ -59,7 +59,7 @@ struct ValueItem {
 
     ValueItem() {}
 
-    ValueItem(const ValueItem &other)
+    ValueItem(const ValueItem& other)
     {
         item = other.item;
         type = other.type;
@@ -71,7 +71,7 @@ struct ValueItem {
 
     ~ValueItem() {}
 
-    ValueItem &operator=(const ValueItem &other)
+    ValueItem& operator=(const ValueItem& other)
     {
         if (this != &other) {
             this->item = other.item;

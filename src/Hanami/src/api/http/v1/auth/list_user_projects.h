@@ -31,10 +31,10 @@ class ListUserProjects : public Blossom
     ListUserProjects();
 
    protected:
-    bool runTask(BlossomIO &blossomIO,
-                 const json &context,
-                 BlossomStatus &status,
-                 Hanami::ErrorContainer &error);
+    bool runTask(BlossomIO& blossomIO,
+                 const json& context,
+                 BlossomStatus& status,
+                 Hanami::ErrorContainer& error);
 };
 
 #endif  // HANAMI_LIST_USER_PROJECTS_H

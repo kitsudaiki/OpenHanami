@@ -44,7 +44,7 @@ class TemplateServer;
 class TcpSocket
 {
    public:
-    TcpSocket(const std::string &address, const uint16_t port);
+    TcpSocket(const std::string& address, const uint16_t port);
     ~TcpSocket();
 
    private:
@@ -64,14 +64,14 @@ class TcpSocket
 
     TcpSocket(const int socketFd);
 
-    bool initClientSide(ErrorContainer &error);
-    bool initSocket(ErrorContainer &error);
+    bool initClientSide(ErrorContainer& error);
+    bool initSocket(ErrorContainer& error);
     int getSocketFd() const;
     bool isClientSide() const;
-    long recvData(int socket, void *bufferPosition, const size_t bufferSize, int flags);
-    ssize_t sendData(int socket, const void *bufferPosition, const size_t bufferSize, int flags);
+    long recvData(int socket, void* bufferPosition, const size_t bufferSize, int flags);
+    ssize_t sendData(int socket, const void* bufferPosition, const size_t bufferSize, int flags);
 
-    const std::string &getAddress() const;
+    const std::string& getAddress() const;
 
     std::string m_address = "";
     uint16_t m_port = 0;

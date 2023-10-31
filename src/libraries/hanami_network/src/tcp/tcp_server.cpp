@@ -40,7 +40,7 @@ TcpServer::~TcpServer() {}
  * @return false, if server creation failed, else true
  */
 bool
-TcpServer::initServer(ErrorContainer &error)
+TcpServer::initServer(ErrorContainer& error)
 {
     // create socket
     serverFd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -65,7 +65,7 @@ TcpServer::initServer(ErrorContainer &error)
     socketAddr.sin_port = htons(m_port);
 
     // bind to port
-    if (bind(serverFd, reinterpret_cast<struct sockaddr *>(&socketAddr), sizeof(socketAddr)) < 0) {
+    if (bind(serverFd, reinterpret_cast<struct sockaddr*>(&socketAddr), sizeof(socketAddr)) < 0) {
         error.addMeesage("Failed to bind tcp-socket to port: " + std::to_string(m_port));
         return false;
     }

@@ -39,7 +39,7 @@ struct ProcessResult {
 };
 
 ProcessResult runSyncProcess(std::string command);
-ProcessResult runSyncProcess(const std::string &programm, const std::vector<std::string> &args);
+ProcessResult runSyncProcess(const std::string& programm, const std::vector<std::string>& args);
 
 }  // namespace Hanami
 

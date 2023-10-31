@@ -31,19 +31,19 @@ class location;
 class IniParserInterface
 {
    public:
-    static IniParserInterface *getInstance();
+    static IniParserInterface* getInstance();
 
     // connection the the scanner and parser
-    void scan_begin(const std::string &inputString);
+    void scan_begin(const std::string& inputString);
     void scan_end();
-    json parse(const std::string &inputString, ErrorContainer &error);
-    const std::string removeQuotes(const std::string &input);
+    json parse(const std::string& inputString, ErrorContainer& error);
+    const std::string removeQuotes(const std::string& input);
 
     // output-handling
     void setOutput(json output);
 
     // Error handling.
-    void error(const Hanami::location &location, const std::string &message);
+    void error(const Hanami::location& location, const std::string& message);
 
     // static variables, which are used in lexer and parser
     static bool m_outsideComment;
@@ -51,7 +51,7 @@ class IniParserInterface
    private:
     IniParserInterface(const bool traceParsing = false);
 
-    static IniParserInterface *m_instance;
+    static IniParserInterface* m_instance;
 
     json m_output;
     std::string m_errorMessage = "";

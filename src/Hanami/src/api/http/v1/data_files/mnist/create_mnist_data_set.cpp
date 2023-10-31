@@ -79,10 +79,10 @@ CreateMnistDataSet::CreateMnistDataSet() : Blossom("Init new mnist-file data-set
 }
 
 bool
-CreateMnistDataSet::runTask(BlossomIO &blossomIO,
-                            const json &context,
-                            BlossomStatus &status,
-                            Hanami::ErrorContainer &error)
+CreateMnistDataSet::runTask(BlossomIO& blossomIO,
+                            const json& context,
+                            BlossomStatus& status,
+                            Hanami::ErrorContainer& error)
 {
     const std::string name = blossomIO.input["name"];
     const long inputDataSize = blossomIO.input["input_data_size"];

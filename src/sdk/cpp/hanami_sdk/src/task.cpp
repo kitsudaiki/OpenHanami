@@ -39,12 +39,12 @@ namespace Hanami
  * @return true, if successful, else false
  */
 bool
-createTask(std::string &result,
-           const std::string &name,
-           const std::string &type,
-           const std::string &clusterUuid,
-           const std::string &dataSetUuid,
-           Hanami::ErrorContainer &error)
+createTask(std::string& result,
+           const std::string& name,
+           const std::string& type,
+           const std::string& clusterUuid,
+           const std::string& dataSetUuid,
+           Hanami::ErrorContainer& error)
 {
     // precheck task-type
     if (type != "train" && type != "request") {
@@ -53,7 +53,7 @@ createTask(std::string &result,
     }
 
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/task";
     const std::string vars = "";
     const std::string jsonBody = "{\"name\":\"" + name + "\",\"type\":\"" + type
@@ -82,13 +82,13 @@ createTask(std::string &result,
  * @return true, if successful, else false
  */
 bool
-getTask(std::string &result,
-        const std::string &taskUuid,
-        const std::string &clusterUuid,
-        Hanami::ErrorContainer &error)
+getTask(std::string& result,
+        const std::string& taskUuid,
+        const std::string& clusterUuid,
+        Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/task";
     std::string vars = "uuid=" + taskUuid + "&cluster_uuid=" + clusterUuid;
 
@@ -113,10 +113,10 @@ getTask(std::string &result,
  * @return true, if successful, else false
  */
 bool
-listTask(std::string &result, const std::string &clusterUuid, Hanami::ErrorContainer &error)
+listTask(std::string& result, const std::string& clusterUuid, Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/task/all?cluster_uuid=" + clusterUuid;
 
     // send request
@@ -140,13 +140,13 @@ listTask(std::string &result, const std::string &clusterUuid, Hanami::ErrorConta
  * @return true, if successful, else false
  */
 bool
-deleteTask(std::string &result,
-           const std::string &taskUuid,
-           const std::string &clusterUuid,
-           Hanami::ErrorContainer &error)
+deleteTask(std::string& result,
+           const std::string& taskUuid,
+           const std::string& clusterUuid,
+           Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/task";
     const std::string vars = "uuid=" + taskUuid + "&clusterUuid=" + clusterUuid;
 

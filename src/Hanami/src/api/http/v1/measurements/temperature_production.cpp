@@ -43,10 +43,10 @@ ThermalProduction::ThermalProduction() : Blossom("Request the temperature-measur
  * @brief runTask
  */
 bool
-ThermalProduction::runTask(BlossomIO &blossomIO,
-                           const json &,
-                           BlossomStatus &,
-                           Hanami::ErrorContainer &)
+ThermalProduction::runTask(BlossomIO& blossomIO,
+                           const json&,
+                           BlossomStatus&,
+                           Hanami::ErrorContainer&)
 {
     blossomIO.output["temperature"] = TemperatureMeasuring::getInstance()->getJson();
 

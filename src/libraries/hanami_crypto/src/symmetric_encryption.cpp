@@ -37,10 +37,10 @@ namespace Hanami
  * @return false, if input is invaid, else true
  */
 bool
-encrypt_AES_256_CBC(std::string &result,
-                    const std::string &input,
-                    const CryptoPP::SecByteBlock &key,
-                    ErrorContainer &error)
+encrypt_AES_256_CBC(std::string& result,
+                    const std::string& input,
+                    const CryptoPP::SecByteBlock& key,
+                    ErrorContainer& error)
 {
     // precheck
     if (key.size() == 0) {
@@ -64,9 +64,9 @@ encrypt_AES_256_CBC(std::string &result,
     // encrypt data
     CryptoPP::AES::Encryption aesEncryption(&sha512Key[0], CryptoPP::AES::MAX_KEYLENGTH);
     CryptoPP::CBC_Mode_ExternalCipher::Encryption cbcEncryption(aesEncryption, &sha512Key[256]);
-    CryptoPP::StringSink *stringSink = new CryptoPP::StringSink(result);
+    CryptoPP::StringSink* stringSink = new CryptoPP::StringSink(result);
     CryptoPP::StreamTransformationFilter stfEncryptor(cbcEncryption, stringSink);
-    stfEncryptor.Put((CryptoPP::byte *)input.c_str(), input.size());
+    stfEncryptor.Put((CryptoPP::byte*)input.c_str(), input.size());
     stfEncryptor.MessageEnd();
 
     return true;
@@ -83,10 +83,10 @@ encrypt_AES_256_CBC(std::string &result,
  * @return false, if input is invaid, else true
  */
 bool
-decrypt_AES_256_CBC(std::string &result,
-                    const std::string &input,
-                    const CryptoPP::SecByteBlock &key,
-                    ErrorContainer &error)
+decrypt_AES_256_CBC(std::string& result,
+                    const std::string& input,
+                    const CryptoPP::SecByteBlock& key,
+                    ErrorContainer& error)
 {
     // precheck
     if (key.size() == 0) {
@@ -121,9 +121,9 @@ decrypt_AES_256_CBC(std::string &result,
     // decrypt data
     CryptoPP::AES::Decryption aesDecryption(&sha512Key[0], CryptoPP::AES::MAX_KEYLENGTH);
     CryptoPP::CBC_Mode_ExternalCipher::Decryption cbcDecryption(aesDecryption, &sha512Key[256]);
-    CryptoPP::StringSink *stringSink = new CryptoPP::StringSink(result);
+    CryptoPP::StringSink* stringSink = new CryptoPP::StringSink(result);
     CryptoPP::StreamTransformationFilter stfDecryptor(cbcDecryption, stringSink);
-    stfDecryptor.Put((CryptoPP::byte *)input.c_str(), input.size());
+    stfDecryptor.Put((CryptoPP::byte*)input.c_str(), input.size());
     stfDecryptor.MessageEnd();
 
     return true;

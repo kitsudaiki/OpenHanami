@@ -84,10 +84,10 @@ CreateUser::CreateUser() : Blossom("Register a new user within Misaki.")
  * @brief runTask
  */
 bool
-CreateUser::runTask(BlossomIO &blossomIO,
-                    const json &context,
-                    BlossomStatus &status,
-                    Hanami::ErrorContainer &error)
+CreateUser::runTask(BlossomIO& blossomIO,
+                    const json& context,
+                    BlossomStatus& status,
+                    Hanami::ErrorContainer& error)
 {
     // check if admin
     if (context["is_admin"] == false) {

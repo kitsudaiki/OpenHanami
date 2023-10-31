@@ -30,7 +30,7 @@ class TableTrainTaskTest : public TestStep
    public:
     TableTrainTaskTest(const bool expectSuccess);
 
-    bool runTest(json &inputData, Hanami::ErrorContainer &error);
+    bool runTest(json& inputData, Hanami::ErrorContainer& error);
 };
 
 #endif  // TSUGUMITESTER_TABLE_TRAINTASKTEST_H

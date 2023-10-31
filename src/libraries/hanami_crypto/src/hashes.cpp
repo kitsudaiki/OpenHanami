@@ -43,7 +43,7 @@ namespace Hanami
  * @return false, if input is empty-string, else true
  */
 bool
-generate_SHA_256(std::string &result, const std::string &input)
+generate_SHA_256(std::string& result, const std::string& input)
 {
     return generate_SHA_256(result, &input[0], input.size());
 }
@@ -58,7 +58,7 @@ generate_SHA_256(std::string &result, const std::string &input)
  * @return false, if input is invalid, else true
  */
 bool
-generate_SHA_256(std::string &result, const void *input, const uint64_t inputSize)
+generate_SHA_256(std::string& result, const void* input, const uint64_t inputSize)
 {
     if (input == nullptr || inputSize == 0) {
         return false;
@@ -70,7 +70,7 @@ generate_SHA_256(std::string &result, const void *input, const uint64_t inputSiz
     CryptoPP::SHA256 hash;
     CryptoPP::byte digest[CryptoPP::SHA256::DIGESTSIZE];
 
-    hash.CalculateDigest(digest, (CryptoPP::byte *)input, inputSize);
+    hash.CalculateDigest(digest, (CryptoPP::byte*)input, inputSize);
     hexEncode(result, digest, sizeof(digest));
     Hanami::toLowerCase(result);
 

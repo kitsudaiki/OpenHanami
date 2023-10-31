@@ -31,7 +31,7 @@
 namespace Hanami
 {
 
-void removeEmptyStrings(std::vector<std::string> &inputVector);
+void removeEmptyStrings(std::vector<std::string>& inputVector);
 
 }
 

@@ -73,10 +73,10 @@ GetErrorLog::GetErrorLog()
  * @brief runTask
  */
 bool
-GetErrorLog::runTask(BlossomIO &blossomIO,
-                     const json &context,
-                     BlossomStatus &status,
-                     Hanami::ErrorContainer &error)
+GetErrorLog::runTask(BlossomIO& blossomIO,
+                     const json& context,
+                     BlossomStatus& status,
+                     Hanami::ErrorContainer& error)
 {
     const UserContext userContext(context);
     const uint64_t page = blossomIO.input["page"];

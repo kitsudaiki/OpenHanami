@@ -34,23 +34,23 @@
  * @param type type of override
  */
 void
-overrideItems(json &original, const json &override, OverrideType type)
+overrideItems(json& original, const json& override, OverrideType type)
 {
     if (type == ONLY_EXISTING) {
-        for (const auto &[name, item] : override.items()) {
+        for (const auto& [name, item] : override.items()) {
             if (original.contains(name)) {
                 original[name] = item;
             }
         }
     }
     if (type == ONLY_NON_EXISTING) {
-        for (const auto &[name, item] : override.items()) {
+        for (const auto& [name, item] : override.items()) {
             if (original.contains(name) == false) {
                 original[name] = item;
             }
         }
     } else if (type == ALL) {
-        for (const auto &[name, item] : override.items()) {
+        for (const auto& [name, item] : override.items()) {
             original[name] = item;
         }
     }
@@ -68,13 +68,13 @@ overrideItems(json &original, const json &override, OverrideType type)
  * @param blossomFilePath file-path, where the error had appeared
  */
 void
-createError(const std::string &errorLocation,
-            Hanami::ErrorContainer &error,
-            const std::string &possibleSolution,
-            const std::string &blossomType,
-            const std::string &blossomGroupType,
-            const std::string &blossomName,
-            const std::string &blossomFilePath)
+createError(const std::string& errorLocation,
+            Hanami::ErrorContainer& error,
+            const std::string& possibleSolution,
+            const std::string& blossomType,
+            const std::string& blossomGroupType,
+            const std::string& blossomName,
+            const std::string& blossomFilePath)
 {
     Hanami::TableItem errorOutput;
     // initialize error-output
@@ -114,11 +114,11 @@ createError(const std::string &errorLocation,
  * @param possibleSolution message with a possible solution to solve the problem
  */
 void
-createError(const BlossomItem &blossomItem,
-            const std::string &blossomPath,
-            const std::string &errorLocation,
-            Hanami::ErrorContainer &error,
-            const std::string &possibleSolution)
+createError(const BlossomItem& blossomItem,
+            const std::string& blossomPath,
+            const std::string& errorLocation,
+            Hanami::ErrorContainer& error,
+            const std::string& possibleSolution)
 {
     return createError(errorLocation,
                        error,
@@ -138,10 +138,10 @@ createError(const BlossomItem &blossomItem,
  * @param possibleSolution message with a possible solution to solve the problem
  */
 void
-createError(const BlossomIO &blossomIO,
-            const std::string &errorLocation,
-            Hanami::ErrorContainer &error,
-            const std::string &possibleSolution)
+createError(const BlossomIO& blossomIO,
+            const std::string& errorLocation,
+            Hanami::ErrorContainer& error,
+            const std::string& possibleSolution)
 {
     return createError(errorLocation,
                        error,

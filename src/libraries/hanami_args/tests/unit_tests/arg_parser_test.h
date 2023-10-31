@@ -52,7 +52,7 @@ class ArgParser_Test : public Hanami::CompareTestHelper
     void getBoolValue_test();
 
    private:
-    void prepareTest(ArgParser &parser);
+    void prepareTest(ArgParser& parser);
 };
 
 }  // namespace Hanami

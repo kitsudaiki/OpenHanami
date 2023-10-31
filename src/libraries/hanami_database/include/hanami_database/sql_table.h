@@ -39,11 +39,11 @@ class SqlDatabase;
 class SqlTable
 {
    public:
-    SqlTable(SqlDatabase *db);
+    SqlTable(SqlDatabase* db);
     virtual ~SqlTable();
 
-    bool initTable(ErrorContainer &error);
-    void createDocumentation(std::string &docu);
+    bool initTable(ErrorContainer& error);
+    void createDocumentation(std::string& docu);
 
    protected:
     enum DbVataValueTypes { STRING_TYPE = 0, INT_TYPE = 1, BOOL_TYPE = 2, FLOAT_TYPE = 3 };
@@ -61,7 +61,7 @@ class SqlTable
         std::string colName;
         std::string value;
 
-        RequestCondition(const std::string &colName, const std::string &value)
+        RequestCondition(const std::string& colName, const std::string& value)
         {
             this->colName = colName;
             this->value = value;
@@ -71,45 +71,45 @@ class SqlTable
     std::vector<DbHeaderEntry> m_tableHeader;
     std::string m_tableName = "";
 
-    bool insertToDb(json &values, ErrorContainer &error);
-    bool updateInDb(const std::vector<RequestCondition> &conditions,
-                    const json &updates,
-                    ErrorContainer &error);
-    bool getAllFromDb(TableItem &resultTable,
-                      ErrorContainer &error,
+    bool insertToDb(json& values, ErrorContainer& error);
+    bool updateInDb(const std::vector<RequestCondition>& conditions,
+                    const json& updates,
+                    ErrorContainer& error);
+    bool getAllFromDb(TableItem& resultTable,
+                      ErrorContainer& error,
                       const bool showHiddenValues = false,
                       const uint64_t positionOffset = 0,
                       const uint64_t numberOfRows = 0);
-    bool getFromDb(TableItem &resultTable,
-                   const std::vector<RequestCondition> &conditions,
-                   ErrorContainer &error,
+    bool getFromDb(TableItem& resultTable,
+                   const std::vector<RequestCondition>& conditions,
+                   ErrorContainer& error,
                    const bool showHiddenValues = false,
                    const uint64_t positionOffset = 0,
                    const uint64_t numberOfRows = 0);
-    bool getFromDb(json &result,
-                   const std::vector<RequestCondition> &conditions,
-                   ErrorContainer &error,
+    bool getFromDb(json& result,
+                   const std::vector<RequestCondition>& conditions,
+                   ErrorContainer& error,
                    const bool showHiddenValues = false,
                    const uint64_t positionOffset = 0,
                    const uint64_t numberOfRows = 0);
-    long getNumberOfRows(ErrorContainer &error);
-    bool deleteAllFromDb(ErrorContainer &error);
-    bool deleteFromDb(const std::vector<RequestCondition> &conditions, ErrorContainer &error);
+    long getNumberOfRows(ErrorContainer& error);
+    bool deleteAllFromDb(ErrorContainer& error);
+    bool deleteFromDb(const std::vector<RequestCondition>& conditions, ErrorContainer& error);
 
    private:
-    SqlDatabase *m_db = nullptr;
+    SqlDatabase* m_db = nullptr;
 
     const std::string createTableCreateQuery();
-    const std::string createSelectQuery(const std::vector<RequestCondition> &conditions,
+    const std::string createSelectQuery(const std::vector<RequestCondition>& conditions,
                                         const uint64_t positionOffset,
                                         const uint64_t numberOfRows);
-    const std::string createUpdateQuery(const std::vector<RequestCondition> &conditions,
-                                        const json &updates);
-    const std::string createInsertQuery(const std::vector<std::string> &values);
-    const std::string createDeleteQuery(const std::vector<RequestCondition> &conditions);
+    const std::string createUpdateQuery(const std::vector<RequestCondition>& conditions,
+                                        const json& updates);
+    const std::string createInsertQuery(const std::vector<std::string>& values);
+    const std::string createDeleteQuery(const std::vector<RequestCondition>& conditions);
     const std::string createCountQuery();
 
-    void processGetResult(json &result, TableItem &tableContent);
+    void processGetResult(json& result, TableItem& tableContent);
 };
 
 }  // namespace Hanami

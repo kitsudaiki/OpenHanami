@@ -30,13 +30,13 @@
 
 struct FieldDef;
 
-void createOpenApiDocumentation(std::string &docu);
+void createOpenApiDocumentation(std::string& docu);
 
-void generateEndpointDocu_openapi(json &result);
-void createBodyParams_openapi(json &schema,
-                              const std::map<std::string, FieldDef> *defMap,
+void generateEndpointDocu_openapi(json& result);
+void createBodyParams_openapi(json& schema,
+                              const std::map<std::string, FieldDef>* defMap,
                               const bool isRequest);
-void createQueryParams_openapi(json &parameters, const std::map<std::string, FieldDef> *defMap);
-void addTokenRequirement(json &parameters);
+void createQueryParams_openapi(json& parameters, const std::map<std::string, FieldDef>* defMap);
+void addTokenRequirement(json& parameters);
 
 #endif  // HANAMI_GENERATERESTAPIDOCU_H

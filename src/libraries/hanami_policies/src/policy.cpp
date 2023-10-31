@@ -26,7 +26,7 @@
 namespace Hanami
 {
 
-Policy *Policy::instance = nullptr;
+Policy* Policy::instance = nullptr;
 
 /**
  * @brief Policy::Policy
@@ -47,13 +47,13 @@ Policy::~Policy() {}
  * @return true, if parsing was successful, else false
  */
 bool
-Policy::parse(const std::string &input, ErrorContainer &error)
+Policy::parse(const std::string& input, ErrorContainer& error)
 {
     if (input.size() == 0) {
         return false;
     }
 
-    PolicyParserInterface *parser = PolicyParserInterface::getInstance();
+    PolicyParserInterface* parser = PolicyParserInterface::getInstance();
     return parser->parse(&m_policyRules, input, error);
 }
 
@@ -67,9 +67,9 @@ Policy::parse(const std::string &input, ErrorContainer &error)
  * @return true, if check was successfully, else false
  */
 bool
-Policy::checkUserAgainstPolicy(const std::string &endpoint,
+Policy::checkUserAgainstPolicy(const std::string& endpoint,
                                const HttpRequestType type,
-                               const std::string &role)
+                               const std::string& role)
 {
     const auto endpoint_it = m_policyRules.find(endpoint);
     if (endpoint_it != m_policyRules.end()) {
@@ -89,7 +89,7 @@ Policy::checkUserAgainstPolicy(const std::string &endpoint,
  * @return true, if a rule in the entry match the role of the user
  */
 bool
-Policy::checkEntry(const PolicyEntry &entry, const HttpRequestType type, const std::string &role)
+Policy::checkEntry(const PolicyEntry& entry, const HttpRequestType type, const std::string& role)
 {
     switch (type) {
         case GET_TYPE:
@@ -122,9 +122,9 @@ Policy::checkEntry(const PolicyEntry &entry, const HttpRequestType type, const s
  * @return true, if user-role is in the list of rules, else false
  */
 bool
-Policy::checkRuleList(const std::vector<std::string> &rules, const std::string &role)
+Policy::checkRuleList(const std::vector<std::string>& rules, const std::string& role)
 {
-    for (const std::string &r : rules) {
+    for (const std::string& r : rules) {
         if (r == role) {
             return true;
         }

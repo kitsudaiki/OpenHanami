@@ -23,10 +23,10 @@ namespace Hanami
  * @param keyFile path to key-file
  * @param caFile path to ca-file
  */
-TlsTcpSocket::TlsTcpSocket(TcpSocket &&socket,
-                           const std::string &certFile,
-                           const std::string &keyFile,
-                           const std::string &caFile)
+TlsTcpSocket::TlsTcpSocket(TcpSocket&& socket,
+                           const std::string& certFile,
+                           const std::string& keyFile,
+                           const std::string& caFile)
 {
     this->socket = std::move(socket);
     this->certFile = certFile;
@@ -63,7 +63,7 @@ TlsTcpSocket::getSocketFd() const
  * @return true, if successful, else false
  */
 bool
-TlsTcpSocket::initClientSide(ErrorContainer &error)
+TlsTcpSocket::initClientSide(ErrorContainer& error)
 {
     if (socket.socketFd == 0) {
         if (socket.initClientSide(error) == false) {
@@ -87,7 +87,7 @@ TlsTcpSocket::initClientSide(ErrorContainer &error)
  * @param error reference for error-output
  */
 bool
-TlsTcpSocket::initOpenssl(ErrorContainer &error)
+TlsTcpSocket::initOpenssl(ErrorContainer& error)
 {
     int result = 0;
 
@@ -97,7 +97,7 @@ TlsTcpSocket::initOpenssl(ErrorContainer &error)
     SSL_library_init();
 
     // set ssl-type
-    const SSL_METHOD *method;
+    const SSL_METHOD* method;
     if (isClientSide()) {
         method = TLS_client_method();
     } else {
@@ -202,7 +202,7 @@ TlsTcpSocket::isClientSide() const
  * @return number of read bytes
  */
 long
-TlsTcpSocket::recvData(int, void *bufferPosition, const size_t bufferSize, int)
+TlsTcpSocket::recvData(int, void* bufferPosition, const size_t bufferSize, int)
 {
     return SSL_read(m_ssl, bufferPosition, static_cast<int>(bufferSize));
 }
@@ -213,7 +213,7 @@ TlsTcpSocket::recvData(int, void *bufferPosition, const size_t bufferSize, int)
  * @return number of written bytes
  */
 ssize_t
-TlsTcpSocket::sendData(int, const void *bufferPosition, const size_t bufferSize, int)
+TlsTcpSocket::sendData(int, const void* bufferPosition, const size_t bufferSize, int)
 {
     return SSL_write(m_ssl, bufferPosition, static_cast<int>(bufferSize));
 }

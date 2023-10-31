@@ -31,10 +31,10 @@ class SetClusterMode : public Blossom
     SetClusterMode();
 
    protected:
-    bool runTask(BlossomIO &blossomIO,
-                 const json &context,
-                 BlossomStatus &status,
-                 Hanami::ErrorContainer &error);
+    bool runTask(BlossomIO& blossomIO,
+                 const json& context,
+                 BlossomStatus& status,
+                 Hanami::ErrorContainer& error);
 };
 
 #endif  // HANAMI_SET_CLUSTER_MODE_H

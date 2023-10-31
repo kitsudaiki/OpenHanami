@@ -36,9 +36,9 @@
  * @brief process request and build response
  */
 bool
-processRequest(http::request<http::string_body> &httpRequest,
-               http::response<http::dynamic_body> &httpResponse,
-               Hanami::ErrorContainer &error)
+processRequest(http::request<http::string_body>& httpRequest,
+               http::response<http::dynamic_body>& httpResponse,
+               Hanami::ErrorContainer& error)
 {
     // build default-header for response
     httpResponse.version(httpRequest.version());
@@ -115,14 +115,14 @@ processRequest(http::request<http::string_body> &httpRequest,
  * @return true, if successful, else false
  */
 bool
-requestToken(http::response<http::dynamic_body> &httpResponse,
-             const RequestMessage &hanamiRequest,
-             Hanami::ErrorContainer &error)
+requestToken(http::response<http::dynamic_body>& httpResponse,
+             const RequestMessage& hanamiRequest,
+             Hanami::ErrorContainer& error)
 {
     json inputValues;
     try {
         inputValues = json::parse(hanamiRequest.inputValues);
-    } catch (const json::parse_error &ex) {
+    } catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
@@ -152,11 +152,11 @@ requestToken(http::response<http::dynamic_body> &httpResponse,
  * @return true, if successful, else false
  */
 bool
-checkPermission(json &tokenData,
-                const std::string &token,
-                const RequestMessage &hanamiRequest,
-                ResponseMessage &responseMsg,
-                Hanami::ErrorContainer &error)
+checkPermission(json& tokenData,
+                const std::string& token,
+                const RequestMessage& hanamiRequest,
+                ResponseMessage& responseMsg,
+                Hanami::ErrorContainer& error)
 {
     RequestMessage requestMsg;
 
@@ -176,20 +176,20 @@ checkPermission(json &tokenData,
     try {
         auto decodedToken = jwt::decode(token);
         auto verifier = jwt::verify().allow_algorithm(
-            jwt::algorithm::hs256{(const char *)HanamiRoot::tokenKey.data()});
+            jwt::algorithm::hs256{(const char*)HanamiRoot::tokenKey.data()});
         verifier.verify(decodedToken);
 
         // copy data of token into the output
-        for (const auto &e : decodedToken.get_payload_json()) {
+        for (const auto& e : decodedToken.get_payload_json()) {
             const std::string tokenStr = e.second.to_str();
             try {
                 tokenData = json::parse(tokenStr);
-            } catch (const json::parse_error &ex) {
+            } catch (const json::parse_error& ex) {
                 error.addMeesage("json-parser error: " + std::string(ex.what()));
                 return false;
             }
         }
-    } catch (const std::exception &ex) {
+    } catch (const std::exception& ex) {
         error.addMeesage("Failed to validate JWT-Token with error: " + std::string(ex.what()));
         responseMsg.success = false;
         responseMsg.type = UNAUTHORIZED_RTYPE;
@@ -229,12 +229,12 @@ checkPermission(json &tokenData,
  * @return true, if successful, else false
  */
 bool
-processControlRequest(http::response<http::dynamic_body> &httpResponse,
-                      const std::string &uri,
-                      const std::string &token,
-                      const std::string &inputValues,
+processControlRequest(http::response<http::dynamic_body>& httpResponse,
+                      const std::string& uri,
+                      const std::string& token,
+                      const std::string& inputValues,
                       const Hanami::HttpRequestType httpType,
-                      Hanami::ErrorContainer &error)
+                      Hanami::ErrorContainer& error)
 {
     RequestMessage hanamiRequest;
     ResponseMessage hanamiResponse;
@@ -292,7 +292,7 @@ processControlRequest(http::response<http::dynamic_body> &httpResponse,
     json inputValuesJson;
     try {
         inputValuesJson = json::parse(hanamiRequest.inputValues);
-    } catch (const json::parse_error &ex) {
+    } catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return internalError_ResponseBuild(httpResponse, error);
     }

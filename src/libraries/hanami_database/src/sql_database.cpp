@@ -25,7 +25,7 @@
 namespace Hanami
 {
 
-SqlDatabase *SqlDatabase::instance = nullptr;
+SqlDatabase* SqlDatabase::instance = nullptr;
 
 /**
  * @brief constructor
@@ -46,7 +46,7 @@ SqlDatabase::~SqlDatabase() { closeDatabase(); }
  * @return true, if successful, else false
  */
 bool
-SqlDatabase::initDatabase(const std::string &path, Hanami::ErrorContainer &error)
+SqlDatabase::initDatabase(const std::string& path, Hanami::ErrorContainer& error)
 {
     std::lock_guard<std::mutex> guard(m_lock);
 
@@ -101,9 +101,9 @@ SqlDatabase::closeDatabase()
  * @return true, if successful, else false
  */
 bool
-SqlDatabase::execSqlCommand(TableItem *resultTable,
-                            const std::string &command,
-                            ErrorContainer &error)
+SqlDatabase::execSqlCommand(TableItem* resultTable,
+                            const std::string& command,
+                            ErrorContainer& error)
 {
     std::lock_guard<std::mutex> guard(m_lock);
 

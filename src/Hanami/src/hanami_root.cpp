@@ -49,10 +49,10 @@
 #include <hanami_root.h>
 
 // init static variables
-uint32_t *HanamiRoot::m_randomValues = nullptr;
-Hanami::GpuInterface *HanamiRoot::gpuInterface = nullptr;
-HanamiRoot *HanamiRoot::root = nullptr;
-HttpServer *HanamiRoot::httpServer = nullptr;
+uint32_t* HanamiRoot::m_randomValues = nullptr;
+Hanami::GpuInterface* HanamiRoot::gpuInterface = nullptr;
+HanamiRoot* HanamiRoot::root = nullptr;
+HttpServer* HanamiRoot::httpServer = nullptr;
 CryptoPP::SecByteBlock HanamiRoot::tokenKey{};
 
 // static flag to switch to experimental gpu-support (see issue #44 and #76)
@@ -76,7 +76,7 @@ HanamiRoot::~HanamiRoot() {}
  * @return true, if successful, else false
  */
 bool
-HanamiRoot::init(Hanami::ErrorContainer &error)
+HanamiRoot::init(Hanami::ErrorContainer& error)
 {
     /*if(useOpencl)
     {
@@ -116,7 +116,7 @@ HanamiRoot::init(Hanami::ErrorContainer &error)
         return false;
     }
 
-    Hanami::Host *host = Hanami::Host::getInstance();
+    Hanami::Host* host = Hanami::Host::getInstance();
     if (host->initHost(error) == false) {
         error.addMeesage("Failed to initialize host-information.");
         LOG_ERROR(error);
@@ -150,7 +150,7 @@ HanamiRoot::init(Hanami::ErrorContainer &error)
 bool
 HanamiRoot::initThreads()
 {
-    ProcessingUnitHandler *processingUnitHandler = ProcessingUnitHandler::getInstance();
+    ProcessingUnitHandler* processingUnitHandler = ProcessingUnitHandler::getInstance();
     if (processingUnitHandler->initProcessingUnits(1) == false) {
         return false;
     }
@@ -166,12 +166,12 @@ HanamiRoot::initThreads()
  * @return true, if successful, else false
  */
 bool
-HanamiRoot::initDatabase(Hanami::ErrorContainer &error)
+HanamiRoot::initDatabase(Hanami::ErrorContainer& error)
 {
     bool success = false;
 
     // read database-path from config
-    Hanami::SqlDatabase *database = Hanami::SqlDatabase::getInstance();
+    Hanami::SqlDatabase* database = Hanami::SqlDatabase::getInstance();
     const std::string databasePath = GET_STRING_CONFIG("DEFAULT", "database", success);
     LOG_DEBUG("database-path: '" + databasePath + "'");
     if (success == false) {
@@ -188,7 +188,7 @@ HanamiRoot::initDatabase(Hanami::ErrorContainer &error)
     }
 
     // initialize cluster-table
-    ClusterTable *clustersTable = ClusterTable::getInstance();
+    ClusterTable* clustersTable = ClusterTable::getInstance();
     if (clustersTable->initTable(error) == false) {
         error.addMeesage("Failed to initialize cluster-table in database.");
         LOG_ERROR(error);
@@ -196,14 +196,14 @@ HanamiRoot::initDatabase(Hanami::ErrorContainer &error)
     }
 
     // initialize projects-table
-    ProjectsTable *projectsTable = ProjectsTable::getInstance();
+    ProjectsTable* projectsTable = ProjectsTable::getInstance();
     if (projectsTable->initTable(error) == false) {
         error.addMeesage("Failed to initialize project-table in database.");
         return false;
     }
 
     // initialize users-table
-    UsersTable *usersTable = UsersTable::getInstance();
+    UsersTable* usersTable = UsersTable::getInstance();
     if (usersTable->initTable(error) == false) {
         error.addMeesage("Failed to initialize user-table in database.");
         return false;
@@ -214,7 +214,7 @@ HanamiRoot::initDatabase(Hanami::ErrorContainer &error)
     }
 
     // initialize dataset-table
-    DataSetTable *dataSetTable = DataSetTable::getInstance();
+    DataSetTable* dataSetTable = DataSetTable::getInstance();
     if (dataSetTable->initTable(error) == false) {
         error.addMeesage("Failed to initialize dataset-table in database.");
         LOG_ERROR(error);
@@ -222,7 +222,7 @@ HanamiRoot::initDatabase(Hanami::ErrorContainer &error)
     }
 
     // initialize request-result-table
-    RequestResultTable *requestResultTable = RequestResultTable::getInstance();
+    RequestResultTable* requestResultTable = RequestResultTable::getInstance();
     if (requestResultTable->initTable(error) == false) {
         error.addMeesage("Failed to initialize request-result-table in database.");
         LOG_ERROR(error);
@@ -230,7 +230,7 @@ HanamiRoot::initDatabase(Hanami::ErrorContainer &error)
     }
 
     // initialize checkpoint-table
-    CheckpointTable *clusterCheckpointTable = CheckpointTable::getInstance();
+    CheckpointTable* clusterCheckpointTable = CheckpointTable::getInstance();
     if (clusterCheckpointTable->initTable(error) == false) {
         error.addMeesage("Failed to initialize checkpoint-table in database.");
         LOG_ERROR(error);
@@ -238,7 +238,7 @@ HanamiRoot::initDatabase(Hanami::ErrorContainer &error)
     }
 
     // initialize error-log-table
-    ErrorLogTable *errorLogTable = ErrorLogTable::getInstance();
+    ErrorLogTable* errorLogTable = ErrorLogTable::getInstance();
     if (errorLogTable->initTable(error) == false) {
         error.addMeesage("Failed to initialize error-log-table in database.");
         LOG_ERROR(error);
@@ -246,7 +246,7 @@ HanamiRoot::initDatabase(Hanami::ErrorContainer &error)
     }
 
     // initialize audit-log-table
-    AuditLogTable *auditLogTable = AuditLogTable::getInstance();
+    AuditLogTable* auditLogTable = AuditLogTable::getInstance();
     if (auditLogTable->initTable(error) == false) {
         error.addMeesage("Failed to initialize audit-log-table in database.");
         LOG_ERROR(error);
@@ -283,7 +283,7 @@ HanamiRoot::initHttpServer()
     // start threads
     for (uint32_t i = 0; i < numberOfThreads; i++) {
         const std::string name = "HttpWebsocketThread";
-        HttpWebsocketThread *httpWebsocketThread = new HttpWebsocketThread(name);
+        HttpWebsocketThread* httpWebsocketThread = new HttpWebsocketThread(name);
         httpWebsocketThread->startThread();
         m_threads.push_back(httpWebsocketThread);
     }
@@ -299,7 +299,7 @@ HanamiRoot::initHttpServer()
  * @return true, if successful, else false
  */
 bool
-HanamiRoot::initPolicies(Hanami::ErrorContainer &error)
+HanamiRoot::initPolicies(Hanami::ErrorContainer& error)
 {
     bool success = false;
 
@@ -318,7 +318,7 @@ HanamiRoot::initPolicies(Hanami::ErrorContainer &error)
     }
 
     // parse policy-file
-    Hanami::Policy *policies = Hanami::Policy::getInstance();
+    Hanami::Policy* policies = Hanami::Policy::getInstance();
     if (policies->parse(policyFileContent, error) == false) {
         error.addMeesage("Failed to parser policy-file");
         return false;
@@ -335,7 +335,7 @@ HanamiRoot::initPolicies(Hanami::ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-HanamiRoot::initJwt(Hanami::ErrorContainer &error)
+HanamiRoot::initJwt(Hanami::ErrorContainer& error)
 {
     bool success = false;
 
@@ -354,7 +354,7 @@ HanamiRoot::initJwt(Hanami::ErrorContainer &error)
 
     // init jwt for token create and sign
     tokenKey
-        = CryptoPP::SecByteBlock((unsigned char *)tokenKeyString.c_str(), tokenKeyString.size());
+        = CryptoPP::SecByteBlock((unsigned char*)tokenKeyString.c_str(), tokenKeyString.size());
 
     return true;
 }
@@ -363,7 +363,7 @@ HanamiRoot::initJwt(Hanami::ErrorContainer &error)
  * @brief delete all clusters, because after a restart these are broken
  */
 void
-HanamiRoot::clearCluster(Hanami::ErrorContainer &error)
+HanamiRoot::clearCluster(Hanami::ErrorContainer& error)
 {
     ClusterTable::getInstance()->deleteAllCluster(error);
     // TODO: if a checkpoint exist for a broken cluster, then the cluster should be
@@ -379,7 +379,7 @@ HanamiRoot::clearCluster(Hanami::ErrorContainer &error)
  * @return true, if blossom with the given group- and item-name exist, else false
  */
 bool
-HanamiRoot::doesBlossomExist(const std::string &groupName, const std::string &itemName)
+HanamiRoot::doesBlossomExist(const std::string& groupName, const std::string& itemName)
 {
     auto groupIt = m_registeredBlossoms.find(groupName);
     if (groupIt != m_registeredBlossoms.end()) {
@@ -402,9 +402,9 @@ HanamiRoot::doesBlossomExist(const std::string &groupName, const std::string &it
  *         registered
  */
 bool
-HanamiRoot::addBlossom(const std::string &groupName,
-                       const std::string &itemName,
-                       Blossom *newBlossom)
+HanamiRoot::addBlossom(const std::string& groupName,
+                       const std::string& itemName,
+                       Blossom* newBlossom)
 {
     // check if already used
     if (doesBlossomExist(groupName, itemName) == true) {
@@ -414,7 +414,7 @@ HanamiRoot::addBlossom(const std::string &groupName,
     // create internal group-map, if not already exist
     auto groupIt = m_registeredBlossoms.find(groupName);
     if (groupIt == m_registeredBlossoms.end()) {
-        std::map<std::string, Blossom *> newMap;
+        std::map<std::string, Blossom*> newMap;
         m_registeredBlossoms.try_emplace(groupName, newMap);
     }
 
@@ -434,8 +434,8 @@ HanamiRoot::addBlossom(const std::string &groupName,
  * @return pointer to the blossom or
  *         nullptr, if blossom the given group- and item-name was not found
  */
-Blossom *
-HanamiRoot::getBlossom(const std::string &groupName, const std::string &itemName)
+Blossom*
+HanamiRoot::getBlossom(const std::string& groupName, const std::string& itemName)
 {
     // search for group
     auto groupIt = m_registeredBlossoms.find(groupName);
@@ -463,18 +463,18 @@ HanamiRoot::getBlossom(const std::string &groupName, const std::string &itemName
  * @return true, if successfule, else false
  */
 bool
-HanamiRoot::triggerBlossom(json &result,
-                           const std::string &blossomName,
-                           const std::string &blossomGroupName,
-                           const json &context,
-                           const json &initialValues,
-                           BlossomStatus &status,
-                           Hanami::ErrorContainer &error)
+HanamiRoot::triggerBlossom(json& result,
+                           const std::string& blossomName,
+                           const std::string& blossomGroupName,
+                           const json& context,
+                           const json& initialValues,
+                           BlossomStatus& status,
+                           Hanami::ErrorContainer& error)
 {
     LOG_DEBUG("trigger blossom");
 
     // get initial blossom-item
-    Blossom *blossom = getBlossom(blossomGroupName, blossomName);
+    Blossom* blossom = getBlossom(blossomGroupName, blossomName);
     if (blossom == nullptr) {
         error.addMeesage("No blosom found for the id " + blossomName);
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -556,11 +556,11 @@ HanamiRoot::triggerBlossom(json &result,
  * @param error reference for error-output
  */
 void
-HanamiRoot::checkStatusCode(Blossom *blossom,
-                            const std::string &blossomName,
-                            const std::string &blossomGroupName,
-                            BlossomStatus &status,
-                            Hanami::ErrorContainer &error)
+HanamiRoot::checkStatusCode(Blossom* blossom,
+                            const std::string& blossomName,
+                            const std::string& blossomGroupName,
+                            BlossomStatus& status,
+                            Hanami::ErrorContainer& error)
 {
     if (status.statusCode) {
         bool found = false;
@@ -592,7 +592,7 @@ HanamiRoot::checkStatusCode(Blossom *blossom,
  * @return false, if mapping failes, else true
  */
 bool
-HanamiRoot::mapEndpoint(EndpointEntry &result, const std::string &id, const HttpRequestType type)
+HanamiRoot::mapEndpoint(EndpointEntry& result, const std::string& id, const HttpRequestType type)
 {
     const auto id_it = endpointRules.find(id);
     if (id_it != endpointRules.end()) {
@@ -621,11 +621,11 @@ HanamiRoot::mapEndpoint(EndpointEntry &result, const std::string &id, const Http
  * @return false, if id together with http-type is already registered, else true
  */
 bool
-HanamiRoot::addEndpoint(const std::string &id,
-                        const HttpRequestType &httpType,
-                        const SakuraObjectType &sakuraType,
-                        const std::string &group,
-                        const std::string &name)
+HanamiRoot::addEndpoint(const std::string& id,
+                        const HttpRequestType& httpType,
+                        const SakuraObjectType& sakuraType,
+                        const std::string& group,
+                        const std::string& name)
 {
     EndpointEntry newEntry;
     newEntry.type = sakuraType;

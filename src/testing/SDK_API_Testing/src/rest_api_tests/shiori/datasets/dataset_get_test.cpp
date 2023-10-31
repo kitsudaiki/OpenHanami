@@ -25,8 +25,8 @@
 #include <hanami_sdk/data_set.h>
 
 DataSetGetTest::DataSetGetTest(const bool expectSuccess,
-                               const std::string &type,
-                               const std::string &uuidOverride)
+                               const std::string& type,
+                               const std::string& uuidOverride)
     : TestStep(expectSuccess)
 {
     m_testName = "get data-set";
@@ -40,7 +40,7 @@ DataSetGetTest::DataSetGetTest(const bool expectSuccess,
 }
 
 bool
-DataSetGetTest::runTest(json &inputData, Hanami::ErrorContainer &error)
+DataSetGetTest::runTest(json& inputData, Hanami::ErrorContainer& error)
 {
     if (m_uuid == "") {
         if (m_type == "train") {
@@ -64,7 +64,7 @@ DataSetGetTest::runTest(json &inputData, Hanami::ErrorContainer &error)
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch (const json::parse_error &ex) {
+    } catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }

@@ -63,10 +63,10 @@ ShowCluster::ShowCluster() : Blossom("Show information of a specific cluster.")
  * @brief runTask
  */
 bool
-ShowCluster::runTask(BlossomIO &blossomIO,
-                     const json &context,
-                     BlossomStatus &status,
-                     Hanami::ErrorContainer &error)
+ShowCluster::runTask(BlossomIO& blossomIO,
+                     const json& context,
+                     BlossomStatus& status,
+                     Hanami::ErrorContainer& error)
 {
     const UserContext userContext(context);
     const std::string clusterUuid = blossomIO.input["uuid"];

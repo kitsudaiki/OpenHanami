@@ -31,10 +31,10 @@ class ValidateAccess : public Blossom
     ValidateAccess();
 
    protected:
-    bool runTask(BlossomIO &blossomIO,
-                 const json &,
-                 BlossomStatus &status,
-                 Hanami::ErrorContainer &error);
+    bool runTask(BlossomIO& blossomIO,
+                 const json&,
+                 BlossomStatus& status,
+                 Hanami::ErrorContainer& error);
 };
 
 #endif  // HANAMI_VALIDATE_ACCESS_H

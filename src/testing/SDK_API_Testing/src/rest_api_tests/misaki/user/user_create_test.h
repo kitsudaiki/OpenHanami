@@ -30,7 +30,7 @@ class UserCreateTest : public TestStep
    public:
     UserCreateTest(const bool expectSuccess);
 
-    bool runTest(json &inputData, Hanami::ErrorContainer &error);
+    bool runTest(json& inputData, Hanami::ErrorContainer& error);
 };
 
 #endif  // TSUGUMITESTER_USERCREATESTEP_H

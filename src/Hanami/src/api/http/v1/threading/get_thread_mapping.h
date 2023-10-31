@@ -31,7 +31,7 @@ class GetThreadMapping : public Blossom
     GetThreadMapping();
 
    protected:
-    bool runTask(BlossomIO &blossomIO, const json &, BlossomStatus &, Hanami::ErrorContainer &);
+    bool runTask(BlossomIO& blossomIO, const json&, BlossomStatus&, Hanami::ErrorContainer&);
 };
 
 #endif  // AZUKIHEART_GETTHREADMAPPING_H

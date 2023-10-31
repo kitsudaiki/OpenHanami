@@ -16,14 +16,14 @@ struct Position {
 
     Position() {}
 
-    Position(const Position &other)
+    Position(const Position& other)
     {
         x = other.x;
         y = other.y;
         z = other.z;
     }
 
-    Position &operator=(const Position &other)
+    Position& operator=(const Position& other)
     {
         if (this != &other) {
             x = other.x;
@@ -34,7 +34,7 @@ struct Position {
         return *this;
     }
 
-    bool operator==(const Position &other)
+    bool operator==(const Position& other)
     {
         return (this->x == other.x && this->y == other.y && this->z == other.z);
     }

@@ -31,10 +31,10 @@ class CreateMnistDataSet : public Blossom
     CreateMnistDataSet();
 
    protected:
-    bool runTask(BlossomIO &blossomIO,
-                 const json &context,
-                 BlossomStatus &status,
-                 Hanami::ErrorContainer &error);
+    bool runTask(BlossomIO& blossomIO,
+                 const json& context,
+                 BlossomStatus& status,
+                 Hanami::ErrorContainer& error);
 };
 
 #endif  // HANAMI_MNIST_CREATE_DATA_SET_H

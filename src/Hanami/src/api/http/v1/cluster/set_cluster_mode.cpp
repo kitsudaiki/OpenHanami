@@ -68,10 +68,10 @@ SetClusterMode::SetClusterMode() : Blossom("Set mode of the cluster.")
  * @brief runTask
  */
 bool
-SetClusterMode::runTask(BlossomIO &blossomIO,
-                        const json &context,
-                        BlossomStatus &status,
-                        Hanami::ErrorContainer &error)
+SetClusterMode::runTask(BlossomIO& blossomIO,
+                        const json& context,
+                        BlossomStatus& status,
+                        Hanami::ErrorContainer& error)
 {
     const std::string clusterUuid = blossomIO.input["uuid"];
     // const std::string connectionUuid = blossomIO.input["connection_uuid"];
@@ -94,7 +94,7 @@ SetClusterMode::runTask(BlossomIO &blossomIO,
     }
 
     // get cluster
-    Cluster *cluster = ClusterHandler::getInstance()->getCluster(clusterUuid);
+    Cluster* cluster = ClusterHandler::getInstance()->getCluster(clusterUuid);
     if (cluster == nullptr) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Cluster with UUID '" + clusterUuid

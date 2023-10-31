@@ -39,14 +39,14 @@ namespace Hanami
 //--------------------------------------------------------------------------------------------------
 // HMAC
 //--------------------------------------------------------------------------------------------------
-bool create_HMAC_SHA256(std::string &result,
-                        const std::string &input,
-                        const CryptoPP::SecByteBlock &key,
-                        Hanami::ErrorContainer &error);
+bool create_HMAC_SHA256(std::string& result,
+                        const std::string& input,
+                        const CryptoPP::SecByteBlock& key,
+                        Hanami::ErrorContainer& error);
 
-bool verify_HMAC_SHA256(const std::string &input,
-                        const std::string &hmac,
-                        const CryptoPP::SecByteBlock &key);
+bool verify_HMAC_SHA256(const std::string& input,
+                        const std::string& hmac,
+                        const CryptoPP::SecByteBlock& key);
 
 }  // namespace Hanami
 

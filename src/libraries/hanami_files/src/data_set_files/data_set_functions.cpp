@@ -34,13 +34,13 @@
  * @return
  */
 bool
-getDataSetPayload(Hanami::DataBuffer &result,
-                  const std::string &location,
-                  Hanami::ErrorContainer &error,
-                  const std::string &columnName)
+getDataSetPayload(Hanami::DataBuffer& result,
+                  const std::string& location,
+                  Hanami::ErrorContainer& error,
+                  const std::string& columnName)
 {
     // init file
-    DataSetFile *file = readDataSetFile(location, error);
+    DataSetFile* file = readDataSetFile(location, error);
     if (file == nullptr) {
         return false;
     }
@@ -66,11 +66,11 @@ getDataSetPayload(Hanami::DataBuffer &result,
  * @return true, if successful, else false
  */
 bool
-getHeaderInformation(json &result, const std::string &location, Hanami::ErrorContainer &error)
+getHeaderInformation(json& result, const std::string& location, Hanami::ErrorContainer& error)
 {
     bool ret = false;
 
-    DataSetFile *file = readDataSetFile(location, error);
+    DataSetFile* file = readDataSetFile(location, error);
     if (file == nullptr) {
         return ret;
     }
@@ -83,7 +83,7 @@ getHeaderInformation(json &result, const std::string &location, Hanami::ErrorCon
         }
 
         if (file->type == DataSetFile::IMAGE_TYPE) {
-            ImageDataSetFile *imgF = dynamic_cast<ImageDataSetFile *>(file);
+            ImageDataSetFile* imgF = dynamic_cast<ImageDataSetFile*>(file);
             if (imgF == nullptr) {
                 break;
             }
@@ -100,7 +100,7 @@ getHeaderInformation(json &result, const std::string &location, Hanami::ErrorCon
             ret = true;
             break;
         } else if (file->type == DataSetFile::TABLE_TYPE) {
-            TableDataSetFile *imgT = dynamic_cast<TableDataSetFile *>(file);
+            TableDataSetFile* imgT = dynamic_cast<TableDataSetFile*>(file);
             if (imgT == nullptr) {
                 break;
             }
@@ -109,7 +109,7 @@ getHeaderInformation(json &result, const std::string &location, Hanami::ErrorCon
             long outputs = 0;
 
             // get number of inputs and outputs
-            for (const TableDataSetFile::TableHeaderEntry &entry : imgT->tableColumns) {
+            for (const TableDataSetFile::TableHeaderEntry& entry : imgT->tableColumns) {
                 if (entry.isInput) {
                     inputs++;
                 }

@@ -37,7 +37,7 @@ struct DataBuffer;
 class TempFileHandler
 {
    public:
-    static TempFileHandler *getInstance()
+    static TempFileHandler* getInstance()
     {
         if (instance == nullptr) {
             instance = new TempFileHandler();
@@ -46,22 +46,22 @@ class TempFileHandler
     }
     ~TempFileHandler();
 
-    bool initNewFile(const std::string &id, const uint64_t size);
-    bool addDataToPos(const std::string &uuid,
+    bool initNewFile(const std::string& id, const uint64_t size);
+    bool addDataToPos(const std::string& uuid,
                       const uint64_t pos,
-                      const void *data,
+                      const void* data,
                       const uint64_t size);
-    bool getData(Hanami::DataBuffer &result, const std::string &uuid);
-    bool removeData(const std::string &id);
-    bool moveData(const std::string &uuid,
-                  const std::string &targetLocation,
-                  Hanami::ErrorContainer &error);
+    bool getData(Hanami::DataBuffer& result, const std::string& uuid);
+    bool removeData(const std::string& id);
+    bool moveData(const std::string& uuid,
+                  const std::string& targetLocation,
+                  Hanami::ErrorContainer& error);
 
    private:
     TempFileHandler();
-    static TempFileHandler *instance;
+    static TempFileHandler* instance;
 
-    std::map<std::string, Hanami::BinaryFile *> m_tempFiles;
+    std::map<std::string, Hanami::BinaryFile*> m_tempFiles;
 };
 
 #endif  // HANAMI_TEMPFILEHANDLER_H

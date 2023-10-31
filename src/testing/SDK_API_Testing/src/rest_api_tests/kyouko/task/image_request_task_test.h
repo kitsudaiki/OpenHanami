@@ -30,7 +30,7 @@ class ImageRequestTaskTest : public TestStep
    public:
     ImageRequestTaskTest(const bool expectSuccess);
 
-    bool runTest(json &inputData, Hanami::ErrorContainer &error);
+    bool runTest(json& inputData, Hanami::ErrorContainer& error);
 };
 
 #endif  // TSUGUMITESTER_REQUESTTASKTEST_H

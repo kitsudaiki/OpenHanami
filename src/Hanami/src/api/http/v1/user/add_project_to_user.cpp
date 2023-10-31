@@ -88,10 +88,10 @@ AddProjectToUser::AddProjectToUser() : Blossom("Add a project to a specific user
  * @brief runTask
  */
 bool
-AddProjectToUser::runTask(BlossomIO &blossomIO,
-                          const json &context,
-                          BlossomStatus &status,
-                          Hanami::ErrorContainer &error)
+AddProjectToUser::runTask(BlossomIO& blossomIO,
+                          const json& context,
+                          BlossomStatus& status,
+                          Hanami::ErrorContainer& error)
 {
     // check if admin
     if (context["is_admin"] == false) {

@@ -41,9 +41,9 @@ class GpuHandler
 {
    public:
     GpuHandler();
-    bool initDevice(ErrorContainer &error);
+    bool initDevice(ErrorContainer& error);
 
-    std::vector<GpuInterface *> m_interfaces;
+    std::vector<GpuInterface*> m_interfaces;
 
    private:
     bool m_isInit = false;

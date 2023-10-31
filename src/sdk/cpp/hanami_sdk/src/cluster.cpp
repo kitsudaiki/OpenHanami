@@ -39,12 +39,12 @@ namespace Hanami
  * @return true, if successful, else false
  */
 bool
-createCluster(std::string &result,
-              const std::string &clusterName,
-              const std::string &clusterTemplate,
-              Hanami::ErrorContainer &error)
+createCluster(std::string& result,
+              const std::string& clusterName,
+              const std::string& clusterTemplate,
+              Hanami::ErrorContainer& error)
 {
-    HanamiRequest *request = Hanami::HanamiRequest::getInstance();
+    HanamiRequest* request = Hanami::HanamiRequest::getInstance();
 
     // convert template into base64-string
     std::string clusterTemplateB64;
@@ -76,10 +76,10 @@ createCluster(std::string &result,
  * @return true, if successful, else false
  */
 bool
-getCluster(std::string &result, const std::string &clusterUuid, Hanami::ErrorContainer &error)
+getCluster(std::string& result, const std::string& clusterUuid, Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/cluster";
     const std::string vars = "uuid=" + clusterUuid;
 
@@ -102,10 +102,10 @@ getCluster(std::string &result, const std::string &clusterUuid, Hanami::ErrorCon
  * @return true, if successful, else false
  */
 bool
-listCluster(std::string &result, Hanami::ErrorContainer &error)
+listCluster(std::string& result, Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/cluster/all";
 
     // send request
@@ -128,10 +128,10 @@ listCluster(std::string &result, Hanami::ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-deleteCluster(std::string &result, const std::string &clusterUuid, Hanami::ErrorContainer &error)
+deleteCluster(std::string& result, const std::string& clusterUuid, Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/cluster";
     const std::string vars = "uuid=" + clusterUuid;
 
@@ -156,13 +156,13 @@ deleteCluster(std::string &result, const std::string &clusterUuid, Hanami::Error
  * @return true, if successful, else false
  */
 bool
-saveCluster(std::string &result,
-            const std::string &clusterUuid,
-            const std::string &checkpointName,
-            Hanami::ErrorContainer &error)
+saveCluster(std::string& result,
+            const std::string& clusterUuid,
+            const std::string& checkpointName,
+            Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/cluster/save";
     const std::string vars = "";
     const std::string jsonBody
@@ -189,13 +189,13 @@ saveCluster(std::string &result,
  * @return true, if successful, else false
  */
 bool
-restoreCluster(std::string &result,
-               const std::string &clusterUuid,
-               const std::string &checkpointUuid,
-               Hanami::ErrorContainer &error)
+restoreCluster(std::string& result,
+               const std::string& clusterUuid,
+               const std::string& checkpointUuid,
+               Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/cluster/load";
     const std::string vars = "";
     const std::string jsonBody = "{\"checkpoint_uuid\":\"" + checkpointUuid
@@ -221,10 +221,10 @@ restoreCluster(std::string &result,
  * @return true, if successful, else false
  */
 bool
-switchToTaskMode(std::string &result, const std::string &clusterUuid, Hanami::ErrorContainer &error)
+switchToTaskMode(std::string& result, const std::string& clusterUuid, Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/cluster/set_mode";
     const std::string vars = "";
     const std::string jsonBody
@@ -251,13 +251,13 @@ switchToTaskMode(std::string &result, const std::string &clusterUuid, Hanami::Er
  *
  * @return true, if successful, else false
  */
-WebsocketClient *
-switchToDirectMode(std::string &result,
-                   const std::string &clusterUuid,
-                   Hanami::ErrorContainer &error)
+WebsocketClient*
+switchToDirectMode(std::string& result,
+                   const std::string& clusterUuid,
+                   Hanami::ErrorContainer& error)
 {
     // init websocket-client
-    WebsocketClient *wsClient = new WebsocketClient();
+    WebsocketClient* wsClient = new WebsocketClient();
     std::string websocketUuid = "";
     const bool ret = wsClient->initClient(websocketUuid,
                                           HanamiRequest::getInstance()->getToken(),
@@ -274,7 +274,7 @@ switchToDirectMode(std::string &result,
     }
 
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/cluster/set_mode";
     const std::string vars = "";
     const std::string jsonBody = "{\"connection_uuid\":\""

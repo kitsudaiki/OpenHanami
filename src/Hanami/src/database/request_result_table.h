@@ -29,7 +29,7 @@
 class RequestResultTable : public HanamiSqlTable
 {
    public:
-    static RequestResultTable *getInstance()
+    static RequestResultTable* getInstance()
     {
         if (instance == nullptr) {
             instance = new RequestResultTable();
@@ -39,24 +39,24 @@ class RequestResultTable : public HanamiSqlTable
 
     ~RequestResultTable();
 
-    bool addRequestResult(json &data,
-                          const UserContext &userContext,
-                          Hanami::ErrorContainer &error);
-    bool getRequestResult(json &result,
-                          const std::string &resultUuid,
-                          const UserContext &userContext,
-                          Hanami::ErrorContainer &error,
+    bool addRequestResult(json& data,
+                          const UserContext& userContext,
+                          Hanami::ErrorContainer& error);
+    bool getRequestResult(json& result,
+                          const std::string& resultUuid,
+                          const UserContext& userContext,
+                          Hanami::ErrorContainer& error,
                           const bool showHiddenValues);
-    bool getAllRequestResult(Hanami::TableItem &result,
-                             const UserContext &userContext,
-                             Hanami::ErrorContainer &error);
-    bool deleteRequestResult(const std::string &resultUuid,
-                             const UserContext &userContext,
-                             Hanami::ErrorContainer &error);
+    bool getAllRequestResult(Hanami::TableItem& result,
+                             const UserContext& userContext,
+                             Hanami::ErrorContainer& error);
+    bool deleteRequestResult(const std::string& resultUuid,
+                             const UserContext& userContext,
+                             Hanami::ErrorContainer& error);
 
    private:
     RequestResultTable();
-    static RequestResultTable *instance;
+    static RequestResultTable* instance;
 };
 
 #endif  // HANAMI_REQUEST_RESULT_TABLE_H

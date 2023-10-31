@@ -30,25 +30,25 @@ namespace Hanami
 class BinaryFile
 {
    public:
-    BinaryFile(const std::string &filePath);
+    BinaryFile(const std::string& filePath);
     ~BinaryFile();
 
-    bool allocateStorage(const uint64_t numberOfBytes, ErrorContainer &error);
-    bool updateFileSize(ErrorContainer &error);
+    bool allocateStorage(const uint64_t numberOfBytes, ErrorContainer& error);
+    bool updateFileSize(ErrorContainer& error);
 
-    bool readCompleteFile(DataBuffer &buffer, ErrorContainer &error);
-    bool writeCompleteFile(DataBuffer &buffer, ErrorContainer &error);
+    bool readCompleteFile(DataBuffer& buffer, ErrorContainer& error);
+    bool writeCompleteFile(DataBuffer& buffer, ErrorContainer& error);
 
-    bool writeDataIntoFile(const void *data,
+    bool writeDataIntoFile(const void* data,
                            const uint64_t startBytePosition,
                            const uint64_t numberOfBytes,
-                           ErrorContainer &error);
-    bool readDataFromFile(void *data,
+                           ErrorContainer& error);
+    bool readDataFromFile(void* data,
                           const uint64_t startBytePosition,
                           const uint64_t numberOfBytes,
-                          ErrorContainer &error);
+                          ErrorContainer& error);
 
-    bool closeFile(ErrorContainer &error);
+    bool closeFile(ErrorContainer& error);
 
     // public variables to avoid stupid getter
     uint64_t m_totalFileSize = 0;
@@ -57,7 +57,7 @@ class BinaryFile
    private:
     int m_fileDescriptor = -1;
 
-    bool initFile(ErrorContainer &error);
+    bool initFile(ErrorContainer& error);
 };
 
 }  // namespace Hanami

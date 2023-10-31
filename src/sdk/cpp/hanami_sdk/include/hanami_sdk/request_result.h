@@ -28,15 +28,15 @@
 namespace Hanami
 {
 
-bool getRequestResult(std::string &result,
-                      const std::string &userId,
-                      Hanami::ErrorContainer &error);
+bool getRequestResult(std::string& result,
+                      const std::string& userId,
+                      Hanami::ErrorContainer& error);
 
-bool listRequestResult(std::string &result, Hanami::ErrorContainer &error);
+bool listRequestResult(std::string& result, Hanami::ErrorContainer& error);
 
-bool deleteRequestResult(std::string &result,
-                         const std::string &userId,
-                         Hanami::ErrorContainer &error);
+bool deleteRequestResult(std::string& result,
+                         const std::string& userId,
+                         Hanami::ErrorContainer& error);
 
 }  // namespace Hanami
 

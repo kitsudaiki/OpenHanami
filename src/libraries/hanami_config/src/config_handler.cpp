@@ -27,7 +27,7 @@
 namespace Hanami
 {
 
-ConfigHandler *ConfigHandler::instance = nullptr;
+ConfigHandler* ConfigHandler::instance = nullptr;
 
 /**
  * @brief ConfigHandler::ConfigHandler
@@ -48,7 +48,7 @@ ConfigHandler::~ConfigHandler() { delete m_iniItem; }
  * @return false, if reading or parsing the file failed, else true
  */
 bool
-ConfigHandler::initConfig(const std::string &configFilePath, ErrorContainer &error)
+ConfigHandler::initConfig(const std::string& configFilePath, ErrorContainer& error)
 {
     // read file
     m_configFilePath = configFilePath;
@@ -71,8 +71,8 @@ ConfigHandler::initConfig(const std::string &configFilePath, ErrorContainer &err
     }
 
     // check config against the registered entries
-    for (auto &[groupName, groupConfig] : m_registeredConfigs) {
-        for (auto &[itemName, entry] : groupConfig) {
+    for (auto& [groupName, groupConfig] : m_registeredConfigs) {
+        for (auto& [itemName, entry] : groupConfig) {
             if (checkEntry(groupName, itemName, entry, error) == false) {
                 error.addMeesage("Error while checking config-file \"" + configFilePath + "\"");
                 LOG_ERROR(error);
@@ -92,8 +92,8 @@ ConfigHandler::initConfig(const std::string &configFilePath, ErrorContainer &err
  *
  * @return false, if item-name and group-name are already registered, else true
  */
-ConfigHandler::ConfigDef &
-ConfigHandler::registerString(const std::string &groupName, const std::string &itemName)
+ConfigHandler::ConfigDef&
+ConfigHandler::registerString(const std::string& groupName, const std::string& itemName)
 {
     return registerValue(groupName, itemName, ConfigDef::STRING_TYPE).setDefault("");
 }
@@ -106,8 +106,8 @@ ConfigHandler::registerString(const std::string &groupName, const std::string &i
  *
  * @return false, if item-name and group-name are already registered, else true
  */
-ConfigHandler::ConfigDef &
-ConfigHandler::registerInteger(const std::string &groupName, const std::string &itemName)
+ConfigHandler::ConfigDef&
+ConfigHandler::registerInteger(const std::string& groupName, const std::string& itemName)
 {
     return registerValue(groupName, itemName, ConfigDef::INT_TYPE).setDefault(0);
 }
@@ -120,8 +120,8 @@ ConfigHandler::registerInteger(const std::string &groupName, const std::string &
  *
  * @return false, if item-name and group-name are already registered, else true
  */
-ConfigHandler::ConfigDef &
-ConfigHandler::registerFloat(const std::string &groupName, const std::string &itemName)
+ConfigHandler::ConfigDef&
+ConfigHandler::registerFloat(const std::string& groupName, const std::string& itemName)
 {
     return registerValue(groupName, itemName, ConfigDef::FLOAT_TYPE).setDefault(0.0f);
 }
@@ -134,8 +134,8 @@ ConfigHandler::registerFloat(const std::string &groupName, const std::string &it
  *
  * @return false, if item-name and group-name are already registered, else true
  */
-ConfigHandler::ConfigDef &
-ConfigHandler::registerBoolean(const std::string &groupName, const std::string &itemName)
+ConfigHandler::ConfigDef&
+ConfigHandler::registerBoolean(const std::string& groupName, const std::string& itemName)
 {
     return registerValue(groupName, itemName, ConfigDef::BOOL_TYPE).setDefault(false);
 }
@@ -148,8 +148,8 @@ ConfigHandler::registerBoolean(const std::string &groupName, const std::string &
  *
  * @return false, if item-name and group-name are already registered, else true
  */
-ConfigHandler::ConfigDef &
-ConfigHandler::registerStringArray(const std::string &groupName, const std::string &itemName)
+ConfigHandler::ConfigDef&
+ConfigHandler::registerStringArray(const std::string& groupName, const std::string& itemName)
 {
     return registerValue(groupName, itemName, ConfigDef::STRING_ARRAY_TYPE);
 }
@@ -166,7 +166,7 @@ ConfigHandler::registerStringArray(const std::string &groupName, const std::stri
  *         config-file or the defined default-value.
  */
 const std::string
-ConfigHandler::getString(const std::string &groupName, const std::string &itemName, bool &success)
+ConfigHandler::getString(const std::string& groupName, const std::string& itemName, bool& success)
 {
     success = true;
 
@@ -192,7 +192,7 @@ ConfigHandler::getString(const std::string &groupName, const std::string &itemNa
  *         config-file or the defined default-value.
  */
 long
-ConfigHandler::getInteger(const std::string &groupName, const std::string &itemName, bool &success)
+ConfigHandler::getInteger(const std::string& groupName, const std::string& itemName, bool& success)
 {
     success = true;
 
@@ -218,7 +218,7 @@ ConfigHandler::getInteger(const std::string &groupName, const std::string &itemN
  *         config-file or the defined default-value.
  */
 double
-ConfigHandler::getFloat(const std::string &groupName, const std::string &itemName, bool &success)
+ConfigHandler::getFloat(const std::string& groupName, const std::string& itemName, bool& success)
 {
     success = true;
 
@@ -244,7 +244,7 @@ ConfigHandler::getFloat(const std::string &groupName, const std::string &itemNam
  *         config-file or the defined default-value.
  */
 bool
-ConfigHandler::getBoolean(const std::string &groupName, const std::string &itemName, bool &success)
+ConfigHandler::getBoolean(const std::string& groupName, const std::string& itemName, bool& success)
 {
     success = true;
 
@@ -270,9 +270,9 @@ ConfigHandler::getBoolean(const std::string &groupName, const std::string &itemN
  *         config-file or the defined default-value.
  */
 const std::vector<std::string>
-ConfigHandler::getStringArray(const std::string &groupName,
-                              const std::string &itemName,
-                              bool &success)
+ConfigHandler::getStringArray(const std::string& groupName,
+                              const std::string& itemName,
+                              bool& success)
 {
     std::vector<std::string> result;
     success = true;
@@ -304,10 +304,10 @@ ConfigHandler::getStringArray(const std::string &groupName,
  * @return true, if successful, else false
  */
 bool
-ConfigHandler::checkEntry(const std::string &groupName,
-                          const std::string &itemName,
-                          ConfigDef &entry,
-                          ErrorContainer &error)
+ConfigHandler::checkEntry(const std::string& groupName,
+                          const std::string& itemName,
+                          ConfigDef& entry,
+                          ErrorContainer& error)
 {
     // check type against config-file
     if (checkType(groupName, itemName, entry.type) == false) {
@@ -346,8 +346,8 @@ ConfigHandler::checkEntry(const std::string &groupName,
  * @return true, if type match with the config-file, else false
  */
 bool
-ConfigHandler::checkType(const std::string &groupName,
-                         const std::string &itemName,
+ConfigHandler::checkType(const std::string& groupName,
+                         const std::string& itemName,
                          const ConfigDef::ConfigType type)
 {
     // get value from config-file
@@ -402,7 +402,7 @@ ConfigHandler::checkType(const std::string &groupName,
  * @return true, if item-name and group-name is already registered, else false
  */
 bool
-ConfigHandler::isRegistered(const std::string &groupName, const std::string &itemName)
+ConfigHandler::isRegistered(const std::string& groupName, const std::string& itemName)
 {
     const auto outerIt = m_registeredConfigs.find(groupName);
     if (outerIt == m_registeredConfigs.end()) {
@@ -426,7 +426,7 @@ ConfigHandler::isRegistered(const std::string &groupName, const std::string &ite
  * @return undefined-type, if item-name and group-name are not registered, else the registered type
  */
 ConfigHandler::ConfigDef::ConfigType
-ConfigHandler::getRegisteredType(const std::string &groupName, const std::string &itemName)
+ConfigHandler::getRegisteredType(const std::string& groupName, const std::string& itemName)
 {
     const auto outerIt = m_registeredConfigs.find(groupName);
     if (outerIt != m_registeredConfigs.end()) {
@@ -449,9 +449,9 @@ ConfigHandler::getRegisteredType(const std::string &groupName, const std::string
  *
  * @return true, if successfull, else false
  */
-ConfigHandler::ConfigDef &
-ConfigHandler::registerValue(const std::string &groupName,
-                             const std::string &itemName,
+ConfigHandler::ConfigDef&
+ConfigHandler::registerValue(const std::string& groupName,
+                             const std::string& itemName,
                              const ConfigDef::ConfigType type)
 {
     std::string finalGroupName = groupName;
@@ -492,14 +492,14 @@ ConfigHandler::registerValue(const std::string &groupName,
  * @param docu reference for the output of the final document
  */
 void
-ConfigHandler::createDocumentation(std::string &docu)
+ConfigHandler::createDocumentation(std::string& docu)
 {
-    for (auto &[groupName, groupConfig] : m_registeredConfigs) {
+    for (auto& [groupName, groupConfig] : m_registeredConfigs) {
         docu.append("## " + groupName + "\n\n");
         docu.append("| Item | Description |\n");
         docu.append("| --- | --- |\n");
 
-        for (auto &[itemName, entry] : groupConfig) {
+        for (auto& [itemName, entry] : groupConfig) {
             docu.append("| " + itemName + "| ");
             docu.append("**Description**: " + entry.comment + "<br>");
             if (entry.isRequired) {

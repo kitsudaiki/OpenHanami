@@ -31,10 +31,10 @@ class ListCluster : public Blossom
     ListCluster();
 
    protected:
-    bool runTask(BlossomIO &blossomIO,
-                 const json &context,
-                 BlossomStatus &status,
-                 Hanami::ErrorContainer &error);
+    bool runTask(BlossomIO& blossomIO,
+                 const json& context,
+                 BlossomStatus& status,
+                 Hanami::ErrorContainer& error);
 };
 
 #endif  // HANAMI_SHOWCLUSTERS_H

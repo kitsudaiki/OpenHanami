@@ -54,10 +54,10 @@ ListCluster::ListCluster() : Blossom("List all visible clusters.")
  * @brief runTask
  */
 bool
-ListCluster::runTask(BlossomIO &blossomIO,
-                     const json &context,
-                     BlossomStatus &status,
-                     Hanami::ErrorContainer &error)
+ListCluster::runTask(BlossomIO& blossomIO,
+                     const json& context,
+                     BlossomStatus& status,
+                     Hanami::ErrorContainer& error)
 {
     const UserContext userContext(context);
 

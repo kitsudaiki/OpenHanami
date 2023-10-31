@@ -23,24 +23,24 @@
 namespace Hanami
 {
 
-bool readFile(std::string &readContent, const std::string &filePath, ErrorContainer &error);
+bool readFile(std::string& readContent, const std::string& filePath, ErrorContainer& error);
 
-bool writeFile(const std::string &filePath,
-               const std::string &content,
-               ErrorContainer &error,
+bool writeFile(const std::string& filePath,
+               const std::string& content,
+               ErrorContainer& error,
                const bool force = true);
 
-bool appendText(const std::string &filePath, const std::string &newText, ErrorContainer &error);
+bool appendText(const std::string& filePath, const std::string& newText, ErrorContainer& error);
 
-bool replaceLine(const std::string &filePath,
+bool replaceLine(const std::string& filePath,
                  const uint32_t lineNumber,
-                 const std::string &newLineContent,
-                 ErrorContainer &error);
+                 const std::string& newLineContent,
+                 ErrorContainer& error);
 
-bool replaceContent(const std::string &filePath,
-                    const std::string &oldContent,
-                    const std::string &newContent,
-                    ErrorContainer &error);
+bool replaceContent(const std::string& filePath,
+                    const std::string& oldContent,
+                    const std::string& newContent,
+                    ErrorContainer& error);
 
 }  // namespace Hanami
 

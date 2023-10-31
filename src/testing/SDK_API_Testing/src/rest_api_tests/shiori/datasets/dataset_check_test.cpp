@@ -36,7 +36,7 @@ DataSetCheckTest::DataSetCheckTest(const bool expectSuccess) : TestStep(expectSu
 }
 
 bool
-DataSetCheckTest::runTest(json &inputData, Hanami::ErrorContainer &error)
+DataSetCheckTest::runTest(json& inputData, Hanami::ErrorContainer& error)
 {
     // get template by name
     std::string result;
@@ -54,7 +54,7 @@ DataSetCheckTest::runTest(json &inputData, Hanami::ErrorContainer &error)
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch (const json::parse_error &ex) {
+    } catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }

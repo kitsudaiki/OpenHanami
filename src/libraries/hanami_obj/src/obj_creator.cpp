@@ -25,7 +25,7 @@ ObjCreator::ObjCreator() {}
  * @return resulting string
  */
 bool
-ObjCreator::create(std::string &convertedString, const ObjItem &input)
+ObjCreator::create(std::string& convertedString, const ObjItem& input)
 {
     convertedString = "";
 

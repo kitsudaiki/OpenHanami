@@ -32,7 +32,7 @@
  *
  * @param cluster pointer to the cluster, where the event and the statemachine belongs to
  */
-TaskHandle_State::TaskHandle_State(Cluster *cluster) { m_cluster = cluster; }
+TaskHandle_State::TaskHandle_State(Cluster* cluster) { m_cluster = cluster; }
 
 /**
  * @brief destructor
@@ -149,7 +149,7 @@ TaskHandle_State::processEvent()
  * @return false, if uuid already exist, else true
  */
 bool
-TaskHandle_State::addTask(const std::string &uuid, const Task &task)
+TaskHandle_State::addTask(const std::string& uuid, const Task& task)
 {
     std::lock_guard<std::mutex> guard(m_task_mutex);
 
@@ -168,7 +168,7 @@ TaskHandle_State::addTask(const std::string &uuid, const Task &task)
  *
  * @return pointer to the actual task of nullptr, if no task is active at the moment
  */
-Task *
+Task*
 TaskHandle_State::getActualTask()
 {
     std::lock_guard<std::mutex> guard(m_task_mutex);
@@ -264,7 +264,7 @@ TaskHandle_State::finishTask()
  * @return task-progress
  */
 const TaskProgress
-TaskHandle_State::getProgress(const std::string &taskUuid)
+TaskHandle_State::getProgress(const std::string& taskUuid)
 {
     std::lock_guard<std::mutex> guard(m_task_mutex);
 
@@ -285,7 +285,7 @@ TaskHandle_State::getProgress(const std::string &taskUuid)
  * @return state of the requested task
  */
 TaskState
-TaskHandle_State::getTaskState(const std::string &taskUuid)
+TaskHandle_State::getTaskState(const std::string& taskUuid)
 {
     TaskState state = UNDEFINED_TASK_STATE;
 
@@ -302,9 +302,9 @@ TaskHandle_State::getTaskState(const std::string &taskUuid)
  * @param result
  */
 void
-TaskHandle_State::getAllProgress(std::map<std::string, TaskProgress> &result)
+TaskHandle_State::getAllProgress(std::map<std::string, TaskProgress>& result)
 {
-    for (const auto &[name, task] : m_taskMap) {
+    for (const auto& [name, task] : m_taskMap) {
         result.emplace(task.uuid.toString(), task.progress);
     }
 }
@@ -317,7 +317,7 @@ TaskHandle_State::getAllProgress(std::map<std::string, TaskProgress> &result)
  * @return false, if task-uuid was not found, else true
  */
 bool
-TaskHandle_State::removeTask(const std::string &taskUuid)
+TaskHandle_State::removeTask(const std::string& taskUuid)
 {
     std::lock_guard<std::mutex> guard(m_task_mutex);
 
@@ -368,7 +368,7 @@ TaskHandle_State::removeTask(const std::string &taskUuid)
  * @return true, if task is finished, else false
  */
 bool
-TaskHandle_State::isFinish(const std::string &taskUuid)
+TaskHandle_State::isFinish(const std::string& taskUuid)
 {
     std::lock_guard<std::mutex> guard(m_task_mutex);
 

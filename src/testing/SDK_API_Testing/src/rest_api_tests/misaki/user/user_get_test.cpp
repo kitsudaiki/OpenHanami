@@ -24,7 +24,7 @@
 
 #include <hanami_sdk/user.h>
 
-UserGetTest::UserGetTest(const bool expectSuccess, const std::string &nameOverride)
+UserGetTest::UserGetTest(const bool expectSuccess, const std::string& nameOverride)
     : TestStep(expectSuccess)
 {
     m_testName = "get user";
@@ -37,7 +37,7 @@ UserGetTest::UserGetTest(const bool expectSuccess, const std::string &nameOverri
 }
 
 bool
-UserGetTest::runTest(json &inputData, Hanami::ErrorContainer &error)
+UserGetTest::runTest(json& inputData, Hanami::ErrorContainer& error)
 {
     if (m_id == "") {
         m_id = inputData["user_id"];
@@ -57,7 +57,7 @@ UserGetTest::runTest(json &inputData, Hanami::ErrorContainer &error)
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch (const json::parse_error &ex) {
+    } catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }

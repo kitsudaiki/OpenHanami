@@ -28,31 +28,31 @@
 namespace Hanami
 {
 
-bool uploadCsvData(std::string &result,
-                   const std::string &dataSetName,
-                   const std::string &inputFilePath,
-                   Hanami::ErrorContainer &error);
+bool uploadCsvData(std::string& result,
+                   const std::string& dataSetName,
+                   const std::string& inputFilePath,
+                   Hanami::ErrorContainer& error);
 
-bool uploadMnistData(std::string &result,
-                     const std::string &dataSetName,
-                     const std::string &inputFilePath,
-                     const std::string &labelFilePath,
-                     Hanami::ErrorContainer &error);
+bool uploadMnistData(std::string& result,
+                     const std::string& dataSetName,
+                     const std::string& inputFilePath,
+                     const std::string& labelFilePath,
+                     Hanami::ErrorContainer& error);
 
-bool checkDataset(std::string &result,
-                  const std::string &dataUuid,
-                  const std::string &resultUuid,
-                  Hanami::ErrorContainer &error);
+bool checkDataset(std::string& result,
+                  const std::string& dataUuid,
+                  const std::string& resultUuid,
+                  Hanami::ErrorContainer& error);
 
-bool getDataset(std::string &result, const std::string &dataUuid, Hanami::ErrorContainer &error);
+bool getDataset(std::string& result, const std::string& dataUuid, Hanami::ErrorContainer& error);
 
-bool listDatasets(std::string &result, Hanami::ErrorContainer &error);
+bool listDatasets(std::string& result, Hanami::ErrorContainer& error);
 
-bool deleteDataset(std::string &result, const std::string &dataUuid, Hanami::ErrorContainer &error);
+bool deleteDataset(std::string& result, const std::string& dataUuid, Hanami::ErrorContainer& error);
 
-bool getDatasetProgress(std::string &result,
-                        const std::string &dataUuid,
-                        Hanami::ErrorContainer &error);
+bool getDatasetProgress(std::string& result,
+                        const std::string& dataUuid,
+                        Hanami::ErrorContainer& error);
 
 }  // namespace Hanami
 

@@ -30,7 +30,7 @@ class DataSetCreateCsvTest : public TestStep
    public:
     DataSetCreateCsvTest(const bool expectSuccess);
 
-    bool runTest(json &inputData, Hanami::ErrorContainer &error);
+    bool runTest(json& inputData, Hanami::ErrorContainer& error);
 };
 
 #endif  // TSUGUMITESTER_DATASETCREATE_CSV_TEST_H

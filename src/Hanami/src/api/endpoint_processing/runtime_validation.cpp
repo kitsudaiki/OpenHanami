@@ -26,7 +26,7 @@
 #include <api/endpoint_processing/items/item_methods.h>
 
 const std::string
-createErrorMessage(const std::string &name, const FieldType fieldType)
+createErrorMessage(const std::string& name, const FieldType fieldType)
 {
     std::string err = "Value-validation failed, because a item '" + name + "'  has the false type:";
     switch (fieldType) {
@@ -66,12 +66,12 @@ createErrorMessage(const std::string &name, const FieldType fieldType)
  * @return true, if everything match, else false
  */
 bool
-checkBlossomValues(const std::map<std::string, FieldDef> &defs,
-                   const json &values,
+checkBlossomValues(const std::map<std::string, FieldDef>& defs,
+                   const json& values,
                    const FieldDef::IO_ValueType ioType,
-                   std::string &errorMessage)
+                   std::string& errorMessage)
 {
-    for (const auto &[name, field] : defs) {
+    for (const auto& [name, field] : defs) {
         if (field.ioType != ioType) {
             continue;
         }
@@ -154,7 +154,7 @@ checkBlossomValues(const std::map<std::string, FieldDef> &defs,
  * @return true, if match, else false
  */
 bool
-checkType(const json &item, const FieldType fieldType)
+checkType(const json& item, const FieldType fieldType)
 {
     if (item.is_array() && fieldType == SAKURA_ARRAY_TYPE) {
         return true;

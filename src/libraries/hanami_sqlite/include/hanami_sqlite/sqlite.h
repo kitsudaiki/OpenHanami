@@ -39,14 +39,14 @@ class Sqlite
     Sqlite();
     ~Sqlite();
 
-    bool initDB(const std::string &path, ErrorContainer &error);
+    bool initDB(const std::string& path, ErrorContainer& error);
 
-    bool execSqlCommand(TableItem *resultTable, const std::string &command, ErrorContainer &error);
+    bool execSqlCommand(TableItem* resultTable, const std::string& command, ErrorContainer& error);
 
     bool closeDB();
 
    private:
-    sqlite3 *m_db = nullptr;
+    sqlite3* m_db = nullptr;
     int m_rc = 0;
 };
 

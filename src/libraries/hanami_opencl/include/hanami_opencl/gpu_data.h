@@ -51,15 +51,15 @@ class GpuData
 
     GpuData();
 
-    bool addBuffer(const std::string &name,
+    bool addBuffer(const std::string& name,
                    const uint64_t numberOfObjects,
                    const uint64_t objectSize,
                    const bool useHostPtr = false,
-                   void *data = nullptr);
-    bool addValue(const std::string &name, const uint64_t value);
+                   void* data = nullptr);
+    bool addValue(const std::string& name, const uint64_t value);
 
-    bool containsBuffer(const std::string &name);
-    void *getBufferData(const std::string &name);
+    bool containsBuffer(const std::string& name);
+    void* getBufferData(const std::string& name);
 
    private:
     friend GpuInterface;
@@ -67,7 +67,7 @@ class GpuData
     struct WorkerBuffer {
         bool isValue = false;
         uint64_t value = 0;
-        void *data = nullptr;
+        void* data = nullptr;
         uint64_t numberOfBytes = 0;
         uint64_t numberOfObjects = 0;
         bool useHostPtr = false;
@@ -87,12 +87,12 @@ class GpuData
     std::map<std::string, WorkerBuffer> m_buffer;
     std::map<std::string, KernelDef> m_kernel;
 
-    WorkerBuffer *getBuffer(const std::string &name);
+    WorkerBuffer* getBuffer(const std::string& name);
 
-    bool containsKernel(const std::string &name);
-    KernelDef *getKernel(const std::string &name);
+    bool containsKernel(const std::string& name);
+    KernelDef* getKernel(const std::string& name);
 
-    uint32_t getArgPosition(KernelDef *kernelDef, const std::string &bufferName);
+    uint32_t getArgPosition(KernelDef* kernelDef, const std::string& bufferName);
 };
 
 }  // namespace Hanami

@@ -28,9 +28,9 @@
 class CheckpointGetTest : public TestStep
 {
    public:
-    CheckpointGetTest(const bool expectSuccess, const std::string &uuidOverride = "");
+    CheckpointGetTest(const bool expectSuccess, const std::string& uuidOverride = "");
 
-    bool runTest(json &inputData, Hanami::ErrorContainer &error);
+    bool runTest(json& inputData, Hanami::ErrorContainer& error);
 
    private:
     std::string m_uuid = "";

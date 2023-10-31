@@ -34,16 +34,16 @@ class FinalizeCsvDataSet : public Blossom
     FinalizeCsvDataSet();
 
    protected:
-    bool runTask(BlossomIO &blossomIO,
-                 const json &context,
-                 BlossomStatus &status,
-                 Hanami::ErrorContainer &error);
+    bool runTask(BlossomIO& blossomIO,
+                 const json& context,
+                 BlossomStatus& status,
+                 Hanami::ErrorContainer& error);
 
    private:
-    bool convertCsvData(const std::string &filePath,
-                        const std::string &name,
-                        const Hanami::DataBuffer &inputBuffer);
-    void convertField(float *segmentPos, const std::string &cell, const float lastVal);
+    bool convertCsvData(const std::string& filePath,
+                        const std::string& name,
+                        const Hanami::DataBuffer& inputBuffer);
+    void convertField(float* segmentPos, const std::string& cell, const float lastVal);
 };
 
 #endif  // HANAMI_CSV_FINALIZE_DATA_SET_H

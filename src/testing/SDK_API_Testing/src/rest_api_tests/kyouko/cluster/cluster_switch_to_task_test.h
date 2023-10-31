@@ -30,7 +30,7 @@ class ClusterSwitchToTaskTest : public TestStep
    public:
     ClusterSwitchToTaskTest(const bool expectSuccess);
 
-    bool runTest(json &inputData, Hanami::ErrorContainer &error);
+    bool runTest(json& inputData, Hanami::ErrorContainer& error);
 };
 
 #endif  // TSUGUMITESTER_CLUSTERSWITCHTOTASKTEST_H

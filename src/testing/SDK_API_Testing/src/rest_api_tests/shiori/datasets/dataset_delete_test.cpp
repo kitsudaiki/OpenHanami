@@ -24,7 +24,7 @@
 
 #include <hanami_sdk/data_set.h>
 
-DataSetDeleteTest::DataSetDeleteTest(const bool expectSuccess, const std::string &type)
+DataSetDeleteTest::DataSetDeleteTest(const bool expectSuccess, const std::string& type)
     : TestStep(expectSuccess)
 {
     m_testName = "delete data-set";
@@ -37,7 +37,7 @@ DataSetDeleteTest::DataSetDeleteTest(const bool expectSuccess, const std::string
 }
 
 bool
-DataSetDeleteTest::runTest(json &inputData, Hanami::ErrorContainer &error)
+DataSetDeleteTest::runTest(json& inputData, Hanami::ErrorContainer& error)
 {
     std::string uuid = "";
     if (m_type == "train") {
@@ -62,7 +62,7 @@ DataSetDeleteTest::runTest(json &inputData, Hanami::ErrorContainer &error)
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch (const json::parse_error &ex) {
+    } catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }

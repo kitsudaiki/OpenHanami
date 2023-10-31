@@ -51,7 +51,7 @@ namespace Hanami
  *
  * @param socket pointer to socket
  */
-Session::Session(AbstractSocket *socket)
+Session::Session(AbstractSocket* socket)
 {
     m_multiblockIo = new MultiblockIO(this);
     m_socket = socket;
@@ -88,9 +88,9 @@ Session::~Session()
  * @return false if session is NOT ready to send, send failed, or message is too big, else true
  */
 bool
-Session::sendStreamData(const void *data,
+Session::sendStreamData(const void* data,
                         const uint64_t size,
-                        ErrorContainer &error,
+                        ErrorContainer& error,
                         const bool replyExpected)
 {
     // check size
@@ -116,7 +116,7 @@ Session::sendStreamData(const void *data,
  * @return true, if successful, else false
  */
 bool
-Session::sendNormalMessage(const void *data, const uint64_t size, ErrorContainer &error)
+Session::sendNormalMessage(const void* data, const uint64_t size, ErrorContainer& error)
 {
     if (m_statemachine.isInState(SESSION_READY)) {
         uint64_t id = 0;
@@ -151,11 +151,11 @@ Session::sendNormalMessage(const void *data, const uint64_t size, ErrorContainer
  *
  * @return content of the response message as data-buffer, or nullptr, if session is not active
  */
-DataBuffer *
-Session::sendRequest(const void *data,
+DataBuffer*
+Session::sendRequest(const void* data,
                      const uint64_t size,
                      const uint64_t timeout,
-                     ErrorContainer &error)
+                     ErrorContainer& error)
 {
     if (m_statemachine.isInState(SESSION_READY)) {
         uint64_t id = 0;
@@ -192,10 +192,10 @@ Session::sendRequest(const void *data,
  * @return multiblock-id, or 0, if session is not active
  */
 uint64_t
-Session::sendResponse(const void *data,
+Session::sendResponse(const void* data,
                       const uint64_t size,
                       const uint64_t blockerId,
-                      ErrorContainer &error)
+                      ErrorContainer& error)
 {
     if (m_statemachine.isInState(SESSION_READY)) {
         if (size < MAX_SINGLE_MESSAGE_SIZE) {
@@ -217,8 +217,8 @@ Session::sendResponse(const void *data,
  * @brief set callback for stram-message
  */
 void
-Session::setStreamCallback(void *receiver,
-                           void (*processStream)(void *, Session *, const void *, const uint64_t))
+Session::setStreamCallback(void* receiver,
+                           void (*processStream)(void*, Session*, const void*, const uint64_t))
 {
     m_streamReceiver = receiver;
     m_processStreamData = processStream;
@@ -228,8 +228,8 @@ Session::setStreamCallback(void *receiver,
  * @brief set callback for requests
  */
 void
-Session::setRequestCallback(void *receiver,
-                            void (*processRequest)(void *, Session *, const uint64_t, DataBuffer *))
+Session::setRequestCallback(void* receiver,
+                            void (*processRequest)(void*, Session*, const uint64_t, DataBuffer*))
 {
     m_standaloneReceiver = receiver;
     m_processRequestData = processRequest;
@@ -239,7 +239,7 @@ Session::setRequestCallback(void *receiver,
  * @brief set callback for errors
  */
 void
-Session::setErrorCallback(void (*processError)(Session *, const uint8_t, const std::string))
+Session::setErrorCallback(void (*processError)(Session*, const uint8_t, const std::string))
 {
     m_processError = processError;
 }
@@ -253,7 +253,7 @@ Session::setErrorCallback(void (*processError)(Session *, const uint8_t, const s
  * @return true, if all was successful, else false
  */
 bool
-Session::closeSession(ErrorContainer &error, const bool replyExpected)
+Session::closeSession(ErrorContainer& error, const bool replyExpected)
 {
     LOG_DEBUG("close session with id " + std::to_string(m_sessionId));
     if (m_statemachine.isInState(SESSION_READY)) {
@@ -317,7 +317,7 @@ Session::isClientSide() const
  * @return false if session is already init or socker can not be connected, else true
  */
 bool
-Session::connectiSession(const uint32_t sessionId, ErrorContainer &error)
+Session::connectiSession(const uint32_t sessionId, ErrorContainer& error)
 {
     LOG_DEBUG("CALL session connect: " + std::to_string(m_sessionId));
 
@@ -361,8 +361,8 @@ Session::connectiSession(const uint32_t sessionId, ErrorContainer &error)
  */
 bool
 Session::makeSessionReady(const uint32_t sessionId,
-                          const std::string &sessionIdentifier,
-                          ErrorContainer &error)
+                          const std::string& sessionIdentifier,
+                          ErrorContainer& error)
 {
     LOG_DEBUG("CALL make session ready: " + std::to_string(m_sessionId));
 
@@ -394,7 +394,7 @@ Session::makeSessionReady(const uint32_t sessionId,
  * @return true, if statechange and socket-disconnect were successful, else false
  */
 bool
-Session::endSession(ErrorContainer &error)
+Session::endSession(ErrorContainer& error)
 {
     LOG_DEBUG("CALL session close: " + std::to_string(m_sessionId));
 
@@ -415,7 +415,7 @@ Session::endSession(ErrorContainer &error)
  *         else false
  */
 bool
-Session::disconnectSession(ErrorContainer &error)
+Session::disconnectSession(ErrorContainer& error)
 {
     LOG_DEBUG("CALL session disconnect: " + std::to_string(m_sessionId));
 
@@ -448,10 +448,10 @@ Session::disconnectSession(ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-Session::sendMessage(const CommonMessageHeader &header,
-                     const void *data,
+Session::sendMessage(const CommonMessageHeader& header,
+                     const void* data,
                      const uint64_t size,
-                     ErrorContainer &error)
+                     ErrorContainer& error)
 {
     if (m_socket == nullptr) {
         return false;

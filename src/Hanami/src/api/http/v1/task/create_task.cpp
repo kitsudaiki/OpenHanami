@@ -74,10 +74,10 @@ CreateTask::CreateTask() : Blossom("Add new task to the task-queue of a cluster.
  * @brief runTask
  */
 bool
-CreateTask::runTask(BlossomIO &blossomIO,
-                    const json &context,
-                    BlossomStatus &status,
-                    Hanami::ErrorContainer &error)
+CreateTask::runTask(BlossomIO& blossomIO,
+                    const json& context,
+                    BlossomStatus& status,
+                    Hanami::ErrorContainer& error)
 {
     const std::string name = blossomIO.input["name"];
     const std::string clusterUuid = blossomIO.input["cluster_uuid"];
@@ -102,7 +102,7 @@ CreateTask::runTask(BlossomIO &blossomIO,
     }
 
     // get cluster
-    Cluster *cluster = ClusterHandler::getInstance()->getCluster(clusterUuid);
+    Cluster* cluster = ClusterHandler::getInstance()->getCluster(clusterUuid);
     if (cluster == nullptr) {
         status.errorMessage = "Cluster with UUID '" + clusterUuid + "'not found";
         status.statusCode = NOT_FOUND_RTYPE;
@@ -162,14 +162,14 @@ CreateTask::runTask(BlossomIO &blossomIO,
  * @return true, if successful, else false
  */
 bool
-CreateTask::imageTask(std::string &taskUuid,
-                      const std::string &name,
-                      const std::string &taskType,
-                      const UserContext &userContext,
-                      Cluster *cluster,
-                      json &dataSetInfo,
-                      BlossomStatus &status,
-                      Hanami::ErrorContainer &error)
+CreateTask::imageTask(std::string& taskUuid,
+                      const std::string& name,
+                      const std::string& taskType,
+                      const UserContext& userContext,
+                      Cluster* cluster,
+                      json& dataSetInfo,
+                      BlossomStatus& status,
+                      Hanami::ErrorContainer& error)
 {
     // get input-data
     const std::string dataSetLocation = dataSetInfo["location"];
@@ -190,7 +190,7 @@ CreateTask::imageTask(std::string &taskUuid,
                                      name,
                                      userContext.userId,
                                      userContext.projectId,
-                                     static_cast<float *>(buffer.data),
+                                     static_cast<float*>(buffer.data),
                                      numberOfInputs,
                                      numberOfOutputs,
                                      numberOfLines);
@@ -199,7 +199,7 @@ CreateTask::imageTask(std::string &taskUuid,
                                        name,
                                        userContext.userId,
                                        userContext.projectId,
-                                       static_cast<float *>(buffer.data),
+                                       static_cast<float*>(buffer.data),
                                        numberOfInputs,
                                        numberOfOutputs,
                                        numberOfLines);
@@ -226,14 +226,14 @@ CreateTask::imageTask(std::string &taskUuid,
  * @return true, if successful, else false
  */
 bool
-CreateTask::tableTask(std::string &taskUuid,
-                      const std::string &name,
-                      const std::string &taskType,
-                      const UserContext &userContext,
-                      Cluster *cluster,
-                      json &dataSetInfo,
-                      BlossomStatus &status,
-                      Hanami::ErrorContainer &error)
+CreateTask::tableTask(std::string& taskUuid,
+                      const std::string& name,
+                      const std::string& taskType,
+                      const UserContext& userContext,
+                      Cluster* cluster,
+                      json& dataSetInfo,
+                      BlossomStatus& status,
+                      Hanami::ErrorContainer& error)
 {
     // init request-task
     const uint64_t numberOfInputs = cluster->clusterHeader->inputValues.count;
@@ -256,7 +256,7 @@ CreateTask::tableTask(std::string &taskUuid,
                                        name,
                                        userContext.userId,
                                        userContext.projectId,
-                                       static_cast<float *>(inputBuffer.data),
+                                       static_cast<float*>(inputBuffer.data),
                                        numberOfInputs,
                                        numberOfOutputs,
                                        numberOfLines - numberOfInputs);
@@ -278,8 +278,8 @@ CreateTask::tableTask(std::string &taskUuid,
                                      name,
                                      userContext.userId,
                                      userContext.projectId,
-                                     static_cast<float *>(inputBuffer.data),
-                                     static_cast<float *>(outputBuffer.data),
+                                     static_cast<float*>(inputBuffer.data),
+                                     static_cast<float*>(outputBuffer.data),
                                      numberOfInputs,
                                      numberOfOutputs,
                                      numberOfLines - numberOfInputs);

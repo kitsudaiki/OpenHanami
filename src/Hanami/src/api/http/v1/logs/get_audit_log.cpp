@@ -73,10 +73,10 @@ GetAuditLog::GetAuditLog() : Blossom("Get audit-log of a user.")
  * @brief runTask
  */
 bool
-GetAuditLog::runTask(BlossomIO &blossomIO,
-                     const json &context,
-                     BlossomStatus &status,
-                     Hanami::ErrorContainer &error)
+GetAuditLog::runTask(BlossomIO& blossomIO,
+                     const json& context,
+                     BlossomStatus& status,
+                     Hanami::ErrorContainer& error)
 {
     const UserContext userContext(context);
     const uint64_t page = blossomIO.input["page"];

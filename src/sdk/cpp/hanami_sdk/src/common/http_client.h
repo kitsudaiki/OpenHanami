@@ -50,46 +50,46 @@ namespace Hanami
 class HanamiRequest
 {
    public:
-    static HanamiRequest *getInstance();
+    static HanamiRequest* getInstance();
     ~HanamiRequest();
 
-    bool init(const std::string &host = "",
-              const std::string &port = "",
-              const std::string &user = "",
-              const std::string &password = "",
-              const std::string &cacert = "");
+    bool init(const std::string& host = "",
+              const std::string& port = "",
+              const std::string& user = "",
+              const std::string& password = "",
+              const std::string& cacert = "");
 
-    bool sendGetRequest(std::string &response,
-                        const std::string &path,
-                        const std::string &vars,
-                        Hanami::ErrorContainer &error);
+    bool sendGetRequest(std::string& response,
+                        const std::string& path,
+                        const std::string& vars,
+                        Hanami::ErrorContainer& error);
 
-    bool sendPostRequest(std::string &response,
-                         const std::string &path,
-                         const std::string &vars,
-                         const std::string &body,
-                         Hanami::ErrorContainer &error);
+    bool sendPostRequest(std::string& response,
+                         const std::string& path,
+                         const std::string& vars,
+                         const std::string& body,
+                         Hanami::ErrorContainer& error);
 
-    bool sendPutRequest(std::string &response,
-                        const std::string &path,
-                        const std::string &vars,
-                        const std::string &body,
-                        Hanami::ErrorContainer &error);
+    bool sendPutRequest(std::string& response,
+                        const std::string& path,
+                        const std::string& vars,
+                        const std::string& body,
+                        Hanami::ErrorContainer& error);
 
-    bool sendDeleteRequest(std::string &response,
-                           const std::string &path,
-                           const std::string &vars,
-                           Hanami::ErrorContainer &error);
+    bool sendDeleteRequest(std::string& response,
+                           const std::string& path,
+                           const std::string& vars,
+                           Hanami::ErrorContainer& error);
 
-    const std::string &getToken() const;
-    const std::string &getPort() const;
-    const std::string &getHost() const;
+    const std::string& getToken() const;
+    const std::string& getPort() const;
+    const std::string& getHost() const;
 
-    void updateToken(const std::string &newToken);
+    void updateToken(const std::string& newToken);
 
    private:
     HanamiRequest();
-    static HanamiRequest *m_instance;
+    static HanamiRequest* m_instance;
 
     std::string m_host = "";
     std::string m_port = "";
@@ -98,19 +98,19 @@ class HanamiRequest
     std::string m_userId = "";
     std::string m_password = "";
 
-    bool requestToken(Hanami::ErrorContainer &error);
-    bool makeRequest(std::string &response,
+    bool requestToken(Hanami::ErrorContainer& error);
+    bool makeRequest(std::string& response,
                      const http::verb type,
-                     const std::string &path,
-                     const std::string &vars,
-                     const std::string &jsonBody,
-                     Hanami::ErrorContainer &error);
-    uint16_t makeSingleRequest(std::string &response,
+                     const std::string& path,
+                     const std::string& vars,
+                     const std::string& jsonBody,
+                     Hanami::ErrorContainer& error);
+    uint16_t makeSingleRequest(std::string& response,
                                const http::verb type,
-                               const std::string &target,
-                               const std::string &jsonBody,
-                               Hanami::ErrorContainer &error);
-    bool getEnvVar(std::string &content, const std::string &key) const;
+                               const std::string& target,
+                               const std::string& jsonBody,
+                               Hanami::ErrorContainer& error);
+    bool getEnvVar(std::string& content, const std::string& key) const;
 };
 
 }  // namespace Hanami

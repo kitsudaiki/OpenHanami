@@ -76,10 +76,10 @@ RemoveProjectFromUser::RemoveProjectFromUser() : Blossom("Remove a project from 
  * @brief runTask
  */
 bool
-RemoveProjectFromUser::runTask(BlossomIO &blossomIO,
-                               const json &context,
-                               BlossomStatus &status,
-                               Hanami::ErrorContainer &error)
+RemoveProjectFromUser::runTask(BlossomIO& blossomIO,
+                               const json& context,
+                               BlossomStatus& status,
+                               Hanami::ErrorContainer& error)
 {
     // check if admin
     if (context["is_admin"] == false) {

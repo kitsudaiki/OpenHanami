@@ -54,10 +54,10 @@ ListRequestResult::ListRequestResult() : Blossom("List all visilbe request-resul
  * @brief runTask
  */
 bool
-ListRequestResult::runTask(BlossomIO &blossomIO,
-                           const json &context,
-                           BlossomStatus &status,
-                           Hanami::ErrorContainer &error)
+ListRequestResult::runTask(BlossomIO& blossomIO,
+                           const json& context,
+                           BlossomStatus& status,
+                           Hanami::ErrorContainer& error)
 {
     const UserContext userContext(context);
 

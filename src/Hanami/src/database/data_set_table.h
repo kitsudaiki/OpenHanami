@@ -29,7 +29,7 @@
 class DataSetTable : public HanamiSqlTable
 {
    public:
-    static DataSetTable *getInstance()
+    static DataSetTable* getInstance()
     {
         if (instance == nullptr) {
             instance = new DataSetTable();
@@ -39,31 +39,31 @@ class DataSetTable : public HanamiSqlTable
 
     ~DataSetTable();
 
-    bool addDataSet(json &data, const UserContext &userContext, Hanami::ErrorContainer &error);
-    bool getDataSet(json &result,
-                    const std::string &datasetUuid,
-                    const UserContext &userContext,
-                    Hanami::ErrorContainer &error,
+    bool addDataSet(json& data, const UserContext& userContext, Hanami::ErrorContainer& error);
+    bool getDataSet(json& result,
+                    const std::string& datasetUuid,
+                    const UserContext& userContext,
+                    Hanami::ErrorContainer& error,
                     const bool showHiddenValues);
-    bool getAllDataSet(Hanami::TableItem &result,
-                       const UserContext &userContext,
-                       Hanami::ErrorContainer &error);
-    bool deleteDataSet(const std::string &uuid,
-                       const UserContext &userContext,
-                       Hanami::ErrorContainer &error);
+    bool getAllDataSet(Hanami::TableItem& result,
+                       const UserContext& userContext,
+                       Hanami::ErrorContainer& error);
+    bool deleteDataSet(const std::string& uuid,
+                       const UserContext& userContext,
+                       Hanami::ErrorContainer& error);
 
-    bool setUploadFinish(const std::string &uuid,
-                         const std::string &fileUuid,
-                         Hanami::ErrorContainer &error);
+    bool setUploadFinish(const std::string& uuid,
+                         const std::string& fileUuid,
+                         Hanami::ErrorContainer& error);
 
-    bool getDateSetInfo(json &result,
-                        const std::string &dataUuid,
-                        const json &context,
-                        Hanami::ErrorContainer &error);
+    bool getDateSetInfo(json& result,
+                        const std::string& dataUuid,
+                        const json& context,
+                        Hanami::ErrorContainer& error);
 
    private:
     DataSetTable();
-    static DataSetTable *instance;
+    static DataSetTable* instance;
 };
 
 #endif  // HANAMI_DATA_SET_TABLE_H

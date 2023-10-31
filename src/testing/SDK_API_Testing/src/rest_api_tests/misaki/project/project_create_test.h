@@ -30,7 +30,7 @@ class ProjectCreateTest : public TestStep
    public:
     ProjectCreateTest(const bool expectSuccess);
 
-    bool runTest(json &inputData, Hanami::ErrorContainer &error);
+    bool runTest(json& inputData, Hanami::ErrorContainer& error);
 };
 
 #endif  // TSUGUMITESTER_PROJECTCREATESTEP_H

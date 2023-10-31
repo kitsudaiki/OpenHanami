@@ -18,7 +18,7 @@ namespace Hanami
  *
  * @param socketFile
  */
-UnixDomainSocket::UnixDomainSocket(const std::string &socketFile)
+UnixDomainSocket::UnixDomainSocket(const std::string& socketFile)
 {
     this->m_socketFile = socketFile;
     this->m_isClientSide = true;
@@ -43,7 +43,7 @@ UnixDomainSocket::~UnixDomainSocket() {}
  * @return true, if successful, else false
  */
 bool
-UnixDomainSocket::initClientSide(ErrorContainer &error)
+UnixDomainSocket::initClientSide(ErrorContainer& error)
 {
     if (socketFd > 0) {
         return true;
@@ -93,7 +93,7 @@ UnixDomainSocket::getSocketFd() const
  * @return false, if socket-creation or connection to the server failed, else true
  */
 bool
-UnixDomainSocket::initSocket(ErrorContainer &error)
+UnixDomainSocket::initSocket(ErrorContainer& error)
 {
     struct sockaddr_un address;
 
@@ -121,7 +121,7 @@ UnixDomainSocket::initSocket(ErrorContainer &error)
     address.sun_path[m_socketFile.size()] = '\0';
 
     // create connection
-    if (connect(socketFd, reinterpret_cast<struct sockaddr *>(&address), sizeof(address)) < 0) {
+    if (connect(socketFd, reinterpret_cast<struct sockaddr*>(&address), sizeof(address)) < 0) {
         error.addMeesage("Failed to connect unix-socket to server with addresse: \"" + m_socketFile
                          + "\"");
         error.addSolution("check your write-permissions for the location \"" + m_socketFile + "\"");
@@ -151,7 +151,7 @@ UnixDomainSocket::isClientSide() const
  * @return number of read bytes
  */
 long
-UnixDomainSocket::recvData(int socket, void *bufferPosition, const size_t bufferSize, int flags)
+UnixDomainSocket::recvData(int socket, void* bufferPosition, const size_t bufferSize, int flags)
 {
     return recv(socket, bufferPosition, bufferSize, flags);
 }
@@ -163,7 +163,7 @@ UnixDomainSocket::recvData(int socket, void *bufferPosition, const size_t buffer
  */
 ssize_t
 UnixDomainSocket::sendData(int socket,
-                           const void *bufferPosition,
+                           const void* bufferPosition,
                            const size_t bufferSize,
                            int flags)
 {

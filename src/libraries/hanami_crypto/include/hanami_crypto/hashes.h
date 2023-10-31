@@ -32,9 +32,9 @@ namespace Hanami
 //--------------------------------------------------------------------------------------------------
 // SHA256
 //--------------------------------------------------------------------------------------------------
-bool generate_SHA_256(std::string &result, const std::string &input);
+bool generate_SHA_256(std::string& result, const std::string& input);
 
-bool generate_SHA_256(std::string &result, const void *input, const uint64_t inputSize);
+bool generate_SHA_256(std::string& result, const void* input, const uint64_t inputSize);
 
 }  // namespace Hanami
 

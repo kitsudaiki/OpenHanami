@@ -38,7 +38,7 @@
  * @return false, if path is invalid, else true
  */
 inline bool
-checkPath(const std::string &path)
+checkPath(const std::string& path)
 {
     if (path.empty() || path[0] != '/' || path.find("..") != std::string::npos) {
         return false;
@@ -59,10 +59,10 @@ checkPath(const std::string &path)
  * @return true, if successful, else false
  */
 inline bool
-parseUri(const std::string &token,
-         RequestMessage &request,
-         const std::string &uri,
-         Hanami::ErrorContainer &error)
+parseUri(const std::string& token,
+         RequestMessage& request,
+         const std::string& uri,
+         Hanami::ErrorContainer& error)
 {
     // first split of uri
     json parsedInputValues;
@@ -82,7 +82,7 @@ parseUri(const std::string &token,
     // parse body
     try {
         parsedInputValues = json::parse(request.inputValues);
-    } catch (const json::parse_error &ex) {
+    } catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         error.addMeesage("Failed to parse input-values.");
         return false;
@@ -96,7 +96,7 @@ parseUri(const std::string &token,
         std::vector<std::string> kvPairs;
         Hanami::splitStringByDelimiter(kvPairs, parts[1], '&');
 
-        for (const std::string &kvPair : kvPairs) {
+        for (const std::string& kvPair : kvPairs) {
             const size_t cutPos = kvPair.find('=');
             const std::string key = kvPair.substr(0, cutPos);
             const std::string val = kvPair.substr(cutPos + 1, kvPair.size() - 1);
@@ -129,7 +129,7 @@ parseUri(const std::string &token,
  * @return true, if first part match, else false
  */
 inline bool
-cutPath(std::string &path, const std::string &cut)
+cutPath(std::string& path, const std::string& cut)
 {
     if (path.compare(0, cut.size(), cut) == 0) {
         path.erase(0, cut.size());

@@ -91,37 +91,37 @@ struct FieldDef {
     {
     }
 
-    FieldDef &setComment(const std::string &comment)
+    FieldDef& setComment(const std::string& comment)
     {
         this->comment = comment;
         return *this;
     }
 
-    FieldDef &setMatch(const json &match)
+    FieldDef& setMatch(const json& match)
     {
         this->match = match;
         return *this;
     }
 
-    FieldDef &setDefault(const json &defaultValue)
+    FieldDef& setDefault(const json& defaultValue)
     {
         this->defaultVal = defaultValue;
         return *this;
     }
 
-    FieldDef &setRequired(const bool required)
+    FieldDef& setRequired(const bool required)
     {
         this->isRequired = required;
         return *this;
     }
 
-    FieldDef &setRegex(const std::string &regex)
+    FieldDef& setRegex(const std::string& regex)
     {
         this->regex = regex;
         return *this;
     }
 
-    FieldDef &setLimit(const long lowerLimit, const long upperLimit)
+    FieldDef& setLimit(const long lowerLimit, const long upperLimit)
     {
         this->lowerLimit = lowerLimit;
         this->upperLimit = upperLimit;
@@ -134,26 +134,26 @@ struct FieldDef {
 class Blossom
 {
    public:
-    Blossom(const std::string &comment, const bool requiresToken = true);
+    Blossom(const std::string& comment, const bool requiresToken = true);
     virtual ~Blossom();
 
     const std::string comment;
     const bool requiresAuthToken;
     std::vector<HttpResponseTypes> errorCodes = {INTERNAL_SERVER_ERROR_RTYPE};
 
-    const std::map<std::string, FieldDef> *getInputValidationMap() const;
-    const std::map<std::string, FieldDef> *getOutputValidationMap() const;
+    const std::map<std::string, FieldDef>* getInputValidationMap() const;
+    const std::map<std::string, FieldDef>* getOutputValidationMap() const;
 
    protected:
-    virtual bool runTask(BlossomIO &blossomIO,
-                         const json &context,
-                         BlossomStatus &status,
-                         Hanami::ErrorContainer &error)
+    virtual bool runTask(BlossomIO& blossomIO,
+                         const json& context,
+                         BlossomStatus& status,
+                         Hanami::ErrorContainer& error)
         = 0;
     bool allowUnmatched = false;
 
-    FieldDef &registerInputField(const std::string &name, const FieldType fieldType);
-    FieldDef &registerOutputField(const std::string &name, const FieldType fieldType);
+    FieldDef& registerInputField(const std::string& name, const FieldType fieldType);
+    FieldDef& registerOutputField(const std::string& name, const FieldType fieldType);
 
    private:
     friend SakuraThread;
@@ -163,21 +163,21 @@ class Blossom
     std::map<std::string, FieldDef> m_inputValidationMap;
     std::map<std::string, FieldDef> m_outputValidationMap;
 
-    bool growBlossom(BlossomIO &blossomIO,
-                     const json &context,
-                     BlossomStatus &status,
-                     Hanami::ErrorContainer &error);
-    bool validateFieldsCompleteness(const json &input,
-                                    const std::map<std::string, FieldDef> &validationMap,
+    bool growBlossom(BlossomIO& blossomIO,
+                     const json& context,
+                     BlossomStatus& status,
+                     Hanami::ErrorContainer& error);
+    bool validateFieldsCompleteness(const json& input,
+                                    const std::map<std::string, FieldDef>& validationMap,
                                     const FieldDef::IO_ValueType valueType,
-                                    std::string &errorMessage);
-    bool validateInput(BlossomItem &blossomItem,
-                       const std::map<std::string, FieldDef> &validationMap,
-                       const std::string &filePath,
-                       Hanami::ErrorContainer &error);
-    void getCompareMap(std::map<std::string, FieldDef::IO_ValueType> &compareMap,
-                       const ValueItemMap &valueMap);
-    void fillDefaultValues(json &values);
+                                    std::string& errorMessage);
+    bool validateInput(BlossomItem& blossomItem,
+                       const std::map<std::string, FieldDef>& validationMap,
+                       const std::string& filePath,
+                       Hanami::ErrorContainer& error);
+    void getCompareMap(std::map<std::string, FieldDef::IO_ValueType>& compareMap,
+                       const ValueItemMap& valueMap);
+    void fillDefaultValues(json& values);
 };
 
 #endif  // HANAMI_LANG_BLOSSOM_H

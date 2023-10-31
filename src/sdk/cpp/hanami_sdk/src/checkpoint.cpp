@@ -36,10 +36,10 @@ namespace Hanami
  * @return true, if successful, else false
  */
 bool
-getCheckpoint(std::string &result, const std::string &checkpointUuid, Hanami::ErrorContainer &error)
+getCheckpoint(std::string& result, const std::string& checkpointUuid, Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/checkpoint";
     const std::string vars = "uuid=" + checkpointUuid;
 
@@ -62,10 +62,10 @@ getCheckpoint(std::string &result, const std::string &checkpointUuid, Hanami::Er
  * @return true, if successful, else false
  */
 bool
-listCheckpoint(std::string &result, Hanami::ErrorContainer &error)
+listCheckpoint(std::string& result, Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/checkpoint/all";
 
     // send request
@@ -88,12 +88,12 @@ listCheckpoint(std::string &result, Hanami::ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-deleteCheckpoint(std::string &result,
-                 const std::string &checkpointUuid,
-                 Hanami::ErrorContainer &error)
+deleteCheckpoint(std::string& result,
+                 const std::string& checkpointUuid,
+                 Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/checkpoint";
     const std::string vars = "uuid=" + checkpointUuid;
 

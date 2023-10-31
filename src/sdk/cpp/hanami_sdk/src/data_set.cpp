@@ -38,7 +38,7 @@ namespace Hanami
  * @return size of file if successful, or -1 if failed
  */
 long
-getFileSize(const std::string &filePath)
+getFileSize(const std::string& filePath)
 {
     std::ifstream in(filePath, std::ifstream::ate | std::ifstream::binary);
     return in.tellg();
@@ -55,13 +55,13 @@ getFileSize(const std::string &filePath)
  * @return true, if successful, else false
  */
 bool
-createCsvDataSet(std::string &result,
-                 const std::string &dataSetName,
+createCsvDataSet(std::string& result,
+                 const std::string& dataSetName,
                  const uint64_t inputDataSize,
-                 Hanami::ErrorContainer &error)
+                 Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/csv/data_set";
     const std::string vars = "";
     const std::string jsonBody = "{\"name\":\""    + dataSetName + "\""
@@ -86,13 +86,13 @@ createCsvDataSet(std::string &result,
  * @return true, if successful, else false
  */
 bool
-finalizeCsvDataSet(std::string &result,
-                   const std::string &uuid,
-                   const std::string &inputUuid,
-                   Hanami::ErrorContainer &error)
+finalizeCsvDataSet(std::string& result,
+                   const std::string& uuid,
+                   const std::string& inputUuid,
+                   Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/csv/data_set";
     const std::string vars = "";
     const std::string jsonBody = "{\"uuid\":\""    + uuid + "\""
@@ -118,14 +118,14 @@ finalizeCsvDataSet(std::string &result,
  * @return true, if successful, else false
  */
 bool
-createMnistDataSet(std::string &result,
-                   const std::string &dataSetName,
+createMnistDataSet(std::string& result,
+                   const std::string& dataSetName,
                    const uint64_t inputDataSize,
                    const uint64_t labelDataSize,
-                   Hanami::ErrorContainer &error)
+                   Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/mnist/data_set";
     const std::string vars = "";
     const std::string jsonBody = "{\"name\":\""    + dataSetName + "\""
@@ -152,14 +152,14 @@ createMnistDataSet(std::string &result,
  * @return true, if successful, else false
  */
 bool
-finalizeMnistDataSet(std::string &result,
-                     const std::string &uuid,
-                     const std::string &inputUuid,
-                     const std::string &labelUuid,
-                     Hanami::ErrorContainer &error)
+finalizeMnistDataSet(std::string& result,
+                     const std::string& uuid,
+                     const std::string& inputUuid,
+                     const std::string& labelUuid,
+                     Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/mnist/data_set";
     const std::string vars = "";
     const std::string jsonBody = "{\"uuid\":\""    + uuid + "\""
@@ -186,11 +186,11 @@ finalizeMnistDataSet(std::string &result,
  * @return true, if successful, else false
  */
 bool
-sendFile(WebsocketClient *client,
-         const std::string &datasetUuid,
-         const std::string &fileUuid,
-         const std::string &filePath,
-         Hanami::ErrorContainer &error)
+sendFile(WebsocketClient* client,
+         const std::string& datasetUuid,
+         const std::string& fileUuid,
+         const std::string& filePath,
+         Hanami::ErrorContainer& error)
 {
     // get data, which should be send
     const uint64_t dataSize = getFileSize(filePath);
@@ -259,7 +259,7 @@ sendFile(WebsocketClient *client,
  * @return true, if successful, else false
  */
 bool
-waitUntilFullyUploaded(const std::string &uuid, Hanami::ErrorContainer &error)
+waitUntilFullyUploaded(const std::string& uuid, Hanami::ErrorContainer& error)
 {
     // TODO: add timeout-timer
     bool completeUploaded = false;
@@ -275,7 +275,7 @@ waitUntilFullyUploaded(const std::string &uuid, Hanami::ErrorContainer &error)
         json progress;
         try {
             progress = json::parse(progressStr);
-        } catch (const json::parse_error &ex) {
+        } catch (const json::parse_error& ex) {
             error.addMeesage("json-parser error: " + std::string(ex.what()));
             LOG_ERROR(error);
             return false;
@@ -298,10 +298,10 @@ waitUntilFullyUploaded(const std::string &uuid, Hanami::ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-uploadCsvData(std::string &result,
-              const std::string &dataSetName,
-              const std::string &inputFilePath,
-              Hanami::ErrorContainer &error)
+uploadCsvData(std::string& result,
+              const std::string& dataSetName,
+              const std::string& inputFilePath,
+              Hanami::ErrorContainer& error)
 {
     // init new mnist-data-set
     if (createCsvDataSet(result, dataSetName, getFileSize(inputFilePath), error) == false) {
@@ -312,7 +312,7 @@ uploadCsvData(std::string &result,
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch (const json::parse_error &ex) {
+    } catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         LOG_ERROR(error);
         return false;
@@ -370,11 +370,11 @@ uploadCsvData(std::string &result,
  * @return true, if successful, else false
  */
 bool
-uploadMnistData(std::string &result,
-                const std::string &dataSetName,
-                const std::string &inputFilePath,
-                const std::string &labelFilePath,
-                Hanami::ErrorContainer &error)
+uploadMnistData(std::string& result,
+                const std::string& dataSetName,
+                const std::string& inputFilePath,
+                const std::string& labelFilePath,
+                Hanami::ErrorContainer& error)
 {
     // init new mnist-data-set
     if (createMnistDataSet(
@@ -387,7 +387,7 @@ uploadMnistData(std::string &result,
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch (const json::parse_error &ex) {
+    } catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         LOG_ERROR(error);
         return false;
@@ -455,13 +455,13 @@ uploadMnistData(std::string &result,
  * @return true, if successful, else false
  */
 bool
-checkDataset(std::string &result,
-             const std::string &dataUuid,
-             const std::string &resultUuid,
-             Hanami::ErrorContainer &error)
+checkDataset(std::string& result,
+             const std::string& dataUuid,
+             const std::string& resultUuid,
+             Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/data_set/check";
     const std::string vars = "";
     const std::string jsonBody = "{\"data_set_uuid\":\"" + dataUuid + "\""
@@ -485,10 +485,10 @@ checkDataset(std::string &result,
  * @return true, if successful, else false
  */
 bool
-getDataset(std::string &result, const std::string &dataUuid, Hanami::ErrorContainer &error)
+getDataset(std::string& result, const std::string& dataUuid, Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/data_set";
     const std::string vars = "uuid=" + dataUuid;
 
@@ -511,10 +511,10 @@ getDataset(std::string &result, const std::string &dataUuid, Hanami::ErrorContai
  * @return true, if successful, else false
  */
 bool
-listDatasets(std::string &result, Hanami::ErrorContainer &error)
+listDatasets(std::string& result, Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/data_set/all";
 
     // send request
@@ -537,10 +537,10 @@ listDatasets(std::string &result, Hanami::ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-deleteDataset(std::string &result, const std::string &dataUuid, Hanami::ErrorContainer &error)
+deleteDataset(std::string& result, const std::string& dataUuid, Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/data_set";
     const std::string vars = "uuid=" + dataUuid;
 
@@ -564,10 +564,10 @@ deleteDataset(std::string &result, const std::string &dataUuid, Hanami::ErrorCon
  * @return true, if successful, else false
  */
 bool
-getDatasetProgress(std::string &result, const std::string &dataUuid, Hanami::ErrorContainer &error)
+getDatasetProgress(std::string& result, const std::string& dataUuid, Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/data_set/progress";
     const std::string vars = "uuid=" + dataUuid;
 

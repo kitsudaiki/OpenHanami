@@ -30,7 +30,7 @@ class DataSetListTest : public TestStep
    public:
     DataSetListTest(const bool expectSuccess);
 
-    bool runTest(json &inputData, Hanami::ErrorContainer &error);
+    bool runTest(json& inputData, Hanami::ErrorContainer& error);
 };
 
 #endif  // TSUGUMITESTER_DATASETLISTTEST_H

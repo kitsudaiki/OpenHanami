@@ -57,7 +57,7 @@ class ConfigHandler_Test;
 class ConfigHandler
 {
    public:
-    static ConfigHandler *getInstance()
+    static ConfigHandler* getInstance()
     {
         if (instance == nullptr) {
             instance = new ConfigHandler();
@@ -80,73 +80,73 @@ class ConfigHandler
         json value;
         std::string comment = "";
 
-        ConfigDef &setComment(const std::string &comment)
+        ConfigDef& setComment(const std::string& comment)
         {
             this->comment = comment;
             return *this;
         }
 
-        ConfigDef &setDefault(const json &defaultValue)
+        ConfigDef& setDefault(const json& defaultValue)
         {
             this->value = defaultValue;
             return *this;
         }
 
-        ConfigDef &setRequired()
+        ConfigDef& setRequired()
         {
             this->isRequired = true;
             return *this;
         }
     };
 
-    bool initConfig(const std::string &configFilePath, ErrorContainer &error);
-    void createDocumentation(std::string &docu);
+    bool initConfig(const std::string& configFilePath, ErrorContainer& error);
+    void createDocumentation(std::string& docu);
 
     // register config-options
-    ConfigDef &registerString(const std::string &groupName, const std::string &itemName);
-    ConfigDef &registerInteger(const std::string &groupName, const std::string &itemName);
-    ConfigDef &registerFloat(const std::string &groupName, const std::string &itemName);
-    ConfigDef &registerBoolean(const std::string &groupName, const std::string &itemName);
-    ConfigDef &registerStringArray(const std::string &groupName, const std::string &itemName);
+    ConfigDef& registerString(const std::string& groupName, const std::string& itemName);
+    ConfigDef& registerInteger(const std::string& groupName, const std::string& itemName);
+    ConfigDef& registerFloat(const std::string& groupName, const std::string& itemName);
+    ConfigDef& registerBoolean(const std::string& groupName, const std::string& itemName);
+    ConfigDef& registerStringArray(const std::string& groupName, const std::string& itemName);
 
     // getter
-    const std::string getString(const std::string &groupName,
-                                const std::string &itemName,
-                                bool &success);
-    long getInteger(const std::string &groupName, const std::string &itemName, bool &success);
-    double getFloat(const std::string &groupName, const std::string &itemName, bool &success);
-    bool getBoolean(const std::string &groupName, const std::string &itemName, bool &success);
-    const std::vector<std::string> getStringArray(const std::string &groupName,
-                                                  const std::string &itemName,
-                                                  bool &success);
+    const std::string getString(const std::string& groupName,
+                                const std::string& itemName,
+                                bool& success);
+    long getInteger(const std::string& groupName, const std::string& itemName, bool& success);
+    double getFloat(const std::string& groupName, const std::string& itemName, bool& success);
+    bool getBoolean(const std::string& groupName, const std::string& itemName, bool& success);
+    const std::vector<std::string> getStringArray(const std::string& groupName,
+                                                  const std::string& itemName,
+                                                  bool& success);
 
-    static Hanami::ConfigHandler *m_config;
+    static Hanami::ConfigHandler* m_config;
 
    private:
     friend ConfigHandler_Test;
 
     ConfigHandler();
     ~ConfigHandler();
-    static ConfigHandler *instance;
+    static ConfigHandler* instance;
 
-    bool checkEntry(const std::string &groupName,
-                    const std::string &itemName,
-                    ConfigDef &entry,
-                    ErrorContainer &error);
-    bool checkType(const std::string &groupName,
-                   const std::string &itemName,
+    bool checkEntry(const std::string& groupName,
+                    const std::string& itemName,
+                    ConfigDef& entry,
+                    ErrorContainer& error);
+    bool checkType(const std::string& groupName,
+                   const std::string& itemName,
                    const ConfigDef::ConfigType type);
-    bool isRegistered(const std::string &groupName, const std::string &itemName);
+    bool isRegistered(const std::string& groupName, const std::string& itemName);
 
-    ConfigDef::ConfigType getRegisteredType(const std::string &groupName,
-                                            const std::string &itemName);
+    ConfigDef::ConfigType getRegisteredType(const std::string& groupName,
+                                            const std::string& itemName);
 
-    ConfigDef &registerValue(const std::string &groupName,
-                             const std::string &itemName,
+    ConfigDef& registerValue(const std::string& groupName,
+                             const std::string& itemName,
                              const ConfigDef::ConfigType type);
 
     std::string m_configFilePath = "";
-    IniItem *m_iniItem = nullptr;
+    IniItem* m_iniItem = nullptr;
     std::map<std::string, std::map<std::string, ConfigDef>> m_registeredConfigs;
 };
 

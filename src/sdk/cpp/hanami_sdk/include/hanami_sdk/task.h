@@ -28,24 +28,24 @@
 namespace Hanami
 {
 
-bool createTask(std::string &result,
-                const std::string &name,
-                const std::string &type,
-                const std::string &clusterUuid,
-                const std::string &dataSetUuid,
-                Hanami::ErrorContainer &error);
+bool createTask(std::string& result,
+                const std::string& name,
+                const std::string& type,
+                const std::string& clusterUuid,
+                const std::string& dataSetUuid,
+                Hanami::ErrorContainer& error);
 
-bool getTask(std::string &result,
-             const std::string &taskUuid,
-             const std::string &clusterUuid,
-             Hanami::ErrorContainer &error);
+bool getTask(std::string& result,
+             const std::string& taskUuid,
+             const std::string& clusterUuid,
+             Hanami::ErrorContainer& error);
 
-bool listTask(std::string &result, const std::string &clusterUuid, Hanami::ErrorContainer &error);
+bool listTask(std::string& result, const std::string& clusterUuid, Hanami::ErrorContainer& error);
 
-bool deleteTask(std::string &result,
-                const std::string &taskUuid,
-                const std::string &clusterUuid,
-                Hanami::ErrorContainer &error);
+bool deleteTask(std::string& result,
+                const std::string& taskUuid,
+                const std::string& clusterUuid,
+                Hanami::ErrorContainer& error);
 
 }  // namespace Hanami
 

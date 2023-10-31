@@ -29,7 +29,7 @@
 class ErrorLogTable : public HanamiSqlLogTable
 {
    public:
-    static ErrorLogTable *getInstance()
+    static ErrorLogTable* getInstance()
     {
         if (instance == nullptr) {
             instance = new ErrorLogTable();
@@ -39,21 +39,21 @@ class ErrorLogTable : public HanamiSqlLogTable
 
     ~ErrorLogTable();
 
-    bool addErrorLogEntry(const std::string &timestamp,
-                          const std::string &userid,
-                          const std::string &component,
-                          const std::string &context,
-                          const std::string &values,
-                          const std::string &message,
-                          Hanami::ErrorContainer &error);
-    bool getAllErrorLogEntries(Hanami::TableItem &result,
-                               const std::string &userId,
+    bool addErrorLogEntry(const std::string& timestamp,
+                          const std::string& userid,
+                          const std::string& component,
+                          const std::string& context,
+                          const std::string& values,
+                          const std::string& message,
+                          Hanami::ErrorContainer& error);
+    bool getAllErrorLogEntries(Hanami::TableItem& result,
+                               const std::string& userId,
                                const uint64_t page,
-                               Hanami::ErrorContainer &error);
+                               Hanami::ErrorContainer& error);
 
    private:
     ErrorLogTable();
-    static ErrorLogTable *instance;
+    static ErrorLogTable* instance;
 };
 
 #endif  // HANAMI_ERROR_LOG_TABLE_H

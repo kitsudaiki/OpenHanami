@@ -66,10 +66,10 @@ CheckDataSet::CheckDataSet()
  * @brief runTask
  */
 bool
-CheckDataSet::runTask(BlossomIO &blossomIO,
-                      const json &context,
-                      BlossomStatus &status,
-                      Hanami::ErrorContainer &error)
+CheckDataSet::runTask(BlossomIO& blossomIO,
+                      const json& context,
+                      BlossomStatus& status,
+                      Hanami::ErrorContainer& error)
 {
     const std::string resultUuid = blossomIO.input["result_uuid"];
     const std::string dataUuid = blossomIO.input["data_set_uuid"];
@@ -119,7 +119,7 @@ CheckDataSet::runTask(BlossomIO &blossomIO,
     uint64_t correctValues = 0;
     uint64_t dataPos
         = sizeof(DataSetFile::DataSetHeader) + sizeof(ImageDataSetFile::ImageTypeHeader);
-    const uint8_t *u8Data = static_cast<const uint8_t *>(buffer.data);
+    const uint8_t* u8Data = static_cast<const uint8_t*>(buffer.data);
     memcpy(&dataSetHeader, buffer.data, sizeof(DataSetFile::DataSetHeader));
     memcpy(&imageTypeHeader,
            &u8Data[sizeof(DataSetFile::DataSetHeader)],
@@ -127,7 +127,7 @@ CheckDataSet::runTask(BlossomIO &blossomIO,
     const uint64_t lineOffset = imageTypeHeader.numberOfInputsX * imageTypeHeader.numberOfInputsY;
     const uint64_t lineSize = (imageTypeHeader.numberOfInputsX * imageTypeHeader.numberOfInputsY)
                               + imageTypeHeader.numberOfOutputs;
-    const float *content = reinterpret_cast<const float *>(&u8Data[dataPos]);
+    const float* content = reinterpret_cast<const float*>(&u8Data[dataPos]);
 
     // iterate over all values and check
     json compareData = requestResult["data"];

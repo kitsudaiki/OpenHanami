@@ -30,7 +30,7 @@ class UserListTest : public TestStep
    public:
     UserListTest(const bool expectSuccess);
 
-    bool runTest(json &inputData, Hanami::ErrorContainer &error);
+    bool runTest(json& inputData, Hanami::ErrorContainer& error);
 };
 
 #endif  // TSUGUMITESTER_USERLISTSTEP_H

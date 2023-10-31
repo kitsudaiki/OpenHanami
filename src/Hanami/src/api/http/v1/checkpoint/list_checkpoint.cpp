@@ -54,10 +54,10 @@ ListCheckpoint::ListCheckpoint() : Blossom("List checkpoints of all visible clus
  * @brief runTask
  */
 bool
-ListCheckpoint::runTask(BlossomIO &blossomIO,
-                        const json &context,
-                        BlossomStatus &status,
-                        Hanami::ErrorContainer &error)
+ListCheckpoint::runTask(BlossomIO& blossomIO,
+                        const json& context,
+                        BlossomStatus& status,
+                        Hanami::ErrorContainer& error)
 {
     const UserContext userContext(context);
 

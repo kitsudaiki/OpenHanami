@@ -72,10 +72,10 @@ CreateCluster::CreateCluster() : Blossom("Create new cluster.")
  * @brief runTask
  */
 bool
-CreateCluster::runTask(BlossomIO &blossomIO,
-                       const json &context,
-                       BlossomStatus &status,
-                       Hanami::ErrorContainer &error)
+CreateCluster::runTask(BlossomIO& blossomIO,
+                       const json& context,
+                       BlossomStatus& status,
+                       Hanami::ErrorContainer& error)
 {
     const std::string clusterName = blossomIO.input["name"];
     const std::string base64Template = blossomIO.input["template"];
@@ -109,7 +109,7 @@ CreateCluster::runTask(BlossomIO &blossomIO,
         }
 
         // parse cluster-template to validate syntax
-        const std::string convertedTemplateStr(static_cast<const char *>(convertedTemplate.data),
+        const std::string convertedTemplateStr(static_cast<const char*>(convertedTemplate.data),
                                                convertedTemplate.usedBufferSize);
         if (Hanami::parseCluster(&parsedCluster, convertedTemplateStr, error) == false) {
             status.errorMessage = "Uploaded template is not a valid cluster-template: \n";
@@ -146,7 +146,7 @@ CreateCluster::runTask(BlossomIO &blossomIO,
     const std::string uuid = blossomIO.output["uuid"];
 
     // create new cluster
-    Cluster *newCluster = new Cluster();
+    Cluster* newCluster = new Cluster();
     if (base64Template != "") {
         // generate and initialize the cluster based on the cluster-templates
         if (newCluster->init(parsedCluster, uuid) == false) {

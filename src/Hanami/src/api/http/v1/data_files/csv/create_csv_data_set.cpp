@@ -72,10 +72,10 @@ CreateCsvDataSet::CreateCsvDataSet() : Blossom("Init new csv-file data-set.")
 }
 
 bool
-CreateCsvDataSet::runTask(BlossomIO &blossomIO,
-                          const json &context,
-                          BlossomStatus &status,
-                          Hanami::ErrorContainer &error)
+CreateCsvDataSet::runTask(BlossomIO& blossomIO,
+                          const json& context,
+                          BlossomStatus& status,
+                          Hanami::ErrorContainer& error)
 {
     const std::string name = blossomIO.input["name"];
     const long inputDataSize = blossomIO.input["input_data_size"];

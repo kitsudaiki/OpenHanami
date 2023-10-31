@@ -55,10 +55,10 @@ ListDataSet::ListDataSet() : Blossom("List all visible data-sets.")
  * @brief runTask
  */
 bool
-ListDataSet::runTask(BlossomIO &blossomIO,
-                     const json &context,
-                     BlossomStatus &status,
-                     Hanami::ErrorContainer &error)
+ListDataSet::runTask(BlossomIO& blossomIO,
+                     const json& context,
+                     BlossomStatus& status,
+                     Hanami::ErrorContainer& error)
 {
     const UserContext userContext(context);
 

@@ -34,17 +34,17 @@ struct BlossomIO;
 // override functions
 enum OverrideType { ALL, ONLY_EXISTING, ONLY_NON_EXISTING };
 
-void overrideItems(json &original, const json &override, OverrideType type);
+void overrideItems(json& original, const json& override, OverrideType type);
 
 // error-output
-void createError(const BlossomItem &blossomItem,
-                 const std::string &blossomPath,
-                 const std::string &errorLocation,
-                 Hanami::ErrorContainer &error,
-                 const std::string &possibleSolution = "");
-void createError(const BlossomIO &blossomIO,
-                 const std::string &errorLocation,
-                 Hanami::ErrorContainer &error,
-                 const std::string &possibleSolution = "");
+void createError(const BlossomItem& blossomItem,
+                 const std::string& blossomPath,
+                 const std::string& errorLocation,
+                 Hanami::ErrorContainer& error,
+                 const std::string& possibleSolution = "");
+void createError(const BlossomIO& blossomIO,
+                 const std::string& errorLocation,
+                 Hanami::ErrorContainer& error,
+                 const std::string& possibleSolution = "");
 
 #endif  // HANAMI_LANG_ITEM_METHODS_H

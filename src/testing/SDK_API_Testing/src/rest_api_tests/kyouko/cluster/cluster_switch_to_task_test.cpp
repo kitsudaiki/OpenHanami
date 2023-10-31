@@ -35,7 +35,7 @@ ClusterSwitchToTaskTest::ClusterSwitchToTaskTest(const bool expectSuccess) : Tes
 }
 
 bool
-ClusterSwitchToTaskTest::runTest(json &inputData, Hanami::ErrorContainer &error)
+ClusterSwitchToTaskTest::runTest(json& inputData, Hanami::ErrorContainer& error)
 {
     // create new cluster
     std::string result;

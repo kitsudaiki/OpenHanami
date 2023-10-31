@@ -24,7 +24,7 @@
 #include <hanami_common/logger.h>
 
 int
-main(int argc, char *argv[])
+main(int argc, char* argv[])
 {
     // error messages of the parser are printed via logger
     Hanami::initConsoleLogger(true);

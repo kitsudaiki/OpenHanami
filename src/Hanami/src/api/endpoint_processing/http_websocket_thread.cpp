@@ -36,7 +36,7 @@ using namespace Hanami;
 /**
  * @brief constructor
  */
-HttpWebsocketThread::HttpWebsocketThread(const std::string &threadName) : Thread(threadName) {}
+HttpWebsocketThread::HttpWebsocketThread(const std::string& threadName) : Thread(threadName) {}
 
 /**
  * @brief HttpThread::run
@@ -45,7 +45,7 @@ void
 HttpWebsocketThread::run()
 {
     while (m_abort == false) {
-        tcp::socket *socket = HanamiRoot::httpServer->getSocket();
+        tcp::socket* socket = HanamiRoot::httpServer->getSocket();
         if (socket != nullptr) {
             ErrorContainer error;
 
@@ -68,7 +68,7 @@ HttpWebsocketThread::run()
  * @return true, if successful, else false
  */
 bool
-HttpWebsocketThread::handleSocket(tcp::socket *socket, ErrorContainer &error)
+HttpWebsocketThread::handleSocket(tcp::socket* socket, ErrorContainer& error)
 {
     http::request<http::string_body> httpRequest;
     http::response<http::dynamic_body> httpResponse;
@@ -83,7 +83,7 @@ HttpWebsocketThread::handleSocket(tcp::socket *socket, ErrorContainer &error)
     // check if request belongs to a new websocket-request
     if (websocket::is_upgrade(httpRequest)) {
         // initialize new websocket-session
-        websocket::stream<tcp::socket &> webSocket(*socket);
+        websocket::stream<tcp::socket&> webSocket(*socket);
         m_webSocket = &webSocket;
         if (initWebsocket(httpRequest) == false) {
             error.addMeesage("Can not init websocket.");
@@ -122,9 +122,9 @@ HttpWebsocketThread::handleSocket(tcp::socket *socket, ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-HttpWebsocketThread::readMessage(tcp::socket &stream,
-                                 http::request<http::string_body> &httpRequest,
-                                 ErrorContainer &error)
+HttpWebsocketThread::readMessage(tcp::socket& stream,
+                                 http::request<http::string_body>& httpRequest,
+                                 ErrorContainer& error)
 {
     beast::error_code ec;
     beast::flat_buffer buffer;
@@ -153,9 +153,9 @@ HttpWebsocketThread::readMessage(tcp::socket &stream,
  * @return true, if successful, else false
  */
 bool
-HttpWebsocketThread::sendResponse(tcp::socket &socket,
-                                  http::response<http::dynamic_body> &httpResponse,
-                                  ErrorContainer &error)
+HttpWebsocketThread::sendResponse(tcp::socket& socket,
+                                  http::response<http::dynamic_body>& httpResponse,
+                                  ErrorContainer& error)
 {
     beast::error_code ec;
     httpResponse.content_length(httpResponse.body().size());
@@ -178,19 +178,19 @@ HttpWebsocketThread::sendResponse(tcp::socket &socket,
  * @return true, if successful, else false
  */
 bool
-HttpWebsocketThread::initWebsocket(http::request<http::string_body> &httpRequest)
+HttpWebsocketThread::initWebsocket(http::request<http::string_body>& httpRequest)
 {
     try {
         // Set a decorator to change the Server of the handshake
         m_webSocket->set_option(
-            websocket::stream_base::decorator([](websocket::response_type &res) {
+            websocket::stream_base::decorator([](websocket::response_type& res) {
                 res.set(http::field::server,
                         std::string(BOOST_BEAST_VERSION_STRING) + " torii-websocket-ssl");
             }));
 
         // Accept the websocket handshake
         m_webSocket->accept(std::move(httpRequest));
-    } catch (const beast::system_error &se) {
+    } catch (const beast::system_error& se) {
         if (se.code() == websocket::error::closed) {
             LOG_INFO("Close websocket1");
         } else {
@@ -200,7 +200,7 @@ HttpWebsocketThread::initWebsocket(http::request<http::string_body> &httpRequest
             LOG_ERROR(error);
             return false;
         }
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         ErrorContainer error;
         error.addMeesage("Error while receiving data over websocket with message: "
                          + std::string(e.what()));
@@ -220,7 +220,7 @@ HttpWebsocketThread::initWebsocket(http::request<http::string_body> &httpRequest
  * @return true, if successful, else false
  */
 bool
-HttpWebsocketThread::sendData(const void *data, const uint64_t dataSize)
+HttpWebsocketThread::sendData(const void* data, const uint64_t dataSize)
 {
     if (m_abort) {
         return false;
@@ -241,7 +241,7 @@ HttpWebsocketThread::sendData(const void *data, const uint64_t dataSize)
         m_waitForInput = true;
 
         return true;
-    } catch (const beast::system_error &se) {
+    } catch (const beast::system_error& se) {
         if (se.code() == websocket::error::closed) {
             LOG_INFO("Close websocket2");
         } else {
@@ -250,7 +250,7 @@ HttpWebsocketThread::sendData(const void *data, const uint64_t dataSize)
                              + se.code().message());
             LOG_ERROR(error);
         }
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         ErrorContainer error;
         error.addMeesage("Error while sending data over websocket with message: "
                          + std::string(e.what()));
@@ -271,7 +271,7 @@ HttpWebsocketThread::sendData(const void *data, const uint64_t dataSize)
  * @return true, if successful, else false
  */
 bool
-HttpWebsocketThread::processInitialMessage(const std::string &message, ErrorContainer &error)
+HttpWebsocketThread::processInitialMessage(const std::string& message, ErrorContainer& error)
 {
     // precehck if already init
     if (m_clientInit) {
@@ -284,7 +284,7 @@ HttpWebsocketThread::processInitialMessage(const std::string &message, ErrorCont
     json content;
     try {
         content = json::parse(message);
-    } catch (const json::parse_error &ex) {
+    } catch (const json::parse_error& ex) {
         error.addMeesage("Parsing of initial websocket-message failed");
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         LOG_ERROR(error);
@@ -337,7 +337,7 @@ HttpWebsocketThread::processInitialMessage(const std::string &message, ErrorCont
  * @param error reference for error-output
  */
 void
-HttpWebsocketThread::closeClient(ErrorContainer &)
+HttpWebsocketThread::closeClient(ErrorContainer&)
 {
     m_clientInit = false;
     if (m_targetCluster != nullptr) {
@@ -372,7 +372,7 @@ HttpWebsocketThread::runWebsocket()
 
             // m_webSocket.text(m_webSocket.got_text());
             if (m_clientInit == false) {
-                const std::string msg(static_cast<const char *>(buffer.data().data()),
+                const std::string msg(static_cast<const char*>(buffer.data().data()),
                                       buffer.data().size());
                 m_uuid = generateUuid().toString();
 
@@ -406,7 +406,7 @@ HttpWebsocketThread::runWebsocket()
                 }
             }
         }
-    } catch (const beast::system_error &se) {
+    } catch (const beast::system_error& se) {
         if (se.code() == websocket::error::closed) {
             LOG_INFO("Close websocket3");
         } else {
@@ -414,7 +414,7 @@ HttpWebsocketThread::runWebsocket()
             error.addMeesage("Error while receiving data over websocket with message: "
                              + se.code().message());
         }
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         ErrorContainer error;
         error.addMeesage("Error while receiving data over websocket with message: "
                          + std::string(e.what()));

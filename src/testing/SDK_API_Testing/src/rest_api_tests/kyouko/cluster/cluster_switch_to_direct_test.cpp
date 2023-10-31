@@ -38,11 +38,11 @@ ClusterSwitchToDirectTest::ClusterSwitchToDirectTest(const bool expectSuccess)
 }
 
 bool
-ClusterSwitchToDirectTest::runTest(json &inputData, Hanami::ErrorContainer &error)
+ClusterSwitchToDirectTest::runTest(json& inputData, Hanami::ErrorContainer& error)
 {
     // create new cluster
     std::string result;
-    Hanami::WebsocketClient *client = nullptr;
+    Hanami::WebsocketClient* client = nullptr;
     client = Hanami::switchToDirectMode(result, inputData["cluster_uuid"], error);
     bool success = client != nullptr;
     if (success != m_expectSuccess) {

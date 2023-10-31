@@ -38,26 +38,26 @@ class location;
 class PolicyParserInterface
 {
    public:
-    static PolicyParserInterface *getInstance();
+    static PolicyParserInterface* getInstance();
     ~PolicyParserInterface();
 
     // connection the the scanner and parser
-    void scan_begin(const std::string &inputString);
+    void scan_begin(const std::string& inputString);
     void scan_end();
-    bool parse(std::map<std::string, PolicyEntry> *result,
-               const std::string &inputString,
-               ErrorContainer &error);
-    const std::string removeQuotes(const std::string &input);
+    bool parse(std::map<std::string, PolicyEntry>* result,
+               const std::string& inputString,
+               ErrorContainer& error);
+    const std::string removeQuotes(const std::string& input);
 
-    std::map<std::string, PolicyEntry> *m_result = nullptr;
+    std::map<std::string, PolicyEntry>* m_result = nullptr;
 
     // Error handling.
-    void error(const location &location, const std::string &message);
+    void error(const location& location, const std::string& message);
 
    private:
     PolicyParserInterface(const bool traceParsing = false);
 
-    static PolicyParserInterface *m_instance;
+    static PolicyParserInterface* m_instance;
 
     std::string m_errorMessage = "";
     std::string m_inputString = "";

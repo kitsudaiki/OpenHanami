@@ -37,13 +37,13 @@ namespace Hanami
  * @return true, if successful, else false
  */
 bool
-createProject(std::string &result,
-              const std::string &projectId,
-              const std::string &projectName,
-              Hanami::ErrorContainer &error)
+createProject(std::string& result,
+              const std::string& projectId,
+              const std::string& projectName,
+              Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/project";
     const std::string vars = "";
     const std::string jsonBody = "{\"id\":\"" + projectId + "\",\"name\":\"" + projectName + "\"}";
@@ -68,10 +68,10 @@ createProject(std::string &result,
  * @return true, if successful, else false
  */
 bool
-getProject(std::string &result, const std::string &projectId, Hanami::ErrorContainer &error)
+getProject(std::string& result, const std::string& projectId, Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/project";
     const std::string vars = "id=" + projectId;
 
@@ -93,10 +93,10 @@ getProject(std::string &result, const std::string &projectId, Hanami::ErrorConta
  * @return true, if successful, else false
  */
 bool
-listProject(std::string &result, Hanami::ErrorContainer &error)
+listProject(std::string& result, Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/project/all";
 
     // send request
@@ -119,10 +119,10 @@ listProject(std::string &result, Hanami::ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-deleteProject(std::string &result, const std::string &projectId, Hanami::ErrorContainer &error)
+deleteProject(std::string& result, const std::string& projectId, Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/project";
     const std::string vars = "id=" + projectId;
 

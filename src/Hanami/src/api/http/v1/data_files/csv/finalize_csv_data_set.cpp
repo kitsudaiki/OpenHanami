@@ -67,10 +67,10 @@ FinalizeCsvDataSet::FinalizeCsvDataSet()
  * @brief runTask
  */
 bool
-FinalizeCsvDataSet::runTask(BlossomIO &blossomIO,
-                            const json &context,
-                            BlossomStatus &status,
-                            Hanami::ErrorContainer &error)
+FinalizeCsvDataSet::runTask(BlossomIO& blossomIO,
+                            const json& context,
+                            BlossomStatus& status,
+                            Hanami::ErrorContainer& error)
 {
     const std::string uuid = blossomIO.input["uuid"];
     const std::string inputUuid = blossomIO.input["uuid_input_file"];
@@ -116,7 +116,7 @@ FinalizeCsvDataSet::runTask(BlossomIO &blossomIO,
 }
 
 void
-FinalizeCsvDataSet::convertField(float *segmentPos, const std::string &cell, const float lastVal)
+FinalizeCsvDataSet::convertField(float* segmentPos, const std::string& cell, const float lastVal)
 {
     // true
     if (cell == "Null" || cell == "null" || cell == "NULL") {
@@ -153,9 +153,9 @@ FinalizeCsvDataSet::convertField(float *segmentPos, const std::string &cell, con
  * @return true, if successfull, else false
  */
 bool
-FinalizeCsvDataSet::convertCsvData(const std::string &filePath,
-                                   const std::string &name,
-                                   const Hanami::DataBuffer &inputBuffer)
+FinalizeCsvDataSet::convertCsvData(const std::string& filePath,
+                                   const std::string& name,
+                                   const Hanami::DataBuffer& inputBuffer)
 {
     Hanami::ErrorContainer error;
 
@@ -164,7 +164,7 @@ FinalizeCsvDataSet::convertCsvData(const std::string &filePath,
     file.name = name;
 
     // prepare content-processing
-    const std::string stringContent(static_cast<char *>(inputBuffer.data),
+    const std::string stringContent(static_cast<char*>(inputBuffer.data),
                                     inputBuffer.usedBufferSize);
 
     // buffer for values to reduce write-access to file
@@ -181,7 +181,7 @@ FinalizeCsvDataSet::convertCsvData(const std::string &filePath,
     bool isHeader = true;
 
     for (uint64_t lineNum = 0; lineNum < lines.size(); lineNum++) {
-        const std::string *line = &lines[lineNum];
+        const std::string* line = &lines[lineNum];
 
         // check if the line is relevant to ignore broken lines
         const uint64_t numberOfColumns = std::count(line->begin(), line->end(), ',') + 1;
@@ -197,7 +197,7 @@ FinalizeCsvDataSet::convertCsvData(const std::string &filePath,
             file.tableHeader.numberOfColumns = numberOfColumns;
             file.tableHeader.numberOfLines = lines.size();
 
-            for (const std::string &col : lineContent) {
+            for (const std::string& col : lineContent) {
                 // create and add header-entry
                 TableDataSetFile::TableHeaderEntry entry;
                 entry.setName(col);
@@ -215,7 +215,7 @@ FinalizeCsvDataSet::convertCsvData(const std::string &filePath,
             lastLine = std::vector<float>(numberOfColumns, 0.0f);
         } else {
             for (uint64_t colNum = 0; colNum < lineContent.size(); colNum++) {
-                const std::string *cell = &lineContent[colNum];
+                const std::string* cell = &lineContent[colNum];
                 if (lastLine.size() > 0) {
                     const float lastVal = lastLine[colNum];
                     convertField(&cluster[segmentPos], *cell, lastVal);

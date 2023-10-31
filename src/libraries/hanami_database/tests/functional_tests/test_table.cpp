@@ -6,7 +6,7 @@
 namespace Hanami
 {
 
-TestTable::TestTable(Hanami::SqlDatabase *db) : SqlTable(db)
+TestTable::TestTable(Hanami::SqlDatabase* db) : SqlTable(db)
 {
     m_tableName = "users";
 
@@ -33,7 +33,7 @@ TestTable::~TestTable() {}
  * @brief addUser
  */
 bool
-TestTable::addUser(json &data, ErrorContainer &error)
+TestTable::addUser(json& data, ErrorContainer& error)
 {
     return insertToDb(data, error);
 }
@@ -42,9 +42,9 @@ TestTable::addUser(json &data, ErrorContainer &error)
  * @brief getUser
  */
 bool
-TestTable::getUser(TableItem &resultTable,
-                   const std::string &userID,
-                   ErrorContainer &error,
+TestTable::getUser(TableItem& resultTable,
+                   const std::string& userID,
+                   ErrorContainer& error,
                    const bool withHideValues)
 {
     std::vector<RequestCondition> conditions;
@@ -56,9 +56,9 @@ TestTable::getUser(TableItem &resultTable,
  * @brief getUser
  */
 bool
-TestTable::getUser(json &resultItem,
-                   const std::string &userID,
-                   ErrorContainer &error,
+TestTable::getUser(json& resultItem,
+                   const std::string& userID,
+                   ErrorContainer& error,
                    const bool withHideValues)
 {
     std::vector<RequestCondition> conditions;
@@ -70,7 +70,7 @@ TestTable::getUser(json &resultItem,
  * @brief updateUser
  */
 bool
-TestTable::updateUser(const std::string &userID, const json &values, ErrorContainer &error)
+TestTable::updateUser(const std::string& userID, const json& values, ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("name", userID);
@@ -81,7 +81,7 @@ TestTable::updateUser(const std::string &userID, const json &values, ErrorContai
  * @brief getNumberOfUsers
  */
 long
-TestTable::getNumberOfUsers(ErrorContainer &error)
+TestTable::getNumberOfUsers(ErrorContainer& error)
 {
     return getNumberOfRows(error);
 }
@@ -90,8 +90,8 @@ TestTable::getNumberOfUsers(ErrorContainer &error)
  * @brief getAllUser
  */
 bool
-TestTable::getAllUser(TableItem &resultItem,
-                      ErrorContainer &error,
+TestTable::getAllUser(TableItem& resultItem,
+                      ErrorContainer& error,
                       const bool showHiddenValues,
                       const uint64_t positionOffset,
                       const uint64_t numberOfRows)
@@ -103,7 +103,7 @@ TestTable::getAllUser(TableItem &resultItem,
  * @brief deleteUser
  */
 bool
-TestTable::deleteUser(const std::string &userID, ErrorContainer &error)
+TestTable::deleteUser(const std::string& userID, ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("name", userID);

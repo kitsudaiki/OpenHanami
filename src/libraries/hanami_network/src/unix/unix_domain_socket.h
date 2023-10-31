@@ -26,7 +26,7 @@ class TemplateServer;
 class UnixDomainSocket
 {
    public:
-    UnixDomainSocket(const std::string &socketFile);
+    UnixDomainSocket(const std::string& socketFile);
     ~UnixDomainSocket();
 
    private:
@@ -45,12 +45,12 @@ class UnixDomainSocket
     uint32_t type = 0;
     ;
 
-    bool initClientSide(ErrorContainer &error);
-    bool initSocket(ErrorContainer &error);
+    bool initClientSide(ErrorContainer& error);
+    bool initSocket(ErrorContainer& error);
     int getSocketFd() const;
     bool isClientSide() const;
-    long recvData(int socket, void *bufferPosition, const size_t bufferSize, int flags);
-    ssize_t sendData(int socket, const void *bufferPosition, const size_t bufferSize, int flags);
+    long recvData(int socket, void* bufferPosition, const size_t bufferSize, int flags);
+    ssize_t sendData(int socket, const void* bufferPosition, const size_t bufferSize, int flags);
 
     std::string m_socketFile = "";
 };

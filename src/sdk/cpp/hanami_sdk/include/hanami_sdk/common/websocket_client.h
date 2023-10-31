@@ -52,20 +52,20 @@ class WebsocketClient
     WebsocketClient();
     ~WebsocketClient();
 
-    bool initClient(std::string &socketUuid,
-                    const std::string &token,
-                    const std::string &target,
-                    const std::string &host,
-                    const std::string &port,
-                    const std::string &targetUuid,
-                    Hanami::ErrorContainer &error);
-    bool sendMessage(const void *data, const uint64_t dataSize, Hanami::ErrorContainer &error);
+    bool initClient(std::string& socketUuid,
+                    const std::string& token,
+                    const std::string& target,
+                    const std::string& host,
+                    const std::string& port,
+                    const std::string& targetUuid,
+                    Hanami::ErrorContainer& error);
+    bool sendMessage(const void* data, const uint64_t dataSize, Hanami::ErrorContainer& error);
 
-    uint8_t *readMessage(uint64_t &numberOfByes, Hanami::ErrorContainer &error);
+    uint8_t* readMessage(uint64_t& numberOfByes, Hanami::ErrorContainer& error);
 
    private:
-    websocket::stream<beast::ssl_stream<tcp::socket>> *m_websocket = nullptr;
-    bool loadCertificates(boost::asio::ssl::context &ctx);
+    websocket::stream<beast::ssl_stream<tcp::socket>>* m_websocket = nullptr;
+    bool loadCertificates(boost::asio::ssl::context& ctx);
 };
 
 }  // namespace Hanami

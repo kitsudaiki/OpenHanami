@@ -38,7 +38,7 @@ GpuHandler::GpuHandler() {}
  * @return true, if creation was successful, else false
  */
 bool
-GpuHandler::initDevice(ErrorContainer &error)
+GpuHandler::initDevice(ErrorContainer& error)
 {
     if (m_isInit) {
         return true;
@@ -59,7 +59,7 @@ GpuHandler::initDevice(ErrorContainer &error)
 
         collectDevices();
         m_isInit = true;
-    } catch (const cl::Error &err) {
+    } catch (const cl::Error& err) {
         error.addMeesage("OpenCL error: " + std::string(err.what()) + "("
                          + std::to_string(err.err()) + ")");
         LOG_ERROR(error);
@@ -78,14 +78,14 @@ void
 GpuHandler::collectDevices()
 {
     // get available platforms
-    for (cl::Platform &platform : m_platform) {
+    for (cl::Platform& platform : m_platform) {
         // get available devices of the selected platform
         std::vector<cl::Device> pldev;
         platform.getDevices(CL_DEVICE_TYPE_ALL, &pldev);
         LOG_DEBUG("number of OpenCL devices: " + std::to_string(pldev.size()));
 
         // select devices within the platform
-        for (cl::Device &device : pldev) {
+        for (cl::Device& device : pldev) {
             // check if device is available
             if (device.getInfo<CL_DEVICE_AVAILABLE>()) {
                 /*if(false)

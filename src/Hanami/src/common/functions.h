@@ -44,7 +44,7 @@ inline const std::string
 getDatetime()
 {
     const time_t now = time(nullptr);
-    tm *ltm = localtime(&now);
+    tm* ltm = localtime(&now);
 
     const std::string datatime
         = std::to_string(1900 + ltm->tm_year) + "-" + std::to_string(1 + ltm->tm_mon) + "-"
@@ -63,8 +63,8 @@ getDatetime()
  * @return string with the converted timestamp
  */
 inline const std::string
-serializeTimePoint(const std::chrono::high_resolution_clock::time_point &time,
-                   const std::string &format = "%Y-%m-%d %H:%M:%S")
+serializeTimePoint(const std::chrono::high_resolution_clock::time_point& time,
+                   const std::string& format = "%Y-%m-%d %H:%M:%S")
 {
     std::time_t tt = std::chrono::system_clock::to_time_t(time);
     std::tm tm = *std::gmtime(&tt);
@@ -81,7 +81,7 @@ serializeTimePoint(const std::chrono::high_resolution_clock::time_point &time,
  * @return true, if id is an uuid, else false
  */
 inline bool
-isUuid(const std::string &id)
+isUuid(const std::string& id)
 {
     const std::regex uuidRegex(UUID_REGEX);
     return regex_match(id, uuidRegex);

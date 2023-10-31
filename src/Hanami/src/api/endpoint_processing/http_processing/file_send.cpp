@@ -35,7 +35,7 @@
  * @return response-type
  */
 const std::string
-getResponseType(const std::string &ext)
+getResponseType(const std::string& ext)
 {
     if (beast::iequals(ext, ".htm")) {
         return "text/html";
@@ -110,10 +110,10 @@ getResponseType(const std::string &ext)
  * @return true, if successful, else false
  */
 bool
-sendFileFromLocalLocation(http::response<http::dynamic_body> &response,
-                          const std::string &dir,
-                          const std::string &relativePath,
-                          Hanami::ErrorContainer &error)
+sendFileFromLocalLocation(http::response<http::dynamic_body>& response,
+                          const std::string& dir,
+                          const std::string& relativePath,
+                          Hanami::ErrorContainer& error)
 {
     // create file-path
     std::string path = dir;
@@ -151,9 +151,9 @@ sendFileFromLocalLocation(http::response<http::dynamic_body> &response,
  * @return false, if file not found, else true
  */
 bool
-processClientRequest(http::response<http::dynamic_body> &response,
-                     const std::string &path,
-                     Hanami::ErrorContainer &error)
+processClientRequest(http::response<http::dynamic_body>& response,
+                     const std::string& path,
+                     Hanami::ErrorContainer& error)
 {
     bool success = false;
     const std::string fileLocation = GET_STRING_CONFIG("http", "dashboard_files", success);

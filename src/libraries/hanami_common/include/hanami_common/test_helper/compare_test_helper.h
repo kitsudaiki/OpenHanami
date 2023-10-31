@@ -64,7 +64,7 @@ class CompareTestHelper
     }
 
    public:
-    CompareTestHelper(const std::string &testName);
+    CompareTestHelper(const std::string& testName);
     ~CompareTestHelper();
 
    protected:

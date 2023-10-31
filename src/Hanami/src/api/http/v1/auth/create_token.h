@@ -31,10 +31,10 @@ class CreateToken : public Blossom
     CreateToken();
 
    protected:
-    bool runTask(BlossomIO &blossomIO,
-                 const json &,
-                 BlossomStatus &status,
-                 Hanami::ErrorContainer &error);
+    bool runTask(BlossomIO& blossomIO,
+                 const json&,
+                 BlossomStatus& status,
+                 Hanami::ErrorContainer& error);
 };
 
 #endif  // HANAMI_CREATETOKEN_H

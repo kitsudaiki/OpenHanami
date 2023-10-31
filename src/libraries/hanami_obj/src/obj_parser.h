@@ -20,18 +20,18 @@ class ObjParser
    public:
     ObjParser();
 
-    bool parse(ObjItem &result, const std::string &inputString, ErrorContainer &error);
+    bool parse(ObjItem& result, const std::string& inputString, ErrorContainer& error);
 
    private:
-    bool parseIndizes(ObjItem &result, const std::string &inputString);
+    bool parseIndizes(ObjItem& result, const std::string& inputString);
 
-    bool parseVertex(Vec4 &result, const std::vector<std::string> &lineContent);
-    bool parseValueList(std::vector<uint32_t> &result, const std::vector<std::string> &lineContent);
-    bool parseIndexList(std::vector<Index> &result, const std::vector<std::string> &lineContent);
-    bool parseIndex(Index &result, const std::vector<std::string> &indexContent);
+    bool parseVertex(Vec4& result, const std::vector<std::string>& lineContent);
+    bool parseValueList(std::vector<uint32_t>& result, const std::vector<std::string>& lineContent);
+    bool parseIndexList(std::vector<Index>& result, const std::vector<std::string>& lineContent);
+    bool parseIndex(Index& result, const std::vector<std::string>& indexContent);
 
-    bool parseFloat(float &result, const std::string &input);
-    bool parseInt(int &result, const std::string &input);
+    bool parseFloat(float& result, const std::string& input);
+    bool parseInt(int& result, const std::string& input);
 };
 
 }  // namespace Hanami

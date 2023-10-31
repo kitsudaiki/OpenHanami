@@ -28,14 +28,14 @@
  *
  * @param filePath path to file
  */
-ImageDataSetFile::ImageDataSetFile(const std::string &filePath) : DataSetFile(filePath) {}
+ImageDataSetFile::ImageDataSetFile(const std::string& filePath) : DataSetFile(filePath) {}
 
 /**
  * @brief constructor
  *
  * @param file pointer to binary-file object
  */
-ImageDataSetFile::ImageDataSetFile(Hanami::BinaryFile *file) : DataSetFile(file) {}
+ImageDataSetFile::ImageDataSetFile(Hanami::BinaryFile* file) : DataSetFile(file) {}
 
 /**
  * @brief destructor
@@ -61,7 +61,7 @@ ImageDataSetFile::initHeader()
  * @param u8buffer buffer to read
  */
 void
-ImageDataSetFile::readHeader(const uint8_t *u8buffer)
+ImageDataSetFile::readHeader(const uint8_t* u8buffer)
 {
     // read image-header
     m_headerSize = sizeof(DataSetHeader) + sizeof(ImageTypeHeader);
@@ -81,7 +81,7 @@ ImageDataSetFile::readHeader(const uint8_t *u8buffer)
  * @return true, if successful, else false
  */
 bool
-ImageDataSetFile::updateHeader(Hanami::ErrorContainer &error)
+ImageDataSetFile::updateHeader(Hanami::ErrorContainer& error)
 {
     // write image-header to file
     if (m_targetFile->writeDataIntoFile(
@@ -103,9 +103,9 @@ ImageDataSetFile::updateHeader(Hanami::ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-ImageDataSetFile::getPayload(Hanami::DataBuffer &result,
-                             Hanami::ErrorContainer &error,
-                             const std::string &)
+ImageDataSetFile::getPayload(Hanami::DataBuffer& result,
+                             Hanami::ErrorContainer& error,
+                             const std::string&)
 {
     const uint64_t payloadSize = m_totalFileSize - m_headerSize;
     Hanami::allocateBlocks_DataBuffer(result, Hanami::calcBytesToBlocks(payloadSize));

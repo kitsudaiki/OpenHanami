@@ -30,11 +30,11 @@
 
 using json = nlohmann::json;
 
-bool getDataSetPayload(Hanami::DataBuffer &result,
-                       const std::string &location,
-                       Hanami::ErrorContainer &error,
-                       const std::string &columnName = "");
+bool getDataSetPayload(Hanami::DataBuffer& result,
+                       const std::string& location,
+                       Hanami::ErrorContainer& error,
+                       const std::string& columnName = "");
 
-bool getHeaderInformation(json &result, const std::string &location, Hanami::ErrorContainer &error);
+bool getHeaderInformation(json& result, const std::string& location, Hanami::ErrorContainer& error);
 
 #endif  // HANAMI_DATA_SET_FUNCTIONS_H

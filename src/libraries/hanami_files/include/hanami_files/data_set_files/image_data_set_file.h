@@ -37,19 +37,19 @@ class ImageDataSetFile : public DataSetFile
         float avgValue = 0.0f;
     };
 
-    ImageDataSetFile(const std::string &filePath);
-    ImageDataSetFile(Hanami::BinaryFile *file);
+    ImageDataSetFile(const std::string& filePath);
+    ImageDataSetFile(Hanami::BinaryFile* file);
     ~ImageDataSetFile();
-    bool updateHeader(Hanami::ErrorContainer &error);
-    bool getPayload(Hanami::DataBuffer &result,
-                    Hanami::ErrorContainer &error,
-                    const std::string &columnName = "");
+    bool updateHeader(Hanami::ErrorContainer& error);
+    bool getPayload(Hanami::DataBuffer& result,
+                    Hanami::ErrorContainer& error,
+                    const std::string& columnName = "");
 
     ImageTypeHeader imageHeader;
 
    protected:
     void initHeader();
-    void readHeader(const uint8_t *u8buffer);
+    void readHeader(const uint8_t* u8buffer);
 };
 
 #endif  // HANAMI_IMAGEDATASETFILE_H

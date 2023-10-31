@@ -31,7 +31,7 @@ class TemplateServer;
 class UnixDomainServer
 {
    public:
-    UnixDomainServer(const std::string &socketFile);
+    UnixDomainServer(const std::string& socketFile);
     ~UnixDomainServer();
 
    private:
@@ -40,7 +40,7 @@ class UnixDomainServer
     UnixDomainServer();
 
     int getServerFd() const;
-    bool initServer(ErrorContainer &error);
+    bool initServer(ErrorContainer& error);
 
     int serverFd = 0;
     uint32_t type = 0;

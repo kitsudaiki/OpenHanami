@@ -24,7 +24,7 @@
 
 #include <hanami_sdk/checkpoint.h>
 
-CheckpointGetTest::CheckpointGetTest(const bool expectSuccess, const std::string &uuidOverride)
+CheckpointGetTest::CheckpointGetTest(const bool expectSuccess, const std::string& uuidOverride)
     : TestStep(expectSuccess)
 {
     m_testName = "get checkpoint";
@@ -37,7 +37,7 @@ CheckpointGetTest::CheckpointGetTest(const bool expectSuccess, const std::string
 }
 
 bool
-CheckpointGetTest::runTest(json &inputData, Hanami::ErrorContainer &error)
+CheckpointGetTest::runTest(json& inputData, Hanami::ErrorContainer& error)
 {
     if (m_uuid == "") {
         m_uuid = inputData["checkpoint_uuid"];
@@ -57,7 +57,7 @@ CheckpointGetTest::runTest(json &inputData, Hanami::ErrorContainer &error)
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch (const json::parse_error &ex) {
+    } catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }

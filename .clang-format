@@ -12,6 +12,8 @@ ColumnLimit:       100
 BreakBeforeBraces: Linux
 BreakBeforeBinaryOperators: All
 AlignOperands:   Align
+DerivePointerAlignment: false  # necessary for the pointer-alignment
+PointerAlignment: Left
 BraceWrapping:
   AfterCaseLabel:  true
   AfterClass:      true

@@ -28,9 +28,9 @@
 class ProjectGetTest : public TestStep
 {
    public:
-    ProjectGetTest(const bool expectSuccess, const std::string &nameOverride = "");
+    ProjectGetTest(const bool expectSuccess, const std::string& nameOverride = "");
 
-    bool runTest(json &inputData, Hanami::ErrorContainer &error);
+    bool runTest(json& inputData, Hanami::ErrorContainer& error);
 
    private:
     std::string m_name = "";

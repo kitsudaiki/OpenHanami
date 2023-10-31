@@ -30,7 +30,7 @@ class ClusterCreateTest : public TestStep
    public:
     ClusterCreateTest(const bool expectSuccess);
 
-    bool runTest(json &inputData, Hanami::ErrorContainer &error);
+    bool runTest(json& inputData, Hanami::ErrorContainer& error);
 };
 
 #endif  // TSUGUMITESTER_CLUSTERCREATETEST_H

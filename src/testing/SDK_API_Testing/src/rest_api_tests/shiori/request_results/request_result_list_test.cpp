@@ -35,7 +35,7 @@ RequestResultListTest::RequestResultListTest(const bool expectSuccess) : TestSte
 }
 
 bool
-RequestResultListTest::runTest(json &inputData, Hanami::ErrorContainer &error)
+RequestResultListTest::runTest(json& inputData, Hanami::ErrorContainer& error)
 {
     // list all data
     std::string result;
@@ -51,7 +51,7 @@ RequestResultListTest::runTest(json &inputData, Hanami::ErrorContainer &error)
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch (const json::parse_error &ex) {
+    } catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
