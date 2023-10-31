@@ -42,7 +42,7 @@ using tcp = boost::asio::ip::tcp;  // from <boost/asio/ip/tcp.hpp>
  * @param message
  */
 bool
-success_ResponseBuild(http::response<http::dynamic_body> &httpResp, const std::string &message)
+success_ResponseBuild(http::response<http::dynamic_body>& httpResp, const std::string& message)
 {
     httpResp.result(http::status::ok);
     httpResp.set(http::field::content_type, "text/json");
@@ -56,7 +56,7 @@ success_ResponseBuild(http::response<http::dynamic_body> &httpResp, const std::s
  * @param message
  */
 bool
-invalid_ResponseBuild(http::response<http::dynamic_body> &httpResp, Hanami::ErrorContainer &error)
+invalid_ResponseBuild(http::response<http::dynamic_body>& httpResp, Hanami::ErrorContainer& error)
 {
     httpResp.result(http::status::bad_request);
     httpResp.set(http::field::content_type, "text/plain");
@@ -71,8 +71,8 @@ invalid_ResponseBuild(http::response<http::dynamic_body> &httpResp, Hanami::Erro
  * @param message
  */
 bool
-internalError_ResponseBuild(http::response<http::dynamic_body> &httpResp,
-                            Hanami::ErrorContainer &error)
+internalError_ResponseBuild(http::response<http::dynamic_body>& httpResp,
+                            Hanami::ErrorContainer& error)
 {
     httpResp.result(http::status::internal_server_error);
     httpResp.set(http::field::content_type, "text/plain");
@@ -88,9 +88,9 @@ internalError_ResponseBuild(http::response<http::dynamic_body> &httpResp,
  * @param message
  */
 bool
-genericError_ResponseBuild(http::response<http::dynamic_body> &httpResp,
+genericError_ResponseBuild(http::response<http::dynamic_body>& httpResp,
                            const HttpResponseTypes type,
-                           const std::string &errorMessage)
+                           const std::string& errorMessage)
 {
     httpResp.result(static_cast<http::status>(type));
     httpResp.set(http::field::content_type, "text/plain");

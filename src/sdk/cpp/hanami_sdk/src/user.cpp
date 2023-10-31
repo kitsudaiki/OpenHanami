@@ -39,15 +39,15 @@ namespace Hanami
  * @return true, if successful, else false
  */
 bool
-createUser(std::string &result,
-           const std::string &userId,
-           const std::string &userName,
-           const std::string &password,
+createUser(std::string& result,
+           const std::string& userId,
+           const std::string& userName,
+           const std::string& password,
            const bool isAdmin,
-           Hanami::ErrorContainer &error)
+           Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/user";
     const std::string vars = "";
     const std::string jsonBody = "{\"id\":\"" + userId + "\",\"name\":\"" + userName
@@ -74,10 +74,10 @@ createUser(std::string &result,
  * @return true, if successful, else false
  */
 bool
-getUser(std::string &result, const std::string &userId, Hanami::ErrorContainer &error)
+getUser(std::string& result, const std::string& userId, Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/user";
     const std::string vars = "id=" + userId;
 
@@ -99,10 +99,10 @@ getUser(std::string &result, const std::string &userId, Hanami::ErrorContainer &
  * @return true, if successful, else false
  */
 bool
-listUser(std::string &result, Hanami::ErrorContainer &error)
+listUser(std::string& result, Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/user/all";
 
     // send request
@@ -125,10 +125,10 @@ listUser(std::string &result, Hanami::ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-deleteUser(std::string &result, const std::string &userId, Hanami::ErrorContainer &error)
+deleteUser(std::string& result, const std::string& userId, Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/user";
     const std::string vars = "id=" + userId;
 
@@ -155,15 +155,15 @@ deleteUser(std::string &result, const std::string &userId, Hanami::ErrorContaine
  * @return true, if successful, else false
  */
 bool
-addProjectToUser(std::string &result,
-                 const std::string &userId,
-                 const std::string &projectId,
-                 const std::string &role,
+addProjectToUser(std::string& result,
+                 const std::string& userId,
+                 const std::string& projectId,
+                 const std::string& role,
                  const bool isProjectAdmin,
-                 Hanami::ErrorContainer &error)
+                 Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/user/project";
     const std::string vars = "";
     const std::string jsonBody = "{id:\"" + userId;
@@ -192,13 +192,13 @@ addProjectToUser(std::string &result,
  * @return true, if successful, else false
  */
 bool
-removeProjectFromUser(std::string &result,
-                      const std::string &userId,
-                      const std::string &projectId,
-                      Hanami::ErrorContainer &error)
+removeProjectFromUser(std::string& result,
+                      const std::string& userId,
+                      const std::string& projectId,
+                      Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/user/project";
     const std::string vars = "id=" + userId + "&project_id=" + projectId;
 
@@ -222,10 +222,10 @@ removeProjectFromUser(std::string &result,
  * @return true, if successful, else false
  */
 bool
-listProjectsOfUser(std::string &result, Hanami::ErrorContainer &error)
+listProjectsOfUser(std::string& result, Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/user/project";
 
     // send request
@@ -249,10 +249,10 @@ listProjectsOfUser(std::string &result, Hanami::ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-switchProject(std::string &result, const std::string &projectId, Hanami::ErrorContainer &error)
+switchProject(std::string& result, const std::string& projectId, Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/user/project";
     const std::string vars = "";
     const std::string jsonBody = "{\"project_id\":\"" + projectId + "\"}";
@@ -268,7 +268,7 @@ switchProject(std::string &result, const std::string &projectId, Hanami::ErrorCo
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch (const json::parse_error &ex) {
+    } catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         LOG_ERROR(error);
         return false;

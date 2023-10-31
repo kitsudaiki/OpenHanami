@@ -25,7 +25,7 @@
 #include <hanami_common/methods/string_methods.h>
 #include <hanami_database/sql_database.h>
 
-RequestResultTable *RequestResultTable::instance = nullptr;
+RequestResultTable* RequestResultTable::instance = nullptr;
 
 /**
  * @brief constructor
@@ -57,9 +57,9 @@ RequestResultTable::~RequestResultTable() {}
  * @return true, if successful, else false
  */
 bool
-RequestResultTable::addRequestResult(json &data,
-                                     const UserContext &userContext,
-                                     Hanami::ErrorContainer &error)
+RequestResultTable::addRequestResult(json& data,
+                                     const UserContext& userContext,
+                                     Hanami::ErrorContainer& error)
 {
     if (add(data, userContext, error) == false) {
         error.addMeesage("Failed to add checkpoint to database");
@@ -81,10 +81,10 @@ RequestResultTable::addRequestResult(json &data,
  * @return true, if successful, else false
  */
 bool
-RequestResultTable::getRequestResult(json &result,
-                                     const std::string &resultUuid,
-                                     const UserContext &userContext,
-                                     Hanami::ErrorContainer &error,
+RequestResultTable::getRequestResult(json& result,
+                                     const std::string& resultUuid,
+                                     const UserContext& userContext,
+                                     Hanami::ErrorContainer& error,
                                      const bool showHiddenValues)
 {
     // get user from db
@@ -112,9 +112,9 @@ RequestResultTable::getRequestResult(json &result,
  * @return true, if successful, else false
  */
 bool
-RequestResultTable::getAllRequestResult(Hanami::TableItem &result,
-                                        const UserContext &userContext,
-                                        Hanami::ErrorContainer &error)
+RequestResultTable::getAllRequestResult(Hanami::TableItem& result,
+                                        const UserContext& userContext,
+                                        Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
     if (getAll(result, userContext, conditions, error) == false) {
@@ -135,9 +135,9 @@ RequestResultTable::getAllRequestResult(Hanami::TableItem &result,
  * @return true, if successful, else false
  */
 bool
-RequestResultTable::deleteRequestResult(const std::string &resultUuid,
-                                        const UserContext &userContext,
-                                        Hanami::ErrorContainer &error)
+RequestResultTable::deleteRequestResult(const std::string& resultUuid,
+                                        const UserContext& userContext,
+                                        Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", resultUuid);

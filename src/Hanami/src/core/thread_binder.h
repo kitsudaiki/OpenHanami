@@ -31,7 +31,7 @@
 class ThreadBinder : public Hanami::Thread
 {
    public:
-    static ThreadBinder *getInstance()
+    static ThreadBinder* getInstance()
     {
         if (instance == nullptr) {
             instance = new ThreadBinder();
@@ -39,7 +39,7 @@ class ThreadBinder : public Hanami::Thread
         return instance;
     }
 
-    bool init(Hanami::ErrorContainer &error);
+    bool init(Hanami::ErrorContainer& error);
     json getMapping();
     uint64_t getNumberOfProcessingThreads();
 
@@ -48,11 +48,11 @@ class ThreadBinder : public Hanami::Thread
 
    private:
     ThreadBinder();
-    static ThreadBinder *instance;
+    static ThreadBinder* instance;
 
-    bool fillCoreIds(std::vector<uint64_t> &coreIds,
-                     std::vector<uint64_t> &processingCoreIds,
-                     Hanami::ErrorContainer &error);
+    bool fillCoreIds(std::vector<uint64_t>& coreIds,
+                     std::vector<uint64_t>& processingCoreIds,
+                     Hanami::ErrorContainer& error);
 
     std::mutex m_mapLock;
     json m_completeMap;

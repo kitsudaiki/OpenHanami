@@ -33,10 +33,10 @@ class TemplateServer;
 class TlsTcpServer
 {
    public:
-    TlsTcpServer(TcpServer &&server,
-                 const std::string &certFile,
-                 const std::string &keyFile,
-                 const std::string &caFile = "");
+    TlsTcpServer(TcpServer&& server,
+                 const std::string& certFile,
+                 const std::string& keyFile,
+                 const std::string& caFile = "");
     ~TlsTcpServer();
 
    private:
@@ -44,7 +44,7 @@ class TlsTcpServer
 
     TlsTcpServer();
 
-    bool initServer(ErrorContainer &error);
+    bool initServer(ErrorContainer& error);
     int getServerFd() const;
 
     std::string caFile = "";

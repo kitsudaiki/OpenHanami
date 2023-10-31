@@ -67,10 +67,10 @@ ListTask::ListTask() : Blossom("List all visible tasks of a specific cluster.")
  * @brief runTask
  */
 bool
-ListTask::runTask(BlossomIO &blossomIO,
-                  const json &context,
-                  BlossomStatus &status,
-                  Hanami::ErrorContainer &error)
+ListTask::runTask(BlossomIO& blossomIO,
+                  const json& context,
+                  BlossomStatus& status,
+                  Hanami::ErrorContainer& error)
 {
     const UserContext userContext(context);
     const std::string clusterUuid = blossomIO.input["cluster_uuid"];
@@ -92,7 +92,7 @@ ListTask::runTask(BlossomIO &blossomIO,
     }
 
     // get cluster
-    Cluster *cluster = ClusterHandler::getInstance()->getCluster(clusterUuid);
+    Cluster* cluster = ClusterHandler::getInstance()->getCluster(clusterUuid);
     if (cluster == nullptr) {
         status.errorMessage = "Cluster with UUID '" + clusterUuid + "'not found";
         status.statusCode = NOT_FOUND_RTYPE;
@@ -114,7 +114,7 @@ ListTask::runTask(BlossomIO &blossomIO,
     result.addColumn("end");
 
     // build table-content
-    for (const auto &[id, progress] : progressOverview) {
+    for (const auto& [id, progress] : progressOverview) {
         if (progress.state == QUEUED_TASK_STATE) {
             result.addRow(std::vector<std::string>{id,
                                                    "queued",

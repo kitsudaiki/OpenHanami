@@ -53,30 +53,30 @@ class Cluster;
 class HttpWebsocketThread : public Hanami::Thread
 {
    public:
-    HttpWebsocketThread(const std::string &threadName);
+    HttpWebsocketThread(const std::string& threadName);
 
-    bool sendData(const void *data, const uint64_t dataSize);
-    Cluster *m_targetCluster = nullptr;
-    void closeClient(Hanami::ErrorContainer &);
+    bool sendData(const void* data, const uint64_t dataSize);
+    Cluster* m_targetCluster = nullptr;
+    void closeClient(Hanami::ErrorContainer&);
 
    protected:
     void run();
 
    private:
-    bool handleSocket(tcp::socket *socket, Hanami::ErrorContainer &error);
-    bool readMessage(tcp::socket &stream,
-                     http::request<http::string_body> &httpRequest,
-                     Hanami::ErrorContainer &error);
-    bool sendResponse(tcp::socket &socket,
-                      http::response<http::dynamic_body> &httpResponse,
-                      Hanami::ErrorContainer &error);
+    bool handleSocket(tcp::socket* socket, Hanami::ErrorContainer& error);
+    bool readMessage(tcp::socket& stream,
+                     http::request<http::string_body>& httpRequest,
+                     Hanami::ErrorContainer& error);
+    bool sendResponse(tcp::socket& socket,
+                      http::response<http::dynamic_body>& httpResponse,
+                      Hanami::ErrorContainer& error);
 
     // websocket-functions and variables
-    bool initWebsocket(http::request<http::string_body> &httpRequest);
+    bool initWebsocket(http::request<http::string_body>& httpRequest);
     void runWebsocket();
-    bool processInitialMessage(const std::string &message, Hanami::ErrorContainer &error);
+    bool processInitialMessage(const std::string& message, Hanami::ErrorContainer& error);
 
-    websocket::stream<tcp::socket &> *m_webSocket = nullptr;
+    websocket::stream<tcp::socket&>* m_webSocket = nullptr;
     std::string m_uuid = "";
     std::string m_target = "";
     bool m_waitForInput = true;

@@ -54,37 +54,37 @@ class HanamiRoot
     HanamiRoot();
     ~HanamiRoot();
 
-    bool init(Hanami::ErrorContainer &error);
+    bool init(Hanami::ErrorContainer& error);
     bool initThreads();
 
     // blossoms
-    bool triggerBlossom(json &result,
-                        const std::string &blossomName,
-                        const std::string &blossomGroupName,
-                        const json &context,
-                        const json &initialValues,
-                        BlossomStatus &status,
-                        Hanami::ErrorContainer &error);
-    bool doesBlossomExist(const std::string &groupName, const std::string &itemName);
-    bool addBlossom(const std::string &groupName, const std::string &itemName, Blossom *newBlossom);
-    Blossom *getBlossom(const std::string &groupName, const std::string &itemName);
+    bool triggerBlossom(json& result,
+                        const std::string& blossomName,
+                        const std::string& blossomGroupName,
+                        const json& context,
+                        const json& initialValues,
+                        BlossomStatus& status,
+                        Hanami::ErrorContainer& error);
+    bool doesBlossomExist(const std::string& groupName, const std::string& itemName);
+    bool addBlossom(const std::string& groupName, const std::string& itemName, Blossom* newBlossom);
+    Blossom* getBlossom(const std::string& groupName, const std::string& itemName);
 
     // endpoints
-    bool mapEndpoint(EndpointEntry &result,
-                     const std::string &id,
+    bool mapEndpoint(EndpointEntry& result,
+                     const std::string& id,
                      const Hanami::HttpRequestType type);
-    bool addEndpoint(const std::string &id,
-                     const Hanami::HttpRequestType &httpType,
-                     const SakuraObjectType &sakuraType,
-                     const std::string &group,
-                     const std::string &name);
+    bool addEndpoint(const std::string& id,
+                     const Hanami::HttpRequestType& httpType,
+                     const SakuraObjectType& sakuraType,
+                     const std::string& group,
+                     const std::string& name);
 
-    WebSocketServer *websocketServer = nullptr;
+    WebSocketServer* websocketServer = nullptr;
 
-    static Hanami::GpuInterface *gpuInterface;
-    static HttpServer *httpServer;
-    static HanamiRoot *root;
-    static uint32_t *m_randomValues;
+    static Hanami::GpuInterface* gpuInterface;
+    static HttpServer* httpServer;
+    static HanamiRoot* root;
+    static uint32_t* m_randomValues;
     static CryptoPP::SecByteBlock tokenKey;
     static bool useCuda;
 
@@ -92,21 +92,21 @@ class HanamiRoot
 
    private:
     uint32_t m_serverId = 0;
-    std::vector<HttpWebsocketThread *> m_threads;
-    std::map<std::string, std::map<std::string, Blossom *>> m_registeredBlossoms;
+    std::vector<HttpWebsocketThread*> m_threads;
+    std::map<std::string, std::map<std::string, Blossom*>> m_registeredBlossoms;
 
     bool initHttpServer();
     bool initSakuraServer();
-    bool initDatabase(Hanami::ErrorContainer &error);
-    bool initPolicies(Hanami::ErrorContainer &error);
-    bool initJwt(Hanami::ErrorContainer &error);
+    bool initDatabase(Hanami::ErrorContainer& error);
+    bool initPolicies(Hanami::ErrorContainer& error);
+    bool initJwt(Hanami::ErrorContainer& error);
 
-    void clearCluster(Hanami::ErrorContainer &error);
-    void checkStatusCode(Blossom *blossom,
-                         const std::string &blossomName,
-                         const std::string &blossomGroupName,
-                         BlossomStatus &status,
-                         Hanami::ErrorContainer &error);
+    void clearCluster(Hanami::ErrorContainer& error);
+    void checkStatusCode(Blossom* blossom,
+                         const std::string& blossomName,
+                         const std::string& blossomGroupName,
+                         BlossomStatus& status,
+                         Hanami::ErrorContainer& error);
 };
 
 #endif  // HANAMI_HANAMI_ROOT_H

@@ -56,10 +56,10 @@ ListProjects::ListProjects() : Blossom("Get information of all registered user a
  * @brief runTask
  */
 bool
-ListProjects::runTask(BlossomIO &blossomIO,
-                      const json &context,
-                      BlossomStatus &status,
-                      Hanami::ErrorContainer &error)
+ListProjects::runTask(BlossomIO& blossomIO,
+                      const json& context,
+                      BlossomStatus& status,
+                      Hanami::ErrorContainer& error)
 {
     // check if admin
     if (context["is_admin"] == false) {

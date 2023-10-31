@@ -30,7 +30,7 @@ ObjParser::ObjParser() {}
  * @return true, if successful, else false
  */
 bool
-ObjParser::parse(ObjItem &result, const std::string &inputString, ErrorContainer &error)
+ObjParser::parse(ObjItem& result, const std::string& inputString, ErrorContainer& error)
 {
     // copy and prepare input string
     std::string preparedString = inputString;
@@ -117,7 +117,7 @@ ObjParser::parse(ObjItem &result, const std::string &inputString, ErrorContainer
  * @return true, if successful, else false
  */
 bool
-ObjParser::parseVertex(Vec4 &result, const std::vector<std::string> &lineContent)
+ObjParser::parseVertex(Vec4& result, const std::vector<std::string>& lineContent)
 {
     // precheck
     if (lineContent.size() < 3) {
@@ -145,8 +145,8 @@ ObjParser::parseVertex(Vec4 &result, const std::vector<std::string> &lineContent
  * @return true, if successful, else false
  */
 bool
-ObjParser::parseValueList(std::vector<uint32_t> &result,
-                          const std::vector<std::string> &lineContent)
+ObjParser::parseValueList(std::vector<uint32_t>& result,
+                          const std::vector<std::string>& lineContent)
 {
     // precheck
     if (lineContent.size() < 4) {
@@ -177,7 +177,7 @@ ObjParser::parseValueList(std::vector<uint32_t> &result,
  * @return true, if successful, else false
  */
 bool
-ObjParser::parseIndexList(std::vector<Index> &result, const std::vector<std::string> &lineContent)
+ObjParser::parseIndexList(std::vector<Index>& result, const std::vector<std::string>& lineContent)
 {
     // precheck
     if (lineContent.size() < 4) {
@@ -212,7 +212,7 @@ ObjParser::parseIndexList(std::vector<Index> &result, const std::vector<std::str
  * @return true, if successful, else false
  */
 bool
-ObjParser::parseIndex(Index &result, const std::vector<std::string> &indexContent)
+ObjParser::parseIndex(Index& result, const std::vector<std::string>& indexContent)
 {
     bool ret = true;
 
@@ -249,9 +249,9 @@ ObjParser::parseIndex(Index &result, const std::vector<std::string> &indexConten
  * @return true, if successful, else false
  */
 bool
-ObjParser::parseFloat(float &result, const std::string &input)
+ObjParser::parseFloat(float& result, const std::string& input)
 {
-    char *err = nullptr;
+    char* err = nullptr;
     result = std::strtof(input.c_str(), &err);
     return std::string(err).size() == 0;
 }
@@ -265,9 +265,9 @@ ObjParser::parseFloat(float &result, const std::string &input)
  * @return true, if successful, else false
  */
 bool
-ObjParser::parseInt(int &result, const std::string &input)
+ObjParser::parseInt(int& result, const std::string& input)
 {
-    char *err = nullptr;
+    char* err = nullptr;
     result = static_cast<int32_t>(std::strtol(input.c_str(), &err, 10));
     return std::string(err).size() == 0;
 }

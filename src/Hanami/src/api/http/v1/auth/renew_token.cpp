@@ -68,10 +68,10 @@ RenewToken::RenewToken() : Blossom("Renew a JWT-access-token for a specific user
  * @brief runTask
  */
 bool
-RenewToken::runTask(BlossomIO &blossomIO,
-                    const json &context,
-                    BlossomStatus &status,
-                    Hanami::ErrorContainer &error)
+RenewToken::runTask(BlossomIO& blossomIO,
+                    const json& context,
+                    BlossomStatus& status,
+                    Hanami::ErrorContainer& error)
 {
     const UserContext userContext(context);
     const std::string projectId = blossomIO.input["project_id"];
@@ -133,7 +133,7 @@ RenewToken::runTask(BlossomIO &blossomIO,
               .set_type("JWT")
               .set_expires_at(expireTimePoint)
               .set_payload_claim("user", jwt::claim(userData.dump()))
-              .sign(jwt::algorithm::hs256{(const char *)HanamiRoot::tokenKey.data()});
+              .sign(jwt::algorithm::hs256{(const char*)HanamiRoot::tokenKey.data()});
 
     blossomIO.output["id"] = userContext.userId;
     blossomIO.output["is_admin"] = isAdmin;
@@ -153,7 +153,7 @@ RenewToken::runTask(BlossomIO &blossomIO,
  * @return true, if selectedProjectId is available for the user, else false
  */
 bool
-RenewToken::chooseProject(json &userData, json &parsedProjects, const std::string selectedProjectId)
+RenewToken::chooseProject(json& userData, json& parsedProjects, const std::string selectedProjectId)
 {
     for (uint64_t i = 0; i < parsedProjects.size(); i++) {
         if (parsedProjects[i]["project_id"] == selectedProjectId) {

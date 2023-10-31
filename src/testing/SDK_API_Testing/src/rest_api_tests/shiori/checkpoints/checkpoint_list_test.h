@@ -30,7 +30,7 @@ class CheckpointListTest : public TestStep
    public:
     CheckpointListTest(const bool expectSuccess);
 
-    bool runTest(json &inputData, Hanami::ErrorContainer &error);
+    bool runTest(json& inputData, Hanami::ErrorContainer& error);
 };
 
 #endif  // TSUGUMITESTER_CHECKPOINTLISTTEST_H

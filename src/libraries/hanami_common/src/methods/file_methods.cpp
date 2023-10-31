@@ -35,10 +35,10 @@ namespace Hanami
  * @param exceptions list with directory-names, which should be skipped
  */
 void
-getFilesInDir(std::vector<std::string> &fileList,
-              const std::filesystem::path &directory,
+getFilesInDir(std::vector<std::string>& fileList,
+              const std::filesystem::path& directory,
               const bool withSubdirs,
-              const std::vector<std::string> &exceptions)
+              const std::vector<std::string>& exceptions)
 {
     std::filesystem::directory_iterator end_itr;
     for (std::filesystem::directory_iterator itr(directory); itr != end_itr; ++itr) {
@@ -46,7 +46,7 @@ getFilesInDir(std::vector<std::string> &fileList,
             if (withSubdirs == true) {
                 bool foundInExceptions = false;
 
-                for (const std::string &exception : exceptions) {
+                for (const std::string& exception : exceptions) {
                     if (itr->path().filename().string() == exception) {
                         foundInExceptions = true;
                     }
@@ -75,10 +75,10 @@ getFilesInDir(std::vector<std::string> &fileList,
  * @return false, if path doesn't exist, else true
  */
 bool
-listFiles(std::vector<std::string> &fileList,
-          const std::string &path,
+listFiles(std::vector<std::string>& fileList,
+          const std::string& path,
           const bool withSubdirs,
-          const std::vector<std::string> &exceptions)
+          const std::vector<std::string>& exceptions)
 {
     std::filesystem::path pathObj(path);
     if (std::filesystem::exists(pathObj) == false) {
@@ -104,9 +104,9 @@ listFiles(std::vector<std::string> &fileList,
  * @return new relative path
  */
 const std::filesystem::path
-getRelativePath(const std::filesystem::path &oldRootPath,
-                const std::filesystem::path &oldRelativePath,
-                const std::filesystem::path &newRootPath)
+getRelativePath(const std::filesystem::path& oldRootPath,
+                const std::filesystem::path& oldRelativePath,
+                const std::filesystem::path& newRootPath)
 {
     const std::filesystem::path completePath = oldRootPath / oldRelativePath;
     return std::filesystem::relative(completePath, newRootPath);
@@ -122,9 +122,9 @@ getRelativePath(const std::filesystem::path &oldRootPath,
  * @return true, if successful, else false
  */
 bool
-renameFileOrDir(const std::filesystem::path &oldPath,
-                const std::filesystem::path &newPath,
-                ErrorContainer &error)
+renameFileOrDir(const std::filesystem::path& oldPath,
+                const std::filesystem::path& newPath,
+                ErrorContainer& error)
 {
     // check source
     if (std::filesystem::exists(oldPath) == false) {
@@ -161,9 +161,9 @@ renameFileOrDir(const std::filesystem::path &oldPath,
  * @return true, if successful, else false
  */
 bool
-copyPath(const std::filesystem::path &sourcePath,
-         const std::filesystem::path &targetPath,
-         ErrorContainer &error,
+copyPath(const std::filesystem::path& sourcePath,
+         const std::filesystem::path& targetPath,
+         ErrorContainer& error,
          const bool force)
 {
     if (std::filesystem::exists(sourcePath) == false) {
@@ -193,7 +193,7 @@ copyPath(const std::filesystem::path &sourcePath,
  * @return true, if successful, else false
  */
 bool
-createDirectory(const std::filesystem::path &path, ErrorContainer &error)
+createDirectory(const std::filesystem::path& path, ErrorContainer& error)
 {
     // check desired path
     if (std::filesystem::exists(path) && std::filesystem::is_directory(path) == false) {
@@ -225,7 +225,7 @@ createDirectory(const std::filesystem::path &path, ErrorContainer &error)
  * @return true, if successful, else false. Also return true, if path is already deleted.
  */
 bool
-deleteFileOrDir(const std::filesystem::path &path, ErrorContainer &error)
+deleteFileOrDir(const std::filesystem::path& path, ErrorContainer& error)
 {
     // if the object is already deleted, then it is basically a success
     if (std::filesystem::exists(path) == false) {

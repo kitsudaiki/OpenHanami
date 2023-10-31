@@ -31,7 +31,7 @@ class ThermalProduction : public Blossom
     ThermalProduction();
 
    protected:
-    bool runTask(BlossomIO &blossomIO, const json &, BlossomStatus &, Hanami::ErrorContainer &);
+    bool runTask(BlossomIO& blossomIO, const json&, BlossomStatus&, Hanami::ErrorContainer&);
 };
 
 #endif  // AZUKIHEART_TEMPERATURE_PRODUCTION_H

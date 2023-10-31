@@ -31,7 +31,7 @@ namespace Hanami
 class EventQueue : public Hanami::Thread
 {
    public:
-    EventQueue(const std::string &threadName, const bool deleteEventObj);
+    EventQueue(const std::string& threadName, const bool deleteEventObj);
     ~EventQueue();
 
    protected:

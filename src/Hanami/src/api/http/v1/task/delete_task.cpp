@@ -52,10 +52,10 @@ DeleteTask::DeleteTask() : Blossom("Delete a task or abort a task, if it is actu
  * @brief runTask
  */
 bool
-DeleteTask::runTask(BlossomIO &blossomIO,
-                    const json &context,
-                    BlossomStatus &status,
-                    Hanami::ErrorContainer &error)
+DeleteTask::runTask(BlossomIO& blossomIO,
+                    const json& context,
+                    BlossomStatus& status,
+                    Hanami::ErrorContainer& error)
 {
     const UserContext userContext(context);
     const std::string taskUuid = blossomIO.input["uuid"];
@@ -78,7 +78,7 @@ DeleteTask::runTask(BlossomIO &blossomIO,
     }
 
     // get cluster
-    Cluster *cluster = ClusterHandler::getInstance()->getCluster(clusterUuid);
+    Cluster* cluster = ClusterHandler::getInstance()->getCluster(clusterUuid);
     if (cluster == nullptr) {
         status.errorMessage = "Cluster with UUID '" + clusterUuid + "'not found";
         status.statusCode = NOT_FOUND_RTYPE;

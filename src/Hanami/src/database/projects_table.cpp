@@ -26,7 +26,7 @@
 #include <hanami_crypto/hashes.h>
 #include <hanami_database/sql_database.h>
 
-ProjectsTable *ProjectsTable::instance = nullptr;
+ProjectsTable* ProjectsTable::instance = nullptr;
 
 /**
  * @brief constructor
@@ -50,7 +50,7 @@ ProjectsTable::~ProjectsTable() {}
  * @return true, if successful, else false
  */
 bool
-ProjectsTable::addProject(json &userData, Hanami::ErrorContainer &error)
+ProjectsTable::addProject(json& userData, Hanami::ErrorContainer& error)
 {
     if (insertToDb(userData, error) == false) {
         error.addMeesage("Failed to add user to database");
@@ -71,9 +71,9 @@ ProjectsTable::addProject(json &userData, Hanami::ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-ProjectsTable::getProject(json &result,
-                          const std::string &projectId,
-                          Hanami::ErrorContainer &error,
+ProjectsTable::getProject(json& result,
+                          const std::string& projectId,
+                          Hanami::ErrorContainer& error,
                           const bool showHiddenValues)
 {
     std::vector<RequestCondition> conditions;
@@ -97,7 +97,7 @@ ProjectsTable::getProject(json &result,
  * @return true, if successful, else false
  */
 bool
-ProjectsTable::getAllProjects(Hanami::TableItem &result, Hanami::ErrorContainer &error)
+ProjectsTable::getAllProjects(Hanami::TableItem& result, Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
     if (getFromDb(result, conditions, error, false) == false) {
@@ -117,7 +117,7 @@ ProjectsTable::getAllProjects(Hanami::TableItem &result, Hanami::ErrorContainer 
  * @return true, if successful, else false
  */
 bool
-ProjectsTable::deleteProject(const std::string &projectId, Hanami::ErrorContainer &error)
+ProjectsTable::deleteProject(const std::string& projectId, Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("id", projectId);

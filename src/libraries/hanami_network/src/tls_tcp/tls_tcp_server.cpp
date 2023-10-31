@@ -16,10 +16,10 @@ namespace Hanami
 /**
  * @brief constructor
  */
-TlsTcpServer::TlsTcpServer(TcpServer &&server,
-                           const std::string &certFile,
-                           const std::string &keyFile,
-                           const std::string &caFile)
+TlsTcpServer::TlsTcpServer(TcpServer&& server,
+                           const std::string& certFile,
+                           const std::string& keyFile,
+                           const std::string& caFile)
 {
     this->server = std::move(server);
     this->port = server.getPort();
@@ -40,7 +40,7 @@ TlsTcpServer::TlsTcpServer() {}
  * @return
  */
 bool
-TlsTcpServer::initServer(ErrorContainer &error)
+TlsTcpServer::initServer(ErrorContainer& error)
 {
     return server.initServer(error);
 }

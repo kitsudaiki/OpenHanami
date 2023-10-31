@@ -70,10 +70,10 @@ GetUser::GetUser() : Blossom("Show information of a specific user.")
  * @brief runTask
  */
 bool
-GetUser::runTask(BlossomIO &blossomIO,
-                 const json &context,
-                 BlossomStatus &status,
-                 Hanami::ErrorContainer &error)
+GetUser::runTask(BlossomIO& blossomIO,
+                 const json& context,
+                 BlossomStatus& status,
+                 Hanami::ErrorContainer& error)
 {
     // check if admin
     if (context["is_admin"] == false) {

@@ -66,10 +66,10 @@ SaveCluster::SaveCluster() : Blossom("Save a cluster.")
  * @brief runTask
  */
 bool
-SaveCluster::runTask(BlossomIO &blossomIO,
-                     const json &context,
-                     BlossomStatus &status,
-                     Hanami::ErrorContainer &error)
+SaveCluster::runTask(BlossomIO& blossomIO,
+                     const json& context,
+                     BlossomStatus& status,
+                     Hanami::ErrorContainer& error)
 {
     const std::string clusterUuid = blossomIO.input["cluster_uuid"];
     const std::string name = blossomIO.input["name"];
@@ -92,7 +92,7 @@ SaveCluster::runTask(BlossomIO &blossomIO,
     }
 
     // get cluster
-    Cluster *cluster = ClusterHandler::getInstance()->getCluster(clusterUuid);
+    Cluster* cluster = ClusterHandler::getInstance()->getCluster(clusterUuid);
     if (cluster == nullptr) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Cluster with UUID '" + clusterUuid

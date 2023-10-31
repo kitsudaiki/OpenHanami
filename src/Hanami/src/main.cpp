@@ -43,7 +43,7 @@
 #include <thread>
 
 int
-main(int argc, char *argv[])
+main(int argc, char* argv[])
 {
     Hanami::ErrorContainer error;
     HanamiRoot rootObj;

@@ -32,16 +32,16 @@ class FinalizeMnistDataSet : public Blossom
     FinalizeMnistDataSet();
 
    protected:
-    bool runTask(BlossomIO &blossomIO,
-                 const json &context,
-                 BlossomStatus &status,
-                 Hanami::ErrorContainer &error);
+    bool runTask(BlossomIO& blossomIO,
+                 const json& context,
+                 BlossomStatus& status,
+                 Hanami::ErrorContainer& error);
 
    private:
-    bool convertMnistData(const std::string &filePath,
-                          const std::string &name,
-                          const Hanami::DataBuffer &inputBuffer,
-                          const Hanami::DataBuffer &labelBuffer);
+    bool convertMnistData(const std::string& filePath,
+                          const std::string& name,
+                          const Hanami::DataBuffer& inputBuffer,
+                          const Hanami::DataBuffer& labelBuffer);
 };
 
 #endif  // HANAMI_MNIST_FINALIZE_DATA_SET_H

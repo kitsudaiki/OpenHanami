@@ -20,7 +20,7 @@ namespace Hanami
  *
  * @param filePath file-path of the binary-file
  */
-BinaryFile::BinaryFile(const std::string &filePath)
+BinaryFile::BinaryFile(const std::string& filePath)
 {
     m_filePath = filePath;
 
@@ -49,7 +49,7 @@ BinaryFile::~BinaryFile()
  * @return true is successful, else false
  */
 bool
-BinaryFile::initFile(Hanami::ErrorContainer &error)
+BinaryFile::initFile(Hanami::ErrorContainer& error)
 {
     m_fileDescriptor = open(m_filePath.c_str(), O_CREAT | O_RDWR | O_LARGEFILE, 0666);
 
@@ -71,7 +71,7 @@ BinaryFile::initFile(Hanami::ErrorContainer &error)
  * @return true is successful, else false
  */
 bool
-BinaryFile::allocateStorage(const uint64_t numberOfBytes, ErrorContainer &error)
+BinaryFile::allocateStorage(const uint64_t numberOfBytes, ErrorContainer& error)
 {
     if (numberOfBytes == 0) {
         return true;
@@ -102,7 +102,7 @@ BinaryFile::allocateStorage(const uint64_t numberOfBytes, ErrorContainer &error)
  * @return false, if file not open, else true
  */
 bool
-BinaryFile::updateFileSize(ErrorContainer &error)
+BinaryFile::updateFileSize(ErrorContainer& error)
 {
     if (m_fileDescriptor == -1) {
         error.addMeesage("Failed to allocate new storage for the binary file for path '"
@@ -130,7 +130,7 @@ BinaryFile::updateFileSize(ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-BinaryFile::readCompleteFile(DataBuffer &buffer, ErrorContainer &error)
+BinaryFile::readCompleteFile(DataBuffer& buffer, ErrorContainer& error)
 {
     // go to the end of the file to get the size of the file
     const long size = lseek(m_fileDescriptor, 0, SEEK_END);
@@ -171,7 +171,7 @@ BinaryFile::readCompleteFile(DataBuffer &buffer, ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-BinaryFile::writeCompleteFile(DataBuffer &buffer, ErrorContainer &error)
+BinaryFile::writeCompleteFile(DataBuffer& buffer, ErrorContainer& error)
 {
     // resize file to the size of the buffer
     int64_t sizeDiff = buffer.usedBufferSize - m_totalFileSize;
@@ -206,10 +206,10 @@ BinaryFile::writeCompleteFile(DataBuffer &buffer, ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-BinaryFile::writeDataIntoFile(const void *data,
+BinaryFile::writeDataIntoFile(const void* data,
                               const uint64_t startBytePosition,
                               const uint64_t numberOfBytes,
-                              ErrorContainer &error)
+                              ErrorContainer& error)
 {
     if (numberOfBytes == 0) {
         return true;
@@ -233,7 +233,7 @@ BinaryFile::writeDataIntoFile(const void *data,
     }
 
     // write data to file
-    const ssize_t ret = write(m_fileDescriptor, static_cast<const uint8_t *>(data), numberOfBytes);
+    const ssize_t ret = write(m_fileDescriptor, static_cast<const uint8_t*>(data), numberOfBytes);
     if (ret == -1) {
         // TODO: process errno
         error.addMeesage("Failed to write data to binary file for path '" + m_filePath + "'");
@@ -257,10 +257,10 @@ BinaryFile::writeDataIntoFile(const void *data,
  * @return true, if successful, else false
  */
 bool
-BinaryFile::readDataFromFile(void *data,
+BinaryFile::readDataFromFile(void* data,
                              const uint64_t startBytePosition,
                              const uint64_t numberOfBytes,
-                             ErrorContainer &error)
+                             ErrorContainer& error)
 {
     if (numberOfBytes == 0) {
         return true;
@@ -283,7 +283,7 @@ BinaryFile::readDataFromFile(void *data,
         return false;
     }
 
-    const ssize_t ret = read(m_fileDescriptor, static_cast<uint8_t *>(data), numberOfBytes);
+    const ssize_t ret = read(m_fileDescriptor, static_cast<uint8_t*>(data), numberOfBytes);
     if (ret == -1) {
         // TODO: process errno
         error.addMeesage("Failed to read data of binary file for path '" + m_filePath + "'");
@@ -301,7 +301,7 @@ BinaryFile::readDataFromFile(void *data,
  * @return true, if file-descriptor is valid, else false
  */
 bool
-BinaryFile::closeFile(ErrorContainer &error)
+BinaryFile::closeFile(ErrorContainer& error)
 {
     // precheck
     if (m_fileDescriptor == -1) {

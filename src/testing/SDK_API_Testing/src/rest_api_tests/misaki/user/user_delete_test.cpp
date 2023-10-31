@@ -24,7 +24,7 @@
 
 #include <hanami_sdk/user.h>
 
-UserDeleteTest::UserDeleteTest(const bool expectSuccess, const std::string &nameOverride)
+UserDeleteTest::UserDeleteTest(const bool expectSuccess, const std::string& nameOverride)
     : TestStep(expectSuccess)
 {
     m_testName = "delete user";
@@ -37,7 +37,7 @@ UserDeleteTest::UserDeleteTest(const bool expectSuccess, const std::string &name
 }
 
 bool
-UserDeleteTest::runTest(json &inputData, Hanami::ErrorContainer &error)
+UserDeleteTest::runTest(json& inputData, Hanami::ErrorContainer& error)
 {
     // delete user by name
     std::string result;
@@ -59,7 +59,7 @@ UserDeleteTest::runTest(json &inputData, Hanami::ErrorContainer &error)
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch (const json::parse_error &ex) {
+    } catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }

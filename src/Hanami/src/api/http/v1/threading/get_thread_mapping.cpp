@@ -46,10 +46,10 @@ GetThreadMapping::GetThreadMapping()
  * @brief runTask
  */
 bool
-GetThreadMapping::runTask(BlossomIO &blossomIO,
-                          const json &,
-                          BlossomStatus &,
-                          Hanami::ErrorContainer &)
+GetThreadMapping::runTask(BlossomIO& blossomIO,
+                          const json&,
+                          BlossomStatus&,
+                          Hanami::ErrorContainer&)
 {
     blossomIO.output["thread_map"] = ThreadBinder::getInstance()->getMapping();
 

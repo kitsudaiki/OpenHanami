@@ -34,20 +34,20 @@
 namespace Hanami
 {
 
-bool listFiles(std::vector<std::string> &fileList,
-               const std::string &path,
+bool listFiles(std::vector<std::string>& fileList,
+               const std::string& path,
                const bool withSubdirs = true,
-               const std::vector<std::string> &exceptions = {});
+               const std::vector<std::string>& exceptions = {});
 
-bool renameFileOrDir(const std::filesystem::path &oldPath,
-                     const std::filesystem::path &newPath,
-                     ErrorContainer &error);
-bool copyPath(const std::filesystem::path &sourcePath,
-              const std::filesystem::path &targetPath,
-              ErrorContainer &error,
+bool renameFileOrDir(const std::filesystem::path& oldPath,
+                     const std::filesystem::path& newPath,
+                     ErrorContainer& error);
+bool copyPath(const std::filesystem::path& sourcePath,
+              const std::filesystem::path& targetPath,
+              ErrorContainer& error,
               const bool force = true);
-bool createDirectory(const std::filesystem::path &path, ErrorContainer &error);
-bool deleteFileOrDir(const std::filesystem::path &path, ErrorContainer &error);
+bool createDirectory(const std::filesystem::path& path, ErrorContainer& error);
+bool deleteFileOrDir(const std::filesystem::path& path, ErrorContainer& error);
 
 }  // namespace Hanami
 

@@ -46,10 +46,7 @@ GetSystemInfo::GetSystemInfo()
  * @brief runTask
  */
 bool
-GetSystemInfo::runTask(BlossomIO &blossomIO,
-                       const json &,
-                       BlossomStatus &,
-                       Hanami::ErrorContainer &)
+GetSystemInfo::runTask(BlossomIO& blossomIO, const json&, BlossomStatus&, Hanami::ErrorContainer&)
 {
     // creat output
     blossomIO.output["info"] = Hanami::Host::getInstance()->toJson();

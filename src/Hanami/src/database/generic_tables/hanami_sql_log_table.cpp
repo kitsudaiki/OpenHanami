@@ -31,7 +31,7 @@
  *
  * @param db pointer to database
  */
-HanamiSqlLogTable::HanamiSqlLogTable(Hanami::SqlDatabase *db) : SqlTable(db)
+HanamiSqlLogTable::HanamiSqlLogTable(Hanami::SqlDatabase* db) : SqlTable(db)
 {
     DbHeaderEntry id;
     id.name = "timestamp";
@@ -52,7 +52,7 @@ HanamiSqlLogTable::~HanamiSqlLogTable() {}
  * @return -1 if request against database failed, else number of rows
  */
 long
-HanamiSqlLogTable::getNumberOfPages(Hanami::ErrorContainer &error)
+HanamiSqlLogTable::getNumberOfPages(Hanami::ErrorContainer& error)
 {
     const long numberOfRows = getNumberOfRows(error);
     if (numberOfRows == -1) {
@@ -73,10 +73,10 @@ HanamiSqlLogTable::getNumberOfPages(Hanami::ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-HanamiSqlLogTable::getPageFromDb(Hanami::TableItem &resultTable,
-                                 const std::string &userId,
+HanamiSqlLogTable::getPageFromDb(Hanami::TableItem& resultTable,
+                                 const std::string& userId,
                                  const uint64_t page,
-                                 Hanami::ErrorContainer &error)
+                                 Hanami::ErrorContainer& error)
 {
     // get number of pages of the log-table
     const long numberOfPages = getNumberOfPages(error);

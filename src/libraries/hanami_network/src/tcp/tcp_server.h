@@ -42,7 +42,7 @@ class TcpServer
 
     TcpServer();
 
-    bool initServer(ErrorContainer &error);
+    bool initServer(ErrorContainer& error);
 
     int getServerFd() const;
     uint16_t getPort() const;

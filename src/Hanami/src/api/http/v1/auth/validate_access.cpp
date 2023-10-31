@@ -100,10 +100,10 @@ ValidateAccess::ValidateAccess()
  * @brief runTask
  */
 bool
-ValidateAccess::runTask(BlossomIO &blossomIO,
-                        const json &,
-                        BlossomStatus &status,
-                        Hanami::ErrorContainer &error)
+ValidateAccess::runTask(BlossomIO& blossomIO,
+                        const json&,
+                        BlossomStatus& status,
+                        Hanami::ErrorContainer& error)
 {
     // collect information from the input
     const std::string token = blossomIO.input["token"];
@@ -121,21 +121,21 @@ ValidateAccess::runTask(BlossomIO &blossomIO,
     try {
         auto decodedToken = jwt::decode(token);
         auto verifier = jwt::verify().allow_algorithm(
-            jwt::algorithm::hs256{(const char *)HanamiRoot::tokenKey.data()});
+            jwt::algorithm::hs256{(const char*)HanamiRoot::tokenKey.data()});
 
         verifier.verify(decodedToken);
 
         // copy data of token into the output
-        for (const auto &payload : decodedToken.get_payload_json()) {
+        for (const auto& payload : decodedToken.get_payload_json()) {
             try {
                 blossomIO.output = json::parse(payload.second.to_str());
-            } catch (const json::parse_error &ex) {
+            } catch (const json::parse_error& ex) {
                 error.addMeesage("Error while parsing decoded token");
                 error.addMeesage("json-parser error: " + std::string(ex.what()));
                 return false;
             }
         }
-    } catch (const std::exception &ex) {
+    } catch (const std::exception& ex) {
         error.addMeesage("Failed to validate JWT-Token with error: " + std::string(ex.what()));
         status.errorMessage = "Failed to validate JWT-Token";
         status.statusCode = UNAUTHORIZED_RTYPE;

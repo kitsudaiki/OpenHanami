@@ -51,10 +51,10 @@ DeleteUser::DeleteUser() : Blossom("Delete a specific user from the database.")
  * @brief runTask
  */
 bool
-DeleteUser::runTask(BlossomIO &blossomIO,
-                    const json &context,
-                    BlossomStatus &status,
-                    Hanami::ErrorContainer &error)
+DeleteUser::runTask(BlossomIO& blossomIO,
+                    const json& context,
+                    BlossomStatus& status,
+                    Hanami::ErrorContainer& error)
 {
     // check if admin
     if (context["is_admin"] == false) {

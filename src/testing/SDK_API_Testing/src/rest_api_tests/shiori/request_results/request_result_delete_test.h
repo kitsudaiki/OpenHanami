@@ -30,7 +30,7 @@ class RequestResultDeleteTest : public TestStep
    public:
     RequestResultDeleteTest(const bool expectSuccess);
 
-    bool runTest(json &inputData, Hanami::ErrorContainer &error);
+    bool runTest(json& inputData, Hanami::ErrorContainer& error);
 };
 
 #endif  // TSUGUMITESTER_REQUEST_RESULT_DELETE_TEST_H

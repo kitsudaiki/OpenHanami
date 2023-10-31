@@ -29,7 +29,7 @@
 class AuditLogTable : public HanamiSqlLogTable
 {
    public:
-    static AuditLogTable *getInstance()
+    static AuditLogTable* getInstance()
     {
         if (instance == nullptr) {
             instance = new AuditLogTable();
@@ -39,19 +39,19 @@ class AuditLogTable : public HanamiSqlLogTable
 
     ~AuditLogTable();
 
-    bool addAuditLogEntry(const std::string &timestamp,
-                          const std::string &userId,
-                          const std::string &endpoint,
-                          const std::string &requestType,
-                          Hanami::ErrorContainer &error);
-    bool getAllAuditLogEntries(Hanami::TableItem &result,
-                               const std::string &userId,
+    bool addAuditLogEntry(const std::string& timestamp,
+                          const std::string& userId,
+                          const std::string& endpoint,
+                          const std::string& requestType,
+                          Hanami::ErrorContainer& error);
+    bool getAllAuditLogEntries(Hanami::TableItem& result,
+                               const std::string& userId,
                                const uint64_t page,
-                               Hanami::ErrorContainer &error);
+                               Hanami::ErrorContainer& error);
 
    private:
     AuditLogTable();
-    static AuditLogTable *instance;
+    static AuditLogTable* instance;
 };
 
 #endif  // HANAMI_AUDIT_LOG_TABLE_H

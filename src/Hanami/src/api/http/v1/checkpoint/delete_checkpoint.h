@@ -31,10 +31,10 @@ class DeleteCheckpoint : public Blossom
     DeleteCheckpoint();
 
    protected:
-    bool runTask(BlossomIO &blossomIO,
-                 const json &context,
-                 BlossomStatus &status,
-                 Hanami::ErrorContainer &error);
+    bool runTask(BlossomIO& blossomIO,
+                 const json& context,
+                 BlossomStatus& status,
+                 Hanami::ErrorContainer& error);
 };
 
 #endif  // DELETE_CLUSTER_CHECKPOINT_H

@@ -29,7 +29,7 @@
 class ProjectsTable : public HanamiSqlAdminTable
 {
    public:
-    static ProjectsTable *getInstance()
+    static ProjectsTable* getInstance()
     {
         if (instance == nullptr) {
             instance = new ProjectsTable();
@@ -39,17 +39,17 @@ class ProjectsTable : public HanamiSqlAdminTable
 
     ~ProjectsTable();
 
-    bool addProject(json &userData, Hanami::ErrorContainer &error);
-    bool getProject(json &result,
-                    const std::string &projectName,
-                    Hanami::ErrorContainer &error,
+    bool addProject(json& userData, Hanami::ErrorContainer& error);
+    bool getProject(json& result,
+                    const std::string& projectName,
+                    Hanami::ErrorContainer& error,
                     const bool showHiddenValues = false);
-    bool getAllProjects(Hanami::TableItem &result, Hanami::ErrorContainer &error);
-    bool deleteProject(const std::string &projectName, Hanami::ErrorContainer &error);
+    bool getAllProjects(Hanami::TableItem& result, Hanami::ErrorContainer& error);
+    bool deleteProject(const std::string& projectName, Hanami::ErrorContainer& error);
 
    private:
     ProjectsTable();
-    static ProjectsTable *instance;
+    static ProjectsTable* instance;
 };
 
 #endif  // HANAMI_PROJECTS_TABLE_H

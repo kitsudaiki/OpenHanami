@@ -55,13 +55,13 @@ WebsocketClient::~WebsocketClient()
  * @return true, if successful, else false
  */
 bool
-WebsocketClient::initClient(std::string &socketUuid,
-                            const std::string &token,
-                            const std::string &target,
-                            const std::string &host,
-                            const std::string &port,
-                            const std::string &targetUuid,
-                            Hanami::ErrorContainer &error)
+WebsocketClient::initClient(std::string& socketUuid,
+                            const std::string& token,
+                            const std::string& target,
+                            const std::string& host,
+                            const std::string& port,
+                            const std::string& targetUuid,
+                            Hanami::ErrorContainer& error)
 {
     try {
         // init ssl
@@ -91,7 +91,7 @@ WebsocketClient::initClient(std::string &socketUuid,
 
         m_websocket->next_layer().handshake(ssl::stream_base::client);
         m_websocket->set_option(
-            websocket::stream_base::decorator([](websocket::response_type &res) {
+            websocket::stream_base::decorator([](websocket::response_type& res) {
                 res.set(http::field::server,
                         std::string(BOOST_BEAST_VERSION_STRING) + " client-websocket-ssl");
             }));
@@ -116,14 +116,14 @@ WebsocketClient::initClient(std::string &socketUuid,
         beast::flat_buffer buffer;
         m_websocket->read(buffer);
 
-        const std::string responseMsg(static_cast<const char *>(buffer.data().data()),
+        const std::string responseMsg(static_cast<const char*>(buffer.data().data()),
                                       buffer.data().size());
 
         // parse response
         json response;
         try {
             response = json::parse(responseMsg);
-        } catch (const json::parse_error &ex) {
+        } catch (const json::parse_error& ex) {
             error.addMeesage("Failed to parse response-message from Websocket-init");
             error.addMeesage("json-parser error: " + std::string(ex.what()));
             LOG_ERROR(error);
@@ -132,7 +132,7 @@ WebsocketClient::initClient(std::string &socketUuid,
 
         socketUuid = response["uuid"];
         return response["success"];
-    } catch (std::exception const &e) {
+    } catch (std::exception const& e) {
         const std::string msg(e.what());
         error.addMeesage("Error-Message while initilializing Websocket-Client: '" + msg + "'");
         LOG_ERROR(error);
@@ -152,15 +152,15 @@ WebsocketClient::initClient(std::string &socketUuid,
  * @return true, if successful, else false
  */
 bool
-WebsocketClient::sendMessage(const void *data,
+WebsocketClient::sendMessage(const void* data,
                              const uint64_t dataSize,
-                             Hanami::ErrorContainer &error)
+                             Hanami::ErrorContainer& error)
 {
     try {
         // Send the message
         m_websocket->binary(true);
         m_websocket->write(net::buffer(data, dataSize));
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         const std::string msg(e.what());
         error.addMeesage("Error-Message while send Websocket-Data: '" + msg + "'");
         LOG_ERROR(error);
@@ -178,8 +178,8 @@ WebsocketClient::sendMessage(const void *data,
  *
  * @return nullptr if failed, else pointer
  */
-uint8_t *
-WebsocketClient::readMessage(uint64_t &numberOfByes, Hanami::ErrorContainer &error)
+uint8_t*
+WebsocketClient::readMessage(uint64_t& numberOfByes, Hanami::ErrorContainer& error)
 {
     try {
         // Read a message into our buffer
@@ -190,11 +190,11 @@ WebsocketClient::readMessage(uint64_t &numberOfByes, Hanami::ErrorContainer &err
         if (numberOfByes == 0) {
             return nullptr;
         }
-        uint8_t *data = new uint8_t[numberOfByes];
+        uint8_t* data = new uint8_t[numberOfByes];
         memcpy(data, buffer.data().data(), numberOfByes);
 
         return data;
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         numberOfByes = 0;
         const std::string msg(e.what());
         error.addMeesage("Error-Message while read Websocket-Data: '" + msg + "'");
@@ -214,7 +214,7 @@ WebsocketClient::readMessage(uint64_t &numberOfByes, Hanami::ErrorContainer &err
  * @return true, if successful, else false
  */
 bool
-WebsocketClient::loadCertificates(boost::asio::ssl::context &ctx)
+WebsocketClient::loadCertificates(boost::asio::ssl::context& ctx)
 {
     // TODO: use this functions to load specific certificates from file
     std::string errorMessage = "";

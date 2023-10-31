@@ -36,12 +36,12 @@ namespace Hanami
  * @return true, if successful, else false
  */
 bool
-getRequestResult(std::string &result,
-                 const std::string &requestResultUuid,
-                 Hanami::ErrorContainer &error)
+getRequestResult(std::string& result,
+                 const std::string& requestResultUuid,
+                 Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/request_result";
     const std::string vars = "uuid=" + requestResultUuid;
 
@@ -63,10 +63,10 @@ getRequestResult(std::string &result,
  * @return true, if successful, else false
  */
 bool
-listRequestResult(std::string &result, Hanami::ErrorContainer &error)
+listRequestResult(std::string& result, Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/request_result/all";
 
     // send request
@@ -89,12 +89,12 @@ listRequestResult(std::string &result, Hanami::ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-deleteRequestResult(std::string &result,
-                    const std::string &requestResultUuid,
-                    Hanami::ErrorContainer &error)
+deleteRequestResult(std::string& result,
+                    const std::string& requestResultUuid,
+                    Hanami::ErrorContainer& error)
 {
     // create request
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/request_result";
     const std::string vars = "uuid=" + requestResultUuid;
 

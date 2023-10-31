@@ -38,7 +38,7 @@ namespace Hanami
 class SqlDatabase
 {
    public:
-    static SqlDatabase *getInstance()
+    static SqlDatabase* getInstance()
     {
         if (instance == nullptr) {
             instance = new SqlDatabase();
@@ -48,14 +48,14 @@ class SqlDatabase
 
     ~SqlDatabase();
 
-    bool initDatabase(const std::string &path, Hanami::ErrorContainer &error);
+    bool initDatabase(const std::string& path, Hanami::ErrorContainer& error);
     bool closeDatabase();
 
-    bool execSqlCommand(TableItem *resultTable, const std::string &command, ErrorContainer &error);
+    bool execSqlCommand(TableItem* resultTable, const std::string& command, ErrorContainer& error);
 
    private:
     SqlDatabase();
-    static SqlDatabase *instance;
+    static SqlDatabase* instance;
 
     std::mutex m_lock;
     bool m_isOpen = false;

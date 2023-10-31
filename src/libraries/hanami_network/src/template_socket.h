@@ -35,7 +35,7 @@ class TemplateSocket : public AbstractSocket
      * @param socketbase-socket-object
      * @param threadName name of the thread of the socket
      */
-    TemplateSocket(T &&socket, const std::string &threadName) : AbstractSocket(threadName)
+    TemplateSocket(T&& socket, const std::string& threadName) : AbstractSocket(threadName)
     {
         m_socket = std::move(socket);
     }
@@ -52,7 +52,7 @@ class TemplateSocket : public AbstractSocket
      *
      * @return true, if successful, else false
      */
-    bool initConnection(Hanami::ErrorContainer &error) { return m_socket.initClientSide(error); }
+    bool initConnection(Hanami::ErrorContainer& error) { return m_socket.initClientSide(error); }
 
     /**
      * @brief get socket-type
@@ -76,10 +76,10 @@ class TemplateSocket : public AbstractSocket
      *
      * @return false, if send failed or send was incomplete, else true
      */
-    bool sendMessage(const std::string &message, ErrorContainer &error)
+    bool sendMessage(const std::string& message, ErrorContainer& error)
     {
         const uint64_t messageLength = message.length();
-        return sendMessage(static_cast<const void *>(message.c_str()), messageLength, error);
+        return sendMessage(static_cast<const void*>(message.c_str()), messageLength, error);
     }
 
     /**
@@ -91,7 +91,7 @@ class TemplateSocket : public AbstractSocket
      *
      * @return false, if send failed or send was incomplete, else true
      */
-    bool sendMessage(const void *message, const uint64_t numberOfBytes, ErrorContainer &error)
+    bool sendMessage(const void* message, const uint64_t numberOfBytes, ErrorContainer& error)
     {
         // precheck if socket is connected
         if (m_socket.getSocketFd() == 0) {

@@ -72,10 +72,10 @@ CreateToken::CreateToken() : Blossom("Create a JWT-access-token for a specific u
  * @brief runTask
  */
 bool
-CreateToken::runTask(BlossomIO &blossomIO,
-                     const json &,
-                     BlossomStatus &status,
-                     Hanami::ErrorContainer &error)
+CreateToken::runTask(BlossomIO& blossomIO,
+                     const json&,
+                     BlossomStatus& status,
+                     Hanami::ErrorContainer& error)
 {
     const std::string userId = blossomIO.input["id"];
 
@@ -158,7 +158,7 @@ CreateToken::runTask(BlossomIO &blossomIO,
               .set_type("JWT")
               .set_expires_at(expireTimePoint)
               .set_payload_claim("user", jwt::claim(userData.dump()))
-              .sign(jwt::algorithm::hs256{(const char *)HanamiRoot::tokenKey.data()});
+              .sign(jwt::algorithm::hs256{(const char*)HanamiRoot::tokenKey.data()});
 
     blossomIO.output["id"] = userId;
     blossomIO.output["is_admin"] = isAdmin;

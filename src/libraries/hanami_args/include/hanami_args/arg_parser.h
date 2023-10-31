@@ -52,56 +52,56 @@ class ArgParser
         json results = json::array();
         bool wasSet = false;
 
-        ArgDef(const std::string &longIdent, const char shortIdent = ' ')
+        ArgDef(const std::string& longIdent, const char shortIdent = ' ')
             : longIdentifier("--" + longIdent), shortIdentifier("-" + std::string{shortIdent})
         {
         }
 
-        ArgDef &setHelpText(const std::string &helpText)
+        ArgDef& setHelpText(const std::string& helpText)
         {
             this->helpText = helpText;
             return *this;
         }
 
-        ArgDef &setRequired()
+        ArgDef& setRequired()
         {
             this->isRequired = true;
             return *this;
         }
 
-        ArgDef &setWithoutFlag()
+        ArgDef& setWithoutFlag()
         {
             this->withoutFlag = true;
             return *this;
         }
     };
 
-    ArgParser(const std::string &version = "");
+    ArgParser(const std::string& version = "");
     ~ArgParser();
 
     // register
-    ArgDef &registerPlain(const std::string &longIdent, const char shortIdent = ' ');
-    ArgDef &registerString(const std::string &longIdent, const char shortIdent = ' ');
-    ArgDef &registerInteger(const std::string &longIdent, const char shortIdent = ' ');
-    ArgDef &registerFloat(const std::string &longIdent, const char shortIdent = ' ');
-    ArgDef &registerBoolean(const std::string &longIdent, const char shortIdent = ' ');
+    ArgDef& registerPlain(const std::string& longIdent, const char shortIdent = ' ');
+    ArgDef& registerString(const std::string& longIdent, const char shortIdent = ' ');
+    ArgDef& registerInteger(const std::string& longIdent, const char shortIdent = ' ');
+    ArgDef& registerFloat(const std::string& longIdent, const char shortIdent = ' ');
+    ArgDef& registerBoolean(const std::string& longIdent, const char shortIdent = ' ');
 
     // parse
-    bool parse(const int argc, char *argv[], ErrorContainer &error);
-    bool parse(const int argc, const char *argv[], ErrorContainer &error);
+    bool parse(const int argc, char* argv[], ErrorContainer& error);
+    bool parse(const int argc, const char* argv[], ErrorContainer& error);
 
     // getter
-    uint64_t getNumberOfValues(const std::string &identifier);
-    bool wasSet(const std::string &identifier);
-    const std::vector<std::string> getStringValues(const std::string &identifier);
-    const std::vector<long> getIntValues(const std::string &identifier);
-    const std::vector<double> getFloatValues(const std::string &identifier);
-    const std::vector<bool> getBoolValues(const std::string &identifier);
+    uint64_t getNumberOfValues(const std::string& identifier);
+    bool wasSet(const std::string& identifier);
+    const std::vector<std::string> getStringValues(const std::string& identifier);
+    const std::vector<long> getIntValues(const std::string& identifier);
+    const std::vector<double> getFloatValues(const std::string& identifier);
+    const std::vector<bool> getBoolValues(const std::string& identifier);
 
-    const std::string getStringValue(const std::string &identifier);
-    long getIntValue(const std::string &identifier);
-    double getFloatValue(const std::string &identifier);
-    bool getBoolValue(const std::string &identifier);
+    const std::string getStringValue(const std::string& identifier);
+    long getIntValue(const std::string& identifier);
+    double getFloatValue(const std::string& identifier);
+    bool getBoolValue(const std::string& identifier);
 
    private:
     friend ArgParser_Test;
@@ -112,13 +112,13 @@ class ArgParser
     std::vector<ArgDef> m_argumentList;
 
     const std::string convertType(ArgDef::ArgType type);
-    void print(const std::string &commandName);
-    bool precheckFlags(const int argc, const char *argv[]);
+    void print(const std::string& commandName);
+    bool precheckFlags(const int argc, const char* argv[]);
 
-    ArgDef *getArgument(const std::string &identifier);
-    int32_t registerArgument(ArgDef &newArgument);
+    ArgDef* getArgument(const std::string& identifier);
+    int32_t registerArgument(ArgDef& newArgument);
 
-    json convertValue(const std::string &value, const ArgDef::ArgType requiredType);
+    json convertValue(const std::string& value, const ArgDef::ArgType requiredType);
 };
 
 }  // namespace Hanami

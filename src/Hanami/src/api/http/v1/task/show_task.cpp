@@ -73,10 +73,10 @@ ShowTask::ShowTask() : Blossom("Show information of a specific task.")
  * @brief runTask
  */
 bool
-ShowTask::runTask(BlossomIO &blossomIO,
-                  const json &context,
-                  BlossomStatus &status,
-                  Hanami::ErrorContainer &error)
+ShowTask::runTask(BlossomIO& blossomIO,
+                  const json& context,
+                  BlossomStatus& status,
+                  Hanami::ErrorContainer& error)
 {
     const std::string clusterUuid = blossomIO.input["cluster_uuid"];
     const std::string taskUuid = blossomIO.input["uuid"];
@@ -99,7 +99,7 @@ ShowTask::runTask(BlossomIO &blossomIO,
     }
 
     // get cluster
-    Cluster *cluster = ClusterHandler::getInstance()->getCluster(clusterUuid);
+    Cluster* cluster = ClusterHandler::getInstance()->getCluster(clusterUuid);
     if (cluster == nullptr) {
         status.errorMessage = "Cluster with UUID '" + clusterUuid + "'not found";
         status.statusCode = NOT_FOUND_RTYPE;

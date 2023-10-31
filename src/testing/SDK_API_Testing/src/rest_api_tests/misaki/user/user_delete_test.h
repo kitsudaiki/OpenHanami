@@ -28,9 +28,9 @@
 class UserDeleteTest : public TestStep
 {
    public:
-    UserDeleteTest(const bool expectSuccess, const std::string &nameOverride = "");
+    UserDeleteTest(const bool expectSuccess, const std::string& nameOverride = "");
 
-    bool runTest(json &inputData, Hanami::ErrorContainer &error);
+    bool runTest(json& inputData, Hanami::ErrorContainer& error);
 
    private:
     std::string m_nameOverride = "";

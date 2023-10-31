@@ -32,7 +32,7 @@ namespace Hanami
  *
  * @param db pointer to database
  */
-SqlTable::SqlTable(SqlDatabase *db) { m_db = db; }
+SqlTable::SqlTable(SqlDatabase* db) { m_db = db; }
 
 /**
  * @brief destructor
@@ -47,7 +47,7 @@ SqlTable::~SqlTable() {}
  * @return true, if successfuly or table already exist, else false
  */
 bool
-SqlTable::initTable(ErrorContainer &error)
+SqlTable::initTable(ErrorContainer& error)
 {
     return m_db->execSqlCommand(nullptr, createTableCreateQuery(), error);
 }
@@ -58,14 +58,14 @@ SqlTable::initTable(ErrorContainer &error)
  * @param docu reference for the output of the final document
  */
 void
-SqlTable::createDocumentation(std::string &docu)
+SqlTable::createDocumentation(std::string& docu)
 {
     // header
     docu.append("## " + m_tableName + "\n\n");
     docu.append("| Column-Name | Type | is primary | allow NULL|\n");
     docu.append("| --- | --- | --- | --- |\n");
 
-    for (const DbHeaderEntry &entry : m_tableHeader) {
+    for (const DbHeaderEntry& entry : m_tableHeader) {
         docu.append("| ");
 
         // name
@@ -120,13 +120,13 @@ SqlTable::createDocumentation(std::string &docu)
  * @return uuid of the new entry, if successful, else empty string
  */
 bool
-SqlTable::insertToDb(json &values, ErrorContainer &error)
+SqlTable::insertToDb(json& values, ErrorContainer& error)
 {
     Hanami::TableItem resultItem;
 
     // get values from input to check if all required values are set
     std::vector<std::string> dbValues;
-    for (const DbHeaderEntry &entry : m_tableHeader) {
+    for (const DbHeaderEntry& entry : m_tableHeader) {
         if (values.contains(entry.name) == false && entry.allowNull == false) {
             error.addMeesage("insert into dabase failed, because '" + entry.name
                              + "' is required, but missing in the input-values.");
@@ -159,9 +159,9 @@ SqlTable::insertToDb(json &values, ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-SqlTable::updateInDb(const std::vector<RequestCondition> &conditions,
-                     const json &updates,
-                     ErrorContainer &error)
+SqlTable::updateInDb(const std::vector<RequestCondition>& conditions,
+                     const json& updates,
+                     ErrorContainer& error)
 {
     // precheck
     if (conditions.size() == 0) {
@@ -186,8 +186,8 @@ SqlTable::updateInDb(const std::vector<RequestCondition> &conditions,
  * @return true, if successful, else false
  */
 bool
-SqlTable::getAllFromDb(TableItem &resultTable,
-                       ErrorContainer &error,
+SqlTable::getAllFromDb(TableItem& resultTable,
+                       ErrorContainer& error,
                        const bool showHiddenValues,
                        const uint64_t positionOffset,
                        const uint64_t numberOfRows)
@@ -202,14 +202,14 @@ SqlTable::getAllFromDb(TableItem &resultTable,
 
     // if header is missing in result, because there are no entries to list, add a default-header
     if (resultTable.getNumberOfColums() == 0) {
-        for (const DbHeaderEntry &entry : m_tableHeader) {
+        for (const DbHeaderEntry& entry : m_tableHeader) {
             resultTable.addColumn(entry.name);
         }
     }
 
     // remove all values, which should be hide
     if (showHiddenValues == false) {
-        for (const DbHeaderEntry &entry : m_tableHeader) {
+        for (const DbHeaderEntry& entry : m_tableHeader) {
             if (entry.hide) {
                 resultTable.deleteColumn(entry.name);
             }
@@ -232,9 +232,9 @@ SqlTable::getAllFromDb(TableItem &resultTable,
  * @return true, if successful, else false
  */
 bool
-SqlTable::getFromDb(TableItem &resultTable,
-                    const std::vector<RequestCondition> &conditions,
-                    ErrorContainer &error,
+SqlTable::getFromDb(TableItem& resultTable,
+                    const std::vector<RequestCondition>& conditions,
+                    ErrorContainer& error,
                     const bool showHiddenValues,
                     const uint64_t positionOffset,
                     const uint64_t numberOfRows)
@@ -248,14 +248,14 @@ SqlTable::getFromDb(TableItem &resultTable,
 
     // if header is missing in result, because there are no entries to list, add a default-header
     if (resultTable.getNumberOfColums() == 0) {
-        for (const DbHeaderEntry &entry : m_tableHeader) {
+        for (const DbHeaderEntry& entry : m_tableHeader) {
             resultTable.addColumn(entry.name);
         }
     }
 
     // remove all values, which should be hide
     if (showHiddenValues == false) {
-        for (const DbHeaderEntry &entry : m_tableHeader) {
+        for (const DbHeaderEntry& entry : m_tableHeader) {
             if (entry.hide) {
                 resultTable.deleteColumn(entry.name);
             }
@@ -278,9 +278,9 @@ SqlTable::getFromDb(TableItem &resultTable,
  * @return true, if successful, else false
  */
 bool
-SqlTable::getFromDb(json &result,
-                    const std::vector<RequestCondition> &conditions,
-                    ErrorContainer &error,
+SqlTable::getFromDb(json& result,
+                    const std::vector<RequestCondition>& conditions,
+                    ErrorContainer& error,
                     const bool showHiddenValues,
                     const uint64_t positionOffset,
                     const uint64_t numberOfRows)
@@ -310,7 +310,7 @@ SqlTable::getFromDb(json &result,
 
     // remove all values, which should be hide
     if (showHiddenValues == false) {
-        for (const DbHeaderEntry &entry : m_tableHeader) {
+        for (const DbHeaderEntry& entry : m_tableHeader) {
             if (entry.hide) {
                 result.erase(entry.name);
             }
@@ -328,7 +328,7 @@ SqlTable::getFromDb(json &result,
  * @return -1 if request against database failed, else number of rows
  */
 long
-SqlTable::getNumberOfRows(ErrorContainer &error)
+SqlTable::getNumberOfRows(ErrorContainer& error)
 {
     Hanami::TableItem resultItem;
     if (m_db->execSqlCommand(&resultItem, createCountQuery(), error) == false) {
@@ -346,7 +346,7 @@ SqlTable::getNumberOfRows(ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-SqlTable::deleteAllFromDb(ErrorContainer &error)
+SqlTable::deleteAllFromDb(ErrorContainer& error)
 {
     const std::vector<RequestCondition> conditions;
     Hanami::TableItem resultItem;
@@ -362,7 +362,7 @@ SqlTable::deleteAllFromDb(ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-SqlTable::deleteFromDb(const std::vector<RequestCondition> &conditions, ErrorContainer &error)
+SqlTable::deleteFromDb(const std::vector<RequestCondition>& conditions, ErrorContainer& error)
 {
     // precheck
     if (conditions.size() == 0) {
@@ -389,7 +389,7 @@ SqlTable::createTableCreateQuery()
 
     // create all field of the table
     for (uint32_t i = 0; i < m_tableHeader.size(); i++) {
-        const DbHeaderEntry *entry = &m_tableHeader[i];
+        const DbHeaderEntry* entry = &m_tableHeader[i];
         if (i != 0) {
             command.append(" , ");
         }
@@ -443,7 +443,7 @@ SqlTable::createTableCreateQuery()
  * @return created sql-query
  */
 const std::string
-SqlTable::createSelectQuery(const std::vector<RequestCondition> &conditions,
+SqlTable::createSelectQuery(const std::vector<RequestCondition>& conditions,
                             const uint64_t positionOffset,
                             const uint64_t numberOfRows)
 {
@@ -457,7 +457,7 @@ SqlTable::createSelectQuery(const std::vector<RequestCondition> &conditions,
             if (i > 0) {
                 command.append(" AND ");
             }
-            const RequestCondition *condition = &conditions.at(i);
+            const RequestCondition* condition = &conditions.at(i);
             command.append(condition->colName);
             command.append("='");
             command.append(condition->value);
@@ -487,7 +487,7 @@ SqlTable::createSelectQuery(const std::vector<RequestCondition> &conditions,
  * @return created sql-query
  */
 const std::string
-SqlTable::createUpdateQuery(const std::vector<RequestCondition> &conditions, const json &updates)
+SqlTable::createUpdateQuery(const std::vector<RequestCondition>& conditions, const json& updates)
 {
     std::string command = "UPDATE ";
     command.append(m_tableName);
@@ -495,7 +495,7 @@ SqlTable::createUpdateQuery(const std::vector<RequestCondition> &conditions, con
     // add set-section
     command.append(" SET ");
     std::vector<std::string> keys;
-    for (const auto &[key, _] : updates.items()) {
+    for (const auto& [key, _] : updates.items()) {
         keys.push_back(key);
     }
     for (uint32_t i = 0; i < keys.size(); i++) {
@@ -518,7 +518,7 @@ SqlTable::createUpdateQuery(const std::vector<RequestCondition> &conditions, con
             if (i > 0) {
                 command.append(" AND ");
             }
-            const RequestCondition *condition = &conditions.at(i);
+            const RequestCondition* condition = &conditions.at(i);
             command.append(condition->colName);
             command.append("='");
             command.append(condition->value);
@@ -538,7 +538,7 @@ SqlTable::createUpdateQuery(const std::vector<RequestCondition> &conditions, con
  * @return created sql-query
  */
 const std::string
-SqlTable::createInsertQuery(const std::vector<std::string> &values)
+SqlTable::createInsertQuery(const std::vector<std::string>& values)
 {
     std::string command = "INSERT INTO ";
     command.append(m_tableName);
@@ -546,7 +546,7 @@ SqlTable::createInsertQuery(const std::vector<std::string> &values)
 
     // create fields
     for (uint32_t i = 0; i < m_tableHeader.size(); i++) {
-        const DbHeaderEntry *entry = &m_tableHeader[i];
+        const DbHeaderEntry* entry = &m_tableHeader[i];
         if (i != 0) {
             command.append(" , ");
         }
@@ -578,7 +578,7 @@ SqlTable::createInsertQuery(const std::vector<std::string> &values)
  * @return created sql-query
  */
 const std::string
-SqlTable::createDeleteQuery(const std::vector<RequestCondition> &conditions)
+SqlTable::createDeleteQuery(const std::vector<RequestCondition>& conditions)
 {
     std::string command = "DELETE FROM ";
     command.append(m_tableName);
@@ -590,7 +590,7 @@ SqlTable::createDeleteQuery(const std::vector<RequestCondition> &conditions)
             if (i > 0) {
                 command.append(" AND ");
             }
-            const RequestCondition *condition = &conditions.at(i);
+            const RequestCondition* condition = &conditions.at(i);
             command.append(condition->colName);
             command.append("='");
             command.append(condition->value);
@@ -624,7 +624,7 @@ SqlTable::createCountQuery()
  * @param tableContent table-input with at least one row
  */
 void
-SqlTable::processGetResult(json &result, TableItem &tableContent)
+SqlTable::processGetResult(json& result, TableItem& tableContent)
 {
     if (tableContent.getNumberOfRows() == 0) {
         return;

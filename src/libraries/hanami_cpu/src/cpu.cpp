@@ -36,7 +36,7 @@ namespace Hanami
  * @return file-content, if available, else empty string
  */
 const std::string
-getInfo(const std::string &filePath, ErrorContainer &error)
+getInfo(const std::string& filePath, ErrorContainer& error)
 {
     // open file
     std::ifstream inFile;
@@ -69,7 +69,7 @@ getInfo(const std::string &filePath, ErrorContainer &error)
  * @return true, if successfull, else false
  */
 bool
-getRangeInfo(uint64_t &result, const std::string &info)
+getRangeInfo(uint64_t& result, const std::string& info)
 {
     // handle case of only one core
     if (info == "0") {
@@ -98,7 +98,7 @@ getRangeInfo(uint64_t &result, const std::string &info)
  * @return false, if no permission to update files, else true
  */
 bool
-writeToFile(const std::string &filePath, const std::string &value, ErrorContainer &error)
+writeToFile(const std::string& filePath, const std::string& value, ErrorContainer& error)
 {
     // open file
     std::ofstream outputFile;
@@ -131,8 +131,8 @@ writeToFile(const std::string &filePath, const std::string &value, ErrorContaine
 bool
 writeToFile(const uint64_t value,
             const uint64_t threadId,
-            const std::string &fileName,
-            ErrorContainer &error)
+            const std::string& fileName,
+            ErrorContainer& error)
 {
     // build target-path
     const std::string filePath
@@ -150,7 +150,7 @@ writeToFile(const uint64_t value,
  * @return true, if successful, else false
  */
 bool
-getNumberOfCpuPackages(uint64_t &result, ErrorContainer &error)
+getNumberOfCpuPackages(uint64_t& result, ErrorContainer& error)
 {
     // get info from requested file
     const std::string filePath = "/sys/devices/system/node/possible";
@@ -187,7 +187,7 @@ getNumberOfCpuPackages(uint64_t &result, ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-getNumberOfCpuThreads(uint64_t &result, ErrorContainer &error)
+getNumberOfCpuThreads(uint64_t& result, ErrorContainer& error)
 {
     // get info from requested file
     const std::string filePath = "/sys/devices/system/cpu/present";
@@ -223,7 +223,7 @@ getNumberOfCpuThreads(uint64_t &result, ErrorContainer &error)
  * @return true, if hyperthreading is enabled, else false
  */
 bool
-isHyperthreadingEnabled(ErrorContainer &error)
+isHyperthreadingEnabled(ErrorContainer& error)
 {
     const std::string filePath = "/sys/devices/system/cpu/smt/active";
     const std::string active = getInfo(filePath, error);
@@ -243,7 +243,7 @@ isHyperthreadingEnabled(ErrorContainer &error)
  * @return true, if supported, else false
  */
 bool
-isHyperthreadingSupported(ErrorContainer &error)
+isHyperthreadingSupported(ErrorContainer& error)
 {
     const std::string filePath = "/sys/devices/system/cpu/smt/control";
     const std::string htState = getInfo(filePath, error);
@@ -265,7 +265,7 @@ isHyperthreadingSupported(ErrorContainer &error)
  * @return true, if hyperthreading is suppored and changes successful, else false
  */
 bool
-changeHyperthreadingState(const bool newState, ErrorContainer &error)
+changeHyperthreadingState(const bool newState, ErrorContainer& error)
 {
     const std::string filePath = "/sys/devices/system/cpu/smt/control";
     const std::string htState = getInfo(filePath, error);
@@ -324,7 +324,7 @@ changeHyperthreadingState(const bool newState, ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-getCpuPackageId(uint64_t &result, const uint64_t threadId, ErrorContainer &error)
+getCpuPackageId(uint64_t& result, const uint64_t threadId, ErrorContainer& error)
 {
     // build request-path
     const std::string filePath = "/sys/devices/system/cpu/cpu" + std::to_string(threadId)
@@ -352,7 +352,7 @@ getCpuPackageId(uint64_t &result, const uint64_t threadId, ErrorContainer &error
  * @return true, if successful, else false
  */
 bool
-getCpuCoreId(uint64_t &result, const uint64_t threadId, ErrorContainer &error)
+getCpuCoreId(uint64_t& result, const uint64_t threadId, ErrorContainer& error)
 {
     // build request-path
     const std::string filePath
@@ -380,7 +380,7 @@ getCpuCoreId(uint64_t &result, const uint64_t threadId, ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-getCpuSiblingId(uint64_t &result, const uint64_t threadId, ErrorContainer &error)
+getCpuSiblingId(uint64_t& result, const uint64_t threadId, ErrorContainer& error)
 {
     // if hyperthreading is not enabled, there are no siblings possible
     if (isHyperthreadingEnabled(error)) {
@@ -435,10 +435,10 @@ getCpuSiblingId(uint64_t &result, const uint64_t threadId, ErrorContainer &error
  * @return true, if successful, else false
  */
 bool
-getSpeed(uint64_t &result,
+getSpeed(uint64_t& result,
          const uint64_t threadId,
-         const std::string &fileName,
-         ErrorContainer &error)
+         const std::string& fileName,
+         ErrorContainer& error)
 {
     // build request-path
     const std::string filePath
@@ -464,7 +464,7 @@ getSpeed(uint64_t &result,
  * @return true, if successful, else false
  */
 bool
-getCurrentMinimumSpeed(uint64_t &result, const uint64_t threadId, ErrorContainer &error)
+getCurrentMinimumSpeed(uint64_t& result, const uint64_t threadId, ErrorContainer& error)
 {
     uint64_t speed = 0;
     if (getSpeed(speed, threadId, "scaling_min_freq", error) == false) {
@@ -487,7 +487,7 @@ getCurrentMinimumSpeed(uint64_t &result, const uint64_t threadId, ErrorContainer
  * @return true, if successful, else false
  */
 bool
-getCurrentMaximumSpeed(uint64_t &result, const uint64_t threadId, ErrorContainer &error)
+getCurrentMaximumSpeed(uint64_t& result, const uint64_t threadId, ErrorContainer& error)
 {
     uint64_t speed = 0;
     if (getSpeed(speed, threadId, "scaling_max_freq", error) == false) {
@@ -510,7 +510,7 @@ getCurrentMaximumSpeed(uint64_t &result, const uint64_t threadId, ErrorContainer
  * @return true, if successful, else false
  */
 bool
-getCurrentSpeed(uint64_t &result, const uint64_t threadId, ErrorContainer &error)
+getCurrentSpeed(uint64_t& result, const uint64_t threadId, ErrorContainer& error)
 {
     uint64_t speed = 0;
     if (getSpeed(speed, threadId, "scaling_cur_freq", error) == false) {
@@ -533,7 +533,7 @@ getCurrentSpeed(uint64_t &result, const uint64_t threadId, ErrorContainer &error
  * @return true, if successful, else false
  */
 bool
-getMinimumSpeed(uint64_t &result, const uint64_t threadId, ErrorContainer &error)
+getMinimumSpeed(uint64_t& result, const uint64_t threadId, ErrorContainer& error)
 {
     uint64_t speed = 0;
     if (getSpeed(speed, threadId, "cpuinfo_min_freq", error) == false) {
@@ -556,7 +556,7 @@ getMinimumSpeed(uint64_t &result, const uint64_t threadId, ErrorContainer &error
  * @return true, if successful, else false
  */
 bool
-getMaximumSpeed(uint64_t &result, const uint64_t threadId, ErrorContainer &error)
+getMaximumSpeed(uint64_t& result, const uint64_t threadId, ErrorContainer& error)
 {
     uint64_t speed = 0;
     if (getSpeed(speed, threadId, "cpuinfo_max_freq", error) == false) {
@@ -579,7 +579,7 @@ getMaximumSpeed(uint64_t &result, const uint64_t threadId, ErrorContainer &error
  * @return false, if no permission to update files, else true
  */
 bool
-setMinimumSpeed(const uint64_t threadId, uint64_t newSpeed, ErrorContainer &error)
+setMinimumSpeed(const uint64_t threadId, uint64_t newSpeed, ErrorContainer& error)
 {
     // fix lower border
     uint64_t minSpeed = 0;
@@ -619,7 +619,7 @@ setMinimumSpeed(const uint64_t threadId, uint64_t newSpeed, ErrorContainer &erro
  * @return false, if no permission to update files, else true
  */
 bool
-setMaximumSpeed(const uint64_t threadId, uint64_t newSpeed, ErrorContainer &error)
+setMaximumSpeed(const uint64_t threadId, uint64_t newSpeed, ErrorContainer& error)
 {
     // fix lower border
     uint64_t minSpeed = 0;
@@ -659,7 +659,7 @@ setMaximumSpeed(const uint64_t threadId, uint64_t newSpeed, ErrorContainer &erro
  * @return false, if no permission to update files, else true
  */
 bool
-resetSpeed(const uint64_t threadId, ErrorContainer &error)
+resetSpeed(const uint64_t threadId, ErrorContainer& error)
 {
     // reset max-speed
     uint64_t maxSpeed = 0;
@@ -692,7 +692,7 @@ resetSpeed(const uint64_t threadId, ErrorContainer &error)
  * @return false if no ids were found, else true
  */
 bool
-getPkgTemperatureIds(std::vector<uint64_t> &ids, ErrorContainer &error)
+getPkgTemperatureIds(std::vector<uint64_t>& ids, ErrorContainer& error)
 {
     uint64_t counter = 0;
     const std::string basePath = "/sys/class/thermal/thermal_zone";
@@ -740,7 +740,7 @@ getPkgTemperatureIds(std::vector<uint64_t> &ids, ErrorContainer &error)
  *             else the temperature behind the id in celsius
  */
 double
-getPkgTemperature(const uint64_t pkgFileId, ErrorContainer &error)
+getPkgTemperature(const uint64_t pkgFileId, ErrorContainer& error)
 {
     const std::string filePath
         = "/sys/class/thermal/thermal_zone" + std::to_string(pkgFileId) + "/temp";

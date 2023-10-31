@@ -35,7 +35,7 @@ UserListTest::UserListTest(const bool expectSuccess) : TestStep(expectSuccess)
 }
 
 bool
-UserListTest::runTest(json &inputData, Hanami::ErrorContainer &error)
+UserListTest::runTest(json& inputData, Hanami::ErrorContainer& error)
 {
     // list all users
     std::string result;
@@ -51,7 +51,7 @@ UserListTest::runTest(json &inputData, Hanami::ErrorContainer &error)
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch (const json::parse_error &ex) {
+    } catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }

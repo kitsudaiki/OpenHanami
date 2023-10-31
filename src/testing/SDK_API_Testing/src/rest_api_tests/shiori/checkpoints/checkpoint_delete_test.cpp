@@ -35,7 +35,7 @@ CheckpointDeleteTest::CheckpointDeleteTest(const bool expectSuccess) : TestStep(
 }
 
 bool
-CheckpointDeleteTest::runTest(json &inputData, Hanami::ErrorContainer &error)
+CheckpointDeleteTest::runTest(json& inputData, Hanami::ErrorContainer& error)
 {
     const std::string uuid = inputData["checkpoint_uuid"];
 
@@ -53,7 +53,7 @@ CheckpointDeleteTest::runTest(json &inputData, Hanami::ErrorContainer &error)
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch (const json::parse_error &ex) {
+    } catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }

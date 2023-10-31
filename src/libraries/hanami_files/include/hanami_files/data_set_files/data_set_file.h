@@ -47,36 +47,36 @@ class DataSetFile
         char name[256];
     };
 
-    DataSetFile(const std::string &filePath);
-    DataSetFile(Hanami::BinaryFile *file);
+    DataSetFile(const std::string& filePath);
+    DataSetFile(Hanami::BinaryFile* file);
     virtual ~DataSetFile();
 
-    bool initNewFile(Hanami::ErrorContainer &error);
-    bool readFromFile(Hanami::ErrorContainer &error);
+    bool initNewFile(Hanami::ErrorContainer& error);
+    bool readFromFile(Hanami::ErrorContainer& error);
 
     bool addBlock(const uint64_t pos,
-                  const float *data,
+                  const float* data,
                   const u_int64_t numberOfValues,
-                  Hanami::ErrorContainer &error);
-    virtual bool getPayload(Hanami::DataBuffer &result,
-                            Hanami::ErrorContainer &error,
-                            const std::string &columnName = "")
+                  Hanami::ErrorContainer& error);
+    virtual bool getPayload(Hanami::DataBuffer& result,
+                            Hanami::ErrorContainer& error,
+                            const std::string& columnName = "")
         = 0;
-    virtual bool updateHeader(Hanami::ErrorContainer &error) = 0;
+    virtual bool updateHeader(Hanami::ErrorContainer& error) = 0;
 
     DataSetType type = UNDEFINED_TYPE;
     std::string name = "";
 
    protected:
     virtual void initHeader() = 0;
-    virtual void readHeader(const uint8_t *u8buffer) = 0;
+    virtual void readHeader(const uint8_t* u8buffer) = 0;
 
-    Hanami::BinaryFile *m_targetFile = nullptr;
+    Hanami::BinaryFile* m_targetFile = nullptr;
 
     uint64_t m_headerSize = 0;
     uint64_t m_totalFileSize = 0;
 };
 
-DataSetFile *readDataSetFile(const std::string &filePath, Hanami::ErrorContainer &error);
+DataSetFile* readDataSetFile(const std::string& filePath, Hanami::ErrorContainer& error);
 
 #endif  // HANAMI_DATASETFILE_H

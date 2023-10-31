@@ -52,7 +52,7 @@ struct PolicyEntry {
 class Policy
 {
    public:
-    static Policy *getInstance()
+    static Policy* getInstance()
     {
         if (instance == nullptr) {
             instance = new Policy();
@@ -61,20 +61,20 @@ class Policy
     }
     ~Policy();
 
-    bool parse(const std::string &input, ErrorContainer &error);
+    bool parse(const std::string& input, ErrorContainer& error);
 
-    bool checkUserAgainstPolicy(const std::string &endpoint,
+    bool checkUserAgainstPolicy(const std::string& endpoint,
                                 const HttpRequestType type,
-                                const std::string &role);
+                                const std::string& role);
 
    private:
     Policy();
-    static Policy *instance;
+    static Policy* instance;
 
     std::map<std::string, PolicyEntry> m_policyRules;
 
-    bool checkEntry(const PolicyEntry &entry, const HttpRequestType type, const std::string &role);
-    bool checkRuleList(const std::vector<std::string> &rules, const std::string &compare);
+    bool checkEntry(const PolicyEntry& entry, const HttpRequestType type, const std::string& role);
+    bool checkRuleList(const std::vector<std::string>& rules, const std::string& compare);
 
     friend Policy_Test;
 };

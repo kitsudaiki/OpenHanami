@@ -29,10 +29,10 @@ class DataSetGetTest : public TestStep
 {
    public:
     DataSetGetTest(const bool expectSuccess,
-                   const std::string &type,
-                   const std::string &uuidOverride = "");
+                   const std::string& type,
+                   const std::string& uuidOverride = "");
 
-    bool runTest(json &inputData, Hanami::ErrorContainer &error);
+    bool runTest(json& inputData, Hanami::ErrorContainer& error);
 
    private:
     std::string m_type = "";

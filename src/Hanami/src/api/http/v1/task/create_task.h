@@ -34,29 +34,29 @@ class CreateTask : public Blossom
     CreateTask();
 
    protected:
-    bool runTask(BlossomIO &blossomIO,
-                 const json &context,
-                 BlossomStatus &status,
-                 Hanami::ErrorContainer &error);
+    bool runTask(BlossomIO& blossomIO,
+                 const json& context,
+                 BlossomStatus& status,
+                 Hanami::ErrorContainer& error);
 
    private:
-    bool imageTask(std::string &taskUuid,
-                   const std::string &name,
-                   const std::string &taskType,
-                   const UserContext &userContext,
-                   Cluster *cluster,
-                   json &dataSetInfo,
-                   BlossomStatus &status,
-                   Hanami::ErrorContainer &error);
+    bool imageTask(std::string& taskUuid,
+                   const std::string& name,
+                   const std::string& taskType,
+                   const UserContext& userContext,
+                   Cluster* cluster,
+                   json& dataSetInfo,
+                   BlossomStatus& status,
+                   Hanami::ErrorContainer& error);
 
-    bool tableTask(std::string &taskUuid,
-                   const std::string &name,
-                   const std::string &taskType,
-                   const UserContext &userContext,
-                   Cluster *cluster,
-                   json &dataSetInfo,
-                   BlossomStatus &status,
-                   Hanami::ErrorContainer &error);
+    bool tableTask(std::string& taskUuid,
+                   const std::string& name,
+                   const std::string& taskType,
+                   const UserContext& userContext,
+                   Cluster* cluster,
+                   json& dataSetInfo,
+                   BlossomStatus& status,
+                   Hanami::ErrorContainer& error);
 };
 
 #endif  // HANAMI_CREATE_IMAGE_TRAINTASK_H

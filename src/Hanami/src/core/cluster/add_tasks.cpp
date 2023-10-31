@@ -42,11 +42,11 @@
  * @return uuid of the new task
  */
 const std::string
-addImageTrainTask(Cluster &cluster,
-                  const std::string &name,
-                  const std::string &userId,
-                  const std::string &projectId,
-                  float *inputData,
+addImageTrainTask(Cluster& cluster,
+                  const std::string& name,
+                  const std::string& userId,
+                  const std::string& projectId,
+                  float* inputData,
                   const uint64_t numberOfInputsPerCycle,
                   const uint64_t numberOfOuputsPerCycle,
                   const uint64_t numberOfCycles)
@@ -91,11 +91,11 @@ addImageTrainTask(Cluster &cluster,
  * @return uuid of the new task
  */
 const std::string
-addImageRequestTask(Cluster &cluster,
-                    const std::string &name,
-                    const std::string &userId,
-                    const std::string &projectId,
-                    float *inputData,
+addImageRequestTask(Cluster& cluster,
+                    const std::string& name,
+                    const std::string& userId,
+                    const std::string& projectId,
+                    float* inputData,
                     const uint64_t numberOfInputsPerCycle,
                     const uint64_t numberOfOuputsPerCycle,
                     const uint64_t numberOfCycles)
@@ -144,12 +144,12 @@ addImageRequestTask(Cluster &cluster,
  * @return uuid of the new task
  */
 const std::string
-addTableTrainTask(Cluster &cluster,
-                  const std::string &name,
-                  const std::string &userId,
-                  const std::string &projectId,
-                  float *inputData,
-                  float *outputData,
+addTableTrainTask(Cluster& cluster,
+                  const std::string& name,
+                  const std::string& userId,
+                  const std::string& projectId,
+                  float* inputData,
+                  float* outputData,
                   const uint64_t numberOfInputs,
                   const uint64_t numberOfOutputs,
                   const uint64_t numberOfCycles)
@@ -195,11 +195,11 @@ addTableTrainTask(Cluster &cluster,
  * @return uuid of the new task
  */
 const std::string
-addTableRequestTask(Cluster &cluster,
-                    const std::string &name,
-                    const std::string &userId,
-                    const std::string &projectId,
-                    float *inputData,
+addTableRequestTask(Cluster& cluster,
+                    const std::string& name,
+                    const std::string& userId,
+                    const std::string& projectId,
+                    float* inputData,
                     const uint64_t numberOfInputs,
                     const uint64_t numberOfOutputs,
                     const uint64_t numberOfCycles)
@@ -243,10 +243,10 @@ addTableRequestTask(Cluster &cluster,
  * @return uuid of the new task
  */
 const std::string
-addCheckpointSaveTask(Cluster &cluster,
-                      const std::string &checkpointName,
-                      const std::string &userId,
-                      const std::string &projectId)
+addCheckpointSaveTask(Cluster& cluster,
+                      const std::string& checkpointName,
+                      const std::string& userId,
+                      const std::string& projectId)
 {
     // create new request-task
     Task newTask;
@@ -282,11 +282,11 @@ addCheckpointSaveTask(Cluster &cluster,
  * @return uuid of the new task
  */
 const std::string
-addCheckpointRestoreTask(Cluster &cluster,
-                         const std::string &name,
-                         const std::string &checkpointInfo,
-                         const std::string &userId,
-                         const std::string &projectId)
+addCheckpointRestoreTask(Cluster& cluster,
+                         const std::string& name,
+                         const std::string& checkpointInfo,
+                         const std::string& userId,
+                         const std::string& projectId)
 {
     // create new request-task
     Task newTask;

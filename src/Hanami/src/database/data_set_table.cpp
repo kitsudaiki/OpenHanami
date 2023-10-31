@@ -26,7 +26,7 @@
 #include <hanami_database/sql_database.h>
 #include <hanami_files/data_set_files/data_set_functions.h>
 
-DataSetTable *DataSetTable::instance = nullptr;
+DataSetTable* DataSetTable::instance = nullptr;
 
 /**
  * @brief constructor
@@ -68,7 +68,7 @@ DataSetTable::~DataSetTable() {}
  * @return true, if successful, else false
  */
 bool
-DataSetTable::addDataSet(json &data, const UserContext &userContext, Hanami::ErrorContainer &error)
+DataSetTable::addDataSet(json& data, const UserContext& userContext, Hanami::ErrorContainer& error)
 {
     if (add(data, userContext, error) == false) {
         error.addMeesage("Failed to add checkpoint to database");
@@ -90,10 +90,10 @@ DataSetTable::addDataSet(json &data, const UserContext &userContext, Hanami::Err
  * @return true, if successful, else false
  */
 bool
-DataSetTable::getDataSet(json &result,
-                         const std::string &datasetUuid,
-                         const UserContext &userContext,
-                         Hanami::ErrorContainer &error,
+DataSetTable::getDataSet(json& result,
+                         const std::string& datasetUuid,
+                         const UserContext& userContext,
+                         Hanami::ErrorContainer& error,
                          const bool showHiddenValues)
 {
     // get user from db
@@ -120,9 +120,9 @@ DataSetTable::getDataSet(json &result,
  * @return true, if successful, else false
  */
 bool
-DataSetTable::getAllDataSet(Hanami::TableItem &result,
-                            const UserContext &userContext,
-                            Hanami::ErrorContainer &error)
+DataSetTable::getAllDataSet(Hanami::TableItem& result,
+                            const UserContext& userContext,
+                            Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
     if (getAll(result, userContext, conditions, error) == false) {
@@ -143,9 +143,9 @@ DataSetTable::getAllDataSet(Hanami::TableItem &result,
  * @return true, if successful, else false
  */
 bool
-DataSetTable::deleteDataSet(const std::string &datasetUuid,
-                            const UserContext &userContext,
-                            Hanami::ErrorContainer &error)
+DataSetTable::deleteDataSet(const std::string& datasetUuid,
+                            const UserContext& userContext,
+                            Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", datasetUuid);
@@ -167,9 +167,9 @@ DataSetTable::deleteDataSet(const std::string &datasetUuid,
  * @return true, if successful, else false
  */
 bool
-DataSetTable::setUploadFinish(const std::string &uuid,
-                              const std::string &fileUuid,
-                              Hanami::ErrorContainer &error)
+DataSetTable::setUploadFinish(const std::string& uuid,
+                              const std::string& fileUuid,
+                              Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", uuid);
@@ -211,10 +211,10 @@ DataSetTable::setUploadFinish(const std::string &uuid,
  * @return
  */
 bool
-DataSetTable::getDateSetInfo(json &result,
-                             const std::string &dataUuid,
-                             const json &context,
-                             Hanami::ErrorContainer &error)
+DataSetTable::getDateSetInfo(json& result,
+                             const std::string& dataUuid,
+                             const json& context,
+                             Hanami::ErrorContainer& error)
 {
     const UserContext userContext(context);
 

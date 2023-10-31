@@ -69,10 +69,10 @@ CreateProject::CreateProject() : Blossom("Register a new project within Misaki."
  * @brief runTask
  */
 bool
-CreateProject::runTask(BlossomIO &blossomIO,
-                       const json &context,
-                       BlossomStatus &status,
-                       Hanami::ErrorContainer &error)
+CreateProject::runTask(BlossomIO& blossomIO,
+                       const json& context,
+                       BlossomStatus& status,
+                       Hanami::ErrorContainer& error)
 {
     // check if admin
     if (context["is_admin"] == false) {

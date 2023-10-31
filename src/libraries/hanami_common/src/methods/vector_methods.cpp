@@ -29,7 +29,7 @@ namespace Hanami
  * remove from a vector of strings all entries, which contains only a empty string
  */
 void
-removeEmptyStrings(std::vector<std::string> &inputVector)
+removeEmptyStrings(std::vector<std::string>& inputVector)
 {
     // remove items
     inputVector.erase(

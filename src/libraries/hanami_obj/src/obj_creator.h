@@ -19,7 +19,7 @@ class ObjCreator
    public:
     ObjCreator();
 
-    bool create(std::string &convertedString, const ObjItem &input);
+    bool create(std::string& convertedString, const ObjItem& input);
 };
 
 }  // namespace Hanami

@@ -17,7 +17,7 @@ namespace Hanami
  *
  * @param socketFile file for the unix-domain-socket
  */
-UnixDomainServer::UnixDomainServer(const std::string &socketFile)
+UnixDomainServer::UnixDomainServer(const std::string& socketFile)
 {
     this->m_socketFile = socketFile;
     this->type = 1;
@@ -41,7 +41,7 @@ UnixDomainServer::~UnixDomainServer() {}
  * @return false, if server creation failed, else true
  */
 bool
-UnixDomainServer::initServer(ErrorContainer &error)
+UnixDomainServer::initServer(ErrorContainer& error)
 {
     // check file-path length to avoid conflics, when copy to the sockaddr_un-object
     if (m_socketFile.size() > 100) {
@@ -67,7 +67,7 @@ UnixDomainServer::initServer(ErrorContainer &error)
     socketAddr.sun_path[m_socketFile.size()] = '\0';
 
     // bind to port
-    if (bind(serverFd, reinterpret_cast<struct sockaddr *>(&socketAddr), sizeof(socketAddr)) < 0) {
+    if (bind(serverFd, reinterpret_cast<struct sockaddr*>(&socketAddr), sizeof(socketAddr)) < 0) {
         error.addMeesage("Failed to bind unix-socket to addresse: \"" + m_socketFile + "\"");
         return false;
     }

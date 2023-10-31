@@ -38,15 +38,15 @@ namespace Hanami
 //--------------------------------------------------------------------------------------------------
 // AES256
 //--------------------------------------------------------------------------------------------------
-bool encrypt_AES_256_CBC(std::string &result,
-                         const std::string &input,
-                         const CryptoPP::SecByteBlock &key,
-                         Hanami::ErrorContainer &error);
+bool encrypt_AES_256_CBC(std::string& result,
+                         const std::string& input,
+                         const CryptoPP::SecByteBlock& key,
+                         Hanami::ErrorContainer& error);
 
-bool decrypt_AES_256_CBC(std::string &result,
-                         const std::string &input,
-                         const CryptoPP::SecByteBlock &key,
-                         Hanami::ErrorContainer &error);
+bool decrypt_AES_256_CBC(std::string& result,
+                         const std::string& input,
+                         const CryptoPP::SecByteBlock& key,
+                         Hanami::ErrorContainer& error);
 
 }  // namespace Hanami
 

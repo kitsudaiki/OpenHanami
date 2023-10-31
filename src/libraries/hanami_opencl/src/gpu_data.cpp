@@ -41,11 +41,11 @@ GpuData::GpuData() {}
  * @return false, if name already is registered, else true
  */
 bool
-GpuData::addBuffer(const std::string &name,
+GpuData::addBuffer(const std::string& name,
                    const uint64_t numberOfObjects,
                    const uint64_t objectSize,
                    const bool useHostPtr,
-                   void *data)
+                   void* data)
 {
     // precheck
     if (containsBuffer(name)) {
@@ -85,7 +85,7 @@ GpuData::addBuffer(const std::string &name,
  * @return false, if name already is registered, else true
  */
 bool
-GpuData::addValue(const std::string &name, const uint64_t value)
+GpuData::addValue(const std::string& name, const uint64_t value)
 {
     // prepare worker-buffer
     WorkerBuffer newBuffer;
@@ -105,8 +105,8 @@ GpuData::addValue(const std::string &name, const uint64_t value)
  *
  * @return pointer to worker-buffer, if name found, else nullptr
  */
-GpuData::WorkerBuffer *
-GpuData::getBuffer(const std::string &name)
+GpuData::WorkerBuffer*
+GpuData::getBuffer(const std::string& name)
 {
     const auto it = m_buffer.find(name);
     if (it != m_buffer.end()) {
@@ -124,7 +124,7 @@ GpuData::getBuffer(const std::string &name)
  * @return true, if exist, else false
  */
 bool
-GpuData::containsBuffer(const std::string &name)
+GpuData::containsBuffer(const std::string& name)
 {
     if (m_buffer.find(name) != m_buffer.end()) {
         return true;
@@ -140,8 +140,8 @@ GpuData::containsBuffer(const std::string &name)
  *
  * @return pointer to data, if name found, else nullptr
  */
-void *
-GpuData::getBufferData(const std::string &name)
+void*
+GpuData::getBufferData(const std::string& name)
 {
     const auto it = m_buffer.find(name);
     if (it != m_buffer.end()) {
@@ -159,7 +159,7 @@ GpuData::getBufferData(const std::string &name)
  * @return true, if exist, else false
  */
 bool
-GpuData::containsKernel(const std::string &name)
+GpuData::containsKernel(const std::string& name)
 {
     if (m_kernel.find(name) != m_kernel.end()) {
         return true;
@@ -175,8 +175,8 @@ GpuData::containsKernel(const std::string &name)
  *
  * @return nullptr if name not exist, else pointer to requested object
  */
-GpuData::KernelDef *
-GpuData::getKernel(const std::string &name)
+GpuData::KernelDef*
+GpuData::getKernel(const std::string& name)
 {
     const auto it = m_kernel.find(name);
     if (it != m_kernel.end()) {
@@ -195,7 +195,7 @@ GpuData::getKernel(const std::string &name)
  * @return position of the argument
  */
 uint32_t
-GpuData::getArgPosition(KernelDef *kernelDef, const std::string &bufferName)
+GpuData::getArgPosition(KernelDef* kernelDef, const std::string& bufferName)
 {
     const auto it = kernelDef->arguments.find(bufferName);
     if (it != kernelDef->arguments.end()) {

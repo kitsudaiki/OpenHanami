@@ -76,10 +76,10 @@ GetDataSet::GetDataSet() : Blossom("Get information of a specific data-set.")
  * @brief runTask
  */
 bool
-GetDataSet::runTask(BlossomIO &blossomIO,
-                    const json &context,
-                    BlossomStatus &status,
-                    Hanami::ErrorContainer &error)
+GetDataSet::runTask(BlossomIO& blossomIO,
+                    const json& context,
+                    BlossomStatus& status,
+                    Hanami::ErrorContainer& error)
 {
     const std::string dataUuid = blossomIO.input["uuid"];
     if (DataSetTable::getInstance()->getDateSetInfo(blossomIO.output, dataUuid, context, error)

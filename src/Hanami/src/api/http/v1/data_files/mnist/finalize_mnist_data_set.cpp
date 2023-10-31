@@ -69,10 +69,10 @@ FinalizeMnistDataSet::FinalizeMnistDataSet()
  * @brief runTask
  */
 bool
-FinalizeMnistDataSet::runTask(BlossomIO &blossomIO,
-                              const json &context,
-                              BlossomStatus &status,
-                              Hanami::ErrorContainer &error)
+FinalizeMnistDataSet::runTask(BlossomIO& blossomIO,
+                              const json& context,
+                              BlossomStatus& status,
+                              Hanami::ErrorContainer& error)
 {
     const std::string uuid = blossomIO.input["uuid"];
     const std::string inputUuid = blossomIO.input["uuid_input_file"];
@@ -138,10 +138,10 @@ FinalizeMnistDataSet::runTask(BlossomIO &blossomIO,
  * @return true, if successfull, else false
  */
 bool
-FinalizeMnistDataSet::convertMnistData(const std::string &filePath,
-                                       const std::string &name,
-                                       const Hanami::DataBuffer &inputBuffer,
-                                       const Hanami::DataBuffer &labelBuffer)
+FinalizeMnistDataSet::convertMnistData(const std::string& filePath,
+                                       const std::string& name,
+                                       const Hanami::DataBuffer& inputBuffer,
+                                       const Hanami::DataBuffer& labelBuffer)
 {
     Hanami::ErrorContainer error;
     ImageDataSetFile file(filePath);
@@ -151,8 +151,8 @@ FinalizeMnistDataSet::convertMnistData(const std::string &filePath,
     // source-data
     const uint64_t dataOffset = 16;
     const uint64_t labelOffset = 8;
-    const uint8_t *dataBufferPtr = static_cast<uint8_t *>(inputBuffer.data);
-    const uint8_t *labelBufferPtr = static_cast<uint8_t *>(labelBuffer.data);
+    const uint8_t* dataBufferPtr = static_cast<uint8_t*>(inputBuffer.data);
+    const uint8_t* labelBufferPtr = static_cast<uint8_t*>(labelBuffer.data);
 
     // get number of images
     uint32_t numberOfImages = 0;

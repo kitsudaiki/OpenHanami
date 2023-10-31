@@ -55,7 +55,7 @@ runSyncProcess(std::string command)
  * @return result with all information like exit-status and std-output
  */
 ProcessResult
-runSyncProcess(const std::string &programm, const std::vector<std::string> &args)
+runSyncProcess(const std::string& programm, const std::vector<std::string>& args)
 {
     ProcessResult result;
 
@@ -67,7 +67,7 @@ runSyncProcess(const std::string &programm, const std::vector<std::string> &args
     call.append(" 2>&1");
 
     // prepare buffer
-    FILE *stream = nullptr;
+    FILE* stream = nullptr;
     const uint32_t max_buffer = 256;
     char buffer[max_buffer];
 

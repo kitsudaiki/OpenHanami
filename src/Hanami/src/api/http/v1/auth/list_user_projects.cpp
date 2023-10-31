@@ -62,10 +62,10 @@ ListUserProjects::ListUserProjects()
  * @brief runTask
  */
 bool
-ListUserProjects::runTask(BlossomIO &blossomIO,
-                          const json &context,
-                          BlossomStatus &status,
-                          Hanami::ErrorContainer &error)
+ListUserProjects::runTask(BlossomIO& blossomIO,
+                          const json& context,
+                          BlossomStatus& status,
+                          Hanami::ErrorContainer& error)
 {
     const UserContext userContext(context);
     std::string userId = blossomIO.input["user_id"];

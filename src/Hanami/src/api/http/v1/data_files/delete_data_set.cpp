@@ -47,10 +47,10 @@ DeleteDataSet::DeleteDataSet() : Blossom("Delete a speific data-set.")
  * @brief runTask
  */
 bool
-DeleteDataSet::runTask(BlossomIO &blossomIO,
-                       const json &context,
-                       BlossomStatus &status,
-                       Hanami::ErrorContainer &error)
+DeleteDataSet::runTask(BlossomIO& blossomIO,
+                       const json& context,
+                       BlossomStatus& status,
+                       Hanami::ErrorContainer& error)
 {
     const std::string dataUuid = blossomIO.input["uuid"];
     const UserContext userContext(context);

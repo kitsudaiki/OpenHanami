@@ -47,10 +47,10 @@ DeleteCheckpoint::DeleteCheckpoint() : Blossom("Delete a result-set from shiori.
  * @brief runTask
  */
 bool
-DeleteCheckpoint::runTask(BlossomIO &blossomIO,
-                          const json &context,
-                          BlossomStatus &status,
-                          Hanami::ErrorContainer &error)
+DeleteCheckpoint::runTask(BlossomIO& blossomIO,
+                          const json& context,
+                          BlossomStatus& status,
+                          Hanami::ErrorContainer& error)
 {
     const std::string checkpointUuid = blossomIO.input["uuid"];
     const UserContext userContext(context);

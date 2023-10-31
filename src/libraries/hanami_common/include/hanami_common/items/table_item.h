@@ -36,26 +36,26 @@ class TableItem
 {
    public:
     TableItem();
-    TableItem(const TableItem &other);
-    TableItem(const json &body, const json &header = json::array());
+    TableItem(const TableItem& other);
+    TableItem(const json& body, const json& header = json::array());
     ~TableItem();
-    TableItem &operator=(const TableItem &other);
+    TableItem& operator=(const TableItem& other);
 
     void clearTable();
 
     // column
-    bool addColumn(const std::string &internalName, const std::string &shownName = "");
-    bool renameColume(const std::string &internalName, const std::string &newShownName);
+    bool addColumn(const std::string& internalName, const std::string& shownName = "");
+    bool renameColume(const std::string& internalName, const std::string& newShownName);
     bool deleteColumn(const uint64_t x);
-    bool deleteColumn(const std::string &internalName);
+    bool deleteColumn(const std::string& internalName);
 
     // row
-    bool addRow(const json &rowContent);
+    bool addRow(const json& rowContent);
     bool addRowVec(const std::vector<std::string> rowContent);
     bool deleteRow(const uint64_t y);
 
     // cell
-    bool setCell(const uint32_t column, const uint32_t row, const std::string &newValue);
+    bool setCell(const uint32_t column, const uint32_t row, const std::string& newValue);
     const std::string getCell(const uint32_t column, const uint32_t row);
     bool deleteCell(const uint32_t column, const uint32_t row);
 
@@ -86,36 +86,36 @@ class TableItem
 
     // helper functions for the output
     const std::vector<std::string> getInnerName();
-    const std::string getLimitLine(const std::vector<uint64_t> &sizes, const bool bigLine = false);
+    const std::string getLimitLine(const std::vector<uint64_t>& sizes, const bool bigLine = false);
 
     // content-converter for easier output-handline
-    void convertCellForOutput(TableCell &convertedCell,
-                              const std::string &cellContent,
-                              uint64_t &width,
+    void convertCellForOutput(TableCell& convertedCell,
+                              const std::string& cellContent,
+                              uint64_t& width,
                               const uint32_t maxColumnWidth);
-    void convertHeaderForOutput(TableRow &convertedHeader,
-                                std::vector<uint64_t> &xSizes,
+    void convertHeaderForOutput(TableRow& convertedHeader,
+                                std::vector<uint64_t>& xSizes,
                                 const uint32_t maxColumnWidth);
-    void convertBodyForOutput(TableBodyAll &convertedBody,
-                              std::vector<uint64_t> &xSizes,
-                              std::vector<uint64_t> &ySizes,
+    void convertBodyForOutput(TableBodyAll& convertedBody,
+                              std::vector<uint64_t>& xSizes,
+                              std::vector<uint64_t>& ySizes,
                               const uint32_t maxColumnWidth);
 
     // output of single lines of the output
-    const std::string printHeaderLine(const std::vector<uint64_t> &xSizes);
-    const std::string printBodyLine(TableRow &rowContent,
-                                    const std::vector<uint64_t> &xSizes,
+    const std::string printHeaderLine(const std::vector<uint64_t>& xSizes);
+    const std::string printBodyLine(TableRow& rowContent,
+                                    const std::vector<uint64_t>& xSizes,
                                     const uint64_t rowHeigh);
-    const std::string printHeaderBodyLine(TableRow &headerContent,
-                                          TableRow &rowContent,
-                                          const std::vector<uint64_t> &xSizes,
+    const std::string printHeaderBodyLine(TableRow& headerContent,
+                                          TableRow& rowContent,
+                                          const std::vector<uint64_t>& xSizes,
                                           const uint64_t rowHeigh,
                                           const uint64_t y);
 
     // final output of the two different versions
-    const std::string printNormalTable(TableBodyAll &convertedBody,
-                                       std::vector<uint64_t> &xSizes,
-                                       std::vector<uint64_t> &ySizes,
+    const std::string printNormalTable(TableBodyAll& convertedBody,
+                                       std::vector<uint64_t>& xSizes,
+                                       std::vector<uint64_t>& ySizes,
                                        const bool withoutHeader);
 };
 

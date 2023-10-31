@@ -29,7 +29,7 @@
 class CheckpointTable : public HanamiSqlTable
 {
    public:
-    static CheckpointTable *getInstance()
+    static CheckpointTable* getInstance()
     {
         if (instance == nullptr) {
             instance = new CheckpointTable();
@@ -39,25 +39,25 @@ class CheckpointTable : public HanamiSqlTable
 
     ~CheckpointTable();
 
-    bool addCheckpoint(json &data, const UserContext &userContext, Hanami::ErrorContainer &error);
-    bool getCheckpoint(json &result,
-                       const std::string &checkpointUuid,
-                       const UserContext &userContext,
-                       Hanami::ErrorContainer &error,
+    bool addCheckpoint(json& data, const UserContext& userContext, Hanami::ErrorContainer& error);
+    bool getCheckpoint(json& result,
+                       const std::string& checkpointUuid,
+                       const UserContext& userContext,
+                       Hanami::ErrorContainer& error,
                        const bool showHiddenValues);
-    bool getAllCheckpoint(Hanami::TableItem &result,
-                          const UserContext &userContext,
-                          Hanami::ErrorContainer &error);
-    bool deleteCheckpoint(const std::string &checkpointUuid,
-                          const UserContext &userContext,
-                          Hanami::ErrorContainer &error);
-    bool setUploadFinish(const std::string &uuid,
-                         const std::string &fileUuid,
-                         Hanami::ErrorContainer &error);
+    bool getAllCheckpoint(Hanami::TableItem& result,
+                          const UserContext& userContext,
+                          Hanami::ErrorContainer& error);
+    bool deleteCheckpoint(const std::string& checkpointUuid,
+                          const UserContext& userContext,
+                          Hanami::ErrorContainer& error);
+    bool setUploadFinish(const std::string& uuid,
+                         const std::string& fileUuid,
+                         Hanami::ErrorContainer& error);
 
    private:
     CheckpointTable();
-    static CheckpointTable *instance;
+    static CheckpointTable* instance;
 };
 
 #endif  // HANAMI_CLUSTER_CHECKPOINT_TABLE_H

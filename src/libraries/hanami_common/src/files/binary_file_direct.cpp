@@ -20,7 +20,7 @@ namespace Hanami
  *
  * @param filePath file-path of the binary-file
  */
-BinaryFileDirect::BinaryFileDirect(const std::string &filePath)
+BinaryFileDirect::BinaryFileDirect(const std::string& filePath)
 {
     m_filePath = filePath;
 
@@ -49,7 +49,7 @@ BinaryFileDirect::~BinaryFileDirect()
  * @return true is successful, else false
  */
 bool
-BinaryFileDirect::initFile(ErrorContainer &error)
+BinaryFileDirect::initFile(ErrorContainer& error)
 {
     m_fileDescriptor = open(m_filePath.c_str(), O_CREAT | O_DIRECT | O_RDWR | O_LARGEFILE, 0666);
     m_blockSize = 512;
@@ -73,7 +73,7 @@ BinaryFileDirect::initFile(ErrorContainer &error)
 bool
 BinaryFileDirect::allocateStorage(const uint64_t numberOfBlocks,
                                   const uint32_t blockSize,
-                                  ErrorContainer &error)
+                                  ErrorContainer& error)
 {
     if (numberOfBlocks == 0) {
         return true;
@@ -97,7 +97,7 @@ BinaryFileDirect::allocateStorage(const uint64_t numberOfBlocks,
  * @return true is successful, else false
  */
 bool
-BinaryFileDirect::allocateStorage(const uint64_t numberOfBytes, ErrorContainer &error)
+BinaryFileDirect::allocateStorage(const uint64_t numberOfBytes, ErrorContainer& error)
 {
     // set first to the start of the file and allocate the new size at the end of the file
     lseek(m_fileDescriptor, 0, SEEK_SET);
@@ -124,7 +124,7 @@ BinaryFileDirect::allocateStorage(const uint64_t numberOfBytes, ErrorContainer &
  * @return false, if file not open, else true
  */
 bool
-BinaryFileDirect::updateFileSize(ErrorContainer &error)
+BinaryFileDirect::updateFileSize(ErrorContainer& error)
 {
     if (m_fileDescriptor == -1) {
         error.addMeesage("Failed to allocate new storage for the binary file for path '"
@@ -152,7 +152,7 @@ BinaryFileDirect::updateFileSize(ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-BinaryFileDirect::readCompleteFile(DataBuffer &buffer, ErrorContainer &error)
+BinaryFileDirect::readCompleteFile(DataBuffer& buffer, ErrorContainer& error)
 {
     // go to the end of the file to get the size of the file
     const long size = lseek(m_fileDescriptor, 0, SEEK_END);
@@ -202,7 +202,7 @@ BinaryFileDirect::readCompleteFile(DataBuffer &buffer, ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-BinaryFileDirect::writeCompleteFile(DataBuffer &buffer, ErrorContainer &error)
+BinaryFileDirect::writeCompleteFile(DataBuffer& buffer, ErrorContainer& error)
 {
     // check if size of the buffer is not compatible with direct-io
     if (buffer.blockSize % 512 != 0) {
@@ -252,11 +252,11 @@ BinaryFileDirect::writeCompleteFile(DataBuffer &buffer, ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-BinaryFileDirect::readSegment(DataBuffer &buffer,
+BinaryFileDirect::readSegment(DataBuffer& buffer,
                               const uint64_t startBlockInFile,
                               const uint64_t numberOfBlocks,
                               const uint64_t startBlockInBuffer,
-                              ErrorContainer &error)
+                              ErrorContainer& error)
 {
     if (numberOfBlocks == 0) {
         return true;
@@ -287,9 +287,8 @@ BinaryFileDirect::readSegment(DataBuffer &buffer,
         return false;
     }
 
-    const ssize_t ret = read(m_fileDescriptor,
-                             static_cast<uint8_t *>(buffer.data) + (startBytesInBuffer),
-                             numberOfBytes);
+    const ssize_t ret = read(
+        m_fileDescriptor, static_cast<uint8_t*>(buffer.data) + (startBytesInBuffer), numberOfBytes);
 
     if (ret == -1) {
         // TODO: process errno
@@ -312,11 +311,11 @@ BinaryFileDirect::readSegment(DataBuffer &buffer,
  * @return true, if successful, else false
  */
 bool
-BinaryFileDirect::writeSegment(DataBuffer &buffer,
+BinaryFileDirect::writeSegment(DataBuffer& buffer,
                                const uint64_t startBlockInFile,
                                const uint64_t numberOfBlocks,
                                const uint64_t startBlockInBuffer,
-                               ErrorContainer &error)
+                               ErrorContainer& error)
 {
     if (numberOfBlocks == 0) {
         return true;
@@ -349,7 +348,7 @@ BinaryFileDirect::writeSegment(DataBuffer &buffer,
 
     // write data to file
     const ssize_t ret = write(
-        m_fileDescriptor, static_cast<uint8_t *>(buffer.data) + startBytesInBuffer, numberOfBytes);
+        m_fileDescriptor, static_cast<uint8_t*>(buffer.data) + startBytesInBuffer, numberOfBytes);
 
     if (ret == -1) {
         // TODO: process errno
@@ -371,7 +370,7 @@ BinaryFileDirect::writeSegment(DataBuffer &buffer,
  * @return true, if file-descriptor is valid, else false
  */
 bool
-BinaryFileDirect::closeFile(ErrorContainer &error)
+BinaryFileDirect::closeFile(ErrorContainer& error)
 {
     // precheck
     if (m_fileDescriptor == -1) {

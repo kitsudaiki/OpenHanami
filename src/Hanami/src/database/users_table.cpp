@@ -26,7 +26,7 @@
 #include <hanami_crypto/hashes.h>
 #include <hanami_database/sql_database.h>
 
-UsersTable *UsersTable::instance = nullptr;
+UsersTable* UsersTable::instance = nullptr;
 
 /**
  * @brief constructor
@@ -71,9 +71,9 @@ UsersTable::~UsersTable() {}
  * @return false, if varibale is not set, else true
  */
 bool
-UsersTable::getEnvVar(std::string &content, const std::string &key) const
+UsersTable::getEnvVar(std::string& content, const std::string& key) const
 {
-    const char *val = getenv(key.c_str());
+    const char* val = getenv(key.c_str());
     if (val == NULL) {
         return false;
     }
@@ -90,7 +90,7 @@ UsersTable::getEnvVar(std::string &content, const std::string &key) const
  * @return true, if seccuessful, else false
  */
 bool
-UsersTable::getAllAdminUser(Hanami::ErrorContainer &error)
+UsersTable::getAllAdminUser(Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("is_admin", "true");
@@ -119,7 +119,7 @@ UsersTable::getAllAdminUser(Hanami::ErrorContainer &error)
  * @return true, if seccuessful, else false
  */
 bool
-UsersTable::initNewAdminUser(Hanami::ErrorContainer &error)
+UsersTable::initNewAdminUser(Hanami::ErrorContainer& error)
 {
     std::string userId = "";
     std::string userName = "";
@@ -193,7 +193,7 @@ UsersTable::initNewAdminUser(Hanami::ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-UsersTable::addUser(json &userData, Hanami::ErrorContainer &error)
+UsersTable::addUser(json& userData, Hanami::ErrorContainer& error)
 {
     if (insertToDb(userData, error) == false) {
         error.addMeesage("Failed to add user to database");
@@ -214,9 +214,9 @@ UsersTable::addUser(json &userData, Hanami::ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-UsersTable::getUser(json &result,
-                    const std::string &userId,
-                    Hanami::ErrorContainer &error,
+UsersTable::getUser(json& result,
+                    const std::string& userId,
+                    Hanami::ErrorContainer& error,
                     const bool showHiddenValues)
 {
     std::vector<RequestCondition> conditions;
@@ -241,7 +241,7 @@ UsersTable::getUser(json &result,
  * @return true, if successful, else false
  */
 bool
-UsersTable::getAllUser(Hanami::TableItem &result, Hanami::ErrorContainer &error)
+UsersTable::getAllUser(Hanami::TableItem& result, Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
     if (getFromDb(result, conditions, error, false) == false) {
@@ -261,7 +261,7 @@ UsersTable::getAllUser(Hanami::TableItem &result, Hanami::ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-UsersTable::deleteUser(const std::string &userId, Hanami::ErrorContainer &error)
+UsersTable::deleteUser(const std::string& userId, Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("id", userId);
@@ -284,9 +284,9 @@ UsersTable::deleteUser(const std::string &userId, Hanami::ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-UsersTable::updateProjectsOfUser(const std::string &userId,
-                                 const std::string &newProjects,
-                                 Hanami::ErrorContainer &error)
+UsersTable::updateProjectsOfUser(const std::string& userId,
+                                 const std::string& newProjects,
+                                 Hanami::ErrorContainer& error)
 {
     json newValues;
     newValues["projects"] = json(newProjects);

@@ -31,7 +31,7 @@ class PowerConsumption : public Blossom
     PowerConsumption();
 
    protected:
-    bool runTask(BlossomIO &blossomIO, const json &, BlossomStatus &, Hanami::ErrorContainer &);
+    bool runTask(BlossomIO& blossomIO, const json&, BlossomStatus&, Hanami::ErrorContainer&);
 };
 
 #endif  // AZUKIHEART_POWER_CONSUMPTION_H

@@ -31,9 +31,9 @@ IniItem::~IniItem() {}
  * @return true, if successful, else false
  */
 bool
-IniItem::parse(const std::string &content, ErrorContainer &error)
+IniItem::parse(const std::string& content, ErrorContainer& error)
 {
-    IniParserInterface *parser = IniParserInterface::getInstance();
+    IniParserInterface* parser = IniParserInterface::getInstance();
 
     // parse ini-template into a data-tree
     m_content = parser->parse(content, error);
@@ -54,7 +54,7 @@ IniItem::parse(const std::string &content, ErrorContainer &error)
  * @return requested value as data-item, if found, else nullptr
  */
 bool
-IniItem::get(json &result, const std::string &group, const std::string &item)
+IniItem::get(json& result, const std::string& group, const std::string& item)
 {
     if (m_content.contains(group) == false) {
         return false;
@@ -81,7 +81,7 @@ IniItem::get(json &result, const std::string &group, const std::string &item)
  * @return false, if item already exist with value and force is false, else it returns true
  */
 bool
-IniItem::set(const std::string &group, const std::string &item, const char *value, const bool force)
+IniItem::set(const std::string& group, const std::string& item, const char* value, const bool force)
 {
     const std::string stringVal = std::string(value);
     return setVal(group, item, stringVal, force);
@@ -98,8 +98,8 @@ IniItem::set(const std::string &group, const std::string &item, const char *valu
  * @return false, if item already exist with value and force is false, else it returns true
  */
 bool
-IniItem::set(const std::string &group,
-             const std::string &item,
+IniItem::set(const std::string& group,
+             const std::string& item,
              const std::string value,
              const bool force)
 {
@@ -117,7 +117,7 @@ IniItem::set(const std::string &group,
  * @return false, if item already exist with value and force is false, else it returns true
  */
 bool
-IniItem::set(const std::string &group, const std::string &item, const long value, const bool force)
+IniItem::set(const std::string& group, const std::string& item, const long value, const bool force)
 {
     return setVal(group, item, value, force);
 }
@@ -133,8 +133,8 @@ IniItem::set(const std::string &group, const std::string &item, const long value
  * @return false, if item already exist with value and force is false, else it returns true
  */
 bool
-IniItem::set(const std::string &group,
-             const std::string &item,
+IniItem::set(const std::string& group,
+             const std::string& item,
              const double value,
              const bool force)
 {
@@ -152,7 +152,7 @@ IniItem::set(const std::string &group,
  * @return false, if item already exist with value and force is false, else it returns true
  */
 bool
-IniItem::set(const std::string &group, const std::string &item, const bool value, const bool force)
+IniItem::set(const std::string& group, const std::string& item, const bool value, const bool force)
 {
     return setVal(group, item, value, force);
 }
@@ -168,8 +168,8 @@ IniItem::set(const std::string &group, const std::string &item, const bool value
  * @return false, if item already exist with value and force is false, else it returns true
  */
 bool
-IniItem::set(const std::string &group,
-             const std::string &item,
+IniItem::set(const std::string& group,
+             const std::string& item,
              const std::vector<std::string> value,
              const bool force)
 {
@@ -189,7 +189,7 @@ IniItem::set(const std::string &group,
  * @return false, if group doesn't exist, else true
  */
 bool
-IniItem::removeGroup(const std::string &group)
+IniItem::removeGroup(const std::string& group)
 {
     return m_content.erase(group);
 }
@@ -203,7 +203,7 @@ IniItem::removeGroup(const std::string &group)
  * @return false, if group or item doesn't exist, else true
  */
 bool
-IniItem::removeEntry(const std::string &group, const std::string &item)
+IniItem::removeEntry(const std::string& group, const std::string& item)
 {
     if (m_content.contains(group) == false) {
         return false;
@@ -224,9 +224,9 @@ IniItem::removeEntry(const std::string &group, const std::string &item)
  * @return false, if item already exist with value and force is false, else it returns true
  */
 bool
-IniItem::setVal(const std::string &group,
-                const std::string &item,
-                const json &value,
+IniItem::setVal(const std::string& group,
+                const std::string& item,
+                const json& value,
                 const bool force)
 {
     // if group doesn't exist, create the group with the new content
@@ -257,14 +257,14 @@ IniItem::toString()
     std::string output = "";
 
     // iterate over all groups
-    for (const auto &[name, globalItem] : m_content.items()) {
+    for (const auto& [name, globalItem] : m_content.items()) {
         // print group-header
         output.append("[");
         output.append(name);
         output.append("]\n");
 
         // iterate over group-content
-        for (const auto &[name, groupItem] : globalItem.items()) {
+        for (const auto& [name, groupItem] : globalItem.items()) {
             // print line of group-content
             output.append(name);
             output.append(" = ");

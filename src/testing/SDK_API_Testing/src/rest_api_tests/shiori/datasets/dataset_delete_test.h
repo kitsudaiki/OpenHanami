@@ -28,9 +28,9 @@
 class DataSetDeleteTest : public TestStep
 {
    public:
-    DataSetDeleteTest(const bool expectSuccess, const std::string &type);
+    DataSetDeleteTest(const bool expectSuccess, const std::string& type);
 
-    bool runTest(json &inputData, Hanami::ErrorContainer &error);
+    bool runTest(json& inputData, Hanami::ErrorContainer& error);
 
    private:
     std::string m_type = "";

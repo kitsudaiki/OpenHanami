@@ -41,7 +41,7 @@ class TableDataSetFile : public DataSetFile
         float averageVal = 0.0f;
         float maxVal = 0.0f;
 
-        void setName(const std::string &name)
+        void setName(const std::string& name)
         {
             uint32_t nameSize = name.size();
             if (nameSize > 255) {
@@ -52,13 +52,13 @@ class TableDataSetFile : public DataSetFile
         }
     };
 
-    TableDataSetFile(const std::string &filePath);
-    TableDataSetFile(Hanami::BinaryFile *file);
+    TableDataSetFile(const std::string& filePath);
+    TableDataSetFile(Hanami::BinaryFile* file);
     ~TableDataSetFile();
-    bool updateHeader(Hanami::ErrorContainer &error);
-    bool getPayload(Hanami::DataBuffer &result,
-                    Hanami::ErrorContainer &error,
-                    const std::string &columnName = "");
+    bool updateHeader(Hanami::ErrorContainer& error);
+    bool getPayload(Hanami::DataBuffer& result,
+                    Hanami::ErrorContainer& error,
+                    const std::string& columnName = "");
 
     void print();
 
@@ -67,7 +67,7 @@ class TableDataSetFile : public DataSetFile
 
    protected:
     void initHeader();
-    void readHeader(const uint8_t *u8buffer);
+    void readHeader(const uint8_t* u8buffer);
 };
 
 #endif  // HANAMI_TABLEDATASETFILE_H

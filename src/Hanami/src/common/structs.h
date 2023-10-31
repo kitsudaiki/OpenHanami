@@ -58,7 +58,7 @@ struct UserContext {
 
     UserContext() {}
 
-    UserContext(const json &inputContext)
+    UserContext(const json& inputContext)
     {
         userId = inputContext["id"];
         projectId = inputContext["project_id"];

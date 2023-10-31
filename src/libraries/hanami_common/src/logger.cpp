@@ -13,7 +13,7 @@
 namespace Hanami
 {
 
-Hanami::Logger *Logger::m_logger = new Hanami::Logger();
+Hanami::Logger* Logger::m_logger = new Hanami::Logger();
 
 /**
  * @brief initialize file logger
@@ -25,8 +25,8 @@ Hanami::Logger *Logger::m_logger = new Hanami::Logger();
  * @return false, if initializing failed, else true
  */
 bool
-initFileLogger(const std::string &directoryPath,
-               const std::string &baseFileName,
+initFileLogger(const std::string& directoryPath,
+               const std::string& baseFileName,
                const bool debugLog)
 {
     return Logger::m_logger->initFileLogger(directoryPath, baseFileName, debugLog);
@@ -63,7 +63,7 @@ setDebugFlag(const bool debugLog)
  *        to be set to avoid seg-faults.
  */
 void
-defaultErrorCallback(const std::string &)
+defaultErrorCallback(const std::string&)
 {
 }
 
@@ -71,7 +71,7 @@ defaultErrorCallback(const std::string &)
  * @brief write debug-message to logfile
  */
 bool
-LOG_debug(const std::string &message)
+LOG_debug(const std::string& message)
 {
     return Logger::m_logger->logData(message, "DEBUG", BLUE_COLOR, true);
 }
@@ -80,7 +80,7 @@ LOG_debug(const std::string &message)
  * @brief write warnign-message to logfile
  */
 bool
-LOG_warning(const std::string &message)
+LOG_warning(const std::string& message)
 {
     return Logger::m_logger->logData(message, "WARNING", YELLOW_COLOR);
 }
@@ -89,7 +89,7 @@ LOG_warning(const std::string &message)
  * @brief write error-message to logfile
  */
 bool
-LOG_error(ErrorContainer &container)
+LOG_error(ErrorContainer& container)
 {
     if (container._alreadyPrinted) {
         return true;
@@ -109,7 +109,7 @@ LOG_error(ErrorContainer &container)
  * @brief write info-message to logfile
  */
 bool
-LOG_info(const std::string &message, const std::string &color)
+LOG_info(const std::string& message, const std::string& color)
 {
     return Hanami::Logger::m_logger->logData(message, "INFO", color);
 }
@@ -145,8 +145,8 @@ Logger::~Logger() { closeLogFile(); }
  * @return false, if initializing failed, else true
  */
 bool
-Logger::initFileLogger(const std::string &directoryPath,
-                       const std::string &baseFileName,
+Logger::initFileLogger(const std::string& directoryPath,
+                       const std::string& baseFileName,
                        const bool debugLog)
 {
     std::lock_guard<std::mutex> guard(m_lock);
@@ -224,7 +224,7 @@ Logger::setDebugFlag(const bool debugLog)
  * @brief set callback for error-messages
  */
 void
-Logger::setErrorLogCallback(void (*handleError)(const std::string &))
+Logger::setErrorLogCallback(void (*handleError)(const std::string&))
 {
     m_handleError = handleError;
 }
@@ -246,9 +246,9 @@ Logger::closeLogFile()
  * @brief write message to logfile
  */
 bool
-Logger::logData(const std::string &message,
-                const std::string &preTag,
-                const std::string &color,
+Logger::logData(const std::string& message,
+                const std::string& preTag,
+                const std::string& color,
                 const bool debug)
 {
     std::lock_guard<std::mutex> guard(m_lock);
@@ -300,7 +300,7 @@ const std::string
 Logger::getDatetime()
 {
     const time_t now = time(nullptr);
-    tm *ltm = localtime(&now);
+    tm* ltm = localtime(&now);
 
     const std::string datatime
         = std::to_string(1900 + ltm->tm_year) + "-" + std::to_string(1 + ltm->tm_mon) + "-"
@@ -314,7 +314,7 @@ Logger::getDatetime()
  * @brief set callback for error-messages
  */
 void
-setErrorLogCallback(void (*handleError)(const std::string &))
+setErrorLogCallback(void (*handleError)(const std::string&))
 {
     Logger::m_logger->setErrorLogCallback(handleError);
 }

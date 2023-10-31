@@ -26,7 +26,7 @@
 #include <hanami_crypto/common.h>
 #include <hanami_database/sql_database.h>
 
-ErrorLogTable *ErrorLogTable::instance = nullptr;
+ErrorLogTable* ErrorLogTable::instance = nullptr;
 
 /**
  * @brief constructor
@@ -79,13 +79,13 @@ ErrorLogTable::~ErrorLogTable() {}
  * @return true, if successful, else false
  */
 bool
-ErrorLogTable::addErrorLogEntry(const std::string &timestamp,
-                                const std::string &userid,
-                                const std::string &component,
-                                const std::string &context,
-                                const std::string &values,
-                                const std::string &message,
-                                Hanami::ErrorContainer &error)
+ErrorLogTable::addErrorLogEntry(const std::string& timestamp,
+                                const std::string& userid,
+                                const std::string& component,
+                                const std::string& context,
+                                const std::string& values,
+                                const std::string& message,
+                                Hanami::ErrorContainer& error)
 {
     json data;
     data["timestamp"] = timestamp;
@@ -117,10 +117,10 @@ ErrorLogTable::addErrorLogEntry(const std::string &timestamp,
  * @return true, if successful, else false
  */
 bool
-ErrorLogTable::getAllErrorLogEntries(Hanami::TableItem &result,
-                                     const std::string &userId,
+ErrorLogTable::getAllErrorLogEntries(Hanami::TableItem& result,
+                                     const std::string& userId,
                                      const uint64_t page,
-                                     Hanami::ErrorContainer &error)
+                                     Hanami::ErrorContainer& error)
 {
     if (getPageFromDb(result, userId, page, error) == false) {
         error.addMeesage("Failed to get all error-log-entries from database");

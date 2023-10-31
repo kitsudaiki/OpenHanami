@@ -53,13 +53,13 @@ struct ErrorContainer {
     std::vector<std::string> _errorMessages;
     std::vector<std::string> _possibleSolution;
 
-    void addMeesage(const std::string &errorMessage)
+    void addMeesage(const std::string& errorMessage)
     {
         _errorMessages.push_back(errorMessage);
         _alreadyPrinted = false;
     }
 
-    void addSolution(const std::string &possibleSolution)
+    void addSolution(const std::string& possibleSolution)
     {
         _possibleSolution.push_back(possibleSolution);
     }
@@ -93,20 +93,20 @@ struct ErrorContainer {
     }
 };
 
-bool initFileLogger(const std::string &directoryPath,
-                    const std::string &baseFileName,
+bool initFileLogger(const std::string& directoryPath,
+                    const std::string& baseFileName,
                     const bool debugLog = false);
 bool initConsoleLogger(const bool debugLog = false);
 bool setDebugFlag(const bool debugLog);
 
-bool LOG_debug(const std::string &message);
-bool LOG_warning(const std::string &message);
-bool LOG_error(ErrorContainer &container);
-bool LOG_info(const std::string &message, const std::string &color = WHITE_COLOR);
+bool LOG_debug(const std::string& message);
+bool LOG_warning(const std::string& message);
+bool LOG_error(ErrorContainer& container);
+bool LOG_info(const std::string& message, const std::string& color = WHITE_COLOR);
 
 void closeLogFile();
 
-void setErrorLogCallback(void (*handleError)(const std::string &));
+void setErrorLogCallback(void (*handleError)(const std::string&));
 
 //==================================================================================================
 
@@ -116,25 +116,25 @@ class Logger
     Logger();
     ~Logger();
 
-    bool initFileLogger(const std::string &directoryPath,
-                        const std::string &baseFileName,
+    bool initFileLogger(const std::string& directoryPath,
+                        const std::string& baseFileName,
                         const bool debugLog);
     bool initConsoleLogger(const bool debugLog);
     bool setDebugFlag(const bool debugLog);
-    void setErrorLogCallback(void (*handleError)(const std::string &));
+    void setErrorLogCallback(void (*handleError)(const std::string&));
 
     void closeLogFile();
 
-    bool logData(const std::string &message,
-                 const std::string &preTag,
-                 const std::string &color,
+    bool logData(const std::string& message,
+                 const std::string& preTag,
+                 const std::string& color,
                  const bool debug = false);
 
     std::string m_filePath = "";
     bool m_debugLog = false;
-    void (*m_handleError)(const std::string &);
+    void (*m_handleError)(const std::string&);
 
-    static Hanami::Logger *m_logger;
+    static Hanami::Logger* m_logger;
 
    private:
     bool m_enableConsoleLog = false;

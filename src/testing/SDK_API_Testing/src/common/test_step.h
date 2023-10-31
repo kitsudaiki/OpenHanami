@@ -36,7 +36,7 @@ class TestStep
 
     const std::string getTestName() const;
 
-    virtual bool runTest(json &inputData, Hanami::ErrorContainer &error) = 0;
+    virtual bool runTest(json& inputData, Hanami::ErrorContainer& error) = 0;
 
    protected:
     const bool m_expectSuccess;

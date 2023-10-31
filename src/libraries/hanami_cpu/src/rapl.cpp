@@ -91,7 +91,7 @@ Rapl::Rapl(const uint64_t threadId) { m_threadId = threadId; }
  * @return false, if already initialized or can not open msr-file, else true
  */
 bool
-Rapl::initRapl(ErrorContainer &error)
+Rapl::initRapl(ErrorContainer& error)
 {
     // check if already initialized
     if (m_isInit) {
@@ -170,7 +170,7 @@ Rapl::checkPP1()
  * @return false, if file doesn't exist or can not be opened, else true
  */
 bool
-Rapl::openMSR(ErrorContainer &error)
+Rapl::openMSR(ErrorContainer& error)
 {
     const std::string path = "/dev/cpu/" + std::to_string(m_threadId) + "/msr";
     m_fd = open(path.c_str(), O_RDONLY);

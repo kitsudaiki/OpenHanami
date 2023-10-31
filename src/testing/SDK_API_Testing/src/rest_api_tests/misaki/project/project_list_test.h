@@ -30,7 +30,7 @@ class ProjectListTest : public TestStep
    public:
     ProjectListTest(const bool expectSuccess);
 
-    bool runTest(json &inputData, Hanami::ErrorContainer &error);
+    bool runTest(json& inputData, Hanami::ErrorContainer& error);
 };
 
 #endif  // TSUGUMITESTER_PROJECTLISTSTEP_H

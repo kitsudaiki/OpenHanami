@@ -46,10 +46,10 @@ DeleteRequestResult::DeleteRequestResult() : Blossom("Delete a request-result fr
  * @brief runTask
  */
 bool
-DeleteRequestResult::runTask(BlossomIO &blossomIO,
-                             const json &context,
-                             BlossomStatus &status,
-                             Hanami::ErrorContainer &error)
+DeleteRequestResult::runTask(BlossomIO& blossomIO,
+                             const json& context,
+                             BlossomStatus& status,
+                             Hanami::ErrorContainer& error)
 {
     const std::string uuid = blossomIO.input["uuid"];
     const UserContext userContext(context);

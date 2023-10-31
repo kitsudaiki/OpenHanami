@@ -32,7 +32,7 @@
  * @brief reduce synapses of a specific section
  */
 inline bool
-reduceSynapses(Cluster &, SynapseBlock &)
+reduceSynapses(Cluster&, SynapseBlock&)
 {
     bool foundEnd = false;
 
@@ -75,7 +75,7 @@ reduceSynapses(Cluster &, SynapseBlock &)
  * @brief reduce all synapses within the cluster and delete them, if the reach a deletion-border
  */
 inline void
-reduceNeurons(Cluster &)
+reduceNeurons(Cluster&)
 {
     /*SynapseSection* section = nullptr;
     Neuron* sourceNeuron = nullptr;

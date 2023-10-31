@@ -38,13 +38,13 @@ namespace Hanami
  * @return true, if successful, else false
  */
 bool
-initClient(const std::string &host,
-           const std::string &port,
-           const std::string &user,
-           const std::string &password,
-           Hanami::ErrorContainer &error)
+initClient(const std::string& host,
+           const std::string& port,
+           const std::string& user,
+           const std::string& password,
+           Hanami::ErrorContainer& error)
 {
-    HanamiRequest *request = HanamiRequest::getInstance();
+    HanamiRequest* request = HanamiRequest::getInstance();
     if (request->init(host, port, user, password) == false) {
         error.addMeesage("Failed to initialize hanami-client");
         LOG_ERROR(error);

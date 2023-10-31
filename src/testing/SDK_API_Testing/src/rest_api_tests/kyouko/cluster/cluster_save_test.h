@@ -30,7 +30,7 @@ class ClusterSaveTest : public TestStep
    public:
     ClusterSaveTest(const bool expectSuccess);
 
-    bool runTest(json &inputData, Hanami::ErrorContainer &error);
+    bool runTest(json& inputData, Hanami::ErrorContainer& error);
 };
 
 #endif  // TSUGUMITESTER_CLUSTERSAVETEST_H

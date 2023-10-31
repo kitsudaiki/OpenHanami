@@ -31,10 +31,10 @@ class ListCheckpoint : public Blossom
     ListCheckpoint();
 
    protected:
-    bool runTask(BlossomIO &blossomIO,
-                 const json &,
-                 BlossomStatus &status,
-                 Hanami::ErrorContainer &error);
+    bool runTask(BlossomIO& blossomIO,
+                 const json&,
+                 BlossomStatus& status,
+                 Hanami::ErrorContainer& error);
 };
 
 #endif  // LIST_CLUSTER_CHECKPOINT_H

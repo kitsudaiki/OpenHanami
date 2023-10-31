@@ -61,10 +61,10 @@ GetProgressDataSet::GetProgressDataSet() : Blossom("Get upload progress of a spe
  * @brief runTask
  */
 bool
-GetProgressDataSet::runTask(BlossomIO &blossomIO,
-                            const json &context,
-                            BlossomStatus &status,
-                            Hanami::ErrorContainer &error)
+GetProgressDataSet::runTask(BlossomIO& blossomIO,
+                            const json& context,
+                            BlossomStatus& status,
+                            Hanami::ErrorContainer& error)
 {
     const std::string dataUuid = blossomIO.input["uuid"];
     const UserContext userContext(context);
@@ -89,7 +89,7 @@ GetProgressDataSet::runTask(BlossomIO &blossomIO,
 
     // check and add if complete
     bool finishedAll = true;
-    for (const auto &[key, file] : tempFiles.items()) {
+    for (const auto& [key, file] : tempFiles.items()) {
         if (file < 1.0f) {
             finishedAll = false;
         }

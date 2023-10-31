@@ -42,10 +42,10 @@ PowerConsumption::PowerConsumption() : Blossom("Request the power-measurement of
  * @brief runTask
  */
 bool
-PowerConsumption::runTask(BlossomIO &blossomIO,
-                          const json &,
-                          BlossomStatus &,
-                          Hanami::ErrorContainer &)
+PowerConsumption::runTask(BlossomIO& blossomIO,
+                          const json&,
+                          BlossomStatus&,
+                          Hanami::ErrorContainer&)
 {
     blossomIO.output["power"] = PowerMeasuring::getInstance()->getJson();
 

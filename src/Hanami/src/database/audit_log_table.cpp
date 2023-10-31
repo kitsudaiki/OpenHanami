@@ -25,7 +25,7 @@
 #include <hanami_common/methods/string_methods.h>
 #include <hanami_database/sql_database.h>
 
-AuditLogTable *AuditLogTable::instance = nullptr;
+AuditLogTable* AuditLogTable::instance = nullptr;
 
 /**
  * @brief constructor
@@ -69,11 +69,11 @@ AuditLogTable::~AuditLogTable() {}
  * @return true, if successful, else false
  */
 bool
-AuditLogTable::addAuditLogEntry(const std::string &timestamp,
-                                const std::string &userId,
-                                const std::string &endpoint,
-                                const std::string &requestType,
-                                Hanami::ErrorContainer &error)
+AuditLogTable::addAuditLogEntry(const std::string& timestamp,
+                                const std::string& userId,
+                                const std::string& endpoint,
+                                const std::string& requestType,
+                                Hanami::ErrorContainer& error)
 {
     json data;
     data["timestamp"] = timestamp;
@@ -100,10 +100,10 @@ AuditLogTable::addAuditLogEntry(const std::string &timestamp,
  * @return true, if successful, else false
  */
 bool
-AuditLogTable::getAllAuditLogEntries(Hanami::TableItem &result,
-                                     const std::string &userId,
+AuditLogTable::getAllAuditLogEntries(Hanami::TableItem& result,
+                                     const std::string& userId,
                                      const uint64_t page,
-                                     Hanami::ErrorContainer &error)
+                                     Hanami::ErrorContainer& error)
 {
     if (getPageFromDb(result, userId, page, error) == false) {
         error.addMeesage("Failed to get all audit-log-entries from database");

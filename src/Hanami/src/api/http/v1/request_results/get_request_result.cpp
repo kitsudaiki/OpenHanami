@@ -66,10 +66,10 @@ GetRequestResult::GetRequestResult() : Blossom("Get a specific request-result")
  * @brief runTask
  */
 bool
-GetRequestResult::runTask(BlossomIO &blossomIO,
-                          const json &context,
-                          BlossomStatus &status,
-                          Hanami::ErrorContainer &error)
+GetRequestResult::runTask(BlossomIO& blossomIO,
+                          const json& context,
+                          BlossomStatus& status,
+                          Hanami::ErrorContainer& error)
 {
     const std::string uuid = blossomIO.input["uuid"];
     const UserContext userContext(context);
