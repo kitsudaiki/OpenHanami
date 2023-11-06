@@ -34,6 +34,10 @@ GitHub issues are used to track public bugs. Report a bug by opening a new issue
 
 Open an issue with the `Feature`-template, where you describes the feature you would like to see. Also add information, why you need it, and how it should work.
 
+## Developtment documentation
+
+To setup a local environment to work on the code, see the [deveolper documentation](https://docs.hanami-ai.com/how_to/development/)
+
 ## Use a consistent coding style
 
 Please follow the [Code Styling Guide](https://docs.hanami-ai.com/other/code_styling/) as good as possible. If you see any improvements, like feature which makes the code cleaner or something like this, then please open a `Quality Assurance` issue and describe what could/should be changed.
