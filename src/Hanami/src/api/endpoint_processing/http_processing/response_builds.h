@@ -61,7 +61,6 @@ invalid_ResponseBuild(http::response<http::dynamic_body>& httpResp, Hanami::Erro
     httpResp.result(http::status::bad_request);
     httpResp.set(http::field::content_type, "text/plain");
     beast::ostream(httpResp.body()) << error.toString();
-    LOG_ERROR(error);
     return false;
 }
 
@@ -76,7 +75,6 @@ internalError_ResponseBuild(http::response<http::dynamic_body>& httpResp,
 {
     httpResp.result(http::status::internal_server_error);
     httpResp.set(http::field::content_type, "text/plain");
-    // beast::ostream(httpResp.body()) << error.toString();
     LOG_ERROR(error);
     return false;
 }
@@ -95,10 +93,6 @@ genericError_ResponseBuild(http::response<http::dynamic_body>& httpResp,
     httpResp.result(static_cast<http::status>(type));
     httpResp.set(http::field::content_type, "text/plain");
     beast::ostream(httpResp.body()) << errorMessage;
-
-    Hanami::ErrorContainer error;
-    error.addMeesage(errorMessage);
-    LOG_ERROR(error);
     return false;
 }
 

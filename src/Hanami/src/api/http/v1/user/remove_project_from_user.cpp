@@ -102,7 +102,7 @@ RemoveProjectFromUser::runTask(BlossomIO& blossomIO,
     if (getResult.size() == 0) {
         status.errorMessage = "User with id '" + userId + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
@@ -122,8 +122,8 @@ RemoveProjectFromUser::runTask(BlossomIO& blossomIO,
         status.errorMessage = "Project with ID '" + projectId
                               + "' is not assigned to user with id '" + userId
                               + "' and so it can not be removed from the user.";
-        error.addMeesage(status.errorMessage);
         status.statusCode = NOT_FOUND_RTYPE;
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 

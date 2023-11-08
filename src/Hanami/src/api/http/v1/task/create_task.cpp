@@ -97,7 +97,7 @@ CreateTask::runTask(BlossomIO& blossomIO,
     if (getResult.size() == 0) {
         status.errorMessage = "Cluster with uuid '" + clusterUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
@@ -106,7 +106,7 @@ CreateTask::runTask(BlossomIO& blossomIO,
     if (cluster == nullptr) {
         status.errorMessage = "Cluster with UUID '" + clusterUuid + "'not found";
         status.statusCode = NOT_FOUND_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
@@ -122,7 +122,7 @@ CreateTask::runTask(BlossomIO& blossomIO,
     if (dataSetInfo.size() == 0) {
         status.errorMessage = "Data-set with uuid '" + dataSetUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
@@ -136,7 +136,7 @@ CreateTask::runTask(BlossomIO& blossomIO,
         status.errorMessage = "Invalid dataset-type '" + std::string(dataSetInfo["type"])
                               + "' given for to create new task";
         status.statusCode = BAD_REQUEST_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 

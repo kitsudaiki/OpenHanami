@@ -57,7 +57,6 @@ class TaskHandle_State : public Hanami::Event
     std::map<std::string, Task> m_taskMap;
     std::mutex m_task_mutex;
     Task* actualTask = nullptr;
-    bool m_abort = false;
 
     bool getNextTask();
     void finishTask();

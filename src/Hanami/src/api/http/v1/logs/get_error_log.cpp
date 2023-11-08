@@ -85,6 +85,7 @@ GetErrorLog::runTask(BlossomIO& blossomIO,
     if (userContext.isAdmin == false) {
         status.statusCode = UNAUTHORIZED_RTYPE;
         status.errorMessage = "only an admin is allowed to request error-logs";
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 

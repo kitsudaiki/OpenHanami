@@ -34,6 +34,7 @@ ListUserProjects::ListUserProjects()
     : Blossom("List all available projects of the user, who made the request.")
 {
     errorCodes.push_back(UNAUTHORIZED_RTYPE);
+    errorCodes.push_back(NOT_FOUND_RTYPE);
 
     //----------------------------------------------------------------------------------------------
     // input
@@ -92,7 +93,7 @@ ListUserProjects::runTask(BlossomIO& blossomIO,
     if (userData.size() == 0) {
         status.errorMessage = "User with id '" + userId + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 

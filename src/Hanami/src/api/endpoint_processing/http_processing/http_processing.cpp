@@ -107,46 +107,12 @@ processRequest(http::request<http::string_body>& httpRequest,
 }
 
 /**
- * @brief request token from misaki
- *
- * @param hanamiRequest hanami-request for the token-request
- * @param error reference for error-output
- *
- * @return true, if successful, else false
- */
-bool
-requestToken(http::response<http::dynamic_body>& httpResponse,
-             const RequestMessage& hanamiRequest,
-             Hanami::ErrorContainer& error)
-{
-    json inputValues;
-    try {
-        inputValues = json::parse(hanamiRequest.inputValues);
-    } catch (const json::parse_error& ex) {
-        error.addMeesage("json-parser error: " + std::string(ex.what()));
-        return false;
-    }
-
-    json result;
-    BlossomStatus status;
-    inputValues.erase("token");
-    if (HanamiRoot::root->triggerBlossom(
-            result, "create", "Token", json::object(), inputValues, status, error)
-        == false) {
-        return genericError_ResponseBuild(
-            httpResponse, static_cast<HttpResponseTypes>(status.statusCode), status.errorMessage);
-    }
-
-    return success_ResponseBuild(httpResponse, result.dump());
-}
-
-/**
  * @brief send request to misaki to check permissions
  *
  * @param tokenData
  * @param token token to validate
  * @param hanamiRequest hanami-request to the requested endpoint
- * @param responseMsg reference for the response
+ * @param status reference for the response
  * @param error reference for error-output
  *
  * @return true, if successful, else false
@@ -155,7 +121,7 @@ bool
 checkPermission(json& tokenData,
                 const std::string& token,
                 const RequestMessage& hanamiRequest,
-                ResponseMessage& responseMsg,
+                BlossomStatus& status,
                 Hanami::ErrorContainer& error)
 {
     RequestMessage requestMsg;
@@ -165,10 +131,9 @@ checkPermission(json& tokenData,
 
     // handle empty token
     if (token.empty()) {
-        error.addMeesage("Failed to validate JWT-Token, because token is missing");
-        responseMsg.success = false;
-        responseMsg.type = UNAUTHORIZED_RTYPE;
-        responseMsg.responseContent = "Failed to validate JWT-Token";
+        status.statusCode = UNAUTHORIZED_RTYPE;
+        status.errorMessage = "JWT-Token is missing in request";
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
@@ -185,15 +150,17 @@ checkPermission(json& tokenData,
             try {
                 tokenData = json::parse(tokenStr);
             } catch (const json::parse_error& ex) {
-                error.addMeesage("json-parser error: " + std::string(ex.what()));
+                status.statusCode = BAD_REQUEST_RTYPE;
+                status.errorMessage = "Failed to pase input-values: " + std::string(ex.what());
+                LOG_DEBUG(status.errorMessage);
                 return false;
             }
         }
     } catch (const std::exception& ex) {
         error.addMeesage("Failed to validate JWT-Token with error: " + std::string(ex.what()));
-        responseMsg.success = false;
-        responseMsg.type = UNAUTHORIZED_RTYPE;
-        responseMsg.responseContent = "Failed to validate JWT-Token";
+        status.statusCode = UNAUTHORIZED_RTYPE;
+        status.errorMessage = "Failed to validate JWT-Token";
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
@@ -205,14 +172,11 @@ checkPermission(json& tokenData,
 
     // check policy
     if (Policy::getInstance()->checkUserAgainstPolicy(endpoint, httpType, role) == false) {
-        responseMsg.success = false;
-        responseMsg.type = UNAUTHORIZED_RTYPE;
-        responseMsg.responseContent = "Access denied by policy";
-        error.addMeesage(responseMsg.responseContent);
+        status.statusCode = UNAUTHORIZED_RTYPE;
+        status.errorMessage = "Access denied by policy";
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
-
-    responseMsg.success = true;
 
     return true;
 }
@@ -237,95 +201,108 @@ processControlRequest(http::response<http::dynamic_body>& httpResponse,
                       Hanami::ErrorContainer& error)
 {
     RequestMessage hanamiRequest;
-    ResponseMessage hanamiResponse;
-
-    // parse uri
-    hanamiRequest.httpType = httpType;
-    hanamiRequest.inputValues = inputValues;
-    if (parseUri(token, hanamiRequest, uri, error) == false) {
-        return invalid_ResponseBuild(httpResponse, error);
-    }
-
-    // handle token-request
-    if (uri == "v1/token" && hanamiRequest.httpType == Hanami::POST_TYPE) {
-        return requestToken(httpResponse, hanamiRequest, error);
-    }
-
-    // check authentication
-    json tokenData = json::object();
-    if (checkPermission(tokenData, token, hanamiRequest, hanamiResponse, error) == false) {
-        return internalError_ResponseBuild(httpResponse, error);
-    }
-
-    // handle failed authentication
-    if (hanamiResponse.type == UNAUTHORIZED_RTYPE || hanamiResponse.success == false) {
-        return genericError_ResponseBuild(
-            httpResponse, hanamiResponse.type, hanamiResponse.responseContent);
-    }
-
-    // convert http-type to string
-    std::string httpTypeStr = "GET";
-    if (hanamiRequest.httpType == Hanami::DELETE_TYPE) {
-        httpTypeStr = "DELETE";
-    }
-    if (hanamiRequest.httpType == Hanami::GET_TYPE) {
-        httpTypeStr = "GET";
-    }
-    if (hanamiRequest.httpType == Hanami::HEAD_TYPE) {
-        httpTypeStr = "HEAD";
-    }
-    if (hanamiRequest.httpType == Hanami::POST_TYPE) {
-        httpTypeStr = "POST";
-    }
-    if (hanamiRequest.httpType == Hanami::PUT_TYPE) {
-        httpTypeStr = "PUT";
-    }
-
-    // write new audit-entry to database
-    if (AuditLogTable::getInstance()->addAuditLogEntry(
-            getDatetime(), tokenData["id"], hanamiRequest.id, httpTypeStr, error)
-        == false) {
-        error.addMeesage("ERROR: Failed to write audit-log into database");
-        return internalError_ResponseBuild(httpResponse, error);
-    }
-
-    json inputValuesJson;
-    try {
-        inputValuesJson = json::parse(hanamiRequest.inputValues);
-    } catch (const json::parse_error& ex) {
-        error.addMeesage("json-parser error: " + std::string(ex.what()));
-        return internalError_ResponseBuild(httpResponse, error);
-    }
-
-    if (hanamiRequest.id != "v1/auth") {
-        inputValuesJson.erase("token");
-    }
-
-    EndpointEntry endpoint;
-    if (HanamiRoot::root->mapEndpoint(endpoint, hanamiRequest.id, hanamiRequest.httpType)
-        == false) {
-        assert(false);
-    }
-
-    // make real request
-    json result = json::object();
     BlossomStatus status;
-    if (HanamiRoot::root->triggerBlossom(
-            result, endpoint.name, endpoint.group, tokenData, inputValuesJson, status, error)
-        == false) {
-        return genericError_ResponseBuild(
-            httpResponse, static_cast<HttpResponseTypes>(status.statusCode), status.errorMessage);
+    json result = json::object();
+
+    do {
+        // parse uri
+        hanamiRequest.httpType = httpType;
+        hanamiRequest.inputValues = inputValues;
+        if (parseUri(token, hanamiRequest, uri, status) == false) {
+            break;
+        }
+
+        // parse input-values
+        json inputValuesJson;
+        try {
+            inputValuesJson = json::parse(hanamiRequest.inputValues);
+        } catch (const json::parse_error& ex) {
+            status.statusCode = BAD_REQUEST_RTYPE;
+            status.errorMessage = "Failed to pase input-values: " + std::string(ex.what());
+            LOG_DEBUG(status.errorMessage);
+            break;
+        }
+
+        // handle token-request
+        if (uri == "v1/token" && hanamiRequest.httpType == Hanami::POST_TYPE) {
+            inputValuesJson.erase("token");
+
+            if (HanamiRoot::root->triggerBlossom(
+                    result, "create", "Token", json::object(), inputValuesJson, status, error)
+                == false) {
+                error.addMeesage("Token request failed");
+                break;
+            }
+            break;
+        }
+
+        // check authentication
+        json tokenData = json::object();
+        if (checkPermission(tokenData, token, hanamiRequest, status, error) == false) {
+            error.addMeesage("Permission-check failed");
+            break;
+        }
+
+        // convert http-type to string
+        std::string httpTypeStr = "GET";
+        if (hanamiRequest.httpType == Hanami::DELETE_TYPE) {
+            httpTypeStr = "DELETE";
+        }
+        if (hanamiRequest.httpType == Hanami::GET_TYPE) {
+            httpTypeStr = "GET";
+        }
+        if (hanamiRequest.httpType == Hanami::HEAD_TYPE) {
+            httpTypeStr = "HEAD";
+        }
+        if (hanamiRequest.httpType == Hanami::POST_TYPE) {
+            httpTypeStr = "POST";
+        }
+        if (hanamiRequest.httpType == Hanami::PUT_TYPE) {
+            httpTypeStr = "PUT";
+        }
+
+        // write new audit-entry to database
+        if (AuditLogTable::getInstance()->addAuditLogEntry(
+                getDatetime(), tokenData["id"], hanamiRequest.id, httpTypeStr, error)
+            == false) {
+            error.addMeesage("ERROR: Failed to write audit-log into database");
+            status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+            break;
+        }
+
+        if (hanamiRequest.id != "v1/auth") {
+            inputValuesJson.erase("token");
+        }
+
+        // map endpoint to blossom
+        EndpointEntry endpoint;
+        if (HanamiRoot::root->mapEndpoint(endpoint, hanamiRequest.id, hanamiRequest.httpType)
+            == false) {
+            status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+            error.addMeesage("Failed to map endpoint with id '" + hanamiRequest.id + "'");
+            break;
+        }
+
+        // make real request
+        if (HanamiRoot::root->triggerBlossom(
+                result, endpoint.name, endpoint.group, tokenData, inputValuesJson, status, error)
+            == false) {
+            error.addMeesage("Blossom-trigger failed");
+            break;
+        }
+
+        break;
+    } while (true);
+
+    // build responses, based on the status-code
+    if (status.statusCode != OK_RTYPE) {
+        if (status.statusCode == INTERNAL_SERVER_ERROR_RTYPE) {
+            return internalError_ResponseBuild(httpResponse, error);
+        } else {
+            const HttpResponseTypes type = static_cast<HttpResponseTypes>(status.statusCode);
+            return genericError_ResponseBuild(httpResponse, type, status.errorMessage);
+        }
     }
 
-    // handle error-response
-    if (hanamiResponse.success == false) {
-        return genericError_ResponseBuild(
-            httpResponse, hanamiResponse.type, hanamiResponse.responseContent);
-    }
-
-    hanamiResponse.type = OK_RTYPE;
-    hanamiResponse.responseContent = result.dump();
-
-    // handle success
-    return success_ResponseBuild(httpResponse, hanamiResponse.responseContent);
+    return success_ResponseBuild(httpResponse, result.dump());
 }

@@ -88,8 +88,8 @@ RenewToken::runTask(BlossomIO& blossomIO,
         status.errorMessage
             = "ACCESS DENIED!\n"
               "User or password is incorrect.";
-        error.addMeesage(status.errorMessage);
         status.statusCode = UNAUTHORIZED_RTYPE;
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
@@ -109,8 +109,8 @@ RenewToken::runTask(BlossomIO& blossomIO,
     if (chooseProject(userData, parsedProjects, projectId) == false) {
         status.errorMessage = "User with id '" + userContext.userId
                               + "' is not assigned to the project with id '" + projectId + "'.";
-        error.addMeesage(status.errorMessage);
         status.statusCode = UNAUTHORIZED_RTYPE;
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 

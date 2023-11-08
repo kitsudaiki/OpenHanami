@@ -87,7 +87,7 @@ ListTask::runTask(BlossomIO& blossomIO,
     if (getResult.size() == 0) {
         status.errorMessage = "Cluster with uuid '" + clusterUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
@@ -96,7 +96,7 @@ ListTask::runTask(BlossomIO& blossomIO,
     if (cluster == nullptr) {
         status.errorMessage = "Cluster with UUID '" + clusterUuid + "'not found";
         status.statusCode = NOT_FOUND_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 

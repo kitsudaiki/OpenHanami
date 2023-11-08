@@ -102,7 +102,7 @@ class HanamiRoot
     bool initJwt(Hanami::ErrorContainer& error);
 
     void clearCluster(Hanami::ErrorContainer& error);
-    void checkStatusCode(Blossom* blossom,
+    bool checkStatusCode(Blossom* blossom,
                          const std::string& blossomName,
                          const std::string& blossomGroupName,
                          BlossomStatus& status,

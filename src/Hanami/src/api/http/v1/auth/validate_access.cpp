@@ -132,6 +132,7 @@ ValidateAccess::runTask(BlossomIO& blossomIO,
             } catch (const json::parse_error& ex) {
                 error.addMeesage("Error while parsing decoded token");
                 error.addMeesage("json-parser error: " + std::string(ex.what()));
+                status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
                 return false;
             }
         }
@@ -139,6 +140,7 @@ ValidateAccess::runTask(BlossomIO& blossomIO,
         error.addMeesage("Failed to validate JWT-Token with error: " + std::string(ex.what()));
         status.errorMessage = "Failed to validate JWT-Token";
         status.statusCode = UNAUTHORIZED_RTYPE;
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
@@ -159,7 +161,7 @@ ValidateAccess::runTask(BlossomIO& blossomIO,
         if (Policy::getInstance()->checkUserAgainstPolicy(endpoint, httpType, role) == false) {
             status.errorMessage = "Access denied by policy";
             status.statusCode = UNAUTHORIZED_RTYPE;
-            error.addMeesage(status.errorMessage);
+            LOG_DEBUG(status.errorMessage);
             return false;
         }
     }

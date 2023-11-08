@@ -37,12 +37,6 @@ struct NextSides {
     uint8_t sides[5];
 };
 
-struct ResponseMessage {
-    bool success = false;
-    HttpResponseTypes type = NO_CONTENT_RTYPE;
-    std::string responseContent = "";
-};
-
 struct RequestMessage {
     Hanami::HttpRequestType httpType = Hanami::GET_TYPE;
     std::string id = "";
@@ -77,7 +71,7 @@ struct EndpointEntry {
 };
 
 struct BlossomStatus {
-    uint64_t statusCode = 0;
+    uint64_t statusCode = OK_RTYPE;
     std::string errorMessage = "";
 };
 

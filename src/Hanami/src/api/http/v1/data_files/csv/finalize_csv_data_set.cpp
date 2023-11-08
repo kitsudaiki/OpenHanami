@@ -87,7 +87,7 @@ FinalizeCsvDataSet::runTask(BlossomIO& blossomIO,
     if (result.size() == 0) {
         status.errorMessage = "Data-set with uuid '" + uuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
@@ -96,6 +96,7 @@ FinalizeCsvDataSet::runTask(BlossomIO& blossomIO,
     if (TempFileHandler::getInstance()->getData(inputBuffer, inputUuid) == false) {
         status.errorMessage = "Input-data with uuid '" + inputUuid + "' not found.";
         status.statusCode = NOT_FOUND_RTYPE;
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 

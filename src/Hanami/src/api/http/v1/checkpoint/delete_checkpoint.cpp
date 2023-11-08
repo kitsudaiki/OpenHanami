@@ -68,7 +68,7 @@ DeleteCheckpoint::runTask(BlossomIO& blossomIO,
     if (result.size() == 0) {
         status.errorMessage = "Chekckpoint with uuid '" + checkpointUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 

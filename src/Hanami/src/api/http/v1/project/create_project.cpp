@@ -96,7 +96,7 @@ CreateProject::runTask(BlossomIO& blossomIO,
     if (getResult.size() != 0) {
         status.errorMessage = "Project with id '" + projectId + "' already exist.";
         status.statusCode = CONFLICT_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 

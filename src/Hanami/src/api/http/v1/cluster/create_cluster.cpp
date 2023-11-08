@@ -93,7 +93,7 @@ CreateCluster::runTask(BlossomIO& blossomIO,
     if (getResult.size() != 0) {
         status.errorMessage = "Cluster with name '" + clusterName + "' already exist.";
         status.statusCode = CONFLICT_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
@@ -104,7 +104,7 @@ CreateCluster::runTask(BlossomIO& blossomIO,
         if (Hanami::decodeBase64(convertedTemplate, base64Template) == false) {
             status.errorMessage = "Uploaded template is not a valid base64-String.";
             status.statusCode = BAD_REQUEST_RTYPE;
-            error.addMeesage(status.errorMessage);
+            LOG_DEBUG(status.errorMessage);
             return false;
         }
 
@@ -115,7 +115,7 @@ CreateCluster::runTask(BlossomIO& blossomIO,
             status.errorMessage = "Uploaded template is not a valid cluster-template: \n";
             status.errorMessage += error.toString();
             status.statusCode = BAD_REQUEST_RTYPE;
-            error.addMeesage(status.errorMessage);
+            LOG_DEBUG(status.errorMessage);
             return false;
         }
     }
