@@ -90,6 +90,7 @@ GetAuditLog::runTask(BlossomIO& blossomIO,
     if (userContext.isAdmin == false && userId.length() != 0) {
         status.statusCode = UNAUTHORIZED_RTYPE;
         status.errorMessage = "'user_id' can only be set by an admin";
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 

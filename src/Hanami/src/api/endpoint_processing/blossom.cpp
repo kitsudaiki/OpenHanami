@@ -138,15 +138,17 @@ Blossom::growBlossom(BlossomIO& blossomIO,
     if (checkBlossomValues(
             m_inputValidationMap, blossomIO.input, FieldDef::INPUT_TYPE, errorMessage)
         == false) {
-        error.addMeesage(errorMessage);
         status.errorMessage = errorMessage;
-        status.statusCode = 400;
+        status.statusCode = BAD_REQUEST_RTYPE;
+        LOG_DEBUG(errorMessage);
         return false;
     }
 
     // handle result
     if (runTask(blossomIO, context, status, error) == false) {
-        createError(blossomIO, "blossom execute", error);
+        if (status.statusCode == INTERNAL_SERVER_ERROR_RTYPE) {
+            createError(blossomIO, "blossom execute", error);
+        }
         return false;
     }
 
@@ -156,7 +158,7 @@ Blossom::growBlossom(BlossomIO& blossomIO,
         == false) {
         error.addMeesage(errorMessage);
         status.errorMessage = errorMessage;
-        status.statusCode = 500;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 

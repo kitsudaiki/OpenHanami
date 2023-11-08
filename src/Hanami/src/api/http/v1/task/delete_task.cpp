@@ -73,7 +73,7 @@ DeleteTask::runTask(BlossomIO& blossomIO,
     if (getResult.size() == 0) {
         status.errorMessage = "Cluster with uuid '" + clusterUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
@@ -82,7 +82,7 @@ DeleteTask::runTask(BlossomIO& blossomIO,
     if (cluster == nullptr) {
         status.errorMessage = "Cluster with UUID '" + clusterUuid + "'not found";
         status.statusCode = NOT_FOUND_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
@@ -91,7 +91,7 @@ DeleteTask::runTask(BlossomIO& blossomIO,
         status.errorMessage = "Task with UUID '" + clusterUuid + "'not found in "
                               "Cluster with UUID '" + clusterUuid;
         status.statusCode = NOT_FOUND_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 

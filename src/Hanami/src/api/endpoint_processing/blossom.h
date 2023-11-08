@@ -29,7 +29,7 @@
 class BlossomItem;
 class SakuraThread;
 class InitialValidator;
-class HanamiRoot;
+class HttpProcessing;
 class ValueItemMap;
 
 //--------------------------------------------------------------------------------------------------
@@ -158,7 +158,7 @@ class Blossom
    private:
     friend SakuraThread;
     friend InitialValidator;
-    friend HanamiRoot;
+    friend HttpProcessing;
 
     std::map<std::string, FieldDef> m_inputValidationMap;
     std::map<std::string, FieldDef> m_outputValidationMap;

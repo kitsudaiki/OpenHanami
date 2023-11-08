@@ -47,11 +47,7 @@ HttpWebsocketThread::run()
     while (m_abort == false) {
         tcp::socket* socket = HanamiRoot::httpServer->getSocket();
         if (socket != nullptr) {
-            ErrorContainer error;
-
-            if (handleSocket(socket, error) == false) {
-                LOG_ERROR(error);
-            }
+            handleSocket(socket);
             delete socket;
         } else {
             sleepThread(10000);
@@ -63,13 +59,13 @@ HttpWebsocketThread::run()
  * @brief handle new incoming http-connection
  *
  * @param socket pointer to new socket to process
- * @param error reference for error-output
  *
  * @return true, if successful, else false
  */
 bool
-HttpWebsocketThread::handleSocket(tcp::socket* socket, ErrorContainer& error)
+HttpWebsocketThread::handleSocket(tcp::socket* socket)
 {
+    ErrorContainer error;
     http::request<http::string_body> httpRequest;
     http::response<http::dynamic_body> httpResponse;
     bool processResult = true;
@@ -95,10 +91,10 @@ HttpWebsocketThread::handleSocket(tcp::socket* socket, ErrorContainer& error)
         m_uuid = "";
     } else {
         // process request
-        processResult = processRequest(httpRequest, httpResponse, error);
+        processResult = HanamiRoot::httpServer->httpProcessing->processRequest(
+            httpRequest, httpResponse, error);
         if (processResult == false) {
-            error.addMeesage("Failed to process http-request.");
-            // IMPORANT: no return false here, because the reponse should retunred anyway
+            LOG_DEBUG("Failed to process http-request.");
         }
         if (sendResponse(*socket, httpResponse, error) == false) {
             error.addMeesage("Can not send http-response.");
@@ -273,71 +269,78 @@ HttpWebsocketThread::sendData(const void* data, const uint64_t dataSize)
 bool
 HttpWebsocketThread::processInitialMessage(const std::string& message, ErrorContainer& error)
 {
-    // precehck if already init
-    if (m_clientInit) {
-        error.addMeesage("Websocket alread initialized and can not be initialized again.");
+    BlossomStatus status;
+
+    do {
+        // precehck if already init
+        if (m_clientInit) {
+            error.addMeesage("Websocket alread initialized and can not be initialized again.");
+            status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+            break;
+        }
+
+        // parse incoming initializing message
+        json content;
+        try {
+            content = json::parse(message);
+        } catch (const json::parse_error& ex) {
+            error.addMeesage("Parsing of initial websocket-message failed");
+            error.addMeesage("json-parser error: " + std::string(ex.what()));
+            status.statusCode = BAD_REQUEST_RTYPE;
+            break;
+        }
+
+        RequestMessage requestMsg;
+
+        requestMsg.id = "v1/foreward";
+        requestMsg.httpType = HttpRequestType::GET_TYPE;
+        m_target = content["target"];
+
+        // check authentication
+        json tokenData = json::object();
+        json tokenInputValues = json::object();
+        tokenInputValues["token"] = content["token"];
+        tokenInputValues["http_type"] = static_cast<uint32_t>(requestMsg.httpType);
+        tokenInputValues["endpoint"] = requestMsg.id;
+        if (HanamiRoot::httpServer->httpProcessing->triggerBlossom(
+                tokenData, "validate", "Token", json::object(), tokenInputValues, status, error)
+            == false) {
+            error.addMeesage("Permission-check failed");
+            break;
+        }
+
+        // forward connection to shiori or hanami
+        if (m_target == "kyouko") {
+            const std::string getClusterUuid = content["uuid"];
+            m_targetCluster = ClusterHandler::getInstance()->getCluster(getClusterUuid);
+            m_targetCluster->msgClient = this;
+            m_clientInit = true;
+            return true;
+        } else if (m_target == "shiori") {
+            m_clientInit = true;
+            return true;
+        }
+
+        error.addMeesage("Session-forwarding to target '" + m_target + "' is not allowed");
+        status.statusCode = BAD_REQUEST_RTYPE;
+
+        break;
+    } while (true);
+
+    if (status.statusCode == INTERNAL_SERVER_ERROR_RTYPE) {
         LOG_ERROR(error);
-        return false;
+    } else {
+        LOG_DEBUG(error.toString());
     }
-
-    // parse incoming initializing message
-    json content;
-    try {
-        content = json::parse(message);
-    } catch (const json::parse_error& ex) {
-        error.addMeesage("Parsing of initial websocket-message failed");
-        error.addMeesage("json-parser error: " + std::string(ex.what()));
-        LOG_ERROR(error);
-        return false;
-    }
-
-    RequestMessage requestMsg;
-    ResponseMessage responseMsg;
-
-    requestMsg.id = "v1/foreward";
-    requestMsg.httpType = HttpRequestType::GET_TYPE;
-    m_target = content["target"];
-
-    // check authentication
-    json tokenData;
-    if (checkPermission(tokenData, content["token"], requestMsg, responseMsg, error) == false) {
-        error.addMeesage("Request to misaki for token-check failed");
-        LOG_ERROR(error);
-        return false;
-    }
-
-    // handle failed authentication
-    if (responseMsg.type == UNAUTHORIZED_RTYPE || responseMsg.success == false) {
-        error.addMeesage("Permission-check for token over websocket failed");
-        LOG_ERROR(error);
-        return false;
-    }
-
-    // forward connection to shiori or hanami
-    if (m_target == "kyouko") {
-        const std::string getClusterUuid = content["uuid"];
-        m_targetCluster = ClusterHandler::getInstance()->getCluster(getClusterUuid);
-        m_targetCluster->msgClient = this;
-        m_clientInit = true;
-        return true;
-    } else if (m_target == "shiori") {
-        m_clientInit = true;
-        return true;
-    }
-
-    error.addMeesage("Session-forwarding to target '" + m_target + "' is not allowed");
-    LOG_ERROR(error);
 
     return false;
 }
 
 /**
  * @brief close temporary client, if exist
- *
- * @param error reference for error-output
  */
 void
-HttpWebsocketThread::closeClient(ErrorContainer&)
+HttpWebsocketThread::closeClient()
 {
     m_clientInit = false;
     if (m_targetCluster != nullptr) {
@@ -382,7 +385,7 @@ HttpWebsocketThread::runWebsocket()
                     success = false;
                     error.addMeesage("Failed initializing of websocket-forwarding");
                     LOG_ERROR(error);
-                    error = ErrorContainer();
+                    error.reset();
                 }
 
                 // build response-message
@@ -408,19 +411,20 @@ HttpWebsocketThread::runWebsocket()
         }
     } catch (const beast::system_error& se) {
         if (se.code() == websocket::error::closed) {
-            LOG_INFO("Close websocket3");
+            LOG_DEBUG("Close websocket3");
         } else {
             ErrorContainer error;
             error.addMeesage("Error while receiving data over websocket with message: "
                              + se.code().message());
+            LOG_ERROR(error);
         }
     } catch (const std::exception& e) {
         ErrorContainer error;
         error.addMeesage("Error while receiving data over websocket with message: "
                          + std::string(e.what()));
+        LOG_ERROR(error);
     }
 
     m_websocketClosed = true;
-    closeClient(error);
-    LOG_ERROR(error);
+    closeClient();
 }

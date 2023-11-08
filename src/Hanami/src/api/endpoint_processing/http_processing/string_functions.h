@@ -62,7 +62,7 @@ inline bool
 parseUri(const std::string& token,
          RequestMessage& request,
          const std::string& uri,
-         Hanami::ErrorContainer& error)
+         BlossomStatus& status)
 {
     // first split of uri
     json parsedInputValues;
@@ -71,11 +71,15 @@ parseUri(const std::string& token,
 
     // check split-result
     if (parts.size() == 0) {
-        error.addMeesage("Uri is empty.");
+        status.errorMessage = "Uri is empty.";
+        status.statusCode = BAD_REQUEST_RTYPE;
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
     if (parts.at(0).find("/") == std::string::npos) {
-        error.addMeesage("Uri doesn't start with '/'.");
+        status.errorMessage = "Uri doesn't start with '/'";
+        status.statusCode = BAD_REQUEST_RTYPE;
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
@@ -83,8 +87,10 @@ parseUri(const std::string& token,
     try {
         parsedInputValues = json::parse(request.inputValues);
     } catch (const json::parse_error& ex) {
-        error.addMeesage("json-parser error: " + std::string(ex.what()));
-        error.addMeesage("Failed to parse input-values.");
+        status.errorMessage = "Failed to parse input-values, because of json-parser error: "
+                              + std::string(ex.what());
+        status.statusCode = BAD_REQUEST_RTYPE;
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 

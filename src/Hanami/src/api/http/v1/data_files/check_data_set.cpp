@@ -89,7 +89,7 @@ CheckDataSet::runTask(BlossomIO& blossomIO,
     if (requestResult.size() == 0) {
         status.errorMessage = "Result with uuid '" + resultUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 

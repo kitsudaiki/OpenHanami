@@ -89,7 +89,7 @@ SetClusterMode::runTask(BlossomIO& blossomIO,
     if (blossomIO.output.size() == 0) {
         status.errorMessage = "Cluster with uuid '" + clusterUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
@@ -121,7 +121,7 @@ SetClusterMode::runTask(BlossomIO& blossomIO,
         {
             status.errorMessage = "Connection with UUID '" + connectionUuid + "'not found";
             status.statusCode = NOT_FOUND_RTYPE;
-            error.addMeesage(status.errorMessage);
+            LOG_DEBUG(status.errorMessage);
             return false;
         }
         client->setStreamCallback(cluster, streamDataCallback);

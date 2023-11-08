@@ -91,8 +91,8 @@ CreateToken::runTask(BlossomIO& blossomIO,
         status.errorMessage
             = "ACCESS DENIED!\n"
               "User or password is incorrect.";
-        error.addMeesage(status.errorMessage);
         status.statusCode = UNAUTHORIZED_RTYPE;
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
@@ -109,8 +109,8 @@ CreateToken::runTask(BlossomIO& blossomIO,
         status.errorMessage
             = "ACCESS DENIED!\n"
               "User or password is incorrect.";
-        error.addMeesage(status.errorMessage);
         status.statusCode = UNAUTHORIZED_RTYPE;
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
@@ -136,8 +136,8 @@ CreateToken::runTask(BlossomIO& blossomIO,
         userData.erase("projects");
     } else {
         status.errorMessage = "User with id '" + userId + "' has no project assigned.";
-        error.addMeesage(status.errorMessage);
         status.statusCode = UNAUTHORIZED_RTYPE;
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
@@ -145,7 +145,7 @@ CreateToken::runTask(BlossomIO& blossomIO,
     bool success = false;
     const u_int32_t expireTime = GET_INT_CONFIG("auth", "token_expire_time", success);
     if (success == false) {
-        error.addMeesage("Could not read 'token_expire_time' from config of misaki.");
+        error.addMeesage("Could not read 'token_expire_time' from config of hanami.");
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
     }
 

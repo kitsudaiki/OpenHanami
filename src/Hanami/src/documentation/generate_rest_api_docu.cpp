@@ -23,6 +23,9 @@
 #include "generate_rest_api_docu.h"
 
 #include <api/endpoint_processing/blossom.h>
+#include <api/endpoint_processing/http_processing/http_processing.h>
+#include <api/endpoint_processing/http_server.h>
+#include <api/endpoint_processing/http_websocket_thread.h>
 #include <hanami_common/methods/file_methods.h>
 #include <hanami_common/methods/string_methods.h>
 #include <hanami_crypto/common.h>
@@ -46,6 +49,8 @@ std::map<HttpResponseTypes, std::string> responseMessage = {
 void
 createOpenApiDocumentation(std::string& docu)
 {
+    HanamiRoot::httpServer = new HttpServer("0.0.0.0", 12345);
+
     json result;
     result["openapi"] = "3.0.0";
 
@@ -334,15 +339,16 @@ createBodyParams_openapi(json& schema,
 void
 generateEndpointDocu_openapi(json& result)
 {
-    for (const auto& [endpointPath, httpDef] : HanamiRoot::root->endpointRules) {
+    HttpProcessing* httpProcessing = HanamiRoot::httpServer->httpProcessing;
+    for (const auto& [endpointPath, httpDef] : httpProcessing->endpointRules) {
         // add endpoint
         json endpoint;
 
         for (const auto& [type, endpointEntry] : httpDef) {
             json endpointType;
 
-            Blossom* blossom
-                = HanamiRoot::root->getBlossom(endpointEntry.group, endpointEntry.name);
+            Blossom* blossom = HanamiRoot::httpServer->httpProcessing->getBlossom(
+                endpointEntry.group, endpointEntry.name);
             if (blossom == nullptr) {
                 // TODO: handle error
                 return;

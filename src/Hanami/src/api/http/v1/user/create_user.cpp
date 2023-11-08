@@ -109,7 +109,7 @@ CreateUser::runTask(BlossomIO& blossomIO,
     if (getResult.size() != 0) {
         status.errorMessage = "User with id '" + newUserId + "' already exist.";
         status.statusCode = CONFLICT_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 

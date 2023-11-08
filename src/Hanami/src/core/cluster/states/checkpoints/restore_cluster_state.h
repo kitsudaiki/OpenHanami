@@ -44,7 +44,6 @@ class RestoreCluster_State : public Hanami::Event
 
    private:
     Cluster* m_cluster = nullptr;
-    Hanami::HanamiMessagingClient* m_client = nullptr;
 };
 
 #endif  // HANAMI_RESTORECLUSTERSTATE_H

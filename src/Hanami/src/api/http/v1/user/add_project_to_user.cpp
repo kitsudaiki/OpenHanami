@@ -116,7 +116,7 @@ AddProjectToUser::runTask(BlossomIO& blossomIO,
     if (getResult.size() == 0) {
         status.errorMessage = "User with id '" + userId + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
@@ -126,8 +126,8 @@ AddProjectToUser::runTask(BlossomIO& blossomIO,
         if (parsedProjects[i]["project_id"] == projectId) {
             status.errorMessage = "Project with ID '" + projectId
                                   + "' is already assigned to user with id '" + userId + "'.";
-            error.addMeesage(status.errorMessage);
             status.statusCode = CONFLICT_RTYPE;
+            LOG_DEBUG(status.errorMessage);
             return false;
         }
     }

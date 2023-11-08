@@ -57,13 +57,13 @@ class HttpWebsocketThread : public Hanami::Thread
 
     bool sendData(const void* data, const uint64_t dataSize);
     Cluster* m_targetCluster = nullptr;
-    void closeClient(Hanami::ErrorContainer&);
+    void closeClient();
 
    protected:
     void run();
 
    private:
-    bool handleSocket(tcp::socket* socket, Hanami::ErrorContainer& error);
+    bool handleSocket(tcp::socket* socket);
     bool readMessage(tcp::socket& stream,
                      http::request<http::string_body>& httpRequest,
                      Hanami::ErrorContainer& error);
@@ -82,8 +82,6 @@ class HttpWebsocketThread : public Hanami::Thread
     bool m_waitForInput = true;
     bool m_websocketClosed = true;
     bool m_clientInit = false;
-    bool m_datasetConnection = false;
-    bool m_clusterConnection = false;
 };
 
 #endif  // TORIIGATEWAY_HTTP_THREAD_H
