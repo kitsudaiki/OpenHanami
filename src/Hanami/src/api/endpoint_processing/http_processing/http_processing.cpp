@@ -22,10 +22,12 @@
 
 #include "http_processing.h"
 
+#include <api/endpoint_processing/blossom.h>
 #include <api/endpoint_processing/http_processing/file_send.h>
 #include <api/endpoint_processing/http_processing/response_builds.h>
 #include <api/endpoint_processing/http_processing/string_functions.h>
 #include <api/endpoint_processing/http_server.h>
+#include <api/endpoint_processing/items/item_methods.h>
 #include <database/audit_log_table.h>
 #include <hanami_common/logger.h>
 #include <hanami_root.h>
@@ -36,9 +38,9 @@
  * @brief process request and build response
  */
 bool
-processRequest(http::request<http::string_body>& httpRequest,
-               http::response<http::dynamic_body>& httpResponse,
-               Hanami::ErrorContainer& error)
+HttpProcessing::processRequest(http::request<http::string_body>& httpRequest,
+                               http::response<http::dynamic_body>& httpResponse,
+                               Hanami::ErrorContainer& error)
 {
     // build default-header for response
     httpResponse.version(httpRequest.version());
@@ -118,12 +120,12 @@ processRequest(http::request<http::string_body>& httpRequest,
  * @return true, if successful, else false
  */
 bool
-processControlRequest(http::response<http::dynamic_body>& httpResponse,
-                      const std::string& uri,
-                      const std::string& token,
-                      const std::string& inputValues,
-                      const Hanami::HttpRequestType httpType,
-                      Hanami::ErrorContainer& error)
+HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpResponse,
+                                      const std::string& uri,
+                                      const std::string& token,
+                                      const std::string& inputValues,
+                                      const Hanami::HttpRequestType httpType,
+                                      Hanami::ErrorContainer& error)
 {
     RequestMessage hanamiRequest;
     BlossomStatus status;
@@ -152,7 +154,7 @@ processControlRequest(http::response<http::dynamic_body>& httpResponse,
         if (uri == "v1/token" && hanamiRequest.httpType == Hanami::POST_TYPE) {
             inputValuesJson.erase("token");
 
-            if (HanamiRoot::root->triggerBlossom(
+            if (triggerBlossom(
                     result, "create", "Token", json::object(), inputValuesJson, status, error)
                 == false) {
                 error.addMeesage("Token request failed");
@@ -167,7 +169,7 @@ processControlRequest(http::response<http::dynamic_body>& httpResponse,
         tokenInputValues["token"] = token;
         tokenInputValues["http_type"] = static_cast<uint32_t>(hanamiRequest.httpType);
         tokenInputValues["endpoint"] = hanamiRequest.id;
-        if (HanamiRoot::root->triggerBlossom(
+        if (triggerBlossom(
                 tokenData, "validate", "Token", json::object(), tokenInputValues, status, error)
             == false) {
             error.addMeesage("Permission-check failed");
@@ -207,15 +209,14 @@ processControlRequest(http::response<http::dynamic_body>& httpResponse,
 
         // map endpoint to blossom
         EndpointEntry endpoint;
-        if (HanamiRoot::root->mapEndpoint(endpoint, hanamiRequest.id, hanamiRequest.httpType)
-            == false) {
+        if (mapEndpoint(endpoint, hanamiRequest.id, hanamiRequest.httpType) == false) {
             status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
             error.addMeesage("Failed to map endpoint with id '" + hanamiRequest.id + "'");
             break;
         }
 
         // make real request
-        if (HanamiRoot::root->triggerBlossom(
+        if (triggerBlossom(
                 result, endpoint.name, endpoint.group, tokenData, inputValuesJson, status, error)
             == false) {
             error.addMeesage("Blossom-trigger failed");
@@ -236,4 +237,280 @@ processControlRequest(http::response<http::dynamic_body>& httpResponse,
     }
 
     return success_ResponseBuild(httpResponse, result.dump());
+}
+
+/**
+ * @brief check if a specific blossom was registered
+ *
+ * @param groupName group-identifier of the blossom
+ * @param itemName item-identifier of the blossom
+ *
+ * @return true, if blossom with the given group- and item-name exist, else false
+ */
+bool
+HttpProcessing::doesBlossomExist(const std::string& groupName, const std::string& itemName)
+{
+    auto groupIt = m_registeredBlossoms.find(groupName);
+    if (groupIt != m_registeredBlossoms.end()) {
+        if (groupIt->second.find(itemName) != groupIt->second.end()) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/**
+ * @brief SakuraLangInterface::addBlossom
+ *
+ * @param groupName group-identifier of the blossom
+ * @param itemName item-identifier of the blossom
+ * @param newBlossom pointer to the new blossom
+ *
+ * @return true, if blossom was registered or false, if the group- and item-name are already
+ *         registered
+ */
+bool
+HttpProcessing::addBlossom(const std::string& groupName,
+                           const std::string& itemName,
+                           Blossom* newBlossom)
+{
+    // check if already used
+    if (doesBlossomExist(groupName, itemName) == true) {
+        return false;
+    }
+
+    // create internal group-map, if not already exist
+    auto groupIt = m_registeredBlossoms.find(groupName);
+    if (groupIt == m_registeredBlossoms.end()) {
+        std::map<std::string, Blossom*> newMap;
+        m_registeredBlossoms.try_emplace(groupName, newMap);
+    }
+
+    // add item to group
+    groupIt = m_registeredBlossoms.find(groupName);
+    groupIt->second.try_emplace(itemName, newBlossom);
+
+    return true;
+}
+
+/**
+ * @brief request a registered blossom
+ *
+ * @param groupName group-identifier of the blossom
+ * @param itemName item-identifier of the blossom
+ *
+ * @return pointer to the blossom or
+ *         nullptr, if blossom the given group- and item-name was not found
+ */
+Blossom*
+HttpProcessing::getBlossom(const std::string& groupName, const std::string& itemName)
+{
+    // search for group
+    auto groupIt = m_registeredBlossoms.find(groupName);
+    if (groupIt != m_registeredBlossoms.end()) {
+        // search for item within group
+        auto itemIt = groupIt->second.find(itemName);
+        if (itemIt != groupIt->second.end()) {
+            return itemIt->second;
+        }
+    }
+
+    return nullptr;
+}
+
+/**
+ * @brief trigger existing blossom
+ *
+ * @param result map with resulting items
+ * @param blossomName id of the blossom to trigger
+ * @param blossomGroupName id of the group of the blossom to trigger
+ * @param initialValues input-values for the tree
+ * @param status reference for status-output
+ * @param error reference for error-output
+ *
+ * @return true, if successfule, else false
+ */
+bool
+HttpProcessing::triggerBlossom(json& result,
+                               const std::string& blossomName,
+                               const std::string& blossomGroupName,
+                               const json& context,
+                               const json& initialValues,
+                               BlossomStatus& status,
+                               Hanami::ErrorContainer& error)
+{
+    LOG_DEBUG("trigger blossom");
+
+    // get initial blossom-item
+    Blossom* blossom = getBlossom(blossomGroupName, blossomName);
+    if (blossom == nullptr) {
+        error.addMeesage("No blosom found for the id " + blossomName);
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        status.errorMessage = "";
+        return false;
+    }
+
+    // inialize a new blossom-leaf for processing
+    BlossomIO blossomIO;
+    blossomIO.blossomName = blossomName;
+    blossomIO.blossomPath = blossomName;
+    blossomIO.blossomGroupType = blossomGroupName;
+    blossomIO.input = initialValues;
+    blossomIO.parentValues = blossomIO.input;
+    blossomIO.nameHirarchie.push_back("BLOSSOM: " + blossomName);
+
+    // check input to be complete
+    std::string errorMessage;
+    if (blossom->validateFieldsCompleteness(
+            initialValues, *blossom->getInputValidationMap(), FieldDef::INPUT_TYPE, errorMessage)
+        == false) {
+        status.statusCode = BAD_REQUEST_RTYPE;
+        status.errorMessage = errorMessage;
+        LOG_DEBUG(status.errorMessage);
+        LOG_DEBUG(
+            "check of completeness of input-fields failed"
+            "Check of blossom '"
+            + blossomName + " in group '" + blossomGroupName + "' failed.");
+        return false;
+    }
+
+    // process blossom
+    if (blossom->growBlossom(blossomIO, context, status, error) == false) {
+        return false;
+    }
+
+    // check output to be complete
+    if (blossom->validateFieldsCompleteness(blossomIO.output,
+                                            *blossom->getOutputValidationMap(),
+                                            FieldDef::OUTPUT_TYPE,
+                                            errorMessage)
+        == false) {
+        error.addMeesage(errorMessage);
+        error.addMeesage("check of completeness of output-fields failed");
+        error.addMeesage("Check of blossom '" + blossomName + " in group '" + blossomGroupName
+                         + "' failed.");
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        status.errorMessage = "";
+        return false;
+    }
+
+    // TODO: override only with the output-values to avoid unnecessary conflicts
+    result.clear();
+    overrideItems(result, blossomIO.output, ALL);
+
+    return checkStatusCode(blossom, blossomName, blossomGroupName, status, error);
+}
+
+/**
+ * @brief check if the given status-code is allowed for the endpoint
+ *
+ * @param blossom pointer to related blossom
+ * @param blossomName name of blossom for error-message
+ * @param blossomGroupName group of the blossom for error-message
+ * @param status status to check
+ * @param error reference for error-output
+ */
+bool
+HttpProcessing::checkStatusCode(Blossom* blossom,
+                                const std::string& blossomName,
+                                const std::string& blossomGroupName,
+                                BlossomStatus& status,
+                                Hanami::ErrorContainer& error)
+{
+    if (status.statusCode == OK_RTYPE) {
+        return true;
+    }
+
+    bool found = false;
+    for (const uint32_t allowed : blossom->errorCodes) {
+        if (allowed == status.statusCode) {
+            found = true;
+        }
+    }
+
+    // if given status-code is unexprected, then override it and clear the message
+    // to avoid leaking unwanted information
+    if (found == false) {
+        error.addMeesage("Status-code '" + std::to_string(status.statusCode)
+                         + "' is not allowed as output for blossom '" + blossomName + "' in group '"
+                         + blossomGroupName + "'");
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        status.errorMessage = "";
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * @brief map the endpoint to the real target
+ *
+ * @param result reference to the result to identify the target
+ * @param id request-id
+ * @param type requested http-request-type
+ *
+ * @return false, if mapping failes, else true
+ */
+bool
+HttpProcessing::mapEndpoint(EndpointEntry& result,
+                            const std::string& id,
+                            const HttpRequestType type)
+{
+    const auto id_it = endpointRules.find(id);
+    if (id_it != endpointRules.end()) {
+        auto type_it = id_it->second.find(type);
+        if (type_it != id_it->second.end()) {
+            result.type = type_it->second.type;
+            result.group = type_it->second.group;
+            result.name = type_it->second.name;
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/**
+ * @brief add new custom-endpoint without the parser
+ *
+ * @param id identifier for the new entry
+ * @param httpType http-type (get, post, put, delete)
+ * @param sakuraType sakura-type (tree or blossom)
+ * @param group blossom-group
+ * @param name tree- or blossom-id
+ *
+ * @return false, if id together with http-type is already registered, else true
+ */
+bool
+HttpProcessing::addEndpoint(const std::string& id,
+                            const HttpRequestType& httpType,
+                            const SakuraObjectType& sakuraType,
+                            const std::string& group,
+                            const std::string& name)
+{
+    EndpointEntry newEntry;
+    newEntry.type = sakuraType;
+    newEntry.group = group;
+    newEntry.name = name;
+
+    // search for id
+    auto id_it = endpointRules.find(id);
+    if (id_it != endpointRules.end()) {
+        // search for http-type
+        if (id_it->second.find(httpType) != id_it->second.end()) {
+            return false;
+        }
+
+        // add new
+        id_it->second.emplace(httpType, newEntry);
+    } else {
+        // add new
+        std::map<HttpRequestType, EndpointEntry> typeEntry;
+        typeEntry.emplace(httpType, newEntry);
+        endpointRules.emplace(id, typeEntry);
+    }
+
+    return true;
 }

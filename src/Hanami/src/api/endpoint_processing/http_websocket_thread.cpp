@@ -91,7 +91,8 @@ HttpWebsocketThread::handleSocket(tcp::socket* socket)
         m_uuid = "";
     } else {
         // process request
-        processResult = processRequest(httpRequest, httpResponse, error);
+        processResult = HanamiRoot::httpServer->httpProcessing->processRequest(
+            httpRequest, httpResponse, error);
         if (processResult == false) {
             LOG_DEBUG("Failed to process http-request.");
         }
@@ -301,7 +302,7 @@ HttpWebsocketThread::processInitialMessage(const std::string& message, ErrorCont
         tokenInputValues["token"] = content["token"];
         tokenInputValues["http_type"] = static_cast<uint32_t>(requestMsg.httpType);
         tokenInputValues["endpoint"] = requestMsg.id;
-        if (HanamiRoot::root->triggerBlossom(
+        if (HanamiRoot::httpServer->httpProcessing->triggerBlossom(
                 tokenData, "validate", "Token", json::object(), tokenInputValues, status, error)
             == false) {
             error.addMeesage("Permission-check failed");

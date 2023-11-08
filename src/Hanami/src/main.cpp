@@ -20,7 +20,6 @@
  *      limitations under the License.
  */
 
-#include <api/http/v1/blossom_initializing.h>
 #include <api/websocket/cluster_io.h>
 #include <args.h>
 #include <common.h>
@@ -47,7 +46,6 @@ main(int argc, char* argv[])
 {
     Hanami::ErrorContainer error;
     HanamiRoot rootObj;
-    initBlossoms();
 
     Hanami::initConsoleLogger(true);
 
@@ -65,7 +63,6 @@ main(int argc, char* argv[])
     // generate api-, config- and database-docu, if requested
     if (argParser.wasSet("generate_docu")) {
         namespace fs = std::filesystem;
-
         Hanami::ErrorContainer error;
 
         //-------------------------------------------------------------------------

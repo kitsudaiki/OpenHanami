@@ -42,14 +42,14 @@
 
 using tcp = boost::asio::ip::tcp;
 
-class HttpWebsocketThread;
+class HttpProcessing;
 
 class HttpServer : public Hanami::Thread
 {
    public:
     HttpServer(const std::string& address, const uint16_t port);
 
-    // boost::asio::ssl::context m_ctx;
+    HttpProcessing* httpProcessing = nullptr;
 
     tcp::socket* getSocket();
     void addSocket(tcp::socket* socket);
