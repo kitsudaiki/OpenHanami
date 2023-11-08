@@ -51,11 +51,6 @@ bool processRequest(http::request<http::string_body>& httpRequest,
                     http::response<http::dynamic_body>& httpResponse,
                     Hanami::ErrorContainer& error);
 
-bool checkPermission(json& tokenData,
-                     const std::string& token,
-                     const RequestMessage& hanamiRequest,
-                     BlossomStatus& status,
-                     Hanami::ErrorContainer& error);
 bool processControlRequest(http::response<http::dynamic_body>& httpResponse,
                            const std::string& uri,
                            const std::string& token,

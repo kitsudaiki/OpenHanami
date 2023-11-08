@@ -107,81 +107,6 @@ processRequest(http::request<http::string_body>& httpRequest,
 }
 
 /**
- * @brief send request to misaki to check permissions
- *
- * @param tokenData
- * @param token token to validate
- * @param hanamiRequest hanami-request to the requested endpoint
- * @param status reference for the response
- * @param error reference for error-output
- *
- * @return true, if successful, else false
- */
-bool
-checkPermission(json& tokenData,
-                const std::string& token,
-                const RequestMessage& hanamiRequest,
-                BlossomStatus& status,
-                Hanami::ErrorContainer& error)
-{
-    RequestMessage requestMsg;
-
-    // collect information from the input
-    const std::string endpoint = hanamiRequest.id;
-
-    // handle empty token
-    if (token.empty()) {
-        status.statusCode = UNAUTHORIZED_RTYPE;
-        status.errorMessage = "JWT-Token is missing in request";
-        LOG_DEBUG(status.errorMessage);
-        return false;
-    }
-
-    // validate token
-    try {
-        auto decodedToken = jwt::decode(token);
-        auto verifier = jwt::verify().allow_algorithm(
-            jwt::algorithm::hs256{(const char*)HanamiRoot::tokenKey.data()});
-        verifier.verify(decodedToken);
-
-        // copy data of token into the output
-        for (const auto& e : decodedToken.get_payload_json()) {
-            const std::string tokenStr = e.second.to_str();
-            try {
-                tokenData = json::parse(tokenStr);
-            } catch (const json::parse_error& ex) {
-                status.statusCode = BAD_REQUEST_RTYPE;
-                status.errorMessage = "Failed to pase input-values: " + std::string(ex.what());
-                LOG_DEBUG(status.errorMessage);
-                return false;
-            }
-        }
-    } catch (const std::exception& ex) {
-        error.addMeesage("Failed to validate JWT-Token with error: " + std::string(ex.what()));
-        status.statusCode = UNAUTHORIZED_RTYPE;
-        status.errorMessage = "Failed to validate JWT-Token";
-        LOG_DEBUG(status.errorMessage);
-        return false;
-    }
-
-    const uint32_t httpTypeValue = static_cast<uint32_t>(hanamiRequest.httpType);
-    const HttpRequestType httpType = static_cast<HttpRequestType>(httpTypeValue);
-
-    // process payload to get role of user
-    const std::string role = tokenData["role"];
-
-    // check policy
-    if (Policy::getInstance()->checkUserAgainstPolicy(endpoint, httpType, role) == false) {
-        status.statusCode = UNAUTHORIZED_RTYPE;
-        status.errorMessage = "Access denied by policy";
-        LOG_DEBUG(status.errorMessage);
-        return false;
-    }
-
-    return true;
-}
-
-/**
  * @brief process control request
  *
  * @param uri requested uri
@@ -238,7 +163,13 @@ processControlRequest(http::response<http::dynamic_body>& httpResponse,
 
         // check authentication
         json tokenData = json::object();
-        if (checkPermission(tokenData, token, hanamiRequest, status, error) == false) {
+        json tokenInputValues = json::object();
+        tokenInputValues["token"] = token;
+        tokenInputValues["http_type"] = static_cast<uint32_t>(hanamiRequest.httpType);
+        tokenInputValues["endpoint"] = hanamiRequest.id;
+        if (HanamiRoot::root->triggerBlossom(
+                tokenData, "validate", "Token", json::object(), tokenInputValues, status, error)
+            == false) {
             error.addMeesage("Permission-check failed");
             break;
         }

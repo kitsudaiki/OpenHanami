@@ -50,26 +50,16 @@ ValidateAccess::ValidateAccess()
         .setComment("User specific JWT-access-token.")
         .setRegex("[a-zA-Z_.\\-0-9]*");
 
-    registerInputField("component", SAKURA_STRING_TYPE)
-        .setComment(
-            "Requested component-name of the request. If this is not set, then only "
-            "the token in itself will be validated.")
-        .setLimit(4, 256)
-        .setRegex("[a-zA-Z][a-zA-Z_0-9]*")
-        .setRequired(false);
-
     registerInputField("endpoint", SAKURA_STRING_TYPE)
         .setComment("Requesed endpoint within the component.")
         .setLimit(4, 256)
-        .setRegex("[a-zA-Z][a-zA-Z_/0-9]*")
-        .setRequired(false);
+        .setRegex("[a-zA-Z][a-zA-Z_/0-9]*");
 
     registerInputField("http_type", SAKURA_INT_TYPE)
         .setComment(
             "Type of the HTTP-request as enum "
             "(DELETE = 1, GET = 2, HEAD = 3, POST = 4, PUT = 5).")
-        .setLimit(1, 5)
-        .setRequired(false);
+        .setLimit(1, 5);
 
     //----------------------------------------------------------------------------------------------
     // output
@@ -107,16 +97,7 @@ ValidateAccess::runTask(BlossomIO& blossomIO,
 {
     // collect information from the input
     const std::string token = blossomIO.input["token"];
-
-    std::string component = "";
-    if (blossomIO.input.contains("component")) {
-        blossomIO.input["component"];
-    }
-
-    std::string endpoint = "";
-    if (blossomIO.input.contains("endpoint")) {
-        blossomIO.input["endpoint"];
-    }
+    const std::string endpoint = blossomIO.input["endpoint"];
 
     try {
         auto decodedToken = jwt::decode(token);
@@ -144,26 +125,22 @@ ValidateAccess::runTask(BlossomIO& blossomIO,
         return false;
     }
 
-    // allow skipping policy-check
-    // TODO: find better solution to make a difference, if policy should be checked or not
-    if (component != "") {
-        if (blossomIO.input.contains("http_type") == false) {
-            error.addMeesage("http_type is missing in token-request");
-            status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-            return false;
-        }
+    if (blossomIO.input.contains("http_type") == false) {
+        error.addMeesage("http_type is missing in token-request");
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
 
-        const uint32_t httpTypeValue = blossomIO.input["http_type"];
-        const HttpRequestType httpType = static_cast<HttpRequestType>(httpTypeValue);
+    const uint32_t httpTypeValue = blossomIO.input["http_type"];
+    const HttpRequestType httpType = static_cast<HttpRequestType>(httpTypeValue);
 
-        // check policy
-        const std::string role = blossomIO.output["role"];
-        if (Policy::getInstance()->checkUserAgainstPolicy(endpoint, httpType, role) == false) {
-            status.errorMessage = "Access denied by policy";
-            status.statusCode = UNAUTHORIZED_RTYPE;
-            LOG_DEBUG(status.errorMessage);
-            return false;
-        }
+    // check policy
+    const std::string role = blossomIO.output["role"];
+    if (Policy::getInstance()->checkUserAgainstPolicy(endpoint, httpType, role) == false) {
+        status.errorMessage = "Access denied by policy";
+        status.statusCode = UNAUTHORIZED_RTYPE;
+        LOG_DEBUG(status.errorMessage);
+        return false;
     }
 
     // remove irrelevant fields

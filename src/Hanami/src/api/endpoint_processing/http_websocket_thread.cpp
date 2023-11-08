@@ -296,9 +296,15 @@ HttpWebsocketThread::processInitialMessage(const std::string& message, ErrorCont
         m_target = content["target"];
 
         // check authentication
-        json tokenData;
-        if (checkPermission(tokenData, content["token"], requestMsg, status, error) == false) {
-            error.addMeesage("Permission-check for token over websocket failed");
+        json tokenData = json::object();
+        json tokenInputValues = json::object();
+        tokenInputValues["token"] = content["token"];
+        tokenInputValues["http_type"] = static_cast<uint32_t>(requestMsg.httpType);
+        tokenInputValues["endpoint"] = requestMsg.id;
+        if (HanamiRoot::root->triggerBlossom(
+                tokenData, "validate", "Token", json::object(), tokenInputValues, status, error)
+            == false) {
+            error.addMeesage("Permission-check failed");
             break;
         }
 
