@@ -65,10 +65,9 @@ class HanamiRoot
     static bool useCuda;
 
    private:
-    uint32_t m_serverId = 0;
     std::vector<HttpWebsocketThread*> m_threads;
 
-    bool initSakuraServer();
+    bool initDataDirectory(Hanami::ErrorContainer& error);
     bool initDatabase(Hanami::ErrorContainer& error);
     bool initPolicies(Hanami::ErrorContainer& error);
     bool initJwt(Hanami::ErrorContainer& error);

@@ -38,6 +38,7 @@
 #include <database/users_table.h>
 #include <hanami_common/files/text_file.h>
 #include <hanami_common/logger.h>
+#include <hanami_common/methods/file_methods.h>
 #include <hanami_config/config_handler.h>
 #include <hanami_database/sql_database.h>
 #include <hanami_hardware/host.h>
@@ -83,6 +84,11 @@ HanamiRoot::init(Hanami::ErrorContainer& error)
         assert(oclHandler.m_interfaces.size() == 1);
         gpuInterface = oclHandler.m_interfaces.at(0);
     }*/
+
+    if (initDataDirectory(error) == false) {
+        error.addMeesage("Failed to initialize directories");
+        return false;
+    }
 
     // init predefinde random-values
     m_randomValues = new uint32_t[NUMBER_OF_RAND_VALUES];
@@ -286,6 +292,41 @@ HanamiRoot::initHttpServer()
         HttpWebsocketThread* httpWebsocketThread = new HttpWebsocketThread(name);
         httpWebsocketThread->startThread();
         m_threads.push_back(httpWebsocketThread);
+    }
+
+    return true;
+}
+
+/**
+ * @brief HanamiRoot::initDataDirectory
+ * @return
+ */
+bool
+HanamiRoot::initDataDirectory(Hanami::ErrorContainer& error)
+{
+    bool success = false;
+
+    const std::string datasetsPath = GET_STRING_CONFIG("storage", "data_set_location", success);
+    if (success == false) {
+        error.addMeesage("No data_set_location defined in config.");
+        return false;
+    }
+
+    if (createDirectory(datasetsPath, error) == false) {
+        error.addMeesage("Failed to create directory for data-sets.");
+        return false;
+    }
+
+    const std::string checkpointsPath
+        = GET_STRING_CONFIG("storage", "checkpoint_location", success);
+    if (success == false) {
+        error.addMeesage("No checkpoint_location defined in config.");
+        return false;
+    }
+
+    if (createDirectory(checkpointsPath, error) == false) {
+        error.addMeesage("Failed to create directory for checkpoints.");
+        return false;
     }
 
     return true;
