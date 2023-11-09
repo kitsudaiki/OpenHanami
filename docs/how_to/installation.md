@@ -148,7 +148,9 @@ After a successful installation the `USER_ID` and `PASSWORD` have to be used for
 
 - login with `USER_ID` and `PASSWORD`
 
+   !!! note
 
+      Persistent data of hanami (checkpoints and so on) within the pod are mounted into the host directory `/etc/hanami_data`, in case you want to save or delete them.
 
 ## With Ansible
 
