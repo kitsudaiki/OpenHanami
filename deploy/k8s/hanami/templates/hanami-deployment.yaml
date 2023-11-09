@@ -44,6 +44,8 @@ spec:
         - name: HANAMI_ADMIN_PASSWORD
           value: {{ .Values.user.pw }}
         volumeMounts:
+        - name: data-volume
+          mountPath: /etc/hanami/data/
         - name: hanami-config
           mountPath: /etc/hanami/hanami.conf
           subPath: hanami.conf
@@ -68,7 +70,8 @@ spec:
         - name: token-key
           configMap:
             name: token-key
-        - name: files-volume
-          emptyDir: {}
         - name: hanami-sockets-volume
           emptyDir: {}
+        - name: data-volume
+          persistentVolumeClaim:
+            claimName: hanami-pvc
