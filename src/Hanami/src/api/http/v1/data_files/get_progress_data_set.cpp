@@ -71,7 +71,8 @@ GetProgressDataSet::runTask(BlossomIO& blossomIO,
 
     json databaseOutput;
     if (DataSetTable::getInstance()->getDataSet(databaseOutput, dataUuid, userContext, error, true)
-        == false) {
+        == false)
+    {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

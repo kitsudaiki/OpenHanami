@@ -271,7 +271,8 @@ BinaryFileDirect::readSegment(DataBuffer& buffer,
     // precheck
     if (startBytesInFile + numberOfBytes > m_totalFileSize
         || startBytesInBuffer + numberOfBytes > buffer.numberOfBlocks * buffer.blockSize
-        || m_fileDescriptor < 0) {
+        || m_fileDescriptor < 0)
+    {
         error.addMeesage("Failed to read cluster of binary file for path '"
                          + m_filePath
                          + "', because the precheck failed. Either the buffer is incompatible "
@@ -330,7 +331,8 @@ BinaryFileDirect::writeSegment(DataBuffer& buffer,
     // precheck
     if (startBytesInFile + numberOfBytes > m_totalFileSize
         || startBytesInBuffer + numberOfBytes > buffer.numberOfBlocks * buffer.blockSize
-        || m_fileDescriptor < 0) {
+        || m_fileDescriptor < 0)
+    {
         error.addMeesage("Failed to write cluster to binary file for path '"
                          + m_filePath
                          + "', because the precheck failed. Either the buffer is incompatible "

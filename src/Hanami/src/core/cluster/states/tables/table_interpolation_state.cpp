@@ -50,7 +50,8 @@ TableInterpolation_State::processEvent()
     uint64_t offset = actualTask->actualCycle;
     if (numberOfInputsPerCycle > numberOfOuputsPerCycle) {
         offset += numberOfInputsPerCycle;
-    } else {
+    }
+    else {
         offset += numberOfOuputsPerCycle;
     }
 

@@ -184,7 +184,8 @@ class TemplateSocket : public AbstractSocket
         do {
             readBytes = m_processMessage(m_target, &m_recvBuffer, this);
             moveForward_RingBuffer(m_recvBuffer, readBytes);
-        } while (readBytes > 0);
+        }
+        while (readBytes > 0);
 
         return true;
     }

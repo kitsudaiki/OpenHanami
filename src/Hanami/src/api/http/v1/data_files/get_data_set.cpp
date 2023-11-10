@@ -83,7 +83,8 @@ GetDataSet::runTask(BlossomIO& blossomIO,
 {
     const std::string dataUuid = blossomIO.input["uuid"];
     if (DataSetTable::getInstance()->getDateSetInfo(blossomIO.output, dataUuid, context, error)
-        == false) {
+        == false)
+    {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

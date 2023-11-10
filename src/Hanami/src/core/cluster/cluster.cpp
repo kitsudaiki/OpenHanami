@@ -208,7 +208,8 @@ Cluster::updateClusterState()
     // send message, that process was finished
     if (mode == ClusterProcessingMode::TRAIN_BACKWARD_MODE) {
         sendClusterTrainEndMessage(this);
-    } else if (mode == ClusterProcessingMode::NORMAL_MODE) {
+    }
+    else if (mode == ClusterProcessingMode::NORMAL_MODE) {
         sendClusterNormalEndMessage(this);
     }
 

@@ -58,7 +58,8 @@ DeleteDataSet::runTask(BlossomIO& blossomIO,
     // get location from database
     json result;
     if (DataSetTable::getInstance()->getDataSet(result, dataUuid, userContext, error, true)
-        == false) {
+        == false)
+    {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

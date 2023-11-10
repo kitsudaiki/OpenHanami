@@ -78,7 +78,8 @@ SaveCluster::runTask(BlossomIO& blossomIO,
     // get data from table
     json clusterResult;
     if (ClusterTable::getInstance()->getCluster(clusterResult, clusterUuid, userContext, error)
-        == false) {
+        == false)
+    {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

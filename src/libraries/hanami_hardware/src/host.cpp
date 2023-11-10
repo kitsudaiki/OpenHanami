@@ -127,7 +127,8 @@ Host::getTotalTemperature(ErrorContainer& error)
 
     if (ids.size() != 0) {
         result /= static_cast<double>(ids.size());
-    } else {
+    }
+    else {
         result = 0.0;
     }
 
@@ -148,7 +149,8 @@ Host::toJsonString() const
     jsonString.append("\"hostname\":\"" + hostName + "\",");
     if (hasHyperThrading) {
         jsonString.append("\"has_hyperthreading\":true,");
-    } else {
+    }
+    else {
         jsonString.append("\"has_hyperthreading\":false,");
     }
 

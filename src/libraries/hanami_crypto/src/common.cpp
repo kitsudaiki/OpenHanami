@@ -141,7 +141,8 @@ encodeBase64(std::string& output, const void* data, const uint64_t dataSize)
         tempBuf.buffer[2] = 0;
         convertToBase64(&result[endPos * 4], tempBuf, 2);
         result[resultSize - 1] = '=';
-    } else if (dataSize % 3 == 1) {
+    }
+    else if (dataSize % 3 == 1) {
         const uint64_t endPos = dataSize / 3;
         Base64Buffer3 tempBuf = buf[endPos];
         tempBuf.buffer[1] = 0;
@@ -268,10 +269,12 @@ decodeBase64(DataBuffer& result, const std::string& input)
     if (input.at(input.size() - 1) == '=' && input.at(input.size() - 2) == '=') {
         result.usedBufferSize -= 2;
         convertFromBase64(&output[lastPos], buf[lastPos], 1);
-    } else if (input.at(input.size() - 1) == '=') {
+    }
+    else if (input.at(input.size() - 1) == '=') {
         result.usedBufferSize -= 1;
         convertFromBase64(&output[lastPos], buf[lastPos], 2);
-    } else {
+    }
+    else {
         convertFromBase64(&output[lastPos], buf[lastPos], 3);
     }
 
@@ -325,7 +328,8 @@ base64ToBase64Url(std::string& base64)
     // remove padding
     if (base64[base64.size() - 2] == '=') {
         base64.resize(base64.size() - 2);
-    } else if (base64[base64.size() - 1] == '=') {
+    }
+    else if (base64[base64.size() - 1] == '=') {
         base64.resize(base64.size() - 1);
     }
 
@@ -360,7 +364,8 @@ base64UrlToBase64(std::string& base64Url)
     // readd padding
     if (base64Url.size() % 4 == 2) {
         base64Url += "==";
-    } else if (base64Url.size() % 4 == 3) {
+    }
+    else if (base64Url.size() % 4 == 3) {
         base64Url += "=";
     }
 

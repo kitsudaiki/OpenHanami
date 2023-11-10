@@ -86,7 +86,8 @@ ImageDataSetFile::updateHeader(Hanami::ErrorContainer& error)
     // write image-header to file
     if (m_targetFile->writeDataIntoFile(
             &imageHeader, sizeof(DataSetHeader), sizeof(ImageTypeHeader), error)
-        == false) {
+        == false)
+    {
         error.addMeesage("Failed to update header of image-file");
         return false;
     }

@@ -212,7 +212,8 @@ initializeNeurons(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta)
                 }
                 block->numberOfNeurons = NEURONS_PER_NEURONSECTION;
                 neuronsInBrick -= NEURONS_PER_NEURONSECTION;
-            } else {
+            }
+            else {
                 for (uint32_t i = 0; i < neuronsInBrick; i++) {
                     block->neurons[i].border = 0.0f;
                 }

@@ -45,8 +45,8 @@ class MemoryLeakTestHelpter
     m_currentAllocations = MemoryCounter::globalMemoryCounter.numberOfActiveAllocations;
 
 #define CHECK_MEMORY()                                                                             \
-    if (MemoryCounter::globalMemoryCounter.numberOfActiveAllocations - m_currentAllocations        \
-        != 0) {                                                                                    \
+    if (MemoryCounter::globalMemoryCounter.numberOfActiveAllocations - m_currentAllocations != 0)  \
+    {                                                                                              \
         int64_t ndiff                                                                              \
             = MemoryCounter::globalMemoryCounter.numberOfActiveAllocations - m_currentAllocations; \
         std::cout << std::endl;                                                                    \
@@ -57,7 +57,8 @@ class MemoryLeakTestHelpter
         std::cout << "   Number of missing deallocations: " << (ndiff) << std::endl;               \
         std::cout << std::endl;                                                                    \
         m_failedTests++;                                                                           \
-    } else {                                                                                       \
+    }                                                                                              \
+    else {                                                                                         \
         m_successfulTests++;                                                                       \
     }
 

@@ -68,7 +68,8 @@ StackBufferReserve::addBuffer(DataBuffer* buffer)
     if (m_reserve.size() >= m_reserveSize) {
         // delete given buffer, if there are already too much within the reserve
         delete buffer;
-    } else {
+    }
+    else {
         // reset buffer and add to reserve
         buffer->usedBufferSize = 0;
         m_reserve.push_back(buffer);

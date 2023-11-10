@@ -58,7 +58,8 @@ RestoreCluster_State::processEvent()
     json parsedCheckpointInfo;
     try {
         parsedCheckpointInfo = json::parse(actualTask->checkpointInfo);
-    } catch (const json::parse_error& ex) {
+    }
+    catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         m_cluster->goToNextState(FINISH_TASK);
         return false;

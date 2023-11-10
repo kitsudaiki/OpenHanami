@@ -60,77 +60,92 @@ TaskHandle_State::processEvent()
     }
 
     switch (actualTask->type) {
-        case IMAGE_TRAIN_TASK: {
+        case IMAGE_TRAIN_TASK:
+        {
             if (m_cluster->goToNextState(TRAIN)) {
                 m_cluster->goToNextState(IMAGE);
                 // Azuki::setSpeedToAutomatic(error);
-            } else {
+            }
+            else {
                 // TODO: error-message
                 return false;
             }
             break;
         }
-        case IMAGE_REQUEST_TASK: {
+        case IMAGE_REQUEST_TASK:
+        {
             if (m_cluster->goToNextState(REQUEST)) {
                 m_cluster->goToNextState(IMAGE);
                 // Azuki::setSpeedToAutomatic(error);
-            } else {
+            }
+            else {
                 // TODO: error-message
                 return false;
             }
             break;
         }
-        case TABLE_TRAIN_TASK: {
+        case TABLE_TRAIN_TASK:
+        {
             if (m_cluster->goToNextState(TRAIN)) {
                 m_cluster->goToNextState(TABLE);
                 // Azuki::setSpeedToAutomatic(error);
-            } else {
+            }
+            else {
                 // TODO: error-message
                 return false;
             }
             break;
         }
-        case TABLE_REQUEST_TASK: {
+        case TABLE_REQUEST_TASK:
+        {
             if (m_cluster->goToNextState(REQUEST)) {
                 m_cluster->goToNextState(TABLE);
                 // Azuki::setSpeedToAutomatic(error);
-            } else {
+            }
+            else {
                 // TODO: error-message
                 return false;
             }
             break;
         }
-        case CLUSTER_CHECKPOINT_SAVE_TASK: {
+        case CLUSTER_CHECKPOINT_SAVE_TASK:
+        {
             if (m_cluster->goToNextState(CHECKPOINT)) {
                 if (m_cluster->goToNextState(CLUSTER)) {
                     m_cluster->goToNextState(SAVE);
                     // Azuki::setSpeedToAutomatic(error);
-                } else {
+                }
+                else {
                     // TODO: error-message
                     return false;
                 }
-            } else {
+            }
+            else {
                 // TODO: error-message
                 return false;
             }
             break;
         }
-        case CLUSTER_CHECKPOINT_RESTORE_TASK: {
+        case CLUSTER_CHECKPOINT_RESTORE_TASK:
+        {
             if (m_cluster->goToNextState(CHECKPOINT)) {
                 if (m_cluster->goToNextState(CLUSTER)) {
                     m_cluster->goToNextState(RESTORE);
                     // Azuki::setSpeedToAutomatic(error);
-                } else {
+                }
+                else {
                     // TODO: error-message
                     return false;
                 }
-            } else {
+            }
+            else {
                 // TODO: error-message
                 return false;
             }
             break;
         }
-        default: {
+        default:
+        {
             // TODO: error-message
             // Azuki::setSpeedToMinimum(error);
             return false;
@@ -237,7 +252,8 @@ TaskHandle_State::finishTask()
         userContext.projectId = actualTask->projectId;
 
         if (RequestResultTable::getInstance()->addRequestResult(resultData, userContext, error)
-            == false) {
+            == false)
+        {
             LOG_ERROR(error);
             return;
         }

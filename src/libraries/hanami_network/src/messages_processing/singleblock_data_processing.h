@@ -117,7 +117,8 @@ process_Data_SingleBlock(Session* session,
     if (header->commonHeader.flags & 0x8) {
         // release thread, which is related to the blocker-id
         SessionHandler::m_blockerHandler->releaseMessage(header->blockerId, buffer);
-    } else {
+    }
+    else {
         // trigger callback
         session->m_processRequestData(
             session->m_standaloneReceiver, session, header->multiblockId, buffer);
@@ -152,14 +153,16 @@ process_SingleBlock_Data_Type(Session* session,
 {
     switch (header->subType) {
         //------------------------------------------------------------------------------------------
-        case DATA_SINGLE_DATA_SUBTYPE: {
+        case DATA_SINGLE_DATA_SUBTYPE:
+        {
             const Data_SingleBlock_Header* message
                 = static_cast<const Data_SingleBlock_Header*>(rawMessage);
             process_Data_SingleBlock(session, message, rawMessage);
             break;
         }
         //------------------------------------------------------------------------------------------
-        case DATA_SINGLE_REPLY_SUBTYPE: {
+        case DATA_SINGLE_REPLY_SUBTYPE:
+        {
             const Data_SingleBlockReply_Message* message
                 = static_cast<const Data_SingleBlockReply_Message*>(rawMessage);
             process_Data_SingleBlock_Reply(session, message);

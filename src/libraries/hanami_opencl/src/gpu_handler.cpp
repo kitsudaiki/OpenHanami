@@ -59,7 +59,8 @@ GpuHandler::initDevice(ErrorContainer& error)
 
         collectDevices();
         m_isInit = true;
-    } catch (const cl::Error& err) {
+    }
+    catch (const cl::Error& err) {
         error.addMeesage("OpenCL error: " + std::string(err.what()) + "("
                          + std::to_string(err.err()) + ")");
         LOG_ERROR(error);

@@ -67,7 +67,8 @@ backpropagateSection(const Cluster& cluster,
         targetNeuron = &neuronBlock->neurons[synapse->targetNeuronId];
         if (counter > synapse->border) {
             sourceDelta += targetNeuron->delta * synapse->weight;
-        } else {
+        }
+        else {
             sourceDelta
                 += targetNeuron->delta * synapse->weight * ((1.0f / synapse->border) * counter);
         }
@@ -111,10 +112,12 @@ backpropagateNeurons(const Cluster& cluster,
     // iterate over all neurons within the brick
     for (uint32_t blockId = brick->brickBlockPos;
          blockId < brick->numberOfNeuronBlocks + brick->brickBlockPos;
-         ++blockId) {
+         ++blockId)
+    {
         block = &neuronBlocks[blockId];
         for (uint32_t neuronIdInBlock = 0; neuronIdInBlock < block->numberOfNeurons;
-             ++neuronIdInBlock) {
+             ++neuronIdInBlock)
+        {
             // skip section, if not active
             sourceNeuron = &block->neurons[neuronIdInBlock];
             LocationPtr* targetLocation = &sourceNeuron->target;
@@ -165,10 +168,12 @@ reweightCoreSegment(const Cluster& cluster)
         if (brick->isOutputBrick) {
             if (backpropagateOutput(
                     brick, neuronBlocks, outputValues, expectedValues, cluster.clusterSettings)
-                == false) {
+                == false)
+            {
                 return;
             }
-        } else {
+        }
+        else {
             backpropagateNeurons(cluster, brick, neuronBlocks, synapseBlocks, synapseConnections);
         }
     }

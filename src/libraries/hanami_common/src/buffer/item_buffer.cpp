@@ -161,7 +161,8 @@ ItemBuffer::deleteItem(const uint64_t itemPos)
 {
     // precheck
     if (metaData == nullptr || metaData->itemSize == 0 || itemPos >= metaData->itemCapacity
-        || metaData->numberOfItems == 0) {
+        || metaData->numberOfItems == 0)
+    {
         return false;
     }
 

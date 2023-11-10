@@ -80,7 +80,8 @@ CheckDataSet::runTask(BlossomIO& blossomIO,
     json requestResult;
     if (RequestResultTable::getInstance()->getRequestResult(
             requestResult, resultUuid, userContext, error, true)
-        == false) {
+        == false)
+    {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
@@ -96,7 +97,8 @@ CheckDataSet::runTask(BlossomIO& blossomIO,
     // get data-info from database
     json dbOutput;
     if (DataSetTable::getInstance()->getDataSet(dbOutput, dataUuid, userContext, error, true)
-        == false) {
+        == false)
+    {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

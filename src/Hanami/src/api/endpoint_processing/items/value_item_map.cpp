@@ -113,7 +113,8 @@ ValueItemMap::insert(const std::string& key, ValueItem& value, bool force)
 
     if (it != m_valueMap.end()) {
         it->second = value;
-    } else {
+    }
+    else {
         auto ret = m_valueMap.try_emplace(key, value);
         return ret.second;
     }
@@ -140,7 +141,8 @@ ValueItemMap::insert(const std::string& key, ValueItemMap* value, bool force)
 
     if (it != m_childMaps.end()) {
         it->second = value;
-    } else {
+    }
+    else {
         auto ret = m_childMaps.try_emplace(key, value);
         return ret.second;
     }

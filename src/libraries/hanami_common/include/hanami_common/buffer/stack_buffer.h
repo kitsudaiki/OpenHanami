@@ -91,7 +91,8 @@ extendBuffer_StackBuffer(StackBuffer& stackBuffer)
     if (stackBuffer.localReserve != nullptr) {
         newBlock = stackBuffer.localReserve;
         stackBuffer.localReserve = nullptr;
-    } else {
+    }
+    else {
         newBlock = StackBufferReserve::getInstance()->getBuffer();
     }
 
@@ -124,7 +125,8 @@ addData_StackBuffer(StackBuffer& stackBuffer, const void* data, const uint64_t d
         // init first buffer on the stack
         extendBuffer_StackBuffer(stackBuffer);
         currentBlock = stackBuffer.blocks.back();
-    } else {
+    }
+    else {
         // get current buffer from the stack and calculate estimated size after writing the new data
         currentBlock = stackBuffer.blocks.back();
         const uint64_t estimatedSize
@@ -204,7 +206,8 @@ removeFirst_StackBuffer(StackBuffer& stackBuffer)
     // add to local reserve, if there is no one is set or else add to central stack-buffer-reserve
     if (stackBuffer.localReserve == nullptr) {
         stackBuffer.localReserve = temp;
-    } else {
+    }
+    else {
         StackBufferReserve::getInstance()->addBuffer(temp);
     }
 
@@ -229,7 +232,8 @@ reset_StackBuffer(StackBuffer& stackBuffer)
         // move local reserve to central stack-buffer-reserve
         if (stackBuffer.localReserve == nullptr) {
             stackBuffer.localReserve = temp;
-        } else {
+        }
+        else {
             StackBufferReserve::getInstance()->addBuffer(temp);
         }
     }

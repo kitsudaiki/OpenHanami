@@ -76,7 +76,8 @@ LoadCluster::runTask(BlossomIO& blossomIO,
     // get data from table
     json clusterInfo;
     if (ClusterTable::getInstance()->getCluster(clusterInfo, clusterUuid, userContext, error)
-        == false) {
+        == false)
+    {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
@@ -102,7 +103,8 @@ LoadCluster::runTask(BlossomIO& blossomIO,
     json parsedCheckpointInfo;
     if (CheckpointTable::getInstance()->getCheckpoint(
             parsedCheckpointInfo, checkpointUuid, userContext, error, true)
-        == false) {
+        == false)
+    {
         error.addMeesage("Failed to get information from database for UUID '" + checkpointUuid
                          + "'");
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;

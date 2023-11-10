@@ -230,7 +230,8 @@ FinalizeMnistDataSet::convertMnistData(const std::string& filePath,
         // write line to file, if cluster is full
         if (segmentPos == segmentSize) {
             if (file.addBlock(segmentCounter * segmentSize, &cluster[0], segmentSize, error)
-                == false) {
+                == false)
+            {
                 return false;
             }
             segmentPos = 0;

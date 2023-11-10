@@ -237,28 +237,32 @@ process_Session_Type(Session* session, const CommonMessageHeader* header, const 
 
     switch (header->subType) {
         //------------------------------------------------------------------------------------------
-        case SESSION_INIT_START_SUBTYPE: {
+        case SESSION_INIT_START_SUBTYPE:
+        {
             const Session_Init_Start_Message* message
                 = static_cast<const Session_Init_Start_Message*>(rawMessage);
             process_Session_Init_Start(session, message);
             break;
         }
         //------------------------------------------------------------------------------------------
-        case SESSION_INIT_REPLY_SUBTYPE: {
+        case SESSION_INIT_REPLY_SUBTYPE:
+        {
             const Session_Init_Reply_Message* message
                 = static_cast<const Session_Init_Reply_Message*>(rawMessage);
             process_Session_Init_Reply(session, message);
             break;
         }
         //------------------------------------------------------------------------------------------
-        case SESSION_CLOSE_START_SUBTYPE: {
+        case SESSION_CLOSE_START_SUBTYPE:
+        {
             const Session_Close_Start_Message* message
                 = static_cast<const Session_Close_Start_Message*>(rawMessage);
             process_Session_Close_Start(session, message);
             break;
         }
         //------------------------------------------------------------------------------------------
-        case SESSION_CLOSE_REPLY_SUBTYPE: {
+        case SESSION_CLOSE_REPLY_SUBTYPE:
+        {
             const Session_Close_Reply_Message* message
                 = static_cast<const Session_Close_Reply_Message*>(rawMessage);
             process_Session_Close_Reply(session, message);

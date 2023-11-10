@@ -56,7 +56,8 @@ getFilesInDir(std::vector<std::string>& fileList,
                     getFilesInDir(fileList, itr->path(), withSubdirs, exceptions);
                 }
             }
-        } else {
+        }
+        else {
             fileList.push_back(itr->path().string());
         }
     }
@@ -87,7 +88,8 @@ listFiles(std::vector<std::string>& fileList,
 
     if (is_directory(pathObj)) {
         getFilesInDir(fileList, pathObj, withSubdirs, exceptions);
-    } else {
+    }
+    else {
         fileList.push_back(path);
     }
 

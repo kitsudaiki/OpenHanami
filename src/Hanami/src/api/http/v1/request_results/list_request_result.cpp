@@ -63,8 +63,8 @@ ListRequestResult::runTask(BlossomIO& blossomIO,
 
     // get data from table
     Hanami::TableItem table;
-    if (RequestResultTable::getInstance()->getAllRequestResult(table, userContext, error)
-        == false) {
+    if (RequestResultTable::getInstance()->getAllRequestResult(table, userContext, error) == false)
+    {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

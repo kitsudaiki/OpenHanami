@@ -80,7 +80,8 @@ SetClusterMode::runTask(BlossomIO& blossomIO,
 
     // get data from table
     if (ClusterTable::getInstance()->getCluster(blossomIO.output, clusterUuid, userContext, error)
-        == false) {
+        == false)
+    {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
@@ -126,7 +127,8 @@ SetClusterMode::runTask(BlossomIO& blossomIO,
         }
         client->setStreamCallback(cluster, streamDataCallback);
         cluster->msgClient = client;*/
-    } else {
+    }
+    else {
         //
     }
 

@@ -39,7 +39,8 @@ readFile(std::string& readContent, const std::string& filePath, ErrorContainer& 
                              "but must be a file or not existing");
             return false;
         }
-    } else {
+    }
+    else {
         error.addMeesage("destination of path \"" + filePath + "\", doesn't exist");
         return false;
     }

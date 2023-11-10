@@ -84,7 +84,8 @@ CreateCluster::runTask(BlossomIO& blossomIO,
     // check if user already exist within the table
     json getResult;
     if (ClusterTable::getInstance()->getClusterByName(getResult, clusterName, userContext, error)
-        == false) {
+        == false)
+    {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
@@ -137,7 +138,8 @@ CreateCluster::runTask(BlossomIO& blossomIO,
     // get new created user from database
     if (ClusterTable::getInstance()->getClusterByName(
             blossomIO.output, clusterName, userContext, error)
-        == false) {
+        == false)
+    {
         error.addMeesage("Failed to get cluster from database by name '" + clusterName + "'");
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;

@@ -45,7 +45,8 @@ sendClusterOutputMessage(Cluster* cluster)
     msg.set_numberofvalues(cluster->clusterHeader->outputValues.count);
 
     for (uint64_t outputNeuronId = 0; outputNeuronId < cluster->clusterHeader->outputValues.count;
-         outputNeuronId++) {
+         outputNeuronId++)
+    {
         msg.add_values(cluster->outputValues[outputNeuronId]);
     }
 
@@ -209,7 +210,8 @@ recvClusterInputMessage(Cluster* cluster, const void* data, const uint64_t dataS
             cluster->mode = ClusterProcessingMode::TRAIN_FORWARD_MODE;
             cluster->startForwardCycle();
         }
-    } else {
+    }
+    else {
         sendProtobufGotInputMessage(cluster);
     }
 

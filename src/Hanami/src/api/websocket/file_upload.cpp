@@ -48,7 +48,8 @@ recvFileUploadPackage(const void* data, const uint64_t dataSize)
 
     if (TempFileHandler::getInstance()->addDataToPos(
             msg.fileuuid(), msg.position(), msg.data().c_str(), msg.data().size())
-        == false) {
+        == false)
+    {
         // TODO: error-handling
         std::cout << "failed to write data" << std::endl;
         return false;
@@ -62,7 +63,8 @@ recvFileUploadPackage(const void* data, const uint64_t dataSize)
 
     if (msg.type() == UploadDataType::DATASET_TYPE) {
         if (DataSetTable::getInstance()->setUploadFinish(msg.datasetuuid(), msg.fileuuid(), error)
-            == false) {
+            == false)
+        {
             // TODO: error-handling
             return false;
         }
@@ -71,7 +73,8 @@ recvFileUploadPackage(const void* data, const uint64_t dataSize)
     if (msg.type() == UploadDataType::CHECKPOINT_TYPE) {
         if (CheckpointTable::getInstance()->setUploadFinish(
                 msg.datasetuuid(), msg.fileuuid(), error)
-            == false) {
+            == false)
+        {
             // TODO: error-handling
             return false;
         }

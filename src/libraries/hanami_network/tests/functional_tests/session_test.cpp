@@ -71,7 +71,8 @@ standaloneDataCallback(void* target, Session* session, const uint64_t blockerId,
 
     if (receivedMessage.size() < 1024) {
         instance->compare(receivedMessage, instance->m_singleBlockMessage);
-    } else {
+    }
+    else {
         instance->compare(receivedMessage, instance->m_multiBlockMessage);
     }
 

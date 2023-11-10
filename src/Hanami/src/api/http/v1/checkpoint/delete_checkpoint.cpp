@@ -59,7 +59,8 @@ DeleteCheckpoint::runTask(BlossomIO& blossomIO,
     json result;
     if (CheckpointTable::getInstance()->getCheckpoint(
             result, checkpointUuid, userContext, error, true)
-        == false) {
+        == false)
+    {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
@@ -77,7 +78,8 @@ DeleteCheckpoint::runTask(BlossomIO& blossomIO,
 
     // delete entry from db
     if (CheckpointTable::getInstance()->deleteCheckpoint(checkpointUuid, userContext, error)
-        == false) {
+        == false)
+    {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

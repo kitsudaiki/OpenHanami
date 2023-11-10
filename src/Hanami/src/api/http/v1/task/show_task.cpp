@@ -85,7 +85,8 @@ ShowTask::runTask(BlossomIO& blossomIO,
     // check if user exist within the table
     json getResult;
     if (ClusterTable::getInstance()->getCluster(getResult, clusterUuid, userContext, error)
-        == false) {
+        == false)
+    {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
@@ -118,15 +119,18 @@ ShowTask::runTask(BlossomIO& blossomIO,
         blossomIO.output["state"] = "queued";
         blossomIO.output["start_timestamp"] = "-";
         blossomIO.output["end_timestamp"] = "-";
-    } else if (progress.state == ACTIVE_TASK_STATE) {
+    }
+    else if (progress.state == ACTIVE_TASK_STATE) {
         blossomIO.output["state"] = "active";
         blossomIO.output["start_timestamp"] = serializeTimePoint(progress.startActiveTimeStamp);
         blossomIO.output["end_timestamp"] = "-";
-    } else if (progress.state == ABORTED_TASK_STATE) {
+    }
+    else if (progress.state == ABORTED_TASK_STATE) {
         blossomIO.output["state"] = "aborted";
         blossomIO.output["start_timestamp"] = serializeTimePoint(progress.startActiveTimeStamp);
         blossomIO.output["end_timestamp"] = "-";
-    } else if (progress.state == FINISHED_TASK_STATE) {
+    }
+    else if (progress.state == FINISHED_TASK_STATE) {
         blossomIO.output["state"] = "finished";
         blossomIO.output["start_timestamp"] = serializeTimePoint(progress.startActiveTimeStamp);
         blossomIO.output["end_timestamp"] = serializeTimePoint(progress.endActiveTimeStamp);

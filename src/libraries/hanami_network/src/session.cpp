@@ -124,11 +124,12 @@ Session::sendNormalMessage(const void* data, const uint64_t size, ErrorContainer
         if (size <= MAX_SINGLE_MESSAGE_SIZE) {
             // send as single-block-message, if small enough
             id = getRandId();
-            if (send_Data_SingleBlock(this, id, data, static_cast<uint32_t>(size), error)
-                == false) {
+            if (send_Data_SingleBlock(this, id, data, static_cast<uint32_t>(size), error) == false)
+            {
                 return false;
             }
-        } else {
+        }
+        else {
             // if too big for one message, send as multi-block-message
             if (m_multiblockIo->sendOutgoingData(data, size, error) == 0) {
                 return false;
@@ -163,11 +164,12 @@ Session::sendRequest(const void* data,
         if (size <= MAX_SINGLE_MESSAGE_SIZE) {
             // send as single-block-message, if small enough
             id = getRandId();
-            if (send_Data_SingleBlock(this, id, data, static_cast<uint32_t>(size), error)
-                == false) {
+            if (send_Data_SingleBlock(this, id, data, static_cast<uint32_t>(size), error) == false)
+            {
                 return nullptr;
             }
-        } else {
+        }
+        else {
             // if too big for one message, send as multi-block-message
             id = m_multiblockIo->sendOutgoingData(data, size, error);
             if (id == 0) {
@@ -204,7 +206,8 @@ Session::sendResponse(const void* data,
             send_Data_SingleBlock(
                 this, singleblockId, data, static_cast<uint32_t>(size), error, blockerId);
             return singleblockId;
-        } else {
+        }
+        else {
             // if too big for one message, send as multi-block-message
             return m_multiblockIo->sendOutgoingData(data, size, error, blockerId);
         }
@@ -261,7 +264,8 @@ Session::closeSession(ErrorContainer& error, const bool replyExpected)
         m_multiblockIo->removeMultiblockBuffer(0);
         if (replyExpected) {
             return send_Session_Close_Start(this, true, error);
-        } else {
+        }
+        else {
             send_Session_Close_Start(this, false, error);
             return endSession(error);
         }

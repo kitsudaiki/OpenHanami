@@ -86,7 +86,8 @@ parseUri(const std::string& token,
     // parse body
     try {
         parsedInputValues = json::parse(request.inputValues);
-    } catch (const json::parse_error& ex) {
+    }
+    catch (const json::parse_error& ex) {
         status.errorMessage = "Failed to parse input-values, because of json-parser error: "
                               + std::string(ex.what());
         status.statusCode = BAD_REQUEST_RTYPE;
@@ -110,9 +111,11 @@ parseUri(const std::string& token,
             // convert result if number and add to resulting map
             if (regex_match(val, std::regex(INT_VALUE_REGEX))) {
                 parsedInputValues[key] = std::stoi(val.c_str(), NULL);
-            } else if (regex_match(val, std::regex(FLOAT_VALUE_REGEX))) {
+            }
+            else if (regex_match(val, std::regex(FLOAT_VALUE_REGEX))) {
                 parsedInputValues[key] = std::strtof(val.c_str(), NULL);
-            } else {
+            }
+            else {
                 parsedInputValues[key] = val;
             }
         }

@@ -54,7 +54,8 @@ send_ErrorMessage(Session* session,
 
     switch (errorCode) {
         //------------------------------------------------------------------------------------------
-        case Session::errorCodes::FALSE_VERSION: {
+        case Session::errorCodes::FALSE_VERSION:
+        {
             Error_FalseVersion_Message message;
 
             // fill message
@@ -72,7 +73,8 @@ send_ErrorMessage(Session* session,
             return session->sendMessage(message, error);
         }
         //------------------------------------------------------------------------------------------
-        case Session::errorCodes::UNKNOWN_SESSION: {
+        case Session::errorCodes::UNKNOWN_SESSION:
+        {
             Error_UnknownSession_Message message;
 
             // fill message
@@ -90,7 +92,8 @@ send_ErrorMessage(Session* session,
             return session->sendMessage(message, error);
         }
         //------------------------------------------------------------------------------------------
-        case Session::errorCodes::INVALID_MESSAGE_SIZE: {
+        case Session::errorCodes::INVALID_MESSAGE_SIZE:
+        {
             Error_InvalidMessage_Message message;
 
             // fill message
@@ -131,7 +134,8 @@ process_Error_Type(Session* session, const CommonMessageHeader* header, const vo
 
     switch (header->subType) {
         //------------------------------------------------------------------------------------------
-        case ERROR_FALSE_VERSION_SUBTYPE: {
+        case ERROR_FALSE_VERSION_SUBTYPE:
+        {
             const Error_FalseVersion_Message* message
                 = static_cast<const Error_FalseVersion_Message*>(rawMessage);
             session->m_processError(session,
@@ -140,7 +144,8 @@ process_Error_Type(Session* session, const CommonMessageHeader* header, const vo
             break;
         }
         //------------------------------------------------------------------------------------------
-        case ERROR_UNKNOWN_SESSION_SUBTYPE: {
+        case ERROR_UNKNOWN_SESSION_SUBTYPE:
+        {
             const Error_UnknownSession_Message* message
                 = static_cast<const Error_UnknownSession_Message*>(rawMessage);
             session->m_processError(session,
@@ -149,7 +154,8 @@ process_Error_Type(Session* session, const CommonMessageHeader* header, const vo
             break;
         }
         //------------------------------------------------------------------------------------------
-        case ERROR_INVALID_MESSAGE_SUBTYPE: {
+        case ERROR_INVALID_MESSAGE_SUBTYPE:
+        {
             const Error_InvalidMessage_Message* message
                 = static_cast<const Error_InvalidMessage_Message*>(rawMessage);
             session->m_processError(session,

@@ -105,7 +105,8 @@ CreateToken::runTask(BlossomIO& blossomIO,
     // check password
     const std::string pwHash = userData["pw_hash"];
     if (pwHash.size() != compareHash.size()
-        || memcmp(pwHash.c_str(), compareHash.c_str(), pwHash.size()) != 0) {
+        || memcmp(pwHash.c_str(), compareHash.c_str(), pwHash.size()) != 0)
+    {
         status.errorMessage
             = "ACCESS DENIED!\n"
               "User or password is incorrect.";
@@ -128,13 +129,15 @@ CreateToken::runTask(BlossomIO& blossomIO,
         userData["role"] = "admin";
         userData["is_project_admin"] = true;
         userData.erase("projects");
-    } else if (parsedProjects.size() != 0) {
+    }
+    else if (parsedProjects.size() != 0) {
         // normal user get assigned to first project in their project-list at beginning
         userData["project_id"] = parsedProjects[0]["project_id"];
         userData["role"] = parsedProjects[0]["role"];
         userData["is_project_admin"] = parsedProjects[0]["is_project_admin"];
         userData.erase("projects");
-    } else {
+    }
+    else {
         status.errorMessage = "User with id '" + userId + "' has no project assigned.";
         status.statusCode = UNAUTHORIZED_RTYPE;
         LOG_DEBUG(status.errorMessage);

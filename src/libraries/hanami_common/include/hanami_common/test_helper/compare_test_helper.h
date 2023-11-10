@@ -43,7 +43,8 @@ class CompareTestHelper
         std::cout << "   Should-Value: " << SHOULD_VAL << std::endl;    \
         std::cout << "   Is-Value: " << IS_VAL << std::endl;            \
         std::cout << std::endl;                                         \
-    } else {                                                            \
+    }                                                                   \
+    else {                                                              \
         m_successfulTests++;                                            \
     }
 
@@ -59,7 +60,8 @@ class CompareTestHelper
         std::cout << "   Should-NOT-Value: " << SHOULD_NOT_VAL << std::endl; \
         std::cout << "   Is-Value: " << IS_VAL << std::endl;                 \
         std::cout << std::endl;                                              \
-    } else {                                                                 \
+    }                                                                        \
+    else {                                                                   \
         m_successfulTests++;                                                 \
     }
 

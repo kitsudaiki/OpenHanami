@@ -151,7 +151,8 @@ isSlash(char c)
 {
     if (c == '\"') {
         return true;
-    } else {
+    }
+    else {
         return false;
     }
 }

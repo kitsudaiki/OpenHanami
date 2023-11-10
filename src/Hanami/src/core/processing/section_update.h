@@ -96,7 +96,8 @@ createNewSection(Cluster& cluster, const LocationPtr& originLocation, const floa
     if (firstSynapseLocation.blockId == UNINIT_STATE_32) {
         sourceIsNeuron = true;
         currentLocation = originLocation;
-    } else {
+    }
+    else {
         currentLocation = checkForwards(cluster, firstSynapseLocation);
     }
     originBrickId = cluster.neuronBlocks[originLocation.blockId].brickId;
@@ -121,7 +122,8 @@ createNewSection(Cluster& cluster, const LocationPtr& originLocation, const floa
             return false;
         }
         targetNeuronBlock->backwardNextId = targetSynapseBlockId;
-    } else {
+    }
+    else {
         targetSynapseBlockId = checkBackwards(cluster, targetNeuronBlock->backwardNextId);
     }
 
@@ -146,7 +148,8 @@ createNewSection(Cluster& cluster, const LocationPtr& originLocation, const floa
         NeuronBlock* neuronBlock = &cluster.neuronBlocks[currentLocation.blockId];
         neuronBlock->neurons[currentLocation.sectionId].target.blockId = targetSynapseBlockId;
         neuronBlock->neurons[currentLocation.sectionId].target.sectionId = targetSectionId;
-    } else {
+    }
+    else {
         SynapseConnection* currentConnection = &cluster.synapseConnections[currentLocation.blockId];
         currentConnection->next[currentLocation.sectionId].blockId = targetSynapseBlockId;
         currentConnection->next[currentLocation.sectionId].sectionId = targetSectionId;
@@ -173,7 +176,8 @@ updateSections(Cluster& cluster)
 
     // iterate over all neurons and add new synapse-section, if required
     for (uint32_t neuronBlockId = 0; neuronBlockId < cluster.clusterHeader->neuronBlocks.count;
-         neuronBlockId++) {
+         neuronBlockId++)
+    {
         neuronBlock = &cluster.neuronBlocks[neuronBlockId];
         for (uint32_t sourceId = 0; sourceId < neuronBlock->numberOfNeurons; sourceId++) {
             neuron = &neuronBlock->neurons[sourceId];

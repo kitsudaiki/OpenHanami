@@ -80,7 +80,8 @@ runSyncProcess(const std::string& programm, const std::vector<std::string>& args
             }
         }
         result.exitStatus = pclose(stream);
-    } else {
+    }
+    else {
         result.errorMessage = "can not execute programm: " + programm;
         result.success = false;
 
@@ -90,7 +91,8 @@ runSyncProcess(const std::string& programm, const std::vector<std::string>& args
     // check exit-status of the external process
     if (result.exitStatus != 0) {
         result.success = false;
-    } else {
+    }
+    else {
         result.success = true;
     }
 

@@ -49,7 +49,8 @@ getHighestOutput(const Cluster& cluster)
     float value = 0.0f;
 
     for (uint32_t outputNeuronId = 0; outputNeuronId < cluster.clusterHeader->outputValues.count;
-         outputNeuronId++) {
+         outputNeuronId++)
+    {
         value = cluster.outputValues[outputNeuronId];
         if (value > hightest) {
             hightest = value;
@@ -137,7 +138,8 @@ synapseProcessing(Cluster& cluster,
             targetNeuron = &neuronBlock->neurons[synapse->targetNeuronId];
             if (counter >= synapse->border) {
                 targetNeuron->input += synapse->weight;
-            } else {
+            }
+            else {
                 targetNeuron->input += synapse->weight * ((1.0f / synapse->border) * counter);
             }
         }
@@ -243,10 +245,12 @@ processNeuronsOfInputBrick(Cluster& cluster,
     // iterate over all neurons within the brick
     for (uint32_t blockId = brick->brickBlockPos;
          blockId < brick->numberOfNeuronBlocks + brick->brickBlockPos;
-         ++blockId) {
+         ++blockId)
+    {
         block = &neuronBlocks[blockId];
         for (uint32_t neuronIdInBlock = 0; neuronIdInBlock < block->numberOfNeurons;
-             ++neuronIdInBlock) {
+             ++neuronIdInBlock)
+        {
             neuron = &block->neurons[neuronIdInBlock];
             neuron->potential = inputValues[counter];
             neuron->active = neuron->potential > 0.0f;
@@ -283,10 +287,12 @@ processNeuronsOfNormalBrick(Cluster& cluster,
     // iterate over all neurons within the brick
     for (uint32_t blockId = brick->brickBlockPos;
          blockId < brick->numberOfNeuronBlocks + brick->brickBlockPos;
-         ++blockId) {
+         ++blockId)
+    {
         blocks = &neuronBlocks[blockId];
         for (uint32_t neuronIdInBlock = 0; neuronIdInBlock < blocks->numberOfNeurons;
-             ++neuronIdInBlock) {
+             ++neuronIdInBlock)
+        {
             neuron = &blocks->neurons[neuronIdInBlock];
 
             neuron->potential /= clusterSettings->neuronCooldown;
@@ -341,7 +347,8 @@ prcessCoreSegment(Cluster& cluster)
                                                  synapseBlocks,
                                                  synapseConnections,
                                                  clusterSettings);
-            } else {
+            }
+            else {
                 processNeuronsOfInputBrick<false>(cluster,
                                                   brick,
                                                   inputValues,
@@ -350,9 +357,11 @@ prcessCoreSegment(Cluster& cluster)
                                                   synapseConnections,
                                                   clusterSettings);
             }
-        } else if (brick->isOutputBrick) {
+        }
+        else if (brick->isOutputBrick) {
             processNeuronsOfOutputBrick(brick, outputValues, neuronBlocks);
-        } else {
+        }
+        else {
             if (clusterSettings->doTrain) {
                 processNeuronsOfNormalBrick<true>(cluster,
                                                   brick,
@@ -360,7 +369,8 @@ prcessCoreSegment(Cluster& cluster)
                                                   synapseBlocks,
                                                   synapseConnections,
                                                   clusterSettings);
-            } else {
+            }
+            else {
                 processNeuronsOfNormalBrick<false>(cluster,
                                                    brick,
                                                    neuronBlocks,

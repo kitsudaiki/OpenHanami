@@ -78,7 +78,8 @@ GpuInterface::initCopyToDevice(GpuData& data, ErrorContainer& error)
 
         // check buffer
         if (workerBuffer.numberOfBytes == 0 || workerBuffer.numberOfObjects == 0
-            || workerBuffer.data == nullptr) {
+            || workerBuffer.data == nullptr)
+        {
             error.addMeesage("failed to copy data to device, because buffer with name '" + name
                              + "' has size 0 or is not initialized.");
             LOG_ERROR(error);
@@ -89,7 +90,8 @@ GpuInterface::initCopyToDevice(GpuData& data, ErrorContainer& error)
         cl_mem_flags flags = 0;
         if (workerBuffer.useHostPtr) {
             flags = CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR;
-        } else {
+        }
+        else {
             flags = CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR;
         }
 
@@ -127,7 +129,8 @@ GpuInterface::addKernel(GpuData& data,
     try {
         std::vector<cl::Device> devices = {m_device};
         program.build(devices);
-    } catch (const cl::Error& err) {
+    }
+    catch (const cl::Error& err) {
         error.addMeesage("OpenCL compilation error\n    "
                          + program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(m_device));
         return false;
@@ -201,10 +204,12 @@ GpuInterface::bindKernelToBuffer(GpuData& data,
     try {
         if (buffer->isValue) {
             def->kernel.setArg(argNumber, static_cast<cl_ulong>(buffer->value));
-        } else {
+        }
+        else {
             def->kernel.setArg(argNumber, buffer->clBuffer);
         }
-    } catch (const cl::Error& err) {
+    }
+    catch (const cl::Error& err) {
         error.addMeesage("OpenCL error while binding buffer to kernel: " + std::string(err.what())
                          + "(" + std::to_string(err.err()) + ")");
         LOG_ERROR(error);
@@ -296,7 +301,8 @@ GpuInterface::updateBufferOnDevice(GpuData& data,
                                        offset * objectSize,
                                        numberOfObjects * objectSize,
                                        buffer->data)
-            != CL_SUCCESS) {
+            != CL_SUCCESS)
+        {
             error.addMeesage("Update buffer with name '" + bufferName + "' on gpu failed");
             return false;
         }
@@ -337,7 +343,8 @@ GpuInterface::run(GpuData& data,
                                   data.numberOfWg.y * data.threadsPerWg.y,
                                   data.numberOfWg.z * data.threadsPerWg.z);
         localRange = cl::NDRange(data.threadsPerWg.x, data.threadsPerWg.y, data.threadsPerWg.z);
-    } else {
+    }
+    else {
         globalRange = cl::NDRange(numberOfGroups * numberOfThreadsPerGroup, 1, 1);
         localRange = cl::NDRange(numberOfThreadsPerGroup, 1, 1);
     }
@@ -359,7 +366,8 @@ GpuInterface::run(GpuData& data,
         }
 
         cl::WaitForEvents(events);
-    } catch (const cl::Error& err) {
+    }
+    catch (const cl::Error& err) {
         error.addMeesage("OpenCL error: " + std::string(err.what()) + "("
                          + std::to_string(err.err()) + ")");
         return false;
@@ -389,7 +397,8 @@ GpuInterface::copyFromDevice(GpuData& data, const std::string& bufferName, Error
     // copy result back to host
     GpuData::WorkerBuffer* buffer = data.getBuffer(bufferName);
     if (m_queue.enqueueReadBuffer(buffer->clBuffer, CL_TRUE, 0, buffer->numberOfBytes, buffer->data)
-        != CL_SUCCESS) {
+        != CL_SUCCESS)
+    {
         return false;
     }
 

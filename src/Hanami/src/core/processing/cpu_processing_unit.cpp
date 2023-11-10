@@ -93,7 +93,8 @@ CpuProcessingUnit::trainSegmentForward(Cluster* cluster)
                         cluster->synapseBlocks,
                         cluster->clusterHeader->synapseBlocks.count,
                         true);
-    } else {
+    }
+    else {
         prcessCoreSegment(*cluster);
     }
     // prcessCoreSegment(*cluster);
@@ -129,7 +130,8 @@ CpuProcessingUnit::trainSegmentBackward(Cluster* cluster)
                         cluster->synapseConnections,
                         cluster->clusterHeader->synapseConnections.count);
         }
-    } else {
+    }
+    else {
         reweightCoreSegment(*cluster);
     }
     // reweightCoreSegment(*cluster);
@@ -165,21 +167,24 @@ CpuProcessingUnit::processSegment(Cluster* cluster)
                         cluster->synapseBlocks,
                         cluster->clusterHeader->synapseBlocks.count,
                         false);
-    } else {
+    }
+    else {
         prcessCoreSegment(*cluster);
     }
 
     // send output back if a client-connection is set
     if (cluster->msgClient != nullptr) {
         sendClusterOutputMessage(cluster);
-    } else {
+    }
+    else {
         Task* actualTask = cluster->getActualTask();
         const uint64_t cycle = actualTask->actualCycle;
         if (actualTask->type == IMAGE_REQUEST_TASK) {
             // TODO: check for cluster-state instead of client
             const uint32_t hightest = getHighestOutput(*cluster);
             actualTask->resultData[cycle] = static_cast<long>(hightest);
-        } else if (actualTask->type == TABLE_REQUEST_TASK) {
+        }
+        else if (actualTask->type == TABLE_REQUEST_TASK) {
             float val = 0.0f;
             for (uint64_t i = 0; i < cluster->clusterHeader->outputValues.count; i++) {
                 const float temp = actualTask->resultData[cycle];
@@ -204,13 +209,16 @@ CpuProcessingUnit::run()
             // handle type of processing
             if (cluster->mode == ClusterProcessingMode::TRAIN_FORWARD_MODE) {
                 trainSegmentForward(cluster);
-            } else if (cluster->mode == ClusterProcessingMode::TRAIN_BACKWARD_MODE) {
+            }
+            else if (cluster->mode == ClusterProcessingMode::TRAIN_BACKWARD_MODE) {
                 trainSegmentBackward(cluster);
-            } else {
+            }
+            else {
                 processSegment(cluster);
             }
             cluster->updateClusterState();
-        } else {
+        }
+        else {
             // if no segments are available then sleep
             sleepThread(1000);
         }

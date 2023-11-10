@@ -96,7 +96,8 @@ TableDataSetFile::updateHeader(Hanami::ErrorContainer& error)
     // write table-header to file
     if (m_targetFile->writeDataIntoFile(
             &tableHeader, sizeof(DataSetHeader), sizeof(TableTypeHeader), error)
-        == false) {
+        == false)
+    {
         error.addMeesage("Failed to write table-header");
         return false;
     }
@@ -108,7 +109,8 @@ TableDataSetFile::updateHeader(Hanami::ErrorContainer& error)
                                             offset + (i * sizeof(TableHeaderEntry)),
                                             sizeof(TableHeaderEntry),
                                             error)
-            == false) {
+            == false)
+        {
             error.addMeesage("Failed to write table-entry-header");
             return false;
         }
@@ -137,7 +139,8 @@ TableDataSetFile::getPayload(Hanami::DataBuffer& result,
 
     if (m_targetFile->readDataFromFile(
             readBuffer.data, m_headerSize, m_totalFileSize - m_headerSize, error)
-        == false) {
+        == false)
+    {
         error.addMeesage("Failed to read data of table-data-set-file");
         return false;
     }

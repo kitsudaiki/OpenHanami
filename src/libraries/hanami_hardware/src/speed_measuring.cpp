@@ -70,7 +70,8 @@ SpeedMeasuring::run()
                 = static_cast<double>(currentSpeed) / static_cast<double>(numberOfValues);
             curSpeed /= 1000.0;  // convert from KHz to MHz
             m_valueContainer.addValue(curSpeed);
-        } else {
+        }
+        else {
             m_valueContainer.addValue(0.0);
         }
 

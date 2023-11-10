@@ -49,7 +49,8 @@ overrideItems(json& original, const json& override, OverrideType type)
                 original[name] = item;
             }
         }
-    } else if (type == ALL) {
+    }
+    else if (type == ALL) {
         for (const auto& [name, item] : override.items()) {
             original[name] = item;
         }

@@ -151,14 +151,16 @@ class TemplateServer : public AbstractServer
                 = new TemplateSocket<TcpSocket>(std::move(tcpSocket), name);
             netSocket->initConnection(error);
             m_processConnection(m_target, netSocket);
-        } else if (std::is_same<T, UnixDomainServer>::value) {
+        }
+        else if (std::is_same<T, UnixDomainServer>::value) {
             const std::string name = "UDS_socket";
             UnixDomainSocket unixSocket(fd);
             TemplateSocket<UnixDomainSocket>* netSocket
                 = new TemplateSocket<UnixDomainSocket>(std::move(unixSocket), name);
             netSocket->initConnection(error);
             m_processConnection(m_target, netSocket);
-        } else if (std::is_same<T, TlsTcpServer>::value) {
+        }
+        else if (std::is_same<T, TlsTcpServer>::value) {
             const std::string name = "TLS_TCP_socket";
             TcpSocket tcpSocket(fd);
             TlsTcpSocket tlsTcpSocket(
