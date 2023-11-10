@@ -28,13 +28,12 @@
 namespace Hanami
 {
 
-class Common_Test
-        : public Hanami::CompareTestHelper
+class Common_Test : public Hanami::CompareTestHelper
 {
-public:
+   public:
     Common_Test();
 
-private:
+   private:
     void hexEncode_test();
 
     void encodeBase64_test();
@@ -44,6 +43,6 @@ private:
     void base64UrlToBase64_test();
 };
 
-}
+}  // namespace Hanami
 
-#endif // COMMON_TEST_H
+#endif  // COMMON_TEST_H

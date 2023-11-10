@@ -27,17 +27,16 @@
 
 class Cluster;
 
-class ImageIdentify_State
-        : public Hanami::Event
+class ImageIdentify_State : public Hanami::Event
 {
-public:
+   public:
     ImageIdentify_State(Cluster* cluster);
     ~ImageIdentify_State();
 
     bool processEvent();
 
-private:
+   private:
     Cluster* m_cluster = nullptr;
 };
 
-#endif // HANAMI_IMAGEIDENTIFY_STATE_H
+#endif  // HANAMI_IMAGEIDENTIFY_STATE_H

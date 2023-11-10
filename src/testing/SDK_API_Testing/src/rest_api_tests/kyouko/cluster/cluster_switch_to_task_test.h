@@ -25,14 +25,12 @@
 
 #include <common/test_step.h>
 
-class ClusterSwitchToTaskTest
-        : public TestStep
+class ClusterSwitchToTaskTest : public TestStep
 {
-public:
+   public:
     ClusterSwitchToTaskTest(const bool expectSuccess);
 
-    bool runTest(json &inputData,
-                 Hanami::ErrorContainer &error);
+    bool runTest(json& inputData, Hanami::ErrorContainer& error);
 };
 
-#endif // TSUGUMITESTER_CLUSTERSWITCHTOTASKTEST_H
+#endif  // TSUGUMITESTER_CLUSTERSWITCHTOTASKTEST_H

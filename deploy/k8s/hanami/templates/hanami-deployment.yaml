@@ -14,6 +14,24 @@ spec:
       labels:
         app: hanami
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: hanami-node
+                operator: In
+                values:
+                - "true"
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - hanami
+            topologyKey: kubernetes.io/hostname
       containers:
       - name: hanami
         image: {{ .Values.docker.registry }}/hanami:{{ .Values.docker.tag }}
@@ -26,6 +44,8 @@ spec:
         - name: HANAMI_ADMIN_PASSWORD
           value: {{ .Values.user.pw }}
         volumeMounts:
+        - name: data-volume
+          mountPath: /etc/hanami/data/
         - name: hanami-config
           mountPath: /etc/hanami/hanami.conf
           subPath: hanami.conf
@@ -38,7 +58,7 @@ spec:
         - name: hanami-sockets-volume
           mountPath: /tmp/hanami
         ports:
-        - containerPort: 1337
+        - containerPort: {{ .Values.api.port }}
           name: hanami-port
       volumes:
         - name: hanami-config
@@ -50,7 +70,8 @@ spec:
         - name: token-key
           configMap:
             name: token-key
-        - name: files-volume
-          emptyDir: {}
         - name: hanami-sockets-volume
           emptyDir: {}
+        - name: data-volume
+          persistentVolumeClaim:
+            claimName: hanami-pvc

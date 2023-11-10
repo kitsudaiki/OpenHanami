@@ -21,18 +21,18 @@
  */
 
 #include "temperature_production.h"
-#include <hanami_root.h>
-#include <hanami_hardware/temperature_measuring.h>
 
-ThermalProduction::ThermalProduction()
-    : Blossom("Request the temperature-measurement of the CPU")
+#include <hanami_hardware/temperature_measuring.h>
+#include <hanami_root.h>
+
+ThermalProduction::ThermalProduction() : Blossom("Request the temperature-measurement of the CPU")
 {
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
     registerOutputField("temperature", SAKURA_MAP_TYPE)
-            .setComment("Json-object with temperature-measurements");
+        .setComment("Json-object with temperature-measurements");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -43,10 +43,10 @@ ThermalProduction::ThermalProduction()
  * @brief runTask
  */
 bool
-ThermalProduction::runTask(BlossomIO &blossomIO,
-                           const json &,
-                           BlossomStatus &,
-                           Hanami::ErrorContainer &)
+ThermalProduction::runTask(BlossomIO& blossomIO,
+                           const json&,
+                           BlossomStatus&,
+                           Hanami::ErrorContainer&)
 {
     blossomIO.output["temperature"] = TemperatureMeasuring::getInstance()->getJson();
 

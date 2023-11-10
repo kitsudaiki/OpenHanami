@@ -14,16 +14,15 @@
 namespace Hanami
 {
 
-class VectorMethods_Test
-        : public Hanami::CompareTestHelper
+class VectorMethods_Test : public Hanami::CompareTestHelper
 {
-public:
+   public:
     VectorMethods_Test();
 
-private:
+   private:
     void removeEmptyStrings_test();
 };
 
-}
+}  // namespace Hanami
 
-#endif // VECTORMETHODS_TEST_H
+#endif  // VECTORMETHODS_TEST_H

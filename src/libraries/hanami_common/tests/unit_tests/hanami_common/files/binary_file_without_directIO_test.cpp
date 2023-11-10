@@ -13,8 +13,7 @@
 namespace Hanami
 {
 
-struct TestStruct
-{
+struct TestStruct {
     uint8_t a = 0;
     uint8_t b = 0;
     uint64_t c = 0;
@@ -73,12 +72,12 @@ BinaryFile_withoutDirectIO_Test::updateFileSize_test()
     // init buffer and file
     DataBuffer buffer(5);
     BinaryFile binaryFile(m_filePath);
-    binaryFile.allocateStorage(4*4000, error);
+    binaryFile.allocateStorage(4 * 4000, error);
     binaryFile.closeFile(error);
 
     BinaryFile binaryFileNew(m_filePath);
     TEST_EQUAL(binaryFileNew.updateFileSize(error), true);
-    TEST_EQUAL(binaryFileNew.m_totalFileSize, 4*4096);
+    TEST_EQUAL(binaryFileNew.m_totalFileSize, 4 * 4096);
 
     TEST_EQUAL(binaryFileNew.m_totalFileSize, binaryFileNew.m_totalFileSize);
 }
@@ -96,17 +95,17 @@ BinaryFile_withoutDirectIO_Test::allocateStorage_test()
     BinaryFile binaryFile(m_filePath);
 
     // test allocation
-    TEST_EQUAL(binaryFile.allocateStorage(4*4000, error), true);
-    TEST_EQUAL(binaryFile.allocateStorage(4*4000, error), true);
+    TEST_EQUAL(binaryFile.allocateStorage(4 * 4000, error), true);
+    TEST_EQUAL(binaryFile.allocateStorage(4 * 4000, error), true);
     TEST_EQUAL(binaryFile.allocateStorage(0, error), true);
 
     // check meta-data
-    TEST_EQUAL(binaryFile.m_totalFileSize, 8*4000);
+    TEST_EQUAL(binaryFile.m_totalFileSize, 8 * 4000);
 
     binaryFile.closeFile(error);
 
     // negative test
-    TEST_EQUAL(binaryFile.allocateStorage(4*4000, error), false);
+    TEST_EQUAL(binaryFile.allocateStorage(4 * 4000, error), false);
 
     deleteFile();
 }
@@ -170,9 +169,7 @@ BinaryFile_withoutDirectIO_Test::readCompleteFile_test()
     TEST_EQUAL(binaryFile.readCompleteFile(targetBuffer, error), true);
 
     // check if source and target-buffer are
-    int ret = memcmp(sourceBuffer.data,
-                     targetBuffer.data,
-                     2 * sourceBuffer.blockSize + 1);
+    int ret = memcmp(sourceBuffer.data, targetBuffer.data, 2 * sourceBuffer.blockSize + 1);
     TEST_EQUAL(ret, 0);
 
     // cleanup
@@ -193,7 +190,7 @@ BinaryFile_withoutDirectIO_Test::writeDataIntoFile_test()
     // init buffer and file
     DataBuffer sourceBuffer(5);
     BinaryFile binaryFile(m_filePath);
-    binaryFile.allocateStorage(4*4096, error);
+    binaryFile.allocateStorage(4 * 4096, error);
 
     // prepare test-buffer
     TestStruct testStruct;
@@ -213,9 +210,7 @@ BinaryFile_withoutDirectIO_Test::writeDataIntoFile_test()
     TEST_EQUAL(binaryFile.readCompleteFile(targetBuffer, error), true);
 
     // check if source and target-buffer are
-    int ret = memcmp(sourceBuffer.data,
-                     targetBuffer.data,
-                     2 * sourceBuffer.blockSize + 1);
+    int ret = memcmp(sourceBuffer.data, targetBuffer.data, 2 * sourceBuffer.blockSize + 1);
     TEST_EQUAL(ret, 0);
 
     // cleanup
@@ -236,7 +231,7 @@ BinaryFile_withoutDirectIO_Test::readDataFromFile_test()
     // init buffer and file
     DataBuffer sourceBuffer(5);
     BinaryFile binaryFile(m_filePath);
-    binaryFile.allocateStorage(4*4096, error);
+    binaryFile.allocateStorage(4 * 4096, error);
 
     // prepare test-buffer
     TestStruct testStruct;
@@ -255,9 +250,7 @@ BinaryFile_withoutDirectIO_Test::readDataFromFile_test()
     TEST_EQUAL(binaryFile.readDataFromFile(targetBuffer.data, 2000, 42000, error), false);
 
     // check if source and target-buffer are
-    int ret = memcmp(sourceBuffer.data,
-                     targetBuffer.data,
-                     2 * sourceBuffer.blockSize + 1);
+    int ret = memcmp(sourceBuffer.data, targetBuffer.data, 2 * sourceBuffer.blockSize + 1);
     TEST_EQUAL(ret, 0);
 
     // cleanup
@@ -281,10 +274,9 @@ void
 BinaryFile_withoutDirectIO_Test::deleteFile()
 {
     std::filesystem::path rootPathObj(m_filePath);
-    if(std::filesystem::exists(rootPathObj)) {
+    if (std::filesystem::exists(rootPathObj)) {
         std::filesystem::remove(rootPathObj);
     }
 }
 
-}
-
+}  // namespace Hanami

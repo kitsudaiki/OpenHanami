@@ -20,14 +20,12 @@
  *      limitations under the License.
  */
 
-#include <hanami_sdk/data_set.h>
-#include <hanami_sdk/common/websocket_client.h>
-#include <common/http_client.h>
-
-#include <hanami_crypto/common.h>
-#include <hanami_common/files/binary_file.h>
-
 #include <../../../libraries/hanami_messages/protobuffers/hanami_messages.proto3.pb.h>
+#include <common/http_client.h>
+#include <hanami_common/files/binary_file.h>
+#include <hanami_crypto/common.h>
+#include <hanami_sdk/common/websocket_client.h>
+#include <hanami_sdk/data_set.h>
 
 namespace Hanami
 {
@@ -40,7 +38,7 @@ namespace Hanami
  * @return size of file if successful, or -1 if failed
  */
 long
-getFileSize(const std::string &filePath)
+getFileSize(const std::string& filePath)
 {
     std::ifstream in(filePath, std::ifstream::ate | std::ifstream::binary);
     return in.tellg();
@@ -57,10 +55,10 @@ getFileSize(const std::string &filePath)
  * @return true, if successful, else false
  */
 bool
-createCsvDataSet(std::string &result,
-                 const std::string &dataSetName,
+createCsvDataSet(std::string& result,
+                 const std::string& dataSetName,
                  const uint64_t inputDataSize,
-                 Hanami::ErrorContainer &error)
+                 Hanami::ErrorContainer& error)
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
@@ -70,7 +68,7 @@ createCsvDataSet(std::string &result,
                                  ",\"input_data_size\":" + std::to_string(inputDataSize) + "}";
 
     // send request
-    if(request->sendPostRequest(result, path, vars, jsonBody, error) == false) {
+    if (request->sendPostRequest(result, path, vars, jsonBody, error) == false) {
         return false;
     }
 
@@ -88,10 +86,10 @@ createCsvDataSet(std::string &result,
  * @return true, if successful, else false
  */
 bool
-finalizeCsvDataSet(std::string &result,
-                   const std::string &uuid,
-                   const std::string &inputUuid,
-                   Hanami::ErrorContainer &error)
+finalizeCsvDataSet(std::string& result,
+                   const std::string& uuid,
+                   const std::string& inputUuid,
+                   Hanami::ErrorContainer& error)
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
@@ -101,7 +99,7 @@ finalizeCsvDataSet(std::string &result,
                                  ",\"uuid_input_file\":\"" + inputUuid + "\"}";
 
     // send request
-    if(request->sendPutRequest(result, path, vars, jsonBody, error) == false) {
+    if (request->sendPutRequest(result, path, vars, jsonBody, error) == false) {
         return false;
     }
 
@@ -120,11 +118,11 @@ finalizeCsvDataSet(std::string &result,
  * @return true, if successful, else false
  */
 bool
-createMnistDataSet(std::string &result,
-                   const std::string &dataSetName,
+createMnistDataSet(std::string& result,
+                   const std::string& dataSetName,
                    const uint64_t inputDataSize,
                    const uint64_t labelDataSize,
-                   Hanami::ErrorContainer &error)
+                   Hanami::ErrorContainer& error)
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
@@ -135,7 +133,7 @@ createMnistDataSet(std::string &result,
                                  ",\"label_data_size\":" + std::to_string(labelDataSize) + "}";
 
     // send request
-    if(request->sendPostRequest(result, path, vars, jsonBody, error) == false) {
+    if (request->sendPostRequest(result, path, vars, jsonBody, error) == false) {
         return false;
     }
 
@@ -154,11 +152,11 @@ createMnistDataSet(std::string &result,
  * @return true, if successful, else false
  */
 bool
-finalizeMnistDataSet(std::string &result,
-                     const std::string &uuid,
-                     const std::string &inputUuid,
-                     const std::string &labelUuid,
-                     Hanami::ErrorContainer &error)
+finalizeMnistDataSet(std::string& result,
+                     const std::string& uuid,
+                     const std::string& inputUuid,
+                     const std::string& labelUuid,
+                     Hanami::ErrorContainer& error)
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
@@ -169,7 +167,7 @@ finalizeMnistDataSet(std::string &result,
                                  ",\"uuid_label_file\":\"" + labelUuid + "\"}";
 
     // send request
-    if(request->sendPutRequest(result, path, vars, jsonBody, error) == false) {
+    if (request->sendPutRequest(result, path, vars, jsonBody, error) == false) {
         return false;
     }
 
@@ -189,10 +187,10 @@ finalizeMnistDataSet(std::string &result,
  */
 bool
 sendFile(WebsocketClient* client,
-         const std::string &datasetUuid,
-         const std::string &fileUuid,
-         const std::string &filePath,
-         Hanami::ErrorContainer &error)
+         const std::string& datasetUuid,
+         const std::string& fileUuid,
+         const std::string& filePath,
+         Hanami::ErrorContainer& error)
 {
     // get data, which should be send
     const uint64_t dataSize = getFileSize(filePath);
@@ -204,14 +202,13 @@ sendFile(WebsocketClient* client,
     // prepare buffer
     uint64_t segmentSize = 96 * 1024;
 
-    uint8_t readBuffer[96*1024];
-    uint8_t sendBuffer[128*1024];
+    uint8_t readBuffer[96 * 1024];
+    uint8_t sendBuffer[128 * 1024];
 
-    do
-    {
+    do {
         // check the size for the last cluster
         segmentSize = 96 * 1024;
-        if(dataSize - pos < segmentSize) {
+        if (dataSize - pos < segmentSize) {
             segmentSize = dataSize - pos;
         }
 
@@ -220,13 +217,12 @@ sendFile(WebsocketClient* client,
         message.set_datasetuuid(datasetUuid);
         message.set_type(UploadDataType::DATASET_TYPE);
         message.set_islast(false);
-        if(pos + segmentSize >= dataSize) {
+        if (pos + segmentSize >= dataSize) {
             message.set_islast(true);
         }
 
         // read cluster of the local file
-        if(sourceFile.readDataFromFile(&readBuffer[0], pos, segmentSize, error) == false)
-        {
+        if (sourceFile.readDataFromFile(&readBuffer[0], pos, segmentSize, error) == false) {
             success = false;
             error.addMeesage("Failed to read file '" + filePath + "'");
             break;
@@ -236,23 +232,20 @@ sendFile(WebsocketClient* client,
         message.set_data(readBuffer, segmentSize);
 
         const uint64_t msgSize = message.ByteSizeLong();
-        if(message.SerializeToArray(sendBuffer, msgSize) == false)
-        {
+        if (message.SerializeToArray(sendBuffer, msgSize) == false) {
             error.addMeesage("Failed to serialize train-message");
             return false;
         }
 
         // send cluster
-        if(client->sendMessage(sendBuffer, msgSize, error) == false)
-        {
+        if (client->sendMessage(sendBuffer, msgSize, error) == false) {
             LOG_ERROR(error);
             success = false;
             break;
         }
 
         pos += segmentSize;
-    }
-    while(pos < dataSize);
+    } while (pos < dataSize);
 
     return success;
 }
@@ -266,18 +259,15 @@ sendFile(WebsocketClient* client,
  * @return true, if successful, else false
  */
 bool
-waitUntilFullyUploaded(const std::string &uuid,
-                       Hanami::ErrorContainer &error)
+waitUntilFullyUploaded(const std::string& uuid, Hanami::ErrorContainer& error)
 {
     // TODO: add timeout-timer
     bool completeUploaded = false;
-    while(completeUploaded == false)
-    {
+    while (completeUploaded == false) {
         sleep(1);
 
         std::string progressStr = "";
-        if(getDatasetProgress(progressStr, uuid, error) == false)
-        {
+        if (getDatasetProgress(progressStr, uuid, error) == false) {
             LOG_ERROR(error);
             return false;
         }
@@ -285,7 +275,7 @@ waitUntilFullyUploaded(const std::string &uuid,
         json progress;
         try {
             progress = json::parse(progressStr);
-        } catch(const json::parse_error& ex) {
+        } catch (const json::parse_error& ex) {
             error.addMeesage("json-parser error: " + std::string(ex.what()));
             LOG_ERROR(error);
             return false;
@@ -308,17 +298,13 @@ waitUntilFullyUploaded(const std::string &uuid,
  * @return true, if successful, else false
  */
 bool
-uploadCsvData(std::string &result,
-              const std::string &dataSetName,
-              const std::string &inputFilePath,
-              Hanami::ErrorContainer &error)
+uploadCsvData(std::string& result,
+              const std::string& dataSetName,
+              const std::string& inputFilePath,
+              Hanami::ErrorContainer& error)
 {
     // init new mnist-data-set
-    if(createCsvDataSet(result,
-                        dataSetName,
-                        getFileSize(inputFilePath),
-                        error) == false)
-    {
+    if (createCsvDataSet(result, dataSetName, getFileSize(inputFilePath), error) == false) {
         return false;
     }
 
@@ -326,7 +312,7 @@ uploadCsvData(std::string &result,
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch(const json::parse_error& ex) {
+    } catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         LOG_ERROR(error);
         return false;
@@ -346,29 +332,25 @@ uploadCsvData(std::string &result,
                                          HanamiRequest::getInstance()->getPort(),
                                          "",
                                          error);
-    if(ret == false)
-    {
+    if (ret == false) {
         error.addMeesage("Failed to init websocket to shiori");
         LOG_ERROR(error);
         return false;
     }
 
     // send file
-    if(sendFile(&wsClient, uuid, inputUuid, inputFilePath, error) == false)
-    {
+    if (sendFile(&wsClient, uuid, inputUuid, inputFilePath, error) == false) {
         LOG_ERROR(error);
         return false;
     }
 
     // wait until all data-transfers to shiori are completed
-    if(waitUntilFullyUploaded(uuid, error) == false)
-    {
+    if (waitUntilFullyUploaded(uuid, error) == false) {
         LOG_ERROR(error);
         return false;
     }
 
-    if(finalizeCsvDataSet(result, uuid, inputUuid, error) == false)
-    {
+    if (finalizeCsvDataSet(result, uuid, inputUuid, error) == false) {
         LOG_ERROR(error);
         return false;
     }
@@ -388,19 +370,16 @@ uploadCsvData(std::string &result,
  * @return true, if successful, else false
  */
 bool
-uploadMnistData(std::string &result,
-                const std::string &dataSetName,
-                const std::string &inputFilePath,
-                const std::string &labelFilePath,
-                Hanami::ErrorContainer &error)
+uploadMnistData(std::string& result,
+                const std::string& dataSetName,
+                const std::string& inputFilePath,
+                const std::string& labelFilePath,
+                Hanami::ErrorContainer& error)
 {
     // init new mnist-data-set
-    if(createMnistDataSet(result,
-                          dataSetName,
-                          getFileSize(inputFilePath),
-                          getFileSize(labelFilePath),
-                          error) == false)
-    {
+    if (createMnistDataSet(
+            result, dataSetName, getFileSize(inputFilePath), getFileSize(labelFilePath), error)
+        == false) {
         return false;
     }
 
@@ -408,7 +387,7 @@ uploadMnistData(std::string &result,
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch(const json::parse_error& ex) {
+    } catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         LOG_ERROR(error);
         return false;
@@ -429,39 +408,34 @@ uploadMnistData(std::string &result,
                                          HanamiRequest::getInstance()->getPort(),
                                          "",
                                          error);
-    if(ret == false)
-    {
+    if (ret == false) {
         error.addMeesage("Failed to init websocket to shiori");
         LOG_ERROR(error);
         return false;
     }
 
     // send file with inputs
-    if(sendFile(&wsClient, uuid, inputUuid, inputFilePath, error) == false)
-    {
+    if (sendFile(&wsClient, uuid, inputUuid, inputFilePath, error) == false) {
         error.addMeesage("Failed to send file with input-values");
         LOG_ERROR(error);
         return false;
     }
 
     // send file with labels
-    if(sendFile(&wsClient, uuid, labelUuid, labelFilePath, error) == false)
-    {
+    if (sendFile(&wsClient, uuid, labelUuid, labelFilePath, error) == false) {
         error.addMeesage("Failed to send file with labes");
         LOG_ERROR(error);
         return false;
     }
 
     // wait until all data-transfers to shiori are completed
-    if(waitUntilFullyUploaded(uuid, error) == false)
-    {
+    if (waitUntilFullyUploaded(uuid, error) == false) {
         error.addMeesage("Failed to wait for fully uploaded files");
         LOG_ERROR(error);
         return false;
     }
 
-    if(finalizeMnistDataSet(result, uuid, inputUuid, labelUuid, error) == false)
-    {
+    if (finalizeMnistDataSet(result, uuid, inputUuid, labelUuid, error) == false) {
         error.addMeesage("Failed to finalize MNIST-dataset");
         LOG_ERROR(error);
         return false;
@@ -481,10 +455,10 @@ uploadMnistData(std::string &result,
  * @return true, if successful, else false
  */
 bool
-checkDataset(std::string &result,
-             const std::string &dataUuid,
-             const std::string &resultUuid,
-             Hanami::ErrorContainer &error)
+checkDataset(std::string& result,
+             const std::string& dataUuid,
+             const std::string& resultUuid,
+             Hanami::ErrorContainer& error)
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
@@ -494,7 +468,7 @@ checkDataset(std::string &result,
                                  ",\"result_uuid\":\"" + resultUuid + "\"}";
 
     // send request
-    if(request->sendPostRequest(result, path, vars, jsonBody, error) == false) {
+    if (request->sendPostRequest(result, path, vars, jsonBody, error) == false) {
         return false;
     }
 
@@ -511,9 +485,7 @@ checkDataset(std::string &result,
  * @return true, if successful, else false
  */
 bool
-getDataset(std::string &result,
-           const std::string &dataUuid,
-           Hanami::ErrorContainer &error)
+getDataset(std::string& result, const std::string& dataUuid, Hanami::ErrorContainer& error)
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
@@ -521,8 +493,7 @@ getDataset(std::string &result,
     const std::string vars = "uuid=" + dataUuid;
 
     // send request
-    if(request->sendGetRequest(result, path, vars, error) == false)
-    {
+    if (request->sendGetRequest(result, path, vars, error) == false) {
         error.addMeesage("Failed to get dataset with UUID '" + dataUuid + "'");
         LOG_ERROR(error);
         return false;
@@ -540,16 +511,14 @@ getDataset(std::string &result,
  * @return true, if successful, else false
  */
 bool
-listDatasets(std::string &result,
-             Hanami::ErrorContainer &error)
+listDatasets(std::string& result, Hanami::ErrorContainer& error)
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/data_set/all";
 
     // send request
-    if(request->sendGetRequest(result, path, "", error) == false)
-    {
+    if (request->sendGetRequest(result, path, "", error) == false) {
         error.addMeesage("Failed to list datasets");
         LOG_ERROR(error);
         return false;
@@ -568,9 +537,7 @@ listDatasets(std::string &result,
  * @return true, if successful, else false
  */
 bool
-deleteDataset(std::string &result,
-              const std::string &dataUuid,
-              Hanami::ErrorContainer &error)
+deleteDataset(std::string& result, const std::string& dataUuid, Hanami::ErrorContainer& error)
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
@@ -578,8 +545,7 @@ deleteDataset(std::string &result,
     const std::string vars = "uuid=" + dataUuid;
 
     // send request
-    if(request->sendDeleteRequest(result, path, vars, error) == false)
-    {
+    if (request->sendDeleteRequest(result, path, vars, error) == false) {
         error.addMeesage("Failed to delete dataset with UUID '" + dataUuid + "'");
         LOG_ERROR(error);
         return false;
@@ -598,9 +564,7 @@ deleteDataset(std::string &result,
  * @return true, if successful, else false
  */
 bool
-getDatasetProgress(std::string &result,
-                   const std::string &dataUuid,
-                   Hanami::ErrorContainer &error)
+getDatasetProgress(std::string& result, const std::string& dataUuid, Hanami::ErrorContainer& error)
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
@@ -608,8 +572,7 @@ getDatasetProgress(std::string &result,
     const std::string vars = "uuid=" + dataUuid;
 
     // send request
-    if(request->sendGetRequest(result, path, vars, error) == false)
-    {
+    if (request->sendGetRequest(result, path, vars, error) == false) {
         error.addMeesage("Failed to check upload-state of dataset with UUID '" + dataUuid + "'");
         LOG_ERROR(error);
         return false;
@@ -618,4 +581,4 @@ getDatasetProgress(std::string &result,
     return true;
 }
 
-} // namespace Hanami
+}  // namespace Hanami

@@ -22,17 +22,15 @@
 
 #include "create_project.h"
 
-#include <hanami_root.h>
 #include <database/projects_table.h>
-
-#include <hanami_crypto/hashes.h>
 #include <hanami_common/methods/string_methods.h>
+#include <hanami_crypto/hashes.h>
+#include <hanami_root.h>
 
 /**
  * @brief constructor
  */
-CreateProject::CreateProject()
-    : Blossom("Register a new project within Misaki.")
+CreateProject::CreateProject() : Blossom("Register a new project within Misaki.")
 {
     errorCodes.push_back(UNAUTHORIZED_RTYPE);
     errorCodes.push_back(CONFLICT_RTYPE);
@@ -42,27 +40,25 @@ CreateProject::CreateProject()
     //----------------------------------------------------------------------------------------------
 
     registerInputField("id", SAKURA_STRING_TYPE)
-            .setComment("ID of the new project.")
-            .setLimit(4, 256)
-            .setRegex(ID_REGEX);
+        .setComment("ID of the new project.")
+        .setLimit(4, 256)
+        .setRegex(ID_REGEX);
 
     registerInputField("name", SAKURA_STRING_TYPE)
-            .setComment("Name of the new project.")
-            .setLimit(4, 256)
-            .setRegex(NAME_REGEX);
+        .setComment("Name of the new project.")
+        .setLimit(4, 256)
+        .setRegex(NAME_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("id", SAKURA_STRING_TYPE)
-            .setComment("ID of the new project.");
+    registerOutputField("id", SAKURA_STRING_TYPE).setComment("ID of the new project.");
 
-    registerOutputField("name", SAKURA_STRING_TYPE)
-            .setComment("Name of the new project.");
+    registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the new project.");
 
     registerOutputField("creator_id", SAKURA_STRING_TYPE)
-            .setComment("Id of the creator of the project.");
+        .setComment("Id of the creator of the project.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -73,14 +69,13 @@ CreateProject::CreateProject()
  * @brief runTask
  */
 bool
-CreateProject::runTask(BlossomIO &blossomIO,
-                       const json &context,
-                       BlossomStatus &status,
-                       Hanami::ErrorContainer &error)
+CreateProject::runTask(BlossomIO& blossomIO,
+                       const json& context,
+                       BlossomStatus& status,
+                       Hanami::ErrorContainer& error)
 {
     // check if admin
-    if(context["is_admin"] == false)
-    {
+    if (context["is_admin"] == false) {
         status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
@@ -92,18 +87,16 @@ CreateProject::runTask(BlossomIO &blossomIO,
 
     // check if user already exist within the table
     json getResult;
-    if(ProjectsTable::getInstance()->getProject(getResult, projectId, error) == false)
-    {
+    if (ProjectsTable::getInstance()->getProject(getResult, projectId, error) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // handle not found
-    if(getResult.size() != 0)
-    {
+    if (getResult.size() != 0) {
         status.errorMessage = "Project with id '" + projectId + "' already exist.";
         status.statusCode = CONFLICT_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
@@ -114,18 +107,14 @@ CreateProject::runTask(BlossomIO &blossomIO,
     userData["creator_id"] = creatorId;
 
     // add new user to table
-    if(ProjectsTable::getInstance()->addProject(userData, error) == false)
-    {
+    if (ProjectsTable::getInstance()->addProject(userData, error) == false) {
         status.errorMessage = error.toString();
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // get new created user from database
-    if(ProjectsTable::getInstance()->getProject(blossomIO.output,
-                                                projectId,
-                                                error) == false)
-    {
+    if (ProjectsTable::getInstance()->getProject(blossomIO.output, projectId, error) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

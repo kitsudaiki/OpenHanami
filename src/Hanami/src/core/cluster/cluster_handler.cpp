@@ -56,16 +56,13 @@ bool
 ClusterHandler::removeCluster(const std::string uuid)
 {
     const auto it = m_allCluster.find(uuid);
-    if(it != m_allCluster.end())
-    {
-        if(it->second != nullptr)
-        {
+    if (it != m_allCluster.end()) {
+        if (it->second != nullptr) {
             // unregister cluster in websocket and close websocket, if direct connection is active
-            if(it->second->msgClient != nullptr)
-            {
+            if (it->second->msgClient != nullptr) {
                 it->second->msgClient->m_targetCluster = nullptr;
                 Hanami::ErrorContainer error;
-                it->second->msgClient->closeClient(error);
+                it->second->msgClient->closeClient();
             }
 
             delete it->second;
@@ -88,7 +85,7 @@ Cluster*
 ClusterHandler::getCluster(const std::string uuid)
 {
     const auto it = m_allCluster.find(uuid);
-    if(it != m_allCluster.end()) {
+    if (it != m_allCluster.end()) {
         return it->second;
     }
 

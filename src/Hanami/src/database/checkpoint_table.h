@@ -23,16 +23,15 @@
 #ifndef HANAMI_CLUSTER_CHECKPOINT_TABLE_H
 #define HANAMI_CLUSTER_CHECKPOINT_TABLE_H
 
-#include <hanami_common/logger.h>
 #include <database/generic_tables/hanami_sql_table.h>
+#include <hanami_common/logger.h>
 
-class CheckpointTable
-        : public HanamiSqlTable
+class CheckpointTable : public HanamiSqlTable
 {
-public:
+   public:
     static CheckpointTable* getInstance()
     {
-        if(instance == nullptr) {
+        if (instance == nullptr) {
             instance = new CheckpointTable();
         }
         return instance;
@@ -40,27 +39,25 @@ public:
 
     ~CheckpointTable();
 
-    bool addCheckpoint(json &data,
-                            const UserContext &userContext,
-                            Hanami::ErrorContainer &error);
-    bool getCheckpoint(json &result,
-                            const std::string &checkpointUuid,
-                            const UserContext &userContext,
-                            Hanami::ErrorContainer &error,
-                            const bool showHiddenValues);
-    bool getAllCheckpoint(Hanami::TableItem &result,
-                               const UserContext &userContext,
-                               Hanami::ErrorContainer &error);
-    bool deleteCheckpoint(const std::string &checkpointUuid,
-                               const UserContext &userContext,
-                               Hanami::ErrorContainer &error);
-    bool setUploadFinish(const std::string &uuid,
-                         const std::string &fileUuid,
-                         Hanami::ErrorContainer &error);
+    bool addCheckpoint(json& data, const UserContext& userContext, Hanami::ErrorContainer& error);
+    bool getCheckpoint(json& result,
+                       const std::string& checkpointUuid,
+                       const UserContext& userContext,
+                       Hanami::ErrorContainer& error,
+                       const bool showHiddenValues);
+    bool getAllCheckpoint(Hanami::TableItem& result,
+                          const UserContext& userContext,
+                          Hanami::ErrorContainer& error);
+    bool deleteCheckpoint(const std::string& checkpointUuid,
+                          const UserContext& userContext,
+                          Hanami::ErrorContainer& error);
+    bool setUploadFinish(const std::string& uuid,
+                         const std::string& fileUuid,
+                         Hanami::ErrorContainer& error);
 
-private:
+   private:
     CheckpointTable();
     static CheckpointTable* instance;
 };
 
-#endif // HANAMI_CLUSTER_CHECKPOINT_TABLE_H
+#endif  // HANAMI_CLUSTER_CHECKPOINT_TABLE_H

@@ -22,15 +22,13 @@
 
 #include "session_handler.h"
 
-#include <handler/reply_handler.h>
-#include <handler/message_blocker_handler.h>
-#include <handler/session_handler.h>
-
+#include <abstract_socket.h>
+#include <hanami_common/logger.h>
 #include <hanami_network/session.h>
 #include <hanami_network/session_controller.h>
-
-#include <hanami_common/logger.h>
-#include <abstract_socket.h>
+#include <handler/message_blocker_handler.h>
+#include <handler/reply_handler.h>
+#include <handler/session_handler.h>
 
 namespace Hanami
 {
@@ -51,15 +49,12 @@ SessionHandler::SessionHandler(void (*processCreateSession)(Session*, const std:
     m_processCloseSession = processCloseSession;
     m_processError = processError;
 
-
-    if(m_replyHandler == nullptr)
-    {
+    if (m_replyHandler == nullptr) {
         m_replyHandler = new ReplyHandler();
         m_replyHandler->startThread();
     }
 
-    if(m_blockerHandler == nullptr)
-    {
+    if (m_blockerHandler == nullptr) {
         m_blockerHandler = new MessageBlockerHandler();
         m_blockerHandler->startThread();
     }
@@ -86,14 +81,12 @@ SessionHandler::SessionHandler(void (*processCreateSession)(Session*, const std:
  */
 SessionHandler::~SessionHandler()
 {
-    if(m_replyHandler != nullptr)
-    {
+    if (m_replyHandler != nullptr) {
         m_replyHandler->scheduleThreadForDeletion();
         m_replyHandler = nullptr;
         sleep(1);
     }
-    if(m_blockerHandler != nullptr)
-    {
+    if (m_blockerHandler != nullptr) {
         delete m_blockerHandler;
         m_blockerHandler = nullptr;
     }
@@ -140,8 +133,7 @@ SessionHandler::removeSession(const uint32_t id)
     std::map<uint32_t, Session*>::iterator it;
     it = m_sessions.find(id);
 
-    if(it != m_sessions.end())
-    {
+    if (it != m_sessions.end()) {
         ret = it->second;
         m_sessions.erase(it);
     }
@@ -221,11 +213,11 @@ SessionHandler::sendHeartBeats()
 {
     lockSessionMap();
 
-    for(auto const& [id, session] : m_sessions) {
+    for (auto const& [id, session] : m_sessions) {
         session->sendHeartbeat();
     }
 
     unlockSessionMap();
 }
 
-}
+}  // namespace Hanami

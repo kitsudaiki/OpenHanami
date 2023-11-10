@@ -23,16 +23,15 @@
 #ifndef HANAMI_AUDIT_LOG_TABLE_H
 #define HANAMI_AUDIT_LOG_TABLE_H
 
-#include <hanami_common/logger.h>
 #include <database/generic_tables/hanami_sql_log_table.h>
+#include <hanami_common/logger.h>
 
-class AuditLogTable
-        : public HanamiSqlLogTable
+class AuditLogTable : public HanamiSqlLogTable
 {
-public:
+   public:
     static AuditLogTable* getInstance()
     {
-        if(instance == nullptr) {
+        if (instance == nullptr) {
             instance = new AuditLogTable();
         }
         return instance;
@@ -40,19 +39,19 @@ public:
 
     ~AuditLogTable();
 
-    bool addAuditLogEntry(const std::string &timestamp,
-                          const std::string &userId,
-                          const std::string &endpoint,
-                          const std::string &requestType,
-                          Hanami::ErrorContainer &error);
-    bool getAllAuditLogEntries(Hanami::TableItem &result,
-                               const std::string &userId,
+    bool addAuditLogEntry(const std::string& timestamp,
+                          const std::string& userId,
+                          const std::string& endpoint,
+                          const std::string& requestType,
+                          Hanami::ErrorContainer& error);
+    bool getAllAuditLogEntries(Hanami::TableItem& result,
+                               const std::string& userId,
                                const uint64_t page,
-                               Hanami::ErrorContainer &error);
+                               Hanami::ErrorContainer& error);
 
-private:
+   private:
     AuditLogTable();
     static AuditLogTable* instance;
 };
 
-#endif // HANAMI_AUDIT_LOG_TABLE_H
+#endif  // HANAMI_AUDIT_LOG_TABLE_H

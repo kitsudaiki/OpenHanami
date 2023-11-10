@@ -25,18 +25,13 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-
-class GetThreadMapping
-        : public Blossom
+class GetThreadMapping : public Blossom
 {
-public:
+   public:
     GetThreadMapping();
 
-protected:
-    bool runTask(BlossomIO &blossomIO,
-                 const json &,
-                 BlossomStatus &,
-                 Hanami::ErrorContainer &);
+   protected:
+    bool runTask(BlossomIO& blossomIO, const json&, BlossomStatus&, Hanami::ErrorContainer&);
 };
 
-#endif // AZUKIHEART_GETTHREADMAPPING_H
+#endif  // AZUKIHEART_GETTHREADMAPPING_H

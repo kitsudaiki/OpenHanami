@@ -23,24 +23,22 @@
 #ifndef SESSION_TEST_H
 #define SESSION_TEST_H
 
-#include <iostream>
+#include <abstract_socket.h>
 #include <hanami_common/logger.h>
+#include <hanami_common/test_helper/memory_leak_test_helper.h>
+#include <hanami_network/session.h>
 #include <hanami_network/session_controller.h>
 #include <handler/session_handler.h>
-#include <hanami_network/session.h>
-#include <abstract_socket.h>
 
-#include <hanami_common/test_helper/memory_leak_test_helper.h>
+#include <iostream>
 
 namespace Hanami
 {
 
-class Session_Test
-        : public Hanami::MemoryLeakTestHelpter
+class Session_Test : public Hanami::MemoryLeakTestHelpter
 {
-public:
+   public:
     Session_Test();
-
 
     static Session_Test* m_instance;
 
@@ -54,14 +52,13 @@ public:
 
     Session* m_serverSession = nullptr;
 
-private:
+   private:
     void initTestCase();
     void testController();
     void testSession();
     void testSend();
-
 };
 
-}
+}  // namespace Hanami
 
-#endif // SESSION_TEST_H
+#endif  // SESSION_TEST_H

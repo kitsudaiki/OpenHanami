@@ -25,18 +25,16 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-
-class CreateMnistDataSet
-        : public Blossom
+class CreateMnistDataSet : public Blossom
 {
-public:
+   public:
     CreateMnistDataSet();
 
-protected:
-    bool runTask(BlossomIO &blossomIO,
-                 const json &context,
-                 BlossomStatus &status,
-                 Hanami::ErrorContainer &error);
+   protected:
+    bool runTask(BlossomIO& blossomIO,
+                 const json& context,
+                 BlossomStatus& status,
+                 Hanami::ErrorContainer& error);
 };
 
-#endif // HANAMI_MNIST_CREATE_DATA_SET_H
+#endif  // HANAMI_MNIST_CREATE_DATA_SET_H

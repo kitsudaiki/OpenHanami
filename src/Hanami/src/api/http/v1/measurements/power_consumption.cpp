@@ -21,18 +21,17 @@
  */
 
 #include "power_consumption.h"
-#include <hanami_root.h>
-#include <hanami_hardware/power_measuring.h>
 
-PowerConsumption::PowerConsumption()
-    : Blossom("Request the power-measurement of the CPU")
+#include <hanami_hardware/power_measuring.h>
+#include <hanami_root.h>
+
+PowerConsumption::PowerConsumption() : Blossom("Request the power-measurement of the CPU")
 {
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("power", SAKURA_MAP_TYPE)
-            .setComment("Json-object with power-measurements");
+    registerOutputField("power", SAKURA_MAP_TYPE).setComment("Json-object with power-measurements");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -43,10 +42,10 @@ PowerConsumption::PowerConsumption()
  * @brief runTask
  */
 bool
-PowerConsumption::runTask(BlossomIO &blossomIO,
-                          const json &,
-                          BlossomStatus &,
-                          Hanami::ErrorContainer &)
+PowerConsumption::runTask(BlossomIO& blossomIO,
+                          const json&,
+                          BlossomStatus&,
+                          Hanami::ErrorContainer&)
 {
     blossomIO.output["power"] = PowerMeasuring::getInstance()->getJson();
 

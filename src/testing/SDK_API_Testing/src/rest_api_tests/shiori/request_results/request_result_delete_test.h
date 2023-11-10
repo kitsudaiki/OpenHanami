@@ -25,14 +25,12 @@
 
 #include <common/test_step.h>
 
-class RequestResultDeleteTest
-        : public TestStep
+class RequestResultDeleteTest : public TestStep
 {
-public:
+   public:
     RequestResultDeleteTest(const bool expectSuccess);
 
-    bool runTest(json &inputData,
-                 Hanami::ErrorContainer &error);
+    bool runTest(json& inputData, Hanami::ErrorContainer& error);
 };
 
-#endif // TSUGUMITESTER_REQUEST_RESULT_DELETE_TEST_H
+#endif  // TSUGUMITESTER_REQUEST_RESULT_DELETE_TEST_H

@@ -27,8 +27,7 @@
  *
  * @param expectSuccess sould success or fail
  */
-TestStep::TestStep(const bool expectSuccess)
-    : m_expectSuccess(expectSuccess) {}
+TestStep::TestStep(const bool expectSuccess) : m_expectSuccess(expectSuccess) {}
 
 /**
  * @brief destructor

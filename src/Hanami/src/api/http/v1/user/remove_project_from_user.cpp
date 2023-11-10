@@ -22,17 +22,15 @@
 
 #include "remove_project_from_user.h"
 
-#include <hanami_root.h>
 #include <database/users_table.h>
-
-#include <hanami_crypto/hashes.h>
 #include <hanami_common/methods/string_methods.h>
+#include <hanami_crypto/hashes.h>
+#include <hanami_root.h>
 
 /**
  * @brief constructor
  */
-RemoveProjectFromUser::RemoveProjectFromUser()
-    : Blossom("Remove a project from a specific user")
+RemoveProjectFromUser::RemoveProjectFromUser() : Blossom("Remove a project from a specific user")
 {
     errorCodes.push_back(UNAUTHORIZED_RTYPE);
     errorCodes.push_back(NOT_FOUND_RTYPE);
@@ -42,34 +40,32 @@ RemoveProjectFromUser::RemoveProjectFromUser()
     //----------------------------------------------------------------------------------------------
 
     registerInputField("id", SAKURA_STRING_TYPE)
-            .setComment("ID of the user.")
-            .setLimit(4, 256)
-            .setRegex(ID_EXT_REGEX);
+        .setComment("ID of the user.")
+        .setLimit(4, 256)
+        .setRegex(ID_EXT_REGEX);
 
     registerInputField("project_id", SAKURA_STRING_TYPE)
-            .setComment("ID of the project, which has to be removed from the user.")
-            .setLimit(4, 256)
-            .setRegex(ID_REGEX);
+        .setComment("ID of the project, which has to be removed from the user.")
+        .setLimit(4, 256)
+        .setRegex(ID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("id", SAKURA_STRING_TYPE)
-            .setComment("ID of the user.");
+    registerOutputField("id", SAKURA_STRING_TYPE).setComment("ID of the user.");
 
-    registerOutputField("name", SAKURA_STRING_TYPE)
-            .setComment("Name of the user.");
+    registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the user.");
 
-    registerOutputField("is_admin", SAKURA_BOOL_TYPE)
-            .setComment("True, if user is an admin.");
+    registerOutputField("is_admin", SAKURA_BOOL_TYPE).setComment("True, if user is an admin.");
 
     registerOutputField("creator_id", SAKURA_STRING_TYPE)
-            .setComment("Id of the creator of the user.");
+        .setComment("Id of the creator of the user.");
 
     registerOutputField("projects", SAKURA_ARRAY_TYPE)
-            .setComment("Json-array with all assigned projects "
-                        "together with role and project-admin-status.");
+        .setComment(
+            "Json-array with all assigned projects "
+            "together with role and project-admin-status.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -80,14 +76,13 @@ RemoveProjectFromUser::RemoveProjectFromUser()
  * @brief runTask
  */
 bool
-RemoveProjectFromUser::runTask(BlossomIO &blossomIO,
-                               const json &context,
-                               BlossomStatus &status,
-                               Hanami::ErrorContainer &error)
+RemoveProjectFromUser::runTask(BlossomIO& blossomIO,
+                               const json& context,
+                               BlossomStatus& status,
+                               Hanami::ErrorContainer& error)
 {
     // check if admin
-    if(context["is_admin"] == false)
-    {
+    if (context["is_admin"] == false) {
         status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
@@ -98,28 +93,24 @@ RemoveProjectFromUser::runTask(BlossomIO &blossomIO,
 
     // check if user already exist within the table
     json getResult;
-    if(UsersTable::getInstance()->getUser(getResult, userId, error, false) == false)
-    {
+    if (UsersTable::getInstance()->getUser(getResult, userId, error, false) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // handle not found
-    if(getResult.size() == 0)
-    {
+    if (getResult.size() == 0) {
         status.errorMessage = "User with id '" + userId + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
     // check if project is assigned to user and remove it if found
     bool found = false;
     json parsedProjects = getResult["projects"];
-    for(uint64_t i = 0; i < parsedProjects.size(); i++)
-    {
-        if(parsedProjects[i]["project_id"] == projectId)
-        {
+    for (uint64_t i = 0; i < parsedProjects.size(); i++) {
+        if (parsedProjects[i]["project_id"] == projectId) {
             parsedProjects.erase(i);
             found = true;
             break;
@@ -127,36 +118,26 @@ RemoveProjectFromUser::runTask(BlossomIO &blossomIO,
     }
 
     // handle error that project is not assigned to user
-    if(found == false)
-    {
-        status.errorMessage = "Project with ID '"
-                              + projectId
-                              + "' is not assigned to user with id '"
-                              + userId
+    if (found == false) {
+        status.errorMessage = "Project with ID '" + projectId
+                              + "' is not assigned to user with id '" + userId
                               + "' and so it can not be removed from the user.";
-        error.addMeesage(status.errorMessage);
         status.statusCode = NOT_FOUND_RTYPE;
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
     // updated projects of user in database
-    if(UsersTable::getInstance()->updateProjectsOfUser(userId,
-                                                       parsedProjects.dump(),
-                                                       error) == false)
+    if (UsersTable::getInstance()->updateProjectsOfUser(userId, parsedProjects.dump(), error)
+        == false)
     {
-        error.addMeesage("Failed to update projects of user with id '"
-                         + userId
-                         + "'.");
+        error.addMeesage("Failed to update projects of user with id '" + userId + "'.");
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // get new created user from database
-    if(UsersTable::getInstance()->getUser(blossomIO.output,
-                                          userId,
-                                          error,
-                                          false) == false)
-    {
+    if (UsersTable::getInstance()->getUser(blossomIO.output, userId, error, false) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

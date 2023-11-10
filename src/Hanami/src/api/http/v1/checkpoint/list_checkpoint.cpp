@@ -22,11 +22,10 @@
 
 #include "list_checkpoint.h"
 
-#include <hanami_root.h>
 #include <database/checkpoint_table.h>
+#include <hanami_root.h>
 
-ListCheckpoint::ListCheckpoint()
-    : Blossom("List checkpoints of all visible cluster.")
+ListCheckpoint::ListCheckpoint() : Blossom("List checkpoints of all visible cluster.")
 {
     //----------------------------------------------------------------------------------------------
     // output
@@ -40,11 +39,11 @@ ListCheckpoint::ListCheckpoint()
     headerMatch.push_back("name");
 
     registerOutputField("header", SAKURA_ARRAY_TYPE)
-            .setComment("Array with the namings all columns of the table.")
-            .setMatch(headerMatch);
+        .setComment("Array with the namings all columns of the table.")
+        .setMatch(headerMatch);
 
     registerOutputField("body", SAKURA_ARRAY_TYPE)
-            .setComment("Array with all rows of the table, which array arrays too.");
+        .setComment("Array with all rows of the table, which array arrays too.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -55,17 +54,16 @@ ListCheckpoint::ListCheckpoint()
  * @brief runTask
  */
 bool
-ListCheckpoint::runTask(BlossomIO &blossomIO,
-                        const json &context,
-                        BlossomStatus &status,
-                        Hanami::ErrorContainer &error)
+ListCheckpoint::runTask(BlossomIO& blossomIO,
+                        const json& context,
+                        BlossomStatus& status,
+                        Hanami::ErrorContainer& error)
 {
     const UserContext userContext(context);
 
     // get data from table
     Hanami::TableItem table;
-    if(CheckpointTable::getInstance()->getAllCheckpoint(table, userContext, error) == false)
-    {
+    if (CheckpointTable::getInstance()->getAllCheckpoint(table, userContext, error) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

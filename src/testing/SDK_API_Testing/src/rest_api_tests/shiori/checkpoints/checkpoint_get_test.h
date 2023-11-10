@@ -25,18 +25,15 @@
 
 #include <common/test_step.h>
 
-class CheckpointGetTest
-        : public TestStep
+class CheckpointGetTest : public TestStep
 {
-public:
-    CheckpointGetTest(const bool expectSuccess,
-                    const std::string &uuidOverride = "");
+   public:
+    CheckpointGetTest(const bool expectSuccess, const std::string& uuidOverride = "");
 
-    bool runTest(json &inputData,
-                 Hanami::ErrorContainer &error);
+    bool runTest(json& inputData, Hanami::ErrorContainer& error);
 
-private:
+   private:
     std::string m_uuid = "";
 };
 
-#endif // TSUGUMITESTER_CHECKPOINTGETTEST_H
+#endif  // TSUGUMITESTER_CHECKPOINTGETTEST_H

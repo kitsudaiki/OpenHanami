@@ -22,11 +22,10 @@
 
 #include "get_request_result.h"
 
-#include <hanami_root.h>
 #include <database/request_result_table.h>
+#include <hanami_root.h>
 
-GetRequestResult::GetRequestResult()
-    : Blossom("Get a specific request-result")
+GetRequestResult::GetRequestResult() : Blossom("Get a specific request-result")
 {
     errorCodes.push_back(NOT_FOUND_RTYPE);
 
@@ -35,30 +34,28 @@ GetRequestResult::GetRequestResult()
     //----------------------------------------------------------------------------------------------
 
     registerInputField("uuid", SAKURA_STRING_TYPE)
-            .setComment("UUID of the original request-task, which placed the result in shiori.")
-            .setRegex(UUID_REGEX);
+        .setComment("UUID of the original request-task, which placed the result in shiori.")
+        .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid", SAKURA_STRING_TYPE)
-            .setComment("UUID of the request-result.");
+    registerOutputField("uuid", SAKURA_STRING_TYPE).setComment("UUID of the request-result.");
 
-    registerOutputField("name", SAKURA_STRING_TYPE)
-            .setComment("Name of the request-result.");
+    registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the request-result.");
 
     registerOutputField("owner_id", SAKURA_STRING_TYPE)
-            .setComment("ID of the user, who created the request-result.");
+        .setComment("ID of the user, who created the request-result.");
 
     registerOutputField("project_id", SAKURA_STRING_TYPE)
-            .setComment("ID of the project, where the request-result belongs to.");
+        .setComment("ID of the project, where the request-result belongs to.");
 
     registerOutputField("visibility", SAKURA_STRING_TYPE)
-            .setComment("Visibility of the request-result (private, shared, public).");
+        .setComment("Visibility of the request-result (private, shared, public).");
 
     registerOutputField("data", SAKURA_ARRAY_TYPE)
-            .setComment("Result of the request-task as json-array.");
+        .setComment("Result of the request-task as json-array.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -69,31 +66,28 @@ GetRequestResult::GetRequestResult()
  * @brief runTask
  */
 bool
-GetRequestResult::runTask(BlossomIO &blossomIO,
-                          const json &context,
-                          BlossomStatus &status,
-                          Hanami::ErrorContainer &error)
+GetRequestResult::runTask(BlossomIO& blossomIO,
+                          const json& context,
+                          BlossomStatus& status,
+                          Hanami::ErrorContainer& error)
 {
     const std::string uuid = blossomIO.input["uuid"];
     const UserContext userContext(context);
 
     // check if request-result exist within the table
-    if(RequestResultTable::getInstance()->getRequestResult(blossomIO.output,
-                                                           uuid,
-                                                           userContext,
-                                                           error,
-                                                           true) == false)
+    if (RequestResultTable::getInstance()->getRequestResult(
+            blossomIO.output, uuid, userContext, error, true)
+        == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // handle not found
-    if(blossomIO.output.size() == 0)
-    {
+    if (blossomIO.output.size() == 0) {
         status.errorMessage = "Request-result with uuid '" + uuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 

@@ -25,18 +25,15 @@
 
 #include <common/test_step.h>
 
-class ProjectDeleteTest
-        : public TestStep
+class ProjectDeleteTest : public TestStep
 {
-public:
-    ProjectDeleteTest(const bool expectSuccess,
-                   const std::string &nameOverride = "");
+   public:
+    ProjectDeleteTest(const bool expectSuccess, const std::string& nameOverride = "");
 
-    bool runTest(json &inputData,
-                 Hanami::ErrorContainer &error);
+    bool runTest(json& inputData, Hanami::ErrorContainer& error);
 
-private:
+   private:
     std::string m_nameOverride = "";
 };
 
-#endif // TSUGUMITESTER_PROJECTDELETESTEP_H
+#endif  // TSUGUMITESTER_PROJECTDELETESTEP_H

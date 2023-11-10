@@ -23,17 +23,14 @@
 #ifndef KITSUNEMIMI_SAKURA_NETWORK_STREAM_DATA_PROCESSING_H
 #define KITSUNEMIMI_SAKURA_NETWORK_STREAM_DATA_PROCESSING_H
 
-#include <message_definitions.h>
-#include <handler/session_handler.h>
-#include <multiblock_io.h>
-
 #include <abstract_socket.h>
 #include <hanami_common/buffer/ring_buffer.h>
-
-#include <hanami_network/session_controller.h>
-#include <hanami_network/session.h>
-
 #include <hanami_common/logger.h>
+#include <hanami_network/session.h>
+#include <hanami_network/session_controller.h>
+#include <handler/session_handler.h>
+#include <message_definitions.h>
+#include <multiblock_io.h>
 
 namespace Hanami
 {
@@ -45,19 +42,17 @@ inline bool
 send_Data_Stream(Session* session,
                  DataBuffer* data,
                  const bool replyExpected,
-                 ErrorContainer &error)
+                 ErrorContainer& error)
 {
-    if(data->usedBufferSize < sizeof(CommonMessageFooter) + sizeof(Data_Stream_Header)) {
+    if (data->usedBufferSize < sizeof(CommonMessageFooter) + sizeof(Data_Stream_Header)) {
         return false;
     }
 
     // bring message-size to a multiple of 8
-    const uint32_t size = static_cast<uint32_t>(data->usedBufferSize)
-                                                - sizeof(CommonMessageFooter)
-                                                - sizeof(Data_Stream_Header);
-    const uint32_t totalMessageSize = sizeof(Data_Stream_Header)
-                                      + size
-                                      + (8-(size % 8)) % 8  // fill up to a multiple of 8
+    const uint32_t size = static_cast<uint32_t>(data->usedBufferSize) - sizeof(CommonMessageFooter)
+                          - sizeof(Data_Stream_Header);
+    const uint32_t totalMessageSize = sizeof(Data_Stream_Header) + size
+                                      + (8 - (size % 8)) % 8  // fill up to a multiple of 8
                                       + sizeof(CommonMessageFooter);
 
     CommonMessageFooter end;
@@ -89,13 +84,12 @@ send_Data_Stream(Session* session,
                  const void* data,
                  const uint32_t size,
                  const bool replyExpected,
-                 ErrorContainer &error)
+                 ErrorContainer& error)
 {
     uint8_t messageBuffer[MESSAGE_CACHE_SIZE];
 
     // bring message-size to a multiple of 8
-    const uint32_t totalMessageSize = sizeof(Data_Stream_Header)
-                                      + size
+    const uint32_t totalMessageSize = sizeof(Data_Stream_Header) + size
                                       + (8 - (size % 8)) % 8  // fill up to a multiple of 8
                                       + sizeof(CommonMessageFooter);
 
@@ -124,9 +118,7 @@ send_Data_Stream(Session* session,
  * @brief send_Data_Stream_Reply
  */
 inline bool
-send_Data_Stream_Reply(Session* session,
-                       const uint32_t messageId,
-                       ErrorContainer &error)
+send_Data_Stream_Reply(Session* session, const uint32_t messageId, ErrorContainer& error)
 {
     Data_StreamReply_Message message;
 
@@ -140,13 +132,11 @@ send_Data_Stream_Reply(Session* session,
  * @brief process_Data_Stream_Static
  */
 inline void
-process_Data_Stream(Session* session,
-                    const Data_Stream_Header* header,
-                    const void* rawMessage)
+process_Data_Stream(Session* session, const Data_Stream_Header* header, const void* rawMessage)
 {
     // get pointer to the beginning of the payload
-    const uint8_t* payloadData = static_cast<const uint8_t*>(rawMessage)
-                                 + sizeof(Data_Stream_Header);
+    const uint8_t* payloadData
+        = static_cast<const uint8_t*>(rawMessage) + sizeof(Data_Stream_Header);
 
     // trigger callback
     session->m_processStreamData(session->m_streamReceiver,
@@ -155,7 +145,7 @@ process_Data_Stream(Session* session,
                                  header->commonHeader.payloadSize);
 
     // send reply if necessary
-    if(header->commonHeader.flags & 0x1) {
+    if (header->commonHeader.flags & 0x1) {
         send_Data_Stream_Reply(session, header->commonHeader.messageId, session->sessionError);
     }
 }
@@ -164,8 +154,7 @@ process_Data_Stream(Session* session,
  * @brief process_Data_Stream_Reply
  */
 inline void
-process_Data_Stream_Reply(Session*,
-                          const Data_StreamReply_Message*)
+process_Data_Stream_Reply(Session*, const Data_StreamReply_Message*)
 {
     return;
 }
@@ -182,30 +171,28 @@ process_Stream_Data_Type(Session* session,
                          const CommonMessageHeader* header,
                          const void* rawMessage)
 {
-    switch(header->subType)
-    {
+    switch (header->subType) {
         //------------------------------------------------------------------------------------------
         case DATA_STREAM_STATIC_SUBTYPE:
-            {
-                const Data_Stream_Header* message =
-                    static_cast<const Data_Stream_Header*>(rawMessage);
-                process_Data_Stream(session, message, rawMessage);
-                break;
-            }
+        {
+            const Data_Stream_Header* message = static_cast<const Data_Stream_Header*>(rawMessage);
+            process_Data_Stream(session, message, rawMessage);
+            break;
+        }
         //------------------------------------------------------------------------------------------
         case DATA_STREAM_REPLY_SUBTYPE:
-            {
-                const Data_StreamReply_Message* message =
-                    static_cast<const Data_StreamReply_Message*>(rawMessage);
-                process_Data_Stream_Reply(session, message);
-                break;
-            }
+        {
+            const Data_StreamReply_Message* message
+                = static_cast<const Data_StreamReply_Message*>(rawMessage);
+            process_Data_Stream_Reply(session, message);
+            break;
+        }
         //------------------------------------------------------------------------------------------
         default:
             break;
     }
 }
 
-}
+}  // namespace Hanami
 
-#endif // KITSUNEMIMI_SAKURA_NETWORK_STREAM_DATA_PROCESSING_H
+#endif  // KITSUNEMIMI_SAKURA_NETWORK_STREAM_DATA_PROCESSING_H

@@ -23,45 +23,45 @@
 #ifndef HANAMI_TEMPFILEHANDLER_H
 #define HANAMI_TEMPFILEHANDLER_H
 
-#include <string>
-#include <map>
 #include <hanami_common/logger.h>
 
-namespace Hanami {
+#include <map>
+#include <string>
+
+namespace Hanami
+{
 class BinaryFile;
 struct DataBuffer;
-}
+}  // namespace Hanami
 
 class TempFileHandler
 {
-public:
+   public:
     static TempFileHandler* getInstance()
     {
-        if(instance == nullptr) {
+        if (instance == nullptr) {
             instance = new TempFileHandler();
         }
         return instance;
     }
     ~TempFileHandler();
 
-    bool initNewFile(const std::string &id,
-                     const uint64_t size);
-    bool addDataToPos(const std::string &uuid,
+    bool initNewFile(const std::string& id, const uint64_t size);
+    bool addDataToPos(const std::string& uuid,
                       const uint64_t pos,
                       const void* data,
                       const uint64_t size);
-    bool getData(Hanami::DataBuffer &result,
-                 const std::string &uuid);
-    bool removeData(const std::string &id);
-    bool moveData(const std::string &uuid,
-                  const std::string &targetLocation,
-                  Hanami::ErrorContainer &error);
+    bool getData(Hanami::DataBuffer& result, const std::string& uuid);
+    bool removeData(const std::string& id);
+    bool moveData(const std::string& uuid,
+                  const std::string& targetLocation,
+                  Hanami::ErrorContainer& error);
 
-private:
+   private:
     TempFileHandler();
     static TempFileHandler* instance;
 
     std::map<std::string, Hanami::BinaryFile*> m_tempFiles;
 };
 
-#endif // HANAMI_TEMPFILEHANDLER_H
+#endif  // HANAMI_TEMPFILEHANDLER_H

@@ -22,13 +22,12 @@
 
 #include "set_cluster_mode.h"
 
-#include <hanami_root.h>
-#include <database/cluster_table.h>
-#include <core/cluster/cluster_handler.h>
 #include <core/cluster/cluster.h>
+#include <core/cluster/cluster_handler.h>
+#include <database/cluster_table.h>
+#include <hanami_root.h>
 
-SetClusterMode::SetClusterMode()
-    : Blossom("Set mode of the cluster.")
+SetClusterMode::SetClusterMode() : Blossom("Set mode of the cluster.")
 {
     errorCodes.push_back(NOT_FOUND_RTYPE);
 
@@ -37,30 +36,28 @@ SetClusterMode::SetClusterMode()
     //----------------------------------------------------------------------------------------------
 
     registerInputField("uuid", SAKURA_STRING_TYPE)
-            .setComment("UUID of the cluster.")
-            .setRegex(UUID_REGEX);
+        .setComment("UUID of the cluster.")
+        .setRegex(UUID_REGEX);
 
     registerInputField("connection_uuid", SAKURA_STRING_TYPE)
-            .setComment("UUID of the connection for input and output.")
-            .setRegex(UUID_REGEX)
-            .setRequired(false);
+        .setComment("UUID of the connection for input and output.")
+        .setRegex(UUID_REGEX)
+        .setRequired(false);
 
     registerInputField("new_state", SAKURA_STRING_TYPE)
-            .setComment("New desired state for the cluster.")
-            .setRegex("^(TASK|DIRECT)$");
+        .setComment("New desired state for the cluster.")
+        .setRegex("^(TASK|DIRECT)$");
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid", SAKURA_STRING_TYPE)
-            .setComment("UUID of the cluster.");
+    registerOutputField("uuid", SAKURA_STRING_TYPE).setComment("UUID of the cluster.");
 
-    registerOutputField("name", SAKURA_STRING_TYPE)
-            .setComment("Name of the cluster.");
+    registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the cluster.");
 
     registerOutputField("new_state", SAKURA_STRING_TYPE)
-            .setComment("New desired state for the cluster.");
+        .setComment("New desired state for the cluster.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -71,54 +68,45 @@ SetClusterMode::SetClusterMode()
  * @brief runTask
  */
 bool
-SetClusterMode::runTask(BlossomIO &blossomIO,
-                        const json &context,
-                        BlossomStatus &status,
-                        Hanami::ErrorContainer &error)
+SetClusterMode::runTask(BlossomIO& blossomIO,
+                        const json& context,
+                        BlossomStatus& status,
+                        Hanami::ErrorContainer& error)
 {
     const std::string clusterUuid = blossomIO.input["uuid"];
-    //const std::string connectionUuid = blossomIO.input["connection_uuid"];
+    // const std::string connectionUuid = blossomIO.input["connection_uuid"];
     const std::string newState = blossomIO.input["new_state"];
     const UserContext userContext(context);
 
     // get data from table
-    if(ClusterTable::getInstance()->getCluster(blossomIO.output,
-                                               clusterUuid,
-                                               userContext,
-                                               error) == false)
+    if (ClusterTable::getInstance()->getCluster(blossomIO.output, clusterUuid, userContext, error)
+        == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // handle not found
-    if(blossomIO.output.size() == 0)
-    {
+    if (blossomIO.output.size() == 0) {
         status.errorMessage = "Cluster with uuid '" + clusterUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
     // get cluster
     Cluster* cluster = ClusterHandler::getInstance()->getCluster(clusterUuid);
-    if(cluster == nullptr)
-    {
+    if (cluster == nullptr) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMeesage("Cluster with UUID '"
-                         + clusterUuid
+        error.addMeesage("Cluster with UUID '" + clusterUuid
                          + "'not found even it exists within the database");
         return false;
     }
 
     // switch mode of cluster
-    if(cluster->setClusterState(newState) == false)
-    {
-        status.errorMessage = "Can not switch Cluster with uuid '"
-                              + clusterUuid
-                              + "' to new mode '"
-                              + newState
-                              + "'";
+    if (cluster->setClusterState(newState) == false) {
+        status.errorMessage = "Can not switch Cluster with uuid '" + clusterUuid + "' to new mode '"
+                              + newState + "'";
         // TODO: get exact reason, why it was not successful
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage(status.errorMessage);
@@ -126,8 +114,7 @@ SetClusterMode::runTask(BlossomIO &blossomIO,
     }
 
     // handle client
-    if(newState == "DIRECT")
-    {
+    if (newState == "DIRECT") {
         // get internal connection
         /*HanamiMessaging* messageing = HanamiMessaging::getInstance();
         HanamiMessagingClient* client =  messageing->getIncomingClient(connectionUuid);
@@ -135,14 +122,13 @@ SetClusterMode::runTask(BlossomIO &blossomIO,
         {
             status.errorMessage = "Connection with UUID '" + connectionUuid + "'not found";
             status.statusCode = NOT_FOUND_RTYPE;
-            error.addMeesage(status.errorMessage);
+            LOG_DEBUG(status.errorMessage);
             return false;
         }
         client->setStreamCallback(cluster, streamDataCallback);
         cluster->msgClient = client;*/
     }
-    else
-    {
+    else {
         //
     }
 

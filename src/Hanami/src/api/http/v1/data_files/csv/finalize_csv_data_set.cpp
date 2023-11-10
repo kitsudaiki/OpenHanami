@@ -22,22 +22,21 @@
 
 #include "finalize_csv_data_set.h"
 
-#include <hanami_root.h>
-#include <database/data_set_table.h>
 #include <core/temp_file_handler.h>
-
-#include <hanami_files/data_set_files/data_set_file.h>
-#include <hanami_files/data_set_files/table_data_set_file.h>
-
-#include <hanami_crypto/common.h>
+#include <database/data_set_table.h>
 #include <hanami_common/files/binary_file.h>
 #include <hanami_common/methods/file_methods.h>
 #include <hanami_common/methods/string_methods.h>
 #include <hanami_common/methods/vector_methods.h>
+#include <hanami_crypto/common.h>
+#include <hanami_files/data_set_files/data_set_file.h>
+#include <hanami_files/data_set_files/table_data_set_file.h>
+#include <hanami_root.h>
 
 FinalizeCsvDataSet::FinalizeCsvDataSet()
-    : Blossom("Finalize uploaded data-set by checking completeness of the "
-              "uploaded and convert into generic format.")
+    : Blossom(
+        "Finalize uploaded data-set by checking completeness of the "
+        "uploaded and convert into generic format.")
 {
     errorCodes.push_back(NOT_FOUND_RTYPE);
 
@@ -46,19 +45,18 @@ FinalizeCsvDataSet::FinalizeCsvDataSet()
     //----------------------------------------------------------------------------------------------
 
     registerInputField("uuid", SAKURA_STRING_TYPE)
-            .setComment("UUID of the new data-set.")
-            .setRegex(UUID_REGEX);
+        .setComment("UUID of the new data-set.")
+        .setRegex(UUID_REGEX);
 
     registerInputField("uuid_input_file", SAKURA_STRING_TYPE)
-            .setComment("UUID to identify the file for date upload of input-data.")
-            .setRegex(UUID_REGEX);
+        .setComment("UUID to identify the file for date upload of input-data.")
+        .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid", SAKURA_STRING_TYPE)
-            .setComment("UUID of the new data-set.");
+    registerOutputField("uuid", SAKURA_STRING_TYPE).setComment("UUID of the new data-set.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -69,10 +67,10 @@ FinalizeCsvDataSet::FinalizeCsvDataSet()
  * @brief runTask
  */
 bool
-FinalizeCsvDataSet::runTask(BlossomIO &blossomIO,
-                            const json &context,
-                            BlossomStatus &status,
-                            Hanami::ErrorContainer &error)
+FinalizeCsvDataSet::runTask(BlossomIO& blossomIO,
+                            const json& context,
+                            BlossomStatus& status,
+                            Hanami::ErrorContainer& error)
 {
     const std::string uuid = blossomIO.input["uuid"];
     const std::string inputUuid = blossomIO.input["uuid_input_file"];
@@ -80,35 +78,30 @@ FinalizeCsvDataSet::runTask(BlossomIO &blossomIO,
 
     // get location from database
     json result;
-    if(DataSetTable::getInstance()->getDataSet(result, uuid, userContext, error, true) == false)
-    {
+    if (DataSetTable::getInstance()->getDataSet(result, uuid, userContext, error, true) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // handle not found
-    if(result.size() == 0)
-    {
+    if (result.size() == 0) {
         status.errorMessage = "Data-set with uuid '" + uuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
     // read input-data from temp-file
     Hanami::DataBuffer inputBuffer;
-    if(TempFileHandler::getInstance()->getData(inputBuffer, inputUuid) == false)
-    {
+    if (TempFileHandler::getInstance()->getData(inputBuffer, inputUuid) == false) {
         status.errorMessage = "Input-data with uuid '" + inputUuid + "' not found.";
         status.statusCode = NOT_FOUND_RTYPE;
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
     // write data to file
-    if(convertCsvData(result["location"],
-                      result["name"],
-                      inputBuffer) == false)
-    {
+    if (convertCsvData(result["location"], result["name"], inputBuffer) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Failed to convert csv-data");
         return false;
@@ -124,43 +117,29 @@ FinalizeCsvDataSet::runTask(BlossomIO &blossomIO,
 }
 
 void
-FinalizeCsvDataSet::convertField(float* segmentPos,
-                                 const std::string &cell,
-                                 const float lastVal)
+FinalizeCsvDataSet::convertField(float* segmentPos, const std::string& cell, const float lastVal)
 {
     // true
-    if(cell == "Null"
-            || cell == "null"
-            || cell == "NULL")
-    {
+    if (cell == "Null" || cell == "null" || cell == "NULL") {
         *segmentPos = lastVal;
     }
     // true
-    else if(cell == "True"
-            || cell == "true"
-            || cell == "TRUE")
-    {
+    else if (cell == "True" || cell == "true" || cell == "TRUE") {
         *segmentPos = 1.0f;
     }
     // false
-    else if(cell == "False"
-            || cell == "false"
-            || cell == "FALSE")
-    {
+    else if (cell == "False" || cell == "false" || cell == "FALSE") {
         *segmentPos = 0.0f;
     }
     // int/long
-    else if(regex_match(cell, std::regex(INT_VALUE_REGEX)))
-    {
+    else if (regex_match(cell, std::regex(INT_VALUE_REGEX))) {
         *segmentPos = static_cast<float>(std::stoi(cell.c_str()));
     }
     // float/double
-    else if(regex_match(cell, std::regex(FLOAT_VALUE_REGEX)))
-    {
+    else if (regex_match(cell, std::regex(FLOAT_VALUE_REGEX))) {
         *segmentPos = std::strtof(cell.c_str(), NULL);
     }
-    else
-    {
+    else {
         // ignore other lines
         *segmentPos = 0.0f;
     }
@@ -176,9 +155,9 @@ FinalizeCsvDataSet::convertField(float* segmentPos,
  * @return true, if successfull, else false
  */
 bool
-FinalizeCsvDataSet::convertCsvData(const std::string &filePath,
-                                   const std::string &name,
-                                   const Hanami::DataBuffer &inputBuffer)
+FinalizeCsvDataSet::convertCsvData(const std::string& filePath,
+                                   const std::string& name,
+                                   const Hanami::DataBuffer& inputBuffer)
 {
     Hanami::ErrorContainer error;
 
@@ -203,13 +182,12 @@ FinalizeCsvDataSet::convertCsvData(const std::string &filePath,
 
     bool isHeader = true;
 
-    for(uint64_t lineNum = 0; lineNum < lines.size(); lineNum++)
-    {
+    for (uint64_t lineNum = 0; lineNum < lines.size(); lineNum++) {
         const std::string* line = &lines[lineNum];
 
         // check if the line is relevant to ignore broken lines
         const uint64_t numberOfColumns = std::count(line->begin(), line->end(), ',') + 1;
-        if(numberOfColumns == 1) {
+        if (numberOfColumns == 1) {
             continue;
         }
 
@@ -217,13 +195,11 @@ FinalizeCsvDataSet::convertCsvData(const std::string &filePath,
         std::vector<std::string> lineContent;
         Hanami::splitStringByDelimiter(lineContent, *line, ',');
 
-        if(isHeader)
-        {
+        if (isHeader) {
             file.tableHeader.numberOfColumns = numberOfColumns;
             file.tableHeader.numberOfLines = lines.size();
 
-            for(const std::string &col : lineContent)
-            {
+            for (const std::string& col : lineContent) {
                 // create and add header-entry
                 TableDataSetFile::TableHeaderEntry entry;
                 entry.setName(col);
@@ -231,7 +207,7 @@ FinalizeCsvDataSet::convertCsvData(const std::string &filePath,
             }
             isHeader = false;
 
-            if(file.initNewFile(error) == false) {
+            if (file.initNewFile(error) == false) {
                 return false;
             }
 
@@ -240,18 +216,14 @@ FinalizeCsvDataSet::convertCsvData(const std::string &filePath,
             file.tableHeader.numberOfLines = 0;
             lastLine = std::vector<float>(numberOfColumns, 0.0f);
         }
-        else
-        {
-            for(uint64_t colNum = 0; colNum < lineContent.size(); colNum++)
-            {
+        else {
+            for (uint64_t colNum = 0; colNum < lineContent.size(); colNum++) {
                 const std::string* cell = &lineContent[colNum];
-                if(lastLine.size() > 0)
-                {
+                if (lastLine.size() > 0) {
                     const float lastVal = lastLine[colNum];
                     convertField(&cluster[segmentPos], *cell, lastVal);
                 }
-                else
-                {
+                else {
                     convertField(&cluster[segmentPos], *cell, 0.0f);
                 }
 
@@ -259,14 +231,13 @@ FinalizeCsvDataSet::convertCsvData(const std::string &filePath,
 
                 // write next cluster to file
                 segmentPos++;
-                if(segmentPos == segmentSize)
-                {
-                    if(file.addBlock(segmentCounter, &cluster[0], segmentSize, error) == false) {
+                if (segmentPos == segmentSize) {
+                    if (file.addBlock(segmentCounter, &cluster[0], segmentSize, error) == false) {
                         return false;
                     }
                     segmentPos = 0;
                     segmentCounter++;
-                }                
+                }
             }
 
             file.tableHeader.numberOfLines++;
@@ -274,22 +245,20 @@ FinalizeCsvDataSet::convertCsvData(const std::string &filePath,
     }
 
     // write last incomplete cluster to file
-    if(segmentPos != 0)
-    {
-        if(file.addBlock(segmentCounter, &cluster[0], segmentPos, error) == false) {
+    if (segmentPos != 0) {
+        if (file.addBlock(segmentCounter, &cluster[0], segmentPos, error) == false) {
             return false;
         }
     }
 
     // update header in file for the final number of lines for the case,
     // that there were invalid lines
-    if(file.updateHeader(error) == false) {
+    if (file.updateHeader(error) == false) {
         return false;
     }
 
     // debug-output
-    //file.print();
+    // file.print();
 
     return true;
 }
-

@@ -25,14 +25,12 @@
 
 #include <common/test_step.h>
 
-class UserCreateTest
-        : public TestStep
+class UserCreateTest : public TestStep
 {
-public:
+   public:
     UserCreateTest(const bool expectSuccess);
 
-    bool runTest(json &inputData,
-                 Hanami::ErrorContainer &error);
+    bool runTest(json& inputData, Hanami::ErrorContainer& error);
 };
 
-#endif // TSUGUMITESTER_USERCREATESTEP_H
+#endif  // TSUGUMITESTER_USERCREATESTEP_H

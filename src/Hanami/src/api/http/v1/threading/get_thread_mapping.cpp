@@ -22,19 +22,20 @@
 
 #include "get_thread_mapping.h"
 
-#include <hanami_root.h>
 #include <core/thread_binder.h>
+#include <hanami_root.h>
 
 GetThreadMapping::GetThreadMapping()
-    : Blossom("Get Mapping of the all threads of all components "
-                                   "to its bound cpu-core")
+    : Blossom(
+        "Get Mapping of the all threads of all components "
+        "to its bound cpu-core")
 {
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
     registerOutputField("thread_map", SAKURA_MAP_TYPE)
-            .setComment("Map with all thread-names and its core-id as json-string.");
+        .setComment("Map with all thread-names and its core-id as json-string.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -45,10 +46,10 @@ GetThreadMapping::GetThreadMapping()
  * @brief runTask
  */
 bool
-GetThreadMapping::runTask(BlossomIO &blossomIO,
-                          const json &,
-                          BlossomStatus &,
-                          Hanami::ErrorContainer &)
+GetThreadMapping::runTask(BlossomIO& blossomIO,
+                          const json&,
+                          BlossomStatus&,
+                          Hanami::ErrorContainer&)
 {
     blossomIO.output["thread_map"] = ThreadBinder::getInstance()->getMapping();
 

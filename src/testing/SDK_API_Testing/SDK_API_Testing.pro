@@ -4,6 +4,9 @@ TARGET = SDK_API_Testing
 CONFIG += console c++17
 CONFIG -= app_bundle
 
+QMAKE_CXX = clang++-15
+QMAKE_LINK = clang++-15
+
 LIBS += -L../../sdk/cpp/hanami_sdk/src -lhanami_sdk
 LIBS += -L../../sdk/cpp/hanami_sdk/src/debug -lhanami_sdk
 LIBS += -L../../sdk/cpp/hanami_sdk/src/release -lhanami_sdk

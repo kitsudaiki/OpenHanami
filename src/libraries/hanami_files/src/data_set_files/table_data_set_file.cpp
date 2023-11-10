@@ -20,25 +20,22 @@
  *      limitations under the License.
  */
 
-#include <hanami_files/data_set_files/table_data_set_file.h>
-
 #include <hanami_common/files/binary_file.h>
+#include <hanami_files/data_set_files/table_data_set_file.h>
 
 /**
  * @brief constructor
  *
  * @param filePath path to file
  */
-TableDataSetFile::TableDataSetFile(const std::string &filePath)
-    : DataSetFile(filePath) {}
+TableDataSetFile::TableDataSetFile(const std::string& filePath) : DataSetFile(filePath) {}
 
 /**
  * @brief constructor
  *
  * @param file pointer to binary-file object
  */
-TableDataSetFile::TableDataSetFile(Hanami::BinaryFile* file)
-    : DataSetFile(file) {}
+TableDataSetFile::TableDataSetFile(Hanami::BinaryFile* file) : DataSetFile(file) {}
 
 /**
  * @brief destructor
@@ -72,8 +69,7 @@ TableDataSetFile::readHeader(const uint8_t* u8buffer)
     memcpy(&tableHeader, &u8buffer[sizeof(DataSetHeader)], sizeof(TableTypeHeader));
 
     // header header
-    for(uint64_t i = 0; i < tableHeader.numberOfColumns; i++)
-    {
+    for (uint64_t i = 0; i < tableHeader.numberOfColumns; i++) {
         TableHeaderEntry entry;
         memcpy(&entry,
                &u8buffer[m_headerSize + (i * sizeof(TableHeaderEntry))],
@@ -95,13 +91,12 @@ TableDataSetFile::readHeader(const uint8_t* u8buffer)
  * @return true, if successful, else false
  */
 bool
-TableDataSetFile::updateHeader(Hanami::ErrorContainer &error)
+TableDataSetFile::updateHeader(Hanami::ErrorContainer& error)
 {
     // write table-header to file
-    if(m_targetFile->writeDataIntoFile(&tableHeader,
-                                       sizeof(DataSetHeader),
-                                       sizeof(TableTypeHeader),
-                                       error) == false)
+    if (m_targetFile->writeDataIntoFile(
+            &tableHeader, sizeof(DataSetHeader), sizeof(TableTypeHeader), error)
+        == false)
     {
         error.addMeesage("Failed to write table-header");
         return false;
@@ -109,12 +104,12 @@ TableDataSetFile::updateHeader(Hanami::ErrorContainer &error)
 
     // write table-header-entries to file
     const uint64_t offset = sizeof(DataSetHeader) + sizeof(TableTypeHeader);
-    for(uint64_t i = 0; i < tableColumns.size(); i++)
-    {
-        if(m_targetFile->writeDataIntoFile(&tableColumns[i],
-                                           offset + (i * sizeof(TableHeaderEntry)),
-                                           sizeof(TableHeaderEntry),
-                                           error) == false)
+    for (uint64_t i = 0; i < tableColumns.size(); i++) {
+        if (m_targetFile->writeDataIntoFile(&tableColumns[i],
+                                            offset + (i * sizeof(TableHeaderEntry)),
+                                            sizeof(TableHeaderEntry),
+                                            error)
+            == false)
         {
             error.addMeesage("Failed to write table-entry-header");
             return false;
@@ -134,18 +129,17 @@ TableDataSetFile::updateHeader(Hanami::ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-TableDataSetFile::getPayload(Hanami::DataBuffer &result,
-                             Hanami::ErrorContainer &error,
-                             const std::string &columnName)
+TableDataSetFile::getPayload(Hanami::DataBuffer& result,
+                             Hanami::ErrorContainer& error,
+                             const std::string& columnName)
 {
     Hanami::DataBuffer readBuffer;
     const uint64_t bufferSize = m_totalFileSize - m_headerSize;
     Hanami::allocateBlocks_DataBuffer(readBuffer, Hanami::calcBytesToBlocks(bufferSize));
 
-    if(m_targetFile->readDataFromFile(readBuffer.data,
-                                      m_headerSize,
-                                      m_totalFileSize - m_headerSize,
-                                      error) == false)
+    if (m_targetFile->readDataFromFile(
+            readBuffer.data, m_headerSize, m_totalFileSize - m_headerSize, error)
+        == false)
     {
         error.addMeesage("Failed to read data of table-data-set-file");
         return false;
@@ -153,18 +147,15 @@ TableDataSetFile::getPayload(Hanami::DataBuffer &result,
 
     // search for column-name
     int64_t columnPos = -1;
-    for(uint64_t i = 0; i < tableColumns.size(); i++)
-    {
-        if(tableColumns[i].name == columnName) {
+    for (uint64_t i = 0; i < tableColumns.size(); i++) {
+        if (tableColumns[i].name == columnName) {
             columnPos = i;
         }
     }
 
     // check if column was found
-    if(columnPos == -1)
-    {
-        error.addMeesage("Column with name '"
-                         + columnName
+    if (columnPos == -1) {
+        error.addMeesage("Column with name '" + columnName
                          + "' was not found in table-data-set-file");
         return false;
     }
@@ -174,7 +165,7 @@ TableDataSetFile::getPayload(Hanami::DataBuffer &result,
     Hanami::allocateBlocks_DataBuffer(result, Hanami::calcBytesToBlocks(payloadSize));
     float* filteredData = static_cast<float*>(result.data);
     float* floatPayload = static_cast<float*>(readBuffer.data);
-    for(uint64_t line = 0; line < tableHeader.numberOfLines; line++) {
+    for (uint64_t line = 0; line < tableHeader.numberOfLines; line++) {
         filteredData[line] = floatPayload[line * tableHeader.numberOfColumns + columnPos];
     }
 
@@ -187,16 +178,15 @@ TableDataSetFile::getPayload(Hanami::DataBuffer &result,
 void
 TableDataSetFile::print()
 {
-    std::cout<<"======================================================="<<std::endl;
-    std::cout<<"====================    PRINT    ======================"<<std::endl;
-    std::cout<<"======================================================="<<std::endl;
-    std::cout<<std::endl;
+    std::cout << "=======================================================" << std::endl;
+    std::cout << "====================    PRINT    ======================" << std::endl;
+    std::cout << "=======================================================" << std::endl;
+    std::cout << std::endl;
 
     Hanami::ErrorContainer error;
 
     Hanami::DataBuffer completeFile;
-    if(m_targetFile->readCompleteFile(completeFile, error) == false)
-    {
+    if (m_targetFile->readCompleteFile(completeFile, error) == false) {
         error.addMeesage("Failed to read file");
         LOG_ERROR(error);
     }
@@ -204,49 +194,45 @@ TableDataSetFile::print()
     // read data-set-header
     DataSetHeader dataSetHeader;
     memcpy(&dataSetHeader, completeFile.data, sizeof(DataSetHeader));
-    std::cout<<"name: "<<dataSetHeader.name<<std::endl;
+    std::cout << "name: " << dataSetHeader.name << std::endl;
 
     // read table-header
     const uint8_t* u8buffer = static_cast<uint8_t*>(completeFile.data);
     uint32_t headerSize = sizeof(DataSetHeader) + sizeof(TableTypeHeader);
     memcpy(&tableHeader, &u8buffer[sizeof(DataSetHeader)], sizeof(TableTypeHeader));
 
-    std::cout<<"number of columns: "<<tableHeader.numberOfColumns<<std::endl;
-    std::cout<<"number of lines: "<<tableHeader.numberOfLines<<std::endl;
-    std::cout<<std::endl;
+    std::cout << "number of columns: " << tableHeader.numberOfColumns << std::endl;
+    std::cout << "number of lines: " << tableHeader.numberOfLines << std::endl;
+    std::cout << std::endl;
 
     // header header
-    for(uint64_t i = 0; i < tableHeader.numberOfColumns; i++)
-    {
-        std::cout<<"column:"<<std::endl;
+    for (uint64_t i = 0; i < tableHeader.numberOfColumns; i++) {
+        std::cout << "column:" << std::endl;
         TableHeaderEntry entry;
         memcpy(&entry,
                &u8buffer[headerSize + (i * sizeof(TableHeaderEntry))],
                sizeof(TableHeaderEntry));
-        std::cout<<"    name: "<<entry.name<<std::endl;
-        std::cout<<"    avg: "<<entry.averageVal<<std::endl;
-        std::cout<<"    max: "<<entry.maxVal<<std::endl;
-        std::cout<<"    multi: "<<entry.multiplicator<<std::endl;
-        std::cout<<std::endl;
+        std::cout << "    name: " << entry.name << std::endl;
+        std::cout << "    avg: " << entry.averageVal << std::endl;
+        std::cout << "    max: " << entry.maxVal << std::endl;
+        std::cout << "    multi: " << entry.multiplicator << std::endl;
+        std::cout << std::endl;
     }
-    std::cout<<std::endl;
+    std::cout << std::endl;
 
     // get sizes
     headerSize += tableHeader.numberOfColumns * sizeof(TableHeaderEntry);
 
-
-    std::cout<<"content:"<<std::endl;
+    std::cout << "content:" << std::endl;
     const float* fbuffer = reinterpret_cast<const float*>(&u8buffer[headerSize]);
 
-    for(uint64_t line = 0; line < tableHeader.numberOfLines; line++)
-    {
-        for(uint64_t col = 0; col < tableHeader.numberOfColumns; col++)
-        {
-            std::cout<<fbuffer[line * tableHeader.numberOfColumns + col];
-            std::cout<<"   ";
+    for (uint64_t line = 0; line < tableHeader.numberOfLines; line++) {
+        for (uint64_t col = 0; col < tableHeader.numberOfColumns; col++) {
+            std::cout << fbuffer[line * tableHeader.numberOfColumns + col];
+            std::cout << "   ";
         }
-        std::cout<<"\n";
+        std::cout << "\n";
     }
 
-    std::cout<<"======================================================="<<std::endl;
+    std::cout << "=======================================================" << std::endl;
 }

@@ -20,14 +20,12 @@
  *      limitations under the License.
  */
 
-#include <handler/reply_handler.h>
-#include <handler/message_blocker_handler.h>
-#include <handler/session_handler.h>
-
-#include <hanami_network/session.h>
-
 #include <abstract_socket.h>
 #include <hanami_common/logger.h>
+#include <hanami_network/session.h>
+#include <handler/message_blocker_handler.h>
+#include <handler/reply_handler.h>
+#include <handler/session_handler.h>
 
 namespace Hanami
 {
@@ -35,11 +33,7 @@ namespace Hanami
 /**
  * @brief constructor
  */
-ReplyHandler::ReplyHandler()
-    : Hanami::Thread("ReplyHandler")
-{
-    m_messageList.reserve(10);
-}
+ReplyHandler::ReplyHandler() : Hanami::Thread("ReplyHandler") { m_messageList.reserve(10); }
 
 /**
  * @brief destructor
@@ -99,8 +93,7 @@ ReplyHandler::addMessage(const uint8_t messageType,
  * @return false, if message-id doesn't exist in the list, else true
  */
 bool
-ReplyHandler::removeMessage(const uint32_t sessionId,
-                            const uint64_t messageId)
+ReplyHandler::removeMessage(const uint32_t sessionId, const uint64_t messageId)
 {
     return removeMessage((messageId << 32) + sessionId);
 }
@@ -134,9 +127,8 @@ ReplyHandler::removeAllOfSession(const uint32_t sessionId)
 {
     spinLock();
 
-    for(MessageTime &messageTime : m_messageList)
-    {
-        if((messageTime.completeMessageId & 0xFFFFFFFF) == sessionId) {
+    for (MessageTime& messageTime : m_messageList) {
+        if ((messageTime.completeMessageId & 0xFFFFFFFF) == sessionId) {
             messageTime.ignoreResult = true;
         }
     }
@@ -155,21 +147,15 @@ bool
 ReplyHandler::removeMessageFromList(const uint64_t completeMessageId)
 {
     std::vector<MessageTime>::iterator it;
-    for(it = m_messageList.begin();
-        it != m_messageList.end();
-        it++)
-    {
-        if(it->completeMessageId == completeMessageId)
-        {
-            if(m_messageList.size() > 1)
-            {
+    for (it = m_messageList.begin(); it != m_messageList.end(); it++) {
+        if (it->completeMessageId == completeMessageId) {
+            if (m_messageList.size() > 1) {
                 // swap with last and remove the last instead of erase the element direct
                 // because this was is faster
                 std::iter_swap(it, m_messageList.end() - 1);
                 m_messageList.pop_back();
             }
-            else
-            {
+            else {
                 m_messageList.clear();
             }
 
@@ -188,17 +174,15 @@ ReplyHandler::run()
 {
     uint32_t counter = 0;
 
-    while(m_abort == false)
-    {
+    while (m_abort == false) {
         sleepThread(100000);
         counter += 1;
 
-        if(m_abort) {
+        if (m_abort) {
             break;
         }
 
-        if(counter % 10 == 0)
-        {
+        if (counter % 10 == 0) {
             makeTimerStep();
 
             SessionHandler::m_sessionHandler->sendHeartBeats();
@@ -215,28 +199,23 @@ ReplyHandler::makeTimerStep()
 {
     spinLock();
 
-    for(MessageTime &messageTime : m_messageList)
-    {
+    for (MessageTime& messageTime : m_messageList) {
         messageTime.timer += 1.0f;
 
-        if(messageTime.timer >= m_timeoutValue)
-        {
+        if (messageTime.timer >= m_timeoutValue) {
             spinUnlock();
             removeMessage(messageTime.completeMessageId);
-            if(messageTime.ignoreResult == false)
-            {
-                const std::string err = "TIMEOUT of message: "
-                                        + std::to_string(messageTime.completeMessageId)
-                                        + " with type: "
-                                        + std::to_string(messageTime.messageType);
+            if (messageTime.ignoreResult == false) {
+                const std::string err
+                    = "TIMEOUT of message: " + std::to_string(messageTime.completeMessageId)
+                      + " with type: " + std::to_string(messageTime.messageType);
                 // release session for the case,
                 // that the session is actually still in creating state.
                 // If this lock is not release, it blocks for eterity.
                 messageTime.session->m_initState = -1;
 
-                messageTime.session->m_processError(messageTime.session,
-                                                    Session::errorCodes::MESSAGE_TIMEOUT,
-                                                    err);
+                messageTime.session->m_processError(
+                    messageTime.session, Session::errorCodes::MESSAGE_TIMEOUT, err);
             }
 
             spinLock();
@@ -248,4 +227,4 @@ ReplyHandler::makeTimerStep()
     spinUnlock();
 }
 
-}
+}  // namespace Hanami

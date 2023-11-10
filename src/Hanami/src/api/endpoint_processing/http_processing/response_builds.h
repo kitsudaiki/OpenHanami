@@ -23,19 +23,18 @@
 #ifndef TORIIGATEWAY_RESPONSE_BUILDS_H
 #define TORIIGATEWAY_RESPONSE_BUILDS_H
 
+#include <common/enums.h>
+#include <hanami_common/logger.h>
+
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
 #include <boost/beast/version.hpp>
 #include <string>
 
-#include <common/enums.h>
-
-#include <hanami_common/logger.h>
-
-namespace beast = boost::beast;         // from <boost/beast.hpp>
-namespace http = beast::http;           // from <boost/beast/http.hpp>
-namespace net = boost::asio;            // from <boost/asio.hpp>
-using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
+namespace beast = boost::beast;    // from <boost/beast.hpp>
+namespace http = beast::http;      // from <boost/beast/http.hpp>
+namespace net = boost::asio;       // from <boost/asio.hpp>
+using tcp = boost::asio::ip::tcp;  // from <boost/asio/ip/tcp.hpp>
 
 /**
  * @brief success_ResponseBuild
@@ -43,8 +42,7 @@ using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
  * @param message
  */
 bool
-success_ResponseBuild(http::response<http::dynamic_body> &httpResp,
-                      const std::string &message)
+success_ResponseBuild(http::response<http::dynamic_body>& httpResp, const std::string& message)
 {
     httpResp.result(http::status::ok);
     httpResp.set(http::field::content_type, "text/json");
@@ -58,13 +56,11 @@ success_ResponseBuild(http::response<http::dynamic_body> &httpResp,
  * @param message
  */
 bool
-invalid_ResponseBuild(http::response<http::dynamic_body> &httpResp,
-                      Hanami::ErrorContainer &error)
+invalid_ResponseBuild(http::response<http::dynamic_body>& httpResp, Hanami::ErrorContainer& error)
 {
     httpResp.result(http::status::bad_request);
     httpResp.set(http::field::content_type, "text/plain");
     beast::ostream(httpResp.body()) << error.toString();
-    LOG_ERROR(error);
     return false;
 }
 
@@ -74,12 +70,11 @@ invalid_ResponseBuild(http::response<http::dynamic_body> &httpResp,
  * @param message
  */
 bool
-internalError_ResponseBuild(http::response<http::dynamic_body> &httpResp,
-                            Hanami::ErrorContainer &error)
+internalError_ResponseBuild(http::response<http::dynamic_body>& httpResp,
+                            Hanami::ErrorContainer& error)
 {
     httpResp.result(http::status::internal_server_error);
     httpResp.set(http::field::content_type, "text/plain");
-    // beast::ostream(httpResp.body()) << error.toString();
     LOG_ERROR(error);
     return false;
 }
@@ -91,18 +86,14 @@ internalError_ResponseBuild(http::response<http::dynamic_body> &httpResp,
  * @param message
  */
 bool
-genericError_ResponseBuild(http::response<http::dynamic_body> &httpResp,
+genericError_ResponseBuild(http::response<http::dynamic_body>& httpResp,
                            const HttpResponseTypes type,
-                           const std::string &errorMessage)
+                           const std::string& errorMessage)
 {
     httpResp.result(static_cast<http::status>(type));
     httpResp.set(http::field::content_type, "text/plain");
     beast::ostream(httpResp.body()) << errorMessage;
-
-    Hanami::ErrorContainer error;
-    error.addMeesage(errorMessage);
-    LOG_ERROR(error);
     return false;
 }
 
-#endif // TORIIGATEWAY_RESPONSE_BUILDS_H
+#endif  // TORIIGATEWAY_RESPONSE_BUILDS_H

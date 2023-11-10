@@ -23,9 +23,10 @@
 #ifndef EVENT_H
 #define EVENT_H
 
+#include <stdint.h>
+
 #include <chrono>
 #include <thread>
-#include <stdint.h>
 
 namespace Hanami
 {
@@ -35,7 +36,7 @@ namespace Hanami
 //===================================================================
 class Event
 {
-public:
+   public:
     virtual ~Event();
 
     virtual bool processEvent() = 0;
@@ -44,19 +45,18 @@ public:
 //===================================================================
 // SleepEvent
 //===================================================================
-class SleepEvent
-        : public Event
+class SleepEvent : public Event
 {
-public:
+   public:
     SleepEvent(const uint64_t milliSeconds);
     ~SleepEvent();
 
     bool processEvent();
 
-private:
+   private:
     uint64_t m_milliSeconds = 0;
 };
 
-}
+}  // namespace Hanami
 
-#endif // EVENT_H
+#endif  // EVENT_H

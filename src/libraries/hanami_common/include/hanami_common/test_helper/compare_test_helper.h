@@ -23,61 +23,57 @@
 #ifndef COMPARE_TEST_HELPER_H
 #define COMPARE_TEST_HELPER_H
 
-#include <string>
 #include <iostream>
+#include <string>
 
 namespace Hanami
 {
 
 class CompareTestHelper
 {
-#define TEST_EQUAL(IS_VAL, SHOULD_VAL) \
-    if(IS_VAL != SHOULD_VAL) \
-    {  \
-        m_failedTests++; \
-        std::cout << std::endl; \
-        std::cout << "Error in Test" << std::endl; \
-        std::cout << "   File: " << __FILE__ << std::endl; \
+#define TEST_EQUAL(IS_VAL, SHOULD_VAL)                                  \
+    if (IS_VAL != SHOULD_VAL) {                                         \
+        m_failedTests++;                                                \
+        std::cout << std::endl;                                         \
+        std::cout << "Error in Test" << std::endl;                      \
+        std::cout << "   File: " << __FILE__ << std::endl;              \
         std::cout << "   Method: " << __PRETTY_FUNCTION__ << std::endl; \
-        std::cout << "   Line: " << __LINE__ << std::endl; \
-        std::cout << "   Variable: " << #IS_VAL << std::endl; \
-        std::cout << "   Should-Value: " << SHOULD_VAL << std::endl; \
-        std::cout << "   Is-Value: " << IS_VAL << std::endl; \
-        std::cout << std::endl; \
-    } \
-    else \
-    { \
-        m_successfulTests++; \
+        std::cout << "   Line: " << __LINE__ << std::endl;              \
+        std::cout << "   Variable: " << #IS_VAL << std::endl;           \
+        std::cout << "   Should-Value: " << SHOULD_VAL << std::endl;    \
+        std::cout << "   Is-Value: " << IS_VAL << std::endl;            \
+        std::cout << std::endl;                                         \
+    }                                                                   \
+    else {                                                              \
+        m_successfulTests++;                                            \
     }
 
-#define TEST_NOT_EQUAL(IS_VAL, SHOULD_NOT_VAL) \
-    if(IS_VAL == SHOULD_NOT_VAL) \
-    {  \
-        m_failedTests++; \
-        std::cout << std::endl; \
-        std::cout << "Error in Test" << std::endl; \
-        std::cout << "   File: " << __FILE__ << std::endl; \
-        std::cout << "   Method: " << __PRETTY_FUNCTION__ << std::endl; \
-        std::cout << "   Line: " << __LINE__ << std::endl; \
-        std::cout << "   Variable: " << #IS_VAL << std::endl; \
+#define TEST_NOT_EQUAL(IS_VAL, SHOULD_NOT_VAL)                               \
+    if (IS_VAL == SHOULD_NOT_VAL) {                                          \
+        m_failedTests++;                                                     \
+        std::cout << std::endl;                                              \
+        std::cout << "Error in Test" << std::endl;                           \
+        std::cout << "   File: " << __FILE__ << std::endl;                   \
+        std::cout << "   Method: " << __PRETTY_FUNCTION__ << std::endl;      \
+        std::cout << "   Line: " << __LINE__ << std::endl;                   \
+        std::cout << "   Variable: " << #IS_VAL << std::endl;                \
         std::cout << "   Should-NOT-Value: " << SHOULD_NOT_VAL << std::endl; \
-        std::cout << "   Is-Value: " << IS_VAL << std::endl; \
-        std::cout << std::endl; \
-    } \
-    else \
-    { \
-        m_successfulTests++; \
+        std::cout << "   Is-Value: " << IS_VAL << std::endl;                 \
+        std::cout << std::endl;                                              \
+    }                                                                        \
+    else {                                                                   \
+        m_successfulTests++;                                                 \
     }
 
-public:
-    CompareTestHelper(const std::string &testName);
+   public:
+    CompareTestHelper(const std::string& testName);
     ~CompareTestHelper();
 
-protected:
+   protected:
     uint32_t m_successfulTests = 0;
     uint32_t m_failedTests = 0;
 };
 
-}
+}  // namespace Hanami
 
-#endif // COMPARE_TEST_HELPER_H
+#endif  // COMPARE_TEST_HELPER_H

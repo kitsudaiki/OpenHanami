@@ -23,12 +23,13 @@
 #ifndef POLICY_PARSER_INTERFACE_H
 #define POLICY_PARSER_INTERFACE_H
 
+#include <hanami_policies/policy.h>
+
 #include <iostream>
-#include <mutex>
 #include <map>
+#include <mutex>
 #include <string>
 #include <vector>
-#include <hanami_policies/policy.h>
 
 namespace Hanami
 {
@@ -36,26 +37,24 @@ class location;
 
 class PolicyParserInterface
 {
-
-public:
+   public:
     static PolicyParserInterface* getInstance();
     ~PolicyParserInterface();
 
     // connection the the scanner and parser
-    void scan_begin(const std::string &inputString);
+    void scan_begin(const std::string& inputString);
     void scan_end();
-    bool parse(std::map<std::string, PolicyEntry> *result,
-               const std::string &inputString,
-               ErrorContainer &error);
-    const std::string removeQuotes(const std::string &input);
+    bool parse(std::map<std::string, PolicyEntry>* result,
+               const std::string& inputString,
+               ErrorContainer& error);
+    const std::string removeQuotes(const std::string& input);
 
     std::map<std::string, PolicyEntry>* m_result = nullptr;
 
     // Error handling.
-    void error(const location &location,
-               const std::string& message);
+    void error(const location& location, const std::string& message);
 
-private:
+   private:
     PolicyParserInterface(const bool traceParsing = false);
 
     static PolicyParserInterface* m_instance;
@@ -67,6 +66,6 @@ private:
     bool m_traceParsing = false;
 };
 
-}
+}  // namespace Hanami
 
-#endif // POLICY_PARSER_INTERFACE_H
+#endif  // POLICY_PARSER_INTERFACE_H

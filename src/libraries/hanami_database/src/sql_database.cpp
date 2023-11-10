@@ -35,10 +35,7 @@ SqlDatabase::SqlDatabase() {}
 /**
  * @brief destructor
  */
-SqlDatabase::~SqlDatabase()
-{
-    closeDatabase();
-}
+SqlDatabase::~SqlDatabase() { closeDatabase(); }
 
 /**
  * @brief initialize sqlite-database
@@ -49,21 +46,18 @@ SqlDatabase::~SqlDatabase()
  * @return true, if successful, else false
  */
 bool
-SqlDatabase::initDatabase(const std::string &path,
-                          Hanami::ErrorContainer &error)
+SqlDatabase::initDatabase(const std::string& path, Hanami::ErrorContainer& error)
 {
     std::lock_guard<std::mutex> guard(m_lock);
 
     // check if database is already open
-    if(m_isOpen)
-    {
+    if (m_isOpen) {
         LOG_DEBUG("Database already open");
         return true;
     }
 
     // init database
-    if(m_db.initDB(path, error))
-    {
+    if (m_db.initDB(path, error)) {
         m_isOpen = true;
         m_path = path;
 
@@ -84,13 +78,12 @@ SqlDatabase::closeDatabase()
     std::lock_guard<std::mutex> guard(m_lock);
 
     // check if already closed
-    if(m_isOpen == false) {
+    if (m_isOpen == false) {
         return true;
     }
 
     // close
-    if(m_db.closeDB())
-    {
+    if (m_db.closeDB()) {
         m_isOpen = false;
         return true;
     }
@@ -109,13 +102,12 @@ SqlDatabase::closeDatabase()
  */
 bool
 SqlDatabase::execSqlCommand(TableItem* resultTable,
-                            const std::string &command,
-                            ErrorContainer &error)
+                            const std::string& command,
+                            ErrorContainer& error)
 {
     std::lock_guard<std::mutex> guard(m_lock);
 
-    if(m_isOpen == false)
-    {
+    if (m_isOpen == false) {
         error.addMeesage("database not open");
         LOG_ERROR(error);
         return false;
@@ -126,4 +118,4 @@ SqlDatabase::execSqlCommand(TableItem* resultTable,
     return m_db.execSqlCommand(resultTable, command, error);
 }
 
-}
+}  // namespace Hanami

@@ -22,11 +22,10 @@
 
 #include "list_request_result.h"
 
-#include <hanami_root.h>
 #include <database/request_result_table.h>
+#include <hanami_root.h>
 
-ListRequestResult::ListRequestResult()
-    : Blossom("List all visilbe request-results.")
+ListRequestResult::ListRequestResult() : Blossom("List all visilbe request-results.")
 {
     //----------------------------------------------------------------------------------------------
     // output
@@ -40,11 +39,11 @@ ListRequestResult::ListRequestResult()
     headerMatch.push_back("name");
 
     registerOutputField("header", SAKURA_ARRAY_TYPE)
-            .setComment("Array with the namings all columns of the table.")
-            .setMatch(headerMatch);
+        .setComment("Array with the namings all columns of the table.")
+        .setMatch(headerMatch);
 
     registerOutputField("body", SAKURA_ARRAY_TYPE)
-            .setComment("Array with all rows of the table, which array arrays too.");
+        .setComment("Array with all rows of the table, which array arrays too.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -55,16 +54,16 @@ ListRequestResult::ListRequestResult()
  * @brief runTask
  */
 bool
-ListRequestResult::runTask(BlossomIO &blossomIO,
-                           const json &context,
-                           BlossomStatus &status,
-                           Hanami::ErrorContainer &error)
+ListRequestResult::runTask(BlossomIO& blossomIO,
+                           const json& context,
+                           BlossomStatus& status,
+                           Hanami::ErrorContainer& error)
 {
     const UserContext userContext(context);
 
     // get data from table
     Hanami::TableItem table;
-    if(RequestResultTable::getInstance()->getAllRequestResult(table, userContext, error) == false)
+    if (RequestResultTable::getInstance()->getAllRequestResult(table, userContext, error) == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;

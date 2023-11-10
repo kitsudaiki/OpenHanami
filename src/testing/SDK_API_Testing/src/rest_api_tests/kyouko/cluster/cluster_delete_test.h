@@ -25,14 +25,12 @@
 
 #include <common/test_step.h>
 
-class ClusterDeleteTest
-        : public TestStep
+class ClusterDeleteTest : public TestStep
 {
-public:
+   public:
     ClusterDeleteTest(const bool expectSuccess);
 
-    bool runTest(json &inputData,
-                 Hanami::ErrorContainer &error);
+    bool runTest(json& inputData, Hanami::ErrorContainer& error);
 };
 
-#endif // TSUGUMITESTER_CLUSTERDELETETEST_H
+#endif  // TSUGUMITESTER_CLUSTERDELETETEST_H

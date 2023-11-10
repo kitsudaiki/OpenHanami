@@ -22,24 +22,21 @@
 
 #include "multiblock_io.h"
 
-#include <hanami_network/session.h>
 #include <hanami_common/logger.h>
+#include <hanami_network/session.h>
 #include <messages_processing/multiblock_data_processing.h>
 
 namespace Hanami
 {
 
-MultiblockIO::MultiblockIO(Session* session)
-{
-    m_session = session;
-}
+MultiblockIO::MultiblockIO(Session* session) { m_session = session; }
 
 MultiblockIO::~MultiblockIO()
 {
     m_abort = true;
     usleep(10000);
 
-    for(auto const& [id, buffer] : m_incomingBuffer) {
+    for (auto const& [id, buffer] : m_incomingBuffer) {
         delete buffer.incomingData;
     }
 }
@@ -57,7 +54,7 @@ MultiblockIO::~MultiblockIO()
 uint64_t
 MultiblockIO::sendOutgoingData(const void* data,
                                const uint64_t size,
-                               ErrorContainer &error,
+                               ErrorContainer& error,
                                const uint64_t blockerId)
 {
     // set or create id
@@ -72,25 +69,24 @@ MultiblockIO::sendOutgoingData(const void* data,
     const uint32_t totalPartNumber = static_cast<uint32_t>(totalSize / MAX_SINGLE_MESSAGE_SIZE) + 1;
     const uint8_t* dataPointer = static_cast<const uint8_t*>(data);
 
-    while(totalSize != 0
-          && m_abort == false)
-    {
+    while (totalSize != 0 && m_abort == false) {
         // get message-size base on the rest
         currentMessageSize = MAX_SINGLE_MESSAGE_SIZE;
-        if(totalSize <= MAX_SINGLE_MESSAGE_SIZE) {
+        if (totalSize <= MAX_SINGLE_MESSAGE_SIZE) {
             currentMessageSize = totalSize;
         }
         totalSize -= currentMessageSize;
 
         // send single packet
-        if(send_Data_Multi_Static(m_session,
-                                  size,
-                                  newMultiblockId,
-                                  totalPartNumber,
-                                  partCounter,
-                                  dataPointer + (MAX_SINGLE_MESSAGE_SIZE * partCounter),
-                                  static_cast<uint32_t>(currentMessageSize),
-                                  error) == false)
+        if (send_Data_Multi_Static(m_session,
+                                   size,
+                                   newMultiblockId,
+                                   totalPartNumber,
+                                   partCounter,
+                                   dataPointer + (MAX_SINGLE_MESSAGE_SIZE * partCounter),
+                                   static_cast<uint32_t>(currentMessageSize),
+                                   error)
+            == false)
         {
             return 0;
         }
@@ -98,12 +94,12 @@ MultiblockIO::sendOutgoingData(const void* data,
         partCounter++;
     }
 
-    if(m_abort) {
+    if (m_abort) {
         return 0;
     }
 
     // finish multiblock-message
-    if(send_Data_Multi_Finish(m_session, newMultiblockId, blockerId, error) == false) {
+    if (send_Data_Multi_Finish(m_session, newMultiblockId, blockerId, error) == false) {
         return 0;
     }
 
@@ -119,8 +115,7 @@ MultiblockIO::sendOutgoingData(const void* data,
  * @return false, if allocation failed, else true
  */
 bool
-MultiblockIO::createIncomingBuffer(const uint64_t multiblockId,
-                                   const uint64_t size)
+MultiblockIO::createIncomingBuffer(const uint64_t multiblockId, const uint64_t size)
 {
     // init new multiblock-message
     MultiblockBuffer newMultiblockMessage;
@@ -129,8 +124,7 @@ MultiblockIO::createIncomingBuffer(const uint64_t multiblockId,
     newMultiblockMessage.multiblockId = multiblockId;
 
     // check if memory allocation was successful
-    if(newMultiblockMessage.incomingData->data == nullptr)
-    {
+    if (newMultiblockMessage.incomingData->data == nullptr) {
         delete newMultiblockMessage.incomingData;
         return false;
     }
@@ -157,7 +151,7 @@ MultiblockIO::getIncomingBuffer(const uint64_t multiblockId)
 
     std::map<uint64_t, MultiblockBuffer>::iterator it;
     it = m_incomingBuffer.find(multiblockId);
-    if(it != m_incomingBuffer.end()) {
+    if (it != m_incomingBuffer.end()) {
         return it->second;
     }
 
@@ -185,7 +179,7 @@ MultiblockIO::writeIntoIncomingBuffer(const uint64_t multiblockId,
     std::map<uint64_t, MultiblockBuffer>::iterator it;
     it = m_incomingBuffer.find(multiblockId);
 
-    if(it != m_incomingBuffer.end()) {
+    if (it != m_incomingBuffer.end()) {
         result = Hanami::addData_DataBuffer(*it->second.incomingData, data, size);
     }
 
@@ -207,8 +201,7 @@ MultiblockIO::removeMultiblockBuffer(const uint64_t multiblockId)
 
     std::map<uint64_t, MultiblockBuffer>::iterator it;
     it = m_incomingBuffer.find(multiblockId);
-    if(it != m_incomingBuffer.end())
-    {
+    if (it != m_incomingBuffer.end()) {
         m_incomingBuffer.erase(it);
         return true;
     }
@@ -216,4 +209,4 @@ MultiblockIO::removeMultiblockBuffer(const uint64_t multiblockId)
     return false;
 }
 
-}
+}  // namespace Hanami

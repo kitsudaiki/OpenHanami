@@ -1,6 +1,9 @@
 TEMPLATE = subdirs
 CONFIG += ordered
 
+QMAKE_CXX = clang++-15
+QMAKE_LINK = clang++-15
+
 lexxer.file = src/lexxer.pro
 parser.file = src/parser.pro
 

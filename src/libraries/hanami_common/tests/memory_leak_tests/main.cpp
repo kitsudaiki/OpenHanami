@@ -6,22 +6,20 @@
  *  @copyright MIT License
  */
 
-#include <iostream>
-
 #include <hanami_common/buffer/data_buffer_test.h>
 #include <hanami_common/buffer/item_buffer_test.h>
 #include <hanami_common/buffer/ring_buffer_test.h>
 #include <hanami_common/buffer/stack_buffer_reserve_test.h>
 #include <hanami_common/buffer/stack_buffer_test.h>
-
+#include <hanami_common/items/table_item_test.h>
 #include <hanami_common/state_test.h>
 #include <hanami_common/statemachine_test.h>
-
-#include <hanami_common/items/table_item_test.h>
-
 #include <hanami_common/threading/thread_test.h>
 
-int main()
+#include <iostream>
+
+int
+main()
 {
     Hanami::DataBuffer_Test();
     Hanami::ItemBuffer_Test();

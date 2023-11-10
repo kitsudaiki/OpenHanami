@@ -21,7 +21,6 @@
  */
 
 #include <hanami_policies/policy.h>
-
 #include <policy_parsing/policy_parser_interface.h>
 
 namespace Hanami
@@ -48,10 +47,9 @@ Policy::~Policy() {}
  * @return true, if parsing was successful, else false
  */
 bool
-Policy::parse(const std::string &input,
-              ErrorContainer &error)
+Policy::parse(const std::string& input, ErrorContainer& error)
 {
-    if(input.size() == 0) {
+    if (input.size() == 0) {
         return false;
     }
 
@@ -69,13 +67,13 @@ Policy::parse(const std::string &input,
  * @return true, if check was successfully, else false
  */
 bool
-Policy::checkUserAgainstPolicy(const std::string &endpoint,
+Policy::checkUserAgainstPolicy(const std::string& endpoint,
                                const HttpRequestType type,
-                               const std::string &role)
+                               const std::string& role)
 {
     const auto endpoint_it = m_policyRules.find(endpoint);
-    if(endpoint_it != m_policyRules.end()) {
-        return checkEntry(endpoint_it->second,  type, role);
+    if (endpoint_it != m_policyRules.end()) {
+        return checkEntry(endpoint_it->second, type, role);
     }
 
     return false;
@@ -91,12 +89,9 @@ Policy::checkUserAgainstPolicy(const std::string &endpoint,
  * @return true, if a rule in the entry match the role of the user
  */
 bool
-Policy::checkEntry(const PolicyEntry &entry,
-                   const HttpRequestType type,
-                   const std::string &role)
+Policy::checkEntry(const PolicyEntry& entry, const HttpRequestType type, const std::string& role)
 {
-    switch(type)
-    {
+    switch (type) {
         case GET_TYPE:
             return checkRuleList(entry.getRules, role);
             break;
@@ -127,12 +122,10 @@ Policy::checkEntry(const PolicyEntry &entry,
  * @return true, if user-role is in the list of rules, else false
  */
 bool
-Policy::checkRuleList(const std::vector<std::string> &rules,
-                      const std::string &role)
+Policy::checkRuleList(const std::vector<std::string>& rules, const std::string& role)
 {
-    for(const std::string& r : rules)
-    {
-        if(r == role) {
+    for (const std::string& r : rules) {
+        if (r == role) {
             return true;
         }
     }
@@ -140,4 +133,4 @@ Policy::checkRuleList(const std::vector<std::string> &rules,
     return false;
 }
 
-}
+}  // namespace Hanami

@@ -28,43 +28,37 @@
 namespace Hanami
 {
 
-bool createUser(std::string &result,
-                const std::string &userId,
-                const std::string &userName,
-                const std::string &password,
+bool createUser(std::string& result,
+                const std::string& userId,
+                const std::string& userName,
+                const std::string& password,
                 const bool isAdmin,
-                Hanami::ErrorContainer &error);
+                Hanami::ErrorContainer& error);
 
-bool getUser(std::string &result,
-             const std::string &userId,
-             Hanami::ErrorContainer &error);
+bool getUser(std::string& result, const std::string& userId, Hanami::ErrorContainer& error);
 
-bool listUser(std::string &result,
-              Hanami::ErrorContainer &error);
+bool listUser(std::string& result, Hanami::ErrorContainer& error);
 
-bool deleteUser(std::string &result,
-                const std::string &userId,
-                Hanami::ErrorContainer &error);
+bool deleteUser(std::string& result, const std::string& userId, Hanami::ErrorContainer& error);
 
-bool addProjectToUser(std::string &result,
-                      const std::string &userId,
-                      const std::string &projectId,
-                      const std::string &role,
+bool addProjectToUser(std::string& result,
+                      const std::string& userId,
+                      const std::string& projectId,
+                      const std::string& role,
                       const bool isProjectAdmin,
-                      Hanami::ErrorContainer &error);
+                      Hanami::ErrorContainer& error);
 
-bool removeProjectFromUser(std::string &result,
-                           const std::string &userId,
-                           const std::string &projectId,
-                           Hanami::ErrorContainer &error);
+bool removeProjectFromUser(std::string& result,
+                           const std::string& userId,
+                           const std::string& projectId,
+                           Hanami::ErrorContainer& error);
 
-bool listProjectsOfUser(std::string &result,
-                        Hanami::ErrorContainer &error);
+bool listProjectsOfUser(std::string& result, Hanami::ErrorContainer& error);
 
-bool switchProject(std::string &result,
-                   const std::string &projectId,
-                   Hanami::ErrorContainer &error);
+bool switchProject(std::string& result,
+                   const std::string& projectId,
+                   Hanami::ErrorContainer& error);
 
-} // namespace Hanami
+}  // namespace Hanami
 
-#endif // HANAMISDK_USER_H
+#endif  // HANAMISDK_USER_H

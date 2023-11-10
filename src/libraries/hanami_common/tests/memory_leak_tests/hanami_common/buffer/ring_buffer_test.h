@@ -14,16 +14,15 @@
 namespace Hanami
 {
 
-class RingBuffer_Test
-        : public Hanami::MemoryLeakTestHelpter
+class RingBuffer_Test : public Hanami::MemoryLeakTestHelpter
 {
-public:
+   public:
     RingBuffer_Test();
 
-private:
+   private:
     void create_delete_test();
 };
 
-}
+}  // namespace Hanami
 
-#endif // RING_BUFFER_TEST_H
+#endif  // RING_BUFFER_TEST_H

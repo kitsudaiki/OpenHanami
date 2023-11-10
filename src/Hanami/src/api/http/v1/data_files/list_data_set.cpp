@@ -22,11 +22,10 @@
 
 #include "list_data_set.h"
 
-#include <hanami_root.h>
 #include <database/data_set_table.h>
+#include <hanami_root.h>
 
-ListDataSet::ListDataSet()
-    : Blossom("List all visible data-sets.")
+ListDataSet::ListDataSet() : Blossom("List all visible data-sets.")
 {
     //----------------------------------------------------------------------------------------------
     // output
@@ -41,11 +40,11 @@ ListDataSet::ListDataSet()
     headerMatch.push_back("type");
 
     registerOutputField("header", SAKURA_ARRAY_TYPE)
-            .setComment("Array with the namings all columns of the table.")
-            .setMatch(headerMatch);
+        .setComment("Array with the namings all columns of the table.")
+        .setMatch(headerMatch);
 
     registerOutputField("body", SAKURA_ARRAY_TYPE)
-            .setComment("Array with all rows of the table, which array arrays too.");
+        .setComment("Array with all rows of the table, which array arrays too.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -56,17 +55,16 @@ ListDataSet::ListDataSet()
  * @brief runTask
  */
 bool
-ListDataSet::runTask(BlossomIO &blossomIO,
-                       const json &context,
-                       BlossomStatus &status,
-                       Hanami::ErrorContainer &error)
+ListDataSet::runTask(BlossomIO& blossomIO,
+                     const json& context,
+                     BlossomStatus& status,
+                     Hanami::ErrorContainer& error)
 {
     const UserContext userContext(context);
 
     // get data from table
     Hanami::TableItem table;
-    if(DataSetTable::getInstance()->getAllDataSet(table, userContext, error) == false)
-    {
+    if (DataSetTable::getInstance()->getAllDataSet(table, userContext, error) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

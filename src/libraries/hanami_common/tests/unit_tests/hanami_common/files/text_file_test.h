@@ -10,18 +10,18 @@
 #define TEXT_FILE_TEST_H
 
 #include <hanami_common/test_helper/compare_test_helper.h>
+
 #include <filesystem>
 
 namespace Hanami
 {
 
-class TextFile_Test
-        : public Hanami::CompareTestHelper
+class TextFile_Test : public Hanami::CompareTestHelper
 {
-public:
+   public:
     TextFile_Test();
 
-private:
+   private:
     void initTest();
     void writeFile_test();
     void readFile_test();
@@ -34,6 +34,6 @@ private:
     void deleteFile();
 };
 
-}
+}  // namespace Hanami
 
-#endif // TEXT_FILE_TEST_H
+#endif  // TEXT_FILE_TEST_H

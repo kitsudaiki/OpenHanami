@@ -23,17 +23,18 @@
 #ifndef HANAMI_PROCESSING_UNIT_HANDLER_H
 #define HANAMI_PROCESSING_UNIT_HANDLER_H
 
-#include <vector>
 #include <stdint.h>
+
+#include <vector>
 
 class CpuProcessingUnit;
 
 class ProcessingUnitHandler
 {
-public:
+   public:
     static ProcessingUnitHandler* getInstance()
     {
-        if(instance == nullptr) {
+        if (instance == nullptr) {
             instance = new ProcessingUnitHandler();
         }
         return instance;
@@ -43,11 +44,11 @@ public:
     void addProcessingUnit(const uint64_t threadId);
     bool initProcessingUnits(const uint16_t numberOfThreads);
 
-private:
+   private:
     ProcessingUnitHandler();
     static ProcessingUnitHandler* instance;
 
     std::vector<CpuProcessingUnit*> m_processingUnits;
 };
 
-#endif // HANAMI_PROCESSING_UNIT_HANDLER_H
+#endif  // HANAMI_PROCESSING_UNIT_HANDLER_H

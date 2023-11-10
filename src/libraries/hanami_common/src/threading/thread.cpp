@@ -20,11 +20,11 @@
  *      limitations under the License.
  */
 
-#include <hanami_common/threading/thread.h>
-#include <hanami_common/threading/event.h>
 #include <hanami_common/buffer/data_buffer.h>
-#include <hanami_common/threading/thread_handler.h>
 #include <hanami_common/threading/cleanup_thread.h>
+#include <hanami_common/threading/event.h>
+#include <hanami_common/threading/thread.h>
+#include <hanami_common/threading/thread_handler.h>
 
 namespace Hanami
 {
@@ -34,9 +34,10 @@ namespace Hanami
  *
  * @param threadName global unique name of the thread for later identification
  */
-Thread::Thread(const std::string &threadName)
-    : m_threadName(threadName),
-      m_threadId(ThreadHandler::getInstance()->getNewId()) {}
+Thread::Thread(const std::string& threadName)
+    : m_threadName(threadName), m_threadId(ThreadHandler::getInstance()->getNewId())
+{
+}
 
 /**
  * @brief destructor
@@ -63,13 +64,10 @@ Thread::bindThreadToCores(const std::vector<uint64_t> coreIds)
     // bind thread
     cpu_set_t cpuset;
     CPU_ZERO(&cpuset);
-    for(const uint64_t coreId : coreIds) {
+    for (const uint64_t coreId : coreIds) {
         CPU_SET(coreId, &cpuset);
     }
-    if(pthread_setaffinity_np(m_thread->native_handle(),
-                              sizeof(cpu_set_t),
-                              &cpuset) != 0)
-    {
+    if (pthread_setaffinity_np(m_thread->native_handle(), sizeof(cpu_set_t), &cpuset) != 0) {
         return false;
     }
 
@@ -92,10 +90,7 @@ Thread::bindThreadToCore(const uint64_t coreId)
     cpu_set_t cpuset;
     CPU_ZERO(&cpuset);
     CPU_SET(coreId, &cpuset);
-    if(pthread_setaffinity_np(m_thread->native_handle(),
-                              sizeof(cpu_set_t),
-                              &cpuset) != 0)
-    {
+    if (pthread_setaffinity_np(m_thread->native_handle(), sizeof(cpu_set_t), &cpuset) != 0) {
         return false;
     }
 
@@ -145,12 +140,14 @@ void
 Thread::addEventToQueue(Event* newEvent)
 {
     // precheck
-    if(m_active == false) {
+    if (m_active == false) {
         return;
     }
 
     // add new event to queue
-    while(m_eventQueue_lock.test_and_set(std::memory_order_acquire)) { asm(""); }
+    while (m_eventQueue_lock.test_and_set(std::memory_order_acquire)) {
+        asm("");
+    }
     m_eventQueue.push_back(newEvent);
     m_eventQueue_lock.clear(std::memory_order_release);
 }
@@ -165,11 +162,12 @@ Thread::getEventFromQueue()
 {
     Event* result = nullptr;
 
-    while(m_eventQueue_lock.test_and_set(std::memory_order_acquire)) { asm(""); }
+    while (m_eventQueue_lock.test_and_set(std::memory_order_acquire)) {
+        asm("");
+    }
 
     // get the next from the queue
-    if(m_eventQueue.empty() == false)
-    {
+    if (m_eventQueue.empty() == false) {
         result = m_eventQueue.front();
         m_eventQueue.pop_front();
     }
@@ -188,7 +186,7 @@ bool
 Thread::startThread()
 {
     // precheck
-    if(m_active) {
+    if (m_active) {
         return false;
     }
 
@@ -211,9 +209,10 @@ bool
 Thread::scheduleThreadForDeletion()
 {
     // check and set deletion-flag
-    while(m_eventQueue_lock.test_and_set(std::memory_order_acquire)) { asm(""); }
-    if(m_scheduledForDeletion)
-    {
+    while (m_eventQueue_lock.test_and_set(std::memory_order_acquire)) {
+        asm("");
+    }
+    if (m_scheduledForDeletion) {
         m_eventQueue_lock.clear(std::memory_order_release);
         return false;
     }
@@ -233,14 +232,14 @@ void
 Thread::stopThread()
 {
     // precheck
-    if(m_active == false) {
+    if (m_active == false) {
         return;
     }
 
     // give thread abort-flag and wait until its end
     m_abort = true;
 
-    if(m_thread->joinable()) {
+    if (m_thread->joinable()) {
         m_thread->join();
     }
 
@@ -253,10 +252,11 @@ Thread::stopThread()
 void
 Thread::clearEventQueue()
 {
-    while(m_eventQueue_lock.test_and_set(std::memory_order_acquire)) { asm(""); }
+    while (m_eventQueue_lock.test_and_set(std::memory_order_acquire)) {
+        asm("");
+    }
 
-    while(m_eventQueue.empty() == false)
-    {
+    while (m_eventQueue.empty() == false) {
         Event* obj = m_eventQueue.front();
         m_eventQueue.pop_front();
         delete obj;
@@ -289,8 +289,7 @@ Thread::continueThread()
 void
 Thread::spinLock()
 {
-    while (m_spin_lock.test_and_set(std::memory_order_acquire))
-    {
+    while (m_spin_lock.test_and_set(std::memory_order_acquire)) {
         asm("");
         /**
          * Explaination from stack overflow:
@@ -343,4 +342,4 @@ Thread::isActive() const
     return m_active;
 }
 
-}
+}  // namespace Hanami

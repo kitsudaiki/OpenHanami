@@ -51,6 +51,6 @@ Azuki can change the frequency of the CPU. This is triggered by Kyouko. Whenever
 
 The result looks like this:
 
-![Workflow-component](../img/cpu_power.png)
+![Workflow-component](../img/cpu_power.jpg)
 
 Every spike in the graph means, that a task comes to be processed. Between the task, the cpu is enforced to minimal cpu-frequency and so also minimal power consumption.

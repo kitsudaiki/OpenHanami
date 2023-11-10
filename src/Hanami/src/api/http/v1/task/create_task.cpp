@@ -21,20 +21,18 @@
  */
 
 #include "create_task.h"
-#include <hanami_root.h>
-#include <database/data_set_table.h>
-#include <database/cluster_table.h>
-#include <core/cluster/cluster_handler.h>
-#include <core/cluster/cluster.h>
+
 #include <core/cluster/add_tasks.h>
-
-#include <hanami_files/data_set_files/data_set_functions.h>
-
+#include <core/cluster/cluster.h>
+#include <core/cluster/cluster_handler.h>
+#include <database/cluster_table.h>
+#include <database/data_set_table.h>
 #include <hanami_common/files/binary_file.h>
 #include <hanami_crypto/common.h>
+#include <hanami_files/data_set_files/data_set_functions.h>
+#include <hanami_root.h>
 
-CreateTask::CreateTask()
-    : Blossom("Add new task to the task-queue of a cluster.")
+CreateTask::CreateTask() : Blossom("Add new task to the task-queue of a cluster.")
 {
     errorCodes.push_back(NOT_FOUND_RTYPE);
 
@@ -43,31 +41,29 @@ CreateTask::CreateTask()
     //----------------------------------------------------------------------------------------------
 
     registerInputField("name", SAKURA_STRING_TYPE)
-            .setComment("Name for the new task for better identification.")
-            .setLimit(4, 256)
-            .setRegex(NAME_REGEX);
+        .setComment("Name for the new task for better identification.")
+        .setLimit(4, 256)
+        .setRegex(NAME_REGEX);
 
     registerInputField("type", SAKURA_STRING_TYPE)
-            .setComment("UUID of the data-set with the input, which coming from shiori.")
-            .setRegex("^(train|request)$");
+        .setComment("UUID of the data-set with the input, which coming from shiori.")
+        .setRegex("^(train|request)$");
 
     registerInputField("cluster_uuid", SAKURA_STRING_TYPE)
-            .setComment("UUID of the cluster, which should process the request")
-            .setRegex(UUID_REGEX);
+        .setComment("UUID of the cluster, which should process the request")
+        .setRegex(UUID_REGEX);
 
     registerInputField("data_set_uuid", SAKURA_STRING_TYPE)
-            .setComment("UUID of the data-set with the input, which coming from shiori.")
-            .setRegex(UUID_REGEX);
+        .setComment("UUID of the data-set with the input, which coming from shiori.")
+        .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid", SAKURA_STRING_TYPE)
-            .setComment("UUID of the new created task.");
+    registerOutputField("uuid", SAKURA_STRING_TYPE).setComment("UUID of the new created task.");
 
-    registerOutputField("name", SAKURA_STRING_TYPE)
-            .setComment("Name of the new created task.");
+    registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the new created task.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -78,10 +74,10 @@ CreateTask::CreateTask()
  * @brief runTask
  */
 bool
-CreateTask::runTask(BlossomIO &blossomIO,
-                              const json &context,
-                              BlossomStatus &status,
-                              Hanami::ErrorContainer &error)
+CreateTask::runTask(BlossomIO& blossomIO,
+                    const json& context,
+                    BlossomStatus& status,
+                    Hanami::ErrorContainer& error)
 {
     const std::string name = blossomIO.input["name"];
     const std::string clusterUuid = blossomIO.input["cluster_uuid"];
@@ -91,85 +87,60 @@ CreateTask::runTask(BlossomIO &blossomIO,
 
     // check if user exist within the table
     json getResult;
-    if(ClusterTable::getInstance()->getCluster(getResult,
-                                               clusterUuid,
-                                               userContext,
-                                               error) == false)
+    if (ClusterTable::getInstance()->getCluster(getResult, clusterUuid, userContext, error)
+        == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // handle not found
-    if(getResult.size() == 0)
-    {
+    if (getResult.size() == 0) {
         status.errorMessage = "Cluster with uuid '" + clusterUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
     // get cluster
     Cluster* cluster = ClusterHandler::getInstance()->getCluster(clusterUuid);
-    if(cluster == nullptr)
-    {
+    if (cluster == nullptr) {
         status.errorMessage = "Cluster with UUID '" + clusterUuid + "'not found";
         status.statusCode = NOT_FOUND_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
     // get meta-infos of data-set from shiori
     json dataSetInfo;
-    if(DataSetTable::getInstance()->getDateSetInfo(dataSetInfo,
-                                                   dataSetUuid,
-                                                   context,
-                                                   error) == false)
+    if (DataSetTable::getInstance()->getDateSetInfo(dataSetInfo, dataSetUuid, context, error)
+        == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // handle not found
-    if(dataSetInfo.size() == 0)
-    {
+    if (dataSetInfo.size() == 0) {
         status.errorMessage = "Data-set with uuid '" + dataSetUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
     // create task
     std::string taskUuid = "";
-    if(dataSetInfo["type"] == "mnist")
-    {
-        imageTask(taskUuid,
-                  name,
-                  taskType,
-                  userContext,
-                  cluster,
-                  dataSetInfo,
-                  status,
-                  error);
+    if (dataSetInfo["type"] == "mnist") {
+        imageTask(taskUuid, name, taskType, userContext, cluster, dataSetInfo, status, error);
     }
-    else if(dataSetInfo["type"] == "csv")
-    {
-        tableTask(taskUuid,
-                  name,
-                  taskType,
-                  userContext,
-                  cluster,
-                  dataSetInfo,
-                  status,
-                  error);
+    else if (dataSetInfo["type"] == "csv") {
+        tableTask(taskUuid, name, taskType, userContext, cluster, dataSetInfo, status, error);
     }
-    else
-    {
-        status.errorMessage = "Invalid dataset-type '"
-                              + std::string(dataSetInfo["type"])
+    else {
+        status.errorMessage = "Invalid dataset-type '" + std::string(dataSetInfo["type"])
                               + "' given for to create new task";
         status.statusCode = BAD_REQUEST_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
@@ -195,23 +166,20 @@ CreateTask::runTask(BlossomIO &blossomIO,
  * @return true, if successful, else false
  */
 bool
-CreateTask::imageTask(std::string &taskUuid,
-                      const std::string &name,
-                      const std::string &taskType,
-                      const UserContext &userContext,
+CreateTask::imageTask(std::string& taskUuid,
+                      const std::string& name,
+                      const std::string& taskType,
+                      const UserContext& userContext,
                       Cluster* cluster,
-                      json &dataSetInfo,
-                      BlossomStatus &status,
-                      Hanami::ErrorContainer &error)
+                      json& dataSetInfo,
+                      BlossomStatus& status,
+                      Hanami::ErrorContainer& error)
 {
     // get input-data
     const std::string dataSetLocation = dataSetInfo["location"];
     Hanami::DataBuffer buffer;
-    if(getDataSetPayload(buffer, dataSetLocation, error) == false)
-    {
-        error.addMeesage("Failed to get data of data-set from location '"
-                         + dataSetLocation
-                         + "'");
+    if (getDataSetPayload(buffer, dataSetLocation, error) == false) {
+        error.addMeesage("Failed to get data of data-set from location '" + dataSetLocation + "'");
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
@@ -221,8 +189,7 @@ CreateTask::imageTask(std::string &taskUuid,
     const uint64_t numberOfOutputs = dataSetInfo["outputs"];
     const uint64_t numberOfLines = dataSetInfo["lines"];
 
-    if(taskType == "train")
-    {
+    if (taskType == "train") {
         taskUuid = addImageTrainTask(*cluster,
                                      name,
                                      userContext.userId,
@@ -232,8 +199,7 @@ CreateTask::imageTask(std::string &taskUuid,
                                      numberOfOutputs,
                                      numberOfLines);
     }
-    else
-    {
+    else {
         taskUuid = addImageRequestTask(*cluster,
                                        name,
                                        userContext.userId,
@@ -265,14 +231,14 @@ CreateTask::imageTask(std::string &taskUuid,
  * @return true, if successful, else false
  */
 bool
-CreateTask::tableTask(std::string &taskUuid,
-                      const std::string &name,
-                      const std::string &taskType,
-                      const UserContext &userContext,
+CreateTask::tableTask(std::string& taskUuid,
+                      const std::string& name,
+                      const std::string& taskType,
+                      const UserContext& userContext,
                       Cluster* cluster,
-                      json &dataSetInfo,
-                      BlossomStatus &status,
-                      Hanami::ErrorContainer &error)
+                      json& dataSetInfo,
+                      BlossomStatus& status,
+                      Hanami::ErrorContainer& error)
 {
     // init request-task
     const uint64_t numberOfInputs = cluster->clusterHeader->inputValues.count;
@@ -283,19 +249,14 @@ CreateTask::tableTask(std::string &taskUuid,
     const std::string inputColumnName = "input";
     const std::string dataSetLocation = dataSetInfo["location"];
     Hanami::DataBuffer inputBuffer;
-    if(getDataSetPayload(inputBuffer, dataSetLocation, error, inputColumnName) == false)
-    {
-        error.addMeesage("Failed to get data of data-set from location '"
-                         + dataSetLocation
-                         + "' and column with name '"
-                         + inputColumnName
-                         + "'");
+    if (getDataSetPayload(inputBuffer, dataSetLocation, error, inputColumnName) == false) {
+        error.addMeesage("Failed to get data of data-set from location '" + dataSetLocation
+                         + "' and column with name '" + inputColumnName + "'");
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
-    if(taskType == "request")
-    {
+    if (taskType == "request") {
         taskUuid = addTableRequestTask(*cluster,
                                        name,
                                        userContext.userId,
@@ -306,18 +267,13 @@ CreateTask::tableTask(std::string &taskUuid,
                                        numberOfLines - numberOfInputs);
         inputBuffer.data = nullptr;
     }
-    else
-    {
+    else {
         // get output-data
         const std::string outputColumnName = "output";
         Hanami::DataBuffer outputBuffer;
-        if(getDataSetPayload(outputBuffer, dataSetLocation, error, outputColumnName) == false)
-        {
-            error.addMeesage("Failed to get data of data-set from location '"
-                             + dataSetLocation
-                             + "' and column with name '"
-                             + outputColumnName
-                             + "'");
+        if (getDataSetPayload(outputBuffer, dataSetLocation, error, outputColumnName) == false) {
+            error.addMeesage("Failed to get data of data-set from location '" + dataSetLocation
+                             + "' and column with name '" + outputColumnName + "'");
             status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
             return false;
         }

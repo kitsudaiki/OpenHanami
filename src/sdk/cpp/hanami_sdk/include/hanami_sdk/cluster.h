@@ -30,40 +30,37 @@ namespace Hanami
 
 class WebsocketClient;
 
-bool createCluster(std::string &result,
-                   const std::string &clusterName,
-                   const std::string &clusterTemplate,
-                   Hanami::ErrorContainer &error);
+bool createCluster(std::string& result,
+                   const std::string& clusterName,
+                   const std::string& clusterTemplate,
+                   Hanami::ErrorContainer& error);
 
-bool getCluster(std::string &result,
-                const std::string &clusterUuid,
-                Hanami::ErrorContainer &error);
+bool getCluster(std::string& result, const std::string& clusterUuid, Hanami::ErrorContainer& error);
 
-bool listCluster(std::string &result,
-                 Hanami::ErrorContainer &error);
+bool listCluster(std::string& result, Hanami::ErrorContainer& error);
 
-bool deleteCluster(std::string &result,
-                   const std::string &clusterUuid,
-                   Hanami::ErrorContainer &error);
+bool deleteCluster(std::string& result,
+                   const std::string& clusterUuid,
+                   Hanami::ErrorContainer& error);
 
-bool saveCluster(std::string &result,
-                 const std::string &clusterUuid,
-                 const std::string &checkpointName,
-                 Hanami::ErrorContainer &error);
+bool saveCluster(std::string& result,
+                 const std::string& clusterUuid,
+                 const std::string& checkpointName,
+                 Hanami::ErrorContainer& error);
 
-bool restoreCluster(std::string &result,
-                    const std::string &clusterUuid,
-                    const std::string &checkpointUuid,
-                    Hanami::ErrorContainer &error);
+bool restoreCluster(std::string& result,
+                    const std::string& clusterUuid,
+                    const std::string& checkpointUuid,
+                    Hanami::ErrorContainer& error);
 
-bool switchToTaskMode(std::string &result,
-                      const std::string &clusterUuid,
-                      Hanami::ErrorContainer &error);
+bool switchToTaskMode(std::string& result,
+                      const std::string& clusterUuid,
+                      Hanami::ErrorContainer& error);
 
-WebsocketClient* switchToDirectMode(std::string &result,
-                                    const std::string &clusterUuid,
-                                    Hanami::ErrorContainer &error);
+WebsocketClient* switchToDirectMode(std::string& result,
+                                    const std::string& clusterUuid,
+                                    Hanami::ErrorContainer& error);
 
-} // namespace Hanami
+}  // namespace Hanami
 
-#endif // HANAMISDK_CLUSTER_H
+#endif  // HANAMISDK_CLUSTER_H

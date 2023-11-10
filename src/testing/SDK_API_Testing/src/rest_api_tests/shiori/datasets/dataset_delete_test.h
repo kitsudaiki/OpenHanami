@@ -25,18 +25,15 @@
 
 #include <common/test_step.h>
 
-class DataSetDeleteTest
-        : public TestStep
+class DataSetDeleteTest : public TestStep
 {
-public:
-    DataSetDeleteTest(const bool expectSuccess,
-                      const std::string &type);
+   public:
+    DataSetDeleteTest(const bool expectSuccess, const std::string& type);
 
-    bool runTest(json &inputData,
-                 Hanami::ErrorContainer &error);
+    bool runTest(json& inputData, Hanami::ErrorContainer& error);
 
-private:
+   private:
     std::string m_type = "";
 };
 
-#endif // TSUGUMITESTER_DATASETDELETETEST_H
+#endif  // TSUGUMITESTER_DATASETDELETETEST_H

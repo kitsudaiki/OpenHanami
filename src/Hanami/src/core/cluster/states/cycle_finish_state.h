@@ -27,17 +27,16 @@
 
 class Cluster;
 
-class CycleFinish_State
-        : public Hanami::Event
+class CycleFinish_State : public Hanami::Event
 {
-public:
+   public:
     CycleFinish_State(Cluster* cluster);
     ~CycleFinish_State();
 
     bool processEvent();
 
-private:
+   private:
     Cluster* m_cluster = nullptr;
 };
 
-#endif // HANAMI_CYCLEFINISH_STATE_H
+#endif  // HANAMI_CYCLEFINISH_STATE_H

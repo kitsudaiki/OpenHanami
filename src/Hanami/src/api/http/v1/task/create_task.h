@@ -23,42 +23,40 @@
 #ifndef HANAMI_CREATE_IMAGE_TRAINTASK_H
 #define HANAMI_CREATE_IMAGE_TRAINTASK_H
 
-#include <common.h>
 #include <api/endpoint_processing/blossom.h>
-
+#include <common.h>
 
 class Cluster;
 
-class CreateTask
-        : public Blossom
+class CreateTask : public Blossom
 {
-public:
+   public:
     CreateTask();
 
-protected:
-    bool runTask(BlossomIO &blossomIO,
-                 const json &context,
-                 BlossomStatus &status,
-                 Hanami::ErrorContainer &error);
+   protected:
+    bool runTask(BlossomIO& blossomIO,
+                 const json& context,
+                 BlossomStatus& status,
+                 Hanami::ErrorContainer& error);
 
-private:
-    bool imageTask(std::string &taskUuid,
-                   const std::string &name,
-                   const std::string &taskType,
-                   const UserContext &userContext,
+   private:
+    bool imageTask(std::string& taskUuid,
+                   const std::string& name,
+                   const std::string& taskType,
+                   const UserContext& userContext,
                    Cluster* cluster,
-                   json &dataSetInfo,
-                   BlossomStatus &status,
-                   Hanami::ErrorContainer &error);
+                   json& dataSetInfo,
+                   BlossomStatus& status,
+                   Hanami::ErrorContainer& error);
 
-    bool tableTask(std::string &taskUuid,
-                   const std::string &name,
-                   const std::string &taskType,
-                   const UserContext &userContext,
+    bool tableTask(std::string& taskUuid,
+                   const std::string& name,
+                   const std::string& taskType,
+                   const UserContext& userContext,
                    Cluster* cluster,
-                   json &dataSetInfo,
-                   BlossomStatus &status,
-                   Hanami::ErrorContainer &error);
+                   json& dataSetInfo,
+                   BlossomStatus& status,
+                   Hanami::ErrorContainer& error);
 };
 
-#endif // HANAMI_CREATE_IMAGE_TRAINTASK_H
+#endif  // HANAMI_CREATE_IMAGE_TRAINTASK_H

@@ -21,29 +21,26 @@
  */
 
 #include "cluster.h"
-#include <hanami_root.h>
 
+#include <api/websocket/cluster_io.h>
 #include <core/cluster/cluster_init.h>
 #include <core/cluster/statemachine_init.h>
 #include <core/cluster/states/task_handle_state.h>
 #include <core/processing/cluster_queue.h>
-#include <api/websocket/cluster_io.h>
-
 #include <hanami_common/logger.h>
 #include <hanami_common/statemachine.h>
 #include <hanami_common/threading/thread.h>
+#include <hanami_root.h>
 
-extern "C"
-void
-copyToDevice_CUDA(PointerHandler* gpuPointer,
-                  ClusterSettings* clusterSettings,
-                  NeuronBlock* neuronBlocks,
-                  const uint32_t numberOfNeuronBlocks,
-                  SynapseBlock* synapseBlocks,
-                  const uint32_t numberOfSynapseBlocks,
-                  SynapseConnection* synapseConnections,
-                  const uint32_t numberOfSynapseConnections,
-                  uint32_t* randomValues);
+extern "C" void copyToDevice_CUDA(PointerHandler* gpuPointer,
+                                  ClusterSettings* clusterSettings,
+                                  NeuronBlock* neuronBlocks,
+                                  const uint32_t numberOfNeuronBlocks,
+                                  SynapseBlock* synapseBlocks,
+                                  const uint32_t numberOfSynapseBlocks,
+                                  SynapseConnection* synapseConnections,
+                                  const uint32_t numberOfSynapseConnections,
+                                  uint32_t* randomValues);
 
 /**
  * @brief constructor
@@ -70,18 +67,15 @@ Cluster::Cluster(const void* data, const uint64_t dataSize)
 /**
  * @brief destructor
  */
-Cluster::~Cluster()
-{
-    delete stateMachine;
-}
+Cluster::~Cluster() { delete stateMachine; }
 
 /**
  * @brief get uuid of the cluster
  *
  * @return uuid of the cluster
  */
-const
-std::string Cluster::getUuid()
+const std::string
+Cluster::getUuid()
 {
     return clusterHeader->uuid.toString();
 }
@@ -113,8 +107,7 @@ Cluster::initCuda()
  * @return true, if successful, else false
  */
 bool
-Cluster::init(const Hanami::ClusterMeta &clusterTemplate,
-              const std::string &uuid)
+Cluster::init(const Hanami::ClusterMeta& clusterTemplate, const std::string& uuid)
 {
     return initNewCluster(this, clusterTemplate, uuid);
 }
@@ -128,7 +121,7 @@ const std::string
 Cluster::getName()
 {
     // precheck
-    if(clusterHeader == nullptr) {
+    if (clusterHeader == nullptr) {
         return std::string("");
     }
 
@@ -146,10 +139,7 @@ bool
 Cluster::setName(const std::string newName)
 {
     // precheck
-    if(clusterHeader == nullptr
-            || newName.size() > 1023
-            || newName.size() == 0)
-    {
+    if (clusterHeader == nullptr || newName.size() > 1023 || newName.size() == 0) {
         return false;
     }
 
@@ -187,13 +177,13 @@ Cluster::startBackwardCycle()
  * @return true, if switch in statemachine was successful, else false
  */
 bool
-Cluster::setClusterState(const std::string &newState)
+Cluster::setClusterState(const std::string& newState)
 {
-    if(newState == "DIRECT") {
+    if (newState == "DIRECT") {
         return goToNextState(SWITCH_TO_DIRECT_MODE);
     }
 
-    if(newState == "TASK") {
+    if (newState == "TASK") {
         return goToNextState(SWITCH_TO_TASK_MODE);
     }
 
@@ -209,23 +199,22 @@ Cluster::updateClusterState()
     std::lock_guard<std::mutex> guard(m_segmentCounterLock);
 
     // trigger next lerning phase, if already in phase 1
-    if(mode == ClusterProcessingMode::TRAIN_FORWARD_MODE)
-    {
+    if (mode == ClusterProcessingMode::TRAIN_FORWARD_MODE) {
         mode = ClusterProcessingMode::TRAIN_BACKWARD_MODE;
         startBackwardCycle();
         return;
     }
 
     // send message, that process was finished
-    if(mode == ClusterProcessingMode::TRAIN_BACKWARD_MODE) {
+    if (mode == ClusterProcessingMode::TRAIN_BACKWARD_MODE) {
         sendClusterTrainEndMessage(this);
-    } else if(mode == ClusterProcessingMode::NORMAL_MODE) {
+    }
+    else if (mode == ClusterProcessingMode::NORMAL_MODE) {
         sendClusterNormalEndMessage(this);
     }
 
     goToNextState(NEXT);
 }
-
 
 /**
  * @brief get actual task
@@ -257,7 +246,7 @@ Cluster::getActualTaskCycle() const
  * @return task-progress
  */
 const TaskProgress
-Cluster::getProgress(const std::string &taskUuid)
+Cluster::getProgress(const std::string& taskUuid)
 {
     return taskHandleState->getProgress(taskUuid);
 }
@@ -270,7 +259,7 @@ Cluster::getProgress(const std::string &taskUuid)
  * @return always true
  */
 bool
-Cluster::removeTask(const std::string &taskUuid)
+Cluster::removeTask(const std::string& taskUuid)
 {
     return taskHandleState->removeTask(taskUuid);
 }
@@ -283,7 +272,7 @@ Cluster::removeTask(const std::string &taskUuid)
  * @return true, if task is finished, else false
  */
 bool
-Cluster::isFinish(const std::string &taskUuid)
+Cluster::isFinish(const std::string& taskUuid)
 {
     return taskHandleState->isFinish(taskUuid);
 }
@@ -293,7 +282,7 @@ Cluster::isFinish(const std::string &taskUuid)
  * @param result
  */
 void
-Cluster::getAllProgress(std::map<std::string, TaskProgress> &result)
+Cluster::getAllProgress(std::map<std::string, TaskProgress>& result)
 {
     return taskHandleState->getAllProgress(result);
 }

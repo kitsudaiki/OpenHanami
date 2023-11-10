@@ -14,17 +14,16 @@
 namespace Hanami
 {
 
-class DataBuffer_Test
-        : public Hanami::MemoryLeakTestHelpter
+class DataBuffer_Test : public Hanami::MemoryLeakTestHelpter
 {
-public:
+   public:
     DataBuffer_Test();
 
-private:
+   private:
     void create_delete_test();
     void fill_reset_test();
 };
 
-}
+}  // namespace Hanami
 
-#endif // DATABUFFER_TEST_H
+#endif  // DATABUFFER_TEST_H

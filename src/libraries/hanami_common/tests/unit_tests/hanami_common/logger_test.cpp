@@ -8,17 +8,13 @@
 
 #include "logger_test.h"
 
-#include <hanami_common/logger.h>
 #include <hanami_common/files/text_file.h>
+#include <hanami_common/logger.h>
 
 namespace Hanami
 {
 
-Logger_Test::Logger_Test()
-    : Hanami::CompareTestHelper("Logger_Test")
-{
-    logger_test();
-}
+Logger_Test::Logger_Test() : Hanami::CompareTestHelper("Logger_Test") { logger_test(); }
 
 /**
  * @brief logger_test
@@ -103,7 +99,6 @@ Logger_Test::logger_test()
     found = logContent.find("info3");
     TEST_NOT_EQUAL(found, std::string::npos);
 
-
     // negative test
     found = logContent.find("ASDF");
     TEST_EQUAL(found, std::string::npos);
@@ -121,9 +116,9 @@ void
 Logger_Test::deleteFile(const std::string filePath)
 {
     std::filesystem::path rootPathObj(filePath);
-    if(std::filesystem::exists(rootPathObj)) {
+    if (std::filesystem::exists(rootPathObj)) {
         std::filesystem::remove(rootPathObj);
     }
 }
 
-}
+}  // namespace Hanami

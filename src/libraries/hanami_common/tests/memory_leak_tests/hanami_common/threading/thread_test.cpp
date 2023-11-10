@@ -8,8 +8,8 @@
 
 #include "thread_test.h"
 
-#include <hanami_common/threading/thread.h>
 #include <hanami_common/threading/event.h>
+#include <hanami_common/threading/thread.h>
 
 #include "bogus_event.h"
 #include "bogus_thread.h"
@@ -17,8 +17,7 @@
 namespace Hanami
 {
 
-Thread_Test::Thread_Test()
-    : Hanami::MemoryLeakTestHelpter("DataBuffer_Test")
+Thread_Test::Thread_Test() : Hanami::MemoryLeakTestHelpter("DataBuffer_Test")
 {
     // The first created thread initialize a static instance of a central thread-handler to
     // track all threads. This will not be deleted anytime, so one thread has to be created
@@ -64,4 +63,4 @@ Thread_Test::create_delete_with_events_test()
     CHECK_MEMORY();
 }
 
-}
+}  // namespace Hanami

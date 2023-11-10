@@ -28,13 +28,12 @@
 namespace Hanami
 {
 
-class ConfigHandler_Test
-        : public Hanami::CompareTestHelper
+class ConfigHandler_Test : public Hanami::CompareTestHelper
 {
-public:
+   public:
     ConfigHandler_Test();
 
-private:
+   private:
     void initTestCase();
 
     void readConfig_test();
@@ -63,6 +62,6 @@ private:
     std::string m_testFilePath = "/tmp/ConfigHandler_Test.ini";
 };
 
-}
+}  // namespace Hanami
 
-#endif // CONFIG_HANDLER_TEST_H
+#endif  // CONFIG_HANDLER_TEST_H

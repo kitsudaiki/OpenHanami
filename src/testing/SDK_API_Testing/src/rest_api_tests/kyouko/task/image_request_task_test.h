@@ -25,14 +25,12 @@
 
 #include <common/test_step.h>
 
-class ImageRequestTaskTest
-        : public TestStep
+class ImageRequestTaskTest : public TestStep
 {
-public:
+   public:
     ImageRequestTaskTest(const bool expectSuccess);
 
-    bool runTest(json &inputData,
-                 Hanami::ErrorContainer &error);
+    bool runTest(json& inputData, Hanami::ErrorContainer& error);
 };
 
-#endif // TSUGUMITESTER_REQUESTTASKTEST_H
+#endif  // TSUGUMITESTER_REQUESTTASKTEST_H

@@ -23,10 +23,10 @@
 #ifndef HANAMI_LANG_SAKURA_ITEMS_H
 #define HANAMI_LANG_SAKURA_ITEMS_H
 
-#include <vector>
-#include <string>
-
 #include <api/endpoint_processing/items/value_item_map.h>
+
+#include <string>
+#include <vector>
 
 namespace Hanami
 {
@@ -38,9 +38,8 @@ struct DataBuffer;
 //==================================================================================================
 class SakuraItem
 {
-public:
-    enum ItemType
-    {
+   public:
+    enum ItemType {
         UNDEFINED_ITEM = 0,
         BLOSSOM_ITEM = 1,
         BLOSSOM_GROUP_ITEM = 2,
@@ -61,7 +60,7 @@ public:
     ItemType getType() const;
     ValueItemMap values;
 
-protected:
+   protected:
     ItemType type = UNDEFINED_ITEM;
 };
 
@@ -70,7 +69,7 @@ protected:
 //==================================================================================================
 class BlossomItem : public SakuraItem
 {
-public:
+   public:
     BlossomItem();
     ~BlossomItem();
     SakuraItem* copy();
@@ -85,7 +84,7 @@ public:
 //==================================================================================================
 class BlossomGroupItem : public SakuraItem
 {
-public:
+   public:
     BlossomGroupItem();
     ~BlossomGroupItem();
     SakuraItem* copy();
@@ -97,4 +96,4 @@ public:
     std::vector<BlossomItem*> blossoms;
 };
 
-#endif // HANAMI_LANG_SAKURA_ITEMS_H
+#endif  // HANAMI_LANG_SAKURA_ITEMS_H

@@ -22,15 +22,13 @@
 
 #include "get_progress_data_set.h"
 
-#include <hanami_root.h>
 #include <database/data_set_table.h>
-
 #include <hanami_files/data_set_files/data_set_file.h>
 #include <hanami_files/data_set_files/image_data_set_file.h>
 #include <hanami_files/data_set_files/table_data_set_file.h>
+#include <hanami_root.h>
 
-GetProgressDataSet::GetProgressDataSet()
-    : Blossom("Get upload progress of a specific data-set.")
+GetProgressDataSet::GetProgressDataSet() : Blossom("Get upload progress of a specific data-set.")
 {
     errorCodes.push_back(NOT_FOUND_RTYPE);
 
@@ -39,21 +37,20 @@ GetProgressDataSet::GetProgressDataSet()
     //----------------------------------------------------------------------------------------------
 
     registerInputField("uuid", SAKURA_STRING_TYPE)
-            .setComment("UUID of the dataset set to delete.")
-            .setRegex(UUID_REGEX);
+        .setComment("UUID of the dataset set to delete.")
+        .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid", SAKURA_STRING_TYPE)
-            .setComment("UUID of the data-set.");
+    registerOutputField("uuid", SAKURA_STRING_TYPE).setComment("UUID of the data-set.");
 
     registerOutputField("temp_files", SAKURA_MAP_TYPE)
-            .setComment("Map with the uuids of the temporary files and it's upload progress");
+        .setComment("Map with the uuids of the temporary files and it's upload progress");
 
     registerOutputField("complete", SAKURA_BOOL_TYPE)
-            .setComment("True, if all temporary files for complete.");
+        .setComment("True, if all temporary files for complete.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -64,31 +61,27 @@ GetProgressDataSet::GetProgressDataSet()
  * @brief runTask
  */
 bool
-GetProgressDataSet::runTask(BlossomIO &blossomIO,
-                            const json &context,
-                            BlossomStatus &status,
-                            Hanami::ErrorContainer &error)
+GetProgressDataSet::runTask(BlossomIO& blossomIO,
+                            const json& context,
+                            BlossomStatus& status,
+                            Hanami::ErrorContainer& error)
 {
     const std::string dataUuid = blossomIO.input["uuid"];
     const UserContext userContext(context);
 
     json databaseOutput;
-    if(DataSetTable::getInstance()->getDataSet(databaseOutput,
-                                               dataUuid,
-                                               userContext,
-                                               error,
-                                               true) == false)
+    if (DataSetTable::getInstance()->getDataSet(databaseOutput, dataUuid, userContext, error, true)
+        == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // handle not found
-    if(databaseOutput.size() == 0)
-    {
+    if (databaseOutput.size() == 0) {
         status.errorMessage = "Data-set with uuid '" + dataUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
@@ -97,9 +90,8 @@ GetProgressDataSet::runTask(BlossomIO &blossomIO,
 
     // check and add if complete
     bool finishedAll = true;
-    for(const auto& [key, file] : tempFiles.items())
-    {
-        if(file < 1.0f) {
+    for (const auto& [key, file] : tempFiles.items()) {
+        if (file < 1.0f) {
             finishedAll = false;
         }
     }

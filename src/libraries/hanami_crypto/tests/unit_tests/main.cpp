@@ -20,14 +20,15 @@
  *      limitations under the License.
  */
 
-#include <iostream>
-#include <vector>
-
 #include <common_test.h>
 #include <hashes_test.h>
 #include <symmetric_encryption_test.h>
 
-int main()
+#include <iostream>
+#include <vector>
+
+int
+main()
 {
     Hanami::Common_Test();
     Hanami::Hashes_Test();
@@ -35,4 +36,3 @@ int main()
 
     return 0;
 }
-

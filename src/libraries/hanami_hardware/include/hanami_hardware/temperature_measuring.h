@@ -23,24 +23,23 @@
 #ifndef HANAMI_TEMPERATURE_MEASURING_H
 #define HANAMI_TEMPERATURE_MEASURING_H
 
-#include <mutex>
-
+#include <hanami_common/logger.h>
+#include <hanami_common/threading/thread.h>
 #include <hanami_hardware/value_container.h>
 
-#include <hanami_common/threading/thread.h>
-#include <hanami_common/logger.h>
+#include <mutex>
 
-namespace Hanami {
+namespace Hanami
+{
 struct RequestMessage;
 }
 
-class TemperatureMeasuring
-        : public Hanami::Thread
+class TemperatureMeasuring : public Hanami::Thread
 {
-public:
+   public:
     static TemperatureMeasuring* getInstance()
     {
-        if(instance == nullptr) {
+        if (instance == nullptr) {
             instance = new TemperatureMeasuring();
         }
         return instance;
@@ -49,14 +48,14 @@ public:
 
     json getJson();
 
-protected:
+   protected:
     void run();
 
-private:
+   private:
     TemperatureMeasuring();
     static TemperatureMeasuring* instance;
 
     ValueContainer m_valueContainer;
 };
 
-#endif // HANAMI_TEMPERATURE_MEASURING_H
+#endif  // HANAMI_TEMPERATURE_MEASURING_H

@@ -67,7 +67,6 @@
                                                 "enum": [
                                                     "timestamp",
                                                     "user_id",
-                                                    "component",
                                                     "endpoint",
                                                     "request_type"
                                                 ],
@@ -123,20 +122,10 @@
             "get": {
                 "parameters": [
                     {
-                        "description": "Requested component-name of the request. If this is not set, then only the token in itself will be validated.",
-                        "in": "query",
-                        "name": "component",
-                        "schema": {
-                            "maxLength": "256",
-                            "minLength": "4",
-                            "pattern": "[a-zA-Z][a-zA-Z_0-9]*",
-                            "type": "string"
-                        }
-                    },
-                    {
                         "description": "Requesed endpoint within the component.",
                         "in": "query",
                         "name": "endpoint",
+                        "required": true,
                         "schema": {
                             "maxLength": "256",
                             "minLength": "4",
@@ -148,6 +137,7 @@
                         "description": "Type of the HTTP-request as enum (DELETE = 1, GET = 2, HEAD = 3, POST = 4, PUT = 5).",
                         "in": "query",
                         "name": "http_type",
+                        "required": true,
                         "schema": {
                             "maximum": "5",
                             "minimum": "1",
@@ -4343,6 +4333,16 @@
                             }
                         },
                         "description": "Information for authentication are missing or are invalid"
+                    },
+                    "404": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "The requested resource was not found."
                     },
                     "500": {
                         "content": {

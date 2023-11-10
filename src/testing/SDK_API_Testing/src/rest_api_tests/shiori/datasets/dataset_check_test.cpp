@@ -25,11 +25,10 @@
 #include <hanami_config/config_handler.h>
 #include <hanami_sdk/data_set.h>
 
-DataSetCheckTest::DataSetCheckTest(const bool expectSuccess)
-          : TestStep(expectSuccess)
+DataSetCheckTest::DataSetCheckTest(const bool expectSuccess) : TestStep(expectSuccess)
 {
     m_testName = "check data-set";
-    if(expectSuccess) {
+    if (expectSuccess) {
         m_testName += " (success)";
     } else {
         m_testName += " (fail)";
@@ -37,20 +36,17 @@ DataSetCheckTest::DataSetCheckTest(const bool expectSuccess)
 }
 
 bool
-DataSetCheckTest::runTest(json &inputData,
-                          Hanami::ErrorContainer &error)
+DataSetCheckTest::runTest(json& inputData, Hanami::ErrorContainer& error)
 {
     // get template by name
     std::string result;
-    if(Hanami::checkDataset(result,
-                              inputData["request_dataset_uuid"],
-                              inputData["request_task_uuid"],
-                              error) != m_expectSuccess)
-    {
+    if (Hanami::checkDataset(
+            result, inputData["request_dataset_uuid"], inputData["request_task_uuid"], error)
+        != m_expectSuccess) {
         return false;
     }
 
-    if(m_expectSuccess == false) {
+    if (m_expectSuccess == false) {
         return true;
     }
 
@@ -58,12 +54,12 @@ DataSetCheckTest::runTest(json &inputData,
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch(const json::parse_error& ex) {
+    } catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
 
-    std::cout<<jsonItem.dump(4)<<std::endl;
+    std::cout << jsonItem.dump(4) << std::endl;
 
     return true;
 }

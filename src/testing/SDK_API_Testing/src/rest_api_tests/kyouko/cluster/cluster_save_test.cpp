@@ -25,11 +25,10 @@
 #include <hanami_sdk/cluster.h>
 #include <hanami_sdk/task.h>
 
-ClusterSaveTest::ClusterSaveTest(const bool expectSuccess)
-          : TestStep(expectSuccess)
+ClusterSaveTest::ClusterSaveTest(const bool expectSuccess) : TestStep(expectSuccess)
 {
     m_testName = "save cluster";
-    if(expectSuccess) {
+    if (expectSuccess) {
         m_testName += " (success)";
     } else {
         m_testName += " (fail)";
@@ -37,20 +36,16 @@ ClusterSaveTest::ClusterSaveTest(const bool expectSuccess)
 }
 
 bool
-ClusterSaveTest::runTest(json &inputData,
-                         Hanami::ErrorContainer &error)
+ClusterSaveTest::runTest(json& inputData, Hanami::ErrorContainer& error)
 {
     // create new cluster
     std::string result;
-    if(Hanami::saveCluster(result,
-                           inputData["cluster_uuid"],
-                           inputData["checkpoint_name"],
-                           error) != m_expectSuccess)
-    {
+    if (Hanami::saveCluster(result, inputData["cluster_uuid"], inputData["checkpoint_name"], error)
+        != m_expectSuccess) {
         return false;
     }
 
-    if(m_expectSuccess == false) {
+    if (m_expectSuccess == false) {
         return true;
     }
 
@@ -58,7 +53,7 @@ ClusterSaveTest::runTest(json &inputData,
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch(const json::parse_error& ex) {
+    } catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
@@ -66,25 +61,20 @@ ClusterSaveTest::runTest(json &inputData,
     inputData["checkpoint_uuid"] = jsonItem["uuid"];
 
     // wait until task is finished
-    do
-    {
+    do {
         sleep(1);
 
-        Hanami::getTask(result,
-                        inputData["checkpoint_uuid"],
-                        inputData["cluster_uuid"],
-                        error);
+        Hanami::getTask(result, inputData["checkpoint_uuid"], inputData["cluster_uuid"], error);
 
         // parse output
         try {
             jsonItem = json::parse(result);
-        } catch(const json::parse_error& ex) {
+        } catch (const json::parse_error& ex) {
             error.addMeesage("json-parser error: " + std::string(ex.what()));
             return false;
         }
-        std::cout<<jsonItem.dump(4)<<std::endl;
-    }
-    while(jsonItem["state"] != "finished");
+        std::cout << jsonItem.dump(4) << std::endl;
+    } while (jsonItem["state"] != "finished");
 
     return true;
 }

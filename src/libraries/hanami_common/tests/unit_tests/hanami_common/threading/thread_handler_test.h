@@ -9,37 +9,34 @@
 #ifndef THREADHANDLER_TEST_H
 #define THREADHANDLER_TEST_H
 
-#include <unistd.h>
-
 #include <hanami_common/test_helper/compare_test_helper.h>
 #include <hanami_common/threading/thread.h>
+#include <unistd.h>
 
 namespace Hanami
 {
 
-class ThreadHandler_Test
-        : public Hanami::CompareTestHelper
+class ThreadHandler_Test : public Hanami::CompareTestHelper
 {
-public:
+   public:
     ThreadHandler_Test();
 
-private:
+   private:
     void all_test();
 };
 
 //==================================================================================================
 // DummyThread for testing
 //==================================================================================================
-class DummyThread
-        : public Hanami::Thread
+class DummyThread : public Hanami::Thread
 {
-public:
+   public:
     DummyThread();
 
-protected:
+   protected:
     void run();
 };
 
-}
+}  // namespace Hanami
 
-#endif // THREADHANDLER_TEST_H
+#endif  // THREADHANDLER_TEST_H

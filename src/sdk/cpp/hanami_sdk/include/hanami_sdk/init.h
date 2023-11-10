@@ -28,12 +28,12 @@
 namespace Hanami
 {
 
-bool initClient(const std::string &host,
-                const std::string &port,
-                const std::string &user,
-                const std::string &password,
-                Hanami::ErrorContainer &error);
+bool initClient(const std::string& host,
+                const std::string& port,
+                const std::string& user,
+                const std::string& password,
+                Hanami::ErrorContainer& error);
 
-} // namespace Hanami
+}  // namespace Hanami
 
-#endif // HANAMISDK_INIT_H
+#endif  // HANAMISDK_INIT_H

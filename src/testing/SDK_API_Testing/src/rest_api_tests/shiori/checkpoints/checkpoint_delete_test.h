@@ -25,14 +25,12 @@
 
 #include <common/test_step.h>
 
-class CheckpointDeleteTest
-        : public TestStep
+class CheckpointDeleteTest : public TestStep
 {
-public:
+   public:
     CheckpointDeleteTest(const bool expectSuccess);
 
-    bool runTest(json &inputData,
-                 Hanami::ErrorContainer &error);
+    bool runTest(json& inputData, Hanami::ErrorContainer& error);
 };
 
-#endif // TSUGUMITESTER_CHECKPOINTDELETETEST_H
+#endif  // TSUGUMITESTER_CHECKPOINTDELETETEST_H

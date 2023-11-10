@@ -23,12 +23,13 @@
 #ifndef STACK_BUFFER_RESERVE_H
 #define STACK_BUFFER_RESERVE_H
 
-#include <iostream>
-#include <atomic>
-#include <vector>
 #include <hanami_common/buffer/data_buffer.h>
 
-#define STACK_BUFFER_BLOCK_SIZE 256*1024
+#include <atomic>
+#include <iostream>
+#include <vector>
+
+#define STACK_BUFFER_BLOCK_SIZE 256 * 1024
 
 namespace Hanami
 {
@@ -36,14 +37,14 @@ class StackBufferReserve_Test;
 
 class StackBufferReserve
 {
-public:
+   public:
     static StackBufferReserve* getInstance();
 
     bool addBuffer(DataBuffer* buffer);
     uint64_t getNumberOfBuffers();
     DataBuffer* getBuffer();
 
-private:
+   private:
     StackBufferReserve(const uint32_t reserveSize = 100);
     ~StackBufferReserve();
 
@@ -55,6 +56,6 @@ private:
     friend StackBufferReserve_Test;
 };
 
-}
+}  // namespace Hanami
 
-#endif // STACK_BUFFER_RESERVE_H
+#endif  // STACK_BUFFER_RESERVE_H

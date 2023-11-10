@@ -1,7 +1,7 @@
 # Hanami
 
 <p align="center">
-  <img src="img/hanami-logo-with-text.png" width="500" height="594" />
+  <img src="img/hanami-logo-with-text.jpg" width="500" height="594" />
 </p>
 
 

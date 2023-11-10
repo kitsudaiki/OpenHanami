@@ -21,7 +21,6 @@
  */
 
 #include <hanami_common/items/table_item.h>
-
 #include <hanami_common/methods/string_methods.h>
 
 namespace Hanami
@@ -39,7 +38,7 @@ TableItem::TableItem()
 /**
  * @brief copy-constructor
  */
-TableItem::TableItem(const TableItem &other)
+TableItem::TableItem(const TableItem& other)
 {
     m_body = other.m_body;
     m_header = other.m_header;
@@ -51,7 +50,7 @@ TableItem::TableItem(const TableItem &other)
  * @param body body-content as data-array-item
  * @param header header-content as data-array-item
  */
-TableItem::TableItem(const json &body, const json &header)
+TableItem::TableItem(const json& body, const json& header)
 {
     m_header = header;
     m_body = body;
@@ -69,7 +68,7 @@ TableItem&
 TableItem::operator=(const TableItem& other)
 {
     // check for self-assignment
-    if(&other == this) {
+    if (&other == this) {
         return *this;
     }
 
@@ -99,15 +98,15 @@ TableItem::clearTable()
  * @return should return true everytime
  */
 bool
-TableItem::addColumn(const std::string &internalName,
-                     const std::string &shownName)
+TableItem::addColumn(const std::string& internalName, const std::string& shownName)
 {
     json obj = json::object();
 
     obj["inner"] = internalName;
-    if(shownName != "") {
+    if (shownName != "") {
         obj["outer"] = shownName;
-    } else {
+    }
+    else {
         obj["outer"] = internalName;
     }
 
@@ -125,15 +124,12 @@ TableItem::addColumn(const std::string &internalName,
  * @return false if internal-name doesn't exist, else true
  */
 bool
-TableItem::renameColume(const std::string &internalName,
-                        const std::string &newShownName)
+TableItem::renameColume(const std::string& internalName, const std::string& newShownName)
 {
     const uint64_t size = m_header.size();
 
-    for(uint64_t x = 0; x < size; x++)
-    {
-        if(m_header[x]["inner"] == internalName)
-        {
+    for (uint64_t x = 0; x < size; x++) {
+        if (m_header[x]["inner"] == internalName) {
             m_header[x]["outer"] = newShownName;
             return true;
         }
@@ -153,7 +149,7 @@ bool
 TableItem::deleteColumn(const uint64_t x)
 {
     // precheck
-    if(x >= m_header.size()) {
+    if (x >= m_header.size()) {
         return false;
     }
 
@@ -162,7 +158,7 @@ TableItem::deleteColumn(const uint64_t x)
 
     // remove data of the column
     const uint64_t size = m_body.size();
-    for(uint64_t y = 0; y < size; y++) {
+    for (uint64_t y = 0; y < size; y++) {
         m_body[y].erase(x);
     }
 
@@ -177,14 +173,13 @@ TableItem::deleteColumn(const uint64_t x)
  * @return false if internal name doesn't exist, else true
  */
 bool
-TableItem::deleteColumn(const std::string &internalName)
+TableItem::deleteColumn(const std::string& internalName)
 {
     const uint64_t size = m_header.size();
 
     // search in header
-    for(uint64_t x = 0; x < size; x++)
-    {
-        if(m_header[x]["inner"] == internalName) {
+    for (uint64_t x = 0; x < size; x++) {
+        if (m_header[x]["inner"] == internalName) {
             return deleteColumn(x);
         }
     }
@@ -200,10 +195,10 @@ TableItem::deleteColumn(const std::string &internalName)
  * @return false, if the new row has not the correct length to fit into the table, else true
  */
 bool
-TableItem::addRow(const json &rowContent)
+TableItem::addRow(const json& rowContent)
 {
     // check if the new row has the correct length
-    if(rowContent.size() != getNumberOfColums()) {
+    if (rowContent.size() != getNumberOfColums()) {
         return false;
     }
 
@@ -223,13 +218,13 @@ bool
 TableItem::addRowVec(const std::vector<std::string> rowContent)
 {
     // check if the new row has the correct length
-    if(rowContent.size() != getNumberOfColums()) {
+    if (rowContent.size() != getNumberOfColums()) {
         return false;
     }
 
     // add new row content to the table
     json obj = json::array();
-    for(uint64_t x = 0; x < rowContent.size(); x++) {
+    for (uint64_t x = 0; x < rowContent.size(); x++) {
         obj.push_back(rowContent.at(x));
     }
 
@@ -249,7 +244,7 @@ bool
 TableItem::deleteRow(const uint64_t y)
 {
     // precheck
-    if(y >= m_body.size()) {
+    if (y >= m_body.size()) {
         return false;
     }
 
@@ -268,14 +263,10 @@ TableItem::deleteRow(const uint64_t y)
  * @return false if x or y is too hight, esle true
  */
 bool
-TableItem::setCell(const uint32_t column,
-                   const uint32_t row,
-                   const std::string &newValue)
+TableItem::setCell(const uint32_t column, const uint32_t row, const std::string& newValue)
 {
     // precheck
-    if(column >= m_header.size()
-            || row >= m_body.size())
-    {
+    if (column >= m_header.size() || row >= m_body.size()) {
         return false;
     }
 
@@ -295,24 +286,22 @@ TableItem::setCell(const uint32_t column,
  *         and also empty string, if x or y is too hight
  */
 const std::string
-TableItem::getCell(const uint32_t column,
-                   const uint32_t row)
+TableItem::getCell(const uint32_t column, const uint32_t row)
 {
     // precheck
-    if(column >= m_header.size()
-            || row >= m_body.size())
-    {
+    if (column >= m_header.size() || row >= m_body.size()) {
         return "";
     }
 
     json value = m_body[row][column];
-    if(value.is_null()) {
+    if (value.is_null()) {
         return "";
     }
 
-    if(value.is_string()) {
+    if (value.is_string()) {
         return value;
-    } else {
+    }
+    else {
         return value.dump();
     }
 }
@@ -326,13 +315,10 @@ TableItem::getCell(const uint32_t column,
  * @return false if cell-content is already deleted or if x or y is too hight, else true
  */
 bool
-TableItem::deleteCell(const uint32_t column,
-                      const uint32_t row)
+TableItem::deleteCell(const uint32_t column, const uint32_t row)
 {
     // precheck
-    if(column >= m_header.size()
-            || row >= m_body.size())
-    {
+    if (column >= m_header.size() || row >= m_body.size()) {
         return false;
     }
 
@@ -383,7 +369,7 @@ json
 TableItem::getInnerHeader() const
 {
     json newArray = json::array();
-    for(uint32_t i = 0; i < m_header.size(); i++) {
+    for (uint32_t i = 0; i < m_header.size(); i++) {
         newArray.push_back(m_header[i]["inner"]);
     }
 
@@ -426,7 +412,7 @@ json
 TableItem::getRow(const uint32_t row) const
 {
     // check if out of range
-    if(row >= m_body.size()) {
+    if (row >= m_body.size()) {
         return nullptr;
     }
 
@@ -442,8 +428,7 @@ TableItem::getRow(const uint32_t row) const
  * @return table as string
  */
 const std::string
-TableItem::toString(const uint32_t maxColumnWidth,
-                    const bool withoutHeader)
+TableItem::toString(const uint32_t maxColumnWidth, const bool withoutHeader)
 {
     // init data-handling values
     std::vector<uint64_t> xSizes(getNumberOfColums(), 0);
@@ -453,19 +438,11 @@ TableItem::toString(const uint32_t maxColumnWidth,
 
     // converts the table into a better format for the output
     // and get the maximum values of the columns and rows
-    convertHeaderForOutput(convertedHeader,
-                           xSizes,
-                           maxColumnWidth);
-    convertBodyForOutput(convertedBody,
-                         xSizes,
-                         ySizes,
-                         maxColumnWidth);
+    convertHeaderForOutput(convertedHeader, xSizes, maxColumnWidth);
+    convertBodyForOutput(convertedBody, xSizes, ySizes, maxColumnWidth);
 
     // print as normal table
-    return printNormalTable(convertedBody,
-                            xSizes,
-                            ySizes,
-                            withoutHeader);
+    return printNormalTable(convertedBody, xSizes, ySizes, withoutHeader);
 }
 
 /**
@@ -496,9 +473,9 @@ TableItem::toJsonString()
  * @return table as string
  */
 const std::string
-TableItem::printNormalTable(TableBodyAll &convertedBody,
-                            std::vector<uint64_t> &xSizes,
-                            std::vector<uint64_t> &ySizes,
+TableItem::printNormalTable(TableBodyAll& convertedBody,
+                            std::vector<uint64_t>& xSizes,
+                            std::vector<uint64_t>& ySizes,
                             const bool withoutHeader)
 {
     // create separator-line
@@ -507,15 +484,13 @@ TableItem::printNormalTable(TableBodyAll &convertedBody,
 
     // print table-header
     result.append(normalSeparator);
-    if(withoutHeader == false)
-    {
+    if (withoutHeader == false) {
         result.append(printHeaderLine(xSizes));
         result.append(getLimitLine(xSizes, true));
     }
 
     // print table body
-    for(uint64_t y = 0; y < getNumberOfRows(); y++)
-    {
+    for (uint64_t y = 0; y < getNumberOfRows(); y++) {
         result.append(printBodyLine(convertedBody.at(y), xSizes, ySizes.at(y)));
         result.append(getLimitLine(xSizes));
     }
@@ -534,7 +509,7 @@ TableItem::getInnerName()
     std::vector<std::string> result;
     result.reserve(m_header.size());
 
-    for(uint64_t x = 0; x < getNumberOfColums(); x++) {
+    for (uint64_t x = 0; x < getNumberOfColums(); x++) {
         result.push_back(m_header[x]["inner"]);
     }
 
@@ -551,28 +526,24 @@ TableItem::getInnerName()
  * @param maxColumnWidth maximum with of a single column in number of characters
  */
 void
-TableItem::convertCellForOutput(TableCell &convertedCell,
-                                const std::string &cellContent,
-                                uint64_t &width,
+TableItem::convertCellForOutput(TableCell& convertedCell,
+                                const std::string& cellContent,
+                                uint64_t& width,
                                 const uint32_t maxColumnWidth)
 {
     splitStringByDelimiter(convertedCell, cellContent, '\n');
-    for(uint32_t line = 0; line < convertedCell.size(); line++)
-    {
-        if(convertedCell.at(line).size() > maxColumnWidth)
-        {
+    for (uint32_t line = 0; line < convertedCell.size(); line++) {
+        if (convertedCell.at(line).size() > maxColumnWidth) {
             std::vector<std::string> sub;
             splitStringByLength(sub, convertedCell.at(line), maxColumnWidth);
 
             // delete old entry and replace it with the splitted content
             convertedCell.erase(convertedCell.begin() + line);
-            convertedCell.insert(convertedCell.begin() + line,
-                                 sub.begin(),
-                                 sub.end());
+            convertedCell.insert(convertedCell.begin() + line, sub.begin(), sub.end());
         }
 
         // check for a new maximum of the column-width
-        if(width < convertedCell.at(line).size()) {
+        if (width < convertedCell.at(line).size()) {
             width = convertedCell.at(line).size();
         }
     }
@@ -586,26 +557,22 @@ TableItem::convertCellForOutput(TableCell &convertedCell,
  * @param maxColumnWidth maximum with of a single column in number of characters
  */
 void
-TableItem::convertHeaderForOutput(TableRow &convertedHeader,
-                                  std::vector<uint64_t> &xSizes,
+TableItem::convertHeaderForOutput(TableRow& convertedHeader,
+                                  std::vector<uint64_t>& xSizes,
                                   const uint32_t maxColumnWidth)
 {
-    for(uint64_t x = 0; x < xSizes.size(); x++)
-    {
+    for (uint64_t x = 0; x < xSizes.size(); x++) {
         std::string cellContent = "";
 
         // get value at requested position
         json value = m_header[x]["outer"];
-        if(value.is_null() == false) {
+        if (value.is_null() == false) {
             cellContent = value;
         }
 
         // split cell content
         TableCell splittedCellContent;
-        convertCellForOutput(splittedCellContent,
-                             cellContent,
-                             xSizes[x],
-                             maxColumnWidth);
+        convertCellForOutput(splittedCellContent, cellContent, xSizes[x], maxColumnWidth);
 
         convertedHeader.push_back(splittedCellContent);
     }
@@ -620,36 +587,33 @@ TableItem::convertHeaderForOutput(TableRow &convertedHeader,
  * @param maxColumnWidth maximum with of a single column in number of characters
  */
 void
-TableItem::convertBodyForOutput(TableBodyAll &convertedBody,
-                                std::vector<uint64_t> &xSizes,
-                                std::vector<uint64_t> &ySizes,
+TableItem::convertBodyForOutput(TableBodyAll& convertedBody,
+                                std::vector<uint64_t>& xSizes,
+                                std::vector<uint64_t>& ySizes,
                                 const uint32_t maxColumnWidth)
 {
-    for(uint64_t y = 0; y < getNumberOfRows(); y++)
-    {
+    for (uint64_t y = 0; y < getNumberOfRows(); y++) {
         convertedBody.push_back(TableRow());
 
-        for(uint64_t x = 0; x < getNumberOfColums(); x++)
-        {
+        for (uint64_t x = 0; x < getNumberOfColums(); x++) {
             std::string cellContent = "";
             const json tempVal = m_body[y][x];
-            if(tempVal.is_null()) {
+            if (tempVal.is_null()) {
                 cellContent = "";
-            } else if(tempVal.is_string()) {
+            }
+            else if (tempVal.is_string()) {
                 cellContent = tempVal;
-            } else {
+            }
+            else {
                 cellContent = tempVal.dump();
             }
 
             // split cell content
             TableCell splittedCellContent;
-            convertCellForOutput(splittedCellContent,
-                                 cellContent,
-                                 xSizes[x],
-                                 maxColumnWidth);
+            convertCellForOutput(splittedCellContent, cellContent, xSizes[x], maxColumnWidth);
 
             // check for a new maximum of the row-height
-            if(ySizes.at(y) < splittedCellContent.size()) {
+            if (ySizes.at(y) < splittedCellContent.size()) {
                 ySizes[y] = splittedCellContent.size();
             }
 
@@ -667,20 +631,18 @@ TableItem::convertBodyForOutput(TableBodyAll &convertedBody,
  * @return separator-line as string
  */
 const std::string
-TableItem::getLimitLine(const std::vector<uint64_t> &sizes,
-                        const bool bigLine)
+TableItem::getLimitLine(const std::vector<uint64_t>& sizes, const bool bigLine)
 {
     std::string output = "";
 
     // set line type
     char lineSegment = '-';
-    if(bigLine) {
+    if (bigLine) {
         lineSegment = '=';
     }
 
     // create line
-    for(uint64_t i = 0; i < sizes.size(); i++)
-    {
+    for (uint64_t i = 0; i < sizes.size(); i++) {
         output.append("+");
         output.append(std::string(sizes.at(i) + 2, lineSegment));
     }
@@ -697,12 +659,11 @@ TableItem::getLimitLine(const std::vector<uint64_t> &sizes,
  * @return sting with the content of the header for output
  */
 const std::string
-TableItem::printHeaderLine(const std::vector<uint64_t> &xSizes)
+TableItem::printHeaderLine(const std::vector<uint64_t>& xSizes)
 {
     std::string output = "";
 
-    for(uint64_t i = 0; i < xSizes.size(); i++)
-    {
+    for (uint64_t i = 0; i < xSizes.size(); i++) {
         const std::string value = m_header[i]["outer"];
         output.append("| ");
         output.append(value);
@@ -725,20 +686,18 @@ TableItem::printHeaderLine(const std::vector<uint64_t> &xSizes)
  * @return sting with the content of a row for output
  */
 const std::string
-TableItem::printBodyLine(TableRow &rowContent,
-                         const std::vector<uint64_t> &xSizes,
+TableItem::printBodyLine(TableRow& rowContent,
+                         const std::vector<uint64_t>& xSizes,
                          const uint64_t rowHeight)
 {
     std::string output = "";
 
     // create output string for all lines of one table-row
-    for(uint64_t line = 0; line < rowHeight; line++)
-    {
+    for (uint64_t line = 0; line < rowHeight; line++) {
         // print row line by line
-        for(uint64_t i = 0; i < xSizes.size(); i++)
-        {
+        for (uint64_t i = 0; i < xSizes.size(); i++) {
             std::string singleCellLine = "";
-            if(rowContent.at(i).size() > line) {
+            if (rowContent.at(i).size() > line) {
                 singleCellLine = rowContent.at(i).at(line);
             }
 
@@ -767,22 +726,21 @@ TableItem::printBodyLine(TableRow &rowContent,
  * @return sting with the content of a row for output
  */
 const std::string
-TableItem::printHeaderBodyLine(TableItem::TableRow &headerContent,
-                               TableItem::TableRow &rowContent,
-                               const std::vector<uint64_t> &xSizes,
+TableItem::printHeaderBodyLine(TableItem::TableRow& headerContent,
+                               TableItem::TableRow& rowContent,
+                               const std::vector<uint64_t>& xSizes,
                                const uint64_t rowHeigh,
                                const uint64_t y)
 {
     std::string output = "";
 
     // create output string for all lines of one table-row
-    for(uint64_t line = 0; line < rowHeigh; line++)
-    {
+    for (uint64_t line = 0; line < rowHeigh; line++) {
         std::string singleCellLine;
 
         // get line-content for the left side
         singleCellLine = "";
-        if(headerContent.at(y).size() > line) {
+        if (headerContent.at(y).size() > line) {
             singleCellLine = headerContent.at(y).at(line);
         }
 
@@ -792,10 +750,9 @@ TableItem::printHeaderBodyLine(TableItem::TableRow &headerContent,
         output.append(std::string(xSizes.at(y) - singleCellLine.size(), ' '));
         output.append(" ");
 
-
         // get line-content for the right side
         singleCellLine = "";
-        if(rowContent.at(y).size() > line) {
+        if (rowContent.at(y).size() > line) {
             singleCellLine = rowContent.at(y).at(line);
         }
 
@@ -811,4 +768,4 @@ TableItem::printHeaderBodyLine(TableItem::TableRow &headerContent,
     return output;
 }
 
-}
+}  // namespace Hanami

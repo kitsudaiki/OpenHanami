@@ -21,7 +21,6 @@
  */
 
 #include <database/request_result_table.h>
-
 #include <hanami_common/items/table_item.h>
 #include <hanami_common/methods/string_methods.h>
 #include <hanami_database/sql_database.h>
@@ -33,8 +32,7 @@ RequestResultTable* RequestResultTable::instance = nullptr;
  *
  * @param db pointer to database
  */
-RequestResultTable::RequestResultTable()
-    : HanamiSqlTable(Hanami::SqlDatabase::getInstance())
+RequestResultTable::RequestResultTable() : HanamiSqlTable(Hanami::SqlDatabase::getInstance())
 {
     m_tableName = "request_result";
 
@@ -59,12 +57,11 @@ RequestResultTable::~RequestResultTable() {}
  * @return true, if successful, else false
  */
 bool
-RequestResultTable::addRequestResult(json &data,
-                                     const UserContext &userContext,
-                                     Hanami::ErrorContainer &error)
+RequestResultTable::addRequestResult(json& data,
+                                     const UserContext& userContext,
+                                     Hanami::ErrorContainer& error)
 {
-    if(add(data, userContext, error) == false)
-    {
+    if (add(data, userContext, error) == false) {
         error.addMeesage("Failed to add checkpoint to database");
         return false;
     }
@@ -84,10 +81,10 @@ RequestResultTable::addRequestResult(json &data,
  * @return true, if successful, else false
  */
 bool
-RequestResultTable::getRequestResult(json &result,
-                                     const std::string &resultUuid,
-                                     const UserContext &userContext,
-                                     Hanami::ErrorContainer &error,
+RequestResultTable::getRequestResult(json& result,
+                                     const std::string& resultUuid,
+                                     const UserContext& userContext,
+                                     Hanami::ErrorContainer& error,
                                      const bool showHiddenValues)
 {
     // get user from db
@@ -95,10 +92,8 @@ RequestResultTable::getRequestResult(json &result,
     conditions.emplace_back("uuid", resultUuid);
 
     // get dataset from db
-    if(get(result, userContext, conditions, error, showHiddenValues) == false)
-    {
-        error.addMeesage("Failed to get request-result with UUID '"
-                         + resultUuid
+    if (get(result, userContext, conditions, error, showHiddenValues) == false) {
+        error.addMeesage("Failed to get request-result with UUID '" + resultUuid
                          + "' from database");
         LOG_ERROR(error);
         return false;
@@ -117,13 +112,12 @@ RequestResultTable::getRequestResult(json &result,
  * @return true, if successful, else false
  */
 bool
-RequestResultTable::getAllRequestResult(Hanami::TableItem &result,
-                                        const UserContext &userContext,
-                                        Hanami::ErrorContainer &error)
+RequestResultTable::getAllRequestResult(Hanami::TableItem& result,
+                                        const UserContext& userContext,
+                                        Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
-    if(getAll(result, userContext, conditions, error) == false)
-    {
+    if (getAll(result, userContext, conditions, error) == false) {
         error.addMeesage("Failed to get all request-results from database");
         return false;
     }
@@ -141,16 +135,14 @@ RequestResultTable::getAllRequestResult(Hanami::TableItem &result,
  * @return true, if successful, else false
  */
 bool
-RequestResultTable::deleteRequestResult(const std::string &resultUuid,
-                                        const UserContext &userContext,
-                                        Hanami::ErrorContainer &error)
+RequestResultTable::deleteRequestResult(const std::string& resultUuid,
+                                        const UserContext& userContext,
+                                        Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", resultUuid);
-    if(del(conditions, userContext, error) == false)
-    {
-        error.addMeesage("Failed to delete request-result with UUID '"
-                         + resultUuid
+    if (del(conditions, userContext, error) == false) {
+        error.addMeesage("Failed to delete request-result with UUID '" + resultUuid
                          + "' from database");
         return false;
     }

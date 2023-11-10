@@ -7,6 +7,7 @@
  */
 
 #include "stack_buffer_reserve_test.h"
+
 #include <hanami_common/buffer/stack_buffer_reserve.h>
 
 namespace Hanami
@@ -52,7 +53,7 @@ StackBufferReserve_Test::getNumberOfBuffers_test()
     TEST_EQUAL(stackBufferReserve.getNumberOfBuffers(), 1);
 
     // test max size
-    for(uint32_t i = 0; i < reserveSize+10; i++) {
+    for (uint32_t i = 0; i < reserveSize + 10; i++) {
         stackBufferReserve.addBuffer(new DataBuffer());
     }
 
@@ -83,4 +84,4 @@ StackBufferReserve_Test::getBuffer_test()
     delete returnBuffer;
 }
 
-}
+}  // namespace Hanami

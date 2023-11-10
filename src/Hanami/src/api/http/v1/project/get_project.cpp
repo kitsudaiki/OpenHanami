@@ -22,14 +22,13 @@
 
 #include "get_project.h"
 
-#include <hanami_root.h>
 #include <database/projects_table.h>
+#include <hanami_root.h>
 
 /**
  * @brief constructor
  */
-GetProject::GetProject()
-    : Blossom("Show information of a specific registered user.")
+GetProject::GetProject() : Blossom("Show information of a specific registered user.")
 {
     errorCodes.push_back(UNAUTHORIZED_RTYPE);
     errorCodes.push_back(NOT_FOUND_RTYPE);
@@ -39,22 +38,20 @@ GetProject::GetProject()
     //----------------------------------------------------------------------------------------------
 
     registerInputField("id", SAKURA_STRING_TYPE)
-            .setComment("Id of the user.")
-            .setLimit(4, 256)
-            .setRegex(ID_REGEX);
+        .setComment("Id of the user.")
+        .setLimit(4, 256)
+        .setRegex(ID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("id", SAKURA_STRING_TYPE)
-            .setComment("ID of the new user.");
+    registerOutputField("id", SAKURA_STRING_TYPE).setComment("ID of the new user.");
 
-    registerOutputField("name", SAKURA_STRING_TYPE)
-            .setComment("Name of the new user.");
+    registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the new user.");
 
     registerOutputField("creator_id", SAKURA_STRING_TYPE)
-            .setComment("Id of the creator of the user.");
+        .setComment("Id of the creator of the user.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -65,14 +62,13 @@ GetProject::GetProject()
  * @brief runTask
  */
 bool
-GetProject::runTask(BlossomIO &blossomIO,
-                    const json &context,
-                    BlossomStatus &status,
-                    Hanami::ErrorContainer &error)
+GetProject::runTask(BlossomIO& blossomIO,
+                    const json& context,
+                    BlossomStatus& status,
+                    Hanami::ErrorContainer& error)
 {
     // check if admin
-    if(context["is_admin"] == false)
-    {
+    if (context["is_admin"] == false) {
         status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
@@ -81,18 +77,16 @@ GetProject::runTask(BlossomIO &blossomIO,
     const std::string projectId = blossomIO.input["id"];
 
     // get data from table
-    if(ProjectsTable::getInstance()->getProject(blossomIO.output, projectId, error) == false)
-    {
+    if (ProjectsTable::getInstance()->getProject(blossomIO.output, projectId, error) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // handle not found
-    if(blossomIO.output.size() == 0)
-    {
+    if (blossomIO.output.size() == 0) {
         status.errorMessage = "Project with id '" + projectId + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 

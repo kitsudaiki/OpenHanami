@@ -22,14 +22,13 @@
 
 #include "common_test.h"
 
-#include <hanami_crypto/common.h>
 #include <hanami_common/buffer/data_buffer.h>
+#include <hanami_crypto/common.h>
 
 namespace Hanami
 {
 
-Common_Test::Common_Test()
-    : Hanami::CompareTestHelper("Common_Test")
+Common_Test::Common_Test() : Hanami::CompareTestHelper("Common_Test")
 {
     hexEncode_test();
 
@@ -124,4 +123,4 @@ Common_Test::base64UrlToBase64_test()
     TEST_EQUAL(input, "ab/4+3==");
 }
 
-}
+}  // namespace Hanami

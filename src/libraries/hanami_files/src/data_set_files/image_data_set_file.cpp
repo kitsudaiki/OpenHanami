@@ -20,25 +20,22 @@
  *      limitations under the License.
  */
 
-#include <hanami_files/data_set_files/image_data_set_file.h>
-
 #include <hanami_common/files/binary_file.h>
+#include <hanami_files/data_set_files/image_data_set_file.h>
 
 /**
  * @brief constructor
  *
  * @param filePath path to file
  */
-ImageDataSetFile::ImageDataSetFile(const std::string &filePath)
-    : DataSetFile(filePath) {}
+ImageDataSetFile::ImageDataSetFile(const std::string& filePath) : DataSetFile(filePath) {}
 
 /**
  * @brief constructor
  *
  * @param file pointer to binary-file object
  */
-ImageDataSetFile::ImageDataSetFile(Hanami::BinaryFile* file)
-    : DataSetFile(file) {}
+ImageDataSetFile::ImageDataSetFile(Hanami::BinaryFile* file) : DataSetFile(file) {}
 
 /**
  * @brief destructor
@@ -53,8 +50,8 @@ ImageDataSetFile::initHeader()
 {
     m_headerSize = sizeof(DataSetHeader) + sizeof(ImageTypeHeader);
 
-    uint64_t lineSize = (imageHeader.numberOfInputsX * imageHeader.numberOfInputsY)
-                        + imageHeader.numberOfOutputs;
+    uint64_t lineSize
+        = (imageHeader.numberOfInputsX * imageHeader.numberOfInputsY) + imageHeader.numberOfOutputs;
     m_totalFileSize = m_headerSize + (lineSize * imageHeader.numberOfImages * sizeof(float));
 }
 
@@ -71,8 +68,8 @@ ImageDataSetFile::readHeader(const uint8_t* u8buffer)
     memcpy(&imageHeader, &u8buffer[sizeof(DataSetHeader)], sizeof(ImageTypeHeader));
 
     // get sizes
-    uint64_t lineSize = (imageHeader.numberOfInputsX * imageHeader.numberOfInputsY)
-                        + imageHeader.numberOfOutputs;
+    uint64_t lineSize
+        = (imageHeader.numberOfInputsX * imageHeader.numberOfInputsY) + imageHeader.numberOfOutputs;
     m_totalFileSize = m_headerSize + (lineSize * imageHeader.numberOfImages * sizeof(float));
 }
 
@@ -84,13 +81,12 @@ ImageDataSetFile::readHeader(const uint8_t* u8buffer)
  * @return true, if successful, else false
  */
 bool
-ImageDataSetFile::updateHeader(Hanami::ErrorContainer &error)
+ImageDataSetFile::updateHeader(Hanami::ErrorContainer& error)
 {
     // write image-header to file
-    if(m_targetFile->writeDataIntoFile(&imageHeader,
-                                       sizeof(DataSetHeader),
-                                       sizeof(ImageTypeHeader),
-                                       error) == false)
+    if (m_targetFile->writeDataIntoFile(
+            &imageHeader, sizeof(DataSetHeader), sizeof(ImageTypeHeader), error)
+        == false)
     {
         error.addMeesage("Failed to update header of image-file");
         return false;
@@ -108,17 +104,13 @@ ImageDataSetFile::updateHeader(Hanami::ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-ImageDataSetFile::getPayload(Hanami::DataBuffer &result,
-                             Hanami::ErrorContainer &error,
-                             const std::string &)
+ImageDataSetFile::getPayload(Hanami::DataBuffer& result,
+                             Hanami::ErrorContainer& error,
+                             const std::string&)
 {
     const uint64_t payloadSize = m_totalFileSize - m_headerSize;
     Hanami::allocateBlocks_DataBuffer(result, Hanami::calcBytesToBlocks(payloadSize));
-    if(m_targetFile->readDataFromFile(result.data,
-                                      m_headerSize,
-                                      payloadSize,
-                                      error) == false)
-    {
+    if (m_targetFile->readDataFromFile(result.data, m_headerSize, payloadSize, error) == false) {
         error.addMeesage("Failed to read data of image-data-set-file");
         return false;
     }

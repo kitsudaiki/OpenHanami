@@ -14,16 +14,15 @@
 namespace Hanami
 {
 
-class StackBuffer_Test
-        : public Hanami::MemoryLeakTestHelpter
+class StackBuffer_Test : public Hanami::MemoryLeakTestHelpter
 {
-public:
+   public:
     StackBuffer_Test();
 
-private:
+   private:
     void create_delete_test();
 };
 
-}
+}  // namespace Hanami
 
-#endif // STACK_BUFFER_TEST_H
+#endif  // STACK_BUFFER_TEST_H

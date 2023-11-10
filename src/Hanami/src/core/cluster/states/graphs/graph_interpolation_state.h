@@ -27,17 +27,16 @@
 
 class Cluster;
 
-class GraphInterpolation_State
-        : public Hanami::Event
+class GraphInterpolation_State : public Hanami::Event
 {
-public:
+   public:
     GraphInterpolation_State(Cluster* cluster);
     ~GraphInterpolation_State();
 
     bool processEvent();
 
-private:
+   private:
     Cluster* m_cluster = nullptr;
 };
 
-#endif // HANAMI_GRAPHINTERPOLATION_STATE_H
+#endif  // HANAMI_GRAPHINTERPOLATION_STATE_H

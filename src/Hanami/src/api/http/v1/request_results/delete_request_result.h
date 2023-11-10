@@ -25,18 +25,16 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-
-class DeleteRequestResult
-        : public Blossom
+class DeleteRequestResult : public Blossom
 {
-public:
+   public:
     DeleteRequestResult();
 
-protected:
-    bool runTask(BlossomIO &blossomIO,
-                 const json &context,
-                 BlossomStatus &status,
-                 Hanami::ErrorContainer &error);
+   protected:
+    bool runTask(BlossomIO& blossomIO,
+                 const json& context,
+                 BlossomStatus& status,
+                 Hanami::ErrorContainer& error);
 };
 
-#endif // DELETEREQUESTRESULT_H
+#endif  // DELETEREQUESTRESULT_H

@@ -30,10 +30,9 @@ namespace Hanami
 {
 class ArgParser;
 
-class ArgParser_Test
-        : public Hanami::CompareTestHelper
+class ArgParser_Test : public Hanami::CompareTestHelper
 {
-public:
+   public:
     ArgParser_Test();
 
     void getArgument_test();
@@ -52,10 +51,10 @@ public:
     void getFloatValue_test();
     void getBoolValue_test();
 
-private:
-    void prepareTest(ArgParser &parser);
+   private:
+    void prepareTest(ArgParser& parser);
 };
 
-}
+}  // namespace Hanami
 
-#endif // ARG_PARSER_TEST_H
+#endif  // ARG_PARSER_TEST_H

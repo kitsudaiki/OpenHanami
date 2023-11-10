@@ -20,12 +20,11 @@
  *      limitations under the License.
  */
 
-#include <hanami_hardware/host.h>
-#include <hanami_hardware/cpu_package.h>
-#include <hanami_hardware/cpu_core.h>
-#include <hanami_hardware/cpu_thread.h>
-
 #include <hanami_cpu/cpu.h>
+#include <hanami_hardware/cpu_core.h>
+#include <hanami_hardware/cpu_package.h>
+#include <hanami_hardware/cpu_thread.h>
+#include <hanami_hardware/host.h>
 
 namespace Hanami
 {
@@ -42,7 +41,7 @@ Host::Host() {}
  */
 Host::~Host()
 {
-    for(uint32_t i = 0; i < cpuPackages.size(); i++) {
+    for (uint32_t i = 0; i < cpuPackages.size(); i++) {
         delete cpuPackages[i];
     }
 
@@ -55,12 +54,12 @@ Host::~Host()
  * @return true, if successful, else false
  */
 bool
-Host::initHost(ErrorContainer &error)
+Host::initHost(ErrorContainer& error)
 {
-    if(readHostName(error) == false) {
+    if (readHostName(error) == false) {
         return false;
     }
-    if(initCpuCoresAndThreads(error) == false) {
+    if (initCpuCoresAndThreads(error) == false) {
         return false;
     }
 
@@ -77,9 +76,8 @@ Host::initHost(ErrorContainer &error)
 CpuPackage*
 Host::getPackage(const uint32_t packageId) const
 {
-    for(CpuPackage* package : cpuPackages)
-    {
-        if(package->packageId == packageId) {
+    for (CpuPackage* package : cpuPackages) {
+        if (package->packageId == packageId) {
             return package;
         }
     }
@@ -100,8 +98,7 @@ Host::addPackage(const uint32_t packageId)
 {
     CpuPackage* package = getPackage(packageId);
 
-    if(package == nullptr)
-    {
+    if (package == nullptr) {
         package = new CpuPackage(packageId);
         cpuPackages.push_back(package);
     }
@@ -118,19 +115,20 @@ Host::addPackage(const uint32_t packageId)
  *         or 0.0 if no data can be read
  */
 double
-Host::getTotalTemperature(ErrorContainer &error)
+Host::getTotalTemperature(ErrorContainer& error)
 {
     std::vector<uint64_t> ids;
     getPkgTemperatureIds(ids, error);
 
     double result = 0.0f;
-    for(const uint64_t id : ids) {
+    for (const uint64_t id : ids) {
         result += getPkgTemperature(id, error);
     }
 
-    if(ids.size() != 0) {
+    if (ids.size() != 0) {
         result /= static_cast<double>(ids.size());
-    } else {
+    }
+    else {
         result = 0.0;
     }
 
@@ -149,17 +147,17 @@ Host::toJsonString() const
 
     // convert host-specific information
     jsonString.append("\"hostname\":\"" + hostName + "\",");
-    if(hasHyperThrading) {
+    if (hasHyperThrading) {
         jsonString.append("\"has_hyperthreading\":true,");
-    } else {
+    }
+    else {
         jsonString.append("\"has_hyperthreading\":false,");
     }
 
     // convert cpu-specific information
     jsonString.append("\"packages\":[");
-    for(uint32_t i = 0; i < cpuPackages.size(); i++)
-    {
-        if(i > 0) {
+    for (uint32_t i = 0; i < cpuPackages.size(); i++) {
+        if (i > 0) {
             jsonString.append(",");
         }
         jsonString.append(cpuPackages.at(i)->toJsonString());
@@ -185,7 +183,7 @@ Host::toJson() const
 
     // convert cpu-specific information
     json packages = json::array();
-    for(uint32_t i = 0; i < cpuPackages.size(); i++) {
+    for (uint32_t i = 0; i < cpuPackages.size(); i++) {
         packages.push_back(cpuPackages.at(i)->toJson());
     }
     result["packages"] = packages;
@@ -199,12 +197,11 @@ Host::toJson() const
  * @return false, if reading the host-name failed, else true
  */
 bool
-Host::readHostName(ErrorContainer &error)
+Host::readHostName(ErrorContainer& error)
 {
     const uint32_t maxHostNameLength = 256;
     char tempHostName[maxHostNameLength];
-    if(gethostname(tempHostName, maxHostNameLength) < 0)
-    {
+    if (gethostname(tempHostName, maxHostNameLength) < 0) {
         error.addMeesage("Failed to read host-name");
         LOG_ERROR(error);
         return false;
@@ -220,22 +217,20 @@ Host::readHostName(ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-Host::initCpuCoresAndThreads(ErrorContainer &error)
+Host::initCpuCoresAndThreads(ErrorContainer& error)
 {
     // get common information
     hasHyperThrading = isHyperthreadingEnabled(error);
     uint64_t numberOfCpuThreads = 0;
-    if(getNumberOfCpuThreads(numberOfCpuThreads, error) < 1)
-    {
+    if (getNumberOfCpuThreads(numberOfCpuThreads, error) < 1) {
         LOG_ERROR(error);
         return false;
     }
 
     // init the number of cpu-threads based on the physical number of threads
-    for(uint64_t i = 0; i < numberOfCpuThreads; i++)
-    {
+    for (uint64_t i = 0; i < numberOfCpuThreads; i++) {
         CpuThread* thread = new CpuThread(i);
-        if(thread->initThread(this) == false) {
+        if (thread->initThread(this) == false) {
             return false;
         }
     }
@@ -243,4 +238,4 @@ Host::initCpuCoresAndThreads(ErrorContainer &error)
     return true;
 }
 
-}
+}  // namespace Hanami

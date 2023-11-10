@@ -6,3 +6,6 @@ gitIdentityChange.sh
 *.pb.h
 *.drawio.bkp
 *.png~
+*.dtmp
+src/cli/hanamictl/hanamictl
+testing/ansible_deploy/.vagrant/

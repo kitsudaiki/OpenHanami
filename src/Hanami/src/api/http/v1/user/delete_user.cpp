@@ -22,14 +22,13 @@
 
 #include "delete_user.h"
 
-#include <hanami_root.h>
 #include <database/users_table.h>
+#include <hanami_root.h>
 
 /**
  * @brief constructor
  */
-DeleteUser::DeleteUser()
-    : Blossom("Delete a specific user from the database.")
+DeleteUser::DeleteUser() : Blossom("Delete a specific user from the database.")
 {
     errorCodes.push_back(UNAUTHORIZED_RTYPE);
     errorCodes.push_back(NOT_FOUND_RTYPE);
@@ -39,9 +38,9 @@ DeleteUser::DeleteUser()
     //----------------------------------------------------------------------------------------------
 
     registerInputField("id", SAKURA_STRING_TYPE)
-            .setComment("ID of the user.")
-            .setLimit(4, 256)
-            .setRegex(ID_EXT_REGEX);
+        .setComment("ID of the user.")
+        .setLimit(4, 256)
+        .setRegex(ID_EXT_REGEX);
 
     //----------------------------------------------------------------------------------------------
     //
@@ -52,14 +51,13 @@ DeleteUser::DeleteUser()
  * @brief runTask
  */
 bool
-DeleteUser::runTask(BlossomIO &blossomIO,
-                    const json &context,
-                    BlossomStatus &status,
-                    Hanami::ErrorContainer &error)
+DeleteUser::runTask(BlossomIO& blossomIO,
+                    const json& context,
+                    BlossomStatus& status,
+                    Hanami::ErrorContainer& error)
 {
     // check if admin
-    if(context["is_admin"] == false)
-    {
+    if (context["is_admin"] == false) {
         status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
@@ -70,35 +68,30 @@ DeleteUser::runTask(BlossomIO &blossomIO,
 
     // check if user exist within the table
     json result;
-    if(UsersTable::getInstance()->getUser(result, userId, error, false) == false)
-    {
+    if (UsersTable::getInstance()->getUser(result, userId, error, false) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // handle not found
-    if(result.size() == 0)
-    {
+    if (result.size() == 0) {
         status.errorMessage = "User with id '" + userId + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
     // prevent user from deleting himself
-    if(result["id"] == deleterId)
-    {
-        status.errorMessage = "User with id '"
-                              + userId
-                              + "' tries to delete himself, which is not allowed.";
+    if (result["id"] == deleterId) {
+        status.errorMessage
+            = "User with id '" + userId + "' tries to delete himself, which is not allowed.";
         status.statusCode = BAD_REQUEST_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
     // get data from table
-    if(UsersTable::getInstance()->deleteUser(userId, error) == false)
-    {
+    if (UsersTable::getInstance()->deleteUser(userId, error) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

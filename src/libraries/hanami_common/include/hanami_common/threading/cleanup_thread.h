@@ -23,25 +23,24 @@
 #ifndef KITSUNEMIMI_CLEANUP_THREAD_H
 #define KITSUNEMIMI_CLEANUP_THREAD_H
 
-#include <queue>
-
 #include <hanami_common/threading/thread.h>
+
+#include <queue>
 
 namespace Hanami
 {
 
-class CleanupThread
-        : public Hanami::Thread
+class CleanupThread : public Hanami::Thread
 {
-public:
+   public:
     static CleanupThread* getInstance();
 
     void addThreadForCleanup(Thread* thread);
 
-protected:
+   protected:
     void run();
 
-private:
+   private:
     CleanupThread();
     ~CleanupThread();
 
@@ -50,6 +49,6 @@ private:
     static CleanupThread* m_cleanupThread;
 };
 
-}
+}  // namespace Hanami
 
-#endif // KITSUNEMIMI_CLEANUP_THREAD_H
+#endif  // KITSUNEMIMI_CLEANUP_THREAD_H

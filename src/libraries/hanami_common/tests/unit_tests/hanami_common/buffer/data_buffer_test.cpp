@@ -13,15 +13,13 @@
 namespace Hanami
 {
 
-struct TestStruct
-{
+struct TestStruct {
     uint8_t a = 0;
     uint8_t b = 0;
     uint64_t c = 0;
 } __attribute__((packed));
 
-DataBuffer_Test::DataBuffer_Test()
-    : Hanami::CompareTestHelper("DataBuffer_Test")
+DataBuffer_Test::DataBuffer_Test() : Hanami::CompareTestHelper("DataBuffer_Test")
 {
     structSize_test();
     constructor_test();
@@ -58,7 +56,7 @@ DataBuffer_Test::constructor_test()
     TEST_EQUAL(isNullptr, false);
     TEST_EQUAL(testBuffer.numberOfBlocks, 10);
     TEST_EQUAL(testBuffer.usedBufferSize, 0);
-    TEST_EQUAL(testBuffer.totalBufferSize, 10*testBuffer.blockSize);
+    TEST_EQUAL(testBuffer.totalBufferSize, 10 * testBuffer.blockSize);
 }
 
 /**
@@ -78,7 +76,7 @@ DataBuffer_Test::copy_assingment_constructor_test()
     // check metadata of the buffer
     TEST_EQUAL(testBuffer.numberOfBlocks, 10);
     TEST_EQUAL(testBuffer.usedBufferSize, 10);
-    TEST_EQUAL(testBuffer.totalBufferSize, 10*testBuffer.blockSize);
+    TEST_EQUAL(testBuffer.totalBufferSize, 10 * testBuffer.blockSize);
 
     // use copy contstructor
     DataBuffer bufferCopy(testBuffer);
@@ -86,7 +84,7 @@ DataBuffer_Test::copy_assingment_constructor_test()
     // check metadata of the new buffer
     TEST_EQUAL(bufferCopy.numberOfBlocks, 10);
     TEST_EQUAL(bufferCopy.usedBufferSize, 10);
-    TEST_EQUAL(bufferCopy.totalBufferSize, 10*bufferCopy.blockSize);
+    TEST_EQUAL(bufferCopy.totalBufferSize, 10 * bufferCopy.blockSize);
 
     // check content of the new buffer
     uint8_t* dataByte = static_cast<uint8_t*>(bufferCopy.data);
@@ -110,7 +108,7 @@ DataBuffer_Test::copy_assingment_operator_test()
     // check metadata of the buffer
     TEST_EQUAL(testBuffer.numberOfBlocks, 10);
     TEST_EQUAL(testBuffer.usedBufferSize, 10);
-    TEST_EQUAL(testBuffer.totalBufferSize, 10*testBuffer.blockSize);
+    TEST_EQUAL(testBuffer.totalBufferSize, 10 * testBuffer.blockSize);
 
     // use copy assignment
     DataBuffer bufferCopy(1);
@@ -119,7 +117,7 @@ DataBuffer_Test::copy_assingment_operator_test()
     // check metadata of the new buffer
     TEST_EQUAL(bufferCopy.numberOfBlocks, 10);
     TEST_EQUAL(bufferCopy.usedBufferSize, 10);
-    TEST_EQUAL(bufferCopy.totalBufferSize, 10*bufferCopy.blockSize);
+    TEST_EQUAL(bufferCopy.totalBufferSize, 10 * bufferCopy.blockSize);
 
     // check content of the new buffer
     uint8_t* dataByte = static_cast<uint8_t*>(bufferCopy.data);
@@ -143,7 +141,7 @@ DataBuffer_Test::addObject_DataBuffer_test()
     // check metadata of the buffer
     TEST_EQUAL(testBuffer.numberOfBlocks, 10);
     TEST_EQUAL(testBuffer.usedBufferSize, 10);
-    TEST_EQUAL(testBuffer.totalBufferSize, 10*testBuffer.blockSize);
+    TEST_EQUAL(testBuffer.totalBufferSize, 10 * testBuffer.blockSize);
 
     // check content of the buffer
     uint8_t* dataByte = static_cast<uint8_t*>(testBuffer.data);
@@ -188,7 +186,7 @@ DataBuffer_Test::reset_DataBuffer_test()
     // check metadata of the buffer
     TEST_EQUAL(testBuffer.numberOfBlocks, 1);
     TEST_EQUAL(testBuffer.usedBufferSize, 0);
-    TEST_EQUAL(testBuffer.totalBufferSize, 1*testBuffer.blockSize);
+    TEST_EQUAL(testBuffer.totalBufferSize, 1 * testBuffer.blockSize);
 
     // check content of the buffer
     uint8_t* dataByte = static_cast<uint8_t*>(testBuffer.data);
@@ -216,7 +214,7 @@ DataBuffer_Test::addData_DataBuffer_test()
     // check metadata of the buffer
     TEST_EQUAL(testBuffer.numberOfBlocks, 10);
     TEST_EQUAL(testBuffer.usedBufferSize, 10);
-    TEST_EQUAL(testBuffer.totalBufferSize, 10*testBuffer.blockSize);
+    TEST_EQUAL(testBuffer.totalBufferSize, 10 * testBuffer.blockSize);
 
     // check content of the buffer
     uint8_t* dataByte = static_cast<uint8_t*>(testBuffer.data);
@@ -240,7 +238,7 @@ DataBuffer_Test::allocateBlocks_DataBuffer_test()
     // check metadata of the buffer
     TEST_EQUAL(testBuffer.numberOfBlocks, 10);
     TEST_EQUAL(testBuffer.usedBufferSize, 10);
-    TEST_EQUAL(testBuffer.totalBufferSize, 10*testBuffer.blockSize);
+    TEST_EQUAL(testBuffer.totalBufferSize, 10 * testBuffer.blockSize);
 
     // check content of the buffer
     uint8_t* dataByte = static_cast<uint8_t*>(testBuffer.data);
@@ -252,11 +250,11 @@ DataBuffer_Test::allocateBlocks_DataBuffer_test()
     // check metadata of the buffer
     TEST_EQUAL(testBuffer.numberOfBlocks, 11);
     TEST_EQUAL(testBuffer.usedBufferSize, 10);
-    TEST_EQUAL(testBuffer.totalBufferSize, 11*testBuffer.blockSize);
+    TEST_EQUAL(testBuffer.totalBufferSize, 11 * testBuffer.blockSize);
 
     // check content of the buffer
     dataByte = static_cast<uint8_t*>(testBuffer.data);
     TEST_EQUAL(static_cast<int>(dataByte[1]), 42);
 }
 
-}
+}  // namespace Hanami

@@ -25,11 +25,11 @@
 #include <hanami_sdk/request_result.h>
 
 RequestResultGetTest::RequestResultGetTest(const bool expectSuccess,
-                                           const std::string &uuidOverride)
+                                           const std::string& uuidOverride)
     : TestStep(expectSuccess)
 {
     m_testName = "get request-result";
-    if(expectSuccess) {
+    if (expectSuccess) {
         m_testName += " (success)";
     } else {
         m_testName += " (fail)";
@@ -38,20 +38,19 @@ RequestResultGetTest::RequestResultGetTest(const bool expectSuccess,
 }
 
 bool
-RequestResultGetTest::runTest(json &inputData,
-                              Hanami::ErrorContainer &error)
+RequestResultGetTest::runTest(json& inputData, Hanami::ErrorContainer& error)
 {
-    if(m_uuid == "") {
+    if (m_uuid == "") {
         m_uuid = inputData["request_task_uuid"];
     }
 
     // get user by name
     std::string result;
-    if(Hanami::getRequestResult(result, m_uuid, error) != m_expectSuccess) {
+    if (Hanami::getRequestResult(result, m_uuid, error) != m_expectSuccess) {
         return false;
     }
 
-    if(m_expectSuccess == false) {
+    if (m_expectSuccess == false) {
         return true;
     }
 
@@ -59,11 +58,10 @@ RequestResultGetTest::runTest(json &inputData,
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch(const json::parse_error& ex) {
+    } catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
 
     return true;
 }
-

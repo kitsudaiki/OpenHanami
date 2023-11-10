@@ -20,17 +20,15 @@
  *      limitations under the License.
  */
 
-#include <hanami_hardware/temperature_measuring.h>
-
-#include <hanami_hardware/host.h>
 #include <hanami_hardware/cpu_core.h>
 #include <hanami_hardware/cpu_package.h>
 #include <hanami_hardware/cpu_thread.h>
+#include <hanami_hardware/host.h>
+#include <hanami_hardware/temperature_measuring.h>
 
 TemperatureMeasuring* TemperatureMeasuring::instance = nullptr;
 
-TemperatureMeasuring::TemperatureMeasuring()
-    : Hanami::Thread("TemperatureMeasuring") {}
+TemperatureMeasuring::TemperatureMeasuring() : Hanami::Thread("TemperatureMeasuring") {}
 
 TemperatureMeasuring::~TemperatureMeasuring() {}
 
@@ -51,10 +49,8 @@ TemperatureMeasuring::getJson()
 void
 TemperatureMeasuring::run()
 {
-
     Hanami::ErrorContainer error;
-    while(m_abort == false)
-    {
+    while (m_abort == false) {
         Hanami::Host* host = Hanami::Host::getInstance();
 
         const double temperature = host->getTotalTemperature(error);

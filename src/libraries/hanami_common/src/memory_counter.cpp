@@ -21,7 +21,6 @@
  */
 
 #include <hanami_common/memory_counter.h>
-
 #include <stdio.h>
 
 Hanami::MemoryCounter Hanami::MemoryCounter::globalMemoryCounter;
@@ -38,7 +37,7 @@ using Hanami::MemoryCounter;
 void
 increaseGlobalMemoryCounter(const size_t size)
 {
-    while(MemoryCounter::globalMemoryCounter.lock.test_and_set(std::memory_order_acquire)) {
+    while (MemoryCounter::globalMemoryCounter.lock.test_and_set(std::memory_order_acquire)) {
         asm("");
     }
     MemoryCounter::globalMemoryCounter.actualAllocatedSize += size;
@@ -53,8 +52,7 @@ increaseGlobalMemoryCounter(const size_t size)
 void
 decreaseGlobalMemoryCounter(const size_t size)
 {
-
-    while(MemoryCounter::globalMemoryCounter.lock.test_and_set(std::memory_order_acquire)) {
+    while (MemoryCounter::globalMemoryCounter.lock.test_and_set(std::memory_order_acquire)) {
         asm("");
     }
     MemoryCounter::globalMemoryCounter.actualAllocatedSize -= size;
@@ -62,4 +60,4 @@ decreaseGlobalMemoryCounter(const size_t size)
     MemoryCounter::globalMemoryCounter.lock.clear(std::memory_order_release);
 }
 
-}
+}  // namespace Hanami

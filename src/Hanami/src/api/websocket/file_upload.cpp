@@ -21,13 +21,11 @@
  */
 
 #include <api/websocket/file_upload.h>
-
-#include <hanami_root.h>
 #include <core/temp_file_handler.h>
-#include <database/data_set_table.h>
 #include <database/checkpoint_table.h>
-
+#include <database/data_set_table.h>
 #include <hanami_messages.proto3.pb.h>
+#include <hanami_root.h>
 
 class Cluster;
 
@@ -38,50 +36,44 @@ class Cluster;
  * @return
  */
 bool
-recvFileUploadPackage(const void* data,
-                         const uint64_t dataSize)
+recvFileUploadPackage(const void* data, const uint64_t dataSize)
 {
     FileUpload_Message msg;
-    if(msg.ParseFromArray(data, dataSize) == false)
-    {
+    if (msg.ParseFromArray(data, dataSize) == false) {
         Hanami::ErrorContainer error;
         error.addMeesage("Got invalid FileUpload-Message");
         LOG_ERROR(error);
         return false;
     }
 
-    if(TempFileHandler::getInstance()->addDataToPos(msg.fileuuid(),
-                                                    msg.position(),
-                                                    msg.data().c_str(),
-                                                    msg.data().size()) == false)
+    if (TempFileHandler::getInstance()->addDataToPos(
+            msg.fileuuid(), msg.position(), msg.data().c_str(), msg.data().size())
+        == false)
     {
         // TODO: error-handling
-        std::cout<<"failed to write data"<<std::endl;
+        std::cout << "failed to write data" << std::endl;
         return false;
     }
 
-    if(msg.islast() == false) {
+    if (msg.islast() == false) {
         return false;
     }
 
     Hanami::ErrorContainer error;
 
-    if(msg.type() == UploadDataType::DATASET_TYPE)
-    {
-        if(DataSetTable::getInstance()->setUploadFinish(msg.datasetuuid(),
-                                                        msg.fileuuid(),
-                                                        error) == false)
+    if (msg.type() == UploadDataType::DATASET_TYPE) {
+        if (DataSetTable::getInstance()->setUploadFinish(msg.datasetuuid(), msg.fileuuid(), error)
+            == false)
         {
             // TODO: error-handling
             return false;
         }
     }
 
-    if(msg.type() == UploadDataType::CHECKPOINT_TYPE)
-    {
-        if(CheckpointTable::getInstance()->setUploadFinish(msg.datasetuuid(),
-                                                                msg.fileuuid(),
-                                                                error) == false)
+    if (msg.type() == UploadDataType::CHECKPOINT_TYPE) {
+        if (CheckpointTable::getInstance()->setUploadFinish(
+                msg.datasetuuid(), msg.fileuuid(), error)
+            == false)
         {
             // TODO: error-handling
             return false;

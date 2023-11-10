@@ -8,8 +8,8 @@ Installed packages under the actual used Ubuntu 23.04
 
 | apt-package | Purpose |
 | --- | --- |
-| gcc | C-compiler |
-| g++  | C++-compiler |
+| clang-15 | C++-compiler |
+| clang-format-15  | Helper for styling the source-code |
 | make  | Build-Tool |
 | qt5-qmake  | Qt-specific build-tool, because pro-files are used |
 | bison  | Parser-Generator |
@@ -20,11 +20,9 @@ Installed packages under the actual used Ubuntu 23.04
 | uuid-dev  | Generate UUID's within the code |
 | libsqlite3-dev | Library to interact with the SQLite3 databases |
 | protobuf-compiler | Convert protobuf-files into source-code |
+| gcc | C-compiler |
+| g++  | C++-compiler |
 | nvidia-cuda-toolkit | Libraries and compiler for the CUDA-Kernel |
-
-!!! info
-
-    CUDA 12 is necessary, which is not in the standard apt-repositories below ubuntu 23.04. So in case it should be installed on 22.04, CUDA has to be installed manually with the manual: https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html
 
 ### Submodules
 
@@ -43,7 +41,7 @@ Installed packages under the actual used Ubuntu 23.04
 | libsqlite3-0  | Library to interact with the SQLite3 databases | 
 | libprotobuf23 | Runtime-library for protobuffers | 
 | libboost1.74 | Provides the Beast-library of Boost, which is used for the REST-API within the Torii |
-| libcudart12.0 | Runtime-library for CUDA | 
+| libcudart11.0 | Runtime-library for CUDA | 
 
 ## Overview
 

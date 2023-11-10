@@ -7,13 +7,13 @@
  */
 
 #include "table_item_test.h"
+
 #include <hanami_common/items/table_item.h>
 
 namespace Hanami
 {
 
-TableItem_test::TableItem_test()
-    : Hanami::MemoryLeakTestHelpter("TableItem_test")
+TableItem_test::TableItem_test() : Hanami::MemoryLeakTestHelpter("TableItem_test")
 {
     create_delete_test();
     add_delete_col_test();
@@ -82,4 +82,4 @@ TableItem_test::add_delete_row_test()
     CHECK_MEMORY();
 }
 
-}
+}  // namespace Hanami

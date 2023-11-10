@@ -22,10 +22,8 @@
 
 #include "hanami_sql_log_table.h"
 
-#include <hanami_database/sql_database.h>
-
 #include <hanami_common/methods/string_methods.h>
-
+#include <hanami_database/sql_database.h>
 #include <uuid/uuid.h>
 
 /**
@@ -33,8 +31,7 @@
  *
  * @param db pointer to database
  */
-HanamiSqlLogTable::HanamiSqlLogTable(Hanami::SqlDatabase* db)
-    : SqlTable(db)
+HanamiSqlLogTable::HanamiSqlLogTable(Hanami::SqlDatabase* db) : SqlTable(db)
 {
     DbHeaderEntry id;
     id.name = "timestamp";
@@ -55,10 +52,10 @@ HanamiSqlLogTable::~HanamiSqlLogTable() {}
  * @return -1 if request against database failed, else number of rows
  */
 long
-HanamiSqlLogTable::getNumberOfPages(Hanami::ErrorContainer &error)
+HanamiSqlLogTable::getNumberOfPages(Hanami::ErrorContainer& error)
 {
     const long numberOfRows = getNumberOfRows(error);
-    if(numberOfRows == -1) {
+    if (numberOfRows == -1) {
         return -1;
     }
 
@@ -76,20 +73,19 @@ HanamiSqlLogTable::getNumberOfPages(Hanami::ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-HanamiSqlLogTable::getPageFromDb(Hanami::TableItem &resultTable,
-                                 const std::string &userId,
+HanamiSqlLogTable::getPageFromDb(Hanami::TableItem& resultTable,
+                                 const std::string& userId,
                                  const uint64_t page,
-                                 Hanami::ErrorContainer &error)
+                                 Hanami::ErrorContainer& error)
 {
     // get number of pages of the log-table
     const long numberOfPages = getNumberOfPages(error);
-    if(numberOfPages == -1) {
+    if (numberOfPages == -1) {
         return false;
     }
 
     // check if requested page-number is in range
-    if(page > static_cast<uint64_t>(numberOfPages))
-    {
+    if (page > static_cast<uint64_t>(numberOfPages)) {
         error.addMeesage("Give page '" + std::to_string(page) + "' is too big");
         return false;
     }
@@ -97,5 +93,5 @@ HanamiSqlLogTable::getPageFromDb(Hanami::TableItem &resultTable,
     // get requested page of log-entries from database-table
     std::vector<RequestCondition> conditions;
     conditions.push_back(RequestCondition("user_id", userId));
-    return getFromDb(resultTable, conditions, error, true, page*100, 100);
+    return getFromDb(resultTable, conditions, error, true, page * 100, 100);
 }

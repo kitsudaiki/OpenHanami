@@ -23,16 +23,15 @@
 #ifndef HANAMI_ERROR_LOG_TABLE_H
 #define HANAMI_ERROR_LOG_TABLE_H
 
-#include <hanami_common/logger.h>
 #include <database/generic_tables/hanami_sql_log_table.h>
+#include <hanami_common/logger.h>
 
-class ErrorLogTable
-        : public HanamiSqlLogTable
+class ErrorLogTable : public HanamiSqlLogTable
 {
-public:
+   public:
     static ErrorLogTable* getInstance()
     {
-        if(instance == nullptr) {
+        if (instance == nullptr) {
             instance = new ErrorLogTable();
         }
         return instance;
@@ -40,21 +39,21 @@ public:
 
     ~ErrorLogTable();
 
-    bool addErrorLogEntry(const std::string &timestamp,
-                          const std::string &userid,
-                          const std::string &component,
-                          const std::string &context,
-                          const std::string &values,
-                          const std::string &message,
-                          Hanami::ErrorContainer &error);
-    bool getAllErrorLogEntries(Hanami::TableItem &result,
-                               const std::string &userId,
+    bool addErrorLogEntry(const std::string& timestamp,
+                          const std::string& userid,
+                          const std::string& component,
+                          const std::string& context,
+                          const std::string& values,
+                          const std::string& message,
+                          Hanami::ErrorContainer& error);
+    bool getAllErrorLogEntries(Hanami::TableItem& result,
+                               const std::string& userId,
                                const uint64_t page,
-                               Hanami::ErrorContainer &error);
+                               Hanami::ErrorContainer& error);
 
-private:
+   private:
     ErrorLogTable();
     static ErrorLogTable* instance;
 };
 
-#endif // HANAMI_ERROR_LOG_TABLE_H
+#endif  // HANAMI_ERROR_LOG_TABLE_H

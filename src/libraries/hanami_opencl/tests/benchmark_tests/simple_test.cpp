@@ -22,14 +22,13 @@
 
 #include "simple_test.h"
 
-#include <hanami_opencl/gpu_interface.h>
 #include <hanami_opencl/gpu_handler.h>
+#include <hanami_opencl/gpu_interface.h>
 
 namespace Hanami
 {
 
-SimpleTest::SimpleTest()
-    : Hanami::SpeedTestHelper()
+SimpleTest::SimpleTest() : Hanami::SpeedTestHelper()
 {
     m_copyToDeviceTimeSlot.unitName = "ms";
     m_copyToDeviceTimeSlot.name = "copy to device";
@@ -54,24 +53,20 @@ SimpleTest::SimpleTest()
 
     chooseDevice();
 
-    for(uint32_t i = 0; i < 10; i++)
-    {
-        std::cout<<"run cycle "<<(i + 1)<<std::endl;
+    for (uint32_t i = 0; i < 10; i++) {
+        std::cout << "run cycle " << (i + 1) << std::endl;
 
         simple_test();
 
-        m_copyToDeviceTimeSlot.values.push_back(
-                    m_copyToDeviceTimeSlot.getDuration(MICRO_SECONDS) / 1000.0);
-        m_initKernelTimeSlot.values.push_back(
-                    m_initKernelTimeSlot.getDuration(MICRO_SECONDS) / 1000.0);
-        m_runTimeSlot.values.push_back(
-                    m_runTimeSlot.getDuration(MICRO_SECONDS) / 1000.0);
-        m_updateTimeSlot.values.push_back(
-                    m_updateTimeSlot.getDuration(MICRO_SECONDS) / 1000.0);
-        m_copyToHostTimeSlot.values.push_back(
-                    m_copyToHostTimeSlot.getDuration(MICRO_SECONDS) / 1000.0);
-        m_cleanupTimeSlot.values.push_back(
-                    m_cleanupTimeSlot.getDuration(MICRO_SECONDS) / 1000.0);
+        m_copyToDeviceTimeSlot.values.push_back(m_copyToDeviceTimeSlot.getDuration(MICRO_SECONDS)
+                                                / 1000.0);
+        m_initKernelTimeSlot.values.push_back(m_initKernelTimeSlot.getDuration(MICRO_SECONDS)
+                                              / 1000.0);
+        m_runTimeSlot.values.push_back(m_runTimeSlot.getDuration(MICRO_SECONDS) / 1000.0);
+        m_updateTimeSlot.values.push_back(m_updateTimeSlot.getDuration(MICRO_SECONDS) / 1000.0);
+        m_copyToHostTimeSlot.values.push_back(m_copyToHostTimeSlot.getDuration(MICRO_SECONDS)
+                                              / 1000.0);
+        m_cleanupTimeSlot.values.push_back(m_cleanupTimeSlot.getDuration(MICRO_SECONDS) / 1000.0);
     }
 
     addToResult(m_copyToDeviceTimeSlot);
@@ -91,27 +86,27 @@ SimpleTest::simple_test()
     ErrorContainer error;
 
     // example kernel for task: c = a + b.
-    const std::string kernelCode =
-        "__kernel void add(\n"
-        "       __global const float* a,\n"
-        "       __global const float* b,\n"
-        "       __global float* c\n"
-        "       )\n"
-        "{\n"
-        "    __local float temp[512];\n"
-        "    size_t globalId_x = get_global_id(0);\n"
-        "    int localId_x = get_local_id(0);\n"
-        "    size_t globalSize_x = get_global_size(0);\n"
-        "    size_t globalSize_y = get_global_size(1);\n"
-        "    \n"
-        "    size_t globalId = get_global_id(0) + get_global_size(0) * get_global_id(1);\n"
-        "    size_t testSize = 1 << 26;\n"
-        "    if (globalId < testSize)\n"
-        "    {\n"
-        "       temp[localId_x] = b[globalId];\n"
-        "       c[globalId] = a[globalId] + b[globalId];"
-        "    }\n"
-        "}\n";
+    const std::string kernelCode
+        = "__kernel void add(\n"
+          "       __global const float* a,\n"
+          "       __global const float* b,\n"
+          "       __global float* c\n"
+          "       )\n"
+          "{\n"
+          "    __local float temp[512];\n"
+          "    size_t globalId_x = get_global_id(0);\n"
+          "    int localId_x = get_local_id(0);\n"
+          "    size_t globalSize_x = get_global_size(0);\n"
+          "    size_t globalSize_y = get_global_size(1);\n"
+          "    \n"
+          "    size_t globalId = get_global_id(0) + get_global_size(0) * get_global_id(1);\n"
+          "    size_t testSize = 1 << 26;\n"
+          "    if (globalId < testSize)\n"
+          "    {\n"
+          "       temp[localId_x] = b[globalId];\n"
+          "       c[globalId] = a[globalId] + b[globalId];"
+          "    }\n"
+          "}\n";
 
     Hanami::GpuHandler oclHandler;
     assert(oclHandler.initDevice(error));
@@ -134,8 +129,7 @@ SimpleTest::simple_test()
     float* b = static_cast<float*>(data.getBufferData("y"));
 
     // write intput dat into buffer
-    for(uint32_t i = 0; i < testSize; i++)
-    {
+    for (uint32_t i = 0; i < testSize; i++) {
         a[i] = 1.0f;
         b[i] = 2.0f;
     }
@@ -163,8 +157,7 @@ SimpleTest::simple_test()
     m_copyToHostTimeSlot.stopTimer();
 
     // update data on host
-    for(uint32_t i = 0; i < testSize; i++)
-    {
+    for (uint32_t i = 0; i < testSize; i++) {
         a[i] = 5.0f;
     }
 
@@ -182,16 +175,16 @@ SimpleTest::simple_test()
 void
 SimpleTest::chooseDevice()
 {
-    std::cout<<"found devices:"<<std::endl;
-    for(uint32_t i = 0; i < m_oclHandler->m_interfaces.size(); i++) {
-        std::cout<<"    "<<i<<": "<<m_oclHandler->m_interfaces.at(i)->getDeviceName()<<std::endl;
+    std::cout << "found devices:" << std::endl;
+    for (uint32_t i = 0; i < m_oclHandler->m_interfaces.size(); i++) {
+        std::cout << "    " << i << ": " << m_oclHandler->m_interfaces.at(i)->getDeviceName()
+                  << std::endl;
     }
 
-    while(m_id >= m_oclHandler->m_interfaces.size())
-    {
-        std::cout<<"wait for input: ";
-        std::cin>>m_id;
+    while (m_id >= m_oclHandler->m_interfaces.size()) {
+        std::cout << "wait for input: ";
+        std::cin >> m_id;
     }
 }
 
-}
+}  // namespace Hanami

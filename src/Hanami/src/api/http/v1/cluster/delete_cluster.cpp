@@ -22,14 +22,12 @@
 
 #include "delete_cluster.h"
 
-#include <hanami_root.h>
-#include <database/cluster_table.h>
-
-#include <core/cluster/cluster_handler.h>
 #include <core/cluster/cluster.h>
+#include <core/cluster/cluster_handler.h>
+#include <database/cluster_table.h>
+#include <hanami_root.h>
 
-DeleteCluster::DeleteCluster()
-    : Blossom("Delete a cluster.")
+DeleteCluster::DeleteCluster() : Blossom("Delete a cluster.")
 {
     errorCodes.push_back(NOT_FOUND_RTYPE);
 
@@ -38,8 +36,8 @@ DeleteCluster::DeleteCluster()
     //----------------------------------------------------------------------------------------------
 
     registerInputField("uuid", SAKURA_STRING_TYPE)
-            .setComment("UUID of the cluster.")
-            .setRegex(UUID_REGEX);
+        .setComment("UUID of the cluster.")
+        .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     //
@@ -50,37 +48,33 @@ DeleteCluster::DeleteCluster()
  * @brief runTask
  */
 bool
-DeleteCluster::runTask(BlossomIO &blossomIO,
-                       const json &context,
-                       BlossomStatus &status,
-                       Hanami::ErrorContainer &error)
+DeleteCluster::runTask(BlossomIO& blossomIO,
+                       const json& context,
+                       BlossomStatus& status,
+                       Hanami::ErrorContainer& error)
 {
     const UserContext userContext(context);
     const std::string clusterUuid = blossomIO.input["uuid"];
 
     // check if user exist within the table
     json getResult;
-    if(ClusterTable::getInstance()->getCluster(getResult,
-                                               clusterUuid,
-                                               userContext,
-                                               error) == false)
+    if (ClusterTable::getInstance()->getCluster(getResult, clusterUuid, userContext, error)
+        == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // handle not found
-    if(getResult.size() == 0)
-    {
+    if (getResult.size() == 0) {
         status.errorMessage = "Cluster with uuid '" + clusterUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
     // remove data from table
-    if(ClusterTable::getInstance()->deleteCluster(clusterUuid, userContext, error) == false)
-    {
+    if (ClusterTable::getInstance()->deleteCluster(clusterUuid, userContext, error) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Failed to delete cluster with UUID '" + clusterUuid + "' from database");
         return false;
@@ -88,12 +82,10 @@ DeleteCluster::runTask(BlossomIO &blossomIO,
 
     // remove internal data
     const std::string uuid = getResult["uuid"];
-    if(ClusterHandler::getInstance()->removeCluster(uuid) == false)
-    {
+    if (ClusterHandler::getInstance()->removeCluster(uuid) == false) {
         // should never be false, because the uuid is already defined as unique by the database
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMeesage("Failed to delete cluster with UUID '"
-                         + clusterUuid
+        error.addMeesage("Failed to delete cluster with UUID '" + clusterUuid
                          + "' from cluster-handler");
         return false;
     }

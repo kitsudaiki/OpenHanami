@@ -13,8 +13,7 @@
 namespace Hanami
 {
 
-VectorMethods_Test::VectorMethods_Test()
-    : Hanami::CompareTestHelper("VectorMethods_Test")
+VectorMethods_Test::VectorMethods_Test() : Hanami::CompareTestHelper("VectorMethods_Test")
 {
     removeEmptyStrings_test();
 }
@@ -26,7 +25,7 @@ void
 VectorMethods_Test::removeEmptyStrings_test()
 {
     // init
-    std::vector<std::string> testVector{"x","","y","z",""};
+    std::vector<std::string> testVector{"x", "", "y", "z", ""};
 
     // run task
     removeEmptyStrings(testVector);
@@ -38,4 +37,4 @@ VectorMethods_Test::removeEmptyStrings_test()
     TEST_EQUAL(testVector[2], "z");
 }
 
-}
+}  // namespace Hanami

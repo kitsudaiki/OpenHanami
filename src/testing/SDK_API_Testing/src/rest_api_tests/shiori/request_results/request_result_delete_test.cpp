@@ -24,11 +24,10 @@
 
 #include <hanami_sdk/request_result.h>
 
-RequestResultDeleteTest::RequestResultDeleteTest(const bool expectSuccess)
-          : TestStep(expectSuccess)
+RequestResultDeleteTest::RequestResultDeleteTest(const bool expectSuccess) : TestStep(expectSuccess)
 {
     m_testName = "delete request-result";
-    if(expectSuccess) {
+    if (expectSuccess) {
         m_testName += " (success)";
     } else {
         m_testName += " (fail)";
@@ -36,18 +35,17 @@ RequestResultDeleteTest::RequestResultDeleteTest(const bool expectSuccess)
 }
 
 bool
-RequestResultDeleteTest::runTest(json &inputData,
-                                 Hanami::ErrorContainer &error)
+RequestResultDeleteTest::runTest(json& inputData, Hanami::ErrorContainer& error)
 {
     const std::string uuid = inputData["request_task_uuid"];
 
     // delete user by name
     std::string result;
-    if(Hanami::deleteRequestResult(result, uuid, error) != m_expectSuccess) {
+    if (Hanami::deleteRequestResult(result, uuid, error) != m_expectSuccess) {
         return false;
     }
 
-    if(m_expectSuccess == false) {
+    if (m_expectSuccess == false) {
         return true;
     }
 
@@ -55,11 +53,10 @@ RequestResultDeleteTest::runTest(json &inputData,
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch(const json::parse_error& ex) {
+    } catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
 
     return true;
 }
-

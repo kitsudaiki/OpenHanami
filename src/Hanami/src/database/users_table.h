@@ -24,16 +24,15 @@
 #define HANAMI_USERS_TABLE_H
 
 #include <common.h>
-#include <hanami_common/logger.h>
 #include <database/generic_tables/hanami_sql_admin_table.h>
+#include <hanami_common/logger.h>
 
-class UsersTable
-        : public HanamiSqlAdminTable
+class UsersTable : public HanamiSqlAdminTable
 {
-public:
+   public:
     static UsersTable* getInstance()
     {
-        if(instance == nullptr) {
+        if (instance == nullptr) {
             instance = new UsersTable();
         }
         return instance;
@@ -41,29 +40,26 @@ public:
 
     ~UsersTable();
 
-    bool initNewAdminUser(Hanami::ErrorContainer &error);
+    bool initNewAdminUser(Hanami::ErrorContainer& error);
 
-    bool addUser(json &userData,
-                 Hanami::ErrorContainer &error);
-    bool getUser(json &result,
-                 const std::string &userId,
-                 Hanami::ErrorContainer &error,
+    bool addUser(json& userData, Hanami::ErrorContainer& error);
+    bool getUser(json& result,
+                 const std::string& userId,
+                 Hanami::ErrorContainer& error,
                  const bool showHiddenValues);
-    bool getAllUser(Hanami::TableItem &result,
-                    Hanami::ErrorContainer &error);
-    bool deleteUser(const std::string &userId,
-                    Hanami::ErrorContainer &error);
-    bool updateProjectsOfUser(const std::string &userId,
-                              const std::string &newProjects,
-                              Hanami::ErrorContainer &error);
+    bool getAllUser(Hanami::TableItem& result, Hanami::ErrorContainer& error);
+    bool deleteUser(const std::string& userId, Hanami::ErrorContainer& error);
+    bool updateProjectsOfUser(const std::string& userId,
+                              const std::string& newProjects,
+                              Hanami::ErrorContainer& error);
 
-private:
+   private:
     UsersTable();
     static UsersTable* instance;
 
-    bool getEnvVar(std::string &content, const std::string &key) const;
+    bool getEnvVar(std::string& content, const std::string& key) const;
 
-    bool getAllAdminUser(Hanami::ErrorContainer &error);
+    bool getAllAdminUser(Hanami::ErrorContainer& error);
 };
 
-#endif // HANAMI_USERS_TABLE_H
+#endif  // HANAMI_USERS_TABLE_H

@@ -21,10 +21,8 @@
  */
 
 #include <database/checkpoint_table.h>
-
 #include <hanami_common/items/table_item.h>
 #include <hanami_common/methods/string_methods.h>
-
 #include <hanami_database/sql_database.h>
 
 CheckpointTable* CheckpointTable::instance = nullptr;
@@ -34,15 +32,14 @@ CheckpointTable* CheckpointTable::instance = nullptr;
  *
  * @param db pointer to database
  */
-CheckpointTable::CheckpointTable()
-    : HanamiSqlTable(Hanami::SqlDatabase::getInstance())
+CheckpointTable::CheckpointTable() : HanamiSqlTable(Hanami::SqlDatabase::getInstance())
 {
     m_tableName = "checkpoint";
 
     DbHeaderEntry location;
     location.name = "location";
     location.hide = true;
-    m_tableHeader.push_back(location);  
+    m_tableHeader.push_back(location);
 }
 
 /**
@@ -60,12 +57,11 @@ CheckpointTable::~CheckpointTable() {}
  * @return true, if successful, else false
  */
 bool
-CheckpointTable::addCheckpoint(json &data,
-                               const UserContext &userContext,
-                               Hanami::ErrorContainer &error)
+CheckpointTable::addCheckpoint(json& data,
+                               const UserContext& userContext,
+                               Hanami::ErrorContainer& error)
 {
-    if(add(data, userContext, error) == false)
-    {
+    if (add(data, userContext, error) == false) {
         error.addMeesage("Failed to add checkpoint to database");
         return false;
     }
@@ -85,10 +81,10 @@ CheckpointTable::addCheckpoint(json &data,
  * @return true, if successful, else false
  */
 bool
-CheckpointTable::getCheckpoint(json &result,
-                               const std::string &checkpointUuid,
-                               const UserContext &userContext,
-                               Hanami::ErrorContainer &error,
+CheckpointTable::getCheckpoint(json& result,
+                               const std::string& checkpointUuid,
+                               const UserContext& userContext,
+                               Hanami::ErrorContainer& error,
                                const bool showHiddenValues)
 {
     // get user from db
@@ -96,10 +92,8 @@ CheckpointTable::getCheckpoint(json &result,
     conditions.emplace_back("uuid", checkpointUuid);
 
     // get dataset from db
-    if(get(result, userContext, conditions, error, showHiddenValues) == false)
-    {
-        error.addMeesage("Failed to get checkpoint with UUID '"
-                         + checkpointUuid
+    if (get(result, userContext, conditions, error, showHiddenValues) == false) {
+        error.addMeesage("Failed to get checkpoint with UUID '" + checkpointUuid
                          + "' from database");
         LOG_ERROR(error);
         return false;
@@ -118,13 +112,12 @@ CheckpointTable::getCheckpoint(json &result,
  * @return true, if successful, else false
  */
 bool
-CheckpointTable::getAllCheckpoint(Hanami::TableItem &result,
-                                  const UserContext &userContext,
-                                  Hanami::ErrorContainer &error)
+CheckpointTable::getAllCheckpoint(Hanami::TableItem& result,
+                                  const UserContext& userContext,
+                                  Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
-    if(getAll(result, userContext, conditions, error) == false)
-    {
+    if (getAll(result, userContext, conditions, error) == false) {
         error.addMeesage("Failed to get all checkpoints from database");
         return false;
     }
@@ -142,16 +135,14 @@ CheckpointTable::getAllCheckpoint(Hanami::TableItem &result,
  * @return true, if successful, else false
  */
 bool
-CheckpointTable::deleteCheckpoint(const std::string &checkpointUuid,
-                                  const UserContext &userContext,
-                                  Hanami::ErrorContainer &error)
+CheckpointTable::deleteCheckpoint(const std::string& checkpointUuid,
+                                  const UserContext& userContext,
+                                  Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", checkpointUuid);
-    if(del(conditions, userContext, error) == false)
-    {
-        error.addMeesage("Failed to delete checkpoint with UUID '"
-                         + checkpointUuid
+    if (del(conditions, userContext, error) == false) {
+        error.addMeesage("Failed to delete checkpoint with UUID '" + checkpointUuid
                          + "' from database");
         return false;
     }
@@ -169,9 +160,9 @@ CheckpointTable::deleteCheckpoint(const std::string &checkpointUuid,
  * @return true, if successful, else false
  */
 bool
-CheckpointTable::setUploadFinish(const std::string &uuid,
-                                 const std::string &fileUuid,
-                                 Hanami::ErrorContainer &error)
+CheckpointTable::setUploadFinish(const std::string& uuid,
+                                 const std::string& fileUuid,
+                                 Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", uuid);
@@ -181,16 +172,14 @@ CheckpointTable::setUploadFinish(const std::string &uuid,
     userContext.isAdmin = true;
 
     // get checkpoint from db
-    if(get(result, userContext, conditions, error, true) == false)
-    {
+    if (get(result, userContext, conditions, error, true) == false) {
         error.addMeesage("Failed to get checkpoint with UUID '" + uuid + "' from database");
         LOG_ERROR(error);
         return false;
     }
 
     // check response from database
-    if(result.contains("temp_files") == false)
-    {
+    if (result.contains("temp_files") == false) {
         error.addMeesage("Entry get for the snaphost with UUID '" + uuid + "' is broken");
         LOG_ERROR(error);
         return false;
@@ -202,10 +191,8 @@ CheckpointTable::setUploadFinish(const std::string &uuid,
     try {
         tempFiles = json::parse(tempFilesStr);
     }
-    catch(const json::parse_error& ex)
-    {
-        error.addMeesage("Failed to parse temp_files entry of checkpoint with UUID '"
-                         + uuid
+    catch (const json::parse_error& ex) {
+        error.addMeesage("Failed to parse temp_files entry of checkpoint with UUID '" + uuid
                          + "' from database");
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         LOG_ERROR(error);
@@ -217,9 +204,9 @@ CheckpointTable::setUploadFinish(const std::string &uuid,
     // update new entry within the database
     json newValues;
     newValues["temp_files"] = tempFiles.dump();
-    if(update(newValues, userContext, conditions, error) == false)
-    {
-        error.addMeesage("Failed to update entry of checkpoint with UUID '" + uuid + "' in database");
+    if (update(newValues, userContext, conditions, error) == false) {
+        error.addMeesage("Failed to update entry of checkpoint with UUID '" + uuid
+                         + "' in database");
         LOG_ERROR(error);
         return false;
     }

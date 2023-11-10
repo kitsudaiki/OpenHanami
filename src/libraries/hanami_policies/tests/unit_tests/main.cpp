@@ -22,7 +22,8 @@
 
 #include <policy_test.h>
 
-int main()
+int
+main()
 {
     Hanami::Policy_Test();
 

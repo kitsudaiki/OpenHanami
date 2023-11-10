@@ -23,18 +23,17 @@
 #ifndef HANAMI_LANG_VALUE_ITEMS_H
 #define HANAMI_LANG_VALUE_ITEMS_H
 
+#include <api/endpoint_processing/blossom.h>
+
 #include <string>
 #include <vector>
-
-#include <api/endpoint_processing/blossom.h>
 
 //==================================================================================================
 // FunctionItem
 //==================================================================================================
 struct ValueItem;
 
-struct FunctionItem
-{
+struct FunctionItem {
     std::string type = "";
     std::vector<ValueItem> arguments;
 };
@@ -42,10 +41,8 @@ struct FunctionItem
 //==================================================================================================
 // ValueItem
 //==================================================================================================
-struct ValueItem
-{
-    enum ValueType
-    {
+struct ValueItem {
+    enum ValueType {
         UNDEFINED_PAIR_TYPE = 0,
         INPUT_PAIR_TYPE = 1,
         OUTPUT_PAIR_TYPE = 2,
@@ -62,7 +59,7 @@ struct ValueItem
 
     ValueItem() {}
 
-    ValueItem(const ValueItem &other)
+    ValueItem(const ValueItem& other)
     {
         item = other.item;
         type = other.type;
@@ -74,10 +71,9 @@ struct ValueItem
 
     ~ValueItem() {}
 
-    ValueItem &operator=(const ValueItem &other)
+    ValueItem& operator=(const ValueItem& other)
     {
-        if(this != &other)
-        {
+        if (this != &other) {
             this->item = other.item;
             this->type = other.type;
             this->isIdentifier = other.isIdentifier;
@@ -89,4 +85,4 @@ struct ValueItem
     }
 };
 
-#endif // HANAMI_LANG_VALUE_ITEMS_H
+#endif  // HANAMI_LANG_VALUE_ITEMS_H

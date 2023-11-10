@@ -9,24 +9,23 @@
 #ifndef TABLE_ITEM_TEST_H
 #define TABLE_ITEM_TEST_H
 
-#include <hanami_common/test_helper/memory_leak_test_helper.h>
 #include <hanami_common/items/table_item.h>
+#include <hanami_common/test_helper/memory_leak_test_helper.h>
 
 namespace Hanami
 {
 
-class TableItem_test
-        : public Hanami::MemoryLeakTestHelpter
+class TableItem_test : public Hanami::MemoryLeakTestHelpter
 {
-public:
+   public:
     TableItem_test();
 
-private:
+   private:
     void create_delete_test();
     void add_delete_col_test();
     void add_delete_row_test();
 };
 
-}
+}  // namespace Hanami
 
-#endif // TABLE_ITEM_TEST_H
+#endif  // TABLE_ITEM_TEST_H

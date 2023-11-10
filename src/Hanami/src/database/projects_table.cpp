@@ -21,7 +21,6 @@
  */
 
 #include <database/projects_table.h>
-
 #include <hanami_common/items/table_item.h>
 #include <hanami_common/methods/string_methods.h>
 #include <hanami_crypto/hashes.h>
@@ -32,8 +31,7 @@ ProjectsTable* ProjectsTable::instance = nullptr;
 /**
  * @brief constructor
  */
-ProjectsTable::ProjectsTable()
-    : HanamiSqlAdminTable(Hanami::SqlDatabase::getInstance())
+ProjectsTable::ProjectsTable() : HanamiSqlAdminTable(Hanami::SqlDatabase::getInstance())
 {
     m_tableName = "projects";
 }
@@ -52,11 +50,9 @@ ProjectsTable::~ProjectsTable() {}
  * @return true, if successful, else false
  */
 bool
-ProjectsTable::addProject(json &userData,
-                          Hanami::ErrorContainer &error)
+ProjectsTable::addProject(json& userData, Hanami::ErrorContainer& error)
 {
-    if(insertToDb(userData, error) == false)
-    {
+    if (insertToDb(userData, error) == false) {
         error.addMeesage("Failed to add user to database");
         return false;
     }
@@ -75,19 +71,16 @@ ProjectsTable::addProject(json &userData,
  * @return true, if successful, else false
  */
 bool
-ProjectsTable::getProject(json &result,
-                          const std::string &projectId,
-                          Hanami::ErrorContainer &error,
+ProjectsTable::getProject(json& result,
+                          const std::string& projectId,
+                          Hanami::ErrorContainer& error,
                           const bool showHiddenValues)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("id", projectId);
 
-    if(getFromDb(result, conditions, error, showHiddenValues) == false)
-    {
-        error.addMeesage("Failed to get user with id '"
-                         + projectId
-                         + "' from database");
+    if (getFromDb(result, conditions, error, showHiddenValues) == false) {
+        error.addMeesage("Failed to get user with id '" + projectId + "' from database");
         LOG_ERROR(error);
         return false;
     }
@@ -104,12 +97,10 @@ ProjectsTable::getProject(json &result,
  * @return true, if successful, else false
  */
 bool
-ProjectsTable::getAllProjects(Hanami::TableItem &result,
-                              Hanami::ErrorContainer &error)
+ProjectsTable::getAllProjects(Hanami::TableItem& result, Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
-    if(getFromDb(result, conditions, error, false) == false)
-    {
+    if (getFromDb(result, conditions, error, false) == false) {
         error.addMeesage("Failed to get all users from database");
         return false;
     }
@@ -126,17 +117,13 @@ ProjectsTable::getAllProjects(Hanami::TableItem &result,
  * @return true, if successful, else false
  */
 bool
-ProjectsTable::deleteProject(const std::string &projectId,
-                             Hanami::ErrorContainer &error)
+ProjectsTable::deleteProject(const std::string& projectId, Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("id", projectId);
 
-    if(deleteFromDb(conditions, error) == false)
-    {
-        error.addMeesage("Failed to delete user with id '"
-                         + projectId
-                         + "' from database");
+    if (deleteFromDb(conditions, error) == false) {
+        error.addMeesage("Failed to delete user with id '" + projectId + "' from database");
         return false;
     }
 

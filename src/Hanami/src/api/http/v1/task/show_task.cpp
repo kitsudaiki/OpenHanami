@@ -22,13 +22,12 @@
 
 #include "show_task.h"
 
-#include <core/cluster/cluster_handler.h>
 #include <core/cluster/cluster.h>
+#include <core/cluster/cluster_handler.h>
 #include <database/cluster_table.h>
 #include <hanami_root.h>
 
-ShowTask::ShowTask()
-    : Blossom("Show information of a specific task.")
+ShowTask::ShowTask() : Blossom("Show information of a specific task.")
 {
     errorCodes.push_back(NOT_FOUND_RTYPE);
 
@@ -37,47 +36,47 @@ ShowTask::ShowTask()
     //----------------------------------------------------------------------------------------------
 
     registerInputField("uuid", SAKURA_STRING_TYPE)
-            .setComment("UUID of the cluster, which should process the request")
-            .setRegex(UUID_REGEX);
+        .setComment("UUID of the cluster, which should process the request")
+        .setRegex(UUID_REGEX);
 
     registerInputField("cluster_uuid", SAKURA_STRING_TYPE)
-            .setComment("UUID of the cluster, which should process the request")
-            .setRegex(UUID_REGEX);
+        .setComment("UUID of the cluster, which should process the request")
+        .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
     registerOutputField("percentage_finished", SAKURA_FLOAT_TYPE)
-            .setComment("Percentation of the progress between 0.0 and 1.0.");
+        .setComment("Percentation of the progress between 0.0 and 1.0.");
 
     registerOutputField("state", SAKURA_STRING_TYPE)
-            .setComment("Actual state of the task (queued, active, aborted or finished).");
+        .setComment("Actual state of the task (queued, active, aborted or finished).");
 
     registerOutputField("queue_timestamp", SAKURA_STRING_TYPE)
-            .setComment("Timestamp in UTC when the task entered the queued state, "
-                        "which is basicall the timestamp when the task was created");
+        .setComment(
+            "Timestamp in UTC when the task entered the queued state, "
+            "which is basicall the timestamp when the task was created");
 
     registerOutputField("start_timestamp", SAKURA_STRING_TYPE)
-            .setComment("Timestamp in UTC when the task entered the active state.");
+        .setComment("Timestamp in UTC when the task entered the active state.");
 
     registerOutputField("end_timestamp", SAKURA_STRING_TYPE)
-            .setComment("Timestamp in UTC when the task was finished.");
+        .setComment("Timestamp in UTC when the task was finished.");
 
     //----------------------------------------------------------------------------------------------
     //
     //----------------------------------------------------------------------------------------------
 }
 
-
 /**
  * @brief runTask
  */
 bool
-ShowTask::runTask(BlossomIO &blossomIO,
-                  const json &context,
-                  BlossomStatus &status,
-                  Hanami::ErrorContainer &error)
+ShowTask::runTask(BlossomIO& blossomIO,
+                  const json& context,
+                  BlossomStatus& status,
+                  Hanami::ErrorContainer& error)
 {
     const std::string clusterUuid = blossomIO.input["cluster_uuid"];
     const std::string taskUuid = blossomIO.input["uuid"];
@@ -85,31 +84,27 @@ ShowTask::runTask(BlossomIO &blossomIO,
 
     // check if user exist within the table
     json getResult;
-    if(ClusterTable::getInstance()->getCluster(getResult,
-                                               clusterUuid,
-                                               userContext,
-                                               error) == false)
+    if (ClusterTable::getInstance()->getCluster(getResult, clusterUuid, userContext, error)
+        == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // handle not found
-    if(getResult.size() == 0)
-    {
+    if (getResult.size() == 0) {
         status.errorMessage = "Cluster with uuid '" + clusterUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
     // get cluster
     Cluster* cluster = ClusterHandler::getInstance()->getCluster(clusterUuid);
-    if(cluster == nullptr)
-    {
+    if (cluster == nullptr) {
         status.errorMessage = "Cluster with UUID '" + clusterUuid + "'not found";
         status.statusCode = NOT_FOUND_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
@@ -120,26 +115,22 @@ ShowTask::runTask(BlossomIO &blossomIO,
     blossomIO.output["queue_timestamp"] = serializeTimePoint(progress.queuedTimeStamp);
 
     // get timestamps
-    if(progress.state == QUEUED_TASK_STATE)
-    {
+    if (progress.state == QUEUED_TASK_STATE) {
         blossomIO.output["state"] = "queued";
         blossomIO.output["start_timestamp"] = "-";
         blossomIO.output["end_timestamp"] = "-";
     }
-    else if(progress.state == ACTIVE_TASK_STATE)
-    {
+    else if (progress.state == ACTIVE_TASK_STATE) {
         blossomIO.output["state"] = "active";
         blossomIO.output["start_timestamp"] = serializeTimePoint(progress.startActiveTimeStamp);
         blossomIO.output["end_timestamp"] = "-";
     }
-    else if(progress.state == ABORTED_TASK_STATE)
-    {
+    else if (progress.state == ABORTED_TASK_STATE) {
         blossomIO.output["state"] = "aborted";
         blossomIO.output["start_timestamp"] = serializeTimePoint(progress.startActiveTimeStamp);
         blossomIO.output["end_timestamp"] = "-";
     }
-    else if(progress.state == FINISHED_TASK_STATE)
-    {
+    else if (progress.state == FINISHED_TASK_STATE) {
         blossomIO.output["state"] = "finished";
         blossomIO.output["start_timestamp"] = serializeTimePoint(progress.startActiveTimeStamp);
         blossomIO.output["end_timestamp"] = serializeTimePoint(progress.endActiveTimeStamp);

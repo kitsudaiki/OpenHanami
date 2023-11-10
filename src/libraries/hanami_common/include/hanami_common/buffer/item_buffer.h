@@ -31,21 +31,19 @@ namespace Hanami
 {
 
 class ItemBuffer;
-template<typename T>
-inline T* getItemData(ItemBuffer &itembuffer);
+template <typename T>
+inline T* getItemData(ItemBuffer& itembuffer);
 
 class ItemBuffer
 {
-public:
-    enum SectionStatus
-    {
+   public:
+    enum SectionStatus {
         UNDEFINED_SECTION = 0,
         ACTIVE_SECTION = 1,
         DELETED_SECTION = 2,
     };
 
-    struct MetaData
-    {
+    struct MetaData {
         uint32_t itemSize = 0;
         uint64_t itemCapacity = 0;
         uint64_t staticSize = 0;
@@ -69,13 +67,12 @@ public:
      *
      * @return true, if successful, else false
      */
-    template<typename T>
-    bool initBuffer(const uint64_t numberOfItems,
-                    const uint64_t staticSize = 0)
+    template <typename T>
+    bool initBuffer(const uint64_t numberOfItems, const uint64_t staticSize = 0)
     {
         // allocate memory
         const bool ret = initDataBlocks(numberOfItems, sizeof(T), staticSize);
-        if(ret == false) {
+        if (ret == false) {
             return false;
         }
 
@@ -99,11 +96,11 @@ public:
      * @return position inside of the buffer, where the new item was added, if successful, or
      *         2^64-1 if the buffer is already full
      */
-    template<typename T>
-    uint64_t addNewItem(const T &item)
+    template <typename T>
+    uint64_t addNewItem(const T& item)
     {
         // precheck
-        if(metaData->itemSize == 0) {
+        if (metaData->itemSize == 0) {
             return ITEM_BUFFER_UNDEFINE_POS;
         }
 
@@ -111,15 +108,17 @@ public:
         uint64_t position = ITEM_BUFFER_UNDEFINE_POS;
 
         // precheck
-        if(metaData->numberOfItems >= metaData->itemCapacity) {
+        if (metaData->numberOfItems >= metaData->itemCapacity) {
             return position;
         }
 
-        while(m_lock.test_and_set(std::memory_order_acquire)) { asm(""); }
+        while (m_lock.test_and_set(std::memory_order_acquire)) {
+            asm("");
+        }
 
         // get item-position inside of the buffer
         position = reserveDynamicItem();
-        if(position == ITEM_BUFFER_UNDEFINE_POS) {
+        if (position == ITEM_BUFFER_UNDEFINE_POS) {
             return position;
         }
 
@@ -135,7 +134,7 @@ public:
     bool deleteItem(const uint64_t itemPos);
     void deleteAll();
 
-private:
+   private:
     std::atomic_flag m_lock = ATOMIC_FLAG_INIT;
 
     bool initDataBlocks(const uint64_t numberOfItems,
@@ -153,13 +152,13 @@ private:
  *
  * @return casted pointer of the item-buffer-content
  */
-template<typename T>
+template <typename T>
 inline T*
-getItemData(ItemBuffer &itembuffer)
+getItemData(ItemBuffer& itembuffer)
 {
     return static_cast<T*>(itembuffer.itemData);
 }
 
-}
+}  // namespace Hanami
 
-#endif // ITEM_BUFFER_H
+#endif  // ITEM_BUFFER_H

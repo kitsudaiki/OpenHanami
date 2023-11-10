@@ -20,22 +20,21 @@ class AbstractSocket;
 class UnixDomainServer;
 class UnixDomainSocket;
 
-template<class>
+template <class>
 class TemplateSocket;
 
-template<class>
+template <class>
 class TemplateServer;
 
-class UnixDomain_Test
-        : public Hanami::CompareTestHelper
+class UnixDomain_Test : public Hanami::CompareTestHelper
 {
-public:
+   public:
     UnixDomain_Test();
 
     DataBuffer* m_buffer = nullptr;
     AbstractSocket* m_socketServerSide = nullptr;
 
-private:
+   private:
     void initTestCase();
     void checkConnectionInit();
     void checkLittleDataTransfer();
@@ -46,6 +45,6 @@ private:
     TemplateSocket<UnixDomainSocket>* m_socketClientSide = nullptr;
 };
 
-}
+}  // namespace Hanami
 
-#endif // UNIX_DOMAIN_TEST_H
+#endif  // UNIX_DOMAIN_TEST_H

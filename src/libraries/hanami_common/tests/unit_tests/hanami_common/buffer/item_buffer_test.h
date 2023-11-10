@@ -14,13 +14,12 @@
 namespace Hanami
 {
 
-class ItemBuffer_Test
-        : public Hanami::CompareTestHelper
+class ItemBuffer_Test : public Hanami::CompareTestHelper
 {
-public:
+   public:
     ItemBuffer_Test();
 
-private:
+   private:
     void initBuffer_test();
     void deleteItem_test();
     void deleteAll_test();
@@ -28,6 +27,6 @@ private:
     void backup_restore_test();
 };
 
-}
+}  // namespace Hanami
 
-#endif // ITEM_BUFFER_TEST_H
+#endif  // ITEM_BUFFER_TEST_H

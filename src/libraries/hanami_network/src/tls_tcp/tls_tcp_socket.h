@@ -9,13 +9,12 @@
 #ifndef TLS_TCP_SOCKET_H
 #define TLS_TCP_SOCKET_H
 
-#include <netinet/in.h>
 #include <netdb.h>
+#include <netinet/in.h>
 #include <netinet/tcp.h>
-#include <openssl/ssl.h>
 #include <openssl/bio.h>
 #include <openssl/err.h>
-
+#include <openssl/ssl.h>
 #include <tcp/tcp_socket.h>
 
 namespace Hanami
@@ -32,15 +31,15 @@ class TemplateServer;
 
 class TlsTcpSocket
 {
-public:
+   public:
     TlsTcpSocket(TcpSocket&& socket,
-                 const std::string &certFile,
-                 const std::string &keyFile,
-                 const std::string &caFile = "");
+                 const std::string& certFile,
+                 const std::string& keyFile,
+                 const std::string& caFile = "");
 
     ~TlsTcpSocket();
 
-private:
+   private:
     friend TemplateSocket<TlsTcpSocket>;
     friend TemplateServer<UnixDomainServer>;
     friend TemplateServer<TcpServer>;
@@ -55,19 +54,13 @@ private:
     std::string caFile = "";
 
     int getSocketFd() const;
-    bool initClientSide(ErrorContainer &error);
-    bool initOpenssl(ErrorContainer &error);
+    bool initClientSide(ErrorContainer& error);
+    bool initOpenssl(ErrorContainer& error);
     bool isClientSide() const;
 
-    long recvData(int,
-                  void* bufferPosition,
-                  const size_t bufferSize,
-                  int);
+    long recvData(int, void* bufferPosition, const size_t bufferSize, int);
 
-    ssize_t sendData(int,
-                     const void* bufferPosition,
-                     const size_t bufferSize,
-                     int);
+    ssize_t sendData(int, const void* bufferPosition, const size_t bufferSize, int);
 
     bool cleanupOpenssl();
 
@@ -75,6 +68,6 @@ private:
     SSL* m_ssl = nullptr;
 };
 
-}
+}  // namespace Hanami
 
-#endif // TLS_TCP_SOCKET_H
+#endif  // TLS_TCP_SOCKET_H

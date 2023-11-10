@@ -18,7 +18,7 @@ namespace Hanami
  */
 AbstractServer::AbstractServer(void* target,
                                void (*processConnection)(void*, AbstractSocket*),
-                               const std::string &threadName)
+                               const std::string& threadName)
     : Hanami::Thread(threadName)
 {
     m_target = target;
@@ -28,8 +28,6 @@ AbstractServer::AbstractServer(void* target,
 /**
  * @brief AbstractServer::~AbstractServer
  */
-AbstractServer::~AbstractServer()
-{
-}
+AbstractServer::~AbstractServer() {}
 
-}
+}  // namespace Hanami
