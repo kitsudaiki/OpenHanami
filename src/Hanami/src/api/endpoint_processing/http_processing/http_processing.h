@@ -23,48 +23,77 @@
 #ifndef TORIIGATEWAY_HTTP_PROCESSING_H
 #define TORIIGATEWAY_HTTP_PROCESSING_H
 
+#include <common.h>
+#include <hanami_common/logger.h>
+#include <hanami_policies/policy.h>
+
+#include <boost/asio/ip/tcp.hpp>
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
-#include <boost/beast/version.hpp>
 #include <boost/beast/ssl.hpp>
-#include <boost/asio/ip/tcp.hpp>
-#include <boost/config.hpp>
+#include <boost/beast/version.hpp>
 #include <boost/beast/websocket.hpp>
-
+#include <boost/config.hpp>
 #include <cstdlib>
+#include <filesystem>
 #include <iostream>
 #include <memory>
 #include <string>
-#include <filesystem>
-#include <common.h>
 
-#include <hanami_policies/policy.h>
-#include <hanami_common/logger.h>
+namespace beast = boost::beast;          // from <boost/beast.hpp>
+namespace http = beast::http;            // from <boost/beast/http.hpp>
+namespace net = boost::asio;             // from <boost/asio.hpp>
+using tcp = boost::asio::ip::tcp;        // from <boost/asio/ip/tcp.hpp>
+namespace websocket = beast::websocket;  // from <boost/beast/websocket.hpp>
+namespace ssl = boost::asio::ssl;        // from <boost/asio/ssl.hpp>
 
-namespace beast = boost::beast;         // from <boost/beast.hpp>
-namespace http = beast::http;           // from <boost/beast/http.hpp>
-namespace net = boost::asio;            // from <boost/asio.hpp>
-using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
-namespace websocket = beast::websocket; // from <boost/beast/websocket.hpp>
-namespace ssl = boost::asio::ssl;       // from <boost/asio/ssl.hpp>
+class Blossom;
 
-bool processRequest(http::request<http::string_body> &httpRequest,
-                    http::response<http::dynamic_body> &httpResponse,
-                    Hanami::ErrorContainer &error);
+class HttpProcessing
+{
+   public:
+    bool processRequest(http::request<http::string_body>& httpRequest,
+                        http::response<http::dynamic_body>& httpResponse,
+                        Hanami::ErrorContainer& error);
 
-bool requestToken(http::response<http::dynamic_body> &httpResponse,
-                  const RequestMessage &hanamiRequest,
-                  Hanami::ErrorContainer &error);
-bool checkPermission(json &tokenData,
-                     const std::string &token,
-                     const RequestMessage &hanamiRequest,
-                     ResponseMessage &responseMsg,
-                     Hanami::ErrorContainer &error);
-bool processControlRequest(http::response<http::dynamic_body> &httpResponse,
-                           const std::string &uri,
-                           const std::string &token,
-                           const std::string &inputValues,
-                           const Hanami::HttpRequestType httpType,
-                           Hanami::ErrorContainer &error);
+    // endpoints
+    bool mapEndpoint(EndpointEntry& result,
+                     const std::string& id,
+                     const Hanami::HttpRequestType type);
+    bool addEndpoint(const std::string& id,
+                     const Hanami::HttpRequestType& httpType,
+                     const SakuraObjectType& sakuraType,
+                     const std::string& group,
+                     const std::string& name);
 
-#endif // TORIIGATEWAY_HTTP_PROCESSING_H
+    // blossoms
+    bool triggerBlossom(json& result,
+                        const std::string& blossomName,
+                        const std::string& blossomGroupName,
+                        const json& context,
+                        const json& initialValues,
+                        BlossomStatus& status,
+                        Hanami::ErrorContainer& error);
+    bool doesBlossomExist(const std::string& groupName, const std::string& itemName);
+    bool addBlossom(const std::string& groupName, const std::string& itemName, Blossom* newBlossom);
+    Blossom* getBlossom(const std::string& groupName, const std::string& itemName);
+
+    std::map<std::string, std::map<Hanami::HttpRequestType, EndpointEntry>> endpointRules;
+
+   private:
+    bool processControlRequest(http::response<http::dynamic_body>& httpResponse,
+                               const std::string& uri,
+                               const std::string& token,
+                               const std::string& inputValues,
+                               const Hanami::HttpRequestType httpType,
+                               Hanami::ErrorContainer& error);
+    bool checkStatusCode(Blossom* blossom,
+                         const std::string& blossomName,
+                         const std::string& blossomGroupName,
+                         BlossomStatus& status,
+                         Hanami::ErrorContainer& error);
+
+    std::map<std::string, std::map<std::string, Blossom*>> m_registeredBlossoms;
+};
+
+#endif  // TORIIGATEWAY_HTTP_PROCESSING_H

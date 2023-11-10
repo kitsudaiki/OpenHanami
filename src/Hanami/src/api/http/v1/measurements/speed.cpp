@@ -21,18 +21,18 @@
  */
 
 #include "speed.h"
-#include <hanami_root.h>
-#include <hanami_hardware/speed_measuring.h>
 
-Speed::Speed()
-    : Blossom("Request the speed of the CPU")
+#include <hanami_hardware/speed_measuring.h>
+#include <hanami_root.h>
+
+Speed::Speed() : Blossom("Request the speed of the CPU")
 {
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
     registerOutputField("current_speed", SAKURA_MAP_TYPE)
-            .setComment("Json-object with current-speed-measurements");
+        .setComment("Json-object with current-speed-measurements");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -43,10 +43,7 @@ Speed::Speed()
  * @brief runTask
  */
 bool
-Speed::runTask(BlossomIO &blossomIO,
-               const json &,
-               BlossomStatus &,
-               Hanami::ErrorContainer &)
+Speed::runTask(BlossomIO& blossomIO, const json&, BlossomStatus&, Hanami::ErrorContainer&)
 {
     blossomIO.output["current_speed"] = SpeedMeasuring::getInstance()->getJson();
 

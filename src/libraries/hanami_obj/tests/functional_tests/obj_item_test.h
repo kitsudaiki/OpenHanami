@@ -10,18 +10,17 @@
 #define OBJPARSER_TEST_H
 
 #include <hanami_common/test_helper/compare_test_helper.h>
-#include <utility>
+
 #include <string>
+#include <utility>
 #include <vector>
 
-class ObjItem_Test
-        : public Hanami::CompareTestHelper
+class ObjItem_Test : public Hanami::CompareTestHelper
 {
-
-public:
+   public:
     ObjItem_Test();
 
-private:
+   private:
     void parse_test();
     void converter_test();
 
@@ -29,4 +28,4 @@ private:
     const std::string getCompareString();
 };
 
-#endif // OBJPARSER_TEST_H
+#endif  // OBJPARSER_TEST_H

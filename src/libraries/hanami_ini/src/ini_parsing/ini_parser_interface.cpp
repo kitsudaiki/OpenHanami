@@ -6,14 +6,12 @@
  *  @copyright MIT License
  */
 
-#include <ini_parsing/ini_parser_interface.h>
-#include <ini_parser.h>
 #include <hanami_common/methods/string_methods.h>
+#include <ini_parser.h>
+#include <ini_parsing/ini_parser_interface.h>
 
-# define YY_DECL \
-    Hanami::IniParser::symbol_type inilex (Hanami::IniParserInterface& driver)
+#define YY_DECL Hanami::IniParser::symbol_type inilex(Hanami::IniParserInterface& driver)
 YY_DECL;
-
 
 namespace Hanami
 {
@@ -31,10 +29,7 @@ bool IniParserInterface::m_outsideComment = true;
  * @param traceParsing If set to true, the scanner prints all triggered rules.
  *                     It is only for better debugging.
  */
-IniParserInterface::IniParserInterface(const bool traceParsing)
-{
-    m_traceParsing = traceParsing;
-}
+IniParserInterface::IniParserInterface(const bool traceParsing) { m_traceParsing = traceParsing; }
 
 /**
  * @brief static methode to get instance of the interface
@@ -44,7 +39,7 @@ IniParserInterface::IniParserInterface(const bool traceParsing)
 IniParserInterface*
 IniParserInterface::getInstance()
 {
-    if(m_instance == nullptr) {
+    if (m_instance == nullptr) {
         m_instance = new IniParserInterface();
     }
 
@@ -60,8 +55,7 @@ IniParserInterface::getInstance()
  * @return resulting object
  */
 json
-IniParserInterface::parse(const std::string &inputString,
-                          ErrorContainer &error)
+IniParserInterface::parse(const std::string& inputString, ErrorContainer& error)
 {
     std::lock_guard<std::mutex> guard(m_lock);
 
@@ -76,9 +70,7 @@ IniParserInterface::parse(const std::string &inputString,
     this->scan_end();
 
     // handle negative result
-    if(res != 0
-            || m_errorMessage.size() > 0)
-    {
+    if (res != 0 || m_errorMessage.size() > 0) {
         error.addMeesage(m_errorMessage);
         LOG_ERROR(error);
         return nullptr;
@@ -95,19 +87,17 @@ IniParserInterface::parse(const std::string &inputString,
  * @return cleared string
  */
 const std::string
-IniParserInterface::removeQuotes(const std::string &input)
+IniParserInterface::removeQuotes(const std::string& input)
 {
     // precheck
-    if(input.length() == 0) {
+    if (input.length() == 0) {
         return input;
     }
 
     // clear
-    if(input[0] == '\"'
-            && input[input.length()-1] == '\"')
-    {
+    if (input[0] == '\"' && input[input.length() - 1] == '\"') {
         std::string result = "";
-        for(uint32_t i = 1; i < input.length()-1; i++) {
+        for (uint32_t i = 1; i < input.length() - 1; i++) {
             result += input[i];
         }
 
@@ -125,7 +115,7 @@ IniParserInterface::removeQuotes(const std::string &input)
 void
 IniParserInterface::setOutput(json output)
 {
-     m_output = output;
+    m_output = output;
 }
 
 /**
@@ -137,10 +127,9 @@ IniParserInterface::setOutput(json output)
  * @param message error-specific message from the parser
  */
 void
-IniParserInterface::error(const location &location,
-                          const std::string& message)
+IniParserInterface::error(const location& location, const std::string& message)
 {
-    if(m_errorMessage.size() > 0) {
+    if (m_errorMessage.size() > 0) {
         return;
     }
 
@@ -153,21 +142,19 @@ IniParserInterface::error(const location &location,
     splitStringByDelimiter(splittedContent, m_inputString, '\n');
 
     // build error-message
-    m_errorMessage =  "ERROR while parsing ini-formated string \n";
+    m_errorMessage = "ERROR while parsing ini-formated string \n";
     m_errorMessage += "parser-message: " + message + " \n";
     m_errorMessage += "line-number: " + std::to_string(linenumber) + " \n";
 
-    if(splittedContent[linenumber - 1].size() > errorStart - 1 + errorLength)
-    {
-        m_errorMessage.append("position in line: " +  std::to_string(location.begin.column) + "\n");
+    if (splittedContent[linenumber - 1].size() > errorStart - 1 + errorLength) {
+        m_errorMessage.append("position in line: " + std::to_string(location.begin.column) + "\n");
         m_errorMessage.append("broken part in string: \""
                               + splittedContent[linenumber - 1].substr(errorStart - 1, errorLength)
                               + "\"");
     }
-    else
-    {
+    else {
         m_errorMessage.append("position in line: UNKNOWN POSITION (maybe a string was not closed)");
     }
 }
 
-}
+}  // namespace Hanami

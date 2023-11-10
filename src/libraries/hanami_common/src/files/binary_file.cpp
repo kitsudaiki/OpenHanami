@@ -20,12 +20,12 @@ namespace Hanami
  *
  * @param filePath file-path of the binary-file
  */
-BinaryFile::BinaryFile(const std::string &filePath)
+BinaryFile::BinaryFile(const std::string& filePath)
 {
     m_filePath = filePath;
 
     ErrorContainer error;
-    if(initFile(error) == false) {
+    if (initFile(error) == false) {
         LOG_ERROR(error);
     }
 }
@@ -36,7 +36,7 @@ BinaryFile::BinaryFile(const std::string &filePath)
 BinaryFile::~BinaryFile()
 {
     ErrorContainer error;
-    if(closeFile(error) == false) {
+    if (closeFile(error) == false) {
         LOG_ERROR(error);
     }
 }
@@ -49,15 +49,12 @@ BinaryFile::~BinaryFile()
  * @return true is successful, else false
  */
 bool
-BinaryFile::initFile(Hanami::ErrorContainer &error)
+BinaryFile::initFile(Hanami::ErrorContainer& error)
 {
-    m_fileDescriptor = open(m_filePath.c_str(),
-                            O_CREAT | O_RDWR | O_LARGEFILE,
-                            0666);
+    m_fileDescriptor = open(m_filePath.c_str(), O_CREAT | O_RDWR | O_LARGEFILE, 0666);
 
     // check if file is open
-    if(m_fileDescriptor == -1)
-    {
+    if (m_fileDescriptor == -1) {
         error.addMeesage("Failed to initialize binary file for path '" + m_filePath + "'");
         return false;
     }
@@ -74,25 +71,22 @@ BinaryFile::initFile(Hanami::ErrorContainer &error)
  * @return true is successful, else false
  */
 bool
-BinaryFile::allocateStorage(const uint64_t numberOfBytes, ErrorContainer &error)
+BinaryFile::allocateStorage(const uint64_t numberOfBytes, ErrorContainer& error)
 {
-    if(numberOfBytes == 0) {
+    if (numberOfBytes == 0) {
         return true;
     }
 
     // set first to the start of the file and allocate the new size at the end of the file
     lseek(m_fileDescriptor, 0, SEEK_SET);
-    const long ret = posix_fallocate(m_fileDescriptor,
-                                     static_cast<long>(m_totalFileSize),
-                                     static_cast<long>(numberOfBytes));
+    const long ret = posix_fallocate(
+        m_fileDescriptor, static_cast<long>(m_totalFileSize), static_cast<long>(numberOfBytes));
 
     // check if allocation was successful
-    if(ret != 0)
-    {
+    if (ret != 0) {
         // TODO: process errno
         error.addMeesage("Failed to allocate new storage for the binary file for path '"
-                         + m_filePath
-                         + "'");
+                         + m_filePath + "'");
         return false;
     }
 
@@ -108,19 +102,17 @@ BinaryFile::allocateStorage(const uint64_t numberOfBytes, ErrorContainer &error)
  * @return false, if file not open, else true
  */
 bool
-BinaryFile::updateFileSize(ErrorContainer &error)
+BinaryFile::updateFileSize(ErrorContainer& error)
 {
-    if(m_fileDescriptor == -1)
-    {
+    if (m_fileDescriptor == -1) {
         error.addMeesage("Failed to allocate new storage for the binary file for path '"
-                         + m_filePath
-                         + "', because the file is not open.");
+                         + m_filePath + "', because the file is not open.");
         return false;
     }
 
     // check if filesize is really 0 or check is requested
     const long ret = lseek(m_fileDescriptor, 0, SEEK_END);
-    if(ret >= 0) {
+    if (ret >= 0) {
         m_totalFileSize = static_cast<uint64_t>(ret);
     }
 
@@ -138,21 +130,19 @@ BinaryFile::updateFileSize(ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-BinaryFile::readCompleteFile(DataBuffer &buffer, ErrorContainer &error)
+BinaryFile::readCompleteFile(DataBuffer& buffer, ErrorContainer& error)
 {
     // go to the end of the file to get the size of the file
     const long size = lseek(m_fileDescriptor, 0, SEEK_END);
-    if(size <= 0)
-    {
-        error.addMeesage("Failed to find the end of the binary file for path '"
-                         + m_filePath
+    if (size <= 0) {
+        error.addMeesage("Failed to find the end of the binary file for path '" + m_filePath
                          + "'.");
         return false;
     }
 
     // resize buffer to the size of the file
     uint64_t numberOfBlocks = (static_cast<uint64_t>(size) / buffer.blockSize);
-    if(size % buffer.blockSize != 0) {
+    if (size % buffer.blockSize != 0) {
         numberOfBlocks++;
     }
     allocateBlocks_DataBuffer(buffer, numberOfBlocks);
@@ -160,12 +150,9 @@ BinaryFile::readCompleteFile(DataBuffer &buffer, ErrorContainer &error)
     // go to the beginning of the file again and read the complete file into the buffer
     lseek(m_fileDescriptor, 0, SEEK_SET);
     const ssize_t ret = read(m_fileDescriptor, buffer.data, static_cast<uint64_t>(size));
-    if(ret == -1)
-    {
+    if (ret == -1) {
         // TODO: process errno
-        error.addMeesage("Failed to read the binary file for path '"
-                         + m_filePath
-                         + "'");
+        error.addMeesage("Failed to read the binary file for path '" + m_filePath + "'");
         return false;
     }
 
@@ -184,18 +171,14 @@ BinaryFile::readCompleteFile(DataBuffer &buffer, ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-BinaryFile::writeCompleteFile(DataBuffer &buffer, ErrorContainer &error)
+BinaryFile::writeCompleteFile(DataBuffer& buffer, ErrorContainer& error)
 {
     // resize file to the size of the buffer
     int64_t sizeDiff = buffer.usedBufferSize - m_totalFileSize;
-    if(sizeDiff > 0)
-    {
+    if (sizeDiff > 0) {
         // allocate additional memory
-        if(allocateStorage(sizeDiff, error) == false)
-        {
-            error.addMeesage("Failed to write to binary file for path '"
-                             + m_filePath
-                             + "'");
+        if (allocateStorage(sizeDiff, error) == false) {
+            error.addMeesage("Failed to write to binary file for path '" + m_filePath + "'");
             return false;
         }
     }
@@ -203,12 +186,9 @@ BinaryFile::writeCompleteFile(DataBuffer &buffer, ErrorContainer &error)
     // go to the beginning of the file and write data to file
     lseek(m_fileDescriptor, 0, SEEK_SET);
     const ssize_t ret = write(m_fileDescriptor, buffer.data, buffer.usedBufferSize);
-    if(ret == -1)
-    {
+    if (ret == -1) {
         // TODO: process errno
-        error.addMeesage("Failed to write to binary file for path '"
-                         + m_filePath
-                         + "'");
+        error.addMeesage("Failed to write to binary file for path '" + m_filePath + "'");
         return false;
     }
 
@@ -229,16 +209,14 @@ bool
 BinaryFile::writeDataIntoFile(const void* data,
                               const uint64_t startBytePosition,
                               const uint64_t numberOfBytes,
-                              ErrorContainer &error)
+                              ErrorContainer& error)
 {
-    if(numberOfBytes == 0) {
+    if (numberOfBytes == 0) {
         return true;
     }
 
     // precheck
-    if(startBytePosition + numberOfBytes > m_totalFileSize
-            || m_fileDescriptor < 0)
-    {
+    if (startBytePosition + numberOfBytes > m_totalFileSize || m_fileDescriptor < 0) {
         error.addMeesage("Failed to write data to binary file for path '"
                          + m_filePath
                          + "', because the precheck failed. Either the buffer is incompatible "
@@ -247,25 +225,18 @@ BinaryFile::writeDataIntoFile(const void* data,
     }
 
     // go to the requested position and write the block
-    const long retSeek = lseek(m_fileDescriptor,
-                               static_cast<long>(startBytePosition),
-                               SEEK_SET);
-    if(retSeek < 0)
-    {
+    const long retSeek = lseek(m_fileDescriptor, static_cast<long>(startBytePosition), SEEK_SET);
+    if (retSeek < 0) {
         error.addMeesage("Failed to go to the requested write position in binary file for path '"
-                         + m_filePath
-                         + "'");
+                         + m_filePath + "'");
         return false;
     }
 
     // write data to file
     const ssize_t ret = write(m_fileDescriptor, static_cast<const uint8_t*>(data), numberOfBytes);
-    if(ret == -1)
-    {
+    if (ret == -1) {
         // TODO: process errno
-        error.addMeesage("Failed to write data to binary file for path '"
-                         + m_filePath
-                         + "'");
+        error.addMeesage("Failed to write data to binary file for path '" + m_filePath + "'");
         return false;
     }
 
@@ -289,16 +260,14 @@ bool
 BinaryFile::readDataFromFile(void* data,
                              const uint64_t startBytePosition,
                              const uint64_t numberOfBytes,
-                             ErrorContainer &error)
+                             ErrorContainer& error)
 {
-    if(numberOfBytes == 0) {
+    if (numberOfBytes == 0) {
         return true;
     }
 
     // precheck
-    if(startBytePosition + numberOfBytes > m_totalFileSize
-            || m_fileDescriptor < 0)
-    {
+    if (startBytePosition + numberOfBytes > m_totalFileSize || m_fileDescriptor < 0) {
         error.addMeesage("Failed to read data of binary file for path '"
                          + m_filePath
                          + "', because the precheck failed. Either the buffer is incompatible "
@@ -307,24 +276,17 @@ BinaryFile::readDataFromFile(void* data,
     }
 
     // go to the requested position and read the block
-    const long retSeek = lseek(m_fileDescriptor,
-                               static_cast<long>(startBytePosition),
-                               SEEK_SET);
-    if(retSeek < 0)
-    {
+    const long retSeek = lseek(m_fileDescriptor, static_cast<long>(startBytePosition), SEEK_SET);
+    if (retSeek < 0) {
         error.addMeesage("Failed to go to the requested read position in binary file for path '"
-                         + m_filePath
-                         + "'");
+                         + m_filePath + "'");
         return false;
     }
 
     const ssize_t ret = read(m_fileDescriptor, static_cast<uint8_t*>(data), numberOfBytes);
-    if(ret == -1)
-    {
+    if (ret == -1) {
         // TODO: process errno
-        error.addMeesage("Failed to read data of binary file for path '"
-                         + m_filePath
-                         + "'");
+        error.addMeesage("Failed to read data of binary file for path '" + m_filePath + "'");
         return false;
     }
 
@@ -339,20 +301,17 @@ BinaryFile::readDataFromFile(void* data,
  * @return true, if file-descriptor is valid, else false
  */
 bool
-BinaryFile::closeFile(ErrorContainer &error)
+BinaryFile::closeFile(ErrorContainer& error)
 {
     // precheck
-    if(m_fileDescriptor == -1) {
+    if (m_fileDescriptor == -1) {
         return true;
     }
 
     // try to close file
-    if(close(m_fileDescriptor) < 0)
-    {
+    if (close(m_fileDescriptor) < 0) {
         // TODO: process errno
-        error.addMeesage("Failed to close binary file for path '"
-                         + m_filePath
-                         + "'");
+        error.addMeesage("Failed to close binary file for path '" + m_filePath + "'");
         return false;
     }
 
@@ -360,4 +319,4 @@ BinaryFile::closeFile(ErrorContainer &error)
     return true;
 }
 
-}
+}  // namespace Hanami

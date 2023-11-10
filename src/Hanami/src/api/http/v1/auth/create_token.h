@@ -25,17 +25,16 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-class CreateToken
-        : public Blossom
+class CreateToken : public Blossom
 {
-public:
+   public:
     CreateToken();
 
-protected:
-    bool runTask(BlossomIO &blossomIO,
-                 const json &,
-                 BlossomStatus &status,
-                 Hanami::ErrorContainer &error);
+   protected:
+    bool runTask(BlossomIO& blossomIO,
+                 const json&,
+                 BlossomStatus& status,
+                 Hanami::ErrorContainer& error);
 };
 
-#endif // HANAMI_CREATETOKEN_H
+#endif  // HANAMI_CREATETOKEN_H

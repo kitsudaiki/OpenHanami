@@ -20,13 +20,11 @@
  *      limitations under the License.
  */
 
-#include <hanami_hardware/cpu_thread.h>
-
-#include <hanami_hardware/cpu_package.h>
-#include <hanami_hardware/cpu_core.h>
-#include <hanami_hardware/host.h>
-
 #include <hanami_cpu/cpu.h>
+#include <hanami_hardware/cpu_core.h>
+#include <hanami_hardware/cpu_package.h>
+#include <hanami_hardware/cpu_thread.h>
+#include <hanami_hardware/host.h>
 
 namespace Hanami
 {
@@ -36,9 +34,11 @@ namespace Hanami
  *
  * @param threadId id of the physical cpu thread, which belongs to this thread
  */
-CpuThread::CpuThread(const uint32_t threadId)
-    : threadId(threadId),
-      m_rapl(threadId) {}
+#if (defined(__i386__)) || (defined(__x86_64__))
+CpuThread::CpuThread(const uint32_t threadId) : threadId(threadId), m_rapl(threadId) {}
+#else
+CpuThread::CpuThread(const uint32_t threadId) : threadId(threadId) {}
+#endif
 
 /**
  * @brief destructor
@@ -58,53 +58,50 @@ CpuThread::initThread(Host* host)
     ErrorContainer error;
 
     // min-speed
-    if(getMinimumSpeed(minSpeed, threadId, error) == false)
-    {
-        LOG_ERROR(error);
-        return false;
+    if (getMinimumSpeed(minSpeed, threadId, error) == false) {
+        LOG_WARNING(error.toString());
+        error.reset();
     }
 
     // max-speed
-    if(getMaximumSpeed(maxSpeed, threadId, error) == false)
-    {
-        LOG_ERROR(error);
-        return false;
+    if (getMaximumSpeed(maxSpeed, threadId, error) == false) {
+        LOG_WARNING(error.toString());
+        error.reset();
     }
 
     // current-min-speed
-    if(getCurrentMinimumSpeed(currentMinSpeed, threadId, error) == false)
-    {
-        LOG_ERROR(error);
-        return false;
+    if (getCurrentMinimumSpeed(currentMinSpeed, threadId, error) == false) {
+        LOG_WARNING(error.toString());
+        error.reset();
     }
 
     // current-max-speed
-    if(getCurrentMaximumSpeed(currentMaxSpeed, threadId, error) == false)
-    {
-        LOG_ERROR(error);
-        return false;
+    if (getCurrentMaximumSpeed(currentMaxSpeed, threadId, error) == false) {
+        LOG_WARNING(error.toString());
+        error.reset();
     }
 
     // core-id
     uint64_t coreId = 0;
-    if(getCpuCoreId(coreId, threadId, error) == false)
-    {
+    if (getCpuCoreId(coreId, threadId, error) == false) {
         LOG_ERROR(error);
         return false;
     }
 
     // package-id
     uint64_t packageId = 0;
-    if(getCpuPackageId(packageId, threadId, error) == false)
-    {
+    if (getCpuPackageId(packageId, threadId, error) == false) {
         LOG_ERROR(error);
         return false;
     }
 
+#if (defined(__i386__)) || (defined(__x86_64__))
     // try to init rapl
-    if(m_rapl.initRapl(error) == false) {
-        LOG_ERROR(error);
+    if (m_rapl.initRapl(error) == false) {
+        LOG_WARNING(error.toString());
+        error.reset();
     }
+#endif
 
     // add thread to the topological overview
     CpuPackage* package = host->addPackage(packageId);
@@ -125,8 +122,7 @@ CpuThread::getCurrentThreadSpeed() const
     ErrorContainer error;
 
     uint64_t speed = 0;
-    if(getCurrentSpeed(speed, threadId, error) == false)
-    {
+    if (getCurrentSpeed(speed, threadId, error) == false) {
         LOG_ERROR(error);
         return 0;
     }
@@ -142,12 +138,16 @@ CpuThread::getCurrentThreadSpeed() const
 double
 CpuThread::getThermalSpec() const
 {
+#if (defined(__i386__)) || (defined(__x86_64__))
     // check if RAPL was successfully initialized
-    if(m_rapl.isActive() == false) {
+    if (m_rapl.isActive() == false) {
         return 0.0;
     }
 
     return m_rapl.getInfo().thermal_spec_power;
+#else
+    return 0.0f;
+#endif
 }
 
 /**
@@ -158,12 +158,16 @@ CpuThread::getThermalSpec() const
 double
 CpuThread::getTotalPackagePower()
 {
+#if (defined(__i386__)) || (defined(__x86_64__))
     // check if RAPL was successfully initialized
-    if(m_rapl.isActive() == false) {
+    if (m_rapl.isActive() == false) {
         return 0.0;
     }
 
     return m_rapl.calculateDiff().pkgAvg;
+#else
+    return 0.0f;
+#endif
 }
 
 /**
@@ -194,4 +198,4 @@ CpuThread::toJson()
     return result;
 }
 
-}
+}  // namespace Hanami

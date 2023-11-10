@@ -22,17 +22,14 @@
 
 #include "create_cluster.h"
 
-#include <core/cluster/cluster_handler.h>
 #include <core/cluster/cluster.h>
+#include <core/cluster/cluster_handler.h>
 #include <database/cluster_table.h>
-
-#include <hanami_crypto/common.h>
 #include <hanami_common/buffer/data_buffer.h>
-
+#include <hanami_crypto/common.h>
 #include <hanami_root.h>
 
-CreateCluster::CreateCluster()
-    : Blossom("Create new cluster.")
+CreateCluster::CreateCluster() : Blossom("Create new cluster.")
 {
     errorCodes.push_back(CONFLICT_RTYPE);
 
@@ -41,32 +38,30 @@ CreateCluster::CreateCluster()
     //----------------------------------------------------------------------------------------------
 
     registerInputField("name", SAKURA_STRING_TYPE)
-            .setComment("Name for the new cluster.")
-            .setLimit(4, 256)
-            .setRegex(NAME_REGEX);
+        .setComment("Name for the new cluster.")
+        .setLimit(4, 256)
+        .setRegex(NAME_REGEX);
 
     registerInputField("template", SAKURA_STRING_TYPE)
-            .setComment("Cluster-template as base64-string.")
-            .setRequired(false);
+        .setComment("Cluster-template as base64-string.")
+        .setRequired(false);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid", SAKURA_STRING_TYPE)
-            .setComment("UUID of the new created cluster.");
+    registerOutputField("uuid", SAKURA_STRING_TYPE).setComment("UUID of the new created cluster.");
 
-    registerOutputField("name", SAKURA_STRING_TYPE)
-            .setComment("Name of the new created cluster.");
+    registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the new created cluster.");
 
     registerOutputField("owner_id", SAKURA_STRING_TYPE)
-            .setComment("ID of the user, who created the new cluster.");
+        .setComment("ID of the user, who created the new cluster.");
 
     registerOutputField("project_id", SAKURA_STRING_TYPE)
-            .setComment("ID of the project, where the new cluster belongs to.");
+        .setComment("ID of the project, where the new cluster belongs to.");
 
     registerOutputField("visibility", SAKURA_STRING_TYPE)
-            .setComment("Visibility of the new created cluster (private, shared, public).");
+        .setComment("Visibility of the new created cluster (private, shared, public).");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -77,10 +72,10 @@ CreateCluster::CreateCluster()
  * @brief runTask
  */
 bool
-CreateCluster::runTask(BlossomIO &blossomIO,
-                       const json &context,
-                       BlossomStatus &status,
-                       Hanami::ErrorContainer &error)
+CreateCluster::runTask(BlossomIO& blossomIO,
+                       const json& context,
+                       BlossomStatus& status,
+                       Hanami::ErrorContainer& error)
 {
     const std::string clusterName = blossomIO.input["name"];
     const std::string base64Template = blossomIO.input["template"];
@@ -88,43 +83,40 @@ CreateCluster::runTask(BlossomIO &blossomIO,
 
     // check if user already exist within the table
     json getResult;
-    if(ClusterTable::getInstance()->getClusterByName(getResult, clusterName, userContext, error) == false)
+    if (ClusterTable::getInstance()->getClusterByName(getResult, clusterName, userContext, error)
+        == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // handle not found
-    if(getResult.size() != 0)
-    {
+    if (getResult.size() != 0) {
         status.errorMessage = "Cluster with name '" + clusterName + "' already exist.";
         status.statusCode = CONFLICT_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
     Hanami::ClusterMeta parsedCluster;
-    if(base64Template != "")
-    {
+    if (base64Template != "") {
         // decode base64 formated template to check if valid base64-string
         Hanami::DataBuffer convertedTemplate;
-        if(Hanami::decodeBase64(convertedTemplate, base64Template) == false)
-        {
+        if (Hanami::decodeBase64(convertedTemplate, base64Template) == false) {
             status.errorMessage = "Uploaded template is not a valid base64-String.";
             status.statusCode = BAD_REQUEST_RTYPE;
-            error.addMeesage(status.errorMessage);
+            LOG_DEBUG(status.errorMessage);
             return false;
         }
 
         // parse cluster-template to validate syntax
         const std::string convertedTemplateStr(static_cast<const char*>(convertedTemplate.data),
                                                convertedTemplate.usedBufferSize);
-        if(Hanami::parseCluster(&parsedCluster, convertedTemplateStr, error) == false)
-        {
+        if (Hanami::parseCluster(&parsedCluster, convertedTemplateStr, error) == false) {
             status.errorMessage = "Uploaded template is not a valid cluster-template: \n";
             status.errorMessage += error.toString();
             status.statusCode = BAD_REQUEST_RTYPE;
-            error.addMeesage(status.errorMessage);
+            LOG_DEBUG(status.errorMessage);
             return false;
         }
     }
@@ -137,18 +129,16 @@ CreateCluster::runTask(BlossomIO &blossomIO,
     clusterData["visibility"] = "private";
 
     // add new user to table
-    if(ClusterTable::getInstance()->addCluster(clusterData, userContext, error) == false)
-    {
+    if (ClusterTable::getInstance()->addCluster(clusterData, userContext, error) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Failed to add cluster to database");
         return false;
     }
 
     // get new created user from database
-    if(ClusterTable::getInstance()->getClusterByName(blossomIO.output,
-                                                     clusterName,
-                                                     userContext,
-                                                     error) == false)
+    if (ClusterTable::getInstance()->getClusterByName(
+            blossomIO.output, clusterName, userContext, error)
+        == false)
     {
         error.addMeesage("Failed to get cluster from database by name '" + clusterName + "'");
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -159,11 +149,9 @@ CreateCluster::runTask(BlossomIO &blossomIO,
 
     // create new cluster
     Cluster* newCluster = new Cluster();
-    if(base64Template != "")
-    {
+    if (base64Template != "") {
         // generate and initialize the cluster based on the cluster-templates
-        if(newCluster->init(parsedCluster, uuid) == false)
-        {
+        if (newCluster->init(parsedCluster, uuid) == false) {
             error.addMeesage("Failed to initialize cluster based on a template");
             status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
             delete newCluster;

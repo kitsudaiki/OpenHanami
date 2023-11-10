@@ -22,12 +22,12 @@
 
 #include "load_cluster.h"
 
-#include <hanami_root.h>
+#include <core/cluster/add_tasks.h>
+#include <core/cluster/cluster.h>
+#include <core/cluster/cluster_handler.h>
 #include <database/checkpoint_table.h>
 #include <database/cluster_table.h>
-#include <core/cluster/cluster_handler.h>
-#include <core/cluster/cluster.h>
-#include <core/cluster/add_tasks.h>
+#include <hanami_root.h>
 
 LoadCluster::LoadCluster()
     : Blossom("Load a checkpoint from shiori into an existing cluster and override the old data.")
@@ -39,20 +39,21 @@ LoadCluster::LoadCluster()
     //----------------------------------------------------------------------------------------------
 
     registerInputField("cluster_uuid", SAKURA_STRING_TYPE)
-            .setComment("UUID of the cluster, where the checkpoint should be loaded into.")
-            .setRegex(UUID_REGEX);
+        .setComment("UUID of the cluster, where the checkpoint should be loaded into.")
+        .setRegex(UUID_REGEX);
 
     registerInputField("checkpoint_uuid", SAKURA_STRING_TYPE)
-            .setComment("UUID of the checkpoint, which should be loaded from shiori "
-                       "into the cluster.")
-            .setRegex(UUID_REGEX);
+        .setComment(
+            "UUID of the checkpoint, which should be loaded from shiori "
+            "into the cluster.")
+        .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
     registerOutputField("uuid", SAKURA_STRING_TYPE)
-            .setComment("UUID of the load-task in the queue of the cluster.");
+        .setComment("UUID of the load-task in the queue of the cluster.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -63,10 +64,10 @@ LoadCluster::LoadCluster()
  * @brief runTask
  */
 bool
-LoadCluster::runTask(BlossomIO &blossomIO,
-                     const json &context,
-                     BlossomStatus &status,
-                     Hanami::ErrorContainer &error)
+LoadCluster::runTask(BlossomIO& blossomIO,
+                     const json& context,
+                     BlossomStatus& status,
+                     Hanami::ErrorContainer& error)
 {
     const std::string clusterUuid = blossomIO.input["cluster_uuid"];
     const std::string checkpointUuid = blossomIO.input["checkpoint_uuid"];
@@ -74,64 +75,54 @@ LoadCluster::runTask(BlossomIO &blossomIO,
 
     // get data from table
     json clusterInfo;
-    if(ClusterTable::getInstance()->getCluster(clusterInfo,
-                                               clusterUuid,
-                                               userContext,
-                                               error) == false)
+    if (ClusterTable::getInstance()->getCluster(clusterInfo, clusterUuid, userContext, error)
+        == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // handle not found
-    if(clusterInfo.size() == 0)
-    {
+    if (clusterInfo.size() == 0) {
         status.errorMessage = "Cluster with uuid '" + clusterUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
     // get cluster
     Cluster* cluster = ClusterHandler::getInstance()->getCluster(clusterUuid);
-    if(cluster == nullptr)
-    {
+    if (cluster == nullptr) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMeesage("Cluster with UUID '"
-                         + clusterUuid
+        error.addMeesage("Cluster with UUID '" + clusterUuid
                          + "'not found even it exists within the database");
         return false;
     }
 
     // get meta-infos of data-set from shiori
     json parsedCheckpointInfo;
-    if(CheckpointTable::getInstance()->getCheckpoint(parsedCheckpointInfo,
-                                                     checkpointUuid,
-                                                     userContext,
-                                                     error,
-                                                     true) == false)
+    if (CheckpointTable::getInstance()->getCheckpoint(
+            parsedCheckpointInfo, checkpointUuid, userContext, error, true)
+        == false)
     {
-        error.addMeesage("Failed to get information from database for UUID '" + checkpointUuid + "'");
+        error.addMeesage("Failed to get information from database for UUID '" + checkpointUuid
+                         + "'");
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // handle not found
-    if(clusterInfo.size() == 0)
-    {
+    if (clusterInfo.size() == 0) {
         status.errorMessage = "Checkpoint with uuid '" + checkpointUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
     // init request-task
     const std::string infoStr = parsedCheckpointInfo.dump();
-    const std::string taskUuid = addCheckpointRestoreTask(*cluster,
-                                                          "",
-                                                          infoStr,
-                                                          userContext.userId,
-                                                          userContext.projectId);
+    const std::string taskUuid = addCheckpointRestoreTask(
+        *cluster, "", infoStr, userContext.userId, userContext.projectId);
     blossomIO.output["uuid"] = taskUuid;
 
     return true;

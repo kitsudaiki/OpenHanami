@@ -23,15 +23,15 @@
 #ifndef SIGNING_H
 #define SIGNING_H
 
-#include <string>
-#include <iostream>
-#include <openssl/hmac.h>
+#include <cryptopp/aes.h>
+#include <hanami_common/logger.h>
+#include <openssl/ec.h>
 #include <openssl/err.h>
 #include <openssl/evp.h>
-#include <openssl/ec.h>
-#include <cryptopp/aes.h>
+#include <openssl/hmac.h>
 
-#include <hanami_common/logger.h>
+#include <iostream>
+#include <string>
 
 namespace Hanami
 {
@@ -39,15 +39,15 @@ namespace Hanami
 //--------------------------------------------------------------------------------------------------
 // HMAC
 //--------------------------------------------------------------------------------------------------
-bool create_HMAC_SHA256(std::string &result,
-                        const std::string &input,
-                        const CryptoPP::SecByteBlock &key,
-                        Hanami::ErrorContainer &error);
+bool create_HMAC_SHA256(std::string& result,
+                        const std::string& input,
+                        const CryptoPP::SecByteBlock& key,
+                        Hanami::ErrorContainer& error);
 
-bool verify_HMAC_SHA256(const std::string &input,
-                        const std::string &hmac,
-                        const CryptoPP::SecByteBlock &key);
+bool verify_HMAC_SHA256(const std::string& input,
+                        const std::string& hmac,
+                        const CryptoPP::SecByteBlock& key);
 
-}
+}  // namespace Hanami
 
-#endif // SIGNING_H
+#endif  // SIGNING_H

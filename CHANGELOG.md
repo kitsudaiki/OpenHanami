@@ -1,5 +1,42 @@
 # Changelog
 
+## v0.3.2
+
+- **Date**: 2023-11-10
+
+### Added
+
+- basic Ansible-playbooks were added in order to deploy the project without kubernetes
+- kubernetes-setup:
+    - now use cert-manager to generate certificates 
+    - ingress was added for ssl-termination of https-connections
+    - persistent volume was added to persist data like database within the kuberntes-setup
+    - node label was added to define the node, where hanami should be deployed by kuberntes
+- first contribution-guide and code-styling guide was added
+- clang-format file was added with a git-hook
+- clang-format check and basic cppcheck was added to the ci-pipeline
+- example-configs for testing purpose
+- at start there is now a check if the directories for the checkpoints and dataset, defined by the config, even exist
+
+### Fixed
+
+- fixed compile-error when trying to build on ARM64 architecture
+- fixed compile-error in cude-code with the standard nvidia-toolkit in ubuntu 22.04
+- fixed broken json-strings in javascript-sdk
+- fixed false error reponse-codes in API
+
+### Changed
+
+- moved old readme files into the normal documenation
+- use clang++ instead of g++ as compiler
+- non-critical API-errors, like for example a 404 (not found) when searching for an unkown id, doesn't produce an internal error-output anymore 
+
+### Removed
+
+- ssl-termination was removed from backend-API, because it will be done by another service in front of the API, like nginx
+
+
+
 ## v0.3.1
 
 - **Date**: 2023-09-24
@@ -17,6 +54,7 @@
 ### Removed
 
 - Removed unused and deprecated checkpoint create and finalize endpoints
+
 
 
 ## v0.3.0 

@@ -20,10 +20,12 @@
  *      limitations under the License.
  */
 
-#include <iostream>
 #include <config_handler_test.h>
 
-int main()
+#include <iostream>
+
+int
+main()
 {
     Hanami::ConfigHandler_Test configHandler_Test;
     return 0;

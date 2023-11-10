@@ -23,16 +23,16 @@
 #ifndef KITSUNEMIMI_SAKURA_NETWORK_MULTIBLOCK_IO_H
 #define KITSUNEMIMI_SAKURA_NETWORK_MULTIBLOCK_IO_H
 
-#include <iostream>
 #include <assert.h>
-#include <atomic>
-#include <utility>
-#include <deque>
-#include <map>
-#include <string>
-
 #include <hanami_common/buffer/data_buffer.h>
 #include <hanami_common/logger.h>
+
+#include <atomic>
+#include <deque>
+#include <iostream>
+#include <map>
+#include <string>
+#include <utility>
 
 namespace Hanami
 {
@@ -40,10 +40,9 @@ class Session;
 
 class MultiblockIO
 {
-public:
+   public:
     // multiblock-message
-    struct MultiblockBuffer
-    {
+    struct MultiblockBuffer {
         uint64_t blockerId = 0;
         uint64_t multiblockId = 0;
         uint64_t messageSize = 0;
@@ -59,10 +58,9 @@ public:
     // create
     uint64_t sendOutgoingData(const void* data,
                               const uint64_t size,
-                              ErrorContainer &error,
+                              ErrorContainer& error,
                               const uint64_t blockerId = 0);
-    bool createIncomingBuffer(const uint64_t multiblockId,
-                              const uint64_t size);
+    bool createIncomingBuffer(const uint64_t multiblockId, const uint64_t size);
 
     // process incoming
     MultiblockBuffer getIncomingBuffer(const uint64_t multiblockId);
@@ -71,7 +69,7 @@ public:
                                  const uint64_t size);
     bool removeMultiblockBuffer(const uint64_t multiblockId);
 
-private:
+   private:
     Session* m_session = nullptr;
     bool m_abort = false;
 
@@ -79,6 +77,6 @@ private:
     std::map<uint64_t, MultiblockBuffer> m_incomingBuffer;
 };
 
-}
+}  // namespace Hanami
 
-#endif // KITSUNEMIMI_SAKURA_NETWORK_MULTIBLOCK_IO_H
+#endif  // KITSUNEMIMI_SAKURA_NETWORK_MULTIBLOCK_IO_H

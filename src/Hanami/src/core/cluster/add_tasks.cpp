@@ -23,9 +23,8 @@
 #include "add_tasks.h"
 
 #include <core/cluster/cluster.h>
-#include <core/cluster/states/task_handle_state.h>
 #include <core/cluster/statemachine_init.h>
-
+#include <core/cluster/states/task_handle_state.h>
 #include <hanami_common/statemachine.h>
 
 /**
@@ -43,10 +42,10 @@
  * @return uuid of the new task
  */
 const std::string
-addImageTrainTask(Cluster &cluster,
-                  const std::string &name,
-                  const std::string &userId,
-                  const std::string &projectId,
+addImageTrainTask(Cluster& cluster,
+                  const std::string& name,
+                  const std::string& userId,
+                  const std::string& projectId,
                   float* inputData,
                   const uint64_t numberOfInputsPerCycle,
                   const uint64_t numberOfOuputsPerCycle,
@@ -92,10 +91,10 @@ addImageTrainTask(Cluster &cluster,
  * @return uuid of the new task
  */
 const std::string
-addImageRequestTask(Cluster &cluster,
-                    const std::string &name,
-                    const std::string &userId,
-                    const std::string &projectId,
+addImageRequestTask(Cluster& cluster,
+                    const std::string& name,
+                    const std::string& userId,
+                    const std::string& projectId,
                     float* inputData,
                     const uint64_t numberOfInputsPerCycle,
                     const uint64_t numberOfOuputsPerCycle,
@@ -108,7 +107,7 @@ addImageRequestTask(Cluster &cluster,
     newTask.userId = userId;
     newTask.projectId = projectId;
     newTask.inputData = inputData;
-    for(uint64_t i = 0; i < numberOfCycles; i++) {
+    for (uint64_t i = 0; i < numberOfCycles; i++) {
         newTask.resultData.push_back(0);
     }
     newTask.type = IMAGE_REQUEST_TASK;
@@ -145,10 +144,10 @@ addImageRequestTask(Cluster &cluster,
  * @return uuid of the new task
  */
 const std::string
-addTableTrainTask(Cluster &cluster,
-                  const std::string &name,
-                  const std::string &userId,
-                  const std::string &projectId,
+addTableTrainTask(Cluster& cluster,
+                  const std::string& name,
+                  const std::string& userId,
+                  const std::string& projectId,
                   float* inputData,
                   float* outputData,
                   const uint64_t numberOfInputs,
@@ -196,10 +195,10 @@ addTableTrainTask(Cluster &cluster,
  * @return uuid of the new task
  */
 const std::string
-addTableRequestTask(Cluster &cluster,
-                    const std::string &name,
-                    const std::string &userId,
-                    const std::string &projectId,
+addTableRequestTask(Cluster& cluster,
+                    const std::string& name,
+                    const std::string& userId,
+                    const std::string& projectId,
                     float* inputData,
                     const uint64_t numberOfInputs,
                     const uint64_t numberOfOutputs,
@@ -212,7 +211,7 @@ addTableRequestTask(Cluster &cluster,
     newTask.userId = userId;
     newTask.projectId = projectId;
     newTask.inputData = inputData;
-    for(uint64_t i = 0; i < numberOfCycles; i++) {
+    for (uint64_t i = 0; i < numberOfCycles; i++) {
         newTask.resultData.push_back(0.0f);
     }
     newTask.type = TABLE_REQUEST_TASK;
@@ -244,10 +243,10 @@ addTableRequestTask(Cluster &cluster,
  * @return uuid of the new task
  */
 const std::string
-addCheckpointSaveTask(Cluster &cluster,
-                      const std::string &checkpointName,
-                      const std::string &userId,
-                      const std::string &projectId)
+addCheckpointSaveTask(Cluster& cluster,
+                      const std::string& checkpointName,
+                      const std::string& userId,
+                      const std::string& projectId)
 {
     // create new request-task
     Task newTask;
@@ -283,11 +282,11 @@ addCheckpointSaveTask(Cluster &cluster,
  * @return uuid of the new task
  */
 const std::string
-addCheckpointRestoreTask(Cluster &cluster,
-                         const std::string &name,
-                         const std::string &checkpointInfo,
-                         const std::string &userId,
-                         const std::string &projectId)
+addCheckpointRestoreTask(Cluster& cluster,
+                         const std::string& name,
+                         const std::string& checkpointInfo,
+                         const std::string& userId,
+                         const std::string& projectId)
 {
     // create new request-task
     Task newTask;

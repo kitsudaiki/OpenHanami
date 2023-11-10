@@ -1,0 +1,28 @@
+ADMIN_USER_ID = ENV['ADMIN_USER_ID']
+ADMIN_USER_NAME = ENV['ADMIN_USER_NAME']
+ADMIN_PASSWORD = ENV['ADMIN_PASSWORD']
+TOKEN_KEY = ENV['TOKEN_KEY']
+
+Vagrant.configure("2") do |config|
+  config.vm.provider "virtualbox" do |vbox|
+    vbox.name = "hanami-test"
+    vbox.memory = 4096
+    vbox.cpus = 4
+  end
+  config.vm.box = "ubuntu/jammy64"
+  config.vm.hostname = "hanami-test"
+  config.vm.network "private_network", type: "dhcp"
+
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "hanami-playbook/deploy.yml"
+    # ansible.verbose = "v"
+    ansible.extra_vars = {
+      env: ADMIN_USER_ID,
+      env: ADMIN_USER_NAME,
+      env: ADMIN_PASSWORD,
+      env: TOKEN_KEY,
+    }
+    # ansible.inventory_path = "inventory"
+  end
+end
+

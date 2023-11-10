@@ -1,0 +1,9 @@
+---
+- name: Install docker
+  ansible.builtin.include: "install_docker.yml"
+
+- name: Deploy Hanami
+  ansible.builtin.include: "deploy_hanami.yml"
+  
+- name: Install and configure nginx with ssl
+  ansible.builtin.include: "install_and_configure_nginx.yml"

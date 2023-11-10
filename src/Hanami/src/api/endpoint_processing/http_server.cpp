@@ -22,13 +22,12 @@
 
 #include "http_server.h"
 
-#include <hanami_root.h>
-
 #include <api/endpoint_processing/http_processing/http_processing.h>
 #include <api/endpoint_processing/http_websocket_thread.h>
-
-#include <hanami_common/logger.h>
+#include <api/http/v1/blossom_initializing.h>
 #include <hanami_common/files/text_file.h>
+#include <hanami_common/logger.h>
+#include <hanami_root.h>
 
 /**
  * @brief constructor
@@ -38,74 +37,15 @@
  * @param certFilePath path to cert-file
  * @param keyFilePath path to key-file
  */
-HttpServer::HttpServer(const std::string &address,
-                       const uint16_t port,
-                       const std::string &certFilePath,
-                       const std::string &keyFilePath)
+HttpServer::HttpServer(const std::string& address, const uint16_t port)
     : Hanami::Thread("HttpServer"),
-      m_ctx{boost::asio::ssl::context::tlsv13_server},
+      // m_ctx{boost::asio::ssl::context::tlsv13_server},
       m_address(address),
-      m_port(port),
-      m_certFilePath(certFilePath),
-      m_keyFilePath(keyFilePath)
-{}
-
-/**
- * @brief load certificates from files into ssl-context
- *
- * @param ctx ssl-context
- * @param error reference for error-output
- *
- * @return true, if successful, else false
- */
-bool
-HttpServer::loadCertificates(boost::asio::ssl::context &ctx,
-                             Hanami::ErrorContainer &error)
+      m_port(port)
 {
-    std::string errorMessage = "";
-    std::string cert = "";
-    std::string key = "";
-    bool ret = false;
-
-    // read certificate
-    ret = Hanami::readFile(cert, m_certFilePath, error);
-    if(ret == false)
-    {
-        error.addMeesage("failed to read certificate-file: '" + m_certFilePath + "'");
-        return false;
-    }
-
-    // read key
-    ret = Hanami::readFile(key, m_keyFilePath, error);
-    if(ret == false)
-    {
-        error.addMeesage("failed to read key-file: '" + m_certFilePath + "'");
-        return false;
-    }
-
-    // TODO: replace hard-coded string by a file
-    /*const std::string dh = "-----BEGIN DH PARAMETERS-----\n"
-                           "MIIBCAKCAQEArzQc5mpm0Fs8yahDeySj31JZlwEphUdZ9StM2D8+Fo7TMduGtSi+\n"
-                           "/HRWVwHcTFAgrxVdm+dl474mOUqqaz4MpzIb6+6OVfWHbQJmXPepZKyu4LgUPvY/\n"
-                           "4q3/iDMjIS0fLOu/bLuObwU5ccZmDgfhmz1GanRlTQOiYRty3FiOATWZBRh6uv4u\n"
-                           "tff4A9Bm3V9tLx9S6djq31w31Gl7OQhryodW28kc16t9TvO1BzcV3HjRPwpe701X\n"
-                           "oEEZdnZWANkkpR/m/pfgdmGPU66S2sXMHgsliViQWpDCYeehrvFRHEdR9NV+XJfC\n"
-                           "QMUk26jPTIVTLfXmmwU0u8vUkpR7LQKkwwIBAg==\n"
-                           "-----END DH PARAMETERS-----\n";*/
-
-
-    ctx.set_options(boost::asio::ssl::context::default_workarounds |
-                    boost::asio::ssl::context::no_sslv2);
-                    //boost::asio::ssl::context::single_dh_use);
-
-    ctx.use_certificate_chain(boost::asio::buffer(cert.data(), cert.size()));
-
-    ctx.use_private_key(boost::asio::buffer(key.data(), key.size()),
-                        boost::asio::ssl::context::file_format::pem);
-
-    //ctx.use_tmp_dh(boost::asio::buffer(dh.data(), dh.size()));
-
-    return true;
+    HanamiRoot::httpServer = this;
+    httpProcessing = new HttpProcessing();
+    initBlossoms();
 }
 
 /**
@@ -116,34 +56,22 @@ HttpServer::run()
 {
     Hanami::ErrorContainer error;
 
-    LOG_INFO("start HTTP-server on address "
-             + m_address
-             + " and port "
-             + std::to_string(m_port));
-    try
-    {
+    LOG_INFO("start HTTP-server on address " + m_address + " and port " + std::to_string(m_port));
+    try {
         // create server
         const net::ip::address address = net::ip::make_address(m_address);
         net::io_context ioc{1};
         tcp::acceptor acceptor{ioc, {address, m_port}};
-        if(loadCertificates(m_ctx, error) == false)
-        {
-            LOG_ERROR(error);
-            return;
-        }
 
-        while(m_abort == false)
-        {
+        while (m_abort == false) {
             // create socket-object for incoming connection
             tcp::socket* socket = new tcp::socket{ioc};
             acceptor.accept(*socket);
             addSocket(socket);
         }
     }
-    catch (const std::exception& e)
-    {
-        error.addMeesage("Error-message while running http-server: '"
-                         + std::string(e.what())
+    catch (const std::exception& e) {
+        error.addMeesage("Error-message while running http-server: '" + std::string(e.what())
                          + "'");
         LOG_ERROR(error);
     }
@@ -160,8 +88,7 @@ HttpServer::getSocket()
     std::lock_guard<std::mutex> guard(m_queueMutex);
 
     tcp::socket* result = nullptr;
-    if(m_queue.size() > 0)
-    {
+    if (m_queue.size() > 0) {
         result = m_queue.front();
         m_queue.pop_front();
     }

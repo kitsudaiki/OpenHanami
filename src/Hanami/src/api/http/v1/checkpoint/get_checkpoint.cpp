@@ -22,11 +22,10 @@
 
 #include "get_checkpoint.h"
 
-#include <hanami_root.h>
 #include <database/checkpoint_table.h>
+#include <hanami_root.h>
 
-GetCheckpoint::GetCheckpoint()
-    : Blossom("Get checkpoint of a cluster.")
+GetCheckpoint::GetCheckpoint() : Blossom("Get checkpoint of a cluster.")
 {
     errorCodes.push_back(NOT_FOUND_RTYPE);
 
@@ -35,22 +34,20 @@ GetCheckpoint::GetCheckpoint()
     //----------------------------------------------------------------------------------------------
 
     registerInputField("uuid", SAKURA_STRING_TYPE)
-            .setComment("UUID of the original request-task, which placed the result in shiori.")
-            .setRegex("[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
-                      "[a-fA-F0-9]{4}-[a-fA-F0-9]{12}");
+        .setComment("UUID of the original request-task, which placed the result in shiori.")
+        .setRegex(
+            "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
+            "[a-fA-F0-9]{4}-[a-fA-F0-9]{12}");
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid", SAKURA_STRING_TYPE)
-            .setComment("UUID of the data-set.");
+    registerOutputField("uuid", SAKURA_STRING_TYPE).setComment("UUID of the data-set.");
 
-    registerOutputField("name", SAKURA_STRING_TYPE)
-            .setComment("Name of the data-set.");
+    registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the data-set.");
 
-    registerOutputField("location", SAKURA_STRING_TYPE)
-            .setComment("File path on local storage.");
+    registerOutputField("location", SAKURA_STRING_TYPE).setComment("File path on local storage.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -61,31 +58,28 @@ GetCheckpoint::GetCheckpoint()
  * @brief runTask
  */
 bool
-GetCheckpoint::runTask(BlossomIO &blossomIO,
-                       const json &context,
-                       BlossomStatus &status,
-                       Hanami::ErrorContainer &error)
+GetCheckpoint::runTask(BlossomIO& blossomIO,
+                       const json& context,
+                       BlossomStatus& status,
+                       Hanami::ErrorContainer& error)
 {
     const std::string checkpointUuid = blossomIO.input["uuid"];
     const UserContext userContext(context);
 
     // get checkpoint-info from database
-    if(CheckpointTable::getInstance()->getCheckpoint(blossomIO.output,
-                                                     checkpointUuid,
-                                                     userContext,
-                                                     error,
-                                                     true) == false)
+    if (CheckpointTable::getInstance()->getCheckpoint(
+            blossomIO.output, checkpointUuid, userContext, error, true)
+        == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // handle not found
-    if(blossomIO.output.size() == 0)
-    {
+    if (blossomIO.output.size() == 0) {
         status.errorMessage = "Checkpoint with uuid '" + checkpointUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
-        error.addMeesage(status.errorMessage);
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 

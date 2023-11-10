@@ -22,29 +22,27 @@
 
 #include "direct_io_test.h"
 
-#include <hanami_sdk/io.h>
 #include <common/test_thread.h>
+#include <hanami_sdk/io.h>
 
-DirectIoTest::DirectIoTest(const bool expectSuccess)
-    : TestStep(expectSuccess)
+DirectIoTest::DirectIoTest(const bool expectSuccess) : TestStep(expectSuccess)
 {
     m_testName = "io-test";
-    if(expectSuccess) {
-      m_testName += " (success)";
+    if (expectSuccess) {
+        m_testName += " (success)";
     } else {
-      m_testName += " (fail)";
+        m_testName += " (fail)";
     }
 }
 
 bool
-DirectIoTest::runTest(json &,
-                      Hanami::ErrorContainer &)
+DirectIoTest::runTest(json&, Hanami::ErrorContainer&)
 {
-    if(trainTest() == false) {
+    if (trainTest() == false) {
         return false;
     }
 
-    if(requestTest() == false) {
+    if (requestTest() == false) {
         return false;
     }
 
@@ -64,17 +62,11 @@ DirectIoTest::trainTest()
     float shouldValues[10];
     fillShouldValues(shouldValues);
 
-    for(uint64_t i = 0; i < 100; i++)
-    {
-        std::cout<<"run: "<<i<<std::endl;
+    for (uint64_t i = 0; i < 100; i++) {
+        std::cout << "run: " << i << std::endl;
 
-        if(Hanami::train(TestThread::m_wsClient,
-                           inputValues,
-                           784,
-                           shouldValues,
-                           10,
-                           error) == false)
-        {
+        if (Hanami::train(TestThread::m_wsClient, inputValues, 784, shouldValues, 10, error)
+            == false) {
             return false;
         }
     }
@@ -91,23 +83,20 @@ DirectIoTest::requestTest()
     float inputValues[784];
     fillInputValues(&inputValues[0]);
 
-    for(uint64_t i = 0; i < 784; i++) {
+    for (uint64_t i = 0; i < 784; i++) {
         inputValues[i] *= 255.0f;
     }
 
     uint64_t numberOfValues = 0;
-    float* values = Hanami::request(TestThread::m_wsClient,
-                                      inputValues,
-                                      784,
-                                      numberOfValues,
-                                      error);
-    if(values == nullptr) {
+    float* values
+        = Hanami::request(TestThread::m_wsClient, inputValues, 784, numberOfValues, error);
+    if (values == nullptr) {
         return false;
     }
 
-    std::cout<<"numberOfValues: "<<numberOfValues<<std::endl;
-    for(uint32_t i = 0; i < numberOfValues; i++) {
-        std::cout<<i<<": "<<values[i]<<std::endl;
+    std::cout << "numberOfValues: " << numberOfValues << std::endl;
+    for (uint32_t i = 0; i < numberOfValues; i++) {
+        std::cout << i << ": " << values[i] << std::endl;
     }
 
     delete[] values;

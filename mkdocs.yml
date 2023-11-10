@@ -29,6 +29,7 @@ nav:
     - api/websocket_workflow.md
   - How To:
     - how_to/installation.md
+    - how_to/development.md
     - how_to/dashboard.md
   - Inner workings:
     - Configs:
@@ -39,8 +40,19 @@ nav:
     - inner_workings/monitoring.md
     - inner_workings/storage.md
     - inner_workings/user_and_projects.md
+    - Libraries (Archive):
+      - inner_workings/libraries/hanami_args.md
+      - inner_workings/libraries/hanami_common.md
+      - inner_workings/libraries/hanami_config.md
+      - inner_workings/libraries/hanami_cpu.md
+      - inner_workings/libraries/hanami_crypto.md
+      - inner_workings/libraries/hanami_ini.md
+      - inner_workings/libraries/hanami_obj.md
+      - inner_workings/libraries/hanami_opencl.md
+      - inner_workings/libraries/hanami_sqlite.md
   - Other:
     - other/dependencies.md
+    - other/code_styling.md
     - other/git_workflow.md
     - other/glossar.md
 

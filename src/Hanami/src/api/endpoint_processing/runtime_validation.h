@@ -23,21 +23,19 @@
 #ifndef HANAMI_LANG_RUNTIME_VALIDATION_H
 #define HANAMI_LANG_RUNTIME_VALIDATION_H
 
-#include <regex>
-
+#include <api/endpoint_processing/blossom.h>
+#include <api/endpoint_processing/items/value_items.h>
 #include <hanami_common/logger.h>
 
-#include <api/endpoint_processing/items/value_items.h>
-#include <api/endpoint_processing//blossom.h>
+#include <regex>
 
 class ValueItemMap;
 
-bool checkBlossomValues(const std::map<std::string, FieldDef> &defs,
-                        const json &values,
+bool checkBlossomValues(const std::map<std::string, FieldDef>& defs,
+                        const json& values,
                         const FieldDef::IO_ValueType ioType,
-                        std::string &errorMessage);
+                        std::string& errorMessage);
 
-bool checkType(const json &item,
-               const FieldType fieldType);
+bool checkType(const json& item, const FieldType fieldType);
 
-#endif // HANAMI_LANG_RUNTIME_VALIDATION_H
+#endif  // HANAMI_LANG_RUNTIME_VALIDATION_H

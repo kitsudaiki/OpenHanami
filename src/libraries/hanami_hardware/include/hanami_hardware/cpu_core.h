@@ -23,10 +23,10 @@
 #ifndef HANAMI_HARDWARE_CPUCORE_H
 #define HANAMI_HARDWARE_CPUCORE_H
 
-#include <string>
 #include <iostream>
-#include <vector>
 #include <nlohmann/json.hpp>
+#include <string>
+#include <vector>
 
 using json = nlohmann::json;
 
@@ -36,7 +36,7 @@ class CpuThread;
 
 class CpuCore
 {
-public:
+   public:
     CpuCore(const uint32_t coreId);
     ~CpuCore();
 
@@ -44,7 +44,7 @@ public:
 
     CpuThread* getThread(const uint32_t threadId) const;
     CpuThread* addThread(const uint32_t threadId);
-    void addCpuThread(CpuThread *thread);
+    void addCpuThread(CpuThread* thread);
 
     double getThermalSpec() const;
     double getTotalPackagePower();
@@ -55,6 +55,6 @@ public:
     std::vector<CpuThread*> cpuThreads;
 };
 
-}
+}  // namespace Hanami
 
-#endif // HANAMI_HARDWARE_CPUCORE_H
+#endif  // HANAMI_HARDWARE_CPUCORE_H

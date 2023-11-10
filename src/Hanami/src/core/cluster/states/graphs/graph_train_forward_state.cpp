@@ -29,10 +29,7 @@
  *
  * @param cluster pointer to the cluster, where the event and the statemachine belongs to
  */
-GraphTrainForward_State::GraphTrainForward_State(Cluster* cluster)
-{
-    m_cluster = cluster;
-}
+GraphTrainForward_State::GraphTrainForward_State(Cluster* cluster) { m_cluster = cluster; }
 
 /**
  * @brief destructor

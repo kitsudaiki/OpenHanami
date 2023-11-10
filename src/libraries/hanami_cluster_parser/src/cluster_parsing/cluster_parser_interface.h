@@ -23,10 +23,10 @@
 #ifndef HANAMI_SEGMENT_PARSER_PARSER_INTERFACE_H
 #define HANAMI_SEGMENT_PARSER_PARSER_INTERFACE_H
 
+#include <hanami_common/logger.h>
+
 #include <iostream>
 #include <mutex>
-
-#include <hanami_common/logger.h>
 
 namespace Hanami
 {
@@ -35,26 +35,22 @@ class location;
 
 class ClusterParserInterface
 {
-
-public:
+   public:
     static ClusterParserInterface* getInstance();
     ~ClusterParserInterface();
 
     // connection the the scanner and parser
-    void scan_begin(const std::string &inputString);
+    void scan_begin(const std::string& inputString);
     void scan_end();
-    bool parse(ClusterMeta* result,
-               const std::string &inputString,
-               ErrorContainer &error);
-    const std::string removeQuotes(const std::string &input);
+    bool parse(ClusterMeta* result, const std::string& inputString, ErrorContainer& error);
+    const std::string removeQuotes(const std::string& input);
 
     // Error handling.
-    void error(const Hanami::location &location,
-               const std::string& message);
+    void error(const Hanami::location& location, const std::string& message);
 
     ClusterMeta* output = nullptr;
 
-private:
+   private:
     ClusterParserInterface(const bool traceParsing = false);
 
     static ClusterParserInterface* m_instance;
@@ -66,6 +62,6 @@ private:
     bool m_traceParsing = false;
 };
 
-}
+}  // namespace Hanami
 
-#endif // HANAMI_SEGMENT_PARSER_PARSER_INTERFACE_H
+#endif  // HANAMI_SEGMENT_PARSER_PARSER_INTERFACE_H

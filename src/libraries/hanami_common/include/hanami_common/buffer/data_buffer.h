@@ -23,23 +23,23 @@
 #ifndef DATA_BUFFER_H
 #define DATA_BUFFER_H
 
-#include <string.h>
-#include <iostream>
 #include <assert.h>
+#include <hanami_common/memory_counter.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
+#include <string.h>
 
-#include <hanami_common/memory_counter.h>
+#include <iostream>
 
 namespace Hanami
 {
 
 struct DataBuffer;
-inline bool allocateBlocks_DataBuffer(DataBuffer &buffer, const uint64_t numberOfBlocks);
-inline bool addData_DataBuffer(DataBuffer &buffer, const void* data, const uint64_t dataSize);
-inline bool reset_DataBuffer(DataBuffer &buffer, const uint64_t numberOfBlocks);
-inline uint8_t* getBlock_DataBuffer(DataBuffer &buffer, const uint64_t blockPosition);
+inline bool allocateBlocks_DataBuffer(DataBuffer& buffer, const uint64_t numberOfBlocks);
+inline bool addData_DataBuffer(DataBuffer& buffer, const void* data, const uint64_t dataSize);
+inline bool reset_DataBuffer(DataBuffer& buffer, const uint64_t numberOfBlocks);
+inline uint8_t* getBlock_DataBuffer(DataBuffer& buffer, const uint64_t blockPosition);
 inline void* alignedMalloc(const uint16_t blockSize, const uint64_t numberOfBytes);
 inline bool alignedFree(void* ptr, const uint64_t numberOfBytes);
 
@@ -52,18 +52,16 @@ inline bool alignedFree(void* ptr, const uint64_t numberOfBytes);
  * @return number of blocks
  */
 inline uint64_t
-calcBytesToBlocks(const uint64_t numberOfBytes,
-                  const uint16_t blockSize = 4096)
+calcBytesToBlocks(const uint64_t numberOfBytes, const uint16_t blockSize = 4096)
 {
-    if(numberOfBytes % blockSize == 0) {
+    if (numberOfBytes % blockSize == 0) {
         return (numberOfBytes / blockSize);
     }
 
     return (numberOfBytes / blockSize) + 1;
 }
 
-struct DataBuffer
-{
+struct DataBuffer {
     uint64_t numberOfBlocks = 0;
     uint64_t usedBufferSize = 0;
     uint64_t totalBufferSize = 0;
@@ -81,12 +79,11 @@ struct DataBuffer
      * @param blockSize size of a block in the data-buffer
      *                  (should never be changed after buffer was created)
      */
-    DataBuffer(const uint64_t numberOfBlocks = 1,
-               const uint16_t blockSize = 4096)
+    DataBuffer(const uint64_t numberOfBlocks = 1, const uint16_t blockSize = 4096)
     {
         this->blockSize = blockSize;
         assert(this->blockSize % 8 == 0);
-        if(numberOfBlocks < 1) {
+        if (numberOfBlocks < 1) {
             allocateBlocks_DataBuffer(*this, 1);
         }
         allocateBlocks_DataBuffer(*this, numberOfBlocks);
@@ -95,7 +92,7 @@ struct DataBuffer
     /**
      * @brief copy-constructor
      */
-    DataBuffer(const DataBuffer &other)
+    DataBuffer(const DataBuffer& other)
     {
         // copy blockSize first to make sure, that the reset reallocate the correct total memroy
         this->blockSize = other.blockSize;
@@ -118,14 +115,12 @@ struct DataBuffer
      */
     DataBuffer(void* data, const uint64_t size)
     {
-        if(data == nullptr
-                && size > 0)
-        {
+        if (data == nullptr && size > 0) {
             this->data = data;
-            numberOfBlocks =  calcBytesToBlocks(size);
+            numberOfBlocks = calcBytesToBlocks(size);
             totalBufferSize = blockSize * numberOfBlocks;
 
-            if(size % blockSize != 0) {
+            if (size % blockSize != 0) {
                 allocateBlocks_DataBuffer(*this, 1);
             }
         }
@@ -134,10 +129,9 @@ struct DataBuffer
     /**
      * @brief copy-assignment operator
      */
-    DataBuffer &operator=(const DataBuffer &other)
+    DataBuffer& operator=(const DataBuffer& other)
     {
-        if(this != &other)
-        {
+        if (this != &other) {
             clear();
 
             // copy blockSize first to make sure, that the reset reallocate the correct total memroy
@@ -157,10 +151,7 @@ struct DataBuffer
     /**
      * @brief destructor to clear the allocated memory inside this object
      */
-    ~DataBuffer()
-    {
-        clear();
-    }
+    ~DataBuffer() { clear(); }
 
     /**
      * @brief clear data of buffer
@@ -170,9 +161,7 @@ struct DataBuffer
     bool clear()
     {
         // deallocate the buffer
-        if(data != nullptr
-                && inUse == 1)
-        {
+        if (data != nullptr && inUse == 1) {
             alignedFree(data, totalBufferSize);
             inUse = 0;
             data = nullptr;
@@ -195,18 +184,17 @@ struct DataBuffer
  *         or allocation failed
  */
 inline void*
-alignedMalloc(const uint16_t blockSize,
-              const uint64_t numberOfBytes)
+alignedMalloc(const uint16_t blockSize, const uint64_t numberOfBytes)
 {
     // precheck
-    if(blockSize % 8 != 0) {
+    if (blockSize % 8 != 0) {
         return nullptr;
     }
 
     // allocate new memory
     void* ptr = nullptr;
     const int ret = posix_memalign(&ptr, blockSize, numberOfBytes);
-    if(ret != 0) {
+    if (ret != 0) {
         return nullptr;
     }
 
@@ -229,11 +217,10 @@ alignedMalloc(const uint16_t blockSize,
  * @return true, if pointer not nullptr, else false
  */
 inline bool
-alignedFree(void* ptr,
-            const uint64_t numberOfBytes)
+alignedFree(void* ptr, const uint64_t numberOfBytes)
 {
     // precheck
-    if(ptr == nullptr) {
+    if (ptr == nullptr) {
         return false;
     }
 
@@ -256,20 +243,17 @@ alignedFree(void* ptr,
  * @return true, if successful, else false
  */
 inline bool
-allocateBlocks_DataBuffer(DataBuffer &buffer,
-                          const uint64_t numberOfBlocks)
+allocateBlocks_DataBuffer(DataBuffer& buffer, const uint64_t numberOfBlocks)
 {
     // create the new buffer
     const uint64_t newNumberOfBlocks = numberOfBlocks + buffer.numberOfBlocks;
-    void* newBuffer =  alignedMalloc(buffer.blockSize, newNumberOfBlocks * buffer.blockSize);
-    if(newBuffer == nullptr) {
+    void* newBuffer = alignedMalloc(buffer.blockSize, newNumberOfBlocks * buffer.blockSize);
+    if (newBuffer == nullptr) {
         return false;
     }
 
     // copy the content of the old buffer to the new and deallocate the old
-    if(buffer.data != nullptr
-            && buffer.inUse == 1)
-    {
+    if (buffer.data != nullptr && buffer.inUse == 1) {
         memcpy(newBuffer, buffer.data, buffer.numberOfBlocks * buffer.blockSize);
         alignedFree(buffer.data, buffer.totalBufferSize);
     }
@@ -293,22 +277,17 @@ allocateBlocks_DataBuffer(DataBuffer &buffer,
  * @return false if precheck or allocation failed, else true
  */
 inline bool
-addData_DataBuffer(DataBuffer &buffer,
-                   const void* data,
-                   const uint64_t dataSize)
+addData_DataBuffer(DataBuffer& buffer, const void* data, const uint64_t dataSize)
 {
     // precheck
-    if(dataSize == 0
-            || data == nullptr)
-    {
+    if (dataSize == 0 || data == nullptr) {
         return false;
     }
 
     // check buffer-size and allocate more memory if necessary
-    if(buffer.usedBufferSize + dataSize >= buffer.numberOfBlocks * buffer.blockSize)
-    {
+    if (buffer.usedBufferSize + dataSize >= buffer.numberOfBlocks * buffer.blockSize) {
         const uint64_t newBlockNum = (dataSize / buffer.blockSize) + 1;
-        if(allocateBlocks_DataBuffer(buffer, newBlockNum) == false) {
+        if (allocateBlocks_DataBuffer(buffer, newBlockNum) == false) {
             return false;
         }
     }
@@ -331,7 +310,7 @@ addData_DataBuffer(DataBuffer &buffer,
  */
 template <typename T>
 inline bool
-addObject_DataBuffer(DataBuffer &buffer, T* data)
+addObject_DataBuffer(DataBuffer& buffer, T* data)
 {
     return addData_DataBuffer(buffer, data, sizeof(T));
 }
@@ -345,24 +324,21 @@ addObject_DataBuffer(DataBuffer &buffer, T* data)
  * @return false if precheck or allocation failed, else true
  */
 inline bool
-reset_DataBuffer(DataBuffer &buffer,
-                 const uint64_t numberOfBlocks)
+reset_DataBuffer(DataBuffer& buffer, const uint64_t numberOfBlocks)
 {
     // precheck
-    if(numberOfBlocks == 0) {
+    if (numberOfBlocks == 0) {
         return false;
     }
 
     // deallocate ald buffer if possible
-    if(buffer.data != nullptr
-            && buffer.inUse == 1)
-    {
+    if (buffer.data != nullptr && buffer.inUse == 1) {
         alignedFree(buffer.data, buffer.totalBufferSize);
     }
 
     // allocate at least one single block as new buffer-data
     void* newBuffer = alignedMalloc(buffer.blockSize, numberOfBlocks * buffer.blockSize);
-    if(newBuffer == nullptr) {
+    if (newBuffer == nullptr) {
         return false;
     }
 
@@ -385,11 +361,10 @@ reset_DataBuffer(DataBuffer &buffer,
  * @return pointer to the buffer-position
  */
 inline uint8_t*
-getBlock_DataBuffer(DataBuffer &buffer,
-                    const uint64_t blockPosition)
+getBlock_DataBuffer(DataBuffer& buffer, const uint64_t blockPosition)
 {
     // precheck
-    if(blockPosition >= buffer.numberOfBlocks) {
+    if (blockPosition >= buffer.numberOfBlocks) {
         return nullptr;
     }
 
@@ -398,6 +373,6 @@ getBlock_DataBuffer(DataBuffer &buffer,
     return &dataByte[blockPosition * buffer.blockSize];
 }
 
-}
+}  // namespace Hanami
 
-#endif // DATABUFFER_H
+#endif  // DATABUFFER_H

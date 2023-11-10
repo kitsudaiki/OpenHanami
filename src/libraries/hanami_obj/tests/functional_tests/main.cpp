@@ -6,11 +6,11 @@
  *  @copyright  MIT License
  */
 
+#include <hanami_common/logger.h>
 #include <obj_item_test.h>
 
-#include <hanami_common/logger.h>
-
-int main()
+int
+main()
 {
     Hanami::initConsoleLogger(true);
 

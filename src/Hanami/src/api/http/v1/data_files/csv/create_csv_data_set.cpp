@@ -22,54 +22,49 @@
 
 #include "create_csv_data_set.h"
 
-#include <hanami_root.h>
-#include <database/data_set_table.h>
 #include <core/temp_file_handler.h>
-
-#include <hanami_crypto/common.h>
-#include <hanami_config/config_handler.h>
+#include <database/data_set_table.h>
 #include <hanami_common/files/binary_file.h>
+#include <hanami_config/config_handler.h>
+#include <hanami_crypto/common.h>
+#include <hanami_root.h>
 
-CreateCsvDataSet::CreateCsvDataSet()
-    : Blossom("Init new csv-file data-set.")
+CreateCsvDataSet::CreateCsvDataSet() : Blossom("Init new csv-file data-set.")
 {
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------
 
     registerInputField("name", SAKURA_STRING_TYPE)
-            .setComment("Name of the new data-set.")
-            .setLimit(4, 256)
-            .setRegex(NAME_REGEX);
+        .setComment("Name of the new data-set.")
+        .setLimit(4, 256)
+        .setRegex(NAME_REGEX);
 
     registerInputField("input_data_size", SAKURA_INT_TYPE)
-            .setComment("Total size of the input-data.")
-            .setLimit(1, 10000000000);
+        .setComment("Total size of the input-data.")
+        .setLimit(1, 10000000000);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid", SAKURA_STRING_TYPE)
-            .setComment("UUID of the new data-set.");
+    registerOutputField("uuid", SAKURA_STRING_TYPE).setComment("UUID of the new data-set.");
 
-    registerOutputField("name", SAKURA_STRING_TYPE)
-            .setComment("Name of the new data-set.");
+    registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the new data-set.");
 
     registerOutputField("owner_id", SAKURA_STRING_TYPE)
-            .setComment("ID of the user, who created the data-set.");
+        .setComment("ID of the user, who created the data-set.");
 
     registerOutputField("project_id", SAKURA_STRING_TYPE)
-            .setComment("ID of the project, where the data-set belongs to.");
+        .setComment("ID of the project, where the data-set belongs to.");
 
     registerOutputField("visibility", SAKURA_STRING_TYPE)
-            .setComment("Visibility of the data-set (private, shared, public).");
+        .setComment("Visibility of the data-set (private, shared, public).");
 
-    registerOutputField("type", SAKURA_STRING_TYPE)
-            .setComment("Type of the new set (csv)");
+    registerOutputField("type", SAKURA_STRING_TYPE).setComment("Type of the new set (csv)");
 
     registerOutputField("uuid_input_file", SAKURA_STRING_TYPE)
-            .setComment("UUID to identify the file for date upload of input-data.");
+        .setComment("UUID to identify the file for date upload of input-data.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -77,10 +72,10 @@ CreateCsvDataSet::CreateCsvDataSet()
 }
 
 bool
-CreateCsvDataSet::runTask(BlossomIO &blossomIO,
-                          const json &context,
-                          BlossomStatus &status,
-                          Hanami::ErrorContainer &error)
+CreateCsvDataSet::runTask(BlossomIO& blossomIO,
+                          const json& context,
+                          BlossomStatus& status,
+                          Hanami::ErrorContainer& error)
 {
     const std::string name = blossomIO.input["name"];
     const long inputDataSize = blossomIO.input["input_data_size"];
@@ -89,8 +84,7 @@ CreateCsvDataSet::runTask(BlossomIO &blossomIO,
     // get directory to store data from config
     bool success = false;
     std::string targetFilePath = GET_STRING_CONFIG("storage", "data_set_location", success);
-    if(success == false)
-    {
+    if (success == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("file-location to store dataset is missing in the config");
         return false;
@@ -98,18 +92,17 @@ CreateCsvDataSet::runTask(BlossomIO &blossomIO,
 
     // init temp-file for input-data
     const std::string inputUuid = generateUuid().toString();
-    if(TempFileHandler::getInstance()->initNewFile(inputUuid, inputDataSize) == false)
-    {
+    if (TempFileHandler::getInstance()->initNewFile(inputUuid, inputDataSize) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Failed to initialize temporary file for new input-data.");
         return false;
     }
 
     // build absolut file-path to store the file
-    if(targetFilePath.at(targetFilePath.size() - 1) != '/') {
+    if (targetFilePath.at(targetFilePath.size() - 1) != '/') {
         targetFilePath.append("/");
     }
-    targetFilePath.append(name + "_csv_" +userContext. userId);
+    targetFilePath.append(name + "_csv_" + userContext.userId);
 
     // register in database
     blossomIO.output["name"] = name;
@@ -125,8 +118,7 @@ CreateCsvDataSet::runTask(BlossomIO &blossomIO,
     blossomIO.output["temp_files"] = tempFiles;
 
     // add to database
-    if(DataSetTable::getInstance()->addDataSet(blossomIO.output, userContext, error) == false)
-    {
+    if (DataSetTable::getInstance()->addDataSet(blossomIO.output, userContext, error) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

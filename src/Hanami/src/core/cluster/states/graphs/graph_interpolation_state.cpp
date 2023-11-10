@@ -29,10 +29,7 @@
  *
  * @param cluster pointer to the cluster, where the event and the statemachine belongs to
  */
-GraphInterpolation_State::GraphInterpolation_State(Cluster* cluster)
-{
-    m_cluster = cluster;
-}
+GraphInterpolation_State::GraphInterpolation_State(Cluster* cluster) { m_cluster = cluster; }
 
 /**
  * @brief destructor
@@ -47,7 +44,6 @@ GraphInterpolation_State::~GraphInterpolation_State() {}
 bool
 GraphInterpolation_State::processEvent()
 {
-
     /*Task* actualTask = m_cluster->getActualTask();
     if(actualTask->isInit)
     {
@@ -63,13 +59,15 @@ GraphInterpolation_State::processEvent()
         inputNodes[4*365 - 2].weight = outputNodes[2].outputWeight * outputNodes[2].maxWeight;
         inputNodes[4*365 - 1].weight = outputNodes[3].outputWeight * outputNodes[3].maxWeight;
 
-        //std::cout<<"x: "<<(outputNodes[0].outputWeight / 5.0f)<<"   y: "<<(outputNodes[1].outputWeight / 5.0f)<<std::endl;
-        const float val1 = outputNodes[0].outputWeight * outputNodes[0].maxWeight;
-        const float val2 = outputNodes[1].outputWeight * outputNodes[1].maxWeight;
-        const float val3 = outputNodes[2].outputWeight * outputNodes[2].maxWeight;
-        const float val4 = outputNodes[3].outputWeight * outputNodes[3].maxWeight;
+        //std::cout<<"x: "<<(outputNodes[0].outputWeight / 5.0f)<<"   y:
+    "<<(outputNodes[1].outputWeight / 5.0f)<<std::endl; const float val1 =
+    outputNodes[0].outputWeight * outputNodes[0].maxWeight; const float val2 =
+    outputNodes[1].outputWeight * outputNodes[1].maxWeight; const float val3 =
+    outputNodes[2].outputWeight * outputNodes[2].maxWeight; const float val4 =
+    outputNodes[3].outputWeight * outputNodes[3].maxWeight;
 
-        std::cout<<"o_up: "<<val1<<"\t   o_down: "<<val2<<"   c_up: "<<val3<<"\t   c_down: "<<val4<<std::endl;
+        std::cout<<"o_up: "<<val1<<"\t   o_down: "<<val2<<"   c_up: "<<val3<<"\t   c_down:
+    "<<val4<<std::endl;
 
         if(val1 > val2) {
             std::cout<<"x: "<<(val1 - val2)<<"\t   y: "<<0.0f<<std::endl;
@@ -84,7 +82,8 @@ GraphInterpolation_State::processEvent()
         const uint64_t numberInputCycles = actualTask->getIntVal("number_of_inputs_per_cycle");
         const float* data = &actualTask->inputData[2 * numberInputCycles - 2*366];
 
-        //std::cout<<"------------------------actualTask->numberOfInputsPerCycle "<<actualTask->numberOfInputsPerCycle<<std::endl;
+        //std::cout<<"------------------------actualTask->numberOfInputsPerCycle
+    "<<actualTask->numberOfInputsPerCycle<<std::endl;
 
 
         float lastVal = data[actualTask->actualCycle + 1];

@@ -54,7 +54,7 @@ void
 ValueContainer::addValue(const float newValue, const uint64_t sectionId)
 {
     // break-condition
-    if(sectionId >= m_valueSections.size()) {
+    if (sectionId >= m_valueSections.size()) {
         return;
     }
 
@@ -64,18 +64,18 @@ ValueContainer::addValue(const float newValue, const uint64_t sectionId)
     currentSection->pos++;
 
     // handle overflow
-    if(currentSection->pos >= currentSection->values.size())
-    {
+    if (currentSection->pos >= currentSection->values.size()) {
         currentSection->pos = 0;
 
         // calc overflow-value
         float valueOverflow = 0.0f;
-        for(const float val : currentSection->values) {
+        for (const float val : currentSection->values) {
             valueOverflow += val;
         }
-        if(currentSection->values.size() != 0) {
+        if (currentSection->values.size() != 0) {
             valueOverflow /= currentSection->values.size();
-        } else {
+        }
+        else {
             valueOverflow = 0.0f;
         }
 
@@ -110,7 +110,7 @@ json
 ValueContainer::appendSectionToJson(const uint64_t sectionId)
 {
     // precheck
-    if(sectionId >= m_valueSections.size()) {
+    if (sectionId >= m_valueSections.size()) {
         return nullptr;
     }
 
@@ -118,8 +118,7 @@ ValueContainer::appendSectionToJson(const uint64_t sectionId)
     json valueList = json::array();
     ValueSection* tempValueSection = &m_valueSections[sectionId];
     uint64_t pos = tempValueSection->pos;
-    for(uint64_t i = 0; i < tempValueSection->values.size(); i++)
-    {
+    for (uint64_t i = 0; i < tempValueSection->values.size(); i++) {
         valueList.push_back(tempValueSection->values.at(pos));
         pos = (pos + 1) % tempValueSection->values.size();
     }

@@ -23,48 +23,43 @@
 #ifndef HANAMI_SQL_TABLE_H
 #define HANAMI_SQL_TABLE_H
 
-#include <vector>
-#include <string>
-#include <uuid/uuid.h>
 #include <common/structs.h>
-
 #include <hanami_common/logger.h>
-
 #include <hanami_database/sql_table.h>
+#include <uuid/uuid.h>
+
+#include <string>
+#include <vector>
 
 class SqlDatabase;
 
-class HanamiSqlTable
-        : public Hanami::SqlTable
+class HanamiSqlTable : public Hanami::SqlTable
 {
-public:
+   public:
     HanamiSqlTable(Hanami::SqlDatabase* db);
     virtual ~HanamiSqlTable();
 
-    bool add(json &values,
-             const UserContext &userContext,
-             Hanami::ErrorContainer &error);
-    bool get(json &result,
-             const UserContext &userContext,
-             std::vector<RequestCondition> &conditions,
-             Hanami::ErrorContainer &error,
+    bool add(json& values, const UserContext& userContext, Hanami::ErrorContainer& error);
+    bool get(json& result,
+             const UserContext& userContext,
+             std::vector<RequestCondition>& conditions,
+             Hanami::ErrorContainer& error,
              const bool showHiddenValues = false);
-    bool update(json &values,
-                const UserContext &userContext,
-                std::vector<RequestCondition> &conditions,
-                Hanami::ErrorContainer &error);
-    bool getAll(Hanami::TableItem &result,
-                const UserContext &userContext,
-                std::vector<RequestCondition> &conditions,
-                Hanami::ErrorContainer &error,
+    bool update(json& values,
+                const UserContext& userContext,
+                std::vector<RequestCondition>& conditions,
+                Hanami::ErrorContainer& error);
+    bool getAll(Hanami::TableItem& result,
+                const UserContext& userContext,
+                std::vector<RequestCondition>& conditions,
+                Hanami::ErrorContainer& error,
                 const bool showHiddenValues = false);
-    bool del(std::vector<RequestCondition> &conditions,
-             const UserContext &userContext,
-             Hanami::ErrorContainer &error);
+    bool del(std::vector<RequestCondition>& conditions,
+             const UserContext& userContext,
+             Hanami::ErrorContainer& error);
 
-private:
-    void fillCondition(std::vector<RequestCondition> &conditions,
-                       const UserContext &userContext);
+   private:
+    void fillCondition(std::vector<RequestCondition>& conditions, const UserContext& userContext);
 };
 
-#endif // HANAMI_SQL_TABLE_H
+#endif  // HANAMI_SQL_TABLE_H

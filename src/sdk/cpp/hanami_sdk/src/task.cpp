@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#include <hanami_sdk/task.h>
 #include <common/http_client.h>
+#include <hanami_sdk/task.h>
 
 namespace Hanami
 {
@@ -39,17 +39,15 @@ namespace Hanami
  * @return true, if successful, else false
  */
 bool
-createTask(std::string &result,
-           const std::string &name,
-           const std::string &type,
-           const std::string &clusterUuid,
-           const std::string &dataSetUuid,
-           Hanami::ErrorContainer &error)
+createTask(std::string& result,
+           const std::string& name,
+           const std::string& type,
+           const std::string& clusterUuid,
+           const std::string& dataSetUuid,
+           Hanami::ErrorContainer& error)
 {
     // precheck task-type
-    if(type != "train"
-            && type != "request")
-    {
+    if (type != "train" && type != "request") {
         error.addMeesage("Unknow task-type '" + type + "'");
         return false;
     }
@@ -58,24 +56,14 @@ createTask(std::string &result,
     HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/task";
     const std::string vars = "";
-    const std::string jsonBody = "{\"name\":\""
-                                 + name
-                                 + "\",\"type\":\""
-                                 + type
-                                 + "\",\"cluster_uuid\":\""
-                                 + clusterUuid
-                                 + "\",\"data_set_uuid\":\""
-                                 + dataSetUuid
-                                 + "\"}";
+    const std::string jsonBody = "{\"name\":\"" + name + "\",\"type\":\"" + type
+                                 + "\",\"cluster_uuid\":\"" + clusterUuid
+                                 + "\",\"data_set_uuid\":\"" + dataSetUuid + "\"}";
 
     // send request
-    if(request->sendPostRequest(result, path, vars, jsonBody, error) == false)
-    {
-        error.addMeesage("Failed to start task on cluster with UUID '"
-                         + clusterUuid
-                         + "' and dataset with UUID '"
-                         + dataSetUuid
-                         + "'");
+    if (request->sendPostRequest(result, path, vars, jsonBody, error) == false) {
+        error.addMeesage("Failed to start task on cluster with UUID '" + clusterUuid
+                         + "' and dataset with UUID '" + dataSetUuid + "'");
         LOG_ERROR(error);
         return false;
     }
@@ -94,10 +82,10 @@ createTask(std::string &result,
  * @return true, if successful, else false
  */
 bool
-getTask(std::string &result,
-        const std::string &taskUuid,
-        const std::string &clusterUuid,
-        Hanami::ErrorContainer &error)
+getTask(std::string& result,
+        const std::string& taskUuid,
+        const std::string& clusterUuid,
+        Hanami::ErrorContainer& error)
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
@@ -105,13 +93,9 @@ getTask(std::string &result,
     std::string vars = "uuid=" + taskUuid + "&cluster_uuid=" + clusterUuid;
 
     // send request
-    if(request->sendGetRequest(result, path, vars, error) == false)
-    {
-        error.addMeesage("Failed to get task with UUID '"
-                         + taskUuid
-                         + "' of cluster with UUID '"
-                         + clusterUuid
-                         + "'");
+    if (request->sendGetRequest(result, path, vars, error) == false) {
+        error.addMeesage("Failed to get task with UUID '" + taskUuid + "' of cluster with UUID '"
+                         + clusterUuid + "'");
         LOG_ERROR(error);
         return false;
     }
@@ -129,17 +113,14 @@ getTask(std::string &result,
  * @return true, if successful, else false
  */
 bool
-listTask(std::string &result,
-         const std::string &clusterUuid,
-         Hanami::ErrorContainer &error)
+listTask(std::string& result, const std::string& clusterUuid, Hanami::ErrorContainer& error)
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
     const std::string path = "/control/v1/task/all?cluster_uuid=" + clusterUuid;
 
     // send request
-    if(request->sendGetRequest(result, path, "", error) == false)
-    {
+    if (request->sendGetRequest(result, path, "", error) == false) {
         error.addMeesage("Failed to list tasks");
         LOG_ERROR(error);
         return false;
@@ -159,10 +140,10 @@ listTask(std::string &result,
  * @return true, if successful, else false
  */
 bool
-deleteTask(std::string &result,
-           const std::string &taskUuid,
-           const std::string &clusterUuid,
-           Hanami::ErrorContainer &error)
+deleteTask(std::string& result,
+           const std::string& taskUuid,
+           const std::string& clusterUuid,
+           Hanami::ErrorContainer& error)
 {
     // create request
     HanamiRequest* request = HanamiRequest::getInstance();
@@ -170,8 +151,7 @@ deleteTask(std::string &result,
     const std::string vars = "uuid=" + taskUuid + "&clusterUuid=" + clusterUuid;
 
     // send request
-    if(request->sendDeleteRequest(result, path, vars, error) == false)
-    {
+    if (request->sendDeleteRequest(result, path, vars, error) == false) {
         error.addMeesage("Failed to delete task with UUID '" + taskUuid + "'");
         LOG_ERROR(error);
         return false;
@@ -180,4 +160,4 @@ deleteTask(std::string &result,
     return true;
 }
 
-} // namespace Hanami
+}  // namespace Hanami

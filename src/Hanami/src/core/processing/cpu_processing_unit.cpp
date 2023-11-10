@@ -22,55 +22,48 @@
 
 #include "cpu_processing_unit.h"
 
-#include <hanami_root.h>
-
+#include <core/cluster/cluster.h>
+#include <core/processing/cluster_queue.h>
 #include <core/processing/cpu/backpropagation.h>
 #include <core/processing/cpu/processing.h>
 #include <core/processing/cpu/reduction.h>
 #include <core/processing/section_update.h>
-#include <core/processing/cluster_queue.h>
-#include <core/cluster/cluster.h>
+#include <hanami_root.h>
 
-extern "C"
-void
-processing_CUDA(PointerHandler* gpuPointer,
-                uint32_t* brickOrder,
-                Brick* bricks,
-                float* inputValues,
-                float* outputValues,
-                const uint32_t numberOfBricks,
-                NeuronBlock* neuronBlocks,
-                const uint32_t numberOfNeuronBlocks,
-                SynapseBlock* synapseBlocks,
-                const uint32_t numberOfSynapseBlocks);
+extern "C" void processing_CUDA(PointerHandler* gpuPointer,
+                                uint32_t* brickOrder,
+                                Brick* bricks,
+                                float* inputValues,
+                                float* outputValues,
+                                const uint32_t numberOfBricks,
+                                NeuronBlock* neuronBlocks,
+                                const uint32_t numberOfNeuronBlocks,
+                                SynapseBlock* synapseBlocks,
+                                const uint32_t numberOfSynapseBlocks,
+                                const bool doTrain);
 
-extern "C"
-void
-backpropagation_CUDA(PointerHandler* gpuPointer,
-                     uint32_t* brickOrder,
-                     Brick* bricks,
-                     float* outputValues,
-                     float* expectedValues,
-                     const uint32_t numberOfBricks,
-                     NeuronBlock* neuronBlocks,
-                     const uint32_t numberOfNeuronBlocks,
-                     ClusterSettings* settings);
+extern "C" void backpropagation_CUDA(PointerHandler* gpuPointer,
+                                     uint32_t* brickOrder,
+                                     Brick* bricks,
+                                     float* outputValues,
+                                     float* expectedValues,
+                                     const uint32_t numberOfBricks,
+                                     NeuronBlock* neuronBlocks,
+                                     const uint32_t numberOfNeuronBlocks,
+                                     ClusterSettings* settings);
 
-extern "C"
-void
-update_CUDA(PointerHandler* gpuPointer,
-            NeuronBlock* neuronBlocks,
-            const uint32_t numberOfNeuronBlocks,
-            SynapseConnection* synapseConnections,
-            const uint32_t numberOfSynapseConnections);
+extern "C" void update_CUDA(PointerHandler* gpuPointer,
+                            NeuronBlock* neuronBlocks,
+                            const uint32_t numberOfNeuronBlocks,
+                            SynapseConnection* synapseConnections,
+                            const uint32_t numberOfSynapseConnections);
 
 uint32_t counter = 0;
 
 /**
  * @brief constructor
  */
-CpuProcessingUnit::CpuProcessingUnit()
-    : Hanami::Thread("CpuProcessingUnit") {}
+CpuProcessingUnit::CpuProcessingUnit() : Hanami::Thread("CpuProcessingUnit") {}
 
 /**
  * @brief destructor
@@ -88,8 +81,7 @@ CpuProcessingUnit::trainSegmentForward(Cluster* cluster)
     Hanami::ErrorContainer error;
 
     cluster->clusterSettings->doTrain = 1;
-    if(HanamiRoot::useCuda)
-    {
+    if (HanamiRoot::useCuda) {
         processing_CUDA(&cluster->gpuPointer,
                         cluster->brickOrder,
                         cluster->bricks,
@@ -99,13 +91,13 @@ CpuProcessingUnit::trainSegmentForward(Cluster* cluster)
                         cluster->neuronBlocks,
                         cluster->numberOfBrickBlocks,
                         cluster->synapseBlocks,
-                        cluster->clusterHeader->synapseBlocks.count);
+                        cluster->clusterHeader->synapseBlocks.count,
+                        true);
     }
-    else
-    {
+    else {
         prcessCoreSegment(*cluster);
     }
-    //prcessCoreSegment(*cluster);
+    // prcessCoreSegment(*cluster);
 
     cluster->clusterSettings->doTrain = 0;
 }
@@ -120,8 +112,7 @@ CpuProcessingUnit::trainSegmentBackward(Cluster* cluster)
 {
     Hanami::ErrorContainer error;
 
-    if(HanamiRoot::useCuda)
-    {
+    if (HanamiRoot::useCuda) {
         backpropagation_CUDA(&cluster->gpuPointer,
                              cluster->brickOrder,
                              cluster->bricks,
@@ -132,8 +123,7 @@ CpuProcessingUnit::trainSegmentBackward(Cluster* cluster)
                              cluster->numberOfBrickBlocks,
                              cluster->clusterSettings);
 
-        if(updateSections(*cluster))
-        {
+        if (updateSections(*cluster)) {
             update_CUDA(&cluster->gpuPointer,
                         cluster->neuronBlocks,
                         cluster->numberOfBrickBlocks,
@@ -141,17 +131,16 @@ CpuProcessingUnit::trainSegmentBackward(Cluster* cluster)
                         cluster->clusterHeader->synapseConnections.count);
         }
     }
-    else
-    {
+    else {
         reweightCoreSegment(*cluster);
     }
-    //reweightCoreSegment(*cluster);
+    // reweightCoreSegment(*cluster);
 
-    //std::cout<<"counter: "<<counter<<std::endl;
-    //counter++;
+    // std::cout<<"counter: "<<counter<<std::endl;
+    // counter++;
 
-    if(reductionCounter == 100) {
-        //reduceNeurons(*seg);
+    if (reductionCounter == 100) {
+        // reduceNeurons(*seg);
         reductionCounter = 0;
     }
     reductionCounter++;
@@ -166,8 +155,7 @@ void
 CpuProcessingUnit::processSegment(Cluster* cluster)
 {
     Hanami::ErrorContainer error;
-    if(HanamiRoot::useCuda)
-    {
+    if (HanamiRoot::useCuda) {
         processing_CUDA(&cluster->gpuPointer,
                         cluster->brickOrder,
                         cluster->bricks,
@@ -177,36 +165,31 @@ CpuProcessingUnit::processSegment(Cluster* cluster)
                         cluster->neuronBlocks,
                         cluster->numberOfBrickBlocks,
                         cluster->synapseBlocks,
-                        cluster->clusterHeader->synapseBlocks.count);
+                        cluster->clusterHeader->synapseBlocks.count,
+                        false);
     }
-    else
-    {
+    else {
         prcessCoreSegment(*cluster);
     }
 
     // send output back if a client-connection is set
-    if(cluster->msgClient != nullptr) {
-         sendClusterOutputMessage(cluster);
+    if (cluster->msgClient != nullptr) {
+        sendClusterOutputMessage(cluster);
     }
-    else
-    {
+    else {
         Task* actualTask = cluster->getActualTask();
         const uint64_t cycle = actualTask->actualCycle;
-        if(actualTask->type == IMAGE_REQUEST_TASK)
-        {
+        if (actualTask->type == IMAGE_REQUEST_TASK) {
             // TODO: check for cluster-state instead of client
             const uint32_t hightest = getHighestOutput(*cluster);
             actualTask->resultData[cycle] = static_cast<long>(hightest);
         }
-        else if(actualTask->type == TABLE_REQUEST_TASK)
-        {
+        else if (actualTask->type == TABLE_REQUEST_TASK) {
             float val = 0.0f;
-            for(uint64_t i = 0; i < cluster->clusterHeader->outputValues.count; i++)
-            {
+            for (uint64_t i = 0; i < cluster->clusterHeader->outputValues.count; i++) {
                 const float temp = actualTask->resultData[cycle];
                 val = temp + cluster->outputValues[i];
                 actualTask->resultData[cycle] = val;
-
             }
         }
     }
@@ -220,29 +203,27 @@ CpuProcessingUnit::run()
 {
     Cluster* cluster = nullptr;
 
-    while(m_abort == false)
-    {
+    while (m_abort == false) {
         cluster = ClusterQueue::getInstance()->getClusterFromQueue();
-        if(cluster != nullptr)
-        {
+        if (cluster != nullptr) {
             // handle type of processing
-            if(cluster->mode == ClusterProcessingMode::TRAIN_FORWARD_MODE) {
+            if (cluster->mode == ClusterProcessingMode::TRAIN_FORWARD_MODE) {
                 trainSegmentForward(cluster);
-            } else if(cluster->mode == ClusterProcessingMode::TRAIN_BACKWARD_MODE) {
+            }
+            else if (cluster->mode == ClusterProcessingMode::TRAIN_BACKWARD_MODE) {
                 trainSegmentBackward(cluster);
-            } else {
+            }
+            else {
                 processSegment(cluster);
             }
             cluster->updateClusterState();
         }
-        else
-        {
+        else {
             // if no segments are available then sleep
             sleepThread(1000);
         }
     }
 }
-
 
 /**
  * @brief SingleThreadProcessingStatic::reductionTraining
@@ -267,4 +248,3 @@ CpuProcessingUnit::reductionTraining(DynamicSegment* synapseSegment)
         }
     }
 }*/
-

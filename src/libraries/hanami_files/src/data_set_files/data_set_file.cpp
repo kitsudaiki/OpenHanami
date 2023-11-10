@@ -20,10 +20,8 @@
  *      limitations under the License.
  */
 
-#include <hanami_files/data_set_files/data_set_file.h>
-
 #include <hanami_common/files/binary_file.h>
-
+#include <hanami_files/data_set_files/data_set_file.h>
 #include <hanami_files/data_set_files/image_data_set_file.h>
 #include <hanami_files/data_set_files/table_data_set_file.h>
 
@@ -32,7 +30,7 @@
  *
  * @param filePath path to file
  */
-DataSetFile::DataSetFile(const std::string &filePath)
+DataSetFile::DataSetFile(const std::string& filePath)
 {
     m_targetFile = new Hanami::BinaryFile(filePath);
 }
@@ -42,18 +40,12 @@ DataSetFile::DataSetFile(const std::string &filePath)
  *
  * @param file pointer to binary-file object
  */
-DataSetFile::DataSetFile(Hanami::BinaryFile* file)
-{
-    m_targetFile = file;
-}
+DataSetFile::DataSetFile(Hanami::BinaryFile* file) { m_targetFile = file; }
 
 /**
  * @brief destructor
  */
-DataSetFile::~DataSetFile()
-{
-    delete m_targetFile;
-}
+DataSetFile::~DataSetFile() { delete m_targetFile; }
 
 /**
  * @brief initialize a new file with the already created header
@@ -63,13 +55,12 @@ DataSetFile::~DataSetFile()
  * @return true, if successful, else false
  */
 bool
-DataSetFile::initNewFile(Hanami::ErrorContainer &error)
+DataSetFile::initNewFile(Hanami::ErrorContainer& error)
 {
     initHeader();
 
     // allocate storage
-    if(m_targetFile->allocateStorage(m_totalFileSize, error) == false)
-    {
+    if (m_targetFile->allocateStorage(m_totalFileSize, error) == false) {
         LOG_ERROR(error);
         // TODO: error-message
         return false;
@@ -79,15 +70,14 @@ DataSetFile::initNewFile(Hanami::ErrorContainer &error)
     DataSetHeader dataSetHeader;
     dataSetHeader.type = type;
     uint32_t nameSize = name.size();
-    if(nameSize > 255) {
+    if (nameSize > 255) {
         nameSize = 255;
     }
     memcpy(dataSetHeader.name, name.c_str(), nameSize);
     dataSetHeader.name[nameSize] = '\0';
 
     // write dataset-header to file
-    if(m_targetFile->writeDataIntoFile(&dataSetHeader, 0, sizeof(DataSetHeader), error) == false)
-    {
+    if (m_targetFile->writeDataIntoFile(&dataSetHeader, 0, sizeof(DataSetHeader), error) == false) {
         error.addMeesage("Failed to write data-set to disc");
         return false;
     }
@@ -104,12 +94,11 @@ DataSetFile::initNewFile(Hanami::ErrorContainer &error)
  * @return true, if successful, else false
  */
 bool
-DataSetFile::readFromFile(Hanami::ErrorContainer &error)
+DataSetFile::readFromFile(Hanami::ErrorContainer& error)
 {
     // create complete file
     Hanami::DataBuffer buffer;
-    if(m_targetFile->readCompleteFile(buffer, error) == false)
-    {
+    if (m_targetFile->readCompleteFile(buffer, error) == false) {
         error.addMeesage("Faile to read data of data-set from disc");
         return false;
     }
@@ -142,20 +131,18 @@ bool
 DataSetFile::addBlock(const uint64_t pos,
                       const float* data,
                       const u_int64_t numberOfValues,
-                      Hanami::ErrorContainer &error)
+                      Hanami::ErrorContainer& error)
 {
     // check size to not write over the end of the file
-    if(m_headerSize + ((pos + numberOfValues) * sizeof(float)) > m_totalFileSize)
-    {
+    if (m_headerSize + ((pos + numberOfValues) * sizeof(float)) > m_totalFileSize) {
         // TODO: error-message
         return false;
     }
 
     // add add data to file
-    if(m_targetFile->writeDataIntoFile(data,
-                                       m_headerSize + pos * sizeof(float),
-                                       numberOfValues * sizeof(float),
-                                       error) == false)
+    if (m_targetFile->writeDataIntoFile(
+            data, m_headerSize + pos * sizeof(float), numberOfValues * sizeof(float), error)
+        == false)
     {
         error.addMeesage("Failed to write block into data-set");
         return false;
@@ -173,13 +160,13 @@ DataSetFile::addBlock(const uint64_t pos,
  * @return pointer to file-handler, if successful, else nullptr
  */
 DataSetFile*
-readDataSetFile(const std::string &filePath,
-                Hanami::ErrorContainer &error)
+readDataSetFile(const std::string& filePath, Hanami::ErrorContainer& error)
 {
     // read header of file to identify type
     Hanami::BinaryFile* targetFile = new Hanami::BinaryFile(filePath);
     DataSetFile::DataSetHeader header;
-    if(targetFile->readDataFromFile(&header, 0 , sizeof(DataSetFile::DataSetHeader), error) == false)
+    if (targetFile->readDataFromFile(&header, 0, sizeof(DataSetFile::DataSetHeader), error)
+        == false)
     {
         error.addMeesage("failed to read dataset-file");
         return nullptr;
@@ -187,16 +174,14 @@ readDataSetFile(const std::string &filePath,
 
     // create file-handling object based on the type from the header
     DataSetFile* file = nullptr;
-    if(header.type == DataSetFile::IMAGE_TYPE) {
+    if (header.type == DataSetFile::IMAGE_TYPE) {
         file = new ImageDataSetFile(targetFile);
     }
-    else if(header.type == DataSetFile::TABLE_TYPE) {
+    else if (header.type == DataSetFile::TABLE_TYPE) {
         file = new TableDataSetFile(targetFile);
     }
 
-    if(file != nullptr
-            && file->readFromFile(error) == false)
-    {
+    if (file != nullptr && file->readFromFile(error) == false) {
         delete file;
         return nullptr;
     }

@@ -13,8 +13,7 @@
 namespace Hanami
 {
 
-TextFile_Test::TextFile_Test()
-    : Hanami::CompareTestHelper("TextFile_Test")
+TextFile_Test::TextFile_Test() : Hanami::CompareTestHelper("TextFile_Test")
 {
     initTest();
     writeFile_test();
@@ -34,7 +33,7 @@ TextFile_Test::initTest()
     m_filePath = "/tmp/textFile_test.txt";
 
     std::filesystem::path rootPathObj(m_filePath);
-    if(std::filesystem::exists(rootPathObj)) {
+    if (std::filesystem::exists(rootPathObj)) {
         std::filesystem::remove(rootPathObj);
     }
 }
@@ -47,8 +46,9 @@ TextFile_Test::writeFile_test()
 {
     bool ret;
     ErrorContainer error;
-    std::string content = "this is a test\n"
-                          "and this is a second line";
+    std::string content
+        = "this is a test\n"
+          "and this is a second line";
 
     // write content to file in three different cases
     ret = writeFile(m_filePath, content, error, false);
@@ -70,8 +70,9 @@ TextFile_Test::readFile_test()
 {
     bool ret;
     ErrorContainer error;
-    std::string content = "this is a test\n"
-                          "and this is a second line";
+    std::string content
+        = "this is a test\n"
+          "and this is a second line";
 
     // write initial file
     writeFile(m_filePath, content, error, true);
@@ -99,8 +100,9 @@ TextFile_Test::appendText_test()
 {
     bool ret;
     ErrorContainer error;
-    std::string content = "this is a test\n"
-                          "and this is a second line";
+    std::string content
+        = "this is a test\n"
+          "and this is a second line";
 
     // write initial file
     writeFile(m_filePath, content, error, false);
@@ -115,9 +117,10 @@ TextFile_Test::appendText_test()
     TEST_EQUAL(ret, true);
 
     // check result
-    std::string compare = "this is a test\n"
-                          "and this is a second line\n"
-                          "asdfasdfasdf";
+    std::string compare
+        = "this is a test\n"
+          "and this is a second line\n"
+          "asdfasdfasdf";
     TEST_EQUAL(fileContent, compare);
 
     // cleanup
@@ -132,9 +135,10 @@ TextFile_Test::replaceLine_test()
 {
     bool ret;
     ErrorContainer error;
-    std::string content = "this is a test\n"
-                          "and this is a second line\n"
-                          "asdfasdfasdf";
+    std::string content
+        = "this is a test\n"
+          "and this is a second line\n"
+          "asdfasdfasdf";
 
     // write initial file
     writeFile(m_filePath, content, error, false);
@@ -145,13 +149,14 @@ TextFile_Test::replaceLine_test()
 
     // read updated file
     std::string fileContent = "";
-    ret= readFile(fileContent, m_filePath, error);
+    ret = readFile(fileContent, m_filePath, error);
     TEST_EQUAL(ret, true);
 
     // check result
-    std::string compare = "this is a test\n"
-                          "and this is a second line\n"
-                          "poi";
+    std::string compare
+        = "this is a test\n"
+          "and this is a second line\n"
+          "poi";
 
     TEST_EQUAL(fileContent, compare);
 
@@ -167,9 +172,10 @@ TextFile_Test::replaceContent_test()
 {
     bool ret;
     ErrorContainer error;
-    std::string content = "this is a test\n"
-                          "and this is a second line\n"
-                          "poi";
+    std::string content
+        = "this is a test\n"
+          "and this is a second line\n"
+          "poi";
 
     // write initial file
     writeFile(m_filePath, content, error, false);
@@ -184,9 +190,10 @@ TextFile_Test::replaceContent_test()
     TEST_EQUAL(ret, true);
 
     // check result
-    std::string compare = "this is a test\n"
-                          "and this is a second line\n"
-                          "nani";
+    std::string compare
+        = "this is a test\n"
+          "and this is a second line\n"
+          "nani";
     TEST_EQUAL(fileContent, compare);
 
     // cleanup
@@ -209,10 +216,9 @@ void
 TextFile_Test::deleteFile()
 {
     std::filesystem::path rootPathObj(m_filePath);
-    if(std::filesystem::exists(rootPathObj)) {
+    if (std::filesystem::exists(rootPathObj)) {
         std::filesystem::remove(rootPathObj);
     }
 }
 
-}
-
+}  // namespace Hanami

@@ -23,14 +23,15 @@
 #ifndef KITSUNEMIMI_SAKURA_NETWORK_SESSION_HANDLER_H
 #define KITSUNEMIMI_SAKURA_NETWORK_SESSION_HANDLER_H
 
-#include <iostream>
-#include <vector>
-#include <map>
-#include <atomic>
-
 #include <hanami_network/session.h>
 
-namespace Hanami {
+#include <atomic>
+#include <iostream>
+#include <map>
+#include <vector>
+
+namespace Hanami
+{
 class AbstractServer;
 }
 
@@ -39,7 +40,7 @@ namespace Hanami
 
 class SessionController
 {
-public:
+   public:
     SessionController(void (*processCreateSession)(Session*, const std::string),
                       void (*processCloseSession)(Session*, const std::string),
                       void (*processError)(Session*, const uint8_t, const std::string));
@@ -48,46 +49,46 @@ public:
     static Hanami::SessionController* m_sessionController;
 
     // server
-    uint32_t addUnixDomainServer(const std::string &socketFile,
-                                 ErrorContainer &error,
-                                 const std::string &threadName = "UDS");
+    uint32_t addUnixDomainServer(const std::string& socketFile,
+                                 ErrorContainer& error,
+                                 const std::string& threadName = "UDS");
     uint32_t addTcpServer(const uint16_t port,
-                          ErrorContainer &error,
-                          const std::string &threadName = "TCP");
+                          ErrorContainer& error,
+                          const std::string& threadName = "TCP");
     uint32_t addTlsTcpServer(const uint16_t port,
-                             const std::string &certFile,
-                             const std::string &keyFile,
-                             ErrorContainer &error,
-                             const std::string &threadName = "TLS_TCP");
+                             const std::string& certFile,
+                             const std::string& keyFile,
+                             ErrorContainer& error,
+                             const std::string& threadName = "TLS_TCP");
     bool closeServer(const uint32_t id);
     void cloesAllServers();
 
     // session
-    Session* startUnixDomainSession(const std::string &socketFile,
-                                    const std::string &sessionIdentifier,
-                                    const std::string &threadName,
-                                    ErrorContainer &error);
-    Session* startTcpSession(const std::string &address,
+    Session* startUnixDomainSession(const std::string& socketFile,
+                                    const std::string& sessionIdentifier,
+                                    const std::string& threadName,
+                                    ErrorContainer& error);
+    Session* startTcpSession(const std::string& address,
                              const uint16_t port,
-                             const std::string &sessionIdentifier,
-                             const std::string &threadName,
-                             ErrorContainer &error);
-    Session* startTlsTcpSession(const std::string &address,
+                             const std::string& sessionIdentifier,
+                             const std::string& threadName,
+                             ErrorContainer& error);
+    Session* startTlsTcpSession(const std::string& address,
                                 const uint16_t port,
-                                const std::string &certFile,
-                                const std::string &keyFile,
-                                const std::string &sessionIdentifier,
-                                const std::string &threadName,
-                                ErrorContainer &error);
+                                const std::string& certFile,
+                                const std::string& keyFile,
+                                const std::string& sessionIdentifier,
+                                const std::string& threadName,
+                                ErrorContainer& error);
 
-private:
+   private:
     uint32_t m_serverIdCounter = 0;
 
     Session* startSession(AbstractSocket* socket,
-                          const std::string &sessionIdentifier,
-                          ErrorContainer &error);
+                          const std::string& sessionIdentifier,
+                          ErrorContainer& error);
 };
 
-}
+}  // namespace Hanami
 
-#endif // KITSUNEMIMI_SAKURA_NETWORK_SESSION_HANDLER_H
+#endif  // KITSUNEMIMI_SAKURA_NETWORK_SESSION_HANDLER_H

@@ -23,18 +23,18 @@
 #ifndef STATE_H
 #define STATE_H
 
-#include <map>
-#include <stdint.h>
-#include <string>
-#include <vector>
-#include <utility>
 #include <hanami_common/threading/event.h>
+#include <stdint.h>
+
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace Hanami
 {
 
-struct State
-{
+struct State {
     std::map<uint32_t, State*> nextStates;
     std::string name = "";
     uint32_t id = 0;
@@ -45,8 +45,7 @@ struct State
     /**
      * @brief constructor
      */
-    State(const uint32_t id,
-          const std::string &name = "")
+    State(const uint32_t id, const std::string& name = "")
     {
         this->id = id;
         this->name = name;
@@ -60,8 +59,7 @@ struct State
      *
      * @return false if key already registerd, else true
      */
-    bool
-    addTransition(const uint32_t &key, State* nextState)
+    bool addTransition(const uint32_t& key, State* nextState)
     {
         return nextStates.try_emplace(key, nextState).second;
     }
@@ -74,14 +72,12 @@ struct State
      * @return pointer to the next state or the next state of the parent,
      *         returns null-pointer if the key is unknown
      */
-    State*
-    next(const uint32_t &key)
+    State* next(const uint32_t& key)
     {
         auto it = nextStates.find(key);
-        if(it != nextStates.end())
-        {
+        if (it != nextStates.end()) {
             State* tempState = it->second;
-            if(tempState->initialChild != nullptr) {
+            if (tempState->initialChild != nullptr) {
                 tempState = tempState->initialChild;
             }
             return tempState;
@@ -95,46 +91,33 @@ struct State
      *
      * @param child initial child state
      */
-    void
-    setInitialChildState(State* child)
-    {
-        this->initialChild = child;
-    }
+    void setInitialChildState(State* child) { this->initialChild = child; }
 
     /**
      * @brief add child state
      *
      * @param child new child state
      */
-    void
-    addChildState(State* child)
-    {
-        child->parent = this;
-    }
+    void addChildState(State* child) { child->parent = this; }
 
     /**
      * @brief add new event to the state
      *
      * @param event new event, which should be triggered, when enter the state
      */
-    void
-    addEvent(Event* event)
-    {
-        events.push_back(event);
-    }
+    void addEvent(Event* event) { events.push_back(event); }
 
     /**
      * @brief process all events in this state
      */
-    void
-    processEvents()
+    void processEvents()
     {
-        for(uint64_t i = 0; i < events.size(); i++) {
+        for (uint64_t i = 0; i < events.size(); i++) {
             events.at(i)->processEvent();
         }
     }
 };
 
-}
+}  // namespace Hanami
 
-#endif // STATE_H
+#endif  // STATE_H

@@ -6,12 +6,12 @@ data:
     [DEFAULT]
     debug = True
     log_path = "/var/log"
-    database = "/etc/hanami/hanami_db"
+    database = "/etc/hanami/data/hanami_db"
     use_cuda = false
 
     [storage]
-    data_set_location = "/etc/hanami/train_data"
-    checkpoint_location = "/etc/hanami/checkpoint"
+    data_set_location = "/etc/hanami/data/datasets"
+    checkpoint_location = "/etc/hanami/data/checkpoint"
 
     [auth]
     policies = "/etc/hanami/policies"
@@ -20,11 +20,9 @@ data:
 
     [http]
     enable = True
-    ip = "0.0.0.0"
-    certificate = "/etc/hanami/cert.pem"
-    key = "/etc/hanami/key.pem"
+    ip = {{ .Values.api.ip }}
     dashboard_files = "/etc/Hanami-Dashboard/src"
-    port = 1337
+    port = {{ .Values.api.port }}
     enable_dashboard = True
 
 kind: ConfigMap

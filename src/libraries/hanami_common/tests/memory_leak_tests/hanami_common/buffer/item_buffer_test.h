@@ -14,16 +14,15 @@
 namespace Hanami
 {
 
-class ItemBuffer_Test
-        : public Hanami::MemoryLeakTestHelpter
+class ItemBuffer_Test : public Hanami::MemoryLeakTestHelpter
 {
-public:
+   public:
     ItemBuffer_Test();
 
-private:
+   private:
     void create_delete_test();
 };
 
-}
+}  // namespace Hanami
 
-#endif // ITEM_BUFFER_TEST_H
+#endif  // ITEM_BUFFER_TEST_H

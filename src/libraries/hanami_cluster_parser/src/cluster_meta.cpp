@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#include <hanami_cluster_parser/cluster_meta.h>
 #include <cluster_parsing/cluster_parser_interface.h>
+#include <hanami_cluster_parser/cluster_meta.h>
 
 namespace Hanami
 {
@@ -36,14 +36,11 @@ namespace Hanami
  * @return true, if successful, else false
  */
 bool
-parseCluster(ClusterMeta* result,
-             const std::string &input,
-             ErrorContainer &error)
+parseCluster(ClusterMeta* result, const std::string& input, ErrorContainer& error)
 {
     ClusterParserInterface* parser = ClusterParserInterface::getInstance();
 
-    if(input.size() == 0)
-    {
+    if (input.size() == 0) {
         error.addMeesage("Parsing of cluster-template failed, because the input is empty");
         return false;
     }
@@ -51,4 +48,4 @@ parseCluster(ClusterMeta* result,
     return parser->parse(result, input, error);
 }
 
-}
+}  // namespace Hanami

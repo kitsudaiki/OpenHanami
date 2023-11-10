@@ -9,15 +9,16 @@
 #ifndef INIPARSERINTERFACE_H
 #define INIPARSERINTERFACE_H
 
-#include <vector>
-#include <string>
-#include <map>
-#include <mutex>
 #include <hanami_common/logger.h>
 
-using std::string;
+#include <map>
+#include <mutex>
+#include <string>
+#include <vector>
+
 using std::map;
 using std::pair;
+using std::string;
 
 #include <nlohmann/json.hpp>
 
@@ -29,27 +30,25 @@ class location;
 
 class IniParserInterface
 {
-
-public:
+   public:
     static IniParserInterface* getInstance();
 
     // connection the the scanner and parser
-    void scan_begin(const std::string &inputString);
+    void scan_begin(const std::string& inputString);
     void scan_end();
-    json parse(const std::string &inputString, ErrorContainer &error);
-    const std::string removeQuotes(const std::string &input);
+    json parse(const std::string& inputString, ErrorContainer& error);
+    const std::string removeQuotes(const std::string& input);
 
     // output-handling
     void setOutput(json output);
 
     // Error handling.
-    void error(const Hanami::location &location,
-               const std::string& message);
+    void error(const Hanami::location& location, const std::string& message);
 
     // static variables, which are used in lexer and parser
     static bool m_outsideComment;
 
-private:
+   private:
     IniParserInterface(const bool traceParsing = false);
 
     static IniParserInterface* m_instance;
@@ -62,6 +61,6 @@ private:
     bool m_traceParsing = false;
 };
 
-}
+}  // namespace Hanami
 
-#endif // INIPARSERINTERFACE_H
+#endif  // INIPARSERINTERFACE_H

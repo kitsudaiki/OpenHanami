@@ -23,25 +23,24 @@
 #ifndef TSUGUMI_TESTSTEP_H
 #define TSUGUMI_TESTSTEP_H
 
-#include <vector>
+#include <hanami_common/logger.h>
 #include <unistd.h>
 
-#include <hanami_common/logger.h>
+#include <vector>
 
 class TestStep
 {
-public:
+   public:
     TestStep(const bool expectSuccess);
     virtual ~TestStep();
 
     const std::string getTestName() const;
 
-    virtual bool runTest(json &inputData,
-                         Hanami::ErrorContainer &error) = 0;
+    virtual bool runTest(json& inputData, Hanami::ErrorContainer& error) = 0;
 
-protected:
+   protected:
     const bool m_expectSuccess;
     std::string m_testName;
 };
 
-#endif // TSUGUMI_TESTSTEP_H
+#endif  // TSUGUMI_TESTSTEP_H

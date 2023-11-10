@@ -23,9 +23,9 @@
 #ifndef HANAMI_ROUTING_FUNCTIONS_H
 #define HANAMI_ROUTING_FUNCTIONS_H
 
-#include <stdint.h>
 #include <common.h>
 #include <hanami_cluster_parser/cluster_meta.h>
+#include <stdint.h>
 
 /**
  * @brief get neighbor-position for a specific side in the hexagon-grid
@@ -40,13 +40,13 @@ getNeighborPos(const Hanami::Position sourcePos, const uint8_t side)
 {
     Hanami::Position result;
 
-    switch(side)
-    {
+    switch (side) {
         case 0:
         {
-            if(sourcePos.y % 2 == 0) {
+            if (sourcePos.y % 2 == 0) {
                 result.x = sourcePos.x - 1;
-            } else {
+            }
+            else {
                 result.x = sourcePos.x;
             }
             result.y = sourcePos.y - 1;
@@ -55,9 +55,10 @@ getNeighborPos(const Hanami::Position sourcePos, const uint8_t side)
         }
         case 1:
         {
-            if(sourcePos.y % 2 == 0) {
+            if (sourcePos.y % 2 == 0) {
                 result.x = sourcePos.x;
-            } else {
+            }
+            else {
                 result.x = sourcePos.x + 1;
             }
             result.y = sourcePos.y - 1;
@@ -73,9 +74,10 @@ getNeighborPos(const Hanami::Position sourcePos, const uint8_t side)
         }
         case 3:
         {
-            if(sourcePos.y % 2 == 0) {
+            if (sourcePos.y % 2 == 0) {
                 result.x = sourcePos.x;
-            } else {
+            }
+            else {
                 result.x = sourcePos.x + 1;
             }
             result.y = sourcePos.y - 1;
@@ -91,9 +93,10 @@ getNeighborPos(const Hanami::Position sourcePos, const uint8_t side)
         }
         case 5:
         {
-            if(sourcePos.y % 2 == 0) {
+            if (sourcePos.y % 2 == 0) {
                 result.x = sourcePos.x;
-            } else {
+            }
+            else {
                 result.x = sourcePos.x + 1;
             }
             result.y = sourcePos.y + 1;
@@ -102,9 +105,10 @@ getNeighborPos(const Hanami::Position sourcePos, const uint8_t side)
         }
         case 8:
         {
-            if(sourcePos.y % 2 == 0) {
+            if (sourcePos.y % 2 == 0) {
                 result.x = sourcePos.x - 1;
-            } else {
+            }
+            else {
                 result.x = sourcePos.x;
             }
             result.y = sourcePos.y + 1;
@@ -120,9 +124,10 @@ getNeighborPos(const Hanami::Position sourcePos, const uint8_t side)
         }
         case 6:
         {
-            if(sourcePos.y % 2 == 0) {
+            if (sourcePos.y % 2 == 0) {
                 result.x = sourcePos.x - 1;
-            } else {
+            }
+            else {
                 result.x = sourcePos.x;
             }
             result.y = sourcePos.y - 1;
@@ -138,9 +143,10 @@ getNeighborPos(const Hanami::Position sourcePos, const uint8_t side)
         }
         case 10:
         {
-            if(sourcePos.y % 2 == 0) {
+            if (sourcePos.y % 2 == 0) {
                 result.x = sourcePos.x - 1;
-            } else {
+            }
+            else {
                 result.x = sourcePos.x;
             }
             result.y = sourcePos.y + 1;
@@ -149,9 +155,10 @@ getNeighborPos(const Hanami::Position sourcePos, const uint8_t side)
         }
         case 11:
         {
-            if(sourcePos.y % 2 == 0) {
+            if (sourcePos.y % 2 == 0) {
                 result.x = sourcePos.x;
-            } else {
+            }
+            else {
                 result.x = sourcePos.x + 1;
             }
             result.y = sourcePos.y + 1;
@@ -179,8 +186,7 @@ getNextSides(const uint8_t side)
 {
     NextSides nextSides;
 
-    switch (side)
-    {
+    switch (side) {
         case 0:
         {
             nextSides.sides[0] = 1;
@@ -298,4 +304,4 @@ getNextSides(const uint8_t side)
     return nextSides;
 }
 
-#endif // HANAMI_ROUTING_FUNCTIONS_H
+#endif  // HANAMI_ROUTING_FUNCTIONS_H

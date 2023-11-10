@@ -32,4 +32,4 @@ typedef std::chrono::seconds chronoSec;
 typedef std::chrono::high_resolution_clock::time_point chronoTimePoint;
 typedef std::chrono::high_resolution_clock chronoClock;
 
-#endif // HANAMI_TYPEDEFS_H
+#endif  // HANAMI_TYPEDEFS_H

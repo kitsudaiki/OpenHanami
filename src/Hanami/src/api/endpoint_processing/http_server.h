@@ -23,56 +23,46 @@
 #ifndef TORIIGATEWAY_HTTP_SERVER_H
 #define TORIIGATEWAY_HTTP_SERVER_H
 
+#include <hanami_common/logger.h>
+#include <hanami_common/threading/thread.h>
+
+#include <boost/asio/ip/tcp.hpp>
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
-#include <boost/beast/version.hpp>
 #include <boost/beast/ssl.hpp>
-#include <boost/asio/ip/tcp.hpp>
-
+#include <boost/beast/version.hpp>
 #include <chrono>
 #include <cstdlib>
 #include <ctime>
+#include <deque>
 #include <iostream>
 #include <memory>
-#include <string>
 #include <mutex>
-#include <deque>
-
-#include <hanami_common/threading/thread.h>
-#include <hanami_common/logger.h>
+#include <string>
 
 using tcp = boost::asio::ip::tcp;
 
-class HttpWebsocketThread;
+class HttpProcessing;
 
-class HttpServer
-        : public Hanami::Thread
+class HttpServer : public Hanami::Thread
 {
-public:
-    HttpServer(const std::string &address,
-               const uint16_t port,
-               const std::string &cert,
-               const std::string &key);
+   public:
+    HttpServer(const std::string& address, const uint16_t port);
 
-    boost::asio::ssl::context m_ctx;
+    HttpProcessing* httpProcessing = nullptr;
 
     tcp::socket* getSocket();
     void addSocket(tcp::socket* socket);
 
-protected:
+   protected:
     void run();
 
-private:
+   private:
     const std::string m_address = "";
     const uint16_t m_port = 0;
-    const std::string m_certFilePath = "";
-    const std::string m_keyFilePath = "";
 
     std::deque<tcp::socket*> m_queue;
     std::mutex m_queueMutex;
-
-    bool loadCertificates(boost::asio::ssl::context &ctx,
-                          Hanami::ErrorContainer &error);
 };
 
-#endif // TORIIGATEWAY_HTTP_SERVER_H
+#endif  // TORIIGATEWAY_HTTP_SERVER_H

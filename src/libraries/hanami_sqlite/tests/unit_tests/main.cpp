@@ -1,8 +1,9 @@
-#include <iostream>
-
 #include <sqlite_test.h>
 
-int main()
+#include <iostream>
+
+int
+main()
 {
     Hanami::Sqlite_Test();
     return 0;

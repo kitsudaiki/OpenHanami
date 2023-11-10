@@ -25,12 +25,11 @@
 #include <hanami_config/config_handler.h>
 #include <hanami_sdk/data_set.h>
 
-DataSetCreateMnistTest::DataSetCreateMnistTest(const bool expectSuccess,
-                                               const std::string &type)
-          : TestStep(expectSuccess)
+DataSetCreateMnistTest::DataSetCreateMnistTest(const bool expectSuccess, const std::string& type)
+    : TestStep(expectSuccess)
 {
     m_testName = "create mnist data-set";
-    if(expectSuccess) {
+    if (expectSuccess) {
         m_testName += " (success)";
     } else {
         m_testName += " (fail)";
@@ -39,35 +38,30 @@ DataSetCreateMnistTest::DataSetCreateMnistTest(const bool expectSuccess,
 }
 
 bool
-DataSetCreateMnistTest::runTest(json &inputData,
-                                Hanami::ErrorContainer &error)
+DataSetCreateMnistTest::runTest(json& inputData, Hanami::ErrorContainer& error)
 {
     std::string result;
-    if(m_type == "train")
-    {
-        if(Hanami::uploadMnistData(result,
-                                     inputData["train_dataset_name"],
-                                     inputData["train_inputs"],
-                                     inputData["train_labels"],
-                                     error) != m_expectSuccess)
-        {
+    if (m_type == "train") {
+        if (Hanami::uploadMnistData(result,
+                                    inputData["train_dataset_name"],
+                                    inputData["train_inputs"],
+                                    inputData["train_labels"],
+                                    error)
+            != m_expectSuccess) {
             return false;
         }
-    }
-    else
-    {
-        if(Hanami::uploadMnistData(result,
-                                     inputData["request_dataset_name"],
-                                     inputData["request_inputs"],
-                                     inputData["request_labels"],
-                                     error) != m_expectSuccess)
-        {
+    } else {
+        if (Hanami::uploadMnistData(result,
+                                    inputData["request_dataset_name"],
+                                    inputData["request_inputs"],
+                                    inputData["request_labels"],
+                                    error)
+            != m_expectSuccess) {
             return false;
         }
     }
 
-
-    if(m_expectSuccess == false) {
+    if (m_expectSuccess == false) {
         return true;
     }
 
@@ -75,12 +69,12 @@ DataSetCreateMnistTest::runTest(json &inputData,
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch(const json::parse_error& ex) {
+    } catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
 
-    if(m_type == "train") {
+    if (m_type == "train") {
         inputData["train_dataset_uuid"] = jsonItem["uuid"];
     } else {
         inputData["request_dataset_uuid"] = jsonItem["uuid"];

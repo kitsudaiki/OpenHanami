@@ -24,49 +24,38 @@
 #define HANAMI_CLUSTERINIT_H
 
 #include <common.h>
-
-#include <hanami_cluster_parser/cluster_meta.h>
 #include <core/processing/objects.h>
+#include <hanami_cluster_parser/cluster_meta.h>
 
 class CoreSegment;
 class Cluster;
 
 using Hanami::ClusterMeta;
 
-bool reinitPointer(Cluster* cluster,
-                   const uint64_t numberOfBytes);
+bool reinitPointer(Cluster* cluster, const uint64_t numberOfBytes);
 
 bool initNewCluster(Cluster* cluster,
-                    const Hanami::ClusterMeta &clusterMeta,
-                    const std::string &uuid);
+                    const Hanami::ClusterMeta& clusterMeta,
+                    const std::string& uuid);
 
 ClusterHeader createNewHeader(const uint32_t numberOfBricks,
                               const uint32_t numberOfBrickBlocks,
                               const uint32_t maxSynapseSections,
                               const uint64_t numberOfInputs,
                               const uint64_t numberOfOutputs);
-void initSegmentPointer(Cluster* cluster,
-                        const ClusterHeader &header);
+void initSegmentPointer(Cluster* cluster, const ClusterHeader& header);
 bool connectBorderBuffer(Cluster* cluster);
-void allocateSegment(Cluster* cluster,
-                     ClusterHeader &header);
-//void initOpencl(Hanami::GpuData &data);
-ClusterSettings initSettings(const Hanami::ClusterMeta &clusterMeta);
+void allocateSegment(Cluster* cluster, ClusterHeader& header);
+// void initOpencl(Hanami::GpuData &data);
+ClusterSettings initSettings(const Hanami::ClusterMeta& clusterMeta);
 
-void addBricksToSegment(Cluster* cluster,
-                        const Hanami::ClusterMeta &clusterMeta);
+void addBricksToSegment(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta);
 bool initTargetBrickList(Cluster* cluster);
 
-Brick createNewBrick(const Hanami::BrickMeta &brickMeta,
-                     const uint32_t id);
-void connectBrick(Cluster* cluster,
-                  Brick *sourceBrick,
-                  const uint8_t side);
+Brick createNewBrick(const Hanami::BrickMeta& brickMeta, const uint32_t id);
+void connectBrick(Cluster* cluster, Brick* sourceBrick, const uint8_t side);
 void connectAllBricks(Cluster* cluster);
-bool initializeNeurons(Cluster* cluster,
-                       const Hanami::ClusterMeta &clusterMeta);
-uint32_t goToNextInitBrick(Cluster* cluster,
-                           Brick* currentBrick,
-                           uint32_t* maxPathLength);
+bool initializeNeurons(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta);
+uint32_t goToNextInitBrick(Cluster* cluster, Brick* currentBrick, uint32_t* maxPathLength);
 
-#endif // HANAMI_CLUSTERINIT_H
+#endif  // HANAMI_CLUSTERINIT_H

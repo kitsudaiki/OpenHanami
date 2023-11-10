@@ -1,12 +1,12 @@
 # Installation
 
+!!! warning
+
+    The installation process is also very basic at the moment. So for example only self-signed certificates are used at the moment.
+
 ## On Kubernetes
 
 For the installation on a kubernetes `helm` is used. 
-
-!!! info
-
-    The installation process is also very only basic at the moment. Usage of statefulsets, cert-manager and node-labels coming in the near future.
 
 ### Requirements
 
@@ -28,7 +28,30 @@ For the installation on a kubernetes `helm` is used.
 
     [official Installation-Guide](https://helm.sh/docs/intro/install/)
 
-3. If measuring of the cpu power consumption should be available, then the following requirements must be fulfilled on the hosts of the kubernetes-deployment:
+3. **Cert-Manager**
+
+    Installation:
+
+    ```
+    helm repo add jetstack https://charts.jetstack.io
+    helm repo update
+    kubectl create namespace cert-manager
+    helm install cert-manager jetstack/cert-manager --namespace cert-manager --set installCRDs=true
+    ```
+
+4. **Node label**
+
+    To all avaialbe nodes, where it is allowed to be deployed, the label `hanami-node` must be assigned
+
+    ```
+    kubectl label nodes NODE_NAME hanami-node=true
+    ```
+
+    !!! info
+
+        At the moment Hanami is only a single-node application. This will change in the near future, but at the moment it doesn't make sense to label more than one node.
+
+<!-- 3. If measuring of the cpu power consumption should be available, then the following requirements must be fulfilled on the hosts of the kubernetes-deployment:
 
     - Required specific CPU-architecture:
         - **Intel**: 
@@ -37,20 +60,23 @@ For the installation on a kubernetes `helm` is used.
             - Zen-Architecture or newer
             - for CPUs of AMD Zen/Zen2 Linux-Kernel of version `5.8` or newer must be used, for Zen3 Linux-Kernel of version `5.11` or newer
 
-    - the `msr`-kernel module has to be loaded with `modeprobe msr`.
+    - the `msr`-kernel module has to be loaded with `modeprobe msr`. -->
 
 ### Installation
 
 ```
 git clone https://github.com/kitsudaiki/Hanami.git
 
-cd Hanami-AI/deploy/k8s
+cd Hanami/deploy/k8s
 
-helm install ./hanami/ --generate-name \
+helm install \
     --set user.id=USER_ID  \
     --set user.name=USER_NAME  \
     --set user.pw=PASSWORD  \
-    --set token.pw=TOKEN_KEY
+    --set token.pw=TOKEN_KEY  \
+    --set api.domain=DOMAIN_NAME  \
+    hanami \
+    ./hanami/
 ```
 
 The `--set`-flag defining the login-information for the initial admin-user of the instance:
@@ -68,7 +94,11 @@ The `--set`-flag defining the login-information for the initial admin-user of th
     - String, with between `8` and `4096` characters length
 
 - `TOKEN_KEY`
-    - Key for the JWT-Tokens provided by Misaki
+    - Key for the JWT-Tokens
+    - String
+
+- `DOMAIN_NAME`
+    - Domain for https-access. Per default it is `local-hanami`
     - String
 
 After a successful installation the `USER_ID` and `PASSWORD` have to be used for login to the system.
@@ -77,27 +107,120 @@ After a successful installation the `USER_ID` and `PASSWORD` have to be used for
 
 - check if all pods are running
 
-    ```
-    kubectl get pods | grep hanami
-
-    svclb-hanami-service-hg7ht   1/1     Running   0          20m
-    hanami-fb996969f-5gd68       5/5     Running   2          20m
-    ```
-
-- get EXTERNAL-IP-address
-
-    ```
-    kubectl get service
+    !!! example
     
-    NAME             TYPE           CLUSTER-IP    EXTERNAL-IP       PORT(S)          AGE
-    kubernetes       ClusterIP      10.43.0.1     <none>            443/TCP          44d
-    hanami-service   LoadBalancer   10.43.23.42   192.168.178.110   1337:31128/TCP   28m
-    ```
+        ```
+        kubectl get pods
 
-- use the address in your browser: `https://EXTERNAL-IP:1337`
+        NAME                      READY   STATUS    RESTARTS   AGE
+        hanami-56fc87c8f5-6k77r   1/1     Running   0          14s
+        ```
 
-    - `https` MUST be used at the moment, because forwarding from http to https is missing at the moment
-    - port `1337` is hard configured at the moment
+- get IP-address
+
+    !!! example
+    
+        ```
+        kubectl get ingress
+
+        NAME                      CLASS     HOSTS          ADDRESS          PORTS     AGE
+        hanami-ingress-redirect   traefik   local-hanami   192.168.178.87   80        8s
+        hanami-ingress            traefik   local-hanami   192.168.178.87   80, 443   8s
+        ```
+
+- add domain with ip to `/etc/hosts`
+
+    !!! example
+
+        ```
+        192.168.178.87  local-hanami
+        ```
+
+- use the address in your browser: 
+
+    `https://DOMAIN_NAME`
+
+    !!! example
+    
+        ```
+        https://local-hanami/
+        ```
 
 - login with `USER_ID` and `PASSWORD`
 
+   !!! note
+
+      Persistent data of hanami (checkpoints and so on) within the pod are mounted into the host directory `/etc/hanami_data`, in case you want to save or delete them.
+
+## With Ansible
+
+### Requirements
+
+- Only Ansible itself is required to be installed
+
+- Other dependencies like docker will be installed by the ansible playbooks, so it is required that playbooks can be executed with sudo permissions
+
+### Environment Variables
+
+Basic parameter have to be set by environemt-variables:
+
+- `ADMIN_USER_ID`
+    - Identifier for the new user. It is used for login and internal references to the user.
+    - String, which MUST match the regex `[a-zA-Z][a-zA-Z_0-9@]*` with between `4` and `256` characters length
+
+- `ADMIN_USER_NAME`
+    - Better readable name for the user, which doesn't have to be unique in the system.
+    - String, which MUST match the regex `[a-zA-Z][a-zA-Z_0-9 ]*` with between `4` and `256` characters length
+
+- `ADMIN_PASSWORD`
+    - Password for the initial user
+    - String, with between `8` and `4096` characters length
+
+- `TOKEN_KEY`
+    - Key for the JWT-Tokens
+    - String
+
+
+!!! example
+
+    ```
+    export ADMIN_USER_ID="admin"
+    export ADMIN_USER_NAME="admin"
+    export ADMIN_PASSWORD="some_password"
+    export TOKEN_KEY="random_token_key"
+    ```
+
+### Run
+
+Run in the root of the repository:
+
+```
+cd deploy/ansible/
+
+ansible-playbook --connection=local -i hanami/inventory.yml hanami/deploy.yml
+```
+
+The resulting setup will listen on `0.0.0.0` and port `443` and `80`.
+
+### Testing
+
+The playbooks can be tested with `vagrant`
+
+```
+apt-get install vagrant virtualbox
+
+vagrant plugin install vagrant-env
+vagrant plugin install vagrant-vbguest
+```
+
+The environment variables also must be set in this case with the initial admin credentials.
+
+Run in the root of the repository:
+
+```
+cd testing/ansible_deploy
+
+vagrant up
+```
+
+It will create a virtualbox-VM with ubuntu 22.04 and automatically deploy Hanami with the ansible-playbook.

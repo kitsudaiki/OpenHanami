@@ -9,23 +9,22 @@
 #ifndef THREAD_TEST_H
 #define THREAD_TEST_H
 
-#include <unistd.h>
 #include <hanami_common/test_helper/memory_leak_test_helper.h>
+#include <unistd.h>
 
 namespace Hanami
 {
 
-class Thread_Test
-        : public Hanami::MemoryLeakTestHelpter
+class Thread_Test : public Hanami::MemoryLeakTestHelpter
 {
-public:
+   public:
     Thread_Test();
 
-private:
+   private:
     void create_delete_test();
     void create_delete_with_events_test();
 };
 
-}
+}  // namespace Hanami
 
-#endif // THREAD_TEST_H
+#endif  // THREAD_TEST_H

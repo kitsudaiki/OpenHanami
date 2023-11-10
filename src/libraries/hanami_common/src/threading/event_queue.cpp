@@ -20,10 +20,9 @@
  *      limitations under the License.
  */
 
-#include <hanami_common/threading/event_queue.h>
-
 #include <hanami_common/logger.h>
 #include <hanami_common/threading/event.h>
+#include <hanami_common/threading/event_queue.h>
 
 namespace Hanami
 {
@@ -33,8 +32,7 @@ namespace Hanami
  *
  * @param deleteEventObj set to true, to delete the event-object after it was processed
  */
-EventQueue::EventQueue(const std::string &threadName,
-                       const bool deleteEventObj)
+EventQueue::EventQueue(const std::string& threadName, const bool deleteEventObj)
     : Thread(threadName)
 {
     m_deleteEventObj = deleteEventObj;
@@ -48,14 +46,12 @@ EventQueue::~EventQueue()
     // Workaround. When the events in the queue are not allowed to be deleted, because they are
     // deleted somewhere else, the list has to be cleared before calling the destructor
     // of the parent thread-class.
-    if(m_deleteEventObj == false)
-    {
+    if (m_deleteEventObj == false) {
         Event* event = nullptr;
-        do
-        {
+        do {
             event = getEventFromQueue();
         }
-        while(event != nullptr);
+        while (event != nullptr);
     }
 }
 
@@ -65,23 +61,20 @@ EventQueue::~EventQueue()
 void
 EventQueue::EventQueue::run()
 {
-    while(m_abort == false)
-    {
+    while (m_abort == false) {
         // get event
         Event* event = getEventFromQueue();
-        if(event == nullptr)
-        {
+        if (event == nullptr) {
             // sleep if no event exist in the queue
             sleepThread(10000);
         }
-        else
-        {
+        else {
             event->processEvent();
-            if(m_deleteEventObj) {
+            if (m_deleteEventObj) {
                 delete event;
             }
         }
     }
 }
 
-}
+}  // namespace Hanami

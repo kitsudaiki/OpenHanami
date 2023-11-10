@@ -24,9 +24,10 @@ Hanami::Logger* Logger::m_logger = new Hanami::Logger();
  *
  * @return false, if initializing failed, else true
  */
-bool initFileLogger(const std::string &directoryPath,
-                    const std::string &baseFileName,
-                    const bool debugLog)
+bool
+initFileLogger(const std::string& directoryPath,
+               const std::string& baseFileName,
+               const bool debugLog)
 {
     return Logger::m_logger->initFileLogger(directoryPath, baseFileName, debugLog);
 }
@@ -38,7 +39,8 @@ bool initFileLogger(const std::string &directoryPath,
  *
  * @return always true
  */
-bool initConsoleLogger(const bool debugLog)
+bool
+initConsoleLogger(const bool debugLog)
 {
     return Logger::m_logger->initConsoleLogger(debugLog);
 }
@@ -60,13 +62,16 @@ setDebugFlag(const bool debugLog)
  * @brief default-error-callback, which is triggered by each LOG_ERROR. There is a default required
  *        to be set to avoid seg-faults.
  */
-void defaultErrorCallback(const std::string &) {}
+void
+defaultErrorCallback(const std::string&)
+{
+}
 
 /**
  * @brief write debug-message to logfile
  */
 bool
-LOG_debug(const std::string &message)
+LOG_debug(const std::string& message)
 {
     return Logger::m_logger->logData(message, "DEBUG", BLUE_COLOR, true);
 }
@@ -75,7 +80,7 @@ LOG_debug(const std::string &message)
  * @brief write warnign-message to logfile
  */
 bool
-LOG_warning(const std::string &message)
+LOG_warning(const std::string& message)
 {
     return Logger::m_logger->logData(message, "WARNING", YELLOW_COLOR);
 }
@@ -84,16 +89,16 @@ LOG_warning(const std::string &message)
  * @brief write error-message to logfile
  */
 bool
-LOG_error(ErrorContainer &container)
+LOG_error(ErrorContainer& container)
 {
-    if(container._alreadyPrinted) {
+    if (container._alreadyPrinted) {
         return true;
     }
 
     const std::string errorMessage = container.toString();
     const bool ret = Logger::m_logger->logData(errorMessage, "ERROR", RED_COLOR);
     Logger::m_logger->m_handleError(errorMessage);
-    if(ret) {
+    if (ret) {
         container._alreadyPrinted = true;
     }
 
@@ -104,7 +109,7 @@ LOG_error(ErrorContainer &container)
  * @brief write info-message to logfile
  */
 bool
-LOG_info(const std::string &message, const std::string &color)
+LOG_info(const std::string& message, const std::string& color)
 {
     return Hanami::Logger::m_logger->logData(message, "INFO", color);
 }
@@ -123,18 +128,12 @@ closeLogFile()
 /**
  * @brief constructor
  */
-Logger::Logger()
-{
-    setErrorLogCallback(defaultErrorCallback);
-}
+Logger::Logger() { setErrorLogCallback(defaultErrorCallback); }
 
 /**
  * @brief destructor
  */
-Logger::~Logger()
-{
-    closeLogFile();
-}
+Logger::~Logger() { closeLogFile(); }
 
 /**
  * @brief initialize file logger
@@ -146,8 +145,8 @@ Logger::~Logger()
  * @return false, if initializing failed, else true
  */
 bool
-Logger::initFileLogger(const std::string &directoryPath,
-                       const std::string &baseFileName,
+Logger::initFileLogger(const std::string& directoryPath,
+                       const std::string& baseFileName,
                        const bool debugLog)
 {
     std::lock_guard<std::mutex> guard(m_lock);
@@ -157,29 +156,22 @@ Logger::initFileLogger(const std::string &directoryPath,
     m_fileDebugLog = debugLog;
 
     // check if already init
-    if(m_enableFileLog)
-    {
-        std::cout<<"ERROR: file logger is already initialized."<<std::endl;
+    if (m_enableFileLog) {
+        std::cout << "ERROR: file logger is already initialized." << std::endl;
         return false;
     }
 
     // check if exist
-    if(std::filesystem::exists(m_directoryPath) == false)
-    {
-        std::cout<<"ERROR: failed to initialize logger, because the path \""
-                 << m_directoryPath
-                 << "\" does not exist."
-                 <<std::endl;
+    if (std::filesystem::exists(m_directoryPath) == false) {
+        std::cout << "ERROR: failed to initialize logger, because the path \"" << m_directoryPath
+                  << "\" does not exist." << std::endl;
         return false;
     }
 
     // check for directory
-    if(std::filesystem::is_directory(m_directoryPath) == false)
-    {
-        std::cout<<"ERROR: failed to initialize logger, because the path \""
-                 << m_directoryPath
-                 << "\" is not an directory."
-                 <<std::endl;
+    if (std::filesystem::is_directory(m_directoryPath) == false) {
+        std::cout << "ERROR: failed to initialize logger, because the path \"" << m_directoryPath
+                  << "\" is not an directory." << std::endl;
         return false;
     }
 
@@ -188,11 +180,9 @@ Logger::initFileLogger(const std::string &directoryPath,
     m_outputFile.open(m_filePath, std::ios_base::app);
     const bool ret = m_outputFile.is_open();
     m_enableFileLog = ret;
-    if(ret == false)
-    {
-        std::cout<<"ERROR: can not create or open log-file-path: \""
-                 << m_filePath
-                 << "\""<<std::endl;
+    if (ret == false) {
+        std::cout << "ERROR: can not create or open log-file-path: \"" << m_filePath << "\""
+                  << std::endl;
     }
 
     return ret;
@@ -234,7 +224,7 @@ Logger::setDebugFlag(const bool debugLog)
  * @brief set callback for error-messages
  */
 void
-Logger::setErrorLogCallback(void (*handleError)(const std::string &))
+Logger::setErrorLogCallback(void (*handleError)(const std::string&))
 {
     m_handleError = handleError;
 }
@@ -247,7 +237,7 @@ Logger::closeLogFile()
 {
     std::lock_guard<std::mutex> guard(m_lock);
 
-    if(m_enableFileLog) {
+    if (m_enableFileLog) {
         m_outputFile.close();
     }
 }
@@ -256,53 +246,41 @@ Logger::closeLogFile()
  * @brief write message to logfile
  */
 bool
-Logger::logData(const std::string &message,
-                const std::string &preTag,
-                const std::string &color,
+Logger::logData(const std::string& message,
+                const std::string& preTag,
+                const std::string& color,
                 const bool debug)
 {
     std::lock_guard<std::mutex> guard(m_lock);
 
     // write to terminal
-    if(m_enableConsoleLog)
-    {
-        if(debug
-                && m_consoleDebugLog == false)
-        {
+    if (m_enableConsoleLog) {
+        if (debug && m_consoleDebugLog == false) {
             return false;
         }
 
-        if(preTag == "INFO")
-        {
-            std::cout<<color<<message<<WHITE_COLOR<<std::endl;
+        if (preTag == "INFO") {
+            std::cout << color << message << WHITE_COLOR << std::endl;
         }
-        else
-        {
-            std::cout<<color<<preTag<<": ";
+        else {
+            std::cout << color << preTag << ": ";
             // special handline for tables
-            if(message.size() > 0
-                    && message.at(0) == '+')
-            {
-                std::cout<<"\n";
+            if (message.size() > 0 && message.at(0) == '+') {
+                std::cout << "\n";
             }
-            std::cout<<message<<WHITE_COLOR<<std::endl;
+            std::cout << message << WHITE_COLOR << std::endl;
         }
     }
 
     // build and write new line
-    if(m_enableFileLog)
-    {
-        if(debug
-                && m_fileDebugLog == false)
-        {
+    if (m_enableFileLog) {
+        if (debug && m_fileDebugLog == false) {
             return false;
         }
 
         std::string line = getDatetime() + " " + preTag + ": ";
         // special handline for tables
-        if(message.size() > 0
-                && message.at(0) == '+')
-        {
+        if (message.size() > 0 && message.at(0) == '+') {
             line += "\n";
         }
         line += message + "\n";
@@ -310,7 +288,6 @@ Logger::logData(const std::string &message,
         m_outputFile << line;
         m_outputFile.flush();
     }
-
 
     return true;
 }
@@ -324,20 +301,12 @@ const std::string
 Logger::getDatetime()
 {
     const time_t now = time(nullptr);
-    tm *ltm = localtime(&now);
+    tm* ltm = localtime(&now);
 
-    const std::string datatime =
-            std::to_string(1900 + ltm->tm_year)
-            + "-"
-            + std::to_string(1 + ltm->tm_mon)
-            + "-"
-            + std::to_string(ltm->tm_mday)
-            + " "
-            + std::to_string(ltm->tm_hour)
-            + ":"
-            + std::to_string(ltm->tm_min)
-            + ":"
-            + std::to_string(ltm->tm_sec);
+    const std::string datatime
+        = std::to_string(1900 + ltm->tm_year) + "-" + std::to_string(1 + ltm->tm_mon) + "-"
+          + std::to_string(ltm->tm_mday) + " " + std::to_string(ltm->tm_hour) + ":"
+          + std::to_string(ltm->tm_min) + ":" + std::to_string(ltm->tm_sec);
 
     return datatime;
 }
@@ -346,9 +315,9 @@ Logger::getDatetime()
  * @brief set callback for error-messages
  */
 void
-setErrorLogCallback(void (*handleError)(const std::string &))
+setErrorLogCallback(void (*handleError)(const std::string&))
 {
     Logger::m_logger->setErrorLogCallback(handleError);
 }
 
-}
+}  // namespace Hanami

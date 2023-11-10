@@ -25,18 +25,16 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-
-class GetCheckpoint
-        : public Blossom
+class GetCheckpoint : public Blossom
 {
-public:
+   public:
     GetCheckpoint();
 
-protected:
-    bool runTask(BlossomIO &blossomIO,
-                 const json &context,
-                 BlossomStatus &status,
-                 Hanami::ErrorContainer &error);
+   protected:
+    bool runTask(BlossomIO& blossomIO,
+                 const json& context,
+                 BlossomStatus& status,
+                 Hanami::ErrorContainer& error);
 };
 
-#endif // GET_CLUSTER_CHECKPOINT_H
+#endif  // GET_CLUSTER_CHECKPOINT_H

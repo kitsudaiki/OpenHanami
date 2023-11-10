@@ -29,9 +29,7 @@ Hanami::WebsocketClient* TestThread::m_wsClient = nullptr;
 /**
  * @brief constructor
  */
-TestThread::TestThread(const std::string &name,
-                       json &inputData)
-    : Hanami::Thread(name)
+TestThread::TestThread(const std::string& name, json& inputData) : Hanami::Thread(name)
 {
     m_inputData = inputData;
 }
@@ -41,7 +39,7 @@ TestThread::TestThread(const std::string &name,
  */
 TestThread::~TestThread()
 {
-    if(m_wsClient != nullptr) {
+    if (m_wsClient != nullptr) {
         delete m_wsClient;
     }
 }
@@ -66,40 +64,35 @@ void
 TestThread::run()
 {
     TestStep* currentStep = getTest();
-    while(currentStep != nullptr)
-    {
-        std::cout<<"==================================================================="<<std::endl;
-        std::cout<<"run test: '"<<currentStep->getTestName()<<"'"<<std::endl;
-        std::cout<<"-------------------------------------------------------------------"<<std::endl;
+    while (currentStep != nullptr) {
+        std::cout << "==================================================================="
+                  << std::endl;
+        std::cout << "run test: '" << currentStep->getTestName() << "'" << std::endl;
+        std::cout << "-------------------------------------------------------------------"
+                  << std::endl;
 
         // run test
         Hanami::ErrorContainer error;
-        if(currentStep->runTest(m_inputData, error) == false)
-        {
-            error.addMeesage("Test '"
-                             + currentStep->getTestName()
-                             + "' in Thread '"
-                             + getThreadName()
-                             + "' has failed");
+        if (currentStep->runTest(m_inputData, error) == false) {
+            error.addMeesage("Test '" + currentStep->getTestName() + "' in Thread '"
+                             + getThreadName() + "' has failed");
             LOG_ERROR(error);
             delete currentStep;
-            std::cout<<std::endl;
-            std::cout<<"RESULT: ERROR"<<std::endl;
+            std::cout << std::endl;
+            std::cout << "RESULT: ERROR" << std::endl;
             break;
-        }
-        else
-        {
-            std::cout<<std::endl;
-            std::cout<<"RESULT: SUCCESS"<<std::endl;
+        } else {
+            std::cout << std::endl;
+            std::cout << "RESULT: SUCCESS" << std::endl;
         }
 
-        std::cout<<std::endl;
+        std::cout << std::endl;
 
         // get next test from queue
         delete currentStep;
         currentStep = getTest();
     }
-    std::cout<<"==================================================================="<<std::endl;
+    std::cout << "===================================================================" << std::endl;
 
     isFinished = true;
 }
@@ -114,8 +107,7 @@ TestThread::getTest()
 {
     std::lock_guard<std::mutex> guard(m_queueLock);
 
-    if(m_taskQueue.size() > 0)
-    {
+    if (m_taskQueue.size() > 0) {
         TestStep* result = m_taskQueue.front();
         m_taskQueue.pop_front();
         return result;

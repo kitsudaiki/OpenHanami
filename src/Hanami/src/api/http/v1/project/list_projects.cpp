@@ -22,14 +22,13 @@
 
 #include "list_projects.h"
 
-#include <hanami_root.h>
 #include <database/projects_table.h>
+#include <hanami_root.h>
 
 /**
  * @brief constructor
  */
-ListProjects::ListProjects()
-    : Blossom("Get information of all registered user as table.")
+ListProjects::ListProjects() : Blossom("Get information of all registered user as table.")
 {
     errorCodes.push_back(UNAUTHORIZED_RTYPE);
 
@@ -43,10 +42,10 @@ ListProjects::ListProjects()
     headerMatch.push_back("creator_id");
 
     registerOutputField("header", SAKURA_ARRAY_TYPE)
-            .setComment("Array with the namings all columns of the table.")
-            .setMatch(headerMatch);
+        .setComment("Array with the namings all columns of the table.")
+        .setMatch(headerMatch);
     registerOutputField("body", SAKURA_ARRAY_TYPE)
-            .setComment("Array with all rows of the table, which array arrays too.");
+        .setComment("Array with all rows of the table, which array arrays too.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -57,22 +56,20 @@ ListProjects::ListProjects()
  * @brief runTask
  */
 bool
-ListProjects::runTask(BlossomIO &blossomIO,
-                      const json &context,
-                      BlossomStatus &status,
-                      Hanami::ErrorContainer &error)
+ListProjects::runTask(BlossomIO& blossomIO,
+                      const json& context,
+                      BlossomStatus& status,
+                      Hanami::ErrorContainer& error)
 {
     // check if admin
-    if(context["is_admin"] == false)
-    {
+    if (context["is_admin"] == false) {
         status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
 
     // get data from table
     Hanami::TableItem table;
-    if(ProjectsTable::getInstance()->getAllProjects(table, error) == false)
-    {
+    if (ProjectsTable::getInstance()->getAllProjects(table, error) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

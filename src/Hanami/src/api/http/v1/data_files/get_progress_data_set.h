@@ -25,19 +25,16 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-
-class GetProgressDataSet
-        : public Blossom
+class GetProgressDataSet : public Blossom
 {
-public:
+   public:
     GetProgressDataSet();
 
-protected:
-    bool runTask(BlossomIO &blossomIO,
-                 const json &,
-                 BlossomStatus &status,
-                 Hanami::ErrorContainer &error);
+   protected:
+    bool runTask(BlossomIO& blossomIO,
+                 const json&,
+                 BlossomStatus& status,
+                 Hanami::ErrorContainer& error);
 };
 
-
-#endif // HANAMI_GET_PROGRESS_DATA_SET_H
+#endif  // HANAMI_GET_PROGRESS_DATA_SET_H

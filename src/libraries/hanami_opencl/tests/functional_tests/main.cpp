@@ -20,14 +20,15 @@
  *      limitations under the License.
  */
 
-#include <iostream>
-#include <vector>
-#include <string>
-
 #include <hanami_common/logger.h>
 #include <simple_test.h>
 
-int main()
+#include <iostream>
+#include <string>
+#include <vector>
+
+int
+main()
 {
     Hanami::initConsoleLogger(true);
 

@@ -23,19 +23,17 @@
 #ifndef HANAMI_FUNCTIONS_H
 #define HANAMI_FUNCTIONS_H
 
-#include <string>
-#include <chrono>
-#include <string>
-#include <sstream>
-#include <ctime>
-#include <iostream>
-#include <iomanip>
-#include <regex>
-
 #include <common/defines.h>
 #include <common/structs.h>
-
 #include <core/processing/objects.h>
+
+#include <chrono>
+#include <ctime>
+#include <iomanip>
+#include <iostream>
+#include <regex>
+#include <sstream>
+#include <string>
 
 /**
  * @brief get the current datetime of the system
@@ -46,24 +44,15 @@ inline const std::string
 getDatetime()
 {
     const time_t now = time(nullptr);
-    tm *ltm = localtime(&now);
+    tm* ltm = localtime(&now);
 
-    const std::string datatime =
-            std::to_string(1900 + ltm->tm_year)
-            + "-"
-            + std::to_string(1 + ltm->tm_mon)
-            + "-"
-            + std::to_string(ltm->tm_mday)
-            + " "
-            + std::to_string(ltm->tm_hour)
-            + ":"
-            + std::to_string(ltm->tm_min)
-            + ":"
-            + std::to_string(ltm->tm_sec);
+    const std::string datatime
+        = std::to_string(1900 + ltm->tm_year) + "-" + std::to_string(1 + ltm->tm_mon) + "-"
+          + std::to_string(ltm->tm_mday) + " " + std::to_string(ltm->tm_hour) + ":"
+          + std::to_string(ltm->tm_min) + ":" + std::to_string(ltm->tm_sec);
 
     return datatime;
 }
-
 
 /**
  * @brief convert chrono-timestamp into a string in UTC time
@@ -74,16 +63,15 @@ getDatetime()
  * @return string with the converted timestamp
  */
 inline const std::string
-serializeTimePoint(const std::chrono::high_resolution_clock::time_point &time,
-                   const std::string &format = "%Y-%m-%d %H:%M:%S")
+serializeTimePoint(const std::chrono::high_resolution_clock::time_point& time,
+                   const std::string& format = "%Y-%m-%d %H:%M:%S")
 {
     std::time_t tt = std::chrono::system_clock::to_time_t(time);
     std::tm tm = *std::gmtime(&tt);
     std::stringstream ss;
-    ss << std::put_time(&tm, format.c_str() );
+    ss << std::put_time(&tm, format.c_str());
     return ss.str();
 }
-
 
 /**
  * @brief check if an id is an uuid
@@ -98,7 +86,6 @@ isUuid(const std::string& id)
     const std::regex uuidRegex(UUID_REGEX);
     return regex_match(id, uuidRegex);
 }
-
 
 /**
  * @brief generate a new uuid with external library
@@ -117,4 +104,4 @@ generateUuid()
     return result;
 }
 
-#endif // HANAMI_FUNCTIONS_H
+#endif  // HANAMI_FUNCTIONS_H

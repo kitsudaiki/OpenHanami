@@ -26,7 +26,7 @@ function saveCluster_request(outputFunc, name, clusterUuid, token)
 {
     const path = "/control/v1/cluster/save";
     let reqContent = "{\"name\":\"" + name;
-    reqContent += "\",\"cluster_uuid\":" + clusterUuid + "}";
+    reqContent += "\",\"cluster_uuid\":\"" + clusterUuid + "\"}";
     createObject_request(outputFunc, path, reqContent, token);
 }
 
@@ -34,7 +34,7 @@ function restoreCluster_request(outputFunc, snapshotUuid, clusterUuid, token)
 {
     const path = "/control/v1/cluster/load";
     let reqContent = "{\"snapshot_uuid\":\"" + snapshotUuid;
-    reqContent += "\",\"cluster_uuid\":" + clusterUuid + "}";
+    reqContent += "\",\"cluster_uuid\":\"" + clusterUuid + "\"}";
     createObject_request(outputFunc, path, reqContent, token);
 }
 

@@ -22,14 +22,13 @@
 
 #include "list_users.h"
 
-#include <hanami_root.h>
 #include <database/users_table.h>
+#include <hanami_root.h>
 
 /**
  * @brief constructor
  */
-ListUsers::ListUsers()
-    : Blossom("Get information of all registered users.")
+ListUsers::ListUsers() : Blossom("Get information of all registered users.")
 {
     errorCodes.push_back(UNAUTHORIZED_RTYPE);
 
@@ -45,11 +44,11 @@ ListUsers::ListUsers()
     headerMatch.push_back("is_admin");
 
     registerOutputField("header", SAKURA_ARRAY_TYPE)
-            .setComment("Array with the namings all columns of the table.")
-            .setMatch(headerMatch);
+        .setComment("Array with the namings all columns of the table.")
+        .setMatch(headerMatch);
 
     registerOutputField("body", SAKURA_ARRAY_TYPE)
-            .setComment("Array with all rows of the table, which array arrays too.");
+        .setComment("Array with all rows of the table, which array arrays too.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -60,22 +59,20 @@ ListUsers::ListUsers()
  * @brief runTask
  */
 bool
-ListUsers::runTask(BlossomIO &blossomIO,
-                   const json &context,
-                   BlossomStatus &status,
-                   Hanami::ErrorContainer &error)
+ListUsers::runTask(BlossomIO& blossomIO,
+                   const json& context,
+                   BlossomStatus& status,
+                   Hanami::ErrorContainer& error)
 {
     // check if admin
-    if(context["is_admin"] == false)
-    {
+    if (context["is_admin"] == false) {
         status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
 
     // get data from table
     Hanami::TableItem table;
-    if(UsersTable::getInstance()->getAllUser(table, error) == false)
-    {
+    if (UsersTable::getInstance()->getAllUser(table, error) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#include <hanami_crypto/symmetric_encryption.h>
 #include <hanami_common/logger.h>
+#include <hanami_crypto/symmetric_encryption.h>
 
 namespace Hanami
 {
@@ -37,19 +37,17 @@ namespace Hanami
  * @return false, if input is invaid, else true
  */
 bool
-encrypt_AES_256_CBC(std::string &result,
-                    const std::string &input,
-                    const CryptoPP::SecByteBlock &key,
-                    ErrorContainer &error)
+encrypt_AES_256_CBC(std::string& result,
+                    const std::string& input,
+                    const CryptoPP::SecByteBlock& key,
+                    ErrorContainer& error)
 {
     // precheck
-    if(key.size() == 0)
-    {
+    if (key.size() == 0) {
         error.addMeesage("Provided key for AES-encryption is empty");
         return false;
     }
-    if(input.size() == 0)
-    {
+    if (input.size() == 0) {
         error.addMeesage("No data given for AES-encryption");
         return false;
     }
@@ -85,29 +83,28 @@ encrypt_AES_256_CBC(std::string &result,
  * @return false, if input is invaid, else true
  */
 bool
-decrypt_AES_256_CBC(std::string &result,
-                    const std::string &input,
-                    const CryptoPP::SecByteBlock &key,
-                    ErrorContainer &error)
+decrypt_AES_256_CBC(std::string& result,
+                    const std::string& input,
+                    const CryptoPP::SecByteBlock& key,
+                    ErrorContainer& error)
 {
     // precheck
-    if(key.size() == 0)
-    {
+    if (key.size() == 0) {
         error.addMeesage("Provided key for AES-decryption is empty");
         return false;
     }
-    if(input.size() == 0)
-    {
+    if (input.size() == 0) {
         error.addMeesage("No data given for AES-decryption");
         return false;
     }
 
     // precheck
-    if(input.size() % CryptoPP::AES::BLOCKSIZE != 0)
-    {
-        error.addMeesage("can not decrypt AES256, "
-                         "because the mount of data has the a size of a multiple"
-                         " of the blocksize " + std::to_string(CryptoPP::AES::BLOCKSIZE));
+    if (input.size() % CryptoPP::AES::BLOCKSIZE != 0) {
+        error.addMeesage(
+            "can not decrypt AES256, "
+            "because the mount of data has the a size of a multiple"
+            " of the blocksize "
+            + std::to_string(CryptoPP::AES::BLOCKSIZE));
         error.addSolution("data are broken or not an AES 256 encrypted string");
         return false;
     }
@@ -132,4 +129,4 @@ decrypt_AES_256_CBC(std::string &result,
     return true;
 }
 
-}
+}  // namespace Hanami

@@ -23,24 +23,23 @@
 #ifndef HANAMI_SPEED_MEASURING_H
 #define HANAMI_SPEED_MEASURING_H
 
-#include <mutex>
-
+#include <hanami_common/logger.h>
+#include <hanami_common/threading/thread.h>
 #include <hanami_hardware/value_container.h>
 
-#include <hanami_common/threading/thread.h>
-#include <hanami_common/logger.h>
+#include <mutex>
 
-namespace Hanami {
+namespace Hanami
+{
 struct RequestMessage;
 }
 
-class SpeedMeasuring
-        : public Hanami::Thread
+class SpeedMeasuring : public Hanami::Thread
 {
-public:
+   public:
     static SpeedMeasuring* getInstance()
     {
-        if(instance == nullptr) {
+        if (instance == nullptr) {
             instance = new SpeedMeasuring();
         }
         return instance;
@@ -49,14 +48,14 @@ public:
 
     json getJson();
 
-protected:
+   protected:
     void run();
 
-private:
+   private:
     SpeedMeasuring();
     static SpeedMeasuring* instance;
 
     ValueContainer m_valueContainer;
 };
 
-#endif // HANAMI_SPEED_MEASURING_H
+#endif  // HANAMI_SPEED_MEASURING_H

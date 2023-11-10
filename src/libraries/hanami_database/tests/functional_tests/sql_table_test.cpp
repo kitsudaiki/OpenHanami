@@ -2,14 +2,12 @@
 
 #include <hanami_database/sql_database.h>
 #include <hanami_database/sql_table.h>
-
 #include <test_table.h>
 
 namespace Hanami
 {
 
-SqlTable_Test::SqlTable_Test()
-    : Hanami::CompareTestHelper("SqlTable_Test")
+SqlTable_Test::SqlTable_Test() : Hanami::CompareTestHelper("SqlTable_Test")
 {
     initTest();
 
@@ -71,7 +69,6 @@ SqlTable_Test::create_test()
 
     TEST_EQUAL(m_table->addUser(testData, error), true);
 
-
     json testData2;
     testData2["name"] = m_name2;
     testData2["pw_hash"] = "secret2";
@@ -94,11 +91,12 @@ SqlTable_Test::get_test()
     TEST_EQUAL(resultItem.dump(), std::string("{\"is_admin\":true,\"name\":\"user0815\"}"));
 
     TEST_EQUAL(m_table->getUser(resultTable, m_name1, error), true);
-    std::string compare = "+----------+----------+\n"
-                          "| name     | is_admin |\n"
-                          "+==========+==========+\n"
-                          "| user0815 | true     |\n"
-                          "+----------+----------+\n";
+    std::string compare
+        = "+----------+----------+\n"
+          "| name     | is_admin |\n"
+          "+==========+==========+\n"
+          "| user0815 | true     |\n"
+          "+----------+----------+\n";
     TEST_EQUAL(resultTable.toString(), compare);
 }
 
@@ -209,9 +207,9 @@ void
 SqlTable_Test::deleteFile()
 {
     std::filesystem::path rootPathObj(m_filePath);
-    if(std::filesystem::exists(rootPathObj)) {
+    if (std::filesystem::exists(rootPathObj)) {
         std::filesystem::remove(rootPathObj);
     }
 }
 
-}
+}  // namespace Hanami

@@ -28,16 +28,15 @@
 namespace Hanami
 {
 
-class Cluster_ParseString_Test
-        : public Hanami::MemoryLeakTestHelpter
+class Cluster_ParseString_Test : public Hanami::MemoryLeakTestHelpter
 {
-public:
+   public:
     Cluster_ParseString_Test();
 
-private:
+   private:
     void parseString_test();
 };
 
-}
+}  // namespace Hanami
 
-#endif // CLUSTER_PARSESTRING_TEST_H
+#endif  // CLUSTER_PARSESTRING_TEST_H

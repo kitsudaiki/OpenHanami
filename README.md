@@ -75,7 +75,7 @@ https://docs.hanami-ai.com
 
     [Dependency-Overview](https://docs.hanami-ai.com/other/dependencies/)
 
-
+If you need help to setup things, have a question or something like this, feel free to contact me by eMail or use the `Question`-template in the issues.
 
 ## Issue-Overview
 
@@ -83,29 +83,30 @@ https://docs.hanami-ai.com
 
 ## This repository
 
-This repository requires `git-lfs` to be able to check out images and binary objects.
-
-Clone repo with:
+**Required packages:**
 
 ```
-git clone --recurse-submodules git@github.com:kitsudaiki/Hanami-AI.git
+sudo apt-get install -y git ssh gcc g++ clang-15 clang-format-15 make qt5-qmake bison flex libssl-dev libcrypto++-dev libboost1.74-dev uuid-dev  libsqlite3-dev protobuf-compiler nvidia-cuda-toolkit
 ```
 
-In case `git-lfs` while cloning and installed afterwards:
+**Clone repo with:**
 
 ```
-git lfs fetch --all
-git lfs pull
+git clone --recurse-submodules https://github.com/kitsudaiki/Hanami.git
+cd Hanami
+
+# load pre-commit hook
+git config core.hooksPath .git-hooks
 ```
 
-In case the repo was cloned without submodules initially:
+**In case the repo was cloned without submodules initially:**
 
 ```
 git submodule init
 git submodule update --recursive
 ```
 
-Mkdocs and plugins:
+**Mkdocs and plugins:**
 
 ```
 pip3 install mkdocs-material mkdocs-swagger-ui-tag mkdocs-drawio-exporter
@@ -125,4 +126,4 @@ The complete project is under [Apache 2 license](https://github.com/kitsudaiki/H
 
 ## Contributing
 
-If you want to contribute things to this project, then I'm really happy about this. Please restrict this for the moment to bug-reports and feature-requests. Use the issue-templates for this. You can also place questions by these issues, if you want some information about parts of the project or if you want to try it out and need some help.
+If you want to help the project by contributing things, you can check the [Contributing guide](https://github.com/kitsudaiki/Hanami/blob/develop/CONTRIBUTING.md).

@@ -25,18 +25,16 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-
-class GetAuditLog
-        : public Blossom
+class GetAuditLog : public Blossom
 {
-public:
+   public:
     GetAuditLog();
 
-protected:
-    bool runTask(BlossomIO &blossomIO,
-                 const json &,
-                 BlossomStatus &status,
-                 Hanami::ErrorContainer &error);
+   protected:
+    bool runTask(BlossomIO& blossomIO,
+                 const json&,
+                 BlossomStatus& status,
+                 Hanami::ErrorContainer& error);
 };
 
-#endif // GETAUDITLOG_H
+#endif  // GETAUDITLOG_H

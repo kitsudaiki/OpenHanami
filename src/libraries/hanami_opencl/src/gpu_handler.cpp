@@ -20,10 +20,9 @@
  *      limitations under the License.
  */
 
-#include <hanami_opencl/gpu_handler.h>
-
-#include <hanami_opencl/gpu_interface.h>
 #include <hanami_common/logger.h>
+#include <hanami_opencl/gpu_handler.h>
+#include <hanami_opencl/gpu_interface.h>
 
 namespace Hanami
 {
@@ -39,20 +38,18 @@ GpuHandler::GpuHandler() {}
  * @return true, if creation was successful, else false
  */
 bool
-GpuHandler::initDevice(ErrorContainer &error)
+GpuHandler::initDevice(ErrorContainer& error)
 {
-    if(m_isInit) {
+    if (m_isInit) {
         return true;
     }
 
     LOG_DEBUG("initialize OpenCL device");
 
-    try
-    {
+    try {
         // get all available opencl platforms
         cl::Platform::get(&m_platform);
-        if(m_platform.empty())
-        {
+        if (m_platform.empty()) {
             error.addSolution("No OpenCL platforms found.");
             LOG_ERROR(error);
             return false;
@@ -63,13 +60,9 @@ GpuHandler::initDevice(ErrorContainer &error)
         collectDevices();
         m_isInit = true;
     }
-    catch(const cl::Error &err)
-    {
-        error.addMeesage("OpenCL error: "
-                         + std::string(err.what())
-                         + "("
-                         + std::to_string(err.err())
-                         + ")");
+    catch (const cl::Error& err) {
+        error.addMeesage("OpenCL error: " + std::string(err.what()) + "("
+                         + std::to_string(err.err()) + ")");
         LOG_ERROR(error);
         return false;
     }
@@ -86,19 +79,16 @@ void
 GpuHandler::collectDevices()
 {
     // get available platforms
-    for(cl::Platform &platform : m_platform)
-    {
+    for (cl::Platform& platform : m_platform) {
         // get available devices of the selected platform
         std::vector<cl::Device> pldev;
         platform.getDevices(CL_DEVICE_TYPE_ALL, &pldev);
         LOG_DEBUG("number of OpenCL devices: " + std::to_string(pldev.size()));
 
         // select devices within the platform
-        for(cl::Device &device : pldev)
-        {
+        for (cl::Device& device : pldev) {
             // check if device is available
-            if(device.getInfo<CL_DEVICE_AVAILABLE>())
-            {
+            if (device.getInfo<CL_DEVICE_AVAILABLE>()) {
                 /*if(false)
                 {
                     // check for double precision support
@@ -117,4 +107,4 @@ GpuHandler::collectDevices()
     }
 }
 
-}
+}  // namespace Hanami

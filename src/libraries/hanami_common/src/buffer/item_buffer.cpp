@@ -25,8 +25,7 @@
 namespace Hanami
 {
 
-struct EmptyPlaceHolder
-{
+struct EmptyPlaceHolder {
     uint8_t status = ItemBuffer::DELETED_SECTION;
     uint64_t bytePositionOfNextEmptyBlock = ITEM_BUFFER_UNDEFINE_POS;
 } __attribute__((packed));
@@ -53,7 +52,7 @@ ItemBuffer::initBuffer(const uint64_t staticSize)
 {
     // allocate memory
     const bool ret = initDataBlocks(0, 0, staticSize);
-    if(ret == false) {
+    if (ret == false) {
         return false;
     }
 
@@ -72,9 +71,7 @@ bool
 ItemBuffer::initBuffer(const void* data, const uint64_t dataSize)
 {
     // precheck
-    if(dataSize == 0
-            || data == nullptr)
-    {
+    if (dataSize == 0 || data == nullptr) {
         return false;
     }
 
@@ -98,12 +95,14 @@ ItemBuffer::initBuffer(const void* data, const uint64_t dataSize)
 void
 ItemBuffer::deleteAll()
 {
-    if(metaData == nullptr) {
+    if (metaData == nullptr) {
         return;
     }
 
-    while(m_lock.test_and_set(std::memory_order_acquire)) { asm(""); }
-    for(uint64_t i = 0; i < metaData->itemCapacity; i++) {
+    while (m_lock.test_and_set(std::memory_order_acquire)) {
+        asm("");
+    }
+    for (uint64_t i = 0; i < metaData->itemCapacity; i++) {
         deleteItem(i);
     }
     m_lock.clear(std::memory_order_release);
@@ -123,9 +122,7 @@ ItemBuffer::initDataBlocks(const uint64_t numberOfItems,
                            const uint64_t staticSize)
 {
     // precheck
-    if(itemSize == 0
-            && staticSize == 0)
-    {
+    if (itemSize == 0 && staticSize == 0) {
         return false;
     }
 
@@ -163,10 +160,8 @@ bool
 ItemBuffer::deleteItem(const uint64_t itemPos)
 {
     // precheck
-    if(metaData == nullptr
-            || metaData->itemSize == 0
-            || itemPos >= metaData->itemCapacity
-            || metaData->numberOfItems == 0)
+    if (metaData == nullptr || metaData->itemSize == 0 || itemPos >= metaData->itemCapacity
+        || metaData->numberOfItems == 0)
     {
         return false;
     }
@@ -180,7 +175,7 @@ ItemBuffer::deleteItem(const uint64_t itemPos)
     EmptyPlaceHolder* placeHolder = static_cast<EmptyPlaceHolder*>(voidBuffer);
 
     // check that the position is active and not already deleted
-    if(placeHolder->status == ItemBuffer::DELETED_SECTION) {
+    if (placeHolder->status == ItemBuffer::DELETED_SECTION) {
         return false;
     }
 
@@ -190,8 +185,7 @@ ItemBuffer::deleteItem(const uint64_t itemPos)
 
     // modify last place-holder
     const uint64_t blockPosition = metaData->bytePositionOfLastEmptyBlock;
-    if(blockPosition != ITEM_BUFFER_UNDEFINE_POS)
-    {
+    if (blockPosition != ITEM_BUFFER_UNDEFINE_POS) {
         voidBuffer = static_cast<void*>(&blockBegin[blockPosition]);
         EmptyPlaceHolder* lastPlaceHolder = static_cast<EmptyPlaceHolder*>(voidBuffer);
         lastPlaceHolder->bytePositionOfNextEmptyBlock = currentBytePos;
@@ -199,7 +193,7 @@ ItemBuffer::deleteItem(const uint64_t itemPos)
 
     // set global values
     metaData->bytePositionOfLastEmptyBlock = currentBytePos;
-    if(metaData->bytePositionOfFirstEmptyBlock == ITEM_BUFFER_UNDEFINE_POS) {
+    if (metaData->bytePositionOfFirstEmptyBlock == ITEM_BUFFER_UNDEFINE_POS) {
         metaData->bytePositionOfFirstEmptyBlock = currentBytePos;
     }
 
@@ -218,7 +212,7 @@ ItemBuffer::reuseItemPosition()
 {
     // get byte-position of free space, if exist
     const uint64_t selectedPosition = metaData->bytePositionOfFirstEmptyBlock;
-    if(selectedPosition == ITEM_BUFFER_UNDEFINE_POS) {
+    if (selectedPosition == ITEM_BUFFER_UNDEFINE_POS) {
         return ITEM_BUFFER_UNDEFINE_POS;
     }
 
@@ -229,7 +223,7 @@ ItemBuffer::reuseItemPosition()
     metaData->bytePositionOfFirstEmptyBlock = secetedPlaceHolder->bytePositionOfNextEmptyBlock;
 
     // reset pointer, if no more free spaces exist
-    if(metaData->bytePositionOfFirstEmptyBlock == ITEM_BUFFER_UNDEFINE_POS) {
+    if (metaData->bytePositionOfFirstEmptyBlock == ITEM_BUFFER_UNDEFINE_POS) {
         metaData->bytePositionOfLastEmptyBlock = ITEM_BUFFER_UNDEFINE_POS;
     }
 
@@ -250,7 +244,7 @@ ItemBuffer::reserveDynamicItem()
 {
     // try to reuse item
     const uint64_t reusePos = reuseItemPosition();
-    if(reusePos != ITEM_BUFFER_UNDEFINE_POS) {
+    if (reusePos != ITEM_BUFFER_UNDEFINE_POS) {
         return reusePos;
     }
 
@@ -260,13 +254,13 @@ ItemBuffer::reserveDynamicItem()
     const uint64_t newNumberOfBlocks = calcBytesToBlocks(itemBytes);
 
     // allocate a new block, if necessary
-    if(numberOfBlocks < newNumberOfBlocks) {
+    if (numberOfBlocks < newNumberOfBlocks) {
         Hanami::allocateBlocks_DataBuffer(buffer, newNumberOfBlocks - numberOfBlocks);
     }
 
     metaData->itemCapacity++;
 
-    return metaData->itemCapacity-1;
+    return metaData->itemCapacity - 1;
 }
 
-}
+}  // namespace Hanami

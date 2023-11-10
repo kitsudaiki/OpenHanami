@@ -23,13 +23,14 @@
 #ifndef THREAD_H
 #define THREAD_H
 
-#include <mutex>
-#include <condition_variable>
-#include <thread>
 #include <pthread.h>
-#include <vector>
+
 #include <atomic>
+#include <condition_variable>
 #include <deque>
+#include <mutex>
+#include <thread>
+#include <vector>
 
 namespace Hanami
 {
@@ -39,8 +40,8 @@ class ThreadHandler;
 
 class Thread
 {
-public:
-    Thread(const std::string &threadName);
+   public:
+    Thread(const std::string& threadName);
     virtual ~Thread();
 
     bool startThread();
@@ -60,7 +61,7 @@ public:
     void addEventToQueue(Event* newEvent);
     void clearEventQueue();
 
-protected:
+   protected:
     bool m_abort = false;
     bool m_block = false;
 
@@ -75,7 +76,7 @@ protected:
 
     virtual void run() = 0;
 
-private:
+   private:
     void stopThread();
 
     // generial variables
@@ -97,6 +98,6 @@ private:
     std::condition_variable m_cv;
 };
 
-}
+}  // namespace Hanami
 
-#endif // THREAD_H
+#endif  // THREAD_H

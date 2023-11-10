@@ -21,20 +21,21 @@
  */
 
 #include "get_system_info.h"
-#include <hanami_root.h>
 
 #include <hanami_hardware/host.h>
+#include <hanami_root.h>
 
 GetSystemInfo::GetSystemInfo()
-    : Blossom("Get all available information of the local system, like "
-              "topology of the cpu-resources and speed of the cpu")
+    : Blossom(
+        "Get all available information of the local system, like "
+        "topology of the cpu-resources and speed of the cpu")
 {
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
     registerOutputField("info", SAKURA_MAP_TYPE)
-            .setComment("All available information of the local system.");
+        .setComment("All available information of the local system.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -45,10 +46,7 @@ GetSystemInfo::GetSystemInfo()
  * @brief runTask
  */
 bool
-GetSystemInfo::runTask(BlossomIO &blossomIO,
-                       const json &,
-                       BlossomStatus &,
-                       Hanami::ErrorContainer &)
+GetSystemInfo::runTask(BlossomIO& blossomIO, const json&, BlossomStatus&, Hanami::ErrorContainer&)
 {
     // creat output
     blossomIO.output["info"] = Hanami::Host::getInstance()->toJson();

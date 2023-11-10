@@ -27,4 +27,4 @@
 
 bool runRestApiTests();
 
-#endif // TSUGUMITESTER_REST_API_TESTS_H
+#endif  // TSUGUMITESTER_REST_API_TESTS_H

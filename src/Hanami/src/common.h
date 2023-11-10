@@ -23,11 +23,11 @@
 #ifndef HANAMI_COMMON_H
 #define HANAMI_COMMON_H
 
-#include <common/enums.h>
-#include <common/typedefs.h>
 #include <common/defines.h>
-#include <common/structs.h>
+#include <common/enums.h>
 #include <common/functions.h>
+#include <common/structs.h>
+#include <common/typedefs.h>
 #include <common/using.h>
 
-#endif // HANAMI_COMMON_H
+#endif  // HANAMI_COMMON_H

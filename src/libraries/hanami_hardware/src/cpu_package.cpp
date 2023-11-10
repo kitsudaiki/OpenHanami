@@ -20,12 +20,10 @@
  *      limitations under the License.
  */
 
-#include <hanami_hardware/cpu_package.h>
-
-#include <hanami_hardware/cpu_core.h>
-#include <hanami_hardware/cpu_thread.h>
-
 #include <hanami_cpu/cpu.h>
+#include <hanami_hardware/cpu_core.h>
+#include <hanami_hardware/cpu_package.h>
+#include <hanami_hardware/cpu_thread.h>
 
 namespace Hanami
 {
@@ -35,15 +33,14 @@ namespace Hanami
  *
  * @param packageId id of the package
  */
-CpuPackage::CpuPackage(const uint32_t packageId)
-    : packageId(packageId) {}
+CpuPackage::CpuPackage(const uint32_t packageId) : packageId(packageId) {}
 
 /**
  * @brief destructor
  */
 CpuPackage::~CpuPackage()
 {
-    for(uint32_t i = 0; i < cpuCores.size(); i++) {
+    for (uint32_t i = 0; i < cpuCores.size(); i++) {
         delete cpuCores[i];
     }
 
@@ -60,9 +57,8 @@ CpuPackage::~CpuPackage()
 CpuCore*
 CpuPackage::getCore(const uint32_t coreId) const
 {
-    for(CpuCore* core : cpuCores)
-    {
-        if(core->coreId == coreId) {
+    for (CpuCore* core : cpuCores) {
+        if (core->coreId == coreId) {
             return core;
         }
     }
@@ -83,8 +79,7 @@ CpuPackage::addCore(const uint32_t coreId)
 {
     CpuCore* core = getCore(coreId);
 
-    if(core == nullptr)
-    {
+    if (core == nullptr) {
         core = new CpuCore(coreId);
         cpuCores.push_back(core);
     }
@@ -100,7 +95,7 @@ CpuPackage::addCore(const uint32_t coreId)
 double
 CpuPackage::getThermalSpec() const
 {
-    if(cpuCores.size() > 0) {
+    if (cpuCores.size() > 0) {
         return cpuCores.at(0)->getThermalSpec();
     }
 
@@ -115,7 +110,7 @@ CpuPackage::getThermalSpec() const
 double
 CpuPackage::getTotalPackagePower()
 {
-    if(cpuCores.size() > 0) {
+    if (cpuCores.size() > 0) {
         return cpuCores.at(0)->getTotalPackagePower();
     }
 
@@ -138,9 +133,8 @@ CpuPackage::toJsonString()
     jsonString.append(",\"cores\":[");
 
     // convert cores
-    for(uint32_t i = 0; i < cpuCores.size(); i++)
-    {
-        if(i > 0) {
+    for (uint32_t i = 0; i < cpuCores.size(); i++) {
+        if (i > 0) {
             jsonString.append(",");
         }
         jsonString.append(cpuCores.at(i)->toJsonString());
@@ -166,7 +160,7 @@ CpuPackage::toJson()
 
     // convert cores
     json cores = json::array();
-    for(uint32_t i = 0; i < cpuCores.size(); i++) {
+    for (uint32_t i = 0; i < cpuCores.size(); i++) {
         cores.push_back(cpuCores.at(i)->toJson());
     }
     result["cores"] = cores;
@@ -174,4 +168,4 @@ CpuPackage::toJson()
     return result;
 }
 
-}
+}  // namespace Hanami

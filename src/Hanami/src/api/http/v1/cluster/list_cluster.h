@@ -25,18 +25,16 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-
-class ListCluster
-        : public Blossom
+class ListCluster : public Blossom
 {
-public:
+   public:
     ListCluster();
 
-protected:
-    bool runTask(BlossomIO &blossomIO,
-                 const json &context,
-                 BlossomStatus &status,
-                 Hanami::ErrorContainer &error);
+   protected:
+    bool runTask(BlossomIO& blossomIO,
+                 const json& context,
+                 BlossomStatus& status,
+                 Hanami::ErrorContainer& error);
 };
 
-#endif // HANAMI_SHOWCLUSTERS_H
+#endif  // HANAMI_SHOWCLUSTERS_H

@@ -39,14 +39,12 @@ registerArguments(Hanami::ArgParser* argparser)
     std::string helpText = "";
 
     // config-flag
-    argparser->registerString("config", 'c')
-            .setHelpText("absolute path to config-file");
+    argparser->registerString("config", 'c').setHelpText("absolute path to config-file");
 
     // debug-flag
-    argparser->registerPlain("debug", 'd')
-            .setHelpText("enable debug-mode");
+    argparser->registerPlain("debug", 'd').setHelpText("enable debug-mode");
 
     return true;
 }
 
-#endif // TSUGUMITESTER_ARGS_H
+#endif  // TSUGUMITESTER_ARGS_H

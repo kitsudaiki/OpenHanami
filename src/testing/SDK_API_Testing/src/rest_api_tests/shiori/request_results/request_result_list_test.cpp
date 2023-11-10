@@ -24,11 +24,10 @@
 
 #include <hanami_sdk/request_result.h>
 
-RequestResultListTest::RequestResultListTest(const bool expectSuccess)
-      : TestStep(expectSuccess)
+RequestResultListTest::RequestResultListTest(const bool expectSuccess) : TestStep(expectSuccess)
 {
     m_testName = "list request-results";
-    if(expectSuccess) {
+    if (expectSuccess) {
         m_testName += " (success)";
     } else {
         m_testName += " (fail)";
@@ -36,16 +35,15 @@ RequestResultListTest::RequestResultListTest(const bool expectSuccess)
 }
 
 bool
-RequestResultListTest::runTest(json &inputData,
-                               Hanami::ErrorContainer &error)
+RequestResultListTest::runTest(json& inputData, Hanami::ErrorContainer& error)
 {
     // list all data
     std::string result;
-    if(Hanami::listRequestResult(result, error) != m_expectSuccess) {
+    if (Hanami::listRequestResult(result, error) != m_expectSuccess) {
         return false;
     }
 
-    if(m_expectSuccess == false) {
+    if (m_expectSuccess == false) {
         return true;
     }
 
@@ -53,7 +51,7 @@ RequestResultListTest::runTest(json &inputData,
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch(const json::parse_error& ex) {
+    } catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
@@ -62,4 +60,3 @@ RequestResultListTest::runTest(json &inputData,
 
     return true;
 }
-

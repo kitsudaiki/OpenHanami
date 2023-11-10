@@ -24,11 +24,10 @@
 
 #include <hanami_sdk/project.h>
 
-ProjectListTest::ProjectListTest(const bool expectSuccess)
-    : TestStep(expectSuccess)
+ProjectListTest::ProjectListTest(const bool expectSuccess) : TestStep(expectSuccess)
 {
     m_testName = "list projects";
-    if(expectSuccess) {
+    if (expectSuccess) {
         m_testName += " (success)";
     } else {
         m_testName += " (fail)";
@@ -36,16 +35,15 @@ ProjectListTest::ProjectListTest(const bool expectSuccess)
 }
 
 bool
-ProjectListTest::runTest(json &inputData,
-                         Hanami::ErrorContainer &error)
+ProjectListTest::runTest(json& inputData, Hanami::ErrorContainer& error)
 {
     // list all users
     std::string result;
-    if(Hanami::listProject(result, error) != m_expectSuccess) {
+    if (Hanami::listProject(result, error) != m_expectSuccess) {
         return false;
     }
 
-    if(m_expectSuccess == false) {
+    if (m_expectSuccess == false) {
         return true;
     }
 
@@ -53,7 +51,7 @@ ProjectListTest::runTest(json &inputData,
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch(const json::parse_error& ex) {
+    } catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }

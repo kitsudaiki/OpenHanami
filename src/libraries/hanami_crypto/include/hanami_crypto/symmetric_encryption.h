@@ -23,14 +23,14 @@
 #ifndef SYMMETRIC_ENCRYPTION_H
 #define SYMMETRIC_ENCRYPTION_H
 
-#include <iostream>
-#include <hanami_common/buffer/data_buffer.h>
-#include <hanami_common/logger.h>
-
-#include <cryptopp/sha.h>
 #include <cryptopp/aes.h>
 #include <cryptopp/files.h>
 #include <cryptopp/modes.h>
+#include <cryptopp/sha.h>
+#include <hanami_common/buffer/data_buffer.h>
+#include <hanami_common/logger.h>
+
+#include <iostream>
 
 namespace Hanami
 {
@@ -38,16 +38,16 @@ namespace Hanami
 //--------------------------------------------------------------------------------------------------
 // AES256
 //--------------------------------------------------------------------------------------------------
-bool encrypt_AES_256_CBC(std::string &result,
-                         const std::string &input,
-                         const CryptoPP::SecByteBlock &key,
-                         Hanami::ErrorContainer &error);
+bool encrypt_AES_256_CBC(std::string& result,
+                         const std::string& input,
+                         const CryptoPP::SecByteBlock& key,
+                         Hanami::ErrorContainer& error);
 
-bool decrypt_AES_256_CBC(std::string &result,
-                         const std::string &input,
-                         const CryptoPP::SecByteBlock &key,
-                         Hanami::ErrorContainer &error);
+bool decrypt_AES_256_CBC(std::string& result,
+                         const std::string& input,
+                         const CryptoPP::SecByteBlock& key,
+                         Hanami::ErrorContainer& error);
 
-}
+}  // namespace Hanami
 
-#endif // SYMMETRIC_ENCRYPTION_H
+#endif  // SYMMETRIC_ENCRYPTION_H

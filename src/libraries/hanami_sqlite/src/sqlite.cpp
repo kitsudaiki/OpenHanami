@@ -15,8 +15,8 @@
  *              https://www.tutorialspoint.com/sqlite/sqlite_c_cpp.htm
  */
 
-#include <hanami_sqlite/sqlite.h>
 #include <hanami_common/items/table_item.h>
+#include <hanami_sqlite/sqlite.h>
 
 namespace Hanami
 {
@@ -29,10 +29,7 @@ Sqlite::Sqlite() {}
 /**
  * @brief destcutor
  */
-Sqlite::~Sqlite()
-{
-    closeDB();
-}
+Sqlite::~Sqlite() { closeDB(); }
 
 /**
  * @brief initialize database
@@ -43,13 +40,11 @@ Sqlite::~Sqlite()
  * @return true, if seccessful, else false
  */
 bool
-Sqlite::initDB(const std::string &path,
-               ErrorContainer &error)
+Sqlite::initDB(const std::string& path, ErrorContainer& error)
 {
     m_rc = sqlite3_open(path.c_str(), &m_db);
 
-    if(m_rc != 0)
-    {
+    if (m_rc != 0) {
         error.addMeesage("Can't open database: \n" + std::string(sqlite3_errmsg(m_db)));
         LOG_ERROR(error);
         return false;
@@ -69,13 +64,10 @@ Sqlite::initDB(const std::string &path,
  * @return 0
  */
 static int
-callback(void* data,
-         int argc,
-         char** argv,
-         char** azColName)
+callback(void* data, int argc, char** argv, char** azColName)
 {
     // precheck
-    if(data == nullptr) {
+    if (data == nullptr) {
         return 0;
     }
 
@@ -84,10 +76,8 @@ callback(void* data,
 
     // add columns to the table-item, but only the first time
     // because this callback is called for every row
-    if(result->getNumberOfColums() == 0)
-    {
-        for(int i = 0; i < argc; i++)
-        {
+    if (result->getNumberOfColums() == 0) {
+        for (int i = 0; i < argc; i++) {
             const std::string columnName = azColName[i];
             result->addColumn(columnName);
         }
@@ -98,68 +88,54 @@ callback(void* data,
 
     // collect row-data
     json row = json::array();
-    for(int i = 0; i < argc; i++)
-    {
-        if(argv[i])
-        {
+    for (int i = 0; i < argc; i++) {
+        if (argv[i]) {
             const std::string value = argv[i];
 
             // true
-            if(value == "True"
-                    || value == "true"
-                    || value == "TRUE")
-            {
+            if (value == "True" || value == "true" || value == "TRUE") {
                 row.push_back(true);
             }
             // false
-            else if(value == "False"
-                    || value == "false"
-                    || value == "FALSE")
-            {
+            else if (value == "False" || value == "false" || value == "FALSE") {
                 row.push_back(false);
             }
             // int/long
-            else if(regex_match(value, intVal))
-            {
+            else if (regex_match(value, intVal)) {
                 const long longVal = std::strtol(value.c_str(), NULL, 10);
                 row.push_back(longVal);
             }
             // float/double
-            else if(regex_match(value, floatVal))
-            {
+            else if (regex_match(value, floatVal)) {
                 const double doubleVal = std::strtod(value.c_str(), NULL);
                 row.push_back(doubleVal);
             }
             // json-map
-            else if(value.size() > 0
-                    && value.at(0) == '{')
-            {
+            else if (value.size() > 0 && value.at(0) == '{') {
                 json newJson = json::parse(value, nullptr, false);
-                if(newJson.is_discarded()) {
+                if (newJson.is_discarded()) {
                     row.push_back(value);
-                } else {
+                }
+                else {
                     row.push_back(newJson);
                 }
             }
             // json-array
-            else if(value.size() > 0
-                    && value.at(0) == '[')
-            {
+            else if (value.size() > 0 && value.at(0) == '[') {
                 json newJson = json::parse(value, nullptr, false);
-                if(newJson.is_discarded()) {
+                if (newJson.is_discarded()) {
                     row.push_back(value);
-                } else {
+                }
+                else {
                     row.push_back(newJson);
                 }
             }
             // string
-            else
-            {
+            else {
                 row.push_back(value);
             }
         }
-        else
-        {
+        else {
             row.push_back("NULL");
         }
     }
@@ -180,21 +156,14 @@ callback(void* data,
  * @return true, if seccessful, else false
  */
 bool
-Sqlite::execSqlCommand(TableItem* resultTable,
-                       const std::string &command,
-                       ErrorContainer &error)
+Sqlite::execSqlCommand(TableItem* resultTable, const std::string& command, ErrorContainer& error)
 {
     // run command
     char* err = nullptr;
-    m_rc = sqlite3_exec(m_db,
-                        command.c_str(),
-                        callback,
-                        static_cast<void*>(resultTable),
-                        &err);
+    m_rc = sqlite3_exec(m_db, command.c_str(), callback, static_cast<void*>(resultTable), &err);
 
     // check result state
-    if(m_rc != SQLITE_OK)
-    {
+    if (m_rc != SQLITE_OK) {
         error.addMeesage("SQL error: " + std::string(err));
         sqlite3_free(err);
         LOG_ERROR(error);
@@ -212,8 +181,7 @@ Sqlite::execSqlCommand(TableItem* resultTable,
 bool
 Sqlite::closeDB()
 {
-    if(m_db != nullptr)
-    {
+    if (m_db != nullptr) {
         sqlite3_close(m_db);
         m_db = nullptr;
         return true;
@@ -222,4 +190,4 @@ Sqlite::closeDB()
     return false;
 }
 
-}
+}  // namespace Hanami

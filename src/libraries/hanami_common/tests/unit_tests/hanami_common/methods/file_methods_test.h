@@ -14,13 +14,12 @@
 namespace Hanami
 {
 
-class FileMethods_Test
-        : public Hanami::CompareTestHelper
+class FileMethods_Test : public Hanami::CompareTestHelper
 {
-public:
+   public:
     FileMethods_Test();
 
-private:
+   private:
     void listFiles_test();
     void renameFileOrDir_test();
     void copyPath_test();
@@ -28,6 +27,6 @@ private:
     void deleteFileOrDir_test();
 };
 
-}
+}  // namespace Hanami
 
-#endif // FILE_METHODS_TEST_H
+#endif  // FILE_METHODS_TEST_H

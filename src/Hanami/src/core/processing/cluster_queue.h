@@ -23,18 +23,18 @@
 #ifndef HANAMI_SEGMENTQUEUE_H
 #define HANAMI_SEGMENTQUEUE_H
 
-#include <vector>
-#include <deque>
 #include <atomic>
+#include <deque>
+#include <vector>
 
 class Cluster;
 
 class ClusterQueue
 {
-public:
+   public:
     static ClusterQueue* getInstance()
     {
-        if(instance == nullptr) {
+        if (instance == nullptr) {
             instance = new ClusterQueue();
         }
         return instance;
@@ -44,7 +44,7 @@ public:
 
     Cluster* getClusterFromQueue();
 
-private:
+   private:
     ClusterQueue();
     static ClusterQueue* instance;
 
@@ -52,4 +52,4 @@ private:
     std::deque<Cluster*> m_clusterQueue;
 };
 
-#endif // HANAMI_SEGMENTQUEUE_H
+#endif  // HANAMI_SEGMENTQUEUE_H

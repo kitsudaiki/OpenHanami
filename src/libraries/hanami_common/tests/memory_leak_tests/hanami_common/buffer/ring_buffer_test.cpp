@@ -13,8 +13,7 @@
 namespace Hanami
 {
 
-RingBuffer_Test::RingBuffer_Test()
-    : Hanami::MemoryLeakTestHelpter("RingBuffer_Test")
+RingBuffer_Test::RingBuffer_Test() : Hanami::MemoryLeakTestHelpter("RingBuffer_Test")
 {
     create_delete_test();
 }
@@ -27,10 +26,10 @@ RingBuffer_Test::create_delete_test()
 {
     REINIT_TEST();
 
-    RingBuffer*  testBuffer = new RingBuffer();
+    RingBuffer* testBuffer = new RingBuffer();
     delete testBuffer;
 
     CHECK_MEMORY();
 }
 
-}
+}  // namespace Hanami

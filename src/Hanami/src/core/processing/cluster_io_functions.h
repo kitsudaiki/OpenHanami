@@ -23,13 +23,16 @@
 #ifndef HANAMI_CORE_CLUSTER_IO_FUNCTIONS_H
 #define HANAMI_CORE_CLUSTER_IO_FUNCTIONS_H
 
-#include <iostream>
 #include <math.h>
+
+#include <iostream>
+
 #include "objects.h"
 
 /**
  * @brief process input brick
  */
+template <bool doTrain>
 inline void
 processNeuronsOfInputBrickBackward(const Brick* brick,
                                    float* inputValues,
@@ -40,50 +43,47 @@ processNeuronsOfInputBrickBackward(const Brick* brick,
     uint32_t counter = 0;
 
     // iterate over all neurons within the brick
-    for(uint32_t blockId = brick->brickBlockPos;
-        blockId < brick->numberOfNeuronBlocks + brick->brickBlockPos;
-        blockId++)
+    for (uint32_t blockId = brick->brickBlockPos;
+         blockId < brick->numberOfNeuronBlocks + brick->brickBlockPos;
+         blockId++)
     {
         block = &neuronBlocks[blockId];
-        for(uint32_t neuronIdInBlock = 0;
-            neuronIdInBlock < block->numberOfNeurons;
-            neuronIdInBlock++)
+        for (uint32_t neuronIdInBlock = 0; neuronIdInBlock < block->numberOfNeurons;
+             neuronIdInBlock++)
         {
             neuron = &block->neurons[neuronIdInBlock];
             neuron->potential = inputValues[counter];
             neuron->active = neuron->potential > 0.0f;
-            neuron->isNew = neuron->active != 0 && neuron->target.blockId == UNINIT_STATE_32;
-            neuron->newOffset = 0.0f;
+            if constexpr (doTrain) {
+                neuron->isNew = neuron->active != 0 && neuron->target.blockId == UNINIT_STATE_32;
+                neuron->newOffset = 0.0f;
+            }
             counter++;
         }
     }
 }
 
 inline void
-processNeuronsOfOutputBrick(const Brick* brick,
-                            float* outputValues,
-                            NeuronBlock* neuronBlocks)
+processNeuronsOfOutputBrick(const Brick* brick, float* outputValues, NeuronBlock* neuronBlocks)
 {
     Neuron* neuron = nullptr;
     NeuronBlock* block = nullptr;
     uint32_t counter = 0;
 
     // iterate over all neurons within the brick
-    for(uint32_t blockId = brick->brickBlockPos;
-        blockId < brick->numberOfNeuronBlocks + brick->brickBlockPos;
-        blockId++)
+    for (uint32_t blockId = brick->brickBlockPos;
+         blockId < brick->numberOfNeuronBlocks + brick->brickBlockPos;
+         blockId++)
     {
         block = &neuronBlocks[blockId];
-        for(uint32_t neuronIdInBlock = 0;
-            neuronIdInBlock < block->numberOfNeurons;
-            neuronIdInBlock++)
+        for (uint32_t neuronIdInBlock = 0; neuronIdInBlock < block->numberOfNeurons;
+             neuronIdInBlock++)
         {
             neuron = &block->neurons[neuronIdInBlock];
             neuron->potential = neuron->input;
-            if(neuron->potential != 0.0f) {
+            if (neuron->potential != 0.0f) {
                 neuron->potential = 1.0f / (1.0f + exp(-1.0f * neuron->potential));
             }
-            //std::cout<<"neuron->potential: "<<neuron->potential<<std::endl;
             outputValues[counter] = neuron->potential;
             neuron->input = 0.0f;
             counter++;
@@ -107,19 +107,17 @@ backpropagateOutput(const Brick* brick,
     uint32_t counter = 0;
 
     // iterate over all neurons within the brick
-    for(uint32_t neuronSectionId = brick->brickBlockPos;
-        neuronSectionId < brick->numberOfNeuronBlocks + brick->brickBlockPos;
-        neuronSectionId++)
+    for (uint32_t neuronSectionId = brick->brickBlockPos;
+         neuronSectionId < brick->numberOfNeuronBlocks + brick->brickBlockPos;
+         neuronSectionId++)
     {
         block = &neuronBlocks[neuronSectionId];
-        for(uint32_t neuronIdInBlock = 0;
-            neuronIdInBlock < block->numberOfNeurons;
-            neuronIdInBlock++)
+        for (uint32_t neuronIdInBlock = 0; neuronIdInBlock < block->numberOfNeurons;
+             neuronIdInBlock++)
         {
             neuron = &block->neurons[neuronIdInBlock];
             neuron->delta = outputValues[counter] - expectedValues[counter];
             neuron->delta *= outputValues[counter] * (1.0f - outputValues[counter]);
-            //std::cout<<" expectedValues[counter] : "<< expectedValues[counter] <<"    outputValues[counter] : "<< outputValues[counter] <<std::endl;
             totalDelta += abs(neuron->delta);
             counter++;
         }
@@ -127,4 +125,4 @@ backpropagateOutput(const Brick* brick,
     return totalDelta > settings->backpropagationBorder;
 }
 
-#endif // HANAMI_CORE_CLUSTER_IO_FUNCTIONS_H
+#endif  // HANAMI_CORE_CLUSTER_IO_FUNCTIONS_H

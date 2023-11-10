@@ -23,37 +23,36 @@
 #ifndef HANAMI_THREADBINDER_H
 #define HANAMI_THREADBINDER_H
 
+#include <hanami_common/logger.h>
+#include <hanami_common/threading/thread.h>
+
 #include <mutex>
 
-#include <hanami_common/threading/thread.h>
-#include <hanami_common/logger.h>
-
-class ThreadBinder
-        : public Hanami::Thread
+class ThreadBinder : public Hanami::Thread
 {
-public:
+   public:
     static ThreadBinder* getInstance()
     {
-        if(instance == nullptr) {
+        if (instance == nullptr) {
             instance = new ThreadBinder();
         }
         return instance;
     }
 
-    bool init(Hanami::ErrorContainer &error);
+    bool init(Hanami::ErrorContainer& error);
     json getMapping();
     uint64_t getNumberOfProcessingThreads();
 
-protected:
+   protected:
     void run();
 
-private:
+   private:
     ThreadBinder();
     static ThreadBinder* instance;
 
-    bool fillCoreIds(std::vector<uint64_t> &coreIds,
-                     std::vector<uint64_t> &processingCoreIds,
-                     Hanami::ErrorContainer &error);
+    bool fillCoreIds(std::vector<uint64_t>& coreIds,
+                     std::vector<uint64_t>& processingCoreIds,
+                     Hanami::ErrorContainer& error);
 
     std::mutex m_mapLock;
     json m_completeMap;
@@ -62,4 +61,4 @@ private:
     std::vector<uint64_t> m_processingCoreIds;
 };
 
-#endif // HANAMI_THREADBINDER_H
+#endif  // HANAMI_THREADBINDER_H

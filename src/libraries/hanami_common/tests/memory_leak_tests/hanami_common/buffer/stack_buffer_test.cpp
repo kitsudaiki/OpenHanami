@@ -7,13 +7,13 @@
  */
 
 #include "stack_buffer_test.h"
+
 #include <hanami_common/buffer/stack_buffer.h>
 
 namespace Hanami
 {
 
-StackBuffer_Test::StackBuffer_Test()
-    : Hanami::MemoryLeakTestHelpter("StackBuffer_Test")
+StackBuffer_Test::StackBuffer_Test() : Hanami::MemoryLeakTestHelpter("StackBuffer_Test")
 {
     create_delete_test();
 }
@@ -36,4 +36,4 @@ StackBuffer_Test::create_delete_test()
     CHECK_MEMORY();
 }
 
-}
+}  // namespace Hanami

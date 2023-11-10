@@ -23,7 +23,8 @@
 #include <hanami_args/arg_parser.h>
 #include <hanami_common/logger.h>
 
-int main(int argc, char *argv[])
+int
+main(int argc, char* argv[])
 {
     // error messages of the parser are printed via logger
     Hanami::initConsoleLogger(true);
@@ -33,27 +34,23 @@ int main(int argc, char *argv[])
     Hanami::ErrorContainer error;
 
     // register flags without value
-    parser.registerPlain("debug", 'd')
-            .setHelpText("debug-flag to enable addtional debug output");
+    parser.registerPlain("debug", 'd').setHelpText("debug-flag to enable addtional debug output");
     // "registerPlain" allows it to register flags without any value, which says only true or flase
     //                 if they were set or not set
 
     // register flags
-    parser.registerString("source")
-            .setHelpText("source-path")
-            .setRequired();
-    parser.registerInteger("input", 'i')
-            .setHelpText("additional parameter");
+    parser.registerString("source").setHelpText("source-path").setRequired();
+    parser.registerInteger("input", 'i').setHelpText("additional parameter");
 
     // register other values
     parser.registerString("mode")
-            .setHelpText("modus for converting")
-            .setRequired()
-            .setWithoutFlag();
+        .setHelpText("modus for converting")
+        .setRequired()
+        .setWithoutFlag();
     parser.registerString("destination")
-            .setHelpText("destination path for output")
-            .setRequired()
-            .setWithoutFlag();
+        .setHelpText("destination path for output")
+        .setRequired()
+        .setWithoutFlag();
 
     // register types:
     //     registerString
@@ -62,7 +59,7 @@ int main(int argc, char *argv[])
     //     registerBoolean
 
     bool ret = parser.parse(argc, argv, error);
-    if(ret == false) {
+    if (ret == false) {
         return 1;
     }
     // ret say, if the converting was successful or not. Error-message are written in the logger

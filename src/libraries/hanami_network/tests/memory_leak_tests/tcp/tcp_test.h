@@ -21,26 +21,25 @@ class AbstractSocket;
 class TcpServer;
 class TcpSocket;
 
-template<class>
+template <class>
 class TemplateSocket;
 
-template<class>
+template <class>
 class TemplateServer;
 
-class Tcp_Test
-        : public Hanami::MemoryLeakTestHelpter
+class Tcp_Test : public Hanami::MemoryLeakTestHelpter
 {
-public:
+   public:
     Tcp_Test();
 
     DataBuffer* m_buffer = nullptr;
     AbstractSocket* m_socketServerSide = nullptr;
 
-private:
+   private:
     TemplateServer<TcpServer>* m_server = nullptr;
     TemplateSocket<TcpSocket>* m_socketClientSide = nullptr;
 };
 
-}
+}  // namespace Hanami
 
-#endif // TCPSOCKET_TCPSERVER_TEST_H
+#endif  // TCPSOCKET_TCPSERVER_TEST_H

@@ -39,7 +39,9 @@ ClusterQueue::ClusterQueue() {}
 void
 ClusterQueue::addClusterToQueue(Cluster* newSegment)
 {
-    while(m_queue_lock.test_and_set(std::memory_order_acquire)) { asm(""); }
+    while (m_queue_lock.test_and_set(std::memory_order_acquire)) {
+        asm("");
+    }
     m_clusterQueue.push_back(newSegment);
     m_queue_lock.clear(std::memory_order_release);
 }
@@ -54,10 +56,11 @@ ClusterQueue::getClusterFromQueue()
 {
     Cluster* result = nullptr;
 
-    while(m_queue_lock.test_and_set(std::memory_order_acquire)) { asm(""); }
+    while (m_queue_lock.test_and_set(std::memory_order_acquire)) {
+        asm("");
+    }
 
-    if(m_clusterQueue.size() > 0)
-    {
+    if (m_clusterQueue.size() > 0) {
         result = m_clusterQueue.front();
         m_clusterQueue.pop_front();
     }

@@ -28,17 +28,16 @@
 
 class Cluster;
 
-class CpuProcessingUnit
-        : public Hanami::Thread
+class CpuProcessingUnit : public Hanami::Thread
 {
-public:
+   public:
     CpuProcessingUnit();
     ~CpuProcessingUnit();
 
-protected:
+   protected:
     void run();
 
-private:
+   private:
     uint64_t reductionCounter = 0;
 
     void trainSegmentForward(Cluster* cluster);
@@ -46,4 +45,4 @@ private:
     void processSegment(Cluster* cluster);
 };
 
-#endif // HANAMI_CPU_PROCESSING_UNIT_H
+#endif  // HANAMI_CPU_PROCESSING_UNIT_H

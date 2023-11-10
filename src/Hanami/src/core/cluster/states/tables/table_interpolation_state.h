@@ -27,17 +27,16 @@
 
 class Cluster;
 
-class TableInterpolation_State
-        : public Hanami::Event
+class TableInterpolation_State : public Hanami::Event
 {
-public:
+   public:
     TableInterpolation_State(Cluster* cluster);
     ~TableInterpolation_State();
 
     bool processEvent();
 
-private:
+   private:
     Cluster* m_cluster = nullptr;
 };
 
-#endif // HANAMI_TABLEINTERPOLATION_STATE_H
+#endif  // HANAMI_TABLEINTERPOLATION_STATE_H

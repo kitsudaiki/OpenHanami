@@ -30,10 +30,7 @@ namespace Hanami
 /**
  * @brief constructor
  */
-Statemachine::Statemachine(EventQueue* eventQueue)
-{
-    m_eventQueue = eventQueue;
-}
+Statemachine::Statemachine(EventQueue* eventQueue) { m_eventQueue = eventQueue; }
 
 /**
  * @brief destructor
@@ -41,10 +38,9 @@ Statemachine::Statemachine(EventQueue* eventQueue)
 Statemachine::~Statemachine()
 {
     // delete all states
-    for(auto & [name, state] : m_allStates)
-    {
+    for (auto& [name, state] : m_allStates) {
         State* tempObj = state;
-        for(Event* event : tempObj->events) {
+        for (Event* event : tempObj->events) {
             delete event;
         }
         delete tempObj;
@@ -64,23 +60,23 @@ Statemachine::~Statemachine()
  * @return false if state-id already exist, else true
  */
 bool
-Statemachine::createNewState(const uint32_t stateId,
-                             const std::string &stateName)
+Statemachine::createNewState(const uint32_t stateId, const std::string& stateName)
 {
-    while(m_state_lock.test_and_set(std::memory_order_acquire)) { asm(""); }
+    while (m_state_lock.test_and_set(std::memory_order_acquire)) {
+        asm("");
+    }
 
     // add new state
     State* newState = new State(stateId, stateName);
     auto ret = m_allStates.try_emplace(stateId, newState);
-    if(ret.second == false)
-    {
+    if (ret.second == false) {
         delete newState;
         m_state_lock.clear(std::memory_order_release);
         return false;
     }
 
     // first created state is set as current stat to init the statemachine
-    if(m_currentState == nullptr) {
+    if (m_currentState == nullptr) {
         m_currentState = newState;
     }
     m_state_lock.clear(std::memory_order_release);
@@ -100,7 +96,7 @@ Statemachine::setCurrentState(const uint32_t stateId)
 {
     // check if state already exist
     State* state = getState(stateId);
-    if(state == nullptr) {
+    if (state == nullptr) {
         return false;
     }
 
@@ -119,21 +115,17 @@ Statemachine::setCurrentState(const uint32_t stateId)
  * @return false if key already registerd or state or nextState doesn't exist, else true
  */
 bool
-Statemachine::addTransition(const uint32_t stateId,
-                            const uint32_t key,
-                            const uint32_t nextStateId)
+Statemachine::addTransition(const uint32_t stateId, const uint32_t key, const uint32_t nextStateId)
 {
     State* sourceState = getState(stateId);
     State* nextState = getState(nextStateId);
 
-    if(sourceState == nullptr
-            || nextState == nullptr)
-    {
+    if (sourceState == nullptr || nextState == nullptr) {
         return false;
     }
 
     // add transition
-    const bool success =  sourceState->addTransition(key, nextState);
+    const bool success = sourceState->addTransition(key, nextState);
 
     return success;
 }
@@ -147,15 +139,12 @@ Statemachine::addTransition(const uint32_t stateId,
  * @return false, if id doesn't exist, else true
  */
 bool
-Statemachine::setInitialChildState(const uint32_t stateId,
-                                   const uint32_t initialChildStateId)
+Statemachine::setInitialChildState(const uint32_t stateId, const uint32_t initialChildStateId)
 {
     State* sourceState = getState(stateId);
     State* initialChildState = getState(initialChildStateId);
 
-    if(sourceState == nullptr
-            || initialChildState == nullptr)
-    {
+    if (sourceState == nullptr || initialChildState == nullptr) {
         return false;
     }
 
@@ -173,15 +162,12 @@ Statemachine::setInitialChildState(const uint32_t stateId,
  * @return false, if id doesn't exist, else true
  */
 bool
-Statemachine::addChildState(const uint32_t stateId,
-                            const uint32_t childStateId)
+Statemachine::addChildState(const uint32_t stateId, const uint32_t childStateId)
 {
     State* sourceState = getState(stateId);
     State* childState = getState(childStateId);
 
-    if(sourceState == nullptr
-            || childState == nullptr)
-    {
+    if (sourceState == nullptr || childState == nullptr) {
         return false;
     }
 
@@ -200,14 +186,11 @@ Statemachine::addChildState(const uint32_t stateId,
  * @return false, if stateId doesn't exist or event is nullptr, else true
  */
 bool
-Statemachine::addEventToState(const uint32_t stateId,
-                              Event* event)
+Statemachine::addEventToState(const uint32_t stateId, Event* event)
 {
     State* sourceState = getState(stateId);
 
-    if(sourceState == nullptr
-            || event == nullptr)
-    {
+    if (sourceState == nullptr || event == nullptr) {
         return false;
     }
 
@@ -225,28 +208,24 @@ Statemachine::addEventToState(const uint32_t stateId,
  * @return true, if there was the next requested state
  */
 bool
-Statemachine::goToNextState(const uint32_t nextStateId,
-                            const uint32_t requiredPreState)
+Statemachine::goToNextState(const uint32_t nextStateId, const uint32_t requiredPreState)
 {
     bool result = false;
-    while(m_state_lock.test_and_set(std::memory_order_acquire)) { asm(""); }
+    while (m_state_lock.test_and_set(std::memory_order_acquire)) {
+        asm("");
+    }
 
-    if(requiredPreState == 0
-            || requiredPreState == m_currentState->id)
-    {
+    if (requiredPreState == 0 || requiredPreState == m_currentState->id) {
         State* state = m_currentState;
-        while(state != nullptr)
-        {
+        while (state != nullptr) {
             State* nextState = state->next(nextStateId);
             state = state->parent;
-            if(nextState != nullptr)
-            {
+            if (nextState != nullptr) {
                 m_currentState = nextState;
 
                 // add event of state to event-queue, if one was defined
-                if(m_eventQueue != nullptr)
-                {
-                    for(uint64_t i = 0; i < m_currentState->events.size(); i++) {
+                if (m_eventQueue != nullptr) {
+                    for (uint64_t i = 0; i < m_currentState->events.size(); i++) {
                         m_eventQueue->addEventToQueue(m_currentState->events.at(i));
                     }
                 }
@@ -263,9 +242,7 @@ Statemachine::goToNextState(const uint32_t nextStateId,
     // to release the spin-lock first. It is possible, that the event-processint take some time
     // and it would be really bad, when the spin-lock runs the whole time and block even requests
     // for the current state for the entire time.
-    if(result == true
-            && m_eventQueue == nullptr)
-    {
+    if (result == true && m_eventQueue == nullptr) {
         m_currentState->processEvents();
     }
 
@@ -282,9 +259,11 @@ Statemachine::getCurrentStateId()
 {
     uint32_t result = 0;
 
-    while(m_state_lock.test_and_set(std::memory_order_acquire)) { asm(""); }
+    while (m_state_lock.test_and_set(std::memory_order_acquire)) {
+        asm("");
+    }
 
-    if(m_currentState != nullptr) {
+    if (m_currentState != nullptr) {
         result = m_currentState->id;
     }
 
@@ -302,9 +281,11 @@ const std::string
 Statemachine::getCurrentStateName()
 {
     std::string result = "";
-    while(m_state_lock.test_and_set(std::memory_order_acquire)) { asm(""); }
+    while (m_state_lock.test_and_set(std::memory_order_acquire)) {
+        asm("");
+    }
 
-    if(m_currentState != nullptr) {
+    if (m_currentState != nullptr) {
         result = m_currentState->name;
     }
 
@@ -324,12 +305,13 @@ bool
 Statemachine::isInState(const uint32_t stateId)
 {
     bool result = false;
-    while(m_state_lock.test_and_set(std::memory_order_acquire)) { asm(""); }
+    while (m_state_lock.test_and_set(std::memory_order_acquire)) {
+        asm("");
+    }
 
     State* state = m_currentState;
-    while(state != nullptr)
-    {
-        if(state->id == stateId) {
+    while (state != nullptr) {
+        if (state->id == stateId) {
             result = true;
         }
         state = state->parent;
@@ -351,11 +333,13 @@ State*
 Statemachine::getState(const uint32_t stateId)
 {
     State* result = nullptr;
-    while(m_state_lock.test_and_set(std::memory_order_acquire)) { asm(""); }
+    while (m_state_lock.test_and_set(std::memory_order_acquire)) {
+        asm("");
+    }
 
     // check and get source-state
     auto it = m_allStates.find(stateId);
-    if(it != m_allStates.end()) {
+    if (it != m_allStates.end()) {
         result = it->second;
     }
 
@@ -364,4 +348,4 @@ Statemachine::getState(const uint32_t stateId)
     return result;
 }
 
-}
+}  // namespace Hanami

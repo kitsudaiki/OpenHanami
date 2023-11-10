@@ -22,15 +22,14 @@
 
 #include "config_handler_test.h"
 
-#include <hanami_config/config_handler.h>
 #include <hanami_common/files/text_file.h>
 #include <hanami_common/methods/file_methods.h>
+#include <hanami_config/config_handler.h>
 
 namespace Hanami
 {
 
-ConfigHandler_Test::ConfigHandler_Test()
-    : Hanami::CompareTestHelper("ConfigHandler_Test")
+ConfigHandler_Test::ConfigHandler_Test() : Hanami::CompareTestHelper("ConfigHandler_Test")
 {
     initTestCase();
 
@@ -109,8 +108,10 @@ ConfigHandler_Test::getRegisteredType_test()
     configHandler.registerString(groupName, "key1");
     configHandler.registerInteger(groupName, "key2");
 
-    TEST_EQUAL(configHandler.getRegisteredType("groupName", "key1"), ConfigHandler::ConfigDef::STRING_TYPE);
-    TEST_EQUAL(configHandler.getRegisteredType("groupName", "key2"), ConfigHandler::ConfigDef::INT_TYPE);
+    TEST_EQUAL(configHandler.getRegisteredType("groupName", "key1"),
+               ConfigHandler::ConfigDef::STRING_TYPE);
+    TEST_EQUAL(configHandler.getRegisteredType("groupName", "key2"),
+               ConfigHandler::ConfigDef::INT_TYPE);
 }
 
 /**
@@ -124,8 +125,11 @@ ConfigHandler_Test::checkType_test()
 
     configHandler.initConfig(m_testFilePath, error);
 
-    TEST_EQUAL(configHandler.checkType("DEFAULT", "string_val", ConfigHandler::ConfigDef::INT_TYPE), false);
-    TEST_EQUAL(configHandler.checkType("DEFAULT", "string_val", ConfigHandler::ConfigDef::STRING_TYPE), true);
+    TEST_EQUAL(configHandler.checkType("DEFAULT", "string_val", ConfigHandler::ConfigDef::INT_TYPE),
+               false);
+    TEST_EQUAL(
+        configHandler.checkType("DEFAULT", "string_val", ConfigHandler::ConfigDef::STRING_TYPE),
+        true);
 }
 
 /**
@@ -139,8 +143,7 @@ ConfigHandler_Test::registerString_test()
 
     configHandler.initConfig(m_testFilePath, error);
 
-    configHandler.registerString("DEFAULT", "int_val")
-            .setDefault("default");
+    configHandler.registerString("DEFAULT", "int_val").setDefault("default");
 }
 
 /**
@@ -154,8 +157,7 @@ ConfigHandler_Test::registerInteger_test()
 
     configHandler.initConfig(m_testFilePath, error);
 
-    configHandler.registerInteger("DEFAULT", "string_val")
-            .setDefault(42);
+    configHandler.registerInteger("DEFAULT", "string_val").setDefault(42);
 }
 
 /**
@@ -169,8 +171,7 @@ ConfigHandler_Test::registerFloat_test()
 
     configHandler.initConfig(m_testFilePath, error);
 
-    configHandler.registerFloat("DEFAULT", "string_val")
-            .setDefault(42.0);
+    configHandler.registerFloat("DEFAULT", "string_val").setDefault(42.0);
 }
 
 /**
@@ -184,8 +185,7 @@ ConfigHandler_Test::registerBoolean_test()
 
     configHandler.initConfig(m_testFilePath, error);
 
-    configHandler.registerBoolean("DEFAULT", "string_val")
-            .setDefault(true);
+    configHandler.registerBoolean("DEFAULT", "string_val").setDefault(true);
 }
 
 /**
@@ -201,8 +201,7 @@ ConfigHandler_Test::registerStringArray_test()
     configHandler.initConfig(m_testFilePath, error);
     defaultValue.push_back("test");
 
-    configHandler.registerStringArray("DEFAULT", "string_val")
-            .setDefault(defaultValue);
+    configHandler.registerStringArray("DEFAULT", "string_val").setDefault(defaultValue);
 }
 
 /**
@@ -215,12 +214,10 @@ ConfigHandler_Test::getString_test()
     bool success = false;
     ErrorContainer error;
 
-    configHandler.registerString("DEFAULT", "string_val")
-            .setDefault("xyz");
+    configHandler.registerString("DEFAULT", "string_val").setDefault("xyz");
     TEST_EQUAL(configHandler.initConfig(m_testFilePath, error), true);
     TEST_EQUAL(configHandler.getString("DEFAULT", "string_val", success), "asdf.asdf");
     TEST_EQUAL(success, true);
-
 }
 
 /**
@@ -233,8 +230,7 @@ ConfigHandler_Test::getInteger_test()
     bool success = false;
     ErrorContainer error;
 
-    configHandler.registerInteger("DEFAULT", "int_val")
-            .setDefault(42);
+    configHandler.registerInteger("DEFAULT", "int_val").setDefault(42);
     TEST_EQUAL(configHandler.initConfig(m_testFilePath, error), true);
     TEST_EQUAL(configHandler.getInteger("DEFAULT", "int_val", success), 2);
     TEST_EQUAL(success, true);
@@ -250,8 +246,7 @@ ConfigHandler_Test::getFloat_test()
     bool success = false;
     ErrorContainer error;
 
-    configHandler.registerFloat("DEFAULT", "float_val")
-            .setDefault(42.0);
+    configHandler.registerFloat("DEFAULT", "float_val").setDefault(42.0);
     TEST_EQUAL(configHandler.initConfig(m_testFilePath, error), true);
     TEST_EQUAL(configHandler.getFloat("DEFAULT", "float_val", success), 123.0);
     TEST_EQUAL(success, true);
@@ -267,8 +262,7 @@ ConfigHandler_Test::getBoolean_test()
     bool success = false;
     ErrorContainer error;
 
-    configHandler.registerBoolean("DEFAULT", "bool_value")
-            .setDefault(false);
+    configHandler.registerBoolean("DEFAULT", "bool_value").setDefault(false);
     TEST_EQUAL(configHandler.initConfig(m_testFilePath, error), true);
     TEST_EQUAL(configHandler.getBoolean("DEFAULT", "bool_value", success), true);
     TEST_EQUAL(success, true);
@@ -287,8 +281,7 @@ ConfigHandler_Test::getStringArray_test()
     ErrorContainer error;
     defaultValue.push_back("test");
 
-    configHandler.registerStringArray("DEFAULT", "string_list")
-            .setDefault(defaultValue);
+    configHandler.registerStringArray("DEFAULT", "string_list").setDefault(defaultValue);
     TEST_EQUAL(configHandler.initConfig(m_testFilePath, error), true);
     ret = configHandler.getStringArray("DEFAULT", "string_list", success);
     TEST_EQUAL(ret.size(), 3);
@@ -313,14 +306,14 @@ const std::string
 ConfigHandler_Test::getTestString()
 {
     const std::string testString(
-                "[DEFAULT]\n"
-                "string_val = asdf.asdf\n"
-                "int_val = 2\n"
-                "float_val = 123.0\n"
-                "string_list = a,b,c\n"
-                "bool_value = true\n"
-                "\n");
+        "[DEFAULT]\n"
+        "string_val = asdf.asdf\n"
+        "int_val = 2\n"
+        "float_val = 123.0\n"
+        "string_list = a,b,c\n"
+        "bool_value = true\n"
+        "\n");
     return testString;
 }
 
-}
+}  // namespace Hanami

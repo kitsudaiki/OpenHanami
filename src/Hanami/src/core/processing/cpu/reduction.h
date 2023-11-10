@@ -24,17 +24,15 @@
 #define HANAMI_CORE_REDUCTION_H
 
 #include <common.h>
-
-#include <hanami_root.h>
-#include <core/processing/objects.h>
 #include <core/cluster/cluster.h>
+#include <core/processing/objects.h>
+#include <hanami_root.h>
 
 /**
  * @brief reduce synapses of a specific section
  */
 inline bool
-reduceSynapses(Cluster &,
-               SynapseBlock &)
+reduceSynapses(Cluster&, SynapseBlock&)
 {
     bool foundEnd = false;
 
@@ -77,7 +75,7 @@ reduceSynapses(Cluster &,
  * @brief reduce all synapses within the cluster and delete them, if the reach a deletion-border
  */
 inline void
-reduceNeurons(Cluster &)
+reduceNeurons(Cluster&)
 {
     /*SynapseSection* section = nullptr;
     Neuron* sourceNeuron = nullptr;
@@ -103,4 +101,4 @@ reduceNeurons(Cluster &)
     }*/
 }
 
-#endif // HANAMI_CORE_REDUCTION_H
+#endif  // HANAMI_CORE_REDUCTION_H

@@ -14,18 +14,17 @@
 namespace Hanami
 {
 
-class Logger_Test
-        : public Hanami::CompareTestHelper
+class Logger_Test : public Hanami::CompareTestHelper
 {
-public:
+   public:
     Logger_Test();
 
-private:
+   private:
     void logger_test();
 
     void deleteFile(const std::string filePath);
 };
 
-}
+}  // namespace Hanami
 
-#endif // LOGGER_TEST_H
+#endif  // LOGGER_TEST_H

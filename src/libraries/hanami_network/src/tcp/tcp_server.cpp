@@ -40,12 +40,11 @@ TcpServer::~TcpServer() {}
  * @return false, if server creation failed, else true
  */
 bool
-TcpServer::initServer(ErrorContainer &error)
+TcpServer::initServer(ErrorContainer& error)
 {
     // create socket
     serverFd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if(serverFd < 0)
-    {
+    if (serverFd < 0) {
         error.addMeesage("Failed to create a tcp-socket");
         error.addSolution("Maybe no permissions to create a tcp-server on the system");
         return false;
@@ -53,8 +52,7 @@ TcpServer::initServer(ErrorContainer &error)
 
     // make the port reusable
     int enable = 1;
-    if(setsockopt(serverFd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)))
-    {
+    if (setsockopt(serverFd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int))) {
         error.addMeesage("Failed set socket-options for tcp-server on port: "
                          + std::to_string(m_port));
         return false;
@@ -67,15 +65,13 @@ TcpServer::initServer(ErrorContainer &error)
     socketAddr.sin_port = htons(m_port);
 
     // bind to port
-    if(bind(serverFd, reinterpret_cast<struct sockaddr*>(&socketAddr), sizeof(socketAddr)) < 0)
-    {
+    if (bind(serverFd, reinterpret_cast<struct sockaddr*>(&socketAddr), sizeof(socketAddr)) < 0) {
         error.addMeesage("Failed to bind tcp-socket to port: " + std::to_string(m_port));
         return false;
     }
 
     // start listening for incoming connections
-    if(listen(serverFd, 5) == -1)
-    {
+    if (listen(serverFd, 5) == -1) {
         error.addMeesage("Failed listen on tcp-socket on port: " + std::to_string(m_port));
         return false;
     }
@@ -107,4 +103,4 @@ TcpServer::getPort() const
     return m_port;
 }
 
-}
+}  // namespace Hanami

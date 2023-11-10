@@ -11,14 +11,14 @@
 namespace Hanami
 {
 
-BogusThread::BogusThread()
-    : Hanami::Thread("BogusThread") {}
+BogusThread::BogusThread() : Hanami::Thread("BogusThread") {}
 
-void BogusThread::run()
+void
+BogusThread::run()
 {
-    while(m_abort == false) {
+    while (m_abort == false) {
         sleepThread(10000);
     }
 }
 
-}
+}  // namespace Hanami

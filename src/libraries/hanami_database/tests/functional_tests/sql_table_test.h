@@ -9,13 +9,12 @@ namespace Hanami
 class SqlDatabase;
 class TestTable;
 
-class SqlTable_Test
-        : public Hanami::CompareTestHelper
+class SqlTable_Test : public Hanami::CompareTestHelper
 {
-public:
+   public:
     SqlTable_Test();
 
-private:
+   private:
     std::string m_filePath = "";
     TestTable* m_table = nullptr;
     SqlDatabase* m_db = nullptr;
@@ -35,6 +34,6 @@ private:
     void getNumberOfRows_test();
 };
 
-}
+}  // namespace Hanami
 
-#endif // SQLTABLE_TEST_H
+#endif  // SQLTABLE_TEST_H

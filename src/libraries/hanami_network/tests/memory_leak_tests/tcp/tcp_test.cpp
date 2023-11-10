@@ -7,11 +7,11 @@
  */
 
 #include "tcp_test.h"
-#include <hanami_common/buffer/ring_buffer.h>
 
+#include <hanami_common/buffer/ring_buffer.h>
 #include <hanami_common/threading/thread_handler.h>
-#include <template_socket.h>
 #include <template_server.h>
+#include <template_socket.h>
 
 namespace Hanami
 {
@@ -19,13 +19,12 @@ namespace Hanami
 /**
  * processMessageTcp-callback
  */
-uint64_t processMessageTcp(void* target,
-                           Hanami::RingBuffer* recvBuffer,
-                           AbstractSocket*)
+uint64_t
+processMessageTcp(void* target, Hanami::RingBuffer* recvBuffer, AbstractSocket*)
 {
     Tcp_Test* targetTest = static_cast<Tcp_Test*>(target);
     const uint8_t* dataPointer = getDataPointer_RingBuffer(*recvBuffer, recvBuffer->usedSize);
-    if(dataPointer == nullptr) {
+    if (dataPointer == nullptr) {
         return 0;
     }
 
@@ -36,8 +35,8 @@ uint64_t processMessageTcp(void* target,
 /**
  * processConnectionTcp-callback
  */
-void processConnectionTcp(void* target,
-                          AbstractSocket* socket)
+void
+processConnectionTcp(void* target, AbstractSocket* socket)
 {
     Tcp_Test* targetTest = static_cast<Tcp_Test*>(target);
     targetTest->m_socketServerSide = socket;
@@ -45,18 +44,14 @@ void processConnectionTcp(void* target,
     socket->startThread();
 }
 
-
-Tcp_Test::Tcp_Test()
-    : Hanami::MemoryLeakTestHelpter("Tcp_Test")
+Tcp_Test::Tcp_Test() : Hanami::MemoryLeakTestHelpter("Tcp_Test")
 {
     ErrorContainer* error = new ErrorContainer();
 
     // init for one-time-allocations
     TcpServer tcpServer2(12345);
-    m_server = new TemplateServer<TcpServer>(std::move(tcpServer2),
-                                        this,
-                                        &processConnectionTcp,
-                                        "Tcp_Test");
+    m_server = new TemplateServer<TcpServer>(
+        std::move(tcpServer2), this, &processConnectionTcp, "Tcp_Test");
 
     m_server->initServer(*error);
     m_server->scheduleThreadForDeletion();
@@ -67,37 +62,34 @@ Tcp_Test::Tcp_Test()
     m_buffer = new DataBuffer(1000);
     error = new ErrorContainer();
     TcpServer tcpServer(12345);
-    m_server = new TemplateServer<TcpServer>(std::move(tcpServer),
-                                        this,
-                                        &processConnectionTcp,
-                                        "Tcp_Test");
+    m_server = new TemplateServer<TcpServer>(
+        std::move(tcpServer), this, &processConnectionTcp, "Tcp_Test");
     m_server->initServer(*error);
     m_server->startThread();
 
-        // test client create and delete
-        TcpSocket tcpSocket("127.0.0.1", 12345);
-        m_socketClientSide = new TemplateSocket<TcpSocket>(std::move(tcpSocket),
-                                                      "Tcp_Test_client");
-        m_socketClientSide->initConnection(*error);
+    // test client create and delete
+    TcpSocket tcpSocket("127.0.0.1", 12345);
+    m_socketClientSide = new TemplateSocket<TcpSocket>(std::move(tcpSocket), "Tcp_Test_client");
+    m_socketClientSide->initConnection(*error);
 
-        sleep(2);
+    sleep(2);
 
-            // send messages
-            std::string sendMessage("poipoipoi");
-            m_socketClientSide->sendMessage(sendMessage, *error);
-            usleep(100000);
+    // send messages
+    std::string sendMessage("poipoipoi");
+    m_socketClientSide->sendMessage(sendMessage, *error);
+    usleep(100000);
 
-            std::string sendMessage2 = "poi";
-            m_socketClientSide->sendMessage(sendMessage2, *error);
-            for(uint32_t i = 0; i < 99999; i++) {
-                m_socketClientSide->sendMessage(sendMessage2, *error);
-            }
+    std::string sendMessage2 = "poi";
+    m_socketClientSide->sendMessage(sendMessage2, *error);
+    for (uint32_t i = 0; i < 99999; i++) {
+        m_socketClientSide->sendMessage(sendMessage2, *error);
+    }
 
-        m_socketServerSide->closeSocket();
-        m_socketServerSide->scheduleThreadForDeletion();
-        m_socketClientSide->closeSocket();
-        m_socketClientSide->scheduleThreadForDeletion();
-        sleep(2);
+    m_socketServerSide->closeSocket();
+    m_socketServerSide->scheduleThreadForDeletion();
+    m_socketClientSide->closeSocket();
+    m_socketClientSide->scheduleThreadForDeletion();
+    sleep(2);
 
     // clear test-server
     m_server->closeServer();
@@ -108,4 +100,4 @@ Tcp_Test::Tcp_Test()
     CHECK_MEMORY();
 }
 
-}
+}  // namespace Hanami

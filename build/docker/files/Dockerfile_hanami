@@ -12,5 +12,4 @@ COPY Hanami/src/frontend/Hanami-Dashboard-Dependencies /etc/Hanami-Dashboard/src
 
 # Hanami
 COPY Hanami/src/Hanami/Hanami /usr/bin/Hanami
-Copy hanami_run.sh /
-CMD /hanami_run.sh
+CMD Hanami

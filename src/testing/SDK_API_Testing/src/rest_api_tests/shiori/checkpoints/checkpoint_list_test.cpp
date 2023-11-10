@@ -24,11 +24,10 @@
 
 #include <hanami_sdk/checkpoint.h>
 
-CheckpointListTest::CheckpointListTest(const bool expectSuccess)
-      : TestStep(expectSuccess)
+CheckpointListTest::CheckpointListTest(const bool expectSuccess) : TestStep(expectSuccess)
 {
     m_testName = "list checkpoint";
-    if(expectSuccess) {
+    if (expectSuccess) {
         m_testName += " (success)";
     } else {
         m_testName += " (fail)";
@@ -36,16 +35,15 @@ CheckpointListTest::CheckpointListTest(const bool expectSuccess)
 }
 
 bool
-CheckpointListTest::runTest(json &inputData,
-                          Hanami::ErrorContainer &error)
+CheckpointListTest::runTest(json& inputData, Hanami::ErrorContainer& error)
 {
     // list all data
     std::string result;
-    if(Hanami::listCheckpoint(result, error) != m_expectSuccess) {
+    if (Hanami::listCheckpoint(result, error) != m_expectSuccess) {
         return false;
     }
 
-    if(m_expectSuccess == false) {
+    if (m_expectSuccess == false) {
         return true;
     }
 
@@ -53,7 +51,7 @@ CheckpointListTest::runTest(json &inputData,
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch(const json::parse_error& ex) {
+    } catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
@@ -62,4 +60,3 @@ CheckpointListTest::runTest(json &inputData,
 
     return true;
 }
-

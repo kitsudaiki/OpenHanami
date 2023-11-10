@@ -2,11 +2,50 @@ name: build-and-test
 on: [push]
 
 jobs:
-  build:
+  clang-format-check:
     runs-on: ubuntu-latest
     container:
-      image: kitsudaiki/hanami_builder:0.4.0
-    name: build-job
+      image: kitsudaiki/ci-check:0.2.0
+    name: "clang-format check"
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v4
+      - name: "ls"
+        run: ls -l
+      - name: "Run tests"
+        run: |
+          find . -regex '.*\.(c$|cpp$|h$|hpp$)' | while read f
+          do
+              clang-format-15 -style=file:.clang-format --dry-run --Werror $f
+              if [ $? -ne 0 ]
+              then
+                  exit 1
+              fi
+          done
+
+  cpp-check:
+    runs-on: ubuntu-latest
+    container:
+      image: kitsudaiki/ci-check:0.2.0
+    name: "cppcheck"
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v4
+      - name: "ls"
+        run: ls -l
+      - name: "Run tests"
+        run: |
+           cppcheck --error-exitcode=1 src/Hanami
+           cppcheck --error-exitcode=1 src/libraries
+           cppcheck --error-exitcode=1 src/sdk
+           cppcheck --error-exitcode=1 src/testing
+
+  build:
+    needs: [ cpp-check, clang-format-check ]
+    runs-on: ubuntu-latest
+    container:
+      image: kitsudaiki/hanami_builder:0.6.0
+    name: "build repository"
     steps:
       - name: "Checkout repository"
         run: |

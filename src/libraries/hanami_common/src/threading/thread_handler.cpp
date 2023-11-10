@@ -20,10 +20,9 @@
  *      limitations under the License.
  */
 
-#include <hanami_common/threading/thread_handler.h>
-
 #include <hanami_common/threading/event.h>
 #include <hanami_common/threading/thread.h>
+#include <hanami_common/threading/thread_handler.h>
 
 namespace Hanami
 {
@@ -54,7 +53,7 @@ ThreadHandler::getRegisteredNames()
     std::unique_lock<std::mutex> lock(m_mutex);
 
     std::vector<std::string> result;
-    for(const auto& [id, thread] : m_allThreads) {
+    for (const auto& [id, thread] : m_allThreads) {
         result.push_back(id);
     }
 
@@ -69,17 +68,16 @@ ThreadHandler::getRegisteredNames()
  * @return list with all threads, which were registered under the name
  */
 const std::vector<Thread*>
-ThreadHandler::getThreads(const std::string &threadName)
+ThreadHandler::getThreads(const std::string& threadName)
 {
     std::unique_lock<std::mutex> lock(m_mutex);
     std::vector<Thread*> result;
 
     // iterate over names
     const auto it = m_allThreads.find(threadName);
-    if(it != m_allThreads.end())
-    {
+    if (it != m_allThreads.end()) {
         // iterate over ids
-        for(const auto& [id, thread] : it->second) {
+        for (const auto& [id, thread] : it->second) {
             result.push_back(thread);
         }
     }
@@ -113,8 +111,7 @@ ThreadHandler::registerThread(Thread* thread)
 
     // if name is already registered then add this to the name
     auto it = m_allThreads.find(thread->getThreadName());
-    if(it != m_allThreads.end())
-    {
+    if (it != m_allThreads.end()) {
         it->second.insert(std::make_pair(thread->getThreadId(), thread));
         return;
     }
@@ -136,27 +133,24 @@ ThreadHandler::registerThread(Thread* thread)
  * @return true, if found and unregistered, else false
  */
 bool
-ThreadHandler::unregisterThread(const std::string &threadName,
-                                const uint64_t threadId)
+ThreadHandler::unregisterThread(const std::string& threadName, const uint64_t threadId)
 {
     std::unique_lock<std::mutex> lock(m_mutex);
     bool found = false;
 
     // iterate over names
     auto name_it = m_allThreads.find(threadName);
-    if(name_it != m_allThreads.end())
-    {
+    if (name_it != m_allThreads.end()) {
         // iterate over ids
         auto id_it = name_it->second.find(threadId);
-        if(id_it != name_it->second.end())
-        {
+        if (id_it != name_it->second.end()) {
             name_it->second.erase(id_it);
             found = true;
         }
 
         // if there are no more threads with the name, then remove the whole entry
         // to avoid a memory-leak
-        if(name_it->second.size() == 0) {
+        if (name_it->second.size() == 0) {
             m_allThreads.erase(name_it);
         }
     }
@@ -164,4 +158,4 @@ ThreadHandler::unregisterThread(const std::string &threadName,
     return found;
 }
 
-}
+}  // namespace Hanami

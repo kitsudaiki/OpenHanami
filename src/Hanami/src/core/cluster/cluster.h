@@ -23,28 +23,27 @@
 #ifndef HANAMI_CLUSTER_H
 #define HANAMI_CLUSTER_H
 
+#include <api/endpoint_processing/http_websocket_thread.h>
 #include <common.h>
 #include <core/cluster/task.h>
 #include <core/processing/objects.h>
-#include <api/endpoint_processing/http_websocket_thread.h>
-
 #include <hanami_cluster_parser/cluster_meta.h>
-
 #include <hanami_common/buffer/data_buffer.h>
 #include <hanami_common/buffer/item_buffer.h>
 
 class TaskHandle_State;
 
-namespace Hanami {
+namespace Hanami
+{
 class EventQueue;
 class Statemachine;
-}
+}  // namespace Hanami
 
 class Cluster
 {
-public:
+   public:
     Cluster();
-    Cluster(const void *data, const uint64_t dataSize);
+    Cluster(const void* data, const uint64_t dataSize);
     ~Cluster();
 
     // cluster-data
@@ -70,23 +69,22 @@ public:
     const std::string getUuid();
     const std::string getName();
     bool setName(const std::string newName);
-    bool init(const Hanami::ClusterMeta &clusterTemplate,
-              const std::string &uuid);
+    bool init(const Hanami::ClusterMeta& clusterTemplate, const std::string& uuid);
 
     // tasks
     Task* getActualTask() const;
     uint64_t getActualTaskCycle() const;
-    const TaskProgress getProgress(const std::string &taskUuid);
-    bool removeTask(const std::string &taskUuid);
-    bool isFinish(const std::string &taskUuid);
-    void getAllProgress(std::map<std::string, TaskProgress> &result);
+    const TaskProgress getProgress(const std::string& taskUuid);
+    bool removeTask(const std::string& taskUuid);
+    bool isFinish(const std::string& taskUuid);
+    void getAllProgress(std::map<std::string, TaskProgress>& result);
     void updateClusterState();
 
     // states
     bool goToNextState(const uint32_t nextStateId);
     void startForwardCycle();
     void startBackwardCycle();
-    bool setClusterState(const std::string &newState);
+    bool setClusterState(const std::string& newState);
 
     ClusterProcessingMode mode = NORMAL_MODE;
     HttpWebsocketThread* msgClient = nullptr;
@@ -94,8 +92,8 @@ public:
     Hanami::Statemachine* stateMachine = nullptr;
     TaskHandle_State* taskHandleState = nullptr;
 
-private:
+   private:
     std::mutex m_segmentCounterLock;
 };
 
-#endif // HANAMI_CLUSTER_H
+#endif  // HANAMI_CLUSTER_H

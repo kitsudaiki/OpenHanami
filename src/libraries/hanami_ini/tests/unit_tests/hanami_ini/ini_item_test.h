@@ -9,18 +9,18 @@
 #ifndef PARSERTEST_H
 #define PARSERTEST_H
 
-#include <algorithm>
 #include <hanami_common/test_helper/compare_test_helper.h>
+
+#include <algorithm>
 
 namespace Hanami
 {
-class IniItem_Test
-        : public Hanami::CompareTestHelper
+class IniItem_Test : public Hanami::CompareTestHelper
 {
-public:
+   public:
     IniItem_Test();
 
-private:
+   private:
     void parse_test();
     void get_test();
     void set_test();
@@ -31,6 +31,6 @@ private:
     const std::string getTestString();
 };
 
-}
+}  // namespace Hanami
 
-#endif // PARSERTEST_H
+#endif  // PARSERTEST_H

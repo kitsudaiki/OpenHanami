@@ -21,10 +21,8 @@
  */
 
 #include <database/audit_log_table.h>
-
 #include <hanami_common/items/table_item.h>
 #include <hanami_common/methods/string_methods.h>
-
 #include <hanami_database/sql_database.h>
 
 AuditLogTable* AuditLogTable::instance = nullptr;
@@ -34,8 +32,7 @@ AuditLogTable* AuditLogTable::instance = nullptr;
  *
  * @param db pointer to database
  */
-AuditLogTable::AuditLogTable()
-    : HanamiSqlLogTable(Hanami::SqlDatabase::getInstance())
+AuditLogTable::AuditLogTable() : HanamiSqlLogTable(Hanami::SqlDatabase::getInstance())
 {
     m_tableName = "audit_log";
 
@@ -72,11 +69,11 @@ AuditLogTable::~AuditLogTable() {}
  * @return true, if successful, else false
  */
 bool
-AuditLogTable::addAuditLogEntry(const std::string &timestamp,
-                                const std::string &userId,
-                                const std::string &endpoint,
-                                const std::string &requestType,
-                                Hanami::ErrorContainer &error)
+AuditLogTable::addAuditLogEntry(const std::string& timestamp,
+                                const std::string& userId,
+                                const std::string& endpoint,
+                                const std::string& requestType,
+                                Hanami::ErrorContainer& error)
 {
     json data;
     data["timestamp"] = timestamp;
@@ -84,8 +81,7 @@ AuditLogTable::addAuditLogEntry(const std::string &timestamp,
     data["endpoint"] = endpoint;
     data["request_type"] = requestType;
 
-    if(insertToDb(data, error) == false)
-    {
+    if (insertToDb(data, error) == false) {
         error.addMeesage("Failed to add audit-log-entry to database");
         return false;
     }
@@ -104,13 +100,12 @@ AuditLogTable::addAuditLogEntry(const std::string &timestamp,
  * @return true, if successful, else false
  */
 bool
-AuditLogTable::getAllAuditLogEntries(Hanami::TableItem &result,
-                                     const std::string &userId,
+AuditLogTable::getAllAuditLogEntries(Hanami::TableItem& result,
+                                     const std::string& userId,
                                      const uint64_t page,
-                                     Hanami::ErrorContainer &error)
+                                     Hanami::ErrorContainer& error)
 {
-    if(getPageFromDb(result, userId, page, error) == false)
-    {
+    if (getPageFromDb(result, userId, page, error) == false) {
         error.addMeesage("Failed to get all audit-log-entries from database");
         return false;
     }

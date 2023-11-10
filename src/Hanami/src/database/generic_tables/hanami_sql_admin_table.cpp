@@ -22,10 +22,8 @@
 
 #include "hanami_sql_admin_table.h"
 
-#include <hanami_database/sql_database.h>
-
 #include <hanami_common/methods/string_methods.h>
-
+#include <hanami_database/sql_database.h>
 #include <uuid/uuid.h>
 
 /**
@@ -33,8 +31,7 @@
  *
  * @param db pointer to database
  */
-HanamiSqlAdminTable::HanamiSqlAdminTable(Hanami::SqlDatabase* db)
-    : SqlTable(db)
+HanamiSqlAdminTable::HanamiSqlAdminTable(Hanami::SqlDatabase* db) : SqlTable(db)
 {
     DbHeaderEntry id;
     id.name = "id";

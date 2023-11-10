@@ -25,18 +25,16 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-
-class ListUsers
-        : public Blossom
+class ListUsers : public Blossom
 {
-public:
+   public:
     ListUsers();
 
-protected:
-    bool runTask(BlossomIO &blossomIO,
-                 const json &context,
-                 BlossomStatus &status,
-                 Hanami::ErrorContainer &error);
+   protected:
+    bool runTask(BlossomIO& blossomIO,
+                 const json& context,
+                 BlossomStatus& status,
+                 Hanami::ErrorContainer& error);
 };
 
-#endif // HANAMI_LISTUSERS_H
+#endif  // HANAMI_LISTUSERS_H

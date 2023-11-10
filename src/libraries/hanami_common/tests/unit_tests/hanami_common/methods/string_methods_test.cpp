@@ -13,8 +13,7 @@
 namespace Hanami
 {
 
-StringMethods_Test::StringMethods_Test()
-    : Hanami::CompareTestHelper("StringMethods_Test")
+StringMethods_Test::StringMethods_Test() : Hanami::CompareTestHelper("StringMethods_Test")
 {
     splitStringByDelimiter_test();
     splitStringByLength_test();
@@ -191,4 +190,4 @@ StringMethods_Test::toLowerCase_test()
     TEST_EQUAL(testString, "1234 this is a test-string _ !?");
 }
 
-}
+}  // namespace Hanami

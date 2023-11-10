@@ -9,31 +9,28 @@
 #ifndef OBJ_ITEM_H
 #define OBJ_ITEM_H
 
-#include <vector>
-#include <string>
-
 #include <hanami_common/logger.h>
+
+#include <string>
+#include <vector>
 
 namespace Hanami
 {
 
-struct Vec4
-{
+struct Vec4 {
     float x = 0.0f;
     float y = 0.0f;
     float z = 0.0f;
     float w = 0.0f;
 };
 
-struct Index
-{
+struct Index {
     int32_t v = -1;
     int32_t vt = -1;
     int32_t vn = -1;
 };
 
-struct ObjItem
-{
+struct ObjItem {
     std::vector<Vec4> vertizes;
     std::vector<Vec4> normals;
     std::vector<Vec4> textures;
@@ -44,11 +41,9 @@ struct ObjItem
     ObjItem() {}
 };
 
-bool parseString(ObjItem &result,
-                 const std::string &input,
-                 ErrorContainer &error);
-bool convertToString(std::string &convertedString, const ObjItem &input);
+bool parseString(ObjItem& result, const std::string& input, ErrorContainer& error);
+bool convertToString(std::string& convertedString, const ObjItem& input);
 
-}
+}  // namespace Hanami
 
-#endif // OBJ_ITEM_H
+#endif  // OBJ_ITEM_H

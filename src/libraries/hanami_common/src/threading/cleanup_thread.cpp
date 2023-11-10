@@ -20,16 +20,16 @@
  *      limitations under the License.
  */
 
-#include <hanami_common/threading/cleanup_thread.h>
-
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
 #include <arpa/inet.h>
+#include <hanami_common/threading/cleanup_thread.h>
+#include <netdb.h>
+#include <netinet/in.h>
 #include <netinet/tcp.h>
-#include <cinttypes>
+#include <sys/socket.h>
+#include <sys/types.h>
 #include <unistd.h>
+
+#include <cinttypes>
 
 namespace Hanami
 {
@@ -39,8 +39,7 @@ CleanupThread* CleanupThread::m_cleanupThread = nullptr;
 /**
  * constructor
  */
-CleanupThread::CleanupThread()
-    : Hanami::Thread("Kitsunemimi_CleanupThread") {}
+CleanupThread::CleanupThread() : Hanami::Thread("Kitsunemimi_CleanupThread") {}
 
 /**
  * @brief destructor
@@ -55,8 +54,7 @@ CleanupThread::~CleanupThread() {}
 CleanupThread*
 CleanupThread::getInstance()
 {
-    if(m_cleanupThread == nullptr)
-    {
+    if (m_cleanupThread == nullptr) {
         m_cleanupThread = new CleanupThread();
         m_cleanupThread->startThread();
     }
@@ -81,13 +79,11 @@ CleanupThread::addThreadForCleanup(Thread* thread)
 void
 CleanupThread::run()
 {
-    while(m_abort == false)
-    {
+    while (m_abort == false) {
         sleepThread(100000);
 
         m_mutex.lock();
-        if(m_cleanupQueue.size() > 0)
-        {
+        if (m_cleanupQueue.size() > 0) {
             Thread* thread = m_cleanupQueue.front();
             m_cleanupQueue.pop();
             delete thread;
@@ -96,4 +92,4 @@ CleanupThread::run()
     }
 }
 
-}
+}  // namespace Hanami

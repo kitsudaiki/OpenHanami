@@ -23,10 +23,12 @@
 #ifndef HANAMI_DATABASE_SQL_DATABASE_H
 #define HANAMI_DATABASE_SQL_DATABASE_H
 
-#include <mutex>
 #include <hanami_sqlite/sqlite.h>
 
-namespace Hanami {
+#include <mutex>
+
+namespace Hanami
+{
 class Sqlite;
 }
 
@@ -35,10 +37,10 @@ namespace Hanami
 
 class SqlDatabase
 {
-public:
+   public:
     static SqlDatabase* getInstance()
     {
-        if(instance == nullptr) {
+        if (instance == nullptr) {
             instance = new SqlDatabase();
         }
         return instance;
@@ -46,16 +48,12 @@ public:
 
     ~SqlDatabase();
 
-    bool initDatabase(const std::string &path,
-                      Hanami::ErrorContainer &error);
+    bool initDatabase(const std::string& path, Hanami::ErrorContainer& error);
     bool closeDatabase();
 
+    bool execSqlCommand(TableItem* resultTable, const std::string& command, ErrorContainer& error);
 
-    bool execSqlCommand(TableItem* resultTable,
-                        const std::string &command,
-                        ErrorContainer &error);
-
-private:
+   private:
     SqlDatabase();
     static SqlDatabase* instance;
 
@@ -66,6 +64,6 @@ private:
     Hanami::Sqlite m_db;
 };
 
-}
+}  // namespace Hanami
 
-#endif // HANAMI_DATABASE_SQL_DATABASE_H
+#endif  // HANAMI_DATABASE_SQL_DATABASE_H

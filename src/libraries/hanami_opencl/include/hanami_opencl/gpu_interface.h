@@ -24,58 +24,55 @@
 #define OPENCL_H
 
 #include <iostream>
-#include <vector>
 #include <map>
 #include <string>
+#include <vector>
 
 #define __CL_ENABLE_EXCEPTIONS
-#include <CL/cl2.hpp>
-
-#include <hanami_opencl/gpu_data.h>
 #include <hanami_common/logger.h>
+#include <hanami_opencl/gpu_data.h>
+
+#include <CL/cl2.hpp>
 
 namespace Hanami
 {
 
 class GpuInterface
 {
-public:
-    GpuInterface(const cl::Device &device);
+   public:
+    GpuInterface(const cl::Device& device);
     ~GpuInterface();
 
     // initializing
-    bool initCopyToDevice(GpuData &data,
-                          ErrorContainer &error);
+    bool initCopyToDevice(GpuData& data, ErrorContainer& error);
 
-    bool addKernel(GpuData &data,
-                   const std::string &kernelName,
-                   const std::string &kernelCode,
-                   ErrorContainer &error);
-    bool bindKernelToBuffer(GpuData &data,
-                            const std::string &kernelName,
-                            const std::string &bufferName,
-                            ErrorContainer &error);
-    bool setLocalMemory(GpuData &data,
-                        const std::string &kernelName,
+    bool addKernel(GpuData& data,
+                   const std::string& kernelName,
+                   const std::string& kernelCode,
+                   ErrorContainer& error);
+    bool bindKernelToBuffer(GpuData& data,
+                            const std::string& kernelName,
+                            const std::string& bufferName,
+                            ErrorContainer& error);
+    bool setLocalMemory(GpuData& data,
+                        const std::string& kernelName,
                         const uint32_t localMemorySize,
-                        ErrorContainer &error);
+                        ErrorContainer& error);
 
-    bool closeDevice(GpuData &data);
+    bool closeDevice(GpuData& data);
 
     // runtime
-    bool updateBufferOnDevice(GpuData &data,
-                              const std::string &bufferName,
-                              ErrorContainer &error,
+    bool updateBufferOnDevice(GpuData& data,
+                              const std::string& bufferName,
+                              ErrorContainer& error,
                               uint64_t numberOfObjects = 0,
                               const uint64_t offset = 0);
-    bool run(GpuData &data,
-             const std::string &kernelName,
-             ErrorContainer &error,
+    bool run(GpuData& data,
+             const std::string& kernelName,
+             ErrorContainer& error,
              const uint32_t numberOfGroups = 0,
              const uint32_t numberOfThreadsPerGroup = 0);
-    bool copyFromDevice(GpuData &data,
-                        const std::string &bufferName,
-                        ErrorContainer &error);
+    bool copyFromDevice(GpuData& data, const std::string& bufferName, ErrorContainer& error);
 
     // common getter
     const std::string getDeviceName();
@@ -94,11 +91,10 @@ public:
     cl::Context m_context;
     cl::CommandQueue m_queue;
 
-private:
-    bool validateWorkerGroupSize(const GpuData &data,
-                                 ErrorContainer &error);
+   private:
+    bool validateWorkerGroupSize(const GpuData& data, ErrorContainer& error);
 };
 
-}
+}  // namespace Hanami
 
-#endif // OPENCL_H
+#endif  // OPENCL_H

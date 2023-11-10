@@ -13,8 +13,7 @@
 namespace Hanami
 {
 
-struct TestStruct
-{
+struct TestStruct {
     uint8_t a = 0;
     uint8_t b = 0;
     uint64_t c = 0;
@@ -77,7 +76,7 @@ BinaryFile_withDirectIO_Test::updateFileSize_test()
 
     BinaryFileDirect binaryFileNew(m_filePath);
     TEST_EQUAL(binaryFileNew.updateFileSize(error), true);
-    TEST_EQUAL(binaryFileNew.m_totalFileSize, 4*4096);
+    TEST_EQUAL(binaryFileNew.m_totalFileSize, 4 * 4096);
 
     TEST_EQUAL(binaryFileNew.m_totalFileSize, binaryFileNew.m_totalFileSize);
 }
@@ -100,7 +99,7 @@ BinaryFile_withDirectIO_Test::allocateStorage_test()
     TEST_EQUAL(binaryFile.allocateStorage(0, 4096, error), true);
 
     // check meta-data
-    TEST_EQUAL(binaryFile.m_totalFileSize, 8*4096);
+    TEST_EQUAL(binaryFile.m_totalFileSize, 8 * 4096);
 
     binaryFile.closeFile(error);
 
@@ -265,9 +264,7 @@ BinaryFile_withDirectIO_Test::readCompleteFile_test()
     TEST_EQUAL(binaryFile.readCompleteFile(targetBuffer, error), true);
 
     // check if source and target-buffer are
-    int ret = memcmp(sourceBuffer.data,
-                     targetBuffer.data,
-                     2 * sourceBuffer.blockSize);
+    int ret = memcmp(sourceBuffer.data, targetBuffer.data, 2 * sourceBuffer.blockSize);
     TEST_EQUAL(ret, 0);
 
     // cleanup
@@ -291,10 +288,9 @@ void
 BinaryFile_withDirectIO_Test::deleteFile()
 {
     std::filesystem::path rootPathObj(m_filePath);
-    if(std::filesystem::exists(rootPathObj)) {
+    if (std::filesystem::exists(rootPathObj)) {
         std::filesystem::remove(rootPathObj);
     }
 }
 
-}
-
+}  // namespace Hanami

@@ -23,40 +23,40 @@
 #ifndef IO_H
 #define IO_H
 
+#include <hanami_common/logger.h>
+#include <stdint.h>
+
+#include <chrono>
 #include <string>
 #include <vector>
-#include <stdint.h>
-#include <chrono>
-
-#include <hanami_common/logger.h>
 
 namespace Hanami
 {
 class WebsocketClient;
 
 bool train(WebsocketClient* wsClient,
-           std::vector<float> &inputValues,
-           std::vector<float> &shouldValues,
-           Hanami::ErrorContainer &error);
+           std::vector<float>& inputValues,
+           std::vector<float>& shouldValues,
+           Hanami::ErrorContainer& error);
 
 float* request(WebsocketClient* wsClient,
-               std::vector<float> &inputValues,
-               uint64_t &numberOfOutputValues,
-               Hanami::ErrorContainer &error);
+               std::vector<float>& inputValues,
+               uint64_t& numberOfOutputValues,
+               Hanami::ErrorContainer& error);
 
 bool train(WebsocketClient* wsClient,
            float* inputValues,
            const uint64_t numberOfInputValues,
            float* shouldValues,
            const uint64_t numberOfShouldValues,
-           Hanami::ErrorContainer &error);
+           Hanami::ErrorContainer& error);
 
 float* request(WebsocketClient* wsClient,
                float* inputData,
                const uint64_t numberOfInputValues,
-               uint64_t &numberOfOutputValues,
-               Hanami::ErrorContainer &error);
+               uint64_t& numberOfOutputValues,
+               Hanami::ErrorContainer& error);
 
-} // namespace Hanami
+}  // namespace Hanami
 
-#endif // IO_H
+#endif  // IO_H

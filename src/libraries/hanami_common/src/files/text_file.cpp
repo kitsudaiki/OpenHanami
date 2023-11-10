@@ -11,8 +11,8 @@
  */
 
 #include <hanami_common/files/text_file.h>
-#include <hanami_common/methods/string_methods.h>
 #include <hanami_common/methods/file_methods.h>
+#include <hanami_common/methods/string_methods.h>
 
 namespace Hanami
 {
@@ -27,16 +27,12 @@ namespace Hanami
  * @return true if successful, else false
  */
 bool
-readFile(std::string &readContent,
-         const std::string &filePath,
-         ErrorContainer &error)
+readFile(std::string& readContent, const std::string& filePath, ErrorContainer& error)
 {
     // check if exist
-    if(std::filesystem::exists(filePath))
-    {
+    if (std::filesystem::exists(filePath)) {
         // check for directory
-        if(std::filesystem::is_directory(filePath))
-        {
+        if (std::filesystem::is_directory(filePath)) {
             error.addMeesage("failed to read destination of path \""
                              + filePath +
                              "\", because it already exist and it is a directory, "
@@ -44,16 +40,14 @@ readFile(std::string &readContent,
             return false;
         }
     }
-    else
-    {
+    else {
         error.addMeesage("destination of path \"" + filePath + "\", doesn't exist");
         return false;
     }
 
     std::ifstream inFile;
     inFile.open(filePath);
-    if(inFile.is_open() == false)
-    {
+    if (inFile.is_open() == false) {
         error.addMeesage("missing permission to open file \"" + filePath + "\"");
         return false;
     }
@@ -78,26 +72,23 @@ readFile(std::string &readContent,
  * @return true, if successful, else false
  */
 bool
-writeFile(const std::string &filePath,
-          const std::string &content,
-          ErrorContainer &error,
+writeFile(const std::string& filePath,
+          const std::string& content,
+          ErrorContainer& error,
           const bool force)
 {
     // check and create parent-directory, if necessary
     const std::filesystem::path parentDirectory = std::filesystem::path(filePath).parent_path();
-    if(std::filesystem::exists(parentDirectory) == false)
-    {
-        if(createDirectory(parentDirectory, error) == false) {
+    if (std::filesystem::exists(parentDirectory) == false) {
+        if (createDirectory(parentDirectory, error) == false) {
             return false;
         }
     }
 
     // check if exist
-    if(std::filesystem::exists(filePath))
-    {
+    if (std::filesystem::exists(filePath)) {
         // check for directory
-        if(std::filesystem::is_directory(filePath))
-        {
+        if (std::filesystem::is_directory(filePath)) {
             error.addMeesage("failed to write destination of path \""
                              + filePath +
                              "\", because it already exist and it is a directory, "
@@ -106,16 +97,14 @@ writeFile(const std::string &filePath,
         }
 
         // check for override
-        if(force == false)
-        {
-            error.addMeesage("failed to write destination of path \""
-                             + filePath +
-                             "\", because it already exist, but should not be overwrite");
+        if (force == false) {
+            error.addMeesage("failed to write destination of path \"" + filePath
+                             + "\", because it already exist, but should not be overwrite");
             return false;
         }
 
         // remove file if force-flag is active
-        if(deleteFileOrDir(filePath, error) == false) {
+        if (deleteFileOrDir(filePath, error) == false) {
             return false;
         }
     }
@@ -123,10 +112,8 @@ writeFile(const std::string &filePath,
     // create new file and write content
     std::ofstream outputFile;
     outputFile.open(filePath);
-    if(outputFile.is_open() == false)
-    {
-        error.addMeesage("missing permission or target-directory to open file \""
-                         + filePath
+    if (outputFile.is_open() == false) {
+        error.addMeesage("missing permission or target-directory to open file \"" + filePath
                          + "\"");
         return false;
     }
@@ -148,26 +135,20 @@ writeFile(const std::string &filePath,
  * @return true, if successful, else false
  */
 bool
-appendText(const std::string &filePath,
-           const std::string &newText,
-           ErrorContainer &error)
+appendText(const std::string& filePath, const std::string& newText, ErrorContainer& error)
 {
     // check for directory
-    if(std::filesystem::is_regular_file(filePath) == false)
-    {
-        error.addMeesage("Failed to append text to file \""
-                         + filePath +
-                         "\", because it is not a regular file.");
+    if (std::filesystem::is_regular_file(filePath) == false) {
+        error.addMeesage("Failed to append text to file \"" + filePath
+                         + "\", because it is not a regular file.");
         return false;
     }
 
     // open, write and close file again
     std::ofstream outputFile;
     outputFile.open(filePath, std::ios_base::app);
-    if(outputFile.is_open() == false)
-    {
-        error.addMeesage("missing permission or target-directory to open file \""
-                         + filePath
+    if (outputFile.is_open() == false) {
+        error.addMeesage("missing permission or target-directory to open file \"" + filePath
                          + "\"");
         return false;
     }
@@ -190,36 +171,33 @@ appendText(const std::string &filePath,
  * @return true, if successful, else false
  */
 bool
-replaceLine(const std::string &filePath,
+replaceLine(const std::string& filePath,
             const uint32_t lineNumber,
-            const std::string &newLineContent,
-            ErrorContainer &error)
+            const std::string& newLineContent,
+            ErrorContainer& error)
 {
     // read file
     std::string fileContent = "";
     bool result = readFile(fileContent, filePath, error);
-    if(result == false) {
+    if (result == false) {
         return false;
     }
 
     // split content into a vector of lines
     std::vector<std::string> splitedContent;
     Hanami::splitStringByDelimiter(splitedContent, fileContent, '\n');
-    if(splitedContent.size() <= lineNumber)
-    {
-        error.addMeesage("failed to replace line in file \""
-                         + filePath +
-                         "\", because linenumber is too big for the file");
+    if (splitedContent.size() <= lineNumber) {
+        error.addMeesage("failed to replace line in file \"" + filePath
+                         + "\", because linenumber is too big for the file");
         return false;
     }
 
     // build new file-content
     splitedContent[lineNumber] = newLineContent;
     std::string newFileContent = "";
-    for(uint64_t i = 0; i < splitedContent.size(); i++)
-    {
-        if(i != 0) {
-           newFileContent.append("\n");
+    for (uint64_t i = 0; i < splitedContent.size(); i++) {
+        if (i != 0) {
+            newFileContent.append("\n");
         }
         newFileContent.append(splitedContent.at(i));
     }
@@ -239,22 +217,21 @@ replaceLine(const std::string &filePath,
  * @return true, if successful, else false
  */
 bool
-replaceContent(const std::string &filePath,
-               const std::string &oldContent,
-               const std::string &newContent,
-               ErrorContainer &error)
+replaceContent(const std::string& filePath,
+               const std::string& oldContent,
+               const std::string& newContent,
+               ErrorContainer& error)
 {
     // read file
     std::string fileContent = "";
     bool result = readFile(fileContent, filePath, error);
-    if(result == false) {
+    if (result == false) {
         return false;
     }
 
     // replace content
     std::string::size_type pos = 0u;
-    while((pos = fileContent.find(oldContent, pos)) != std::string::npos)
-    {
+    while ((pos = fileContent.find(oldContent, pos)) != std::string::npos) {
         fileContent.replace(pos, oldContent.length(), newContent);
         pos += newContent.length();
     }
@@ -265,4 +242,4 @@ replaceContent(const std::string &filePath,
     return writeResult;
 }
 
-}
+}  // namespace Hanami

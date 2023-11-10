@@ -25,14 +25,12 @@
 
 #include <common/test_step.h>
 
-class DataSetListTest
-        : public TestStep
+class DataSetListTest : public TestStep
 {
-public:
+   public:
     DataSetListTest(const bool expectSuccess);
 
-    bool runTest(json &inputData,
-                 Hanami::ErrorContainer &error);
+    bool runTest(json& inputData, Hanami::ErrorContainer& error);
 };
 
-#endif // TSUGUMITESTER_DATASETLISTTEST_H
+#endif  // TSUGUMITESTER_DATASETLISTTEST_H

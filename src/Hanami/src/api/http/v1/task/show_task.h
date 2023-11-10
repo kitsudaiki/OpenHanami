@@ -25,18 +25,16 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-
-class ShowTask
-        : public Blossom
+class ShowTask : public Blossom
 {
-public:
+   public:
     ShowTask();
 
-protected:
-    bool runTask(BlossomIO &blossomIO,
-                 const json &context,
-                 BlossomStatus &status,
-                 Hanami::ErrorContainer &error);
+   protected:
+    bool runTask(BlossomIO& blossomIO,
+                 const json& context,
+                 BlossomStatus& status,
+                 Hanami::ErrorContainer& error);
 };
 
-#endif // HANAMI_SHOWTASK_H
+#endif  // HANAMI_SHOWTASK_H

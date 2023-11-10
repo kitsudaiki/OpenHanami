@@ -2,15 +2,22 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: hanami-ingress
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
 spec:
+  tls:
+    - hosts:
+        - {{ .Values.api.domain }}
+      secretName: hanami-selfsigned-secret
   rules:
-  - http:
+  - host: {{ .Values.api.domain }}
+    http:
       paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: hanami-service
-            port:
-              number: 1337
-
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: hanami-service
+              port:
+                number: {{ .Values.api.port }}

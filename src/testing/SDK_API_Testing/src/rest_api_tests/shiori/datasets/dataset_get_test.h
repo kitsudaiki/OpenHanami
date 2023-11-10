@@ -25,20 +25,18 @@
 
 #include <common/test_step.h>
 
-class DataSetGetTest
-        : public TestStep
+class DataSetGetTest : public TestStep
 {
-public:
+   public:
     DataSetGetTest(const bool expectSuccess,
-                   const std::string &type,
-                   const std::string &uuidOverride = "");
+                   const std::string& type,
+                   const std::string& uuidOverride = "");
 
-    bool runTest(json &inputData,
-                 Hanami::ErrorContainer &error);
+    bool runTest(json& inputData, Hanami::ErrorContainer& error);
 
-private:
+   private:
     std::string m_type = "";
     std::string m_uuid = "";
 };
 
-#endif // TSUGUMITESTER_DATASETGETTEST_H
+#endif  // TSUGUMITESTER_DATASETGETTEST_H

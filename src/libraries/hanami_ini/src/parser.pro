@@ -2,6 +2,9 @@ QT -= qt core gui
 TEMPLATE = aux
 CONFIG += c++17 staticlib
 
+QMAKE_CXX = clang++-15
+QMAKE_LINK = clang++-15
+
 LIBS += -L../../hanami_common/src -lhanami_common
 LIBS += -L../../hanami_common/src/debug -lhanami_common
 LIBS += -L../../hanami_common/src/release -lhanami_common

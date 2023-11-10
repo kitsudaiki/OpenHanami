@@ -29,7 +29,8 @@ SakuraItem::SakuraItem() {}
 
 SakuraItem::~SakuraItem() {}
 
-SakuraItem::ItemType SakuraItem::getType() const
+SakuraItem::ItemType
+SakuraItem::getType() const
 {
     return type;
 }
@@ -37,10 +38,7 @@ SakuraItem::ItemType SakuraItem::getType() const
 //===================================================================
 // BlossomItem
 //===================================================================
-BlossomItem::BlossomItem()
-{
-    type = BLOSSOM_ITEM;
-}
+BlossomItem::BlossomItem() { type = BLOSSOM_ITEM; }
 
 BlossomItem::~BlossomItem() {}
 

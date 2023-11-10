@@ -4,6 +4,9 @@ TARGET = Hanami
 CONFIG += console
 CONFIG += c++17
 
+QMAKE_CXX = clang++-15
+QMAKE_LINK = clang++-15
+
 INCLUDEPATH += ../libraries/hanami_messages/protobuffers
 
 LIBS += -L../libraries/hanami_hardware/src -lhanami_hardware
@@ -76,8 +79,7 @@ INCLUDEPATH += ../third-party-libs/json/include
 
 LIBS += -lcryptopp -lcrypto -lssl -lsqlite3 -luuid -pthread -lprotobuf
 # LIBS += -lOpenCL
-LIBS +=  -L"/usr/local/cuda-12.1/targets/x86_64-linux/lib"  -L"/usr/local/cuda-12.2/targets/x86_64-linux/lib" -lcuda -lcudart -lcublas
-
+LIBS +=  -L"/usr/local/cuda-12.1/targets/x86_64-linux/lib"  -L"/usr/local/cuda-12.2/targets/x86_64-linux/lib" -lcuda -lcudart
 INCLUDEPATH += $$PWD \
                src
 

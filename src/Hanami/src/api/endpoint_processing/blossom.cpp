@@ -21,21 +21,18 @@
  */
 
 #include <api/endpoint_processing/blossom.h>
-
 #include <api/endpoint_processing/items/item_methods.h>
 #include <api/endpoint_processing/runtime_validation.h>
 #include <common.h>
-
 #include <hanami_common/logger.h>
 
 /**
  * @brief constructor
  */
-Blossom::Blossom(const std::string &comment, const bool requiresToken)
-    : comment(comment),
-      requiresAuthToken(requiresToken)
+Blossom::Blossom(const std::string& comment, const bool requiresToken)
+    : comment(comment), requiresAuthToken(requiresToken)
 {
-    if(requiresToken) {
+    if (requiresToken) {
         errorCodes.push_back(UNAUTHORIZED_RTYPE);
     }
 }
@@ -54,8 +51,7 @@ Blossom::~Blossom() {}
  * @return reference to entry for further updates
  */
 FieldDef&
-Blossom::registerInputField(const std::string &name,
-                            const FieldType fieldType)
+Blossom::registerInputField(const std::string& name, const FieldType fieldType)
 {
     errorCodes.push_back(BAD_REQUEST_RTYPE);
     auto ret = m_inputValidationMap.try_emplace(name, FieldDef(FieldDef::INPUT_TYPE, fieldType));
@@ -71,8 +67,7 @@ Blossom::registerInputField(const std::string &name,
  * @return reference to entry for further updates
  */
 FieldDef&
-Blossom::registerOutputField(const std::string &name,
-                             const FieldType fieldType)
+Blossom::registerOutputField(const std::string& name, const FieldType fieldType)
 {
     auto ret = m_outputValidationMap.try_emplace(name, FieldDef(FieldDef::OUTPUT_TYPE, fieldType));
     return ret.first->second;
@@ -88,7 +83,6 @@ Blossom::getInputValidationMap() const
 {
     return &m_inputValidationMap;
 }
-
 
 /**
  * @brief get a pointer to the output-validation-map
@@ -107,13 +101,11 @@ Blossom::getOutputValidationMap() const
  * @param values input-values to fill
  */
 void
-Blossom::fillDefaultValues(json &values)
+Blossom::fillDefaultValues(json& values)
 {
-    for(const auto& [name, field] : m_inputValidationMap)
-    {
-        if(field.defaultVal != nullptr)
-        {
-            if(values.contains(name) == false) {
+    for (const auto& [name, field] : m_inputValidationMap) {
+        if (field.defaultVal != nullptr) {
+            if (values.contains(name) == false) {
                 values[name] = field.defaultVal;
             }
         }
@@ -131,10 +123,10 @@ Blossom::fillDefaultValues(json &values)
  * @return true, if successful, else false
  */
 bool
-Blossom::growBlossom(BlossomIO &blossomIO,
-                     const json &context,
-                     BlossomStatus &status,
-                     Hanami::ErrorContainer &error)
+Blossom::growBlossom(BlossomIO& blossomIO,
+                     const json& context,
+                     BlossomStatus& status,
+                     Hanami::ErrorContainer& error)
 {
     LOG_DEBUG("runTask " + blossomIO.blossomName);
 
@@ -143,33 +135,32 @@ Blossom::growBlossom(BlossomIO &blossomIO,
     std::string errorMessage;
 
     // validate input
-    if(checkBlossomValues(m_inputValidationMap,
-                          blossomIO.input,
-                          FieldDef::INPUT_TYPE,
-                          errorMessage) == false)
+    if (checkBlossomValues(
+            m_inputValidationMap, blossomIO.input, FieldDef::INPUT_TYPE, errorMessage)
+        == false)
     {
-        error.addMeesage(errorMessage);
         status.errorMessage = errorMessage;
-        status.statusCode = 400;
+        status.statusCode = BAD_REQUEST_RTYPE;
+        LOG_DEBUG(errorMessage);
         return false;
     }
 
     // handle result
-    if(runTask(blossomIO, context, status, error) == false)
-    {
-        createError(blossomIO, "blossom execute", error);
+    if (runTask(blossomIO, context, status, error) == false) {
+        if (status.statusCode == INTERNAL_SERVER_ERROR_RTYPE) {
+            createError(blossomIO, "blossom execute", error);
+        }
         return false;
     }
 
     // validate output
-    if(checkBlossomValues(m_outputValidationMap,
-                          blossomIO.output,
-                          FieldDef::OUTPUT_TYPE,
-                          errorMessage) == false)
+    if (checkBlossomValues(
+            m_outputValidationMap, blossomIO.output, FieldDef::OUTPUT_TYPE, errorMessage)
+        == false)
     {
         error.addMeesage(errorMessage);
         status.errorMessage = errorMessage;
-        status.statusCode = 500;
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
@@ -186,21 +177,17 @@ Blossom::growBlossom(BlossomIO &blossomIO,
  * @return true, if successful, else false
  */
 bool
-Blossom::validateFieldsCompleteness(const json &input,
-                                    const std::map<std::string, FieldDef> &validationMap,
+Blossom::validateFieldsCompleteness(const json& input,
+                                    const std::map<std::string, FieldDef>& validationMap,
                                     const FieldDef::IO_ValueType valueType,
-                                    std::string &errorMessage)
+                                    std::string& errorMessage)
 {
-    if(allowUnmatched == false)
-    {
+    if (allowUnmatched == false) {
         // check if all keys in the values of the blossom-item also exist in the required-key-list
-        for(const auto& [name, _] : input.items())
-        {
-            if(validationMap.find(name) == validationMap.end())
-            {
+        for (const auto& [name, _] : input.items()) {
+            if (validationMap.find(name) == validationMap.end()) {
                 // build error-output
-                errorMessage = "Validation failed, because item '"
-                               + name
+                errorMessage = "Validation failed, because item '" + name
                                + "' is not in the list of allowed keys";
                 return false;
             }
@@ -208,16 +195,11 @@ Blossom::validateFieldsCompleteness(const json &input,
     }
 
     // check that all keys in the required keys are also in the values of the blossom-item
-    for(const auto& [name, field] : validationMap)
-    {
-        if(field.isRequired == true
-                && field.ioType == valueType)
-        {
+    for (const auto& [name, field] : validationMap) {
+        if (field.isRequired == true && field.ioType == valueType) {
             // search for values
-            if(input.contains(name) == false)
-            {
-                errorMessage = "Validation failed, because variable '"
-                               + name
+            if (input.contains(name) == false) {
+                errorMessage = "Validation failed, because variable '" + name
                                + "' is required, but is not set.";
                 return false;
             }
@@ -237,25 +219,20 @@ Blossom::validateFieldsCompleteness(const json &input,
  * @return true, if successful, else false
  */
 bool
-Blossom::validateInput(BlossomItem &blossomItem,
-                       const std::map<std::string, FieldDef> &validationMap,
-                       const std::string &filePath,
-                       Hanami::ErrorContainer &error)
+Blossom::validateInput(BlossomItem& blossomItem,
+                       const std::map<std::string, FieldDef>& validationMap,
+                       const std::string& filePath,
+                       Hanami::ErrorContainer& error)
 {
     std::map<std::string, FieldDef::IO_ValueType> compareMap;
     getCompareMap(compareMap, blossomItem.values);
 
-    if(allowUnmatched == false)
-    {
+    if (allowUnmatched == false) {
         // check if all keys in the values of the blossom-item also exist in the required-key-list
-        for(const auto& [name, field] : compareMap)
-        {
-            if(validationMap.find(name) == validationMap.end())
-            {
+        for (const auto& [name, field] : compareMap) {
+            if (validationMap.find(name) == validationMap.end()) {
                 // build error-output
-                error.addMeesage("item '"
-                                 + name
-                                 + "' is not in the list of allowed keys");
+                error.addMeesage("item '" + name + "' is not in the list of allowed keys");
                 createError(blossomItem, filePath, "validator", error);
                 return false;
             }
@@ -263,28 +240,19 @@ Blossom::validateInput(BlossomItem &blossomItem,
     }
 
     // check that all keys in the required keys are also in the values of the blossom-item
-    for(const auto& [name, field] : validationMap)
-    {
-        if(field.isRequired == true)
-        {
+    for (const auto& [name, field] : validationMap) {
+        if (field.isRequired == true) {
             // search for values
             auto compareIt = compareMap.find(name);
-            if(compareIt != compareMap.end())
-            {
-                if(field.ioType != compareIt->second)
-                {
-                    error.addMeesage("item '"
-                                     + name
-                                     + "' has not the correct input/output type");
+            if (compareIt != compareMap.end()) {
+                if (field.ioType != compareIt->second) {
+                    error.addMeesage("item '" + name + "' has not the correct input/output type");
                     createError(blossomItem, filePath, "validator", error);
                     return false;
                 }
             }
-            else
-            {
-                error.addMeesage("item '"
-                                 + name
-                                 + "' is required, but is not set.");
+            else {
+                error.addMeesage("item '" + name + "' is required, but is not set.");
                 createError(blossomItem, filePath, "validator", error);
                 return false;
             }
@@ -301,24 +269,22 @@ Blossom::validateInput(BlossomItem &blossomItem,
  * @param value-map to compare
  */
 void
-Blossom::getCompareMap(std::map<std::string, FieldDef::IO_ValueType> &compareMap,
-                       const ValueItemMap &valueMap)
+Blossom::getCompareMap(std::map<std::string, FieldDef::IO_ValueType>& compareMap,
+                       const ValueItemMap& valueMap)
 {
     // copy items
-    for(const auto& [id, item] : valueMap.m_valueMap)
-    {
-        if(item.type == ValueItem::INPUT_PAIR_TYPE) {
+    for (const auto& [id, item] : valueMap.m_valueMap) {
+        if (item.type == ValueItem::INPUT_PAIR_TYPE) {
             compareMap.emplace(id, FieldDef::INPUT_TYPE);
         }
 
-        if(item.type == ValueItem::OUTPUT_PAIR_TYPE) {
+        if (item.type == ValueItem::OUTPUT_PAIR_TYPE) {
             compareMap.emplace(item.item.dump(), FieldDef::OUTPUT_TYPE);
         }
     }
 
     // copy child-maps
-    for(const auto& [id, _] : valueMap.m_childMaps)
-    {
+    for (const auto& [id, _] : valueMap.m_childMaps) {
         compareMap.emplace(id, FieldDef::INPUT_TYPE);
     }
 }

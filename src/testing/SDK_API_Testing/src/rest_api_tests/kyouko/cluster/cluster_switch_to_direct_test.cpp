@@ -23,7 +23,6 @@
 #include "cluster_switch_to_direct_test.h"
 
 #include <common/test_thread.h>
-
 #include <hanami_sdk/cluster.h>
 #include <hanami_sdk/common/websocket_client.h>
 
@@ -31,7 +30,7 @@ ClusterSwitchToDirectTest::ClusterSwitchToDirectTest(const bool expectSuccess)
     : TestStep(expectSuccess)
 {
     m_testName = "switch cluster to direct mode";
-    if(expectSuccess) {
+    if (expectSuccess) {
         m_testName += " (success)";
     } else {
         m_testName += " (fail)";
@@ -39,18 +38,14 @@ ClusterSwitchToDirectTest::ClusterSwitchToDirectTest(const bool expectSuccess)
 }
 
 bool
-ClusterSwitchToDirectTest::runTest(json &inputData,
-                                   Hanami::ErrorContainer &error)
+ClusterSwitchToDirectTest::runTest(json& inputData, Hanami::ErrorContainer& error)
 {
     // create new cluster
     std::string result;
     Hanami::WebsocketClient* client = nullptr;
-    client = Hanami::switchToDirectMode(result,
-                                        inputData["cluster_uuid"],
-                                        error);
+    client = Hanami::switchToDirectMode(result, inputData["cluster_uuid"], error);
     bool success = client != nullptr;
-    if(success != m_expectSuccess)
-    {
+    if (success != m_expectSuccess) {
         return false;
     }
 

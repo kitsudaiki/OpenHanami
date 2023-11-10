@@ -25,14 +25,12 @@
 
 #include <common/test_step.h>
 
-class ClusterSwitchToDirectTest
-        : public TestStep
+class ClusterSwitchToDirectTest : public TestStep
 {
-public:
+   public:
     ClusterSwitchToDirectTest(const bool expectSuccess);
 
-    bool runTest(json &inputData,
-                 Hanami::ErrorContainer &error);
+    bool runTest(json& inputData, Hanami::ErrorContainer& error);
 };
 
-#endif // TSUGUMITESTER_CLUSTERSWITCHTODIRECTTEST_H
+#endif  // TSUGUMITESTER_CLUSTERSWITCHTODIRECTTEST_H

@@ -25,16 +25,14 @@
 
 #include <common/test_step.h>
 
-class DirectIoTest
-        : public TestStep
+class DirectIoTest : public TestStep
 {
-public:
+   public:
     DirectIoTest(const bool expectSuccess);
 
-    bool runTest(json &,
-                 Hanami::ErrorContainer &);
+    bool runTest(json&, Hanami::ErrorContainer&);
 
-private:
+   private:
     void fillInputValues(float* inputValues);
     void fillShouldValues(float* shouldValues);
 
@@ -42,4 +40,4 @@ private:
     bool requestTest();
 };
 
-#endif // TSUGUMITESTER_DIRECTIOTEST_H
+#endif  // TSUGUMITESTER_DIRECTIOTEST_H

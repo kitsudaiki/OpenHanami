@@ -22,8 +22,8 @@
 
 #include "temp_file_handler.h"
 
-#include <hanami_common/methods/file_methods.h>
 #include <hanami_common/files/binary_file.h>
+#include <hanami_common/methods/file_methods.h>
 #include <hanami_config/config_handler.h>
 
 TempFileHandler* TempFileHandler::instance = nullptr;
@@ -36,25 +36,7 @@ TempFileHandler::TempFileHandler() {}
 /**
  * @brief destructor and delete all registered temporary files
  */
-TempFileHandler::~TempFileHandler()
-{
-    bool success = false;
-    Hanami::ErrorContainer error;
-    const std::string targetFilePath = GET_STRING_CONFIG("storage", "data_set_location", success);
-
-    std::vector<std::string> result;
-    auto it = m_tempFiles.begin();
-    for( ; it != m_tempFiles.end(); it++)
-    {
-        Hanami::BinaryFile* ptr = it->second;
-        if(ptr->closeFile(error) == false) {
-            //TODO: handle error
-        }
-        delete ptr;
-        Hanami::deleteFileOrDir(targetFilePath + "/" + it->first, error);
-        m_tempFiles.erase(it);
-    }
-}
+TempFileHandler::~TempFileHandler() {}
 
 /**
  * @brief initialize new temporary file
@@ -65,9 +47,9 @@ TempFileHandler::~TempFileHandler()
  * @return false, if id already exist or storage-allocation failed, else true
  */
 bool
-TempFileHandler::initNewFile(const std::string &id, const uint64_t size)
+TempFileHandler::initNewFile(const std::string& id, const uint64_t size)
 {
-    if(m_tempFiles.find(id) != m_tempFiles.end()) {
+    if (m_tempFiles.find(id) != m_tempFiles.end()) {
         return false;
     }
 
@@ -77,15 +59,13 @@ TempFileHandler::initNewFile(const std::string &id, const uint64_t size)
 
     Hanami::ErrorContainer error;
     Hanami::BinaryFile* tempfile = new Hanami::BinaryFile(targetFilePath);
-    if(tempfile->allocateStorage(size, error) == false)
-    {
+    if (tempfile->allocateStorage(size, error) == false) {
         LOG_ERROR(error);
         return false;
     }
 
     auto ret = m_tempFiles.try_emplace(id, tempfile);
-    if(ret.second == false)
-    {
+    if (ret.second == false) {
         error.addMeesage("ID '" + id + "' already exist in tempfiles");
         LOG_ERROR(error);
         delete tempfile;
@@ -106,7 +86,7 @@ TempFileHandler::initNewFile(const std::string &id, const uint64_t size)
  * @return false, if id not found, else true
  */
 bool
-TempFileHandler::addDataToPos(const std::string &uuid,
+TempFileHandler::addDataToPos(const std::string& uuid,
                               const uint64_t pos,
                               const void* data,
                               const uint64_t size)
@@ -114,11 +94,9 @@ TempFileHandler::addDataToPos(const std::string &uuid,
     Hanami::ErrorContainer error;
 
     const auto it = m_tempFiles.find(uuid);
-    if(it != m_tempFiles.end())
-    {
+    if (it != m_tempFiles.end()) {
         Hanami::BinaryFile* ptr = it->second;
-        if(ptr->writeDataIntoFile(data, pos, size, error) == false)
-        {
+        if (ptr->writeDataIntoFile(data, pos, size, error) == false) {
             LOG_ERROR(error);
             return false;
         }
@@ -140,13 +118,12 @@ TempFileHandler::addDataToPos(const std::string &uuid,
  * @return false, if id not found, else true
  */
 bool
-TempFileHandler::getData(Hanami::DataBuffer &result, const std::string &uuid)
+TempFileHandler::getData(Hanami::DataBuffer& result, const std::string& uuid)
 {
     Hanami::ErrorContainer error;
 
     const auto it = m_tempFiles.find(uuid);
-    if(it != m_tempFiles.end())
-    {
+    if (it != m_tempFiles.end()) {
         Hanami::BinaryFile* ptr = it->second;
         return ptr->readCompleteFile(result, error);
     }
@@ -162,18 +139,17 @@ TempFileHandler::getData(Hanami::DataBuffer &result, const std::string &uuid)
  * @return false, if id not found, else true
  */
 bool
-TempFileHandler::removeData(const std::string &id)
+TempFileHandler::removeData(const std::string& id)
 {
     bool success = false;
     Hanami::ErrorContainer error;
     std::string targetFilePath = GET_STRING_CONFIG("storage", "data_set_location", success);
 
     const auto it = m_tempFiles.find(id);
-    if(it != m_tempFiles.end())
-    {
+    if (it != m_tempFiles.end()) {
         Hanami::BinaryFile* ptr = it->second;
-        if(ptr->closeFile(error) == false) {
-            //TODO: handle error
+        if (ptr->closeFile(error) == false) {
+            // TODO: handle error
         }
         delete ptr;
         Hanami::deleteFileOrDir(targetFilePath + "/" + it->first, error);
@@ -195,32 +171,26 @@ TempFileHandler::removeData(const std::string &id)
  * @return true, if successful, else false
  */
 bool
-TempFileHandler::moveData(const std::string &uuid,
-                          const std::string &targetLocation,
-                          Hanami::ErrorContainer &error)
+TempFileHandler::moveData(const std::string& uuid,
+                          const std::string& targetLocation,
+                          Hanami::ErrorContainer& error)
 {
     bool success = false;
     std::string targetFilePath = GET_STRING_CONFIG("storage", "data_set_location", success);
 
     const auto it = m_tempFiles.find(uuid);
-    if(it != m_tempFiles.end())
-    {
+    if (it != m_tempFiles.end()) {
         Hanami::BinaryFile* ptr = it->second;
-        if(ptr->closeFile(error) == false)
-        {
+        if (ptr->closeFile(error) == false) {
             LOG_ERROR(error);
             return false;
         }
 
-        if(Hanami::renameFileOrDir(targetFilePath + "/" + it->first,
-                                   targetLocation,
-                                   error) == false)
+        if (Hanami::renameFileOrDir(targetFilePath + "/" + it->first, targetLocation, error)
+            == false)
         {
-            error.addMeesage("Failed to move temp-file with uuid '"
-                             + uuid
-                             + "' to target-locateion '"
-                             + targetLocation
-                             + "'");
+            error.addMeesage("Failed to move temp-file with uuid '" + uuid
+                             + "' to target-locateion '" + targetLocation + "'");
             LOG_ERROR(error);
             return false;
         }
@@ -231,8 +201,7 @@ TempFileHandler::moveData(const std::string &uuid,
         return true;
     }
 
-    error.addMeesage("Failed to move temp-file with uuid '"
-                     + uuid
+    error.addMeesage("Failed to move temp-file with uuid '" + uuid
                      + ", because it can not be found.");
     LOG_ERROR(error);
 

@@ -25,7 +25,6 @@
 
 #include <common.h>
 
-bool recvFileUploadPackage(const void* data,
-                           const uint64_t dataSize);
+bool recvFileUploadPackage(const void* data, const uint64_t dataSize);
 
-#endif // FILE_UPLOAD_H
+#endif  // FILE_UPLOAD_H

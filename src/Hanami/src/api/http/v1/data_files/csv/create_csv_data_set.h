@@ -25,18 +25,16 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-
-class CreateCsvDataSet
-        : public Blossom
+class CreateCsvDataSet : public Blossom
 {
-public:
+   public:
     CreateCsvDataSet();
 
-protected:
-    bool runTask(BlossomIO &blossomIO,
-                 const json &context,
-                 BlossomStatus &status,
-                 Hanami::ErrorContainer &error);
+   protected:
+    bool runTask(BlossomIO& blossomIO,
+                 const json& context,
+                 BlossomStatus& status,
+                 Hanami::ErrorContainer& error);
 };
 
-#endif // HANAMI_CSV_CREATE_DATA_SET_H
+#endif  // HANAMI_CSV_CREATE_DATA_SET_H

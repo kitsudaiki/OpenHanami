@@ -25,19 +25,13 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-
-class GetSystemInfo
-        : public Blossom
+class GetSystemInfo : public Blossom
 {
-public:
+   public:
     GetSystemInfo();
 
-protected:
-    bool runTask(BlossomIO &blossomIO,
-                 const json &,
-                 BlossomStatus &,
-                 Hanami::ErrorContainer &);
+   protected:
+    bool runTask(BlossomIO& blossomIO, const json&, BlossomStatus&, Hanami::ErrorContainer&);
 };
 
-
-#endif // AZUKIHEART_GETSYSTEMINFO_H
+#endif  // AZUKIHEART_GETSYSTEMINFO_H
