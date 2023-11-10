@@ -104,14 +104,16 @@ process_Heartbeat_Type(Session* session, const CommonMessageHeader* header, cons
 {
     switch (header->subType) {
         //------------------------------------------------------------------------------------------
-        case HEARTBEAT_START_SUBTYPE: {
+        case HEARTBEAT_START_SUBTYPE:
+        {
             const Heartbeat_Start_Message* message
                 = static_cast<const Heartbeat_Start_Message*>(rawMessage);
             process_Heartbeat_Start(session, message);
             break;
         }
         //------------------------------------------------------------------------------------------
-        case HEARTBEAT_REPLY_SUBTYPE: {
+        case HEARTBEAT_REPLY_SUBTYPE:
+        {
             const Heartbeat_Reply_Message* message
                 = static_cast<const Heartbeat_Reply_Message*>(rawMessage);
             process_Heartbeat_Reply(session, message);

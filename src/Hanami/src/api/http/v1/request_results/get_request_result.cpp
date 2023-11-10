@@ -77,7 +77,8 @@ GetRequestResult::runTask(BlossomIO& blossomIO,
     // check if request-result exist within the table
     if (RequestResultTable::getInstance()->getRequestResult(
             blossomIO.output, uuid, userContext, error, true)
-        == false) {
+        == false)
+    {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

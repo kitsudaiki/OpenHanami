@@ -141,7 +141,8 @@ AddProjectToUser::runTask(BlossomIO& blossomIO,
 
     // updated projects of user in database
     if (UsersTable::getInstance()->updateProjectsOfUser(userId, parsedProjects.dump(), error)
-        == false) {
+        == false)
+    {
         error.addMeesage("Failed to update projects of user with id '" + userId + "'.");
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;

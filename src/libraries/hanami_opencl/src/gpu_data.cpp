@@ -66,7 +66,8 @@ GpuData::addBuffer(const std::string& name,
         }
 
         newBuffer.data = Hanami::alignedMalloc(4096, newBuffer.numberOfBytes);
-    } else {
+    }
+    else {
         newBuffer.data = data;
         newBuffer.allowBufferDeleteAfterClose = false;
     }

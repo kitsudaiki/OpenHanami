@@ -50,7 +50,8 @@ EventQueue::~EventQueue()
         Event* event = nullptr;
         do {
             event = getEventFromQueue();
-        } while (event != nullptr);
+        }
+        while (event != nullptr);
     }
 }
 
@@ -66,7 +67,8 @@ EventQueue::EventQueue::run()
         if (event == nullptr) {
             // sleep if no event exist in the queue
             sleepThread(10000);
-        } else {
+        }
+        else {
             event->processEvent();
             if (m_deleteEventObj) {
                 delete event;

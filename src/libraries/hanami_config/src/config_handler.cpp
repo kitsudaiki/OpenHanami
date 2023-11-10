@@ -504,7 +504,8 @@ ConfigHandler::createDocumentation(std::string& docu)
             docu.append("**Description**: " + entry.comment + "<br>");
             if (entry.isRequired) {
                 docu.append("**Required**: TRUE<br>");
-            } else {
+            }
+            else {
                 docu.append("**Required**: FALSE<br>");
             }
             if (entry.value != nullptr && entry.isRequired == false) {

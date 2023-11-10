@@ -261,7 +261,8 @@ Logger::logData(const std::string& message,
 
         if (preTag == "INFO") {
             std::cout << color << message << WHITE_COLOR << std::endl;
-        } else {
+        }
+        else {
             std::cout << color << preTag << ": ";
             // special handline for tables
             if (message.size() > 0 && message.at(0) == '+') {

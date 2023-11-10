@@ -63,7 +63,8 @@ HttpProcessing::processRequest(http::request<http::string_body>& httpRequest,
 
     // check if http-type is supported
     if (messageType != http::verb::get && messageType != http::verb::post
-        && messageType != http::verb::put && messageType != http::verb::delete_) {
+        && messageType != http::verb::put && messageType != http::verb::delete_)
+    {
         httpResponse.result(http::status::bad_request);
         error.addMeesage("Invalid request-method '" + std::string(httpRequest.method_string())
                          + "'");
@@ -143,7 +144,8 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
         json inputValuesJson;
         try {
             inputValuesJson = json::parse(hanamiRequest.inputValues);
-        } catch (const json::parse_error& ex) {
+        }
+        catch (const json::parse_error& ex) {
             status.statusCode = BAD_REQUEST_RTYPE;
             status.errorMessage = "Failed to pase input-values: " + std::string(ex.what());
             LOG_DEBUG(status.errorMessage);
@@ -156,7 +158,8 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
 
             if (triggerBlossom(
                     result, "create", "Token", json::object(), inputValuesJson, status, error)
-                == false) {
+                == false)
+            {
                 error.addMeesage("Token request failed");
                 break;
             }
@@ -171,7 +174,8 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
         tokenInputValues["endpoint"] = hanamiRequest.id;
         if (triggerBlossom(
                 tokenData, "validate", "Token", json::object(), tokenInputValues, status, error)
-            == false) {
+            == false)
+        {
             error.addMeesage("Permission-check failed");
             break;
         }
@@ -197,7 +201,8 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
         // write new audit-entry to database
         if (AuditLogTable::getInstance()->addAuditLogEntry(
                 getDatetime(), tokenData["id"], hanamiRequest.id, httpTypeStr, error)
-            == false) {
+            == false)
+        {
             error.addMeesage("ERROR: Failed to write audit-log into database");
             status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
             break;
@@ -218,19 +223,22 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
         // make real request
         if (triggerBlossom(
                 result, endpoint.name, endpoint.group, tokenData, inputValuesJson, status, error)
-            == false) {
+            == false)
+        {
             error.addMeesage("Blossom-trigger failed");
             break;
         }
 
         break;
-    } while (true);
+    }
+    while (true);
 
     // build responses, based on the status-code
     if (status.statusCode != OK_RTYPE) {
         if (status.statusCode == INTERNAL_SERVER_ERROR_RTYPE) {
             return internalError_ResponseBuild(httpResponse, error);
-        } else {
+        }
+        else {
             const HttpResponseTypes type = static_cast<HttpResponseTypes>(status.statusCode);
             return genericError_ResponseBuild(httpResponse, type, status.errorMessage);
         }
@@ -364,7 +372,8 @@ HttpProcessing::triggerBlossom(json& result,
     std::string errorMessage;
     if (blossom->validateFieldsCompleteness(
             initialValues, *blossom->getInputValidationMap(), FieldDef::INPUT_TYPE, errorMessage)
-        == false) {
+        == false)
+    {
         status.statusCode = BAD_REQUEST_RTYPE;
         status.errorMessage = errorMessage;
         LOG_DEBUG(status.errorMessage);
@@ -385,7 +394,8 @@ HttpProcessing::triggerBlossom(json& result,
                                             *blossom->getOutputValidationMap(),
                                             FieldDef::OUTPUT_TYPE,
                                             errorMessage)
-        == false) {
+        == false)
+    {
         error.addMeesage(errorMessage);
         error.addMeesage("check of completeness of output-fields failed");
         error.addMeesage("Check of blossom '" + blossomName + " in group '" + blossomGroupName
@@ -505,7 +515,8 @@ HttpProcessing::addEndpoint(const std::string& id,
 
         // add new
         id_it->second.emplace(httpType, newEntry);
-    } else {
+    }
+    else {
         // add new
         std::map<HttpRequestType, EndpointEntry> typeEntry;
         typeEntry.emplace(httpType, newEntry);

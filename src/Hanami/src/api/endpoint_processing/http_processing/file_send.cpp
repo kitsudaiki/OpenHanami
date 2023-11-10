@@ -119,7 +119,8 @@ sendFileFromLocalLocation(http::response<http::dynamic_body>& response,
     std::string path = dir;
     if (relativePath == "/" || relativePath == "") {
         path += "/index.html";
-    } else {
+    }
+    else {
         path += relativePath;
     }
 

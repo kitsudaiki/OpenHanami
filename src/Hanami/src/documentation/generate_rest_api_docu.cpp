@@ -168,15 +168,20 @@ createQueryParams_openapi(json& parameters, const std::map<std::string, FieldDef
         // type
         if (fieldType == SAKURA_MAP_TYPE) {
             schema["type"] = "object";
-        } else if (fieldType == SAKURA_ARRAY_TYPE) {
+        }
+        else if (fieldType == SAKURA_ARRAY_TYPE) {
             schema["type"] = "array";
-        } else if (fieldType == SAKURA_BOOL_TYPE) {
+        }
+        else if (fieldType == SAKURA_BOOL_TYPE) {
             schema["type"] = "boolean";
-        } else if (fieldType == SAKURA_INT_TYPE) {
+        }
+        else if (fieldType == SAKURA_INT_TYPE) {
             schema["type"] = "integer";
-        } else if (fieldType == SAKURA_FLOAT_TYPE) {
+        }
+        else if (fieldType == SAKURA_FLOAT_TYPE) {
             schema["type"] = "number";
-        } else if (fieldType == SAKURA_STRING_TYPE) {
+        }
+        else if (fieldType == SAKURA_STRING_TYPE) {
             schema["type"] = "string";
         }
 
@@ -246,7 +251,8 @@ createBodyParams_openapi(json& schema,
         // type
         if (fieldType == SAKURA_MAP_TYPE) {
             temp["type"] = "object";
-        } else if (fieldType == SAKURA_ARRAY_TYPE) {
+        }
+        else if (fieldType == SAKURA_ARRAY_TYPE) {
             temp["type"] = "array";
             json array;
             array["type"] = "string";
@@ -256,19 +262,24 @@ createBodyParams_openapi(json& schema,
                 json match = json::parse(matchVal.dump(), nullptr, false);
                 if (match.is_discarded()) {
                     array["enum"] = json(match);
-                } else {
+                }
+                else {
                     array["enum"] = match;
                 }
             }
 
             temp["items"] = array;
-        } else if (fieldType == SAKURA_BOOL_TYPE) {
+        }
+        else if (fieldType == SAKURA_BOOL_TYPE) {
             temp["type"] = "boolean";
-        } else if (fieldType == SAKURA_INT_TYPE) {
+        }
+        else if (fieldType == SAKURA_INT_TYPE) {
             temp["type"] = "integer";
-        } else if (fieldType == SAKURA_FLOAT_TYPE) {
+        }
+        else if (fieldType == SAKURA_FLOAT_TYPE) {
             temp["type"] = "number";
-        } else if (fieldType == SAKURA_STRING_TYPE) {
+        }
+        else if (fieldType == SAKURA_STRING_TYPE) {
             temp["type"] = "string";
         }
 
@@ -397,11 +408,14 @@ generateEndpointDocu_openapi(json& result)
             // add http-type
             if (type == GET_TYPE) {
                 endpoint["get"] = endpointType;
-            } else if (type == POST_TYPE) {
+            }
+            else if (type == POST_TYPE) {
                 endpoint["post"] = endpointType;
-            } else if (type == DELETE_TYPE) {
+            }
+            else if (type == DELETE_TYPE) {
                 endpoint["delete"] = endpointType;
-            } else if (type == PUT_TYPE) {
+            }
+            else if (type == PUT_TYPE) {
                 endpoint["put"] = endpointType;
             }
         }

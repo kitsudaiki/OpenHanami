@@ -151,7 +151,8 @@ IniParserInterface::error(const location& location, const std::string& message)
         m_errorMessage.append("broken part in string: \""
                               + splittedContent[linenumber - 1].substr(errorStart - 1, errorLength)
                               + "\"");
-    } else {
+    }
+    else {
         m_errorMessage.append("position in line: UNKNOWN POSITION (maybe a string was not closed)");
     }
 }

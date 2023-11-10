@@ -69,7 +69,8 @@ GetCheckpoint::runTask(BlossomIO& blossomIO,
     // get checkpoint-info from database
     if (CheckpointTable::getInstance()->getCheckpoint(
             blossomIO.output, checkpointUuid, userContext, error, true)
-        == false) {
+        == false)
+    {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

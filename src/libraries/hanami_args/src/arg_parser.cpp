@@ -347,12 +347,14 @@ ArgParser::parse(const int argc, const char* argv[], ErrorContainer& error)
                 argIdent->results.push_back(convertedValue);
 
                 i += 2;
-            } else {
+            }
+            else {
                 i += 1;
             }
 
             argIdent->wasSet = true;
-        } else {
+        }
+        else {
             uint32_t counter = 0;
             for (uint64_t j = 0; j < m_argumentList.size(); j++) {
                 if (m_argumentList[j].withoutFlag == true) {
@@ -795,7 +797,8 @@ ArgParser::getArgument(const std::string& identifier)
         if (m_argumentList.at(i).longIdentifier == identifier
             || m_argumentList.at(i).shortIdentifier == identifier
             || m_argumentList.at(i).longIdentifier == "--" + identifier
-            || m_argumentList.at(i).shortIdentifier == "-" + identifier) {
+            || m_argumentList.at(i).shortIdentifier == "-" + identifier)
+        {
             return &m_argumentList.at(i);
         }
     }

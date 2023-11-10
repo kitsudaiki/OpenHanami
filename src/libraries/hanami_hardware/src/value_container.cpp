@@ -74,7 +74,8 @@ ValueContainer::addValue(const float newValue, const uint64_t sectionId)
         }
         if (currentSection->values.size() != 0) {
             valueOverflow /= currentSection->values.size();
-        } else {
+        }
+        else {
             valueOverflow = 0.0f;
         }
 

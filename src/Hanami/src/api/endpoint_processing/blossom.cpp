@@ -137,7 +137,8 @@ Blossom::growBlossom(BlossomIO& blossomIO,
     // validate input
     if (checkBlossomValues(
             m_inputValidationMap, blossomIO.input, FieldDef::INPUT_TYPE, errorMessage)
-        == false) {
+        == false)
+    {
         status.errorMessage = errorMessage;
         status.statusCode = BAD_REQUEST_RTYPE;
         LOG_DEBUG(errorMessage);
@@ -155,7 +156,8 @@ Blossom::growBlossom(BlossomIO& blossomIO,
     // validate output
     if (checkBlossomValues(
             m_outputValidationMap, blossomIO.output, FieldDef::OUTPUT_TYPE, errorMessage)
-        == false) {
+        == false)
+    {
         error.addMeesage(errorMessage);
         status.errorMessage = errorMessage;
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -248,7 +250,8 @@ Blossom::validateInput(BlossomItem& blossomItem,
                     createError(blossomItem, filePath, "validator", error);
                     return false;
                 }
-            } else {
+            }
+            else {
                 error.addMeesage("item '" + name + "' is required, but is not set.");
                 createError(blossomItem, filePath, "validator", error);
                 return false;

@@ -138,7 +138,8 @@ FinalizeCsvDataSet::convertField(float* segmentPos, const std::string& cell, con
     // float/double
     else if (regex_match(cell, std::regex(FLOAT_VALUE_REGEX))) {
         *segmentPos = std::strtof(cell.c_str(), NULL);
-    } else {
+    }
+    else {
         // ignore other lines
         *segmentPos = 0.0f;
     }
@@ -214,13 +215,15 @@ FinalizeCsvDataSet::convertCsvData(const std::string& filePath,
             // calculated with the correct value
             file.tableHeader.numberOfLines = 0;
             lastLine = std::vector<float>(numberOfColumns, 0.0f);
-        } else {
+        }
+        else {
             for (uint64_t colNum = 0; colNum < lineContent.size(); colNum++) {
                 const std::string* cell = &lineContent[colNum];
                 if (lastLine.size() > 0) {
                     const float lastVal = lastLine[colNum];
                     convertField(&cluster[segmentPos], *cell, lastVal);
-                } else {
+                }
+                else {
                     convertField(&cluster[segmentPos], *cell, 0.0f);
                 }
 

@@ -52,7 +52,8 @@ Barrier::triggerBarrier()
         m_spin_lock.clear(std::memory_order_release);
         usleep(1);
         m_cond.notify_all();
-    } else {
+    }
+    else {
         std::unique_lock<std::mutex> lock(m_mutex);
         m_spin_lock.clear(std::memory_order_release);
         m_cond.wait(lock);

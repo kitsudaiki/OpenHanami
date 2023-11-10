@@ -57,9 +57,11 @@ ProgressBar::updateProgress(const float newProgress)
     for (uint32_t i = 0; i < m_maxBarWidth; i++) {
         if (i < pos) {
             std::cout << "=";
-        } else if (i == pos) {
+        }
+        else if (i == pos) {
             std::cout << ">";
-        } else {
+        }
+        else {
             std::cout << " ";
         }
     }

@@ -154,7 +154,8 @@ ReplyHandler::removeMessageFromList(const uint64_t completeMessageId)
                 // because this was is faster
                 std::iter_swap(it, m_messageList.end() - 1);
                 m_messageList.pop_back();
-            } else {
+            }
+            else {
                 m_messageList.clear();
             }
 

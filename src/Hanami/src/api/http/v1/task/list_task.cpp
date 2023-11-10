@@ -78,7 +78,8 @@ ListTask::runTask(BlossomIO& blossomIO,
     // check if user exist within the table
     json getResult;
     if (ClusterTable::getInstance()->getCluster(getResult, clusterUuid, userContext, error)
-        == false) {
+        == false)
+    {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
@@ -122,7 +123,8 @@ ListTask::runTask(BlossomIO& blossomIO,
                                                    serializeTimePoint(progress.queuedTimeStamp),
                                                    "-",
                                                    "-"});
-        } else if (progress.state == ACTIVE_TASK_STATE) {
+        }
+        else if (progress.state == ACTIVE_TASK_STATE) {
             result.addRow(
                 std::vector<std::string>{id,
                                          "active",
@@ -130,7 +132,8 @@ ListTask::runTask(BlossomIO& blossomIO,
                                          serializeTimePoint(progress.queuedTimeStamp),
                                          serializeTimePoint(progress.startActiveTimeStamp),
                                          "-"});
-        } else if (progress.state == ABORTED_TASK_STATE) {
+        }
+        else if (progress.state == ABORTED_TASK_STATE) {
             result.addRow(
                 std::vector<std::string>{id,
                                          "aborted",
@@ -138,7 +141,8 @@ ListTask::runTask(BlossomIO& blossomIO,
                                          serializeTimePoint(progress.queuedTimeStamp),
                                          serializeTimePoint(progress.startActiveTimeStamp),
                                          "-"});
-        } else if (progress.state == FINISHED_TASK_STATE) {
+        }
+        else if (progress.state == FINISHED_TASK_STATE) {
             result.addRow(
                 std::vector<std::string>{id,
                                          "finished",

@@ -99,7 +99,8 @@ getHeaderInformation(json& result, const std::string& location, Hanami::ErrorCon
 
             ret = true;
             break;
-        } else if (file->type == DataSetFile::TABLE_TYPE) {
+        }
+        else if (file->type == DataSetFile::TABLE_TYPE) {
             TableDataSetFile* imgT = dynamic_cast<TableDataSetFile*>(file);
             if (imgT == nullptr) {
                 break;
@@ -127,7 +128,8 @@ getHeaderInformation(json& result, const std::string& location, Hanami::ErrorCon
             ret = true;
             break;
         }
-    } while (false);
+    }
+    while (false);
 
     delete file;
 

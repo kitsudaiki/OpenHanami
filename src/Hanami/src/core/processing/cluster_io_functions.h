@@ -45,10 +45,12 @@ processNeuronsOfInputBrickBackward(const Brick* brick,
     // iterate over all neurons within the brick
     for (uint32_t blockId = brick->brickBlockPos;
          blockId < brick->numberOfNeuronBlocks + brick->brickBlockPos;
-         blockId++) {
+         blockId++)
+    {
         block = &neuronBlocks[blockId];
         for (uint32_t neuronIdInBlock = 0; neuronIdInBlock < block->numberOfNeurons;
-             neuronIdInBlock++) {
+             neuronIdInBlock++)
+        {
             neuron = &block->neurons[neuronIdInBlock];
             neuron->potential = inputValues[counter];
             neuron->active = neuron->potential > 0.0f;
@@ -71,10 +73,12 @@ processNeuronsOfOutputBrick(const Brick* brick, float* outputValues, NeuronBlock
     // iterate over all neurons within the brick
     for (uint32_t blockId = brick->brickBlockPos;
          blockId < brick->numberOfNeuronBlocks + brick->brickBlockPos;
-         blockId++) {
+         blockId++)
+    {
         block = &neuronBlocks[blockId];
         for (uint32_t neuronIdInBlock = 0; neuronIdInBlock < block->numberOfNeurons;
-             neuronIdInBlock++) {
+             neuronIdInBlock++)
+        {
             neuron = &block->neurons[neuronIdInBlock];
             neuron->potential = neuron->input;
             if (neuron->potential != 0.0f) {
@@ -105,10 +109,12 @@ backpropagateOutput(const Brick* brick,
     // iterate over all neurons within the brick
     for (uint32_t neuronSectionId = brick->brickBlockPos;
          neuronSectionId < brick->numberOfNeuronBlocks + brick->brickBlockPos;
-         neuronSectionId++) {
+         neuronSectionId++)
+    {
         block = &neuronBlocks[neuronSectionId];
         for (uint32_t neuronIdInBlock = 0; neuronIdInBlock < block->numberOfNeurons;
-             neuronIdInBlock++) {
+             neuronIdInBlock++)
+        {
             neuron = &block->neurons[neuronIdInBlock];
             neuron->delta = outputValues[counter] - expectedValues[counter];
             neuron->delta *= outputValues[counter] * (1.0f - outputValues[counter]);

@@ -277,15 +277,18 @@ IniItem::toString()
                     }
                     if (groupItem[i].is_string()) {
                         output.append(groupItem[i]);
-                    } else {
+                    }
+                    else {
                         output.append(groupItem[i].dump());
                     }
                 }
-            } else {
+            }
+            else {
                 // print simple items
                 if (groupItem.is_string()) {
                     output.append(groupItem);
-                } else {
+                }
+                else {
                     output.append(groupItem.dump());
                 }
             }

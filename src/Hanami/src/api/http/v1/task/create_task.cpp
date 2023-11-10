@@ -88,7 +88,8 @@ CreateTask::runTask(BlossomIO& blossomIO,
     // check if user exist within the table
     json getResult;
     if (ClusterTable::getInstance()->getCluster(getResult, clusterUuid, userContext, error)
-        == false) {
+        == false)
+    {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
@@ -113,7 +114,8 @@ CreateTask::runTask(BlossomIO& blossomIO,
     // get meta-infos of data-set from shiori
     json dataSetInfo;
     if (DataSetTable::getInstance()->getDateSetInfo(dataSetInfo, dataSetUuid, context, error)
-        == false) {
+        == false)
+    {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
@@ -130,9 +132,11 @@ CreateTask::runTask(BlossomIO& blossomIO,
     std::string taskUuid = "";
     if (dataSetInfo["type"] == "mnist") {
         imageTask(taskUuid, name, taskType, userContext, cluster, dataSetInfo, status, error);
-    } else if (dataSetInfo["type"] == "csv") {
+    }
+    else if (dataSetInfo["type"] == "csv") {
         tableTask(taskUuid, name, taskType, userContext, cluster, dataSetInfo, status, error);
-    } else {
+    }
+    else {
         status.errorMessage = "Invalid dataset-type '" + std::string(dataSetInfo["type"])
                               + "' given for to create new task";
         status.statusCode = BAD_REQUEST_RTYPE;
@@ -194,7 +198,8 @@ CreateTask::imageTask(std::string& taskUuid,
                                      numberOfInputs,
                                      numberOfOutputs,
                                      numberOfLines);
-    } else {
+    }
+    else {
         taskUuid = addImageRequestTask(*cluster,
                                        name,
                                        userContext.userId,
@@ -261,7 +266,8 @@ CreateTask::tableTask(std::string& taskUuid,
                                        numberOfOutputs,
                                        numberOfLines - numberOfInputs);
         inputBuffer.data = nullptr;
-    } else {
+    }
+    else {
         // get output-data
         const std::string outputColumnName = "output";
         Hanami::DataBuffer outputBuffer;

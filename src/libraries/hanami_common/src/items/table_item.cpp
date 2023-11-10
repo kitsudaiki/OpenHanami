@@ -105,7 +105,8 @@ TableItem::addColumn(const std::string& internalName, const std::string& shownNa
     obj["inner"] = internalName;
     if (shownName != "") {
         obj["outer"] = shownName;
-    } else {
+    }
+    else {
         obj["outer"] = internalName;
     }
 
@@ -299,7 +300,8 @@ TableItem::getCell(const uint32_t column, const uint32_t row)
 
     if (value.is_string()) {
         return value;
-    } else {
+    }
+    else {
         return value.dump();
     }
 }
@@ -598,9 +600,11 @@ TableItem::convertBodyForOutput(TableBodyAll& convertedBody,
             const json tempVal = m_body[y][x];
             if (tempVal.is_null()) {
                 cellContent = "";
-            } else if (tempVal.is_string()) {
+            }
+            else if (tempVal.is_string()) {
                 cellContent = tempVal;
-            } else {
+            }
+            else {
                 cellContent = tempVal.dump();
             }
 

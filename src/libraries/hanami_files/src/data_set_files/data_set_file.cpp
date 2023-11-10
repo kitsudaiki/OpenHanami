@@ -142,7 +142,8 @@ DataSetFile::addBlock(const uint64_t pos,
     // add add data to file
     if (m_targetFile->writeDataIntoFile(
             data, m_headerSize + pos * sizeof(float), numberOfValues * sizeof(float), error)
-        == false) {
+        == false)
+    {
         error.addMeesage("Failed to write block into data-set");
         return false;
     }
@@ -165,7 +166,8 @@ readDataSetFile(const std::string& filePath, Hanami::ErrorContainer& error)
     Hanami::BinaryFile* targetFile = new Hanami::BinaryFile(filePath);
     DataSetFile::DataSetHeader header;
     if (targetFile->readDataFromFile(&header, 0, sizeof(DataSetFile::DataSetHeader), error)
-        == false) {
+        == false)
+    {
         error.addMeesage("failed to read dataset-file");
         return nullptr;
     }
@@ -174,7 +176,8 @@ readDataSetFile(const std::string& filePath, Hanami::ErrorContainer& error)
     DataSetFile* file = nullptr;
     if (header.type == DataSetFile::IMAGE_TYPE) {
         file = new ImageDataSetFile(targetFile);
-    } else if (header.type == DataSetFile::TABLE_TYPE) {
+    }
+    else if (header.type == DataSetFile::TABLE_TYPE) {
         file = new TableDataSetFile(targetFile);
     }
 

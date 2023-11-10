@@ -175,7 +175,8 @@ ThreadBinder::run()
             // std::cout<<m_completeMap.dump(4)<<std::endl;
             // std::cout<<"#############################################################"<<std::endl;
             // LOG_DEBUG(newMapping.dump(4));
-        } while (false);
+        }
+        while (false);
         m_mapLock.unlock();
 
         sleep(10);

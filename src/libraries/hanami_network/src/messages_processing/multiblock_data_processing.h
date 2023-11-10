@@ -141,7 +141,8 @@ process_Data_Multi_Finish(Session* session, const Data_MultiFinish_Message* mess
     if (message->commonHeader.flags & 0x8) {
         // release thread, which is related to the blocker-id
         SessionHandler::m_blockerHandler->releaseMessage(message->blockerId, buffer.incomingData);
-    } else {
+    }
+    else {
         // trigger callback
         session->m_processRequestData(
             session->m_standaloneReceiver, session, message->multiblockId, buffer.incomingData);
@@ -164,14 +165,16 @@ process_MultiBlock_Data_Type(Session* session,
 {
     switch (header->subType) {
         //------------------------------------------------------------------------------------------
-        case DATA_MULTI_STATIC_SUBTYPE: {
+        case DATA_MULTI_STATIC_SUBTYPE:
+        {
             const Data_MultiBlock_Header* message
                 = static_cast<const Data_MultiBlock_Header*>(rawMessage);
             process_Data_Multiblock(session, message, rawMessage);
             break;
         }
         //------------------------------------------------------------------------------------------
-        case DATA_MULTI_FINISH_SUBTYPE: {
+        case DATA_MULTI_FINISH_SUBTYPE:
+        {
             const Data_MultiFinish_Message* message
                 = static_cast<const Data_MultiFinish_Message*>(rawMessage);
             process_Data_Multi_Finish(session, message);

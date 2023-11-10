@@ -110,14 +110,16 @@ ValidateAccess::runTask(BlossomIO& blossomIO,
         for (const auto& payload : decodedToken.get_payload_json()) {
             try {
                 blossomIO.output = json::parse(payload.second.to_str());
-            } catch (const json::parse_error& ex) {
+            }
+            catch (const json::parse_error& ex) {
                 error.addMeesage("Error while parsing decoded token");
                 error.addMeesage("json-parser error: " + std::string(ex.what()));
                 status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
                 return false;
             }
         }
-    } catch (const std::exception& ex) {
+    }
+    catch (const std::exception& ex) {
         error.addMeesage("Failed to validate JWT-Token with error: " + std::string(ex.what()));
         status.errorMessage = "Failed to validate JWT-Token";
         status.statusCode = UNAUTHORIZED_RTYPE;

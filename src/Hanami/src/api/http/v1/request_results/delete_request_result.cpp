@@ -57,7 +57,8 @@ DeleteRequestResult::runTask(BlossomIO& blossomIO,
     // check if request-result exist within the table
     json result;
     if (RequestResultTable::getInstance()->getRequestResult(result, uuid, userContext, error, false)
-        == false) {
+        == false)
+    {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

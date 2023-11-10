@@ -100,7 +100,8 @@ TlsTcpSocket::initOpenssl(ErrorContainer& error)
     const SSL_METHOD* method;
     if (isClientSide()) {
         method = TLS_client_method();
-    } else {
+    }
+    else {
         method = TLS_server_method();
     }
 
@@ -170,7 +171,8 @@ TlsTcpSocket::initOpenssl(ErrorContainer& error)
             error.addSolution("Maybe the server is only plain TCP-server or doesn't support TLS");
             return false;
         }
-    } else {
+    }
+    else {
         // try to accept incoming ssl-connection
         int result = SSL_accept(m_ssl);
         if (result <= 0) {

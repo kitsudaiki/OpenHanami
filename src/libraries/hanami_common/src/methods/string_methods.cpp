@@ -170,9 +170,10 @@ trim(std::string& original, const std::string& chars)
 void
 toUpperCase(std::string& original)
 {
-    std::transform(original.begin(), original.end(), original.begin(), [](unsigned char c) {
-        return std::toupper(c);
-    });
+    std::transform(original.begin(),
+                   original.end(),
+                   original.begin(),
+                   [](unsigned char c) { return std::toupper(c); });
 }
 
 /**
@@ -183,9 +184,10 @@ toUpperCase(std::string& original)
 void
 toLowerCase(std::string& original)
 {
-    std::transform(original.begin(), original.end(), original.begin(), [](unsigned char c) {
-        return std::tolower(c);
-    });
+    std::transform(original.begin(),
+                   original.end(),
+                   original.begin(),
+                   [](unsigned char c) { return std::tolower(c); });
 }
 
 }  // namespace Hanami

@@ -114,7 +114,8 @@ TcpSocket::initSocket(ErrorContainer& error)
     memset(&address, 0, sizeof(address));
     if ((addr = inet_addr(m_address.c_str())) != INADDR_NONE) {
         memcpy(reinterpret_cast<char*>(&address.sin_addr), &addr, sizeof(addr));
-    } else {
+    }
+    else {
         // get server-connection via host-name instead of ip-address
         hostInfo = gethostbyname(m_address.c_str());
         if (hostInfo == nullptr) {

@@ -86,7 +86,8 @@ MultiblockIO::sendOutgoingData(const void* data,
                                    dataPointer + (MAX_SINGLE_MESSAGE_SIZE * partCounter),
                                    static_cast<uint32_t>(currentMessageSize),
                                    error)
-            == false) {
+            == false)
+        {
             return 0;
         }
 

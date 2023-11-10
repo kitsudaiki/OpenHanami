@@ -173,13 +173,15 @@ process_Stream_Data_Type(Session* session,
 {
     switch (header->subType) {
         //------------------------------------------------------------------------------------------
-        case DATA_STREAM_STATIC_SUBTYPE: {
+        case DATA_STREAM_STATIC_SUBTYPE:
+        {
             const Data_Stream_Header* message = static_cast<const Data_Stream_Header*>(rawMessage);
             process_Data_Stream(session, message, rawMessage);
             break;
         }
         //------------------------------------------------------------------------------------------
-        case DATA_STREAM_REPLY_SUBTYPE: {
+        case DATA_STREAM_REPLY_SUBTYPE:
+        {
             const Data_StreamReply_Message* message
                 = static_cast<const Data_StreamReply_Message*>(rawMessage);
             process_Data_Stream_Reply(session, message);

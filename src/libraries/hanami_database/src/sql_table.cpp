@@ -76,7 +76,8 @@ SqlTable::createDocumentation(std::string& docu)
             case STRING_TYPE:
                 if (entry.maxLength > 0) {
                     docu.append("varchar(" + std::to_string(entry.maxLength) + ") | ");
-                } else {
+                }
+                else {
                     docu.append("text | ");
                 }
                 break;
@@ -94,14 +95,16 @@ SqlTable::createDocumentation(std::string& docu)
         // primary
         if (entry.isPrimary) {
             docu.append("true | ");
-        } else {
+        }
+        else {
             docu.append("false | ");
         }
 
         // NULL
         if (entry.allowNull) {
             docu.append("true | ");
-        } else {
+        }
+        else {
             docu.append("false | ");
         }
 
@@ -135,7 +138,8 @@ SqlTable::insertToDb(json& values, ErrorContainer& error)
         }
         if (values[entry.name].is_string()) {
             dbValues.push_back(values[entry.name]);
-        } else {
+        }
+        else {
             dbValues.push_back(values[entry.name].dump());
         }
     }
@@ -195,7 +199,8 @@ SqlTable::getAllFromDb(TableItem& resultTable,
     std::vector<RequestCondition> conditions;
     if (m_db->execSqlCommand(
             &resultTable, createSelectQuery(conditions, positionOffset, numberOfRows), error)
-        == false) {
+        == false)
+    {
         LOG_ERROR(error);
         return false;
     }
@@ -241,7 +246,8 @@ SqlTable::getFromDb(TableItem& resultTable,
 {
     if (m_db->execSqlCommand(
             &resultTable, createSelectQuery(conditions, positionOffset, numberOfRows), error)
-        == false) {
+        == false)
+    {
         LOG_ERROR(error);
         return false;
     }
@@ -296,7 +302,8 @@ SqlTable::getFromDb(json& result,
     TableItem tableResult;
     if (m_db->execSqlCommand(
             &tableResult, createSelectQuery(conditions, positionOffset, numberOfRows), error)
-        == false) {
+        == false)
+    {
         LOG_ERROR(error);
         return false;
     }
@@ -402,7 +409,8 @@ SqlTable::createTableCreateQuery()
                     command.append("varchar(");
                     command.append(std::to_string(entry->maxLength));
                     command.append(") ");
-                } else {
+                }
+                else {
                     command.append("text ");
                 }
                 break;
@@ -505,7 +513,8 @@ SqlTable::createUpdateQuery(const std::vector<RequestCondition>& conditions, con
         command.append(keys.at(i));
         if (updates[keys.at(i)].is_string()) {
             command.append("='" + std::string(updates[keys.at(i)]) + "' ");
-        } else {
+        }
+        else {
             command.append("='" + updates[keys.at(i)].dump() + "' ");
         }
     }

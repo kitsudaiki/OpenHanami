@@ -69,7 +69,8 @@ HttpServer::run()
             acceptor.accept(*socket);
             addSocket(socket);
         }
-    } catch (const std::exception& e) {
+    }
+    catch (const std::exception& e) {
         error.addMeesage("Error-message while running http-server: '" + std::string(e.what())
                          + "'");
         LOG_ERROR(error);

@@ -59,7 +59,8 @@ DeleteCluster::runTask(BlossomIO& blossomIO,
     // check if user exist within the table
     json getResult;
     if (ClusterTable::getInstance()->getCluster(getResult, clusterUuid, userContext, error)
-        == false) {
+        == false)
+    {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

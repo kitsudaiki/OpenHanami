@@ -113,7 +113,8 @@ addData_RingBuffer(RingBuffer& ringBuffer, const void* data, const uint64_t data
 
     if (dataSize <= spaceToEnd) {
         memcpy(&ringBuffer.data[writePosition], data, dataSize);
-    } else {
+    }
+    else {
         const uint64_t remaining = dataSize - spaceToEnd;
         const uint8_t* dataPos = static_cast<const uint8_t*>(data);
 

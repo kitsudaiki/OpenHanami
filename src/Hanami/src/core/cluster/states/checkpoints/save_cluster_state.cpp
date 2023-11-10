@@ -107,7 +107,8 @@ SaveCluster_State::processEvent()
 
         result = true;
         break;
-    } while (true);
+    }
+    while (true);
 
     m_cluster->goToNextState(FINISH_TASK);
 

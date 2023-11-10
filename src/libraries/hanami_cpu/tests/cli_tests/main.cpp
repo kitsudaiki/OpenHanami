@@ -143,7 +143,8 @@ main()
             std::cout << diff.toString() << std::endl;
             sleep(10);
         }
-    } else {
+    }
+    else {
         LOG_ERROR(error);
     }
 #endif

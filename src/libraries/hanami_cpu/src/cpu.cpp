@@ -296,7 +296,8 @@ changeHyperthreadingState(const bool newState, ErrorContainer& error)
         }
 
         return true;
-    } else {
+    }
+    else {
         // check if hyperthreading is already disabled
         if (htState == "off") {
             return true;

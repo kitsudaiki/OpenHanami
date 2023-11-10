@@ -58,7 +58,8 @@ CycleFinish_State::processEvent()
     // to go next state of finish the task to goal is reached
     if (actualTask->actualCycle == numberOfCycles) {
         m_cluster->goToNextState(FINISH_TASK);
-    } else {
+    }
+    else {
         m_cluster->goToNextState(NEXT);
     }
 

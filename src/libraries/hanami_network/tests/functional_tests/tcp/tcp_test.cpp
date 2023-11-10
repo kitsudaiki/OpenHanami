@@ -138,7 +138,8 @@ Tcp_Test::checkBigDataTransfer()
     for (uint32_t i = 0; i < 300000; i = i + 3) {
         uint8_t* dataBufferData = static_cast<uint8_t*>(dataBuffer->data);
         if (dataBufferData[i] == 'p' && dataBufferData[i + 1] == 'o'
-            && dataBufferData[i + 2] == 'i') {
+            && dataBufferData[i + 2] == 'i')
+        {
             numberOfPois++;
         }
     }

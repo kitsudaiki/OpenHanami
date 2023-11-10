@@ -49,7 +49,8 @@ HttpWebsocketThread::run()
         if (socket != nullptr) {
             handleSocket(socket);
             delete socket;
-        } else {
+        }
+        else {
             sleepThread(10000);
         }
     }
@@ -89,7 +90,8 @@ HttpWebsocketThread::handleSocket(tcp::socket* socket)
         runWebsocket();
         m_webSocket = nullptr;
         m_uuid = "";
-    } else {
+    }
+    else {
         // process request
         processResult = HanamiRoot::httpServer->httpProcessing->processRequest(
             httpRequest, httpResponse, error);
@@ -178,25 +180,29 @@ HttpWebsocketThread::initWebsocket(http::request<http::string_body>& httpRequest
 {
     try {
         // Set a decorator to change the Server of the handshake
-        m_webSocket->set_option(
-            websocket::stream_base::decorator([](websocket::response_type& res) {
+        m_webSocket->set_option(websocket::stream_base::decorator(
+            [](websocket::response_type& res)
+            {
                 res.set(http::field::server,
                         std::string(BOOST_BEAST_VERSION_STRING) + " torii-websocket-ssl");
             }));
 
         // Accept the websocket handshake
         m_webSocket->accept(std::move(httpRequest));
-    } catch (const beast::system_error& se) {
+    }
+    catch (const beast::system_error& se) {
         if (se.code() == websocket::error::closed) {
             LOG_INFO("Close websocket1");
-        } else {
+        }
+        else {
             ErrorContainer error;
             error.addMeesage("Error while receiving data over websocket with message: "
                              + se.code().message());
             LOG_ERROR(error);
             return false;
         }
-    } catch (const std::exception& e) {
+    }
+    catch (const std::exception& e) {
         ErrorContainer error;
         error.addMeesage("Error while receiving data over websocket with message: "
                          + std::string(e.what()));
@@ -237,16 +243,19 @@ HttpWebsocketThread::sendData(const void* data, const uint64_t dataSize)
         m_waitForInput = true;
 
         return true;
-    } catch (const beast::system_error& se) {
+    }
+    catch (const beast::system_error& se) {
         if (se.code() == websocket::error::closed) {
             LOG_INFO("Close websocket2");
-        } else {
+        }
+        else {
             ErrorContainer error;
             error.addMeesage("Error while sending data over websocket with message: "
                              + se.code().message());
             LOG_ERROR(error);
         }
-    } catch (const std::exception& e) {
+    }
+    catch (const std::exception& e) {
         ErrorContainer error;
         error.addMeesage("Error while sending data over websocket with message: "
                          + std::string(e.what()));
@@ -283,7 +292,8 @@ HttpWebsocketThread::processInitialMessage(const std::string& message, ErrorCont
         json content;
         try {
             content = json::parse(message);
-        } catch (const json::parse_error& ex) {
+        }
+        catch (const json::parse_error& ex) {
             error.addMeesage("Parsing of initial websocket-message failed");
             error.addMeesage("json-parser error: " + std::string(ex.what()));
             status.statusCode = BAD_REQUEST_RTYPE;
@@ -304,7 +314,8 @@ HttpWebsocketThread::processInitialMessage(const std::string& message, ErrorCont
         tokenInputValues["endpoint"] = requestMsg.id;
         if (HanamiRoot::httpServer->httpProcessing->triggerBlossom(
                 tokenData, "validate", "Token", json::object(), tokenInputValues, status, error)
-            == false) {
+            == false)
+        {
             error.addMeesage("Permission-check failed");
             break;
         }
@@ -316,7 +327,8 @@ HttpWebsocketThread::processInitialMessage(const std::string& message, ErrorCont
             m_targetCluster->msgClient = this;
             m_clientInit = true;
             return true;
-        } else if (m_target == "shiori") {
+        }
+        else if (m_target == "shiori") {
             m_clientInit = true;
             return true;
         }
@@ -325,11 +337,13 @@ HttpWebsocketThread::processInitialMessage(const std::string& message, ErrorCont
         status.statusCode = BAD_REQUEST_RTYPE;
 
         break;
-    } while (true);
+    }
+    while (true);
 
     if (status.statusCode == INTERNAL_SERVER_ERROR_RTYPE) {
         LOG_ERROR(error);
-    } else {
+    }
+    else {
         LOG_DEBUG(error.toString());
     }
 
@@ -399,26 +413,31 @@ HttpWebsocketThread::runWebsocket()
                 m_webSocket->binary(true);
                 m_webSocket->write(net::buffer(responseMsg, responseMsg.size()));
                 m_waitForInput = true;
-            } else {
+            }
+            else {
                 if (m_target == "kyouko") {
                     recvClusterInputMessage(
                         m_targetCluster, buffer.data().data(), buffer.data().size());
-                } else if (m_target == "shiori") {
+                }
+                else if (m_target == "shiori") {
                     recvFileUploadPackage(buffer.data().data(), buffer.data().size());
                     m_waitForInput = true;
                 }
             }
         }
-    } catch (const beast::system_error& se) {
+    }
+    catch (const beast::system_error& se) {
         if (se.code() == websocket::error::closed) {
             LOG_DEBUG("Close websocket3");
-        } else {
+        }
+        else {
             ErrorContainer error;
             error.addMeesage("Error while receiving data over websocket with message: "
                              + se.code().message());
             LOG_ERROR(error);
         }
-    } catch (const std::exception& e) {
+    }
+    catch (const std::exception& e) {
         ErrorContainer error;
         error.addMeesage("Error while receiving data over websocket with message: "
                          + std::string(e.what()));

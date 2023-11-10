@@ -14,12 +14,24 @@
 
 	Source-Code must be as explicit as possible. Try the keep the amount of used language features as basic as possible. Not every feature has to be used only because it exist. Code, which is hard to understand and to maintain, is the greatest risk factor for stability and security.
 
+## Clang-format
+
+For code-styling `clang-format` is used. With the following steps a pre-commit hook can be used, which styles the coded based on the clang-format file, when ever a `git commit` is done.
+
+Installation: 
+
+```
+sudo apt-get install clang-format-15
+```
+
+Load pre-commit hook
+
+```
+cd Hanami
+git config core.hooksPath .git-hooks
+```
+
 ## Limitations
-
-### Length of lines
-
-- soft-cap: `100` characters
-- hard-cap: `120` characters
 
 ### Length of files
 

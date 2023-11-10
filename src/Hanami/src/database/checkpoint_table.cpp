@@ -190,7 +190,8 @@ CheckpointTable::setUploadFinish(const std::string& uuid,
     json tempFiles;
     try {
         tempFiles = json::parse(tempFilesStr);
-    } catch (const json::parse_error& ex) {
+    }
+    catch (const json::parse_error& ex) {
         error.addMeesage("Failed to parse temp_files entry of checkpoint with UUID '" + uuid
                          + "' from database");
         error.addMeesage("json-parser error: " + std::string(ex.what()));

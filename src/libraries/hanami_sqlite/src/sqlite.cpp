@@ -115,7 +115,8 @@ callback(void* data, int argc, char** argv, char** azColName)
                 json newJson = json::parse(value, nullptr, false);
                 if (newJson.is_discarded()) {
                     row.push_back(value);
-                } else {
+                }
+                else {
                     row.push_back(newJson);
                 }
             }
@@ -124,7 +125,8 @@ callback(void* data, int argc, char** argv, char** azColName)
                 json newJson = json::parse(value, nullptr, false);
                 if (newJson.is_discarded()) {
                     row.push_back(value);
-                } else {
+                }
+                else {
                     row.push_back(newJson);
                 }
             }
@@ -132,7 +134,8 @@ callback(void* data, int argc, char** argv, char** azColName)
             else {
                 row.push_back(value);
             }
-        } else {
+        }
+        else {
             row.push_back("NULL");
         }
     }
