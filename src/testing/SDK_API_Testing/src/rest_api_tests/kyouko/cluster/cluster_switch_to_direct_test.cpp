@@ -32,7 +32,8 @@ ClusterSwitchToDirectTest::ClusterSwitchToDirectTest(const bool expectSuccess)
     m_testName = "switch cluster to direct mode";
     if (expectSuccess) {
         m_testName += " (success)";
-    } else {
+    }
+    else {
         m_testName += " (fail)";
     }
 }

@@ -29,7 +29,8 @@ ClusterSwitchToTaskTest::ClusterSwitchToTaskTest(const bool expectSuccess) : Tes
     m_testName = "switch cluster to task mode";
     if (expectSuccess) {
         m_testName += " (success)";
-    } else {
+    }
+    else {
         m_testName += " (fail)";
     }
 }
