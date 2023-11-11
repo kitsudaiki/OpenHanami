@@ -6,16 +6,16 @@
 
 ### Added
 
-- basic Ansible-playbooks were added in order to deploy the project without kubernetes
-- kubernetes-setup:
+- basic Ansible-playbooks was added in order to deploy the project without kubernetes
+- in kubernetes-setup:
     - now use cert-manager to generate certificates 
     - ingress was added for ssl-termination of https-connections
     - persistent volume was added to persist data like database within the kuberntes-setup
-    - node label was added to define the node, where hanami should be deployed by kuberntes
+    - node label was added to define the node, where hanami should be deployed by kubernetes
+- `clang-format` file was added with a git pre-commit hook
+- `clang-format` check and basic `cppcheck` were added to the ci-pipeline
 - first contribution-guide and code-styling guide was added
-- clang-format file was added with a git-hook
-- clang-format check and basic cppcheck was added to the ci-pipeline
-- example-configs for testing purpose
+- example-configs for testing purpose and guide to setup local test-environment
 - at start there is now a check if the directories for the checkpoints and dataset, defined by the config, even exist
 
 ### Fixed
@@ -23,13 +23,13 @@
 - fixed compile-error when trying to build on ARM64 architecture
 - fixed compile-error in cude-code with the standard nvidia-toolkit in ubuntu 22.04
 - fixed broken json-strings in javascript-sdk
-- fixed false error reponse-codes in API
+- fixed false error response-codes in API
 
 ### Changed
 
-- moved old readme files into the normal documenation
+- moved old readme files into the normal documentation
 - use clang++ instead of g++ as compiler
-- non-critical API-errors, like for example a 404 (not found) when searching for an unkown id, doesn't produce an internal error-output anymore 
+- non-critical API-errors, like for example a 404 (not found) when searching for an unknown id, doesn't produce an internal error-output anymore 
 
 ### Removed
 
