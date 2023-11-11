@@ -125,7 +125,6 @@
                         "description": "Requesed endpoint within the component.",
                         "in": "query",
                         "name": "endpoint",
-                        "required": true,
                         "schema": {
                             "maxLength": "256",
                             "minLength": "4",
@@ -137,7 +136,6 @@
                         "description": "Type of the HTTP-request as enum (DELETE = 1, GET = 2, HEAD = 3, POST = 4, PUT = 5).",
                         "in": "query",
                         "name": "http_type",
-                        "required": true,
                         "schema": {
                             "maximum": "5",
                             "minimum": "1",
