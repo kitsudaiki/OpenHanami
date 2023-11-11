@@ -29,7 +29,8 @@ TableTrainTaskTest::TableTrainTaskTest(const bool expectSuccess) : TestStep(expe
     m_testName = "table-train-task";
     if (expectSuccess) {
         m_testName += " (success)";
-    } else {
+    }
+    else {
         m_testName += " (fail)";
     }
 }
@@ -45,7 +46,8 @@ TableTrainTaskTest::runTest(json& inputData, Hanami::ErrorContainer& error)
                            inputData["cluster_uuid"],
                            inputData["base_dataset_uuid"],
                            error)
-        != m_expectSuccess) {
+        != m_expectSuccess)
+    {
         return false;
     }
 
@@ -57,7 +59,8 @@ TableTrainTaskTest::runTest(json& inputData, Hanami::ErrorContainer& error)
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch (const json::parse_error& ex) {
+    }
+    catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
@@ -73,12 +76,14 @@ TableTrainTaskTest::runTest(json& inputData, Hanami::ErrorContainer& error)
         // parse output
         try {
             jsonItem = json::parse(result);
-        } catch (const json::parse_error& ex) {
+        }
+        catch (const json::parse_error& ex) {
             error.addMeesage("json-parser error: " + std::string(ex.what()));
             return false;
         }
         std::cout << jsonItem.dump(4) << std::endl;
-    } while (jsonItem["state"] != "finished");
+    }
+    while (jsonItem["state"] != "finished");
 
     return true;
 }

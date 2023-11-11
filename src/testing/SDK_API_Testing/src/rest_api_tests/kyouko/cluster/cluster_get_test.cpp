@@ -30,7 +30,8 @@ ClusterGetTest::ClusterGetTest(const bool expectSuccess, const std::string& name
     m_testName = "get cluster";
     if (expectSuccess) {
         m_testName += " (success)";
-    } else {
+    }
+    else {
         m_testName += " (fail)";
     }
     m_uuid = nameOverride;
@@ -57,7 +58,8 @@ ClusterGetTest::runTest(json& inputData, Hanami::ErrorContainer& error)
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch (const json::parse_error& ex) {
+    }
+    catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }

@@ -266,7 +266,8 @@ HanamiRequest::requestToken(Hanami::ErrorContainer& error)
     json item;
     try {
         item = json::parse(response);
-    } catch (const json::parse_error& ex) {
+    }
+    catch (const json::parse_error& ex) {
         error.addMeesage("Failed to parse token-response");
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         LOG_ERROR(error);
@@ -441,7 +442,8 @@ HanamiRequest::makeSingleRequest(std::string& response,
             error.addMeesage("failed to close http-connection");
             return statusCode;
         }
-    } catch (std::exception const& e) {
+    }
+    catch (std::exception const& e) {
         error.addMeesage("Error while making http-request: " + std::string(e.what()));
         return statusCode;
     }
