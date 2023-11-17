@@ -53,13 +53,15 @@ ValidateAccess::ValidateAccess()
     registerInputField("endpoint", SAKURA_STRING_TYPE)
         .setComment("Requesed endpoint within the component.")
         .setLimit(4, 256)
-        .setRegex("[a-zA-Z][a-zA-Z_/0-9]*");
+        .setRegex("[a-zA-Z][a-zA-Z_/0-9]*")
+        .setRequired(false);
 
     registerInputField("http_type", SAKURA_INT_TYPE)
         .setComment(
             "Type of the HTTP-request as enum "
             "(DELETE = 1, GET = 2, HEAD = 3, POST = 4, PUT = 5).")
-        .setLimit(1, 5);
+        .setLimit(1, 5)
+        .setRequired(false);
 
     //----------------------------------------------------------------------------------------------
     // output
@@ -97,7 +99,9 @@ ValidateAccess::runTask(BlossomIO& blossomIO,
 {
     // collect information from the input
     const std::string token = blossomIO.input["token"];
-    const std::string endpoint = blossomIO.input["endpoint"];
+    const std::string endpoint = blossomIO.input.value("endpoint", "");
+    const uint32_t httpTypeValue = blossomIO.input.value("http_type", 2);
+    const HttpRequestType httpType = static_cast<HttpRequestType>(httpTypeValue);
 
     try {
         auto decodedToken = jwt::decode(token);
@@ -127,22 +131,15 @@ ValidateAccess::runTask(BlossomIO& blossomIO,
         return false;
     }
 
-    if (blossomIO.input.contains("http_type") == false) {
-        error.addMeesage("http_type is missing in token-request");
-        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        return false;
-    }
-
-    const uint32_t httpTypeValue = blossomIO.input["http_type"];
-    const HttpRequestType httpType = static_cast<HttpRequestType>(httpTypeValue);
-
-    // check policy
-    const std::string role = blossomIO.output["role"];
-    if (Policy::getInstance()->checkUserAgainstPolicy(endpoint, httpType, role) == false) {
-        status.errorMessage = "Access denied by policy";
-        status.statusCode = UNAUTHORIZED_RTYPE;
-        LOG_DEBUG(status.errorMessage);
-        return false;
+    if (endpoint != "") {
+        // check policy
+        const std::string role = blossomIO.output["role"];
+        if (Policy::getInstance()->checkUserAgainstPolicy(endpoint, httpType, role) == false) {
+            status.errorMessage = "Access denied by policy";
+            status.statusCode = UNAUTHORIZED_RTYPE;
+            LOG_DEBUG(status.errorMessage);
+            return false;
+        }
     }
 
     // remove irrelevant fields

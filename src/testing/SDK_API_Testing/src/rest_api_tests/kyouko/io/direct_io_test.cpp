@@ -30,7 +30,8 @@ DirectIoTest::DirectIoTest(const bool expectSuccess) : TestStep(expectSuccess)
     m_testName = "io-test";
     if (expectSuccess) {
         m_testName += " (success)";
-    } else {
+    }
+    else {
         m_testName += " (fail)";
     }
 }
@@ -66,7 +67,8 @@ DirectIoTest::trainTest()
         std::cout << "run: " << i << std::endl;
 
         if (Hanami::train(TestThread::m_wsClient, inputValues, 784, shouldValues, 10, error)
-            == false) {
+            == false)
+        {
             return false;
         }
     }

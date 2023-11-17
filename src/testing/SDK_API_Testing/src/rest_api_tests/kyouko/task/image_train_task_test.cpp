@@ -38,7 +38,8 @@ ImageTrainTaskTest::ImageTrainTaskTest(const bool expectSuccess) : TestStep(expe
     m_testName = "train-task";
     if (expectSuccess) {
         m_testName += " (success)";
-    } else {
+    }
+    else {
         m_testName += " (fail)";
     }
 }
@@ -54,7 +55,8 @@ ImageTrainTaskTest::runTest(json& inputData, Hanami::ErrorContainer& error)
                            inputData["cluster_uuid"],
                            inputData["train_dataset_uuid"],
                            error)
-        != m_expectSuccess) {
+        != m_expectSuccess)
+    {
         return false;
     }
 
@@ -66,7 +68,8 @@ ImageTrainTaskTest::runTest(json& inputData, Hanami::ErrorContainer& error)
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch (const json::parse_error& ex) {
+    }
+    catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
@@ -91,7 +94,8 @@ ImageTrainTaskTest::runTest(json& inputData, Hanami::ErrorContainer& error)
             return false;
         }
         // std::cout<<jsonItem.dump(4)<<std::endl;
-    } while (jsonItem["state"] != "finished");
+    }
+    while (jsonItem["state"] != "finished");
     end = std::chrono::system_clock::now();
     const float time2 = std::chrono::duration_cast<chronoMilliSec>(end - start).count();
 

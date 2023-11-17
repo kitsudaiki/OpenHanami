@@ -30,7 +30,8 @@ DataSetCheckTest::DataSetCheckTest(const bool expectSuccess) : TestStep(expectSu
     m_testName = "check data-set";
     if (expectSuccess) {
         m_testName += " (success)";
-    } else {
+    }
+    else {
         m_testName += " (fail)";
     }
 }
@@ -42,7 +43,8 @@ DataSetCheckTest::runTest(json& inputData, Hanami::ErrorContainer& error)
     std::string result;
     if (Hanami::checkDataset(
             result, inputData["request_dataset_uuid"], inputData["request_task_uuid"], error)
-        != m_expectSuccess) {
+        != m_expectSuccess)
+    {
         return false;
     }
 
@@ -54,7 +56,8 @@ DataSetCheckTest::runTest(json& inputData, Hanami::ErrorContainer& error)
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch (const json::parse_error& ex) {
+    }
+    catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }

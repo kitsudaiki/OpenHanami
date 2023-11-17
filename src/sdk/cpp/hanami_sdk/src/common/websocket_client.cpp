@@ -90,8 +90,9 @@ WebsocketClient::initClient(std::string& socketUuid,
         const std::string address = host + ':' + std::to_string(ep.port());
 
         m_websocket->next_layer().handshake(ssl::stream_base::client);
-        m_websocket->set_option(
-            websocket::stream_base::decorator([](websocket::response_type& res) {
+        m_websocket->set_option(websocket::stream_base::decorator(
+            [](websocket::response_type& res)
+            {
                 res.set(http::field::server,
                         std::string(BOOST_BEAST_VERSION_STRING) + " client-websocket-ssl");
             }));
@@ -123,7 +124,8 @@ WebsocketClient::initClient(std::string& socketUuid,
         json response;
         try {
             response = json::parse(responseMsg);
-        } catch (const json::parse_error& ex) {
+        }
+        catch (const json::parse_error& ex) {
             error.addMeesage("Failed to parse response-message from Websocket-init");
             error.addMeesage("json-parser error: " + std::string(ex.what()));
             LOG_ERROR(error);
@@ -132,7 +134,8 @@ WebsocketClient::initClient(std::string& socketUuid,
 
         socketUuid = response["uuid"];
         return response["success"];
-    } catch (std::exception const& e) {
+    }
+    catch (std::exception const& e) {
         const std::string msg(e.what());
         error.addMeesage("Error-Message while initilializing Websocket-Client: '" + msg + "'");
         LOG_ERROR(error);
@@ -160,7 +163,8 @@ WebsocketClient::sendMessage(const void* data,
         // Send the message
         m_websocket->binary(true);
         m_websocket->write(net::buffer(data, dataSize));
-    } catch (const std::exception& e) {
+    }
+    catch (const std::exception& e) {
         const std::string msg(e.what());
         error.addMeesage("Error-Message while send Websocket-Data: '" + msg + "'");
         LOG_ERROR(error);
@@ -194,7 +198,8 @@ WebsocketClient::readMessage(uint64_t& numberOfByes, Hanami::ErrorContainer& err
         memcpy(data, buffer.data().data(), numberOfByes);
 
         return data;
-    } catch (const std::exception& e) {
+    }
+    catch (const std::exception& e) {
         numberOfByes = 0;
         const std::string msg(e.what());
         error.addMeesage("Error-Message while read Websocket-Data: '" + msg + "'");

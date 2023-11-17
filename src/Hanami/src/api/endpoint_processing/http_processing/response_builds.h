@@ -71,11 +71,14 @@ invalid_ResponseBuild(http::response<http::dynamic_body>& httpResp, Hanami::Erro
  */
 bool
 internalError_ResponseBuild(http::response<http::dynamic_body>& httpResp,
+                            const std::string& userId,
+                            json& inputValuesJson,
                             Hanami::ErrorContainer& error)
 {
+    inputValuesJson.erase("password");
     httpResp.result(http::status::internal_server_error);
     httpResp.set(http::field::content_type, "text/plain");
-    LOG_ERROR(error);
+    LOG_ERROR(error, userId, inputValuesJson.dump());
     return false;
 }
 

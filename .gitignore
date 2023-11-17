@@ -9,3 +9,8 @@ gitIdentityChange.sh
 *.dtmp
 src/cli/hanamictl/hanamictl
 testing/ansible_deploy/.vagrant/
+.git-hooks/post-checkout
+.git-hooks/post-commit
+.git-hooks/post-merge
+.git-hooks/pre-push
+

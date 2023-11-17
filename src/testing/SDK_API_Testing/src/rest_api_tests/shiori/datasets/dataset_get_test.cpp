@@ -32,7 +32,8 @@ DataSetGetTest::DataSetGetTest(const bool expectSuccess,
     m_testName = "get data-set";
     if (expectSuccess) {
         m_testName += " (success)";
-    } else {
+    }
+    else {
         m_testName += " (fail)";
     }
     m_type = type;
@@ -45,7 +46,8 @@ DataSetGetTest::runTest(json& inputData, Hanami::ErrorContainer& error)
     if (m_uuid == "") {
         if (m_type == "train") {
             m_uuid = inputData["train_dataset_uuid"];
-        } else {
+        }
+        else {
             m_uuid = inputData["request_dataset_uuid"];
         }
     }
@@ -64,7 +66,8 @@ DataSetGetTest::runTest(json& inputData, Hanami::ErrorContainer& error)
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch (const json::parse_error& ex) {
+    }
+    catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }

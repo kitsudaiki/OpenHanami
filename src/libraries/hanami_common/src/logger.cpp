@@ -63,7 +63,7 @@ setDebugFlag(const bool debugLog)
  *        to be set to avoid seg-faults.
  */
 void
-defaultErrorCallback(const std::string&)
+defaultErrorCallback(const std::string&, const std::string&, const std::string&)
 {
 }
 
@@ -89,7 +89,7 @@ LOG_warning(const std::string& message)
  * @brief write error-message to logfile
  */
 bool
-LOG_error(ErrorContainer& container)
+LOG_error(ErrorContainer& container, const std::string& userId, const std::string& values)
 {
     if (container._alreadyPrinted) {
         return true;
@@ -97,7 +97,7 @@ LOG_error(ErrorContainer& container)
 
     const std::string errorMessage = container.toString();
     const bool ret = Logger::m_logger->logData(errorMessage, "ERROR", RED_COLOR);
-    Logger::m_logger->m_handleError(errorMessage);
+    Logger::m_logger->m_handleError(errorMessage, userId, values);
     if (ret) {
         container._alreadyPrinted = true;
     }
@@ -224,7 +224,9 @@ Logger::setDebugFlag(const bool debugLog)
  * @brief set callback for error-messages
  */
 void
-Logger::setErrorLogCallback(void (*handleError)(const std::string&))
+Logger::setErrorLogCallback(void (*handleError)(const std::string&,
+                                                const std::string&,
+                                                const std::string&))
 {
     m_handleError = handleError;
 }
@@ -315,7 +317,7 @@ Logger::getDatetime()
  * @brief set callback for error-messages
  */
 void
-setErrorLogCallback(void (*handleError)(const std::string&))
+setErrorLogCallback(void (*handleError)(const std::string&, const std::string&, const std::string&))
 {
     Logger::m_logger->setErrorLogCallback(handleError);
 }

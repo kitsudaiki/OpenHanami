@@ -41,6 +41,16 @@
 
 #include <thread>
 
+void
+handleErrorCallback(const std::string& errorMessage,
+                    const std::string& userId,
+                    const std::string& values)
+{
+    ErrorContainer error;
+    ErrorLogTable::getInstance()->addErrorLogEntry(
+        getDatetime(), userId, "", "", values, errorMessage, error);
+}
+
 int
 main(int argc, char* argv[])
 {
@@ -133,6 +143,7 @@ main(int argc, char* argv[])
     }
 
     // init logger
+    Hanami::setErrorLogCallback(&handleErrorCallback);
     Hanami::initConsoleLogger(enableDebug);
     Hanami::initFileLogger(logPath, "hanami", enableDebug);
 

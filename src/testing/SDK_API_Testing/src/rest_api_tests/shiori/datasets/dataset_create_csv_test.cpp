@@ -30,7 +30,8 @@ DataSetCreateCsvTest::DataSetCreateCsvTest(const bool expectSuccess) : TestStep(
     m_testName = "create csv data-set";
     if (expectSuccess) {
         m_testName += " (success)";
-    } else {
+    }
+    else {
         m_testName += " (fail)";
     }
 }
@@ -41,7 +42,8 @@ DataSetCreateCsvTest::runTest(json& inputData, Hanami::ErrorContainer& error)
     std::string result;
     if (Hanami::uploadCsvData(
             result, inputData["base_dataset_name"], inputData["base_inputs"], error)
-        != m_expectSuccess) {
+        != m_expectSuccess)
+    {
         return false;
     }
 
@@ -53,7 +55,8 @@ DataSetCreateCsvTest::runTest(json& inputData, Hanami::ErrorContainer& error)
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch (const json::parse_error& ex) {
+    }
+    catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }

@@ -89,7 +89,7 @@ GetErrorLog::runTask(BlossomIO& blossomIO,
         return false;
     }
 
-    const std::string userId = blossomIO.input["user_id"];
+    const std::string userId = blossomIO.input.value("user_id", "");
 
     // get data from table
     Hanami::TableItem table;
