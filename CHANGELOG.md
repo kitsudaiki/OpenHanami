@@ -1,12 +1,21 @@
 # Changelog
 
+## v0.3.3
+
+- **Date**: 2023-11-17
+
+### Fixed
+
+- fixed broken login to dashboard
+- fixed broken internal error-log and the error-log API-endpoint
+
 ## v0.3.2
 
 - **Date**: 2023-11-10
 
 ### Added
 
-- basic Ansible-playbooks was added in order to deploy the project without kubernetes
+- basic Ansible-playbook was added in order to deploy the project without kubernetes
 - in kubernetes-setup:
     - now use cert-manager to generate certificates 
     - ingress was added for ssl-termination of https-connections
