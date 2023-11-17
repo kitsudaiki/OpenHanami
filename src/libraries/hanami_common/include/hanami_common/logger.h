@@ -108,12 +108,16 @@ bool setDebugFlag(const bool debugLog);
 
 bool LOG_debug(const std::string& message);
 bool LOG_warning(const std::string& message);
-bool LOG_error(ErrorContainer& container);
+bool LOG_error(ErrorContainer& container,
+               const std::string& userId = "",
+               const std::string& values = "");
 bool LOG_info(const std::string& message, const std::string& color = WHITE_COLOR);
 
 void closeLogFile();
 
-void setErrorLogCallback(void (*handleError)(const std::string&));
+void setErrorLogCallback(void (*handleError)(const std::string&,
+                                             const std::string&,
+                                             const std::string&));
 
 //==================================================================================================
 
@@ -128,7 +132,9 @@ class Logger
                         const bool debugLog);
     bool initConsoleLogger(const bool debugLog);
     bool setDebugFlag(const bool debugLog);
-    void setErrorLogCallback(void (*handleError)(const std::string&));
+    void setErrorLogCallback(void (*handleError)(const std::string&,
+                                                 const std::string&,
+                                                 const std::string&));
 
     void closeLogFile();
 
@@ -139,7 +145,7 @@ class Logger
 
     std::string m_filePath = "";
     bool m_debugLog = false;
-    void (*m_handleError)(const std::string&);
+    void (*m_handleError)(const std::string&, const std::string&, const std::string&);
 
     static Hanami::Logger* m_logger;
 
