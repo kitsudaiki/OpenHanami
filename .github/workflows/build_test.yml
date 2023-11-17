@@ -42,7 +42,7 @@ jobs:
     needs: [ cpp-check, clang-format-check ]
     runs-on: ubuntu-latest
     container:
-      image: kitsudaiki/hanami_builder:0.6.0
+      image: kitsudaiki/hanami_builder:0.6.1
     name: "build repository"
     steps:
       - name: "Checkout repository"
@@ -70,7 +70,7 @@ jobs:
           find ./src/ -type f -name "*.a" -exec rm {} \;
           cp -r src/* /build_result/
       - name: Create artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: result
           path: /build_result
@@ -83,7 +83,7 @@ jobs:
     name: "Unit-Tests"
     steps:
       - name: Get artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: result
           path: /build_result
@@ -91,36 +91,36 @@ jobs:
         run: ls -l /build_result
       - name: "Run test: hanami_common"
         run: |
-          chmod +x /build_result/libraries/hanami_common/tests/unit_tests/unit_tests
-          /build_result/libraries/hanami_common/tests/unit_tests/unit_tests
+          chmod +x /build_result/libraries/hanami_common/tests/unit_tests/hanami_common_unit_tests
+          /build_result/libraries/hanami_common/tests/unit_tests/hanami_common_unit_tests
       - name: "Run test: hanami_config"
         run: |
-          chmod +x /build_result/libraries/hanami_config/tests/unit_tests/unit_tests
-          /build_result/libraries/hanami_config/tests/unit_tests/unit_tests
-      - name: "Run test: hanami_args"
-        run: |
-          chmod +x /build_result/libraries/hanami_args/tests/unit_tests/unit_tests
-          /build_result/libraries/hanami_args/tests/unit_tests/unit_tests
+          chmod +x /build_result/libraries/hanami_config/tests/unit_tests/hanami_config_unit_tests
+          /build_result/libraries/hanami_config/tests/unit_tests/hanami_config_unit_tests
       - name: "Run test: hanami_crypto"
         run: |
-          chmod +x /build_result/libraries/hanami_crypto/tests/unit_tests/unit_tests
-          /build_result/libraries/hanami_crypto/tests/unit_tests/unit_tests
+          chmod +x /build_result/libraries/hanami_crypto/tests/unit_tests/hanami_crypto_unit_tests
+          /build_result/libraries/hanami_crypto/tests/unit_tests/hanami_crypto_unit_tests
       - name: "Run test: hanami_ini"
         run: |
-          chmod +x /build_result/libraries/hanami_ini/tests/unit_tests/unit_tests
-          /build_result/libraries/hanami_ini/tests/unit_tests/unit_tests
+          chmod +x /build_result/libraries/hanami_ini/tests/unit_tests/hanami_ini_unit_tests
+          /build_result/libraries/hanami_ini/tests/unit_tests/hanami_ini_unit_tests
       - name: "Run test: hanami_sqlite"
         run: |
-          chmod +x /build_result/libraries/hanami_sqlite/tests/unit_tests/unit_tests
-          /build_result/libraries/hanami_sqlite/tests/unit_tests/unit_tests
+          chmod +x /build_result/libraries/hanami_sqlite/tests/unit_tests/hanami_sqlite_unit_tests
+          /build_result/libraries/hanami_sqlite/tests/unit_tests/hanami_sqlite_unit_tests
       - name: "Run test: hanami_cluster_parser"
         run: |
-          chmod +x /build_result/libraries/hanami_cluster_parser/tests/unit_tests/unit_tests
-          /build_result/libraries/hanami_cluster_parser/tests/unit_tests/unit_tests
+          chmod +x /build_result/libraries/hanami_cluster_parser/tests/unit_tests/hanami_cluster_parser_unit_tests
+          /build_result/libraries/hanami_cluster_parser/tests/unit_tests/hanami_cluster_parser_unit_tests
       - name: "Run test: hanami_policies"
         run: |
-          chmod +x /build_result/libraries/hanami_policies/tests/unit_tests/unit_tests
-          /build_result/libraries/hanami_policies/tests/unit_tests/unit_tests
+          chmod +x /build_result/libraries/hanami_policies/tests/unit_tests/hanami_policies_unit_tests
+          /build_result/libraries/hanami_policies/tests/unit_tests/hanami_policies_unit_tests
+      - name: "Run test: hanami_args"
+        run: |
+          chmod +x /build_result/libraries/hanami_args/tests/unit_tests/hanami_args_unit_tests
+          /build_result/libraries/hanami_args/tests/unit_tests/hanami_args_unit_tests
 
   memory_leak_tests:
     needs: build
@@ -130,7 +130,7 @@ jobs:
     name: "Memory-Leak-Tests"
     steps:
       - name: Get artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: result
           path: /build_result
@@ -138,12 +138,12 @@ jobs:
         run: ls -l /build_result
       - name: "Run test: hanami_common"
         run: |
-          chmod +x /build_result/libraries/hanami_common/tests/memory_leak_tests/memory_leak_tests
-          /build_result/libraries/hanami_common/tests/memory_leak_tests/memory_leak_tests
+          chmod +x /build_result/libraries/hanami_common/tests/memory_leak_tests/hanami_common_memory_leak_tests
+          /build_result/libraries/hanami_common/tests/memory_leak_tests/hanami_common_memory_leak_tests
       - name: "Run test: hanami_cluster_parser"
         run: |
-          chmod +x /build_result/libraries/hanami_cluster_parser/tests/memory_leak_tests/memory_leak_tests
-          /build_result/libraries/hanami_cluster_parser/tests/memory_leak_tests/memory_leak_tests
+          chmod +x /build_result/libraries/hanami_cluster_parser/tests/memory_leak_tests/hanami_cluster_parser_memory_leak_tests
+          /build_result/libraries/hanami_cluster_parser/tests/memory_leak_tests/hanami_cluster_parser_memory_leak_tests
 
 
   functional_tests:
@@ -154,7 +154,7 @@ jobs:
     name: "Functional-Tests"
     steps:
       - name: Get artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: result
           path: /build_result
@@ -162,16 +162,16 @@ jobs:
         run: ls -l /build_result
       - name: "Run test: hanami_config"
         run: |
-          chmod +x /build_result/libraries/hanami_config/tests/functional_tests/functional_tests
-          /build_result/libraries/hanami_config/tests/functional_tests/functional_tests
+          chmod +x /build_result/libraries/hanami_config/tests/functional_tests/hanami_config_functional_tests
+          /build_result/libraries/hanami_config/tests/functional_tests/hanami_config_functional_tests
       # - name: "Run test: hanami_obj"
       #   run: |
       #     chmod +x /build_result/libraries/hanami_obj/tests/functional_tests/functional_tests
       #     /build_result/libraries/hanami_obj/tests/functional_tests/functional_tests
       - name: "Run test: hanami_database"
         run: |
-          chmod +x /build_result/libraries/hanami_database/tests/functional_tests/functional_tests
-          /build_result/libraries/hanami_database/tests/functional_tests/functional_tests
+          chmod +x /build_result/libraries/hanami_database/tests/functional_tests/hanami_database_functional_tests
+          /build_result/libraries/hanami_database/tests/functional_tests/hanami_database_functional_tests
       # - name: "Run test: hanami_network"
       #   run: |
       #     chmod +x /build_result/libraries/hanami_network/tests/functional_tests/functional_tests

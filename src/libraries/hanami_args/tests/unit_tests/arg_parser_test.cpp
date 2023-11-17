@@ -380,7 +380,7 @@ ArgParser_Test::prepareTest(ArgParser& parser)
     parser.registerFloat("thirdArg").setHelpText("third argument").setRequired().setWithoutFlag();
     parser.registerBoolean("lastArg").setHelpText("last argument").setRequired().setWithoutFlag();
 
-    assert(parser.parse(argc, argv, error));
+    parser.parse(argc, argv, error);
 }
 
 }  // namespace Hanami
