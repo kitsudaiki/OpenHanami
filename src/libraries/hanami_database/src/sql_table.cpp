@@ -133,7 +133,6 @@ SqlTable::insertToDb(json& values, ErrorContainer& error)
         if (values.contains(entry.name) == false && entry.allowNull == false) {
             error.addMeesage("insert into dabase failed, because '" + entry.name
                              + "' is required, but missing in the input-values.");
-            LOG_ERROR(error);
             return false;
         }
         if (values[entry.name].is_string()) {
@@ -146,7 +145,6 @@ SqlTable::insertToDb(json& values, ErrorContainer& error)
 
     // build and run insert-command
     if (m_db->execSqlCommand(&resultItem, createInsertQuery(dbValues), error) == false) {
-        LOG_ERROR(error);
         return false;
     }
 

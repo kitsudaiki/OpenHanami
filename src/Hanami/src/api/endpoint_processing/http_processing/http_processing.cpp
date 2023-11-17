@@ -131,6 +131,8 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
     RequestMessage hanamiRequest;
     BlossomStatus status;
     json result = json::object();
+    json inputValuesJson;
+    std::string userId;
 
     do {
         // parse uri
@@ -141,7 +143,6 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
         }
 
         // parse input-values
-        json inputValuesJson;
         try {
             inputValuesJson = json::parse(hanamiRequest.inputValues);
         }
@@ -180,6 +181,8 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
             break;
         }
 
+        userId = tokenData["id"];
+
         // convert http-type to string
         std::string httpTypeStr = "GET";
         if (hanamiRequest.httpType == Hanami::DELETE_TYPE) {
@@ -200,7 +203,7 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
 
         // write new audit-entry to database
         if (AuditLogTable::getInstance()->addAuditLogEntry(
-                getDatetime(), tokenData["id"], hanamiRequest.id, httpTypeStr, error)
+                getDatetime(), userId, hanamiRequest.id, httpTypeStr, error)
             == false)
         {
             error.addMeesage("ERROR: Failed to write audit-log into database");
@@ -236,7 +239,7 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
     // build responses, based on the status-code
     if (status.statusCode != OK_RTYPE) {
         if (status.statusCode == INTERNAL_SERVER_ERROR_RTYPE) {
-            return internalError_ResponseBuild(httpResponse, error);
+            return internalError_ResponseBuild(httpResponse, userId, inputValuesJson, error);
         }
         else {
             const HttpResponseTypes type = static_cast<HttpResponseTypes>(status.statusCode);
