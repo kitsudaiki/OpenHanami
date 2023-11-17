@@ -245,7 +245,8 @@ sendFile(WebsocketClient* client,
         }
 
         pos += segmentSize;
-    } while (pos < dataSize);
+    }
+    while (pos < dataSize);
 
     return success;
 }
@@ -275,7 +276,8 @@ waitUntilFullyUploaded(const std::string& uuid, Hanami::ErrorContainer& error)
         json progress;
         try {
             progress = json::parse(progressStr);
-        } catch (const json::parse_error& ex) {
+        }
+        catch (const json::parse_error& ex) {
             error.addMeesage("json-parser error: " + std::string(ex.what()));
             LOG_ERROR(error);
             return false;
@@ -312,7 +314,8 @@ uploadCsvData(std::string& result,
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch (const json::parse_error& ex) {
+    }
+    catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         LOG_ERROR(error);
         return false;
@@ -379,7 +382,8 @@ uploadMnistData(std::string& result,
     // init new mnist-data-set
     if (createMnistDataSet(
             result, dataSetName, getFileSize(inputFilePath), getFileSize(labelFilePath), error)
-        == false) {
+        == false)
+    {
         return false;
     }
 
@@ -387,7 +391,8 @@ uploadMnistData(std::string& result,
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch (const json::parse_error& ex) {
+    }
+    catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         LOG_ERROR(error);
         return false;

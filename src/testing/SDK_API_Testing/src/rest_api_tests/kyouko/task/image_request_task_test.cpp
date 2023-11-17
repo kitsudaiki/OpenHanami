@@ -38,7 +38,8 @@ ImageRequestTaskTest::ImageRequestTaskTest(const bool expectSuccess) : TestStep(
     m_testName = "request-task";
     if (expectSuccess) {
         m_testName += " (success)";
-    } else {
+    }
+    else {
         m_testName += " (fail)";
     }
 }
@@ -54,7 +55,8 @@ ImageRequestTaskTest::runTest(json& inputData, Hanami::ErrorContainer& error)
                            inputData["cluster_uuid"],
                            inputData["request_dataset_uuid"],
                            error)
-        != m_expectSuccess) {
+        != m_expectSuccess)
+    {
         return false;
     }
 
@@ -66,7 +68,8 @@ ImageRequestTaskTest::runTest(json& inputData, Hanami::ErrorContainer& error)
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch (const json::parse_error& ex) {
+    }
+    catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
@@ -86,12 +89,14 @@ ImageRequestTaskTest::runTest(json& inputData, Hanami::ErrorContainer& error)
         // parse output
         try {
             jsonItem = json::parse(result);
-        } catch (const json::parse_error& ex) {
+        }
+        catch (const json::parse_error& ex) {
             error.addMeesage("json-parser error: " + std::string(ex.what()));
             return false;
         }
         // std::cout<<jsonItem.dump(4)<<std::endl;
-    } while (jsonItem["state"] != "finished");
+    }
+    while (jsonItem["state"] != "finished");
     end = std::chrono::system_clock::now();
     const float time2 = std::chrono::duration_cast<chronoMilliSec>(end - start).count();
 

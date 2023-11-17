@@ -31,7 +31,8 @@ DataSetCreateMnistTest::DataSetCreateMnistTest(const bool expectSuccess, const s
     m_testName = "create mnist data-set";
     if (expectSuccess) {
         m_testName += " (success)";
-    } else {
+    }
+    else {
         m_testName += " (fail)";
     }
     m_type = type;
@@ -47,16 +48,19 @@ DataSetCreateMnistTest::runTest(json& inputData, Hanami::ErrorContainer& error)
                                     inputData["train_inputs"],
                                     inputData["train_labels"],
                                     error)
-            != m_expectSuccess) {
+            != m_expectSuccess)
+        {
             return false;
         }
-    } else {
+    }
+    else {
         if (Hanami::uploadMnistData(result,
                                     inputData["request_dataset_name"],
                                     inputData["request_inputs"],
                                     inputData["request_labels"],
                                     error)
-            != m_expectSuccess) {
+            != m_expectSuccess)
+        {
             return false;
         }
     }
@@ -69,14 +73,16 @@ DataSetCreateMnistTest::runTest(json& inputData, Hanami::ErrorContainer& error)
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch (const json::parse_error& ex) {
+    }
+    catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
 
     if (m_type == "train") {
         inputData["train_dataset_uuid"] = jsonItem["uuid"];
-    } else {
+    }
+    else {
         inputData["request_dataset_uuid"] = jsonItem["uuid"];
     }
 

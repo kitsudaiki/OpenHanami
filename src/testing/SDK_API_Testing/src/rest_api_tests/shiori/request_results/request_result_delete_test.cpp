@@ -29,7 +29,8 @@ RequestResultDeleteTest::RequestResultDeleteTest(const bool expectSuccess) : Tes
     m_testName = "delete request-result";
     if (expectSuccess) {
         m_testName += " (success)";
-    } else {
+    }
+    else {
         m_testName += " (fail)";
     }
 }
@@ -53,7 +54,8 @@ RequestResultDeleteTest::runTest(json& inputData, Hanami::ErrorContainer& error)
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch (const json::parse_error& ex) {
+    }
+    catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }

@@ -81,7 +81,8 @@ TestThread::run()
             std::cout << std::endl;
             std::cout << "RESULT: ERROR" << std::endl;
             break;
-        } else {
+        }
+        else {
             std::cout << std::endl;
             std::cout << "RESULT: SUCCESS" << std::endl;
         }

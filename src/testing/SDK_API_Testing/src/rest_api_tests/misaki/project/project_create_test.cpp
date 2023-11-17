@@ -29,7 +29,8 @@ ProjectCreateTest::ProjectCreateTest(const bool expectSuccess) : TestStep(expect
     m_testName = "create user";
     if (expectSuccess) {
         m_testName += " (success)";
-    } else {
+    }
+    else {
         m_testName += " (fail)";
     }
 }
@@ -40,7 +41,8 @@ ProjectCreateTest::runTest(json& inputData, Hanami::ErrorContainer& error)
     // create new user
     std::string result;
     if (Hanami::createProject(result, inputData["project_id"], inputData["project_name"], error)
-        != m_expectSuccess) {
+        != m_expectSuccess)
+    {
         return false;
     }
 
@@ -52,7 +54,8 @@ ProjectCreateTest::runTest(json& inputData, Hanami::ErrorContainer& error)
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch (const json::parse_error& ex) {
+    }
+    catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }

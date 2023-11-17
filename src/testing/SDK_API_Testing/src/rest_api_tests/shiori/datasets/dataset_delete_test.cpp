@@ -30,7 +30,8 @@ DataSetDeleteTest::DataSetDeleteTest(const bool expectSuccess, const std::string
     m_testName = "delete data-set";
     if (expectSuccess) {
         m_testName += " (success)";
-    } else {
+    }
+    else {
         m_testName += " (fail)";
     }
     m_type = type;
@@ -42,9 +43,11 @@ DataSetDeleteTest::runTest(json& inputData, Hanami::ErrorContainer& error)
     std::string uuid = "";
     if (m_type == "train") {
         uuid = inputData["train_dataset_uuid"];
-    } else if (m_type == "request") {
+    }
+    else if (m_type == "request") {
         uuid = inputData["request_dataset_uuid"];
-    } else {
+    }
+    else {
         uuid = inputData["base_dataset_uuid"];
     }
 
@@ -62,7 +65,8 @@ DataSetDeleteTest::runTest(json& inputData, Hanami::ErrorContainer& error)
     json jsonItem;
     try {
         jsonItem = json::parse(result);
-    } catch (const json::parse_error& ex) {
+    }
+    catch (const json::parse_error& ex) {
         error.addMeesage("json-parser error: " + std::string(ex.what()));
         return false;
     }
