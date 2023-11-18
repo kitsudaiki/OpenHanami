@@ -202,13 +202,15 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
         }
 
         // write new audit-entry to database
-        if (AuditLogTable::getInstance()->addAuditLogEntry(
-                getDatetime(), userId, hanamiRequest.id, httpTypeStr, error)
-            == false)
-        {
-            error.addMeesage("ERROR: Failed to write audit-log into database");
-            status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-            break;
+        if (hanamiRequest.httpType != Hanami::GET_TYPE) {
+            if (AuditLogTable::getInstance()->addAuditLogEntry(
+                    getDatetime(), userId, hanamiRequest.id, httpTypeStr, error)
+                == false)
+            {
+                error.addMeesage("ERROR: Failed to write audit-log into database");
+                status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+                break;
+            }
         }
 
         if (hanamiRequest.id != "v1/auth") {
