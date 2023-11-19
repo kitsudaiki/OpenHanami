@@ -32,7 +32,7 @@ import configparser
 
 
 config = configparser.ConfigParser()
-config.read('testing.conf')
+config.read('/etc/hanami/hanami_testing.conf')
 
 address = config["connection"]["address"]
 test_user_id = config["connection"]["test_user"]
