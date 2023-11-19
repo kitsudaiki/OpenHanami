@@ -4,6 +4,6 @@
 for FILE in $(git diff --cached --name-only | grep -E '.*\.(c$|cpp$|h$|hpp$)')
 do
     clang-format-15 -style=file:.clang-format -i $FILE
-    git add $FILE
+    git add $FILE | true
 done
 

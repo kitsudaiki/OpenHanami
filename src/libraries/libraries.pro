@@ -37,4 +37,3 @@ hanami_database.depends = hanami_sqlite
 hanami_policies.depends = hanami_config hanami_args
 libKitsunemimiHanamiSegmentParser.depends = hanami_config hanami_args
 hanami_cluster_parser.depends = hanami_config hanami_args
-src/hanami_sdk.depends = hanami_crypto
