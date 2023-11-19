@@ -57,24 +57,6 @@ This document should help to setup a local environment for development.
 
     2. In file `/etc/hanami/hanami_testing.conf` update the path to the 4 MNIST files, so they point to the MNIST-files, which you downloaded eralier.
 
-- Setup HTTPS-Connection
-
-    !!! info 
-
-        This section contains only a workaround for testing. This will be fixed in the near future, so this here is only a temporary solution.
-
-    The backend itself only listen on HTTPS. The ssl-termination for HTTPS-connections is done by nginx or a similar service, which works as proxy. The `SDK_API_Testing` requires a HTTPS-connection. This tool in its current form is deprecated anyway, so it is not worth to correctly implement a switch to choose, if it should use ssl or not. So as workaround a local nginx is used to provide the ssl.
-
-    ```
-    apt-get install nginx
-
-    cp example_configs/nginx/hanami.conf /etc/nginx/sites-available/
-    
-    ln -s /etc/nginx/sites-available/hanami.conf /etc/nginx/sites-enabled/hanami.conf
-    
-    service nginx restart
-    ```
-
 ## Build project
 
 ### With Qt Creator
@@ -90,3 +72,33 @@ QMAKE_CXX=clang++-15 qmake "Hanami.pro" -r -spec linux-clang "CONFIG += staticli
 
 make -j8
 ```
+
+## Testing
+
+There is a python-script, which uses the python-version fo the SDK to run basic tests against the API.
+
+- install python:
+
+```
+sudo apt-get install python3 python3-pip python3-venv
+```
+
+- go into the test-directory 
+
+`cd Hanami/testing/python_sdk_api`
+
+
+- create and prepare python-env
+
+```
+python3 -m venv hanami_env
+
+source hanami_env/bin/activate
+
+pip3 install -r hanami_sdk/requirements.txt 
+```
+
+- run tests
+
+`./sdk_api_test.py`
+
