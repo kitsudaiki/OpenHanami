@@ -1,11 +1,9 @@
 /**
- * @file        train_data_commands.go
-  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
  * @copyright   Apache License Version 2.0
  *
- *      Copyright 2021 Tobias Anker
+ *      Copyright 2022 Tobias Anker
  *
  *      Licensed under the Apache License, Version 2.0 (the "License");
  *      you may not use this file except in compliance with the License.
@@ -20,13 +18,29 @@
  *      limitations under the License.
  */
 
- package http_request
+package main
 
 import (
+    "fmt"
+    "github.com/spf13/cobra"
+    "os"
+    "hanamictl/resources"
 )
 
-func GetThreadMapping_Request() (bool, string) {
-	path := "control/v1/threading"
-	vars := ""
-    return SendGet_Request(path, vars)
+var rootCmd = &cobra.Command{Use: "hanamictl"}
+
+func init() {
+    hanami_resources.Init_User_Commands(rootCmd);
+    hanami_resources.Init_Project_Commands(rootCmd);
+    hanami_resources.Init_Checkpoint_Commands(rootCmd);
+    hanami_resources.Init_RequestResult_Commands(rootCmd);
+    hanami_resources.Init_Task_Commands(rootCmd);
+    hanami_resources.Init_Cluster_Commands(rootCmd);
+}
+
+func main() {
+    if err := rootCmd.Execute(); err != nil {
+        fmt.Println(err)
+        os.Exit(1)
+    }
 }

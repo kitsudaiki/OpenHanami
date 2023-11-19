@@ -1,11 +1,9 @@
 /**
- * @file        user_commands.go
-  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
  * @copyright   Apache License Version 2.0
  *
- *      Copyright 2021 Tobias Anker
+ *      Copyright 2022 Tobias Anker
  *
  *      Licensed under the Apache License, Version 2.0 (the "License");
  *      you may not use this file except in compliance with the License.
@@ -20,11 +18,12 @@
  *      limitations under the License.
  */
 
-package http_request
+package hanami_resources
 
-func GetRestApiDocumentation_Request() (bool, string) {
-	path := "control/misaka/v1/documentation/api/rest"
-	vars := ""
-	return SendGet_Request(path, vars)
-}
- 
+import (
+    //"fmt"
+    //"hanamictl/common"
+    //"github.com/spf13/cobra"
+    //"github.com/kitsudaiki/Hanami"
+)
+
