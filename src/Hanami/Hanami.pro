@@ -69,11 +69,6 @@ LIBS += -L../libraries/../libraries/hanami_cpu/src/debug -lhanami_cpu
 LIBS += -L../libraries/../libraries/hanami_cpu/src/release -lhanami_cpu
 INCLUDEPATH += ../libraries/hanami_cpu/include
 
-LIBS += -L../sdk/cpp/hanami_sdk/src -lhanami_sdk
-LIBS += -L../sdk/cpp/hanami_sdk/src/debug -lhanami_sdk
-LIBS += -L../sdk/cpp/hanami_sdk/src/release -lhanami_sdk
-INCLUDEPATH += ../sdk/cpp/hanami_sdk/include
-
 INCLUDEPATH += ../third-party-libs/jwt-cpp/include
 INCLUDEPATH += ../third-party-libs/json/include
 
