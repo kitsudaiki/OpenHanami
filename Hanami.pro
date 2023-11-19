@@ -10,4 +10,3 @@ SUBDIRS =  src/libraries
 SUBDIRS += src/Hanami
 
 src/Hanami.depends = libraries
-src/testing.depends = core libraries
