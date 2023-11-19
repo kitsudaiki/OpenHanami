@@ -13,6 +13,6 @@ testing/ansible_deploy/.vagrant/
 .git-hooks/post-commit
 .git-hooks/post-merge
 .git-hooks/pre-push
-src/sdk/python/hanami_sdk/__pycache__/
+__pycache__
 proto3_pb2.py
 hanami_env
