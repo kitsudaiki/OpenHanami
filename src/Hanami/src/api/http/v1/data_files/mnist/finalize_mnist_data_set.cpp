@@ -106,7 +106,7 @@ FinalizeMnistDataSet::runTask(BlossomIO& blossomIO,
     // read label from temp-file
     Hanami::DataBuffer labelBuffer;
     if (TempFileHandler::getInstance()->getData(labelBuffer, labelUuid) == false) {
-        status.errorMessage = "Label-data with uuid '" + inputUuid + "' not found.";
+        status.errorMessage = "Label-data with uuid '" + labelUuid + "' not found.";
         status.statusCode = NOT_FOUND_RTYPE;
         LOG_DEBUG(status.errorMessage);
         return false;
@@ -120,8 +120,9 @@ FinalizeMnistDataSet::runTask(BlossomIO& blossomIO,
     }
 
     // delete temp-files
-    TempFileHandler::getInstance()->removeData(inputUuid);
-    TempFileHandler::getInstance()->removeData(labelUuid);
+    // TODO: error-handling
+    TempFileHandler::getInstance()->removeData(inputUuid, userContext, error);
+    TempFileHandler::getInstance()->removeData(labelUuid, userContext, error);
 
     // create output
     blossomIO.output["uuid"] = uuid;

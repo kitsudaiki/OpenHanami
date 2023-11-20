@@ -87,7 +87,7 @@ def switch_to_direct_mode(token: str, address: str, cluster_uuid: str):
     # create initial request for the websocket-connection
     initial_ws_msg = {
         "token": token,
-        "target": "kyouko",
+        "target": "cluster",
         "uuid": cluster_uuid,
     }
     body_str = json.dumps(initial_ws_msg)

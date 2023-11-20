@@ -35,6 +35,7 @@
 #include <database/error_log_table.h>
 #include <database/projects_table.h>
 #include <database/request_result_table.h>
+#include <database/tempfile_table.h>
 #include <database/users_table.h>
 #include <hanami_common/files/text_file.h>
 #include <hanami_common/logger.h>
@@ -239,6 +240,14 @@ HanamiRoot::initDatabase(Hanami::ErrorContainer& error)
     CheckpointTable* clusterCheckpointTable = CheckpointTable::getInstance();
     if (clusterCheckpointTable->initTable(error) == false) {
         error.addMeesage("Failed to initialize checkpoint-table in database.");
+        LOG_ERROR(error);
+        return false;
+    }
+
+    // initialize tempfile-table
+    TempfileTable* tempfileTable = TempfileTable::getInstance();
+    if (tempfileTable->initTable(error) == false) {
+        error.addMeesage("Failed to initialize tempfile-table in database.");
         LOG_ERROR(error);
         return false;
     }

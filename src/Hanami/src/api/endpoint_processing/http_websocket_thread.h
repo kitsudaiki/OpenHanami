@@ -57,6 +57,7 @@ class HttpWebsocketThread : public Hanami::Thread
 
     bool sendData(const void* data, const uint64_t dataSize);
     Cluster* m_targetCluster = nullptr;
+    FileHandle* m_fileHandle = nullptr;
     void closeClient();
 
    protected:
@@ -74,7 +75,7 @@ class HttpWebsocketThread : public Hanami::Thread
     // websocket-functions and variables
     bool initWebsocket(http::request<http::string_body>& httpRequest);
     void runWebsocket();
-    bool processInitialMessage(const std::string& message, Hanami::ErrorContainer& error);
+    bool processInitialMessage(const std::string& message, std::string& errorMessage);
 
     websocket::stream<tcp::socket&>* m_webSocket = nullptr;
     std::string m_uuid = "";

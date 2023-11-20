@@ -22,57 +22,123 @@
 
 #include "temp_file_handler.h"
 
-#include <hanami_common/files/binary_file.h>
+#include <database/tempfile_table.h>
 #include <hanami_common/methods/file_methods.h>
 #include <hanami_config/config_handler.h>
 
 TempFileHandler* TempFileHandler::instance = nullptr;
 
-/**
- * @brief constructor
- */
 TempFileHandler::TempFileHandler() {}
 
-/**
- * @brief destructor and delete all registered temporary files
- */
 TempFileHandler::~TempFileHandler() {}
 
 /**
  * @brief initialize new temporary file
  *
- * @param id id of the new temporary file
- * @param size size to allocate
+ * @param uuid uuid of the new temporary file
+ * @param name name of the file for easier identification
+ * @param relatedUuid uuid of the related resource
+ * @param size number of bytes of the file, to allocate the storage on disc
+ * @param userContext user-context for database-access
+ * @param error reference for error-output
  *
- * @return false, if id already exist or storage-allocation failed, else true
+ * @return true, if successful, else false
  */
 bool
-TempFileHandler::initNewFile(const std::string& id, const uint64_t size)
+TempFileHandler::initNewFile(std::string& uuid,
+                             const std::string& name,
+                             const std::string& relatedUuid,
+                             const uint64_t size,
+                             const UserContext& userContext,
+                             Hanami::ErrorContainer& error)
 {
-    if (m_tempFiles.find(id) != m_tempFiles.end()) {
-        return false;
-    }
+    uuid = generateUuid().toString();
 
     bool success = false;
     std::string targetFilePath = GET_STRING_CONFIG("storage", "data_set_location", success);
-    targetFilePath += "/" + id;
+    targetFilePath += "/" + uuid;
 
-    Hanami::ErrorContainer error;
-    Hanami::BinaryFile* tempfile = new Hanami::BinaryFile(targetFilePath);
-    if (tempfile->allocateStorage(size, error) == false) {
-        LOG_ERROR(error);
-        return false;
+    bool result = false;
+
+    Hanami::BinaryFile* tempfile = nullptr;
+    do {
+        // allocate storage on disc
+        tempfile = new Hanami::BinaryFile(targetFilePath);
+        if (tempfile->allocateStorage(size, error) == false) {
+            break;
+        }
+
+        // calculate number of segments
+        uint64_t numberOfInputSegments = size / TRANSFER_SEGMENT_SIZE;
+        if (numberOfInputSegments % TRANSFER_SEGMENT_SIZE == 0) {
+            numberOfInputSegments++;
+        }
+
+        // create file-handle object
+        FileHandle fileHandle;
+        fileHandle.userContext = userContext;
+        fileHandle.file = tempfile;
+        fileHandle.bitBuffer = new Hanami::BitBuffer(numberOfInputSegments);
+
+        auto ret = m_tempFiles.try_emplace(uuid, std::move(fileHandle));
+        if (ret.second == false) {
+            error.addMeesage("UUID '" + uuid + "' already exist in tempfiles");
+            break;
+        }
+        else {
+            // set pointer to default again to avoid a try of double-free
+            fileHandle.bitBuffer = nullptr;
+            fileHandle.file = nullptr;
+        }
+
+        // create database-endtry
+        if (TempfileTable::getInstance()->addTempfile(
+                uuid, "dataset", relatedUuid, name, size, targetFilePath, userContext, error)
+            == false)
+        {
+            error.addMeesage("Failed to add tempfile-entry with UUID '" + uuid + "' to database");
+            LOG_ERROR(error);
+            break;
+        }
+
+        result = true;
+        break;
+    }
+    while (true);
+
+    // cleanup if failed
+    if (result == false) {
+        auto it = m_tempFiles.find(uuid);
+        if (it != m_tempFiles.end()) {
+            m_tempFiles.erase(it);
+        }
+
+        TempfileTable::getInstance()->deleteTempfile(uuid, userContext, error);
     }
 
-    auto ret = m_tempFiles.try_emplace(id, tempfile);
-    if (ret.second == false) {
-        error.addMeesage("ID '" + id + "' already exist in tempfiles");
-        LOG_ERROR(error);
-        delete tempfile;
-        return false;
+    return result;
+}
+
+/**
+ * @brief get handler of a temporaray file
+ *
+ * @param uuid uuid of the temporary file
+ *
+ * @return pointer to handle if uuid found, else nullptr
+ */
+FileHandle*
+TempFileHandler::getFileHandle(const std::string& uuid, const UserContext& context)
+{
+    const auto it = m_tempFiles.find(uuid);
+    if (it != m_tempFiles.end()) {
+        if (context.userId == it->second.userContext.userId
+            && context.projectId == it->second.userContext.projectId)
+        {
+            return &it->second;
+        }
     }
 
-    return true;
+    return nullptr;
 }
 
 /**
@@ -94,19 +160,23 @@ TempFileHandler::addDataToPos(const std::string& uuid,
     Hanami::ErrorContainer error;
 
     const auto it = m_tempFiles.find(uuid);
-    if (it != m_tempFiles.end()) {
-        Hanami::BinaryFile* ptr = it->second;
-        if (ptr->writeDataIntoFile(data, pos, size, error) == false) {
-            LOG_ERROR(error);
-            return false;
-        }
-
-        return true;
+    if (it == m_tempFiles.end()) {
+        error.addMeesage("File with UUID '" + uuid + "' is unknown.");
+        LOG_ERROR(error);
+        return false;
     }
 
-    LOG_ERROR(error);
+    // write data to file
+    Hanami::BinaryFile* ptr = it->second.file;
+    if (ptr->writeDataIntoFile(data, pos, size, error) == false) {
+        LOG_ERROR(error);
+        return false;
+    }
 
-    return false;
+    // update progress in bit-buffer
+    it->second.bitBuffer->set(pos / TRANSFER_SEGMENT_SIZE, true);
+
+    return true;
 }
 
 /**
@@ -124,7 +194,7 @@ TempFileHandler::getData(Hanami::DataBuffer& result, const std::string& uuid)
 
     const auto it = m_tempFiles.find(uuid);
     if (it != m_tempFiles.end()) {
-        Hanami::BinaryFile* ptr = it->second;
+        Hanami::BinaryFile* ptr = it->second.file;
         return ptr->readCompleteFile(result, error);
     }
 
@@ -132,33 +202,48 @@ TempFileHandler::getData(Hanami::DataBuffer& result, const std::string& uuid)
 }
 
 /**
- * @brief remove an id from this class and delete the file within the storage
+ * @brief remove an uuid from this class and database and delete the file within the storage
  *
- * @param id id of the temporary file
+ * @param uuid uuid of the temporary file
+ * @param userContext user-context for database-access
+ * @param error reference for error-output
  *
- * @return false, if id not found, else true
+ * @return false, if uuid not found, else true
  */
 bool
-TempFileHandler::removeData(const std::string& id)
+TempFileHandler::removeData(const std::string& uuid,
+                            const UserContext& userContext,
+                            Hanami::ErrorContainer& error)
 {
-    bool success = false;
-    Hanami::ErrorContainer error;
-    std::string targetFilePath = GET_STRING_CONFIG("storage", "data_set_location", success);
-
-    const auto it = m_tempFiles.find(id);
-    if (it != m_tempFiles.end()) {
-        Hanami::BinaryFile* ptr = it->second;
-        if (ptr->closeFile(error) == false) {
-            // TODO: handle error
-        }
-        delete ptr;
-        Hanami::deleteFileOrDir(targetFilePath + "/" + it->first, error);
-        m_tempFiles.erase(it);
-
-        return true;
+    // check tempfile-database form entry
+    json tempfileData;
+    if (TempfileTable::getInstance()->getTempfile(tempfileData, uuid, userContext, error, true)
+        == false)
+    {
+        error.addMeesage("Tempfile with '" + uuid + "' not found in database");
+        return false;
     }
 
-    return false;
+    // close file and remove from tempfile-handler
+    const auto it = m_tempFiles.find(uuid);
+    if (it != m_tempFiles.end()) {
+        m_tempFiles.erase(it);
+    }
+
+    // delete file from disc
+    const std::string targetFilePath = tempfileData["location"];
+    if (Hanami::deleteFileOrDir(targetFilePath, error) == false) {
+        error.addMeesage("Failed to delete file '" + targetFilePath + "' from disc");
+        LOG_ERROR(error);
+    }
+
+    // delete from tempfile-database
+    if (TempfileTable::getInstance()->deleteTempfile(uuid, userContext, error) == false) {
+        error.addMeesage("Filed to delete tempfile with UUID '" + uuid + "' from database");
+        LOG_ERROR(error);
+    }
+
+    return true;
 }
 
 /**
@@ -180,9 +265,8 @@ TempFileHandler::moveData(const std::string& uuid,
 
     const auto it = m_tempFiles.find(uuid);
     if (it != m_tempFiles.end()) {
-        Hanami::BinaryFile* ptr = it->second;
+        Hanami::BinaryFile* ptr = it->second.file;
         if (ptr->closeFile(error) == false) {
-            LOG_ERROR(error);
             return false;
         }
 
@@ -191,7 +275,6 @@ TempFileHandler::moveData(const std::string& uuid,
         {
             error.addMeesage("Failed to move temp-file with uuid '" + uuid
                              + "' to target-locateion '" + targetLocation + "'");
-            LOG_ERROR(error);
             return false;
         }
 
@@ -203,7 +286,6 @@ TempFileHandler::moveData(const std::string& uuid,
 
     error.addMeesage("Failed to move temp-file with uuid '" + uuid
                      + ", because it can not be found.");
-    LOG_ERROR(error);
 
     return false;
 }

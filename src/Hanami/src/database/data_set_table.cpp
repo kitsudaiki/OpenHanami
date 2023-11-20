@@ -46,11 +46,6 @@ DataSetTable::DataSetTable() : HanamiSqlTable(Hanami::SqlDatabase::getInstance()
     location.name = "location";
     location.hide = true;
     m_tableHeader.push_back(location);
-
-    DbHeaderEntry tempFiles;
-    tempFiles.name = "temp_files";
-    tempFiles.hide = true;
-    m_tableHeader.push_back(tempFiles);
 }
 
 /**
@@ -158,53 +153,6 @@ DataSetTable::deleteDataSet(const std::string& datasetUuid,
 }
 
 /**
- * @brief update dataset in database to fully uploaded
- *
- * @param uuid uuid of the dataset
- * @param fileUuid uuid of the temporary file
- * @param error reference for error-output
- *
- * @return true, if successful, else false
- */
-bool
-DataSetTable::setUploadFinish(const std::string& uuid,
-                              const std::string& fileUuid,
-                              Hanami::ErrorContainer& error)
-{
-    std::vector<RequestCondition> conditions;
-    conditions.emplace_back("uuid", uuid);
-    json result;
-
-    UserContext userContext;
-    userContext.isAdmin = true;
-
-    // get dataset from db
-    if (get(result, userContext, conditions, error, true) == false) {
-        error.addMeesage("Failed to get dataset with UUID '" + uuid + "' from database");
-        LOG_ERROR(error);
-        return false;
-    }
-
-    // check response from database
-    if (result.contains("temp_files") == false) {
-        error.addMeesage("Entry get for the dataset with UUID '" + uuid + "' is broken");
-        LOG_ERROR(error);
-        return false;
-    }
-
-    // update temp-files entry to 100%
-    result["temp_files"][fileUuid] = 1.0f;
-
-    if (update(result, userContext, conditions, error) == false) {
-        error.addMeesage("Failed to update entry of dataset with UUID '" + uuid + "' in database");
-        LOG_ERROR(error);
-        return false;
-    }
-
-    return true;
-}
-
-/**
  * @brief getDateSetInfo
  * @param dataUuid
  * @param error
@@ -228,9 +176,6 @@ DataSetTable::getDateSetInfo(json& result,
         error.addMeesage("Failed the read information from file '" + location + "'");
         return false;
     }
-
-    // remove irrelevant fields
-    result.erase("temp_files");
 
     return true;
 }

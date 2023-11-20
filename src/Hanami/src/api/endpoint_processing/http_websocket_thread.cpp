@@ -28,6 +28,9 @@
 #include <api/websocket/file_upload.h>
 #include <core/cluster/cluster.h>
 #include <core/cluster/cluster_handler.h>
+#include <core/temp_file_handler.h>
+#include <database/cluster_table.h>
+#include <database/tempfile_table.h>
 #include <hanami_common/threading/event.h>
 #include <hanami_root.h>
 
@@ -276,75 +279,88 @@ HttpWebsocketThread::sendData(const void* data, const uint64_t dataSize)
  * @return true, if successful, else false
  */
 bool
-HttpWebsocketThread::processInitialMessage(const std::string& message, ErrorContainer& error)
+HttpWebsocketThread::processInitialMessage(const std::string& message, std::string& errorMessage)
 {
+    ErrorContainer error;
+
+    // precehck if already init
+    if (m_clientInit) {
+        error.addMeesage("Websocket alread initialized and can not be initialized again.");
+        LOG_ERROR(error);
+        return false;
+    }
+
+    // parse incoming initializing message
+    json content;
+    try {
+        content = json::parse(message);
+    }
+    catch (const json::parse_error& ex) {
+        errorMessage = "json-parser error: " + std::string(ex.what());
+    }
+
+    // check authentication
     BlossomStatus status;
+    json tokenData = json::object();
+    json tokenInputValues = json::object();
+    tokenInputValues["token"] = content["token"];
+    tokenInputValues["http_type"] = static_cast<uint32_t>(HttpRequestType::GET_TYPE);
+    if (HanamiRoot::httpServer->httpProcessing->triggerBlossom(
+            tokenData, "validate", "Token", json::object(), tokenInputValues, status, error)
+        == false)
+    {
+        errorMessage = "Token invalid";
+        return false;
+    }
 
-    do {
-        // precehck if already init
-        if (m_clientInit) {
-            error.addMeesage("Websocket alread initialized and can not be initialized again.");
-            status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-            break;
-        }
+    const UserContext userContext(tokenData);
 
-        // parse incoming initializing message
-        json content;
-        try {
-            content = json::parse(message);
-        }
-        catch (const json::parse_error& ex) {
-            error.addMeesage("Parsing of initial websocket-message failed");
-            error.addMeesage("json-parser error: " + std::string(ex.what()));
-            status.statusCode = BAD_REQUEST_RTYPE;
-            break;
-        }
+    // forward connection to shiori or hanami
+    if (content["target"] == "cluster") {
+        const std::string clusterUuid = content["uuid"];
 
-        RequestMessage requestMsg;
-
-        requestMsg.id = "v1/foreward";
-        requestMsg.httpType = HttpRequestType::GET_TYPE;
-        m_target = content["target"];
-
-        // check authentication
-        json tokenData = json::object();
-        json tokenInputValues = json::object();
-        tokenInputValues["token"] = content["token"];
-        tokenInputValues["http_type"] = static_cast<uint32_t>(requestMsg.httpType);
-        tokenInputValues["endpoint"] = requestMsg.id;
-        if (HanamiRoot::httpServer->httpProcessing->triggerBlossom(
-                tokenData, "validate", "Token", json::object(), tokenInputValues, status, error)
+        // check if uuid exist in context of the user and project
+        json clusterData = json::object();
+        if (ClusterTable::getInstance()->getCluster(clusterData, clusterUuid, userContext, error)
             == false)
         {
-            error.addMeesage("Permission-check failed");
-            break;
+            errorMessage = "Cluster with UUID '" + clusterUuid + "' not found";
+            return false;
         }
 
-        // forward connection to shiori or hanami
-        if (m_target == "kyouko") {
-            const std::string getClusterUuid = content["uuid"];
-            m_targetCluster = ClusterHandler::getInstance()->getCluster(getClusterUuid);
-            m_targetCluster->msgClient = this;
-            m_clientInit = true;
-            return true;
-        }
-        else if (m_target == "shiori") {
-            m_clientInit = true;
-            return true;
-        }
+        // ini local socket
+        m_targetCluster = ClusterHandler::getInstance()->getCluster(clusterUuid);
+        m_targetCluster->msgClient = this;
+        m_clientInit = true;
+        m_target = content["target"];
 
-        error.addMeesage("Session-forwarding to target '" + m_target + "' is not allowed");
-        status.statusCode = BAD_REQUEST_RTYPE;
-
-        break;
+        return true;
     }
-    while (true);
+    else if (content["target"] == "file_upload") {
+        const std::string fileUuid = content["uuid"];
 
-    if (status.statusCode == INTERNAL_SERVER_ERROR_RTYPE) {
-        LOG_ERROR(error);
-    }
-    else {
-        LOG_DEBUG(error.toString());
+        // check if uuid exist in context of the user and project
+        json tempfileData = json::object();
+        if (TempfileTable::getInstance()->getTempfile(tempfileData, fileUuid, userContext, error)
+            == false)
+        {
+            errorMessage = "Tempfile with UUID '" + fileUuid + "' not found";
+            return false;
+        }
+
+        // ini local socket
+        m_fileHandle = TempFileHandler::getInstance()->getFileHandle(fileUuid, userContext);
+        if (m_fileHandle == nullptr) {
+            errorMessage = "Tempfile with UUID '" + fileUuid + "' not found";
+            error.addMeesage("Tempfile with UUID '" + fileUuid + "'exist in database, "
+                             "but not in file-handler");
+            LOG_ERROR(error, userContext.userId);
+            return false;
+        }
+        m_clientInit = true;
+        m_target = content["target"];
+
+        return true;
     }
 
     return false;
@@ -361,6 +377,7 @@ HttpWebsocketThread::closeClient()
         m_targetCluster->msgClient = nullptr;
     }
     m_targetCluster = nullptr;
+    m_fileHandle = nullptr;
 }
 
 /**
@@ -369,7 +386,6 @@ HttpWebsocketThread::closeClient()
 void
 HttpWebsocketThread::runWebsocket()
 {
-    ErrorContainer error;
     m_websocketClosed = false;
 
     try {
@@ -394,19 +410,17 @@ HttpWebsocketThread::runWebsocket()
                 m_uuid = generateUuid().toString();
 
                 LOG_DEBUG("got initial websocket-message: '" + msg + "'");
-                bool success = true;
-                if (processInitialMessage(msg, error) == false) {
-                    success = false;
-                    error.addMeesage("Failed initializing of websocket-forwarding");
-                    LOG_ERROR(error);
-                    error.reset();
-                }
+                std::string errorMessage = "";
+                const bool success = processInitialMessage(msg, errorMessage);
 
                 // build response-message
                 json response = json::object();
                 response["success"] = success;
                 if (success) {
                     response["uuid"] = m_uuid;
+                }
+                else {
+                    response["error"] = errorMessage;
                 }
 
                 const std::string responseMsg = response.dump();
@@ -415,13 +429,15 @@ HttpWebsocketThread::runWebsocket()
                 m_waitForInput = true;
             }
             else {
-                if (m_target == "kyouko") {
+                if (m_target == "cluster") {
                     recvClusterInputMessage(
                         m_targetCluster, buffer.data().data(), buffer.data().size());
                 }
-                else if (m_target == "shiori") {
-                    recvFileUploadPackage(buffer.data().data(), buffer.data().size());
-                    m_waitForInput = true;
+                else if (m_target == "file_upload") {
+                    std::string errorMessage;
+                    const bool ret = recvFileUploadPackage(
+                        m_fileHandle, buffer.data().data(), buffer.data().size(), errorMessage);
+                    sendFileUploadResponse(this, ret, errorMessage);
                 }
             }
         }

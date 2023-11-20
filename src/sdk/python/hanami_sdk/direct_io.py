@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from websockets.sync.client import connect
-from hanami_sdk import proto3_pb2
+from hanami_sdk.hanami_messages import proto3_pb2
 import asyncio
 
 

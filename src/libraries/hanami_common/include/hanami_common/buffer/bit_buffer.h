@@ -3,14 +3,20 @@
 
 #include <stdint.h>
 
-#include <array>
 #include <cstring>
+#include <vector>
 
-template <uint64_t numberOfBits>
+namespace Hanami
+{
+
 class BitBuffer
 {
    public:
-    BitBuffer() { clear(); }
+    BitBuffer(const uint64_t numberOfBits) : m_numberOfBits(numberOfBits)
+    {
+        m_data = std::vector<uint8_t>((numberOfBits / 8) + 1, 0);
+        m_counter = 0;
+    }
 
     /**
      * @brief set buffer to zero
@@ -75,9 +81,11 @@ class BitBuffer
     bool isComplete() { return m_numberOfBits == m_counter; }
 
    private:
-    std::array<uint8_t, (numberOfBits / 8) + 1> m_data;
-    const uint64_t m_numberOfBits = numberOfBits;
+    std::vector<uint8_t> m_data;
+    const uint64_t m_numberOfBits;
     uint64_t m_counter = 0;
 };
+
+}  // namespace Hanami
 
 #endif  // BIT_BUFFER_H

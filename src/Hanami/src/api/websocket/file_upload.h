@@ -25,6 +25,14 @@
 
 #include <common.h>
 
-bool recvFileUploadPackage(const void* data, const uint64_t dataSize);
+class HttpWebsocketThread;
+
+bool recvFileUploadPackage(FileHandle* fileHandle,
+                           const void* data,
+                           const uint64_t dataSize,
+                           std::string& errorMessage);
+void sendFileUploadResponse(HttpWebsocketThread* msgClient,
+                            const bool success,
+                            const std::string& errorMessage);
 
 #endif  // FILE_UPLOAD_H

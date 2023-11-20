@@ -87,7 +87,6 @@ GetCheckpoint::runTask(BlossomIO& blossomIO,
     blossomIO.output.erase("owner_id");
     blossomIO.output.erase("project_id");
     blossomIO.output.erase("visibility");
-    blossomIO.output.erase("temp_files");
 
     return true;
 }

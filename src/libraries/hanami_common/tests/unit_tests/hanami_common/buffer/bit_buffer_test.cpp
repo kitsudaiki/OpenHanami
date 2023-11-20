@@ -14,7 +14,7 @@ BitBuffer_Test::BitBuffer_Test() : Hanami::CompareTestHelper("BitBuffer_Test")
 void
 BitBuffer_Test::set_get_test()
 {
-    BitBuffer<10> buffer;
+    BitBuffer buffer(10);
     buffer.set(1, true);
 
     TEST_EQUAL(buffer.get(100), false);
@@ -27,7 +27,7 @@ BitBuffer_Test::set_get_test()
 void
 BitBuffer_Test::complete_test()
 {
-    BitBuffer<10> buffer;
+    BitBuffer buffer(10);
 
     TEST_EQUAL(buffer.isComplete(), false);
     buffer.set(0, true);
