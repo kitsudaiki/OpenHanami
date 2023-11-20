@@ -6,6 +6,7 @@
  *  @copyright MIT License
  */
 
+#include <hanami_common/buffer/bit_buffer_test.h>
 #include <hanami_common/buffer/data_buffer_test.h>
 #include <hanami_common/buffer/item_buffer_test.h>
 #include <hanami_common/buffer/ring_buffer_test.h>
@@ -29,6 +30,7 @@
 int
 main()
 {
+    Hanami::BitBuffer_Test();
     Hanami::DataBuffer_Test();
     Hanami::ItemBuffer_Test();
     Hanami::RingBuffer_Test();
