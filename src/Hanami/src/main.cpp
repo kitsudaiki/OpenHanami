@@ -27,7 +27,7 @@
 #include <database/audit_log_table.h>
 #include <database/checkpoint_table.h>
 #include <database/cluster_table.h>
-#include <database/data_set_table.h>
+#include <database/dataset_table.h>
 #include <database/error_log_table.h>
 #include <database/projects_table.h>
 #include <database/request_result_table.h>

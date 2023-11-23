@@ -36,27 +36,27 @@ data:
     v1/foreward
     - GET: admin, member
 
-    v1/mnist/data_set
+    v1/mnist/dataset
     - POST: admin, member
     - PUT: admin, member
 
-    v1/csv/data_set
+    v1/csv/dataset
     - POST: admin, member
     - PUT: admin, member
 
-    v1/data_set/check
+    v1/dataset/check
     - POST: admin, member
 
-    v1/data_set/progress
+    v1/dataset/progress
     - GET: admin, member
 
-    v1/data_set
+    v1/dataset
     - POST: admin, member
     - PUT: admin, member
     - GET: admin, member
     - DELETE: admin, member
 
-    v1/data_set/all
+    v1/dataset/all
     - GET: admin, member
 
     v1/checkpoint

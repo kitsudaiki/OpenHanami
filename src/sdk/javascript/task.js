@@ -22,7 +22,7 @@ function createTask_request(outputFunc, name, type, clusterUuid, datasetUuid, to
     var reqContent = "{\"name\":\"" + name
                      + "\",\"type\":\"" + type
                      + "\",\"cluster_uuid\":\"" + clusterUuid
-                     + "\",\"data_set_uuid\":\"" + datasetUuid + "\"}";
+                     + "\",\"dataset_uuid\":\"" + datasetUuid + "\"}";
 
     createObject_request(outputFunc, path, reqContent, token);
 }

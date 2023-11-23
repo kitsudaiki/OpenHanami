@@ -1,5 +1,5 @@
 /**
- * @file        finalize_mnist_data_set.h
+ * @file        get_dataset.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,28 +20,26 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_MNIST_FINALIZE_DATA_SET_H
-#define HANAMI_MNIST_FINALIZE_DATA_SET_H
+#ifndef HANAMI_GET_DATA_SET_H
+#define HANAMI_GET_DATA_SET_H
 
 #include <api/endpoint_processing/blossom.h>
-#include <hanami_common/buffer/data_buffer.h>
 
-class FinalizeMnistDataSet : public Blossom
+class GetDataSet : public Blossom
 {
    public:
-    FinalizeMnistDataSet();
+    GetDataSet();
 
    protected:
     bool runTask(BlossomIO& blossomIO,
-                 const json& context,
+                 const json&,
                  BlossomStatus& status,
                  Hanami::ErrorContainer& error);
 
    private:
-    bool convertMnistData(const std::string& filePath,
-                          const std::string& name,
-                          const Hanami::DataBuffer& inputBuffer,
-                          const Hanami::DataBuffer& labelBuffer);
+    bool getHeaderInformation(json& result,
+                              const std::string& location,
+                              Hanami::ErrorContainer& error);
 };
 
-#endif  // HANAMI_MNIST_FINALIZE_DATA_SET_H
+#endif  // HANAMI_GET_DATA_SET_H

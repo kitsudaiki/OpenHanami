@@ -1,5 +1,5 @@
 /**
- * @file        data_set_functions.h
+ * @file        get_progress_dataset.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,21 +20,21 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_DATA_SET_FUNCTIONS_H
-#define HANAMI_DATA_SET_FUNCTIONS_H
+#ifndef HANAMI_GET_PROGRESS_DATA_SET_H
+#define HANAMI_GET_PROGRESS_DATA_SET_H
 
-#include <hanami_common/buffer/data_buffer.h>
-#include <hanami_common/logger.h>
+#include <api/endpoint_processing/blossom.h>
 
-#include <nlohmann/json.hpp>
+class GetProgressDataSet : public Blossom
+{
+   public:
+    GetProgressDataSet();
 
-using json = nlohmann::json;
+   protected:
+    bool runTask(BlossomIO& blossomIO,
+                 const json&,
+                 BlossomStatus& status,
+                 Hanami::ErrorContainer& error);
+};
 
-bool getDataSetPayload(Hanami::DataBuffer& result,
-                       const std::string& location,
-                       Hanami::ErrorContainer& error,
-                       const std::string& columnName = "");
-
-bool getHeaderInformation(json& result, const std::string& location, Hanami::ErrorContainer& error);
-
-#endif  // HANAMI_DATA_SET_FUNCTIONS_H
+#endif  // HANAMI_GET_PROGRESS_DATA_SET_H

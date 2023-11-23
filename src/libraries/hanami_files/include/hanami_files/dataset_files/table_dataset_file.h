@@ -1,5 +1,5 @@
 /**
- * @file        image_data_set_file.h
+ * @file        table_dataset_file.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,34 +20,54 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_IMAGEDATASETFILE_H
-#define HANAMI_IMAGEDATASETFILE_H
+#ifndef HANAMI_TABLEDATASETFILE_H
+#define HANAMI_TABLEDATASETFILE_H
 
-#include <hanami_files/data_set_files/data_set_file.h>
+#include <hanami_files/dataset_files/dataset_file.h>
 
-class ImageDataSetFile : public DataSetFile
+class TableDataSetFile : public DataSetFile
 {
    public:
-    struct ImageTypeHeader {
-        uint64_t numberOfInputsX = 0;
-        uint64_t numberOfInputsY = 0;
-        uint64_t numberOfOutputs = 0;
-        uint64_t numberOfImages = 0;
+    struct TableTypeHeader {
+        uint64_t numberOfColumns = 0;
+        uint64_t numberOfLines = 0;
     };
 
-    ImageDataSetFile(const std::string& filePath);
-    ImageDataSetFile(Hanami::BinaryFile* file);
-    ~ImageDataSetFile();
+    struct TableHeaderEntry {
+        char name[256];
+        bool isInput = false;
+        bool isOutput = false;
+        float multiplicator = 1.0f;
+        float averageVal = 0.0f;
+        float maxVal = 0.0f;
+
+        void setName(const std::string& name)
+        {
+            uint32_t nameSize = name.size();
+            if (nameSize > 255) {
+                nameSize = 255;
+            }
+            memcpy(this->name, name.c_str(), nameSize);
+            this->name[nameSize] = '\0';
+        }
+    };
+
+    TableDataSetFile(const std::string& filePath);
+    TableDataSetFile(Hanami::BinaryFile* file);
+    ~TableDataSetFile();
     bool updateHeader(Hanami::ErrorContainer& error);
     bool getPayload(Hanami::DataBuffer& result,
                     Hanami::ErrorContainer& error,
                     const std::string& columnName = "");
 
-    ImageTypeHeader imageHeader;
+    void print();
+
+    TableTypeHeader tableHeader;
+    std::vector<TableHeaderEntry> tableColumns;
 
    protected:
     void initHeader();
     void readHeader(const uint8_t* u8buffer);
 };
 
-#endif  // HANAMI_IMAGEDATASETFILE_H
+#endif  // HANAMI_TABLEDATASETFILE_H

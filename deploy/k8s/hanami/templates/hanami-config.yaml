@@ -10,7 +10,7 @@ data:
     use_cuda = false
 
     [storage]
-    data_set_location = "/etc/hanami/data/datasets"
+    dataset_location = "/etc/hanami/data/datasets"
     checkpoint_location = "/etc/hanami/data/checkpoints"
     tempfile_location = "/etc/hanami/data/tempfiles"
     tempfile_timeout = 10

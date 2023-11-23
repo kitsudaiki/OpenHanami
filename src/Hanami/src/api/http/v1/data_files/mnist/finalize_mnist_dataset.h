@@ -1,5 +1,5 @@
 /**
- * @file        delete_data_set.h
+ * @file        finalize_mnist_dataset.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,21 +20,28 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_DELETE_DATA_SET_H
-#define HANAMI_DELETE_DATA_SET_H
+#ifndef HANAMI_MNIST_FINALIZE_DATA_SET_H
+#define HANAMI_MNIST_FINALIZE_DATA_SET_H
 
 #include <api/endpoint_processing/blossom.h>
+#include <hanami_common/buffer/data_buffer.h>
 
-class DeleteDataSet : public Blossom
+class FinalizeMnistDataSet : public Blossom
 {
    public:
-    DeleteDataSet();
+    FinalizeMnistDataSet();
 
    protected:
     bool runTask(BlossomIO& blossomIO,
                  const json& context,
                  BlossomStatus& status,
                  Hanami::ErrorContainer& error);
+
+   private:
+    bool convertMnistData(const std::string& filePath,
+                          const std::string& name,
+                          const Hanami::DataBuffer& inputBuffer,
+                          const Hanami::DataBuffer& labelBuffer);
 };
 
-#endif  // HANAMI_DELETE_DATA_SET_H
+#endif  // HANAMI_MNIST_FINALIZE_DATA_SET_H

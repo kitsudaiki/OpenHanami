@@ -1,5 +1,5 @@
 /**
- * @file        list_data_set.cpp
+ * @file        list_dataset.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,12 +20,12 @@
  *      limitations under the License.
  */
 
-#include "list_data_set.h"
+#include "list_dataset.h"
 
-#include <database/data_set_table.h>
+#include <database/dataset_table.h>
 #include <hanami_root.h>
 
-ListDataSet::ListDataSet() : Blossom("List all visible data-sets.")
+ListDataSet::ListDataSet() : Blossom("List all visible datasets.")
 {
     //----------------------------------------------------------------------------------------------
     // output

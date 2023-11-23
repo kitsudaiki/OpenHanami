@@ -1,5 +1,5 @@
 /**
- * @file        check_data_set.cpp
+ * @file        check_dataset.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,21 +20,21 @@
  *      limitations under the License.
  */
 
-#include "check_data_set.h"
+#include "check_dataset.h"
 
-#include <database/data_set_table.h>
+#include <database/dataset_table.h>
 #include <database/request_result_table.h>
 #include <hanami_common/buffer/data_buffer.h>
 #include <hanami_common/files/binary_file.h>
 #include <hanami_common/files/text_file.h>
 #include <hanami_common/methods/file_methods.h>
 #include <hanami_config/config_handler.h>
-#include <hanami_files/data_set_files/data_set_file.h>
-#include <hanami_files/data_set_files/image_data_set_file.h>
+#include <hanami_files/dataset_files/dataset_file.h>
+#include <hanami_files/dataset_files/image_dataset_file.h>
 #include <hanami_root.h>
 
 CheckDataSet::CheckDataSet()
-    : Blossom("Compare a list of values with a data-set to check correctness.")
+    : Blossom("Compare a list of values with a dataset to check correctness.")
 {
     errorCodes.push_back(NOT_FOUND_RTYPE);
 
@@ -43,11 +43,11 @@ CheckDataSet::CheckDataSet()
     //----------------------------------------------------------------------------------------------
 
     registerInputField("result_uuid", SAKURA_STRING_TYPE)
-        .setComment("UUID of the data-set to compare to.")
+        .setComment("UUID of the dataset to compare to.")
         .setRegex(UUID_REGEX);
 
-    registerInputField("data_set_uuid", SAKURA_STRING_TYPE)
-        .setComment("UUID of the data-set to compare to.")
+    registerInputField("dataset_uuid", SAKURA_STRING_TYPE)
+        .setComment("UUID of the dataset to compare to.")
         .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
@@ -55,7 +55,7 @@ CheckDataSet::CheckDataSet()
     //----------------------------------------------------------------------------------------------
 
     registerOutputField("correctness", SAKURA_FLOAT_TYPE)
-        .setComment("Correctness of the values compared to the data-set.");
+        .setComment("Correctness of the values compared to the dataset.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -72,7 +72,7 @@ CheckDataSet::runTask(BlossomIO& blossomIO,
                       Hanami::ErrorContainer& error)
 {
     const std::string resultUuid = blossomIO.input["result_uuid"];
-    const std::string dataUuid = blossomIO.input["data_set_uuid"];
+    const std::string dataUuid = blossomIO.input["dataset_uuid"];
     const UserContext userContext(context);
 
     // get result
@@ -111,9 +111,9 @@ CheckDataSet::runTask(BlossomIO& blossomIO,
     ImageDataSetFile::ImageTypeHeader imageTypeHeader;
     Hanami::BinaryFile file(location);
 
-    // read data-set-header
+    // read dataset-header
     if (file.readCompleteFile(buffer, error) == false) {
-        error.addMeesage("Failed to read data-set-header from file '" + location + "'");
+        error.addMeesage("Failed to read dataset-header from file '" + location + "'");
         return false;
     }
 

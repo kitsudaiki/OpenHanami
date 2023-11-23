@@ -1,5 +1,5 @@
 ﻿/**
- * @file        finalize_csv_data_set.cpp
+ * @file        finalize_csv_dataset.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,22 +20,22 @@
  *      limitations under the License.
  */
 
-#include "finalize_csv_data_set.h"
+#include "finalize_csv_dataset.h"
 
 #include <core/temp_file_handler.h>
-#include <database/data_set_table.h>
+#include <database/dataset_table.h>
 #include <hanami_common/files/binary_file.h>
 #include <hanami_common/methods/file_methods.h>
 #include <hanami_common/methods/string_methods.h>
 #include <hanami_common/methods/vector_methods.h>
 #include <hanami_crypto/common.h>
-#include <hanami_files/data_set_files/data_set_file.h>
-#include <hanami_files/data_set_files/table_data_set_file.h>
+#include <hanami_files/dataset_files/dataset_file.h>
+#include <hanami_files/dataset_files/table_dataset_file.h>
 #include <hanami_root.h>
 
 FinalizeCsvDataSet::FinalizeCsvDataSet()
     : Blossom(
-        "Finalize uploaded data-set by checking completeness of the "
+        "Finalize uploaded dataset by checking completeness of the "
         "uploaded and convert into generic format.")
 {
     errorCodes.push_back(NOT_FOUND_RTYPE);
@@ -45,7 +45,7 @@ FinalizeCsvDataSet::FinalizeCsvDataSet()
     //----------------------------------------------------------------------------------------------
 
     registerInputField("uuid", SAKURA_STRING_TYPE)
-        .setComment("UUID of the new data-set.")
+        .setComment("UUID of the new dataset.")
         .setRegex(UUID_REGEX);
 
     registerInputField("uuid_input_file", SAKURA_STRING_TYPE)
@@ -56,7 +56,7 @@ FinalizeCsvDataSet::FinalizeCsvDataSet()
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid", SAKURA_STRING_TYPE).setComment("UUID of the new data-set.");
+    registerOutputField("uuid", SAKURA_STRING_TYPE).setComment("UUID of the new dataset.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -150,7 +150,7 @@ FinalizeCsvDataSet::convertField(float* segmentPos, const std::string& cell, con
  * @brief convert csv-data into generic format
  *
  * @param filePath path to the resulting file
- * @param name data-set name
+ * @param name dataset name
  * @param inputBuffer buffer with input-data
  *
  * @return true, if successfull, else false

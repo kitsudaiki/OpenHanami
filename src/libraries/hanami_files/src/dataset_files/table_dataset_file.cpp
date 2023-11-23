@@ -1,5 +1,5 @@
 /**
- * @file        table_data_set_file.cpp
+ * @file        table_dataset_file.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -21,7 +21,7 @@
  */
 
 #include <hanami_common/files/binary_file.h>
-#include <hanami_files/data_set_files/table_data_set_file.h>
+#include <hanami_files/dataset_files/table_dataset_file.h>
 
 /**
  * @brief constructor
@@ -141,7 +141,7 @@ TableDataSetFile::getPayload(Hanami::DataBuffer& result,
             readBuffer.data, m_headerSize, m_totalFileSize - m_headerSize, error)
         == false)
     {
-        error.addMeesage("Failed to read data of table-data-set-file");
+        error.addMeesage("Failed to read data of table-dataset-file");
         return false;
     }
 
@@ -156,7 +156,7 @@ TableDataSetFile::getPayload(Hanami::DataBuffer& result,
     // check if column was found
     if (columnPos == -1) {
         error.addMeesage("Column with name '" + columnName
-                         + "' was not found in table-data-set-file");
+                         + "' was not found in table-dataset-file");
         return false;
     }
 
@@ -191,7 +191,7 @@ TableDataSetFile::print()
         LOG_ERROR(error);
     }
 
-    // read data-set-header
+    // read dataset-header
     DataSetHeader dataSetHeader;
     memcpy(&dataSetHeader, completeFile.data, sizeof(DataSetHeader));
     std::cout << "name: " << dataSetHeader.name << std::endl;

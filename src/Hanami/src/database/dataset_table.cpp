@@ -1,5 +1,5 @@
 /**
- * @file        data_set_table.cpp
+ * @file        dataset_table.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,11 +20,11 @@
  *      limitations under the License.
  */
 
-#include <database/data_set_table.h>
+#include <database/dataset_table.h>
 #include <hanami_common/items/table_item.h>
 #include <hanami_common/methods/string_methods.h>
 #include <hanami_database/sql_database.h>
-#include <hanami_files/data_set_files/data_set_functions.h>
+#include <hanami_files/dataset_files/dataset_functions.h>
 
 DataSetTable* DataSetTable::instance = nullptr;
 
@@ -35,7 +35,7 @@ DataSetTable* DataSetTable::instance = nullptr;
  */
 DataSetTable::DataSetTable() : HanamiSqlTable(Hanami::SqlDatabase::getInstance())
 {
-    m_tableName = "data_set";
+    m_tableName = "dataset";
 
     DbHeaderEntry type;
     type.name = "type";

@@ -1,5 +1,5 @@
 /**
- * @file        delete_data_set.cpp
+ * @file        delete_dataset.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,13 +20,13 @@
  *      limitations under the License.
  */
 
-#include "delete_data_set.h"
+#include "delete_dataset.h"
 
-#include <database/data_set_table.h>
+#include <database/dataset_table.h>
 #include <hanami_common/methods/file_methods.h>
 #include <hanami_root.h>
 
-DeleteDataSet::DeleteDataSet() : Blossom("Delete a speific data-set.")
+DeleteDataSet::DeleteDataSet() : Blossom("Delete a speific dataset.")
 {
     errorCodes.push_back(NOT_FOUND_RTYPE);
 
@@ -35,7 +35,7 @@ DeleteDataSet::DeleteDataSet() : Blossom("Delete a speific data-set.")
     //----------------------------------------------------------------------------------------------
 
     registerInputField("uuid", SAKURA_STRING_TYPE)
-        .setComment("UUID of the data-set to delete.")
+        .setComment("UUID of the dataset to delete.")
         .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------

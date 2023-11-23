@@ -99,7 +99,7 @@ LoadCluster::runTask(BlossomIO& blossomIO,
         return false;
     }
 
-    // get meta-infos of data-set from shiori
+    // get meta-infos of dataset from shiori
     json parsedCheckpointInfo;
     if (CheckpointTable::getInstance()->getCheckpoint(
             parsedCheckpointInfo, checkpointUuid, userContext, error, true)

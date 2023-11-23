@@ -1,5 +1,5 @@
 /**
- * @file        data_set_file.cpp
+ * @file        dataset_file.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -21,9 +21,9 @@
  */
 
 #include <hanami_common/files/binary_file.h>
-#include <hanami_files/data_set_files/data_set_file.h>
-#include <hanami_files/data_set_files/image_data_set_file.h>
-#include <hanami_files/data_set_files/table_data_set_file.h>
+#include <hanami_files/dataset_files/dataset_file.h>
+#include <hanami_files/dataset_files/image_dataset_file.h>
+#include <hanami_files/dataset_files/table_dataset_file.h>
 
 /**
  * @brief constructor
@@ -78,7 +78,7 @@ DataSetFile::initNewFile(Hanami::ErrorContainer& error)
 
     // write dataset-header to file
     if (m_targetFile->writeDataIntoFile(&dataSetHeader, 0, sizeof(DataSetHeader), error) == false) {
-        error.addMeesage("Failed to write data-set to disc");
+        error.addMeesage("Failed to write dataset to disc");
         return false;
     }
 
@@ -99,14 +99,14 @@ DataSetFile::readFromFile(Hanami::ErrorContainer& error)
     // create complete file
     Hanami::DataBuffer buffer;
     if (m_targetFile->readCompleteFile(buffer, error) == false) {
-        error.addMeesage("Faile to read data of data-set from disc");
+        error.addMeesage("Faile to read data of dataset from disc");
         return false;
     }
 
     // prepare
     const uint8_t* u8buffer = static_cast<const uint8_t*>(buffer.data);
 
-    // read data-set-header
+    // read dataset-header
     DataSetHeader dataSetHeader;
     memcpy(&dataSetHeader, u8buffer, sizeof(DataSetHeader));
     type = static_cast<DataSetType>(dataSetHeader.type);
@@ -144,7 +144,7 @@ DataSetFile::addBlock(const uint64_t pos,
             data, m_headerSize + pos * sizeof(float), numberOfValues * sizeof(float), error)
         == false)
     {
-        error.addMeesage("Failed to write block into data-set");
+        error.addMeesage("Failed to write block into dataset");
         return false;
     }
 
@@ -152,7 +152,7 @@ DataSetFile::addBlock(const uint64_t pos,
 }
 
 /**
- * @brief read file as data-set
+ * @brief read file as dataset
  *
  * @param filePath path to file
  * @param error reference for error-output

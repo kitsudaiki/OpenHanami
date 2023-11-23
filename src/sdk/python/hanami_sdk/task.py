@@ -21,13 +21,13 @@ def create_task(token: str,
                 name: str,
                 task_type: str, 
                 cluster_uuid: str,
-                data_set_uuid: str) -> tuple[bool,str]:
+                dataset_uuid: str) -> tuple[bool,str]:
     path = "/control/v1/task"
     json_body = {
         "name": name,
         "type": task_type,
         "cluster_uuid": cluster_uuid,
-        "data_set_uuid": data_set_uuid,
+        "dataset_uuid": dataset_uuid,
     }
     body_str = json.dumps(json_body)
     return hanami_request.send_post_request(token, address, path, body_str)

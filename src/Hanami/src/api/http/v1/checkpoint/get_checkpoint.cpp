@@ -43,9 +43,9 @@ GetCheckpoint::GetCheckpoint() : Blossom("Get checkpoint of a cluster.")
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid", SAKURA_STRING_TYPE).setComment("UUID of the data-set.");
+    registerOutputField("uuid", SAKURA_STRING_TYPE).setComment("UUID of the dataset.");
 
-    registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the data-set.");
+    registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the dataset.");
 
     registerOutputField("location", SAKURA_STRING_TYPE).setComment("File path on local storage.");
 

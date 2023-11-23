@@ -145,15 +145,15 @@ HEADERS += \
     src/api/http/v1/checkpoint/delete_checkpoint.h \
     src/api/http/v1/checkpoint/get_checkpoint.h \
     src/api/http/v1/checkpoint/list_checkpoint.h \
-    src/api/http/v1/data_files/check_data_set.h \
-    src/api/http/v1/data_files/csv/create_csv_data_set.h \
-    src/api/http/v1/data_files/csv/finalize_csv_data_set.h \
-    src/api/http/v1/data_files/delete_data_set.h \
-    src/api/http/v1/data_files/get_data_set.h \
-    src/api/http/v1/data_files/get_progress_data_set.h \
-    src/api/http/v1/data_files/list_data_set.h \
-    src/api/http/v1/data_files/mnist/create_mnist_data_set.h \
-    src/api/http/v1/data_files/mnist/finalize_mnist_data_set.h \
+    src/api/http/v1/data_files/check_dataset.h \
+    src/api/http/v1/data_files/csv/create_csv_dataset.h \
+    src/api/http/v1/data_files/csv/finalize_csv_dataset.h \
+    src/api/http/v1/data_files/delete_dataset.h \
+    src/api/http/v1/data_files/get_dataset.h \
+    src/api/http/v1/data_files/get_progress_dataset.h \
+    src/api/http/v1/data_files/list_dataset.h \
+    src/api/http/v1/data_files/mnist/create_mnist_dataset.h \
+    src/api/http/v1/data_files/mnist/finalize_mnist_dataset.h \
     src/common/using.h \
     src/database/tempfile_table.h \
     src/documentation/generate_rest_api_docu.h \
@@ -222,7 +222,7 @@ HEADERS += \
     src/database/audit_log_table.h \
     src/database/checkpoint_table.h \
     src/database/cluster_table.h \
-    src/database/data_set_table.h \
+    src/database/dataset_table.h \
     src/database/error_log_table.h \
     src/database/generic_tables/hanami_sql_admin_table.h \
     src/database/generic_tables/hanami_sql_log_table.h \
@@ -253,15 +253,15 @@ SOURCES += \
     src/api/http/v1/checkpoint/delete_checkpoint.cpp \
     src/api/http/v1/checkpoint/get_checkpoint.cpp \
     src/api/http/v1/checkpoint/list_checkpoint.cpp \
-    src/api/http/v1/data_files/check_data_set.cpp \
-    src/api/http/v1/data_files/csv/create_csv_data_set.cpp \
-    src/api/http/v1/data_files/csv/finalize_csv_data_set.cpp \
-    src/api/http/v1/data_files/delete_data_set.cpp \
-    src/api/http/v1/data_files/get_data_set.cpp \
-    src/api/http/v1/data_files/get_progress_data_set.cpp \
-    src/api/http/v1/data_files/list_data_set.cpp \
-    src/api/http/v1/data_files/mnist/create_mnist_data_set.cpp \
-    src/api/http/v1/data_files/mnist/finalize_mnist_data_set.cpp \
+    src/api/http/v1/data_files/check_dataset.cpp \
+    src/api/http/v1/data_files/csv/create_csv_dataset.cpp \
+    src/api/http/v1/data_files/csv/finalize_csv_dataset.cpp \
+    src/api/http/v1/data_files/delete_dataset.cpp \
+    src/api/http/v1/data_files/get_dataset.cpp \
+    src/api/http/v1/data_files/get_progress_dataset.cpp \
+    src/api/http/v1/data_files/list_dataset.cpp \
+    src/api/http/v1/data_files/mnist/create_mnist_dataset.cpp \
+    src/api/http/v1/data_files/mnist/finalize_mnist_dataset.cpp \
     src/database/tempfile_table.cpp \
     src/documentation/generate_rest_api_docu.cpp \
     src/api/http/v1/logs/get_audit_log.cpp \
@@ -313,7 +313,7 @@ SOURCES += \
     src/database/audit_log_table.cpp \
     src/database/checkpoint_table.cpp \
     src/database/cluster_table.cpp \
-    src/database/data_set_table.cpp \
+    src/database/dataset_table.cpp \
     src/database/error_log_table.cpp \
     src/database/generic_tables/hanami_sql_admin_table.cpp \
     src/database/generic_tables/hanami_sql_log_table.cpp \

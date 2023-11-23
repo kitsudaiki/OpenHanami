@@ -54,7 +54,7 @@ RestoreCluster_State::processEvent()
     Hanami::ErrorContainer error;
     const std::string originalUuid = m_cluster->getUuid();
 
-    // get meta-infos of data-set from shiori
+    // get meta-infos of dataset from shiori
     json parsedCheckpointInfo;
     try {
         parsedCheckpointInfo = json::parse(actualTask->checkpointInfo);

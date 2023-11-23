@@ -53,12 +53,12 @@ registerConfigs()
     // storage-section
     const std::string storageGroup = "storage";
 
-    REGISTER_STRING_CONFIG(storageGroup, "data_set_location")
-        .setComment("Local storage location, where all uploaded data-set should be written into.")
+    REGISTER_STRING_CONFIG(storageGroup, "dataset_location")
+        .setComment("Local storage location, where all uploaded dataset should be written into.")
         .setDefault("/etc/hanami/datasets");
 
     REGISTER_STRING_CONFIG(storageGroup, "checkpoint_location")
-        .setComment("Local storage location, where all uploaded data-set should be written into.")
+        .setComment("Local storage location, where all uploaded dataset should be written into.")
         .setDefault("/etc/hanami/checkpoints");
 
     REGISTER_STRING_CONFIG(storageGroup, "tempfile_location")

@@ -1,5 +1,5 @@
 /**
- * @file        finalize_csv_data_set.h
+ * @file        dataset_functions.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,30 +20,21 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_CSV_FINALIZE_DATA_SET_H
-#define HANAMI_CSV_FINALIZE_DATA_SET_H
+#ifndef HANAMI_DATA_SET_FUNCTIONS_H
+#define HANAMI_DATA_SET_FUNCTIONS_H
 
-#include <api/endpoint_processing/blossom.h>
 #include <hanami_common/buffer/data_buffer.h>
+#include <hanami_common/logger.h>
 
-#include <regex>
+#include <nlohmann/json.hpp>
 
-class FinalizeCsvDataSet : public Blossom
-{
-   public:
-    FinalizeCsvDataSet();
+using json = nlohmann::json;
 
-   protected:
-    bool runTask(BlossomIO& blossomIO,
-                 const json& context,
-                 BlossomStatus& status,
-                 Hanami::ErrorContainer& error);
+bool getDataSetPayload(Hanami::DataBuffer& result,
+                       const std::string& location,
+                       Hanami::ErrorContainer& error,
+                       const std::string& columnName = "");
 
-   private:
-    bool convertCsvData(const std::string& filePath,
-                        const std::string& name,
-                        const Hanami::DataBuffer& inputBuffer);
-    void convertField(float* segmentPos, const std::string& cell, const float lastVal);
-};
+bool getHeaderInformation(json& result, const std::string& location, Hanami::ErrorContainer& error);
 
-#endif  // HANAMI_CSV_FINALIZE_DATA_SET_H
+#endif  // HANAMI_DATA_SET_FUNCTIONS_H
