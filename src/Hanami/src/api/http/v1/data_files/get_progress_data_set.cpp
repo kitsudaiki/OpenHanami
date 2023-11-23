@@ -22,7 +22,9 @@
 
 #include "get_progress_data_set.h"
 
+#include <core/temp_file_handler.h>
 #include <database/data_set_table.h>
+#include <database/tempfile_table.h>
 #include <hanami_files/data_set_files/data_set_file.h>
 #include <hanami_files/data_set_files/image_data_set_file.h>
 #include <hanami_files/data_set_files/table_data_set_file.h>
@@ -46,9 +48,6 @@ GetProgressDataSet::GetProgressDataSet() : Blossom("Get upload progress of a spe
 
     registerOutputField("uuid", SAKURA_STRING_TYPE).setComment("UUID of the data-set.");
 
-    registerOutputField("temp_files", SAKURA_MAP_TYPE)
-        .setComment("Map with the uuids of the temporary files and it's upload progress");
-
     registerOutputField("complete", SAKURA_BOOL_TYPE)
         .setComment("True, if all temporary files for complete.");
 
@@ -66,11 +65,12 @@ GetProgressDataSet::runTask(BlossomIO& blossomIO,
                             BlossomStatus& status,
                             Hanami::ErrorContainer& error)
 {
-    const std::string dataUuid = blossomIO.input["uuid"];
+    const std::string datasetUuid = blossomIO.input["uuid"];
     const UserContext userContext(context);
 
     json databaseOutput;
-    if (DataSetTable::getInstance()->getDataSet(databaseOutput, dataUuid, userContext, error, true)
+    if (DataSetTable::getInstance()->getDataSet(
+            databaseOutput, datasetUuid, userContext, error, true)
         == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -79,27 +79,34 @@ GetProgressDataSet::runTask(BlossomIO& blossomIO,
 
     // handle not found
     if (databaseOutput.size() == 0) {
-        status.errorMessage = "Data-set with uuid '" + dataUuid + "' not found";
+        status.errorMessage = "Data-set with uuid '" + datasetUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         LOG_DEBUG(status.errorMessage);
         return false;
     }
 
-    // parse and add temp-file-information
-    const json tempFiles = databaseOutput["temp_files"];
+    // get all related tempfiles of the dataset
+    std::vector<std::string> relatedUuids;
+    if (TempfileTable::getInstance()->getRelatedResourceUuids(
+            relatedUuids, "dataset", datasetUuid, userContext, error)
+        == false)
+    {
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
 
-    // check and add if complete
-    bool finishedAll = true;
-    for (const auto& [key, file] : tempFiles.items()) {
-        if (file < 1.0f) {
-            finishedAll = false;
+    // check if upload complete
+    bool isComplete = true;
+    for (const std::string& uuid : relatedUuids) {
+        FileHandle* fileHandle = TempFileHandler::getInstance()->getFileHandle(uuid, userContext);
+        if (fileHandle->bitBuffer->isComplete() == false) {
+            isComplete = false;
         }
     }
 
     // create output
-    blossomIO.output["uuid"] = databaseOutput["uuid"];
-    blossomIO.output["temp_files"] = tempFiles;
-    blossomIO.output["complete"] = finishedAll;
+    blossomIO.output["uuid"] = datasetUuid;
+    blossomIO.output["complete"] = isComplete;
 
     return true;
 }

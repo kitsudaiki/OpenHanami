@@ -31,6 +31,8 @@
 
 #define UNINTI_POINT_32 0x0FFFFFFF
 
+#define TRANSFER_SEGMENT_SIZE (128 * 1024)
+
 // regex
 #define UUID_REGEX "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
 #define ID_REGEX "[a-zA-Z][a-zA-Z_0-9]*"

@@ -27,7 +27,6 @@
 #include <api/endpoint_processing/http_processing/response_builds.h>
 #include <api/endpoint_processing/http_processing/string_functions.h>
 #include <api/endpoint_processing/http_server.h>
-#include <api/endpoint_processing/items/item_methods.h>
 #include <database/audit_log_table.h>
 #include <hanami_common/logger.h>
 #include <hanami_root.h>
@@ -367,11 +366,8 @@ HttpProcessing::triggerBlossom(json& result,
     // inialize a new blossom-leaf for processing
     BlossomIO blossomIO;
     blossomIO.blossomName = blossomName;
-    blossomIO.blossomPath = blossomName;
     blossomIO.blossomGroupType = blossomGroupName;
     blossomIO.input = initialValues;
-    blossomIO.parentValues = blossomIO.input;
-    blossomIO.nameHirarchie.push_back("BLOSSOM: " + blossomName);
 
     // check input to be complete
     std::string errorMessage;
@@ -529,4 +525,36 @@ HttpProcessing::addEndpoint(const std::string& id,
     }
 
     return true;
+}
+
+/**
+ * @brief override data of a data-map with new incoming information
+ *
+ * @param original data-map with the original key-values, which should be updates with the
+ *                 information of the override-map
+ * @param override map with the new incoming information
+ * @param type type of override
+ */
+void
+HttpProcessing::overrideItems(json& original, const json& override, OverrideType type)
+{
+    if (type == ONLY_EXISTING) {
+        for (const auto& [name, item] : override.items()) {
+            if (original.contains(name)) {
+                original[name] = item;
+            }
+        }
+    }
+    if (type == ONLY_NON_EXISTING) {
+        for (const auto& [name, item] : override.items()) {
+            if (original.contains(name) == false) {
+                original[name] = item;
+            }
+        }
+    }
+    else if (type == ALL) {
+        for (const auto& [name, item] : override.items()) {
+            original[name] = item;
+        }
+    }
 }

@@ -14,7 +14,7 @@
 
 from websockets.sync.client import connect
 from hanami_sdk import hanami_request
-from hanami_sdk import proto3_pb2
+from hanami_sdk.hanami_messages import proto3_pb2
 import json
 import asyncio
 import math
@@ -67,7 +67,8 @@ def send_data(token: str,
     # create initial request for the websocket-connection
     initial_ws_msg = {
         "token": token,
-        "target": "shiori",
+        "target": "file_upload",
+        "uuid": file_uuid,
     }
     body_str = json.dumps(initial_ws_msg)
 
@@ -81,7 +82,7 @@ def send_data(token: str,
             return False
 
         total_size = len(data)
-        chunk_size = 96 * 1024
+        chunk_size = 128 * 1024
         num_chunks = math.ceil(total_size / chunk_size)
 
         for i in range(num_chunks):
@@ -90,17 +91,12 @@ def send_data(token: str,
             chunk_data = data[start:end]
 
             file_upload_msg = proto3_pb2.FileUpload_Message()
-            file_upload_msg.datasetUuid = dataset_uuid
-            file_upload_msg.fileUuid = file_uuid
-            file_upload_msg.type = 0
             file_upload_msg.position = start
-            file_upload_msg.isLast = (end - start) < chunk_size
             file_upload_msg.data = chunk_data
             serialized_msg = file_upload_msg.SerializeToString()
 
             websocket.send(serialized_msg)
-
-            # message = websocket.recv()
+            message = websocket.recv()
 
     return True
 

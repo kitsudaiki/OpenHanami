@@ -51,7 +51,7 @@ sendClusterOutputMessage(Cluster* cluster)
     }
 
     // serialize message
-    uint8_t buffer[96 * 1024];
+    uint8_t buffer[TRANSFER_SEGMENT_SIZE];
     const uint64_t size = msg.ByteSizeLong();
     if (msg.SerializeToArray(buffer, size) == false) {
         Hanami::ErrorContainer error;
@@ -82,7 +82,7 @@ sendProtobufGotInputMessage(Cluster* cluster)
     msg.add_values(0.0);
 
     // serialize message
-    uint8_t buffer[96 * 1024];
+    uint8_t buffer[TRANSFER_SEGMENT_SIZE];
     const uint64_t size = msg.ByteSizeLong();
     if (msg.SerializeToArray(buffer, size) == false) {
         Hanami::ErrorContainer error;
@@ -119,7 +119,7 @@ sendClusterNormalEndMessage(Cluster* cluster)
     msg.set_numberofvalues(1);
 
     // serialize message
-    uint8_t buffer[96 * 1024];
+    uint8_t buffer[TRANSFER_SEGMENT_SIZE];
     const uint64_t size = msg.ByteSizeLong();
     if (msg.SerializeToArray(buffer, size) == false) {
         Hanami::ErrorContainer error;
@@ -152,7 +152,7 @@ sendClusterTrainEndMessage(Cluster* cluster)
     msg.set_numberofvalues(1);
 
     // serialize message
-    uint8_t buffer[96 * 1024];
+    uint8_t buffer[TRANSFER_SEGMENT_SIZE];
     const uint64_t size = msg.ByteSizeLong();
     if (msg.SerializeToArray(buffer, size) == false) {
         Hanami::ErrorContainer error;

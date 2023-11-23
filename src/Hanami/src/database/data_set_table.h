@@ -52,10 +52,6 @@ class DataSetTable : public HanamiSqlTable
                        const UserContext& userContext,
                        Hanami::ErrorContainer& error);
 
-    bool setUploadFinish(const std::string& uuid,
-                         const std::string& fileUuid,
-                         Hanami::ErrorContainer& error);
-
     bool getDateSetInfo(json& result,
                         const std::string& dataUuid,
                         const json& context,

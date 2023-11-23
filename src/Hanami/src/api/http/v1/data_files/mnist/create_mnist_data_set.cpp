@@ -100,16 +100,22 @@ CreateMnistDataSet::runTask(BlossomIO& blossomIO,
     }
 
     // init temp-file for input-data
-    const std::string inputUuid = generateUuid().toString();
-    if (TempFileHandler::getInstance()->initNewFile(inputUuid, inputDataSize) == false) {
+    std::string inputUuid;
+    if (TempFileHandler::getInstance()->initNewFile(
+            inputUuid, "input-file", uuid, inputDataSize, userContext, error)
+        == false)
+    {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Failed to initialize temporary file for new input-data.");
         return false;
     }
 
     // init temp-file for label-data
-    const std::string labelUuid = generateUuid().toString();
-    if (TempFileHandler::getInstance()->initNewFile(labelUuid, labelDataSize) == false) {
+    std::string labelUuid;
+    if (TempFileHandler::getInstance()->initNewFile(
+            labelUuid, "label-file", uuid, labelDataSize, userContext, error)
+        == false)
+    {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Failed to initialize temporary file for new label-data.");
         return false;
@@ -130,12 +136,6 @@ CreateMnistDataSet::runTask(BlossomIO& blossomIO,
     blossomIO.output["owner_id"] = userContext.userId;
     blossomIO.output["visibility"] = "private";
 
-    // init placeholder for temp-file progress to database
-    json tempFiles;
-    tempFiles[inputUuid] = json(0.0f);
-    tempFiles[labelUuid] = json(0.0f);
-    blossomIO.output["temp_files"] = tempFiles;
-
     // add to database
     if (DataSetTable::getInstance()->addDataSet(blossomIO.output, userContext, error) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -148,7 +148,6 @@ CreateMnistDataSet::runTask(BlossomIO& blossomIO,
 
     // remove blocked values from output
     blossomIO.output.erase("location");
-    blossomIO.output.erase("temp_files");
 
     return true;
 }

@@ -35,6 +35,7 @@
 #include <database/error_log_table.h>
 #include <database/projects_table.h>
 #include <database/request_result_table.h>
+#include <database/tempfile_table.h>
 #include <database/users_table.h>
 #include <hanami_common/files/text_file.h>
 #include <hanami_common/logger.h>
@@ -243,6 +244,14 @@ HanamiRoot::initDatabase(Hanami::ErrorContainer& error)
         return false;
     }
 
+    // initialize tempfile-table
+    TempfileTable* tempfileTable = TempfileTable::getInstance();
+    if (tempfileTable->initTable(error) == false) {
+        error.addMeesage("Failed to initialize tempfile-table in database.");
+        LOG_ERROR(error);
+        return false;
+    }
+
     // initialize error-log-table
     ErrorLogTable* errorLogTable = ErrorLogTable::getInstance();
     if (errorLogTable->initTable(error) == false) {
@@ -326,6 +335,17 @@ HanamiRoot::initDataDirectory(Hanami::ErrorContainer& error)
 
     if (createDirectory(checkpointsPath, error) == false) {
         error.addMeesage("Failed to create directory for checkpoints.");
+        return false;
+    }
+
+    const std::string tempfilesPath = GET_STRING_CONFIG("storage", "tempfile_location", success);
+    if (success == false) {
+        error.addMeesage("No tempfile_location defined in config.");
+        return false;
+    }
+
+    if (createDirectory(tempfilesPath, error) == false) {
+        error.addMeesage("Failed to create directory for tempfiles.");
         return false;
     }
 

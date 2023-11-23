@@ -1,7 +1,7 @@
 site
 docs/drawio-exporter
 gitIdentityChange.sh
-*.pro.user
+*.pro.user*
 *.pb.cc
 *.pb.h
 *.drawio.bkp

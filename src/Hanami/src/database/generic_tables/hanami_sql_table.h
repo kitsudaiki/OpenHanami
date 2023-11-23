@@ -39,6 +39,7 @@ class HanamiSqlTable : public Hanami::SqlTable
     HanamiSqlTable(Hanami::SqlDatabase* db);
     virtual ~HanamiSqlTable();
 
+   protected:
     bool add(json& values, const UserContext& userContext, Hanami::ErrorContainer& error);
     bool get(json& result,
              const UserContext& userContext,

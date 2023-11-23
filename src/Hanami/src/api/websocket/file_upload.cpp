@@ -20,6 +20,7 @@
  *      limitations under the License.
  */
 
+#include <api/endpoint_processing/http_websocket_thread.h>
 #include <api/websocket/file_upload.h>
 #include <core/temp_file_handler.h>
 #include <database/checkpoint_table.h>
@@ -36,49 +37,47 @@ class Cluster;
  * @return
  */
 bool
-recvFileUploadPackage(const void* data, const uint64_t dataSize)
+recvFileUploadPackage(FileHandle* fileHandle,
+                      const void* data,
+                      const uint64_t dataSize,
+                      std::string& errorMessage)
 {
     FileUpload_Message msg;
     if (msg.ParseFromArray(data, dataSize) == false) {
+        errorMessage = "Got invalid FileUpload-Message";
+        return false;
+    }
+
+    return fileHandle->addDataToPos(
+        msg.position(), msg.data().c_str(), msg.data().size(), errorMessage);
+}
+
+/**
+ * @brief sendResultMessage
+ * @param success
+ * @param errorMessage
+ */
+void
+sendFileUploadResponse(HttpWebsocketThread* msgClient,
+                       const bool success,
+                       const std::string& errorMessage)
+{
+    // build message
+    FileUploadResponse_Message response;
+    response.set_success(success);
+    response.set_errormessage(errorMessage);
+
+    // serialize message
+    uint8_t buffer[TRANSFER_SEGMENT_SIZE];
+    const uint64_t size = response.ByteSizeLong();
+    if (response.SerializeToArray(buffer, size) == false) {
         Hanami::ErrorContainer error;
-        error.addMeesage("Got invalid FileUpload-Message");
+        error.addMeesage("Failed to serialize request-message");
         LOG_ERROR(error);
-        return false;
+        return;
     }
 
-    if (TempFileHandler::getInstance()->addDataToPos(
-            msg.fileuuid(), msg.position(), msg.data().c_str(), msg.data().size())
-        == false)
-    {
-        // TODO: error-handling
-        std::cout << "failed to write data" << std::endl;
-        return false;
-    }
-
-    if (msg.islast() == false) {
-        return false;
-    }
-
+    // send message
     Hanami::ErrorContainer error;
-
-    if (msg.type() == UploadDataType::DATASET_TYPE) {
-        if (DataSetTable::getInstance()->setUploadFinish(msg.datasetuuid(), msg.fileuuid(), error)
-            == false)
-        {
-            // TODO: error-handling
-            return false;
-        }
-    }
-
-    if (msg.type() == UploadDataType::CHECKPOINT_TYPE) {
-        if (CheckpointTable::getInstance()->setUploadFinish(
-                msg.datasetuuid(), msg.fileuuid(), error)
-            == false)
-        {
-            // TODO: error-handling
-            return false;
-        }
-    }
-
-    return true;
+    msgClient->sendData(buffer, size);
 }

@@ -30,23 +30,16 @@ class BlossomItem;
 class SakuraThread;
 class InitialValidator;
 class HttpProcessing;
-class ValueItemMap;
 
 //--------------------------------------------------------------------------------------------------
 
 struct BlossomIO {
     std::string blossomType = "";
     std::string blossomName = "";
-    std::string blossomPath = "";
     std::string blossomGroupType = "";
-    std::vector<std::string> nameHirarchie;
 
     json output;
     json input;
-
-    json parentValues = nullptr;
-
-    std::string terminalOutput = "";
 
     BlossomIO()
     {
@@ -171,13 +164,10 @@ class Blossom
                                     const std::map<std::string, FieldDef>& validationMap,
                                     const FieldDef::IO_ValueType valueType,
                                     std::string& errorMessage);
-    bool validateInput(BlossomItem& blossomItem,
-                       const std::map<std::string, FieldDef>& validationMap,
-                       const std::string& filePath,
-                       Hanami::ErrorContainer& error);
-    void getCompareMap(std::map<std::string, FieldDef::IO_ValueType>& compareMap,
-                       const ValueItemMap& valueMap);
     void fillDefaultValues(json& values);
+    void createError(const BlossomIO& blossomIO,
+                     const std::string& errorLocation,
+                     Hanami::ErrorContainer& error);
 };
 
 #endif  // HANAMI_LANG_BLOSSOM_H

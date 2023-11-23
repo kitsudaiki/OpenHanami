@@ -23,10 +23,16 @@
 #ifndef HANAMI_TEMPFILEHANDLER_H
 #define HANAMI_TEMPFILEHANDLER_H
 
+#include <common.h>
+#include <hanami_common/buffer/bit_buffer.h>
+#include <hanami_common/files/binary_file.h>
 #include <hanami_common/logger.h>
+#include <hanami_common/threading/thread.h>
 
+#include <chrono>
 #include <map>
 #include <string>
+#include <thread>
 
 namespace Hanami
 {
@@ -34,34 +40,54 @@ class BinaryFile;
 struct DataBuffer;
 }  // namespace Hanami
 
-class TempFileHandler
+class TempFileHandler : Hanami::Thread
 {
    public:
     static TempFileHandler* getInstance()
     {
         if (instance == nullptr) {
             instance = new TempFileHandler();
+            instance->spinUnlock();
         }
         return instance;
     }
     ~TempFileHandler();
 
-    bool initNewFile(const std::string& id, const uint64_t size);
+    bool initNewFile(std::string& uuid,
+                     const std::string& name,
+                     const std::string& relatedUuid,
+                     const uint64_t size,
+                     const UserContext& userContext,
+                     Hanami::ErrorContainer& error);
+
+    FileHandle* getFileHandle(const std::string& uuid, const UserContext& context);
+
     bool addDataToPos(const std::string& uuid,
                       const uint64_t pos,
                       const void* data,
                       const uint64_t size);
     bool getData(Hanami::DataBuffer& result, const std::string& uuid);
-    bool removeData(const std::string& id);
+    bool removeData(const std::string& uuid,
+                    const UserContext& userContext,
+                    Hanami::ErrorContainer& error);
     bool moveData(const std::string& uuid,
                   const std::string& targetLocation,
+                  const UserContext& userContext,
                   Hanami::ErrorContainer& error);
+
+   protected:
+    void run();
 
    private:
     TempFileHandler();
     static TempFileHandler* instance;
 
-    std::map<std::string, Hanami::BinaryFile*> m_tempFiles;
+    bool removeTempfile(const std::string& uuid,
+                        const UserContext& userContext,
+                        Hanami::ErrorContainer& error);
+
+    std::mutex m_fileHandleMutex;
+    std::map<std::string, FileHandle> m_tempFiles;
 };
 
 #endif  // HANAMI_TEMPFILEHANDLER_H

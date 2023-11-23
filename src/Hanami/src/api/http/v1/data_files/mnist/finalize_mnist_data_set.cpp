@@ -106,7 +106,7 @@ FinalizeMnistDataSet::runTask(BlossomIO& blossomIO,
     // read label from temp-file
     Hanami::DataBuffer labelBuffer;
     if (TempFileHandler::getInstance()->getData(labelBuffer, labelUuid) == false) {
-        status.errorMessage = "Label-data with uuid '" + inputUuid + "' not found.";
+        status.errorMessage = "Label-data with uuid '" + labelUuid + "' not found.";
         status.statusCode = NOT_FOUND_RTYPE;
         LOG_DEBUG(status.errorMessage);
         return false;
@@ -120,8 +120,9 @@ FinalizeMnistDataSet::runTask(BlossomIO& blossomIO,
     }
 
     // delete temp-files
-    TempFileHandler::getInstance()->removeData(inputUuid);
-    TempFileHandler::getInstance()->removeData(labelUuid);
+    // TODO: error-handling
+    TempFileHandler::getInstance()->removeData(inputUuid, userContext, error);
+    TempFileHandler::getInstance()->removeData(labelUuid, userContext, error);
 
     // create output
     blossomIO.output["uuid"] = uuid;
@@ -198,9 +199,6 @@ FinalizeMnistDataSet::convertMnistData(const std::string& filePath,
 
     // get pictures
     const uint32_t pictureSize = numberOfRows * numberOfColumns;
-    double averageVal = 0.0f;
-    uint64_t valueCounter = 0;
-    float maxVal = 0.0f;
 
     // copy values of each pixel into the resulting file
     for (uint32_t pic = 0; pic < numberOfImages; pic++) {
@@ -208,14 +206,6 @@ FinalizeMnistDataSet::convertMnistData(const std::string& filePath,
         for (uint32_t i = 0; i < pictureSize; i++) {
             const uint32_t pos = pic * pictureSize + i + dataOffset;
             cluster[segmentPos] = static_cast<float>(dataBufferPtr[pos]);
-
-            // update values for metadata
-            averageVal += cluster[segmentPos];
-            valueCounter++;
-            if (maxVal < cluster[segmentPos]) {
-                maxVal = cluster[segmentPos];
-            }
-
             segmentPos++;
         }
 
@@ -245,10 +235,6 @@ FinalizeMnistDataSet::convertMnistData(const std::string& filePath,
             return false;
         }
     }
-
-    // write additional information to header
-    file.imageHeader.avgValue = averageVal / static_cast<double>(valueCounter);
-    file.imageHeader.maxValue = maxVal;
 
     // update header in file for the final number of lines for the case,
     // that there were invalid lines

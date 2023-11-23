@@ -108,7 +108,8 @@ FinalizeCsvDataSet::runTask(BlossomIO& blossomIO,
     }
 
     // delete temp-files
-    TempFileHandler::getInstance()->removeData(inputUuid);
+    // TODO: error-handling
+    TempFileHandler::getInstance()->removeData(inputUuid, userContext, error);
 
     // create output
     blossomIO.output["uuid"] = uuid;

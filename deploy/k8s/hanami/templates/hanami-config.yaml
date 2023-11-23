@@ -11,7 +11,9 @@ data:
 
     [storage]
     data_set_location = "/etc/hanami/data/datasets"
-    checkpoint_location = "/etc/hanami/data/checkpoint"
+    checkpoint_location = "/etc/hanami/data/checkpoints"
+    tempfile_location = "/etc/hanami/data/tempfiles"
+    tempfile_timeout = 10
 
     [auth]
     policies = "/etc/hanami/policies"

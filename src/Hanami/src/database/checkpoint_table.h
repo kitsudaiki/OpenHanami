@@ -51,9 +51,6 @@ class CheckpointTable : public HanamiSqlTable
     bool deleteCheckpoint(const std::string& checkpointUuid,
                           const UserContext& userContext,
                           Hanami::ErrorContainer& error);
-    bool setUploadFinish(const std::string& uuid,
-                         const std::string& fileUuid,
-                         Hanami::ErrorContainer& error);
 
    private:
     CheckpointTable();

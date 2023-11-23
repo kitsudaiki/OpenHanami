@@ -74,23 +74,23 @@ SaveCluster_State::processEvent()
 
         // get directory to store data from config
         bool success = false;
-        std::string targetFilePath = GET_STRING_CONFIG("storage", "checkpoint_location", success);
+        std::filesystem::path targetFilePath
+            = GET_STRING_CONFIG("storage", "checkpoint_location", success);
         if (success == false) {
             error.addMeesage("checkpoint-location to store checkpoint is missing in the config");
             break;
         }
 
         // build absolut file-path to store the file
-        if (targetFilePath.at(targetFilePath.size() - 1) != '/') {
-            targetFilePath.append("/");
-        }
-        targetFilePath.append(actualTask->uuid.toString() + "_checkpoint_" + actualTask->userId);
+        targetFilePath = targetFilePath
+                         / std::filesystem::path(actualTask->uuid.toString() + "_checkpoint_"
+                                                 + actualTask->userId);
 
         // register in database
         json dbEntry;
         dbEntry["uuid"] = actualTask->uuid.toString();
         dbEntry["name"] = actualTask->checkpointName;
-        dbEntry["location"] = targetFilePath;
+        dbEntry["location"] = targetFilePath.generic_string();
         dbEntry["project_id"] = actualTask->projectId;
         dbEntry["owner_id"] = actualTask->userId;
         dbEntry["visibility"] = "private";

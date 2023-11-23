@@ -48,6 +48,7 @@ namespace websocket = beast::websocket;  // from <boost/beast/websocket.hpp>
 namespace ssl = boost::asio::ssl;        // from <boost/asio/ssl.hpp>
 
 class Blossom;
+struct BlossomIO;
 
 class HttpProcessing
 {
@@ -81,6 +82,9 @@ class HttpProcessing
     std::map<std::string, std::map<Hanami::HttpRequestType, EndpointEntry>> endpointRules;
 
    private:
+    enum OverrideType { ALL, ONLY_EXISTING, ONLY_NON_EXISTING };
+    void overrideItems(json& original, const json& override, OverrideType type);
+
     bool processControlRequest(http::response<http::dynamic_body>& httpResponse,
                                const std::string& uri,
                                const std::string& token,

@@ -55,11 +55,21 @@ registerConfigs()
 
     REGISTER_STRING_CONFIG(storageGroup, "data_set_location")
         .setComment("Local storage location, where all uploaded data-set should be written into.")
-        .setDefault("/etc/hanami/train_data");
+        .setDefault("/etc/hanami/datasets");
 
     REGISTER_STRING_CONFIG(storageGroup, "checkpoint_location")
         .setComment("Local storage location, where all uploaded data-set should be written into.")
-        .setDefault("/etc/hanami/cluster_snapshots");
+        .setDefault("/etc/hanami/checkpoints");
+
+    REGISTER_STRING_CONFIG(storageGroup, "tempfile_location")
+        .setComment(
+            "Local storage location, where all temporary files for upload and download should be "
+            "cached.")
+        .setDefault("/etc/hanami/tempfiles");
+
+    REGISTER_INT_CONFIG(storageGroup, "tempfile_timeout")
+        .setComment("Number of minutes, until an inactive timefile is removed.")
+        .setDefault(10);
 
     // auth-section
     const std::string authGroup = "auth";
