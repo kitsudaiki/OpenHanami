@@ -129,10 +129,6 @@ HEADERS += \
     src/api/endpoint_processing/http_processing/string_functions.h \
     src/api/endpoint_processing/http_server.h \
     src/api/endpoint_processing/http_websocket_thread.h \
-    src/api/endpoint_processing/items/item_methods.h \
-    src/api/endpoint_processing/items/sakura_items.h \
-    src/api/endpoint_processing/items/value_item_map.h \
-    src/api/endpoint_processing/items/value_items.h \
     src/api/endpoint_processing/runtime_validation.h \
     src/api/http/v1/auth/create_token.h \
     src/api/http/v1/auth/list_user_projects.h \
@@ -242,9 +238,6 @@ SOURCES += \
     src/api/endpoint_processing/http_processing/http_processing.cpp \
     src/api/endpoint_processing/http_server.cpp \
     src/api/endpoint_processing/http_websocket_thread.cpp \
-    src/api/endpoint_processing/items/item_methods.cpp \
-    src/api/endpoint_processing/items/sakura_items.cpp \
-    src/api/endpoint_processing/items/value_item_map.cpp \
     src/api/endpoint_processing/runtime_validation.cpp \
     src/api/http/v1/auth/create_token.cpp \
     src/api/http/v1/auth/list_user_projects.cpp \

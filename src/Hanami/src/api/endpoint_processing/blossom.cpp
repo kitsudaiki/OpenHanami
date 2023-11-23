@@ -21,7 +21,6 @@
  */
 
 #include <api/endpoint_processing/blossom.h>
-#include <api/endpoint_processing/items/item_methods.h>
 #include <api/endpoint_processing/runtime_validation.h>
 #include <common.h>
 #include <hanami_common/logger.h>
@@ -210,81 +209,36 @@ Blossom::validateFieldsCompleteness(const json& input,
 }
 
 /**
- * @brief validate given input with the required and allowed values of the selected blossom
+ * @brief create an error-output
  *
- * @param blossomItem blossom-item with given values
- * @param filePath file-path where the blossom belongs to, only used for error-output
+ * @param blossomIO blossom-item with information of the error-location
+ * @param errorLocation location where the error appeared
  * @param error reference for error-output
- *
- * @return true, if successful, else false
- */
-bool
-Blossom::validateInput(BlossomItem& blossomItem,
-                       const std::map<std::string, FieldDef>& validationMap,
-                       const std::string& filePath,
-                       Hanami::ErrorContainer& error)
-{
-    std::map<std::string, FieldDef::IO_ValueType> compareMap;
-    getCompareMap(compareMap, blossomItem.values);
-
-    if (allowUnmatched == false) {
-        // check if all keys in the values of the blossom-item also exist in the required-key-list
-        for (const auto& [name, field] : compareMap) {
-            if (validationMap.find(name) == validationMap.end()) {
-                // build error-output
-                error.addMeesage("item '" + name + "' is not in the list of allowed keys");
-                createError(blossomItem, filePath, "validator", error);
-                return false;
-            }
-        }
-    }
-
-    // check that all keys in the required keys are also in the values of the blossom-item
-    for (const auto& [name, field] : validationMap) {
-        if (field.isRequired == true) {
-            // search for values
-            auto compareIt = compareMap.find(name);
-            if (compareIt != compareMap.end()) {
-                if (field.ioType != compareIt->second) {
-                    error.addMeesage("item '" + name + "' has not the correct input/output type");
-                    createError(blossomItem, filePath, "validator", error);
-                    return false;
-                }
-            }
-            else {
-                error.addMeesage("item '" + name + "' is required, but is not set.");
-                createError(blossomItem, filePath, "validator", error);
-                return false;
-            }
-        }
-    }
-
-    return true;
-}
-
-/**
- * @brief get map for comparism in validator
- *
- * @param compareMap reference for the resulting map
- * @param value-map to compare
  */
 void
-Blossom::getCompareMap(std::map<std::string, FieldDef::IO_ValueType>& compareMap,
-                       const ValueItemMap& valueMap)
+Blossom::createError(const BlossomIO& blossomIO,
+                     const std::string& errorLocation,
+                     Hanami::ErrorContainer& error)
 {
-    // copy items
-    for (const auto& [id, item] : valueMap.m_valueMap) {
-        if (item.type == ValueItem::INPUT_PAIR_TYPE) {
-            compareMap.emplace(id, FieldDef::INPUT_TYPE);
-        }
+    Hanami::TableItem errorOutput;
+    // initialize error-output
+    errorOutput.addColumn("Field");
+    errorOutput.addColumn("Value");
 
-        if (item.type == ValueItem::OUTPUT_PAIR_TYPE) {
-            compareMap.emplace(item.item.dump(), FieldDef::OUTPUT_TYPE);
-        }
+    if (errorLocation.size() > 0) {
+        errorOutput.addRow(std::vector<std::string>{"location", errorLocation});
     }
 
-    // copy child-maps
-    for (const auto& [id, _] : valueMap.m_childMaps) {
-        compareMap.emplace(id, FieldDef::INPUT_TYPE);
+    if (blossomIO.blossomType.size() > 0) {
+        errorOutput.addRow(std::vector<std::string>{"blossom-type", blossomIO.blossomType});
     }
+    if (blossomIO.blossomGroupType.size() > 0) {
+        errorOutput.addRow(
+            std::vector<std::string>{"blossom-group-type", blossomIO.blossomGroupType});
+    }
+    if (blossomIO.blossomName.size() > 0) {
+        errorOutput.addRow(std::vector<std::string>{"blossom-name", blossomIO.blossomName});
+    }
+
+    error.addMeesage("Error in location: \n" + errorOutput.toString(200, true));
 }

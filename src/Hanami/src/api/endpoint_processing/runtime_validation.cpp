@@ -23,7 +23,6 @@
 #include "runtime_validation.h"
 
 #include <api/endpoint_processing/blossom.h>
-#include <api/endpoint_processing/items/item_methods.h>
 
 const std::string
 createErrorMessage(const std::string& name, const FieldType fieldType)

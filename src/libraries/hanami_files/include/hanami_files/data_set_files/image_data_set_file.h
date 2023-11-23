@@ -33,8 +33,6 @@ class ImageDataSetFile : public DataSetFile
         uint64_t numberOfInputsY = 0;
         uint64_t numberOfOutputs = 0;
         uint64_t numberOfImages = 0;
-        float maxValue = 0.0f;
-        float avgValue = 0.0f;
     };
 
     ImageDataSetFile(const std::string& filePath);

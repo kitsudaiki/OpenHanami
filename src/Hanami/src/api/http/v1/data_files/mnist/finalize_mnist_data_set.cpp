@@ -199,9 +199,6 @@ FinalizeMnistDataSet::convertMnistData(const std::string& filePath,
 
     // get pictures
     const uint32_t pictureSize = numberOfRows * numberOfColumns;
-    double averageVal = 0.0f;
-    uint64_t valueCounter = 0;
-    float maxVal = 0.0f;
 
     // copy values of each pixel into the resulting file
     for (uint32_t pic = 0; pic < numberOfImages; pic++) {
@@ -209,14 +206,6 @@ FinalizeMnistDataSet::convertMnistData(const std::string& filePath,
         for (uint32_t i = 0; i < pictureSize; i++) {
             const uint32_t pos = pic * pictureSize + i + dataOffset;
             cluster[segmentPos] = static_cast<float>(dataBufferPtr[pos]);
-
-            // update values for metadata
-            averageVal += cluster[segmentPos];
-            valueCounter++;
-            if (maxVal < cluster[segmentPos]) {
-                maxVal = cluster[segmentPos];
-            }
-
             segmentPos++;
         }
 
@@ -246,10 +235,6 @@ FinalizeMnistDataSet::convertMnistData(const std::string& filePath,
             return false;
         }
     }
-
-    // write additional information to header
-    file.imageHeader.avgValue = averageVal / static_cast<double>(valueCounter);
-    file.imageHeader.maxValue = maxVal;
 
     // update header in file for the final number of lines for the case,
     // that there were invalid lines
