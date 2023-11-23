@@ -34,7 +34,7 @@
 | pw_hash | varchar(64) | false | false | 
 | salt | varchar(64) | false | false | 
 
-## data_set
+## dataset
 
 | Column-Name | Type | is primary | allow NULL|
 | --- | --- | --- | --- |
@@ -45,7 +45,6 @@
 | name | varchar(256) | false | false | 
 | type | varchar(64) | false | false | 
 | location | text | false | false | 
-| temp_files | text | false | false | 
 
 ## request_result
 
