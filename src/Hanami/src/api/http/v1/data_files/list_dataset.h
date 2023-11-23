@@ -1,5 +1,5 @@
 /**
- * @file        create_csv_data_set.h
+ * @file        list_dataset.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,15 +20,15 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_CSV_CREATE_DATA_SET_H
-#define HANAMI_CSV_CREATE_DATA_SET_H
+#ifndef HANAMI_LIST_DATA_SET_H
+#define HANAMI_LIST_DATA_SET_H
 
 #include <api/endpoint_processing/blossom.h>
 
-class CreateCsvDataSet : public Blossom
+class ListDataSet : public Blossom
 {
    public:
-    CreateCsvDataSet();
+    ListDataSet();
 
    protected:
     bool runTask(BlossomIO& blossomIO,
@@ -37,4 +37,4 @@ class CreateCsvDataSet : public Blossom
                  Hanami::ErrorContainer& error);
 };
 
-#endif  // HANAMI_CSV_CREATE_DATA_SET_H
+#endif  // HANAMI_LIST_DATA_SET_H

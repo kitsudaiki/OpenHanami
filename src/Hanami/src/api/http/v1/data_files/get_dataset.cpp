@@ -1,5 +1,5 @@
 /**
- * @file        get_data_set.cpp
+ * @file        get_dataset.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,13 +20,13 @@
  *      limitations under the License.
  */
 
-#include "get_data_set.h"
+#include "get_dataset.h"
 
-#include <database/data_set_table.h>
-#include <hanami_files/data_set_files/data_set_functions.h>
+#include <database/dataset_table.h>
+#include <hanami_files/dataset_files/dataset_functions.h>
 #include <hanami_root.h>
 
-GetDataSet::GetDataSet() : Blossom("Get information of a specific data-set.")
+GetDataSet::GetDataSet() : Blossom("Get information of a specific dataset.")
 {
     errorCodes.push_back(NOT_FOUND_RTYPE);
 
@@ -35,28 +35,28 @@ GetDataSet::GetDataSet() : Blossom("Get information of a specific data-set.")
     //----------------------------------------------------------------------------------------------
 
     registerInputField("uuid", SAKURA_STRING_TYPE)
-        .setComment("UUID of the data-set set to delete.")
+        .setComment("UUID of the dataset set to delete.")
         .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid", SAKURA_STRING_TYPE).setComment("UUID of the data-set.");
+    registerOutputField("uuid", SAKURA_STRING_TYPE).setComment("UUID of the dataset.");
 
-    registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the data-set.");
+    registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the dataset.");
 
     registerOutputField("owner_id", SAKURA_STRING_TYPE)
-        .setComment("ID of the user, who created the data-set.");
+        .setComment("ID of the user, who created the dataset.");
 
     registerOutputField("project_id", SAKURA_STRING_TYPE)
-        .setComment("ID of the project, where the data-set belongs to.");
+        .setComment("ID of the project, where the dataset belongs to.");
 
     registerOutputField("visibility", SAKURA_STRING_TYPE)
-        .setComment("Visibility of the data-set (private, shared, public).");
+        .setComment("Visibility of the dataset (private, shared, public).");
 
     registerOutputField("location", SAKURA_STRING_TYPE)
-        .setComment("Local file-path of the data-set.");
+        .setComment("Local file-path of the dataset.");
 
     registerOutputField("type", SAKURA_STRING_TYPE)
         .setComment("Type of the new set (csv or mnist)");

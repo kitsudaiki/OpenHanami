@@ -19,14 +19,14 @@ INCLUDEPATH += $$PWD \
                $$PWD/../include
 
 SOURCES += \
-    data_set_files/data_set_file.cpp \
-    data_set_files/data_set_functions.cpp \
-    data_set_files/image_data_set_file.cpp \
-    data_set_files/table_data_set_file.cpp
+    dataset_files/dataset_file.cpp \
+    dataset_files/dataset_functions.cpp \
+    dataset_files/image_dataset_file.cpp \
+    dataset_files/table_dataset_file.cpp
 
 HEADERS += \
-    ../include/hanami_files/data_set_files/data_set_file.h \
-    ../include/hanami_files/data_set_files/data_set_functions.h \
-    ../include/hanami_files/data_set_files/image_data_set_file.h \
-    ../include/hanami_files/data_set_files/table_data_set_file.h
+    ../include/hanami_files/dataset_files/dataset_file.h \
+    ../include/hanami_files/dataset_files/dataset_functions.h \
+    ../include/hanami_files/dataset_files/image_dataset_file.h \
+    ../include/hanami_files/dataset_files/table_dataset_file.h
 

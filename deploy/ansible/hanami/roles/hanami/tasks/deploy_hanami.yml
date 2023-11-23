@@ -14,7 +14,7 @@
 
 - name: Create dataset-directory
   file:
-    path: "{{ data_set_location }}"
+    path: "{{ dataset_location }}"
     state: directory
     mode: 0777
 

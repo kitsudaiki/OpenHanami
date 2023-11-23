@@ -31,7 +31,7 @@
 #include <database/audit_log_table.h>
 #include <database/checkpoint_table.h>
 #include <database/cluster_table.h>
-#include <database/data_set_table.h>
+#include <database/dataset_table.h>
 #include <database/error_log_table.h>
 #include <database/projects_table.h>
 #include <database/request_result_table.h>
@@ -315,14 +315,14 @@ HanamiRoot::initDataDirectory(Hanami::ErrorContainer& error)
 {
     bool success = false;
 
-    const std::string datasetsPath = GET_STRING_CONFIG("storage", "data_set_location", success);
+    const std::string datasetsPath = GET_STRING_CONFIG("storage", "dataset_location", success);
     if (success == false) {
-        error.addMeesage("No data_set_location defined in config.");
+        error.addMeesage("No dataset_location defined in config.");
         return false;
     }
 
     if (createDirectory(datasetsPath, error) == false) {
-        error.addMeesage("Failed to create directory for data-sets.");
+        error.addMeesage("Failed to create directory for datasets.");
         return false;
     }
 

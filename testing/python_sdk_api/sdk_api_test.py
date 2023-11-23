@@ -101,6 +101,8 @@ def delete_all_user():
 
 def delete_all_datasets():
     success, result = dataset.list_datasets(token, address)
+    print(result)
+
     body = json.loads(result)["body"]
 
     for entry in body:

@@ -39,15 +39,15 @@
 #include <api/http/v1/cluster/save_cluster.h>
 #include <api/http/v1/cluster/set_cluster_mode.h>
 #include <api/http/v1/cluster/show_cluster.h>
-#include <api/http/v1/data_files/check_data_set.h>
-#include <api/http/v1/data_files/csv/create_csv_data_set.h>
-#include <api/http/v1/data_files/csv/finalize_csv_data_set.h>
-#include <api/http/v1/data_files/delete_data_set.h>
-#include <api/http/v1/data_files/get_data_set.h>
-#include <api/http/v1/data_files/get_progress_data_set.h>
-#include <api/http/v1/data_files/list_data_set.h>
-#include <api/http/v1/data_files/mnist/create_mnist_data_set.h>
-#include <api/http/v1/data_files/mnist/finalize_mnist_data_set.h>
+#include <api/http/v1/data_files/check_dataset.h>
+#include <api/http/v1/data_files/csv/create_csv_dataset.h>
+#include <api/http/v1/data_files/csv/finalize_csv_dataset.h>
+#include <api/http/v1/data_files/delete_dataset.h>
+#include <api/http/v1/data_files/get_dataset.h>
+#include <api/http/v1/data_files/get_progress_dataset.h>
+#include <api/http/v1/data_files/list_dataset.h>
+#include <api/http/v1/data_files/mnist/create_mnist_dataset.h>
+#include <api/http/v1/data_files/mnist/finalize_mnist_dataset.h>
 #include <api/http/v1/logs/get_audit_log.h>
 #include <api/http/v1/logs/get_error_log.h>
 #include <api/http/v1/measurements/power_consumption.h>
@@ -134,7 +134,7 @@ initTaskBlossoms()
 }
 
 /**
- * @brief init data_set blossoms
+ * @brief init dataset blossoms
  */
 void
 dataSetBlossoms()
@@ -144,36 +144,36 @@ dataSetBlossoms()
 
     assert(httpProcessing->addBlossom(group, "create_mnist", new CreateMnistDataSet()));
     httpProcessing->addEndpoint(
-        "v1/mnist/data_set", Hanami::POST_TYPE, BLOSSOM_TYPE, group, "create_mnist");
+        "v1/mnist/dataset", Hanami::POST_TYPE, BLOSSOM_TYPE, group, "create_mnist");
 
     assert(httpProcessing->addBlossom(group, "finalize_mnist", new FinalizeMnistDataSet()));
     httpProcessing->addEndpoint(
-        "v1/mnist/data_set", Hanami::PUT_TYPE, BLOSSOM_TYPE, group, "finalize_mnist");
+        "v1/mnist/dataset", Hanami::PUT_TYPE, BLOSSOM_TYPE, group, "finalize_mnist");
 
     assert(httpProcessing->addBlossom(group, "create_csv", new CreateCsvDataSet()));
     httpProcessing->addEndpoint(
-        "v1/csv/data_set", Hanami::POST_TYPE, BLOSSOM_TYPE, group, "create_csv");
+        "v1/csv/dataset", Hanami::POST_TYPE, BLOSSOM_TYPE, group, "create_csv");
 
     assert(httpProcessing->addBlossom(group, "finalize_csv", new FinalizeCsvDataSet()));
     httpProcessing->addEndpoint(
-        "v1/csv/data_set", Hanami::PUT_TYPE, BLOSSOM_TYPE, group, "finalize_csv");
+        "v1/csv/dataset", Hanami::PUT_TYPE, BLOSSOM_TYPE, group, "finalize_csv");
 
     assert(httpProcessing->addBlossom(group, "check", new CheckDataSet()));
     httpProcessing->addEndpoint(
-        "v1/data_set/check", Hanami::POST_TYPE, BLOSSOM_TYPE, group, "check");
+        "v1/dataset/check", Hanami::POST_TYPE, BLOSSOM_TYPE, group, "check");
 
     assert(httpProcessing->addBlossom(group, "progress", new GetProgressDataSet()));
     httpProcessing->addEndpoint(
-        "v1/data_set/progress", Hanami::GET_TYPE, BLOSSOM_TYPE, group, "progress");
+        "v1/dataset/progress", Hanami::GET_TYPE, BLOSSOM_TYPE, group, "progress");
 
     assert(httpProcessing->addBlossom(group, "get", new GetDataSet()));
-    httpProcessing->addEndpoint("v1/data_set", Hanami::GET_TYPE, BLOSSOM_TYPE, group, "get");
+    httpProcessing->addEndpoint("v1/dataset", Hanami::GET_TYPE, BLOSSOM_TYPE, group, "get");
 
     assert(httpProcessing->addBlossom(group, "delete", new DeleteDataSet()));
-    httpProcessing->addEndpoint("v1/data_set", Hanami::DELETE_TYPE, BLOSSOM_TYPE, group, "delete");
+    httpProcessing->addEndpoint("v1/dataset", Hanami::DELETE_TYPE, BLOSSOM_TYPE, group, "delete");
 
     assert(httpProcessing->addBlossom(group, "list", new ListDataSet()));
-    httpProcessing->addEndpoint("v1/data_set/all", Hanami::GET_TYPE, BLOSSOM_TYPE, group, "list");
+    httpProcessing->addEndpoint("v1/dataset/all", Hanami::GET_TYPE, BLOSSOM_TYPE, group, "list");
 }
 
 /**

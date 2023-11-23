@@ -1,5 +1,5 @@
 /**
- * @file        create_csv_data_set.cpp
+ * @file        create_csv_dataset.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,23 +20,23 @@
  *      limitations under the License.
  */
 
-#include "create_csv_data_set.h"
+#include "create_csv_dataset.h"
 
 #include <core/temp_file_handler.h>
-#include <database/data_set_table.h>
+#include <database/dataset_table.h>
 #include <hanami_common/files/binary_file.h>
 #include <hanami_config/config_handler.h>
 #include <hanami_crypto/common.h>
 #include <hanami_root.h>
 
-CreateCsvDataSet::CreateCsvDataSet() : Blossom("Init new csv-file data-set.")
+CreateCsvDataSet::CreateCsvDataSet() : Blossom("Init new csv-file dataset.")
 {
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------
 
     registerInputField("name", SAKURA_STRING_TYPE)
-        .setComment("Name of the new data-set.")
+        .setComment("Name of the new dataset.")
         .setLimit(4, 256)
         .setRegex(NAME_REGEX);
 
@@ -48,18 +48,18 @@ CreateCsvDataSet::CreateCsvDataSet() : Blossom("Init new csv-file data-set.")
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid", SAKURA_STRING_TYPE).setComment("UUID of the new data-set.");
+    registerOutputField("uuid", SAKURA_STRING_TYPE).setComment("UUID of the new dataset.");
 
-    registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the new data-set.");
+    registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the new dataset.");
 
     registerOutputField("owner_id", SAKURA_STRING_TYPE)
-        .setComment("ID of the user, who created the data-set.");
+        .setComment("ID of the user, who created the dataset.");
 
     registerOutputField("project_id", SAKURA_STRING_TYPE)
-        .setComment("ID of the project, where the data-set belongs to.");
+        .setComment("ID of the project, where the dataset belongs to.");
 
     registerOutputField("visibility", SAKURA_STRING_TYPE)
-        .setComment("Visibility of the data-set (private, shared, public).");
+        .setComment("Visibility of the dataset (private, shared, public).");
 
     registerOutputField("type", SAKURA_STRING_TYPE).setComment("Type of the new set (csv)");
 
@@ -84,7 +84,7 @@ CreateCsvDataSet::runTask(BlossomIO& blossomIO,
 
     // get directory to store data from config
     bool success = false;
-    std::string targetFilePath = GET_STRING_CONFIG("storage", "data_set_location", success);
+    std::string targetFilePath = GET_STRING_CONFIG("storage", "dataset_location", success);
     if (success == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("file-location to store dataset is missing in the config");

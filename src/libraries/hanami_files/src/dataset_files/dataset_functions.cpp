@@ -1,5 +1,5 @@
 /**
- * @file        data_set_functions.cpp
+ * @file        dataset_functions.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -21,10 +21,10 @@
  */
 
 #include <hanami_common/files/binary_file.h>
-#include <hanami_files/data_set_files/data_set_file.h>
-#include <hanami_files/data_set_files/data_set_functions.h>
-#include <hanami_files/data_set_files/image_data_set_file.h>
-#include <hanami_files/data_set_files/table_data_set_file.h>
+#include <hanami_files/dataset_files/dataset_file.h>
+#include <hanami_files/dataset_files/dataset_functions.h>
+#include <hanami_files/dataset_files/image_dataset_file.h>
+#include <hanami_files/dataset_files/table_dataset_file.h>
 
 /**
  * @brief getDataSetPayload
@@ -76,7 +76,7 @@ getHeaderInformation(json& result, const std::string& location, Hanami::ErrorCon
     }
 
     do {
-        // read data-set-header
+        // read dataset-header
         if (file->readFromFile(error) == false) {
             error.addMeesage("Failed to read header from file '" + location + "'");
             break;

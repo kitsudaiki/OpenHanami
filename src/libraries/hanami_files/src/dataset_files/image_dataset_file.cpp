@@ -1,5 +1,5 @@
 /**
- * @file        image_data_set_file.cpp
+ * @file        image_dataset_file.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -21,7 +21,7 @@
  */
 
 #include <hanami_common/files/binary_file.h>
-#include <hanami_files/data_set_files/image_data_set_file.h>
+#include <hanami_files/dataset_files/image_dataset_file.h>
 
 /**
  * @brief constructor
@@ -111,7 +111,7 @@ ImageDataSetFile::getPayload(Hanami::DataBuffer& result,
     const uint64_t payloadSize = m_totalFileSize - m_headerSize;
     Hanami::allocateBlocks_DataBuffer(result, Hanami::calcBytesToBlocks(payloadSize));
     if (m_targetFile->readDataFromFile(result.data, m_headerSize, payloadSize, error) == false) {
-        error.addMeesage("Failed to read data of image-data-set-file");
+        error.addMeesage("Failed to read data of image-dataset-file");
         return false;
     }
 

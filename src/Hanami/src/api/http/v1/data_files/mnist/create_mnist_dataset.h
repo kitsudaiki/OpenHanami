@@ -1,5 +1,5 @@
 /**
- * @file        check_data_set.h
+ * @file        create_mnist_dataset.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,15 +20,15 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_CHECKDATASET_H
-#define HANAMI_CHECKDATASET_H
+#ifndef HANAMI_MNIST_CREATE_DATA_SET_H
+#define HANAMI_MNIST_CREATE_DATA_SET_H
 
 #include <api/endpoint_processing/blossom.h>
 
-class CheckDataSet : public Blossom
+class CreateMnistDataSet : public Blossom
 {
    public:
-    CheckDataSet();
+    CreateMnistDataSet();
 
    protected:
     bool runTask(BlossomIO& blossomIO,
@@ -37,4 +37,4 @@ class CheckDataSet : public Blossom
                  Hanami::ErrorContainer& error);
 };
 
-#endif  // HANAMI_CHECKDATASET_H
+#endif  // HANAMI_MNIST_CREATE_DATA_SET_H

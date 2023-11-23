@@ -26,10 +26,10 @@
 #include <core/cluster/cluster.h>
 #include <core/cluster/cluster_handler.h>
 #include <database/cluster_table.h>
-#include <database/data_set_table.h>
+#include <database/dataset_table.h>
 #include <hanami_common/files/binary_file.h>
 #include <hanami_crypto/common.h>
-#include <hanami_files/data_set_files/data_set_functions.h>
+#include <hanami_files/dataset_files/dataset_functions.h>
 #include <hanami_root.h>
 
 CreateTask::CreateTask() : Blossom("Add new task to the task-queue of a cluster.")
@@ -46,15 +46,15 @@ CreateTask::CreateTask() : Blossom("Add new task to the task-queue of a cluster.
         .setRegex(NAME_REGEX);
 
     registerInputField("type", SAKURA_STRING_TYPE)
-        .setComment("UUID of the data-set with the input, which coming from shiori.")
+        .setComment("UUID of the dataset with the input, which coming from shiori.")
         .setRegex("^(train|request)$");
 
     registerInputField("cluster_uuid", SAKURA_STRING_TYPE)
         .setComment("UUID of the cluster, which should process the request")
         .setRegex(UUID_REGEX);
 
-    registerInputField("data_set_uuid", SAKURA_STRING_TYPE)
-        .setComment("UUID of the data-set with the input, which coming from shiori.")
+    registerInputField("dataset_uuid", SAKURA_STRING_TYPE)
+        .setComment("UUID of the dataset with the input, which coming from shiori.")
         .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
@@ -81,7 +81,7 @@ CreateTask::runTask(BlossomIO& blossomIO,
 {
     const std::string name = blossomIO.input["name"];
     const std::string clusterUuid = blossomIO.input["cluster_uuid"];
-    const std::string dataSetUuid = blossomIO.input["data_set_uuid"];
+    const std::string dataSetUuid = blossomIO.input["dataset_uuid"];
     const std::string taskType = blossomIO.input["type"];
     const UserContext userContext(context);
 
@@ -111,7 +111,7 @@ CreateTask::runTask(BlossomIO& blossomIO,
         return false;
     }
 
-    // get meta-infos of data-set from shiori
+    // get meta-infos of dataset from shiori
     json dataSetInfo;
     if (DataSetTable::getInstance()->getDateSetInfo(dataSetInfo, dataSetUuid, context, error)
         == false)
@@ -179,7 +179,7 @@ CreateTask::imageTask(std::string& taskUuid,
     const std::string dataSetLocation = dataSetInfo["location"];
     Hanami::DataBuffer buffer;
     if (getDataSetPayload(buffer, dataSetLocation, error) == false) {
-        error.addMeesage("Failed to get data of data-set from location '" + dataSetLocation + "'");
+        error.addMeesage("Failed to get data of dataset from location '" + dataSetLocation + "'");
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
@@ -250,7 +250,7 @@ CreateTask::tableTask(std::string& taskUuid,
     const std::string dataSetLocation = dataSetInfo["location"];
     Hanami::DataBuffer inputBuffer;
     if (getDataSetPayload(inputBuffer, dataSetLocation, error, inputColumnName) == false) {
-        error.addMeesage("Failed to get data of data-set from location '" + dataSetLocation
+        error.addMeesage("Failed to get data of dataset from location '" + dataSetLocation
                          + "' and column with name '" + inputColumnName + "'");
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
@@ -272,7 +272,7 @@ CreateTask::tableTask(std::string& taskUuid,
         const std::string outputColumnName = "output";
         Hanami::DataBuffer outputBuffer;
         if (getDataSetPayload(outputBuffer, dataSetLocation, error, outputColumnName) == false) {
-            error.addMeesage("Failed to get data of data-set from location '" + dataSetLocation
+            error.addMeesage("Failed to get data of dataset from location '" + dataSetLocation
                              + "' and column with name '" + outputColumnName + "'");
             status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
             return false;

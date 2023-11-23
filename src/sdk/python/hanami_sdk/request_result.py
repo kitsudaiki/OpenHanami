@@ -34,10 +34,10 @@ def delete_request_result(token: str, address: str, request_result_uuid: str) ->
 
 
 def check_against_dataset(token: str, address: str, result_uuid: str, dataset_uuid: str) -> tuple[bool,str]:
-    path = "/control/v1/data_set/check"
+    path = "/control/v1/dataset/check"
     json_body = {
         "result_uuid": result_uuid,
-        "data_set_uuid": dataset_uuid,
+        "dataset_uuid": dataset_uuid,
     }
     body_str = json.dumps(json_body)
     return hanami_request.send_post_request(token, address, path, body_str)

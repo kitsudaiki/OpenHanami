@@ -1,5 +1,5 @@
 /**
- * @file        list_data_set.h
+ * @file        delete_dataset.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,15 +20,15 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_LIST_DATA_SET_H
-#define HANAMI_LIST_DATA_SET_H
+#ifndef HANAMI_DELETE_DATA_SET_H
+#define HANAMI_DELETE_DATA_SET_H
 
 #include <api/endpoint_processing/blossom.h>
 
-class ListDataSet : public Blossom
+class DeleteDataSet : public Blossom
 {
    public:
-    ListDataSet();
+    DeleteDataSet();
 
    protected:
     bool runTask(BlossomIO& blossomIO,
@@ -37,4 +37,4 @@ class ListDataSet : public Blossom
                  Hanami::ErrorContainer& error);
 };
 
-#endif  // HANAMI_LIST_DATA_SET_H
+#endif  // HANAMI_DELETE_DATA_SET_H

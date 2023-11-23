@@ -1,5 +1,5 @@
 /**
- * @file        data_set_table.h
+ * @file        dataset_table.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *

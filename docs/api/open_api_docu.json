@@ -340,11 +340,11 @@
                                             "type": "string"
                                         },
                                         "name": {
-                                            "description": "Name of the data-set.",
+                                            "description": "Name of the dataset.",
                                             "type": "string"
                                         },
                                         "uuid": {
-                                            "description": "UUID of the data-set.",
+                                            "description": "UUID of the dataset.",
                                             "type": "string"
                                         }
                                     },
@@ -1176,7 +1176,7 @@
                 ]
             }
         },
-        "v1/csv/data_set": {
+        "v1/csv/dataset": {
             "post": {
                 "parameters": [
                     {
@@ -1201,7 +1201,7 @@
                                         "type": "integer"
                                     },
                                     "name": {
-                                        "description": "Name of the new data-set.",
+                                        "description": "Name of the new dataset.",
                                         "maxLength": "256",
                                         "minLength": "4",
                                         "pattern": "[a-zA-Z][a-zA-Z_0-9 ]*",
@@ -1225,15 +1225,15 @@
                                 "schema": {
                                     "properties": {
                                         "name": {
-                                            "description": "Name of the new data-set.",
+                                            "description": "Name of the new dataset.",
                                             "type": "string"
                                         },
                                         "owner_id": {
-                                            "description": "ID of the user, who created the data-set.",
+                                            "description": "ID of the user, who created the dataset.",
                                             "type": "string"
                                         },
                                         "project_id": {
-                                            "description": "ID of the project, where the data-set belongs to.",
+                                            "description": "ID of the project, where the dataset belongs to.",
                                             "type": "string"
                                         },
                                         "type": {
@@ -1241,7 +1241,7 @@
                                             "type": "string"
                                         },
                                         "uuid": {
-                                            "description": "UUID of the new data-set.",
+                                            "description": "UUID of the new dataset.",
                                             "type": "string"
                                         },
                                         "uuid_input_file": {
@@ -1249,7 +1249,7 @@
                                             "type": "string"
                                         },
                                         "visibility": {
-                                            "description": "Visibility of the data-set (private, shared, public).",
+                                            "description": "Visibility of the dataset (private, shared, public).",
                                             "type": "string"
                                         }
                                     },
@@ -1290,7 +1290,7 @@
                         "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
-                "summary": "Init new csv-file data-set.",
+                "summary": "Init new csv-file dataset.",
                 "tags": [
                     "Data Set"
                 ]
@@ -1313,7 +1313,7 @@
                             "schema": {
                                 "properties": {
                                     "uuid": {
-                                        "description": "UUID of the new data-set.",
+                                        "description": "UUID of the new dataset.",
                                         "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
                                         "type": "string"
                                     },
@@ -1340,7 +1340,7 @@
                                 "schema": {
                                     "properties": {
                                         "uuid": {
-                                            "description": "UUID of the new data-set.",
+                                            "description": "UUID of the new dataset.",
                                             "type": "string"
                                         }
                                     },
@@ -1391,13 +1391,13 @@
                         "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
-                "summary": "Finalize uploaded data-set by checking completeness of the uploaded and convert into generic format.",
+                "summary": "Finalize uploaded dataset by checking completeness of the uploaded and convert into generic format.",
                 "tags": [
                     "Data Set"
                 ]
             }
         },
-        "v1/data_set": {
+        "v1/dataset": {
             "delete": {
                 "parameters": [
                     {
@@ -1410,7 +1410,7 @@
                         }
                     },
                     {
-                        "description": "UUID of the data-set to delete.",
+                        "description": "UUID of the dataset to delete.",
                         "in": "query",
                         "name": "uuid",
                         "required": true,
@@ -1472,7 +1472,7 @@
                         "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
-                "summary": "Delete a speific data-set.",
+                "summary": "Delete a speific dataset.",
                 "tags": [
                     "Data Set"
                 ]
@@ -1489,7 +1489,7 @@
                         }
                     },
                     {
-                        "description": "UUID of the data-set set to delete.",
+                        "description": "UUID of the dataset set to delete.",
                         "in": "query",
                         "name": "uuid",
                         "required": true,
@@ -1514,11 +1514,11 @@
                                             "type": "integer"
                                         },
                                         "location": {
-                                            "description": "Local file-path of the data-set.",
+                                            "description": "Local file-path of the dataset.",
                                             "type": "string"
                                         },
                                         "name": {
-                                            "description": "Name of the data-set.",
+                                            "description": "Name of the dataset.",
                                             "type": "string"
                                         },
                                         "outputs": {
@@ -1526,11 +1526,11 @@
                                             "type": "integer"
                                         },
                                         "owner_id": {
-                                            "description": "ID of the user, who created the data-set.",
+                                            "description": "ID of the user, who created the dataset.",
                                             "type": "string"
                                         },
                                         "project_id": {
-                                            "description": "ID of the project, where the data-set belongs to.",
+                                            "description": "ID of the project, where the dataset belongs to.",
                                             "type": "string"
                                         },
                                         "type": {
@@ -1538,11 +1538,11 @@
                                             "type": "string"
                                         },
                                         "uuid": {
-                                            "description": "UUID of the data-set.",
+                                            "description": "UUID of the dataset.",
                                             "type": "string"
                                         },
                                         "visibility": {
-                                            "description": "Visibility of the data-set (private, shared, public).",
+                                            "description": "Visibility of the dataset (private, shared, public).",
                                             "type": "string"
                                         }
                                     },
@@ -1593,13 +1593,13 @@
                         "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
-                "summary": "Get information of a specific data-set.",
+                "summary": "Get information of a specific dataset.",
                 "tags": [
                     "Data Set"
                 ]
             }
         },
-        "v1/data_set/all": {
+        "v1/dataset/all": {
             "get": {
                 "parameters": [
                     {
@@ -1668,13 +1668,13 @@
                         "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
-                "summary": "List all visible data-sets.",
+                "summary": "List all visible datasets.",
                 "tags": [
                     "Data Set"
                 ]
             }
         },
-        "v1/data_set/check": {
+        "v1/dataset/check": {
             "post": {
                 "parameters": [
                     {
@@ -1692,19 +1692,19 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
-                                    "data_set_uuid": {
-                                        "description": "UUID of the data-set to compare to.",
+                                    "dataset_uuid": {
+                                        "description": "UUID of the dataset to compare to.",
                                         "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
                                         "type": "string"
                                     },
                                     "result_uuid": {
-                                        "description": "UUID of the data-set to compare to.",
+                                        "description": "UUID of the dataset to compare to.",
                                         "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
                                         "type": "string"
                                     }
                                 },
                                 "required": [
-                                    "data_set_uuid",
+                                    "dataset_uuid",
                                     "result_uuid"
                                 ],
                                 "type": "object"
@@ -1720,7 +1720,7 @@
                                 "schema": {
                                     "properties": {
                                         "correctness": {
-                                            "description": "Correctness of the values compared to the data-set.",
+                                            "description": "Correctness of the values compared to the dataset.",
                                             "type": "number"
                                         }
                                     },
@@ -1771,13 +1771,13 @@
                         "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
-                "summary": "Compare a list of values with a data-set to check correctness.",
+                "summary": "Compare a list of values with a dataset to check correctness.",
                 "tags": [
                     "Data Set"
                 ]
             }
         },
-        "v1/data_set/progress": {
+        "v1/dataset/progress": {
             "get": {
                 "parameters": [
                     {
@@ -1810,12 +1810,8 @@
                                             "description": "True, if all temporary files for complete.",
                                             "type": "boolean"
                                         },
-                                        "temp_files": {
-                                            "description": "Map with the uuids of the temporary files and it's upload progress",
-                                            "type": "object"
-                                        },
                                         "uuid": {
-                                            "description": "UUID of the data-set.",
+                                            "description": "UUID of the dataset.",
                                             "type": "string"
                                         }
                                     },
@@ -1866,7 +1862,7 @@
                         "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
-                "summary": "Get upload progress of a specific data-set.",
+                "summary": "Get upload progress of a specific dataset.",
                 "tags": [
                     "Data Set"
                 ]
@@ -1979,7 +1975,7 @@
                 ]
             }
         },
-        "v1/mnist/data_set": {
+        "v1/mnist/dataset": {
             "post": {
                 "parameters": [
                     {
@@ -2035,15 +2031,15 @@
                                 "schema": {
                                     "properties": {
                                         "name": {
-                                            "description": "Name of the new data-set.",
+                                            "description": "Name of the new dataset.",
                                             "type": "string"
                                         },
                                         "owner_id": {
-                                            "description": "ID of the user, who created the data-set.",
+                                            "description": "ID of the user, who created the dataset.",
                                             "type": "string"
                                         },
                                         "project_id": {
-                                            "description": "ID of the project, where the data-set belongs to.",
+                                            "description": "ID of the project, where the dataset belongs to.",
                                             "type": "string"
                                         },
                                         "type": {
@@ -2051,7 +2047,7 @@
                                             "type": "string"
                                         },
                                         "uuid": {
-                                            "description": "UUID of the new data-set.",
+                                            "description": "UUID of the new dataset.",
                                             "type": "string"
                                         },
                                         "uuid_input_file": {
@@ -2063,7 +2059,7 @@
                                             "type": "string"
                                         },
                                         "visibility": {
-                                            "description": "Visibility of the data-set (private, shared, public).",
+                                            "description": "Visibility of the dataset (private, shared, public).",
                                             "type": "string"
                                         }
                                     },
@@ -2104,7 +2100,7 @@
                         "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
-                "summary": "Init new mnist-file data-set.",
+                "summary": "Init new mnist-file dataset.",
                 "tags": [
                     "Data Set"
                 ]
@@ -2127,7 +2123,7 @@
                             "schema": {
                                 "properties": {
                                     "uuid": {
-                                        "description": "UUID of the new data-set.",
+                                        "description": "UUID of the new dataset.",
                                         "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
                                         "type": "string"
                                     },
@@ -2160,7 +2156,7 @@
                                 "schema": {
                                     "properties": {
                                         "uuid": {
-                                            "description": "UUID of the new data-set.",
+                                            "description": "UUID of the new dataset.",
                                             "type": "string"
                                         }
                                     },
@@ -2211,7 +2207,7 @@
                         "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
-                "summary": "Finalize uploaded data-set by checking completeness of the uploaded and convert into generic format.",
+                "summary": "Finalize uploaded dataset by checking completeness of the uploaded and convert into generic format.",
                 "tags": [
                     "Data Set"
                 ]
@@ -3237,8 +3233,8 @@
                                         "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
                                         "type": "string"
                                     },
-                                    "data_set_uuid": {
-                                        "description": "UUID of the data-set with the input, which coming from shiori.",
+                                    "dataset_uuid": {
+                                        "description": "UUID of the dataset with the input, which coming from shiori.",
                                         "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
                                         "type": "string"
                                     },
@@ -3250,14 +3246,14 @@
                                         "type": "string"
                                     },
                                     "type": {
-                                        "description": "UUID of the data-set with the input, which coming from shiori.",
+                                        "description": "UUID of the dataset with the input, which coming from shiori.",
                                         "pattern": "^(train|request)$",
                                         "type": "string"
                                     }
                                 },
                                 "required": [
                                     "cluster_uuid",
-                                    "data_set_uuid",
+                                    "dataset_uuid",
                                     "name",
                                     "type"
                                 ],

@@ -5,7 +5,7 @@ docker_tag: "develop"
 listen_address: "0.0.0.0"
 log_dir: "/var/log/hanami"
 
-data_set_location: "/etc/hanami/datasets"
+dataset_location: "/etc/hanami/datasets"
 checkpoint_location: "/etc/hanami/checkpoints"
 tempfile_location: "/etc/hanami/tempfiles"
 

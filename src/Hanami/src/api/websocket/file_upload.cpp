@@ -24,7 +24,7 @@
 #include <api/websocket/file_upload.h>
 #include <core/temp_file_handler.h>
 #include <database/checkpoint_table.h>
-#include <database/data_set_table.h>
+#include <database/dataset_table.h>
 #include <hanami_messages.proto3.pb.h>
 #include <hanami_root.h>
 

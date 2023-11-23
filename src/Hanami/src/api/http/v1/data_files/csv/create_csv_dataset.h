@@ -1,5 +1,5 @@
 /**
- * @file        create_mnist_data_set.h
+ * @file        create_csv_dataset.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,15 +20,15 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_MNIST_CREATE_DATA_SET_H
-#define HANAMI_MNIST_CREATE_DATA_SET_H
+#ifndef HANAMI_CSV_CREATE_DATA_SET_H
+#define HANAMI_CSV_CREATE_DATA_SET_H
 
 #include <api/endpoint_processing/blossom.h>
 
-class CreateMnistDataSet : public Blossom
+class CreateCsvDataSet : public Blossom
 {
    public:
-    CreateMnistDataSet();
+    CreateCsvDataSet();
 
    protected:
     bool runTask(BlossomIO& blossomIO,
@@ -37,4 +37,4 @@ class CreateMnistDataSet : public Blossom
                  Hanami::ErrorContainer& error);
 };
 
-#endif  // HANAMI_MNIST_CREATE_DATA_SET_H
+#endif  // HANAMI_CSV_CREATE_DATA_SET_H

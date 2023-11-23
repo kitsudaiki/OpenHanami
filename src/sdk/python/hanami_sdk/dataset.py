@@ -22,12 +22,12 @@ import time
 
 
 def list_datasets(token: str, address: str) -> tuple[bool,str]:
-    path = "/control/v1/data_set/all"
+    path = "/control/v1/dataset/all"
     return hanami_request.send_get_request(token, address, path, "")
 
 
 def get_dataset(token: str, address: str, dataset_uuid: str) -> tuple[bool,str]:
-    path = "/control/v1/data_set"
+    path = "/control/v1/dataset"
     values = f'uuid={dataset_uuid}'
     return hanami_request.send_get_request(token, address, path, values)
 
@@ -35,14 +35,14 @@ def get_dataset(token: str, address: str, dataset_uuid: str) -> tuple[bool,str]:
 def delete_dataset(token: str,
                    address: str, 
                    checkpoint_uuid: str) -> tuple[bool,str]:
-    path = "/control/v1/data_set";
+    path = "/control/v1/dataset";
     values = f'uuid={checkpoint_uuid}'
     return hanami_request.send_delete_request(token, address, path, values)
 
 
 def wait_until_upload_complete(token: str, address: str, uuid: str) -> bool:
     while True:
-        path = "/control/v1/data_set/progress"
+        path = "/control/v1/dataset/progress"
         values = f'uuid={uuid}'
 
         success, result = hanami_request.send_get_request(token, address, path, values)
@@ -114,7 +114,7 @@ def upload_mnist_files(token: str,
         label_file_data = l_f.read()
 
     # initialize
-    path = "/control/v1/mnist/data_set"
+    path = "/control/v1/mnist/dataset"
     json_body = {
         "name": name,
         "input_data_size": len(input_file_data),
@@ -143,7 +143,7 @@ def upload_mnist_files(token: str,
         return False, ""
 
     # finalize
-    path = "/control/v1/mnist/data_set"
+    path = "/control/v1/mnist/dataset"
     json_body = {
         "uuid": uuid,
         "uuid_input_file": input_file_uuid,
@@ -168,7 +168,7 @@ def upload_csv_files(token: str,
         input_file_data = i_f.read()
 
     # initialize
-    path = "/control/v1/csv/data_set"
+    path = "/control/v1/csv/dataset"
     json_body = {
         "name": name,
         "input_data_size": len(input_file_data),
@@ -192,7 +192,7 @@ def upload_csv_files(token: str,
         return False, ""
 
     # finalize
-    path = "/control/v1/csv/data_set"
+    path = "/control/v1/csv/dataset"
     json_body = {
         "uuid": uuid,
         "uuid_input_file": input_file_uuid,

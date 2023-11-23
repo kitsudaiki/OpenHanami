@@ -1,5 +1,5 @@
 /**
- * @file        get_progress_data_set.h
+ * @file        check_dataset.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,21 +20,21 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_GET_PROGRESS_DATA_SET_H
-#define HANAMI_GET_PROGRESS_DATA_SET_H
+#ifndef HANAMI_CHECKDATASET_H
+#define HANAMI_CHECKDATASET_H
 
 #include <api/endpoint_processing/blossom.h>
 
-class GetProgressDataSet : public Blossom
+class CheckDataSet : public Blossom
 {
    public:
-    GetProgressDataSet();
+    CheckDataSet();
 
    protected:
     bool runTask(BlossomIO& blossomIO,
-                 const json&,
+                 const json& context,
                  BlossomStatus& status,
                  Hanami::ErrorContainer& error);
 };
 
-#endif  // HANAMI_GET_PROGRESS_DATA_SET_H
+#endif  // HANAMI_CHECKDATASET_H

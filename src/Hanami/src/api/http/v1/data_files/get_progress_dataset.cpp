@@ -1,5 +1,5 @@
 /**
- * @file        get_progress_data_set.cpp
+ * @file        get_progress_dataset.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,17 +20,17 @@
  *      limitations under the License.
  */
 
-#include "get_progress_data_set.h"
+#include "get_progress_dataset.h"
 
 #include <core/temp_file_handler.h>
-#include <database/data_set_table.h>
+#include <database/dataset_table.h>
 #include <database/tempfile_table.h>
-#include <hanami_files/data_set_files/data_set_file.h>
-#include <hanami_files/data_set_files/image_data_set_file.h>
-#include <hanami_files/data_set_files/table_data_set_file.h>
+#include <hanami_files/dataset_files/dataset_file.h>
+#include <hanami_files/dataset_files/image_dataset_file.h>
+#include <hanami_files/dataset_files/table_dataset_file.h>
 #include <hanami_root.h>
 
-GetProgressDataSet::GetProgressDataSet() : Blossom("Get upload progress of a specific data-set.")
+GetProgressDataSet::GetProgressDataSet() : Blossom("Get upload progress of a specific dataset.")
 {
     errorCodes.push_back(NOT_FOUND_RTYPE);
 
@@ -46,7 +46,7 @@ GetProgressDataSet::GetProgressDataSet() : Blossom("Get upload progress of a spe
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid", SAKURA_STRING_TYPE).setComment("UUID of the data-set.");
+    registerOutputField("uuid", SAKURA_STRING_TYPE).setComment("UUID of the dataset.");
 
     registerOutputField("complete", SAKURA_BOOL_TYPE)
         .setComment("True, if all temporary files for complete.");
