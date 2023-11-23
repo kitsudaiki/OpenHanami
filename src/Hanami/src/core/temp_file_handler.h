@@ -27,9 +27,12 @@
 #include <hanami_common/buffer/bit_buffer.h>
 #include <hanami_common/files/binary_file.h>
 #include <hanami_common/logger.h>
+#include <hanami_common/threading/thread.h>
 
+#include <chrono>
 #include <map>
 #include <string>
+#include <thread>
 
 namespace Hanami
 {
@@ -37,13 +40,14 @@ class BinaryFile;
 struct DataBuffer;
 }  // namespace Hanami
 
-class TempFileHandler
+class TempFileHandler : Hanami::Thread
 {
    public:
     static TempFileHandler* getInstance()
     {
         if (instance == nullptr) {
             instance = new TempFileHandler();
+            instance->spinUnlock();
         }
         return instance;
     }
@@ -68,12 +72,21 @@ class TempFileHandler
                     Hanami::ErrorContainer& error);
     bool moveData(const std::string& uuid,
                   const std::string& targetLocation,
+                  const UserContext& userContext,
                   Hanami::ErrorContainer& error);
+
+   protected:
+    void run();
 
    private:
     TempFileHandler();
     static TempFileHandler* instance;
 
+    bool removeTempfile(const std::string& uuid,
+                        const UserContext& userContext,
+                        Hanami::ErrorContainer& error);
+
+    std::mutex m_fileHandleMutex;
     std::map<std::string, FileHandle> m_tempFiles;
 };
 

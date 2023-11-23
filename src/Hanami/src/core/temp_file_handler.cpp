@@ -28,7 +28,7 @@
 
 TempFileHandler* TempFileHandler::instance = nullptr;
 
-TempFileHandler::TempFileHandler() {}
+TempFileHandler::TempFileHandler() : Hanami::Thread("tempfile-handler") {}
 
 TempFileHandler::~TempFileHandler() {}
 
@@ -52,11 +52,14 @@ TempFileHandler::initNewFile(std::string& uuid,
                              const UserContext& userContext,
                              Hanami::ErrorContainer& error)
 {
+    const std::lock_guard<std::mutex> lock(m_fileHandleMutex);
+
     uuid = generateUuid().toString();
 
     bool success = false;
-    std::string targetFilePath = GET_STRING_CONFIG("storage", "data_set_location", success);
-    targetFilePath += "/" + uuid;
+    std::filesystem::path targetFilePath
+        = GET_STRING_CONFIG("storage", "tempfile_location", success);
+    targetFilePath = targetFilePath / std::filesystem::path(uuid);
 
     bool result = false;
 
@@ -129,6 +132,8 @@ TempFileHandler::initNewFile(std::string& uuid,
 FileHandle*
 TempFileHandler::getFileHandle(const std::string& uuid, const UserContext& context)
 {
+    const std::lock_guard<std::mutex> lock(m_fileHandleMutex);
+
     const auto it = m_tempFiles.find(uuid);
     if (it != m_tempFiles.end()) {
         if (context.userId == it->second.userContext.userId
@@ -157,6 +162,8 @@ TempFileHandler::addDataToPos(const std::string& uuid,
                               const void* data,
                               const uint64_t size)
 {
+    const std::lock_guard<std::mutex> lock(m_fileHandleMutex);
+
     Hanami::ErrorContainer error;
 
     const auto it = m_tempFiles.find(uuid);
@@ -190,6 +197,8 @@ TempFileHandler::addDataToPos(const std::string& uuid,
 bool
 TempFileHandler::getData(Hanami::DataBuffer& result, const std::string& uuid)
 {
+    const std::lock_guard<std::mutex> lock(m_fileHandleMutex);
+
     Hanami::ErrorContainer error;
 
     const auto it = m_tempFiles.find(uuid);
@@ -215,12 +224,9 @@ TempFileHandler::removeData(const std::string& uuid,
                             const UserContext& userContext,
                             Hanami::ErrorContainer& error)
 {
-    // check tempfile-database form entry
-    json tempfileData;
-    if (TempfileTable::getInstance()->getTempfile(tempfileData, uuid, userContext, error, true)
-        == false)
-    {
-        error.addMeesage("Tempfile with '" + uuid + "' not found in database");
+    const std::lock_guard<std::mutex> lock(m_fileHandleMutex);
+
+    if (removeTempfile(uuid, userContext, error) == false) {
         return false;
     }
 
@@ -228,6 +234,32 @@ TempFileHandler::removeData(const std::string& uuid,
     const auto it = m_tempFiles.find(uuid);
     if (it != m_tempFiles.end()) {
         m_tempFiles.erase(it);
+    }
+
+    return true;
+}
+
+/**
+ * @brief remove an uuid from this class and database and delete the file within the storage
+ *
+ * @param uuid uuid of the temporary file
+ * @param userContext user-context for database-access
+ * @param error reference for error-output
+ *
+ * @return false, if uuid not found, else true
+ */
+bool
+TempFileHandler::removeTempfile(const std::string& uuid,
+                                const UserContext& userContext,
+                                Hanami::ErrorContainer& error)
+{
+    // check tempfile-database form entry
+    json tempfileData;
+    if (TempfileTable::getInstance()->getTempfile(tempfileData, uuid, userContext, error, true)
+        == false)
+    {
+        error.addMeesage("Tempfile with '" + uuid + "' not found in database");
+        return false;
     }
 
     // delete file from disc
@@ -258,10 +290,19 @@ TempFileHandler::removeData(const std::string& uuid,
 bool
 TempFileHandler::moveData(const std::string& uuid,
                           const std::string& targetLocation,
+                          const UserContext& userContext,
                           Hanami::ErrorContainer& error)
 {
-    bool success = false;
-    std::string targetFilePath = GET_STRING_CONFIG("storage", "data_set_location", success);
+    const std::lock_guard<std::mutex> lock(m_fileHandleMutex);
+
+    // get location of the tempfile of the uuid
+    json tempfileMeta;
+    if (TempfileTable::getInstance()->getTempfile(tempfileMeta, uuid, userContext, error) == false)
+    {
+        error.addMeesage("Tempfile with UUID '" + uuid + "' can not be found in database.");
+        return false;
+    }
+    const std::filesystem::path tempfileLocation(tempfileMeta["location"]);
 
     const auto it = m_tempFiles.find(uuid);
     if (it != m_tempFiles.end()) {
@@ -270,11 +311,9 @@ TempFileHandler::moveData(const std::string& uuid,
             return false;
         }
 
-        if (Hanami::renameFileOrDir(targetFilePath + "/" + it->first, targetLocation, error)
-            == false)
-        {
+        if (Hanami::renameFileOrDir(tempfileLocation, targetLocation, error) == false) {
             error.addMeesage("Failed to move temp-file with uuid '" + uuid
-                             + "' to target-locateion '" + targetLocation + "'");
+                             + "' to target-location '" + targetLocation + "'");
             return false;
         }
 
@@ -288,4 +327,42 @@ TempFileHandler::moveData(const std::string& uuid,
                      + ", because it can not be found.");
 
     return false;
+}
+
+/**
+ * @brief TempFileHandler::run
+ */
+void
+TempFileHandler::run()
+{
+    uint64_t timeout = 10;
+    std::chrono::seconds interval(60);
+    std::vector<std::string> deleteList;
+
+    while (m_abort == false) {
+        std::this_thread::sleep_for(interval);
+
+        m_fileHandleMutex.lock();
+
+        for (auto& [uuid, fileHandle] : m_tempFiles) {
+            if (fileHandle.lock == false) {
+                fileHandle.timeoutCounter++;
+                if (fileHandle.timeoutCounter == timeout) {
+                    Hanami::ErrorContainer error;
+                    if (removeTempfile(uuid, fileHandle.userContext, error) == false) {
+                        LOG_ERROR(error);
+                    }
+                    deleteList.push_back(uuid);
+                }
+            }
+        }
+
+        for (const std::string& uuid : deleteList) {
+            auto it = m_tempFiles.find(uuid);
+            m_tempFiles.erase(it);
+        }
+        deleteList.clear();
+
+        m_fileHandleMutex.unlock();
+    }
 }

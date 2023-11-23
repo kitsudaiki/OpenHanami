@@ -7,6 +7,8 @@ log_dir: "/var/log/hanami"
 
 data_set_location: "/etc/hanami/datasets"
 checkpoint_location: "/etc/hanami/checkpoints"
+tempfile_location: "/etc/hanami/tempfiles"
+
 token_key_path: "/etc/hanami/token_key"
 ssl_cert_path: "/etc/hanami/cert.pem"
 ssl_key_path: "/etc/hanami/key.pem"

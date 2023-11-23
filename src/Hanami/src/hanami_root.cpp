@@ -338,6 +338,17 @@ HanamiRoot::initDataDirectory(Hanami::ErrorContainer& error)
         return false;
     }
 
+    const std::string tempfilesPath = GET_STRING_CONFIG("storage", "tempfile_location", success);
+    if (success == false) {
+        error.addMeesage("No tempfile_location defined in config.");
+        return false;
+    }
+
+    if (createDirectory(tempfilesPath, error) == false) {
+        error.addMeesage("Failed to create directory for tempfiles.");
+        return false;
+    }
+
     return true;
 }
 

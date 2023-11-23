@@ -79,6 +79,8 @@ struct FileHandle {
     UserContext userContext;
     Hanami::BinaryFile* file = nullptr;
     Hanami::BitBuffer* bitBuffer = nullptr;
+    uint64_t timeoutCounter = 0;
+    bool lock = false;
 
     FileHandle() {}
 

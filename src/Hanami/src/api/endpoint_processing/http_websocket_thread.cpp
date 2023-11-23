@@ -357,6 +357,8 @@ HttpWebsocketThread::processInitialMessage(const std::string& message, std::stri
             LOG_ERROR(error, userContext.userId);
             return false;
         }
+        m_fileHandle->lock = true;
+        m_fileHandle->timeoutCounter = 0;
         m_clientInit = true;
         m_target = content["target"];
 
@@ -377,6 +379,10 @@ HttpWebsocketThread::closeClient()
         m_targetCluster->msgClient = nullptr;
     }
     m_targetCluster = nullptr;
+
+    if (m_fileHandle != nullptr) {
+        m_fileHandle->lock = false;
+    }
     m_fileHandle = nullptr;
 }
 
