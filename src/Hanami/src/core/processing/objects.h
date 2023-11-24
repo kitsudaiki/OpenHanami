@@ -78,31 +78,52 @@ static_assert(sizeof(HeaderEntry) == 16);
 
 //==================================================================================================
 
+struct ClusterSettings {
+    uint64_t maxSynapseSections = 0;
+    float synapseDeleteBorder = 1.0f;
+    float neuronCooldown = 100.0f;
+    float memorizing = 0.1f;
+    float gliaValue = 1.0f;
+    float signNeg = 0.6f;
+    float potentialOverflow = 1.0f;
+    float synapseSegmentation = 10.0f;
+    float backpropagationBorder = 0.01f;
+    float lerningValue = 0.0f;
+
+    uint8_t refractionTime = 1;
+    uint8_t updateSections = 0;
+
+    uint8_t padding[18];
+};
+static_assert(sizeof(ClusterSettings) == 64);
+
+//==================================================================================================
+
 struct ClusterHeader {
     uint8_t objectType = 0;
     uint8_t version = 1;
-    uint8_t padding[6];
-    uint64_t staticDataSize = 0;
+    uint8_t padding[2];
 
+    char name[256];
+    uint32_t nameSize = 0;
+
+    uint64_t staticDataSize = 0;
     kuuid uuid;
-    char name[1024];
+
+    uint32_t numberOfInputs = 0;
+    uint32_t numberOfOutputs = 0;
 
     // synapse-cluster
-    HeaderEntry settings;
-    HeaderEntry slotList;
-    HeaderEntry inputValues;
-    HeaderEntry outputValues;
-    HeaderEntry expectedValues;
-
     HeaderEntry bricks;
-    HeaderEntry brickOrder;
     HeaderEntry neuronBlocks;
     HeaderEntry synapseConnections;
     HeaderEntry synapseBlocks;
 
-    uint8_t padding2[808];
+    ClusterSettings settings;
+
+    uint8_t padding2[64];
 };
-static_assert(sizeof(ClusterHeader) == 2048);
+static_assert(sizeof(ClusterHeader) == 512);
 
 //==================================================================================================
 
@@ -231,28 +252,6 @@ struct SynapseConnection {
     }
 };
 static_assert(sizeof(SynapseConnection) == 1292);
-
-//==================================================================================================
-
-struct ClusterSettings {
-    uint64_t maxSynapseSections = 0;
-    float synapseDeleteBorder = 1.0f;
-    float neuronCooldown = 100.0f;
-    float memorizing = 0.1f;
-    float gliaValue = 1.0f;
-    float signNeg = 0.6f;
-    float potentialOverflow = 1.0f;
-    float synapseSegmentation = 10.0f;
-    float backpropagationBorder = 0.01f;
-    float lerningValue = 0.0f;
-
-    uint8_t refractionTime = 1;
-    uint8_t doTrain = 0;
-    uint8_t updateSections = 0;
-
-    uint8_t padding[209];
-};
-static_assert(sizeof(ClusterSettings) == 256);
 
 //==================================================================================================
 

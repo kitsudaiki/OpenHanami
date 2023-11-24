@@ -162,12 +162,14 @@ reweightCoreSegment(const Cluster& cluster)
 
     // run back-propagation over all internal neurons and synapses
     const uint32_t numberOfBricks = cluster.clusterHeader->bricks.count;
-    for (int32_t pos = numberOfBricks - 1; pos >= 0; --pos) {
-        const uint32_t brickId = cluster.brickOrder[pos];
+    for (int32_t brickId = numberOfBricks - 1; brickId >= 0; --brickId) {
         Brick* brick = &cluster.bricks[brickId];
         if (brick->isOutputBrick) {
-            if (backpropagateOutput(
-                    brick, neuronBlocks, outputValues, expectedValues, cluster.clusterSettings)
+            if (backpropagateOutput(brick,
+                                    neuronBlocks,
+                                    outputValues,
+                                    expectedValues,
+                                    &cluster.clusterHeader->settings)
                 == false)
             {
                 return;

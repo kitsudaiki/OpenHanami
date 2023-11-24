@@ -53,14 +53,11 @@ class Cluster
     void initCuda();
 
     ClusterHeader* clusterHeader = nullptr;
-    ClusterSettings* clusterSettings = nullptr;
     float* inputValues = nullptr;
     float* outputValues = nullptr;
     float* expectedValues = nullptr;
 
     Brick* bricks = nullptr;
-    uint32_t* brickOrder = nullptr;
-
     NeuronBlock* neuronBlocks = nullptr;
     SynapseConnection* synapseConnections = nullptr;
     SynapseBlock* synapseBlocks = nullptr;
@@ -68,7 +65,7 @@ class Cluster
 
     const std::string getUuid();
     const std::string getName();
-    bool setName(const std::string newName);
+    bool setName(const std::string& newName);
     bool init(const Hanami::ClusterMeta& clusterTemplate, const std::string& uuid);
 
     // tasks

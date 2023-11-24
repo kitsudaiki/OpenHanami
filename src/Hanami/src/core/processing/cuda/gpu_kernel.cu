@@ -269,7 +269,6 @@ copyToDevice_CUDA(PointerHandler* gpuPointer,
     cudaMalloc(&gpuPointer->synapseConnections, numberOfSynapseConnections * sizeof(SynapseConnection));
     cudaMalloc(&gpuPointer->randomValues,       NUMBER_OF_RAND_VALUES      * sizeof(uint32_t));
 
-    cudaMemcpy(gpuPointer->clusterSettings,    clusterSettings,    1                          * sizeof(ClusterSettings),   cudaMemcpyHostToDevice);
     cudaMemcpy(gpuPointer->neuronBlocks,       neuronBlocks,       numberOfNeuronBlocks       * sizeof(NeuronBlock),       cudaMemcpyHostToDevice);
     cudaMemcpy(gpuPointer->synapseBlocks,      synapseBlocks,      numberOfSynapseBlocks      * sizeof(SynapseBlock),      cudaMemcpyHostToDevice);
     cudaMemcpy(gpuPointer->synapseConnections, synapseConnections, numberOfSynapseConnections * sizeof(SynapseConnection), cudaMemcpyHostToDevice);
@@ -281,7 +280,6 @@ copyToDevice_CUDA(PointerHandler* gpuPointer,
 extern "C"
 void
 processing_CUDA(PointerHandler* gpuPointer,
-                uint32_t* brickOrder,
                 Brick* bricks,
                 float* inputValues,
                 float* outputValues,
@@ -292,9 +290,9 @@ processing_CUDA(PointerHandler* gpuPointer,
                 const uint32_t numberOfSynapseBlocks,
                 const bool doTrain)
 {
-    for(uint32_t pos = 0; pos < numberOfBricks; ++pos)
+    for(uint32_t brickId = 0; brickId < numberOfBricks; ++brickId)
     {
-        Brick* brick = &bricks[brickOrder[pos]];
+        Brick* brick = &bricks[brickId];
         if(brick->isInputBrick)
         {
             if(doTrain) {
@@ -310,9 +308,9 @@ processing_CUDA(PointerHandler* gpuPointer,
                numberOfNeuronBlocks * sizeof(NeuronBlock),
                cudaMemcpyHostToDevice);
 
-    for(uint32_t pos = 0; pos < numberOfBricks; ++pos)
+    for(uint32_t brickId = 0; brickId < numberOfBricks; ++brickId)
     {
-        Brick* brick = &bricks[brickOrder[pos]];
+        Brick* brick = &bricks[brickId];
         if(brick->isInputBrick == false)
         {
             if(doTrain)
@@ -347,9 +345,9 @@ processing_CUDA(PointerHandler* gpuPointer,
                numberOfNeuronBlocks * sizeof(NeuronBlock),
                cudaMemcpyDeviceToHost);
 
-    for(uint32_t pos = 0; pos < numberOfBricks; ++pos)
+    for(uint32_t brickId = 0; brickId < numberOfBricks; ++brickId)
     {
-        Brick* brick = &bricks[brickOrder[pos]];
+        Brick* brick = &bricks[brickId];
         if(brick->isOutputBrick) {
             processNeuronsOfOutputBrick(brick, outputValues, neuronBlocks);
         }
@@ -359,7 +357,6 @@ processing_CUDA(PointerHandler* gpuPointer,
 extern "C"
 void
 backpropagation_CUDA(PointerHandler* gpuPointer,
-                     uint32_t* brickOrder,
                      Brick* bricks,
                      float* outputValues,
                      float* expectedValues,
@@ -368,9 +365,9 @@ backpropagation_CUDA(PointerHandler* gpuPointer,
                      const uint32_t numberOfNeuronBlocks,
                      ClusterSettings* settings)
 {
-    for(uint32_t pos = 0; pos < numberOfBricks; ++pos)
+    for(uint32_t brickId = 0; brickId < numberOfBricks; ++brickId)
     {
-        Brick* brick = &bricks[brickOrder[pos]];
+        Brick* brick = &bricks[brickId];
         if(brick->isOutputBrick)
         {
             if(backpropagateOutput(brick,
@@ -389,9 +386,9 @@ backpropagation_CUDA(PointerHandler* gpuPointer,
                numberOfNeuronBlocks * sizeof(NeuronBlock),
                cudaMemcpyHostToDevice);
 
-    for(int32_t pos = numberOfBricks - 1; pos >= 0; --pos)
+    for(int32_t brickId = numberOfBricks - 1; brickId >= 0; --brickId)
     {
-        Brick* brick = &bricks[brickOrder[pos]];
+        Brick* brick = &bricks[brickId];
         if(brick->isOutputBrick == false)
         {
             reweightCoreSegmentKernel<<<brick->numberOfNeuronBlocks, 64>>>(

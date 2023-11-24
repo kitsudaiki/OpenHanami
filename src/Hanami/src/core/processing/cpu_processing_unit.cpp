@@ -31,7 +31,6 @@
 #include <hanami_root.h>
 
 extern "C" void processing_CUDA(PointerHandler* gpuPointer,
-                                uint32_t* brickOrder,
                                 Brick* bricks,
                                 float* inputValues,
                                 float* outputValues,
@@ -43,7 +42,6 @@ extern "C" void processing_CUDA(PointerHandler* gpuPointer,
                                 const bool doTrain);
 
 extern "C" void backpropagation_CUDA(PointerHandler* gpuPointer,
-                                     uint32_t* brickOrder,
                                      Brick* bricks,
                                      float* outputValues,
                                      float* expectedValues,
@@ -80,10 +78,8 @@ CpuProcessingUnit::trainSegmentForward(Cluster* cluster)
 {
     Hanami::ErrorContainer error;
 
-    cluster->clusterSettings->doTrain = 1;
     if (HanamiRoot::useCuda) {
         processing_CUDA(&cluster->gpuPointer,
-                        cluster->brickOrder,
                         cluster->bricks,
                         cluster->inputValues,
                         cluster->outputValues,
@@ -95,11 +91,9 @@ CpuProcessingUnit::trainSegmentForward(Cluster* cluster)
                         true);
     }
     else {
-        prcessCoreSegment(*cluster);
+        prcessCoreSegment(*cluster, true);
     }
     // prcessCoreSegment(*cluster);
-
-    cluster->clusterSettings->doTrain = 0;
 }
 
 /**
@@ -114,14 +108,13 @@ CpuProcessingUnit::trainSegmentBackward(Cluster* cluster)
 
     if (HanamiRoot::useCuda) {
         backpropagation_CUDA(&cluster->gpuPointer,
-                             cluster->brickOrder,
                              cluster->bricks,
                              cluster->outputValues,
                              cluster->expectedValues,
                              cluster->clusterHeader->bricks.count,
                              cluster->neuronBlocks,
                              cluster->numberOfBrickBlocks,
-                             cluster->clusterSettings);
+                             &cluster->clusterHeader->settings);
 
         if (updateSections(*cluster)) {
             update_CUDA(&cluster->gpuPointer,
@@ -157,7 +150,6 @@ CpuProcessingUnit::processSegment(Cluster* cluster)
     Hanami::ErrorContainer error;
     if (HanamiRoot::useCuda) {
         processing_CUDA(&cluster->gpuPointer,
-                        cluster->brickOrder,
                         cluster->bricks,
                         cluster->inputValues,
                         cluster->outputValues,
@@ -169,7 +161,7 @@ CpuProcessingUnit::processSegment(Cluster* cluster)
                         false);
     }
     else {
-        prcessCoreSegment(*cluster);
+        prcessCoreSegment(*cluster, false);
     }
 
     // send output back if a client-connection is set
@@ -186,7 +178,7 @@ CpuProcessingUnit::processSegment(Cluster* cluster)
         }
         else if (actualTask->type == TABLE_REQUEST_TASK) {
             float val = 0.0f;
-            for (uint64_t i = 0; i < cluster->clusterHeader->outputValues.count; i++) {
+            for (uint64_t i = 0; i < cluster->clusterHeader->numberOfOutputs; i++) {
                 const float temp = actualTask->resultData[cycle];
                 val = temp + cluster->outputValues[i];
                 actualTask->resultData[cycle] = val;

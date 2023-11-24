@@ -42,9 +42,9 @@ sendClusterOutputMessage(Cluster* cluster)
     msg.set_islast(false);
     msg.set_processtype(ClusterProcessType::REQUEST_TYPE);
     msg.set_datatype(ClusterDataType::OUTPUT_TYPE);
-    msg.set_numberofvalues(cluster->clusterHeader->outputValues.count);
+    msg.set_numberofvalues(cluster->clusterHeader->numberOfOutputs);
 
-    for (uint64_t outputNeuronId = 0; outputNeuronId < cluster->clusterHeader->outputValues.count;
+    for (uint64_t outputNeuronId = 0; outputNeuronId < cluster->clusterHeader->numberOfOutputs;
          outputNeuronId++)
     {
         msg.add_values(cluster->outputValues[outputNeuronId]);

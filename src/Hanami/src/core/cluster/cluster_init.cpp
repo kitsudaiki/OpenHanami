@@ -93,7 +93,7 @@ initNewCluster(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta, const s
     initSegmentPointer(cluster, header);
     strncpy(header.uuid.uuid, uuid.c_str(), uuid.size());
 
-    cluster->clusterSettings[0] = settings;
+    header.settings = settings;
     cluster->clusterHeader[0] = header;
 
     // init content
@@ -132,29 +132,17 @@ reinitPointer(Cluster* cluster, const uint64_t numberOfBytes)
 
     ClusterHeader* clusterHeader = cluster->clusterHeader;
 
-    pos = clusterHeader->settings.bytePos;
-    cluster->clusterSettings = reinterpret_cast<ClusterSettings*>(dataPtr + pos);
-    byteCounter += sizeof(ClusterSettings);
+    cluster->inputValues = new float[clusterHeader->numberOfInputs];
+    cluster->outputValues = new float[clusterHeader->numberOfOutputs];
+    cluster->expectedValues = new float[clusterHeader->numberOfOutputs];
 
-    pos = clusterHeader->inputValues.bytePos;
-    cluster->inputValues = reinterpret_cast<float*>(dataPtr + pos);
-    byteCounter += clusterHeader->inputValues.count * sizeof(float);
-
-    pos = clusterHeader->outputValues.bytePos;
-    cluster->outputValues = reinterpret_cast<float*>(dataPtr + pos);
-    byteCounter += clusterHeader->outputValues.count * sizeof(float);
-
-    pos = clusterHeader->expectedValues.bytePos;
-    cluster->expectedValues = reinterpret_cast<float*>(dataPtr + pos);
-    byteCounter += clusterHeader->expectedValues.count * sizeof(float);
+    std::fill_n(cluster->inputValues, clusterHeader->numberOfInputs, 0.0f);
+    std::fill_n(cluster->outputValues, clusterHeader->numberOfOutputs, 0.0f);
+    std::fill_n(cluster->expectedValues, clusterHeader->numberOfOutputs, 0.0f);
 
     pos = clusterHeader->bricks.bytePos;
     cluster->bricks = reinterpret_cast<Brick*>(dataPtr + pos);
     byteCounter += clusterHeader->bricks.count * sizeof(Brick);
-
-    pos = clusterHeader->brickOrder.bytePos;
-    cluster->brickOrder = reinterpret_cast<uint32_t*>(dataPtr + pos);
-    byteCounter += clusterHeader->brickOrder.count * sizeof(uint32_t);
 
     pos = clusterHeader->neuronBlocks.bytePos;
     cluster->neuronBlocks = reinterpret_cast<NeuronBlock*>(dataPtr + pos);
@@ -270,35 +258,13 @@ createNewHeader(const uint32_t numberOfBricks,
     // init header
     clusterDataPos += sizeof(ClusterHeader);
 
-    // init settings
-    clusterHeader.settings.count = 1;
-    clusterHeader.settings.bytePos = clusterDataPos;
-    clusterDataPos += sizeof(ClusterSettings);
-
-    // init inputTransfers
-    clusterHeader.inputValues.count = numberOfInputs;
-    clusterHeader.inputValues.bytePos = clusterDataPos;
-    clusterDataPos += numberOfInputs * sizeof(float);
-
-    // init numberOfOutputs
-    clusterHeader.outputValues.count = numberOfOutputs;
-    clusterHeader.outputValues.bytePos = clusterDataPos;
-    clusterDataPos += numberOfOutputs * sizeof(float);
-
-    // init numberOfExprextes
-    clusterHeader.expectedValues.count = numberOfOutputs;
-    clusterHeader.expectedValues.bytePos = clusterDataPos;
-    clusterDataPos += numberOfOutputs * sizeof(float);
+    clusterHeader.numberOfInputs = numberOfInputs;
+    clusterHeader.numberOfOutputs = numberOfOutputs;
 
     // init bricks
     clusterHeader.bricks.count = numberOfBricks;
     clusterHeader.bricks.bytePos = clusterDataPos;
     clusterDataPos += numberOfBricks * sizeof(Brick);
-
-    // init brick-order
-    clusterHeader.brickOrder.count = numberOfBricks;
-    clusterHeader.brickOrder.bytePos = clusterDataPos;
-    clusterDataPos += numberOfBricks * sizeof(uint32_t);
 
     // init neuron blocks
     clusterHeader.neuronBlocks.count = numberOfBrickBlocks;
@@ -336,30 +302,17 @@ initSegmentPointer(Cluster* cluster, const ClusterHeader& header)
 
     ClusterHeader* clusterHeader = cluster->clusterHeader;
 
-    pos = clusterHeader->settings.bytePos;
-    cluster->clusterSettings = reinterpret_cast<ClusterSettings*>(dataPtr + pos);
+    cluster->inputValues = new float[clusterHeader->numberOfInputs];
+    cluster->outputValues = new float[clusterHeader->numberOfOutputs];
+    cluster->expectedValues = new float[clusterHeader->numberOfOutputs];
 
-    pos = clusterHeader->inputValues.bytePos;
-    cluster->inputValues = reinterpret_cast<float*>(dataPtr + pos);
-    std::fill_n(cluster->inputValues, clusterHeader->inputValues.count, 0.0f);
-
-    pos = clusterHeader->outputValues.bytePos;
-    cluster->outputValues = reinterpret_cast<float*>(dataPtr + pos);
-    std::fill_n(cluster->outputValues, clusterHeader->outputValues.count, 0.0f);
-
-    pos = clusterHeader->expectedValues.bytePos;
-    cluster->expectedValues = reinterpret_cast<float*>(dataPtr + pos);
-    std::fill_n(cluster->expectedValues, clusterHeader->expectedValues.count, 0.0f);
+    std::fill_n(cluster->inputValues, clusterHeader->numberOfInputs, 0.0f);
+    std::fill_n(cluster->outputValues, clusterHeader->numberOfOutputs, 0.0f);
+    std::fill_n(cluster->expectedValues, clusterHeader->numberOfOutputs, 0.0f);
 
     pos = clusterHeader->bricks.bytePos;
     cluster->bricks = reinterpret_cast<Brick*>(dataPtr + pos);
     std::fill_n(cluster->bricks, clusterHeader->bricks.count, Brick());
-
-    pos = clusterHeader->brickOrder.bytePos;
-    cluster->brickOrder = reinterpret_cast<uint32_t*>(dataPtr + pos);
-    for (uint32_t i = 0; i < clusterHeader->bricks.count; i++) {
-        cluster->brickOrder[i] = i;
-    }
 
     pos = clusterHeader->neuronBlocks.bytePos;
     cluster->neuronBlocks = reinterpret_cast<NeuronBlock*>(dataPtr + pos);
@@ -426,7 +379,6 @@ addBricksToSegment(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta)
     uint32_t neuronBrickIdCounter = 0;
     uint32_t neuronSectionPosCounter = 0;
     NeuronBlock* block = nullptr;
-    uint32_t neuronIdCounter = 0;
 
     for (uint32_t i = 0; i < clusterMeta.bricks.size(); i++) {
         Brick newBrick = createNewBrick(clusterMeta.bricks.at(i), i);
@@ -435,9 +387,6 @@ addBricksToSegment(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta)
         for (uint32_t j = 0; j < newBrick.numberOfNeuronBlocks; j++) {
             block = &cluster->neuronBlocks[j + neuronSectionPosCounter];
             block->brickId = newBrick.brickId;
-            for (uint32_t k = 0; k < block->numberOfNeurons; k++) {
-                neuronIdCounter++;
-            }
         }
 
         // copy new brick to cluster

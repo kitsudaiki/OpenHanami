@@ -67,7 +67,13 @@ Cluster::Cluster(const void* data, const uint64_t dataSize)
 /**
  * @brief destructor
  */
-Cluster::~Cluster() { delete stateMachine; }
+Cluster::~Cluster()
+{
+    delete stateMachine;
+    delete inputValues;
+    delete outputValues;
+    delete expectedValues;
+}
 
 /**
  * @brief get uuid of the cluster
@@ -87,7 +93,7 @@ void
 Cluster::initCuda()
 {
     copyToDevice_CUDA(&gpuPointer,
-                      clusterSettings,
+                      &clusterHeader->settings,
                       neuronBlocks,
                       clusterHeader->neuronBlocks.count,
                       synapseBlocks,
@@ -125,7 +131,7 @@ Cluster::getName()
         return std::string("");
     }
 
-    return std::string(clusterHeader->name);
+    return std::string(clusterHeader->name, clusterHeader->nameSize);
 }
 
 /**
@@ -136,10 +142,10 @@ Cluster::getName()
  * @return true, if successful, else false
  */
 bool
-Cluster::setName(const std::string newName)
+Cluster::setName(const std::string& newName)
 {
     // precheck
-    if (clusterHeader == nullptr || newName.size() > 1023 || newName.size() == 0) {
+    if (clusterHeader == nullptr || newName.size() > 255 || newName.size() == 0) {
         return false;
     }
 
@@ -147,6 +153,7 @@ Cluster::setName(const std::string newName)
     // that it is set to absolut avoid buffer-overflows
     strncpy(clusterHeader->name, newName.c_str(), newName.size());
     clusterHeader->name[newName.size()] = '\0';
+    clusterHeader->nameSize = newName.size();
 
     return true;
 }

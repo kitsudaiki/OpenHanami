@@ -48,7 +48,7 @@ getHighestOutput(const Cluster& cluster)
     uint32_t hightestPos = 0;
     float value = 0.0f;
 
-    for (uint32_t outputNeuronId = 0; outputNeuronId < cluster.clusterHeader->outputValues.count;
+    for (uint32_t outputNeuronId = 0; outputNeuronId < cluster.clusterHeader->numberOfOutputs;
          outputNeuronId++)
     {
         value = cluster.outputValues[outputNeuronId];
@@ -325,21 +325,20 @@ processNeuronsOfNormalBrick(Cluster& cluster,
  * @brief process all neurons within a cluster
  */
 inline void
-prcessCoreSegment(Cluster& cluster)
+prcessCoreSegment(Cluster& cluster, const bool doTrain)
 {
     float* inputValues = cluster.inputValues;
     float* outputValues = cluster.outputValues;
     NeuronBlock* neuronBlocks = cluster.neuronBlocks;
     SynapseConnection* synapseConnections = cluster.synapseConnections;
     SynapseBlock* synapseBlocks = cluster.synapseBlocks;
-    ClusterSettings* clusterSettings = cluster.clusterSettings;
+    ClusterSettings* clusterSettings = &cluster.clusterHeader->settings;
 
     const uint32_t numberOfBricks = cluster.clusterHeader->bricks.count;
-    for (uint32_t pos = 0; pos < numberOfBricks; ++pos) {
-        const uint32_t brickId = cluster.brickOrder[pos];
+    for (uint32_t brickId = 0; brickId < numberOfBricks; ++brickId) {
         Brick* brick = &cluster.bricks[brickId];
         if (brick->isInputBrick) {
-            if (clusterSettings->doTrain) {
+            if (doTrain) {
                 processNeuronsOfInputBrick<true>(cluster,
                                                  brick,
                                                  inputValues,
@@ -362,7 +361,7 @@ prcessCoreSegment(Cluster& cluster)
             processNeuronsOfOutputBrick(brick, outputValues, neuronBlocks);
         }
         else {
-            if (clusterSettings->doTrain) {
+            if (doTrain) {
                 processNeuronsOfNormalBrick<true>(cluster,
                                                   brick,
                                                   neuronBlocks,
