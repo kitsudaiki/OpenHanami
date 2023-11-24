@@ -39,17 +39,15 @@ bool initNewCluster(Cluster* cluster,
                     const std::string& uuid);
 
 ClusterHeader createNewHeader(const uint32_t numberOfBricks,
-                              const uint32_t numberOfBrickBlocks,
-                              const uint32_t maxSynapseSections,
+                              const uint32_t numberOfNeuronBlocks,
                               const uint64_t numberOfInputs,
                               const uint64_t numberOfOutputs);
 void initSegmentPointer(Cluster* cluster, const ClusterHeader& header);
 bool connectBorderBuffer(Cluster* cluster);
-void allocateSegment(Cluster* cluster, ClusterHeader& header);
 // void initOpencl(Hanami::GpuData &data);
 ClusterSettings initSettings(const Hanami::ClusterMeta& clusterMeta);
 
-void addBricksToSegment(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta);
+void addBricksToCluster(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta);
 bool initTargetBrickList(Cluster* cluster);
 
 Brick createNewBrick(const Hanami::BrickMeta& brickMeta, const uint32_t id);

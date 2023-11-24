@@ -36,7 +36,7 @@
  * @return
  */
 uint32_t
-getNumberOfNeuronSections(const uint32_t numberOfNeurons)
+calcNumberOfNeuronBlocks(const uint32_t numberOfNeurons)
 {
     uint32_t numberOfSections = numberOfNeurons / NEURONS_PER_NEURONSECTION;
     if (numberOfNeurons % NEURONS_PER_NEURONSECTION != 0) {
@@ -59,7 +59,7 @@ getNumberOfNeuronSections(const uint32_t numberOfNeurons)
 bool
 initNewCluster(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta, const std::string& uuid)
 {
-    cluster->numberOfBrickBlocks = 0;
+    cluster->numberOfNeuronBlocks = 0;
     Hanami::ErrorContainer error;
     uint32_t numberOfInputs = 0;
     uint32_t numberOfOutputs = 0;
@@ -71,25 +71,21 @@ initNewCluster(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta, const s
         neuronsInBrick = brickMeta.numberOfNeurons;
         if (brickMeta.type == Hanami::BrickType::INPUT_BRICK_TYPE) {
             numberOfInputs = brickMeta.numberOfNeurons;
-            ;
         }
         if (brickMeta.type == Hanami::BrickType::OUTPUT_BRICK_TYPE) {
             numberOfOutputs = brickMeta.numberOfNeurons;
-            ;
         }
-        cluster->numberOfBrickBlocks += getNumberOfNeuronSections(neuronsInBrick);
+        cluster->numberOfNeuronBlocks += calcNumberOfNeuronBlocks(neuronsInBrick);
     }
 
     // create cluster metadata
     const ClusterSettings settings = initSettings(clusterMeta);
-    ClusterHeader header = createNewHeader(clusterMeta.bricks.size(),
-                                           cluster->numberOfBrickBlocks,
-                                           settings.maxSynapseSections,
-                                           numberOfInputs,
-                                           numberOfOutputs);
+    ClusterHeader header = createNewHeader(
+        clusterMeta.bricks.size(), cluster->numberOfNeuronBlocks, numberOfInputs, numberOfOutputs);
 
     // initialize cluster itself
-    allocateSegment(cluster, header);
+    Hanami::allocateBlocks_DataBuffer(cluster->clusterData,
+                                      Hanami::calcBytesToBlocks(header.staticDataSize));
     initSegmentPointer(cluster, header);
     strncpy(header.uuid.uuid, uuid.c_str(), uuid.size());
 
@@ -98,7 +94,7 @@ initNewCluster(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta, const s
 
     // init content
     initializeNeurons(cluster, clusterMeta);
-    addBricksToSegment(cluster, clusterMeta);
+    addBricksToCluster(cluster, clusterMeta);
     connectAllBricks(cluster);
     initTargetBrickList(cluster);
 
@@ -123,7 +119,7 @@ bool
 reinitPointer(Cluster* cluster, const uint64_t numberOfBytes)
 {
     // TODO: checks
-    uint8_t* dataPtr = static_cast<uint8_t*>(cluster->clusterData.staticData);
+    /*uint8_t* dataPtr = static_cast<uint8_t*>(cluster->clusterData.data);
 
     uint64_t pos = 0;
     uint64_t byteCounter = 0;
@@ -144,6 +140,12 @@ reinitPointer(Cluster* cluster, const uint64_t numberOfBytes)
     cluster->bricks = reinterpret_cast<Brick*>(dataPtr + pos);
     byteCounter += clusterHeader->bricks.count * sizeof(Brick);
 
+    cluster->namedBricks.clear();
+    for (uint64_t brickId = 0; brickId < clusterHeader->bricks.count; brickId++) {
+        Brick* brick = &cluster->bricks[brickId];
+        cluster->namedBricks.emplace(brick->getName(), brick);
+    }
+
     pos = clusterHeader->neuronBlocks.bytePos;
     cluster->neuronBlocks = reinterpret_cast<NeuronBlock*>(dataPtr + pos);
     byteCounter += clusterHeader->neuronBlocks.count * sizeof(NeuronBlock);
@@ -154,14 +156,8 @@ reinitPointer(Cluster* cluster, const uint64_t numberOfBytes)
 
     dataPtr = static_cast<uint8_t*>(cluster->clusterData.itemData);
     // pos = segmentHeader->synapseSections.bytePos;
-    cluster->synapseConnections = reinterpret_cast<SynapseConnection*>(dataPtr);
-    byteCounter += clusterHeader->synapseConnections.count * sizeof(SynapseConnection);
-
-    /*if(HanamiRoot::useOpencl)
-    {
-        data = new Hanami::GpuData();
-        initOpencl(*data);
-    }*/
+    cluster->synapseConnections = reinterpret_cast<ConnectionBlock*>(dataPtr);
+    byteCounter += clusterHeader->synapseConnections.count * sizeof(ConnectionBlock);
 
     if (HanamiRoot::useCuda) {
         cluster->initCuda();
@@ -170,7 +166,7 @@ reinitPointer(Cluster* cluster, const uint64_t numberOfBytes)
     // check result
     if (byteCounter != numberOfBytes - 48) {
         return false;
-    }
+    }*/
 
     return true;
 }
@@ -187,7 +183,7 @@ initializeNeurons(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta)
 
     for (uint32_t i = 0; i < clusterMeta.bricks.size(); i++) {
         int64_t neuronsInBrick = clusterMeta.bricks.at(i).numberOfNeurons;
-        const uint32_t numberOfNeuronSectionsInBrick = getNumberOfNeuronSections(neuronsInBrick);
+        const uint32_t numberOfNeuronSectionsInBrick = calcNumberOfNeuronBlocks(neuronsInBrick);
 
         uint32_t sectionCounter = 0;
         while (sectionCounter < numberOfNeuronSectionsInBrick) {
@@ -247,8 +243,7 @@ initSettings(const Hanami::ClusterMeta& clusterMeta)
  */
 ClusterHeader
 createNewHeader(const uint32_t numberOfBricks,
-                const uint32_t numberOfBrickBlocks,
-                const uint32_t maxSynapseSections,
+                const uint32_t numberOfNeuronBlocks,
                 const uint64_t numberOfInputs,
                 const uint64_t numberOfOutputs)
 {
@@ -267,21 +262,11 @@ createNewHeader(const uint32_t numberOfBricks,
     clusterDataPos += numberOfBricks * sizeof(Brick);
 
     // init neuron blocks
-    clusterHeader.neuronBlocks.count = numberOfBrickBlocks;
+    clusterHeader.neuronBlocks.count = numberOfNeuronBlocks;
     clusterHeader.neuronBlocks.bytePos = clusterDataPos;
-    clusterDataPos += numberOfBrickBlocks * sizeof(NeuronBlock);
-
-    // init synapse blocks
-    clusterHeader.synapseBlocks.count = maxSynapseSections;
-    clusterHeader.synapseBlocks.bytePos = clusterDataPos;
-    clusterDataPos += maxSynapseSections * sizeof(SynapseBlock);
+    clusterDataPos += numberOfNeuronBlocks * sizeof(NeuronBlock);
 
     clusterHeader.staticDataSize = clusterDataPos;
-
-    // init synapse sections
-    clusterDataPos = 0;
-    clusterHeader.synapseConnections.count = maxSynapseSections;
-    clusterHeader.synapseConnections.bytePos = clusterDataPos;
 
     return clusterHeader;
 }
@@ -294,7 +279,7 @@ createNewHeader(const uint32_t numberOfBricks,
 void
 initSegmentPointer(Cluster* cluster, const ClusterHeader& header)
 {
-    uint8_t* dataPtr = static_cast<uint8_t*>(cluster->clusterData.staticData);
+    uint8_t* dataPtr = static_cast<uint8_t*>(cluster->clusterData.data);
     uint64_t pos = 0;
 
     cluster->clusterHeader = reinterpret_cast<ClusterHeader*>(dataPtr + pos);
@@ -317,27 +302,6 @@ initSegmentPointer(Cluster* cluster, const ClusterHeader& header)
     pos = clusterHeader->neuronBlocks.bytePos;
     cluster->neuronBlocks = reinterpret_cast<NeuronBlock*>(dataPtr + pos);
     std::fill_n(cluster->neuronBlocks, clusterHeader->neuronBlocks.count, NeuronBlock());
-
-    pos = clusterHeader->synapseBlocks.bytePos;
-    cluster->synapseBlocks = reinterpret_cast<SynapseBlock*>(dataPtr + pos);
-    std::fill_n(cluster->synapseBlocks, clusterHeader->synapseBlocks.count, SynapseBlock());
-
-    dataPtr = static_cast<uint8_t*>(cluster->clusterData.itemData);
-    pos = clusterHeader->synapseConnections.bytePos;
-    cluster->synapseConnections = reinterpret_cast<SynapseConnection*>(dataPtr + pos);
-}
-
-/**
- * @brief allocate memory for the cluster
- *
- * @param header header with the size-information
- */
-void
-allocateSegment(Cluster* cluster, ClusterHeader& header)
-{
-    cluster->clusterData.initBuffer<SynapseConnection>(header.synapseConnections.count,
-                                                       header.staticDataSize);
-    cluster->clusterData.deleteAll();
 }
 
 /**
@@ -357,11 +321,12 @@ createNewBrick(const Hanami::BrickMeta& brickMeta, const uint32_t id)
     newBrick.brickId = id;
     newBrick.isOutputBrick = brickMeta.type == Hanami::OUTPUT_BRICK_TYPE;
     newBrick.isInputBrick = brickMeta.type == Hanami::INPUT_BRICK_TYPE;
+    newBrick.setName(brickMeta.name);
 
     // convert other values
     newBrick.brickPos = brickMeta.position;
     newBrick.numberOfNeurons = brickMeta.numberOfNeurons;
-    newBrick.numberOfNeuronBlocks = getNumberOfNeuronSections(brickMeta.numberOfNeurons);
+    newBrick.numberOfNeuronBlocks = calcNumberOfNeuronBlocks(brickMeta.numberOfNeurons);
 
     std::fill_n(newBrick.neighbors, 12, UNINIT_STATE_32);
 
@@ -374,26 +339,39 @@ createNewBrick(const Hanami::BrickMeta& brickMeta, const uint32_t id)
  * @param metaBase json with all brick-definitions
  */
 void
-addBricksToSegment(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta)
+addBricksToCluster(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta)
 {
     uint32_t neuronBrickIdCounter = 0;
-    uint32_t neuronSectionPosCounter = 0;
+    uint32_t neuronBlockPosCounter = 0;
     NeuronBlock* block = nullptr;
+    uint32_t inputBufferCounter = 0;
+    uint32_t outputBufferCounter = 0;
 
     for (uint32_t i = 0; i < clusterMeta.bricks.size(); i++) {
         Brick newBrick = createNewBrick(clusterMeta.bricks.at(i), i);
-        newBrick.brickBlockPos = neuronSectionPosCounter;
+        newBrick.neuronBlockPos = neuronBlockPosCounter;
+
+        if (newBrick.isInputBrick) {
+            newBrick.ioBufferPos = inputBufferCounter;
+            inputBufferCounter += newBrick.numberOfNeurons;
+        }
+
+        if (newBrick.isOutputBrick) {
+            newBrick.ioBufferPos = outputBufferCounter;
+            outputBufferCounter += newBrick.numberOfNeurons;
+        }
 
         for (uint32_t j = 0; j < newBrick.numberOfNeuronBlocks; j++) {
-            block = &cluster->neuronBlocks[j + neuronSectionPosCounter];
+            block = &cluster->neuronBlocks[j + neuronBlockPosCounter];
             block->brickId = newBrick.brickId;
         }
 
         // copy new brick to cluster
         cluster->bricks[neuronBrickIdCounter] = newBrick;
+        cluster->namedBricks.emplace(newBrick.getName(), &cluster->bricks[neuronBrickIdCounter]);
         assert(neuronBrickIdCounter == newBrick.brickId);
         neuronBrickIdCounter++;
-        neuronSectionPosCounter += newBrick.numberOfNeuronBlocks;
+        neuronBlockPosCounter += newBrick.numberOfNeuronBlocks;
     }
 
     return;
@@ -493,7 +471,7 @@ initTargetBrickList(Cluster* cluster)
         }
 
         // test 1000 samples for possible next bricks
-        for (uint32_t counter = 0; counter < 1000; counter++) {
+        for (uint32_t counter = 0; counter < NUMBER_OF_POSSIBLE_NEXT; counter++) {
             uint32_t maxPathLength = 2;  // TODO: make configurable
             const uint32_t brickId = goToNextInitBrick(cluster, baseBrick, &maxPathLength);
             if (brickId == baseBrick->brickId) {

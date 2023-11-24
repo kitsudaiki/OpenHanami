@@ -47,7 +47,7 @@ class Cluster
     ~Cluster();
 
     // cluster-data
-    Hanami::ItemBuffer clusterData;
+    Hanami::DataBuffer clusterData;
     PointerHandler gpuPointer;
 
     void initCuda();
@@ -57,11 +57,11 @@ class Cluster
     float* outputValues = nullptr;
     float* expectedValues = nullptr;
 
+    std::map<std::string, Brick*> namedBricks;
+
     Brick* bricks = nullptr;
     NeuronBlock* neuronBlocks = nullptr;
-    SynapseConnection* synapseConnections = nullptr;
-    SynapseBlock* synapseBlocks = nullptr;
-    uint32_t numberOfBrickBlocks = 0;
+    uint32_t numberOfNeuronBlocks = 0;
 
     const std::string getUuid();
     const std::string getName();

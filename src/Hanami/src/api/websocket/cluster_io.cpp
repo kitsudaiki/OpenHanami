@@ -37,32 +37,40 @@ sendClusterOutputMessage(Cluster* cluster)
         return;
     }
 
-    // build message
-    ClusterIO_Message msg;
-    msg.set_islast(false);
-    msg.set_processtype(ClusterProcessType::REQUEST_TYPE);
-    msg.set_datatype(ClusterDataType::OUTPUT_TYPE);
-    msg.set_numberofvalues(cluster->clusterHeader->numberOfOutputs);
-
-    for (uint64_t outputNeuronId = 0; outputNeuronId < cluster->clusterHeader->numberOfOutputs;
-         outputNeuronId++)
-    {
-        msg.add_values(cluster->outputValues[outputNeuronId]);
-    }
-
-    // serialize message
     uint8_t buffer[TRANSFER_SEGMENT_SIZE];
-    const uint64_t size = msg.ByteSizeLong();
-    if (msg.SerializeToArray(buffer, size) == false) {
-        Hanami::ErrorContainer error;
-        error.addMeesage("Failed to serialize request-message");
-        return;
-    }
 
-    // send message
-    HttpWebsocketThread* client = cluster->msgClient;
-    Hanami::ErrorContainer error;
-    client->sendData(buffer, size);
+    for (const auto& [name, brick] : cluster->namedBricks) {
+        if (brick->isOutputBrick == false) {
+            continue;
+        }
+
+        // build message
+        ClusterIO_Message msg;
+        msg.set_islast(false);
+        msg.set_brickname(name);
+        msg.set_processtype(ClusterProcessType::REQUEST_TYPE);
+        msg.set_numberofvalues(cluster->clusterHeader->numberOfOutputs);
+
+        for (uint64_t outputNeuronId = brick->ioBufferPos;
+             outputNeuronId < brick->ioBufferPos + cluster->clusterHeader->numberOfOutputs;
+             outputNeuronId++)
+        {
+            msg.add_values(cluster->outputValues[outputNeuronId]);
+        }
+
+        // serialize message
+        const uint64_t size = msg.ByteSizeLong();
+        if (msg.SerializeToArray(buffer, size) == false) {
+            Hanami::ErrorContainer error;
+            error.addMeesage("Failed to serialize request-message");
+            return;
+        }
+
+        // send message
+        HttpWebsocketThread* client = cluster->msgClient;
+        Hanami::ErrorContainer error;
+        client->sendData(buffer, size);
+    }
 }
 
 void
@@ -74,10 +82,8 @@ sendProtobufGotInputMessage(Cluster* cluster)
 
     // build message
     ClusterIO_Message msg;
-    msg.set_segmentname("output");
     msg.set_islast(false);
     msg.set_processtype(ClusterProcessType::TRAIN_TYPE);
-    msg.set_datatype(ClusterDataType::SHOULD_TYPE);
     msg.set_numberofvalues(1);
     msg.add_values(0.0);
 
@@ -114,7 +120,6 @@ sendClusterNormalEndMessage(Cluster* cluster)
     ClusterIO_Message msg;
     msg.set_islast(true);
     msg.set_processtype(ClusterProcessType::REQUEST_TYPE);
-    msg.set_datatype(ClusterDataType::OUTPUT_TYPE);
     msg.add_values(0.0);
     msg.set_numberofvalues(1);
 
@@ -147,7 +152,6 @@ sendClusterTrainEndMessage(Cluster* cluster)
     ClusterIO_Message msg;
     msg.set_islast(true);
     msg.set_processtype(ClusterProcessType::TRAIN_TYPE);
-    msg.set_datatype(ClusterDataType::OUTPUT_TYPE);
     msg.add_values(0.0);
     msg.set_numberofvalues(1);
 
@@ -186,15 +190,26 @@ recvClusterInputMessage(Cluster* cluster, const void* data, const uint64_t dataS
         return false;
     }
 
+    auto it = cluster->namedBricks.find(msg.brickname());
+    if (it == cluster->namedBricks.end()) {
+        Hanami::ErrorContainer error;
+        error.addMeesage("Brick with name '" + msg.brickname() + "' not found for direct-io");
+        LOG_ERROR(error);
+        return false;
+    }
+
     // fill given data into the target-cluster
-    if (msg.datatype() == ClusterDataType::INPUT_TYPE) {
+    Brick* brick = it->second;
+    if (brick->isInputBrick) {
+        float* buffer = &cluster->inputValues[brick->ioBufferPos];
         for (uint64_t i = 0; i < msg.numberofvalues(); i++) {
-            cluster->inputValues[i] = msg.values(i);
+            buffer[i] = msg.values(i);
         }
     }
-    if (msg.datatype() == ClusterDataType::SHOULD_TYPE) {
+    if (brick->isOutputBrick) {
+        float* buffer = &cluster->expectedValues[brick->ioBufferPos];
         for (uint64_t i = 0; i < msg.numberofvalues(); i++) {
-            cluster->expectedValues[i] = msg.values(i);
+            buffer[i] = msg.values(i);
         }
     }
 

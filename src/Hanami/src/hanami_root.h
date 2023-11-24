@@ -25,6 +25,7 @@
 
 #include <common.h>
 #include <cryptopp/secblock.h>
+#include <hanami_common/buffer/item_buffer.h>
 
 class ClusterHandler;
 class ClusterQueue;
@@ -62,6 +63,7 @@ class HanamiRoot
     static HanamiRoot* root;
     static uint32_t* m_randomValues;
     static CryptoPP::SecByteBlock tokenKey;
+    static Hanami::ItemBuffer m_synapseBlocks;
     static bool useCuda;
 
    private:

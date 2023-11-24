@@ -53,7 +53,7 @@ extern "C" void backpropagation_CUDA(PointerHandler* gpuPointer,
 extern "C" void update_CUDA(PointerHandler* gpuPointer,
                             NeuronBlock* neuronBlocks,
                             const uint32_t numberOfNeuronBlocks,
-                            SynapseConnection* synapseConnections,
+                            ConnectionBlock* synapseConnections,
                             const uint32_t numberOfSynapseConnections);
 
 uint32_t counter = 0;
@@ -79,16 +79,16 @@ CpuProcessingUnit::trainSegmentForward(Cluster* cluster)
     Hanami::ErrorContainer error;
 
     if (HanamiRoot::useCuda) {
-        processing_CUDA(&cluster->gpuPointer,
+        /*processing_CUDA(&cluster->gpuPointer,
                         cluster->bricks,
                         cluster->inputValues,
                         cluster->outputValues,
                         cluster->clusterHeader->bricks.count,
                         cluster->neuronBlocks,
-                        cluster->numberOfBrickBlocks,
+                        cluster->numberOfNeuronBlocks,
                         cluster->synapseBlocks,
                         cluster->clusterHeader->synapseBlocks.count,
-                        true);
+                        true);*/
     }
     else {
         prcessCoreSegment(*cluster, true);
@@ -107,21 +107,21 @@ CpuProcessingUnit::trainSegmentBackward(Cluster* cluster)
     Hanami::ErrorContainer error;
 
     if (HanamiRoot::useCuda) {
-        backpropagation_CUDA(&cluster->gpuPointer,
+        /*backpropagation_CUDA(&cluster->gpuPointer,
                              cluster->bricks,
                              cluster->outputValues,
                              cluster->expectedValues,
                              cluster->clusterHeader->bricks.count,
                              cluster->neuronBlocks,
-                             cluster->numberOfBrickBlocks,
-                             &cluster->clusterHeader->settings);
+                             cluster->numberOfNeuronBlocks,
+                             &cluster->clusterHeader->settings);*/
 
         if (updateSections(*cluster)) {
-            update_CUDA(&cluster->gpuPointer,
+            /*update_CUDA(&cluster->gpuPointer,
                         cluster->neuronBlocks,
-                        cluster->numberOfBrickBlocks,
+                        cluster->numberOfNeuronBlocks,
                         cluster->synapseConnections,
-                        cluster->clusterHeader->synapseConnections.count);
+                        cluster->clusterHeader->synapseConnections.count);*/
         }
     }
     else {
@@ -140,6 +140,33 @@ CpuProcessingUnit::trainSegmentBackward(Cluster* cluster)
 }
 
 /**
+ * @brief get position of the highest output-position
+ *
+ * @param cluster output-cluster to check
+ *
+ * @return position of the highest output.
+ */
+uint32_t
+getHighestOutput(const Cluster& cluster)
+{
+    float hightest = -0.1f;
+    uint32_t hightestPos = 0;
+    float value = 0.0f;
+
+    for (uint32_t outputNeuronId = 0; outputNeuronId < cluster.clusterHeader->numberOfOutputs;
+         outputNeuronId++)
+    {
+        value = cluster.outputValues[outputNeuronId];
+        if (value > hightest) {
+            hightest = value;
+            hightestPos = outputNeuronId;
+        }
+    }
+
+    return hightestPos;
+}
+
+/**
  * @brief process segments
  *
  * @param cluster cluster to process
@@ -149,16 +176,16 @@ CpuProcessingUnit::processSegment(Cluster* cluster)
 {
     Hanami::ErrorContainer error;
     if (HanamiRoot::useCuda) {
-        processing_CUDA(&cluster->gpuPointer,
+        /*processing_CUDA(&cluster->gpuPointer,
                         cluster->bricks,
                         cluster->inputValues,
                         cluster->outputValues,
                         cluster->clusterHeader->bricks.count,
                         cluster->neuronBlocks,
-                        cluster->numberOfBrickBlocks,
+                        cluster->numberOfNeuronBlocks,
                         cluster->synapseBlocks,
                         cluster->clusterHeader->synapseBlocks.count,
-                        false);
+                        false);*/
     }
     else {
         prcessCoreSegment(*cluster, false);

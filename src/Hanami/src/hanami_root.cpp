@@ -54,6 +54,7 @@ Hanami::GpuInterface* HanamiRoot::gpuInterface = nullptr;
 HanamiRoot* HanamiRoot::root = nullptr;
 HttpServer* HanamiRoot::httpServer = nullptr;
 CryptoPP::SecByteBlock HanamiRoot::tokenKey{};
+Hanami::ItemBuffer HanamiRoot::m_synapseBlocks{};
 
 // static flag to switch to experimental gpu-support (see issue #44 and #76)
 bool HanamiRoot::useCuda = false;
@@ -90,6 +91,11 @@ HanamiRoot::init(Hanami::ErrorContainer& error)
         error.addMeesage("Failed to initialize directories");
         return false;
     }
+
+    // initialize global synapse-block-buffer
+    // TODO: size has to be configurable
+    m_synapseBlocks.initBuffer<SynapseBlock>(10000);
+    m_synapseBlocks.deleteAll();
 
     // init predefinde random-values
     m_randomValues = new uint32_t[NUMBER_OF_RAND_VALUES];

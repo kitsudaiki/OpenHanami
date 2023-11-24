@@ -34,7 +34,7 @@
 template <bool doTrain>
 __device__ __forceinline__ void
 synapseProcessingBackward(Synapse* section,
-                          SynapseConnection* connection,
+                          ConnectionBlock* connection,
                           NeuronBlock* currentNeuronBlock,
                           NeuronBlock* neuronBlocks,
                           ClusterSettings* clusterSettings,
@@ -111,7 +111,7 @@ template <bool doTrain>
 __global__ void
 processNeuronsOfNormalBrick(NeuronBlock* neuronBlocks,
                             SynapseBlock* synapseBlocks,
-                            SynapseConnection* synapseConnections,
+                            ConnectionBlock* synapseConnections,
                             ClusterSettings* clusterSettings,
                             const uint32_t* randomValues,
                             const uint32_t neuronBlockPos,
@@ -131,7 +131,7 @@ processNeuronsOfNormalBrick(NeuronBlock* neuronBlocks,
     {
         // process synapse-sections
         Synapse* section = synapseBlocks[synapseBlockId].synapses[tid];
-        SynapseConnection* connection = &synapseConnections[synapseBlockId];
+        ConnectionBlock* connection = &synapseConnections[synapseBlockId];
 
         if(connection->origin[tid].blockId != UNINIT_STATE_32)
         {
@@ -194,7 +194,7 @@ processNeuronsOfNormalBrick(NeuronBlock* neuronBlocks,
 __global__ void
 reweightCoreSegmentKernel(NeuronBlock* neuronBlocks,
                           SynapseBlock* synapseBlocks,
-                          SynapseConnection* synapseConnections,
+                          ConnectionBlock* synapseConnections,
                           ClusterSettings* clusterSettings,
                           const uint32_t neuronSectionPos)
 {
@@ -220,7 +220,7 @@ reweightCoreSegmentKernel(NeuronBlock* neuronBlocks,
             while(loc[tid].blockId != UNINIT_STATE_32)
             {
                 Synapse* section = synapseBlocks[loc[tid].blockId].synapses[loc[tid].sectionId];
-                SynapseConnection* connection = &synapseConnections[loc[tid].blockId];
+                ConnectionBlock* connection = &synapseConnections[loc[tid].blockId];
                 NeuronBlock* targetNeuronSection = &neuronBlocks[connection->targetNeuronBlockId];
 
                 tempVal[tid] = sourceNeuron->delta;
@@ -259,19 +259,19 @@ copyToDevice_CUDA(PointerHandler* gpuPointer,
                   const uint32_t numberOfNeuronBlocks,
                   SynapseBlock* synapseBlocks,
                   const uint32_t numberOfSynapseBlocks,
-                  SynapseConnection* synapseConnections,
+                  ConnectionBlock* synapseConnections,
                   const uint32_t numberOfSynapseConnections,
                   uint32_t* randomValues)
 {
     cudaMalloc(&gpuPointer->clusterSettings,    1                          * sizeof(ClusterSettings));
     cudaMalloc(&gpuPointer->neuronBlocks,       numberOfNeuronBlocks       * sizeof(NeuronBlock));
     cudaMalloc(&gpuPointer->synapseBlocks,      numberOfSynapseBlocks      * sizeof(SynapseBlock));
-    cudaMalloc(&gpuPointer->synapseConnections, numberOfSynapseConnections * sizeof(SynapseConnection));
+    cudaMalloc(&gpuPointer->synapseConnections, numberOfSynapseConnections * sizeof(ConnectionBlock));
     cudaMalloc(&gpuPointer->randomValues,       NUMBER_OF_RAND_VALUES      * sizeof(uint32_t));
 
     cudaMemcpy(gpuPointer->neuronBlocks,       neuronBlocks,       numberOfNeuronBlocks       * sizeof(NeuronBlock),       cudaMemcpyHostToDevice);
     cudaMemcpy(gpuPointer->synapseBlocks,      synapseBlocks,      numberOfSynapseBlocks      * sizeof(SynapseBlock),      cudaMemcpyHostToDevice);
-    cudaMemcpy(gpuPointer->synapseConnections, synapseConnections, numberOfSynapseConnections * sizeof(SynapseConnection), cudaMemcpyHostToDevice);
+    cudaMemcpy(gpuPointer->synapseConnections, synapseConnections, numberOfSynapseConnections * sizeof(ConnectionBlock), cudaMemcpyHostToDevice);
     cudaMemcpy(gpuPointer->randomValues,       randomValues,       NUMBER_OF_RAND_VALUES      * sizeof(uint32_t),          cudaMemcpyHostToDevice);
 }
 
@@ -413,12 +413,12 @@ void
 update_CUDA(PointerHandler* gpuPointer,
             NeuronBlock* neuronBlocks,
             const uint32_t numberOfNeuronBlocks,
-            SynapseConnection* synapseConnections,
+            ConnectionBlock* synapseConnections,
             const uint32_t numberOfSynapseConnections)
 {
     cudaMemcpy(gpuPointer->synapseConnections,
                synapseConnections,
-               numberOfSynapseConnections * sizeof(SynapseConnection),
+               numberOfSynapseConnections * sizeof(ConnectionBlock),
                cudaMemcpyHostToDevice);
 
     cudaMemcpy(gpuPointer->neuronBlocks,

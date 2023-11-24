@@ -29,6 +29,8 @@
 
 #include "objects.h"
 
+uint32_t outputCounter = 0;
+
 /**
  * @brief process input brick
  */
@@ -41,10 +43,11 @@ processNeuronsOfInputBrickBackward(const Brick* brick,
     Neuron* neuron = nullptr;
     NeuronBlock* block = nullptr;
     uint32_t counter = 0;
+    float* brickBuffer = &inputValues[brick->ioBufferPos];
 
     // iterate over all neurons within the brick
-    for (uint32_t blockId = brick->brickBlockPos;
-         blockId < brick->numberOfNeuronBlocks + brick->brickBlockPos;
+    for (uint32_t blockId = brick->neuronBlockPos;
+         blockId < brick->numberOfNeuronBlocks + brick->neuronBlockPos;
          blockId++)
     {
         block = &neuronBlocks[blockId];
@@ -52,10 +55,10 @@ processNeuronsOfInputBrickBackward(const Brick* brick,
              neuronIdInBlock++)
         {
             neuron = &block->neurons[neuronIdInBlock];
-            neuron->potential = inputValues[counter];
+            neuron->potential = brickBuffer[counter];
             neuron->active = neuron->potential > 0.0f;
             if constexpr (doTrain) {
-                neuron->isNew = neuron->active != 0 && neuron->target.blockId == UNINIT_STATE_32;
+                neuron->isNew = neuron->active != 0 && neuron->inUse == 0;
                 neuron->newOffset = 0.0f;
             }
             counter++;
@@ -69,10 +72,11 @@ processNeuronsOfOutputBrick(const Brick* brick, float* outputValues, NeuronBlock
     Neuron* neuron = nullptr;
     NeuronBlock* block = nullptr;
     uint32_t counter = 0;
+    float* brickBuffer = &outputValues[brick->ioBufferPos];
 
     // iterate over all neurons within the brick
-    for (uint32_t blockId = brick->brickBlockPos;
-         blockId < brick->numberOfNeuronBlocks + brick->brickBlockPos;
+    for (uint32_t blockId = brick->neuronBlockPos;
+         blockId < brick->numberOfNeuronBlocks + brick->neuronBlockPos;
          blockId++)
     {
         block = &neuronBlocks[blockId];
@@ -84,7 +88,9 @@ processNeuronsOfOutputBrick(const Brick* brick, float* outputValues, NeuronBlock
             if (neuron->potential != 0.0f) {
                 neuron->potential = 1.0f / (1.0f + exp(-1.0f * neuron->potential));
             }
-            outputValues[counter] = neuron->potential;
+            // std::cout<<std::to_string(outputCounter)<<": "<<neuron->potential<<std::endl;
+            // outputCounter++;
+            brickBuffer[counter] = neuron->potential;
             neuron->input = 0.0f;
             counter++;
         }
@@ -105,10 +111,12 @@ backpropagateOutput(const Brick* brick,
     NeuronBlock* block = nullptr;
     float totalDelta = 0.0f;
     uint32_t counter = 0;
+    float* brickOutputValues = &outputValues[brick->ioBufferPos];
+    float* brickExectedValues = &expectedValues[brick->ioBufferPos];
 
     // iterate over all neurons within the brick
-    for (uint32_t neuronSectionId = brick->brickBlockPos;
-         neuronSectionId < brick->numberOfNeuronBlocks + brick->brickBlockPos;
+    for (uint32_t neuronSectionId = brick->neuronBlockPos;
+         neuronSectionId < brick->numberOfNeuronBlocks + brick->neuronBlockPos;
          neuronSectionId++)
     {
         block = &neuronBlocks[neuronSectionId];
@@ -116,9 +124,9 @@ backpropagateOutput(const Brick* brick,
              neuronIdInBlock++)
         {
             neuron = &block->neurons[neuronIdInBlock];
-            neuron->delta = outputValues[counter] - expectedValues[counter];
-            neuron->delta *= outputValues[counter] * (1.0f - outputValues[counter]);
-            totalDelta += abs(neuron->delta);
+            neuron->delta[0] = brickOutputValues[counter] - brickExectedValues[counter];
+            neuron->delta[0] *= brickOutputValues[counter] * (1.0f - brickOutputValues[counter]);
+            totalDelta += abs(neuron->delta[0]);
             counter++;
         }
     }

@@ -38,7 +38,7 @@ extern "C" void copyToDevice_CUDA(PointerHandler* gpuPointer,
                                   const uint32_t numberOfNeuronBlocks,
                                   SynapseBlock* synapseBlocks,
                                   const uint32_t numberOfSynapseBlocks,
-                                  SynapseConnection* synapseConnections,
+                                  ConnectionBlock* synapseConnections,
                                   const uint32_t numberOfSynapseConnections,
                                   uint32_t* randomValues);
 
@@ -61,7 +61,8 @@ Cluster::Cluster()
  */
 Cluster::Cluster(const void* data, const uint64_t dataSize)
 {
-    clusterData.initBuffer(data, dataSize);
+    Hanami::allocateBlocks_DataBuffer(clusterData, Hanami::calcBytesToBlocks(dataSize));
+    memcpy(clusterData.data, data, dataSize);
 }
 
 /**
@@ -92,7 +93,7 @@ Cluster::getUuid()
 void
 Cluster::initCuda()
 {
-    copyToDevice_CUDA(&gpuPointer,
+    /*copyToDevice_CUDA(&gpuPointer,
                       &clusterHeader->settings,
                       neuronBlocks,
                       clusterHeader->neuronBlocks.count,
@@ -100,7 +101,7 @@ Cluster::initCuda()
                       clusterHeader->synapseBlocks.count,
                       synapseConnections,
                       clusterHeader->synapseConnections.count,
-                      HanamiRoot::m_randomValues);
+                      HanamiRoot::m_randomValues);*/
 }
 
 /**

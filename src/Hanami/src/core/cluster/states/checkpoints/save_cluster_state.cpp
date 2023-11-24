@@ -62,7 +62,7 @@ SaveCluster_State::processEvent()
 
     do {
         Task* actualTask = m_cluster->getActualTask();
-        const uint64_t totalSize = m_cluster->clusterData.buffer.usedBufferSize;
+        const uint64_t totalSize = m_cluster->clusterData.usedBufferSize;
 
         // send checkpoint to shiori
         std::string fileUuid = "";
@@ -134,13 +134,13 @@ SaveCluster_State::writeData(const std::string& filePath,
                              const uint64_t fileSize,
                              Hanami::ErrorContainer& error)
 {
-    if (HanamiRoot::useCuda) {
+    /*if (HanamiRoot::useCuda) {
         copyFromGpu_CUDA(&m_cluster->gpuPointer,
                          m_cluster->neuronBlocks,
                          m_cluster->clusterHeader->neuronBlocks.count,
                          m_cluster->synapseBlocks,
                          m_cluster->clusterHeader->synapseBlocks.count);
-    }
+    }*/
 
     Hanami::BinaryFile checkpointFile(filePath);
     if (checkpointFile.allocateStorage(fileSize, error) == false) {
@@ -150,7 +150,7 @@ SaveCluster_State::writeData(const std::string& filePath,
     }
 
     // global byte-counter to identifiy the position within the complete checkpoint
-    Hanami::DataBuffer* buffer = &m_cluster->clusterData.buffer;
+    Hanami::DataBuffer* buffer = &m_cluster->clusterData;
     if (checkpointFile.writeDataIntoFile(buffer->data, 0, buffer->usedBufferSize, error) == false) {
         error.addMeesage("Failed to write cluster for checkpoint into file '" + filePath + "'");
         return false;

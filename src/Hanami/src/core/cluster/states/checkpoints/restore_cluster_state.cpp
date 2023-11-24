@@ -78,13 +78,13 @@ RestoreCluster_State::processEvent()
     }
 
     // copy data of cluster
-    const uint8_t* u8Data = static_cast<const uint8_t*>(checkpointBuffer.data);
+    /*const uint8_t* u8Data = static_cast<const uint8_t*>(checkpointBuffer.data);
     m_cluster->clusterData.initBuffer(u8Data, checkpointBuffer.usedBufferSize);
     if (reinitPointer(m_cluster, checkpointBuffer.usedBufferSize) == false) {
         error.addMeesage("failed to re-init pointer in cluster");
         m_cluster->goToNextState(FINISH_TASK);
         return false;
-    }
+    }*/
 
     strncpy(m_cluster->clusterHeader->uuid.uuid, originalUuid.c_str(), originalUuid.size());
     m_cluster->goToNextState(FINISH_TASK);

@@ -22,19 +22,12 @@ enum ClusterProcessType {
     TRAIN_TYPE = 1;
 }
 
-enum ClusterDataType {
-    INPUT_TYPE = 0;
-    SHOULD_TYPE = 1;
-    OUTPUT_TYPE = 2;
-}
-
 message ClusterIO_Message {
-    string segmentName = 1;
+    string brickName = 1;
     bool isLast = 2;
     ClusterProcessType processType = 3;
-    ClusterDataType dataType = 4;
-    uint64 numberOfValues = 5;
-    repeated float values = 6 [packed=true];
+    uint64 numberOfValues = 4;
+    repeated float values = 5 [packed=true];
 }
 
 message FileUpload_Message 

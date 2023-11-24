@@ -33,123 +33,123 @@
 #include <cmath>
 
 /**
- * @brief run backpropagation for a single synapse-section
+ * @brief backpropagateSection
+ * @param section
+ * @param connection
+ * @param targetNeuronBlock
+ * @param sourceNeuron
  */
-inline void
-backpropagateSection(const Cluster& cluster,
-                     Synapse* section,
-                     float& sourceDelta,
+void
+backpropagateSection(Synapse* section,
                      SynapseConnection* connection,
-                     LocationPtr* sourceLocation,
-                     const float outH,
-                     NeuronBlock* neuronBlocks,
-                     SynapseBlock* synapseBlocks,
-                     SynapseConnection* synapseConnections)
+                     NeuronBlock* targetNeuronBlock,
+                     Neuron* sourceNeuron)
 {
-    Synapse* synapse = nullptr;
+    float counter = sourceNeuron->potential - connection->offset;
+    uint pos = 0;
+    Synapse* synapse;
     Neuron* targetNeuron = nullptr;
-    float trainValue = 0.2f;
-    uint16_t pos = 0;
-    float counter = outH - connection->offset[sourceLocation->sectionId];
-    NeuronBlock* neuronBlock = &neuronBlocks[connection->targetNeuronBlockId];
+    constexpr float trainValue = 0.05f;
+    float delta = 0.0f;
+    sourceNeuron->delta[connection->origin.posInNeuron] = 0.0f;
 
     // iterate over all synapses in the section
     while (pos < SYNAPSES_PER_SYNAPSESECTION && counter > 0.01f) {
         // break look, if no more synapses to process
         synapse = &section[pos];
-        if (synapse->targetNeuronId == UNINIT_STATE_16) {
-            ++pos;
-            continue;
-        }
+        if (synapse->targetNeuronId != UNINIT_STATE_16) {
+            // update weight
+            targetNeuron = &targetNeuronBlock->neurons[synapse->targetNeuronId];
+            delta = targetNeuron->delta[0] * synapse->weight;
+            if (counter < synapse->border) {
+                delta *= (1.0f / synapse->border) * counter;
+            }
+            synapse->weight -= trainValue * targetNeuron->delta[0];
+            sourceNeuron->delta[connection->origin.posInNeuron] += delta;
 
-        // update weight
-        trainValue = 0.05f;
-        targetNeuron = &neuronBlock->neurons[synapse->targetNeuronId];
-        if (counter > synapse->border) {
-            sourceDelta += targetNeuron->delta * synapse->weight;
+            counter -= synapse->border;
         }
-        else {
-            sourceDelta
-                += targetNeuron->delta * synapse->weight * ((1.0f / synapse->border) * counter);
-        }
-        synapse->weight -= trainValue * targetNeuron->delta;
-
-        counter -= synapse->border;
         ++pos;
-    }
-
-    LocationPtr* targetLocation = &connection->next[sourceLocation->sectionId];
-    if (targetLocation->sectionId != UNINIT_STATE_16) {
-        Synapse* nextSection
-            = synapseBlocks[targetLocation->blockId].synapses[targetLocation->sectionId];
-        SynapseConnection* nextConnection = &synapseConnections[targetLocation->blockId];
-        backpropagateSection(cluster,
-                             nextSection,
-                             sourceDelta,
-                             nextConnection,
-                             targetLocation,
-                             outH,
-                             neuronBlocks,
-                             synapseBlocks,
-                             synapseConnections);
     }
 }
 
 /**
- * @brief run back-propagation over all neurons
+ * @brief backpropagateNeurons
+ * @param brick
+ * @param neuronBlocks
+ * @param synapseBlocks
  */
 inline void
-backpropagateNeurons(const Cluster& cluster,
-                     const Brick* brick,
-                     NeuronBlock* neuronBlocks,
-                     SynapseBlock* synapseBlocks,
-                     SynapseConnection* synapseConnections)
+backpropagateNeurons(Brick* brick, NeuronBlock* neuronBlocks, SynapseBlock* synapseBlocks)
 {
-    Neuron* sourceNeuron;
-    NeuronBlock* block;
-    float sourceDelta;
+    SynapseConnection* scon = nullptr;
+    Neuron* neuron = nullptr;
+    NeuronBlock* sourceNeuronBlock = nullptr;
+    NeuronBlock* targetNeuronBlock = nullptr;
+    Neuron* sourceNeuron = nullptr;
+    Synapse* section = nullptr;
+    uint32_t counter = 0;
+    float delta;
 
     // iterate over all neurons within the brick
-    for (uint32_t blockId = brick->brickBlockPos;
-         blockId < brick->numberOfNeuronBlocks + brick->brickBlockPos;
+    for (uint32_t blockId = brick->neuronBlockPos;
+         blockId < brick->numberOfNeuronBlocks + brick->neuronBlockPos;
          ++blockId)
     {
-        block = &neuronBlocks[blockId];
-        for (uint32_t neuronIdInBlock = 0; neuronIdInBlock < block->numberOfNeurons;
+        targetNeuronBlock = &neuronBlocks[blockId];
+        for (uint32_t neuronIdInBlock = 0; neuronIdInBlock < NEURONS_PER_NEURONSECTION;
              ++neuronIdInBlock)
         {
-            // skip section, if not active
-            sourceNeuron = &block->neurons[neuronIdInBlock];
-            LocationPtr* targetLocation = &sourceNeuron->target;
-            sourceNeuron->delta = 0.0f;
-
-            if (targetLocation->blockId == UNINIT_STATE_32 || sourceNeuron->active == 0) {
+            neuron = &targetNeuronBlock->neurons[neuronIdInBlock];
+            if (neuron->active == false) {
                 continue;
             }
 
-            // set start-values
-            sourceDelta = 0.0f;
-            Synapse* nextSection
-                = synapseBlocks[targetLocation->blockId].synapses[targetLocation->sectionId];
-            SynapseConnection* nextConnection = &synapseConnections[targetLocation->blockId];
-            backpropagateSection(cluster,
-                                 nextSection,
-                                 sourceDelta,
-                                 nextConnection,
-                                 targetLocation,
-                                 sourceNeuron->potential,
-                                 neuronBlocks,
-                                 synapseBlocks,
-                                 synapseConnections);
+            // aggregate different delta-values
+            delta = 0.0f;
+            delta += neuron->delta[0];
+            delta += neuron->delta[1];
+            delta += neuron->delta[2];
+            delta += neuron->delta[3];
+            delta += neuron->delta[4];
+            delta += neuron->delta[5];
+            delta += neuron->delta[6];
+            delta += neuron->delta[7];
 
-            sourceDelta *= 1.4427f * pow(0.5f, sourceNeuron->potential);
-            sourceNeuron->delta = sourceDelta;
+            // calculate new delta-value for next iteration
+            delta *= 1.4427f * pow(0.5f, neuron->potential);
+            neuron->delta[0] = delta;
+            neuron->delta[1] = 0.0f;
+            neuron->delta[2] = 0.0f;
+            neuron->delta[3] = 0.0f;
+            neuron->delta[4] = 0.0f;
+            neuron->delta[5] = 0.0f;
+            neuron->delta[6] = 0.0f;
+            neuron->delta[7] = 0.0f;
         }
+    }
+
+    for (ConnectionBlock& connection : brick->connectionBlocks) {
+        for (uint16_t i = 0; i < NUMBER_OF_SYNAPSESECTION; i++) {
+            scon = &connection.connections[i];
+            if (scon->origin.blockId == UNINIT_STATE_32) {
+                continue;
+            }
+            sourceNeuronBlock = &neuronBlocks[scon->origin.blockId];
+            sourceNeuron = &sourceNeuronBlock->neurons[scon->origin.sectionId];
+            section = synapseBlocks[connection.targetSynapseBlockPos].synapses[i];
+            targetNeuronBlock = &neuronBlocks[brick->neuronBlockPos + (counter / brick->dimY)];
+
+            backpropagateSection(section, scon, targetNeuronBlock, sourceNeuron);
+        }
+
+        ++counter;
     }
 }
 
 /**
- * @brief correct weight of synapses within a cluster
+ * @brief reweightCoreSegment
+ * @param cluster
  */
 void
 reweightCoreSegment(const Cluster& cluster)
@@ -157,10 +157,8 @@ reweightCoreSegment(const Cluster& cluster)
     float* expectedValues = cluster.expectedValues;
     float* outputValues = cluster.outputValues;
     NeuronBlock* neuronBlocks = cluster.neuronBlocks;
-    SynapseConnection* synapseConnections = cluster.synapseConnections;
-    SynapseBlock* synapseBlocks = cluster.synapseBlocks;
+    SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(HanamiRoot::m_synapseBlocks);
 
-    // run back-propagation over all internal neurons and synapses
     const uint32_t numberOfBricks = cluster.clusterHeader->bricks.count;
     for (int32_t brickId = numberOfBricks - 1; brickId >= 0; --brickId) {
         Brick* brick = &cluster.bricks[brickId];
@@ -175,8 +173,9 @@ reweightCoreSegment(const Cluster& cluster)
                 return;
             }
         }
-        else {
-            backpropagateNeurons(cluster, brick, neuronBlocks, synapseBlocks, synapseConnections);
+
+        if (brick->isInputBrick == false) {
+            backpropagateNeurons(brick, neuronBlocks, synapseBlocks);
         }
     }
 }
