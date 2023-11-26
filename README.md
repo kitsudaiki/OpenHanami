@@ -120,6 +120,10 @@ pip3 install mkdocs-material mkdocs-swagger-ui-tag mkdocs-drawio-exporter
 
 eMail: tobias.anker@kitsunemimi.moe
 
+## Note
+
+For the one who clones this repo every 2 hours currently: If you are so interested in this project, it would be nice if you could also support this project by giving some feedback, contribute some code and so on. Feel free to contact me for some possible tasks or if you have any questions.
+
 ## License
 
 The complete project is under [Apache 2 license](https://github.com/kitsudaiki/Hanami/blob/develop/LICENSE).
