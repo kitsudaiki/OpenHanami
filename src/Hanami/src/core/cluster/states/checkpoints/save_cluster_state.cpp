@@ -142,18 +142,75 @@ SaveCluster_State::writeData(const std::string& filePath,
                          m_cluster->clusterHeader->synapseBlocks.count);
     }*/
 
+    const uint64_t clusterSize = m_cluster->getDataSize();
+    uint64_t position = 0;
+
     Hanami::BinaryFile checkpointFile(filePath);
-    if (checkpointFile.allocateStorage(fileSize, error) == false) {
+    if (checkpointFile.allocateStorage(clusterSize, error) == false) {
         error.addMeesage("Failed to allocate '" + std::to_string(fileSize)
                          + "' bytes for checkpointfile at path '" + filePath + "'");
         return false;
     }
 
-    // global byte-counter to identifiy the position within the complete checkpoint
-    Hanami::DataBuffer* buffer = &m_cluster->clusterData;
-    if (checkpointFile.writeDataIntoFile(buffer->data, 0, buffer->usedBufferSize, error) == false) {
-        error.addMeesage("Failed to write cluster for checkpoint into file '" + filePath + "'");
+    // create header
+    CheckpointHeader header;
+    header.setName(m_cluster->getName());
+    header.setUuid(m_cluster->clusterHeader->uuid);
+    header.metaSize = m_cluster->clusterData.totalBufferSize;
+    header.blockSize = m_cluster->getDataSize() - header.metaSize;
+
+    // write header of cluster to file
+    if (checkpointFile.writeDataIntoFile(&header, position, sizeof(CheckpointHeader), error)
+        == false)
+    {
+        error.addMeesage("Failed to write cluster-header for checkpoint into file '" + filePath
+                         + "'");
         return false;
+    }
+    position += sizeof(CheckpointHeader);
+
+    // write static data of cluster to file
+    if (checkpointFile.writeDataIntoFile(
+            m_cluster->clusterData.data, position, m_cluster->clusterData.totalBufferSize, error)
+        == false)
+    {
+        error.addMeesage("Failed to write cluster-meta for checkpoint into file '" + filePath
+                         + "'");
+        return false;
+    }
+    position += m_cluster->clusterData.totalBufferSize;
+
+    // write bricks to file
+    for (uint64_t i = 0; i < m_cluster->clusterHeader->bricks.count; i++) {
+        const uint64_t numberOfConnections = m_cluster->bricks[i].connectionBlocks.size();
+        for (uint64_t c = 0; c < numberOfConnections; c++) {
+            // write connection-blocks of brick to file
+            ConnectionBlock* connectionBlock = &m_cluster->bricks[i].connectionBlocks[c];
+            if (checkpointFile.writeDataIntoFile(
+                    connectionBlock, position, sizeof(ConnectionBlock), error)
+                == false)
+            {
+                error.addMeesage("Failed to write connection-blocks for checkpoint into file '"
+                                 + filePath + "'");
+                return false;
+            }
+            position += sizeof(ConnectionBlock);
+
+            // write synapse-blocks of brick to file
+            SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(HanamiRoot::m_synapseBlocks);
+            if (checkpointFile.writeDataIntoFile(
+                    &synapseBlocks[connectionBlock->targetSynapseBlockPos],
+                    position,
+                    sizeof(SynapseBlock),
+                    error)
+                == false)
+            {
+                error.addMeesage("Failed to write synapse-blocks for checkpoint into file '"
+                                 + filePath + "'");
+                return false;
+            }
+            position += sizeof(SynapseBlock);
+        }
     }
 
     return true;

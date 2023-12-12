@@ -50,8 +50,6 @@ class Cluster
     Hanami::DataBuffer clusterData;
     PointerHandler gpuPointer;
 
-    void initCuda();
-
     ClusterHeader* clusterHeader = nullptr;
     float* inputValues = nullptr;
     float* outputValues = nullptr;
@@ -63,10 +61,15 @@ class Cluster
     NeuronBlock* neuronBlocks = nullptr;
     uint32_t numberOfNeuronBlocks = 0;
 
+    // meta
     const std::string getUuid();
     const std::string getName();
     bool setName(const std::string& newName);
     bool init(const Hanami::ClusterMeta& clusterTemplate, const std::string& uuid);
+    void initCuda();
+
+    // stats
+    uint64_t getDataSize() const;
 
     // tasks
     Task* getActualTask() const;

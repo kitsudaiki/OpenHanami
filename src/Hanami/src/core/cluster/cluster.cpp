@@ -120,6 +120,24 @@ Cluster::init(const Hanami::ClusterMeta& clusterTemplate, const std::string& uui
 }
 
 /**
+ * @brief get total size of data of the cluster
+ *
+ * @return size of cluster in bytes
+ */
+uint64_t
+Cluster::getDataSize() const
+{
+    uint64_t size = clusterData.totalBufferSize;
+    for (uint64_t i = 0; i < clusterHeader->bricks.count; i++) {
+        const uint64_t numberOfConnections = bricks[i].connectionBlocks.size();
+        size += numberOfConnections * sizeof(ConnectionBlock);
+        size += numberOfConnections * sizeof(SynapseBlock);
+    }
+
+    return size;
+}
+
+/**
  * @brief get the name of the clsuter
  *
  * @return name of the cluster

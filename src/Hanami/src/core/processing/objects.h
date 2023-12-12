@@ -303,4 +303,55 @@ struct PointerHandler {
 
 //==================================================================================================
 
+struct CheckpointHeader {
+    uint64_t metaSize = 0;
+    uint64_t blockSize = 0;
+
+    char name[256];
+    uint32_t nameSize = 0;
+    char uuid[40];
+
+    uint8_t padding[3780];
+
+    CheckpointHeader()
+    {
+        std::fill_n(uuid, 40, '\0');
+        std::fill_n(name, 256, '\0');
+    }
+
+    /**
+     * @brief set new name for the brick
+     *
+     * @param newName new name
+     *
+     * @return true, if successful, else false
+     */
+    bool setName(const std::string& newName)
+    {
+        // precheck
+        if (newName.size() > 255 || newName.size() == 0) {
+            return false;
+        }
+
+        // copy string into char-buffer and set explicit the escape symbol to be absolut sure
+        // that it is set to absolut avoid buffer-overflows
+        strncpy(name, newName.c_str(), newName.size());
+        name[newName.size()] = '\0';
+        nameSize = newName.size();
+
+        return true;
+    }
+
+    bool setUuid(const kuuid& uuid)
+    {
+        const std::string uuidStr = uuid.toString();
+
+        strncpy(this->uuid, uuidStr.c_str(), uuidStr.size());
+        this->uuid[uuidStr.size()] = '\0';
+
+        return true;
+    }
+};
+static_assert(sizeof(CheckpointHeader) == 4096);
+
 #endif  // HANAMI_CORE_SEGMENT_OBJECTS_H

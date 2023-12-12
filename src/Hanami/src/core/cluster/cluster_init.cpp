@@ -119,7 +119,7 @@ bool
 reinitPointer(Cluster* cluster, const uint64_t numberOfBytes)
 {
     // TODO: checks
-    /*uint8_t* dataPtr = static_cast<uint8_t*>(cluster->clusterData.data);
+    uint8_t* dataPtr = static_cast<uint8_t*>(cluster->clusterData.data);
 
     uint64_t pos = 0;
     uint64_t byteCounter = 0;
@@ -150,23 +150,10 @@ reinitPointer(Cluster* cluster, const uint64_t numberOfBytes)
     cluster->neuronBlocks = reinterpret_cast<NeuronBlock*>(dataPtr + pos);
     byteCounter += clusterHeader->neuronBlocks.count * sizeof(NeuronBlock);
 
-    pos = clusterHeader->synapseBlocks.bytePos;
-    cluster->synapseBlocks = reinterpret_cast<SynapseBlock*>(dataPtr + pos);
-    byteCounter += clusterHeader->synapseBlocks.count * sizeof(SynapseBlock);
-
-    dataPtr = static_cast<uint8_t*>(cluster->clusterData.itemData);
-    // pos = segmentHeader->synapseSections.bytePos;
-    cluster->synapseConnections = reinterpret_cast<ConnectionBlock*>(dataPtr);
-    byteCounter += clusterHeader->synapseConnections.count * sizeof(ConnectionBlock);
-
-    if (HanamiRoot::useCuda) {
-        cluster->initCuda();
-    }
-
     // check result
-    if (byteCounter != numberOfBytes - 48) {
-        return false;
-    }*/
+    // if (byteCounter != numberOfBytes - 48) {
+    //    return false;
+    // }
 
     return true;
 }

@@ -101,7 +101,7 @@ def delete_all_user():
 
 def delete_all_datasets():
     success, result = dataset.list_datasets(token, address)
-    print(result)
+    # print(result)
 
     body = json.loads(result)["body"]
 
@@ -213,16 +213,16 @@ def test_workflow():
     assert success
 
     # save and reload checkpoint
-    # success, result = cluster.save_cluster(token, address, checkpoint_name, cluster_uuid)
-    # assert success
-    # checkpoint_uuid = json.loads(result)["uuid"]
+    success, result = cluster.save_cluster(token, address, checkpoint_name, cluster_uuid)
+    assert success
+    checkpoint_uuid = json.loads(result)["uuid"]
 
-    # cluster.delete_cluster(token, address, cluster_uuid)
-    # success, result = cluster.create_cluster(token, address, cluster_name, cluster_template)
-    # cluster_uuid = json.loads(result)["uuid"]
+    cluster.delete_cluster(token, address, cluster_uuid)
+    success, result = cluster.create_cluster(token, address, cluster_name, cluster_template)
+    cluster_uuid = json.loads(result)["uuid"]
 
-    # success, result = cluster.restore_cluster(token, address, checkpoint_uuid, cluster_uuid)
-    # assert success
+    success, result = cluster.restore_cluster(token, address, checkpoint_uuid, cluster_uuid)
+    assert success
 
     # run testing
     success, result = task.create_task(
