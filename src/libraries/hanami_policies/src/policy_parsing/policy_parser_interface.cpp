@@ -95,7 +95,7 @@ PolicyParserInterface::parse(std::map<std::string, PolicyEntry>* result,
 
     // handle negative result
     if (res != 0 || m_errorMessage.size() > 0) {
-        error.addMeesage(m_errorMessage);
+        error.addMessage(m_errorMessage);
         LOG_ERROR(error);
         return false;
     }

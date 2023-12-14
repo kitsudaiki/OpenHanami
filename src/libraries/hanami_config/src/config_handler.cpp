@@ -55,7 +55,7 @@ ConfigHandler::initConfig(const std::string& configFilePath, ErrorContainer& err
     std::string fileContent = "";
     const bool ret = readFile(fileContent, m_configFilePath, error);
     if (ret == false) {
-        error.addMeesage("Error while reading config-file \"" + configFilePath + "\"");
+        error.addMessage("Error while reading config-file \"" + configFilePath + "\"");
         LOG_ERROR(error);
         return false;
     }
@@ -65,7 +65,7 @@ ConfigHandler::initConfig(const std::string& configFilePath, ErrorContainer& err
     std::string parseErrorMessage = "";
     const bool result = m_iniItem->parse(fileContent, error);
     if (result == false) {
-        error.addMeesage("Error while parsing config-file \"" + configFilePath + "\"");
+        error.addMessage("Error while parsing config-file \"" + configFilePath + "\"");
         LOG_ERROR(error);
         return false;
     }
@@ -74,7 +74,7 @@ ConfigHandler::initConfig(const std::string& configFilePath, ErrorContainer& err
     for (auto& [groupName, groupConfig] : m_registeredConfigs) {
         for (auto& [itemName, entry] : groupConfig) {
             if (checkEntry(groupName, itemName, entry, error) == false) {
-                error.addMeesage("Error while checking config-file \"" + configFilePath + "\"");
+                error.addMessage("Error while checking config-file \"" + configFilePath + "\"");
                 LOG_ERROR(error);
                 return false;
             }
@@ -311,7 +311,7 @@ ConfigHandler::checkEntry(const std::string& groupName,
 {
     // check type against config-file
     if (checkType(groupName, itemName, entry.type) == false) {
-        error.addMeesage("Config registration failed because item has the false value type: \n"
+        error.addMessage("Config registration failed because item has the false value type: \n"
                          "    group: \'" + groupName + "\'\n"
                          "    item: \'" + itemName + "\'");
         return false;
@@ -321,7 +321,7 @@ ConfigHandler::checkEntry(const std::string& groupName,
     json currentVal;
     const bool found = m_iniItem->get(currentVal, groupName, itemName);
     if (entry.isRequired && found == false) {
-        error.addMeesage("Config registration failed because required "
+        error.addMessage("Config registration failed because required "
                          "value was not set in the config: \n"
                          "    group: \'" + groupName + "\'\n"
                          "    item: \'" + itemName + "\'");
@@ -464,7 +464,7 @@ ConfigHandler::registerValue(const std::string& groupName,
     // precheck if already exist
     if (isRegistered(finalGroupName, itemName) == true) {
         ErrorContainer error;
-        error.addMeesage("Config registration failed because item is already registered: \n"
+        error.addMessage("Config registration failed because item is already registered: \n"
                          "    group: \'" + finalGroupName + "\'\n"
                          "    item: \'" + itemName + "\'");
         LOG_ERROR(error);

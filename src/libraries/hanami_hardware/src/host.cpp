@@ -202,7 +202,7 @@ Host::readHostName(ErrorContainer& error)
     const uint32_t maxHostNameLength = 256;
     char tempHostName[maxHostNameLength];
     if (gethostname(tempHostName, maxHostNameLength) < 0) {
-        error.addMeesage("Failed to read host-name");
+        error.addMessage("Failed to read host-name");
         LOG_ERROR(error);
         return false;
     }

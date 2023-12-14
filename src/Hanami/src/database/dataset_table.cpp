@@ -66,7 +66,7 @@ bool
 DataSetTable::addDataSet(json& data, const UserContext& userContext, Hanami::ErrorContainer& error)
 {
     if (add(data, userContext, error) == false) {
-        error.addMeesage("Failed to add checkpoint to database");
+        error.addMessage("Failed to add checkpoint to database");
         return false;
     }
 
@@ -97,7 +97,7 @@ DataSetTable::getDataSet(json& result,
 
     // get dataset from db
     if (get(result, userContext, conditions, error, showHiddenValues) == false) {
-        error.addMeesage("Failed to get dataset with UUID '" + datasetUuid + "' from database");
+        error.addMessage("Failed to get dataset with UUID '" + datasetUuid + "' from database");
         LOG_ERROR(error);
         return false;
     }
@@ -121,7 +121,7 @@ DataSetTable::getAllDataSet(Hanami::TableItem& result,
 {
     std::vector<RequestCondition> conditions;
     if (getAll(result, userContext, conditions, error) == false) {
-        error.addMeesage("Failed to get all datasets from database");
+        error.addMessage("Failed to get all datasets from database");
         return false;
     }
 
@@ -145,7 +145,7 @@ DataSetTable::deleteDataSet(const std::string& datasetUuid,
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", datasetUuid);
     if (del(conditions, userContext, error) == false) {
-        error.addMeesage("Failed to delete dataset with UUID '" + datasetUuid + "' from database");
+        error.addMessage("Failed to delete dataset with UUID '" + datasetUuid + "' from database");
         return false;
     }
 
@@ -173,7 +173,7 @@ DataSetTable::getDateSetInfo(json& result,
     // get file information
     const std::string location = result["location"];
     if (getHeaderInformation(result, location, error) == false) {
-        error.addMeesage("Failed the read information from file '" + location + "'");
+        error.addMessage("Failed the read information from file '" + location + "'");
         return false;
     }
 

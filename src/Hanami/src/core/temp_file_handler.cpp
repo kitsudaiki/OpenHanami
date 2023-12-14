@@ -85,7 +85,7 @@ TempFileHandler::initNewFile(std::string& uuid,
 
         auto ret = m_tempFiles.try_emplace(uuid, std::move(fileHandle));
         if (ret.second == false) {
-            error.addMeesage("UUID '" + uuid + "' already exist in tempfiles");
+            error.addMessage("UUID '" + uuid + "' already exist in tempfiles");
             break;
         }
         else {
@@ -99,7 +99,7 @@ TempFileHandler::initNewFile(std::string& uuid,
                 uuid, "dataset", relatedUuid, name, size, targetFilePath, userContext, error)
             == false)
         {
-            error.addMeesage("Failed to add tempfile-entry with UUID '" + uuid + "' to database");
+            error.addMessage("Failed to add tempfile-entry with UUID '" + uuid + "' to database");
             LOG_ERROR(error);
             break;
         }
@@ -168,7 +168,7 @@ TempFileHandler::addDataToPos(const std::string& uuid,
 
     const auto it = m_tempFiles.find(uuid);
     if (it == m_tempFiles.end()) {
-        error.addMeesage("File with UUID '" + uuid + "' is unknown.");
+        error.addMessage("File with UUID '" + uuid + "' is unknown.");
         LOG_ERROR(error);
         return false;
     }
@@ -258,20 +258,20 @@ TempFileHandler::removeTempfile(const std::string& uuid,
     if (TempfileTable::getInstance()->getTempfile(tempfileData, uuid, userContext, error, true)
         == false)
     {
-        error.addMeesage("Tempfile with '" + uuid + "' not found in database");
+        error.addMessage("Tempfile with '" + uuid + "' not found in database");
         return false;
     }
 
     // delete file from disc
     const std::string targetFilePath = tempfileData["location"];
     if (Hanami::deleteFileOrDir(targetFilePath, error) == false) {
-        error.addMeesage("Failed to delete file '" + targetFilePath + "' from disc");
+        error.addMessage("Failed to delete file '" + targetFilePath + "' from disc");
         LOG_ERROR(error);
     }
 
     // delete from tempfile-database
     if (TempfileTable::getInstance()->deleteTempfile(uuid, userContext, error) == false) {
-        error.addMeesage("Filed to delete tempfile with UUID '" + uuid + "' from database");
+        error.addMessage("Filed to delete tempfile with UUID '" + uuid + "' from database");
         LOG_ERROR(error);
     }
 
@@ -299,7 +299,7 @@ TempFileHandler::moveData(const std::string& uuid,
     json tempfileMeta;
     if (TempfileTable::getInstance()->getTempfile(tempfileMeta, uuid, userContext, error) == false)
     {
-        error.addMeesage("Tempfile with UUID '" + uuid + "' can not be found in database.");
+        error.addMessage("Tempfile with UUID '" + uuid + "' can not be found in database.");
         return false;
     }
     const std::filesystem::path tempfileLocation(tempfileMeta["location"]);
@@ -312,7 +312,7 @@ TempFileHandler::moveData(const std::string& uuid,
         }
 
         if (Hanami::renameFileOrDir(tempfileLocation, targetLocation, error) == false) {
-            error.addMeesage("Failed to move temp-file with uuid '" + uuid
+            error.addMessage("Failed to move temp-file with uuid '" + uuid
                              + "' to target-location '" + targetLocation + "'");
             return false;
         }
@@ -323,7 +323,7 @@ TempFileHandler::moveData(const std::string& uuid,
         return true;
     }
 
-    error.addMeesage("Failed to move temp-file with uuid '" + uuid
+    error.addMessage("Failed to move temp-file with uuid '" + uuid
                      + ", because it can not be found.");
 
     return false;

@@ -65,7 +65,7 @@ ListCluster::runTask(BlossomIO& blossomIO,
     Hanami::TableItem table;
     if (ClusterTable::getInstance()->getAllCluster(table, userContext, error) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMeesage("Failed to get all clusters form database");
+        error.addMessage("Failed to get all clusters form database");
         return false;
     }
 

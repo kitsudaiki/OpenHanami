@@ -77,7 +77,7 @@ SaveCluster_State::processEvent()
         std::filesystem::path targetFilePath
             = GET_STRING_CONFIG("storage", "checkpoint_location", success);
         if (success == false) {
-            error.addMeesage("checkpoint-location to store checkpoint is missing in the config");
+            error.addMessage("checkpoint-location to store checkpoint is missing in the config");
             break;
         }
 
@@ -113,7 +113,7 @@ SaveCluster_State::processEvent()
     m_cluster->goToNextState(FINISH_TASK);
 
     if (result == false) {
-        error.addMeesage("Failed to create checkpoint of cluster with UUID '" + m_cluster->getUuid()
+        error.addMessage("Failed to create checkpoint of cluster with UUID '" + m_cluster->getUuid()
                          + "'");
         // TODO: cleanup in error-case
         // TODO: give the user a feedback by setting the task to failed-state
@@ -147,7 +147,7 @@ SaveCluster_State::writeData(const std::string& filePath,
 
     Hanami::BinaryFile checkpointFile(filePath);
     if (checkpointFile.allocateStorage(clusterSize, error) == false) {
-        error.addMeesage("Failed to allocate '" + std::to_string(fileSize)
+        error.addMessage("Failed to allocate '" + std::to_string(fileSize)
                          + "' bytes for checkpointfile at path '" + filePath + "'");
         return false;
     }
@@ -163,7 +163,7 @@ SaveCluster_State::writeData(const std::string& filePath,
     if (checkpointFile.writeDataIntoFile(&header, position, sizeof(CheckpointHeader), error)
         == false)
     {
-        error.addMeesage("Failed to write cluster-header for checkpoint into file '" + filePath
+        error.addMessage("Failed to write cluster-header for checkpoint into file '" + filePath
                          + "'");
         return false;
     }
@@ -174,7 +174,7 @@ SaveCluster_State::writeData(const std::string& filePath,
             m_cluster->clusterData.data, position, m_cluster->clusterData.totalBufferSize, error)
         == false)
     {
-        error.addMeesage("Failed to write cluster-meta for checkpoint into file '" + filePath
+        error.addMessage("Failed to write cluster-meta for checkpoint into file '" + filePath
                          + "'");
         return false;
     }
@@ -190,7 +190,7 @@ SaveCluster_State::writeData(const std::string& filePath,
                     connectionBlock, position, sizeof(ConnectionBlock), error)
                 == false)
             {
-                error.addMeesage("Failed to write connection-blocks for checkpoint into file '"
+                error.addMessage("Failed to write connection-blocks for checkpoint into file '"
                                  + filePath + "'");
                 return false;
             }
@@ -205,7 +205,7 @@ SaveCluster_State::writeData(const std::string& filePath,
                     error)
                 == false)
             {
-                error.addMeesage("Failed to write synapse-blocks for checkpoint into file '"
+                error.addMessage("Failed to write synapse-blocks for checkpoint into file '"
                                  + filePath + "'");
                 return false;
             }

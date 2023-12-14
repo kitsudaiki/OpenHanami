@@ -113,7 +113,7 @@ CheckDataSet::runTask(BlossomIO& blossomIO,
 
     // read dataset-header
     if (file.readCompleteFile(buffer, error) == false) {
-        error.addMeesage("Failed to read dataset-header from file '" + location + "'");
+        error.addMessage("Failed to read dataset-header from file '" + location + "'");
         return false;
     }
 

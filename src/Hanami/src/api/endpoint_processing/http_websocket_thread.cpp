@@ -76,7 +76,7 @@ HttpWebsocketThread::handleSocket(tcp::socket* socket)
 
     // read http-message
     if (readMessage(*socket, httpRequest, error) == false) {
-        error.addMeesage("Can read http-request");
+        error.addMessage("Can read http-request");
         return false;
     }
 
@@ -86,7 +86,7 @@ HttpWebsocketThread::handleSocket(tcp::socket* socket)
         websocket::stream<tcp::socket&> webSocket(*socket);
         m_webSocket = &webSocket;
         if (initWebsocket(httpRequest) == false) {
-            error.addMeesage("Can not init websocket.");
+            error.addMessage("Can not init websocket.");
             return false;
         }
 
@@ -102,7 +102,7 @@ HttpWebsocketThread::handleSocket(tcp::socket* socket)
             LOG_DEBUG("Failed to process http-request.");
         }
         if (sendResponse(*socket, httpResponse, error) == false) {
-            error.addMeesage("Can not send http-response.");
+            error.addMessage("Can not send http-response.");
             return false;
         }
 
@@ -136,7 +136,7 @@ HttpWebsocketThread::readMessage(tcp::socket& stream,
     }
 
     if (ec) {
-        error.addMeesage("Error while reading http-message: '" + ec.message() + "'");
+        error.addMessage("Error while reading http-message: '" + ec.message() + "'");
         LOG_ERROR(error);
         return false;
     }
@@ -163,7 +163,7 @@ HttpWebsocketThread::sendResponse(tcp::socket& socket,
     http::write(socket, httpResponse, ec);
 
     if (ec) {
-        error.addMeesage("Error while writing http-message: '" + ec.message() + "'");
+        error.addMessage("Error while writing http-message: '" + ec.message() + "'");
         LOG_ERROR(error);
         return false;
     }
@@ -199,7 +199,7 @@ HttpWebsocketThread::initWebsocket(http::request<http::string_body>& httpRequest
         }
         else {
             ErrorContainer error;
-            error.addMeesage("Error while receiving data over websocket with message: "
+            error.addMessage("Error while receiving data over websocket with message: "
                              + se.code().message());
             LOG_ERROR(error);
             return false;
@@ -207,7 +207,7 @@ HttpWebsocketThread::initWebsocket(http::request<http::string_body>& httpRequest
     }
     catch (const std::exception& e) {
         ErrorContainer error;
-        error.addMeesage("Error while receiving data over websocket with message: "
+        error.addMessage("Error while receiving data over websocket with message: "
                          + std::string(e.what()));
         LOG_ERROR(error);
         return false;
@@ -253,14 +253,14 @@ HttpWebsocketThread::sendData(const void* data, const uint64_t dataSize)
         }
         else {
             ErrorContainer error;
-            error.addMeesage("Error while sending data over websocket with message: "
+            error.addMessage("Error while sending data over websocket with message: "
                              + se.code().message());
             LOG_ERROR(error);
         }
     }
     catch (const std::exception& e) {
         ErrorContainer error;
-        error.addMeesage("Error while sending data over websocket with message: "
+        error.addMessage("Error while sending data over websocket with message: "
                          + std::string(e.what()));
         LOG_ERROR(error);
     }
@@ -285,7 +285,7 @@ HttpWebsocketThread::processInitialMessage(const std::string& message, std::stri
 
     // precehck if already init
     if (m_clientInit) {
-        error.addMeesage("Websocket alread initialized and can not be initialized again.");
+        error.addMessage("Websocket alread initialized and can not be initialized again.");
         LOG_ERROR(error);
         return false;
     }
@@ -352,7 +352,7 @@ HttpWebsocketThread::processInitialMessage(const std::string& message, std::stri
         m_fileHandle = TempFileHandler::getInstance()->getFileHandle(fileUuid, userContext);
         if (m_fileHandle == nullptr) {
             errorMessage = "Tempfile with UUID '" + fileUuid + "' not found";
-            error.addMeesage("Tempfile with UUID '" + fileUuid + "'exist in database, "
+            error.addMessage("Tempfile with UUID '" + fileUuid + "'exist in database, "
                              "but not in file-handler");
             LOG_ERROR(error, userContext.userId);
             return false;
@@ -454,14 +454,14 @@ HttpWebsocketThread::runWebsocket()
         }
         else {
             ErrorContainer error;
-            error.addMeesage("Error while receiving data over websocket with message: "
+            error.addMessage("Error while receiving data over websocket with message: "
                              + se.code().message());
             LOG_ERROR(error);
         }
     }
     catch (const std::exception& e) {
         ErrorContainer error;
-        error.addMeesage("Error while receiving data over websocket with message: "
+        error.addMessage("Error while receiving data over websocket with message: "
                          + std::string(e.what()));
         LOG_ERROR(error);
     }

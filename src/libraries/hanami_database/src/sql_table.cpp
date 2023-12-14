@@ -131,7 +131,7 @@ SqlTable::insertToDb(json& values, ErrorContainer& error)
     std::vector<std::string> dbValues;
     for (const DbHeaderEntry& entry : m_tableHeader) {
         if (values.contains(entry.name) == false && entry.allowNull == false) {
-            error.addMeesage("insert into dabase failed, because '" + entry.name
+            error.addMessage("insert into dabase failed, because '" + entry.name
                              + "' is required, but missing in the input-values.");
             return false;
         }
@@ -167,7 +167,7 @@ SqlTable::updateInDb(const std::vector<RequestCondition>& conditions,
 {
     // precheck
     if (conditions.size() == 0) {
-        error.addMeesage("no conditions given for table-access.");
+        error.addMessage("no conditions given for table-access.");
         LOG_ERROR(error);
         return false;
     }
@@ -291,7 +291,7 @@ SqlTable::getFromDb(json& result,
 {
     // precheck
     if (conditions.size() == 0) {
-        error.addMeesage("no conditions given for table-access.");
+        error.addMessage("no conditions given for table-access.");
         LOG_ERROR(error);
         return false;
     }
@@ -371,7 +371,7 @@ SqlTable::deleteFromDb(const std::vector<RequestCondition>& conditions, ErrorCon
 {
     // precheck
     if (conditions.size() == 0) {
-        error.addMeesage("no conditions given for table-access.");
+        error.addMessage("no conditions given for table-access.");
         LOG_ERROR(error);
         return false;
     }

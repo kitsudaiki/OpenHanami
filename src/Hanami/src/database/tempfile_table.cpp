@@ -92,7 +92,7 @@ TempfileTable::addTempfile(const std::string& uuid,
     data["visibility"] = "private";
 
     if (add(data, userContext, error) == false) {
-        error.addMeesage("Failed to add tempfile to database");
+        error.addMessage("Failed to add tempfile to database");
         return false;
     }
 
@@ -123,7 +123,7 @@ TempfileTable::getTempfile(json& result,
 
     // get dataset from db
     if (get(result, userContext, conditions, error, showHiddenValues) == false) {
-        error.addMeesage("Failed to get tempfile with UUID '" + tempfileUuid + "' from database");
+        error.addMessage("Failed to get tempfile with UUID '" + tempfileUuid + "' from database");
         LOG_ERROR(error);
         return false;
     }
@@ -147,7 +147,7 @@ TempfileTable::getAllTempfile(Hanami::TableItem& result,
 {
     std::vector<RequestCondition> conditions;
     if (getAll(result, userContext, conditions, error) == false) {
-        error.addMeesage("Failed to get all tempfiles from database");
+        error.addMessage("Failed to get all tempfiles from database");
         return false;
     }
 
@@ -171,7 +171,7 @@ TempfileTable::deleteTempfile(const std::string& tempfileUuid,
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", tempfileUuid);
     if (del(conditions, userContext, error) == false) {
-        error.addMeesage("Failed to delete tempfile with UUID '" + tempfileUuid
+        error.addMessage("Failed to delete tempfile with UUID '" + tempfileUuid
                          + "' from database");
         return false;
     }
@@ -204,7 +204,7 @@ TempfileTable::getRelatedResourceUuids(std::vector<std::string>& relatedUuids,
     // get tempfile from db
     Hanami::TableItem result;
     if (getAll(result, userContext, conditions, error, true) == false) {
-        error.addMeesage("Failed to get related recources for UUID '" + resourceUuid
+        error.addMessage("Failed to get related recources for UUID '" + resourceUuid
                          + "' and type '" + resourceType + "' from database");
         return false;
     }

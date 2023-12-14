@@ -63,7 +63,7 @@ RestoreCluster_State::processEvent()
             parsedCheckpointInfo = json::parse(actualTask->checkpointInfo);
         }
         catch (const json::parse_error& ex) {
-            error.addMeesage("json-parser error: " + std::string(ex.what()));
+            error.addMessage("json-parser error: " + std::string(ex.what()));
             break;
         }
 
@@ -74,7 +74,7 @@ RestoreCluster_State::processEvent()
         Hanami::BinaryFile checkpointFile(location);
         Hanami::DataBuffer checkpointBuffer;
         if (checkpointFile.readCompleteFile(checkpointBuffer, error) == false) {
-            error.addMeesage("failed to load checkpoint-data");
+            error.addMessage("failed to load checkpoint-data");
             break;
         }
 
@@ -91,12 +91,12 @@ RestoreCluster_State::processEvent()
                                      Hanami::calcBytesToBlocks(header.metaSize))
             == false)
         {
-            error.addMeesage("failed to allocate cluster-data for write-back of checkpoint");
+            error.addMessage("failed to allocate cluster-data for write-back of checkpoint");
             break;
         }
         memcpy(m_cluster->clusterData.data, &u8Data[position], header.metaSize);
         if (reinitPointer(m_cluster, header.metaSize) == false) {
-            error.addMeesage("failed to re-init cluster from checkpoint");
+            error.addMessage("failed to re-init cluster from checkpoint");
             break;
         }
         position += header.metaSize;
@@ -117,7 +117,7 @@ RestoreCluster_State::processEvent()
                 memcpy(&newSynapseBlock, &u8Data[position], sizeof(SynapseBlock));
                 const uint64_t itemPos = HanamiRoot::m_synapseBlocks.addNewItem(newSynapseBlock);
                 if (itemPos == UNINIT_STATE_64) {
-                    error.addMeesage("failed allocate synapse-block for checkpoint");
+                    error.addMessage("failed allocate synapse-block for checkpoint");
                     break;
                 }
 

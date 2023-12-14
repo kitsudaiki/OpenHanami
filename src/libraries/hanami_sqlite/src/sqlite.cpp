@@ -45,7 +45,7 @@ Sqlite::initDB(const std::string& path, ErrorContainer& error)
     m_rc = sqlite3_open(path.c_str(), &m_db);
 
     if (m_rc != 0) {
-        error.addMeesage("Can't open database: \n" + std::string(sqlite3_errmsg(m_db)));
+        error.addMessage("Can't open database: \n" + std::string(sqlite3_errmsg(m_db)));
         LOG_ERROR(error);
         return false;
     }
@@ -164,7 +164,7 @@ Sqlite::execSqlCommand(TableItem* resultTable, const std::string& command, Error
 
     // check result state
     if (m_rc != SQLITE_OK) {
-        error.addMeesage("SQL error: " + std::string(err));
+        error.addMessage("SQL error: " + std::string(err));
         sqlite3_free(err);
         LOG_ERROR(error);
         return false;

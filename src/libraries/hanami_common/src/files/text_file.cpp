@@ -33,7 +33,7 @@ readFile(std::string& readContent, const std::string& filePath, ErrorContainer& 
     if (std::filesystem::exists(filePath)) {
         // check for directory
         if (std::filesystem::is_directory(filePath)) {
-            error.addMeesage("failed to read destination of path \""
+            error.addMessage("failed to read destination of path \""
                              + filePath +
                              "\", because it already exist and it is a directory, "
                              "but must be a file or not existing");
@@ -41,14 +41,14 @@ readFile(std::string& readContent, const std::string& filePath, ErrorContainer& 
         }
     }
     else {
-        error.addMeesage("destination of path \"" + filePath + "\", doesn't exist");
+        error.addMessage("destination of path \"" + filePath + "\", doesn't exist");
         return false;
     }
 
     std::ifstream inFile;
     inFile.open(filePath);
     if (inFile.is_open() == false) {
-        error.addMeesage("missing permission to open file \"" + filePath + "\"");
+        error.addMessage("missing permission to open file \"" + filePath + "\"");
         return false;
     }
 
@@ -89,7 +89,7 @@ writeFile(const std::string& filePath,
     if (std::filesystem::exists(filePath)) {
         // check for directory
         if (std::filesystem::is_directory(filePath)) {
-            error.addMeesage("failed to write destination of path \""
+            error.addMessage("failed to write destination of path \""
                              + filePath +
                              "\", because it already exist and it is a directory, "
                              "but must be a file or not existing");
@@ -98,7 +98,7 @@ writeFile(const std::string& filePath,
 
         // check for override
         if (force == false) {
-            error.addMeesage("failed to write destination of path \"" + filePath
+            error.addMessage("failed to write destination of path \"" + filePath
                              + "\", because it already exist, but should not be overwrite");
             return false;
         }
@@ -113,7 +113,7 @@ writeFile(const std::string& filePath,
     std::ofstream outputFile;
     outputFile.open(filePath);
     if (outputFile.is_open() == false) {
-        error.addMeesage("missing permission or target-directory to open file \"" + filePath
+        error.addMessage("missing permission or target-directory to open file \"" + filePath
                          + "\"");
         return false;
     }
@@ -139,7 +139,7 @@ appendText(const std::string& filePath, const std::string& newText, ErrorContain
 {
     // check for directory
     if (std::filesystem::is_regular_file(filePath) == false) {
-        error.addMeesage("Failed to append text to file \"" + filePath
+        error.addMessage("Failed to append text to file \"" + filePath
                          + "\", because it is not a regular file.");
         return false;
     }
@@ -148,7 +148,7 @@ appendText(const std::string& filePath, const std::string& newText, ErrorContain
     std::ofstream outputFile;
     outputFile.open(filePath, std::ios_base::app);
     if (outputFile.is_open() == false) {
-        error.addMeesage("missing permission or target-directory to open file \"" + filePath
+        error.addMessage("missing permission or target-directory to open file \"" + filePath
                          + "\"");
         return false;
     }
@@ -187,7 +187,7 @@ replaceLine(const std::string& filePath,
     std::vector<std::string> splitedContent;
     Hanami::splitStringByDelimiter(splitedContent, fileContent, '\n');
     if (splitedContent.size() <= lineNumber) {
-        error.addMeesage("failed to replace line in file \"" + filePath
+        error.addMessage("failed to replace line in file \"" + filePath
                          + "\", because linenumber is too big for the file");
         return false;
     }

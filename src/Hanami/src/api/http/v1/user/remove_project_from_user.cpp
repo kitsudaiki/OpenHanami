@@ -131,7 +131,7 @@ RemoveProjectFromUser::runTask(BlossomIO& blossomIO,
     if (UsersTable::getInstance()->updateProjectsOfUser(userId, parsedProjects.dump(), error)
         == false)
     {
-        error.addMeesage("Failed to update projects of user with id '" + userId + "'.");
+        error.addMessage("Failed to update projects of user with id '" + userId + "'.");
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

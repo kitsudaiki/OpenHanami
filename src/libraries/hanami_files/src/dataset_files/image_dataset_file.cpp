@@ -88,7 +88,7 @@ ImageDataSetFile::updateHeader(Hanami::ErrorContainer& error)
             &imageHeader, sizeof(DataSetHeader), sizeof(ImageTypeHeader), error)
         == false)
     {
-        error.addMeesage("Failed to update header of image-file");
+        error.addMessage("Failed to update header of image-file");
         return false;
     }
 
@@ -111,7 +111,7 @@ ImageDataSetFile::getPayload(Hanami::DataBuffer& result,
     const uint64_t payloadSize = m_totalFileSize - m_headerSize;
     Hanami::allocateBlocks_DataBuffer(result, Hanami::calcBytesToBlocks(payloadSize));
     if (m_targetFile->readDataFromFile(result.data, m_headerSize, payloadSize, error) == false) {
-        error.addMeesage("Failed to read data of image-dataset-file");
+        error.addMessage("Failed to read data of image-dataset-file");
         return false;
     }
 

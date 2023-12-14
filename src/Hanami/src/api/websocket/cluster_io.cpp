@@ -62,7 +62,7 @@ sendClusterOutputMessage(Cluster* cluster)
         const uint64_t size = msg.ByteSizeLong();
         if (msg.SerializeToArray(buffer, size) == false) {
             Hanami::ErrorContainer error;
-            error.addMeesage("Failed to serialize request-message");
+            error.addMessage("Failed to serialize request-message");
             return;
         }
 
@@ -92,7 +92,7 @@ sendProtobufGotInputMessage(Cluster* cluster)
     const uint64_t size = msg.ByteSizeLong();
     if (msg.SerializeToArray(buffer, size) == false) {
         Hanami::ErrorContainer error;
-        error.addMeesage("Failed to serialize request-message");
+        error.addMessage("Failed to serialize request-message");
         LOG_ERROR(error);
         return;
     }
@@ -128,7 +128,7 @@ sendClusterNormalEndMessage(Cluster* cluster)
     const uint64_t size = msg.ByteSizeLong();
     if (msg.SerializeToArray(buffer, size) == false) {
         Hanami::ErrorContainer error;
-        error.addMeesage("Failed to serialize request-message");
+        error.addMessage("Failed to serialize request-message");
         return;
     }
 
@@ -160,7 +160,7 @@ sendClusterTrainEndMessage(Cluster* cluster)
     const uint64_t size = msg.ByteSizeLong();
     if (msg.SerializeToArray(buffer, size) == false) {
         Hanami::ErrorContainer error;
-        error.addMeesage("Failed to serialize request-message");
+        error.addMessage("Failed to serialize request-message");
         return;
     }
 
@@ -185,7 +185,7 @@ recvClusterInputMessage(Cluster* cluster, const void* data, const uint64_t dataS
     ClusterIO_Message msg;
     if (msg.ParseFromArray(data, dataSize) == false) {
         Hanami::ErrorContainer error;
-        error.addMeesage("Got invalid Protobuf-ClusterIO-Message");
+        error.addMessage("Got invalid Protobuf-ClusterIO-Message");
         LOG_ERROR(error);
         return false;
     }
@@ -193,7 +193,7 @@ recvClusterInputMessage(Cluster* cluster, const void* data, const uint64_t dataS
     auto it = cluster->namedBricks.find(msg.brickname());
     if (it == cluster->namedBricks.end()) {
         Hanami::ErrorContainer error;
-        error.addMeesage("Brick with name '" + msg.brickname() + "' not found for direct-io");
+        error.addMessage("Brick with name '" + msg.brickname() + "' not found for direct-io");
         LOG_ERROR(error);
         return false;
     }

@@ -62,7 +62,7 @@ RequestResultTable::addRequestResult(json& data,
                                      Hanami::ErrorContainer& error)
 {
     if (add(data, userContext, error) == false) {
-        error.addMeesage("Failed to add checkpoint to database");
+        error.addMessage("Failed to add checkpoint to database");
         return false;
     }
 
@@ -93,7 +93,7 @@ RequestResultTable::getRequestResult(json& result,
 
     // get dataset from db
     if (get(result, userContext, conditions, error, showHiddenValues) == false) {
-        error.addMeesage("Failed to get request-result with UUID '" + resultUuid
+        error.addMessage("Failed to get request-result with UUID '" + resultUuid
                          + "' from database");
         LOG_ERROR(error);
         return false;
@@ -118,7 +118,7 @@ RequestResultTable::getAllRequestResult(Hanami::TableItem& result,
 {
     std::vector<RequestCondition> conditions;
     if (getAll(result, userContext, conditions, error) == false) {
-        error.addMeesage("Failed to get all request-results from database");
+        error.addMessage("Failed to get all request-results from database");
         return false;
     }
 
@@ -142,7 +142,7 @@ RequestResultTable::deleteRequestResult(const std::string& resultUuid,
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", resultUuid);
     if (del(conditions, userContext, error) == false) {
-        error.addMeesage("Failed to delete request-result with UUID '" + resultUuid
+        error.addMessage("Failed to delete request-result with UUID '" + resultUuid
                          + "' from database");
         return false;
     }

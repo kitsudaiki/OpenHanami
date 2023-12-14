@@ -98,7 +98,7 @@ UsersTable::getAllAdminUser(Hanami::ErrorContainer& error)
     // get admin-user from db
     json users;
     if (getFromDb(users, conditions, error, false) == false) {
-        error.addMeesage("Failed to get admin-users from database");
+        error.addMessage("Failed to get admin-users from database");
         LOG_ERROR(error);
         return false;
     }
@@ -133,7 +133,7 @@ UsersTable::initNewAdminUser(Hanami::ErrorContainer& error)
 
     // get env with new admin-user id
     if (getEnvVar(userId, "HANAMI_ADMIN_USER_ID") == false) {
-        error.addMeesage(
+        error.addMessage(
             "environment variable 'HANAMI_ADMIN_USER_ID' was not set, "
             "but is required to initialize a new admin-user");
         LOG_ERROR(error);
@@ -142,7 +142,7 @@ UsersTable::initNewAdminUser(Hanami::ErrorContainer& error)
 
     // get env with new admin-user name
     if (getEnvVar(userName, "HANAMI_ADMIN_USER_NAME") == false) {
-        error.addMeesage(
+        error.addMessage(
             "environment variable 'HANAMI_ADMIN_USER_NAME' was not set, "
             "but is required to initialize a new admin-user");
         LOG_ERROR(error);
@@ -151,7 +151,7 @@ UsersTable::initNewAdminUser(Hanami::ErrorContainer& error)
 
     // get env with new admin-user password
     if (getEnvVar(pw, "HANAMI_ADMIN_PASSWORD") == false) {
-        error.addMeesage(
+        error.addMessage(
             "environment variable 'HANAMI_ADMIN_PASSWORD' was not set, "
             "but is required to initialize a new admin-user");
         LOG_ERROR(error);
@@ -176,7 +176,7 @@ UsersTable::initNewAdminUser(Hanami::ErrorContainer& error)
 
     // add new admin-user to db
     if (addUser(userData, error) == false) {
-        error.addMeesage("Failed to add new initial admin-user to database");
+        error.addMessage("Failed to add new initial admin-user to database");
         LOG_ERROR(error);
         return false;
     }
@@ -196,7 +196,7 @@ bool
 UsersTable::addUser(json& userData, Hanami::ErrorContainer& error)
 {
     if (insertToDb(userData, error) == false) {
-        error.addMeesage("Failed to add user to database");
+        error.addMessage("Failed to add user to database");
         return false;
     }
 
@@ -224,7 +224,7 @@ UsersTable::getUser(json& result,
 
     // get user from db
     if (getFromDb(result, conditions, error, showHiddenValues) == false) {
-        error.addMeesage("Failed to get user with id '" + userId + "' from database");
+        error.addMessage("Failed to get user with id '" + userId + "' from database");
         LOG_ERROR(error);
         return false;
     }
@@ -245,7 +245,7 @@ UsersTable::getAllUser(Hanami::TableItem& result, Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
     if (getFromDb(result, conditions, error, false) == false) {
-        error.addMeesage("Failed to get all users from database");
+        error.addMessage("Failed to get all users from database");
         return false;
     }
 
@@ -267,7 +267,7 @@ UsersTable::deleteUser(const std::string& userId, Hanami::ErrorContainer& error)
     conditions.emplace_back("id", userId);
 
     if (deleteFromDb(conditions, error) == false) {
-        error.addMeesage("Failed to delete user with id '" + userId + "' from database");
+        error.addMessage("Failed to delete user with id '" + userId + "' from database");
         return false;
     }
 
@@ -295,7 +295,7 @@ UsersTable::updateProjectsOfUser(const std::string& userId,
     conditions.emplace_back("id", userId);
 
     if (updateInDb(conditions, newValues, error) == false) {
-        error.addMeesage("Failed to update projects for user with id '" + userId
+        error.addMessage("Failed to update projects for user with id '" + userId
                          + "' from database");
         return false;
     }

@@ -86,7 +86,7 @@ HanamiSqlLogTable::getPageFromDb(Hanami::TableItem& resultTable,
 
     // check if requested page-number is in range
     if (page > static_cast<uint64_t>(numberOfPages)) {
-        error.addMeesage("Give page '" + std::to_string(page) + "' is too big");
+        error.addMessage("Give page '" + std::to_string(page) + "' is too big");
         return false;
     }
 

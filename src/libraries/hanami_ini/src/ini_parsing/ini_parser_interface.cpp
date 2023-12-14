@@ -71,7 +71,7 @@ IniParserInterface::parse(const std::string& inputString, ErrorContainer& error)
 
     // handle negative result
     if (res != 0 || m_errorMessage.size() > 0) {
-        error.addMeesage(m_errorMessage);
+        error.addMessage(m_errorMessage);
         LOG_ERROR(error);
         return nullptr;
     }

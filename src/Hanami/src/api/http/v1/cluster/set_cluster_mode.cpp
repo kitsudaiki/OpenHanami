@@ -98,7 +98,7 @@ SetClusterMode::runTask(BlossomIO& blossomIO,
     Cluster* cluster = ClusterHandler::getInstance()->getCluster(clusterUuid);
     if (cluster == nullptr) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMeesage("Cluster with UUID '" + clusterUuid
+        error.addMessage("Cluster with UUID '" + clusterUuid
                          + "'not found even it exists within the database");
         return false;
     }
@@ -109,7 +109,7 @@ SetClusterMode::runTask(BlossomIO& blossomIO,
                               + newState + "'";
         // TODO: get exact reason, why it was not successful
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMeesage(status.errorMessage);
+        error.addMessage(status.errorMessage);
         return false;
     }
 

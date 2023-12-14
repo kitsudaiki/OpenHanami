@@ -118,7 +118,7 @@ RenewToken::runTask(BlossomIO& blossomIO,
     bool success = false;
     const u_int32_t expireTime = GET_INT_CONFIG("auth", "token_expire_time", success);
     if (success == false) {
-        error.addMeesage("Could not read 'token_expire_time' from config of misaki.");
+        error.addMessage("Could not read 'token_expire_time' from config of misaki.");
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
     }
 

@@ -44,11 +44,11 @@ encrypt_AES_256_CBC(std::string& result,
 {
     // precheck
     if (key.size() == 0) {
-        error.addMeesage("Provided key for AES-encryption is empty");
+        error.addMessage("Provided key for AES-encryption is empty");
         return false;
     }
     if (input.size() == 0) {
-        error.addMeesage("No data given for AES-encryption");
+        error.addMessage("No data given for AES-encryption");
         return false;
     }
 
@@ -90,17 +90,17 @@ decrypt_AES_256_CBC(std::string& result,
 {
     // precheck
     if (key.size() == 0) {
-        error.addMeesage("Provided key for AES-decryption is empty");
+        error.addMessage("Provided key for AES-decryption is empty");
         return false;
     }
     if (input.size() == 0) {
-        error.addMeesage("No data given for AES-decryption");
+        error.addMessage("No data given for AES-decryption");
         return false;
     }
 
     // precheck
     if (input.size() % CryptoPP::AES::BLOCKSIZE != 0) {
-        error.addMeesage(
+        error.addMessage(
             "can not decrypt AES256, "
             "because the mount of data has the a size of a multiple"
             " of the blocksize "

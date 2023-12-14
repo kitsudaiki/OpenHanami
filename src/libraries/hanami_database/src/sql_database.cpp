@@ -108,7 +108,7 @@ SqlDatabase::execSqlCommand(TableItem* resultTable,
     std::lock_guard<std::mutex> guard(m_lock);
 
     if (m_isOpen == false) {
-        error.addMeesage("database not open");
+        error.addMessage("database not open");
         LOG_ERROR(error);
         return false;
     }

@@ -41,7 +41,7 @@ parseCluster(ClusterMeta* result, const std::string& input, ErrorContainer& erro
     ClusterParserInterface* parser = ClusterParserInterface::getInstance();
 
     if (input.size() == 0) {
-        error.addMeesage("Parsing of cluster-template failed, because the input is empty");
+        error.addMessage("Parsing of cluster-template failed, because the input is empty");
         return false;
     }
 

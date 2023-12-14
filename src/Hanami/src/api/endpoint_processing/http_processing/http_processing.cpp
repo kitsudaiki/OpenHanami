@@ -55,7 +55,7 @@ HttpProcessing::processRequest(http::request<http::string_body>& httpRequest,
 
     // Request path must be absolute and not contain "..".
     if (checkPath(path) == false) {
-        error.addMeesage("Path '" + path + "' is not valid");
+        error.addMessage("Path '" + path + "' is not valid");
         httpResponse.result(http::status::bad_request);
         return false;
     }
@@ -65,7 +65,7 @@ HttpProcessing::processRequest(http::request<http::string_body>& httpRequest,
         && messageType != http::verb::put && messageType != http::verb::delete_)
     {
         httpResponse.result(http::status::bad_request);
-        error.addMeesage("Invalid request-method '" + std::string(httpRequest.method_string())
+        error.addMessage("Invalid request-method '" + std::string(httpRequest.method_string())
                          + "'");
         beast::ostream(httpResponse.body()) << error.toString();
         return false;
@@ -74,7 +74,7 @@ HttpProcessing::processRequest(http::request<http::string_body>& httpRequest,
     // check for dashboard-client-request
     if (messageType == http::verb::get && path.compare(0, 8, "/control") != 0) {
         if (processClientRequest(httpResponse, path, error) == false) {
-            error.addMeesage("Failed to send dashboard-files");
+            error.addMessage("Failed to send dashboard-files");
             return false;
         }
         return true;
@@ -95,14 +95,14 @@ HttpProcessing::processRequest(http::request<http::string_body>& httpRequest,
     if (cutPath(path, "/control/")) {
         HttpRequestType hType = static_cast<HttpRequestType>(messageType);
         if (processControlRequest(httpResponse, path, token, payload, hType, error) == false) {
-            error.addMeesage("Failed to process control-request");
+            error.addMessage("Failed to process control-request");
             return false;
         }
         return true;
     }
 
     // handle default, if nothing was found
-    error.addMeesage("no matching endpoint found for path '" + path + "'");
+    error.addMessage("no matching endpoint found for path '" + path + "'");
     genericError_ResponseBuild(httpResponse, HttpResponseTypes::NOT_FOUND_RTYPE, error.toString());
 
     return false;
@@ -160,7 +160,7 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
                     result, "create", "Token", json::object(), inputValuesJson, status, error)
                 == false)
             {
-                error.addMeesage("Token request failed");
+                error.addMessage("Token request failed");
                 break;
             }
             break;
@@ -176,7 +176,7 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
                 tokenData, "validate", "Token", json::object(), tokenInputValues, status, error)
             == false)
         {
-            error.addMeesage("Permission-check failed");
+            error.addMessage("Permission-check failed");
             break;
         }
 
@@ -206,7 +206,7 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
                     getDatetime(), userId, hanamiRequest.id, httpTypeStr, error)
                 == false)
             {
-                error.addMeesage("ERROR: Failed to write audit-log into database");
+                error.addMessage("ERROR: Failed to write audit-log into database");
                 status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
                 break;
             }
@@ -220,7 +220,7 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
         EndpointEntry endpoint;
         if (mapEndpoint(endpoint, hanamiRequest.id, hanamiRequest.httpType) == false) {
             status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-            error.addMeesage("Failed to map endpoint with id '" + hanamiRequest.id + "'");
+            error.addMessage("Failed to map endpoint with id '" + hanamiRequest.id + "'");
             break;
         }
 
@@ -229,7 +229,7 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
                 result, endpoint.name, endpoint.group, tokenData, inputValuesJson, status, error)
             == false)
         {
-            error.addMeesage("Blossom-trigger failed");
+            error.addMessage("Blossom-trigger failed");
             break;
         }
 
@@ -357,7 +357,7 @@ HttpProcessing::triggerBlossom(json& result,
     // get initial blossom-item
     Blossom* blossom = getBlossom(blossomGroupName, blossomName);
     if (blossom == nullptr) {
-        error.addMeesage("No blosom found for the id " + blossomName);
+        error.addMessage("No blosom found for the id " + blossomName);
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         status.errorMessage = "";
         return false;
@@ -397,9 +397,9 @@ HttpProcessing::triggerBlossom(json& result,
                                             errorMessage)
         == false)
     {
-        error.addMeesage(errorMessage);
-        error.addMeesage("check of completeness of output-fields failed");
-        error.addMeesage("Check of blossom '" + blossomName + " in group '" + blossomGroupName
+        error.addMessage(errorMessage);
+        error.addMessage("check of completeness of output-fields failed");
+        error.addMessage("Check of blossom '" + blossomName + " in group '" + blossomGroupName
                          + "' failed.");
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         status.errorMessage = "";
@@ -443,7 +443,7 @@ HttpProcessing::checkStatusCode(Blossom* blossom,
     // if given status-code is unexprected, then override it and clear the message
     // to avoid leaking unwanted information
     if (found == false) {
-        error.addMeesage("Status-code '" + std::to_string(status.statusCode)
+        error.addMessage("Status-code '" + std::to_string(status.statusCode)
                          + "' is not allowed as output for blossom '" + blossomName + "' in group '"
                          + blossomGroupName + "'");
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;

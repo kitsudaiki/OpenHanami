@@ -94,7 +94,7 @@ LoadCluster::runTask(BlossomIO& blossomIO,
     Cluster* cluster = ClusterHandler::getInstance()->getCluster(clusterUuid);
     if (cluster == nullptr) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMeesage("Cluster with UUID '" + clusterUuid
+        error.addMessage("Cluster with UUID '" + clusterUuid
                          + "'not found even it exists within the database");
         return false;
     }
@@ -105,7 +105,7 @@ LoadCluster::runTask(BlossomIO& blossomIO,
             parsedCheckpointInfo, checkpointUuid, userContext, error, true)
         == false)
     {
-        error.addMeesage("Failed to get information from database for UUID '" + checkpointUuid
+        error.addMessage("Failed to get information from database for UUID '" + checkpointUuid
                          + "'");
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;

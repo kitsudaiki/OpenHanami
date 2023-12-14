@@ -82,7 +82,7 @@ AuditLogTable::addAuditLogEntry(const std::string& timestamp,
     data["request_type"] = requestType;
 
     if (insertToDb(data, error) == false) {
-        error.addMeesage("Failed to add audit-log-entry to database");
+        error.addMessage("Failed to add audit-log-entry to database");
         return false;
     }
 
@@ -106,7 +106,7 @@ AuditLogTable::getAllAuditLogEntries(Hanami::TableItem& result,
                                      Hanami::ErrorContainer& error)
 {
     if (getPageFromDb(result, userId, page, error) == false) {
-        error.addMeesage("Failed to get all audit-log-entries from database");
+        error.addMessage("Failed to get all audit-log-entries from database");
         return false;
     }
 
