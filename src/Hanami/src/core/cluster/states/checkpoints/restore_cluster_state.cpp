@@ -68,6 +68,9 @@ RestoreCluster_State::processEvent()
         }
 
         // get other information
+        if (parsedCheckpointInfo.contains("location") == false) {
+            break;
+        }
         const std::string location = parsedCheckpointInfo["location"];
 
         // get checkpoint-data
