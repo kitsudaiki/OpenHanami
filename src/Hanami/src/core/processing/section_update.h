@@ -54,7 +54,7 @@ searchTargetInBrick(Brick* targetBrick)
                 if (connectionBlock->targetSynapseBlockPos == UNINIT_STATE_64) {
                     SynapseBlock block;
                     connectionBlock->targetSynapseBlockPos
-                        = HanamiRoot::m_synapseBlocks.addNewItem(block);
+                        = HanamiRoot::cpuSynapseBlocks.addNewItem(block);
                     if (connectionBlock->targetSynapseBlockPos == UNINIT_STATE_64) {
                         return nullptr;
                     }
@@ -145,11 +145,13 @@ updateSections(Cluster& cluster)
             neuron = &neuronBlock->neurons[sourceId];
             if (neuron->isNew > 0) {
                 found = true;
+                std::cout << "----- new: " << neuronBlock->brickId << std::endl;
                 SourceLocationPtr originLocation;
                 originLocation.blockId = neuronBlockId;
                 originLocation.sectionId = sourceId;
 
-                createNewSection(cluster, originLocation, neuron->newOffset, neuron->isNew - 1);
+                neuron->inUse = createNewSection(
+                    cluster, originLocation, neuron->newOffset, neuron->isNew - 1);
 
                 neuron->newOffset = 0.0f;
                 neuron->isNew = 0;

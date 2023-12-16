@@ -56,7 +56,6 @@ class Cluster
     float* expectedValues = nullptr;
 
     std::map<std::string, Brick*> namedBricks;
-
     Brick* bricks = nullptr;
     NeuronBlock* neuronBlocks = nullptr;
     uint32_t numberOfNeuronBlocks = 0;
@@ -67,6 +66,9 @@ class Cluster
     bool setName(const std::string& newName);
     bool init(const Hanami::ClusterMeta& clusterTemplate, const std::string& uuid);
     void initCuda();
+
+    // gpu
+    bool moveToGpu();
 
     // stats
     uint64_t getDataSize() const;

@@ -303,7 +303,7 @@ SaveCluster_State::writeSynapseBlockToFile(Hanami::BinaryFile& file,
                                            const uint64_t targetSynapseBlockPos,
                                            Hanami::ErrorContainer& error)
 {
-    SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(HanamiRoot::m_synapseBlocks);
+    SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(HanamiRoot::cpuSynapseBlocks);
     if (file.writeDataIntoFile(
             &synapseBlocks[targetSynapseBlockPos], position, sizeof(SynapseBlock), error)
         == false)

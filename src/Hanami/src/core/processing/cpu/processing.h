@@ -91,7 +91,7 @@ createNewSynapse(NeuronBlock* block,
                  const ClusterSettings* clusterSettings,
                  const float remainingW)
 {
-    const uint32_t* randomValues = HanamiRoot::m_randomValues;
+    const uint32_t* randomValues = HanamiRoot::randomValues;
     const float randMax = static_cast<float>(RAND_MAX);
     uint32_t signRand = 0;
     const float sigNeg = clusterSettings->signNeg;
@@ -124,7 +124,7 @@ createNewSynapse(NeuronBlock* block,
  * @param clusterSettings
  */
 template <bool doTrain>
-void
+inline void
 synapseProcessingBackward(Cluster& cluster,
                           Synapse* section,
                           SynapseConnection* connection,
@@ -281,7 +281,7 @@ prcessCoreSegment(Cluster& cluster, const bool doTrain)
     float* inputValues = cluster.inputValues;
     float* outputValues = cluster.outputValues;
     NeuronBlock* neuronBlocks = cluster.neuronBlocks;
-    SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(HanamiRoot::m_synapseBlocks);
+    SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(HanamiRoot::cpuSynapseBlocks);
     ClusterSettings* clusterSettings = &cluster.clusterHeader->settings;
 
     const uint32_t numberOfBricks = cluster.clusterHeader->bricks.count;

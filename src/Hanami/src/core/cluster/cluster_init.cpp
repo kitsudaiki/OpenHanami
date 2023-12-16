@@ -122,9 +122,9 @@ reinitPointer(Cluster* cluster, const uint64_t numberOfBytes)
     uint8_t* dataPtr = static_cast<uint8_t*>(cluster->clusterData.data);
 
     uint64_t pos = 0;
-    uint64_t byteCounter = 0;
+    // uint64_t byteCounter = 0;
     cluster->clusterHeader = reinterpret_cast<ClusterHeader*>(dataPtr + pos);
-    byteCounter += sizeof(ClusterHeader);
+    // byteCounter += sizeof(ClusterHeader);
 
     ClusterHeader* clusterHeader = cluster->clusterHeader;
 
@@ -138,7 +138,7 @@ reinitPointer(Cluster* cluster, const uint64_t numberOfBytes)
 
     pos = clusterHeader->bricks.bytePos;
     cluster->bricks = reinterpret_cast<Brick*>(dataPtr + pos);
-    byteCounter += clusterHeader->bricks.count * sizeof(Brick);
+    // byteCounter += clusterHeader->bricks.count * sizeof(Brick);
 
     cluster->namedBricks.clear();
     for (uint64_t brickId = 0; brickId < clusterHeader->bricks.count; brickId++) {
@@ -148,12 +148,16 @@ reinitPointer(Cluster* cluster, const uint64_t numberOfBytes)
 
     pos = clusterHeader->neuronBlocks.bytePos;
     cluster->neuronBlocks = reinterpret_cast<NeuronBlock*>(dataPtr + pos);
-    byteCounter += clusterHeader->neuronBlocks.count * sizeof(NeuronBlock);
+    // byteCounter += clusterHeader->neuronBlocks.count * sizeof(NeuronBlock);
 
     // check result
     // if (byteCounter != numberOfBytes - 48) {
     //    return false;
     // }
+
+    if (HanamiRoot::useCuda) {
+        cluster->initCuda();
+    }
 
     return true;
 }

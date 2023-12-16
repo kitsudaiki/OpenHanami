@@ -30,6 +30,8 @@
 #include <core/processing/section_update.h>
 #include <hanami_root.h>
 
+static uint64_t counter = 0;
+
 extern "C" void processing_CUDA(PointerHandler* gpuPointer,
                                 Brick* bricks,
                                 float* inputValues,
@@ -37,8 +39,6 @@ extern "C" void processing_CUDA(PointerHandler* gpuPointer,
                                 const uint32_t numberOfBricks,
                                 NeuronBlock* neuronBlocks,
                                 const uint32_t numberOfNeuronBlocks,
-                                SynapseBlock* synapseBlocks,
-                                const uint32_t numberOfSynapseBlocks,
                                 const bool doTrain);
 
 extern "C" void backpropagation_CUDA(PointerHandler* gpuPointer,
@@ -53,10 +53,8 @@ extern "C" void backpropagation_CUDA(PointerHandler* gpuPointer,
 extern "C" void update_CUDA(PointerHandler* gpuPointer,
                             NeuronBlock* neuronBlocks,
                             const uint32_t numberOfNeuronBlocks,
-                            ConnectionBlock* synapseConnections,
-                            const uint32_t numberOfSynapseConnections);
-
-uint32_t counter = 0;
+                            Brick* bricks,
+                            const uint32_t numberOfBricks);
 
 /**
  * @brief constructor
@@ -79,16 +77,24 @@ CpuProcessingUnit::trainSegmentForward(Cluster* cluster)
     Hanami::ErrorContainer error;
 
     if (HanamiRoot::useCuda) {
-        /*processing_CUDA(&cluster->gpuPointer,
+        processing_CUDA(&cluster->gpuPointer,
                         cluster->bricks,
                         cluster->inputValues,
                         cluster->outputValues,
                         cluster->clusterHeader->bricks.count,
                         cluster->neuronBlocks,
                         cluster->numberOfNeuronBlocks,
-                        cluster->synapseBlocks,
-                        cluster->clusterHeader->synapseBlocks.count,
-                        true);*/
+                        true);
+
+        if (updateSections(*cluster)) {
+            update_CUDA(&cluster->gpuPointer,
+                        cluster->neuronBlocks,
+                        cluster->numberOfNeuronBlocks,
+                        cluster->bricks,
+                        cluster->clusterHeader->bricks.count);
+        }
+        std::cout << "counter: " << counter << std::endl;
+        counter++;
     }
     else {
         prcessCoreSegment(*cluster, true);
@@ -107,30 +113,19 @@ CpuProcessingUnit::trainSegmentBackward(Cluster* cluster)
     Hanami::ErrorContainer error;
 
     if (HanamiRoot::useCuda) {
-        /*backpropagation_CUDA(&cluster->gpuPointer,
+        backpropagation_CUDA(&cluster->gpuPointer,
                              cluster->bricks,
                              cluster->outputValues,
                              cluster->expectedValues,
                              cluster->clusterHeader->bricks.count,
                              cluster->neuronBlocks,
                              cluster->numberOfNeuronBlocks,
-                             &cluster->clusterHeader->settings);*/
-
-        if (updateSections(*cluster)) {
-            /*update_CUDA(&cluster->gpuPointer,
-                        cluster->neuronBlocks,
-                        cluster->numberOfNeuronBlocks,
-                        cluster->synapseConnections,
-                        cluster->clusterHeader->synapseConnections.count);*/
-        }
+                             &cluster->clusterHeader->settings);
     }
     else {
         reweightCoreSegment(*cluster);
     }
     // reweightCoreSegment(*cluster);
-
-    // std::cout<<"counter: "<<counter<<std::endl;
-    // counter++;
 
     if (reductionCounter == 100) {
         // reduceNeurons(*seg);
@@ -176,16 +171,14 @@ CpuProcessingUnit::processSegment(Cluster* cluster)
 {
     Hanami::ErrorContainer error;
     if (HanamiRoot::useCuda) {
-        /*processing_CUDA(&cluster->gpuPointer,
+        processing_CUDA(&cluster->gpuPointer,
                         cluster->bricks,
                         cluster->inputValues,
                         cluster->outputValues,
                         cluster->clusterHeader->bricks.count,
                         cluster->neuronBlocks,
                         cluster->numberOfNeuronBlocks,
-                        cluster->synapseBlocks,
-                        cluster->clusterHeader->synapseBlocks.count,
-                        false);*/
+                        false);
     }
     else {
         prcessCoreSegment(*cluster, false);

@@ -29,8 +29,6 @@
 
 #include "objects.h"
 
-uint32_t outputCounter = 0;
-
 /**
  * @brief process input brick
  */
@@ -88,8 +86,7 @@ processNeuronsOfOutputBrick(const Brick* brick, float* outputValues, NeuronBlock
             if (neuron->potential != 0.0f) {
                 neuron->potential = 1.0f / (1.0f + exp(-1.0f * neuron->potential));
             }
-            // std::cout<<std::to_string(outputCounter)<<": "<<neuron->potential<<std::endl;
-            // outputCounter++;
+            // std::cout<<"potential: "<<neuron->potential<<std::endl;
             brickBuffer[counter] = neuron->potential;
             neuron->input = 0.0f;
             counter++;

@@ -118,7 +118,7 @@ RestoreCluster_State::processEvent()
                 // convert synapse-block
                 SynapseBlock newSynapseBlock;
                 memcpy(&newSynapseBlock, &u8Data[position], sizeof(SynapseBlock));
-                const uint64_t itemPos = HanamiRoot::m_synapseBlocks.addNewItem(newSynapseBlock);
+                const uint64_t itemPos = HanamiRoot::cpuSynapseBlocks.addNewItem(newSynapseBlock);
                 if (itemPos == UNINIT_STATE_64) {
                     error.addMessage("failed allocate synapse-block for checkpoint");
                     break;

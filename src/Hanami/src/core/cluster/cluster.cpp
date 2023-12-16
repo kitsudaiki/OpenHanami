@@ -38,8 +38,8 @@ extern "C" void copyToDevice_CUDA(PointerHandler* gpuPointer,
                                   const uint32_t numberOfNeuronBlocks,
                                   SynapseBlock* synapseBlocks,
                                   const uint32_t numberOfSynapseBlocks,
-                                  ConnectionBlock* synapseConnections,
-                                  const uint32_t numberOfSynapseConnections,
+                                  Brick* bricks,
+                                  const uint32_t numberOfBricks,
                                   uint32_t* randomValues);
 
 /**
@@ -93,15 +93,44 @@ Cluster::getUuid()
 void
 Cluster::initCuda()
 {
-    /*copyToDevice_CUDA(&gpuPointer,
+    moveToGpu();
+    copyToDevice_CUDA(&gpuPointer,
                       &clusterHeader->settings,
                       neuronBlocks,
                       clusterHeader->neuronBlocks.count,
-                      synapseBlocks,
-                      clusterHeader->synapseBlocks.count,
-                      synapseConnections,
-                      clusterHeader->synapseConnections.count,
-                      HanamiRoot::m_randomValues);*/
+                      getItemData<SynapseBlock>(HanamiRoot::gpuSynapseBlocks),
+                      HanamiRoot::gpuSynapseBlocks.metaData->itemCapacity,
+                      bricks,
+                      clusterHeader->bricks.count,
+                      HanamiRoot::randomValues);
+}
+
+/**
+ * @brief Cluster::moveToGpu
+ * @return
+ */
+bool
+Cluster::moveToGpu()
+{
+    SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(HanamiRoot::cpuSynapseBlocks);
+    SynapseBlock tempBlock;
+
+    for (uint64_t i = 0; i < clusterHeader->bricks.count; i++) {
+        for (ConnectionBlock& block : bricks[i].connectionBlocks) {
+            if (block.targetSynapseBlockPos != UNINIT_STATE_64) {
+                tempBlock = synapseBlocks[block.targetSynapseBlockPos];
+                HanamiRoot::cpuSynapseBlocks.deleteItem(block.targetSynapseBlockPos);
+                const uint64_t newPos = HanamiRoot::gpuSynapseBlocks.addNewItem(tempBlock);
+                // TODO: make roll-back possible in error-case
+                if (newPos == UNINIT_STATE_64) {
+                    return false;
+                }
+                block.targetSynapseBlockPos = newPos;
+            }
+        }
+    }
+
+    return true;
 }
 
 /**

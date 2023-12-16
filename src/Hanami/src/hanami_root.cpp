@@ -49,12 +49,13 @@
 #include <hanami_root.h>
 
 // init static variables
-uint32_t* HanamiRoot::m_randomValues = nullptr;
+uint32_t* HanamiRoot::randomValues = nullptr;
 Hanami::GpuInterface* HanamiRoot::gpuInterface = nullptr;
 HanamiRoot* HanamiRoot::root = nullptr;
 HttpServer* HanamiRoot::httpServer = nullptr;
 CryptoPP::SecByteBlock HanamiRoot::tokenKey{};
-Hanami::ItemBuffer HanamiRoot::m_synapseBlocks{};
+Hanami::ItemBuffer HanamiRoot::cpuSynapseBlocks{};
+Hanami::ItemBuffer HanamiRoot::gpuSynapseBlocks{};
 
 // static flag to switch to experimental gpu-support (see issue #44 and #76)
 bool HanamiRoot::useCuda = false;
@@ -94,14 +95,16 @@ HanamiRoot::init(Hanami::ErrorContainer& error)
 
     // initialize global synapse-block-buffer
     // TODO: size has to be configurable
-    m_synapseBlocks.initBuffer<SynapseBlock>(10000);
-    m_synapseBlocks.deleteAll();
+    cpuSynapseBlocks.initBuffer<SynapseBlock>(10000);
+    cpuSynapseBlocks.deleteAll();
+    gpuSynapseBlocks.initBuffer<SynapseBlock>(10000);
+    gpuSynapseBlocks.deleteAll();
 
     // init predefinde random-values
-    m_randomValues = new uint32_t[NUMBER_OF_RAND_VALUES];
+    randomValues = new uint32_t[NUMBER_OF_RAND_VALUES];
     srand(time(NULL));
     for (uint32_t i = 0; i < NUMBER_OF_RAND_VALUES; i++) {
-        m_randomValues[i] = static_cast<uint32_t>(rand());
+        randomValues[i] = static_cast<uint32_t>(rand());
     }
 
     if (initDatabase(error) == false) {

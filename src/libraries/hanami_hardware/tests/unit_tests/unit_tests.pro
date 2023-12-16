@@ -15,6 +15,11 @@ LIBS += -L../../../hanami_common/src/debug -lhanami_common
 LIBS += -L../../../hanami_common/src/release -lhanami_common
 INCLUDEPATH += ../../../hanami_common/include
 
+LIBS += -L../../../hanami_cpu/src -lhanami_cpu
+LIBS += -L../../../hanami_cpu/src/debug -lhanami_cpu
+LIBS += -L../../../hanami_cpu/src/release -lhanami_cpu
+INCLUDEPATH += ../../../hanami_cpu/include
+
 INCLUDEPATH += ../../../../third-party-libs/json/include
 
 LIBS += -luuid

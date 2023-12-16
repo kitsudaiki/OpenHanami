@@ -157,7 +157,7 @@ reweightCoreSegment(const Cluster& cluster)
     float* expectedValues = cluster.expectedValues;
     float* outputValues = cluster.outputValues;
     NeuronBlock* neuronBlocks = cluster.neuronBlocks;
-    SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(HanamiRoot::m_synapseBlocks);
+    SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(HanamiRoot::cpuSynapseBlocks);
 
     const uint32_t numberOfBricks = cluster.clusterHeader->bricks.count;
     for (int32_t brickId = numberOfBricks - 1; brickId >= 0; --brickId) {

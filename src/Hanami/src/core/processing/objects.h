@@ -295,7 +295,7 @@ static_assert(sizeof(Brick) == 512);
 struct PointerHandler {
     NeuronBlock* neuronBlocks = nullptr;
     SynapseBlock* synapseBlocks = nullptr;
-    ConnectionBlock* synapseConnections = nullptr;
+    std::vector<ConnectionBlock*> connectionBlocks;
 
     ClusterSettings* clusterSettings = nullptr;
     uint32_t* randomValues = nullptr;
