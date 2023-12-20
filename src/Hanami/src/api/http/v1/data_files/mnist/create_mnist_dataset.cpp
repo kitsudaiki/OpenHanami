@@ -95,7 +95,7 @@ CreateMnistDataSet::runTask(BlossomIO& blossomIO,
     std::string targetFilePath = GET_STRING_CONFIG("storage", "dataset_location", success);
     if (success == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMeesage("file-location to store dataset is missing in the config");
+        error.addMessage("file-location to store dataset is missing in the config");
         return false;
     }
 
@@ -106,7 +106,7 @@ CreateMnistDataSet::runTask(BlossomIO& blossomIO,
         == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMeesage("Failed to initialize temporary file for new input-data.");
+        error.addMessage("Failed to initialize temporary file for new input-data.");
         return false;
     }
 
@@ -117,7 +117,7 @@ CreateMnistDataSet::runTask(BlossomIO& blossomIO,
         == false)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMeesage("Failed to initialize temporary file for new label-data.");
+        error.addMessage("Failed to initialize temporary file for new label-data.");
         return false;
     }
 

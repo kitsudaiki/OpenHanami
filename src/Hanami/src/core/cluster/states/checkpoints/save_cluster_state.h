@@ -30,7 +30,7 @@ class Cluster;
 
 namespace Hanami
 {
-class HanamiMessagingClient;
+class BinaryFile;
 }
 
 class SaveCluster_State : public Hanami::Event
@@ -44,9 +44,30 @@ class SaveCluster_State : public Hanami::Event
    private:
     Cluster* m_cluster = nullptr;
 
-    bool writeData(const std::string& filePath,
-                   const uint64_t fileSize,
-                   Hanami::ErrorContainer& error);
+    bool writeCheckpointToFile(const std::string& filePath, Hanami::ErrorContainer& error);
+
+    bool writeHeaderToFile(Hanami::BinaryFile& file,
+                           uint64_t& position,
+                           Hanami::ErrorContainer& error);
+
+    bool writeClusterToFile(Hanami::BinaryFile& file,
+                            uint64_t& position,
+                            Hanami::ErrorContainer& error);
+
+    bool writeBricksToFile(Hanami::BinaryFile& file,
+                           uint64_t& position,
+                           Hanami::ErrorContainer& error);
+
+    bool writeConnectionBlockToFile(Hanami::BinaryFile& file,
+                                    uint64_t& position,
+                                    const uint64_t brickId,
+                                    const uint64_t blockid,
+                                    Hanami::ErrorContainer& error);
+
+    bool writeSynapseBlockToFile(Hanami::BinaryFile& file,
+                                 uint64_t& position,
+                                 const uint64_t targetSynapseBlockPos,
+                                 Hanami::ErrorContainer& error);
 };
 
 #endif  // HANAMI_SAVECLUSTERSTATE_H

@@ -115,7 +115,7 @@ FinalizeMnistDataSet::runTask(BlossomIO& blossomIO,
     // write data to file
     if (convertMnistData(result["location"], result["name"], inputBuffer, labelBuffer) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMeesage("Failed to convert mnist-data");
+        error.addMessage("Failed to convert mnist-data");
         return false;
     }
 

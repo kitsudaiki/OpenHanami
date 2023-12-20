@@ -46,7 +46,7 @@ bool
 ThreadBinder::init(Hanami::ErrorContainer& error)
 {
     if (fillCoreIds(m_controlCoreIds, m_processingCoreIds, error) == false) {
-        error.addMeesage("Failed to initialize cpu-thread-lists for thread-binder.");
+        error.addMessage("Failed to initialize cpu-thread-lists for thread-binder.");
         return false;
     }
 
@@ -94,12 +94,12 @@ ThreadBinder::fillCoreIds(std::vector<uint64_t>& controlCoreIds,
     Hanami::Host* host = Hanami::Host::getInstance();
 
     if (host->cpuPackages.size() == 0) {
-        error.addMeesage("Failed to read number of cpu-packages from host.");
+        error.addMessage("Failed to read number of cpu-packages from host.");
         return false;
     }
 
     if (host->cpuPackages[0]->cpuCores.size() == 0) {
-        error.addMeesage("Failed to read number of cpu-cores from host.");
+        error.addMessage("Failed to read number of cpu-cores from host.");
         return false;
     }
 

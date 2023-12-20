@@ -98,7 +98,7 @@ ClusterParserInterface::parse(ClusterMeta* result,
 
     // handle negative result
     if (parserResult != 0 || m_errorMessage.size() > 0) {
-        error.addMeesage(m_errorMessage);
+        error.addMessage(m_errorMessage);
         return false;
     }
 

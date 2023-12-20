@@ -76,7 +76,7 @@ DeleteCluster::runTask(BlossomIO& blossomIO,
     // remove data from table
     if (ClusterTable::getInstance()->deleteCluster(clusterUuid, userContext, error) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMeesage("Failed to delete cluster with UUID '" + clusterUuid + "' from database");
+        error.addMessage("Failed to delete cluster with UUID '" + clusterUuid + "' from database");
         return false;
     }
 
@@ -85,7 +85,7 @@ DeleteCluster::runTask(BlossomIO& blossomIO,
     if (ClusterHandler::getInstance()->removeCluster(uuid) == false) {
         // should never be false, because the uuid is already defined as unique by the database
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMeesage("Failed to delete cluster with UUID '" + clusterUuid
+        error.addMessage("Failed to delete cluster with UUID '" + clusterUuid
                          + "' from cluster-handler");
         return false;
     }

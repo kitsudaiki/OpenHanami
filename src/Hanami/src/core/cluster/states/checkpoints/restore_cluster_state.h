@@ -29,11 +29,6 @@
 
 class Cluster;
 
-namespace Hanami
-{
-class HanamiMessagingClient;
-}
-
 class RestoreCluster_State : public Hanami::Event
 {
    public:

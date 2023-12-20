@@ -72,7 +72,7 @@ sendFileUploadResponse(HttpWebsocketThread* msgClient,
     const uint64_t size = response.ByteSizeLong();
     if (response.SerializeToArray(buffer, size) == false) {
         Hanami::ErrorContainer error;
-        error.addMeesage("Failed to serialize request-message");
+        error.addMessage("Failed to serialize request-message");
         LOG_ERROR(error);
         return;
     }

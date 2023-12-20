@@ -175,7 +175,7 @@ Rapl::openMSR(ErrorContainer& error)
     const std::string path = "/dev/cpu/" + std::to_string(m_threadId) + "/msr";
     m_fd = open(path.c_str(), O_RDONLY);
     if (m_fd <= 0) {
-        error.addMeesage("Failed to open path: \"" + path + "\"");
+        error.addMessage("Failed to open path: \"" + path + "\"");
         error.addSolution(
             "Maybe the msr-kernel-module still have to be loaded with "
             "\"modporobe msr\" or \"modprobe intel_rapl_msr\"");
@@ -199,7 +199,7 @@ Rapl::readMSR(const int32_t offset)
     uint64_t data;
     if (pread(m_fd, &data, sizeof(data), offset) != sizeof(data)) {
         ErrorContainer error;
-        error.addMeesage("can not read MSR of cpu even the msr-file is open");
+        error.addMessage("can not read MSR of cpu even the msr-file is open");
         LOG_ERROR(error);
         return 0;
     }

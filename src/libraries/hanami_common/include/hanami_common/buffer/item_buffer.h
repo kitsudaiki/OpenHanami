@@ -85,7 +85,6 @@ class ItemBuffer
         return true;
     }
 
-    bool initBuffer(const uint64_t staticSize);
     bool initBuffer(const void* data, const uint64_t dataSize);
 
     /**
@@ -112,10 +111,6 @@ class ItemBuffer
             return position;
         }
 
-        while (m_lock.test_and_set(std::memory_order_acquire)) {
-            asm("");
-        }
-
         // get item-position inside of the buffer
         position = reserveDynamicItem();
         if (position == ITEM_BUFFER_UNDEFINE_POS) {
@@ -125,8 +120,6 @@ class ItemBuffer
         // write new item at the position
         T* array = static_cast<T*>(itemData);
         array[position] = item;
-
-        m_lock.clear(std::memory_order_release);
 
         return position;
     }

@@ -25,6 +25,8 @@ The actual prototype consists of:
 - able to generate an OpenAPI-documentation from source-code
 - basic energy-optimization supporting the scheduling of threads of all components and changing the cpu-frequency based on workload
 - basic monitoring of cpu-load
+- sdk-library written in python
+- basic cli-client written in go
 - Webfrontend with client-side rendering and SDK-library
 - Websocket-connection to directly interact with the artificial neuronal networks
 - CI-pipelines, Test-Tool, Docker-build-process and basic helm-chart to deploy the project on Kubernetes
@@ -119,10 +121,6 @@ pip3 install mkdocs-material mkdocs-swagger-ui-tag mkdocs-drawio-exporter
 **Tobias Anker**
 
 eMail: tobias.anker@kitsunemimi.moe
-
-## Note
-
-For the one who clones this repo every 2 hours currently: If you are so interested in this project, it would be nice if you could also support this project by giving some feedback, contribute some code and so on. Feel free to contact me for some possible tasks or if you have any questions.
 
 ## License
 

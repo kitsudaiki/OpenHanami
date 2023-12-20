@@ -96,7 +96,7 @@ SaveCluster::runTask(BlossomIO& blossomIO,
     Cluster* cluster = ClusterHandler::getInstance()->getCluster(clusterUuid);
     if (cluster == nullptr) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMeesage("Cluster with UUID '" + clusterUuid
+        error.addMessage("Cluster with UUID '" + clusterUuid
                          + "'not found even it exists within the database");
         return false;
     }

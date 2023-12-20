@@ -25,10 +25,13 @@
 
 #include <hanami_common/structs.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <string.h>
 #include <uuid/uuid.h>
 
 #include <cstdlib>
 #include <string>
+#include <vector>
 
 // const predefined values
 #define UNINIT_STATE_64 0xFFFFFFFFFFFFFFFF
@@ -42,9 +45,9 @@
 // network-predefines
 #define SYNAPSES_PER_SYNAPSESECTION 64
 #define NUMBER_OF_SYNAPSESECTION 64
-#define NEURONS_PER_NEURONSECTION 63
+#define NEURONS_PER_NEURONSECTION 64
 #define POSSIBLE_NEXT_AXON_STEP 80
-#define NEURON_CONNECTIONS 512
+#define NUMBER_OF_POSSIBLE_NEXT 64
 
 // processing
 #define NUMBER_OF_PROCESSING_UNITS 1
@@ -78,59 +81,62 @@ static_assert(sizeof(HeaderEntry) == 16);
 
 //==================================================================================================
 
-struct ClusterHeader {
-    uint8_t objectType = 0;
-    uint8_t version = 1;
-    uint8_t padding[6];
-    uint64_t staticDataSize = 0;
+struct ClusterSettings {
+    uint64_t maxSynapseSections = 0;
+    float synapseDeleteBorder = 1.0f;
+    float neuronCooldown = 100000000.0f;
+    float memorizing = 0.1f;
+    float gliaValue = 1.0f;
+    float signNeg = 0.6f;
+    float potentialOverflow = 1.0f;
+    float synapseSegmentation = 10.0f;
+    float backpropagationBorder = 0.01f;
+    float lerningValue = 0.0f;
 
-    kuuid uuid;
-    char name[1024];
+    uint8_t refractionTime = 1;
+    uint8_t updateSections = 0;
 
-    // synapse-cluster
-    HeaderEntry settings;
-    HeaderEntry slotList;
-    HeaderEntry inputValues;
-    HeaderEntry outputValues;
-    HeaderEntry expectedValues;
-
-    HeaderEntry bricks;
-    HeaderEntry brickOrder;
-    HeaderEntry neuronBlocks;
-    HeaderEntry synapseConnections;
-    HeaderEntry synapseBlocks;
-
-    uint8_t padding2[808];
+    uint8_t padding[18];
 };
-static_assert(sizeof(ClusterHeader) == 2048);
+static_assert(sizeof(ClusterSettings) == 64);
 
 //==================================================================================================
 
-struct Brick {
-    // common
-    uint32_t brickId = UNINIT_STATE_32;
-    bool isOutputBrick = false;
-    bool isInputBrick = false;
-    uint8_t padding1[14];
-    uint32_t brickBlockPos = UNINIT_STATE_32;
+struct ClusterHeader {
+    uint8_t objectType = 0;
+    uint8_t version = 1;
+    uint8_t padding[2];
 
-    uint32_t numberOfNeurons = 0;
-    uint32_t numberOfNeuronBlocks = 0;
+    char name[256];
+    uint32_t nameSize = 0;
 
-    Hanami::Position brickPos;
-    uint32_t neighbors[12];
-    uint32_t possibleTargetNeuronBrickIds[1000];
+    uint64_t staticDataSize = 0;
+    kuuid uuid;
+
+    uint32_t numberOfInputs = 0;
+    uint32_t numberOfOutputs = 0;
+
+    // synapse-cluster
+    HeaderEntry bricks;
+    HeaderEntry neuronBlocks;
+
+    ClusterSettings settings;
+
+    uint8_t padding2[96];
 };
-static_assert(sizeof(Brick) == 4096);
+static_assert(sizeof(ClusterHeader) == 512);
 
 //==================================================================================================
 
 struct Synapse {
+    int8_t active = 1;
+    uint8_t padding1[3];
+
     float weight = 0.0f;
     float border = 0.0f;
+
+    uint8_t padding2[2];
     uint16_t targetNeuronId = UNINIT_STATE_16;
-    int8_t activeCounter = 0;
-    uint8_t padding[5];
 };
 static_assert(sizeof(Synapse) == 16);
 
@@ -150,15 +156,16 @@ static_assert(sizeof(SynapseBlock) == 64 * 1024);
 
 //==================================================================================================
 
-struct LocationPtr {
+struct SourceLocationPtr {
     // HINT (kitsudaiki): not initialized here, because they are used in shared memory in cuda
     //                    which doesn't support initializing of the values, when defining the
     //                    shared-memory-object
     uint32_t blockId;
     uint16_t sectionId;
-    uint8_t padding[2];
+    uint8_t posInNeuron;
+    uint8_t padding[1];
 };
-static_assert(sizeof(LocationPtr) == 8);
+static_assert(sizeof(SourceLocationPtr) == 8);
 
 //==================================================================================================
 
@@ -166,33 +173,26 @@ struct Neuron {
     float input = 0.0f;
     float border = 100.0f;
     float potential = 0.0f;
-    float delta = 0.0f;
-
-    float newOffset = 0.0f;
-    uint8_t isNew = 0;
+    float delta[8];
 
     uint8_t refractionTime = 1;
     uint8_t active = 0;
-    uint8_t padding[1];
-    LocationPtr target;
 
-    Neuron()
-    {
-        target.blockId = UNINIT_STATE_32;
-        target.sectionId = UNINIT_STATE_16;
-    }
+    float newOffset = 0.0f;
+    uint8_t isNew = 0;
+    uint8_t inUse = 0;
+
+    Neuron() { std::fill_n(delta, 8, 0.0f); }
 };
-static_assert(sizeof(Neuron) == 32);
+static_assert(sizeof(Neuron) == 56);
 
 //==================================================================================================
 
 struct NeuronBlock {
-    uint64_t triggerMap;
-    uint64_t triggerCompare;
     uint32_t numberOfNeurons = 0;
     uint32_t brickId = 0;
     uint32_t randomPos = 0;
-    uint32_t backwardNextId = UNINIT_STATE_32;
+    uint8_t padding[52];
 
     Neuron neurons[NEURONS_PER_NEURONSECTION];
 
@@ -202,69 +202,156 @@ struct NeuronBlock {
         std::fill_n(neurons, NEURONS_PER_NEURONSECTION, Neuron());
     }
 };
-static_assert(sizeof(NeuronBlock) == 2048);
+static_assert(sizeof(NeuronBlock) == 3648);
 
 //==================================================================================================
 
 struct SynapseConnection {
-    uint8_t active = 1;
+    SourceLocationPtr origin;
+    float offset = 0.0f;
+    bool hasNext = false;
     uint8_t padding[3];
-    uint32_t targetNeuronBlockId = UNINIT_STATE_32;
-    uint32_t backwardNextId = UNINIT_STATE_32;
-
-    LocationPtr next[NUMBER_OF_SYNAPSESECTION];
-    LocationPtr origin[NUMBER_OF_SYNAPSESECTION];
-    float offset[NUMBER_OF_SYNAPSESECTION];
 
     SynapseConnection()
     {
-        std::fill_n(next, NUMBER_OF_SYNAPSESECTION, LocationPtr());
-        std::fill_n(origin, NUMBER_OF_SYNAPSESECTION, LocationPtr());
-        std::fill_n(offset, NUMBER_OF_SYNAPSESECTION, 0.0f);
-
-        for (uint32_t i = 0; i < NUMBER_OF_SYNAPSESECTION; i++) {
-            next[i].blockId = UNINIT_STATE_32;
-            next[i].sectionId = UNINIT_STATE_16;
-            origin[i].blockId = UNINIT_STATE_32;
-            origin[i].sectionId = UNINIT_STATE_16;
-        }
+        origin.blockId = UNINIT_STATE_32;
+        origin.sectionId = UNINIT_STATE_16;
     }
 };
-static_assert(sizeof(SynapseConnection) == 1292);
+static_assert(sizeof(SynapseConnection) == 16);
 
 //==================================================================================================
 
-struct ClusterSettings {
-    uint64_t maxSynapseSections = 0;
-    float synapseDeleteBorder = 1.0f;
-    float neuronCooldown = 100.0f;
-    float memorizing = 0.1f;
-    float gliaValue = 1.0f;
-    float signNeg = 0.6f;
-    float potentialOverflow = 1.0f;
-    float synapseSegmentation = 10.0f;
-    float backpropagationBorder = 0.01f;
-    float lerningValue = 0.0f;
+struct ConnectionBlock {
+    SynapseConnection connections[NUMBER_OF_SYNAPSESECTION];
+    uint64_t targetSynapseBlockPos = UNINIT_STATE_64;
 
-    uint8_t refractionTime = 1;
-    uint8_t doTrain = 0;
-    uint8_t updateSections = 0;
-
-    uint8_t padding[209];
+    ConnectionBlock() { std::fill_n(connections, NUMBER_OF_SYNAPSESECTION, SynapseConnection()); }
 };
-static_assert(sizeof(ClusterSettings) == 256);
+static_assert(sizeof(ConnectionBlock) == 1032);
+
+//==================================================================================================
+
+struct Brick {
+    // common
+    uint32_t brickId = UNINIT_STATE_32;
+    bool isOutputBrick = false;
+    bool isInputBrick = false;
+    uint8_t padding1[2];
+
+    char name[128];
+    uint32_t nameSize = 0;
+
+    uint8_t padding2[4];
+    uint32_t ioBufferPos = UNINIT_STATE_32;
+    uint32_t neuronBlockPos = UNINIT_STATE_32;
+
+    uint32_t numberOfNeurons = 0;
+    uint32_t numberOfNeuronBlocks = 0;
+
+    Hanami::Position brickPos;
+    uint32_t neighbors[12];
+    uint32_t possibleTargetNeuronBrickIds[NUMBER_OF_POSSIBLE_NEXT];
+
+    uint32_t dimX = 0;
+    uint32_t dimY = 0;
+
+    std::vector<ConnectionBlock> connectionBlocks;
+
+    Brick() { std::fill_n(name, 128, '\0'); }
+
+    /**
+     * @brief get the name of the brick
+     */
+    const std::string getName() { return std::string(name, nameSize); }
+
+    /**
+     * @brief set new name for the brick
+     *
+     * @param newName new name
+     *
+     * @return true, if successful, else false
+     */
+    bool setName(const std::string& newName)
+    {
+        // precheck
+        if (newName.size() > 127 || newName.size() == 0) {
+            return false;
+        }
+
+        // copy string into char-buffer and set explicit the escape symbol to be absolut sure
+        // that it is set to absolut avoid buffer-overflows
+        strncpy(name, newName.c_str(), newName.size());
+        name[newName.size()] = '\0';
+        nameSize = newName.size();
+
+        return true;
+    }
+};
+static_assert(sizeof(Brick) == 512);
 
 //==================================================================================================
 
 struct PointerHandler {
     NeuronBlock* neuronBlocks = nullptr;
     SynapseBlock* synapseBlocks = nullptr;
-    SynapseConnection* synapseConnections = nullptr;
+    std::vector<ConnectionBlock*> connectionBlocks;
 
     ClusterSettings* clusterSettings = nullptr;
     uint32_t* randomValues = nullptr;
 };
 
 //==================================================================================================
+
+struct CheckpointHeader {
+    uint64_t metaSize = 0;
+    uint64_t blockSize = 0;
+
+    char name[256];
+    uint32_t nameSize = 0;
+    char uuid[40];
+
+    uint8_t padding[3780];
+
+    CheckpointHeader()
+    {
+        std::fill_n(uuid, 40, '\0');
+        std::fill_n(name, 256, '\0');
+    }
+
+    /**
+     * @brief set new name for the brick
+     *
+     * @param newName new name
+     *
+     * @return true, if successful, else false
+     */
+    bool setName(const std::string& newName)
+    {
+        // precheck
+        if (newName.size() > 255 || newName.size() == 0) {
+            return false;
+        }
+
+        // copy string into char-buffer and set explicit the escape symbol to be absolut sure
+        // that it is set to absolut avoid buffer-overflows
+        strncpy(name, newName.c_str(), newName.size());
+        name[newName.size()] = '\0';
+        nameSize = newName.size();
+
+        return true;
+    }
+
+    bool setUuid(const kuuid& uuid)
+    {
+        const std::string uuidStr = uuid.toString();
+
+        strncpy(this->uuid, uuidStr.c_str(), uuidStr.size());
+        this->uuid[uuidStr.size()] = '\0';
+
+        return true;
+    }
+};
+static_assert(sizeof(CheckpointHeader) == 4096);
 
 #endif  // HANAMI_CORE_SEGMENT_OBJECTS_H

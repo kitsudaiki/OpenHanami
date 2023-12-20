@@ -38,8 +38,8 @@ extern "C" void copyToDevice_CUDA(PointerHandler* gpuPointer,
                                   const uint32_t numberOfNeuronBlocks,
                                   SynapseBlock* synapseBlocks,
                                   const uint32_t numberOfSynapseBlocks,
-                                  SynapseConnection* synapseConnections,
-                                  const uint32_t numberOfSynapseConnections,
+                                  Brick* bricks,
+                                  const uint32_t numberOfBricks,
                                   uint32_t* randomValues);
 
 /**
@@ -61,13 +61,20 @@ Cluster::Cluster()
  */
 Cluster::Cluster(const void* data, const uint64_t dataSize)
 {
-    clusterData.initBuffer(data, dataSize);
+    Hanami::allocateBlocks_DataBuffer(clusterData, Hanami::calcBytesToBlocks(dataSize));
+    memcpy(clusterData.data, data, dataSize);
 }
 
 /**
  * @brief destructor
  */
-Cluster::~Cluster() { delete stateMachine; }
+Cluster::~Cluster()
+{
+    delete stateMachine;
+    delete inputValues;
+    delete outputValues;
+    delete expectedValues;
+}
 
 /**
  * @brief get uuid of the cluster
@@ -86,15 +93,44 @@ Cluster::getUuid()
 void
 Cluster::initCuda()
 {
+    moveToGpu();
     copyToDevice_CUDA(&gpuPointer,
-                      clusterSettings,
+                      &clusterHeader->settings,
                       neuronBlocks,
                       clusterHeader->neuronBlocks.count,
-                      synapseBlocks,
-                      clusterHeader->synapseBlocks.count,
-                      synapseConnections,
-                      clusterHeader->synapseConnections.count,
-                      HanamiRoot::m_randomValues);
+                      getItemData<SynapseBlock>(HanamiRoot::gpuSynapseBlocks),
+                      HanamiRoot::gpuSynapseBlocks.metaData->itemCapacity,
+                      bricks,
+                      clusterHeader->bricks.count,
+                      HanamiRoot::randomValues);
+}
+
+/**
+ * @brief Cluster::moveToGpu
+ * @return
+ */
+bool
+Cluster::moveToGpu()
+{
+    SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(HanamiRoot::cpuSynapseBlocks);
+    SynapseBlock tempBlock;
+
+    for (uint64_t i = 0; i < clusterHeader->bricks.count; i++) {
+        for (ConnectionBlock& block : bricks[i].connectionBlocks) {
+            if (block.targetSynapseBlockPos != UNINIT_STATE_64) {
+                tempBlock = synapseBlocks[block.targetSynapseBlockPos];
+                HanamiRoot::cpuSynapseBlocks.deleteItem(block.targetSynapseBlockPos);
+                const uint64_t newPos = HanamiRoot::gpuSynapseBlocks.addNewItem(tempBlock);
+                // TODO: make roll-back possible in error-case
+                if (newPos == UNINIT_STATE_64) {
+                    return false;
+                }
+                block.targetSynapseBlockPos = newPos;
+            }
+        }
+    }
+
+    return true;
 }
 
 /**
@@ -113,6 +149,24 @@ Cluster::init(const Hanami::ClusterMeta& clusterTemplate, const std::string& uui
 }
 
 /**
+ * @brief get total size of data of the cluster
+ *
+ * @return size of cluster in bytes
+ */
+uint64_t
+Cluster::getDataSize() const
+{
+    uint64_t size = clusterData.totalBufferSize;
+    for (uint64_t i = 0; i < clusterHeader->bricks.count; i++) {
+        const uint64_t numberOfConnections = bricks[i].connectionBlocks.size();
+        size += numberOfConnections * sizeof(ConnectionBlock);
+        size += numberOfConnections * sizeof(SynapseBlock);
+    }
+
+    return size;
+}
+
+/**
  * @brief get the name of the clsuter
  *
  * @return name of the cluster
@@ -125,7 +179,7 @@ Cluster::getName()
         return std::string("");
     }
 
-    return std::string(clusterHeader->name);
+    return std::string(clusterHeader->name, clusterHeader->nameSize);
 }
 
 /**
@@ -136,10 +190,10 @@ Cluster::getName()
  * @return true, if successful, else false
  */
 bool
-Cluster::setName(const std::string newName)
+Cluster::setName(const std::string& newName)
 {
     // precheck
-    if (clusterHeader == nullptr || newName.size() > 1023 || newName.size() == 0) {
+    if (clusterHeader == nullptr || newName.size() > 255 || newName.size() == 0) {
         return false;
     }
 
@@ -147,6 +201,7 @@ Cluster::setName(const std::string newName)
     // that it is set to absolut avoid buffer-overflows
     strncpy(clusterHeader->name, newName.c_str(), newName.size());
     clusterHeader->name[newName.size()] = '\0';
+    clusterHeader->nameSize = newName.size();
 
     return true;
 }

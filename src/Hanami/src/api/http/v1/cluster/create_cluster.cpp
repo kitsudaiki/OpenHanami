@@ -131,7 +131,7 @@ CreateCluster::runTask(BlossomIO& blossomIO,
     // add new user to table
     if (ClusterTable::getInstance()->addCluster(clusterData, userContext, error) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMeesage("Failed to add cluster to database");
+        error.addMessage("Failed to add cluster to database");
         return false;
     }
 
@@ -140,7 +140,7 @@ CreateCluster::runTask(BlossomIO& blossomIO,
             blossomIO.output, clusterName, userContext, error)
         == false)
     {
-        error.addMeesage("Failed to get cluster from database by name '" + clusterName + "'");
+        error.addMessage("Failed to get cluster from database by name '" + clusterName + "'");
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
@@ -152,7 +152,7 @@ CreateCluster::runTask(BlossomIO& blossomIO,
     if (base64Template != "") {
         // generate and initialize the cluster based on the cluster-templates
         if (newCluster->init(parsedCluster, uuid) == false) {
-            error.addMeesage("Failed to initialize cluster based on a template");
+            error.addMessage("Failed to initialize cluster based on a template");
             status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
             delete newCluster;
             ClusterTable::getInstance()->deleteCluster(uuid, userContext, error);

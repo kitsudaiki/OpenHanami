@@ -53,7 +53,7 @@ struct ErrorContainer {
     std::vector<std::string> _errorMessages;
     std::vector<std::string> _possibleSolution;
 
-    void addMeesage(const std::string& errorMessage)
+    void addMessage(const std::string& errorMessage)
     {
         _errorMessages.push_back(errorMessage);
         _alreadyPrinted = false;

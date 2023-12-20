@@ -179,7 +179,7 @@ CreateTask::imageTask(std::string& taskUuid,
     const std::string dataSetLocation = dataSetInfo["location"];
     Hanami::DataBuffer buffer;
     if (getDataSetPayload(buffer, dataSetLocation, error) == false) {
-        error.addMeesage("Failed to get data of dataset from location '" + dataSetLocation + "'");
+        error.addMessage("Failed to get data of dataset from location '" + dataSetLocation + "'");
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
@@ -241,8 +241,8 @@ CreateTask::tableTask(std::string& taskUuid,
                       Hanami::ErrorContainer& error)
 {
     // init request-task
-    const uint64_t numberOfInputs = cluster->clusterHeader->inputValues.count;
-    const uint64_t numberOfOutputs = cluster->clusterHeader->outputValues.count;
+    const uint64_t numberOfInputs = cluster->clusterHeader->numberOfInputs;
+    const uint64_t numberOfOutputs = cluster->clusterHeader->numberOfOutputs;
     const uint64_t numberOfLines = dataSetInfo["lines"];
 
     // get input-data
@@ -250,7 +250,7 @@ CreateTask::tableTask(std::string& taskUuid,
     const std::string dataSetLocation = dataSetInfo["location"];
     Hanami::DataBuffer inputBuffer;
     if (getDataSetPayload(inputBuffer, dataSetLocation, error, inputColumnName) == false) {
-        error.addMeesage("Failed to get data of dataset from location '" + dataSetLocation
+        error.addMessage("Failed to get data of dataset from location '" + dataSetLocation
                          + "' and column with name '" + inputColumnName + "'");
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
@@ -272,7 +272,7 @@ CreateTask::tableTask(std::string& taskUuid,
         const std::string outputColumnName = "output";
         Hanami::DataBuffer outputBuffer;
         if (getDataSetPayload(outputBuffer, dataSetLocation, error, outputColumnName) == false) {
-            error.addMeesage("Failed to get data of dataset from location '" + dataSetLocation
+            error.addMessage("Failed to get data of dataset from location '" + dataSetLocation
                              + "' and column with name '" + outputColumnName + "'");
             status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
             return false;

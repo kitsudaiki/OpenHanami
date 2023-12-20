@@ -53,7 +53,7 @@ bool
 ProjectsTable::addProject(json& userData, Hanami::ErrorContainer& error)
 {
     if (insertToDb(userData, error) == false) {
-        error.addMeesage("Failed to add user to database");
+        error.addMessage("Failed to add user to database");
         return false;
     }
 
@@ -80,7 +80,7 @@ ProjectsTable::getProject(json& result,
     conditions.emplace_back("id", projectId);
 
     if (getFromDb(result, conditions, error, showHiddenValues) == false) {
-        error.addMeesage("Failed to get user with id '" + projectId + "' from database");
+        error.addMessage("Failed to get user with id '" + projectId + "' from database");
         LOG_ERROR(error);
         return false;
     }
@@ -101,7 +101,7 @@ ProjectsTable::getAllProjects(Hanami::TableItem& result, Hanami::ErrorContainer&
 {
     std::vector<RequestCondition> conditions;
     if (getFromDb(result, conditions, error, false) == false) {
-        error.addMeesage("Failed to get all users from database");
+        error.addMessage("Failed to get all users from database");
         return false;
     }
 
@@ -123,7 +123,7 @@ ProjectsTable::deleteProject(const std::string& projectId, Hanami::ErrorContaine
     conditions.emplace_back("id", projectId);
 
     if (deleteFromDb(conditions, error) == false) {
-        error.addMeesage("Failed to delete user with id '" + projectId + "' from database");
+        error.addMessage("Failed to delete user with id '" + projectId + "' from database");
         return false;
     }
 

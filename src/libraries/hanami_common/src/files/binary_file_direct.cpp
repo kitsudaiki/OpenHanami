@@ -56,7 +56,7 @@ BinaryFileDirect::initFile(ErrorContainer& error)
 
     // check if file is open
     if (m_fileDescriptor == -1) {
-        error.addMeesage("Failed to initialize binary file for path '" + m_filePath + "'");
+        error.addMessage("Failed to initialize binary file for path '" + m_filePath + "'");
         return false;
     }
 
@@ -81,7 +81,7 @@ BinaryFileDirect::allocateStorage(const uint64_t numberOfBlocks,
 
     // precheck
     if (blockSize % m_blockSize != 0 || m_fileDescriptor < 0) {
-        error.addMeesage("Failed to read cluster of binary file for path '"
+        error.addMessage("Failed to read cluster of binary file for path '"
                          + m_filePath
                          + "', because the precheck failed. Either the buffer is incompatible "
                            "or the file is not open.");
@@ -107,7 +107,7 @@ BinaryFileDirect::allocateStorage(const uint64_t numberOfBytes, ErrorContainer& 
     // check if allocation was successful
     if (ret != 0) {
         // TODO: process errno
-        error.addMeesage("Failed to allocate new storage for the binary file for path '"
+        error.addMessage("Failed to allocate new storage for the binary file for path '"
                          + m_filePath + "'");
         return false;
     }
@@ -127,7 +127,7 @@ bool
 BinaryFileDirect::updateFileSize(ErrorContainer& error)
 {
     if (m_fileDescriptor == -1) {
-        error.addMeesage("Failed to allocate new storage for the binary file for path '"
+        error.addMessage("Failed to allocate new storage for the binary file for path '"
                          + m_filePath + "', because the file is not open.");
         return false;
     }
@@ -157,14 +157,14 @@ BinaryFileDirect::readCompleteFile(DataBuffer& buffer, ErrorContainer& error)
     // go to the end of the file to get the size of the file
     const long size = lseek(m_fileDescriptor, 0, SEEK_END);
     if (size <= 0) {
-        error.addMeesage("Failed to find the end of the binary file for path '" + m_filePath
+        error.addMessage("Failed to find the end of the binary file for path '" + m_filePath
                          + "'.");
         return false;
     }
 
     // check if size of the file is not compatible with direct-io
     if (buffer.blockSize % 512 != 0) {
-        error.addMeesage("Failed to read the binary file for path '"
+        error.addMessage("Failed to read the binary file for path '"
                          + m_filePath
                          + "', because the buffer has a incompatible blocksize, "
                            "which is not a multiple of 512.");
@@ -183,7 +183,7 @@ BinaryFileDirect::readCompleteFile(DataBuffer& buffer, ErrorContainer& error)
     const ssize_t ret = read(m_fileDescriptor, buffer.data, static_cast<uint64_t>(size));
     if (ret == -1) {
         // TODO: process errno
-        error.addMeesage("Failed to read the binary file for path '" + m_filePath + "'");
+        error.addMessage("Failed to read the binary file for path '" + m_filePath + "'");
         return false;
     }
 
@@ -206,7 +206,7 @@ BinaryFileDirect::writeCompleteFile(DataBuffer& buffer, ErrorContainer& error)
 {
     // check if size of the buffer is not compatible with direct-io
     if (buffer.blockSize % 512 != 0) {
-        error.addMeesage("Failed to write to binary file for path '"
+        error.addMessage("Failed to write to binary file for path '"
                          + m_filePath
                          + "', because the buffer has a incompatible blocksize, "
                            "which is not a multiple of 512.");
@@ -223,7 +223,7 @@ BinaryFileDirect::writeCompleteFile(DataBuffer& buffer, ErrorContainer& error)
 
         // allocate additional memory
         if (allocateStorage(sizeDiff, error) == false) {
-            error.addMeesage("Failed to write to binary file for path '" + m_filePath + "'");
+            error.addMessage("Failed to write to binary file for path '" + m_filePath + "'");
             return false;
         }
     }
@@ -233,7 +233,7 @@ BinaryFileDirect::writeCompleteFile(DataBuffer& buffer, ErrorContainer& error)
     const ssize_t ret = write(m_fileDescriptor, buffer.data, buffer.usedBufferSize);
     if (ret == -1) {
         // TODO: process errno
-        error.addMeesage("Failed to write to binary file for path '" + m_filePath + "'");
+        error.addMessage("Failed to write to binary file for path '" + m_filePath + "'");
         return false;
     }
 
@@ -273,7 +273,7 @@ BinaryFileDirect::readSegment(DataBuffer& buffer,
         || startBytesInBuffer + numberOfBytes > buffer.numberOfBlocks * buffer.blockSize
         || m_fileDescriptor < 0)
     {
-        error.addMeesage("Failed to read cluster of binary file for path '"
+        error.addMessage("Failed to read cluster of binary file for path '"
                          + m_filePath
                          + "', because the precheck failed. Either the buffer is incompatible "
                            "or the file is not open.");
@@ -283,7 +283,7 @@ BinaryFileDirect::readSegment(DataBuffer& buffer,
     // go to the requested position and read the block
     const long retSeek = lseek(m_fileDescriptor, static_cast<long>(startBytesInFile), SEEK_SET);
     if (retSeek < 0) {
-        error.addMeesage("Failed to go to the requested read position in binary file for path '"
+        error.addMessage("Failed to go to the requested read position in binary file for path '"
                          + m_filePath + "'");
         return false;
     }
@@ -293,7 +293,7 @@ BinaryFileDirect::readSegment(DataBuffer& buffer,
 
     if (ret == -1) {
         // TODO: process errno
-        error.addMeesage("Failed to read cluster of binary file for path '" + m_filePath + "'");
+        error.addMessage("Failed to read cluster of binary file for path '" + m_filePath + "'");
         return false;
     }
 
@@ -333,7 +333,7 @@ BinaryFileDirect::writeSegment(DataBuffer& buffer,
         || startBytesInBuffer + numberOfBytes > buffer.numberOfBlocks * buffer.blockSize
         || m_fileDescriptor < 0)
     {
-        error.addMeesage("Failed to write cluster to binary file for path '"
+        error.addMessage("Failed to write cluster to binary file for path '"
                          + m_filePath
                          + "', because the precheck failed. Either the buffer is incompatible "
                            "or the file is not open.");
@@ -343,7 +343,7 @@ BinaryFileDirect::writeSegment(DataBuffer& buffer,
     // go to the requested position and write the block
     const long retSeek = lseek(m_fileDescriptor, static_cast<long>(startBytesInFile), SEEK_SET);
     if (retSeek < 0) {
-        error.addMeesage("Failed to go to the requested write position in binary file for path '"
+        error.addMessage("Failed to go to the requested write position in binary file for path '"
                          + m_filePath + "'");
         return false;
     }
@@ -354,7 +354,7 @@ BinaryFileDirect::writeSegment(DataBuffer& buffer,
 
     if (ret == -1) {
         // TODO: process errno
-        error.addMeesage("Failed to write cluster to binary file for path '" + m_filePath + "'");
+        error.addMessage("Failed to write cluster to binary file for path '" + m_filePath + "'");
         return false;
     }
 
@@ -382,7 +382,7 @@ BinaryFileDirect::closeFile(ErrorContainer& error)
     // try to close file
     if (close(m_fileDescriptor) < 0) {
         // TODO: process errno
-        error.addMeesage("Failed to close binary file for path '" + m_filePath + "'");
+        error.addMessage("Failed to close binary file for path '" + m_filePath + "'");
         return false;
     }
 

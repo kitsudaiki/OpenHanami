@@ -34,16 +34,16 @@ Logger_Test::logger_test()
 
     // create error-container
     ErrorContainer error1;
-    error1.addMeesage("error1.1");
-    error1.addMeesage("error1.2");
-    error1.addMeesage("error1.3");
+    error1.addMessage("error1.1");
+    error1.addMessage("error1.2");
+    error1.addMessage("error1.3");
     error1.addSolution("do nothing1");
     error1.addSolution("do nothing2");
     ErrorContainer error2;
-    error2.addMeesage("error2");
+    error2.addMessage("error2");
     error2.addSolution("really nothing");
     ErrorContainer error3;
-    error3.addMeesage("error3");
+    error3.addMessage("error3");
     error3.addSolution("really absolutely nothing");
 
     // write test-data

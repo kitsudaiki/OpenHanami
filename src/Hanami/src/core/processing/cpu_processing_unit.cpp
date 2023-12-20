@@ -30,20 +30,18 @@
 #include <core/processing/section_update.h>
 #include <hanami_root.h>
 
+static uint64_t counter = 0;
+
 extern "C" void processing_CUDA(PointerHandler* gpuPointer,
-                                uint32_t* brickOrder,
                                 Brick* bricks,
                                 float* inputValues,
                                 float* outputValues,
                                 const uint32_t numberOfBricks,
                                 NeuronBlock* neuronBlocks,
                                 const uint32_t numberOfNeuronBlocks,
-                                SynapseBlock* synapseBlocks,
-                                const uint32_t numberOfSynapseBlocks,
                                 const bool doTrain);
 
 extern "C" void backpropagation_CUDA(PointerHandler* gpuPointer,
-                                     uint32_t* brickOrder,
                                      Brick* bricks,
                                      float* outputValues,
                                      float* expectedValues,
@@ -55,10 +53,8 @@ extern "C" void backpropagation_CUDA(PointerHandler* gpuPointer,
 extern "C" void update_CUDA(PointerHandler* gpuPointer,
                             NeuronBlock* neuronBlocks,
                             const uint32_t numberOfNeuronBlocks,
-                            SynapseConnection* synapseConnections,
-                            const uint32_t numberOfSynapseConnections);
-
-uint32_t counter = 0;
+                            Brick* bricks,
+                            const uint32_t numberOfBricks);
 
 /**
  * @brief constructor
@@ -80,26 +76,30 @@ CpuProcessingUnit::trainSegmentForward(Cluster* cluster)
 {
     Hanami::ErrorContainer error;
 
-    cluster->clusterSettings->doTrain = 1;
     if (HanamiRoot::useCuda) {
         processing_CUDA(&cluster->gpuPointer,
-                        cluster->brickOrder,
                         cluster->bricks,
                         cluster->inputValues,
                         cluster->outputValues,
                         cluster->clusterHeader->bricks.count,
                         cluster->neuronBlocks,
-                        cluster->numberOfBrickBlocks,
-                        cluster->synapseBlocks,
-                        cluster->clusterHeader->synapseBlocks.count,
+                        cluster->numberOfNeuronBlocks,
                         true);
+
+        if (updateSections(*cluster)) {
+            update_CUDA(&cluster->gpuPointer,
+                        cluster->neuronBlocks,
+                        cluster->numberOfNeuronBlocks,
+                        cluster->bricks,
+                        cluster->clusterHeader->bricks.count);
+        }
+        std::cout << "counter: " << counter << std::endl;
+        counter++;
     }
     else {
-        prcessCoreSegment(*cluster);
+        prcessCoreSegment(*cluster, true);
     }
     // prcessCoreSegment(*cluster);
-
-    cluster->clusterSettings->doTrain = 0;
 }
 
 /**
@@ -114,36 +114,51 @@ CpuProcessingUnit::trainSegmentBackward(Cluster* cluster)
 
     if (HanamiRoot::useCuda) {
         backpropagation_CUDA(&cluster->gpuPointer,
-                             cluster->brickOrder,
                              cluster->bricks,
                              cluster->outputValues,
                              cluster->expectedValues,
                              cluster->clusterHeader->bricks.count,
                              cluster->neuronBlocks,
-                             cluster->numberOfBrickBlocks,
-                             cluster->clusterSettings);
-
-        if (updateSections(*cluster)) {
-            update_CUDA(&cluster->gpuPointer,
-                        cluster->neuronBlocks,
-                        cluster->numberOfBrickBlocks,
-                        cluster->synapseConnections,
-                        cluster->clusterHeader->synapseConnections.count);
-        }
+                             cluster->numberOfNeuronBlocks,
+                             &cluster->clusterHeader->settings);
     }
     else {
         reweightCoreSegment(*cluster);
     }
     // reweightCoreSegment(*cluster);
 
-    // std::cout<<"counter: "<<counter<<std::endl;
-    // counter++;
-
     if (reductionCounter == 100) {
         // reduceNeurons(*seg);
         reductionCounter = 0;
     }
     reductionCounter++;
+}
+
+/**
+ * @brief get position of the highest output-position
+ *
+ * @param cluster output-cluster to check
+ *
+ * @return position of the highest output.
+ */
+uint32_t
+getHighestOutput(const Cluster& cluster)
+{
+    float hightest = -0.1f;
+    uint32_t hightestPos = 0;
+    float value = 0.0f;
+
+    for (uint32_t outputNeuronId = 0; outputNeuronId < cluster.clusterHeader->numberOfOutputs;
+         outputNeuronId++)
+    {
+        value = cluster.outputValues[outputNeuronId];
+        if (value > hightest) {
+            hightest = value;
+            hightestPos = outputNeuronId;
+        }
+    }
+
+    return hightestPos;
 }
 
 /**
@@ -157,19 +172,16 @@ CpuProcessingUnit::processSegment(Cluster* cluster)
     Hanami::ErrorContainer error;
     if (HanamiRoot::useCuda) {
         processing_CUDA(&cluster->gpuPointer,
-                        cluster->brickOrder,
                         cluster->bricks,
                         cluster->inputValues,
                         cluster->outputValues,
                         cluster->clusterHeader->bricks.count,
                         cluster->neuronBlocks,
-                        cluster->numberOfBrickBlocks,
-                        cluster->synapseBlocks,
-                        cluster->clusterHeader->synapseBlocks.count,
+                        cluster->numberOfNeuronBlocks,
                         false);
     }
     else {
-        prcessCoreSegment(*cluster);
+        prcessCoreSegment(*cluster, false);
     }
 
     // send output back if a client-connection is set
@@ -186,7 +198,7 @@ CpuProcessingUnit::processSegment(Cluster* cluster)
         }
         else if (actualTask->type == TABLE_REQUEST_TASK) {
             float val = 0.0f;
-            for (uint64_t i = 0; i < cluster->clusterHeader->outputValues.count; i++) {
+            for (uint64_t i = 0; i < cluster->clusterHeader->numberOfOutputs; i++) {
                 const float temp = actualTask->resultData[cycle];
                 val = temp + cluster->outputValues[i];
                 actualTask->resultData[cycle] = val;

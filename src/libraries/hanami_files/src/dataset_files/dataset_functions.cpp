@@ -48,7 +48,7 @@ getDataSetPayload(Hanami::DataBuffer& result,
     // get payload
     if (file->getPayload(result, error, columnName) == false) {
         delete file;
-        error.addMeesage("Failed to get payload.");
+        error.addMessage("Failed to get payload.");
         return false;
     }
     delete file;
@@ -78,7 +78,7 @@ getHeaderInformation(json& result, const std::string& location, Hanami::ErrorCon
     do {
         // read dataset-header
         if (file->readFromFile(error) == false) {
-            error.addMeesage("Failed to read header from file '" + location + "'");
+            error.addMessage("Failed to read header from file '" + location + "'");
             break;
         }
 

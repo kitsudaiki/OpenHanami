@@ -103,7 +103,7 @@ FinalizeCsvDataSet::runTask(BlossomIO& blossomIO,
     // write data to file
     if (convertCsvData(result["location"], result["name"], inputBuffer) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMeesage("Failed to convert csv-data");
+        error.addMessage("Failed to convert csv-data");
         return false;
     }
 

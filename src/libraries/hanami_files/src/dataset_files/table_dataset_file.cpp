@@ -98,7 +98,7 @@ TableDataSetFile::updateHeader(Hanami::ErrorContainer& error)
             &tableHeader, sizeof(DataSetHeader), sizeof(TableTypeHeader), error)
         == false)
     {
-        error.addMeesage("Failed to write table-header");
+        error.addMessage("Failed to write table-header");
         return false;
     }
 
@@ -111,7 +111,7 @@ TableDataSetFile::updateHeader(Hanami::ErrorContainer& error)
                                             error)
             == false)
         {
-            error.addMeesage("Failed to write table-entry-header");
+            error.addMessage("Failed to write table-entry-header");
             return false;
         }
     }
@@ -141,7 +141,7 @@ TableDataSetFile::getPayload(Hanami::DataBuffer& result,
             readBuffer.data, m_headerSize, m_totalFileSize - m_headerSize, error)
         == false)
     {
-        error.addMeesage("Failed to read data of table-dataset-file");
+        error.addMessage("Failed to read data of table-dataset-file");
         return false;
     }
 
@@ -155,7 +155,7 @@ TableDataSetFile::getPayload(Hanami::DataBuffer& result,
 
     // check if column was found
     if (columnPos == -1) {
-        error.addMeesage("Column with name '" + columnName
+        error.addMessage("Column with name '" + columnName
                          + "' was not found in table-dataset-file");
         return false;
     }
@@ -187,7 +187,7 @@ TableDataSetFile::print()
 
     Hanami::DataBuffer completeFile;
     if (m_targetFile->readCompleteFile(completeFile, error) == false) {
-        error.addMeesage("Failed to read file");
+        error.addMessage("Failed to read file");
         LOG_ERROR(error);
     }
 

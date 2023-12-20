@@ -313,7 +313,7 @@ ArgParser::parse(const int argc, const char* argv[], ErrorContainer& error)
             // get and check identifier
             ArgParser::ArgDef* argIdent = getArgument(currentArgument);
             if (argIdent == nullptr) {
-                error.addMeesage("unknown argument: " + currentArgument);
+                error.addMessage("unknown argument: " + currentArgument);
                 LOG_ERROR(error);
                 return false;
             }
@@ -321,7 +321,7 @@ ArgParser::parse(const int argc, const char* argv[], ErrorContainer& error)
             if (argIdent->hasValue) {
                 // check if there is a value for the identifier
                 if (i + 1 == argc) {
-                    error.addMeesage("flag has no value: " + currentArgument);
+                    error.addMessage("flag has no value: " + currentArgument);
                     LOG_ERROR(error);
                     return false;
                 }
@@ -338,7 +338,7 @@ ArgParser::parse(const int argc, const char* argv[], ErrorContainer& error)
                           + convertType(argIdent->type) + "\n    identifier: " + currentArgument
                           + "\n    given value: " + currentValue;
 
-                    error.addMeesage(errMsg);
+                    error.addMessage(errMsg);
                     LOG_ERROR(error);
                     return false;
                 }
@@ -370,7 +370,7 @@ ArgParser::parse(const int argc, const char* argv[], ErrorContainer& error)
                                   + "\n    identifier: " + m_argumentList[j].longIdentifier
                                   + "\n    given value: " + currentArgument;
 
-                            error.addMeesage(errMsg);
+                            error.addMessage(errMsg);
                             LOG_ERROR(error);
                             return false;
                         }
@@ -394,7 +394,7 @@ ArgParser::parse(const int argc, const char* argv[], ErrorContainer& error)
     // check if all requirements are satisfied
     for (uint32_t i = 0; i < m_argumentList.size(); i++) {
         if (m_argumentList[i].results.size() == 0 && m_argumentList[i].isRequired) {
-            error.addMeesage("argument is required but was not set: "
+            error.addMessage("argument is required but was not set: "
                              + m_argumentList[i].longIdentifier);
             LOG_ERROR(error);
             return false;

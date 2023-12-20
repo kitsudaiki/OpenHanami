@@ -99,7 +99,7 @@ ErrorLogTable::addErrorLogEntry(const std::string& timestamp,
     data["message"] = base64Msg;
 
     if (insertToDb(data, error) == false) {
-        error.addMeesage("Failed to add error-log-entry to database");
+        error.addMessage("Failed to add error-log-entry to database");
         return false;
     }
 
@@ -123,7 +123,7 @@ ErrorLogTable::getAllErrorLogEntries(Hanami::TableItem& result,
                                      Hanami::ErrorContainer& error)
 {
     if (getPageFromDb(result, userId, page, error) == false) {
-        error.addMeesage("Failed to get all error-log-entries from database");
+        error.addMessage("Failed to get all error-log-entries from database");
         return false;
     }
 

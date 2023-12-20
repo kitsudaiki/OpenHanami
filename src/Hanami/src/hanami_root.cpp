@@ -49,11 +49,13 @@
 #include <hanami_root.h>
 
 // init static variables
-uint32_t* HanamiRoot::m_randomValues = nullptr;
+uint32_t* HanamiRoot::randomValues = nullptr;
 Hanami::GpuInterface* HanamiRoot::gpuInterface = nullptr;
 HanamiRoot* HanamiRoot::root = nullptr;
 HttpServer* HanamiRoot::httpServer = nullptr;
 CryptoPP::SecByteBlock HanamiRoot::tokenKey{};
+Hanami::ItemBuffer HanamiRoot::cpuSynapseBlocks{};
+Hanami::ItemBuffer HanamiRoot::gpuSynapseBlocks{};
 
 // static flag to switch to experimental gpu-support (see issue #44 and #76)
 bool HanamiRoot::useCuda = false;
@@ -87,43 +89,50 @@ HanamiRoot::init(Hanami::ErrorContainer& error)
     }*/
 
     if (initDataDirectory(error) == false) {
-        error.addMeesage("Failed to initialize directories");
+        error.addMessage("Failed to initialize directories");
         return false;
     }
 
+    // initialize global synapse-block-buffer
+    // TODO: size has to be configurable
+    cpuSynapseBlocks.initBuffer<SynapseBlock>(10000);
+    cpuSynapseBlocks.deleteAll();
+    gpuSynapseBlocks.initBuffer<SynapseBlock>(10000);
+    gpuSynapseBlocks.deleteAll();
+
     // init predefinde random-values
-    m_randomValues = new uint32_t[NUMBER_OF_RAND_VALUES];
+    randomValues = new uint32_t[NUMBER_OF_RAND_VALUES];
     srand(time(NULL));
     for (uint32_t i = 0; i < NUMBER_OF_RAND_VALUES; i++) {
-        m_randomValues[i] = static_cast<uint32_t>(rand());
+        randomValues[i] = static_cast<uint32_t>(rand());
     }
 
     if (initDatabase(error) == false) {
-        error.addMeesage("Failed to initialize database");
+        error.addMessage("Failed to initialize database");
         return false;
     }
 
     clearCluster(error);
 
     if (initJwt(error) == false) {
-        error.addMeesage("Failed to initialize jwt");
+        error.addMessage("Failed to initialize jwt");
         return false;
     }
 
     if (initPolicies(error) == false) {
-        error.addMeesage("Failed to initialize policies");
+        error.addMessage("Failed to initialize policies");
         return false;
     }
 
     if (initHttpServer() == false) {
-        error.addMeesage("initializing http-server failed");
+        error.addMessage("initializing http-server failed");
         LOG_ERROR(error);
         return false;
     }
 
     Hanami::Host* host = Hanami::Host::getInstance();
     if (host->initHost(error) == false) {
-        error.addMeesage("Failed to initialize host-information.");
+        error.addMessage("Failed to initialize host-information.");
         LOG_ERROR(error);
         // can fail because it runs within a virtual machine for example, but this should
         // not prevent the process from starting
@@ -135,7 +144,7 @@ HanamiRoot::init(Hanami::ErrorContainer& error)
 
     // create thread-binder
     if (ThreadBinder::getInstance()->init(error) == false) {
-        error.addMeesage("failed to init thread-binder");
+        error.addMessage("failed to init thread-binder");
         LOG_ERROR(error);
         return false;
     }
@@ -182,14 +191,14 @@ HanamiRoot::initDatabase(Hanami::ErrorContainer& error)
     const std::string databasePath = GET_STRING_CONFIG("DEFAULT", "database", success);
     LOG_DEBUG("database-path: '" + databasePath + "'");
     if (success == false) {
-        error.addMeesage("No database-path defined in config.");
+        error.addMessage("No database-path defined in config.");
         LOG_ERROR(error);
         return false;
     }
 
     // initalize database
     if (database->initDatabase(databasePath, error) == false) {
-        error.addMeesage("Failed to initialize sql-database.");
+        error.addMessage("Failed to initialize sql-database.");
         LOG_ERROR(error);
         return false;
     }
@@ -197,7 +206,7 @@ HanamiRoot::initDatabase(Hanami::ErrorContainer& error)
     // initialize cluster-table
     ClusterTable* clustersTable = ClusterTable::getInstance();
     if (clustersTable->initTable(error) == false) {
-        error.addMeesage("Failed to initialize cluster-table in database.");
+        error.addMessage("Failed to initialize cluster-table in database.");
         LOG_ERROR(error);
         return false;
     }
@@ -205,25 +214,25 @@ HanamiRoot::initDatabase(Hanami::ErrorContainer& error)
     // initialize projects-table
     ProjectsTable* projectsTable = ProjectsTable::getInstance();
     if (projectsTable->initTable(error) == false) {
-        error.addMeesage("Failed to initialize project-table in database.");
+        error.addMessage("Failed to initialize project-table in database.");
         return false;
     }
 
     // initialize users-table
     UsersTable* usersTable = UsersTable::getInstance();
     if (usersTable->initTable(error) == false) {
-        error.addMeesage("Failed to initialize user-table in database.");
+        error.addMessage("Failed to initialize user-table in database.");
         return false;
     }
     if (usersTable->initNewAdminUser(error) == false) {
-        error.addMeesage("Failed to initialize new admin-user even this is necessary.");
+        error.addMessage("Failed to initialize new admin-user even this is necessary.");
         return false;
     }
 
     // initialize dataset-table
     DataSetTable* dataSetTable = DataSetTable::getInstance();
     if (dataSetTable->initTable(error) == false) {
-        error.addMeesage("Failed to initialize dataset-table in database.");
+        error.addMessage("Failed to initialize dataset-table in database.");
         LOG_ERROR(error);
         return false;
     }
@@ -231,7 +240,7 @@ HanamiRoot::initDatabase(Hanami::ErrorContainer& error)
     // initialize request-result-table
     RequestResultTable* requestResultTable = RequestResultTable::getInstance();
     if (requestResultTable->initTable(error) == false) {
-        error.addMeesage("Failed to initialize request-result-table in database.");
+        error.addMessage("Failed to initialize request-result-table in database.");
         LOG_ERROR(error);
         return false;
     }
@@ -239,7 +248,7 @@ HanamiRoot::initDatabase(Hanami::ErrorContainer& error)
     // initialize checkpoint-table
     CheckpointTable* clusterCheckpointTable = CheckpointTable::getInstance();
     if (clusterCheckpointTable->initTable(error) == false) {
-        error.addMeesage("Failed to initialize checkpoint-table in database.");
+        error.addMessage("Failed to initialize checkpoint-table in database.");
         LOG_ERROR(error);
         return false;
     }
@@ -247,7 +256,7 @@ HanamiRoot::initDatabase(Hanami::ErrorContainer& error)
     // initialize tempfile-table
     TempfileTable* tempfileTable = TempfileTable::getInstance();
     if (tempfileTable->initTable(error) == false) {
-        error.addMeesage("Failed to initialize tempfile-table in database.");
+        error.addMessage("Failed to initialize tempfile-table in database.");
         LOG_ERROR(error);
         return false;
     }
@@ -255,7 +264,7 @@ HanamiRoot::initDatabase(Hanami::ErrorContainer& error)
     // initialize error-log-table
     ErrorLogTable* errorLogTable = ErrorLogTable::getInstance();
     if (errorLogTable->initTable(error) == false) {
-        error.addMeesage("Failed to initialize error-log-table in database.");
+        error.addMessage("Failed to initialize error-log-table in database.");
         LOG_ERROR(error);
         return false;
     }
@@ -263,7 +272,7 @@ HanamiRoot::initDatabase(Hanami::ErrorContainer& error)
     // initialize audit-log-table
     AuditLogTable* auditLogTable = AuditLogTable::getInstance();
     if (auditLogTable->initTable(error) == false) {
-        error.addMeesage("Failed to initialize audit-log-table in database.");
+        error.addMessage("Failed to initialize audit-log-table in database.");
         LOG_ERROR(error);
         return false;
     }
@@ -317,35 +326,35 @@ HanamiRoot::initDataDirectory(Hanami::ErrorContainer& error)
 
     const std::string datasetsPath = GET_STRING_CONFIG("storage", "dataset_location", success);
     if (success == false) {
-        error.addMeesage("No dataset_location defined in config.");
+        error.addMessage("No dataset_location defined in config.");
         return false;
     }
 
     if (createDirectory(datasetsPath, error) == false) {
-        error.addMeesage("Failed to create directory for datasets.");
+        error.addMessage("Failed to create directory for datasets.");
         return false;
     }
 
     const std::string checkpointsPath
         = GET_STRING_CONFIG("storage", "checkpoint_location", success);
     if (success == false) {
-        error.addMeesage("No checkpoint_location defined in config.");
+        error.addMessage("No checkpoint_location defined in config.");
         return false;
     }
 
     if (createDirectory(checkpointsPath, error) == false) {
-        error.addMeesage("Failed to create directory for checkpoints.");
+        error.addMessage("Failed to create directory for checkpoints.");
         return false;
     }
 
     const std::string tempfilesPath = GET_STRING_CONFIG("storage", "tempfile_location", success);
     if (success == false) {
-        error.addMeesage("No tempfile_location defined in config.");
+        error.addMessage("No tempfile_location defined in config.");
         return false;
     }
 
     if (createDirectory(tempfilesPath, error) == false) {
-        error.addMeesage("Failed to create directory for tempfiles.");
+        error.addMessage("Failed to create directory for tempfiles.");
         return false;
     }
 
@@ -367,21 +376,21 @@ HanamiRoot::initPolicies(Hanami::ErrorContainer& error)
     // read policy-file-path from config
     const std::string policyFilePath = GET_STRING_CONFIG("auth", "policies", success);
     if (success == false) {
-        error.addMeesage("No policy-file defined in config.");
+        error.addMessage("No policy-file defined in config.");
         return false;
     }
 
     // read policy-file
     std::string policyFileContent;
     if (Hanami::readFile(policyFileContent, policyFilePath, error) == false) {
-        error.addMeesage("Failed to read policy-file");
+        error.addMessage("Failed to read policy-file");
         return false;
     }
 
     // parse policy-file
     Hanami::Policy* policies = Hanami::Policy::getInstance();
     if (policies->parse(policyFileContent, error) == false) {
-        error.addMeesage("Failed to parser policy-file");
+        error.addMessage("Failed to parser policy-file");
         return false;
     }
 
@@ -403,13 +412,13 @@ HanamiRoot::initJwt(Hanami::ErrorContainer& error)
     // read jwt-token-key from config
     const std::string tokenKeyPath = GET_STRING_CONFIG("auth", "token_key_path", success);
     if (success == false) {
-        error.addMeesage("No token_key_path defined in config.");
+        error.addMessage("No token_key_path defined in config.");
         return false;
     }
 
     std::string tokenKeyString;
     if (Hanami::readFile(tokenKeyString, tokenKeyPath, error) == false) {
-        error.addMeesage("Failed to read token-file '" + tokenKeyPath + "'");
+        error.addMessage("Failed to read token-file '" + tokenKeyPath + "'");
         return false;
     }
 

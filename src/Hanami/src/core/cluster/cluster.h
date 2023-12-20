@@ -47,29 +47,31 @@ class Cluster
     ~Cluster();
 
     // cluster-data
-    Hanami::ItemBuffer clusterData;
+    Hanami::DataBuffer clusterData;
     PointerHandler gpuPointer;
 
-    void initCuda();
-
     ClusterHeader* clusterHeader = nullptr;
-    ClusterSettings* clusterSettings = nullptr;
     float* inputValues = nullptr;
     float* outputValues = nullptr;
     float* expectedValues = nullptr;
 
+    std::map<std::string, Brick*> namedBricks;
     Brick* bricks = nullptr;
-    uint32_t* brickOrder = nullptr;
-
     NeuronBlock* neuronBlocks = nullptr;
-    SynapseConnection* synapseConnections = nullptr;
-    SynapseBlock* synapseBlocks = nullptr;
-    uint32_t numberOfBrickBlocks = 0;
+    uint32_t numberOfNeuronBlocks = 0;
 
+    // meta
     const std::string getUuid();
     const std::string getName();
-    bool setName(const std::string newName);
+    bool setName(const std::string& newName);
     bool init(const Hanami::ClusterMeta& clusterTemplate, const std::string& uuid);
+    void initCuda();
+
+    // gpu
+    bool moveToGpu();
+
+    // stats
+    uint64_t getDataSize() const;
 
     // tasks
     Task* getActualTask() const;

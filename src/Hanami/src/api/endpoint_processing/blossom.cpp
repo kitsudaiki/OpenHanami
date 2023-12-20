@@ -157,7 +157,7 @@ Blossom::growBlossom(BlossomIO& blossomIO,
             m_outputValidationMap, blossomIO.output, FieldDef::OUTPUT_TYPE, errorMessage)
         == false)
     {
-        error.addMeesage(errorMessage);
+        error.addMessage(errorMessage);
         status.errorMessage = errorMessage;
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
@@ -240,5 +240,5 @@ Blossom::createError(const BlossomIO& blossomIO,
         errorOutput.addRow(std::vector<std::string>{"blossom-name", blossomIO.blossomName});
     }
 
-    error.addMeesage("Error in location: \n" + errorOutput.toString(200, true));
+    error.addMessage("Error in location: \n" + errorOutput.toString(200, true));
 }

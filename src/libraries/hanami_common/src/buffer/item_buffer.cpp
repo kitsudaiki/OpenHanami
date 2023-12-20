@@ -41,25 +41,6 @@ ItemBuffer::ItemBuffer() {}
 ItemBuffer::~ItemBuffer() {}
 
 /**
- * @brief init basically a simple buffer without items.
- *
- * @param staticSize number of bytes to allocate
- *
- * @return true, if successful, else false
- */
-bool
-ItemBuffer::initBuffer(const uint64_t staticSize)
-{
-    // allocate memory
-    const bool ret = initDataBlocks(0, 0, staticSize);
-    if (ret == false) {
-        return false;
-    }
-
-    return true;
-}
-
-/**
  * @brief initialize a new item-buffer based on the payload of an old one
  *
  * @param data pointer to the data to import
@@ -99,13 +80,9 @@ ItemBuffer::deleteAll()
         return;
     }
 
-    while (m_lock.test_and_set(std::memory_order_acquire)) {
-        asm("");
-    }
     for (uint64_t i = 0; i < metaData->itemCapacity; i++) {
         deleteItem(i);
     }
-    m_lock.clear(std::memory_order_release);
 }
 
 /**
@@ -160,10 +137,17 @@ bool
 ItemBuffer::deleteItem(const uint64_t itemPos)
 {
     // precheck
-    if (metaData == nullptr || metaData->itemSize == 0 || itemPos >= metaData->itemCapacity
-        || metaData->numberOfItems == 0)
-    {
+    if (metaData == nullptr || metaData->itemSize == 0 || itemPos >= metaData->itemCapacity) {
         return false;
+    }
+
+    while (m_lock.test_and_set(std::memory_order_acquire)) {
+        asm("");
+    }
+
+    if (metaData->numberOfItems == 0) {
+        m_lock.clear(std::memory_order_release);
+        return true;
     }
 
     // get buffer
@@ -176,6 +160,7 @@ ItemBuffer::deleteItem(const uint64_t itemPos)
 
     // check that the position is active and not already deleted
     if (placeHolder->status == ItemBuffer::DELETED_SECTION) {
+        m_lock.clear(std::memory_order_release);
         return false;
     }
 
@@ -198,6 +183,8 @@ ItemBuffer::deleteItem(const uint64_t itemPos)
     }
 
     metaData->numberOfItems--;
+
+    m_lock.clear(std::memory_order_release);
 
     return true;
 }
@@ -242,9 +229,14 @@ ItemBuffer::reuseItemPosition()
 uint64_t
 ItemBuffer::reserveDynamicItem()
 {
+    while (m_lock.test_and_set(std::memory_order_acquire)) {
+        asm("");
+    }
+
     // try to reuse item
     const uint64_t reusePos = reuseItemPosition();
     if (reusePos != ITEM_BUFFER_UNDEFINE_POS) {
+        m_lock.clear(std::memory_order_release);
         return reusePos;
     }
 
@@ -259,8 +251,11 @@ ItemBuffer::reserveDynamicItem()
     }
 
     metaData->itemCapacity++;
+    const uint64_t ret = metaData->itemCapacity - 1;
 
-    return metaData->itemCapacity - 1;
+    m_lock.clear(std::memory_order_release);
+
+    return ret;
 }
 
 }  // namespace Hanami

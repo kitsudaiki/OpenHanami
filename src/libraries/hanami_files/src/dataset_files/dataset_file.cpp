@@ -78,7 +78,7 @@ DataSetFile::initNewFile(Hanami::ErrorContainer& error)
 
     // write dataset-header to file
     if (m_targetFile->writeDataIntoFile(&dataSetHeader, 0, sizeof(DataSetHeader), error) == false) {
-        error.addMeesage("Failed to write dataset to disc");
+        error.addMessage("Failed to write dataset to disc");
         return false;
     }
 
@@ -99,7 +99,7 @@ DataSetFile::readFromFile(Hanami::ErrorContainer& error)
     // create complete file
     Hanami::DataBuffer buffer;
     if (m_targetFile->readCompleteFile(buffer, error) == false) {
-        error.addMeesage("Faile to read data of dataset from disc");
+        error.addMessage("Faile to read data of dataset from disc");
         return false;
     }
 
@@ -144,7 +144,7 @@ DataSetFile::addBlock(const uint64_t pos,
             data, m_headerSize + pos * sizeof(float), numberOfValues * sizeof(float), error)
         == false)
     {
-        error.addMeesage("Failed to write block into dataset");
+        error.addMessage("Failed to write block into dataset");
         return false;
     }
 
@@ -168,7 +168,7 @@ readDataSetFile(const std::string& filePath, Hanami::ErrorContainer& error)
     if (targetFile->readDataFromFile(&header, 0, sizeof(DataSetFile::DataSetHeader), error)
         == false)
     {
-        error.addMeesage("failed to read dataset-file");
+        error.addMessage("failed to read dataset-file");
         return nullptr;
     }
 
