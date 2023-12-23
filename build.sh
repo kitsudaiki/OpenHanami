@@ -5,11 +5,9 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 PARENT_DIR="$(dirname "$DIR")"
 
 if [ $1 = "test" ]; then
-    QMAKE_CXX=clang++-15  /usr/lib/x86_64-linux-gnu/qt5/bin/qmake "$PARENT_DIR/Hanami/Hanami.pro" -r -spec linux-clang "CONFIG += optimize_full staticlib run_tests" || \
-                          /usr/bin/qmake "$PARENT_DIR/Hanami/Hanami.pro" -r -spec linux-clang "CONFIG += optimize_full staticlib run_tests"
+    cmake -DCMAKE_BUILD_TYPE=Release -Drun_tests=ON  "$PARENT_DIR/Hanami"
 else
-    QMAKE_CXX=clang++-15  /usr/lib/x86_64-linux-gnu/qt5/bin/qmake "$PARENT_DIR/Hanami/Hanami.pro" -r -spec linux-clang "CONFIG += optimize_full staticlib" || \
-                          /usr/bin/qmake "$PARENT_DIR/Hanami/Hanami.pro" -r -spec linux-clang "CONFIG += optimize_full staticlib"
+    cmake -DCMAKE_BUILD_TYPE=Release "$PARENT_DIR/Hanami"
 fi
 
 /usr/bin/make -j8

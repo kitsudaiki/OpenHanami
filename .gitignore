@@ -16,3 +16,6 @@ testing/ansible_deploy/.vagrant/
 __pycache__
 proto3_pb2.py
 hanami_env
+*.qmake2cmake
+CMakeLists.txt.user
+*.orig

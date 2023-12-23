@@ -20,13 +20,7 @@ This document should help to setup a local environment for development.
     apt-get install gcc g++ clang-15 clang-format-15 make bison flex libssl-dev libcrypto++-dev libboost1.74-dev uuid-dev libsqlite3-dev protobuf-compiler nvidia-cuda-toolkit
     ```
 
-- Install `qmake`
-
-    !!! info
-
-        At the moment the project still uses `qmake` to build. Thats because at the time, when this project startet, I used the Qt-framwork. The Qt-code was removed to be independent, because of the licensing stuff and so one. Because I really like the Qt-Creator as IDE for C++ programming, `qmake` remained as build-tool. This makes it harder for using other development tools and because of this, in the near future `qmake` will be replaced by `cmake` in context of issue https://github.com/kitsudaiki/Hanami/issues/61.
-
-    Install the package `qt5-qmake` or the `Qt Creator` itself.
+- Install `cmake`
 
 - Download the MNIST-dataset
 
@@ -68,7 +62,7 @@ When using the Qt Creator as IDE, then you only need to load the `Hanami.pro` in
 Without the Qt creator you can still build the project within the root-directory of the repository with:
 
 ```
-QMAKE_CXX=clang++-15 qmake "Hanami.pro" -r -spec linux-clang "CONFIG += staticlib run_tests" 
+cmake -DCMAKE_BUILD_TYPE=Debug -Drun_tests=ON "Hanami/"
 
 make -j8
 ```

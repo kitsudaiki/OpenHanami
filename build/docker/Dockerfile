@@ -5,7 +5,7 @@ RUN apt-get update && \
                        gcc \
                        g++ \
                        make \
-                       qt5-qmake \
+                       cmake \
                        bison \
                        flex \
                        git \
