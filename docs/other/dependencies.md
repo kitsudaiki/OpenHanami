@@ -11,7 +11,7 @@ Installed packages under the actual used Ubuntu 23.04
 | clang-15 | C++-compiler |
 | clang-format-15  | Helper for styling the source-code |
 | make  | Build-Tool |
-| qt5-qmake  | Qt-specific build-tool, because pro-files are used |
+| cmake  | Tool to genereate make-file for the code. |
 | bison  | Parser-Generator |
 | flex  | Lexxer for the Parser-Generator |
 | libssl-dev | ssl-library for TCS-encryption of network-connections |
@@ -63,7 +63,7 @@ I know, this is not a valid UML-diagram or something like this. It should old vi
 | **hanami_policies** | Parser for custon policy-files. |
 | **hanami_hardware** | Collect and aggregate information of the local available hardware ressources. |
 | **hanami_files** | File-handler and converter. |
-| **hanami_network** | Self-created session-layer-protocol for network-communication in the Kitsunemimi-projects. |
+| **hanami_network** | Custom session-layer-protocol for network-communication in the Kitsunemimi-projects. |
 | **hanami_database** | Abstration-layer for access databases. At the moment it only contains functionalities for easier creating of sql-requests. |
 | **hanami_sqlite** | Simple wrapper-library for Sqlit3 databases. |
 | **hanami_cpu** | Simple library to read different information of the cpu, like topological information, speed and energy consumption with RAPL, manipulate the speed of single cores of the cpu and read information of the local memory. |

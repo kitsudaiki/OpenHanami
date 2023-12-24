@@ -88,7 +88,7 @@ If you need help to setup things, have a question or something like this, feel f
 **Required packages:**
 
 ```
-sudo apt-get install -y git ssh gcc g++ clang-15 clang-format-15 make qt5-qmake bison flex libssl-dev libcrypto++-dev libboost1.74-dev uuid-dev  libsqlite3-dev protobuf-compiler nvidia-cuda-toolkit
+sudo apt-get install -y git ssh gcc g++ clang-15 clang-format-15 make cmake bison flex libssl-dev libcrypto++-dev libboost1.74-dev uuid-dev  libsqlite3-dev protobuf-compiler nvidia-cuda-toolkit
 ```
 
 **Clone repo with:**
