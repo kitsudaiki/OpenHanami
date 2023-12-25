@@ -76,12 +76,39 @@ searchTargetInBrick(Brick* targetBrick)
 inline void
 resizeConnections(Brick* targetBrick)
 {
+    const uint32_t dimXold = targetBrick->dimX;
+    const uint32_t dimYold = targetBrick->dimY;
+
+    // update brick-dimensions
     if (targetBrick->dimX < targetBrick->numberOfNeuronBlocks) {
         targetBrick->dimX++;
     }
-
     targetBrick->dimY++;
+
+    // resize list
     targetBrick->connectionBlocks.resize(targetBrick->dimX * targetBrick->dimY);
+
+    // if there was no scaling in x-dimension, then no re-ordering necessary
+    if (targetBrick->dimX == dimXold) {
+        return;
+    }
+
+    LOG_DEBUG("resized connection-Block: " + std::to_string(dimXold) + ":" + std::to_string(dimYold)
+              + " -> " + std::to_string(targetBrick->dimX) + ":"
+              + std::to_string(targetBrick->dimY));
+    uint32_t newPos = 0;
+    uint32_t oldPos = 0;
+
+    // update content of list for the new size
+    for (int32_t y = dimYold - 1; y >= 1; y--) {
+        for (int32_t x = dimXold - 1; x >= 0; x--) {
+            newPos = (y * targetBrick->dimX) + x;
+            oldPos = (y * dimXold) + x;
+
+            targetBrick->connectionBlocks[newPos] = targetBrick->connectionBlocks[oldPos];
+            targetBrick->connectionBlocks[oldPos] = ConnectionBlock();
+        }
+    }
 }
 
 /**
@@ -141,11 +168,12 @@ updateSections(Cluster& cluster)
     const uint32_t numberOfBlocks = cluster.clusterHeader->neuronBlocks.count;
     for (uint32_t neuronBlockId = 0; neuronBlockId < numberOfBlocks; neuronBlockId++) {
         neuronBlock = &cluster.neuronBlocks[neuronBlockId];
+
         for (uint32_t sourceId = 0; sourceId < neuronBlock->numberOfNeurons; sourceId++) {
             neuron = &neuronBlock->neurons[sourceId];
+
             if (neuron->isNew > 0) {
                 found = true;
-                std::cout << "----- new: " << neuronBlock->brickId << std::endl;
                 SourceLocationPtr originLocation;
                 originLocation.blockId = neuronBlockId;
                 originLocation.sectionId = sourceId;

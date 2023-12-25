@@ -83,7 +83,7 @@ createNewSynapse(NeuronBlock* block,
  */
 template <bool doTrain>
 __device__ __forceinline__ void
-synapseProcessingBackward(Synapse* section,
+synapseProcessingBackward(SynapseSection* section,
                           SynapseConnection* connection,
                           NeuronBlock* targetNeuronBlock,
                           Neuron* sourceNeuron,
@@ -92,16 +92,13 @@ synapseProcessingBackward(Synapse* section,
                           const uint* randomValues,
                           float* localMem)
 {
-    const uint tid = threadIdx.x;
-
     float counter = sourceNeuron->potential - connection->offset;
     uint pos = 0;
     Synapse* synapse = nullptr;
-    Neuron* targetNeuron = nullptr;
 
     // iterate over all synapses in the section
     while (pos < SYNAPSES_PER_SYNAPSESECTION && counter > 0.01f) {
-        synapse = &section[pos];
+        synapse = &section->synapses[pos];
 
         if constexpr (doTrain) {
             // create new synapse if necesarry and training is active
@@ -111,14 +108,14 @@ synapseProcessingBackward(Synapse* section,
 
             if (synapse->border > 2.0f * counter && pos < SYNAPSES_PER_SYNAPSESECTION - 2) {
                 const float val = synapse->border / 2.0f;
-                section[pos + 1].border += val;
+                section->synapses[pos + 1].border += val;
                 synapse->border -= val;
             }
         }
 
         if (synapse->targetNeuronId != UNINIT_STATE_16) {
             // update target-neuron
-            if(counter >= synapse->border) {
+            if (counter >= synapse->border) {
                 localMem[synapse->targetNeuronId] += synapse->weight;
             } else {
                 localMem[synapse->targetNeuronId] += synapse->weight * ((1.0f / synapse->border) * counter);
@@ -132,9 +129,9 @@ synapseProcessingBackward(Synapse* section,
 
     if constexpr (doTrain) {
         sourceNeuron->isNew = (counter > 0.01f
-                               && connection->hasNext == false) * (connection->origin.posInNeuron + 1);
+                               && section->hasNext == false) * (connection->origin.posInNeuron + 1);
         sourceNeuron->newOffset = (sourceNeuron->potential - counter) + connection->offset;
-        connection->hasNext = true;
+        section->hasNext = true;
     }
 }
 
@@ -156,7 +153,6 @@ processBrick(NeuronBlock* neuronBlocks,
              const uint32_t neuronBlockPos,
              const uint32_t numberConnectionBlocks,
              const uint32_t dimY,
-             const uint32_t brickId,
              const bool isOutputBrick)
 {
     SynapseConnection* scon = nullptr;
@@ -164,30 +160,26 @@ processBrick(NeuronBlock* neuronBlocks,
     NeuronBlock* targetNeuronBlock = nullptr;
     Neuron* sourceNeuron = nullptr;
     ConnectionBlock* connectionBlock = nullptr;
-    Synapse* section = nullptr;
-    uint32_t counter = 0;
+    SynapseSection* section = nullptr;
     const uint64_t tid = threadIdx.x;
     const uint64_t neuronBlockId = blockIdx.x + neuronBlockPos;
 
     // init temp-values
     __shared__ float tempVal[64][64];
-    for(uint i = 0; i < 64; ++i){
+    for (uint i = 0; i < 64; ++i){
         tempVal[tid][i] = 0.0f;
     }
 
-    //if(tid == 0) {
-    //    printf("brickId: %d\n", brickId);
-    //}
-
     // process synapses
-    for (int c = blockIdx.x; c < blockIdx.x + dimY; c++) {
+    for (int c = blockIdx.x; c < blockIdx.x + dimY; ++c) {
         connectionBlock = &connectionBlocks[c];
         scon = &connectionBlock->connections[tid];
+
         if (scon->origin.blockId != UNINIT_STATE_32) {
             sourceNeuronBlock = &neuronBlocks[scon->origin.blockId];
             sourceNeuron = &sourceNeuronBlock->neurons[scon->origin.sectionId];
             if (sourceNeuron->active != 0) {
-                section = synapseBlocks[connectionBlock->targetSynapseBlockPos].synapses[tid];
+                section = &synapseBlocks[connectionBlock->targetSynapseBlockPos].sections[tid];
                 targetNeuronBlock = &neuronBlocks[neuronBlockId];
 
                 synapseProcessingBackward<doTrain>(section,
@@ -207,9 +199,8 @@ processBrick(NeuronBlock* neuronBlocks,
     // aggregate temp-values
     NeuronBlock* currentNeuronBlock = &neuronBlocks[neuronBlockId];
     Neuron* neuron = &currentNeuronBlock->neurons[tid];
-    for(uint i = 0; i < 64; ++i) {
+    for (uint i = 0; i < 64; ++i) {
         neuron->input += tempVal[i][tid];
-        //printf("input: %f \n", neuron->input);
     }
 
     // process neurons
@@ -248,7 +239,7 @@ processBrick(NeuronBlock* neuronBlocks,
  * @param sourceNeuron
  */
 __device__ __forceinline__ void
-backpropagateSection(Synapse* section,
+backpropagateSection(SynapseSection* section,
                      SynapseConnection* connection,
                      NeuronBlock* targetNeuronBlock,
                      Neuron* sourceNeuron)
@@ -264,7 +255,7 @@ backpropagateSection(Synapse* section,
     // iterate over all synapses in the section
     while (pos < SYNAPSES_PER_SYNAPSESECTION && counter > 0.01f) {
         // break look, if no more synapses to process
-        synapse = &section[pos];
+        synapse = &section->synapses[pos];
         if (synapse->targetNeuronId != UNINIT_STATE_16) {
             // update weight
             targetNeuron = &targetNeuronBlock->neurons[synapse->targetNeuronId];
@@ -297,10 +288,9 @@ backpropagateNeurons(NeuronBlock* neuronBlocks,
 {
     NeuronBlock* sourceNeuronBlock = nullptr;
     Neuron* sourceNeuron = nullptr;
-    Synapse* section = nullptr;
+    SynapseSection* section = nullptr;
     ConnectionBlock* connectionBlock = nullptr;
     SynapseConnection* scon = nullptr;
-    uint32_t counter = 0;
     float delta;
     const uint64_t tid = threadIdx.x;
     const uint64_t neuronBlockId = blockIdx.x + neuronBlockPos;
@@ -335,13 +325,14 @@ backpropagateNeurons(NeuronBlock* neuronBlocks,
 
     __syncthreads();
 
-    for (int c = blockIdx.x; c < blockIdx.x + dimY; c++) {
+    for (int c = blockIdx.x; c < blockIdx.x + dimY; ++c) {
         connectionBlock = &connectionBlocks[c];
         scon = &connectionBlock->connections[tid];
+
         if (scon->origin.blockId != UNINIT_STATE_32) {
             sourceNeuronBlock = &neuronBlocks[scon->origin.blockId];
             sourceNeuron = &sourceNeuronBlock->neurons[scon->origin.sectionId];
-            section = synapseBlocks[connectionBlock->targetSynapseBlockPos].synapses[tid];
+            section = &synapseBlocks[connectionBlock->targetSynapseBlockPos].sections[tid];
             targetNeuronBlock = &neuronBlocks[neuronBlockId];
 
             backpropagateSection(section, scon, targetNeuronBlock, sourceNeuron);
@@ -374,7 +365,7 @@ copyToDevice_CUDA(PointerHandler* gpuPointer,
     cudaMemcpy(gpuPointer->randomValues,       randomValues,       NUMBER_OF_RAND_VALUES  * sizeof(uint32_t),          cudaMemcpyHostToDevice);
 
     gpuPointer->connectionBlocks.resize(numberOfBricks);
-    for(uint32_t brickId = 0; brickId < numberOfBricks; ++brickId) {
+    for (uint32_t brickId = 0; brickId < numberOfBricks; ++brickId) {
         gpuPointer->connectionBlocks[brickId] = nullptr;
     }
 }
@@ -392,16 +383,17 @@ processing_CUDA(PointerHandler* gpuPointer,
                 const uint32_t numberOfNeuronBlocks,
                 const bool doTrain)
 {
-    for(uint32_t brickId = 0; brickId < numberOfBricks; ++brickId)
+    for (uint32_t brickId = 0; brickId < numberOfBricks; ++brickId)
     {
         Brick* brick = &bricks[brickId];
-        if(brick->isInputBrick)
-        {
-            if(doTrain) {
-                processNeuronsOfInputBrickBackward<true>(brick, inputValues, neuronBlocks);
-            } else {
-                processNeuronsOfInputBrickBackward<false>(brick, inputValues, neuronBlocks);
-            }
+        if (brick->isInputBrick == false) {
+            continue;
+        }
+
+        if (doTrain) {
+            processNeuronsOfInputBrickBackward<true>(brick, inputValues, neuronBlocks);
+        } else {
+            processNeuronsOfInputBrickBackward<false>(brick, inputValues, neuronBlocks);
         }
     }
 
@@ -410,66 +402,56 @@ processing_CUDA(PointerHandler* gpuPointer,
                numberOfNeuronBlocks * sizeof(NeuronBlock),
                cudaMemcpyHostToDevice);
 
-    for(uint32_t brickId = 0; brickId < numberOfBricks; ++brickId)
+    for (uint32_t brickId = 0; brickId < numberOfBricks; ++brickId)
     {
         Brick* brick = &bricks[brickId];
-        if(brick->isInputBrick == false)
+        if (brick->isInputBrick) {
+            continue;
+        }
+
+        if (doTrain)
         {
-            if(doTrain)
-            {
-                processBrick<true><<<brick->dimX, 64>>>(
-                    gpuPointer->neuronBlocks,
-                    gpuPointer->synapseBlocks,
-                    gpuPointer->connectionBlocks[brickId],
-                    gpuPointer->clusterSettings,
-                    gpuPointer->randomValues,
-                    brick->neuronBlockPos,
-                    brick->connectionBlocks.size(),
-                    brick->dimY,
-                                                          brickId,
-                    brick->isOutputBrick);
-            }
-            else
-            {
-                processBrick<false><<<brick->dimX, 64>>>(
-                    gpuPointer->neuronBlocks,
-                    gpuPointer->synapseBlocks,
-                    gpuPointer->connectionBlocks[brickId],
-                    gpuPointer->clusterSettings,
-                    gpuPointer->randomValues,
-                    brick->neuronBlockPos,
-                    brick->connectionBlocks.size(),
-                    brick->dimY,
-                                                           brickId,
-                    brick->isOutputBrick);
-            }
+            processBrick<true><<<brick->dimX, 64>>>(
+                gpuPointer->neuronBlocks,
+                gpuPointer->synapseBlocks,
+                gpuPointer->connectionBlocks[brickId],
+                gpuPointer->clusterSettings,
+                gpuPointer->randomValues,
+                brick->neuronBlockPos,
+                brick->connectionBlocks.size(),
+                brick->dimY,
+                brick->isOutputBrick);
+        }
+        else
+        {
+            processBrick<false><<<brick->dimX, 64>>>(
+                gpuPointer->neuronBlocks,
+                gpuPointer->synapseBlocks,
+                gpuPointer->connectionBlocks[brickId],
+                gpuPointer->clusterSettings,
+                gpuPointer->randomValues,
+                brick->neuronBlockPos,
+                brick->connectionBlocks.size(),
+                brick->dimY,
+                brick->isOutputBrick);
         }
     }
 
     cudaDeviceSynchronize();
-
-    if(doTrain) {
-        for(uint32_t brickId = 0; brickId < numberOfBricks; ++brickId)
-        {
-            Brick* brick = &bricks[brickId];
-            cudaMemcpy(&brick->connectionBlocks[0],
-                       gpuPointer->connectionBlocks[brickId],
-                       brick->connectionBlocks.size() * sizeof(ConnectionBlock),
-                       cudaMemcpyDeviceToHost);
-        }
-    }
 
     cudaMemcpy(neuronBlocks,
                gpuPointer->neuronBlocks,
                numberOfNeuronBlocks * sizeof(NeuronBlock),
                cudaMemcpyDeviceToHost);
 
-    for(uint32_t brickId = 0; brickId < numberOfBricks; ++brickId)
+    for (uint32_t brickId = 0; brickId < numberOfBricks; ++brickId)
     {
         Brick* brick = &bricks[brickId];
-        if(brick->isOutputBrick) {
-            processNeuronsOfOutputBrick(brick, outputValues, neuronBlocks);
+        if (brick->isOutputBrick == false) {
+            continue;
         }
+
+        processNeuronsOfOutputBrick(brick, outputValues, neuronBlocks);
     }
 }
 
@@ -484,12 +466,12 @@ backpropagation_CUDA(PointerHandler* gpuPointer,
                      const uint32_t numberOfNeuronBlocks,
                      ClusterSettings* settings)
 {
-    for(uint32_t brickId = 0; brickId < numberOfBricks; ++brickId)
+    for (uint32_t brickId = 0; brickId < numberOfBricks; ++brickId)
     {
         Brick* brick = &bricks[brickId];
-        if(brick->isOutputBrick)
+        if (brick->isOutputBrick)
         {
-            if(backpropagateOutput(brick,
+            if (backpropagateOutput(brick,
                                    neuronBlocks,
                                    outputValues,
                                    expectedValues,
@@ -505,19 +487,20 @@ backpropagation_CUDA(PointerHandler* gpuPointer,
                numberOfNeuronBlocks * sizeof(NeuronBlock),
                cudaMemcpyHostToDevice);
 
-    for(int32_t brickId = numberOfBricks - 1; brickId >= 0; --brickId)
+    for (int32_t brickId = numberOfBricks - 1; brickId >= 0; --brickId)
     {
         Brick* brick = &bricks[brickId];
-        if(brick->isInputBrick == false)
-        {
-            backpropagateNeurons<<<brick->dimX, 64>>>(
-                    gpuPointer->neuronBlocks,
-                    gpuPointer->synapseBlocks,
-                    gpuPointer->connectionBlocks[brickId],
-                    brick->neuronBlockPos,
-                    brick->connectionBlocks.size(),
-                    brick->dimY);
+        if (brick->isInputBrick) {
+            continue;
         }
+
+        backpropagateNeurons<<<brick->dimX, 64>>>(
+                gpuPointer->neuronBlocks,
+                gpuPointer->synapseBlocks,
+                gpuPointer->connectionBlocks[brickId],
+                brick->neuronBlockPos,
+                brick->connectionBlocks.size(),
+                brick->dimY);
     }
 
     cudaDeviceSynchronize();
@@ -536,10 +519,10 @@ update_CUDA(PointerHandler* gpuPointer,
             Brick* bricks,
             const uint32_t numberOfBricks)
 {
-    for(uint32_t brickId = 0; brickId < numberOfBricks; ++brickId)
+    for (uint32_t brickId = 0; brickId < numberOfBricks; ++brickId)
     {
         Brick* brick = &bricks[brickId];
-        if(gpuPointer->connectionBlocks[brickId] != nullptr)
+        if (gpuPointer->connectionBlocks[brickId] != nullptr)
         {
             cudaFree(gpuPointer->connectionBlocks[brickId]);
             gpuPointer->connectionBlocks[brickId] = nullptr;

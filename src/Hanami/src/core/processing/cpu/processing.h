@@ -126,7 +126,7 @@ createNewSynapse(NeuronBlock* block,
 template <bool doTrain>
 inline void
 synapseProcessingBackward(Cluster& cluster,
-                          Synapse* section,
+                          SynapseSection* section,
                           SynapseConnection* connection,
                           NeuronBlock* targetNeuronBlock,
                           Neuron* sourceNeuron,
@@ -140,7 +140,7 @@ synapseProcessingBackward(Cluster& cluster,
 
     // iterate over all synapses in the section
     while (pos < SYNAPSES_PER_SYNAPSESECTION && counter > 0.01f) {
-        synapse = &section[pos];
+        synapse = &section->synapses[pos];
 
         if constexpr (doTrain) {
             // create new synapse if necesarry and training is active
@@ -150,7 +150,7 @@ synapseProcessingBackward(Cluster& cluster,
 
             if (synapse->border > 2.0f * counter && pos < SYNAPSES_PER_SYNAPSESECTION - 2) {
                 const float val = synapse->border / 2.0f;
-                section[pos + 1].border += val;
+                section->synapses[pos + 1].border += val;
                 synapse->border -= val;
             }
         }
@@ -172,9 +172,9 @@ synapseProcessingBackward(Cluster& cluster,
     }
 
     if constexpr (doTrain) {
-        if (counter > 0.01f && connection->hasNext == false) {
+        if (counter > 0.01f && section->hasNext == false) {
             const float newOffset = (sourceNeuron->potential - counter) + connection->offset;
-            connection->hasNext = createNewSection(
+            section->hasNext = createNewSection(
                 cluster, originLocation, newOffset, connection->origin.posInNeuron + 1);
         }
     }
@@ -200,14 +200,15 @@ processBrick(Cluster& cluster,
     Neuron* neuron = nullptr;
     NeuronBlock* sourceNeuronBlock = nullptr;
     NeuronBlock* targetNeuronBlock = nullptr;
+    ConnectionBlock* connectionBlock = nullptr;
     Neuron* sourceNeuron = nullptr;
-    Synapse* section = nullptr;
-    uint32_t counter = 0;
+    SynapseSection* section = nullptr;
 
     // process synapses
-    for (ConnectionBlock& connection : brick->connectionBlocks) {
+    for (uint32_t c = 0; c < brick->connectionBlocks.size(); c++) {
+        connectionBlock = &brick->connectionBlocks[c];
         for (uint16_t i = 0; i < NUMBER_OF_SYNAPSESECTION; i++) {
-            scon = &connection.connections[i];
+            scon = &connectionBlock->connections[i];
             if (scon->origin.blockId == UNINIT_STATE_32) {
                 continue;
             }
@@ -217,8 +218,8 @@ processBrick(Cluster& cluster,
                 continue;
             }
 
-            section = synapseBlocks[connection.targetSynapseBlockPos].synapses[i];
-            targetNeuronBlock = &neuronBlocks[brick->neuronBlockPos + (counter / brick->dimY)];
+            section = &synapseBlocks[connectionBlock->targetSynapseBlockPos].sections[i];
+            targetNeuronBlock = &neuronBlocks[brick->neuronBlockPos + (c / brick->dimY)];
 
             synapseProcessingBackward<doTrain>(cluster,
                                                section,
@@ -228,42 +229,42 @@ processBrick(Cluster& cluster,
                                                scon->origin,
                                                clusterSettings);
         }
+    }
 
-        ++counter;
+    if (brick->isOutputBrick) {
+        return;
     }
 
     // process neurons
-    if (brick->isOutputBrick == false) {
-        for (uint32_t blockId = brick->neuronBlockPos;
-             blockId < brick->numberOfNeuronBlocks + brick->neuronBlockPos;
-             ++blockId)
+    for (uint32_t blockId = brick->neuronBlockPos;
+         blockId < brick->numberOfNeuronBlocks + brick->neuronBlockPos;
+         ++blockId)
+    {
+        targetNeuronBlock = &neuronBlocks[blockId];
+        for (uint32_t neuronIdInBlock = 0; neuronIdInBlock < NEURONS_PER_NEURONSECTION;
+             ++neuronIdInBlock)
         {
-            targetNeuronBlock = &neuronBlocks[blockId];
-            for (uint32_t neuronIdInBlock = 0; neuronIdInBlock < NEURONS_PER_NEURONSECTION;
-                 ++neuronIdInBlock)
-            {
-                neuron = &targetNeuronBlock->neurons[neuronIdInBlock];
-                neuron->potential /= clusterSettings->neuronCooldown;
-                neuron->refractionTime = neuron->refractionTime >> 1;
+            neuron = &targetNeuronBlock->neurons[neuronIdInBlock];
+            neuron->potential /= clusterSettings->neuronCooldown;
+            neuron->refractionTime = neuron->refractionTime >> 1;
 
-                if (neuron->refractionTime == 0) {
-                    neuron->potential = clusterSettings->potentialOverflow * neuron->input;
-                    neuron->refractionTime = clusterSettings->refractionTime;
-                }
+            if (neuron->refractionTime == 0) {
+                neuron->potential = clusterSettings->potentialOverflow * neuron->input;
+                neuron->refractionTime = clusterSettings->refractionTime;
+            }
 
-                // update neuron
-                neuron->potential -= neuron->border;
-                neuron->active = neuron->potential > 0.0f;
-                neuron->input = 0.0f;
-                neuron->potential = log2(neuron->potential + 1.0f);
+            // update neuron
+            neuron->potential -= neuron->border;
+            neuron->active = neuron->potential > 0.0f;
+            neuron->input = 0.0f;
+            neuron->potential = log2(neuron->potential + 1.0f);
 
-                if constexpr (doTrain) {
-                    if (neuron->active != 0 && neuron->inUse == 0) {
-                        SourceLocationPtr originLocation;
-                        originLocation.blockId = blockId;
-                        originLocation.sectionId = neuronIdInBlock;
-                        neuron->inUse = createNewSection(cluster, originLocation, 0.0f, 0);
-                    }
+            if constexpr (doTrain) {
+                if (neuron->active != 0 && neuron->inUse == 0) {
+                    SourceLocationPtr originLocation;
+                    originLocation.blockId = blockId;
+                    originLocation.sectionId = neuronIdInBlock;
+                    neuron->inUse = createNewSection(cluster, originLocation, 0.0f, 0);
                 }
             }
         }

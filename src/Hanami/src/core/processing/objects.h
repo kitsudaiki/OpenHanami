@@ -43,7 +43,7 @@
 #define UNINTI_POINT_32 0x0FFFFFFF
 
 // network-predefines
-#define SYNAPSES_PER_SYNAPSESECTION 64
+#define SYNAPSES_PER_SYNAPSESECTION 63
 #define NUMBER_OF_SYNAPSESECTION 64
 #define NEURONS_PER_NEURONSECTION 64
 #define POSSIBLE_NEXT_AXON_STEP 80
@@ -142,15 +142,21 @@ static_assert(sizeof(Synapse) == 16);
 
 //==================================================================================================
 
-struct SynapseBlock {
-    Synapse synapses[NUMBER_OF_SYNAPSESECTION][SYNAPSES_PER_SYNAPSESECTION];
+struct SynapseSection {
+    Synapse synapses[SYNAPSES_PER_SYNAPSESECTION];
+    uint8_t padding[15];
+    bool hasNext = false;
 
-    SynapseBlock()
-    {
-        for (uint32_t i = 0; i < NUMBER_OF_SYNAPSESECTION; i++) {
-            std::fill_n(synapses[i], SYNAPSES_PER_SYNAPSESECTION, Synapse());
-        }
-    }
+    SynapseSection() { std::fill_n(synapses, SYNAPSES_PER_SYNAPSESECTION, Synapse()); }
+};
+static_assert(sizeof(SynapseSection) == 1024);
+
+//==================================================================================================
+
+struct SynapseBlock {
+    SynapseSection sections[NUMBER_OF_SYNAPSESECTION];
+
+    SynapseBlock() { std::fill_n(sections, NUMBER_OF_SYNAPSESECTION, SynapseSection()); }
 };
 static_assert(sizeof(SynapseBlock) == 64 * 1024);
 
@@ -209,8 +215,7 @@ static_assert(sizeof(NeuronBlock) == 3648);
 struct SynapseConnection {
     SourceLocationPtr origin;
     float offset = 0.0f;
-    bool hasNext = false;
-    uint8_t padding[3];
+    uint8_t padding[4];
 
     SynapseConnection()
     {

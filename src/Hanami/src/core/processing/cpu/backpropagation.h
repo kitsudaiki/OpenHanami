@@ -40,7 +40,7 @@
  * @param sourceNeuron
  */
 void
-backpropagateSection(Synapse* section,
+backpropagateSection(SynapseSection* section,
                      SynapseConnection* connection,
                      NeuronBlock* targetNeuronBlock,
                      Neuron* sourceNeuron)
@@ -56,7 +56,7 @@ backpropagateSection(Synapse* section,
     // iterate over all synapses in the section
     while (pos < SYNAPSES_PER_SYNAPSESECTION && counter > 0.01f) {
         // break look, if no more synapses to process
-        synapse = &section[pos];
+        synapse = &section->synapses[pos];
         if (synapse->targetNeuronId != UNINIT_STATE_16) {
             // update weight
             targetNeuron = &targetNeuronBlock->neurons[synapse->targetNeuronId];
@@ -87,8 +87,8 @@ backpropagateNeurons(Brick* brick, NeuronBlock* neuronBlocks, SynapseBlock* syna
     NeuronBlock* sourceNeuronBlock = nullptr;
     NeuronBlock* targetNeuronBlock = nullptr;
     Neuron* sourceNeuron = nullptr;
-    Synapse* section = nullptr;
-    uint32_t counter = 0;
+    ConnectionBlock* connectionBlock = nullptr;
+    SynapseSection* section = nullptr;
     float delta;
 
     // iterate over all neurons within the brick
@@ -129,21 +129,20 @@ backpropagateNeurons(Brick* brick, NeuronBlock* neuronBlocks, SynapseBlock* syna
         }
     }
 
-    for (ConnectionBlock& connection : brick->connectionBlocks) {
+    for (uint32_t c = 0; c < brick->connectionBlocks.size(); c++) {
+        connectionBlock = &brick->connectionBlocks[c];
         for (uint16_t i = 0; i < NUMBER_OF_SYNAPSESECTION; i++) {
-            scon = &connection.connections[i];
+            scon = &connectionBlock->connections[i];
             if (scon->origin.blockId == UNINIT_STATE_32) {
                 continue;
             }
             sourceNeuronBlock = &neuronBlocks[scon->origin.blockId];
             sourceNeuron = &sourceNeuronBlock->neurons[scon->origin.sectionId];
-            section = synapseBlocks[connection.targetSynapseBlockPos].synapses[i];
-            targetNeuronBlock = &neuronBlocks[brick->neuronBlockPos + (counter / brick->dimY)];
+            section = &synapseBlocks[connectionBlock->targetSynapseBlockPos].sections[i];
+            targetNeuronBlock = &neuronBlocks[brick->neuronBlockPos + (c / brick->dimY)];
 
             backpropagateSection(section, scon, targetNeuronBlock, sourceNeuron);
         }
-
-        ++counter;
     }
 }
 
