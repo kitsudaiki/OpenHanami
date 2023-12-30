@@ -131,10 +131,12 @@ reinitPointer(Cluster* cluster, const uint64_t numberOfBytes)
     cluster->inputValues = new float[clusterHeader->numberOfInputs];
     cluster->outputValues = new float[clusterHeader->numberOfOutputs];
     cluster->expectedValues = new float[clusterHeader->numberOfOutputs];
+    cluster->tempNeuronBlocks = new TempNeuronBlock[clusterHeader->neuronBlocks.count];
 
     std::fill_n(cluster->inputValues, clusterHeader->numberOfInputs, 0.0f);
     std::fill_n(cluster->outputValues, clusterHeader->numberOfOutputs, 0.0f);
     std::fill_n(cluster->expectedValues, clusterHeader->numberOfOutputs, 0.0f);
+    std::fill_n(cluster->tempNeuronBlocks, clusterHeader->neuronBlocks.count, TempNeuronBlock());
 
     pos = clusterHeader->bricks.bytePos;
     cluster->bricks = reinterpret_cast<Brick*>(dataPtr + pos);
@@ -281,10 +283,12 @@ initSegmentPointer(Cluster* cluster, const ClusterHeader& header)
     cluster->inputValues = new float[clusterHeader->numberOfInputs];
     cluster->outputValues = new float[clusterHeader->numberOfOutputs];
     cluster->expectedValues = new float[clusterHeader->numberOfOutputs];
+    cluster->tempNeuronBlocks = new TempNeuronBlock[clusterHeader->neuronBlocks.count];
 
     std::fill_n(cluster->inputValues, clusterHeader->numberOfInputs, 0.0f);
     std::fill_n(cluster->outputValues, clusterHeader->numberOfOutputs, 0.0f);
     std::fill_n(cluster->expectedValues, clusterHeader->numberOfOutputs, 0.0f);
+    std::fill_n(cluster->tempNeuronBlocks, clusterHeader->neuronBlocks.count, TempNeuronBlock());
 
     pos = clusterHeader->bricks.bytePos;
     cluster->bricks = reinterpret_cast<Brick*>(dataPtr + pos);

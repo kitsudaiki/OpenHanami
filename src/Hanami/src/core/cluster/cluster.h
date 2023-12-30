@@ -54,6 +54,7 @@ class Cluster
     float* inputValues = nullptr;
     float* outputValues = nullptr;
     float* expectedValues = nullptr;
+    TempNeuronBlock* tempNeuronBlocks = nullptr;
 
     std::map<std::string, Brick*> namedBricks;
     Brick* bricks = nullptr;

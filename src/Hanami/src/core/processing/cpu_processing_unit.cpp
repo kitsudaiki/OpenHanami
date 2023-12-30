@@ -47,6 +47,7 @@ extern "C" void backpropagation_CUDA(PointerHandler* gpuPointer,
                                      float* expectedValues,
                                      const uint32_t numberOfBricks,
                                      NeuronBlock* neuronBlocks,
+                                     TempNeuronBlock* tempNeuronBlocks,
                                      const uint32_t numberOfNeuronBlocks,
                                      ClusterSettings* settings);
 
@@ -119,6 +120,7 @@ CpuProcessingUnit::trainSegmentBackward(Cluster* cluster)
                              cluster->expectedValues,
                              cluster->clusterHeader->bricks.count,
                              cluster->neuronBlocks,
+                             cluster->tempNeuronBlocks,
                              cluster->numberOfNeuronBlocks,
                              &cluster->clusterHeader->settings);
     }

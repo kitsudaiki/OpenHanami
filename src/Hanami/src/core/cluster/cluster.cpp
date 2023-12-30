@@ -35,6 +35,7 @@
 extern "C" void copyToDevice_CUDA(PointerHandler* gpuPointer,
                                   ClusterSettings* clusterSettings,
                                   NeuronBlock* neuronBlocks,
+                                  TempNeuronBlock* tempNeuronBlocks,
                                   const uint32_t numberOfNeuronBlocks,
                                   SynapseBlock* synapseBlocks,
                                   const uint32_t numberOfSynapseBlocks,
@@ -74,6 +75,7 @@ Cluster::~Cluster()
     delete inputValues;
     delete outputValues;
     delete expectedValues;
+    delete tempNeuronBlocks;
 }
 
 /**
@@ -97,6 +99,7 @@ Cluster::initCuda()
     copyToDevice_CUDA(&gpuPointer,
                       &clusterHeader->settings,
                       neuronBlocks,
+                      tempNeuronBlocks,
                       clusterHeader->neuronBlocks.count,
                       getItemData<SynapseBlock>(HanamiRoot::gpuSynapseBlocks),
                       HanamiRoot::gpuSynapseBlocks.metaData->itemCapacity,
