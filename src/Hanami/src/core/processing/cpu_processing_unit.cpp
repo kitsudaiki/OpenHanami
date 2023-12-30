@@ -23,6 +23,7 @@
 #include "cpu_processing_unit.h"
 
 #include <core/cluster/cluster.h>
+#include <core/cuda_functions.h>
 #include <core/processing/cluster_queue.h>
 #include <core/processing/cpu/backpropagation.h>
 #include <core/processing/cpu/processing.h>
@@ -31,31 +32,6 @@
 #include <hanami_root.h>
 
 static uint64_t counter = 0;
-
-extern "C" void processing_CUDA(PointerHandler* gpuPointer,
-                                Brick* bricks,
-                                float* inputValues,
-                                float* outputValues,
-                                const uint32_t numberOfBricks,
-                                NeuronBlock* neuronBlocks,
-                                const uint32_t numberOfNeuronBlocks,
-                                const bool doTrain);
-
-extern "C" void backpropagation_CUDA(PointerHandler* gpuPointer,
-                                     Brick* bricks,
-                                     float* outputValues,
-                                     float* expectedValues,
-                                     const uint32_t numberOfBricks,
-                                     NeuronBlock* neuronBlocks,
-                                     TempNeuronBlock* tempNeuronBlocks,
-                                     const uint32_t numberOfNeuronBlocks,
-                                     ClusterSettings* settings);
-
-extern "C" void update_CUDA(PointerHandler* gpuPointer,
-                            NeuronBlock* neuronBlocks,
-                            const uint32_t numberOfNeuronBlocks,
-                            Brick* bricks,
-                            const uint32_t numberOfBricks);
 
 /**
  * @brief constructor
@@ -78,14 +54,33 @@ CpuProcessingUnit::trainSegmentForward(Cluster* cluster)
     Hanami::ErrorContainer error;
 
     if (HanamiRoot::useCuda) {
+        // process input-bricks
+        for (uint32_t brickId = 0; brickId < cluster->clusterHeader->bricks.count; ++brickId) {
+            Brick* brick = &cluster->bricks[brickId];
+            if (brick->isInputBrick == false) {
+                continue;
+            }
+
+            processNeuronsOfInputBrickBackward<true>(
+                brick, cluster->inputValues, cluster->neuronBlocks);
+        }
+
         processing_CUDA(&cluster->gpuPointer,
                         cluster->bricks,
-                        cluster->inputValues,
-                        cluster->outputValues,
                         cluster->clusterHeader->bricks.count,
                         cluster->neuronBlocks,
                         cluster->numberOfNeuronBlocks,
                         true);
+
+        // process output-bricks
+        for (uint32_t brickId = 0; brickId < cluster->clusterHeader->bricks.count; ++brickId) {
+            Brick* brick = &cluster->bricks[brickId];
+            if (brick->isOutputBrick == false) {
+                continue;
+            }
+
+            processNeuronsOfOutputBrick(brick, cluster->outputValues, cluster->neuronBlocks);
+        }
 
         if (updateSections(*cluster)) {
             update_CUDA(&cluster->gpuPointer,
@@ -114,15 +109,29 @@ CpuProcessingUnit::trainSegmentBackward(Cluster* cluster)
     Hanami::ErrorContainer error;
 
     if (HanamiRoot::useCuda) {
+        // process output-bricks on cpu
+        for (uint32_t brickId = 0; brickId < cluster->clusterHeader->bricks.count; ++brickId) {
+            Brick* brick = &cluster->bricks[brickId];
+            if (brick->isOutputBrick) {
+                if (backpropagateOutput(brick,
+                                        cluster->neuronBlocks,
+                                        cluster->tempNeuronBlocks,
+                                        cluster->outputValues,
+                                        cluster->expectedValues,
+                                        &cluster->clusterHeader->settings)
+                    == false)
+                {
+                    return;
+                }
+            }
+        }
+
         backpropagation_CUDA(&cluster->gpuPointer,
                              cluster->bricks,
-                             cluster->outputValues,
-                             cluster->expectedValues,
                              cluster->clusterHeader->bricks.count,
                              cluster->neuronBlocks,
                              cluster->tempNeuronBlocks,
-                             cluster->numberOfNeuronBlocks,
-                             &cluster->clusterHeader->settings);
+                             cluster->numberOfNeuronBlocks);
     }
     else {
         reweightCoreSegment(*cluster);
@@ -173,14 +182,33 @@ CpuProcessingUnit::processSegment(Cluster* cluster)
 {
     Hanami::ErrorContainer error;
     if (HanamiRoot::useCuda) {
+        // process input-bricks
+        for (uint32_t brickId = 0; brickId < cluster->clusterHeader->bricks.count; ++brickId) {
+            Brick* brick = &cluster->bricks[brickId];
+            if (brick->isInputBrick == false) {
+                continue;
+            }
+
+            processNeuronsOfInputBrickBackward<false>(
+                brick, cluster->inputValues, cluster->neuronBlocks);
+        }
+
         processing_CUDA(&cluster->gpuPointer,
                         cluster->bricks,
-                        cluster->inputValues,
-                        cluster->outputValues,
                         cluster->clusterHeader->bricks.count,
                         cluster->neuronBlocks,
                         cluster->numberOfNeuronBlocks,
                         false);
+
+        // process output-bricks
+        for (uint32_t brickId = 0; brickId < cluster->clusterHeader->bricks.count; ++brickId) {
+            Brick* brick = &cluster->bricks[brickId];
+            if (brick->isOutputBrick == false) {
+                continue;
+            }
+
+            processNeuronsOfOutputBrick(brick, cluster->outputValues, cluster->neuronBlocks);
+        }
     }
     else {
         prcessCoreSegment(*cluster, false);

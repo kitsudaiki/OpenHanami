@@ -68,7 +68,9 @@ backpropagateSection(SynapseSection* section,
             }
             synapse->weight -= trainValue * targetTempNeuron->delta[0];
             sourceTempNeuron->delta[connection->origin.posInNeuron] += delta;
-
+            // if(connection->origin.posInNeuron == 2) {
+            //     printf("poi %d \n", connection->origin.posInNeuron);
+            // }
             counter -= synapse->border;
         }
         ++pos;
@@ -135,13 +137,6 @@ backpropagateNeurons(Brick* brick,
             // calculate new delta-value for next iteration
             delta *= 1.4427f * pow(0.5f, targetNeuron->potential);
             targetTempNeuron->delta[0] = delta;
-            targetTempNeuron->delta[1] = 0.0f;
-            targetTempNeuron->delta[2] = 0.0f;
-            targetTempNeuron->delta[3] = 0.0f;
-            targetTempNeuron->delta[4] = 0.0f;
-            targetTempNeuron->delta[5] = 0.0f;
-            targetTempNeuron->delta[6] = 0.0f;
-            targetTempNeuron->delta[7] = 0.0f;
         }
     }
 

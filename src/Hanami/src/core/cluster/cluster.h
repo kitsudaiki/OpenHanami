@@ -48,7 +48,7 @@ class Cluster
 
     // cluster-data
     Hanami::DataBuffer clusterData;
-    PointerHandler gpuPointer;
+    CudaPointerHandle gpuPointer;
 
     ClusterHeader* clusterHeader = nullptr;
     float* inputValues = nullptr;

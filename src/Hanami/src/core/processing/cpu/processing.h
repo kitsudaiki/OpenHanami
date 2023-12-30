@@ -70,7 +70,7 @@ processNeuronsOfInputBrick(Cluster& cluster,
                     SourceLocationPtr originLocation;
                     originLocation.blockId = blockId;
                     originLocation.sectionId = neuronIdInBlock;
-                    neuron->inUse = createNewSection(cluster, originLocation, 0.0f, 0);
+                    createNewSection(cluster, originLocation, 0.0f);
                 }
             }
             counter++;
@@ -174,8 +174,7 @@ synapseProcessingBackward(Cluster& cluster,
     if constexpr (doTrain) {
         if (counter > 0.01f && section->hasNext == false) {
             const float newOffset = (sourceNeuron->potential - counter) + connection->offset;
-            section->hasNext = createNewSection(
-                cluster, originLocation, newOffset, connection->origin.posInNeuron + 1);
+            section->hasNext = createNewSection(cluster, originLocation, newOffset);
         }
     }
 }
@@ -264,7 +263,7 @@ processBrick(Cluster& cluster,
                     SourceLocationPtr originLocation;
                     originLocation.blockId = blockId;
                     originLocation.sectionId = neuronIdInBlock;
-                    neuron->inUse = createNewSection(cluster, originLocation, 0.0f, 0);
+                    createNewSection(cluster, originLocation, 0.0f);
                 }
             }
         }

@@ -155,10 +155,15 @@ static_assert(sizeof(SynapseSection) == 1024);
 
 struct SynapseBlock {
     SynapseSection sections[NUMBER_OF_SYNAPSESECTION];
+    float tempValues[NEURONS_PER_NEURONSECTION];
 
-    SynapseBlock() { std::fill_n(sections, NUMBER_OF_SYNAPSESECTION, SynapseSection()); }
+    SynapseBlock()
+    {
+        std::fill_n(sections, NUMBER_OF_SYNAPSESECTION, SynapseSection());
+        std::fill_n(tempValues, NEURONS_PER_NEURONSECTION, 0.0f);
+    }
 };
-static_assert(sizeof(SynapseBlock) == 64 * 1024);
+static_assert(sizeof(SynapseBlock) == 64 * 1024 + 256);
 
 //==================================================================================================
 
@@ -239,6 +244,7 @@ struct SynapseConnection {
     {
         origin.blockId = UNINIT_STATE_32;
         origin.sectionId = UNINIT_STATE_16;
+        origin.posInNeuron = 0;
     }
 };
 static_assert(sizeof(SynapseConnection) == 16);
@@ -315,7 +321,7 @@ static_assert(sizeof(Brick) == 512);
 
 //==================================================================================================
 
-struct PointerHandler {
+struct CudaPointerHandle {
     NeuronBlock* neuronBlocks = nullptr;
     TempNeuronBlock* tempNeuronBlock = nullptr;
     SynapseBlock* synapseBlocks = nullptr;

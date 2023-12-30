@@ -26,22 +26,12 @@
 #include <core/cluster/cluster_init.h>
 #include <core/cluster/statemachine_init.h>
 #include <core/cluster/states/task_handle_state.h>
+#include <core/cuda_functions.h>
 #include <core/processing/cluster_queue.h>
 #include <hanami_common/logger.h>
 #include <hanami_common/statemachine.h>
 #include <hanami_common/threading/thread.h>
 #include <hanami_root.h>
-
-extern "C" void copyToDevice_CUDA(PointerHandler* gpuPointer,
-                                  ClusterSettings* clusterSettings,
-                                  NeuronBlock* neuronBlocks,
-                                  TempNeuronBlock* tempNeuronBlocks,
-                                  const uint32_t numberOfNeuronBlocks,
-                                  SynapseBlock* synapseBlocks,
-                                  const uint32_t numberOfSynapseBlocks,
-                                  Brick* bricks,
-                                  const uint32_t numberOfBricks,
-                                  uint32_t* randomValues);
 
 /**
  * @brief constructor
