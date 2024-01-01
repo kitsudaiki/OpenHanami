@@ -73,7 +73,7 @@ createNewSynapse(NeuronBlock* block,
 }
 
 /**
- * @brief process synapse-section
+ * @brief process a single synapse-section
  *
  * @param synapseSection current synapse-section to process
  * @param connection pointer to the connection-object, which is related to the section
@@ -188,7 +188,7 @@ processSynapses(NeuronBlock* neuronBlocks,
 
         if (scon->origin.blockId != UNINIT_STATE_32) {
             NeuronBlock* sourceNeuronBlock = &neuronBlocks[scon->origin.blockId];
-            Neuron* sourceNeuron = &sourceNeuronBlock->neurons[scon->origin.sectionId];
+            Neuron* sourceNeuron = &sourceNeuronBlock->neurons[scon->origin.neuronId];
 
             if (sourceNeuron->active != 0) {
                 SynapseSection* synapseSection = &synapseBlock->sections[tid];
@@ -402,8 +402,8 @@ backpropagateConnections(NeuronBlock* neuronBlocks,
 
         NeuronBlock* sourceNeuronBlock = &neuronBlocks[scon->origin.blockId];
         TempNeuronBlock* sourceTempBlock = &tempNeuronBlocks[scon->origin.blockId];
-        Neuron* sourceNeuron = &sourceNeuronBlock->neurons[scon->origin.sectionId];
-        TempNeuron* sourceTempNeuron = &sourceTempBlock->neurons[scon->origin.sectionId];
+        Neuron* sourceNeuron = &sourceNeuronBlock->neurons[scon->origin.neuronId];
+        TempNeuron* sourceTempNeuron = &sourceTempBlock->neurons[scon->origin.neuronId];
 
         const uint64_t neuronBlockId = (blockIdx.x / dimY)  + neuronBlockPos;
         TempNeuronBlock* targetTempBlock = &tempNeuronBlocks[neuronBlockId];
@@ -548,20 +548,25 @@ update_CUDA(CudaPointerHandle* gpuPointer,
     {
         Brick* brick = &bricks[brickId];
 
-        // free old connection-block-memory on gpu, if exist
-        if (gpuPointer->connectionBlocks[brickId] != nullptr)
-        {
-            cudaFree(gpuPointer->connectionBlocks[brickId]);
-            gpuPointer->connectionBlocks[brickId] = nullptr;
+        if (brick->wasResized) {
+            // free old connection-block-memory on gpu, if exist
+            if (gpuPointer->connectionBlocks[brickId] != nullptr)
+            {
+                cudaFree(gpuPointer->connectionBlocks[brickId]);
+                gpuPointer->connectionBlocks[brickId] = nullptr;
+            }
+
+            // allocate to resized memory for the connectionblocks on gpu
+            cudaMalloc(&gpuPointer->connectionBlocks[brickId],
+                       brick->connectionBlocks.size() * sizeof(ConnectionBlock));
         }
 
-        // allocate to resized memory for the connectionblocks on gpu
-        cudaMalloc(&gpuPointer->connectionBlocks[brickId],
-                   brick->connectionBlocks.size() * sizeof(ConnectionBlock));
         cudaMemcpy(gpuPointer->connectionBlocks[brickId],
                    &brick->connectionBlocks[0],
                    brick->connectionBlocks.size() * sizeof(ConnectionBlock),
                    cudaMemcpyHostToDevice);
+
+        brick->wasResized = false;
     }
 }
 

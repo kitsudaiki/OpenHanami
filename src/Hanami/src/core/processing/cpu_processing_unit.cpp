@@ -93,7 +93,7 @@ CpuProcessingUnit::trainSegmentForward(Cluster* cluster)
         counter++;
     }
     else {
-        prcessCoreSegment(*cluster, true);
+        processCluster(*cluster, true);
     }
     // prcessCoreSegment(*cluster);
 }
@@ -134,7 +134,7 @@ CpuProcessingUnit::trainSegmentBackward(Cluster* cluster)
                              cluster->numberOfNeuronBlocks);
     }
     else {
-        reweightCoreSegment(*cluster);
+        reweightCluster(*cluster);
     }
     // reweightCoreSegment(*cluster);
 
@@ -211,7 +211,7 @@ CpuProcessingUnit::processSegment(Cluster* cluster)
         }
     }
     else {
-        prcessCoreSegment(*cluster, false);
+        processCluster(*cluster, false);
     }
 
     // send output back if a client-connection is set

@@ -172,7 +172,7 @@ struct SourceLocationPtr {
     //                    which doesn't support initializing of the values, when defining the
     //                    shared-memory-object
     uint32_t blockId;
-    uint16_t sectionId;
+    uint16_t neuronId;
     uint8_t posInNeuron;
     uint8_t padding[1];
 };
@@ -243,7 +243,7 @@ struct SynapseConnection {
     SynapseConnection()
     {
         origin.blockId = UNINIT_STATE_32;
-        origin.sectionId = UNINIT_STATE_16;
+        origin.neuronId = UNINIT_STATE_16;
         origin.posInNeuron = 0;
     }
 };
@@ -266,7 +266,8 @@ struct Brick {
     uint32_t brickId = UNINIT_STATE_32;
     bool isOutputBrick = false;
     bool isInputBrick = false;
-    uint8_t padding1[2];
+    bool wasResized = false;
+    uint8_t padding1[1];
 
     char name[128];
     uint32_t nameSize = 0;
