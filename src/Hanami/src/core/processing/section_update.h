@@ -37,7 +37,7 @@
  * @return
  */
 inline SynapseConnection*
-searchTargetInBrick(Brick* targetBrick)
+searchTargetInBrick(Brick* targetBrick, ItemBuffer& synapseBlockBuffer)
 {
     const uint64_t numberOfConnectionsBlocks = targetBrick->connectionBlocks.size();
     if (numberOfConnectionsBlocks == 0) {
@@ -53,8 +53,7 @@ searchTargetInBrick(Brick* targetBrick)
                 // initialize a synapse-block if necessary
                 if (connectionBlock->targetSynapseBlockPos == UNINIT_STATE_64) {
                     SynapseBlock block;
-                    connectionBlock->targetSynapseBlockPos
-                        = HanamiRoot::cpuSynapseBlocks.addNewItem(block);
+                    connectionBlock->targetSynapseBlockPos = synapseBlockBuffer.addNewItem(block);
                     if (connectionBlock->targetSynapseBlockPos == UNINIT_STATE_64) {
                         return nullptr;
                     }
@@ -122,7 +121,10 @@ resizeConnections(Brick* targetBrick)
  * @return
  */
 inline bool
-createNewSection(Cluster& cluster, const SourceLocationPtr& originLocation, const float offset)
+createNewSection(Cluster& cluster,
+                 const SourceLocationPtr& originLocation,
+                 const float offset,
+                 ItemBuffer& synapseBlockBuffer)
 {
     // get origin objects
     NeuronBlock* originBlock = &cluster.neuronBlocks[originLocation.blockId];
@@ -140,10 +142,10 @@ createNewSection(Cluster& cluster, const SourceLocationPtr& originLocation, cons
     Brick* targetBrick = &cluster.bricks[targetBrickId];
 
     // get target-connection
-    SynapseConnection* targetConnection = searchTargetInBrick(targetBrick);
+    SynapseConnection* targetConnection = searchTargetInBrick(targetBrick, synapseBlockBuffer);
     if (targetConnection == nullptr) {
         resizeConnections(targetBrick);
-        targetConnection = searchTargetInBrick(targetBrick);
+        targetConnection = searchTargetInBrick(targetBrick, synapseBlockBuffer);
     }
 
     // initialize connection
@@ -180,7 +182,8 @@ updateSections(Cluster& cluster)
                 originLocation.blockId = neuronBlockId;
                 originLocation.sectionId = sourceId;
 
-                createNewSection(cluster, originLocation, neuron->newOffset);
+                createNewSection(
+                    cluster, originLocation, neuron->newOffset, HanamiRoot::gpuSynapseBlocks);
 
                 neuron->newOffset = 0.0f;
                 neuron->isNew = 0;

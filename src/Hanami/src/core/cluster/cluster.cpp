@@ -61,6 +61,35 @@ Cluster::Cluster(const void* data, const uint64_t dataSize)
  */
 Cluster::~Cluster()
 {
+    if (HanamiRoot::useCuda) {
+        SynapseBlock* gpuSynapseBlocks = getItemData<SynapseBlock>(HanamiRoot::gpuSynapseBlocks);
+        SynapseBlock tempBlock;
+
+        for (uint64_t i = 0; i < clusterHeader->bricks.count; i++) {
+            for (ConnectionBlock& block : bricks[i].connectionBlocks) {
+                if (block.targetSynapseBlockPos != UNINIT_STATE_64) {
+                    tempBlock = gpuSynapseBlocks[block.targetSynapseBlockPos];
+                    HanamiRoot::gpuSynapseBlocks.deleteItem(block.targetSynapseBlockPos);
+                }
+            }
+        }
+
+        removeFromDevice_CUDA(&gpuPointer);
+    }
+    else {
+        SynapseBlock* cpuSynapseBlocks = getItemData<SynapseBlock>(HanamiRoot::cpuSynapseBlocks);
+        SynapseBlock tempBlock;
+
+        for (uint64_t i = 0; i < clusterHeader->bricks.count; i++) {
+            for (ConnectionBlock& block : bricks[i].connectionBlocks) {
+                if (block.targetSynapseBlockPos != UNINIT_STATE_64) {
+                    tempBlock = cpuSynapseBlocks[block.targetSynapseBlockPos];
+                    HanamiRoot::cpuSynapseBlocks.deleteItem(block.targetSynapseBlockPos);
+                }
+            }
+        }
+    }
+
     delete stateMachine;
     delete inputValues;
     delete outputValues;
@@ -82,36 +111,16 @@ Cluster::getUuid()
 /**
  * @brief Cluster::initCuda
  */
-void
+bool
 Cluster::initCuda()
 {
-    moveToGpu();
-    copyToDevice_CUDA(&gpuPointer,
-                      &clusterHeader->settings,
-                      neuronBlocks,
-                      tempNeuronBlocks,
-                      clusterHeader->neuronBlocks.count,
-                      getItemData<SynapseBlock>(HanamiRoot::gpuSynapseBlocks),
-                      HanamiRoot::gpuSynapseBlocks.metaData->itemCapacity,
-                      bricks,
-                      clusterHeader->bricks.count,
-                      HanamiRoot::randomValues);
-}
-
-/**
- * @brief Cluster::moveToGpu
- * @return
- */
-bool
-Cluster::moveToGpu()
-{
-    SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(HanamiRoot::cpuSynapseBlocks);
+    SynapseBlock* cpuSynapseBlocks = getItemData<SynapseBlock>(HanamiRoot::cpuSynapseBlocks);
     SynapseBlock tempBlock;
 
     for (uint64_t i = 0; i < clusterHeader->bricks.count; i++) {
         for (ConnectionBlock& block : bricks[i].connectionBlocks) {
             if (block.targetSynapseBlockPos != UNINIT_STATE_64) {
-                tempBlock = synapseBlocks[block.targetSynapseBlockPos];
+                tempBlock = cpuSynapseBlocks[block.targetSynapseBlockPos];
                 HanamiRoot::cpuSynapseBlocks.deleteItem(block.targetSynapseBlockPos);
                 const uint64_t newPos = HanamiRoot::gpuSynapseBlocks.addNewItem(tempBlock);
                 // TODO: make roll-back possible in error-case
@@ -122,6 +131,17 @@ Cluster::moveToGpu()
             }
         }
     }
+
+    copyToDevice_CUDA(&gpuPointer,
+                      &clusterHeader->settings,
+                      neuronBlocks,
+                      tempNeuronBlocks,
+                      clusterHeader->neuronBlocks.count,
+                      getItemData<SynapseBlock>(HanamiRoot::gpuSynapseBlocks),
+                      HanamiRoot::gpuSynapseBlocks.metaData->itemCapacity,
+                      bricks,
+                      clusterHeader->bricks.count,
+                      HanamiRoot::randomValues);
 
     return true;
 }

@@ -66,10 +66,7 @@ class Cluster
     const std::string getName();
     bool setName(const std::string& newName);
     bool init(const Hanami::ClusterMeta& clusterTemplate, const std::string& uuid);
-    void initCuda();
-
-    // gpu
-    bool moveToGpu();
+    bool initCuda();
 
     // stats
     uint64_t getDataSize() const;

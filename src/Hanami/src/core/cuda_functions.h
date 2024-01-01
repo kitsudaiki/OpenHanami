@@ -14,6 +14,8 @@ extern "C" void copyToDevice_CUDA(CudaPointerHandle* gpuPointer,
                                   const uint32_t numberOfBricks,
                                   uint32_t* randomValues);
 
+extern "C" void removeFromDevice_CUDA(CudaPointerHandle* gpuPointer);
+
 extern "C" void processing_CUDA(CudaPointerHandle* gpuPointer,
                                 Brick* bricks,
                                 const uint32_t numberOfBricks,

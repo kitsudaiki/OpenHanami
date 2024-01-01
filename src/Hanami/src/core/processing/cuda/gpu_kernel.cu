@@ -475,6 +475,32 @@ copyToDevice_CUDA(CudaPointerHandle* gpuPointer,
 }
 
 /**
+ * @brief removed all data from the gpu, which are linked in the handle-object
+ *
+ * @param gpuPointer handle with all pointer to free
+ */
+extern "C"
+void
+removeFromDevice_CUDA(CudaPointerHandle* gpuPointer)
+{
+    for (uint32_t c = 0; c < gpuPointer->connectionBlocks.size(); ++c)
+    {
+        // free old connection-block-memory on gpu, if exist
+        if (gpuPointer->connectionBlocks[c] != nullptr)
+        {
+            cudaFree(gpuPointer->connectionBlocks[c]);
+            gpuPointer->connectionBlocks[c] = nullptr;
+        }
+    }
+
+    cudaFree(gpuPointer->clusterSettings);
+    cudaFree(gpuPointer->neuronBlocks);
+    cudaFree(gpuPointer->tempNeuronBlock);
+    cudaFree(gpuPointer->synapseBlocks);
+    cudaFree(gpuPointer->randomValues);
+}
+
+/**
  * @brief copy all data from the gpu back to the host
  *
  * @param gpuPointer handle with all gpu-pointer of the cluster
