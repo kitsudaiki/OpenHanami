@@ -100,12 +100,14 @@ processNeuronsOfOutputBrick(const Brick* brick, float* outputValues, NeuronBlock
 inline bool
 backpropagateOutput(const Brick* brick,
                     NeuronBlock* neuronBlocks,
+                    TempNeuronBlock* tempNeuronBlocks,
                     float* outputValues,
                     float* expectedValues,
                     ClusterSettings* settings)
 {
-    Neuron* neuron = nullptr;
     NeuronBlock* block = nullptr;
+    TempNeuron* tempNeuron = nullptr;
+    TempNeuronBlock* tempBlock = nullptr;
     float totalDelta = 0.0f;
     uint32_t counter = 0;
     float* brickOutputValues = &outputValues[brick->ioBufferPos];
@@ -117,13 +119,16 @@ backpropagateOutput(const Brick* brick,
          neuronSectionId++)
     {
         block = &neuronBlocks[neuronSectionId];
+        tempBlock = &tempNeuronBlocks[neuronSectionId];
+
         for (uint32_t neuronIdInBlock = 0; neuronIdInBlock < block->numberOfNeurons;
              neuronIdInBlock++)
         {
-            neuron = &block->neurons[neuronIdInBlock];
-            neuron->delta[0] = brickOutputValues[counter] - brickExectedValues[counter];
-            neuron->delta[0] *= brickOutputValues[counter] * (1.0f - brickOutputValues[counter]);
-            totalDelta += abs(neuron->delta[0]);
+            tempNeuron = &tempBlock->neurons[neuronIdInBlock];
+            tempNeuron->delta[0] = brickOutputValues[counter] - brickExectedValues[counter];
+            tempNeuron->delta[0]
+                *= brickOutputValues[counter] * (1.0f - brickOutputValues[counter]);
+            totalDelta += abs(tempNeuron->delta[0]);
             counter++;
         }
     }

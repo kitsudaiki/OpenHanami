@@ -43,7 +43,7 @@
 #define IPV4_REGEX "\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b"
 
 // network-predefines
-#define SYNAPSES_PER_SYNAPSESECTION 64
+#define SYNAPSES_PER_SYNAPSESECTION 63
 #define NEURONS_PER_NEURONSECTION 64
 #define POSSIBLE_NEXT_AXON_STEP 80
 #define NEURON_CONNECTIONS 512

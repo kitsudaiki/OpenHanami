@@ -43,7 +43,7 @@
 #define UNINTI_POINT_32 0x0FFFFFFF
 
 // network-predefines
-#define SYNAPSES_PER_SYNAPSESECTION 64
+#define SYNAPSES_PER_SYNAPSESECTION 63
 #define NUMBER_OF_SYNAPSESECTION 64
 #define NEURONS_PER_NEURONSECTION 64
 #define POSSIBLE_NEXT_AXON_STEP 80
@@ -142,17 +142,28 @@ static_assert(sizeof(Synapse) == 16);
 
 //==================================================================================================
 
+struct SynapseSection {
+    Synapse synapses[SYNAPSES_PER_SYNAPSESECTION];
+    uint8_t padding[15];
+    bool hasNext = false;
+
+    SynapseSection() { std::fill_n(synapses, SYNAPSES_PER_SYNAPSESECTION, Synapse()); }
+};
+static_assert(sizeof(SynapseSection) == 1024);
+
+//==================================================================================================
+
 struct SynapseBlock {
-    Synapse synapses[NUMBER_OF_SYNAPSESECTION][SYNAPSES_PER_SYNAPSESECTION];
+    SynapseSection sections[NUMBER_OF_SYNAPSESECTION];
+    float tempValues[NEURONS_PER_NEURONSECTION];
 
     SynapseBlock()
     {
-        for (uint32_t i = 0; i < NUMBER_OF_SYNAPSESECTION; i++) {
-            std::fill_n(synapses[i], SYNAPSES_PER_SYNAPSESECTION, Synapse());
-        }
+        std::fill_n(sections, NUMBER_OF_SYNAPSESECTION, SynapseSection());
+        std::fill_n(tempValues, NEURONS_PER_NEURONSECTION, 0.0f);
     }
 };
-static_assert(sizeof(SynapseBlock) == 64 * 1024);
+static_assert(sizeof(SynapseBlock) == 64 * 1024 + 256);
 
 //==================================================================================================
 
@@ -161,7 +172,7 @@ struct SourceLocationPtr {
     //                    which doesn't support initializing of the values, when defining the
     //                    shared-memory-object
     uint32_t blockId;
-    uint16_t sectionId;
+    uint16_t neuronId;
     uint8_t posInNeuron;
     uint8_t padding[1];
 };
@@ -173,7 +184,7 @@ struct Neuron {
     float input = 0.0f;
     float border = 100.0f;
     float potential = 0.0f;
-    float delta[8];
+    float delta = 0.0f;
 
     uint8_t refractionTime = 1;
     uint8_t active = 0;
@@ -182,9 +193,9 @@ struct Neuron {
     uint8_t isNew = 0;
     uint8_t inUse = 0;
 
-    Neuron() { std::fill_n(delta, 8, 0.0f); }
+    uint8_t padding[4];
 };
-static_assert(sizeof(Neuron) == 56);
+static_assert(sizeof(Neuron) == 32);
 
 //==================================================================================================
 
@@ -192,7 +203,7 @@ struct NeuronBlock {
     uint32_t numberOfNeurons = 0;
     uint32_t brickId = 0;
     uint32_t randomPos = 0;
-    uint8_t padding[52];
+    uint8_t padding[4];
 
     Neuron neurons[NEURONS_PER_NEURONSECTION];
 
@@ -202,20 +213,38 @@ struct NeuronBlock {
         std::fill_n(neurons, NEURONS_PER_NEURONSECTION, Neuron());
     }
 };
-static_assert(sizeof(NeuronBlock) == 3648);
+static_assert(sizeof(NeuronBlock) == 2064);
+
+//==================================================================================================
+
+struct TempNeuron {
+    float delta[8];
+
+    TempNeuron() { std::fill_n(delta, 8, 0.0f); }
+};
+static_assert(sizeof(TempNeuron) == 32);
+
+//==================================================================================================
+
+struct TempNeuronBlock {
+    TempNeuron neurons[NEURONS_PER_NEURONSECTION];
+
+    TempNeuronBlock() { std::fill_n(neurons, NEURONS_PER_NEURONSECTION, TempNeuron()); }
+};
+static_assert(sizeof(TempNeuronBlock) == 2048);
 
 //==================================================================================================
 
 struct SynapseConnection {
     SourceLocationPtr origin;
     float offset = 0.0f;
-    bool hasNext = false;
-    uint8_t padding[3];
+    uint8_t padding[4];
 
     SynapseConnection()
     {
         origin.blockId = UNINIT_STATE_32;
-        origin.sectionId = UNINIT_STATE_16;
+        origin.neuronId = UNINIT_STATE_16;
+        origin.posInNeuron = 0;
     }
 };
 static_assert(sizeof(SynapseConnection) == 16);
@@ -237,7 +266,8 @@ struct Brick {
     uint32_t brickId = UNINIT_STATE_32;
     bool isOutputBrick = false;
     bool isInputBrick = false;
-    uint8_t padding1[2];
+    bool wasResized = false;
+    uint8_t padding1[1];
 
     char name[128];
     uint32_t nameSize = 0;
@@ -292,8 +322,9 @@ static_assert(sizeof(Brick) == 512);
 
 //==================================================================================================
 
-struct PointerHandler {
+struct CudaPointerHandle {
     NeuronBlock* neuronBlocks = nullptr;
+    TempNeuronBlock* tempNeuronBlock = nullptr;
     SynapseBlock* synapseBlocks = nullptr;
     std::vector<ConnectionBlock*> connectionBlocks;
 

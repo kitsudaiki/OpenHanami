@@ -33,63 +33,66 @@
 #include <cmath>
 
 /**
- * @brief backpropagateSection
- * @param section
- * @param connection
- * @param targetNeuronBlock
- * @param sourceNeuron
+ * @brief backpropagate a synapse-section
+ *
+ * @param section current synapse-section
+ * @param connection current connection related to the synapse-section
+ * @param targetTempBlock temp-value-block of the target neuron-block
+ * @param sourceNeuron source-neuron, which triggered the section
+ * @param sourceTempNeuron temp-balue block of the source-neuron
  */
 void
-backpropagateSection(Synapse* section,
+backpropagateSection(SynapseSection* section,
                      SynapseConnection* connection,
-                     NeuronBlock* targetNeuronBlock,
-                     Neuron* sourceNeuron)
+                     TempNeuronBlock* targetTempBlock,
+                     Neuron* sourceNeuron,
+                     TempNeuron* sourceTempNeuron)
 {
-    float counter = sourceNeuron->potential - connection->offset;
+    float potential = sourceNeuron->potential - connection->offset;
     uint pos = 0;
     Synapse* synapse;
     Neuron* targetNeuron = nullptr;
+    TempNeuron* targetTempNeuron = nullptr;
     constexpr float trainValue = 0.05f;
     float delta = 0.0f;
-    sourceNeuron->delta[connection->origin.posInNeuron] = 0.0f;
+    sourceTempNeuron->delta[connection->origin.posInNeuron] = 0.0f;
 
     // iterate over all synapses in the section
-    while (pos < SYNAPSES_PER_SYNAPSESECTION && counter > 0.01f) {
-        // break look, if no more synapses to process
-        synapse = &section[pos];
-        if (synapse->targetNeuronId != UNINIT_STATE_16) {
-            // update weight
-            targetNeuron = &targetNeuronBlock->neurons[synapse->targetNeuronId];
-            delta = targetNeuron->delta[0] * synapse->weight;
-            if (counter < synapse->border) {
-                delta *= (1.0f / synapse->border) * counter;
-            }
-            synapse->weight -= trainValue * targetNeuron->delta[0];
-            sourceNeuron->delta[connection->origin.posInNeuron] += delta;
+    while (pos < SYNAPSES_PER_SYNAPSESECTION && potential > 0.01f) {
+        synapse = &section->synapses[pos];
 
-            counter -= synapse->border;
+        if (synapse->targetNeuronId != UNINIT_STATE_16) {
+            targetTempNeuron = &targetTempBlock->neurons[synapse->targetNeuronId];
+
+            delta = targetTempNeuron->delta[0] * synapse->weight;
+            if (potential < synapse->border) {
+                delta *= (1.0f / synapse->border) * potential;
+            }
+            synapse->weight -= trainValue * targetTempNeuron->delta[0];
+            sourceTempNeuron->delta[connection->origin.posInNeuron] += delta;
+
+            potential -= synapse->border;
         }
         ++pos;
     }
 }
 
 /**
- * @brief backpropagateNeurons
- * @param brick
- * @param neuronBlocks
- * @param synapseBlocks
+ * @brief backpropagate a synapse-section
+ *
+ * @param brick pointer to current brick
+ * @param neuronBlocks pointer to neuron-blocks
+ * @param synapseBlocks pointer to synapse-blocks
  */
 inline void
-backpropagateNeurons(Brick* brick, NeuronBlock* neuronBlocks, SynapseBlock* synapseBlocks)
+backpropagateSection(Brick* brick, NeuronBlock* neuronBlocks, TempNeuronBlock* tempNeuronBlocks)
 {
     SynapseConnection* scon = nullptr;
-    Neuron* neuron = nullptr;
-    NeuronBlock* sourceNeuronBlock = nullptr;
+    Neuron* targetNeuron = nullptr;
     NeuronBlock* targetNeuronBlock = nullptr;
-    Neuron* sourceNeuron = nullptr;
-    Synapse* section = nullptr;
-    uint32_t counter = 0;
-    float delta;
+    TempNeuron* targetTempNeuron = nullptr;
+    TempNeuronBlock* targetTempBlock = nullptr;
+    float delta = 0.0f;
 
     // iterate over all neurons within the brick
     for (uint32_t blockId = brick->neuronBlockPos;
@@ -97,85 +100,119 @@ backpropagateNeurons(Brick* brick, NeuronBlock* neuronBlocks, SynapseBlock* syna
          ++blockId)
     {
         targetNeuronBlock = &neuronBlocks[blockId];
-        for (uint32_t neuronIdInBlock = 0; neuronIdInBlock < NEURONS_PER_NEURONSECTION;
-             ++neuronIdInBlock)
-        {
-            neuron = &targetNeuronBlock->neurons[neuronIdInBlock];
-            if (neuron->active == false) {
+        targetTempBlock = &tempNeuronBlocks[blockId];
+
+        for (uint32_t neuronId = 0; neuronId < NEURONS_PER_NEURONSECTION; ++neuronId) {
+            targetNeuron = &targetNeuronBlock->neurons[neuronId];
+            targetTempNeuron = &targetTempBlock->neurons[neuronId];
+
+            if (targetNeuron->active == false) {
                 continue;
             }
 
             // aggregate different delta-values
             delta = 0.0f;
-            delta += neuron->delta[0];
-            delta += neuron->delta[1];
-            delta += neuron->delta[2];
-            delta += neuron->delta[3];
-            delta += neuron->delta[4];
-            delta += neuron->delta[5];
-            delta += neuron->delta[6];
-            delta += neuron->delta[7];
+            delta += targetTempNeuron->delta[0];
+            delta += targetTempNeuron->delta[1];
+            delta += targetTempNeuron->delta[2];
+            delta += targetTempNeuron->delta[3];
+            delta += targetTempNeuron->delta[4];
+            delta += targetTempNeuron->delta[5];
+            delta += targetTempNeuron->delta[6];
+            delta += targetTempNeuron->delta[7];
 
             // calculate new delta-value for next iteration
-            delta *= 1.4427f * pow(0.5f, neuron->potential);
-            neuron->delta[0] = delta;
-            neuron->delta[1] = 0.0f;
-            neuron->delta[2] = 0.0f;
-            neuron->delta[3] = 0.0f;
-            neuron->delta[4] = 0.0f;
-            neuron->delta[5] = 0.0f;
-            neuron->delta[6] = 0.0f;
-            neuron->delta[7] = 0.0f;
+            delta *= 1.4427f * pow(0.5f, targetNeuron->potential);
+            targetTempNeuron->delta[0] = delta;
         }
-    }
-
-    for (ConnectionBlock& connection : brick->connectionBlocks) {
-        for (uint16_t i = 0; i < NUMBER_OF_SYNAPSESECTION; i++) {
-            scon = &connection.connections[i];
-            if (scon->origin.blockId == UNINIT_STATE_32) {
-                continue;
-            }
-            sourceNeuronBlock = &neuronBlocks[scon->origin.blockId];
-            sourceNeuron = &sourceNeuronBlock->neurons[scon->origin.sectionId];
-            section = synapseBlocks[connection.targetSynapseBlockPos].synapses[i];
-            targetNeuronBlock = &neuronBlocks[brick->neuronBlockPos + (counter / brick->dimY)];
-
-            backpropagateSection(section, scon, targetNeuronBlock, sourceNeuron);
-        }
-
-        ++counter;
     }
 }
 
 /**
- * @brief reweightCoreSegment
- * @param cluster
+ * @brief backpropagate connections
+ *
+ * @param brick pointer to current brick
+ * @param neuronBlocks pointer to neuron-blocks
+ * @param synapseBlocks pointer to synapse-blocks
+ */
+inline void
+backpropagateConnections(Brick* brick,
+                         NeuronBlock* neuronBlocks,
+                         TempNeuronBlock* tempNeuronBlocks,
+                         SynapseBlock* synapseBlocks)
+{
+    SynapseConnection* connection = nullptr;
+    Neuron* sourceNeuron = nullptr;
+    NeuronBlock* sourceNeuronBlock = nullptr;
+    TempNeuron* sourceTempNeuron = nullptr;
+    TempNeuronBlock* sourceTempBlock = nullptr;
+    TempNeuronBlock* targetTempBlock = nullptr;
+    ConnectionBlock* connectionBlock = nullptr;
+    SynapseSection* synapseSection = nullptr;
+
+    for (uint32_t c = 0; c < brick->connectionBlocks.size(); c++) {
+        connectionBlock = &brick->connectionBlocks[c];
+
+        for (uint16_t i = 0; i < NUMBER_OF_SYNAPSESECTION; i++) {
+            connection = &connectionBlock->connections[i];
+
+            if (connection->origin.blockId == UNINIT_STATE_32) {
+                continue;
+            }
+
+            synapseSection = &synapseBlocks[connectionBlock->targetSynapseBlockPos].sections[i];
+
+            sourceNeuronBlock = &neuronBlocks[connection->origin.blockId];
+            sourceTempBlock = &tempNeuronBlocks[connection->origin.blockId];
+            sourceNeuron = &sourceNeuronBlock->neurons[connection->origin.neuronId];
+            sourceTempNeuron = &sourceTempBlock->neurons[connection->origin.neuronId];
+
+            targetTempBlock = &tempNeuronBlocks[brick->neuronBlockPos + (c / brick->dimY)];
+
+            backpropagateSection(
+                synapseSection, connection, targetTempBlock, sourceNeuron, sourceTempNeuron);
+        }
+    }
+}
+
+/**
+ * @brief adjust weights of synapses within a cluster
+ *
+ * @param cluster cluster, which should be updated
  */
 void
-reweightCoreSegment(const Cluster& cluster)
+reweightCluster(const Cluster& cluster)
 {
-    float* expectedValues = cluster.expectedValues;
-    float* outputValues = cluster.outputValues;
-    NeuronBlock* neuronBlocks = cluster.neuronBlocks;
+    Brick* brick = nullptr;
     SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(HanamiRoot::cpuSynapseBlocks);
-
     const uint32_t numberOfBricks = cluster.clusterHeader->bricks.count;
+
+    // backpropagate all output-values
     for (int32_t brickId = numberOfBricks - 1; brickId >= 0; --brickId) {
-        Brick* brick = &cluster.bricks[brickId];
+        brick = &cluster.bricks[brickId];
+
         if (brick->isOutputBrick) {
             if (backpropagateOutput(brick,
-                                    neuronBlocks,
-                                    outputValues,
-                                    expectedValues,
+                                    cluster.neuronBlocks,
+                                    cluster.tempNeuronBlocks,
+                                    cluster.outputValues,
+                                    cluster.expectedValues,
                                     &cluster.clusterHeader->settings)
                 == false)
             {
                 return;
             }
         }
+    }
+
+    // process normal and output-bricks
+    for (int32_t brickId = numberOfBricks - 1; brickId >= 0; --brickId) {
+        brick = &cluster.bricks[brickId];
 
         if (brick->isInputBrick == false) {
-            backpropagateNeurons(brick, neuronBlocks, synapseBlocks);
+            backpropagateSection(brick, cluster.neuronBlocks, cluster.tempNeuronBlocks);
+            backpropagateConnections(
+                brick, cluster.neuronBlocks, cluster.tempNeuronBlocks, synapseBlocks);
         }
     }
 }
