@@ -30,7 +30,11 @@
 #include "objects.h"
 
 /**
- * @brief process input brick
+ * @brief processNeuronsOfInputBrickBackward
+ *
+ * @param brick
+ * @param inputValues
+ * @param neuronBlocks
  */
 template <bool doTrain>
 inline void
@@ -46,13 +50,11 @@ processNeuronsOfInputBrickBackward(const Brick* brick,
     // iterate over all neurons within the brick
     for (uint32_t blockId = brick->neuronBlockPos;
          blockId < brick->numberOfNeuronBlocks + brick->neuronBlockPos;
-         blockId++)
+         ++blockId)
     {
         block = &neuronBlocks[blockId];
-        for (uint32_t neuronIdInBlock = 0; neuronIdInBlock < block->numberOfNeurons;
-             neuronIdInBlock++)
-        {
-            neuron = &block->neurons[neuronIdInBlock];
+        for (uint32_t neuronId = 0; neuronId < block->numberOfNeurons; ++neuronId) {
+            neuron = &block->neurons[neuronId];
             neuron->potential = brickBuffer[counter];
             neuron->active = neuron->potential > 0.0f;
             if constexpr (doTrain) {
@@ -64,6 +66,13 @@ processNeuronsOfInputBrickBackward(const Brick* brick,
     }
 }
 
+/**
+ * @brief processNeuronsOfOutputBrick
+ *
+ * @param brick
+ * @param outputValues
+ * @param neuronBlocks
+ */
 inline void
 processNeuronsOfOutputBrick(const Brick* brick, float* outputValues, NeuronBlock* neuronBlocks)
 {
@@ -75,18 +84,15 @@ processNeuronsOfOutputBrick(const Brick* brick, float* outputValues, NeuronBlock
     // iterate over all neurons within the brick
     for (uint32_t blockId = brick->neuronBlockPos;
          blockId < brick->numberOfNeuronBlocks + brick->neuronBlockPos;
-         blockId++)
+         ++blockId)
     {
         block = &neuronBlocks[blockId];
-        for (uint32_t neuronIdInBlock = 0; neuronIdInBlock < block->numberOfNeurons;
-             neuronIdInBlock++)
-        {
-            neuron = &block->neurons[neuronIdInBlock];
+        for (uint32_t neuronId = 0; neuronId < block->numberOfNeurons; ++neuronId) {
+            neuron = &block->neurons[neuronId];
             neuron->potential = neuron->input;
             if (neuron->potential != 0.0f) {
                 neuron->potential = 1.0f / (1.0f + exp(-1.0f * neuron->potential));
             }
-            // std::cout<<"potential: "<<neuron->potential<<std::endl;
             brickBuffer[counter] = neuron->potential;
             neuron->input = 0.0f;
             counter++;
@@ -95,7 +101,16 @@ processNeuronsOfOutputBrick(const Brick* brick, float* outputValues, NeuronBlock
 }
 
 /**
- * @brief backpropagate values of an output-brick
+ * @brief backpropagateOutput
+ *
+ * @param brick
+ * @param neuronBlocks
+ * @param tempNeuronBlocks
+ * @param outputValues
+ * @param expectedValues
+ * @param settings
+ *
+ * @return
  */
 inline bool
 backpropagateOutput(const Brick* brick,
@@ -110,8 +125,8 @@ backpropagateOutput(const Brick* brick,
     TempNeuronBlock* tempBlock = nullptr;
     float totalDelta = 0.0f;
     uint32_t counter = 0;
-    float* brickOutputValues = &outputValues[brick->ioBufferPos];
-    float* brickExectedValues = &expectedValues[brick->ioBufferPos];
+    float* outputBuffer = &outputValues[brick->ioBufferPos];
+    float* expectedBuffer = &expectedValues[brick->ioBufferPos];
 
     // iterate over all neurons within the brick
     for (uint32_t neuronSectionId = brick->neuronBlockPos;
@@ -125,13 +140,13 @@ backpropagateOutput(const Brick* brick,
              neuronIdInBlock++)
         {
             tempNeuron = &tempBlock->neurons[neuronIdInBlock];
-            tempNeuron->delta[0] = brickOutputValues[counter] - brickExectedValues[counter];
-            tempNeuron->delta[0]
-                *= brickOutputValues[counter] * (1.0f - brickOutputValues[counter]);
+            tempNeuron->delta[0] = outputBuffer[counter] - expectedBuffer[counter];
+            tempNeuron->delta[0] *= outputBuffer[counter] * (1.0f - outputBuffer[counter]);
             totalDelta += abs(tempNeuron->delta[0]);
             counter++;
         }
     }
+
     return totalDelta > settings->backpropagationBorder;
 }
 

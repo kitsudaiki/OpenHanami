@@ -108,7 +108,7 @@ synapseProcessingBackward(SynapseSection* synapseSection,
 
         if constexpr (doTrain) {
             // create new synapse if necesarry and training is active
-            if (synapse->targetNeuronId == UNINIT_STATE_16) {
+            if (synapse->targetNeuronId == UNINIT_STATE_8) {
                 createNewSynapse(targetNeuronBlock,
                                  synapse,
                                  clusterSettings,
@@ -126,7 +126,7 @@ synapseProcessingBackward(SynapseSection* synapseSection,
             }
         }
 
-        if (synapse->targetNeuronId != UNINIT_STATE_16) {
+        if (synapse->targetNeuronId != UNINIT_STATE_8) {
             // update target-neuron
             val = synapse->weight;
             if (localPotential[threadIdx.x] < synapse->border) {
@@ -175,7 +175,7 @@ processSynapses(NeuronBlock* neuronBlocks,
 
     // init temp-values, one for each thread and each neuron
     __shared__ float tempVal[64][64];
-    for (uint i = 0; i < 64; ++i){
+    for (uint8_t i = 0; i < 64; ++i){
         tempVal[tid][i] = 0.0f;
     }
 
@@ -210,7 +210,7 @@ processSynapses(NeuronBlock* neuronBlocks,
 
     // fill temp-values of the synapse-block
     if (connectionBlock->targetSynapseBlockPos != UNINIT_STATE_64) {
-        for (uint i = 0; i < 64; ++i) {
+        for (uint8_t i = 0; i < 64; ++i) {
             synapseBlock->tempValues[tid] += tempVal[i][tid];
         }
     }
@@ -334,7 +334,7 @@ backpropagateNeurons(NeuronBlock* neuronBlocks,
  * @param sourceTempNeuron temp-balue block of the source-neuron
  */
 __device__ __forceinline__ void
-backpropagateSection(SynapseSection* section,
+backpropagateNeuron(SynapseSection* section,
                      SynapseConnection* connection,
                      TempNeuronBlock* targetTempBlock,
                      Neuron* sourceNeuron,
@@ -356,7 +356,7 @@ backpropagateSection(SynapseSection* section,
     for (uint16_t pos = 0; pos < SYNAPSES_PER_SYNAPSESECTION; pos++) {
         synapse = &section->synapses[pos];
 
-        if (synapse->targetNeuronId != UNINIT_STATE_16) {
+        if (synapse->targetNeuronId != UNINIT_STATE_8) {
             targetTempNeuron = &targetTempBlock->neurons[synapse->targetNeuronId];
 
             // calculate new delta
@@ -408,7 +408,7 @@ backpropagateConnections(NeuronBlock* neuronBlocks,
         const uint64_t neuronBlockId = (blockIdx.x / dimY)  + neuronBlockPos;
         TempNeuronBlock* targetTempBlock = &tempNeuronBlocks[neuronBlockId];
 
-        backpropagateSection(synapseSection, scon, targetTempBlock, sourceNeuron, sourceTempNeuron);
+        backpropagateNeuron(synapseSection, scon, targetTempBlock, sourceNeuron, sourceTempNeuron);
     }
 }
 

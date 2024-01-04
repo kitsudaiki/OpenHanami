@@ -82,7 +82,7 @@ CpuProcessingUnit::trainSegmentForward(Cluster* cluster)
             processNeuronsOfOutputBrick(brick, cluster->outputValues, cluster->neuronBlocks);
         }
 
-        if (updateSections(*cluster)) {
+        if (updateCluster(*cluster)) {
             update_CUDA(&cluster->gpuPointer,
                         cluster->neuronBlocks,
                         cluster->numberOfNeuronBlocks,
@@ -139,7 +139,8 @@ CpuProcessingUnit::trainSegmentBackward(Cluster* cluster)
     // reweightCoreSegment(*cluster);
 
     if (reductionCounter == 100) {
-        // reduceNeurons(*seg);
+        reduceCluster(*cluster);
+        // updateCluster(*cluster);
         reductionCounter = 0;
     }
     reductionCounter++;

@@ -29,76 +29,102 @@
 #include <hanami_root.h>
 
 /**
- * @brief reduce synapses of a specific section
+ * @brief backpropagate a synapse-section
+ *
+ * @param section current synapse-section
  */
 inline bool
-reduceSynapses(Cluster&, SynapseBlock&)
+reduceSection(SynapseSection* section)
 {
-    bool foundEnd = false;
+    Synapse* synapse;
+    uint8_t exist = 0;
 
-    /*if(section.next != UNINIT_STATE_32)
-    {
-        // delete if sections is empty
-        foundEnd = true;
-        if(reduceSynapses(cluster, cluster.synapseSections[section.next]) == false)
-        {
-            cluster.segmentData.deleteItem(section.next);
-            section.next = UNINIT_STATE_32;
-            foundEnd = false;
+    for (uint8_t pos = 0; pos < SYNAPSES_PER_SYNAPSESECTION; pos++) {
+        synapse = &section->synapses[pos];
+
+        if (synapse->targetNeuronId != UNINIT_STATE_8) {
+            synapse->activeCounter -= static_cast<uint8_t>(synapse->activeCounter < 10);
+
+            // handle active-counter
+            if (synapse->activeCounter == 0) {
+                if (pos < SYNAPSES_PER_SYNAPSESECTION - 1) {
+                    section->synapses[pos] = section->synapses[pos + 1];
+                    section->synapses[pos + 1] = Synapse();
+                }
+            }
+            else {
+                exist++;
+            }
         }
     }
 
-    Synapse* synapse = nullptr;
+    // return true;
+    return exist != 0;
+}
 
-    // iterate over all synapses in synapse-section
-    for(int32_t pos = SYNAPSES_PER_SYNAPSESECTION - 1;
-        pos >= 0;
-        pos--)
-    {
-        // skip not connected synapses
-        synapse = &section.synapses[pos];
+/**
+ * @brief backpropagate connections
+ *
+ * @param brick pointer to current brick
+ * @param neuronBlocks pointer to neuron-blocks
+ * @param synapseBlocks pointer to synapse-blocks
+ */
+inline void
+reduceConnections(Brick* brick, NeuronBlock* neuronBlocks, SynapseBlock* synapseBlocks)
+{
+    SynapseConnection* connection = nullptr;
+    Neuron* sourceNeuron = nullptr;
+    NeuronBlock* sourceNeuronBlock = nullptr;
+    ConnectionBlock* connectionBlock = nullptr;
+    SynapseSection* synapseSection = nullptr;
 
-        synapse->activeCounter -= synapse->activeCounter < 100;
-        if(synapse->activeCounter < 5) {
-            synapse->targetNeuronId = UNINIT_STATE_16;
+    for (uint32_t c = 0; c < brick->connectionBlocks.size(); c++) {
+        connectionBlock = &brick->connectionBlocks[c];
+
+        for (uint16_t i = 0; i < NUMBER_OF_SYNAPSESECTION; i++) {
+            connection = &connectionBlock->connections[i];
+            if (connection->origin.blockId == UNINIT_STATE_32) {
+                continue;
+            }
+
+            synapseSection = &synapseBlocks[connectionBlock->targetSynapseBlockPos].sections[i];
+            sourceNeuronBlock = &neuronBlocks[connection->origin.blockId];
+            sourceNeuron = &sourceNeuronBlock->neurons[connection->origin.neuronId];
+
+            // if section is complete empty, then erase it
+            if (reduceSection(synapseSection) == false) {
+                // initialize the creation of a new section
+                sourceNeuron->isNew = 1;
+                sourceNeuron->newOffset = connection->offset;
+                sourceNeuron->deleteInUse(connection->origin.posInNeuron);
+
+                // mark current connection as available again
+                connection->origin.blockId = UNINIT_STATE_32;
+                connection->origin.neuronId = UNINIT_STATE_16;
+                connection->origin.posInNeuron = 0;
+            }
         }
-
-        if(synapse->targetNeuronId != UNINIT_STATE_16) {
-            foundEnd = true;
-        }
-    }*/
-
-    return foundEnd;
+    }
 }
 
 /**
  * @brief reduce all synapses within the cluster and delete them, if the reach a deletion-border
  */
 inline void
-reduceNeurons(Cluster&)
+reduceCluster(const Cluster& cluster)
 {
-    /*SynapseSection* section = nullptr;
-    Neuron* sourceNeuron = nullptr;
+    Brick* brick = nullptr;
+    SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(HanamiRoot::cpuSynapseBlocks);
+    const uint32_t numberOfBricks = cluster.clusterHeader->bricks.count;
 
-    for(uint32_t neuronId = 0;
-        neuronId < cluster.segmentHeader->neuronSections.count;
-        neuronId++)
-    {
-        //sourceNeuron = &cluster.neurons[neuronId];
-        if(sourceNeuron->targetSectionId == UNINIT_STATE_32) {
-            continue;
+    // process normal and output-bricks
+    for (int32_t brickId = numberOfBricks - 1; brickId >= 0; --brickId) {
+        brick = &cluster.bricks[brickId];
+
+        if (brick->isInputBrick == false) {
+            reduceConnections(brick, cluster.neuronBlocks, synapseBlocks);
         }
-
-        // set start-values
-        section = &cluster.synapseSections[sourceNeuron->targetSectionId];
-
-        // delete if sections is empty
-        if(reduceSynapses(cluster, *section) == false)
-        {
-            cluster.segmentData.deleteItem(sourceNeuron->targetSectionId);
-            sourceNeuron->targetSectionId = UNINIT_STATE_32;
-        }
-    }*/
+    }
 }
 
 #endif  // HANAMI_CORE_REDUCTION_H

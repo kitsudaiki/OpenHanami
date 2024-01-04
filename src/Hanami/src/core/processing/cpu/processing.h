@@ -56,7 +56,7 @@ processNeuronsOfInputBrick(Cluster& cluster, const Brick* brick)
     // iterate over all neurons within the brick
     for (uint32_t blockId = brick->neuronBlockPos;
          blockId < brick->numberOfNeuronBlocks + brick->neuronBlockPos;
-         blockId++)
+         ++blockId)
     {
         block = &neuronBlocks[blockId];
 
@@ -102,6 +102,9 @@ createNewSynapse(NeuronBlock* block,
     // set activation-border
     synapse->border = remainingW;
 
+    // set initial active-counter for reduction-process
+    synapse->activeCounter = 5;
+
     // set target neuron
     block->randomPos = (block->randomPos + 1) % NUMBER_OF_RAND_VALUES;
     synapse->targetNeuronId
@@ -139,7 +142,7 @@ synapseProcessingBackward(Cluster& cluster,
 {
     float potential = sourceNeuron->potential - connection->offset;
     float val = 0.0f;
-    uint pos = 0;
+    uint8_t pos = 0;
     Synapse* synapse = nullptr;
     Neuron* targetNeuron = nullptr;
 
@@ -149,7 +152,7 @@ synapseProcessingBackward(Cluster& cluster,
 
         if constexpr (doTrain) {
             // create new synapse if necesarry and training is active
-            if (synapse->targetNeuronId == UNINIT_STATE_16) {
+            if (synapse->targetNeuronId == UNINIT_STATE_8) {
                 createNewSynapse(targetNeuronBlock, synapse, clusterSettings, potential);
             }
 
@@ -160,7 +163,7 @@ synapseProcessingBackward(Cluster& cluster,
             }
         }
 
-        if (synapse->targetNeuronId != UNINIT_STATE_16) {
+        if (synapse->targetNeuronId != UNINIT_STATE_8) {
             // update target-neuron
             targetNeuron = &targetNeuronBlock->neurons[synapse->targetNeuronId];
             val = synapse->weight;
