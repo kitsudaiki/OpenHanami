@@ -139,8 +139,24 @@ CpuProcessingUnit::trainSegmentBackward(Cluster* cluster)
     // reweightCoreSegment(*cluster);
 
     if (reductionCounter == 100) {
-        reduceCluster(*cluster);
-        // updateCluster(*cluster);
+        if (HanamiRoot::useCuda) {
+            reduction_CUDA(&cluster->gpuPointer,
+                           cluster->bricks,
+                           cluster->clusterHeader->bricks.count,
+                           cluster->neuronBlocks,
+                           cluster->numberOfNeuronBlocks);
+            if (updateCluster(*cluster)) {
+                update_CUDA(&cluster->gpuPointer,
+                            cluster->neuronBlocks,
+                            cluster->numberOfNeuronBlocks,
+                            cluster->bricks,
+                            cluster->clusterHeader->bricks.count);
+            }
+        }
+        else {
+            reduceCluster(*cluster);
+            updateCluster(*cluster);
+        }
         reductionCounter = 0;
     }
     reductionCounter++;
@@ -267,27 +283,3 @@ CpuProcessingUnit::run()
         }
     }
 }
-
-/**
- * @brief SingleThreadProcessingStatic::reductionTraining
-
-void
-CpuProcessingUnit::reductionTraining(DynamicSegment* synapseSegment)
-{
-    const float initError = calculateSegmentError(synapseSegment);
-    float error = initError;
-
-    if(initError > 0.1f)
-    {
-        int16_t timeout = 10;
-        while(error >= initError
-              && timeout >= 0)
-        {
-            reduceSegment(synapseSegment);
-            execute(synapseSegment);
-            error = calculateSegmentError(synapseSegment);
-
-            timeout--;
-        }
-    }
-}*/
