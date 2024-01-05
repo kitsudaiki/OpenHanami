@@ -108,7 +108,7 @@ synapseProcessingBackward(SynapseSection* synapseSection,
 
         if constexpr (doTrain) {
             // create new synapse if necesarry and training is active
-            if (synapse->targetNeuronId == UNINIT_STATE_16) {
+            if (synapse->targetNeuronId == UNINIT_STATE_8) {
                 createNewSynapse(targetNeuronBlock,
                                  synapse,
                                  clusterSettings,
@@ -126,7 +126,7 @@ synapseProcessingBackward(SynapseSection* synapseSection,
             }
         }
 
-        if (synapse->targetNeuronId != UNINIT_STATE_16) {
+        if (synapse->targetNeuronId != UNINIT_STATE_8) {
             // update target-neuron
             val = synapse->weight;
             if (localPotential[threadIdx.x] < synapse->border) {
@@ -175,7 +175,7 @@ processSynapses(NeuronBlock* neuronBlocks,
 
     // init temp-values, one for each thread and each neuron
     __shared__ float tempVal[64][64];
-    for (uint i = 0; i < 64; ++i){
+    for (uint8_t i = 0; i < 64; ++i){
         tempVal[tid][i] = 0.0f;
     }
 
@@ -210,7 +210,7 @@ processSynapses(NeuronBlock* neuronBlocks,
 
     // fill temp-values of the synapse-block
     if (connectionBlock->targetSynapseBlockPos != UNINIT_STATE_64) {
-        for (uint i = 0; i < 64; ++i) {
+        for (uint8_t i = 0; i < 64; ++i) {
             synapseBlock->tempValues[tid] += tempVal[i][tid];
         }
     }
@@ -334,7 +334,7 @@ backpropagateNeurons(NeuronBlock* neuronBlocks,
  * @param sourceTempNeuron temp-balue block of the source-neuron
  */
 __device__ __forceinline__ void
-backpropagateSection(SynapseSection* section,
+backpropagateNeuron(SynapseSection* section,
                      SynapseConnection* connection,
                      TempNeuronBlock* targetTempBlock,
                      Neuron* sourceNeuron,
@@ -356,7 +356,7 @@ backpropagateSection(SynapseSection* section,
     for (uint16_t pos = 0; pos < SYNAPSES_PER_SYNAPSESECTION; pos++) {
         synapse = &section->synapses[pos];
 
-        if (synapse->targetNeuronId != UNINIT_STATE_16) {
+        if (synapse->targetNeuronId != UNINIT_STATE_8) {
             targetTempNeuron = &targetTempBlock->neurons[synapse->targetNeuronId];
 
             // calculate new delta
@@ -408,7 +408,84 @@ backpropagateConnections(NeuronBlock* neuronBlocks,
         const uint64_t neuronBlockId = (blockIdx.x / dimY)  + neuronBlockPos;
         TempNeuronBlock* targetTempBlock = &tempNeuronBlocks[neuronBlockId];
 
-        backpropagateSection(synapseSection, scon, targetTempBlock, sourceNeuron, sourceTempNeuron);
+        backpropagateNeuron(synapseSection, scon, targetTempBlock, sourceNeuron, sourceTempNeuron);
+    }
+}
+
+//==================================================================================================
+//==================================================================================================
+//==================================================================================================
+
+/**
+ * @brief backpropagate a synapse-section
+ *
+ * @param section current synapse-section
+ */
+__device__ __forceinline__ bool
+reduceSection(SynapseSection* section)
+{
+    Synapse* synapse;
+    uint8_t exist = 0;
+
+    for (uint8_t pos = 0; pos < SYNAPSES_PER_SYNAPSESECTION; pos++) {
+        synapse = &section->synapses[pos];
+
+        if (synapse->targetNeuronId != UNINIT_STATE_8) {
+            synapse->activeCounter -= static_cast<uint8_t>(synapse->activeCounter < 10);
+
+            // handle active-counter
+            if (synapse->activeCounter == 0) {
+                if (pos < SYNAPSES_PER_SYNAPSESECTION - 1) {
+                    section->synapses[pos] = section->synapses[pos + 1];
+                    section->synapses[pos + 1] = Synapse();
+                }
+            }
+            else {
+                exist++;
+            }
+        }
+    }
+
+    // return true;
+    return exist != 0;
+}
+
+/**
+ * @brief reduce synapse, in order to limit the amount of memory
+ *
+ * @param connectionBlocks pointer to connection-blocks
+ * @param neuronBlocks pointer to neuron-blocks
+ * @param synapseBlocks pointer to synapse-blocks
+ */
+__global__ void
+reduceConnections(ConnectionBlock* connectionBlocks,
+                  NeuronBlock* neuronBlocks,
+                  SynapseBlock* synapseBlocks)
+{
+    Neuron* sourceNeuron = nullptr;
+    NeuronBlock* sourceNeuronBlock = nullptr;
+    SynapseSection* synapseSection = nullptr;
+
+    ConnectionBlock* connectionBlock = &connectionBlocks[blockIdx.x];
+    SynapseConnection* connection = &connectionBlock->connections[threadIdx.x];
+
+    if (connection->origin.blockId != UNINIT_STATE_32) {
+        synapseSection = &synapseBlocks[connectionBlock->targetSynapseBlockPos].sections[threadIdx.x];
+        sourceNeuronBlock = &neuronBlocks[connection->origin.blockId];
+        sourceNeuron = &sourceNeuronBlock->neurons[connection->origin.neuronId];
+
+        // if section is complete empty, then erase it
+        if (reduceSection(synapseSection) == false) {
+            // initialize the creation of a new section
+            sourceNeuron->isNew = 1;
+            sourceNeuron->newOffset = connection->offset;
+            sourceNeuron->inUse &= (~(1 << connection->origin.posInNeuron));
+
+            // mark current connection as available again
+            connection->origin.blockId = UNINIT_STATE_32;
+            connection->origin.neuronId = UNINIT_STATE_16;
+            connection->origin.posInNeuron = 0;
+        }
     }
 }
 
@@ -702,6 +779,57 @@ backpropagation_CUDA(CudaPointerHandle* gpuPointer,
                 gpuPointer->connectionBlocks[brickId],
                 brick->neuronBlockPos,
                 brick->dimY);
+    }
+
+    // copy neurons back to host
+    cudaMemcpy(neuronBlocks,
+               gpuPointer->neuronBlocks,
+               numberOfNeuronBlocks * sizeof(NeuronBlock),
+               cudaMemcpyDeviceToHost);
+}
+
+/**
+ * @brief run backpropagaion on all normal- and output-brikcs to update the weights
+ *        of the synapses.
+ *
+ * @param gpuPointer handle with all gpu-pointer of the cluster
+ * @param bricks pointer to local bricks
+ * @param numberOfBricks number of bricks
+ * @param neuronBlocks pointer to local neuron-blocks
+ * @param numberOfNeuronBlocks number of neuron-blocks
+ */
+extern "C"
+void
+reduction_CUDA(CudaPointerHandle* gpuPointer,
+               Brick* bricks,
+               const uint32_t numberOfBricks,
+               NeuronBlock* neuronBlocks,
+               const uint32_t numberOfNeuronBlocks)
+{
+    // copy necessary data from host to gpu
+    cudaMemcpy(gpuPointer->neuronBlocks,
+               neuronBlocks,
+               numberOfNeuronBlocks * sizeof(NeuronBlock),
+               cudaMemcpyHostToDevice);
+
+    // process all bricks on gpu
+    for (int32_t brickId = numberOfBricks - 1; brickId >= 0; --brickId)
+    {
+        Brick* brick = &bricks[brickId];
+        if (brick->isInputBrick) {
+            continue;
+        }
+
+        reduceConnections<<<brick->dimX, 64>>>(
+                gpuPointer->connectionBlocks[brickId],
+                gpuPointer->neuronBlocks,
+                gpuPointer->synapseBlocks);
+
+
+        cudaMemcpy(&brick->connectionBlocks[0],
+                   gpuPointer->connectionBlocks[brickId],
+                   brick->connectionBlocks.size() * sizeof(ConnectionBlock),
+                   cudaMemcpyDeviceToHost);
     }
 
     // copy neurons back to host

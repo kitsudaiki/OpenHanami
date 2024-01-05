@@ -129,14 +129,12 @@ static_assert(sizeof(ClusterHeader) == 512);
 //==================================================================================================
 
 struct Synapse {
-    int8_t active = 1;
-    uint8_t padding1[3];
-
     float weight = 0.0f;
     float border = 0.0f;
 
-    uint8_t padding2[2];
-    uint16_t targetNeuronId = UNINIT_STATE_16;
+    uint8_t padding2[6];
+    uint8_t activeCounter = 0;
+    uint8_t targetNeuronId = UNINIT_STATE_8;
 };
 static_assert(sizeof(Synapse) == 16);
 
@@ -194,6 +192,21 @@ struct Neuron {
     uint8_t inUse = 0;
 
     uint8_t padding[4];
+
+    void setInUse(const uint8_t pos) { inUse |= (1 << pos); }
+
+    void deleteInUse(const uint8_t pos) { inUse &= (~(1 << pos)); }
+
+    uint8_t getFirstZeroBit()
+    {
+        for (int i = 0; i < 8; ++i) {
+            if ((inUse & (1 << i)) == 0) {
+                return i;
+            }
+        }
+
+        return UNINIT_STATE_8;
+    }
 };
 static_assert(sizeof(Neuron) == 32);
 

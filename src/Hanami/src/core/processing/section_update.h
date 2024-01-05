@@ -78,6 +78,11 @@ resizeConnections(Brick* targetBrick)
     const uint32_t dimXold = targetBrick->dimX;
     const uint32_t dimYold = targetBrick->dimY;
 
+    // output-bricks must cover the whole output
+    if (targetBrick->isOutputBrick) {
+        targetBrick->dimX = targetBrick->numberOfNeuronBlocks;
+    }
+
     // update brick-dimensions
     if (targetBrick->dimX < targetBrick->numberOfNeuronBlocks) {
         targetBrick->dimX++;
@@ -129,6 +134,10 @@ createNewSection(Cluster& cluster,
     // get origin objects
     NeuronBlock* originBlock = &cluster.neuronBlocks[originLocation.blockId];
     Neuron* originNeuron = &originBlock->neurons[originLocation.neuronId];
+    const uint8_t newPosInNeuron = originNeuron->getFirstZeroBit();
+    if (newPosInNeuron == UNINIT_STATE_8) {
+        return false;
+    }
 
     const uint32_t originBrickId = cluster.neuronBlocks[originLocation.blockId].brickId;
     const Brick* originBrick = &cluster.bricks[originBrickId];
@@ -151,10 +160,9 @@ createNewSection(Cluster& cluster,
 
     // initialize connection
     targetConnection->origin = originLocation;
-    targetConnection->origin.posInNeuron = originNeuron->inUse;
     targetConnection->offset = offset;
-
-    originNeuron->inUse++;
+    targetConnection->origin.posInNeuron = newPosInNeuron;
+    originNeuron->setInUse(newPosInNeuron);
 
     return true;
 }
@@ -163,7 +171,7 @@ createNewSection(Cluster& cluster,
  * @brief prcess update-positions in order to create new sections
  */
 inline bool
-updateSections(Cluster& cluster)
+updateCluster(Cluster& cluster)
 {
     NeuronBlock* neuronBlock = nullptr;
     Neuron* neuron = nullptr;

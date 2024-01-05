@@ -196,21 +196,22 @@ def test_workflow():
         token, address, request_dataset_name, request_inputs, request_labels)
 
     # run training
-    success, result = task.create_task(
-        token, address, generic_task_name, "train", cluster_uuid, train_dataset_uuid)
-    assert success
-    task_uuid = json.loads(result)["uuid"]
-
-    finished = False
-    while not finished:
-        success, result = task.get_task(token, address, task_uuid, cluster_uuid)
+    for i in range(0,1):
+        success, result = task.create_task(
+            token, address, generic_task_name, "train", cluster_uuid, train_dataset_uuid)
         assert success
-        finished = json.loads(result)["state"] == "finished"
-        print("wait for finish train-task")
-        time.sleep(1)
+        task_uuid = json.loads(result)["uuid"]
 
-    success, result = task.delete_task(token, address, task_uuid, cluster_uuid)
-    assert success
+        finished = False
+        while not finished:
+            success, result = task.get_task(token, address, task_uuid, cluster_uuid)
+            assert success
+            finished = json.loads(result)["state"] == "finished"
+            print("wait for finish train-task")
+            time.sleep(1)
+
+        success, result = task.delete_task(token, address, task_uuid, cluster_uuid)
+        assert success
 
     # save and reload checkpoint
     success, result = cluster.save_cluster(token, address, checkpoint_name, cluster_uuid)
