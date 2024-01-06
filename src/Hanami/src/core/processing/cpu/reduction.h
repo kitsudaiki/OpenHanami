@@ -51,6 +51,9 @@ reduceSection(SynapseSection* section)
                     section->synapses[pos] = section->synapses[pos + 1];
                     section->synapses[pos + 1] = Synapse();
                 }
+                else {
+                    section->synapses[pos] = Synapse();
+                }
             }
             else {
                 exist++;

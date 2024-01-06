@@ -49,7 +49,6 @@
 #include <hanami_root.h>
 
 // init static variables
-uint32_t* HanamiRoot::randomValues = nullptr;
 Hanami::GpuInterface* HanamiRoot::gpuInterface = nullptr;
 HanamiRoot* HanamiRoot::root = nullptr;
 HttpServer* HanamiRoot::httpServer = nullptr;
@@ -80,6 +79,8 @@ HanamiRoot::~HanamiRoot() {}
 bool
 HanamiRoot::init(Hanami::ErrorContainer& error)
 {
+    srand(time(NULL));
+
     /*if(useOpencl)
     {
         Hanami::GpuHandler oclHandler;
@@ -99,13 +100,6 @@ HanamiRoot::init(Hanami::ErrorContainer& error)
     cpuSynapseBlocks.deleteAll();
     gpuSynapseBlocks.initBuffer<SynapseBlock>(10000);
     gpuSynapseBlocks.deleteAll();
-
-    // init predefinde random-values
-    randomValues = new uint32_t[NUMBER_OF_RAND_VALUES];
-    srand(time(NULL));
-    for (uint32_t i = 0; i < NUMBER_OF_RAND_VALUES; i++) {
-        randomValues[i] = static_cast<uint32_t>(rand());
-    }
 
     if (initDatabase(error) == false) {
         error.addMessage("Failed to initialize database");

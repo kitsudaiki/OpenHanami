@@ -140,8 +140,7 @@ Cluster::initCuda()
                       getItemData<SynapseBlock>(HanamiRoot::gpuSynapseBlocks),
                       HanamiRoot::gpuSynapseBlocks.metaData->itemCapacity,
                       bricks,
-                      clusterHeader->bricks.count,
-                      HanamiRoot::randomValues);
+                      clusterHeader->bricks.count);
 
     return true;
 }

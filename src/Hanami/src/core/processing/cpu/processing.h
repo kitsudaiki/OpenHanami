@@ -92,9 +92,9 @@ inline void
 createNewSynapse(NeuronBlock* block,
                  Synapse* synapse,
                  const ClusterSettings* clusterSettings,
-                 const float remainingW)
+                 const float remainingW,
+                 uint32_t& randomSeed)
 {
-    const uint32_t* randomValues = HanamiRoot::randomValues;
     const float randMax = static_cast<float>(RAND_MAX);
     uint32_t signRand = 0;
     const float sigNeg = clusterSettings->signNeg;
@@ -106,16 +106,15 @@ createNewSynapse(NeuronBlock* block,
     synapse->activeCounter = 5;
 
     // set target neuron
-    block->randomPos = (block->randomPos + 1) % NUMBER_OF_RAND_VALUES;
-    synapse->targetNeuronId
-        = static_cast<uint16_t>(randomValues[block->randomPos] % block->numberOfNeurons);
+    randomSeed = pcg_hash(randomSeed);
+    synapse->targetNeuronId = static_cast<uint16_t>(randomSeed % block->numberOfNeurons);
 
-    block->randomPos = (block->randomPos + 1) % NUMBER_OF_RAND_VALUES;
-    synapse->weight = (static_cast<float>(randomValues[block->randomPos]) / randMax) / 10.0f;
+    randomSeed = pcg_hash(randomSeed);
+    synapse->weight = (static_cast<float>(randomSeed) / randMax) / 10.0f;
 
     // update weight with sign
-    block->randomPos = (block->randomPos + 1) % NUMBER_OF_RAND_VALUES;
-    signRand = randomValues[block->randomPos] % 1000;
+    randomSeed = pcg_hash(randomSeed);
+    signRand = randomSeed % 1000;
     synapse->weight *= static_cast<float>(1.0f - (1000.0f * sigNeg > signRand) * 2);
 }
 
@@ -138,7 +137,8 @@ synapseProcessingBackward(Cluster& cluster,
                           NeuronBlock* targetNeuronBlock,
                           Neuron* sourceNeuron,
                           const SourceLocationPtr originLocation,
-                          ClusterSettings* clusterSettings)
+                          ClusterSettings* clusterSettings,
+                          uint32_t& randomSeed)
 {
     float potential = sourceNeuron->potential - connection->offset;
     float val = 0.0f;
@@ -153,7 +153,8 @@ synapseProcessingBackward(Cluster& cluster,
         if constexpr (doTrain) {
             // create new synapse if necesarry and training is active
             if (synapse->targetNeuronId == UNINIT_STATE_8) {
-                createNewSynapse(targetNeuronBlock, synapse, clusterSettings, potential);
+                createNewSynapse(
+                    targetNeuronBlock, synapse, clusterSettings, potential, randomSeed);
             }
 
             if (synapse->border > 2.0f * potential && pos < SYNAPSES_PER_SYNAPSESECTION - 2) {
@@ -206,6 +207,7 @@ processSynapses(Cluster& cluster, Brick* brick)
     ConnectionBlock* connectionBlock = nullptr;
     Neuron* sourceNeuron = nullptr;
     SynapseSection* section = nullptr;
+    uint32_t randomeSeed = rand();
 
     // process synapses
     for (uint32_t c = 0; c < brick->connectionBlocks.size(); c++) {
@@ -225,6 +227,7 @@ processSynapses(Cluster& cluster, Brick* brick)
 
             section = &synapseBlocks[connectionBlock->targetSynapseBlockPos].sections[i];
             targetNeuronBlock = &neuronBlocks[brick->neuronBlockPos + (c / brick->dimY)];
+            randomeSeed += (c * NUMBER_OF_SYNAPSESECTION) + i;
 
             synapseProcessingBackward<doTrain>(cluster,
                                                section,
@@ -232,7 +235,8 @@ processSynapses(Cluster& cluster, Brick* brick)
                                                targetNeuronBlock,
                                                sourceNeuron,
                                                scon->origin,
-                                               clusterSettings);
+                                               clusterSettings,
+                                               randomeSeed);
         }
     }
 }

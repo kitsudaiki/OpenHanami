@@ -27,6 +27,23 @@
 #include "../objects.h"
 #include "../cluster_io_functions.h"
 
+/**
+ * @brief function for generating random-values
+ *        coming from this website:
+ *            https://www.reedbeta.com/blog/hash-functions-for-gpu-rendering/
+ *
+ * @param input seed for random value
+ *
+ * @return random value
+ */
+__device__ __forceinline__
+uint32_t pcg_hash(const uint32_t input)
+{
+    const uint32_t state = input * 747796405u + 2891336453u;
+    const uint32_t word = ((state >> ((state >> 28u) + 4u)) ^ state) * 277803737u;
+    return (word >> 22u) ^ word;
+}
+
 //==================================================================================================
 //==================================================================================================
 //==================================================================================================
@@ -45,12 +62,8 @@ createNewSynapse(NeuronBlock* block,
                  Synapse* synapse,
                  const ClusterSettings* clusterSettings,
                  const float remainingW,
-                 const uint32_t* randomValues)
+                 uint32_t& randomSeed)
 {
-    uint32_t randomPos = (block->randomPos + (threadIdx.x * blockIdx.x) + 1)
-                               % (NUMBER_OF_RAND_VALUES - 5);
-    block->randomPos = randomPos;
-
     const float randMax = static_cast<float>(RAND_MAX);
     uint32_t signRand = 0;
     const float sigNeg = clusterSettings->signNeg;
@@ -58,17 +71,19 @@ createNewSynapse(NeuronBlock* block,
     // set activation-border
     synapse->border = remainingW;
 
-    // set target neuron
-    randomPos = (randomPos + 1) % NUMBER_OF_RAND_VALUES;
-    synapse->targetNeuronId
-        = static_cast<uint16_t>(randomValues[randomPos] % block->numberOfNeurons);
+    // set initial active-counter for reduction-process
+    synapse->activeCounter = 5;
 
-    randomPos = (randomPos + 1) % NUMBER_OF_RAND_VALUES;
-    synapse->weight = (static_cast<float>(randomValues[randomPos]) / randMax) / 10.0f;
+    // set target neuron
+    randomSeed = pcg_hash(randomSeed);
+    synapse->targetNeuronId = static_cast<uint16_t>(randomSeed % block->numberOfNeurons);
+
+    randomSeed = pcg_hash(randomSeed);
+    synapse->weight = (static_cast<float>(randomSeed) / randMax) / 10.0f;
 
     // update weight with sign
-    randomPos = (randomPos + 1) % NUMBER_OF_RAND_VALUES;
-    signRand = randomValues[randomPos] % 1000;
+    randomSeed = pcg_hash(randomSeed);
+    signRand = randomSeed % 1000;
     synapse->weight *= static_cast<float>(1.0f - (1000.0f * sigNeg > signRand) * 2);
 }
 
@@ -92,7 +107,7 @@ synapseProcessingBackward(SynapseSection* synapseSection,
                           Neuron* sourceNeuron,
                           const SourceLocationPtr originLocation,
                           ClusterSettings* clusterSettings,
-                          const uint* randomValues,
+                          uint32_t& randomSeed,
                           float* localMem)
 {
     __shared__ float localPotential[64];
@@ -113,7 +128,7 @@ synapseProcessingBackward(SynapseSection* synapseSection,
                                  synapse,
                                  clusterSettings,
                                  localPotential[threadIdx.x],
-                                 randomValues);
+                                 randomSeed);
             }
 
             // split synapse, if necessary
@@ -165,11 +180,12 @@ processSynapses(NeuronBlock* neuronBlocks,
                 SynapseBlock* synapseBlocks,
                 ConnectionBlock* connectionBlocks,
                 ClusterSettings* clusterSettings,
-                const uint32_t* randomValues,
+                uint32_t randomeSeed,
                 const uint32_t neuronBlockPos,
                 const uint32_t dimY)
 {
     SynapseBlock* synapseBlock = nullptr;
+    randomeSeed += (blockIdx.x * blockDim.x) + threadIdx.x;
     const uint64_t tid = threadIdx.x;
     const uint64_t neuronBlockId = (blockIdx.x / dimY) + neuronBlockPos;
 
@@ -200,7 +216,7 @@ processSynapses(NeuronBlock* neuronBlocks,
                                                    sourceNeuron,
                                                    scon->origin,
                                                    clusterSettings,
-                                                   randomValues,
+                                                   randomeSeed,
                                                    tempVal[tid]);
             }
         }
@@ -335,10 +351,11 @@ backpropagateNeurons(NeuronBlock* neuronBlocks,
  */
 __device__ __forceinline__ void
 backpropagateNeuron(SynapseSection* section,
-                     SynapseConnection* connection,
-                     TempNeuronBlock* targetTempBlock,
-                     Neuron* sourceNeuron,
-                     TempNeuron* sourceTempNeuron)
+                    SynapseConnection* connection,
+                    NeuronBlock* targetBlock,
+                    TempNeuronBlock* targetTempBlock,
+                    Neuron* sourceNeuron,
+                    TempNeuron* sourceTempNeuron)
 {
     __shared__ float localDelta[64];
     __shared__ float localTotalDeltas[64];
@@ -347,10 +364,12 @@ backpropagateNeuron(SynapseSection* section,
     // init values
     localPotential[threadIdx.x] = sourceNeuron->potential - connection->offset;
     Synapse* synapse = nullptr;
+    Neuron* targetNeuron = nullptr;
     TempNeuron* targetTempNeuron = nullptr;
     constexpr float trainValue = 0.05f;
     localTotalDeltas[threadIdx.x] = 0.0f;
     float valid = 0.0f;
+    uint8_t active = 0;
 
     // iterate over all synapses in the section
     for (uint16_t pos = 0; pos < SYNAPSES_PER_SYNAPSESECTION; pos++) {
@@ -358,6 +377,9 @@ backpropagateNeuron(SynapseSection* section,
 
         if (synapse->targetNeuronId != UNINIT_STATE_8) {
             targetTempNeuron = &targetTempBlock->neurons[synapse->targetNeuronId];
+            targetNeuron = &targetBlock->neurons[synapse->targetNeuronId];
+            active = (targetNeuron->potential > 0.0f) == (synapse->weight > 0.0f);
+            synapse->activeCounter += active * static_cast<uint8_t>(synapse->activeCounter < 10);
 
             // calculate new delta
             localDelta[threadIdx.x] = targetTempNeuron->delta[0] * synapse->weight;
@@ -395,20 +417,26 @@ backpropagateConnections(NeuronBlock* neuronBlocks,
                          const uint32_t dimY)
 {
     ConnectionBlock* connectionBlock = &connectionBlocks[blockIdx.x];
-    SynapseConnection* scon = &connectionBlock->connections[threadIdx.x];
+    SynapseConnection* connection = &connectionBlock->connections[threadIdx.x];
 
-    if (scon->origin.blockId != UNINIT_STATE_32) {
+    if (connection->origin.blockId != UNINIT_STATE_32) {
         SynapseSection* synapseSection = &synapseBlocks[connectionBlock->targetSynapseBlockPos].sections[threadIdx.x];
 
-        NeuronBlock* sourceNeuronBlock = &neuronBlocks[scon->origin.blockId];
-        TempNeuronBlock* sourceTempBlock = &tempNeuronBlocks[scon->origin.blockId];
-        Neuron* sourceNeuron = &sourceNeuronBlock->neurons[scon->origin.neuronId];
-        TempNeuron* sourceTempNeuron = &sourceTempBlock->neurons[scon->origin.neuronId];
+        NeuronBlock* sourceNeuronBlock = &neuronBlocks[connection->origin.blockId];
+        TempNeuronBlock* sourceTempBlock = &tempNeuronBlocks[connection->origin.blockId];
+        Neuron* sourceNeuron = &sourceNeuronBlock->neurons[connection->origin.neuronId];
+        TempNeuron* sourceTempNeuron = &sourceTempBlock->neurons[connection->origin.neuronId];
 
         const uint64_t neuronBlockId = (blockIdx.x / dimY)  + neuronBlockPos;
         TempNeuronBlock* targetTempBlock = &tempNeuronBlocks[neuronBlockId];
+        NeuronBlock* targetNeuronBlock = &neuronBlocks[neuronBlockId];
 
-        backpropagateNeuron(synapseSection, scon, targetTempBlock, sourceNeuron, sourceTempNeuron);
+        backpropagateNeuron(synapseSection,
+                            connection,
+                            targetNeuronBlock,
+                            targetTempBlock,
+                            sourceNeuron,
+                            sourceTempNeuron);
     }
 }
 
@@ -438,6 +466,9 @@ reduceSection(SynapseSection* section)
                 if (pos < SYNAPSES_PER_SYNAPSESECTION - 1) {
                     section->synapses[pos] = section->synapses[pos + 1];
                     section->synapses[pos + 1] = Synapse();
+                    printf("delete\n");
+                } else {
+                    section->synapses[pos] = Synapse();
                 }
             }
             else {
@@ -505,7 +536,6 @@ reduceConnections(ConnectionBlock* connectionBlocks,
  * @param numberOfSynapseBlocks number of synapse-blocks to copy
  * @param bricks pointer to bricks to initialize their connection-blocks, if exist
  * @param numberOfBricks number of bricks in the cluster to init the connection-block-buffer
- * @param randomValues pointer to neuron-blocks on host
  */
 extern "C"
 void
@@ -517,22 +547,19 @@ copyToDevice_CUDA(CudaPointerHandle* gpuPointer,
                   SynapseBlock* synapseBlocks,
                   const uint32_t numberOfSynapseBlocks,
                   Brick* bricks,
-                  const uint32_t numberOfBricks,
-                  uint32_t* randomValues)
+                  const uint32_t numberOfBricks)
 {
     // allocate memory on gpu
     cudaMalloc(&gpuPointer->clusterSettings, 1                     * sizeof(ClusterSettings));
     cudaMalloc(&gpuPointer->neuronBlocks,    numberOfNeuronBlocks  * sizeof(NeuronBlock));
     cudaMalloc(&gpuPointer->tempNeuronBlock, numberOfNeuronBlocks  * sizeof(TempNeuronBlock));
     cudaMalloc(&gpuPointer->synapseBlocks,   numberOfSynapseBlocks * sizeof(SynapseBlock));
-    cudaMalloc(&gpuPointer->randomValues,    NUMBER_OF_RAND_VALUES * sizeof(uint32_t));
 
     // copy data from host into the allocated memory
     cudaMemcpy(gpuPointer->clusterSettings, clusterSettings,  1                     * sizeof(ClusterSettings), cudaMemcpyHostToDevice);
     cudaMemcpy(gpuPointer->neuronBlocks,    neuronBlocks,     numberOfNeuronBlocks  * sizeof(NeuronBlock),     cudaMemcpyHostToDevice);
     cudaMemcpy(gpuPointer->tempNeuronBlock, tempNeuronBlocks, numberOfNeuronBlocks  * sizeof(TempNeuronBlock), cudaMemcpyHostToDevice);
     cudaMemcpy(gpuPointer->synapseBlocks,   synapseBlocks,    numberOfSynapseBlocks * sizeof(SynapseBlock),    cudaMemcpyHostToDevice);
-    cudaMemcpy(gpuPointer->randomValues,    randomValues,     NUMBER_OF_RAND_VALUES * sizeof(uint32_t),        cudaMemcpyHostToDevice);
 
     // initialize connection-blocks all all bricks
     gpuPointer->connectionBlocks.resize(numberOfBricks);
@@ -574,7 +601,6 @@ removeFromDevice_CUDA(CudaPointerHandle* gpuPointer)
     cudaFree(gpuPointer->neuronBlocks);
     cudaFree(gpuPointer->tempNeuronBlock);
     cudaFree(gpuPointer->synapseBlocks);
-    cudaFree(gpuPointer->randomValues);
 }
 
 /**
@@ -666,6 +692,8 @@ processing_CUDA(CudaPointerHandle* gpuPointer,
                 const uint32_t numberOfNeuronBlocks,
                 const bool doTrain)
 {
+    uint32_t randomeSeed = rand();
+
     // copy necessary data from host to gpu
     cudaMemcpy(gpuPointer->neuronBlocks,
                neuronBlocks,
@@ -687,7 +715,7 @@ processing_CUDA(CudaPointerHandle* gpuPointer,
                 gpuPointer->synapseBlocks,
                 gpuPointer->connectionBlocks[brickId],
                 gpuPointer->clusterSettings,
-                gpuPointer->randomValues,
+                randomeSeed + brickId,
                 brick->neuronBlockPos,
                 brick->dimY);
 
@@ -707,7 +735,7 @@ processing_CUDA(CudaPointerHandle* gpuPointer,
                 gpuPointer->synapseBlocks,
                 gpuPointer->connectionBlocks[brickId],
                 gpuPointer->clusterSettings,
-                gpuPointer->randomValues,
+                randomeSeed + brickId,
                 brick->neuronBlockPos,
                 brick->dimY);
 
