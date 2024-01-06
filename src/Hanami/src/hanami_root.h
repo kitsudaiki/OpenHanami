@@ -61,7 +61,6 @@ class HanamiRoot
     static Hanami::GpuInterface* gpuInterface;
     static HttpServer* httpServer;
     static HanamiRoot* root;
-    static uint32_t* randomValues;
     static CryptoPP::SecByteBlock tokenKey;
     static Hanami::ItemBuffer cpuSynapseBlocks;
     static Hanami::ItemBuffer gpuSynapseBlocks;

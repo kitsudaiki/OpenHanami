@@ -215,16 +215,11 @@ static_assert(sizeof(Neuron) == 32);
 struct NeuronBlock {
     uint32_t numberOfNeurons = 0;
     uint32_t brickId = 0;
-    uint32_t randomPos = 0;
-    uint8_t padding[4];
+    uint8_t padding[8];
 
     Neuron neurons[NEURONS_PER_NEURONSECTION];
 
-    NeuronBlock()
-    {
-        randomPos = rand();
-        std::fill_n(neurons, NEURONS_PER_NEURONSECTION, Neuron());
-    }
+    NeuronBlock() { std::fill_n(neurons, NEURONS_PER_NEURONSECTION, Neuron()); }
 };
 static_assert(sizeof(NeuronBlock) == 2064);
 
@@ -342,7 +337,6 @@ struct CudaPointerHandle {
     std::vector<ConnectionBlock*> connectionBlocks;
 
     ClusterSettings* clusterSettings = nullptr;
-    uint32_t* randomValues = nullptr;
 };
 
 //==================================================================================================

@@ -33,8 +33,7 @@ extern "C" void copyToDevice_CUDA(CudaPointerHandle* gpuPointer,
                                   SynapseBlock* synapseBlocks,
                                   const uint32_t numberOfSynapseBlocks,
                                   Brick*,
-                                  const uint32_t numberOfBricks,
-                                  uint32_t* randomValues);
+                                  const uint32_t numberOfBricks);
 
 extern "C" void removeFromDevice_CUDA(CudaPointerHandle* gpuPointer);
 
