@@ -19,7 +19,7 @@ import json
 def list_audit_logs(token: str,
                     address: str,
                     user_id: str,
-                    page: int) -> tuple[bool,str]:
+                    page: int) -> str:
     path = "/control/v1/audit_log"
     values = f'user_id={user_id}&page={page}'
     return hanami_request.send_get_request(token, address, path, values)
@@ -28,7 +28,7 @@ def list_audit_logs(token: str,
 def list_error_logs(token: str,
                     address: str,
                     user_id: str,
-                    page: int) -> tuple[bool,str]:
+                    page: int) -> str:
     path = "/control/v1/error_log";
     if user_id:
         values = f'user_id={user_id}&page={page}'

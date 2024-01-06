@@ -21,7 +21,7 @@ import base64
 def create_cluster(token: str,
                    address: str, 
                    name: str,
-                   template: str) -> tuple[bool,str]:
+                   template: str) -> str:
     # convert template to base64
     template_bytes = template.encode("ascii") 
     base64_bytes = base64.b64encode(template_bytes) 
@@ -36,7 +36,7 @@ def create_cluster(token: str,
     return hanami_request.send_post_request(token, address, path, body_str)
 
 
-def save_cluster(token: str, address: str, name: str, cluster_uuid: str) -> tuple[bool,str]:
+def save_cluster(token: str, address: str, name: str, cluster_uuid: str) -> str:
     path = "/control/v1/cluster/save"
     json_body = {
         "name": name,
@@ -46,7 +46,7 @@ def save_cluster(token: str, address: str, name: str, cluster_uuid: str) -> tupl
     return hanami_request.send_post_request(token, address, path, body_str)
 
 
-def restore_cluster(token: str, address: str, checkpoint_uuid: str, cluster_uuid: str) -> tuple[bool,str]:
+def restore_cluster(token: str, address: str, checkpoint_uuid: str, cluster_uuid: str) -> str:
     path = "/control/v1/cluster/load"
     json_body = {
         "checkpoint_uuid": checkpoint_uuid,
@@ -56,18 +56,18 @@ def restore_cluster(token: str, address: str, checkpoint_uuid: str, cluster_uuid
     return hanami_request.send_post_request(token, address, path, body_str)
 
 
-def get_cluster(token: str, address: str, cluster_uuid: str) -> tuple[bool,str]:
+def get_cluster(token: str, address: str, cluster_uuid: str) -> str:
     path = "/control/v1/cluster"
     values = f'uuid={cluster_uuid}'
     return hanami_request.send_get_request(token, address, path, values)
 
 
-def list_clusters(token: str, address: str) -> tuple[bool,str]:
+def list_clusters(token: str, address: str) -> str:
     path = "/control/v1/cluster/all"
     return hanami_request.send_get_request(token, address, path, "")
 
 
-def delete_cluster(token: str, address: str, cluster_uuid: str) -> tuple[bool,str]:
+def delete_cluster(token: str, address: str, cluster_uuid: str) -> str:
     path = "/control/v1/cluster"
     values = f'uuid={cluster_uuid}'
     return hanami_request.send_delete_request(token, address, path, values)

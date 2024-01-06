@@ -14,21 +14,30 @@
 
 import requests
 import json
+from hanami_sdk import exceptions
 
 
 def request_token(address: str, 
                   user_id: str, 
-                  pw: str) -> tuple[bool,str]:
+                  pw: str) -> str:
     url = f'{address}/control/v1/token'
     json_body = {
         "id": user_id,
         "password": pw,
     }
 
-    response = requests.post(url, json=json_body)    
-    if response.status_code != 200:
-        return False, response.content
-    else:
-        return True, response.json()["token"]
+    response = requests.post(url, json=json_body) 
+    if response.status_code == 200:
+        return response.json()["token"]
+    if response.status_code == 400:
+        raise exceptions.BadRequestException(response.content)
+    if response.status_code == 401:
+        raise exceptions.UnauthorizedException(response.content)
+    if response.status_code == 404:
+        raise exceptions.NotFoundException(response.content)
+    if response.status_code == 409:
+        raise exceptions.ConflictException(response.content)
+    if response.status_code == 500:
+        raise exceptions.InternalServerErrorException()
 
 # check_token

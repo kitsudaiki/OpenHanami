@@ -14,26 +14,39 @@
 
 import requests
 import json
+from hanami_sdk import exceptions
+
+
+def _handle_response(response) -> str:
+    if response.status_code == 200:
+        return response.content
+    if response.status_code == 400:
+        raise exceptions.BadRequestException(response.content)
+    if response.status_code == 401:
+        raise exceptions.UnauthorizedException(response.content)
+    if response.status_code == 404:
+        raise exceptions.NotFoundException(response.content)
+    if response.status_code == 409:
+        raise exceptions.ConflictException(response.content)
+    if response.status_code == 500:
+        raise exceptions.InternalServerErrorException()
 
 
 def send_post_request(token: str,
                       address: str, 
                       path: str, 
-                      body: str) -> tuple[bool,str]:
+                      body: str) -> str:
     url = f'{address}{path}'
     headers = {'content-type': 'application/json'}
     headers = {'X-Auth-Token': token}
     response = requests.post(url, data=body, headers=headers) 
-    if response.status_code != 200:
-        return False, response.content
-    else:
-        return True, response.content
+    return _handle_response(response)
 
 
 def send_get_request(token: str,
                      address: str, 
                      path: str, 
-                     values: str) -> tuple[bool,str]:
+                     values: str) -> str:
     if values:
         url = f'{address}{path}?{values}'
     else:
@@ -41,36 +54,25 @@ def send_get_request(token: str,
 
     headers = {'X-Auth-Token': token}
     response = requests.get(url, headers=headers) 
-    if response.status_code != 200:
-        return False, response.content
-    else:
-        return True, response.content
+    return _handle_response(response)
 
 
 def send_put_request(token: str,
                      address: str, 
                      path: str, 
-                     body: str) -> tuple[bool,str]:
+                     body: str) -> str:
     url = f'{address}{path}'
     headers = {'content-type': 'application/json'}
     headers = {'X-Auth-Token': token}
-    response = requests.put(url, data=body, headers=headers)   
-    if response.status_code != 200:
-        return False, response.content
-    else:
-        return True, response.content
+    response = requests.put(url, data=body, headers=headers) 
+    return _handle_response(response)
 
 
 def send_delete_request(token: str,
                         address: str, 
                         path: str, 
-                        values: str) -> tuple[bool,str]:
+                        values: str) -> str:
     url = f'{address}{path}?{values}'
     headers = {'X-Auth-Token': token}
-    response = requests.delete(url, headers=headers) 
-    if response.status_code != 200:
-        return False, response.content
-    else:
-        return True, ""
-
-
+    response = requests.delete(url, headers=headers)
+    return _handle_response(response)

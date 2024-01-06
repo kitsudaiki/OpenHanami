@@ -16,24 +16,24 @@ from hanami_sdk import hanami_request
 import json
 
 
-def get_request_result(token: str, address: str, request_result_uuid: str) -> tuple[bool,str]:
+def get_request_result(token: str, address: str, request_result_uuid: str) -> str:
     path = "/control/v1/request_result"
     values = f'uuid={request_result_uuid}'
     return hanami_request.send_get_request(token, address, path, values)
 
 
-def list_request_results(token: str, address: str) -> tuple[bool,str]:
+def list_request_results(token: str, address: str) -> str:
     path = "/control/v1/request_result/all"
     return hanami_request.send_get_request(token, address, path, "")
 
 
-def delete_request_result(token: str, address: str, request_result_uuid: str) -> tuple[bool,str]:
+def delete_request_result(token: str, address: str, request_result_uuid: str) -> str:
     path = "/control/v1/request_result"
     values = f'uuid={request_result_uuid}'
     return hanami_request.send_delete_request(token, address, path, values)
 
 
-def check_against_dataset(token: str, address: str, result_uuid: str, dataset_uuid: str) -> tuple[bool,str]:
+def check_against_dataset(token: str, address: str, result_uuid: str, dataset_uuid: str) -> str:
     path = "/control/v1/dataset/check"
     json_body = {
         "result_uuid": result_uuid,

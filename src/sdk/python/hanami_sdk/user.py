@@ -20,7 +20,7 @@ def create_user(token: str,
                 user_id: str, 
                 user_name: str,
                 passwort: str,
-                is_admin: bool) -> tuple[bool,str]:
+                is_admin: bool) -> str:
     path = "/control/v1/user"
     json_body = {
         "id": user_id,
@@ -32,18 +32,18 @@ def create_user(token: str,
     return hanami_request.send_post_request(token, address, path, body_str)
 
 
-def get_user(token: str, address: str, user_id: str) -> tuple[bool,str]:
+def get_user(token: str, address: str, user_id: str) -> str:
     path = "/control/v1/user"
     values = f'id={user_id}'
     return hanami_request.send_get_request(token, address, path, values)
 
 
-def list_users(token: str, address: str) -> tuple[bool,str]:
+def list_users(token: str, address: str) -> str:
     path = "/control/v1/user/all"
     return hanami_request.send_get_request(token, address, path, "")
 
 
-def delete_user(token: str, address: str, user_id: str) -> tuple[bool,str]:
+def delete_user(token: str, address: str, user_id: str) -> str:
     path = "/control/v1/user"
     values = f'id={user_id}'
     return hanami_request.send_delete_request(token, address, path, values)
@@ -53,7 +53,7 @@ def add_roject_to_user(token: str,
                        user_id: str, 
                        project_id: str,
                        role: str,
-                       is_project_admin: bool) -> tuple[bool,str]:
+                       is_project_admin: bool) -> str:
     path = "/control/v1/user/project";
     json_body = {
         "id": user_id,
@@ -67,20 +67,20 @@ def add_roject_to_user(token: str,
 def remove_project_fromUser(token: str,
                             address: str, 
                             user_id: str, 
-                            project_id: str)-> tuple[bool,str]:
+                            project_id: str)-> str:
     path = "/control/v1/user/project";
     values = f'project_id={project_id}&id={user_id}'
     return hanami_request.send_delete_request(token, address, path, values)
 
 
-def list_projects_of_user(token: str, address: str) -> tuple[bool,str]:
+def list_projects_of_user(token: str, address: str) -> str:
     path = "/control/v1/user/project"
     return hanami_request.send_get_request(token, address, path, "")
 
 
 def switch_project(token: str,
                    address: str, 
-                   project_id: str) -> tuple[bool,str]:
+                   project_id: str) -> str:
     path = "/control/v1/user/project";
     json_body = {
         "project_id": user_name,
