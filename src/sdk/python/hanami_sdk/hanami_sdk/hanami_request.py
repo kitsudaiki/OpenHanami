@@ -14,22 +14,22 @@
 
 import requests
 import json
-from hanami_sdk import exceptions
+from . import hanami_exceptions
 
 
 def _handle_response(response) -> str:
     if response.status_code == 200:
         return response.content
     if response.status_code == 400:
-        raise exceptions.BadRequestException(response.content)
+        raise hanami_exceptions.BadRequestException(response.content)
     if response.status_code == 401:
-        raise exceptions.UnauthorizedException(response.content)
+        raise hanami_exceptions.UnauthorizedException(response.content)
     if response.status_code == 404:
-        raise exceptions.NotFoundException(response.content)
+        raise hanami_exceptions.NotFoundException(response.content)
     if response.status_code == 409:
-        raise exceptions.ConflictException(response.content)
+        raise hanami_exceptions.ConflictException(response.content)
     if response.status_code == 500:
-        raise exceptions.InternalServerErrorException()
+        raise hanami_exceptions.InternalServerErrorException()
 
 
 def send_post_request(token: str,

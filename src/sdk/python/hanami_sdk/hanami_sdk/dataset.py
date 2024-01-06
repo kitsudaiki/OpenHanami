@@ -13,9 +13,9 @@
 # limitations under the License.
 
 from websockets.sync.client import connect
-from hanami_sdk import hanami_request
-from hanami_sdk.hanami_messages import proto3_pb2
-from hanami_sdk import exceptions
+from . import hanami_request
+from . import hanami_exceptions
+from .hanami_messages import proto3_pb2
 import json
 import asyncio
 import math

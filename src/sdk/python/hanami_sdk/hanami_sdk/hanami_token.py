@@ -14,7 +14,7 @@
 
 import requests
 import json
-from hanami_sdk import exceptions
+from . import hanami_exceptions
 
 
 def request_token(address: str, 
@@ -30,14 +30,14 @@ def request_token(address: str,
     if response.status_code == 200:
         return response.json()["token"]
     if response.status_code == 400:
-        raise exceptions.BadRequestException(response.content)
+        raise hanami_exceptions.BadRequestException(response.content)
     if response.status_code == 401:
-        raise exceptions.UnauthorizedException(response.content)
+        raise hanami_exceptions.UnauthorizedException(response.content)
     if response.status_code == 404:
-        raise exceptions.NotFoundException(response.content)
+        raise hanami_exceptions.NotFoundException(response.content)
     if response.status_code == 409:
-        raise exceptions.ConflictException(response.content)
+        raise hanami_exceptions.ConflictException(response.content)
     if response.status_code == 500:
-        raise exceptions.InternalServerErrorException()
+        raise hanami_exceptions.InternalServerErrorException()
 
 # check_token

@@ -1,7 +1,7 @@
-# Python-SDK for Hanami
+# HanamiSDK
 
-## prepare
+This is the python version of the HanamiSDK.
 
-To build the protobuf-messages, run in this directory:
+## install
 
-`protoc --python_out=. --proto_path ../../../libraries/hanami_messages/protobuffers  hanami_messages.proto3`
+`pip3 install -U .`

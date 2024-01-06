@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from hanami_sdk import token as hanami_token
+from hanami_sdk import hanami_token
 from hanami_sdk import checkpoint
 from hanami_sdk import cluster
 from hanami_sdk import dataset
@@ -24,7 +24,7 @@ from hanami_sdk import project
 from hanami_sdk import request_result
 from hanami_sdk import task
 from hanami_sdk import user
-from hanami_sdk import exceptions
+from hanami_sdk import hanami_exceptions
 import test_values
 import json
 import time
@@ -99,7 +99,7 @@ def delete_all_user():
     for entry in body:
         try:
             user.delete_user(token, address, entry[0])
-        except exceptions.ConflictException:
+        except hanami_exceptions.ConflictException:
             pass
 
 
@@ -119,18 +119,18 @@ def test_project():
     result = project.create_project(token, address, projet_id, project_name)
     try:
         result = project.create_project(token, address, projet_id, project_name)
-    except exceptions.ConflictException:
+    except hanami_exceptions.ConflictException:
         pass
     result = project.list_projects(token, address)
     result = project.get_project(token, address, projet_id)
     try:
         result = project.get_project(token, address, "fail_project")
-    except exceptions.NotFoundException:
+    except hanami_exceptions.NotFoundException:
         pass
     result = project.delete_project(token, address, projet_id)
     try:
         result = project.delete_project(token, address, "fail_project")
-    except exceptions.NotFoundException:
+    except hanami_exceptions.NotFoundException:
         pass
 
 
@@ -140,18 +140,18 @@ def test_user():
     result = user.create_user(token, address, user_id, user_name, password, is_admin)
     try:
         result = user.create_user(token, address, user_id, user_name, password, is_admin)
-    except exceptions.ConflictException:
+    except hanami_exceptions.ConflictException:
         pass
     result = user.list_users(token, address)
     result = user.get_user(token, address, user_id)
     try:
         result = user.get_user(token, address, "fail_user")
-    except exceptions.NotFoundException:
+    except hanami_exceptions.NotFoundException:
         pass
     result = user.delete_user(token, address, user_id)
     try:
         result = user.delete_user(token, address, "fail_user")
-    except exceptions.NotFoundException:
+    except hanami_exceptions.NotFoundException:
         pass
 
 
@@ -164,12 +164,12 @@ def test_dataset():
     result = dataset.get_dataset(token, address, dataset_uuid)
     try:
         result = dataset.get_dataset(token, address, "fail_dataset")
-    except exceptions.BadRequestException:
+    except hanami_exceptions.BadRequestException:
         pass
     result = dataset.delete_dataset(token, address, dataset_uuid)
     try:
         result = dataset.delete_dataset(token, address, "fail_dataset")
-    except exceptions.BadRequestException:
+    except hanami_exceptions.BadRequestException:
         pass
 
 
@@ -182,12 +182,12 @@ def test_cluster():
     result = cluster.get_cluster(token, address, cluster_uuid)
     try:
         result = cluster.get_cluster(token, address, "fail_cluster")
-    except exceptions.BadRequestException:
+    except hanami_exceptions.BadRequestException:
         pass
     result = cluster.delete_cluster(token, address, cluster_uuid)
     try:
         result = cluster.delete_cluster(token, address, "fail_cluster")
-    except exceptions.BadRequestException:
+    except hanami_exceptions.BadRequestException:
         pass
 
 

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from hanami_sdk import hanami_request
+from . import hanami_request
 import json
 
 def create_user(token: str,

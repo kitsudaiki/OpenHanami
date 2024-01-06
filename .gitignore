@@ -19,3 +19,7 @@ hanami_env
 *.qmake2cmake
 CMakeLists.txt.user
 *.orig
+*.egg-info
+build
+src/sdk/python/sdk_test_env
+
