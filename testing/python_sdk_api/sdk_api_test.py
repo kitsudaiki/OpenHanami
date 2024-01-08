@@ -105,12 +105,27 @@ def delete_all_user():
 
 def delete_all_datasets():
     result = dataset.list_datasets(token, address)
-    # print(result)
-
     body = json.loads(result)["body"]
 
     for entry in body:
         dataset.delete_dataset(token, address, entry[0])
+
+
+def delete_all_checkpoints():
+    result = checkpoint.list_checkpoints(token, address)
+    body = json.loads(result)["body"]
+
+    for entry in body:
+        checkpoint.delete_checkpoint(token, address, entry[0])
+
+
+
+def delete_all_results():
+    result = request_result.list_request_results(token, address)
+    body = json.loads(result)["body"]
+
+    for entry in body:
+        request_result.delete_request_result(token, address, entry[0])
 
 
 def test_project():
@@ -129,7 +144,7 @@ def test_project():
         pass
     result = project.delete_project(token, address, projet_id)
     try:
-        result = project.delete_project(token, address, "fail_project")
+        result = project.delete_project(token, address, projet_id)
     except hanami_exceptions.NotFoundException:
         pass
 
@@ -150,7 +165,7 @@ def test_user():
         pass
     result = user.delete_user(token, address, user_id)
     try:
-        result = user.delete_user(token, address, "fail_user")
+        result = user.delete_user(token, address, user_id)
     except hanami_exceptions.NotFoundException:
         pass
 
@@ -160,16 +175,18 @@ def test_dataset():
 
     result = dataset.upload_mnist_files(token, address, train_dataset_name, train_inputs, train_labels)
     dataset_uuid = result
+
     result = dataset.list_datasets(token, address)
     result = dataset.get_dataset(token, address, dataset_uuid)
+
     try:
         result = dataset.get_dataset(token, address, "fail_dataset")
     except hanami_exceptions.BadRequestException:
         pass
     result = dataset.delete_dataset(token, address, dataset_uuid)
     try:
-        result = dataset.delete_dataset(token, address, "fail_dataset")
-    except hanami_exceptions.BadRequestException:
+        result = dataset.delete_dataset(token, address, dataset_uuid)
+    except hanami_exceptions.NotFoundException:
         pass
 
 
@@ -186,8 +203,8 @@ def test_cluster():
         pass
     result = cluster.delete_cluster(token, address, cluster_uuid)
     try:
-        result = cluster.delete_cluster(token, address, "fail_cluster")
-    except hanami_exceptions.BadRequestException:
+        result = cluster.delete_cluster(token, address, cluster_uuid)
+    except hanami_exceptions.NotFoundException:
         pass
 
 
@@ -220,12 +237,19 @@ def test_workflow():
     # save and reload checkpoint
     result = cluster.save_cluster(token, address, checkpoint_name, cluster_uuid)
     checkpoint_uuid = json.loads(result)["uuid"]
+    result = checkpoint.list_checkpoints(token, address)
+    # print(json.dumps(json.loads(result), indent=4))
 
     cluster.delete_cluster(token, address, cluster_uuid)
     result = cluster.create_cluster(token, address, cluster_name, cluster_template)
     cluster_uuid = json.loads(result)["uuid"]
 
     result = cluster.restore_cluster(token, address, checkpoint_uuid, cluster_uuid)
+    result = checkpoint.delete_checkpoint(token, address, checkpoint_uuid)
+    try:
+        result = checkpoint.delete_checkpoint(token, address, checkpoint_uuid)
+    except hanami_exceptions.NotFoundException:
+        pass
 
     # run testing
     result = task.create_task(
@@ -239,6 +263,7 @@ def test_workflow():
         print("wait for finish request-task")
         time.sleep(1)
 
+    result = task.list_tasks(token, address, cluster_uuid)
     result = task.delete_task(token, address, task_uuid, cluster_uuid)
 
     # check request-result
@@ -262,6 +287,8 @@ def test_workflow():
     # print(output_values)
     ws.close()
 
+    cluster.switch_to_task_mode(token, address, cluster_uuid)
+
     assert list(output_values).index(max(output_values)) == 5
 
     # cleanup
@@ -272,7 +299,9 @@ def test_workflow():
 
 token = hanami_token.request_token(address, test_user_id, test_user_pw)
 
+delete_all_results()
 delete_all_datasets()
+delete_all_checkpoints()
 delete_all_cluster()
 delete_all_projects()
 delete_all_user()
