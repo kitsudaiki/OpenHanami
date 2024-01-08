@@ -108,28 +108,10 @@ SetClusterMode::runTask(BlossomIO& blossomIO,
         status.errorMessage = "Can not switch Cluster with uuid '" + clusterUuid + "' to new mode '"
                               + newState + "'";
         // TODO: get exact reason, why it was not successful
-        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = CONFLICT_RTYPE;
+        status.errorMessage = "Can not switch cluster to '" + newState + "'";
         error.addMessage(status.errorMessage);
         return false;
-    }
-
-    // handle client
-    if (newState == "DIRECT") {
-        // get internal connection
-        /*HanamiMessaging* messageing = HanamiMessaging::getInstance();
-        HanamiMessagingClient* client =  messageing->getIncomingClient(connectionUuid);
-        if(client == nullptr)
-        {
-            status.errorMessage = "Connection with UUID '" + connectionUuid + "'not found";
-            status.statusCode = NOT_FOUND_RTYPE;
-            LOG_DEBUG(status.errorMessage);
-            return false;
-        }
-        client->setStreamCallback(cluster, streamDataCallback);
-        cluster->msgClient = client;*/
-    }
-    else {
-        //
     }
 
     blossomIO.output["new_state"] = newState;

@@ -84,6 +84,14 @@ def switch_to_task_mode(token: str, address: str, cluster_uuid: str):
 
 
 def switch_to_direct_mode(token: str, address: str, cluster_uuid: str):
+    path = "/control/v1/cluster/set_mode"
+    json_body = {
+        "new_state": "DIRECT",
+        "uuid": cluster_uuid,
+    }
+    body_str = json.dumps(json_body)
+    hanami_request.send_put_request(token, address, path, body_str)
+
     # create initial request for the websocket-connection
     initial_ws_msg = {
         "token": token,
