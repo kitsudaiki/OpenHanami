@@ -93,7 +93,6 @@ YY_DECL;
 //
 // version: 1
 // settings:
-//     max_synapse_sections: 1000
 //
 // bricks:
 //     1,1,1
@@ -109,6 +108,11 @@ YY_DECL;
 
 startpoint:
     "version1" linebreaks "settings" ":" linebreaks settings "bricks" ":" linebreaks bricks
+    {
+        driver.output->version = 1;
+    }
+|
+    "version1" linebreaks "bricks" ":" linebreaks bricks
     {
         driver.output->version = 1;
     }

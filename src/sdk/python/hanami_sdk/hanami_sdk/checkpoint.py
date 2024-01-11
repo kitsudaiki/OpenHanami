@@ -12,18 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from hanami_sdk import hanami_request
+from . import hanami_request
 import json
 
 
-def list_checkpoints(token: str, address: str) -> tuple[bool,str]:
+def list_checkpoints(token: str, address: str) -> str:
     path = "/control/v1/checkpoint/all"
     return hanami_request.send_get_request(token, address, path, "")
 
 
 def delete_checkpoint(token: str,
                       address: str, 
-                      checkpoint_uuid: str) -> tuple[bool,str]:
+                      checkpoint_uuid: str) -> str:
     path = "/control/v1/checkpoint";
     values = f'uuid={checkpoint_uuid}'
     return hanami_request.send_delete_request(token, address, path, values)

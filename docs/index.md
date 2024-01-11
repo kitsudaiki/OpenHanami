@@ -7,9 +7,7 @@
 
 !!! danger "IMPORTANT"
 
-    **This project is still an experimental prototype at the moment and NOT ready for productive usage.** 
-
-    There is still a huge bunch of known bugs and missing validations, which can break the backend. Even the documentation here is quite basic. Normally I absolutely dislike it to make something public, which has known bugs and other problems, but I simply don't wanted to wait longer for the open-sourcing of this project. Most of it will be fixed until [Version `0.2.0`](/#roadmap). Keep in mind, that this project is created by a single person in his spare time beside a 40h/week job. ;)
+    # **This project is still an experimental prototype at the moment and NOT ready for productive usage.** 
 
 !!! info
 
@@ -65,8 +63,25 @@ Because the normalization of input is not necessary, together with the good perf
 
     Installation-Guide to deploy HanamiAI on a kubernetes
 
-    [:octicons-arrow-right-24: Installation](/How_To/1_installation/)
+    [:octicons-arrow-right-24: Installation](/how_to/installation/)
 
+
+-   :material-file-document-multiple-outline:{ .lg .middle } __OpenAPI Documentation__
+
+    ---
+
+    Automatic generated OpenAPI documentation
+
+    [:octicons-arrow-right-24: OpenAPI documentation](/api/rest_api_documentation/)
+
+
+-   :material-file-document-multiple-outline:{ .lg .middle } __SDK Documentation__
+
+    ---
+
+    Documentation of the SDK
+
+    [:octicons-arrow-right-24: SDK documentation](/api/sdk_library/)
 
 
 -   :material-monitor-dashboard:{ .lg .middle } __First Look__
@@ -77,16 +92,7 @@ Because the normalization of input is not necessary, together with the good perf
 
     For the naming at some points look into the [Glossar](/other/2_glossar)
 
-    [:octicons-arrow-right-24: Dashboard](/How_To/2_dashboard/)
-
-
--   :material-file-document-multiple-outline:{ .lg .middle } __OpenAPI Documentation__
-
-    ---
-
-    Automatic generated OpenAPI documentation
-
-    [:octicons-arrow-right-24: OpenAPI documentation](/Resource_Docus/1_rest_api_documentation/)
+    [:octicons-arrow-right-24: Dashboard](/how_to/dashboard/)
 
 
 -   :octicons-package-dependencies-24:{ .lg .middle } __Dependencies__
@@ -95,13 +101,17 @@ Because the normalization of input is not necessary, together with the good perf
 
     Many basic dependencies were created in context of this project. Here is an overview of all involved repositories.
 
-    [:octicons-arrow-right-24: Dependencies](/other/1_dependencies/)
+    [:octicons-arrow-right-24: Dependencies](/other/dependencies/)
 
 </div>
 
 ## Issue-Overview
 
 [Hanami-Project](https://github.com/users/kitsudaiki/projects/9/views/4)
+
+## Contributing
+
+If you want to help the project by contributing things, you can check the [Contributing guide](https://github.com/kitsudaiki/Hanami/blob/develop/CONTRIBUTING.md).
 
 ## Author
 

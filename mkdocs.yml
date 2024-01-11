@@ -23,23 +23,24 @@ nav:
     - index.md
     - home/license.md
     - home/CHANGELOG.md
-  - API:
+  - Usage:
     - api/rest_api_documentation.md
     - api/sdk_library.md
+    - api/cluster_template.md
     - api/websocket_workflow.md
   - How To:
     - how_to/installation.md
     - how_to/development.md
     - how_to/dashboard.md
   - Inner workings:
-    - Configs:
-      - inner_workings/config.md
-      - inner_workings/db.md
     - inner_workings/core.md
     - inner_workings/input_processing.md
     - inner_workings/monitoring.md
     - inner_workings/storage.md
     - inner_workings/user_and_projects.md
+    - Configs:
+      - inner_workings/config.md
+      - inner_workings/db.md
     - Libraries (Archive):
       - inner_workings/libraries/hanami_args.md
       - inner_workings/libraries/hanami_common.md
@@ -103,7 +104,7 @@ markdown_extensions:
 extra_css:
   - stylesheets/extra.css
 
-copyright: all rights reserved; 2022-2023 Tobias Anker
+copyright: all rights reserved; 2022-2024 Tobias Anker
 
 extra:
   social:

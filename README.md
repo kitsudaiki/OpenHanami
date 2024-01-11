@@ -69,6 +69,10 @@ https://docs.hanami-ai.com
 
     [OpenAPI docu](https://docs.hanami-ai.com/api/rest_api_documentation/)
 
+- SDK documentation
+
+    [OpenAPI docu](https://docs.hanami-ai.com/api/sdk_library/)
+
 - To get a first impression there is a first example-workflow via the dashboard:
 
     [Dashboard](https://docs.hanami-ai.com/how_to/dashboard/)
@@ -116,6 +120,10 @@ pip3 install mkdocs-material mkdocs-swagger-ui-tag mkdocs-drawio-exporter
 
 (to build the documentation `Draw.io` also has to be installed on the system)
 
+## Contributing
+
+If you want to help the project by contributing things, you can check the [Contributing guide](https://github.com/kitsudaiki/Hanami/blob/develop/CONTRIBUTING.md).
+
 ## Author
 
 **Tobias Anker**
@@ -125,7 +133,3 @@ eMail: tobias.anker@kitsunemimi.moe
 ## License
 
 The complete project is under [Apache 2 license](https://github.com/kitsudaiki/Hanami/blob/develop/LICENSE).
-
-## Contributing
-
-If you want to help the project by contributing things, you can check the [Contributing guide](https://github.com/kitsudaiki/Hanami/blob/develop/CONTRIBUTING.md).

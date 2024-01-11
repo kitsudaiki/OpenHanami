@@ -85,7 +85,7 @@ DeleteUser::runTask(BlossomIO& blossomIO,
     if (result["id"] == deleterId) {
         status.errorMessage
             = "User with id '" + userId + "' tries to delete himself, which is not allowed.";
-        status.statusCode = BAD_REQUEST_RTYPE;
+        status.statusCode = CONFLICT_RTYPE;
         LOG_DEBUG(status.errorMessage);
         return false;
     }

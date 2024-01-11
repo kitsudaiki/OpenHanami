@@ -13,20 +13,21 @@
 # limitations under the License.
 
 from websockets.sync.client import connect
-from hanami_sdk import hanami_request
-from hanami_sdk.hanami_messages import proto3_pb2
+from . import hanami_request
+from . import hanami_exceptions
+from .hanami_messages import proto3_pb2
 import json
 import asyncio
 import math
 import time
 
 
-def list_datasets(token: str, address: str) -> tuple[bool,str]:
+def list_datasets(token: str, address: str) -> str:
     path = "/control/v1/dataset/all"
     return hanami_request.send_get_request(token, address, path, "")
 
 
-def get_dataset(token: str, address: str, dataset_uuid: str) -> tuple[bool,str]:
+def get_dataset(token: str, address: str, dataset_uuid: str) -> str:
     path = "/control/v1/dataset"
     values = f'uuid={dataset_uuid}'
     return hanami_request.send_get_request(token, address, path, values)
@@ -34,7 +35,7 @@ def get_dataset(token: str, address: str, dataset_uuid: str) -> tuple[bool,str]:
 
 def delete_dataset(token: str,
                    address: str, 
-                   checkpoint_uuid: str) -> tuple[bool,str]:
+                   checkpoint_uuid: str) -> str:
     path = "/control/v1/dataset";
     values = f'uuid={checkpoint_uuid}'
     return hanami_request.send_delete_request(token, address, path, values)
@@ -45,10 +46,7 @@ def wait_until_upload_complete(token: str, address: str, uuid: str) -> bool:
         path = "/control/v1/dataset/progress"
         values = f'uuid={uuid}'
 
-        success, result = hanami_request.send_get_request(token, address, path, values)
-
-        if not success:
-            return False
+        result = hanami_request.send_get_request(token, address, path, values)
 
         result_json = json.loads(result)
         if result_json["complete"]:
@@ -105,7 +103,7 @@ def upload_mnist_files(token: str,
                        address: str, 
                        name: str, 
                        input_file_path: str, 
-                       label_file_path: str) -> tuple[bool,str]:
+                       label_file_path: str) -> str:
     # read files
     with open(input_file_path, 'rb') as i_f:
         input_file_data = i_f.read()
@@ -121,10 +119,7 @@ def upload_mnist_files(token: str,
         "label_data_size": len(label_file_data),
     }
     body_str = json.dumps(json_body)
-    success, result = hanami_request.send_post_request(token, address, path, body_str)
-
-    if not success:
-        return False, ""
+    result = hanami_request.send_post_request(token, address, path, body_str)
 
     # process init-result
     result_json = json.loads(result)
@@ -134,13 +129,13 @@ def upload_mnist_files(token: str,
 
     # send data
     if not send_data(token, address, uuid, input_file_uuid, input_file_data):
-        return False, ""
+        raise exceptions.InternalServerErrorException()
 
     if not send_data(token, address, uuid, label_file_uuid, label_file_data):
-        return False, ""
+        raise exceptions.InternalServerErrorException()
 
     if not wait_until_upload_complete(token, address, uuid): 
-        return False, ""
+        raise exceptions.InternalServerErrorException()
 
     # finalize
     path = "/control/v1/mnist/dataset"
@@ -150,19 +145,16 @@ def upload_mnist_files(token: str,
         "uuid_label_file": label_file_uuid,
     }
     body_str = json.dumps(json_body)
-    success, result = hanami_request.send_put_request(token, address, path, body_str)
+    result = hanami_request.send_put_request(token, address, path, body_str)
     result_json = json.loads(result)
 
-    if not success:
-        return False, ""
-
-    return True, uuid
+    return uuid
 
 
 def upload_csv_files(token: str, 
                      address: str, 
                      name: str, 
-                     input_file_path: str) -> tuple[bool,str]:
+                     input_file_path: str) -> str:
     # read files
     with open(input_file_path, 'rb') as i_f:
         input_file_data = i_f.read()
@@ -174,10 +166,7 @@ def upload_csv_files(token: str,
         "input_data_size": len(input_file_data),
     }
     body_str = json.dumps(json_body)
-    success, result = hanami_request.send_post_request(token, address, path, body_str)
-
-    if not success:
-        return False, ""
+    result = hanami_request.send_post_request(token, address, path, body_str)
 
     # process init-result
     result_json = json.loads(result)
@@ -186,10 +175,10 @@ def upload_csv_files(token: str,
 
     # send data
     if not send_data(token, address, uuid, input_file_uuid, input_file_data):
-        return False, ""
+        raise exceptions.InternalServerErrorException()
 
     if not wait_until_upload_complete(token, address, uuid): 
-        return False, ""
+        raise exceptions.InternalServerErrorException()
 
     # finalize
     path = "/control/v1/csv/dataset"
@@ -198,10 +187,7 @@ def upload_csv_files(token: str,
         "uuid_input_file": input_file_uuid,
     }
     body_str = json.dumps(json_body)
-    success, result = hanami_request.send_put_request(token, address, path, body_str)
+    result = hanami_request.send_put_request(token, address, path, body_str)
     result_json = json.loads(result)
 
-    if not success:
-        return False, ""
-
-    return True, uuid
+    return uuid

@@ -4,6 +4,10 @@
 
     Description comes later...
 
+!!! info
+
+    usage see: https://docs.hanami-ai.com/api/sdk_library/#direct-io
+
 ## File-upload of Data-sets
 
 TBD

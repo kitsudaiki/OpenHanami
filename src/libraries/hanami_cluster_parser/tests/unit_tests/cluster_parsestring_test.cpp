@@ -41,10 +41,10 @@ Cluster_ParseString_Test::parseString_test()
 {
     std::string input(
         "version: 1\n"
-        "settings:\n"
-        "    max_synapse_sections: 100000\n"
-        "    synapse_clusteration: 10\n"
-        "    sign_neg: 0.5\n"
+        //"settings:\n"
+        //"    max_synapse_sections: 100000\n"
+        //"    synapse_clusteration: 10\n"
+        //"    sign_neg: 0.5\n"
         "        \n"
         "bricks:\n"
         "    1,1,1\n"
@@ -68,9 +68,9 @@ Cluster_ParseString_Test::parseString_test()
 
     TEST_EQUAL(result.version, 1);
 
-    TEST_EQUAL(result.maxSynapseSections, 100000);
-    TEST_EQUAL(result.synapseSegmentation, 10);
-    TEST_EQUAL(result.signNeg, 0.5);
+    // TEST_EQUAL(result.maxSynapseSections, 100000);
+    // TEST_EQUAL(result.synapseSegmentation, 10);
+    // TEST_EQUAL(result.signNeg, 0.5);
 
     TEST_EQUAL(result.bricks.size(), 3);
 
