@@ -1159,6 +1159,16 @@
                         },
                         "description": "The requested resource was not found."
                     },
+                    "409": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Resource with name or id already exist."
+                    },
                     "500": {
                         "content": {
                             "text/plain": {

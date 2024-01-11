@@ -1,5 +1,38 @@
 # Changelog
 
+## [Unreleased (state tag v0.4.0b1)]
+
+### Breaking-Changes
+
+#### Checkpoint-Breaking
+
+- Complete restructure of the core to improve the performance of the CUDA-kernel by enabling more capabilities for parallel processing.
+- Synapse-blocks are not limited to a single cluster-scroped buffer, but instead are stored in a global buffer, which is shared by multiple cluster.
+- The number of used synapse-blocks is now independed from the number of neuron-blocks of a brick. They scale now better over time. This way the number of neurons in the clsuter-template are only a maximum value. This way it is easier to too high values in the cluster-template are no pain-point anymore.
+
+#### API-Breaking
+
+- removed cpp version of the SDK
+
+### Added
+
+- python version of the SDK
+- basic (incomplete) cli-client in go 
+- new entry in config to define a location for temporary files while uploading
+- new cleanup-loop for tempfiles, which deleted incative temporary files after a certain amount of time, to remove file of a broken upload-process
+- the reduction-process was re-added to limit the amount of used memory while learning.
+
+### Changed
+
+- replaced old api-test-tool by a new python-script, which use and test the new python version of the SDK
+- moved from `qmake` to `cmake` as build-tool for the c++ code
+
+### Removed
+
+- removed GET-request from audit-log
+
+
+
 ## v0.3.3
 
 - **Date**: 2023-11-17
@@ -8,6 +41,8 @@
 
 - fixed broken login to dashboard
 - fixed broken internal error-log and the error-log API-endpoint
+
+
 
 ## v0.3.2
 

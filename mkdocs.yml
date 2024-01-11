@@ -23,9 +23,10 @@ nav:
     - index.md
     - home/license.md
     - home/CHANGELOG.md
-  - API:
+  - Usage:
     - api/rest_api_documentation.md
     - api/sdk_library.md
+    - api/cluster_template.md
     - api/websocket_workflow.md
   - How To:
     - how_to/installation.md

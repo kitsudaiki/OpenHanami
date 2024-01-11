@@ -30,6 +30,7 @@
 SetClusterMode::SetClusterMode() : Blossom("Set mode of the cluster.")
 {
     errorCodes.push_back(NOT_FOUND_RTYPE);
+    errorCodes.push_back(CONFLICT_RTYPE);
 
     //----------------------------------------------------------------------------------------------
     // input
