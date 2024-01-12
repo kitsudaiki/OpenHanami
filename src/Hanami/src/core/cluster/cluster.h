@@ -32,6 +32,7 @@
 #include <hanami_common/buffer/item_buffer.h>
 
 class TaskHandle_State;
+class LogicalHost;
 
 namespace Hanami
 {
@@ -42,13 +43,14 @@ class Statemachine;
 class Cluster
 {
    public:
-    Cluster();
-    Cluster(const void* data, const uint64_t dataSize);
+    Cluster(LogicalHost* host);
+    Cluster(LogicalHost* host, const void* data, const uint64_t dataSize);
     ~Cluster();
 
     // cluster-data
     Hanami::DataBuffer clusterData;
     CudaPointerHandle gpuPointer;
+    LogicalHost* attachedHost;
 
     ClusterHeader* clusterHeader = nullptr;
     float* inputValues = nullptr;
@@ -66,7 +68,6 @@ class Cluster
     const std::string getName();
     bool setName(const std::string& newName);
     bool init(const Hanami::ClusterMeta& clusterTemplate, const std::string& uuid);
-    bool initCuda();
 
     // stats
     uint64_t getDataSize() const;

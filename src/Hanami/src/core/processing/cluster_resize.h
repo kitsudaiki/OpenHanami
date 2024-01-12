@@ -1,5 +1,5 @@
 /**
- * @file        section_update.h
+ * @file        cluster_resize.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -25,6 +25,9 @@
 
 #include <common.h>
 #include <core/cluster/cluster.h>
+#include <core/processing/cpu/cpu_host.h>
+#include <core/processing/cuda/cuda_host.h>
+#include <core/processing/logical_host.h>
 #include <hanami_root.h>
 
 #include "objects.h"
@@ -192,8 +195,10 @@ updateCluster(Cluster& cluster)
                 originLocation.blockId = neuronBlockId;
                 originLocation.neuronId = sourceId;
 
-                createNewSection(
-                    cluster, originLocation, neuron->newOffset, HanamiRoot::gpuSynapseBlocks);
+                createNewSection(cluster,
+                                 originLocation,
+                                 neuron->newOffset,
+                                 cluster.attachedHost->synapseBlocks);
 
                 neuron->newOffset = 0.0f;
                 neuron->isNew = 0;

@@ -31,7 +31,7 @@
  * @param cluster cluster, which output-data should send
  */
 void
-sendClusterOutputMessage(Cluster* cluster)
+sendClusterOutputMessage(const Cluster* cluster)
 {
     if (cluster->msgClient == nullptr) {
         return;

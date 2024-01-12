@@ -117,7 +117,7 @@ inline void
 reduceCluster(const Cluster& cluster)
 {
     Brick* brick = nullptr;
-    SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(HanamiRoot::cpuSynapseBlocks);
+    SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(cluster.attachedHost->synapseBlocks);
     const uint32_t numberOfBricks = cluster.clusterHeader->bricks.count;
 
     // process normal and output-bricks

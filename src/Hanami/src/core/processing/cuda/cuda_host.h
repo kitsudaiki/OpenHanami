@@ -1,5 +1,5 @@
 /**
- * @file        processing_unit_handler.h
+ * @file        cuda_host.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,35 +20,26 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_PROCESSING_UNIT_HANDLER_H
-#define HANAMI_PROCESSING_UNIT_HANDLER_H
+#ifndef CUDAHOST_H
+#define CUDAHOST_H
 
-#include <stdint.h>
+#include <core/processing/logical_host.h>
 
-#include <vector>
-
-class CpuProcessingUnit;
-
-class ProcessingUnitHandler
+class CudaHost : public LogicalHost
 {
    public:
-    static ProcessingUnitHandler* getInstance()
-    {
-        if (instance == nullptr) {
-            instance = new ProcessingUnitHandler();
-        }
-        return instance;
-    }
-    ~ProcessingUnitHandler();
+    CudaHost();
+    ~CudaHost();
 
-    void addProcessingUnit(const uint64_t threadId);
-    bool initProcessingUnits(const uint16_t numberOfThreads);
+    uint64_t getAvailableMemory();
+    void hostSpecificCleanup(Cluster* cluster);
+
+    bool moveCluster(LogicalHost* originHost, Cluster* cluster);
 
    private:
-    ProcessingUnitHandler();
-    static ProcessingUnitHandler* instance;
-
-    std::vector<CpuProcessingUnit*> m_processingUnits;
+    void trainClusterForward(Cluster* cluster);
+    void trainClusterBackward(Cluster* cluster);
+    void requestCluster(Cluster* cluster);
 };
 
-#endif  // HANAMI_PROCESSING_UNIT_HANDLER_H
+#endif  // CUDAHOST_H

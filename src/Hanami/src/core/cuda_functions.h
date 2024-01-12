@@ -63,4 +63,8 @@ extern "C" void reduction_CUDA(CudaPointerHandle* gpuPointer,
                                NeuronBlock* neuronBlocks,
                                const uint32_t numberOfNeuronBlocks);
 
+extern "C" uint32_t getNumberOfDevices_CUDA();
+
+extern "C" uint64_t getAvailableMemory_CUDA(const uint32_t deviceId);
+
 #endif  // CUDA_FUNCTIONS_H

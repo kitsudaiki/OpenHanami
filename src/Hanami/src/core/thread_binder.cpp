@@ -22,7 +22,6 @@
 
 #include "thread_binder.h"
 
-#include <core/processing/processing_unit_handler.h>
 #include <hanami_common/threading/thread.h>
 #include <hanami_common/threading/thread_handler.h>
 #include <hanami_hardware/cpu_core.h>
@@ -110,14 +109,14 @@ ThreadBinder::fillCoreIds(std::vector<uint64_t>& controlCoreIds,
     }
 
     // processing-cores
-    for (uint64_t i = 1; i < host->cpuPackages[0]->cpuCores.size(); i++) {
+    /*for (uint64_t i = 1; i < host->cpuPackages[0]->cpuCores.size(); i++) {
         phyCore = host->cpuPackages[0]->cpuCores[i];
         ProcessingUnitHandler* processingUnitHandler = ProcessingUnitHandler::getInstance();
         for (Hanami::CpuThread* singleThread : phyCore->cpuThreads) {
             processingUnitHandler->addProcessingUnit(singleThread->threadId);
             processingCoreIds.push_back(singleThread->threadId);
         }
-    }
+    }*/
 
     return true;
 }

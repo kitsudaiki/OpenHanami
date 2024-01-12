@@ -24,6 +24,8 @@
 #include <chrono>
 #include <math.h>
 
+#include <cuda_runtime_api.h>
+
 #include "../objects.h"
 #include "../cluster_io_functions.h"
 
@@ -865,4 +867,45 @@ reduction_CUDA(CudaPointerHandle* gpuPointer,
                gpuPointer->neuronBlocks,
                numberOfNeuronBlocks * sizeof(NeuronBlock),
                cudaMemcpyDeviceToHost);
+}
+
+/**
+ * @brief get number of available cuda-devices
+ */
+extern "C"
+uint32_t
+getNumberOfDevices_CUDA()
+{
+    int deviceCount;
+    cudaError_t cudaResult = cudaGetDeviceCount(&deviceCount);
+
+    if (cudaResult != cudaSuccess || deviceCount == 0) {
+        return 0;
+    }
+
+    return deviceCount;
+}
+
+/**
+ * @brief get available memory on device
+ *
+ * @param deviceId id of the device to check
+ *
+ * @return size of free memory on device in bytes
+ */
+extern "C"
+uint64_t
+getAvailableMemory_CUDA(const uint32_t deviceId)
+{
+    cudaSetDevice(deviceId);
+
+    cudaDeviceProp deviceProp;
+    cudaGetDeviceProperties(&deviceProp, deviceId);
+
+    size_t freeMem, totalMem;
+    cudaMemGetInfo(&freeMem, &totalMem);
+
+    // totalMem;
+
+    return freeMem;
 }

@@ -1,5 +1,5 @@
 /**
- * @file        segment_queue.h
+ * @file        physical_host.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,36 +20,32 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_SEGMENTQUEUE_H
-#define HANAMI_SEGMENTQUEUE_H
+#ifndef PHYSICALHOST_H
+#define PHYSICALHOST_H
 
-#include <atomic>
-#include <deque>
 #include <vector>
 
-class Cluster;
+class CudaHost;
+class CpuHost;
+class LogicalHost;
 
-class ClusterQueue
+namespace Hanami
+{
+struct ErrorContainer;
+}
+
+class PhysicalHost
 {
    public:
-    static ClusterQueue* getInstance()
-    {
-        if (instance == nullptr) {
-            instance = new ClusterQueue();
-        }
-        return instance;
-    }
+    PhysicalHost();
 
-    void addClusterToQueue(Cluster* newSegment);
+    bool init(Hanami::ErrorContainer& error);
 
-    Cluster* getClusterFromQueue();
+    LogicalHost* getFirstHost() const;
 
    private:
-    ClusterQueue();
-    static ClusterQueue* instance;
-
-    std::atomic_flag m_queue_lock = ATOMIC_FLAG_INIT;
-    std::deque<Cluster*> m_clusterQueue;
+    std::vector<CudaHost*> m_cudaHosts;
+    std::vector<CpuHost*> m_cpuHosts;
 };
 
-#endif  // HANAMI_SEGMENTQUEUE_H
+#endif  // PHYSICALHOST_H

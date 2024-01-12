@@ -24,6 +24,7 @@
 
 #include <core/cluster/cluster.h>
 #include <core/cluster/cluster_handler.h>
+#include <core/processing/physical_host.h>
 #include <database/cluster_table.h>
 #include <hanami_common/buffer/data_buffer.h>
 #include <hanami_crypto/common.h>
@@ -147,8 +148,16 @@ CreateCluster::runTask(BlossomIO& blossomIO,
 
     const std::string uuid = blossomIO.output["uuid"];
 
+    // get initial logical host
+    LogicalHost* host = HanamiRoot::physicalHost->getFirstHost();
+    if (host == nullptr) {
+        error.addMessage("No logical host found for new cluster.");
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
     // create new cluster
-    Cluster* newCluster = new Cluster();
+    Cluster* newCluster = new Cluster(host);
     if (base64Template != "") {
         // generate and initialize the cluster based on the cluster-templates
         if (newCluster->init(parsedCluster, uuid) == false) {

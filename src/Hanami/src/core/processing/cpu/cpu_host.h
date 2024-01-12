@@ -1,5 +1,5 @@
 /**
- * @file        cpu_processing_unit.h
+ * @file        cpu_host.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,29 +20,25 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_CPU_PROCESSING_UNIT_H
-#define HANAMI_CPU_PROCESSING_UNIT_H
+#ifndef CPUHOST_H
+#define CPUHOST_H
 
-#include <common.h>
-#include <hanami_common/threading/thread.h>
+#include <core/processing/logical_host.h>
 
-class Cluster;
-
-class CpuProcessingUnit : public Hanami::Thread
+class CpuHost : public LogicalHost
 {
    public:
-    CpuProcessingUnit();
-    ~CpuProcessingUnit();
+    CpuHost();
 
-   protected:
-    void run();
+    uint64_t getAvailableMemory();
+    void hostSpecificCleanup(Cluster*);
+
+    bool moveCluster(LogicalHost* originHost, Cluster* cluster);
 
    private:
-    uint64_t reductionCounter = 0;
-
-    void trainSegmentForward(Cluster* cluster);
-    void trainSegmentBackward(Cluster* cluster);
-    void processSegment(Cluster* cluster);
+    void trainClusterForward(Cluster* cluster);
+    void trainClusterBackward(Cluster* cluster);
+    void requestCluster(Cluster* cluster);
 };
 
-#endif  // HANAMI_CPU_PROCESSING_UNIT_H
+#endif  // CPUHOST_H
