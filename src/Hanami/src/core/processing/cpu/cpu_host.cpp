@@ -27,8 +27,13 @@
 #include <core/processing/cpu/backpropagation.h>
 #include <core/processing/cpu/processing.h>
 #include <core/processing/cpu/reduction.h>
+#include <hanami_cpu/memory.h>
 
-CpuHost::CpuHost() : LogicalHost() { m_hostType = CPU_HOST_TYPE; }
+CpuHost::CpuHost(const uint32_t localId) : LogicalHost(localId)
+{
+    m_hostType = CPU_HOST_TYPE;
+    initBuffer(localId);
+}
 
 uint64_t
 CpuHost::getAvailableMemory()
@@ -118,4 +123,16 @@ CpuHost::requestCluster(Cluster* cluster)
 {
     Hanami::ErrorContainer error;
     processCluster(*cluster, false);
+}
+
+void
+CpuHost::initBuffer(const uint32_t id)
+{
+    uint64_t sizeOfMemory = getFreeMemory();
+    sizeOfMemory = (sizeOfMemory / 100) * 80;  // use 80% for synapse-blocks
+    synapseBlocks.initBuffer<SynapseBlock>(sizeOfMemory / sizeof(SynapseBlock));
+    synapseBlocks.deleteAll();
+
+    LOG_INFO("Initialized number of syanpse-blocks on cpu-device with id '" + std::to_string(id)
+             + "': " + std::to_string(synapseBlocks.metaData->itemCapacity));
 }

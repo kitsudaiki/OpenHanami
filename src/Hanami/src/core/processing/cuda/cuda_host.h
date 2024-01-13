@@ -28,7 +28,7 @@
 class CudaHost : public LogicalHost
 {
    public:
-    CudaHost();
+    CudaHost(const uint32_t localId);
     ~CudaHost();
 
     uint64_t getAvailableMemory();
@@ -40,6 +40,7 @@ class CudaHost : public LogicalHost
     void trainClusterForward(Cluster* cluster);
     void trainClusterBackward(Cluster* cluster);
     void requestCluster(Cluster* cluster);
+    void initBuffer(const uint32_t id);
 };
 
 #endif  // CUDAHOST_H

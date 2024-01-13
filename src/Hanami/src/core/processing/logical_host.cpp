@@ -27,12 +27,10 @@
 #include <core/processing/objects.h>
 #include <hanami_common/buffer/item_buffer.h>
 
-LogicalHost::LogicalHost() : Hanami::Thread("ProcessingUnit")
+LogicalHost::LogicalHost(const uint32_t localId) : Hanami::Thread("ProcessingUnit")
 {
+    m_localId = localId;
     m_uuid = generateUuid().toString();
-
-    synapseBlocks.initBuffer<SynapseBlock>(10000);
-    synapseBlocks.deleteAll();
 }
 
 LogicalHost::~LogicalHost() {}

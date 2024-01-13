@@ -43,14 +43,14 @@ PhysicalHost::init(Hanami::ErrorContainer& error)
 
     const uint32_t numberOfSockets = Hanami::Host::getInstance()->cpuPackages.size();
     for (uint32_t i = 0; i < numberOfSockets; i++) {
-        CpuHost* newHost = new CpuHost();
+        CpuHost* newHost = new CpuHost(i);
         newHost->startThread();
         m_cpuHosts.push_back(newHost);
     }
 
     const uint32_t numberOfCudaGpus = getNumberOfDevices_CUDA();
     for (uint32_t i = 0; i < numberOfCudaGpus; i++) {
-        CudaHost* newHost = new CudaHost();
+        CudaHost* newHost = new CudaHost(i);
         newHost->startThread();
         m_cudaHosts.push_back(newHost);
     }

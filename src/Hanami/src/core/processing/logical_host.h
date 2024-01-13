@@ -45,7 +45,7 @@ class LogicalHost : public Hanami::Thread
         CUDA_HOST_TYPE = 2,
     };
 
-    LogicalHost();
+    LogicalHost(const uint32_t localId);
     virtual ~LogicalHost();
 
     virtual uint64_t getAvailableMemory() = 0;
@@ -72,6 +72,7 @@ class LogicalHost : public Hanami::Thread
     std::deque<Cluster*> m_clusterQueue;
     HostType m_hostType = UNDEFINED_HOST_TYPE;
     std::string m_uuid = "";
+    uint32_t m_localId = 0;
 
    private:
     virtual void trainClusterForward(Cluster* cluster) = 0;

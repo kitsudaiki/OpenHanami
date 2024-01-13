@@ -28,7 +28,7 @@
 class CpuHost : public LogicalHost
 {
    public:
-    CpuHost();
+    CpuHost(const uint32_t localId);
 
     uint64_t getAvailableMemory();
     void hostSpecificCleanup(Cluster*);
@@ -39,6 +39,7 @@ class CpuHost : public LogicalHost
     void trainClusterForward(Cluster* cluster);
     void trainClusterBackward(Cluster* cluster);
     void requestCluster(Cluster* cluster);
+    void initBuffer(const uint32_t id);
 };
 
 #endif  // CPUHOST_H

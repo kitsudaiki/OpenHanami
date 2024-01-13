@@ -24,6 +24,7 @@
 #define KITSUNEMIMI_CPU_MEMORY_H
 
 #include <stdint.h>
+#include <sys/sysinfo.h>
 #include <unistd.h>
 
 namespace Hanami

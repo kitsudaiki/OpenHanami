@@ -31,9 +31,12 @@ namespace Hanami
 uint64_t
 getTotalMemory()
 {
-    const uint64_t pages = sysconf(_SC_PHYS_PAGES);
-    const uint64_t page_size = getPageSize();
-    return pages * page_size;
+    struct sysinfo info;
+    if (sysinfo(&info) != 0) {
+        return 0;
+    }
+
+    return static_cast<uint64_t>(info.totalram) * info.mem_unit;
 }
 
 /**
@@ -42,9 +45,12 @@ getTotalMemory()
 uint64_t
 getFreeMemory()
 {
-    const uint64_t pages = sysconf(_SC_AVPHYS_PAGES);
-    const uint64_t page_size = getPageSize();
-    return pages * page_size;
+    struct sysinfo info;
+    if (sysinfo(&info) != 0) {
+        return 0;
+    }
+
+    return static_cast<uint64_t>(info.freeram + info.bufferram) * info.mem_unit;
 }
 
 /**
@@ -53,7 +59,12 @@ getFreeMemory()
 uint64_t
 getPageSize()
 {
-    return sysconf(_SC_PAGE_SIZE);
+    struct sysinfo info;
+    if (sysinfo(&info) != 0) {
+        return 0;
+    }
+
+    return static_cast<uint64_t>(info.mem_unit);
 }
 
 }  // namespace Hanami

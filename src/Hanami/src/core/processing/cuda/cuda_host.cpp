@@ -26,7 +26,11 @@
 #include <core/processing/cluster_io_functions.h>
 #include <core/processing/cluster_resize.h>
 
-CudaHost::CudaHost() : LogicalHost() { m_hostType = CUDA_HOST_TYPE; }
+CudaHost::CudaHost(const uint32_t localId) : LogicalHost(localId)
+{
+    m_hostType = CUDA_HOST_TYPE;
+    initBuffer(localId);
+}
 
 CudaHost::~CudaHost() {}
 
@@ -221,4 +225,16 @@ CudaHost::requestCluster(Cluster* cluster)
 
         processNeuronsOfOutputBrick(brick, cluster->outputValues, cluster->neuronBlocks);
     }
+}
+
+void
+CudaHost::initBuffer(const uint32_t id)
+{
+    uint64_t sizeOfMemory = getAvailableMemory_CUDA(id);
+    sizeOfMemory = (sizeOfMemory / 100) * 80;  // use 80% for synapse-blocks
+    synapseBlocks.initBuffer<SynapseBlock>(sizeOfMemory / sizeof(SynapseBlock));
+    synapseBlocks.deleteAll();
+
+    LOG_INFO("Initialized number of syanpse-blocks on gpu-device with id '" + std::to_string(id)
+             + "': " + std::to_string(synapseBlocks.metaData->itemCapacity));
 }
