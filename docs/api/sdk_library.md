@@ -750,7 +750,7 @@ Each CPU and GPU is handled as its logical host. Cluster and be moved between th
 
 !!! warning
 
-    Only supported for 1 cpu and 1 gpu currently. Support for multi-gpu and NUMA-architecture comes in the future.
+    Only supported for 1 cpu currently. Support for NUMA-architecture comes in the future. Multiple gpu's are theoretically supported, but this case was not tested currently.
 
 === "Python"
 

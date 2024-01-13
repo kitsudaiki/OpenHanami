@@ -74,6 +74,8 @@ CudaHost::moveCluster(Cluster* cluster)
         }
     }
 
+    cluster->gpuPointer.deviceId = m_localId;
+
     copyToDevice_CUDA(&cluster->gpuPointer,
                       &cluster->clusterHeader->settings,
                       cluster->neuronBlocks,

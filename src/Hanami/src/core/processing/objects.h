@@ -331,6 +331,7 @@ static_assert(sizeof(Brick) == 512);
 //==================================================================================================
 
 struct CudaPointerHandle {
+    uint32_t deviceId = 0;
     NeuronBlock* neuronBlocks = nullptr;
     TempNeuronBlock* tempNeuronBlock = nullptr;
     SynapseBlock* synapseBlocks = nullptr;
