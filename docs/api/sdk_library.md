@@ -744,6 +744,39 @@ Reset a cluster to the state, which is stored in a specific checkpoint.
     ```
 
 
+### Switch Host
+
+Each CPU and GPU is handled as its logical host. Cluster and be moved between them. To list avaialble hosts there is the [list-hosts endpoint](https://docs.hanami-ai.com/api/sdk_library/#list-hosts).
+
+!!! warning
+
+    Only supported for 1 cpu and 1 gpu currently. Support for multi-gpu and NUMA-architecture comes in the future.
+
+=== "Python"
+
+    ```python
+    from hanami_sdk import cluster
+
+    address = "http://127.0.0.1:1337"
+    host_uuid = "cc6120c7-cc31-4f17-baee-c6c606f00512"
+    cluster_uuid = "d94f2b53-f404-4215-9a33-63c4a03e3202"
+
+    # request a token for a user, who has admin-permissions
+    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+
+    result = cluster.switch_host(token, address, cluster_uuid, host_uuid)
+
+    # example-content of result:
+    #
+    # {
+    #     "name": "test_cluster",
+    #     "owner_id": "asdf",
+    #     "project_id": "admin",
+    #     "uuid": "d94f2b53-f404-4215-9a33-63c4a03e3202",
+    #     "visibility": "private"
+    # }
+    ```
+
 ## Task
 
 Tasks are asynchronous actions, which are placed within a queue of the cluster, which should be affected by the task. They are processed one after another. 
@@ -1186,7 +1219,7 @@ Delete a checkpoint from the backend.
 
 ### List Hosts
 
-List available hosts.
+Each CPU and GPU is handled as its own logical host to have more control over the exact location of the data. These logical hosts can be listed with this endpoint.
 
 === "Python"
 

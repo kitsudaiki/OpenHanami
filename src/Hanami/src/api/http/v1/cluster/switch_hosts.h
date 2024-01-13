@@ -1,5 +1,5 @@
 /**
- * @file        cuda_host.h
+ * @file        switch_host.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,26 +20,21 @@
  *      limitations under the License.
  */
 
-#ifndef CUDAHOST_H
-#define CUDAHOST_H
+#ifndef SWITCHHOSTS_H
+#define SWITCHHOSTS_H
 
-#include <core/processing/logical_host.h>
+#include <api/endpoint_processing/blossom.h>
 
-class CudaHost : public LogicalHost
+class SwitchHosts : public Blossom
 {
    public:
-    CudaHost();
-    ~CudaHost();
+    SwitchHosts();
 
-    uint64_t getAvailableMemory();
-    void hostSpecificCleanup(Cluster* cluster);
-
-    bool moveCluster(Cluster* cluster);
-
-   private:
-    void trainClusterForward(Cluster* cluster);
-    void trainClusterBackward(Cluster* cluster);
-    void requestCluster(Cluster* cluster);
+   protected:
+    bool runTask(BlossomIO& blossomIO,
+                 const json& context,
+                 BlossomStatus& status,
+                 Hanami::ErrorContainer& error);
 };
 
-#endif  // CUDAHOST_H
+#endif  // SWITCHHOSTS_H

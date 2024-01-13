@@ -1,5 +1,5 @@
 /**
- * @file        create_cluster_template.cpp
+ * @file        create_cluster.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *

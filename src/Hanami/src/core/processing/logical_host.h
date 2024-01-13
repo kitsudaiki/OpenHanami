@@ -57,7 +57,7 @@ class LogicalHost : public Hanami::Thread
     HostType getHostType() const;
     const std::string getUuid() const;
 
-    virtual bool moveCluster(LogicalHost* originHost, Cluster* cluster) = 0;
+    virtual bool moveCluster(Cluster* cluster) = 0;
 
     Hanami::ItemBuffer synapseBlocks;
 

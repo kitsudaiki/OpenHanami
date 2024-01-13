@@ -49,8 +49,9 @@ CudaHost::hostSpecificCleanup(Cluster* cluster)
  * @return
  */
 bool
-CudaHost::moveCluster(LogicalHost* originHost, Cluster* cluster)
+CudaHost::moveCluster(Cluster* cluster)
 {
+    LogicalHost* originHost = cluster->attachedHost;
     SynapseBlock* cpuSynapseBlocks = Hanami::getItemData<SynapseBlock>(synapseBlocks);
     SynapseBlock tempBlock;
 
@@ -78,6 +79,8 @@ CudaHost::moveCluster(LogicalHost* originHost, Cluster* cluster)
                       synapseBlocks.metaData->itemCapacity,
                       cluster->bricks,
                       cluster->clusterHeader->bricks.count);
+
+    cluster->attachedHost = this;
 
     return true;
 }

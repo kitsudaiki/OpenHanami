@@ -32,6 +32,7 @@ set(SOURCES
     src/api/http/v1/cluster/save_cluster.h
     src/api/http/v1/cluster/set_cluster_mode.h
     src/api/http/v1/cluster/show_cluster.h
+    src/api/http/v1/cluster/switch_hosts.h
     src/api/http/v1/data_files/check_dataset.h
     src/api/http/v1/data_files/csv/create_csv_dataset.h
     src/api/http/v1/data_files/csv/finalize_csv_dataset.h
@@ -141,6 +142,7 @@ set(SOURCES
     src/api/http/v1/cluster/save_cluster.cpp
     src/api/http/v1/cluster/set_cluster_mode.cpp
     src/api/http/v1/cluster/show_cluster.cpp
+    src/api/http/v1/cluster/switch_hosts.cpp
     src/api/http/v1/data_files/check_dataset.cpp
     src/api/http/v1/data_files/csv/create_csv_dataset.cpp
     src/api/http/v1/data_files/csv/finalize_csv_dataset.cpp

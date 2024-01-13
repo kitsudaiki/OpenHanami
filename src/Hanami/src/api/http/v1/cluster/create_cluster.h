@@ -1,5 +1,5 @@
 /**
- * @file        create_cluster_template.h
+ * @file        create_cluster.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -25,8 +25,6 @@
 
 #include <api/endpoint_processing/blossom.h>
 #include <hanami_cluster_parser/cluster_meta.h>
-
-class Cluster;
 
 class CreateCluster : public Blossom
 {

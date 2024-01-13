@@ -113,6 +113,9 @@ v1/cluster/load
 v1/cluster/set_mode
 - PUT: admin, member
 
+v1/cluster/switch_host
+- PUT: admin, member
+
 v1/cluster/all
 - GET : admin, member
 

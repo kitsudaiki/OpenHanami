@@ -25,6 +25,7 @@
 
 #include <common.h>
 #include <core/cluster/cluster.h>
+#include <core/processing/logical_host.h>
 #include <core/processing/objects.h>
 #include <hanami_root.h>
 

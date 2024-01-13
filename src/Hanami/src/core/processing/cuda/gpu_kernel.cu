@@ -468,7 +468,6 @@ reduceSection(SynapseSection* section)
                 if (pos < SYNAPSES_PER_SYNAPSESECTION - 1) {
                     section->synapses[pos] = section->synapses[pos + 1];
                     section->synapses[pos + 1] = Synapse();
-                    printf("delete\n");
                 } else {
                     section->synapses[pos] = Synapse();
                 }

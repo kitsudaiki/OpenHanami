@@ -33,7 +33,7 @@ class CpuHost : public LogicalHost
     uint64_t getAvailableMemory();
     void hostSpecificCleanup(Cluster*);
 
-    bool moveCluster(LogicalHost* originHost, Cluster* cluster);
+    bool moveCluster(Cluster* cluster);
 
    private:
     void trainClusterForward(Cluster* cluster);

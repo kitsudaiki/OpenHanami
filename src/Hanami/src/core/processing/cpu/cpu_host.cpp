@@ -49,8 +49,9 @@ CpuHost::hostSpecificCleanup(Cluster*)
  * @return
  */
 bool
-CpuHost::moveCluster(LogicalHost* originHost, Cluster* cluster)
+CpuHost::moveCluster(Cluster* cluster)
 {
+    LogicalHost* originHost = cluster->attachedHost;
     SynapseBlock* cpuSynapseBlocks = Hanami::getItemData<SynapseBlock>(synapseBlocks);
     SynapseBlock tempBlock;
 
@@ -68,6 +69,8 @@ CpuHost::moveCluster(LogicalHost* originHost, Cluster* cluster)
             }
         }
     }
+
+    cluster->attachedHost = this;
 
     return true;
 }
