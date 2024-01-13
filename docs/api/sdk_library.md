@@ -1181,3 +1181,37 @@ Delete a checkpoint from the backend.
 
     ```
 
+
+## Hosts
+
+### List Hosts
+
+List available hosts.
+
+=== "Python"
+
+    ```python
+    from hanami_sdk import hosts
+
+    address = "http://127.0.0.1:1337"
+
+    # request a token for a user, who has admin-permissions
+    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+
+    result = hosts.list_hosts(token, address)
+
+    # example-content of result:
+    #
+    # {
+    #     "body": [
+    #         [
+    #             "cc6120c7-cc31-4f17-baee-c6c606f00512",
+    #             "cpu",
+    #         ]
+    #     ],
+    #     "header": [
+    #         "uuid",
+    #         "type"
+    #     ]
+    # }
+    ```

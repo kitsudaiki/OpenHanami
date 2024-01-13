@@ -41,6 +41,7 @@ set(SOURCES
     src/api/http/v1/data_files/list_dataset.h
     src/api/http/v1/data_files/mnist/create_mnist_dataset.h
     src/api/http/v1/data_files/mnist/finalize_mnist_dataset.h
+    src/api/http/v1/hosts/list_hosts.h
     src/api/http/v1/logs/get_audit_log.h
     src/api/http/v1/logs/get_error_log.h
     src/api/http/v1/measurements/power_consumption.h
@@ -94,15 +95,15 @@ set(SOURCES
     src/core/cluster/task.h
     src/core/cuda_functions.h
     src/core/processing/cluster_io_functions.h
+    src/core/processing/cluster_resize.h
     src/core/processing/cpu/backpropagation.h
+    src/core/processing/cpu/cpu_host.h
     src/core/processing/cpu/processing.h
     src/core/processing/cpu/reduction.h
-    src/core/processing/cpu/cpu_host.h
     src/core/processing/cuda/cuda_host.h
     src/core/processing/logical_host.h
     src/core/processing/objects.h
     src/core/processing/physical_host.h
-    src/core/processing/cluster_resize.h
     src/core/routing_functions.h
     src/core/temp_file_handler.h
     src/core/thread_binder.h
@@ -149,6 +150,7 @@ set(SOURCES
     src/api/http/v1/data_files/list_dataset.cpp
     src/api/http/v1/data_files/mnist/create_mnist_dataset.cpp
     src/api/http/v1/data_files/mnist/finalize_mnist_dataset.cpp
+    src/api/http/v1/hosts/list_hosts.cpp
     src/api/http/v1/logs/get_audit_log.cpp
     src/api/http/v1/logs/get_error_log.cpp
     src/api/http/v1/measurements/power_consumption.cpp

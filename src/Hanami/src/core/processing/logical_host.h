@@ -55,6 +55,7 @@ class LogicalHost : public Hanami::Thread
     Cluster* getClusterFromQueue();
 
     HostType getHostType() const;
+    const std::string getUuid() const;
 
     virtual bool moveCluster(LogicalHost* originHost, Cluster* cluster) = 0;
 
@@ -70,6 +71,7 @@ class LogicalHost : public Hanami::Thread
     std::atomic_flag m_queue_lock = ATOMIC_FLAG_INIT;
     std::deque<Cluster*> m_clusterQueue;
     HostType m_hostType = UNDEFINED_HOST_TYPE;
+    std::string m_uuid = "";
 
    private:
     virtual void trainClusterForward(Cluster* cluster) = 0;

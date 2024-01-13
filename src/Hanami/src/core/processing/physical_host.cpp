@@ -74,3 +74,50 @@ PhysicalHost::getFirstHost() const
 
     return m_cpuHosts.at(0);
 }
+
+/**
+ * @brief PhysicalHost::getHost
+ * @param uuid
+ * @return
+ */
+LogicalHost*
+PhysicalHost::getHost(const std::string& uuid) const
+{
+    for (LogicalHost* host : m_cpuHosts) {
+        if (host->getUuid() == uuid) {
+            return host;
+        }
+    }
+
+    for (LogicalHost* host : m_cudaHosts) {
+        if (host->getUuid() == uuid) {
+            return host;
+        }
+    }
+
+    return nullptr;
+}
+
+/**
+ * @brief PhysicalHost::getAllHosts
+ * @return
+ */
+json
+PhysicalHost::getAllHostsAsJson()
+{
+    json body = json::array();
+    for (LogicalHost* host : m_cpuHosts) {
+        json line = json::array();
+        line.push_back(host->getUuid());
+        line.push_back("cpu");
+        body.push_back(line);
+    }
+    for (LogicalHost* host : m_cudaHosts) {
+        json line = json::array();
+        line.push_back(host->getUuid());
+        line.push_back("cuda");
+        body.push_back(line);
+    }
+
+    return body;
+}

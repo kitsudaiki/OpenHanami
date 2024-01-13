@@ -1,5 +1,5 @@
 /**
- * @file        physical_host.h
+ * @file        list_hosts.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,37 +20,21 @@
  *      limitations under the License.
  */
 
-#ifndef PHYSICALHOST_H
-#define PHYSICALHOST_H
+#ifndef LISTHOSTS_H
+#define LISTHOSTS_H
 
-#include <nlohmann/json.hpp>
-#include <string>
-#include <vector>
+#include <api/endpoint_processing/blossom.h>
 
-class CudaHost;
-class CpuHost;
-class LogicalHost;
-using json = nlohmann::json;
-
-namespace Hanami
-{
-struct ErrorContainer;
-}
-
-class PhysicalHost
+class ListHosts : public Blossom
 {
    public:
-    PhysicalHost();
+    ListHosts();
 
-    bool init(Hanami::ErrorContainer& error);
-
-    LogicalHost* getFirstHost() const;
-    LogicalHost* getHost(const std::string& uuid) const;
-    json getAllHostsAsJson();
-
-   private:
-    std::vector<CudaHost*> m_cudaHosts;
-    std::vector<CpuHost*> m_cpuHosts;
+   protected:
+    bool runTask(BlossomIO& blossomIO,
+                 const json& context,
+                 BlossomStatus& status,
+                 Hanami::ErrorContainer& error);
 };
 
-#endif  // PHYSICALHOST_H
+#endif  // LISTHOSTS_H

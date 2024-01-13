@@ -20,6 +20,7 @@ from hanami_sdk import cluster
 from hanami_sdk import dataset
 from hanami_sdk import direct_io
 from hanami_sdk import logs
+from hanami_sdk import hosts
 from hanami_sdk import project
 from hanami_sdk import request_result
 from hanami_sdk import task
@@ -210,6 +211,9 @@ def test_cluster():
 
 def test_workflow():
     print("test workflow")
+
+    result = hosts.list_hosts(token, address)
+    # print(result)
 
     # init
     result = cluster.create_cluster(token, address, cluster_name, cluster_template)

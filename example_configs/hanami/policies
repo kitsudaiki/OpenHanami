@@ -31,6 +31,9 @@ v1/documentation/api/rest
 v1/foreward
 - GET: admin, member
 
+v1/hosts/all
+- GET: admin, member
+
 v1/mnist/dataset
 - POST: admin, member
 - PUT: admin, member

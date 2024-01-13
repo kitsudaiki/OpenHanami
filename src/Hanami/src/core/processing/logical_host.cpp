@@ -29,6 +29,8 @@
 
 LogicalHost::LogicalHost() : Hanami::Thread("ProcessingUnit")
 {
+    m_uuid = generateUuid().toString();
+
     synapseBlocks.initBuffer<SynapseBlock>(10000);
     synapseBlocks.deleteAll();
 }
@@ -82,6 +84,12 @@ LogicalHost::HostType
 LogicalHost::getHostType() const
 {
     return m_hostType;
+}
+
+const std::string
+LogicalHost::getUuid() const
+{
+    return m_uuid;
 }
 
 /**
