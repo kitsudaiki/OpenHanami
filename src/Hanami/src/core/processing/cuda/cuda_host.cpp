@@ -43,6 +43,8 @@ CudaHost::getAvailableMemory()
 void
 CudaHost::hostSpecificCleanup(Cluster* cluster)
 {
+    const std::lock_guard<std::mutex> lock(m_cudaMutex);
+
     removeFromDevice_CUDA(&cluster->gpuPointer);
 }
 
@@ -55,6 +57,14 @@ CudaHost::hostSpecificCleanup(Cluster* cluster)
 bool
 CudaHost::moveCluster(Cluster* cluster)
 {
+    const std::lock_guard<std::mutex> lock(m_cudaMutex);
+
+    copyFromGpu_CUDA(&cluster->gpuPointer,
+                     cluster->neuronBlocks,
+                     cluster->clusterHeader->neuronBlocks.count,
+                     getItemData<SynapseBlock>(synapseBlocks),
+                     synapseBlocks.metaData->itemCapacity);
+
     LogicalHost* originHost = cluster->attachedHost;
     SynapseBlock* cpuSynapseBlocks = Hanami::getItemData<SynapseBlock>(synapseBlocks);
     SynapseBlock tempBlock;
@@ -91,6 +101,18 @@ CudaHost::moveCluster(Cluster* cluster)
     return true;
 }
 
+void
+CudaHost::syncWithHost(Cluster* cluster)
+{
+    const std::lock_guard<std::mutex> lock(m_cudaMutex);
+
+    copyFromGpu_CUDA(&cluster->gpuPointer,
+                     cluster->neuronBlocks,
+                     cluster->clusterHeader->neuronBlocks.count,
+                     getItemData<SynapseBlock>(synapseBlocks),
+                     synapseBlocks.metaData->itemCapacity);
+}
+
 /**
  * @brief run forward-propagation on a cluster
  *
@@ -99,6 +121,8 @@ CudaHost::moveCluster(Cluster* cluster)
 void
 CudaHost::trainClusterForward(Cluster* cluster)
 {
+    const std::lock_guard<std::mutex> lock(m_cudaMutex);
+
     Hanami::ErrorContainer error;
 
     // process input-bricks
@@ -146,6 +170,8 @@ CudaHost::trainClusterForward(Cluster* cluster)
 void
 CudaHost::trainClusterBackward(Cluster* cluster)
 {
+    const std::lock_guard<std::mutex> lock(m_cudaMutex);
+
     Hanami::ErrorContainer error;
 
     // process output-bricks on cpu
@@ -198,6 +224,8 @@ CudaHost::trainClusterBackward(Cluster* cluster)
 void
 CudaHost::requestCluster(Cluster* cluster)
 {
+    const std::lock_guard<std::mutex> lock(m_cudaMutex);
+
     Hanami::ErrorContainer error;
 
     // process input-bricks
@@ -232,6 +260,8 @@ CudaHost::requestCluster(Cluster* cluster)
 void
 CudaHost::initBuffer(const uint32_t id)
 {
+    const std::lock_guard<std::mutex> lock(m_cudaMutex);
+
     uint64_t sizeOfMemory = getAvailableMemory_CUDA(id);
     sizeOfMemory = (sizeOfMemory / 100) * 80;  // use 80% for synapse-blocks
     synapseBlocks.initBuffer<SynapseBlock>(sizeOfMemory / sizeof(SynapseBlock));

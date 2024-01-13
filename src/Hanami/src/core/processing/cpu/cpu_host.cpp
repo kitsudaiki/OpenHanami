@@ -57,6 +57,8 @@ bool
 CpuHost::moveCluster(Cluster* cluster)
 {
     LogicalHost* originHost = cluster->attachedHost;
+    originHost->syncWithHost(cluster);
+
     SynapseBlock* cpuSynapseBlocks = Hanami::getItemData<SynapseBlock>(synapseBlocks);
     SynapseBlock tempBlock;
 
@@ -78,6 +80,11 @@ CpuHost::moveCluster(Cluster* cluster)
     cluster->attachedHost = this;
 
     return true;
+}
+
+void
+CpuHost::syncWithHost(Cluster*)
+{
 }
 
 /**

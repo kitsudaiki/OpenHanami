@@ -25,6 +25,8 @@
 
 #include <core/processing/logical_host.h>
 
+#include <mutex>
+
 class CudaHost : public LogicalHost
 {
    public:
@@ -35,12 +37,15 @@ class CudaHost : public LogicalHost
     void hostSpecificCleanup(Cluster* cluster);
 
     bool moveCluster(Cluster* cluster);
+    void syncWithHost(Cluster* cluster);
 
    private:
     void trainClusterForward(Cluster* cluster);
     void trainClusterBackward(Cluster* cluster);
     void requestCluster(Cluster* cluster);
     void initBuffer(const uint32_t id);
+
+    std::mutex m_cudaMutex;
 };
 
 #endif  // CUDAHOST_H

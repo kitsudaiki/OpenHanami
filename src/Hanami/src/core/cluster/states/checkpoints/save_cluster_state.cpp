@@ -103,6 +103,7 @@ SaveCluster_State::processEvent()
         }
 
         // write data of cluster to disc
+        m_cluster->attachedHost->syncWithHost(m_cluster);
         if (writeCheckpointToFile(targetFilePath, error) == false) {
             break;
         }

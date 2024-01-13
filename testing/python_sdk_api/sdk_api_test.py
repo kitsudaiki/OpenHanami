@@ -243,21 +243,21 @@ def test_workflow():
         result = task.delete_task(token, address, task_uuid, cluster_uuid)
 
     # save and reload checkpoint
-    #result = cluster.save_cluster(token, address, checkpoint_name, cluster_uuid)
-    #checkpoint_uuid = json.loads(result)["uuid"]
-    #result = checkpoint.list_checkpoints(token, address)
+    result = cluster.save_cluster(token, address, checkpoint_name, cluster_uuid)
+    checkpoint_uuid = json.loads(result)["uuid"]
+    result = checkpoint.list_checkpoints(token, address)
     # print(json.dumps(json.loads(result), indent=4))
 
-    #cluster.delete_cluster(token, address, cluster_uuid)
-    #result = cluster.create_cluster(token, address, cluster_name, cluster_template)
-    #cluster_uuid = json.loads(result)["uuid"]
+    cluster.delete_cluster(token, address, cluster_uuid)
+    result = cluster.create_cluster(token, address, cluster_name, cluster_template)
+    cluster_uuid = json.loads(result)["uuid"]
 
-    #result = cluster.restore_cluster(token, address, checkpoint_uuid, cluster_uuid)
-    #result = checkpoint.delete_checkpoint(token, address, checkpoint_uuid)
-    #try:
-    #    result = checkpoint.delete_checkpoint(token, address, checkpoint_uuid)
-    #except hanami_exceptions.NotFoundException:
-    #    pass
+    result = cluster.restore_cluster(token, address, checkpoint_uuid, cluster_uuid)
+    result = checkpoint.delete_checkpoint(token, address, checkpoint_uuid)
+    try:
+        result = checkpoint.delete_checkpoint(token, address, checkpoint_uuid)
+    except hanami_exceptions.NotFoundException:
+        pass
 
     # run testing
     result = task.create_task(

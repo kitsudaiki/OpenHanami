@@ -34,6 +34,7 @@ class CpuHost : public LogicalHost
     void hostSpecificCleanup(Cluster*);
 
     bool moveCluster(Cluster* cluster);
+    void syncWithHost(Cluster*);
 
    private:
     void trainClusterForward(Cluster* cluster);

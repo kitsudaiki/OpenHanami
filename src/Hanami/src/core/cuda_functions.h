@@ -37,6 +37,12 @@ extern "C" void copyToDevice_CUDA(CudaPointerHandle* gpuPointer,
 
 extern "C" void removeFromDevice_CUDA(CudaPointerHandle* gpuPointer);
 
+extern "C" void copyFromGpu_CUDA(CudaPointerHandle* gpuPointer,
+                                 NeuronBlock* neuronBlocks,
+                                 const uint32_t numberOfNeuronBlocks,
+                                 SynapseBlock* synapseBlocks,
+                                 const uint32_t numberOfSynapseBlocks);
+
 extern "C" void processing_CUDA(CudaPointerHandle* gpuPointer,
                                 Brick* bricks,
                                 const uint32_t numberOfBricks,
