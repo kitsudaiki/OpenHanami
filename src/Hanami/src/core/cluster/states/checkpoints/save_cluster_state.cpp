@@ -26,6 +26,9 @@
 #include <core/cluster/cluster.h>
 #include <core/cluster/statemachine_init.h>
 #include <core/cluster/task.h>
+#include <core/processing/cpu/cpu_host.h>
+#include <core/processing/cuda/cuda_host.h>
+#include <core/processing/logical_host.h>
 #include <database/checkpoint_table.h>
 #include <hanami_common/files/binary_file.h>
 #include <hanami_crypto/hashes.h>
@@ -100,6 +103,7 @@ SaveCluster_State::processEvent()
         }
 
         // write data of cluster to disc
+        m_cluster->attachedHost->syncWithHost(m_cluster);
         if (writeCheckpointToFile(targetFilePath, error) == false) {
             break;
         }
@@ -303,7 +307,7 @@ SaveCluster_State::writeSynapseBlockToFile(Hanami::BinaryFile& file,
                                            const uint64_t targetSynapseBlockPos,
                                            Hanami::ErrorContainer& error)
 {
-    SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(HanamiRoot::cpuSynapseBlocks);
+    SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(m_cluster->attachedHost->synapseBlocks);
     if (file.writeDataIntoFile(
             &synapseBlocks[targetSynapseBlockPos], position, sizeof(SynapseBlock), error)
         == false)

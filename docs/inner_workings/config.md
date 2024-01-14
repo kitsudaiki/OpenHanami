@@ -3,7 +3,7 @@
 !!! info
 
     This documeation was generated from the source-code to provide a maximum of consistency.
-   
+
 ## DEFAULT
 
 | Item | Description |
@@ -11,7 +11,6 @@
 | database| **Description**: Path to the sqlite3 database-file for all local sql-tables of hanami.<br>**Required**: FALSE<br>**Default**: "/etc/hanami/hanami_db"<br> |
 | debug| **Description**: Flag to enable debug-output in logging.<br>**Required**: FALSE<br>**Default**: false<br> |
 | log_path| **Description**: Path to the directory, where the log-files should be written into.<br>**Required**: FALSE<br>**Default**: "/var/log"<br> |
-| use_cuda| **Description**: Use very experimental CUDA processing.<br>**Required**: FALSE<br>**Default**: false<br> |
 
 ## auth
 
@@ -40,3 +39,4 @@
 | dataset_location| **Description**: Local storage location, where all uploaded dataset should be written into.<br>**Required**: FALSE<br>**Default**: "/etc/hanami/datasets"<br> |
 | tempfile_location| **Description**: Local storage location, where all temporary files for upload and download should be cached.<br>**Required**: FALSE<br>**Default**: "/etc/hanami/tempfiles"<br> |
 | tempfile_timeout| **Description**: Number of minutes, until an inactive timefile is removed.<br>**Required**: FALSE<br>**Default**: 10<br> |
+

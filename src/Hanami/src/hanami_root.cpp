@@ -25,7 +25,7 @@
 #include <core/cluster/cluster.h>
 #include <core/cluster/cluster_handler.h>
 #include <core/cluster/cluster_init.h>
-#include <core/processing/processing_unit_handler.h>
+#include <core/processing/physical_host.h>
 #include <core/temp_file_handler.h>
 #include <core/thread_binder.h>
 #include <database/audit_log_table.h>
@@ -51,13 +51,9 @@
 // init static variables
 Hanami::GpuInterface* HanamiRoot::gpuInterface = nullptr;
 HanamiRoot* HanamiRoot::root = nullptr;
+PhysicalHost* HanamiRoot::physicalHost = nullptr;
 HttpServer* HanamiRoot::httpServer = nullptr;
 CryptoPP::SecByteBlock HanamiRoot::tokenKey{};
-Hanami::ItemBuffer HanamiRoot::cpuSynapseBlocks{};
-Hanami::ItemBuffer HanamiRoot::gpuSynapseBlocks{};
-
-// static flag to switch to experimental gpu-support (see issue #44 and #76)
-bool HanamiRoot::useCuda = false;
 
 /**
  * @brief constructor
@@ -81,25 +77,10 @@ HanamiRoot::init(Hanami::ErrorContainer& error)
 {
     srand(time(NULL));
 
-    /*if(useOpencl)
-    {
-        Hanami::GpuHandler oclHandler;
-        assert(oclHandler.initDevice(error));
-        assert(oclHandler.m_interfaces.size() == 1);
-        gpuInterface = oclHandler.m_interfaces.at(0);
-    }*/
-
     if (initDataDirectory(error) == false) {
         error.addMessage("Failed to initialize directories");
         return false;
     }
-
-    // initialize global synapse-block-buffer
-    // TODO: size has to be configurable
-    cpuSynapseBlocks.initBuffer<SynapseBlock>(10000);
-    cpuSynapseBlocks.deleteAll();
-    gpuSynapseBlocks.initBuffer<SynapseBlock>(10000);
-    gpuSynapseBlocks.deleteAll();
 
     if (initDatabase(error) == false) {
         error.addMessage("Failed to initialize database");
@@ -132,9 +113,12 @@ HanamiRoot::init(Hanami::ErrorContainer& error)
         // not prevent the process from starting
     }
 
-    bool success = false;
-    useCuda = GET_BOOL_CONFIG("DEFAULT", "use_cuda", success);
-    assert(success);
+    // inti hosts
+    physicalHost = new PhysicalHost();
+    if (physicalHost->init(error) == false) {
+        LOG_ERROR(error);
+        return false;
+    }
 
     // create thread-binder
     if (ThreadBinder::getInstance()->init(error) == false) {
@@ -148,22 +132,6 @@ HanamiRoot::init(Hanami::ErrorContainer& error)
     PowerMeasuring::getInstance()->startThread();
     SpeedMeasuring::getInstance()->startThread();
     TemperatureMeasuring::getInstance()->startThread();
-
-    return true;
-}
-
-/**
- * @brief create processing-threads
- *
- * @return true, if successful, else false
- */
-bool
-HanamiRoot::initThreads()
-{
-    ProcessingUnitHandler* processingUnitHandler = ProcessingUnitHandler::getInstance();
-    if (processingUnitHandler->initProcessingUnits(1) == false) {
-        return false;
-    }
 
     return true;
 }

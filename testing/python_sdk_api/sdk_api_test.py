@@ -20,6 +20,7 @@ from hanami_sdk import cluster
 from hanami_sdk import dataset
 from hanami_sdk import direct_io
 from hanami_sdk import logs
+from hanami_sdk import hosts
 from hanami_sdk import project
 from hanami_sdk import request_result
 from hanami_sdk import task
@@ -218,6 +219,13 @@ def test_workflow():
         token, address, train_dataset_name, train_inputs, train_labels)
     request_dataset_uuid = dataset.upload_mnist_files(
         token, address, request_dataset_name, request_inputs, request_labels)
+
+    result = hosts.list_hosts(token, address)
+    hosts_json = json.loads(result)["body"]
+    if len(hosts_json) > 1:
+        print("test move cluster to gpu")
+        target_host_uuid = hosts_json[1][0]
+        cluster.switch_host(token, address, cluster_uuid, target_host_uuid)
 
     # run training
     for i in range(0,1):

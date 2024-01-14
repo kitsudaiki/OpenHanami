@@ -27,8 +27,8 @@
 #include <common.h>
 #include <core/cluster/cluster.h>
 #include <core/processing/cluster_io_functions.h>
+#include <core/processing/cluster_resize.h>
 #include <core/processing/objects.h>
-#include <core/processing/section_update.h>
 #include <hanami_root.h>
 #include <math.h>
 
@@ -72,7 +72,8 @@ processNeuronsOfInputBrick(Cluster& cluster, const Brick* brick)
                     SourceLocationPtr originLocation;
                     originLocation.blockId = blockId;
                     originLocation.neuronId = neuronIdInBlock;
-                    createNewSection(cluster, originLocation, 0.0f, HanamiRoot::cpuSynapseBlocks);
+                    createNewSection(
+                        cluster, originLocation, 0.0f, cluster.attachedHost->synapseBlocks);
                 }
             }
             counter++;
@@ -183,7 +184,7 @@ synapseProcessingBackward(Cluster& cluster,
         if (potential > 0.01f && synapseSection->hasNext == false) {
             const float newOffset = (sourceNeuron->potential - potential) + connection->offset;
             synapseSection->hasNext = createNewSection(
-                cluster, originLocation, newOffset, HanamiRoot::cpuSynapseBlocks);
+                cluster, originLocation, newOffset, cluster.attachedHost->synapseBlocks);
         }
     }
 }
@@ -199,7 +200,7 @@ inline void
 processSynapses(Cluster& cluster, Brick* brick)
 {
     NeuronBlock* neuronBlocks = cluster.neuronBlocks;
-    SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(HanamiRoot::cpuSynapseBlocks);
+    SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(cluster.attachedHost->synapseBlocks);
     ClusterSettings* clusterSettings = &cluster.clusterHeader->settings;
     SynapseConnection* scon = nullptr;
     NeuronBlock* sourceNeuronBlock = nullptr;
@@ -281,7 +282,8 @@ processNeurons(Cluster& cluster, Brick* brick)
                     SourceLocationPtr originLocation;
                     originLocation.blockId = blockId;
                     originLocation.neuronId = neuronId;
-                    createNewSection(cluster, originLocation, 0.0f, HanamiRoot::cpuSynapseBlocks);
+                    createNewSection(
+                        cluster, originLocation, 0.0f, cluster.attachedHost->synapseBlocks);
                 }
             }
         }

@@ -1,5 +1,5 @@
 /**
- * @file        cluster_io.h
+ * @file        physical_host.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,15 +20,37 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_PROTOBUF_MESSAGES_H
-#define HANAMI_PROTOBUF_MESSAGES_H
+#ifndef PHYSICALHOST_H
+#define PHYSICALHOST_H
 
-#include <core/cluster/cluster.h>
+#include <nlohmann/json.hpp>
+#include <string>
+#include <vector>
 
-void sendClusterOutputMessage(const Cluster* cluster);
-void sendClusterNormalEndMessage(Cluster* cluster);
-void sendClusterTrainEndMessage(Cluster* cluster);
+class CudaHost;
+class CpuHost;
+class LogicalHost;
+using json = nlohmann::json;
 
-bool recvClusterInputMessage(Cluster* cluster, const void* data, const uint64_t dataSize);
+namespace Hanami
+{
+struct ErrorContainer;
+}
 
-#endif  // HANAMI_PROTOBUF_MESSAGES_H
+class PhysicalHost
+{
+   public:
+    PhysicalHost();
+
+    bool init(Hanami::ErrorContainer& error);
+
+    LogicalHost* getFirstHost() const;
+    LogicalHost* getHost(const std::string& uuid) const;
+    json getAllHostsAsJson();
+
+   private:
+    std::vector<CudaHost*> m_cudaHosts;
+    std::vector<CpuHost*> m_cpuHosts;
+};
+
+#endif  // PHYSICALHOST_H

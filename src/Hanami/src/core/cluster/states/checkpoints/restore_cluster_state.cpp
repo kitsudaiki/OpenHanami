@@ -26,6 +26,9 @@
 #include <core/cluster/cluster_init.h>
 #include <core/cluster/statemachine_init.h>
 #include <core/cluster/task.h>
+#include <core/processing/cpu/cpu_host.h>
+#include <core/processing/logical_host.h>
+#include <core/processing/physical_host.h>
 #include <hanami_common/files/binary_file.h>
 #include <hanami_crypto/hashes.h>
 #include <hanami_root.h>
@@ -57,6 +60,13 @@ RestoreCluster_State::processEvent()
     bool success = false;
 
     do {
+        // get initial logical host
+        LogicalHost* host = HanamiRoot::physicalHost->getFirstHost();
+        if (host == nullptr) {
+            error.addMessage("No logical host found for new cluster.");
+            break;
+        }
+
         // get meta-infos of dataset from shiori
         json parsedCheckpointInfo;
         try {
@@ -118,7 +128,7 @@ RestoreCluster_State::processEvent()
                 // convert synapse-block
                 SynapseBlock newSynapseBlock;
                 memcpy(&newSynapseBlock, &u8Data[position], sizeof(SynapseBlock));
-                const uint64_t itemPos = HanamiRoot::cpuSynapseBlocks.addNewItem(newSynapseBlock);
+                const uint64_t itemPos = host->synapseBlocks.addNewItem(newSynapseBlock);
                 if (itemPos == UNINIT_STATE_64) {
                     error.addMessage("failed allocate synapse-block for checkpoint");
                     break;

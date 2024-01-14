@@ -9,205 +9,212 @@ set(CMAKE_CXX_COMPILER "clang++-15")
 
 # Adding source files
 set(SOURCES
-    src/common.h
+    src/api/endpoint_processing/blossom.h
+    src/api/endpoint_processing/http_processing/file_send.h
+    src/api/endpoint_processing/http_processing/http_processing.h
+    src/api/endpoint_processing/http_processing/response_builds.h
+    src/api/endpoint_processing/http_processing/string_functions.h
+    src/api/endpoint_processing/http_server.h
+    src/api/endpoint_processing/http_websocket_thread.h
+    src/api/endpoint_processing/runtime_validation.h
     src/api/http/v1/auth/create_token.h
-    src/api/http/v1/auth/renew_token.h
     src/api/http/v1/auth/list_user_projects.h
+    src/api/http/v1/auth/renew_token.h
     src/api/http/v1/auth/validate_access.h
-    src/api/http/v1/logs/get_error_log.h
-    src/api/http/v1/logs/get_audit_log.h
-    src/api/http/v1/data_files/mnist/finalize_mnist_dataset.h
-    src/api/http/v1/data_files/mnist/create_mnist_dataset.h
-    src/api/http/v1/data_files/check_dataset.h
-    src/api/http/v1/data_files/list_dataset.h
-    src/api/http/v1/data_files/csv/finalize_csv_dataset.h
-    src/api/http/v1/data_files/csv/create_csv_dataset.h
-    src/api/http/v1/data_files/get_progress_dataset.h
-    src/api/http/v1/data_files/delete_dataset.h
-    src/api/http/v1/data_files/get_dataset.h
-    src/api/http/v1/user/get_user.h
-    src/api/http/v1/user/remove_project_from_user.h
-    src/api/http/v1/user/list_users.h
-    src/api/http/v1/user/add_project_to_user.h
-    src/api/http/v1/user/delete_user.h
-    src/api/http/v1/user/create_user.h
     src/api/http/v1/blossom_initializing.h
-    src/api/http/v1/cluster/show_cluster.h
-    src/api/http/v1/cluster/save_cluster.h
-    src/api/http/v1/cluster/load_cluster.h
-    src/api/http/v1/cluster/set_cluster_mode.h
-    src/api/http/v1/cluster/delete_cluster.h
-    src/api/http/v1/cluster/create_cluster.h
-    src/api/http/v1/cluster/list_cluster.h
-    src/api/http/v1/system_info/get_system_info.h
+    src/api/http/v1/checkpoint/delete_checkpoint.h
     src/api/http/v1/checkpoint/get_checkpoint.h
     src/api/http/v1/checkpoint/list_checkpoint.h
-    src/api/http/v1/checkpoint/delete_checkpoint.h
-    src/api/http/v1/task/show_task.h
+    src/api/http/v1/cluster/create_cluster.h
+    src/api/http/v1/cluster/delete_cluster.h
+    src/api/http/v1/cluster/list_cluster.h
+    src/api/http/v1/cluster/load_cluster.h
+    src/api/http/v1/cluster/save_cluster.h
+    src/api/http/v1/cluster/set_cluster_mode.h
+    src/api/http/v1/cluster/show_cluster.h
+    src/api/http/v1/cluster/switch_hosts.h
+    src/api/http/v1/data_files/check_dataset.h
+    src/api/http/v1/data_files/csv/create_csv_dataset.h
+    src/api/http/v1/data_files/csv/finalize_csv_dataset.h
+    src/api/http/v1/data_files/delete_dataset.h
+    src/api/http/v1/data_files/get_dataset.h
+    src/api/http/v1/data_files/get_progress_dataset.h
+    src/api/http/v1/data_files/list_dataset.h
+    src/api/http/v1/data_files/mnist/create_mnist_dataset.h
+    src/api/http/v1/data_files/mnist/finalize_mnist_dataset.h
+    src/api/http/v1/hosts/list_hosts.h
+    src/api/http/v1/logs/get_audit_log.h
+    src/api/http/v1/logs/get_error_log.h
+    src/api/http/v1/measurements/power_consumption.h
+    src/api/http/v1/measurements/speed.h
+    src/api/http/v1/measurements/temperature_production.h
+    src/api/http/v1/project/create_project.h
+    src/api/http/v1/project/delete_project.h
+    src/api/http/v1/project/get_project.h
+    src/api/http/v1/project/list_projects.h
+    src/api/http/v1/request_results/delete_request_result.h
+    src/api/http/v1/request_results/get_request_result.h
+    src/api/http/v1/request_results/list_request_result.h
+    src/api/http/v1/system_info/get_system_info.h
     src/api/http/v1/task/create_task.h
     src/api/http/v1/task/delete_task.h
     src/api/http/v1/task/list_task.h
-    src/api/http/v1/project/get_project.h
-    src/api/http/v1/project/list_projects.h
-    src/api/http/v1/project/delete_project.h
-    src/api/http/v1/project/create_project.h
-    src/api/http/v1/request_results/list_request_result.h
-    src/api/http/v1/request_results/delete_request_result.h
-    src/api/http/v1/request_results/get_request_result.h
+    src/api/http/v1/task/show_task.h
     src/api/http/v1/threading/get_thread_mapping.h
-    src/api/http/v1/measurements/power_consumption.h
-    src/api/http/v1/measurements/temperature_production.h
-    src/api/http/v1/measurements/speed.h
+    src/api/http/v1/user/add_project_to_user.h
+    src/api/http/v1/user/create_user.h
+    src/api/http/v1/user/delete_user.h
+    src/api/http/v1/user/get_user.h
+    src/api/http/v1/user/list_users.h
+    src/api/http/v1/user/remove_project_from_user.h
     src/api/websocket/cluster_io.h
     src/api/websocket/file_upload.h
-    src/api/endpoint_processing/runtime_validation.h
-    src/api/endpoint_processing/http_server.h
-    src/api/endpoint_processing/http_processing/string_functions.h
-    src/api/endpoint_processing/http_processing/file_send.h
-    src/api/endpoint_processing/http_processing/response_builds.h
-    src/api/endpoint_processing/http_processing/http_processing.h
-    src/api/endpoint_processing/http_websocket_thread.h
-    src/api/endpoint_processing/blossom.h
-    src/core/temp_file_handler.h
-    src/core/cluster/cluster_init.h
+    src/args.h
+    src/common.h
+    src/common/defines.h
+    src/common/enums.h
+    src/common/functions.h
+    src/common/structs.h
+    src/common/typedefs.h
+    src/common/using.h
+    src/config.h
     src/core/cluster/add_tasks.h
-    src/core/cluster/states/task_handle_state.h
-    src/core/cluster/states/graphs/graph_train_forward_state.h
-    src/core/cluster/states/graphs/graph_interpolation_state.h
+    src/core/cluster/cluster.h
+    src/core/cluster/cluster_handler.h
+    src/core/cluster/cluster_init.h
+    src/core/cluster/statemachine_init.h
     src/core/cluster/states/checkpoints/restore_cluster_state.h
     src/core/cluster/states/checkpoints/save_cluster_state.h
     src/core/cluster/states/cycle_finish_state.h
-    src/core/cluster/states/tables/table_interpolation_state.h
-    src/core/cluster/states/tables/table_train_forward_state.h
+    src/core/cluster/states/graphs/graph_interpolation_state.h
+    src/core/cluster/states/graphs/graph_train_forward_state.h
     src/core/cluster/states/images/image_identify_state.h
     src/core/cluster/states/images/image_train_forward_state.h
-    src/core/cluster/cluster.h
+    src/core/cluster/states/tables/table_interpolation_state.h
+    src/core/cluster/states/tables/table_train_forward_state.h
+    src/core/cluster/states/task_handle_state.h
     src/core/cluster/task.h
-    src/core/cluster/statemachine_init.h
-    src/core/cluster/cluster_handler.h
-    src/core/processing/cpu/reduction.h
-    src/core/processing/cpu/backpropagation.h
-    src/core/processing/cpu/processing.h
-    src/core/processing/section_update.h
-    src/core/processing/cpu_processing_unit.h
-    src/core/processing/processing_unit_handler.h
-    src/core/processing/cluster_queue.h
+    src/core/cuda_functions.h
     src/core/processing/cluster_io_functions.h
+    src/core/processing/cluster_resize.h
+    src/core/processing/cpu/backpropagation.h
+    src/core/processing/cpu/cpu_host.h
+    src/core/processing/cpu/processing.h
+    src/core/processing/cpu/reduction.h
+    src/core/processing/cuda/cuda_host.h
+    src/core/processing/logical_host.h
     src/core/processing/objects.h
+    src/core/processing/physical_host.h
     src/core/routing_functions.h
+    src/core/temp_file_handler.h
     src/core/thread_binder.h
-    src/args.h
-    src/documentation/generate_rest_api_docu.h
-    src/common/structs.h
-    src/common/typedefs.h
-    src/common/defines.h
-    src/common/using.h
-    src/common/functions.h
-    src/common/enums.h
-    src/hanami_root.h
-    src/database/projects_table.h
-    src/database/users_table.h
-    src/database/request_result_table.h
+    src/database/audit_log_table.h
     src/database/checkpoint_table.h
     src/database/cluster_table.h
+    src/database/dataset_table.h
+    src/database/error_log_table.h
     src/database/generic_tables/hanami_sql_admin_table.h
     src/database/generic_tables/hanami_sql_log_table.h
     src/database/generic_tables/hanami_sql_table.h
-    src/database/error_log_table.h
+    src/database/projects_table.h
+    src/database/request_result_table.h
     src/database/tempfile_table.h
-    src/database/audit_log_table.h
-    src/database/dataset_table.h
-    src/config.h
-    src/api/http/v1/auth/renew_token.cpp
-    src/api/http/v1/auth/validate_access.cpp
-    src/api/http/v1/auth/list_user_projects.cpp
-    src/api/http/v1/auth/create_token.cpp
-    src/api/http/v1/logs/get_audit_log.cpp
-    src/api/http/v1/logs/get_error_log.cpp
-    src/api/http/v1/data_files/mnist/create_mnist_dataset.cpp
-    src/api/http/v1/data_files/mnist/finalize_mnist_dataset.cpp
-    src/api/http/v1/data_files/check_dataset.cpp
-    src/api/http/v1/data_files/delete_dataset.cpp
-    src/api/http/v1/data_files/csv/finalize_csv_dataset.cpp
-    src/api/http/v1/data_files/csv/create_csv_dataset.cpp
-    src/api/http/v1/data_files/get_progress_dataset.cpp
-    src/api/http/v1/data_files/get_dataset.cpp
-    src/api/http/v1/data_files/list_dataset.cpp
-    src/api/http/v1/user/list_users.cpp
-    src/api/http/v1/user/add_project_to_user.cpp
-    src/api/http/v1/user/delete_user.cpp
-    src/api/http/v1/user/create_user.cpp
-    src/api/http/v1/user/remove_project_from_user.cpp
-    src/api/http/v1/user/get_user.cpp
-    src/api/http/v1/cluster/load_cluster.cpp
-    src/api/http/v1/cluster/delete_cluster.cpp
-    src/api/http/v1/cluster/set_cluster_mode.cpp
-    src/api/http/v1/cluster/create_cluster.cpp
-    src/api/http/v1/cluster/save_cluster.cpp
-    src/api/http/v1/cluster/list_cluster.cpp
-    src/api/http/v1/cluster/show_cluster.cpp
-    src/api/http/v1/system_info/get_system_info.cpp
-    src/api/http/v1/checkpoint/list_checkpoint.cpp
-    src/api/http/v1/checkpoint/delete_checkpoint.cpp
-    src/api/http/v1/checkpoint/get_checkpoint.cpp
-    src/api/http/v1/task/list_task.cpp
-    src/api/http/v1/task/show_task.cpp
-    src/api/http/v1/task/delete_task.cpp
-    src/api/http/v1/task/create_task.cpp
-    src/api/http/v1/project/list_projects.cpp
-    src/api/http/v1/project/delete_project.cpp
-    src/api/http/v1/project/create_project.cpp
-    src/api/http/v1/project/get_project.cpp
-    src/api/http/v1/request_results/list_request_result.cpp
-    src/api/http/v1/request_results/get_request_result.cpp
-    src/api/http/v1/request_results/delete_request_result.cpp
-    src/api/http/v1/threading/get_thread_mapping.cpp
-    src/api/http/v1/measurements/speed.cpp
-    src/api/http/v1/measurements/temperature_production.cpp
-    src/api/http/v1/measurements/power_consumption.cpp
-    src/api/websocket/cluster_io.cpp
-    src/api/websocket/file_upload.cpp
+    src/database/users_table.h
+    src/documentation/generate_rest_api_docu.h
+    src/hanami_root.h
     src/api/endpoint_processing/blossom.cpp
     src/api/endpoint_processing/http_processing/file_send.cpp
     src/api/endpoint_processing/http_processing/http_processing.cpp
+    src/api/endpoint_processing/http_server.cpp
     src/api/endpoint_processing/http_websocket_thread.cpp
     src/api/endpoint_processing/runtime_validation.cpp
-    src/api/endpoint_processing/http_server.cpp
-    src/main.cpp
-    src/core/temp_file_handler.cpp
+    src/api/http/v1/auth/create_token.cpp
+    src/api/http/v1/auth/list_user_projects.cpp
+    src/api/http/v1/auth/renew_token.cpp
+    src/api/http/v1/auth/validate_access.cpp
+    src/api/http/v1/checkpoint/delete_checkpoint.cpp
+    src/api/http/v1/checkpoint/get_checkpoint.cpp
+    src/api/http/v1/checkpoint/list_checkpoint.cpp
+    src/api/http/v1/cluster/create_cluster.cpp
+    src/api/http/v1/cluster/delete_cluster.cpp
+    src/api/http/v1/cluster/list_cluster.cpp
+    src/api/http/v1/cluster/load_cluster.cpp
+    src/api/http/v1/cluster/save_cluster.cpp
+    src/api/http/v1/cluster/set_cluster_mode.cpp
+    src/api/http/v1/cluster/show_cluster.cpp
+    src/api/http/v1/cluster/switch_hosts.cpp
+    src/api/http/v1/data_files/check_dataset.cpp
+    src/api/http/v1/data_files/csv/create_csv_dataset.cpp
+    src/api/http/v1/data_files/csv/finalize_csv_dataset.cpp
+    src/api/http/v1/data_files/delete_dataset.cpp
+    src/api/http/v1/data_files/get_dataset.cpp
+    src/api/http/v1/data_files/get_progress_dataset.cpp
+    src/api/http/v1/data_files/list_dataset.cpp
+    src/api/http/v1/data_files/mnist/create_mnist_dataset.cpp
+    src/api/http/v1/data_files/mnist/finalize_mnist_dataset.cpp
+    src/api/http/v1/hosts/list_hosts.cpp
+    src/api/http/v1/logs/get_audit_log.cpp
+    src/api/http/v1/logs/get_error_log.cpp
+    src/api/http/v1/measurements/power_consumption.cpp
+    src/api/http/v1/measurements/speed.cpp
+    src/api/http/v1/measurements/temperature_production.cpp
+    src/api/http/v1/project/create_project.cpp
+    src/api/http/v1/project/delete_project.cpp
+    src/api/http/v1/project/get_project.cpp
+    src/api/http/v1/project/list_projects.cpp
+    src/api/http/v1/request_results/delete_request_result.cpp
+    src/api/http/v1/request_results/get_request_result.cpp
+    src/api/http/v1/request_results/list_request_result.cpp
+    src/api/http/v1/system_info/get_system_info.cpp
+    src/api/http/v1/task/create_task.cpp
+    src/api/http/v1/task/delete_task.cpp
+    src/api/http/v1/task/list_task.cpp
+    src/api/http/v1/task/show_task.cpp
+    src/api/http/v1/threading/get_thread_mapping.cpp
+    src/api/http/v1/user/add_project_to_user.cpp
+    src/api/http/v1/user/create_user.cpp
+    src/api/http/v1/user/delete_user.cpp
+    src/api/http/v1/user/get_user.cpp
+    src/api/http/v1/user/list_users.cpp
+    src/api/http/v1/user/remove_project_from_user.cpp
+    src/api/websocket/cluster_io.cpp
+    src/api/websocket/file_upload.cpp
     src/core/cluster/add_tasks.cpp
     src/core/cluster/cluster.cpp
-    src/core/cluster/states/graphs/graph_train_forward_state.cpp
-    src/core/cluster/states/graphs/graph_interpolation_state.cpp
-    src/core/cluster/states/checkpoints/save_cluster_state.cpp
+    src/core/cluster/cluster_handler.cpp
+    src/core/cluster/cluster_init.cpp
+    src/core/cluster/statemachine_init.cpp
     src/core/cluster/states/checkpoints/restore_cluster_state.cpp
-    src/core/cluster/states/task_handle_state.cpp
-    src/core/cluster/states/tables/table_train_forward_state.cpp
-    src/core/cluster/states/tables/table_interpolation_state.cpp
+    src/core/cluster/states/checkpoints/save_cluster_state.cpp
     src/core/cluster/states/cycle_finish_state.cpp
+    src/core/cluster/states/graphs/graph_interpolation_state.cpp
+    src/core/cluster/states/graphs/graph_train_forward_state.cpp
     src/core/cluster/states/images/image_identify_state.cpp
     src/core/cluster/states/images/image_train_forward_state.cpp
-    src/core/cluster/cluster_init.cpp
-    src/core/cluster/cluster_handler.cpp
-    src/core/cluster/statemachine_init.cpp
+    src/core/cluster/states/tables/table_interpolation_state.cpp
+    src/core/cluster/states/tables/table_train_forward_state.cpp
+    src/core/cluster/states/task_handle_state.cpp
+    src/core/processing/cpu/cpu_host.cpp
+    src/core/processing/cuda/cuda_host.cpp
+    src/core/processing/logical_host.cpp
+    src/core/processing/physical_host.cpp
+    src/core/temp_file_handler.cpp
     src/core/thread_binder.cpp
-    src/core/processing/cpu_processing_unit.cpp
-    src/core/processing/processing_unit_handler.cpp
-    src/core/processing/cluster_queue.cpp
+    src/database/audit_log_table.cpp
+    src/database/checkpoint_table.cpp
+    src/database/cluster_table.cpp
+    src/database/dataset_table.cpp
+    src/database/error_log_table.cpp
+    src/database/generic_tables/hanami_sql_admin_table.cpp
+    src/database/generic_tables/hanami_sql_log_table.cpp
+    src/database/generic_tables/hanami_sql_table.cpp
+    src/database/projects_table.cpp
+    src/database/request_result_table.cpp
+    src/database/tempfile_table.cpp
+    src/database/users_table.cpp
     src/documentation/generate_rest_api_docu.cpp
     src/hanami_root.cpp
-    src/database/dataset_table.cpp
-    src/database/users_table.cpp
-    src/database/cluster_table.cpp
-    src/database/tempfile_table.cpp
-    src/database/generic_tables/hanami_sql_log_table.cpp
-    src/database/generic_tables/hanami_sql_admin_table.cpp
-    src/database/generic_tables/hanami_sql_table.cpp
-    src/database/request_result_table.cpp
-    src/database/checkpoint_table.cpp
-    src/database/audit_log_table.cpp
-    src/database/projects_table.cpp
-    src/database/error_log_table.cpp
+    src/main.cpp
 )
 
 # Adding the executable

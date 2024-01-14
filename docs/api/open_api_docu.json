@@ -1186,6 +1186,135 @@
                 ]
             }
         },
+        "v1/cluster/switch_host": {
+            "put": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "cluster_uuid": {
+                                        "description": "UUID of the cluster to move.",
+                                        "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                                        "type": "string"
+                                    },
+                                    "host_uuid": {
+                                        "description": "UUID of the target-host where the cluster should moved to.",
+                                        "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "cluster_uuid",
+                                    "host_uuid"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "name": {
+                                            "description": "Name of the new created cluster.",
+                                            "type": "string"
+                                        },
+                                        "owner_id": {
+                                            "description": "ID of the user, who created the new cluster.",
+                                            "type": "string"
+                                        },
+                                        "project_id": {
+                                            "description": "ID of the project, where the new cluster belongs to.",
+                                            "type": "string"
+                                        },
+                                        "uuid": {
+                                            "description": "UUID of the new created cluster.",
+                                            "type": "string"
+                                        },
+                                        "visibility": {
+                                            "description": "Visibility of the new created cluster (private, shared, public).",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response."
+                    },
+                    "400": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Request has invalid syntax."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "404": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "The requested resource was not found."
+                    },
+                    "409": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Resource with name or id already exist."
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
+                    }
+                },
+                "summary": "Switch the host, where the cluster should be processed.",
+                "tags": [
+                    "Cluster"
+                ]
+            }
+        },
         "v1/csv/dataset": {
             "post": {
                 "parameters": [
@@ -1982,6 +2111,77 @@
                 "summary": "Get error-log of a user. Only an admin is allowed to request the error-log.",
                 "tags": [
                     "Logs"
+                ]
+            }
+        },
+        "v1/hosts/all": {
+            "get": {
+                "parameters": [
+                    {
+                        "description": "JWT-Token for authentication",
+                        "in": "header",
+                        "name": "X-Auth-Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "body": {
+                                            "description": "Json-string with all information of all vilible hosts.",
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        },
+                                        "header": {
+                                            "description": "Array with the names all columns of the table.",
+                                            "items": {
+                                                "enum": [
+                                                    "uuid",
+                                                    "type"
+                                                ],
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful response."
+                    },
+                    "401": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Information for authentication are missing or are invalid"
+                    },
+                    "500": {
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Something internally went wrong. Check the server-internal logs for more information."
+                    }
+                },
+                "summary": "List all logical hosts.",
+                "tags": [
+                    "Hosts"
                 ]
             }
         },

@@ -1,5 +1,5 @@
 /**
- * @file        segment_queue.h
+ * @file        switch_host.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,36 +20,21 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_SEGMENTQUEUE_H
-#define HANAMI_SEGMENTQUEUE_H
+#ifndef SWITCHHOSTS_H
+#define SWITCHHOSTS_H
 
-#include <atomic>
-#include <deque>
-#include <vector>
+#include <api/endpoint_processing/blossom.h>
 
-class Cluster;
-
-class ClusterQueue
+class SwitchHosts : public Blossom
 {
    public:
-    static ClusterQueue* getInstance()
-    {
-        if (instance == nullptr) {
-            instance = new ClusterQueue();
-        }
-        return instance;
-    }
+    SwitchHosts();
 
-    void addClusterToQueue(Cluster* newSegment);
-
-    Cluster* getClusterFromQueue();
-
-   private:
-    ClusterQueue();
-    static ClusterQueue* instance;
-
-    std::atomic_flag m_queue_lock = ATOMIC_FLAG_INIT;
-    std::deque<Cluster*> m_clusterQueue;
+   protected:
+    bool runTask(BlossomIO& blossomIO,
+                 const json& context,
+                 BlossomStatus& status,
+                 Hanami::ErrorContainer& error);
 };
 
-#endif  // HANAMI_SEGMENTQUEUE_H
+#endif  // SWITCHHOSTS_H

@@ -24,6 +24,8 @@
 #include <chrono>
 #include <math.h>
 
+#include <cuda_runtime_api.h>
+
 #include "../objects.h"
 #include "../cluster_io_functions.h"
 
@@ -466,7 +468,6 @@ reduceSection(SynapseSection* section)
                 if (pos < SYNAPSES_PER_SYNAPSESECTION - 1) {
                     section->synapses[pos] = section->synapses[pos + 1];
                     section->synapses[pos + 1] = Synapse();
-                    printf("delete\n");
                 } else {
                     section->synapses[pos] = Synapse();
                 }
@@ -549,6 +550,8 @@ copyToDevice_CUDA(CudaPointerHandle* gpuPointer,
                   Brick* bricks,
                   const uint32_t numberOfBricks)
 {
+    cudaSetDevice(gpuPointer->deviceId);
+
     // allocate memory on gpu
     cudaMalloc(&gpuPointer->clusterSettings, 1                     * sizeof(ClusterSettings));
     cudaMalloc(&gpuPointer->neuronBlocks,    numberOfNeuronBlocks  * sizeof(NeuronBlock));
@@ -587,6 +590,8 @@ extern "C"
 void
 removeFromDevice_CUDA(CudaPointerHandle* gpuPointer)
 {
+    cudaSetDevice(gpuPointer->deviceId);
+
     for (uint32_t c = 0; c < gpuPointer->connectionBlocks.size(); ++c)
     {
         // free old connection-block-memory on gpu, if exist
@@ -620,6 +625,8 @@ copyFromGpu_CUDA(CudaPointerHandle* gpuPointer,
                  SynapseBlock* synapseBlocks,
                  const uint32_t numberOfSynapseBlocks)
 {
+    cudaSetDevice(gpuPointer->deviceId);
+
     cudaMemcpy(neuronBlocks,
                gpuPointer->neuronBlocks,
                numberOfNeuronBlocks * sizeof(NeuronBlock),
@@ -647,6 +654,8 @@ update_CUDA(CudaPointerHandle* gpuPointer,
             Brick* bricks,
             const uint32_t numberOfBricks)
 {
+    cudaSetDevice(gpuPointer->deviceId);
+
     for (uint32_t brickId = 0; brickId < numberOfBricks; ++brickId)
     {
         Brick* brick = &bricks[brickId];
@@ -692,6 +701,8 @@ processing_CUDA(CudaPointerHandle* gpuPointer,
                 const uint32_t numberOfNeuronBlocks,
                 const bool doTrain)
 {
+    cudaSetDevice(gpuPointer->deviceId);
+
     uint32_t randomeSeed = rand();
 
     // copy necessary data from host to gpu
@@ -777,6 +788,8 @@ backpropagation_CUDA(CudaPointerHandle* gpuPointer,
                      TempNeuronBlock* tempNeuronBlocks,
                      const uint32_t numberOfNeuronBlocks)
 {
+    cudaSetDevice(gpuPointer->deviceId);
+
     // copy necessary data from host to gpu
     cudaMemcpy(gpuPointer->neuronBlocks,
                neuronBlocks,
@@ -834,6 +847,8 @@ reduction_CUDA(CudaPointerHandle* gpuPointer,
                NeuronBlock* neuronBlocks,
                const uint32_t numberOfNeuronBlocks)
 {
+    cudaSetDevice(gpuPointer->deviceId);
+
     // copy necessary data from host to gpu
     cudaMemcpy(gpuPointer->neuronBlocks,
                neuronBlocks,
@@ -865,4 +880,45 @@ reduction_CUDA(CudaPointerHandle* gpuPointer,
                gpuPointer->neuronBlocks,
                numberOfNeuronBlocks * sizeof(NeuronBlock),
                cudaMemcpyDeviceToHost);
+}
+
+/**
+ * @brief get number of available cuda-devices
+ */
+extern "C"
+uint32_t
+getNumberOfDevices_CUDA()
+{
+    int deviceCount;
+    cudaError_t cudaResult = cudaGetDeviceCount(&deviceCount);
+
+    if (cudaResult != cudaSuccess || deviceCount == 0) {
+        return 0;
+    }
+
+    return deviceCount;
+}
+
+/**
+ * @brief get available memory on device
+ *
+ * @param deviceId id of the device to check
+ *
+ * @return size of free memory on device in bytes
+ */
+extern "C"
+uint64_t
+getAvailableMemory_CUDA(const uint32_t deviceId)
+{
+    cudaSetDevice(deviceId);
+
+    cudaDeviceProp deviceProp;
+    cudaGetDeviceProperties(&deviceProp, deviceId);
+
+    size_t freeMem, totalMem;
+    cudaMemGetInfo(&freeMem, &totalMem);
+
+    // totalMem;
+
+    return freeMem;
 }

@@ -27,17 +27,10 @@
 #include <cryptopp/secblock.h>
 #include <hanami_common/buffer/item_buffer.h>
 
-class ClusterHandler;
-class ClusterQueue;
-class ProcessingUnitHandler;
 class WebSocketServer;
 class HttpServer;
 class HttpWebsocketThread;
-class TempFileHandler;
-class ThreadBinder;
-class SpeedMeasuring;
-class PowerMeasuring;
-class TemperatureMeasuring;
+class PhysicalHost;
 using namespace Hanami;
 
 namespace Hanami
@@ -53,7 +46,6 @@ class HanamiRoot
     ~HanamiRoot();
 
     bool init(Hanami::ErrorContainer& error);
-    bool initThreads();
     bool initHttpServer();
 
     WebSocketServer* websocketServer = nullptr;
@@ -62,9 +54,7 @@ class HanamiRoot
     static HttpServer* httpServer;
     static HanamiRoot* root;
     static CryptoPP::SecByteBlock tokenKey;
-    static Hanami::ItemBuffer cpuSynapseBlocks;
-    static Hanami::ItemBuffer gpuSynapseBlocks;
-    static bool useCuda;
+    static PhysicalHost* physicalHost;
 
    private:
     std::vector<HttpWebsocketThread*> m_threads;

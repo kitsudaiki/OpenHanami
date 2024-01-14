@@ -26,6 +26,8 @@
 #include <common.h>
 #include <core/cluster/cluster.h>
 #include <core/processing/cluster_io_functions.h>
+#include <core/processing/cpu/cpu_host.h>
+#include <core/processing/logical_host.h>
 #include <core/processing/objects.h>
 #include <hanami_root.h>
 #include <math.h>
@@ -195,7 +197,7 @@ void
 reweightCluster(const Cluster& cluster)
 {
     Brick* brick = nullptr;
-    SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(HanamiRoot::cpuSynapseBlocks);
+    SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(cluster.attachedHost->synapseBlocks);
     const uint32_t numberOfBricks = cluster.clusterHeader->bricks.count;
 
     // backpropagate all output-values

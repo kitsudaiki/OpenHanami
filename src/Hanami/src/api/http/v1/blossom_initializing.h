@@ -39,6 +39,7 @@
 #include <api/http/v1/cluster/save_cluster.h>
 #include <api/http/v1/cluster/set_cluster_mode.h>
 #include <api/http/v1/cluster/show_cluster.h>
+#include <api/http/v1/cluster/switch_hosts.h>
 #include <api/http/v1/data_files/check_dataset.h>
 #include <api/http/v1/data_files/csv/create_csv_dataset.h>
 #include <api/http/v1/data_files/csv/finalize_csv_dataset.h>
@@ -48,6 +49,7 @@
 #include <api/http/v1/data_files/list_dataset.h>
 #include <api/http/v1/data_files/mnist/create_mnist_dataset.h>
 #include <api/http/v1/data_files/mnist/finalize_mnist_dataset.h>
+#include <api/http/v1/hosts/list_hosts.h>
 #include <api/http/v1/logs/get_audit_log.h>
 #include <api/http/v1/logs/get_error_log.h>
 #include <api/http/v1/measurements/power_consumption.h>
@@ -109,6 +111,10 @@ initClusterBlossoms()
     httpProcessing->addBlossom(group, "set_mode", new SetClusterMode());
     httpProcessing->addEndpoint(
         "v1/cluster/set_mode", Hanami::PUT_TYPE, BLOSSOM_TYPE, group, "set_mode");
+
+    httpProcessing->addBlossom(group, "switch_host", new SwitchHosts());
+    httpProcessing->addEndpoint(
+        "v1/cluster/switch_host", Hanami::PUT_TYPE, BLOSSOM_TYPE, group, "switch_host");
 }
 
 /**
@@ -339,21 +345,36 @@ measuringBlossomes()
 }
 
 /**
+ * @brief init host endpoints
+ */
+void
+hostBlossoms()
+{
+    const std::string group = "Hosts";
+    HttpProcessing* httpProcessing = HanamiRoot::httpServer->httpProcessing;
+
+    httpProcessing->addBlossom(group, "list_hosts", new ListHosts());
+    httpProcessing->addEndpoint(
+        "v1/hosts/all", Hanami::GET_TYPE, BLOSSOM_TYPE, group, "list_hosts");
+}
+
+/**
  * @brief initBlossoms
  */
 void
 initBlossoms()
 {
+    clusterCheckpointBlossoms();
+    dataSetBlossoms();
+    hostBlossoms();
     initClusterBlossoms();
     initTaskBlossoms();
-    dataSetBlossoms();
-    clusterCheckpointBlossoms();
-    resultBlossoms();
     logsBlossoms();
-    projectBlossomes();
-    userBlossomes();
-    tokenBlossomes();
     measuringBlossomes();
+    projectBlossomes();
+    resultBlossoms();
+    tokenBlossomes();
+    userBlossomes();
 
     HttpProcessing* httpProcessing = HanamiRoot::httpServer->httpProcessing;
 

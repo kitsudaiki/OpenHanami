@@ -27,7 +27,7 @@
 #include <core/cluster/statemachine_init.h>
 #include <core/cluster/states/task_handle_state.h>
 #include <core/cuda_functions.h>
-#include <core/processing/cluster_queue.h>
+#include <core/processing/logical_host.h>
 #include <hanami_common/logger.h>
 #include <hanami_common/statemachine.h>
 #include <hanami_common/threading/thread.h>
@@ -36,8 +36,9 @@
 /**
  * @brief constructor
  */
-Cluster::Cluster()
+Cluster::Cluster(LogicalHost* host)
 {
+    attachedHost = host;
     stateMachine = new Hanami::Statemachine();
     taskHandleState = new TaskHandle_State(this);
 
@@ -50,8 +51,9 @@ Cluster::Cluster()
  * @param data pointer to data with checkpoint
  * @param dataSize size of checkpoint in number of bytes
  */
-Cluster::Cluster(const void* data, const uint64_t dataSize)
+Cluster::Cluster(LogicalHost* host, const void* data, const uint64_t dataSize)
 {
+    attachedHost = host;
     Hanami::allocateBlocks_DataBuffer(clusterData, Hanami::calcBytesToBlocks(dataSize));
     memcpy(clusterData.data, data, dataSize);
 }
@@ -61,34 +63,7 @@ Cluster::Cluster(const void* data, const uint64_t dataSize)
  */
 Cluster::~Cluster()
 {
-    if (HanamiRoot::useCuda) {
-        SynapseBlock* gpuSynapseBlocks = getItemData<SynapseBlock>(HanamiRoot::gpuSynapseBlocks);
-        SynapseBlock tempBlock;
-
-        for (uint64_t i = 0; i < clusterHeader->bricks.count; i++) {
-            for (ConnectionBlock& block : bricks[i].connectionBlocks) {
-                if (block.targetSynapseBlockPos != UNINIT_STATE_64) {
-                    tempBlock = gpuSynapseBlocks[block.targetSynapseBlockPos];
-                    HanamiRoot::gpuSynapseBlocks.deleteItem(block.targetSynapseBlockPos);
-                }
-            }
-        }
-
-        removeFromDevice_CUDA(&gpuPointer);
-    }
-    else {
-        SynapseBlock* cpuSynapseBlocks = getItemData<SynapseBlock>(HanamiRoot::cpuSynapseBlocks);
-        SynapseBlock tempBlock;
-
-        for (uint64_t i = 0; i < clusterHeader->bricks.count; i++) {
-            for (ConnectionBlock& block : bricks[i].connectionBlocks) {
-                if (block.targetSynapseBlockPos != UNINIT_STATE_64) {
-                    tempBlock = cpuSynapseBlocks[block.targetSynapseBlockPos];
-                    HanamiRoot::cpuSynapseBlocks.deleteItem(block.targetSynapseBlockPos);
-                }
-            }
-        }
-    }
+    attachedHost->removeCluster(this);
 
     delete stateMachine;
     delete inputValues;
@@ -106,43 +81,6 @@ const std::string
 Cluster::getUuid()
 {
     return clusterHeader->uuid.toString();
-}
-
-/**
- * @brief Cluster::initCuda
- */
-bool
-Cluster::initCuda()
-{
-    SynapseBlock* cpuSynapseBlocks = getItemData<SynapseBlock>(HanamiRoot::cpuSynapseBlocks);
-    SynapseBlock tempBlock;
-
-    for (uint64_t i = 0; i < clusterHeader->bricks.count; i++) {
-        for (ConnectionBlock& block : bricks[i].connectionBlocks) {
-            if (block.targetSynapseBlockPos != UNINIT_STATE_64) {
-                tempBlock = cpuSynapseBlocks[block.targetSynapseBlockPos];
-                HanamiRoot::cpuSynapseBlocks.deleteItem(block.targetSynapseBlockPos);
-                const uint64_t newPos = HanamiRoot::gpuSynapseBlocks.addNewItem(tempBlock);
-                // TODO: make roll-back possible in error-case
-                if (newPos == UNINIT_STATE_64) {
-                    return false;
-                }
-                block.targetSynapseBlockPos = newPos;
-            }
-        }
-    }
-
-    copyToDevice_CUDA(&gpuPointer,
-                      &clusterHeader->settings,
-                      neuronBlocks,
-                      tempNeuronBlocks,
-                      clusterHeader->neuronBlocks.count,
-                      getItemData<SynapseBlock>(HanamiRoot::gpuSynapseBlocks),
-                      HanamiRoot::gpuSynapseBlocks.metaData->itemCapacity,
-                      bricks,
-                      clusterHeader->bricks.count);
-
-    return true;
 }
 
 /**
@@ -224,7 +162,7 @@ Cluster::setName(const std::string& newName)
 void
 Cluster::startForwardCycle()
 {
-    ClusterQueue::getInstance()->addClusterToQueue(this);
+    attachedHost->addClusterToQueue(this);
 }
 
 /**
@@ -233,7 +171,7 @@ Cluster::startForwardCycle()
 void
 Cluster::startBackwardCycle()
 {
-    ClusterQueue::getInstance()->addClusterToQueue(this);
+    attachedHost->addClusterToQueue(this);
 }
 
 /**

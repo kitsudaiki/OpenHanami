@@ -1,9 +1,9 @@
 /**
- *  @file       memory.h
+ * @file        cpu_host.h
  *
- *  @author     Tobias Anker <tobias.anker@kitsunemimi.moe>
+ * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
- *  @copyright  Apache License Version 2.0
+ * @copyright   Apache License Version 2.0
  *
  *      Copyright 2022 Tobias Anker
  *
@@ -20,20 +20,26 @@
  *      limitations under the License.
  */
 
-#ifndef KITSUNEMIMI_CPU_MEMORY_H
-#define KITSUNEMIMI_CPU_MEMORY_H
+#ifndef CPUHOST_H
+#define CPUHOST_H
 
-#include <stdint.h>
-#include <sys/sysinfo.h>
-#include <unistd.h>
+#include <core/processing/logical_host.h>
 
-namespace Hanami
+class CpuHost : public LogicalHost
 {
+   public:
+    CpuHost(const uint32_t localId);
+    ~CpuHost();
 
-uint64_t getTotalMemory();
-uint64_t getFreeMemory();
-uint64_t getPageSize();
+    bool moveCluster(Cluster* cluster);
+    void syncWithHost(Cluster*);
+    void removeCluster(Cluster* cluster);
 
-}  // namespace Hanami
+   private:
+    void trainClusterForward(Cluster* cluster);
+    void trainClusterBackward(Cluster* cluster);
+    void requestCluster(Cluster* cluster);
+    void initBuffer(const uint32_t id);
+};
 
-#endif  // KITSUNEMIMI_CPU_MEMORY_H
+#endif  // CPUHOST_H

@@ -46,10 +46,6 @@ registerConfigs()
         .setComment("Path to the sqlite3 database-file for all local sql-tables of hanami.")
         .setDefault("/etc/hanami/hanami_db");
 
-    REGISTER_BOOL_CONFIG(defaultGroup, "use_cuda")
-        .setComment("Use very experimental CUDA processing.")
-        .setDefault(false);
-
     // storage-section
     const std::string storageGroup = "storage";
 

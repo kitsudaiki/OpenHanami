@@ -83,6 +83,16 @@ def switch_to_task_mode(token: str, address: str, cluster_uuid: str):
     return hanami_request.send_put_request(token, address, path, body_str)
 
 
+def switch_host(token: str, address: str, cluster_uuid: str, host_uuid: str):
+    path = "/control/v1/cluster/switch_host"
+    json_body = {
+        "cluster_uuid": cluster_uuid,
+        "host_uuid": host_uuid,
+    }
+    body_str = json.dumps(json_body)
+    return hanami_request.send_put_request(token, address, path, body_str)
+
+
 def switch_to_direct_mode(token: str, address: str, cluster_uuid: str):
     path = "/control/v1/cluster/set_mode"
     json_body = {

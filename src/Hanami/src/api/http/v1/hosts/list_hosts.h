@@ -1,5 +1,5 @@
 /**
- * @file        cpu_processing_unit.h
+ * @file        list_hosts.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,29 +20,21 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_CPU_PROCESSING_UNIT_H
-#define HANAMI_CPU_PROCESSING_UNIT_H
+#ifndef LISTHOSTS_H
+#define LISTHOSTS_H
 
-#include <common.h>
-#include <hanami_common/threading/thread.h>
+#include <api/endpoint_processing/blossom.h>
 
-class Cluster;
-
-class CpuProcessingUnit : public Hanami::Thread
+class ListHosts : public Blossom
 {
    public:
-    CpuProcessingUnit();
-    ~CpuProcessingUnit();
+    ListHosts();
 
    protected:
-    void run();
-
-   private:
-    uint64_t reductionCounter = 0;
-
-    void trainSegmentForward(Cluster* cluster);
-    void trainSegmentBackward(Cluster* cluster);
-    void processSegment(Cluster* cluster);
+    bool runTask(BlossomIO& blossomIO,
+                 const json& context,
+                 BlossomStatus& status,
+                 Hanami::ErrorContainer& error);
 };
 
-#endif  // HANAMI_CPU_PROCESSING_UNIT_H
+#endif  // LISTHOSTS_H

@@ -98,16 +98,6 @@ initNewCluster(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta, const s
     connectAllBricks(cluster);
     initTargetBrickList(cluster);
 
-    /*if(HanamiRoot::useOpencl)
-    {
-        data = new Hanami::GpuData();
-        initOpencl(*data);
-    }*/
-
-    if (HanamiRoot::useCuda) {
-        cluster->initCuda();
-    }
-
     return true;
 }
 
@@ -156,10 +146,6 @@ reinitPointer(Cluster* cluster, const uint64_t numberOfBytes)
     // if (byteCounter != numberOfBytes - 48) {
     //    return false;
     // }
-
-    if (HanamiRoot::useCuda) {
-        cluster->initCuda();
-    }
 
     return true;
 }

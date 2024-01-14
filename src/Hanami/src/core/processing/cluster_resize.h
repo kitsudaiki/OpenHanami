@@ -1,5 +1,5 @@
 /**
- * @file        section_update.h
+ * @file        cluster_resize.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -25,16 +25,21 @@
 
 #include <common.h>
 #include <core/cluster/cluster.h>
+#include <core/processing/cpu/cpu_host.h>
+#include <core/processing/cuda/cuda_host.h>
+#include <core/processing/logical_host.h>
 #include <hanami_root.h>
 
 #include "objects.h"
 
 /**
- * @brief searchTargetInBrick
+ * @brief search for an empty target-connection within a target-brick
  *
- * @param targetBrick
+ * @param targetBrick target-brick where to search
+ * @param synapseBlockBuffer synapse-block-buffer to allocate new block,
+ *                           if search-process was successful
  *
- * @return
+ * @return found empty connection, if seccessfule, else nullptr
  */
 inline SynapseConnection*
 searchTargetInBrick(Brick* targetBrick, ItemBuffer& synapseBlockBuffer)
@@ -68,9 +73,9 @@ searchTargetInBrick(Brick* targetBrick, ItemBuffer& synapseBlockBuffer)
 }
 
 /**
- * @brief resizeConnections
+ * @brief resize the number of connection-blocks of a brick
  *
- * @param targetBrick
+ * @param targetBrick brick to resize
  */
 inline void
 resizeConnections(Brick* targetBrick)
@@ -116,14 +121,14 @@ resizeConnections(Brick* targetBrick)
 }
 
 /**
- * @brief createNewSection
+ * @brief allocate a new synapse-section
  *
- * @param cluster
- * @param originLocation
- * @param offset
- * @param posInNeuron
+ * @param cluster cluster to update
+ * @param originLocation position of the soruce-neuron, which require the resize
+ * @param offset action-offset of the new section
+ * @param synapseBlockBuffer synapse-block-buffer to allocate new blocks, if necessary
  *
- * @return
+ * @return true, if successful, else false
  */
 inline bool
 createNewSection(Cluster& cluster,
@@ -168,7 +173,13 @@ createNewSection(Cluster& cluster,
 }
 
 /**
- * @brief prcess update-positions in order to create new sections
+ * @brief iterate over all neuron and run the resize-process, if necessary. This function is used
+ *        in case of a cuda host, where the resize has to be done after the processing
+ *
+ * @param cluster cluster to resize
+ *
+ * @return true, if a resize was performed, else false. This is used to avoid unnecessary data-
+ *         transfers to the gpu
  */
 inline bool
 updateCluster(Cluster& cluster)
@@ -192,8 +203,10 @@ updateCluster(Cluster& cluster)
                 originLocation.blockId = neuronBlockId;
                 originLocation.neuronId = sourceId;
 
-                createNewSection(
-                    cluster, originLocation, neuron->newOffset, HanamiRoot::gpuSynapseBlocks);
+                createNewSection(cluster,
+                                 originLocation,
+                                 neuron->newOffset,
+                                 cluster.attachedHost->synapseBlocks);
 
                 neuron->newOffset = 0.0f;
                 neuron->isNew = 0;
