@@ -22,4 +22,5 @@ CMakeLists.txt.user
 *.egg-info
 build
 src/sdk/python/sdk_test_env
+*.proto3.pb.go
 

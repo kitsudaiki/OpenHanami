@@ -22,7 +22,7 @@ package hanami_resources
 
 import (
     "fmt"
-    
+    "os"
     "hanamictl/common"
     "github.com/spf13/cobra"
     "github.com/kitsudaiki/Hanami"
@@ -37,8 +37,10 @@ var createProjectCmd = &cobra.Command {
     Short: "Create a new project.",
     Args:  cobra.ExactArgs(1),
     Run:   func(cmd *cobra.Command, args []string) {
+        token := Login()
+        address := os.Getenv("HANAMI_ADDRESS")
         projectId := args[0]
-        success, content := hanami_sdk.CreateProject(projectId, projectName)
+        success, content := hanami_sdk.CreateProject(address, token, projectId, projectName)
         if success {
             hanamictl_common.ParseSingle(content)
         } else {
@@ -52,8 +54,10 @@ var getProjectCmd = &cobra.Command {
     Short: "Get information of a specific project.",
     Args:  cobra.ExactArgs(1),
     Run:   func(cmd *cobra.Command, args []string) {
+        token := Login()
+        address := os.Getenv("HANAMI_ADDRESS")
         projectId := args[0]
-        success, content := hanami_sdk.GetProject(projectId)
+        success, content := hanami_sdk.GetProject(address, token, projectId)
         if success {
             hanamictl_common.ParseSingle(content)
         } else {
@@ -66,7 +70,9 @@ var listProjectCmd = &cobra.Command {
     Use:   "list",
     Short: "List all project.",
     Run:   func(cmd *cobra.Command, args []string) {
-        success, content := hanami_sdk.ListProject()
+        token := Login()
+        address := os.Getenv("HANAMI_ADDRESS")
+        success, content := hanami_sdk.ListProject(address, token)
         if success {
             hanamictl_common.ParseList(content)
         } else {
@@ -80,8 +86,10 @@ var deleteProjectCmd = &cobra.Command {
     Short: "Delete a specific project from the backend.",
     Args:  cobra.ExactArgs(1),
     Run:   func(cmd *cobra.Command, args []string) {
+        token := Login()
+        address := os.Getenv("HANAMI_ADDRESS")
         projectId := args[0]
-        success, content := hanami_sdk.DeleteProject(projectId)
+        success, content := hanami_sdk.DeleteProject(address, token, projectId)
         if success {
             fmt.Println("successfully deleted project '%s'", projectId)
         } else {

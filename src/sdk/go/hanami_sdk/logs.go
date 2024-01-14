@@ -24,20 +24,19 @@ import (
     "fmt"
 )
 
-func listAuditLogs(userId string, page int)
-{
+func listAuditLogs(address string, token string, userId string, page int) (bool, string) {
     path := "/control/v1/audit_log?";
-    if(userId !== "") {
-        vars := fmt.Sprintf("user_id=%s&page=%d", userId, page)
+    vars := "";
+    if(userId != "") {
+        vars = fmt.Sprintf("user_id=%s&page=%d", userId, page)
     } else {
-        vars := fmt.Sprintf("page=%d", page)
+        vars = fmt.Sprintf("page=%d", page)
     }
-    return SendGet(path, vars)
+    return SendGet(address, token, path, vars)
 }
- 
-func listErrorLogs(userId string, page int)
-{
+
+func listErrorLogs(address string, token string, userId string, page int)  (bool, string) {
     path := "/control/v1/error_log";
     vars := fmt.Sprintf("user_id=%s&page=%d", userId, page)
-    return SendGet(path, vars)
+    return SendGet(address, token, path, vars)
 }

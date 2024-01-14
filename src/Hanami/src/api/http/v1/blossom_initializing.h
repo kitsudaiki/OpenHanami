@@ -354,8 +354,7 @@ hostBlossoms()
     HttpProcessing* httpProcessing = HanamiRoot::httpServer->httpProcessing;
 
     httpProcessing->addBlossom(group, "list_hosts", new ListHosts());
-    httpProcessing->addEndpoint(
-        "v1/hosts/all", Hanami::GET_TYPE, BLOSSOM_TYPE, group, "list_hosts");
+    httpProcessing->addEndpoint("v1/host/all", Hanami::GET_TYPE, BLOSSOM_TYPE, group, "list_hosts");
 }
 
 /**

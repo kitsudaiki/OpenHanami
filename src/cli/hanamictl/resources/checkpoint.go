@@ -22,7 +22,7 @@ package hanami_resources
 
 import (
     "fmt"
-    
+    "os"
     "hanamictl/common"
     "github.com/spf13/cobra"
     "github.com/kitsudaiki/Hanami"
@@ -34,8 +34,10 @@ var getCheckpointCmd = &cobra.Command {
     Short: "Get information of a specific checkpoint.",
     Args:  cobra.ExactArgs(1),
     Run:   func(cmd *cobra.Command, args []string) {
-        checkpointId := args[0]
-        success, content := hanami_sdk.GetCheckpoint(checkpointId)
+        token := Login()
+        address := os.Getenv("HANAMI_ADDRESS")
+        checkpointUuid := args[0]
+        success, content := hanami_sdk.GetCheckpoint(address, token, checkpointUuid)
         if success {
             hanamictl_common.ParseSingle(content)
         } else {
@@ -48,7 +50,9 @@ var listCheckpointCmd = &cobra.Command {
     Use:   "list",
     Short: "List all checkpoint.",
     Run:   func(cmd *cobra.Command, args []string) {
-        success, content := hanami_sdk.ListCheckpoint()
+        token := Login()
+        address := os.Getenv("HANAMI_ADDRESS")
+        success, content := hanami_sdk.ListCheckpoint(address, token)
         if success {
             hanamictl_common.ParseList(content)
         } else {
@@ -62,10 +66,12 @@ var deleteCheckpointCmd = &cobra.Command {
     Short: "Delete a specific checkpoint from the backend.",
     Args:  cobra.ExactArgs(1),
     Run:   func(cmd *cobra.Command, args []string) {
-        checkpointId := args[0]
-        success, content := hanami_sdk.DeleteCheckpoint(checkpointId)
+        token := Login()
+        address := os.Getenv("HANAMI_ADDRESS")
+        checkpointUuid := args[0]
+        success, content := hanami_sdk.DeleteCheckpoint(address, token, checkpointUuid)
         if success {
-            fmt.Println("successfully deleted checkpoint '%s'", checkpointId)
+            fmt.Println("successfully deleted checkpoint '%s'", checkpointUuid)
         } else {
             fmt.Println(content)
         }

@@ -18,32 +18,38 @@
  *      limitations under the License.
  */
 
-package hanami_sdk
+package hanami_resources
 
 import (
     "fmt"
+    "os"
+    "hanamictl/common"
+    "github.com/spf13/cobra"
+    "github.com/kitsudaiki/Hanami"
 )
 
-func UploadTrainData(name string, dataType string, data string) (bool, string) {
-    path := "control/train_data"
-    vars := ""
-    jsonBody := fmt.Sprintf("{\"name\":%s,\"type\":%s,\"data\":%s}", name, dataType, data)
-    return SendPost(path, vars, jsonBody)
+var listHostsCmd = &cobra.Command {
+    Use:   "list",
+    Short: "List all logical hosts.",
+    Run:   func(cmd *cobra.Command, args []string) {
+        token := Login()
+        address := os.Getenv("HANAMI_ADDRESS")
+        success, content := hanami_sdk.ListHosts(address, token)
+        if success {
+            hanamictl_common.ParseList(content)
+        } else {
+            fmt.Println(content)
+        }
+    },
 }
 
-func GetTrainData(uuid string, withData bool) (bool, string) {
-    path := "control/train_data"
-    vars := fmt.Sprintf("uuid=%s", uuid)
-    if withData {
-        vars += "&with_data=true"
-    } else {
-        vars += "&with_data=false"
-    }
-    return SendGet(path, vars)
+var hostsCmd = &cobra.Command {
+    Use:   "host",
+    Short: "Manage hosts.",
 }
 
-func ListTrainData() (bool, string) {
-    path := fmt.Sprintf("control/train_datas")
-    vars := ""
-    return SendGet(path, vars)
+func Init_Host_Commands(rootCmd *cobra.Command) {
+    rootCmd.AddCommand(hostsCmd)
+
+    hostsCmd.AddCommand(listHostsCmd)
 }

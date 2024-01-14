@@ -18,22 +18,18 @@
  *      limitations under the License.
  */
 
-package hanami_sdk
+package hanami_resources
 
-func getPowerData(address string, token string) (bool, string) {
-    path := "/control/v1/power_consumption";
-    vars := ""
-    return SendGet(address, token, path, vars)
-}
+import (
+    "os"
+    "github.com/kitsudaiki/Hanami"
+)
 
-func getTemperatureData_request(address string, token string) (bool, string) {
-    path := "/control/v1/temperature_production";
-    vars := ""
-    return SendGet(address, token, path, vars)
-}
+func Login() string {
 
-func getSpeedData_request(address string, token string) (bool, string) {
-    path := "/control/v1/speed";
-    vars := ""
-    return SendGet(address, token, path, vars)
+    user := os.Getenv("HANAMI_USER")
+    pw := os.Getenv("HANAMI_PW")
+    address := os.Getenv("HANAMI_ADDRESS")
+    
+    return hanami_sdk.RequestToken(address, user, pw)
 }

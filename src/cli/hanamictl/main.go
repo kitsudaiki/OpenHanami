@@ -36,6 +36,8 @@ func init() {
     hanami_resources.Init_RequestResult_Commands(rootCmd);
     hanami_resources.Init_Task_Commands(rootCmd);
     hanami_resources.Init_Cluster_Commands(rootCmd);
+    hanami_resources.Init_Dataset_Commands(rootCmd);
+    hanami_resources.Init_Host_Commands(rootCmd)
 }
 
 func main() {

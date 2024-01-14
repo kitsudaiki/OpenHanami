@@ -20,20 +20,12 @@
 
 package hanami_sdk
 
-func getPowerData(address string, token string) (bool, string) {
-    path := "/control/v1/power_consumption";
-    vars := ""
-    return SendGet(address, token, path, vars)
-}
+import (
+    "fmt"
+)
 
-func getTemperatureData_request(address string, token string) (bool, string) {
-    path := "/control/v1/temperature_production";
-    vars := ""
-    return SendGet(address, token, path, vars)
-}
-
-func getSpeedData_request(address string, token string) (bool, string) {
-    path := "/control/v1/speed";
+func ListHosts(address string, token string) (bool, string) {
+    path := fmt.Sprintf("control/v1/host/all")
     vars := ""
     return SendGet(address, token, path, vars)
 }
