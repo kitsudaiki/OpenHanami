@@ -33,7 +33,6 @@ class CudaHost : public LogicalHost
     CudaHost(const uint32_t localId);
     ~CudaHost();
 
-    uint64_t getAvailableMemory();
     bool moveCluster(Cluster* cluster);
     void syncWithHost(Cluster* cluster);
     void removeCluster(Cluster* cluster);

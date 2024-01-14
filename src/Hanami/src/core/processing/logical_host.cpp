@@ -27,18 +27,26 @@
 #include <core/processing/objects.h>
 #include <hanami_common/buffer/item_buffer.h>
 
+/**
+ * @brief constructor
+ *
+ * @param localId identifier starting with 0 within the physical host and with the type of host
+ */
 LogicalHost::LogicalHost(const uint32_t localId) : Hanami::Thread("ProcessingUnit")
 {
     m_localId = localId;
     m_uuid = generateUuid().toString();
 }
 
+/**
+ * @brief destructor
+ */
 LogicalHost::~LogicalHost() {}
 
 /**
  * @brief add cluster to queue
  *
- * @param newSegment cluster to add to queue
+ * @param cluster cluster to add to queue
  */
 void
 LogicalHost::addClusterToQueue(Cluster* cluster)
@@ -75,8 +83,7 @@ LogicalHost::getClusterFromQueue()
 }
 
 /**
- * @brief LogicalHost::getHostType
- * @return
+ * @brief get host-type of this logical host (cpu, cuda, ...)
  */
 LogicalHost::HostType
 LogicalHost::getHostType() const
@@ -84,6 +91,9 @@ LogicalHost::getHostType() const
     return m_hostType;
 }
 
+/**
+ * @brief get uuid of the host for identification
+ */
 const std::string
 LogicalHost::getUuid() const
 {
@@ -118,8 +128,10 @@ LogicalHost::getHighestOutput(const Cluster& cluster)
 }
 
 /**
- * @brief LogicalHost::handleClientOutput
- * @param cluster
+ * @brief in case of a request-task the output is either written into a request-result in case of a
+ *        task or is send via websocket to a client in case of direct-io
+ *
+ * @param cluster cluster to handle
  */
 void
 LogicalHost::handleClientOutput(const Cluster& cluster)
@@ -148,7 +160,7 @@ LogicalHost::handleClientOutput(const Cluster& cluster)
 }
 
 /**
- * @brief run loop to process all available segments
+ * @brief run loop to process all scheduled cluster
  */
 void
 LogicalHost::run()

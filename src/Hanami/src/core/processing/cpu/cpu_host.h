@@ -29,8 +29,8 @@ class CpuHost : public LogicalHost
 {
    public:
     CpuHost(const uint32_t localId);
+    ~CpuHost();
 
-    uint64_t getAvailableMemory();
     bool moveCluster(Cluster* cluster);
     void syncWithHost(Cluster*);
     void removeCluster(Cluster* cluster);

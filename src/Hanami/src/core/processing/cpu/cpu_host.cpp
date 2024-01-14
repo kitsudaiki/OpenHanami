@@ -29,17 +29,21 @@
 #include <core/processing/cpu/reduction.h>
 #include <hanami_cpu/memory.h>
 
+/**
+ * @brief constructor
+ *
+ * @param localId identifier starting with 0 within the physical host and with the type of host
+ */
 CpuHost::CpuHost(const uint32_t localId) : LogicalHost(localId)
 {
     m_hostType = CPU_HOST_TYPE;
     initBuffer(localId);
 }
 
-uint64_t
-CpuHost::getAvailableMemory()
-{
-    return 0;
-}
+/**
+ * @brief destructor
+ */
+CpuHost::~CpuHost() {}
 
 /**
  * @brief LogicalHost::moveCluster
@@ -54,6 +58,7 @@ CpuHost::moveCluster(Cluster* cluster)
     SynapseBlock* cpuSynapseBlocks = Hanami::getItemData<SynapseBlock>(synapseBlocks);
     SynapseBlock tempBlock;
 
+    // copy synapse-blocks from the old host to this one here
     for (uint64_t i = 0; i < cluster->clusterHeader->bricks.count; i++) {
         for (ConnectionBlock& block : cluster->bricks[i].connectionBlocks) {
             if (block.targetSynapseBlockPos != UNINIT_STATE_64) {
@@ -74,6 +79,9 @@ CpuHost::moveCluster(Cluster* cluster)
     return true;
 }
 
+/**
+ * @brief empty function in this case
+ */
 void
 CpuHost::syncWithHost(Cluster*)
 {
@@ -82,9 +90,6 @@ CpuHost::syncWithHost(Cluster*)
 void
 CpuHost::removeCluster(Cluster* cluster)
 {
-    SynapseBlock* cpuSynapseBlocks = Hanami::getItemData<SynapseBlock>(synapseBlocks);
-    SynapseBlock tempBlock;
-
     for (uint64_t i = 0; i < cluster->clusterHeader->bricks.count; i++) {
         for (ConnectionBlock& block : cluster->bricks[i].connectionBlocks) {
             if (block.targetSynapseBlockPos != UNINIT_STATE_64) {

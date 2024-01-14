@@ -30,17 +30,22 @@
 PhysicalHost::PhysicalHost() {}
 
 /**
- * @brief PhysicalHost::init
- * @param error
- * @return
+ * @brief initialize all cpu's ang cuda gpu's of the physical host by creating a logical-host for
+ *        each of them and giving them a local device-id
+ *
+ * @param error reference for error-output
+ *
+ * @return true, if successful, else false
  */
 bool
 PhysicalHost::init(Hanami::ErrorContainer& error)
 {
+    // get information of all available cpus and their threads
     if (Hanami::Host::getInstance()->initHost(error) == false) {
         return false;
     }
 
+    // identify and init cpu's
     const uint32_t numberOfSockets = Hanami::Host::getInstance()->cpuPackages.size();
     for (uint32_t i = 0; i < numberOfSockets; i++) {
         CpuHost* newHost = new CpuHost(i);
@@ -48,6 +53,7 @@ PhysicalHost::init(Hanami::ErrorContainer& error)
         m_cpuHosts.push_back(newHost);
     }
 
+    // identify and init cuda gpu's
     const uint32_t numberOfCudaGpus = getNumberOfDevices_CUDA();
     for (uint32_t i = 0; i < numberOfCudaGpus; i++) {
         CudaHost* newHost = new CudaHost(i);
@@ -62,8 +68,9 @@ PhysicalHost::init(Hanami::ErrorContainer& error)
 }
 
 /**
- * @brief PhysicalHost::getFirstHost
- * @return
+ * @brief give first logical cpu-host
+ *
+ * @return pointer if at least one cpu-host exist, else nullptr
  */
 LogicalHost*
 PhysicalHost::getFirstHost() const
@@ -76,19 +83,23 @@ PhysicalHost::getFirstHost() const
 }
 
 /**
- * @brief PhysicalHost::getHost
- * @param uuid
- * @return
+ * @brief get a logical host by uuid
+ *
+ * @param uuid uuid of the host
+ *
+ * @return pointer if uuid was found, else nullptr
  */
 LogicalHost*
 PhysicalHost::getHost(const std::string& uuid) const
 {
+    // check cpu
     for (LogicalHost* host : m_cpuHosts) {
         if (host->getUuid() == uuid) {
             return host;
         }
     }
 
+    // check cuda gpu
     for (LogicalHost* host : m_cudaHosts) {
         if (host->getUuid() == uuid) {
             return host;
@@ -99,8 +110,9 @@ PhysicalHost::getHost(const std::string& uuid) const
 }
 
 /**
- * @brief PhysicalHost::getAllHosts
- * @return
+ * @brief convert all hosts into a json for api-output
+ *
+ * @return json with information of the hosts
  */
 json
 PhysicalHost::getAllHostsAsJson()

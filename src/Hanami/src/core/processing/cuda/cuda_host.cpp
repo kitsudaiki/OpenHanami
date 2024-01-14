@@ -26,31 +26,53 @@
 #include <core/processing/cluster_io_functions.h>
 #include <core/processing/cluster_resize.h>
 
+/**
+ * @brief constructor
+ *
+ * @param localId identifier starting with 0 within the physical host and with the type of host
+ */
 CudaHost::CudaHost(const uint32_t localId) : LogicalHost(localId)
 {
     m_hostType = CUDA_HOST_TYPE;
     initBuffer(localId);
 }
 
+/**
+ * @brief destructor
+ */
 CudaHost::~CudaHost() {}
 
-uint64_t
-CudaHost::getAvailableMemory()
+/**
+ * @brief CudaHost::initBuffer
+ * @param id
+ */
+void
+CudaHost::initBuffer(const uint32_t id)
 {
-    return 0;
+    const std::lock_guard<std::mutex> lock(m_cudaMutex);
+
+    uint64_t sizeOfMemory = getAvailableMemory_CUDA(id);
+    sizeOfMemory = (sizeOfMemory / 100) * 80;  // use 80% for synapse-blocks
+    synapseBlocks.initBuffer<SynapseBlock>(sizeOfMemory / sizeof(SynapseBlock));
+    synapseBlocks.deleteAll();
+
+    LOG_INFO("Initialized number of syanpse-blocks on gpu-device with id '" + std::to_string(id)
+             + "': " + std::to_string(synapseBlocks.metaData->itemCapacity));
 }
 
 /**
- * @brief CudaHost::moveCluster
- * @param originHost
- * @param cluster
- * @return
+ * @brief move the data of a cluster to this host
+ *
+ * @param cluster cluster to move
+ *
+ * @return true, if successful, else false
  */
 bool
 CudaHost::moveCluster(Cluster* cluster)
 {
     const std::lock_guard<std::mutex> lock(m_cudaMutex);
 
+    // sync data from gpu to host, in order to have a consistent state
     copyFromGpu_CUDA(&cluster->gpuPointer,
                      cluster->neuronBlocks,
                      cluster->clusterHeader->neuronBlocks.count,
@@ -61,6 +83,7 @@ CudaHost::moveCluster(Cluster* cluster)
     SynapseBlock* cpuSynapseBlocks = Hanami::getItemData<SynapseBlock>(synapseBlocks);
     SynapseBlock tempBlock;
 
+    // copy synapse-blocks from the old host to this one here
     for (uint64_t i = 0; i < cluster->clusterHeader->bricks.count; i++) {
         for (ConnectionBlock& block : cluster->bricks[i].connectionBlocks) {
             if (block.targetSynapseBlockPos != UNINIT_STATE_64) {
@@ -76,8 +99,8 @@ CudaHost::moveCluster(Cluster* cluster)
         }
     }
 
+    // update data on gpu
     cluster->gpuPointer.deviceId = m_localId;
-
     copyToDevice_CUDA(&cluster->gpuPointer,
                       &cluster->clusterHeader->settings,
                       cluster->neuronBlocks,
@@ -92,7 +115,11 @@ CudaHost::moveCluster(Cluster* cluster)
 
     return true;
 }
-
+/**
+ * @brief sync data of a cluster from gpu to host
+ *
+ * @param cluster cluster to sync
+ */
 void
 CudaHost::syncWithHost(Cluster* cluster)
 {
@@ -105,19 +132,17 @@ CudaHost::syncWithHost(Cluster* cluster)
                      synapseBlocks.metaData->itemCapacity);
 }
 
+/**
+ * @brief remove the cluster-data from this host
+ *
+ * @param cluster cluster to remove
+ */
 void
 CudaHost::removeCluster(Cluster* cluster)
 {
     const std::lock_guard<std::mutex> lock(m_cudaMutex);
 
-    copyFromGpu_CUDA(&cluster->gpuPointer,
-                     cluster->neuronBlocks,
-                     cluster->clusterHeader->neuronBlocks.count,
-                     getItemData<SynapseBlock>(synapseBlocks),
-                     synapseBlocks.metaData->itemCapacity);
-
-    SynapseBlock tempBlock;
-
+    // remove synapse-blocks
     for (uint64_t i = 0; i < cluster->clusterHeader->bricks.count; i++) {
         for (ConnectionBlock& block : cluster->bricks[i].connectionBlocks) {
             if (block.targetSynapseBlockPos != UNINIT_STATE_64) {
@@ -126,6 +151,7 @@ CudaHost::removeCluster(Cluster* cluster)
         }
     }
 
+    // remove other data of the cluster, which are no synapse-blocks, from gpu
     removeFromDevice_CUDA(&cluster->gpuPointer);
 }
 
@@ -152,6 +178,7 @@ CudaHost::trainClusterForward(Cluster* cluster)
             brick, cluster->inputValues, cluster->neuronBlocks);
     }
 
+    // process all bricks on cpu
     processing_CUDA(&cluster->gpuPointer,
                     cluster->bricks,
                     cluster->clusterHeader->bricks.count,
@@ -169,6 +196,7 @@ CudaHost::trainClusterForward(Cluster* cluster)
         processNeuronsOfOutputBrick(brick, cluster->outputValues, cluster->neuronBlocks);
     }
 
+    // update cluster
     if (updateCluster(*cluster)) {
         update_CUDA(&cluster->gpuPointer,
                     cluster->neuronBlocks,
@@ -207,6 +235,7 @@ CudaHost::trainClusterBackward(Cluster* cluster)
         }
     }
 
+    // backpropagation over all bricks on gpu
     backpropagation_CUDA(&cluster->gpuPointer,
                          cluster->bricks,
                          cluster->clusterHeader->bricks.count,
@@ -214,6 +243,7 @@ CudaHost::trainClusterBackward(Cluster* cluster)
                          cluster->tempNeuronBlocks,
                          cluster->numberOfNeuronBlocks);
 
+    // run reduction-process
     if (reductionCounter == 100) {
         reduction_CUDA(&cluster->gpuPointer,
                        cluster->bricks,
@@ -255,6 +285,7 @@ CudaHost::requestCluster(Cluster* cluster)
             brick, cluster->inputValues, cluster->neuronBlocks);
     }
 
+    // process all bricks on gpu
     processing_CUDA(&cluster->gpuPointer,
                     cluster->bricks,
                     cluster->clusterHeader->bricks.count,
@@ -271,18 +302,4 @@ CudaHost::requestCluster(Cluster* cluster)
 
         processNeuronsOfOutputBrick(brick, cluster->outputValues, cluster->neuronBlocks);
     }
-}
-
-void
-CudaHost::initBuffer(const uint32_t id)
-{
-    const std::lock_guard<std::mutex> lock(m_cudaMutex);
-
-    uint64_t sizeOfMemory = getAvailableMemory_CUDA(id);
-    sizeOfMemory = (sizeOfMemory / 100) * 80;  // use 80% for synapse-blocks
-    synapseBlocks.initBuffer<SynapseBlock>(sizeOfMemory / sizeof(SynapseBlock));
-    synapseBlocks.deleteAll();
-
-    LOG_INFO("Initialized number of syanpse-blocks on gpu-device with id '" + std::to_string(id)
-             + "': " + std::to_string(synapseBlocks.metaData->itemCapacity));
 }
