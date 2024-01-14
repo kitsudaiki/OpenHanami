@@ -66,7 +66,7 @@ For each of the following actions, the user must request an access-token at the 
     ```python
     from hanami_sdk import hanami_token
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
     test_user = "asdf"
     test_pw = "asdfasdf"
 
@@ -92,7 +92,7 @@ Create new empty project.
     ```python
     from hanami_sdk import project
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
     project_id = "test_project"
     project_name = "Test Project"
 
@@ -119,7 +119,7 @@ Get information about a project.
     ```python
     from hanami_sdk import project
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
     project_id = "test_project"
 
     # request a token for a user, who has admin-permissions
@@ -145,7 +145,7 @@ List all projects.
     ```python
     from hanami_sdk import project
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
 
     # request a token for a user, who has admin-permissions
     # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
@@ -183,7 +183,7 @@ Delete a project.
     ```python
     from hanami_sdk import project
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
     project_id = "test_project"
 
     # request a token for a user, who has admin-permissions
@@ -210,7 +210,7 @@ If the `is_admin` is set to true, the user becomes a global admin.
     ```python
     from hanami_sdk import user
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
     new_user = "new_user"
     new_id = "new_user"
     new_pw = "asdfasdf"
@@ -241,7 +241,7 @@ Get information about a specific user.
     ```python
     from hanami_sdk import user
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
     user_id = "new_user"
 
     # request a token for a user, who has admin-permissions
@@ -269,7 +269,7 @@ List all user.
     ```python
     from hanami_sdk import user
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
 
     # request a token for a user, who has admin-permissions
     # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
@@ -318,7 +318,7 @@ Delete a user from the backend.
     ```python
     from hanami_sdk import user
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
     user_id = "new_user"
 
     # request a token for a user, who has admin-permissions
@@ -340,7 +340,7 @@ If `is_project_admin` is set to true, the user can access all resources of all u
     ```python
     from hanami_sdk import user
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
     user_id = "new_user"
     project_id = "test_project"
     role = "member"
@@ -366,7 +366,7 @@ Unassign a project from a user.
     ```python
     from hanami_sdk import user
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
     user_id = "new_user"
 
     # request a token for a user, who has admin-permissions
@@ -384,7 +384,7 @@ List projects only of the current user, which are enabled by the current token.
     ```python
     from hanami_sdk import user
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
 
     # request a token for a user, who has admin-permissions
     # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
@@ -401,7 +401,7 @@ Switch to another project with the current user.
     ```python
     from hanami_sdk import user
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
     project_id = "test_project"
 
     # request a token for a user, who has admin-permissions
@@ -428,7 +428,7 @@ These are files of the official mnist-dataset, which can be uploaded and which a
     ```python
     from hanami_sdk import dataset
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
     train_dataset_name = "train_test_dataset"
     train_inputs = "/tmp/mnist/train-images.idx3-ubyte"
     train_labels = "/tmp/mnist/train-labels.idx1-ubyte"
@@ -454,7 +454,7 @@ These are files of the official mnist-dataset, which can be uploaded and which a
     ```python
     from hanami_sdk import dataset
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
     train_dataset_name = "train_test_dataset"
     train_inputs = "/tmp/csv/test-file.csv"
 
@@ -477,7 +477,7 @@ Get information about a specific dataset.
     ```python
     from hanami_sdk import dataset
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
     dataset_uuid = "6f2bbcd2-7081-4b08-ae1d-16e6cd6f54c4"
 
     # request a token for a user, who has admin-permissions
@@ -510,7 +510,7 @@ List all visible datasets.
     ```python
     from hanami_sdk import dataset
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
 
     # request a token for a user, who has admin-permissions
     # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
@@ -550,7 +550,7 @@ Delete a dataset.
     ```python
     from hanami_sdk import dataset
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
     dataset_uuid = "6f2bbcd2-7081-4b08-ae1d-16e6cd6f54c4"
 
     # request a token for a user, who has admin-permissions
@@ -572,7 +572,7 @@ To initialize a new cluster, a cluster-templated is used, which describes the ba
     ```python
     from hanami_sdk import cluster
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
     cluster_name = "test_cluster"
     cluster_template = \
         "version: 1\n" \
@@ -615,7 +615,7 @@ Get information of a specific cluster.
     ```python
     from hanami_sdk import cluster
 
-    address = "http://127.0.0.1:1337" 
+    address = "http://127.0.0.1:11418" 
     cluster_uuid = "d94f2b53-f404-4215-9a33-63c4a03e3202"
 
     # request a token for a user, who has admin-permissions
@@ -644,7 +644,7 @@ List all visible cluster.
     ```python
     from hanami_sdk import cluster
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
 
     # request a token for a user, who has admin-permissions
     # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
@@ -683,7 +683,7 @@ Delete a cluster from a backend.
     ```python
     from hanami_sdk import cluster
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
     cluster_uuid = "d94f2b53-f404-4215-9a33-63c4a03e3202"
 
     # request a token for a user, who has admin-permissions
@@ -702,7 +702,7 @@ Save the state of the cluster by creating a checkpoint, which is stored on the s
     ```python
     from hanami_sdk import cluster
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
     checkpoint_name = "test_checkpoint"
 
     # request a token for a user, who has admin-permissions
@@ -727,7 +727,7 @@ Reset a cluster to the state, which is stored in a specific checkpoint.
     ```python
     from hanami_sdk import cluster
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
     checkpoint_uuid = "cc6120c7-cc31-4f17-baee-c6c606f00512"
     cluster_uuid = "d94f2b53-f404-4215-9a33-63c4a03e3202"
 
@@ -757,7 +757,7 @@ Each CPU and GPU is handled as its logical host. Cluster and be moved between th
     ```python
     from hanami_sdk import cluster
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
     host_uuid = "cc6120c7-cc31-4f17-baee-c6c606f00512"
     cluster_uuid = "d94f2b53-f404-4215-9a33-63c4a03e3202"
 
@@ -790,7 +790,7 @@ Create a new task to train the cluster with the data of a dataset, which was upl
     ```python
     from hanami_sdk import task
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
     task_name = "test_task"
     cluster_uuid = "9f86921d-9a7c-44a2-836c-1683928d9354"
     dataset_uuid = "6f2bbcd2-7081-4b08-ae1d-16e6cd6f54c4"
@@ -824,7 +824,7 @@ Create a new task to request information from a trained cluster. As input the da
     ```python
     from hanami_sdk import task
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
     task_name = "test_task"
     cluster_uuid = "9f86921d-9a7c-44a2-836c-1683928d9354"
     dataset_uuid = "6f2bbcd2-7081-4b08-ae1d-16e6cd6f54c4"
@@ -856,7 +856,7 @@ Create a new task to request information from a trained cluster. As input the da
     ```python
     from hanami_sdk import task
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
     cluster_uuid = "9f86921d-9a7c-44a2-836c-1683928d9354"
     task_uuid = "c7f7e274-5d7d-4696-8591-18441cb1b685"
 
@@ -885,7 +885,7 @@ List all tasks for a cluster, together with their progress.
     ```python
     from hanami_sdk import task
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
     cluster_uuid = "9f86921d-9a7c-44a2-836c-1683928d9354"
 
     # request a token for a user, who has admin-permissions
@@ -927,7 +927,7 @@ Delete a task from a cluster. In this task was a request and produced a request-
     ```python
     from hanami_sdk import task
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
     cluster_uuid = "9f86921d-9a7c-44a2-836c-1683928d9354"
     task_uuid = "c7f7e274-5d7d-4696-8591-18441cb1b685"
 
@@ -957,7 +957,7 @@ It is possible to directly connect via websocket to the cluster on the server to
     ```python
     from hanami_sdk import direct_io
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
     cluster_uuid = "9f86921d-9a7c-44a2-836c-1683928d9354"
     input_values = [0.0, 2.0, 0.0, 10.0, 0.5]
     exprected_values = [1.0, 0.0]
@@ -988,7 +988,7 @@ It is possible to directly connect via websocket to the cluster on the server to
     ```python
     from hanami_sdk import direct_io
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
     cluster_uuid = "9f86921d-9a7c-44a2-836c-1683928d9354"
     input_values = [0.0, 2.0, 0.0, 10.0, 0.5]
 
@@ -1027,7 +1027,7 @@ Get the result of a request-task with all of the resulting values.
     ```python
     from hanami_sdk import request_result
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
     task_uuid = "c7f7e274-5d7d-4696-8591-18441cb1b685"
 
     # request a token for a user, who has admin-permissions
@@ -1073,7 +1073,7 @@ List all visible request-results.
     ```python
     from hanami_sdk import request_result
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
 
     # request a token for a user, who has admin-permissions
     # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
@@ -1111,7 +1111,7 @@ Delete a request-result.
     ```python
     from hanami_sdk import request_result
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
     task_uuid = "c7f7e274-5d7d-4696-8591-18441cb1b685"
 
     # request a token for a user, who has admin-permissions
@@ -1129,7 +1129,7 @@ Checks a request-result against a dataset to compare who much of the output of t
     ```python
     from hanami_sdk import request_result
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
     task_uuid = "c7f7e274-5d7d-4696-8591-18441cb1b685"
     request_dataset_uuid = "d40c0c06-bd28-49a4-b872-6a70c4750bb9"
 
@@ -1166,7 +1166,7 @@ List all visible checkpoints.
     ```python
     from hanami_sdk import checkpoint
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
 
     # request a token for a user, who has admin-permissions
     # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
@@ -1204,7 +1204,7 @@ Delete a checkpoint from the backend.
     ```python
     from hanami_sdk import checkpoint
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
     checkpoint_uuid = "cc6120c7-cc31-4f17-baee-c6c606f00512"
 
     # request a token for a user, who has admin-permissions
@@ -1226,7 +1226,7 @@ Each CPU and GPU is handled as its own logical host to have more control over th
     ```python
     from hanami_sdk import hosts
 
-    address = "http://127.0.0.1:1337"
+    address = "http://127.0.0.1:11418"
 
     # request a token for a user, who has admin-permissions
     # see: https://docs.hanami-ai.com/api/sdk_library/#request-token

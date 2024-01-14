@@ -19,7 +19,7 @@ docker:
 
 api:
   domain: local-hanami
-  port: 1337
+  port: 11418
   ip: "0.0.0.0"
 
 resources: {}
