@@ -89,6 +89,11 @@ main(int argc, char* argv[])
         //-------------------------------------------------------------------------
 
         std::string configDocu = "# Configs of Hanami\n\n";
+        configDocu.append("!!! info\n\n");
+        configDocu.append(
+            "    This documeation was generated from the source-code to "
+            "provide a maximum of consistency.\n\n");
+
         Hanami::ConfigHandler::getInstance()->createDocumentation(configDocu);
         complete = fs::current_path() / fs::path{"config.md"};
         if (writeFile(complete.generic_string(), configDocu, error, true) == false) {
@@ -100,6 +105,10 @@ main(int argc, char* argv[])
         //-------------------------------------------------------------------------
 
         std::string dbDocu = "# Database-Tables\n\n";
+        dbDocu.append("!!! info\n\n");
+        dbDocu.append(
+            "    This documeation was generated from the source-code to "
+            "provide a maximum of consistency.\n\n");
         ClusterTable::getInstance()->createDocumentation(dbDocu);
         ProjectsTable::getInstance()->createDocumentation(dbDocu);
         UsersTable::getInstance()->createDocumentation(dbDocu);
