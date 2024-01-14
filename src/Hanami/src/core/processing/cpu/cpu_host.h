@@ -31,10 +31,9 @@ class CpuHost : public LogicalHost
     CpuHost(const uint32_t localId);
 
     uint64_t getAvailableMemory();
-    void hostSpecificCleanup(Cluster*);
-
     bool moveCluster(Cluster* cluster);
     void syncWithHost(Cluster*);
+    void removeCluster(Cluster* cluster);
 
    private:
     void trainClusterForward(Cluster* cluster);

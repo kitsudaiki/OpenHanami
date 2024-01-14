@@ -48,17 +48,16 @@ class LogicalHost : public Hanami::Thread
     LogicalHost(const uint32_t localId);
     virtual ~LogicalHost();
 
-    virtual uint64_t getAvailableMemory() = 0;
-    virtual void hostSpecificCleanup(Cluster* cluster) = 0;
-
     void addClusterToQueue(Cluster* cluster);
     Cluster* getClusterFromQueue();
 
     HostType getHostType() const;
     const std::string getUuid() const;
 
+    virtual uint64_t getAvailableMemory() = 0;
     virtual bool moveCluster(Cluster* cluster) = 0;
     virtual void syncWithHost(Cluster* cluster) = 0;
+    virtual void removeCluster(Cluster* cluster) = 0;
 
     Hanami::ItemBuffer synapseBlocks;
 

@@ -41,12 +41,6 @@ CpuHost::getAvailableMemory()
     return 0;
 }
 
-void
-CpuHost::hostSpecificCleanup(Cluster*)
-{
-    return;
-}
-
 /**
  * @brief LogicalHost::moveCluster
  * @param originHost
@@ -57,8 +51,6 @@ bool
 CpuHost::moveCluster(Cluster* cluster)
 {
     LogicalHost* originHost = cluster->attachedHost;
-    originHost->syncWithHost(cluster);
-
     SynapseBlock* cpuSynapseBlocks = Hanami::getItemData<SynapseBlock>(synapseBlocks);
     SynapseBlock tempBlock;
 
@@ -85,6 +77,21 @@ CpuHost::moveCluster(Cluster* cluster)
 void
 CpuHost::syncWithHost(Cluster*)
 {
+}
+
+void
+CpuHost::removeCluster(Cluster* cluster)
+{
+    SynapseBlock* cpuSynapseBlocks = Hanami::getItemData<SynapseBlock>(synapseBlocks);
+    SynapseBlock tempBlock;
+
+    for (uint64_t i = 0; i < cluster->clusterHeader->bricks.count; i++) {
+        for (ConnectionBlock& block : cluster->bricks[i].connectionBlocks) {
+            if (block.targetSynapseBlockPos != UNINIT_STATE_64) {
+                synapseBlocks.deleteItem(block.targetSynapseBlockPos);
+            }
+        }
+    }
 }
 
 /**

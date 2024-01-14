@@ -40,14 +40,6 @@ CudaHost::getAvailableMemory()
     return 0;
 }
 
-void
-CudaHost::hostSpecificCleanup(Cluster* cluster)
-{
-    const std::lock_guard<std::mutex> lock(m_cudaMutex);
-
-    removeFromDevice_CUDA(&cluster->gpuPointer);
-}
-
 /**
  * @brief CudaHost::moveCluster
  * @param originHost
@@ -111,6 +103,30 @@ CudaHost::syncWithHost(Cluster* cluster)
                      cluster->clusterHeader->neuronBlocks.count,
                      getItemData<SynapseBlock>(synapseBlocks),
                      synapseBlocks.metaData->itemCapacity);
+}
+
+void
+CudaHost::removeCluster(Cluster* cluster)
+{
+    const std::lock_guard<std::mutex> lock(m_cudaMutex);
+
+    copyFromGpu_CUDA(&cluster->gpuPointer,
+                     cluster->neuronBlocks,
+                     cluster->clusterHeader->neuronBlocks.count,
+                     getItemData<SynapseBlock>(synapseBlocks),
+                     synapseBlocks.metaData->itemCapacity);
+
+    SynapseBlock tempBlock;
+
+    for (uint64_t i = 0; i < cluster->clusterHeader->bricks.count; i++) {
+        for (ConnectionBlock& block : cluster->bricks[i].connectionBlocks) {
+            if (block.targetSynapseBlockPos != UNINIT_STATE_64) {
+                synapseBlocks.deleteItem(block.targetSynapseBlockPos);
+            }
+        }
+    }
+
+    removeFromDevice_CUDA(&cluster->gpuPointer);
 }
 
 /**

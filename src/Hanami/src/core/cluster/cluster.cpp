@@ -63,15 +63,7 @@ Cluster::Cluster(LogicalHost* host, const void* data, const uint64_t dataSize)
  */
 Cluster::~Cluster()
 {
-    for (uint64_t i = 0; i < clusterHeader->bricks.count; i++) {
-        for (ConnectionBlock& block : bricks[i].connectionBlocks) {
-            if (block.targetSynapseBlockPos != UNINIT_STATE_64) {
-                attachedHost->synapseBlocks.deleteItem(block.targetSynapseBlockPos);
-            }
-        }
-    }
-
-    attachedHost->hostSpecificCleanup(this);
+    attachedHost->removeCluster(this);
 
     delete stateMachine;
     delete inputValues;

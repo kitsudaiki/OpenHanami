@@ -34,10 +34,9 @@ class CudaHost : public LogicalHost
     ~CudaHost();
 
     uint64_t getAvailableMemory();
-    void hostSpecificCleanup(Cluster* cluster);
-
     bool moveCluster(Cluster* cluster);
     void syncWithHost(Cluster* cluster);
+    void removeCluster(Cluster* cluster);
 
    private:
     void trainClusterForward(Cluster* cluster);
