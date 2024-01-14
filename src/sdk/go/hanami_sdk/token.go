@@ -18,22 +18,34 @@
  *      limitations under the License.
  */
 
+
 package hanami_sdk
 
-func getPowerData(address string, token string) (bool, string) {
-    path := "/control/v1/power_consumption";
-    vars := ""
-    return SendGet(address, token, path, vars)
+import (
+    "fmt"
+    "encoding/json"
+)
+
+func parseJson(input string) map[string]interface{} {
+    // parse json and fill into map
+    outputMap := map[string]interface{}{}
+    err := json.Unmarshal([]byte(input), &outputMap)
+    if err != nil {
+        panic(err)
+    }
+
+    return outputMap
 }
 
-func getTemperatureData_request(address string, token string) (bool, string) {
-    path := "/control/v1/temperature_production";
-    vars := ""
-    return SendGet(address, token, path, vars)
-}
+func RequestToken(address string, user string, pw string) string {
+    path := fmt.Sprintf("control/v1/token")
+    body := fmt.Sprintf("{\"id\":\"%s\",\"password\":\"%s\"}", user, pw)
 
-func getSpeedData_request(address string, token string) (bool, string) {
-    path := "/control/v1/speed";
-    vars := ""
-    return SendGet(address, token, path, vars)
+    success, content := sendGenericRequest(address, "", "POST", path, body)
+    if success == false {
+        return ""
+    }
+
+    outputMap := parseJson(content)
+    return  outputMap["token"].(string)
 }

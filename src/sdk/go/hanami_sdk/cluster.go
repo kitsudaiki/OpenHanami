@@ -22,46 +22,45 @@ package hanami_sdk
 
 import (
     b64 "encoding/base64"
-
     "fmt"
 )
 
-func CreateCluster(name string, template string) (bool, string) {
+func CreateCluster(address string, token string, name string, template string) (bool, string) {
     sEnc := b64.StdEncoding.EncodeToString([]byte(template))
 	jsonBody := fmt.Sprintf("{\"name\":\"%s\", \"template\":\"%s\"}", name, sEnc)
 	path := "control/v1/cluster"
 	vars := ""
-    return SendPost(path, vars, jsonBody)
+    return SendPost(address, token, path, vars, jsonBody)
 }
 
-func GetCluster(clusterUuid string) (bool, string) {
+func GetCluster(address string, token string, clusterUuid string) (bool, string) {
     path := "control/v1/cluster"
     vars := fmt.Sprintf("uuid=%s", clusterUuid)
-    return SendGet(path, vars)
+    return SendGet(address, token, path, vars)
 }
 
-func ListCluster() (bool, string) {
+func ListCluster(address string, token string) (bool, string) {
     path := fmt.Sprintf("control/v1/cluster/all")
     vars := ""
-    return SendGet(path, vars)
+    return SendGet(address, token, path, vars)
 }
 
-func DeleteCluster(clusterUuid string) (bool, string) {
+func DeleteCluster(address string, token string, clusterUuid string) (bool, string) {
     path := "control/v1/cluster"
     vars := fmt.Sprintf("uuid=%s", clusterUuid)
-    return SendDelete(path, vars)
+    return SendDelete(address, token, path, vars)
 }
  
-func SaveCluster(clusterUuid string, checkpointName string) (bool, string) {
+func SaveCluster(address string, token string, clusterUuid string, checkpointName string) (bool, string) {
 	jsonBody := fmt.Sprintf("{\"name\":\"%s\", \"cluster_uuid\":\"%s\"}", checkpointName, clusterUuid)
 	path := "/control/v1/cluster/save"
 	vars := ""
-    return SendPost(path, vars, jsonBody)
+    return SendPost(address, token, path, vars, jsonBody)
 }
 
-func RestoreCluster(clusterUuid string, checkpointUuid string) (bool, string) {
+func RestoreCluster(address string, token string, clusterUuid string, checkpointUuid string) (bool, string) {
 	jsonBody := fmt.Sprintf("{\"checkpoint_uuid\":\"%s\", \"cluster_uuid\":\"%s\"}", checkpointUuid, clusterUuid)
 	path := "/control/v1/cluster/load"
 	vars := ""
-    return SendPost(path, vars, jsonBody)
+    return SendPost(address, token, path, vars, jsonBody)
 }

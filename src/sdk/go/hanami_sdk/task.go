@@ -24,7 +24,7 @@ import (
     "fmt"
 )
 
-func CreateTask(name string, taskType string, clusterUuid string, dataSetUuid string) (bool, string) {
+func CreateTask(address string, token string, name string, taskType string, clusterUuid string, dataSetUuid string) (bool, string) {
 	path := "control/v1/task"
 	vars := ""
 	jsonBody := fmt.Sprintf("{\"name\":%s, \"type\":%s, \"cluster_uuid\":%s, \"cluster_uuid\":\"%s\"}", 
@@ -32,23 +32,23 @@ func CreateTask(name string, taskType string, clusterUuid string, dataSetUuid st
                             taskType, 
                             clusterUuid, 
                             dataSetUuid)
-    return SendPost(path, vars, jsonBody)
+    return SendPost(address, token, path, vars, jsonBody)
 }
 
-func GetTask(taskId string, clusterUuid string) (bool, string) {
+func GetTask(address string, token string, taskId string, clusterUuid string) (bool, string) {
     path := "control/v1/task"
     vars := fmt.Sprintf("uuid=%s&cluster_uuid=%s", taskId, clusterUuid)
-    return SendGet(path, vars)
+    return SendGet(address, token, path, vars)
 }
 
-func ListTask(clusterUuid string) (bool, string) {
+func ListTask(address string, token string, clusterUuid string) (bool, string) {
     path := "control/v1/task/all"
     vars := fmt.Sprintf("cluster_uuid=%s", clusterUuid)
-    return SendGet(path, vars)
+    return SendGet(address, token, path, vars)
 }
 
-func DeleteTask(taskId string, clusterUuid string) (bool, string) {
+func DeleteTask(address string, token string, taskId string, clusterUuid string) (bool, string) {
     path := "control/v1/task"
     vars := fmt.Sprintf("uuid=%s&cluster_uuid=%s", taskId, clusterUuid)
-    return SendDelete(path, vars)
+    return SendDelete(address, token, path, vars)
 }

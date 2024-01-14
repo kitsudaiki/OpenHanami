@@ -24,14 +24,14 @@ import (
     "fmt"
 )
 
-func UploadTrainData(name string, dataType string, data string) (bool, string) {
+func UploadTrainData(address string, token string, name string, dataType string, data string) (bool, string) {
     path := "control/train_data"
     vars := ""
     jsonBody := fmt.Sprintf("{\"name\":%s,\"type\":%s,\"data\":%s}", name, dataType, data)
-    return SendPost(path, vars, jsonBody)
+    return SendPost(address, token, path, vars, jsonBody)
 }
 
-func GetTrainData(uuid string, withData bool) (bool, string) {
+func GetTrainData(address string, token string, uuid string, withData bool) (bool, string) {
     path := "control/train_data"
     vars := fmt.Sprintf("uuid=%s", uuid)
     if withData {
@@ -39,11 +39,11 @@ func GetTrainData(uuid string, withData bool) (bool, string) {
     } else {
         vars += "&with_data=false"
     }
-    return SendGet(path, vars)
+    return SendGet(address, token, path, vars)
 }
 
-func ListTrainData() (bool, string) {
+func ListTrainData(address string, token string) (bool, string) {
     path := fmt.Sprintf("control/train_datas")
     vars := ""
-    return SendGet(path, vars)
+    return SendGet(address, token, path, vars)
 }

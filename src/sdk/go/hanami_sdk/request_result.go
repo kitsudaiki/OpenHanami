@@ -24,20 +24,20 @@ import (
     "fmt"
 )
 
-func GetRequestResult(requestResultUuid string) (bool, string) {
+func GetRequestResult(address string, token string, requestResultUuid string) (bool, string) {
     path := "control/v1/request_result"
     vars := fmt.Sprintf("uuid=%s", requestResultUuid)
-    return SendGet(path, vars)
+    return SendGet(address, token, path, vars)
 }
 
-func ListRequestResult() (bool, string) {
+func ListRequestResult(address string, token string) (bool, string) {
     path := fmt.Sprintf("control/v1/request_result/all")
     vars := ""
-    return SendGet(path, vars)
+    return SendGet(address, token, path, vars)
 }
 
-func DeleteRequestResult(requestResultUuid string) (bool, string) {
+func DeleteRequestResult(address string, token string, requestResultUuid string) (bool, string) {
     path := "control/v1/request_result"
     vars := fmt.Sprintf("uuid=%s", requestResultUuid)
-    return SendDelete(path, vars)
+    return SendDelete(address, token, path, vars)
 }

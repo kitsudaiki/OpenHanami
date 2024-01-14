@@ -24,28 +24,28 @@ import (
     "fmt"
 )
 
-func CreateProject(projectId string, projectName string) (bool, string) {
+func CreateProject(address string, token string, projectId string, projectName string) (bool, string) {
     path := "control/v1/project"
     vars := ""
     jsonBody := fmt.Sprintf("{\"id\":\"%s\",\"name\":\"%s\"}", 
                             projectId, projectName)
-    return SendPost(path, vars, jsonBody)
+    return SendPost(address, token, path, vars, jsonBody)
 }
 
-func GetProject(projectId string) (bool, string) {
+func GetProject(address string, token string, projectId string) (bool, string) {
     path := "control/v1/project"
     vars := fmt.Sprintf("id=%s", projectId)
-    return SendGet(path, vars)
+    return SendGet(address, token, path, vars)
 }
 
-func ListProject() (bool, string) {
+func ListProject(address string, token string) (bool, string) {
     path := fmt.Sprintf("control/v1/project/all")
     vars := ""
-    return SendGet(path, vars)
+    return SendGet(address, token, path, vars)
 }
 
-func DeleteProject(projectId string) (bool, string) {
+func DeleteProject(address string, token string, projectId string) (bool, string) {
     path := "control/v1/project"
     vars := fmt.Sprintf("id=%s", projectId)
-    return SendDelete(path, vars)
+    return SendDelete(address, token, path, vars)
 }

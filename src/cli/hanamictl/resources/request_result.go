@@ -22,7 +22,7 @@ package hanami_resources
 
 import (
     "fmt"
-    
+    "os"
     "hanamictl/common"
     "github.com/spf13/cobra"
     "github.com/kitsudaiki/Hanami"
@@ -34,8 +34,10 @@ var getRequestResultCmd = &cobra.Command {
     Short: "Get information of a specific request result.",
     Args:  cobra.ExactArgs(1),
     Run:   func(cmd *cobra.Command, args []string) {
+        token := Login()
+        address := os.Getenv("HANAMI_ADDRESS")
         requestResultUuid := args[0]
-        success, content := hanami_sdk.GetRequestResult(requestResultUuid)
+        success, content := hanami_sdk.GetRequestResult(address, token, requestResultUuid)
         if success {
             hanamictl_common.ParseSingle(content)
         } else {
@@ -48,7 +50,9 @@ var listRequestResultCmd = &cobra.Command {
     Use:   "list",
     Short: "List all request result.",
     Run:   func(cmd *cobra.Command, args []string) {
-        success, content := hanami_sdk.ListRequestResult()
+        token := Login()
+        address := os.Getenv("HANAMI_ADDRESS")
+        success, content := hanami_sdk.ListRequestResult(address, token)
         if success {
             hanamictl_common.ParseList(content)
         } else {
@@ -62,8 +66,10 @@ var deleteRequestResultCmd = &cobra.Command {
     Short: "Delete a specific request result from the backend.",
     Args:  cobra.ExactArgs(1),
     Run:   func(cmd *cobra.Command, args []string) {
+        token := Login()
+        address := os.Getenv("HANAMI_ADDRESS")
         requestResultUuid := args[0]
-        success, content := hanami_sdk.DeleteRequestResult(requestResultUuid)
+        success, content := hanami_sdk.DeleteRequestResult(address, token, requestResultUuid)
         if success {
             fmt.Println("successfully deleted request result '%s'", requestResultUuid)
         } else {

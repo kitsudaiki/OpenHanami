@@ -1,6 +1,6 @@
 module hanamictl
 
-go 1.21.1
+go 1.18
 
 replace github.com/kitsudaiki/Hanami => ../../sdk/go/hanami_sdk
 

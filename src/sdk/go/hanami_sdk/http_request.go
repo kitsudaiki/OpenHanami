@@ -26,107 +26,34 @@ import (
     "io/ioutil"
     "crypto/tls"
     "strings"
-    "strconv"
-    "os"
-    "encoding/json"
 )
 
-func SendGet(path string, vars string) (bool, string) {
-    return sendHanamiRequest("GET", path, vars, "")
+func SendGet(address string, token string, path string, vars string) (bool, string) {
+    return sendRequest(address, token, "GET", path, vars, "")
 }
 
-func SendPost(path string, vars string, jsonBody string) (bool, string) {
-    return sendHanamiRequest("POST", path, vars, jsonBody)
+func SendPost(address string, token string, path string, vars string, jsonBody string) (bool, string) {
+    return sendRequest(address, token, "POST", path, vars, jsonBody)
 }
 
-func SendPut(path string, vars string, jsonBody string) (bool, string) {
-    return sendHanamiRequest("PUT", path, vars, jsonBody)
+func SendPut(address string, token string, path string, vars string, jsonBody string) (bool, string) {
+    return sendRequest(address, token, "PUT", path, vars, jsonBody)
 }
 
-func SendDelete(path string, vars string) (bool, string) {
-    return sendHanamiRequest("DELETE", path, vars, "")
+func SendDelete(address string, token string, path string, vars string) (bool, string) {
+    return sendRequest(address, token, "DELETE", path, vars, "")
 }
 
-
-func sendHanamiRequest(requestType string, path string, vars string, jsonBody string) (bool, string){
-    var token = os.Getenv("HANAMI_TOKEN")
-
-    // request token, if no one exist within the environment-variables
-    if token == "" {
-        success := requestToken()
-        if success == false {
-            return false, "ACCESS DENIED!"
-        }
-    }
-    
-    // make request
-    token = os.Getenv("HANAMI_TOKEN")
-    success, content := sendRequest(requestType, token, path, vars, jsonBody)
-
-    // hande expired token
-    if success && content == "Token is expired" {
-        success := requestToken()
-        if success == false {
-            return false, "ACCESS DENIED!"
-        }
-
-        // make new request with new token
-        token = os.Getenv("HANAMI_TOKEN")
-
-        return sendRequest(requestType, token, path, vars, jsonBody)
-    }
-
-    return success, content
-}
-
-
-func parseJson(input string) map[string]interface{} {
-    // parse json and fill into map
-    outputMap := map[string]interface{}{}
-    err := json.Unmarshal([]byte(input), &outputMap)
-    if err != nil {
-        panic(err)
-    }
-
-    return outputMap
-}
-
-func requestToken() bool {
-    var user = os.Getenv("HANAMI_USER")
-    var pw = os.Getenv("HANAMI_PW")
-
-    path := fmt.Sprintf("control/v1/token")
-    body := fmt.Sprintf("{\"id\":\"%s\",\"password\":\"%s\"}", user, pw)
-
-    success, content := sendGenericRequest("POST", "", path, body)
-    if success == false {
-        return false
-    }
-
-    outputMap := parseJson(content)
-    token := outputMap["token"].(string)
-    os.Setenv("HANAMI_TOKEN", token)
-
-    return true
-}
-
-func sendRequest(requestType string, token string, path string, vars string, jsonBody string) (bool, string) {
+func sendRequest(address string, token string, requestType string, path string, vars string, jsonBody string) (bool, string) {
     completePath := path
     if vars != "" {
         completePath += fmt.Sprintf("?%s", vars)
     }
     
-    return sendGenericRequest(requestType, token, completePath, jsonBody)
+    return sendGenericRequest(address, token, requestType, completePath, jsonBody)
 }
 
-func sendGenericRequest(requestType string, token string, path string, jsonBody string) (bool, string) {
-    // read environment-variables
-    var address = os.Getenv("HANAMI_ADDRESS")
-    port, err := strconv.Atoi(os.Getenv("HANAMI_PORT"))
-    if err != nil {
-        return false, "err"
-    }
-
+func sendGenericRequest(address string, token string, requestType string, path string, jsonBody string) (bool, string) {
     // check if https or not
     if strings.Contains(address, "https") {
         http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
@@ -135,7 +62,7 @@ func sendGenericRequest(requestType string, token string, path string, jsonBody 
     // build uri
     var reqBody = strings.NewReader(jsonBody)
     // fmt.Printf("completePath: "+ completePath)
-    completePath := fmt.Sprintf("%s:%d/%s", address, port, path)
+    completePath := fmt.Sprintf("%s/%s", address, path)
     req, err := http.NewRequest(requestType, completePath, reqBody)
     if err != nil {
         panic(err)

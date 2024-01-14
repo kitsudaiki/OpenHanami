@@ -22,7 +22,7 @@ package hanami_resources
 
 import (
     "fmt"
-    
+    "os"
     "hanamictl/common"
     "github.com/spf13/cobra"
     "github.com/kitsudaiki/Hanami"
@@ -39,8 +39,10 @@ var createClusterCmd = &cobra.Command {
     Short: "Create a new cluster.",
     Args:  cobra.ExactArgs(1),
     Run:   func(cmd *cobra.Command, args []string) {
+        token := Login()
+        address := os.Getenv("HANAMI_ADDRESS")
         clusterName := args[0]
-        success, content := hanami_sdk.CreateCluster(clusterName, template)
+        success, content := hanami_sdk.CreateCluster(address, token, clusterName, template)
         if success {
             hanamictl_common.ParseSingle(content)
         } else {
@@ -54,8 +56,10 @@ var getClusterCmd = &cobra.Command {
     Short: "Get information of a specific cluster.",
     Args:  cobra.ExactArgs(1),
     Run:   func(cmd *cobra.Command, args []string) {
+        token := Login()
+        address := os.Getenv("HANAMI_ADDRESS")
         clusterUuid := args[0]
-        success, content := hanami_sdk.GetCluster(clusterUuid)
+        success, content := hanami_sdk.GetCluster(address, token, clusterUuid)
         if success {
             hanamictl_common.ParseSingle(content)
         } else {
@@ -68,7 +72,9 @@ var listClusterCmd = &cobra.Command {
     Use:   "list",
     Short: "List all cluster.",
     Run:   func(cmd *cobra.Command, args []string) {
-        success, content := hanami_sdk.ListCluster()
+        token := Login()
+        address := os.Getenv("HANAMI_ADDRESS")
+        success, content := hanami_sdk.ListCluster(address, token)
         if success {
             hanamictl_common.ParseList(content)
         } else {
@@ -82,8 +88,10 @@ var deleteClusterCmd = &cobra.Command {
     Short: "Delete a specific cluster from the backend.",
     Args:  cobra.ExactArgs(1),
     Run:   func(cmd *cobra.Command, args []string) {
+        token := Login()
+        address := os.Getenv("HANAMI_ADDRESS")
         clusterUuid := args[0]
-        success, content := hanami_sdk.DeleteCluster(clusterUuid)
+        success, content := hanami_sdk.DeleteCluster(address, token, clusterUuid)
         if success {
             fmt.Println("successfully deleted cluster '%s'", clusterUuid)
         } else {
@@ -97,8 +105,10 @@ var saveClusterCmd = &cobra.Command {
     Short: "Save cluster as checkpoint.",
     Args:  cobra.ExactArgs(1),
     Run:   func(cmd *cobra.Command, args []string) {
+        token := Login()
+        address := os.Getenv("HANAMI_ADDRESS")
         clusterUuid := args[0]
-        success, content := hanami_sdk.SaveCluster(clusterUuid, checkpointName)
+        success, content := hanami_sdk.SaveCluster(address, token, clusterUuid, checkpointName)
         if success {
             hanamictl_common.ParseSingle(content)
         } else {
@@ -112,8 +122,10 @@ var restoreClusterCmd = &cobra.Command {
     Short: "Restore cluster from checkpoint.",
     Args:  cobra.ExactArgs(1),
     Run:   func(cmd *cobra.Command, args []string) {
+        token := Login()
+        address := os.Getenv("HANAMI_ADDRESS")
         clusterUuid := args[0]
-        success, content := hanami_sdk.RestoreCluster(clusterUuid, checkpointUuid)
+        success, content := hanami_sdk.RestoreCluster(address, token, clusterUuid, checkpointUuid)
         if success {
             hanamictl_common.ParseSingle(content)
         } else {

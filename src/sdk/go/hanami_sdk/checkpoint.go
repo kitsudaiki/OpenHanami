@@ -24,21 +24,21 @@ import (
     "fmt"
 )
 
-func GetCheckpoint(checkpointUuid string) (bool, string) {
+func GetCheckpoint(address string, token string, checkpointUuid string) (bool, string) {
     path := "control/v1/checkpoint"
     vars := fmt.Sprintf("uuid=%s", checkpointUuid)
-    return SendGet(path, vars)
+    return SendGet(address, token, path, vars)
 }
 
-func ListCheckpoint() (bool, string) {
+func ListCheckpoint(address string, token string) (bool, string) {
     path := fmt.Sprintf("control/v1/checkpoint/all")
     vars := ""
-    return SendGet(path, vars)
+    return SendGet(address, token, path, vars)
 }
 
-func DeleteCheckpoint(checkpointUuid string) (bool, string) {
+func DeleteCheckpoint(address string, token string, checkpointUuid string) (bool, string) {
     path := "control/v1/checkpoint"
     vars := fmt.Sprintf("uuid=%s", checkpointUuid)
-    return SendDelete(path, vars)
+    return SendDelete(address, token, path, vars)
 }
  

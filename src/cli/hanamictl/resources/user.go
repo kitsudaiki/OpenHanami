@@ -25,7 +25,7 @@ import (
     "strings"
     "syscall"
     "errors"
-    
+    "os"
     "hanamictl/common"
     "github.com/spf13/cobra"
     "github.com/kitsudaiki/Hanami"
@@ -43,11 +43,13 @@ var createUserCmd = &cobra.Command {
     Short: "Create a new user.",
     Args:  cobra.ExactArgs(1),
     Run:   func(cmd *cobra.Command, args []string) {
+        token := Login()
+        address := os.Getenv("HANAMI_ADDRESS")
         pw, err := getPassword()
         userId := args[0]
 
         if err == nil {
-            success, content := hanami_sdk.CreateUser(userId, userName, pw, isAdmin)
+            success, content := hanami_sdk.CreateUser(address, token, userId, userName, pw, isAdmin)
             if success {
                 hanamictl_common.ParseSingle(content)
             } else {
@@ -64,8 +66,10 @@ var getUserCmd = &cobra.Command {
     Short: "Get information of a specific user.",
     Args:  cobra.ExactArgs(1),
     Run:   func(cmd *cobra.Command, args []string) {
+        token := Login()
+        address := os.Getenv("HANAMI_ADDRESS")
         userId := args[0]
-        success, content := hanami_sdk.GetUser(userId)
+        success, content := hanami_sdk.GetUser(address, token, userId)
         if success {
             hanamictl_common.ParseSingle(content)
         } else {
@@ -78,7 +82,9 @@ var listUserCmd = &cobra.Command {
     Use:   "list",
     Short: "List all user.",
     Run:   func(cmd *cobra.Command, args []string) {
-        success, content := hanami_sdk.ListUser()
+        token := Login()
+        address := os.Getenv("HANAMI_ADDRESS")
+        success, content := hanami_sdk.ListUser(address, token)
         if success {
             hanamictl_common.ParseList(content)
         } else {
@@ -92,8 +98,10 @@ var deleteUserCmd = &cobra.Command {
     Short: "Delete a specific user from the backend.",
     Args:  cobra.ExactArgs(1),
     Run:   func(cmd *cobra.Command, args []string) {
+        token := Login()
+        address := os.Getenv("HANAMI_ADDRESS")
         userId := args[0]
-        success, content := hanami_sdk.DeleteUser(userId)
+        success, content := hanami_sdk.DeleteUser(address, token, userId)
         if success {
             fmt.Println("successfully deleted user '%s'", userId)
         } else {

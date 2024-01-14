@@ -22,7 +22,7 @@ package hanami_resources
 
 import (
     "fmt"
-    
+    "os"
     "hanamictl/common"
     "github.com/spf13/cobra"
     "github.com/kitsudaiki/Hanami"
@@ -40,8 +40,10 @@ var createTaskCmd = &cobra.Command {
     Short: "Create a new task.",
     Args:  cobra.ExactArgs(1),
     Run:   func(cmd *cobra.Command, args []string) {
+        token := Login()
+        address := os.Getenv("HANAMI_ADDRESS")
         taskName := args[0]
-        success, content := hanami_sdk.CreateTask(taskName, taskType, clusterUuid, datasetUuid)
+        success, content := hanami_sdk.CreateTask(address, token, taskName, taskType, clusterUuid, datasetUuid)
         if success {
             hanamictl_common.ParseSingle(content)
         } else {
@@ -55,8 +57,10 @@ var getTaskCmd = &cobra.Command {
     Short: "Get information of a specific task.",
     Args:  cobra.ExactArgs(1),
     Run:   func(cmd *cobra.Command, args []string) {
+        token := Login()
+        address := os.Getenv("HANAMI_ADDRESS")
         taskId := args[0]
-        success, content := hanami_sdk.GetTask(taskId, clusterUuid)
+        success, content := hanami_sdk.GetTask(address, token, taskId, clusterUuid)
         if success {
             hanamictl_common.ParseSingle(content)
         } else {
@@ -69,7 +73,9 @@ var listTaskCmd = &cobra.Command {
     Use:   "list",
     Short: "List all task.",
     Run:   func(cmd *cobra.Command, args []string) {
-        success, content := hanami_sdk.ListTask(clusterUuid)
+        token := Login()
+        address := os.Getenv("HANAMI_ADDRESS")
+        success, content := hanami_sdk.ListTask(address, token, clusterUuid)
         if success {
             hanamictl_common.ParseList(content)
         } else {
@@ -83,8 +89,10 @@ var deleteTaskCmd = &cobra.Command {
     Short: "Delete a specific task from the backend.",
     Args:  cobra.ExactArgs(1),
     Run:   func(cmd *cobra.Command, args []string) {
+        token := Login()
+        address := os.Getenv("HANAMI_ADDRESS")
         taskId := args[0]
-        success, content := hanami_sdk.DeleteTask(taskId, clusterUuid)
+        success, content := hanami_sdk.DeleteTask(address, token, taskId, clusterUuid)
         if success {
             fmt.Println("successfully deleted task '%s'", taskId)
         } else {
