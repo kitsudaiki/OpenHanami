@@ -101,6 +101,15 @@ LogicalHost::getUuid() const
 }
 
 /**
+ * @brief get amount of initialy defined available memory
+ */
+uint64_t
+LogicalHost::getTotalMemory()
+{
+    return m_totalMemory;
+}
+
+/**
  * @brief get position of the highest output-position
  *
  * @param cluster output-cluster to check

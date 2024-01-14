@@ -43,17 +43,18 @@ CudaHost::CudaHost(const uint32_t localId) : LogicalHost(localId)
 CudaHost::~CudaHost() {}
 
 /**
- * @brief CudaHost::initBuffer
- * @param id
+ * @brief initialize synpase-block-buffer based on the avaialble size of memory
+ *
+ * @param id local device-id
  */
 void
 CudaHost::initBuffer(const uint32_t id)
 {
     const std::lock_guard<std::mutex> lock(m_cudaMutex);
 
-    uint64_t sizeOfMemory = getAvailableMemory_CUDA(id);
-    sizeOfMemory = (sizeOfMemory / 100) * 80;  // use 80% for synapse-blocks
-    synapseBlocks.initBuffer<SynapseBlock>(sizeOfMemory / sizeof(SynapseBlock));
+    m_totalMemory = getAvailableMemory_CUDA(id);
+    const uint64_t usedMemory = (m_totalMemory / 100) * 80;  // use 80% for synapse-blocks
+    synapseBlocks.initBuffer<SynapseBlock>(usedMemory / sizeof(SynapseBlock));
     synapseBlocks.deleteAll();
 
     LOG_INFO("Initialized number of syanpse-blocks on gpu-device with id '" + std::to_string(id)

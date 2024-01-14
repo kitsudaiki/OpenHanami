@@ -46,10 +46,28 @@ CpuHost::CpuHost(const uint32_t localId) : LogicalHost(localId)
 CpuHost::~CpuHost() {}
 
 /**
- * @brief LogicalHost::moveCluster
- * @param originHost
- * @param cluster
- * @return
+ * @brief initialize synpase-block-buffer based on the avaialble size of memory
+ *
+ * @param id local device-id
+ */
+void
+CpuHost::initBuffer(const uint32_t id)
+{
+    m_totalMemory = getFreeMemory();
+    const uint64_t usedMemory = (m_totalMemory / 100) * 80;  // use 80% for synapse-blocks
+    synapseBlocks.initBuffer<SynapseBlock>(usedMemory / sizeof(SynapseBlock));
+    synapseBlocks.deleteAll();
+
+    LOG_INFO("Initialized number of syanpse-blocks on cpu-device with id '" + std::to_string(id)
+             + "': " + std::to_string(synapseBlocks.metaData->itemCapacity));
+}
+
+/**
+ * @brief move the data of a cluster to this host
+ *
+ * @param cluster cluster to move
+ *
+ * @return true, if successful, else false
  */
 bool
 CpuHost::moveCluster(Cluster* cluster)
@@ -142,16 +160,4 @@ CpuHost::requestCluster(Cluster* cluster)
 {
     Hanami::ErrorContainer error;
     processCluster(*cluster, false);
-}
-
-void
-CpuHost::initBuffer(const uint32_t id)
-{
-    uint64_t sizeOfMemory = getFreeMemory();
-    sizeOfMemory = (sizeOfMemory / 100) * 80;  // use 80% for synapse-blocks
-    synapseBlocks.initBuffer<SynapseBlock>(sizeOfMemory / sizeof(SynapseBlock));
-    synapseBlocks.deleteAll();
-
-    LOG_INFO("Initialized number of syanpse-blocks on cpu-device with id '" + std::to_string(id)
-             + "': " + std::to_string(synapseBlocks.metaData->itemCapacity));
 }

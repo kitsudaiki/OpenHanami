@@ -53,6 +53,7 @@ class LogicalHost : public Hanami::Thread
 
     HostType getHostType() const;
     const std::string getUuid() const;
+    uint64_t getTotalMemory();
 
     virtual bool moveCluster(Cluster* cluster) = 0;
     virtual void syncWithHost(Cluster* cluster) = 0;
@@ -72,6 +73,7 @@ class LogicalHost : public Hanami::Thread
     HostType m_hostType = UNDEFINED_HOST_TYPE;
     std::string m_uuid = "";
     uint32_t m_localId = 0;
+    uint64_t m_totalMemory = 0;
 
    private:
     virtual void trainClusterForward(Cluster* cluster) = 0;

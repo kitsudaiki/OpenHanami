@@ -40,6 +40,15 @@ PhysicalHost::PhysicalHost() {}
 bool
 PhysicalHost::init(Hanami::ErrorContainer& error)
 {
+    // identify and init cuda gpu's
+    // IMPORTANT: these are initialized first, because they also need memory on the host
+    const uint32_t numberOfCudaGpus = getNumberOfDevices_CUDA();
+    for (uint32_t i = 0; i < numberOfCudaGpus; i++) {
+        CudaHost* newHost = new CudaHost(i);
+        newHost->startThread();
+        m_cudaHosts.push_back(newHost);
+    }
+
     // get information of all available cpus and their threads
     if (Hanami::Host::getInstance()->initHost(error) == false) {
         return false;
@@ -51,14 +60,6 @@ PhysicalHost::init(Hanami::ErrorContainer& error)
         CpuHost* newHost = new CpuHost(i);
         newHost->startThread();
         m_cpuHosts.push_back(newHost);
-    }
-
-    // identify and init cuda gpu's
-    const uint32_t numberOfCudaGpus = getNumberOfDevices_CUDA();
-    for (uint32_t i = 0; i < numberOfCudaGpus; i++) {
-        CudaHost* newHost = new CudaHost(i);
-        newHost->startThread();
-        m_cudaHosts.push_back(newHost);
     }
 
     LOG_INFO("Initialized " + std::to_string(m_cpuHosts.size()) + " CPU-sockets");
