@@ -27,9 +27,9 @@ import (
 
 func CreateCluster(address string, token string, name string, template string) (bool, string) {
     sEnc := b64.StdEncoding.EncodeToString([]byte(template))
-	jsonBody := fmt.Sprintf("{\"name\":\"%s\", \"template\":\"%s\"}", name, sEnc)
-	path := "control/v1/cluster"
-	vars := ""
+    jsonBody := fmt.Sprintf("{\"name\":\"%s\", \"template\":\"%s\"}", name, sEnc)
+    path := "control/v1/cluster"
+    vars := ""
     return SendPost(address, token, path, vars, jsonBody)
 }
 
@@ -52,15 +52,15 @@ func DeleteCluster(address string, token string, clusterUuid string) (bool, stri
 }
  
 func SaveCluster(address string, token string, clusterUuid string, checkpointName string) (bool, string) {
-	jsonBody := fmt.Sprintf("{\"name\":\"%s\", \"cluster_uuid\":\"%s\"}", checkpointName, clusterUuid)
-	path := "/control/v1/cluster/save"
-	vars := ""
+    jsonBody := fmt.Sprintf("{\"name\":\"%s\", \"cluster_uuid\":\"%s\"}", checkpointName, clusterUuid)
+    path := "/control/v1/cluster/save"
+    vars := ""
     return SendPost(address, token, path, vars, jsonBody)
 }
 
 func RestoreCluster(address string, token string, clusterUuid string, checkpointUuid string) (bool, string) {
-	jsonBody := fmt.Sprintf("{\"checkpoint_uuid\":\"%s\", \"cluster_uuid\":\"%s\"}", checkpointUuid, clusterUuid)
-	path := "/control/v1/cluster/load"
-	vars := ""
+    jsonBody := fmt.Sprintf("{\"checkpoint_uuid\":\"%s\", \"cluster_uuid\":\"%s\"}", checkpointUuid, clusterUuid)
+    path := "/control/v1/cluster/load"
+    vars := ""
     return SendPost(address, token, path, vars, jsonBody)
 }
