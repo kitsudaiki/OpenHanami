@@ -43,7 +43,7 @@
   copy:
     dest: "{{ token_key_path }}"
     content: "{{ lookup('env','TOKEN_KEY') }}"
-    
+
 
 - name: Create Hanami docker-container
   become: yes
@@ -58,8 +58,8 @@
       HANAMI_ADMIN_USER_ID: "{{ lookup('env','ADMIN_USER_ID') }}"
       HANAMI_ADMIN_USER_NAME: "{{ lookup('env','ADMIN_USER_NAME') }}"
       HANAMI_ADMIN_PASSWORD: "{{ lookup('env','ADMIN_PASSWORD') }}"
-    ports: 
-      - "1337:1337"
+    ports:
+      - "11418:11418"
     mounts:
       - source: /etc/hanami
         target: /etc/hanami

@@ -103,7 +103,7 @@ registerConfigs()
 
     REGISTER_INT_CONFIG(httpGroup, "port")
         .setComment("Port, where the http-server should listen.")
-        .setDefault(1337);
+        .setDefault(11418);
 
     REGISTER_INT_CONFIG(httpGroup, "number_of_threads")
         .setComment("Number of threads in the thread-pool for processing http-requests.")

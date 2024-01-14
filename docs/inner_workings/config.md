@@ -29,7 +29,7 @@
 | enable_dashboard| **Description**: Flag to enable the dashboard.<br>**Required**: FALSE<br>**Default**: false<br> |
 | ip| **Description**: IP-address, where the http-server should listen.<br>**Required**: FALSE<br>**Default**: "0.0.0.0"<br> |
 | number_of_threads| **Description**: Number of threads in the thread-pool for processing http-requests.<br>**Required**: FALSE<br>**Default**: 4<br> |
-| port| **Description**: Port, where the http-server should listen.<br>**Required**: FALSE<br>**Default**: 1337<br> |
+| port| **Description**: Port, where the http-server should listen.<br>**Required**: FALSE<br>**Default**: 11418<br> |
 
 ## storage
 
