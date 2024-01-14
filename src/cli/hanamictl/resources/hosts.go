@@ -18,31 +18,38 @@
  *      limitations under the License.
  */
 
-package main
+package hanami_resources
 
 import (
     "fmt"
-    "github.com/spf13/cobra"
     "os"
-    "hanamictl/resources"
+    "hanamictl/common"
+    "github.com/spf13/cobra"
+    "github.com/kitsudaiki/Hanami"
 )
 
-var rootCmd = &cobra.Command{Use: "hanamictl"}
-
-func init() {
-    hanami_resources.Init_User_Commands(rootCmd);
-    hanami_resources.Init_Project_Commands(rootCmd);
-    hanami_resources.Init_Checkpoint_Commands(rootCmd);
-    hanami_resources.Init_RequestResult_Commands(rootCmd);
-    hanami_resources.Init_Task_Commands(rootCmd);
-    hanami_resources.Init_Cluster_Commands(rootCmd);
-    hanami_resources.Init_Dataset_Commands(rootCmd);
-    hanami_resources.Init_Host_Commands(rootCmd)
+var listHostsCmd = &cobra.Command {
+    Use:   "list",
+    Short: "List all logical hosts.",
+    Run:   func(cmd *cobra.Command, args []string) {
+        token := Login()
+        address := os.Getenv("HANAMI_ADDRESS")
+        success, content := hanami_sdk.ListHosts(address, token)
+        if success {
+            hanamictl_common.ParseList(content)
+        } else {
+            fmt.Println(content)
+        }
+    },
 }
 
-func main() {
-    if err := rootCmd.Execute(); err != nil {
-        fmt.Println(err)
-        os.Exit(1)
-    }
+var hostsCmd = &cobra.Command {
+    Use:   "host",
+    Short: "Manage hosts.",
+}
+
+func Init_Host_Commands(rootCmd *cobra.Command) {
+    rootCmd.AddCommand(hostsCmd)
+
+    hostsCmd.AddCommand(listHostsCmd)
 }

@@ -18,31 +18,14 @@
  *      limitations under the License.
  */
 
-package main
+package hanami_sdk
 
 import (
     "fmt"
-    "github.com/spf13/cobra"
-    "os"
-    "hanamictl/resources"
 )
 
-var rootCmd = &cobra.Command{Use: "hanamictl"}
-
-func init() {
-    hanami_resources.Init_User_Commands(rootCmd);
-    hanami_resources.Init_Project_Commands(rootCmd);
-    hanami_resources.Init_Checkpoint_Commands(rootCmd);
-    hanami_resources.Init_RequestResult_Commands(rootCmd);
-    hanami_resources.Init_Task_Commands(rootCmd);
-    hanami_resources.Init_Cluster_Commands(rootCmd);
-    hanami_resources.Init_Dataset_Commands(rootCmd);
-    hanami_resources.Init_Host_Commands(rootCmd)
-}
-
-func main() {
-    if err := rootCmd.Execute(); err != nil {
-        fmt.Println(err)
-        os.Exit(1)
-    }
+func ListHosts(address string, token string) (bool, string) {
+    path := fmt.Sprintf("control/v1/host/all")
+    vars := ""
+    return SendGet(address, token, path, vars)
 }

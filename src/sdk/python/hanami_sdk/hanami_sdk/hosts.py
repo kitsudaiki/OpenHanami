@@ -17,6 +17,6 @@ import json
 import base64 
 
 def list_hosts(token: str, address: str) -> str:
-    path = "/control/v1/hosts/all"
+    path = "/control/v1/host/all"
     return hanami_request.send_get_request(token, address, path, "")
 
