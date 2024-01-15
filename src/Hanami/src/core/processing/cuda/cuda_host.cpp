@@ -43,6 +43,45 @@ CudaHost::CudaHost(const uint32_t localId) : LogicalHost(localId)
 CudaHost::~CudaHost() {}
 
 /**
+ * @brief add cluster to queue
+ *
+ * @param cluster cluster to add to queue
+ */
+void
+CudaHost::addClusterToHost(Cluster* cluster)
+{
+    while (m_queue_lock.test_and_set(std::memory_order_acquire)) {
+        asm("");
+    }
+    m_clusterQueue.push_back(cluster);
+    m_queue_lock.clear(std::memory_order_release);
+}
+
+/**
+ * @brief get next cluster in the queue
+ *
+ * @return nullptr, if queue is empty, else next cluster in queue
+ */
+Cluster*
+CudaHost::getClusterFromQueue()
+{
+    Cluster* result = nullptr;
+
+    while (m_queue_lock.test_and_set(std::memory_order_acquire)) {
+        asm("");
+    }
+
+    if (m_clusterQueue.size() > 0) {
+        result = m_clusterQueue.front();
+        m_clusterQueue.pop_front();
+    }
+
+    m_queue_lock.clear(std::memory_order_release);
+
+    return result;
+}
+
+/**
  * @brief initialize synpase-block-buffer based on the avaialble size of memory
  *
  * @param id local device-id
@@ -194,7 +233,10 @@ CudaHost::trainClusterForward(Cluster* cluster)
             continue;
         }
 
-        processNeuronsOfOutputBrick(brick, cluster->outputValues, cluster->neuronBlocks);
+        for (uint32_t blockId = 0; blockId < cluster->numberOfNeuronBlocks; ++blockId) {
+            processNeuronsOfOutputBrick(
+                brick, cluster->outputValues, cluster->neuronBlocks, blockId);
+        }
     }
 
     // update cluster
@@ -300,7 +342,9 @@ CudaHost::requestCluster(Cluster* cluster)
         if (brick->isOutputBrick == false) {
             continue;
         }
-
-        processNeuronsOfOutputBrick(brick, cluster->outputValues, cluster->neuronBlocks);
+        for (uint32_t blockId = 0; blockId < cluster->numberOfNeuronBlocks; ++blockId) {
+            processNeuronsOfOutputBrick(
+                brick, cluster->outputValues, cluster->neuronBlocks, blockId);
+        }
     }
 }

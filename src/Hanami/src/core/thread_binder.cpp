@@ -108,16 +108,6 @@ ThreadBinder::fillCoreIds(std::vector<uint64_t>& controlCoreIds,
         controlCoreIds.push_back(singleThread->threadId);
     }
 
-    // processing-cores
-    /*for (uint64_t i = 1; i < host->cpuPackages[0]->cpuCores.size(); i++) {
-        phyCore = host->cpuPackages[0]->cpuCores[i];
-        ProcessingUnitHandler* processingUnitHandler = ProcessingUnitHandler::getInstance();
-        for (Hanami::CpuThread* singleThread : phyCore->cpuThreads) {
-            processingUnitHandler->addProcessingUnit(singleThread->threadId);
-            processingCoreIds.push_back(singleThread->threadId);
-        }
-    }*/
-
     return true;
 }
 
@@ -128,6 +118,7 @@ void
 ThreadBinder::run()
 {
     Hanami::ThreadHandler* threadHandler = Hanami::ThreadHandler::getInstance();
+    sleep(5);
 
     while (m_abort == false) {
         m_mapLock.lock();
@@ -140,7 +131,7 @@ ThreadBinder::run()
                 // update thread-binding
                 const std::vector<Hanami::Thread*> threads = threadHandler->getThreads(name);
                 for (Hanami::Thread* thread : threads) {
-                    if (name != "CpuProcessingUnit") {
+                    if (name != "WorkerThread") {
                         if (thread->bindThreadToCores(m_controlCoreIds) == false) {
                             break;
                         }
@@ -159,10 +150,9 @@ ThreadBinder::run()
 
             // add initially defined core-ids to output
             ThreadHandler* threadHandler = ThreadHandler::getInstance();
-            const std::vector<Thread*> coreThreads = threadHandler->getThreads("CpuProcessingUnit");
+            const std::vector<Thread*> coreThreads = threadHandler->getThreads("WorkerThread");
             for (const Thread* thread : coreThreads) {
-                const std::string entry
-                    = "CpuProcessingUnit_" + std::to_string(thread->getThreadId());
+                const std::string entry = "WorkerThread_" + std::to_string(thread->getThreadId());
                 const uint64_t coreId = thread->getCoreIds().at(0);
                 json idList = json::array();
                 idList.push_back((long)coreId);

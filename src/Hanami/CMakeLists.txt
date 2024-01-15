@@ -101,6 +101,7 @@ set(SOURCES
     src/core/processing/cpu/cpu_host.h
     src/core/processing/cpu/processing.h
     src/core/processing/cpu/reduction.h
+    src/core/processing/cpu/worker_thread.h
     src/core/processing/cuda/cuda_host.h
     src/core/processing/logical_host.h
     src/core/processing/objects.h
@@ -195,6 +196,7 @@ set(SOURCES
     src/core/cluster/states/tables/table_train_forward_state.cpp
     src/core/cluster/states/task_handle_state.cpp
     src/core/processing/cpu/cpu_host.cpp
+    src/core/processing/cpu/worker_thread.cpp
     src/core/processing/cuda/cuda_host.cpp
     src/core/processing/logical_host.cpp
     src/core/processing/physical_host.cpp

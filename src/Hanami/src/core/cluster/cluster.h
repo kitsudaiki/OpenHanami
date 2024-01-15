@@ -31,6 +31,8 @@
 #include <hanami_common/buffer/data_buffer.h>
 #include <hanami_common/buffer/item_buffer.h>
 
+#include <atomic>
+
 class TaskHandle_State;
 class LogicalHost;
 
@@ -62,6 +64,7 @@ class Cluster
     Brick* bricks = nullptr;
     NeuronBlock* neuronBlocks = nullptr;
     uint32_t numberOfNeuronBlocks = 0;
+    std::atomic<int> counter;
 
     // meta
     const std::string getUuid();
@@ -85,6 +88,7 @@ class Cluster
     bool goToNextState(const uint32_t nextStateId);
     void startForwardCycle();
     void startBackwardCycle();
+    void startReductionCycle();
     bool setClusterState(const std::string& newState);
 
     ClusterProcessingMode mode = NORMAL_MODE;
@@ -93,8 +97,12 @@ class Cluster
     Hanami::Statemachine* stateMachine = nullptr;
     TaskHandle_State* taskHandleState = nullptr;
 
+    bool incrementAndCompare(const uint32_t referenceValue);
+    uint32_t reductionCounter = 0;
+
    private:
     std::mutex m_segmentCounterLock;
+    std::mutex m_counterMutex;
 };
 
 #endif  // HANAMI_CLUSTER_H

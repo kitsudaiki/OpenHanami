@@ -27,7 +27,12 @@
 #include <core/processing/cpu/backpropagation.h>
 #include <core/processing/cpu/processing.h>
 #include <core/processing/cpu/reduction.h>
+#include <core/processing/cpu/worker_thread.h>
 #include <hanami_cpu/memory.h>
+#include <hanami_hardware/cpu_core.h>
+#include <hanami_hardware/cpu_package.h>
+#include <hanami_hardware/cpu_thread.h>
+#include <hanami_hardware/host.h>
 
 /**
  * @brief constructor
@@ -38,12 +43,65 @@ CpuHost::CpuHost(const uint32_t localId) : LogicalHost(localId)
 {
     m_hostType = CPU_HOST_TYPE;
     initBuffer(localId);
+    initWorkerThreads();
 }
 
 /**
  * @brief destructor
  */
 CpuHost::~CpuHost() {}
+
+/**
+ * @brief CpuHost::addClusterToHost
+ * @param cluster
+ */
+void
+CpuHost::addClusterToHost(Cluster* cluster)
+{
+    if (cluster->mode == ClusterProcessingMode::REDUCTION_MODE) {
+        addBrickToTaskQueue(cluster, 0);
+    }
+    else {
+        addBrickToTaskQueue(cluster, UNINIT_STATE_32);
+    }
+}
+
+/**
+ * @brief not implemented in this case
+ */
+Cluster*
+CpuHost::getClusterFromQueue()
+{
+    return nullptr;
+}
+
+/**
+ * @brief add a brick to the task-queue, which is used source source for the worker-threads
+ *
+ * @param cluster related cluster
+ * @param brickId brick-id to process
+ */
+void
+CpuHost::addBrickToTaskQueue(Cluster* cluster, const u_int32_t brickId)
+{
+    if (brickId == UNINIT_STATE_32) {
+        // special case, where based on the cluster-mode, the whole firsth or last
+        // brick should be processed by a single worker-threads
+        WorkerTask task;
+        task.cluster = cluster;
+        task.brickId = brickId;
+        addWorkerTaskToQueue(task);
+    }
+    else {
+        for (uint32_t i = 0; i < cluster->bricks[brickId].numberOfNeuronBlocks; i++) {
+            WorkerTask task;
+            task.cluster = cluster;
+            task.brickId = brickId;
+            task.blockId = i;
+            addWorkerTaskToQueue(task);
+        }
+    }
+}
 
 /**
  * @brief initialize synpase-block-buffer based on the avaialble size of memory
@@ -60,6 +118,30 @@ CpuHost::initBuffer(const uint32_t id)
 
     LOG_INFO("Initialized number of syanpse-blocks on cpu-device with id '" + std::to_string(id)
              + "': " + std::to_string(synapseBlocks.metaData->itemCapacity));
+}
+
+/**
+ * @brief init processing-thread
+ */
+bool
+CpuHost::initWorkerThreads()
+{
+    Host* host = Host::getInstance();
+    CpuPackage* package = host->cpuPackages.at(m_localId);
+    uint64_t numberOfThreads = package->cpuCores.size();
+    if (host->hasHyperThrading) {
+        numberOfThreads *= 2;
+    }
+
+    LOG_INFO("initialize " + std::to_string(numberOfThreads) + " worker-threads");
+    for (uint16_t i = 5; i < numberOfThreads; i++) {
+        WorkerThread* newUnit = new WorkerThread(this);
+        m_workerThreads.push_back(newUnit);
+        newUnit->startThread();
+        newUnit->bindThreadToCore(i);
+    }
+
+    return true;
 }
 
 /**
@@ -105,6 +187,11 @@ CpuHost::syncWithHost(Cluster*)
 {
 }
 
+/**
+ * @brief remove synpase-blocks of a cluster from the host-buffer
+ *
+ * @param cluster cluster to clear
+ */
 void
 CpuHost::removeCluster(Cluster* cluster)
 {
@@ -118,46 +205,57 @@ CpuHost::removeCluster(Cluster* cluster)
 }
 
 /**
- * @brief run forward-propagation on a cluster
- *
- * @param cluster cluster to process
+ * @brief empty in this case, because this is done by the worker-threads
  */
 void
 CpuHost::trainClusterForward(Cluster* cluster)
 {
-    Hanami::ErrorContainer error;
-
-    processCluster(*cluster, true);
 }
 
 /**
- * @brief run back-propagation on a cluster
- *
- * @param cluster cluster to process
+ * @brief empty in this case, because this is done by the worker-threads
  */
 void
 CpuHost::trainClusterBackward(Cluster* cluster)
 {
-    Hanami::ErrorContainer error;
-
-    reweightCluster(*cluster);
-
-    if (reductionCounter == 100) {
-        reduceCluster(*cluster);
-        updateCluster(*cluster);
-        reductionCounter = 0;
-    }
-    reductionCounter++;
 }
 
 /**
- * @brief process segments
- *
- * @param cluster cluster to process
+ * @brief empty in this case, because this is done by the worker-threads
  */
 void
 CpuHost::requestCluster(Cluster* cluster)
 {
-    Hanami::ErrorContainer error;
-    processCluster(*cluster, false);
+}
+
+/**
+ * @brief add cluster to queue
+ *
+ * @param cluster cluster to add to queue
+ */
+void
+CpuHost::addWorkerTaskToQueue(const WorkerTask task)
+{
+    const std::lock_guard<std::mutex> lock(m_queue_lock);
+
+    m_workerTaskQueue.push_back(task);
+}
+
+/**
+ * @brief get next cluster in the queue
+ *
+ * @return nullptr, if queue is empty, else next cluster in queue
+ */
+const CpuHost::WorkerTask
+CpuHost::getWorkerTaskFromQueue()
+{
+    WorkerTask result;
+    const std::lock_guard<std::mutex> lock(m_queue_lock);
+
+    if (m_workerTaskQueue.size() > 0) {
+        result = m_workerTaskQueue.front();
+        m_workerTaskQueue.pop_front();
+    }
+
+    return result;
 }

@@ -33,6 +33,9 @@ class CudaHost : public LogicalHost
     CudaHost(const uint32_t localId);
     ~CudaHost();
 
+    void addClusterToHost(Cluster* cluster);
+    Cluster* getClusterFromQueue();
+
     bool moveCluster(Cluster* cluster);
     void syncWithHost(Cluster* cluster);
     void removeCluster(Cluster* cluster);
@@ -44,6 +47,8 @@ class CudaHost : public LogicalHost
     void initBuffer(const uint32_t id);
 
     std::mutex m_cudaMutex;
+    std::atomic_flag m_queue_lock = ATOMIC_FLAG_INIT;
+    std::deque<Cluster*> m_clusterQueue;
 };
 
 #endif  // CUDAHOST_H
