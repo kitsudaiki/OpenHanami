@@ -286,23 +286,25 @@ CudaHost::trainClusterBackward(Cluster* cluster)
                          cluster->tempNeuronBlocks,
                          cluster->numberOfNeuronBlocks);
 
-    // run reduction-process
-    if (reductionCounter == 100) {
-        reduction_CUDA(&cluster->gpuPointer,
-                       cluster->bricks,
-                       cluster->clusterHeader->bricks.count,
-                       cluster->neuronBlocks,
-                       cluster->numberOfNeuronBlocks);
-        if (updateCluster(*cluster)) {
-            update_CUDA(&cluster->gpuPointer,
-                        cluster->neuronBlocks,
-                        cluster->numberOfNeuronBlocks,
-                        cluster->bricks,
-                        cluster->clusterHeader->bricks.count);
+    // run reduction-process if enabled
+    if (cluster->clusterHeader->settings.enableReduction) {
+        if (reductionCounter == 100) {
+            reduction_CUDA(&cluster->gpuPointer,
+                           cluster->bricks,
+                           cluster->clusterHeader->bricks.count,
+                           cluster->neuronBlocks,
+                           cluster->numberOfNeuronBlocks);
+            if (updateCluster(*cluster)) {
+                update_CUDA(&cluster->gpuPointer,
+                            cluster->neuronBlocks,
+                            cluster->numberOfNeuronBlocks,
+                            cluster->bricks,
+                            cluster->clusterHeader->bricks.count);
+            }
+            reductionCounter = 0;
         }
-        reductionCounter = 0;
+        reductionCounter++;
     }
-    reductionCounter++;
 }
 
 /**

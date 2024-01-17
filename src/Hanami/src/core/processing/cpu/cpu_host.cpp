@@ -134,7 +134,7 @@ CpuHost::initWorkerThreads()
     }
 
     LOG_INFO("initialize " + std::to_string(numberOfThreads) + " worker-threads");
-    for (uint16_t i = 5; i < numberOfThreads; i++) {
+    for (uint16_t i = 0; i < numberOfThreads; i++) {
         WorkerThread* newUnit = new WorkerThread(this);
         m_workerThreads.push_back(newUnit);
         newUnit->startThread();

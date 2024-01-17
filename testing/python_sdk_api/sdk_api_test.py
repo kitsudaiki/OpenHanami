@@ -47,10 +47,6 @@ request_labels = config["test_data"]["request_labels"]
 
 cluster_template = \
     "version: 1\n" \
-    "settings:\n" \
-    "    max_synapse_sections: 1000\n" \
-    "    sign_neg: 0.5\n" \
-    "        \n" \
     "bricks:\n" \
     "    1,1,1\n" \
     "        input: test_input\n" \

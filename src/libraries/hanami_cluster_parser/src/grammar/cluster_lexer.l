@@ -67,6 +67,10 @@ blank [ \t]
 "version: 1"   return Hanami::ClusterParser::make_VERSION_1 (clusterloc);
 "settings"     return Hanami::ClusterParser::make_SETTINGS (clusterloc);
 "bricks"       return Hanami::ClusterParser::make_BRICKS (clusterloc);
+"true"         return Hanami::ClusterParser::make_BOOL_TRUE (clusterloc);
+"false"        return Hanami::ClusterParser::make_BOOL_FALSE (clusterloc);
+"True"         return Hanami::ClusterParser::make_BOOL_TRUE (clusterloc);
+"False"        return Hanami::ClusterParser::make_BOOL_FALSE (clusterloc);
 ","            return Hanami::ClusterParser::make_COMMA (clusterloc);
 ":"            return Hanami::ClusterParser::make_ASSIGN (clusterloc);
 

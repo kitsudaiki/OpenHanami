@@ -97,7 +97,7 @@ createNewSynapse(NeuronBlock* block,
 {
     const float randMax = static_cast<float>(RAND_MAX);
     uint32_t signRand = 0;
-    const float sigNeg = clusterSettings->signNeg;
+    const float sigNeg = 0.5f;
 
     // set activation-border
     synapse->border = remainingW;
@@ -271,12 +271,13 @@ processNeurons(Cluster& cluster, Brick* brick, const uint32_t blockId)
         neuron->refractionTime = neuron->refractionTime >> 1;
 
         if (neuron->refractionTime == 0) {
-            neuron->potential = clusterSettings->potentialOverflow * neuron->input;
+            neuron->potential += clusterSettings->potentialOverflow * neuron->input;
             neuron->refractionTime = clusterSettings->refractionTime;
         }
 
         neuron->potential -= neuron->border;
         neuron->active = neuron->potential > 0.0f;
+        neuron->potential = static_cast<float>(neuron->active) * neuron->potential;
         neuron->input = 0.0f;
         neuron->potential = log2(neuron->potential + 1.0f);
 

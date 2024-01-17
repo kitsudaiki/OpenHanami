@@ -204,9 +204,10 @@ initSettings(const Hanami::ClusterMeta& clusterMeta)
     ClusterSettings settings;
 
     // parse settings
-    settings.synapseSegmentation = clusterMeta.synapseSegmentation;
-    settings.signNeg = clusterMeta.signNeg;
-    settings.maxSynapseSections = clusterMeta.maxSynapseSections;
+    settings.neuronCooldown = clusterMeta.neuronCooldown;
+    settings.refractionTime = clusterMeta.refractionTime;
+    settings.maxConnectionDistance = clusterMeta.maxConnectionDistance;
+    settings.enableReduction = clusterMeta.enableReduction;
 
     return settings;
 }
@@ -453,7 +454,7 @@ initTargetBrickList(Cluster* cluster)
 
         // test 1000 samples for possible next bricks
         for (uint32_t counter = 0; counter < NUMBER_OF_POSSIBLE_NEXT; counter++) {
-            uint32_t maxPathLength = 2;  // TODO: make configurable
+            uint32_t maxPathLength = cluster->clusterHeader->settings.maxConnectionDistance + 1;
             const uint32_t brickId = goToNextInitBrick(cluster, baseBrick, &maxPathLength);
             if (brickId == baseBrick->brickId) {
                 LOG_WARNING("brick has no next brick and is a dead-end. Brick-ID: "

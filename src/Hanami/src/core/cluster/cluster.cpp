@@ -239,7 +239,7 @@ Cluster::updateClusterState()
     }
     else if (mode == ClusterProcessingMode::TRAIN_BACKWARD_MODE) {
         reductionCounter++;
-        if (reductionCounter >= 100) {
+        if (reductionCounter >= 100 && clusterHeader->settings.enableReduction) {
             mode = ClusterProcessingMode::REDUCTION_MODE;
             startReductionCycle();
             reductionCounter = 0;
