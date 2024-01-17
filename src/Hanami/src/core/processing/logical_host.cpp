@@ -44,45 +44,6 @@ LogicalHost::LogicalHost(const uint32_t localId) : Hanami::Thread("ProcessingUni
 LogicalHost::~LogicalHost() {}
 
 /**
- * @brief add cluster to queue
- *
- * @param cluster cluster to add to queue
- */
-void
-LogicalHost::addClusterToQueue(Cluster* cluster)
-{
-    while (m_queue_lock.test_and_set(std::memory_order_acquire)) {
-        asm("");
-    }
-    m_clusterQueue.push_back(cluster);
-    m_queue_lock.clear(std::memory_order_release);
-}
-
-/**
- * @brief get next cluster in the queue
- *
- * @return nullptr, if queue is empty, else next cluster in queue
- */
-Cluster*
-LogicalHost::getClusterFromQueue()
-{
-    Cluster* result = nullptr;
-
-    while (m_queue_lock.test_and_set(std::memory_order_acquire)) {
-        asm("");
-    }
-
-    if (m_clusterQueue.size() > 0) {
-        result = m_clusterQueue.front();
-        m_clusterQueue.pop_front();
-    }
-
-    m_queue_lock.clear(std::memory_order_release);
-
-    return result;
-}
-
-/**
  * @brief get host-type of this logical host (cpu, cuda, ...)
  */
 LogicalHost::HostType
@@ -107,65 +68,6 @@ uint64_t
 LogicalHost::getTotalMemory()
 {
     return m_totalMemory;
-}
-
-/**
- * @brief get position of the highest output-position
- *
- * @param cluster output-cluster to check
- *
- * @return position of the highest output.
- */
-uint32_t
-LogicalHost::getHighestOutput(const Cluster& cluster)
-{
-    float hightest = -0.1f;
-    uint32_t hightestPos = 0;
-    float value = 0.0f;
-
-    for (uint32_t outputNeuronId = 0; outputNeuronId < cluster.clusterHeader->numberOfOutputs;
-         outputNeuronId++)
-    {
-        value = cluster.outputValues[outputNeuronId];
-        if (value > hightest) {
-            hightest = value;
-            hightestPos = outputNeuronId;
-        }
-    }
-
-    return hightestPos;
-}
-
-/**
- * @brief in case of a request-task the output is either written into a request-result in case of a
- *        task or is send via websocket to a client in case of direct-io
- *
- * @param cluster cluster to handle
- */
-void
-LogicalHost::handleClientOutput(const Cluster& cluster)
-{
-    // send output back if a client-connection is set
-    if (cluster.msgClient != nullptr) {
-        sendClusterOutputMessage(&cluster);
-    }
-    else {
-        Task* actualTask = cluster.getActualTask();
-        const uint64_t cycle = actualTask->actualCycle;
-        if (actualTask->type == IMAGE_REQUEST_TASK) {
-            // TODO: check for cluster-state instead of client
-            const uint32_t hightest = getHighestOutput(cluster);
-            actualTask->resultData[cycle] = static_cast<long>(hightest);
-        }
-        else if (actualTask->type == TABLE_REQUEST_TASK) {
-            float val = 0.0f;
-            for (uint64_t i = 0; i < cluster.clusterHeader->numberOfOutputs; i++) {
-                const float temp = actualTask->resultData[cycle];
-                val = temp + cluster.outputValues[i];
-                actualTask->resultData[cycle] = val;
-            }
-        }
-    }
 }
 
 /**
@@ -195,6 +97,65 @@ LogicalHost::run()
         else {
             // if no segments are available then sleep
             sleepThread(1000);
+        }
+    }
+}
+
+/**
+ * @brief get position of the highest output-position
+ *
+ * @param cluster output-cluster to check
+ *
+ * @return position of the highest output.
+ */
+uint32_t
+getHighestOutput(const Cluster& cluster)
+{
+    float hightest = -0.1f;
+    uint32_t hightestPos = 0;
+    float value = 0.0f;
+
+    for (uint32_t outputNeuronId = 0; outputNeuronId < cluster.clusterHeader->numberOfOutputs;
+         outputNeuronId++)
+    {
+        value = cluster.outputValues[outputNeuronId];
+        if (value > hightest) {
+            hightest = value;
+            hightestPos = outputNeuronId;
+        }
+    }
+
+    return hightestPos;
+}
+
+/**
+ * @brief in case of a request-task the output is either written into a request-result in case of a
+ *        task or is send via websocket to a client in case of direct-io
+ *
+ * @param cluster cluster to handle
+ */
+void
+handleClientOutput(const Cluster& cluster)
+{
+    // send output back if a client-connection is set
+    if (cluster.msgClient != nullptr) {
+        sendClusterOutputMessage(&cluster);
+    }
+    else {
+        Task* actualTask = cluster.getActualTask();
+        const uint64_t cycle = actualTask->actualCycle;
+        if (actualTask->type == IMAGE_REQUEST_TASK) {
+            // TODO: check for cluster-state instead of client
+            const uint32_t hightest = getHighestOutput(cluster);
+            actualTask->resultData[cycle] = static_cast<long>(hightest);
+        }
+        else if (actualTask->type == TABLE_REQUEST_TASK) {
+            float val = 0.0f;
+            for (uint64_t i = 0; i < cluster.clusterHeader->numberOfOutputs; i++) {
+                const float temp = actualTask->resultData[cycle];
+                val = temp + cluster.outputValues[i];
+                actualTask->resultData[cycle] = val;
+            }
         }
     }
 }

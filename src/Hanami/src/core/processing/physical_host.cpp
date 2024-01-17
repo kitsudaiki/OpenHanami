@@ -58,7 +58,7 @@ PhysicalHost::init(Hanami::ErrorContainer& error)
     const uint32_t numberOfSockets = Hanami::Host::getInstance()->cpuPackages.size();
     for (uint32_t i = 0; i < numberOfSockets; i++) {
         CpuHost* newHost = new CpuHost(i);
-        newHost->startThread();
+        // this host ist not run as thead, because it has its worker-threads
         m_cpuHosts.push_back(newHost);
     }
 

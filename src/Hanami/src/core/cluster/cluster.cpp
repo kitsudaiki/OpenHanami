@@ -42,6 +42,8 @@ Cluster::Cluster(LogicalHost* host)
     stateMachine = new Hanami::Statemachine();
     taskHandleState = new TaskHandle_State(this);
 
+    counter.store(0, std::memory_order_relaxed);
+
     initStatemachine(*stateMachine, this, taskHandleState);
 }
 
@@ -54,6 +56,8 @@ Cluster::Cluster(LogicalHost* host)
 Cluster::Cluster(LogicalHost* host, const void* data, const uint64_t dataSize)
 {
     attachedHost = host;
+
+    counter.store(0, std::memory_order_relaxed);
     Hanami::allocateBlocks_DataBuffer(clusterData, Hanami::calcBytesToBlocks(dataSize));
     memcpy(clusterData.data, data, dataSize);
 }
@@ -70,6 +74,22 @@ Cluster::~Cluster()
     delete outputValues;
     delete expectedValues;
     delete tempNeuronBlocks;
+}
+
+/**
+ * @brief Cluster::incrementAndCompare
+ * @param referenceValue
+ */
+bool
+Cluster::incrementAndCompare(const uint32_t referenceValue)
+{
+    const int incrementedValue = counter.fetch_add(1, std::memory_order_relaxed);
+    if (incrementedValue == referenceValue - 1) {
+        counter.store(0, std::memory_order_relaxed);
+        return true;
+    }
+
+    return false;
 }
 
 /**
@@ -162,7 +182,7 @@ Cluster::setName(const std::string& newName)
 void
 Cluster::startForwardCycle()
 {
-    attachedHost->addClusterToQueue(this);
+    attachedHost->addClusterToHost(this);
 }
 
 /**
@@ -171,7 +191,16 @@ Cluster::startForwardCycle()
 void
 Cluster::startBackwardCycle()
 {
-    attachedHost->addClusterToQueue(this);
+    attachedHost->addClusterToHost(this);
+}
+
+/**
+ * @brief Cluster::startReductionCycle
+ */
+void
+Cluster::startReductionCycle()
+{
+    attachedHost->addClusterToHost(this);
 }
 
 /**
@@ -207,18 +236,27 @@ Cluster::updateClusterState()
     if (mode == ClusterProcessingMode::TRAIN_FORWARD_MODE) {
         mode = ClusterProcessingMode::TRAIN_BACKWARD_MODE;
         startBackwardCycle();
-        return;
     }
-
-    // send message, that process was finished
-    if (mode == ClusterProcessingMode::TRAIN_BACKWARD_MODE) {
+    else if (mode == ClusterProcessingMode::TRAIN_BACKWARD_MODE) {
+        reductionCounter++;
+        if (reductionCounter >= 100) {
+            mode = ClusterProcessingMode::REDUCTION_MODE;
+            startReductionCycle();
+            reductionCounter = 0;
+        }
+        else {
+            sendClusterTrainEndMessage(this);
+            goToNextState(NEXT);
+        }
+    }
+    else if (mode == ClusterProcessingMode::REDUCTION_MODE) {
         sendClusterTrainEndMessage(this);
+        goToNextState(NEXT);
     }
     else if (mode == ClusterProcessingMode::NORMAL_MODE) {
         sendClusterNormalEndMessage(this);
+        goToNextState(NEXT);
     }
-
-    goToNextState(NEXT);
 }
 
 /**

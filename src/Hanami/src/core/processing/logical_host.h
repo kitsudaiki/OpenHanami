@@ -36,6 +36,9 @@
 
 class Cluster;
 
+void handleClientOutput(const Cluster& cluster);
+uint32_t getHighestOutput(const Cluster& cluster);
+
 class LogicalHost : public Hanami::Thread
 {
    public:
@@ -48,8 +51,8 @@ class LogicalHost : public Hanami::Thread
     LogicalHost(const uint32_t localId);
     virtual ~LogicalHost();
 
-    void addClusterToQueue(Cluster* cluster);
-    Cluster* getClusterFromQueue();
+    virtual void addClusterToHost(Cluster* cluster) = 0;
+    virtual Cluster* getClusterFromQueue() = 0;
 
     HostType getHostType() const;
     const std::string getUuid() const;
@@ -64,12 +67,8 @@ class LogicalHost : public Hanami::Thread
    protected:
     void run();
 
-    uint32_t getHighestOutput(const Cluster& cluster);
-    void handleClientOutput(const Cluster& cluster);
     uint64_t reductionCounter = 0;
 
-    std::atomic_flag m_queue_lock = ATOMIC_FLAG_INIT;
-    std::deque<Cluster*> m_clusterQueue;
     HostType m_hostType = UNDEFINED_HOST_TYPE;
     std::string m_uuid = "";
     uint32_t m_localId = 0;
