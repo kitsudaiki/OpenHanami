@@ -128,18 +128,21 @@ CpuHost::initWorkerThreads()
 {
     Host* host = Host::getInstance();
     CpuPackage* package = host->cpuPackages.at(m_localId);
-    uint64_t numberOfThreads = package->cpuCores.size();
-    if (host->hasHyperThrading) {
-        numberOfThreads *= 2;
+    uint32_t threadCounter = 0;
+    for (uint32_t coreId = 1; coreId < package->cpuCores.size(); coreId++) {
+        for (uint32_t threadId = 0; threadId < package->cpuCores.at(coreId)->cpuThreads.size();
+             threadId++)
+        {
+            CpuThread* thread = package->cpuCores.at(coreId)->cpuThreads.at(threadId);
+            WorkerThread* newUnit = new WorkerThread(this);
+            m_workerThreads.push_back(newUnit);
+            newUnit->startThread();
+            newUnit->bindThreadToCore(thread->threadId);
+            threadCounter++;
+        }
     }
 
-    LOG_INFO("initialize " + std::to_string(numberOfThreads) + " worker-threads");
-    for (uint16_t i = 0; i < numberOfThreads; i++) {
-        WorkerThread* newUnit = new WorkerThread(this);
-        m_workerThreads.push_back(newUnit);
-        newUnit->startThread();
-        newUnit->bindThreadToCore(i);
-    }
+    LOG_INFO("initialized " + std::to_string(threadCounter) + " worker-threads");
 
     return true;
 }
