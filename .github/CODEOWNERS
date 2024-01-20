@@ -1,0 +1,4 @@
+# CODEOWNERS file
+
+# Assigning ownership of the entire codebase to kitsudaiki
+*       @kitsudaiki
