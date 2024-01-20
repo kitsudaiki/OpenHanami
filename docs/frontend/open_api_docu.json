@@ -1858,7 +1858,7 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "correctness": {
+                                        "accuracy": {
                                             "description": "Correctness of the values compared to the dataset.",
                                             "type": "number"
                                         }
@@ -1910,7 +1910,7 @@
                         "description": "Something internally went wrong. Check the server-internal logs for more information."
                     }
                 },
-                "summary": "Compare a list of values with a dataset to check correctness.",
+                "summary": "Compare a list of values with a dataset to check accuracy.",
                 "tags": [
                     "Data Set"
                 ]
@@ -2114,7 +2114,7 @@
                 ]
             }
         },
-        "v1/hosts/all": {
+        "v1/host/all": {
             "get": {
                 "parameters": [
                     {

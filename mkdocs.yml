@@ -23,39 +23,40 @@ nav:
     - index.md
     - home/license.md
     - home/CHANGELOG.md
-  - Usage:
-    - api/rest_api_documentation.md
-    - api/sdk_library.md
-    - api/cluster_template.md
-    - api/websocket_workflow.md
-  - How To:
-    - how_to/installation.md
-    - how_to/development.md
-    - how_to/dashboard.md
+  - Frontend:
+    - frontend/rest_api_documentation.md
+    - frontend/sdk_library.md
+    - frontend/cluster_templates/cluster_template.md
+    - frontend/websockets/websocket_workflow.md
+    - frontend/cli_client.md
+    - frontend/dashboard/dashboard.md
+  - Backend:
+    - backend/development.md
+    - backend/installation.md
+    - backend/config.md
+    - backend/db.md
   - Inner workings:
-    - inner_workings/core.md
-    - inner_workings/input_processing.md
-    - inner_workings/monitoring.md
+    - inner_workings/core/core.md
+    - inner_workings/measurements/measurements.md
+    - inner_workings/input_processing/input_processing.md
+    - inner_workings/monitoring/monitoring.md
     - inner_workings/storage.md
     - inner_workings/user_and_projects.md
-    - Configs:
-      - inner_workings/config.md
-      - inner_workings/db.md
-    - Libraries (Archive):
-      - inner_workings/libraries/hanami_args.md
-      - inner_workings/libraries/hanami_common.md
-      - inner_workings/libraries/hanami_config.md
-      - inner_workings/libraries/hanami_cpu.md
-      - inner_workings/libraries/hanami_crypto.md
-      - inner_workings/libraries/hanami_ini.md
-      - inner_workings/libraries/hanami_obj.md
-      - inner_workings/libraries/hanami_opencl.md
-      - inner_workings/libraries/hanami_sqlite.md
   - Other:
     - other/dependencies.md
     - other/code_styling.md
     - other/git_workflow.md
     - other/glossar.md
+    - Libraries (Archive):
+      - other/libraries/hanami_args.md
+      - other/libraries/hanami_common.md
+      - other/libraries/hanami_config.md
+      - other/libraries/hanami_cpu.md
+      - other/libraries/hanami_crypto.md
+      - other/libraries/hanami_ini.md
+      - other/libraries/hanami_obj.md
+      - other/libraries/hanami_opencl.md
+      - other/libraries/hanami_sqlite.md
 
 plugins:
     - swagger-ui-tag

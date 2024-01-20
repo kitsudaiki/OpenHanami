@@ -2,7 +2,7 @@
 
 !!! warning
 
-    The installation process is also very basic at the moment. So for example only self-signed certificates are used at the moment.
+    The installation process is also very basic at the moment. So for example only self-signed certificates are used at the moment. Because of this the given SDK also has a problem to connect correctly to these installation currently. Also CUDA-gpu's are not useable in the docker-installations here now. 
 
 ## On Kubernetes
 
@@ -19,7 +19,7 @@ For the installation on a kubernetes `helm` is used.
         For fast, easy and minimal installation a `k3s` as single-node installation can be used. Installation with for example:
 
         ```
-        curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=v1.21.8+k3s1 sh -
+        curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=v1.24.8+k3s1 sh -
 
         export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
         ```

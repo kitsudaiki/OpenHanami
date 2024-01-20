@@ -48,8 +48,8 @@ In `Request-Tasks` only the input-data are provided for the network in order to 
 
 ### **Cluster-Template**
 
-`Cluster-Templates` are a custom-formated string, which defines the structure of the `Cluster`. Basically it describes the sizes and order of the bricks.
+`Cluster-Templates` are a custom-formated string, which defines the structure of the `Cluster`. Basically it describes the sizes and order of the bricks. See the docu of the [cluster-templates](/frontend/cluster_templates/cluster_template).
 
-### **Request-Result** or **Result**
+### **Request-Result**
 
 `Request-Results` are the output of a `Request-Task`, which are stored in `Shiori`. They have the same name like the `Request-Task`, which genrated the output.

@@ -1144,7 +1144,7 @@ Checks a request-result against a dataset to compare who much of the output of t
     # example-content of result:
     #
     # {
-    #     "correctness": 93.40999603271484
+    #     "accuracy": 93.40999603271484
     # }
     ```
 
