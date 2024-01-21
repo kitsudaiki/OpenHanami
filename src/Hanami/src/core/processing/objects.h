@@ -87,7 +87,7 @@ struct ClusterSettings {
     float potentialOverflow = 1.0f;
 
     float neuronCooldown = 1000000000.0f;
-    uint32_t refractionTime = 1;
+    uint32_t refractoryTime = 1;
     uint32_t maxConnectionDistance = 1;
     bool enableReduction = false;
 
@@ -179,7 +179,7 @@ struct Neuron {
     float potential = 0.0f;
     float delta = 0.0f;
 
-    uint8_t refractionTime = 1;
+    uint8_t refractoryTime = 1;
     uint8_t active = 0;
 
     float newOffset = 0.0f;

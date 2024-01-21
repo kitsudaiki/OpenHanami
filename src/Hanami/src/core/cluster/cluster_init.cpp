@@ -205,7 +205,7 @@ initSettings(const Hanami::ClusterMeta& clusterMeta)
 
     // parse settings
     settings.neuronCooldown = clusterMeta.neuronCooldown;
-    settings.refractionTime = clusterMeta.refractionTime;
+    settings.refractoryTime = clusterMeta.refractoryTime;
     settings.maxConnectionDistance = clusterMeta.maxConnectionDistance;
     settings.enableReduction = clusterMeta.enableReduction;
 

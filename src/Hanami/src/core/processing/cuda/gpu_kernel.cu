@@ -281,11 +281,11 @@ processNeurons(NeuronBlock* neuronBlocks,
     if(isOutputBrick == false)
     {
         neuron->potential /= clusterSettings->neuronCooldown;
-        neuron->refractionTime = neuron->refractionTime >> 1;
+        neuron->refractoryTime = neuron->refractoryTime >> 1;
 
-        if (neuron->refractionTime == 0) {
+        if (neuron->refractoryTime == 0) {
             neuron->potential = clusterSettings->potentialOverflow * neuron->input;
-            neuron->refractionTime = clusterSettings->refractionTime;
+            neuron->refractoryTime = clusterSettings->refractoryTime;
         }
 
         neuron->potential -= neuron->border;

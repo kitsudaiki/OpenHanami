@@ -142,7 +142,7 @@ CpuHost::initWorkerThreads()
         }
     }
 
-    LOG_INFO("initialized " + std::to_string(threadCounter) + " worker-threads");
+    LOG_INFO("Initialized " + std::to_string(threadCounter) + " worker-threads");
 
     return true;
 }

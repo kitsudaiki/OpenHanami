@@ -122,13 +122,21 @@ startpoint:
 settings:
     settings "identifier" ":" "number" linebreaks
     {
-        if($2 == "max_connection_distance")
+        if($2 == "neuron_cooldown")
+        {
+            driver.output->neuronCooldown = $4;
+        }
+        else if($2 == "max_connection_distance")
         {
             driver.output->maxConnectionDistance = $4;
         }
-        else if($2 == "refraction_time")
+        else if($2 == "refractory_time")
         {
-            driver.output->refractionTime = $4;
+            if($4 < 1) {
+                driver.error(yyla.location, "refractory_time must be >= 1");
+                return 1;
+            }
+            driver.output->refractoryTime = $4;
         }
         else
         {
@@ -163,15 +171,36 @@ settings:
         }
     }
 |
+    settings "identifier" ":" "false" linebreaks
+    {
+        if($2 == "enable_reduction")
+        {
+            driver.output->enableReduction = false;
+        }
+        else
+        {
+            driver.error(yyla.location, "unkown settings-field '" + $2 + "'");
+            return 1;
+        }
+    }
+|
     "identifier" ":" "number" linebreaks
     {
-        if($1 == "max_connection_distance")
+        if($1 == "neuron_cooldown")
+        {
+            driver.output->neuronCooldown = $3;
+        }
+        else if($1 == "max_connection_distance")
         {
             driver.output->maxConnectionDistance = $3;
         }
-        else if($1 == "refraction_time")
+        else if($1 == "refractory_time")
         {
-            driver.output->refractionTime = $3;
+            if($3 < 1) {
+                driver.error(yyla.location, "refractory_time must be >= 1");
+                return 1;
+            }
+            driver.output->refractoryTime = $3;
         }
         else
         {
@@ -198,6 +227,19 @@ settings:
         if($1 == "enable_reduction")
         {
             driver.output->enableReduction = true;
+        }
+        else
+        {
+            driver.error(yyla.location, "unkown settings-field '" + $1 + "'");
+            return 1;
+        }
+    }
+|
+    "identifier" ":" "false" linebreaks
+    {
+        if($1 == "enable_reduction")
+        {
+            driver.output->enableReduction = false;
         }
         else
         {

@@ -51,7 +51,7 @@ struct BrickMeta {
 struct ClusterMeta {
     uint32_t version = 0;
     float neuronCooldown = 1000000000.f;
-    uint32_t refractionTime = 1;
+    uint32_t refractoryTime = 1;
     uint32_t maxConnectionDistance = 1;
     bool enableReduction = false;
 

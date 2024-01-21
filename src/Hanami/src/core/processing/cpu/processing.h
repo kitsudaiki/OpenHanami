@@ -268,11 +268,11 @@ processNeurons(Cluster& cluster, Brick* brick, const uint32_t blockId)
     for (uint32_t neuronId = 0; neuronId < NEURONS_PER_NEURONSECTION; ++neuronId) {
         neuron = &targetNeuronBlock->neurons[neuronId];
         neuron->potential /= clusterSettings->neuronCooldown;
-        neuron->refractionTime = neuron->refractionTime >> 1;
+        neuron->refractoryTime = neuron->refractoryTime >> 1;
 
-        if (neuron->refractionTime == 0) {
+        if (neuron->refractoryTime == 0) {
             neuron->potential += clusterSettings->potentialOverflow * neuron->input;
-            neuron->refractionTime = clusterSettings->refractionTime;
+            neuron->refractoryTime = clusterSettings->refractoryTime;
         }
 
         neuron->potential -= neuron->border;

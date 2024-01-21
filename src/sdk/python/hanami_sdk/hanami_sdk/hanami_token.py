@@ -26,7 +26,7 @@ def request_token(address: str,
         "password": pw,
     }
 
-    response = requests.post(url, json=json_body) 
+    response = requests.post(url, json=json_body, verify=False) 
     if response.status_code == 200:
         return response.json()["token"]
     if response.status_code == 400:

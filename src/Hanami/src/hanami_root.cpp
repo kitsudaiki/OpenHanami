@@ -105,14 +105,6 @@ HanamiRoot::init(Hanami::ErrorContainer& error)
         return false;
     }
 
-    Hanami::Host* host = Hanami::Host::getInstance();
-    if (host->initHost(error) == false) {
-        error.addMessage("Failed to initialize host-information.");
-        LOG_ERROR(error);
-        // can fail because it runs within a virtual machine for example, but this should
-        // not prevent the process from starting
-    }
-
     // inti hosts
     physicalHost = new PhysicalHost();
     if (physicalHost->init(error) == false) {
