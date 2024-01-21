@@ -20,7 +20,7 @@ Graphical the desired function to learn looks like this:
 
 ![Trained output](ideal.jpg)
 
-This is a very constructure scenario, so it is may be not the optimal case for testing the features.
+This is a very constructed scenario, so it is may be not the optimal case for testing the features.
 
 
 #### Cluster-template
@@ -157,12 +157,12 @@ With default-values, but enabled reduction-process the diagram looks nearly the 
 
 ![With reduction](reduction.jpg)
 
-Because there are only 4 different input-values in the test, which are used over and over again, a big difference also wouldn't be expected, but the transions between the different input-values are looking a bit smother compared to the other version.
+Because there are only 4 different input-values in the test, which are used over and over again, a big difference also wouldn't be expected, but the transitions between the different input-values are looking a bit smother compared to the other version.
 
 
 ## MNIST-Test
 
-Because the constructured case above doesn't show much measurable impact, the recutions-process was also tested with the MNIST-dataset.
+Because the constructed case above doesn't show much measurable impact, the reduction-process was also tested with the MNIST-dataset.
 
 ### Cluster-template
 

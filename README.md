@@ -35,13 +35,13 @@ Like already written above, it is still a prototype. There are still many missin
 
 - **Reduction-Process**
 
-    The concept of a growing network has the result, that there is basically nearly no limit in size, even if the growth-rate slows down over time. To limit the growth-rate even more, it is possible to enable a reduction-process, which removes synapses again, which were to inactive to reach the threshold to be markes as persistent.
+    The concept of a growing network has the result, that there is basically nearly no limit in size, even if the growth-rate slows down over time. To limit the growth-rate even more, it is possible to enable a reduction-process, which removes synapses again, which were to inactive to reach the threshold to be marked as persistent.
 
     See [measurement-examples](https://docs.hanami-ai.com/inner_workings/measurements/measurements/#reduction_1)
 
 - **No normalization of input**
 
-    The input of the network is not restricted to range of 0.0 - 1.0 . Every value, as long it is a positive value, can be inserted. Also if there is a single broken value in the input-data, which is million times higher, than the rest of the input-values, it has nearly no effect on the rest of the already trained data. Thanks to the redcution-process, all synapses, which are only the result of this single input, are removed again from the network.
+    The input of the network is not restricted to range of 0.0 - 1.0 . Every value, as long it is a positive value, can be inserted. Also if there is a single broken value in the input-data, which is million times higher, than the rest of the input-values, it has nearly no effect on the rest of the already trained data. Thanks to the reduction-process, all synapses, which are only the result of this single input, are removed again from the network.
 
 - **Spiking neural network**
 
@@ -62,22 +62,22 @@ Like already written above, it is still a prototype. There are still many missin
 
 - **Parallelism**
 
-    The processing structure works also for multiple threads, which can work at the same time on the same network, and also works on gpu. 
-    For the gpu only CUDA is suppored at the moment. With the next version it is also planned to port the CUDA-kernel to OpenCL. OpenCL was already supported in the past, but in the recent developing-process replaced by CUDA, because it was easier to keep up-to-date with the fast changing data-structures, than OpenCL.
+    The processing structure works also for multiple threads, which can work at the same time on the same network, and also works on GPU. 
+    For the gpu only CUDA is supported at the moment. With the next version it is also planned to port the CUDA-kernel to OpenCL. OpenCL was already supported in the past, but in the recent developing-process replaced by CUDA, because it was easier to keep up-to-date with the fast changing data-structures, than OpenCL.
 
 - **Usable performance**
 
     The 60.000 training pictures of the MNIST handwritten letters can be trained on CPU in about 4 seconds for the first epoch, without any batch-processing of the input-data and results in an accuracy of 93-94 % after this time.
 
-- **Generated OpenAPI-Documentattion**
+- **Generated OpenAPI-Documentation**
 
-    The OpenAPI-documentattion is generated directly from the code. So changing the settings of a single endpoint in the code automatically results in changes of the resulting documentation, to make sure, that code and documentattion are in sync.
+    The OpenAPI-documentation is generated directly from the code. So changing the settings of a single endpoint in the code automatically results in changes of the resulting documentation, to make sure, that code and documentation are in sync.
 
     See [OpenAPI-docu](https://docs.hanami-ai.com/frontend/rest_api_documentation/)
 
 - **Multi-user and multi-project**
 
-    The projecs supports multiple user and multiple projects with different roles (member, project-admin and admin) and also managing the access to single api-endpoints via policy-file. Each user can login by username and password and gets an JWT-token to access the user- and project-specific resources.
+    The projects supports multiple user and multiple projects with different roles (member, project-admin and admin) and also managing the access to single api-endpoints via policy-file. Each user can login by username and password and gets an JWT-token to access the user- and project-specific resources.
 
     See [Authentication-docu](https://docs.hanami-ai.com/inner_workings/user_and_projects/)
 
@@ -87,7 +87,7 @@ Like already written above, it is still a prototype. There are still many missin
 
     2. Because of the multi-user support, multiple networks of multiple users can be processed on the same physical host and share the RAM, CPU-cores and even the GPU, without spliting them via virtual machines or vCPUs.
 
-    3. Capability to regulate the cpu-frequest and measure power-consuption. (disabled currently)
+    3. Capability to regulate the cpu-frequence and measure power-consumption. (disabled currently)
 
         See [Monitoring-docu](https://docs.hanami-ai.com/inner_workings/monitoring/monitoring/#controlling-cpu-frequency)
 
@@ -142,8 +142,6 @@ Like already written above, it is still a prototype. There are still many missin
 Because the normalization of input is not necessary, together with the good performance of training single inputs (based on the benchmark) and the direct interaction remotely over websockets, could make this project useful for processing measurement-data of sensors of different machines, especially for new sensors, where the exact maximum output-values are unknown. So continuous training of the network right from the beginning would be possible, without collecting a bunch of data at first.
 
 ## Summary important links
-
-All of this page and more in the documentation on: 
 
 https://docs.hanami-ai.com
 
