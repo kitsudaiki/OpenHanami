@@ -67,7 +67,7 @@ typedef struct Neuron_struct
     float potential;
     float delta;
 
-    uchar refractionTime;
+    uchar refractoryTime;
     uchar active;
     uchar padding[6];
 
@@ -166,7 +166,7 @@ typedef struct SegmentSettings
     float potentialOverflow;
     float synapseSegmentation;
     float backpropagationBorder;
-    uchar refractionTime;
+    uchar refractoryTime;
     uchar doLearn;
     uchar updateSections;
 
@@ -409,12 +409,12 @@ prcessCoreSegment(__global BrickHeader* bricks,
                     __global Neuron* neuron = &neuronSection->neurons[neuronId];
 
                     neuron->potential /= segmentSettings->neuronCooldown;
-                    neuron->refractionTime = neuron->refractionTime >> 1;
+                    neuron->refractoryTime = neuron->refractoryTime >> 1;
 
-                    if(neuron->refractionTime == 0)
+                    if(neuron->refractoryTime == 0)
                     {
                         neuron->potential = segmentSettings->potentialOverflow * neuron->input;
-                        neuron->refractionTime = segmentSettings->refractionTime;
+                        neuron->refractoryTime = segmentSettings->refractoryTime;
                     }
 
                     // update neuron

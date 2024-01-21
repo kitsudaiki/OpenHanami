@@ -39,7 +39,7 @@ def send_post_request(token: str,
     url = f'{address}{path}'
     headers = {'content-type': 'application/json'}
     headers = {'X-Auth-Token': token}
-    response = requests.post(url, data=body, headers=headers) 
+    response = requests.post(url, data=body, headers=headers, verify=False) 
     return _handle_response(response)
 
 
@@ -53,7 +53,7 @@ def send_get_request(token: str,
         url = f'{address}{path}'
 
     headers = {'X-Auth-Token': token}
-    response = requests.get(url, headers=headers) 
+    response = requests.get(url, headers=headers, verify=False) 
     return _handle_response(response)
 
 
@@ -64,7 +64,7 @@ def send_put_request(token: str,
     url = f'{address}{path}'
     headers = {'content-type': 'application/json'}
     headers = {'X-Auth-Token': token}
-    response = requests.put(url, data=body, headers=headers) 
+    response = requests.put(url, data=body, headers=headers, verify=False) 
     return _handle_response(response)
 
 
@@ -74,5 +74,5 @@ def send_delete_request(token: str,
                         values: str) -> str:
     url = f'{address}{path}?{values}'
     headers = {'X-Auth-Token': token}
-    response = requests.delete(url, headers=headers)
+    response = requests.delete(url, headers=headers, verify=False)
     return _handle_response(response)

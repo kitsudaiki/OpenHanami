@@ -83,21 +83,15 @@ static_assert(sizeof(HeaderEntry) == 16);
 //==================================================================================================
 
 struct ClusterSettings {
-    uint64_t maxSynapseSections = 0;
-    float synapseDeleteBorder = 1.0f;
-    float neuronCooldown = 100000000.0f;
-    float memorizing = 0.1f;
-    float gliaValue = 1.0f;
-    float signNeg = 0.6f;
-    float potentialOverflow = 1.0f;
-    float synapseSegmentation = 10.0f;
     float backpropagationBorder = 0.01f;
-    float lerningValue = 0.0f;
+    float potentialOverflow = 1.0f;
 
-    uint8_t refractionTime = 1;
-    uint8_t updateSections = 0;
+    float neuronCooldown = 1000000000.0f;
+    uint32_t refractoryTime = 1;
+    uint32_t maxConnectionDistance = 1;
+    bool enableReduction = false;
 
-    uint8_t padding[18];
+    uint8_t padding[43];
 };
 static_assert(sizeof(ClusterSettings) == 64);
 
@@ -185,7 +179,7 @@ struct Neuron {
     float potential = 0.0f;
     float delta = 0.0f;
 
-    uint8_t refractionTime = 1;
+    uint8_t refractoryTime = 1;
     uint8_t active = 0;
 
     float newOffset = 0.0f;

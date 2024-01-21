@@ -20,6 +20,7 @@ import json
 import asyncio
 import math
 import time
+import ssl
 
 
 def list_datasets(token: str, address: str) -> str:
@@ -71,7 +72,12 @@ def send_data(token: str,
     body_str = json.dumps(initial_ws_msg)
 
     base_address = address.split('/')[2]
-    with connect("ws://" + base_address) as websocket:
+    websocket_address = "ws://" + base_address
+
+    if address.split('/')[0] == "https:":
+        websocket_address = "wss://" + base_address
+
+    with connect(websocket_address) as websocket:
         websocket.send(body_str)
         message = websocket.recv()
         result_json = json.loads(message)

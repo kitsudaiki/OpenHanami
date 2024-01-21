@@ -48,9 +48,10 @@ request_labels = config["test_data"]["request_labels"]
 cluster_template = \
     "version: 1\n" \
     "settings:\n" \
-    "    max_synapse_sections: 1000\n" \
-    "    sign_neg: 0.5\n" \
-    "        \n" \
+    "   neuron_cooldown: 10000000.0\n" \
+    "   refractory_time: 1\n" \
+    "   max_connection_distance: 1\n" \
+    "   enable_reduction: false\n" \
     "bricks:\n" \
     "    1,1,1\n" \
     "        input: test_input\n" \
@@ -279,11 +280,11 @@ def test_workflow():
     result = request_result.list_request_results(token, address)
     result = request_result.check_against_dataset(
         token, address, task_uuid, request_dataset_uuid)
-    correctness = json.loads(result)["correctness"]
+    accuracy = json.loads(result)["accuracy"]
     print("=======================================")
-    print("test-result: " + str(correctness))
+    print("test-result: " + str(accuracy))
     print("=======================================")
-    assert correctness > 90.0
+    assert accuracy > 90.0
     result = request_result.delete_request_result(token, address, task_uuid)
 
     # check direct-mode

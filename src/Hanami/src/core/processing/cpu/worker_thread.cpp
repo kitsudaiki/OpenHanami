@@ -175,7 +175,7 @@ WorkerThread::handleProcessTask(const CpuHost::WorkerTask task)
         return;
     }
     else {
-        processClusterForward(*task.cluster, task.brickId, task.blockId, true);
+        processClusterForward(*task.cluster, task.brickId, task.blockId, false);
         if (task.cluster->incrementAndCompare(
                 task.cluster->bricks[task.brickId].numberOfNeuronBlocks))
         {

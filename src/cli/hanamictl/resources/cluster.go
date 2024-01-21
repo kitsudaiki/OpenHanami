@@ -35,7 +35,7 @@ var (
 )
 
 var createClusterCmd = &cobra.Command {
-    Use:   "create CLUSTER_UUID",
+    Use:   "create -t TEMPLATE_PATH NAME",
     Short: "Create a new cluster.",
     Args:  cobra.ExactArgs(1),
     Run:   func(cmd *cobra.Command, args []string) {
@@ -101,7 +101,7 @@ var deleteClusterCmd = &cobra.Command {
 }
 
 var saveClusterCmd = &cobra.Command {
-    Use:   "save CLUSTER_UUID",
+    Use:   "save -n CHECKPOINT_NAME CLUSTER_UUID",
     Short: "Save cluster as checkpoint.",
     Args:  cobra.ExactArgs(1),
     Run:   func(cmd *cobra.Command, args []string) {
@@ -118,7 +118,7 @@ var saveClusterCmd = &cobra.Command {
 }
 
 var restoreClusterCmd = &cobra.Command {
-    Use:   "restore CLUSTER_UUID",
+    Use:   "restore -c CHECKPOINT_UUID CLUSTER_UUID",
     Short: "Restore cluster from checkpoint.",
     Args:  cobra.ExactArgs(1),
     Run:   func(cmd *cobra.Command, args []string) {
@@ -159,7 +159,7 @@ func Init_Cluster_Commands(rootCmd *cobra.Command) {
     saveClusterCmd.MarkFlagRequired("name")
 
     clusterCmd.AddCommand(restoreClusterCmd)
-    restoreClusterCmd.Flags().StringVarP(&checkpointUuid, "checkpoint", "t", "", "Checkpoint UUID (mandatory)")
+    restoreClusterCmd.Flags().StringVarP(&checkpointUuid, "checkpoint", "c", "", "Checkpoint UUID (mandatory)")
     restoreClusterCmd.MarkFlagRequired("checkpoint")
 }
 

@@ -41,11 +41,11 @@ Cluster_ParseString_Test::parseString_test()
 {
     std::string input(
         "version: 1\n"
-        //"settings:\n"
-        //"    max_synapse_sections: 100000\n"
-        //"    synapse_clusteration: 10\n"
-        //"    sign_neg: 0.5\n"
-        "        \n"
+        "settings:\n"
+        "   neuron_cooldown: 10000000.0\n"
+        "   refractory_time: 1\n"
+        "   max_connection_distance: 1\n"
+        "   enable_reduction: false\n"
         "bricks:\n"
         "    1,1,1\n"
         "        input: test_input\n"

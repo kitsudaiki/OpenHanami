@@ -2,7 +2,7 @@
 
 ## Basic git workflow
 
-![Workflow-component](../img/git-workflow.drawio)
+![Workflow-component](git-workflow.drawio)
 
 ## Branches
 

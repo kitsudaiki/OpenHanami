@@ -245,52 +245,71 @@ CreateTask::tableTask(std::string& taskUuid,
     const uint64_t numberOfOutputs = cluster->clusterHeader->numberOfOutputs;
     const uint64_t numberOfLines = dataSetInfo["lines"];
 
-    // get input-data
-    const std::string inputColumnName = "input";
     const std::string dataSetLocation = dataSetInfo["location"];
-    Hanami::DataBuffer inputBuffer;
-    if (getDataSetPayload(inputBuffer, dataSetLocation, error, inputColumnName) == false) {
-        error.addMessage("Failed to get data of dataset from location '" + dataSetLocation
-                         + "' and column with name '" + inputColumnName + "'");
-        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        return false;
-    }
 
-    if (taskType == "request") {
-        taskUuid = addTableRequestTask(*cluster,
-                                       name,
-                                       userContext.userId,
-                                       userContext.projectId,
-                                       static_cast<float*>(inputBuffer.data),
-                                       numberOfInputs,
-                                       numberOfOutputs,
-                                       numberOfLines - numberOfInputs);
-        inputBuffer.data = nullptr;
-    }
-    else {
-        // get output-data
-        const std::string outputColumnName = "output";
-        Hanami::DataBuffer outputBuffer;
-        if (getDataSetPayload(outputBuffer, dataSetLocation, error, outputColumnName) == false) {
+    for (auto& [name, brick] : cluster->namedBricks) {
+        if (brick->isInputBrick == false) {
+            continue;
+        }
+
+        // get input-data
+        Hanami::DataBuffer inputBuffer;
+        if (getDataSetPayload(inputBuffer, dataSetLocation, error, name) == false) {
             error.addMessage("Failed to get data of dataset from location '" + dataSetLocation
-                             + "' and column with name '" + outputColumnName + "'");
+                             + "' and column with name '" + name + "'");
             status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
             return false;
         }
 
-        // create task
-        const uint64_t numberOfLines = dataSetInfo["lines"];
-        taskUuid = addTableTrainTask(*cluster,
-                                     name,
-                                     userContext.userId,
-                                     userContext.projectId,
-                                     static_cast<float*>(inputBuffer.data),
-                                     static_cast<float*>(outputBuffer.data),
-                                     numberOfInputs,
-                                     numberOfOutputs,
-                                     numberOfLines - numberOfInputs);
-        inputBuffer.data = nullptr;
-        outputBuffer.data = nullptr;
+        if (taskType == "request") {
+            taskUuid = addTableRequestTask(*cluster,
+                                           name,
+                                           userContext.userId,
+                                           userContext.projectId,
+                                           static_cast<float*>(inputBuffer.data),
+                                           numberOfInputs,
+                                           numberOfOutputs,
+                                           numberOfLines - numberOfInputs);
+            inputBuffer.data = nullptr;
+
+            // TODO: support more than 1 input
+            break;
+        }
+        else {
+            for (auto& [name, brick] : cluster->namedBricks) {
+                if (brick->isOutputBrick == false) {
+                    continue;
+                }
+
+                // get output-data
+                Hanami::DataBuffer outputBuffer;
+                if (getDataSetPayload(outputBuffer, dataSetLocation, error, name) == false) {
+                    error.addMessage("Failed to get data of dataset from location '"
+                                     + dataSetLocation + "' and column with name '" + name + "'");
+                    status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+                    return false;
+                }
+
+                // create task
+                const uint64_t numberOfLines = dataSetInfo["lines"];
+                taskUuid = addTableTrainTask(*cluster,
+                                             name,
+                                             userContext.userId,
+                                             userContext.projectId,
+                                             static_cast<float*>(inputBuffer.data),
+                                             static_cast<float*>(outputBuffer.data),
+                                             numberOfInputs,
+                                             numberOfOutputs,
+                                             numberOfLines - numberOfInputs);
+                inputBuffer.data = nullptr;
+                outputBuffer.data = nullptr;
+
+                // TODO: support more than 1 output
+                break;
+            }
+        }
+
+        return true;
     }
 
     return true;

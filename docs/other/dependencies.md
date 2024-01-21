@@ -4,7 +4,7 @@
 
 Installed packages under the actual used Ubuntu 23.04
 
-### Build
+### Build Hanami
 
 | apt-package | Purpose |
 | --- | --- |
@@ -40,14 +40,22 @@ Installed packages under the actual used Ubuntu 23.04
 | libcrypto++8  | HMAC, SHA256 and other crypto related operations | 
 | libsqlite3-0  | Library to interact with the SQLite3 databases | 
 | libprotobuf23 | Runtime-library for protobuffers | 
-| libboost1.74 | Provides the Beast-library of Boost, which is used for the REST-API within the Torii |
+| libboost1.74 | Provides the Beast-library of Boost, which is used for the REST-API within Hanami |
 | libcudart11.0 | Runtime-library for CUDA | 
+
+### Python-SDK
+
+see [requirements.txt](https://github.com/kitsudaiki/Hanami/blob/develop/src/sdk/python/hanami_sdk/requirements.txt)
+
+### Go CLI-clien
+
+see [go.sum](https://github.com/kitsudaiki/Hanami/blob/develop/src/cli/hanamictl/go.sum)
 
 ## Overview
 
 The following diagramm shows the basic relations of the library and tools with each other.
 
-![Overview](../img/overview_dependencies.drawio)
+![Overview](overview_dependencies.drawio)
 
 I know, this is not a valid UML-diagram or something like this. It should old visualize the relations. A few connections in the diagram doesn't exist at the moment.
 

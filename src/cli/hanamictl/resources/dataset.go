@@ -34,7 +34,7 @@ var (
 )
 
 var createMnistDatasetCmd = &cobra.Command {
-    Use:   "mnist DATASET_UUID",
+    Use:   "mnist -i INPUT_FILE_PATH -l LABEL_FILE_PATH DATASET_NAME",
     Short: "Upload new mnist dataset.",
     Args:  cobra.ExactArgs(1),
     Run:   func(cmd *cobra.Command, args []string) {
@@ -56,7 +56,7 @@ var createMnistDatasetCmd = &cobra.Command {
 }
 
 var createCsvDatasetCmd = &cobra.Command {
-    Use:   "csv DATASET_UUID",
+    Use:   "csv -i INPUT_FILE_PATH DATASET_NAME",
     Short: "Upload new csv dataset.",
     Args:  cobra.ExactArgs(1),
     Run:   func(cmd *cobra.Command, args []string) {

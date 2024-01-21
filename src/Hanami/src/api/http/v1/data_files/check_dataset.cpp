@@ -33,8 +33,7 @@
 #include <hanami_files/dataset_files/image_dataset_file.h>
 #include <hanami_root.h>
 
-CheckDataSet::CheckDataSet()
-    : Blossom("Compare a list of values with a dataset to check correctness.")
+CheckDataSet::CheckDataSet() : Blossom("Compare a list of values with a dataset to check accuracy.")
 {
     errorCodes.push_back(NOT_FOUND_RTYPE);
 
@@ -54,7 +53,7 @@ CheckDataSet::CheckDataSet()
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("correctness", SAKURA_FLOAT_TYPE)
+    registerOutputField("accuracy", SAKURA_FLOAT_TYPE)
         .setComment("Correctness of the values compared to the dataset.");
 
     //----------------------------------------------------------------------------------------------
@@ -142,9 +141,9 @@ CheckDataSet::runTask(BlossomIO& blossomIO,
     }
 
     // add result to output
-    const float correctness
+    const float accuracy
         = (100.0f / static_cast<float>(compareData.size())) * static_cast<float>(correctValues);
-    blossomIO.output["correctness"] = correctness;
+    blossomIO.output["accuracy"] = accuracy;
 
     return true;
 }

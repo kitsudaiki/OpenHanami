@@ -40,6 +40,8 @@ PhysicalHost::PhysicalHost() {}
 bool
 PhysicalHost::init(Hanami::ErrorContainer& error)
 {
+    LOG_INFO("Please wait a few seconds, until hardware-resources are initialized...");
+
     // identify and init cuda gpu's
     // IMPORTANT: these are initialized first, because they also need memory on the host
     const uint32_t numberOfCudaGpus = getNumberOfDevices_CUDA();

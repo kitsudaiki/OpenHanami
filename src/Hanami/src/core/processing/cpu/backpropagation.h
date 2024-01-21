@@ -122,9 +122,9 @@ backpropagateSection(SynapseSection* section,
             synapse->activeCounter += active * static_cast<uint8_t>(synapse->activeCounter < 10);
 
             delta = targetTempNeuron->delta[0] * synapse->weight;
-            if (potential < synapse->border) {
+            /*if (potential < synapse->border) {
                 delta *= (1.0f / synapse->border) * potential;
-            }
+            }*/
             synapse->weight -= trainValue * targetTempNeuron->delta[0];
             sourceTempNeuron->delta[connection->origin.posInNeuron] += delta;
 

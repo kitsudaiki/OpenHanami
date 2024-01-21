@@ -68,7 +68,7 @@ createNewSynapse(NeuronBlock* block,
 {
     const float randMax = static_cast<float>(RAND_MAX);
     uint32_t signRand = 0;
-    const float sigNeg = clusterSettings->signNeg;
+    const float sigNeg = 0.5f;
 
     // set activation-border
     synapse->border = remainingW;
@@ -281,15 +281,16 @@ processNeurons(NeuronBlock* neuronBlocks,
     if(isOutputBrick == false)
     {
         neuron->potential /= clusterSettings->neuronCooldown;
-        neuron->refractionTime = neuron->refractionTime >> 1;
+        neuron->refractoryTime = neuron->refractoryTime >> 1;
 
-        if (neuron->refractionTime == 0) {
+        if (neuron->refractoryTime == 0) {
             neuron->potential = clusterSettings->potentialOverflow * neuron->input;
-            neuron->refractionTime = clusterSettings->refractionTime;
+            neuron->refractoryTime = clusterSettings->refractoryTime;
         }
 
         neuron->potential -= neuron->border;
         neuron->active = neuron->potential > 0.0f;
+        neuron->potential = static_cast<float>(neuron->active) * neuron->potential;
         neuron->input = 0.0f;
         neuron->potential = log2(neuron->potential + 1.0f);
 
@@ -385,9 +386,9 @@ backpropagateNeuron(SynapseSection* section,
 
             // calculate new delta
             localDelta[threadIdx.x] = targetTempNeuron->delta[0] * synapse->weight;
-            if (localPotential[threadIdx.x] < synapse->border) {
+            /*if (localPotential[threadIdx.x] < synapse->border) {
                 localDelta[threadIdx.x] *= (1.0f / synapse->border) * localPotential[threadIdx.x];
-            }
+            }*/
 
             // update values
             valid = (float)(localPotential[threadIdx.x] > 0.01f);

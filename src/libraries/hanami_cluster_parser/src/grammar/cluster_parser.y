@@ -76,6 +76,8 @@ YY_DECL;
     VERSION_1 "version1"
     SETTINGS "settings"
     BRICKS "bricks"
+    BOOL_TRUE  "true"
+    BOOL_FALSE "false"
 ;
 
 %token <std::string> IDENTIFIER "identifier"
@@ -118,28 +120,23 @@ startpoint:
     }
 
 settings:
-    settings "identifier" ":" "float" linebreaks
-    {
-        if($2 == "sign_neg")
-        {
-            driver.output->signNeg = $4;
-        }
-        else
-        {
-            driver.error(yyla.location, "unkown settings-field '" + $2 + "'");
-            return 1;
-        }
-    }
-|
     settings "identifier" ":" "number" linebreaks
     {
-        if($2 == "synapse_clusteration")
+        if($2 == "neuron_cooldown")
         {
-            driver.output->synapseSegmentation = $4;
+            driver.output->neuronCooldown = $4;
         }
-        else if($2 == "max_synapse_sections")
+        else if($2 == "max_connection_distance")
         {
-            driver.output->maxSynapseSections = $4;
+            driver.output->maxConnectionDistance = $4;
+        }
+        else if($2 == "refractory_time")
+        {
+            if($4 < 1) {
+                driver.error(yyla.location, "refractory_time must be >= 1");
+                return 1;
+            }
+            driver.output->refractoryTime = $4;
         }
         else
         {
@@ -148,11 +145,62 @@ settings:
         }
     }
 |
-    "identifier" ":" "float" linebreaks
+    settings "identifier" ":" "float" linebreaks
     {
-        if($1 == "sign_neg")
+        if($2 == "neuron_cooldown")
         {
-            driver.output->signNeg = $3;
+            driver.output->neuronCooldown = $4;
+        }
+        else
+        {
+            driver.error(yyla.location, "unkown settings-field '" + $2 + "'");
+            return 1;
+        }
+    }
+|
+    settings "identifier" ":" "true" linebreaks
+    {
+        if($2 == "enable_reduction")
+        {
+            driver.output->enableReduction = true;
+        }
+        else
+        {
+            driver.error(yyla.location, "unkown settings-field '" + $2 + "'");
+            return 1;
+        }
+    }
+|
+    settings "identifier" ":" "false" linebreaks
+    {
+        if($2 == "enable_reduction")
+        {
+            driver.output->enableReduction = false;
+        }
+        else
+        {
+            driver.error(yyla.location, "unkown settings-field '" + $2 + "'");
+            return 1;
+        }
+    }
+|
+    "identifier" ":" "number" linebreaks
+    {
+        if($1 == "neuron_cooldown")
+        {
+            driver.output->neuronCooldown = $3;
+        }
+        else if($1 == "max_connection_distance")
+        {
+            driver.output->maxConnectionDistance = $3;
+        }
+        else if($1 == "refractory_time")
+        {
+            if($3 < 1) {
+                driver.error(yyla.location, "refractory_time must be >= 1");
+                return 1;
+            }
+            driver.output->refractoryTime = $3;
         }
         else
         {
@@ -161,15 +209,37 @@ settings:
         }
     }
 |
-    "identifier" ":" "number" linebreaks
+    "identifier" ":" "float" linebreaks
     {
-        if($1 == "synapse_clusteration")
+        if($1 == "neuron_cooldown")
         {
-            driver.output->synapseSegmentation = $3;
+            driver.output->neuronCooldown = $3;
         }
-        else if($1 == "max_synapse_sections")
+        else
         {
-            driver.output->maxSynapseSections = $3;
+            driver.error(yyla.location, "unkown settings-field '" + $1 + "'");
+            return 1;
+        }
+    }
+|
+    "identifier" ":" "true" linebreaks
+    {
+        if($1 == "enable_reduction")
+        {
+            driver.output->enableReduction = true;
+        }
+        else
+        {
+            driver.error(yyla.location, "unkown settings-field '" + $1 + "'");
+            return 1;
+        }
+    }
+|
+    "identifier" ":" "false" linebreaks
+    {
+        if($1 == "enable_reduction")
+        {
+            driver.output->enableReduction = false;
         }
         else
         {

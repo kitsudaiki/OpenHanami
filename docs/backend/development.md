@@ -53,6 +53,18 @@ This document should help to setup a local environment for development.
 
 ## Build project
 
+### Prepare
+
+For the initial run, environment-variables have to be set to initialize the sqlite-database and create the first admin-user:
+
+```
+export HANAMI_ADMIN_USER_ID=asdf
+export HANAMI_ADMIN_USER_NAME=asdf
+export HANAMI_ADMIN_PASSWORD=asdfasdf
+```
+
+(These are the default testing-configs, to match with the config-files, which are copied above.)
+
 ### With Qt Creator
 
 When using the Qt Creator as IDE, then you only need to load the `Hanami.pro` in the root directory of the repository and select `clang-15` and `clang++-15` as compiler. The unit-, function- and memory-leak-tests of the libraries are not compiled by default. Within the project-settings you have to add as additional build argument the linke `CONFIG+=run_tests` to build the tests too.
