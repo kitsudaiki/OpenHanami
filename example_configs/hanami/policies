@@ -31,7 +31,7 @@ v1/documentation/api/rest
 v1/foreward
 - GET: admin, member
 
-v1/hosts/all
+v1/host/all
 - GET: admin, member
 
 v1/mnist/dataset
