@@ -1,38 +1,38 @@
 ---
 - name: Install required packages
-  become: yes
-  ansible.builtin.apt: 
-    name: [ 'python3', 
-            'python3-pip',
-            'python3-setuptools', 
-            'apt-transport-https',
-            'ca-certificates',
-            'curl',
-            'software-properties-common',
-            'virtualenv']
-    state: latest 
-    update_cache: yes
+  become: true
+  ansible.builtin.apt:
+    name: ['python3',
+           'python3-pip',
+           'python3-setuptools',
+           'apt-transport-https',
+           'ca-certificates',
+           'curl',
+           'software-properties-common',
+           'virtualenv']
+    state: present
+    update_cache: true
 
 - name: Add Docker GPG apt Key
-  become: yes
+  become: true
   apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg
     state: present
 
 - name: Add Docker Repository
-  become: yes
+  become: true
   apt_repository:
     repo: deb https://download.docker.com/linux/ubuntu jammy stable
     state: present
 
 - name: Update apt and install docker-ce
-  become: yes
+  become: true
   apt:
     name: docker-ce
-    state: latest
+    state: present
     update_cache: true
 
 - name: Install docker-py python package
-  become: yes
+  become: true
   ansible.builtin.pip:
     name: "docker"

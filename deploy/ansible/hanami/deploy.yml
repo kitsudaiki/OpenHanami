@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- name: Install hanami
+  hosts: all
   roles:
     - hanami
-

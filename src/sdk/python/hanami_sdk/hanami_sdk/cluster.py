@@ -15,17 +15,17 @@
 from . import hanami_request
 from websockets.sync.client import connect
 import json
-import base64 
+import base64
 
 
 def create_cluster(token: str,
-                   address: str, 
+                   address: str,
                    name: str,
                    template: str) -> str:
     # convert template to base64
-    template_bytes = template.encode("ascii") 
-    base64_bytes = base64.b64encode(template_bytes) 
-    base64_string = base64_bytes.decode("ascii") 
+    template_bytes = template.encode("ascii")
+    base64_bytes = base64.b64encode(template_bytes)
+    base64_string = base64_bytes.decode("ascii")
 
     path = "/control/v1/cluster"
     json_body = {

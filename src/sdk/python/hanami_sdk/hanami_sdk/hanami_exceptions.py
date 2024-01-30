@@ -39,5 +39,4 @@ class ConflictException(Exception):
 
 class InternalServerErrorException(Exception):
     def __init__(self):
-        self.message = message
-        super().__init__(f"Server internal error appeared.")
+        super().__init__("Server internal error appeared.")

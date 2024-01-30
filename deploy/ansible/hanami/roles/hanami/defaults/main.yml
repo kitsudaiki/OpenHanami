@@ -1,14 +1,14 @@
 ---
-debug: true
+hanami_debug: true
 
-docker_tag: "develop"
-listen_address: "0.0.0.0"
-log_dir: "/var/log/hanami"
+hanami_docker_tag: "develop"
+hanami_listen_address: "0.0.0.0"
+hanami_log_dir: "/var/log/hanami"
 
-dataset_location: "/etc/hanami/datasets"
-checkpoint_location: "/etc/hanami/checkpoints"
-tempfile_location: "/etc/hanami/tempfiles"
+hanami_dataset_location: "/etc/hanami/datasets"
+hanami_checkpoint_location: "/etc/hanami/checkpoints"
+hanami_tempfile_location: "/etc/hanami/tempfiles"
 
-token_key_path: "/etc/hanami/token_key"
-ssl_cert_path: "/etc/hanami/cert.pem"
-ssl_key_path: "/etc/hanami/key.pem"
+hanami_token_key_path: "/etc/hanami/token_key"
+hanami_ssl_cert_path: "/etc/hanami/cert.pem"
+hanami_ssl_key_path: "/etc/hanami/key.pem"

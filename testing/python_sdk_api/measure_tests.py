@@ -1,23 +1,13 @@
 #!python3
 
-import numpy as np
 import matplotlib.pyplot as plt
 from hanami_sdk import hanami_token
-from hanami_sdk import checkpoint
 from hanami_sdk import cluster
 from hanami_sdk import dataset
-from hanami_sdk import direct_io
-from hanami_sdk import logs
-from hanami_sdk import hosts
-from hanami_sdk import project
 from hanami_sdk import request_result
 from hanami_sdk import task
-from hanami_sdk import user
-from hanami_sdk import hanami_exceptions
-import test_values
 import json
 import time
-import base64
 import configparser
 
 
@@ -62,16 +52,15 @@ result = cluster.create_cluster(token, address, cluster_name, cluster_template)
 cluster_uuid = json.loads(result)["uuid"]
 
 train_dataset_uuid = dataset.upload_csv_files(token, address, train_dataset_name, train_inputs)
-request_dataset_uuid = dataset.upload_csv_files(token, address, request_dataset_name, request_inputs)
-
-
-
+request_dataset_uuid = dataset.upload_csv_files(
+    token, address, request_dataset_name, request_inputs)
 
 
 # train
-for i in range(0,100):
+for i in range(0, 100):
     print("poi: ", i)
-    result = task.create_task(token, address, generic_task_name, "train", cluster_uuid, train_dataset_uuid)
+    result = task.create_task(token, address, generic_task_name,
+                              "train", cluster_uuid, train_dataset_uuid)
     task_uuid = json.loads(result)["uuid"]
     finished = False
     while not finished:
@@ -83,7 +72,8 @@ for i in range(0,100):
 
 
 # test
-result = task.create_task(token, address, generic_task_name, "request", cluster_uuid, request_dataset_uuid)
+result = task.create_task(token, address, generic_task_name, "request",
+                          cluster_uuid, request_dataset_uuid)
 task_uuid = json.loads(result)["uuid"]
 
 finished = False
@@ -93,7 +83,6 @@ while not finished:
     print("wait for finish request-task")
     time.sleep(0.2)
 result = task.delete_task(token, address, task_uuid, cluster_uuid)
-
 
 
 result = request_result.get_request_result(token, address, task_uuid)
@@ -109,7 +98,6 @@ with open("out.txt", 'w') as file:
     # Write each value from the array to a new line
     for value in data:
         file.write(str(value) + '\n')
-
 
 
 plt.rcParams["figure.figsize"] = [10, 5]

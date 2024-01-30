@@ -1,9 +1,12 @@
 ---
 - name: Install docker
-  ansible.builtin.include: "install_docker.yml"
+  ansible.builtin.include_tasks:
+    file: install_docker.yml
 
 - name: Deploy Hanami
-  ansible.builtin.include: "deploy_hanami.yml"
-  
+  ansible.builtin.include_tasks:
+    file: deploy_hanami.yml
+
 - name: Install and configure nginx with ssl
-  ansible.builtin.include: "install_and_configure_nginx.yml"
+  ansible.builtin.include_tasks:
+    file: install_and_configure_nginx.yml

@@ -13,7 +13,6 @@
 # limitations under the License.
 
 from . import hanami_request
-import json
 
 
 def list_audit_logs(token: str,
@@ -29,7 +28,7 @@ def list_error_logs(token: str,
                     address: str,
                     user_id: str,
                     page: int) -> str:
-    path = "/control/v1/error_log";
+    path = "/control/v1/error_log"
     if user_id:
         values = f'user_id={user_id}&page={page}'
     else:

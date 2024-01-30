@@ -17,10 +17,8 @@ from . import hanami_request
 from . import hanami_exceptions
 from .hanami_messages import proto3_pb2
 import json
-import asyncio
 import math
 import time
-import ssl
 
 
 def list_datasets(token: str, address: str) -> str:
@@ -35,9 +33,9 @@ def get_dataset(token: str, address: str, dataset_uuid: str) -> str:
 
 
 def delete_dataset(token: str,
-                   address: str, 
+                   address: str,
                    checkpoint_uuid: str) -> str:
-    path = "/control/v1/dataset";
+    path = "/control/v1/dataset"
     values = f'uuid={checkpoint_uuid}'
     return hanami_request.send_delete_request(token, address, path, values)
 
@@ -58,10 +56,10 @@ def wait_until_upload_complete(token: str, address: str, uuid: str) -> bool:
     return True
 
 
-def send_data(token: str, 
-              address: str, 
-              dataset_uuid: str, 
-              file_uuid: str, 
+def send_data(token: str,
+              address: str,
+              dataset_uuid: str,
+              file_uuid: str,
               data) -> bool:
     # create initial request for the websocket-connection
     initial_ws_msg = {
@@ -72,12 +70,7 @@ def send_data(token: str,
     body_str = json.dumps(initial_ws_msg)
 
     base_address = address.split('/')[2]
-    websocket_address = "ws://" + base_address
-
-    if address.split('/')[0] == "https:":
-        websocket_address = "wss://" + base_address
-
-    with connect(websocket_address) as websocket:
+    with connect("ws://" + base_address) as websocket:
         websocket.send(body_str)
         message = websocket.recv()
         result_json = json.loads(message)
@@ -105,10 +98,10 @@ def send_data(token: str,
     return True
 
 
-def upload_mnist_files(token: str, 
-                       address: str, 
-                       name: str, 
-                       input_file_path: str, 
+def upload_mnist_files(token: str,
+                       address: str,
+                       name: str,
+                       input_file_path: str,
                        label_file_path: str) -> str:
     # read files
     with open(input_file_path, 'rb') as i_f:
@@ -135,13 +128,13 @@ def upload_mnist_files(token: str,
 
     # send data
     if not send_data(token, address, uuid, input_file_uuid, input_file_data):
-        raise exceptions.InternalServerErrorException()
+        raise hanami_exceptions.InternalServerErrorException()
 
     if not send_data(token, address, uuid, label_file_uuid, label_file_data):
-        raise exceptions.InternalServerErrorException()
+        raise hanami_exceptions.InternalServerErrorException()
 
-    if not wait_until_upload_complete(token, address, uuid): 
-        raise exceptions.InternalServerErrorException()
+    if not wait_until_upload_complete(token, address, uuid):
+        raise hanami_exceptions.InternalServerErrorException()
 
     # finalize
     path = "/control/v1/mnist/dataset"
@@ -157,9 +150,9 @@ def upload_mnist_files(token: str,
     return uuid
 
 
-def upload_csv_files(token: str, 
-                     address: str, 
-                     name: str, 
+def upload_csv_files(token: str,
+                     address: str,
+                     name: str,
                      input_file_path: str) -> str:
     # read files
     with open(input_file_path, 'rb') as i_f:
@@ -181,10 +174,10 @@ def upload_csv_files(token: str,
 
     # send data
     if not send_data(token, address, uuid, input_file_uuid, input_file_data):
-        raise exceptions.InternalServerErrorException()
+        raise hanami_exceptions.InternalServerErrorException()
 
-    if not wait_until_upload_complete(token, address, uuid): 
-        raise exceptions.InternalServerErrorException()
+    if not wait_until_upload_complete(token, address, uuid):
+        raise hanami_exceptions.InternalServerErrorException()
 
     # finalize
     path = "/control/v1/csv/dataset"
