@@ -23,4 +23,5 @@ CMakeLists.txt.user
 build
 src/sdk/python/sdk_test_env
 *.proto3.pb.go
-
+src/sdk/python/hanami_sdk/build
+src/sdk/python/hanami_sdk/hanami_sdk.egg-info

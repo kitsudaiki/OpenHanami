@@ -19,7 +19,6 @@ from hanami_sdk import checkpoint
 from hanami_sdk import cluster
 from hanami_sdk import dataset
 from hanami_sdk import direct_io
-from hanami_sdk import logs
 from hanami_sdk import hosts
 from hanami_sdk import project
 from hanami_sdk import request_result
@@ -29,7 +28,6 @@ from hanami_sdk import hanami_exceptions
 import test_values
 import json
 import time
-import base64
 import configparser
 
 
@@ -121,7 +119,6 @@ def delete_all_checkpoints():
         checkpoint.delete_checkpoint(token, address, entry[0])
 
 
-
 def delete_all_results():
     result = request_result.list_request_results(token, address)
     body = json.loads(result)["body"]
@@ -133,20 +130,20 @@ def delete_all_results():
 def test_project():
     print("test project")
 
-    result = project.create_project(token, address, projet_id, project_name)
+    project.create_project(token, address, projet_id, project_name)
     try:
-        result = project.create_project(token, address, projet_id, project_name)
+        project.create_project(token, address, projet_id, project_name)
     except hanami_exceptions.ConflictException:
         pass
-    result = project.list_projects(token, address)
-    result = project.get_project(token, address, projet_id)
+    project.list_projects(token, address)
+    project.get_project(token, address, projet_id)
     try:
-        result = project.get_project(token, address, "fail_project")
+        project.get_project(token, address, "fail_project")
     except hanami_exceptions.NotFoundException:
         pass
-    result = project.delete_project(token, address, projet_id)
+    project.delete_project(token, address, projet_id)
     try:
-        result = project.delete_project(token, address, projet_id)
+        project.delete_project(token, address, projet_id)
     except hanami_exceptions.NotFoundException:
         pass
 
@@ -154,20 +151,20 @@ def test_project():
 def test_user():
     print("test user")
 
-    result = user.create_user(token, address, user_id, user_name, password, is_admin)
+    user.create_user(token, address, user_id, user_name, password, is_admin)
     try:
-        result = user.create_user(token, address, user_id, user_name, password, is_admin)
+        user.create_user(token, address, user_id, user_name, password, is_admin)
     except hanami_exceptions.ConflictException:
         pass
-    result = user.list_users(token, address)
-    result = user.get_user(token, address, user_id)
+    user.list_users(token, address)
+    user.get_user(token, address, user_id)
     try:
-        result = user.get_user(token, address, "fail_user")
+        user.get_user(token, address, "fail_user")
     except hanami_exceptions.NotFoundException:
         pass
-    result = user.delete_user(token, address, user_id)
+    user.delete_user(token, address, user_id)
     try:
-        result = user.delete_user(token, address, user_id)
+        user.delete_user(token, address, user_id)
     except hanami_exceptions.NotFoundException:
         pass
 
@@ -175,7 +172,8 @@ def test_user():
 def test_dataset():
     print("test dataset")
 
-    result = dataset.upload_mnist_files(token, address, train_dataset_name, train_inputs, train_labels)
+    result = dataset.upload_mnist_files(
+        token, address, train_dataset_name, train_inputs, train_labels)
     dataset_uuid = result
 
     result = dataset.list_datasets(token, address)
@@ -229,7 +227,7 @@ def test_workflow():
         cluster.switch_host(token, address, cluster_uuid, target_host_uuid)
 
     # run training
-    for i in range(0,1):
+    for i in range(0, 1):
         result = task.create_task(
             token, address, generic_task_name, "train", cluster_uuid, train_dataset_uuid)
         task_uuid = json.loads(result)["uuid"]
@@ -292,7 +290,8 @@ def test_workflow():
     for i in range(0, 100):
         direct_io.send_train_input(ws, "test_input", test_values.get_direct_io_test_intput(), False)
         direct_io.send_train_input(ws, "test_output", test_values.get_direct_io_test_output(), True)
-    output_values = direct_io.send_request_input(ws, "test_input", test_values.get_direct_io_test_intput(), True)
+    output_values = direct_io.send_request_input(
+        ws, "test_input", test_values.get_direct_io_test_intput(), True)
     # print(output_values)
     ws.close()
 

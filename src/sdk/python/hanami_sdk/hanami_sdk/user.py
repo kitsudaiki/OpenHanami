@@ -15,9 +15,10 @@
 from . import hanami_request
 import json
 
+
 def create_user(token: str,
-                address: str, 
-                user_id: str, 
+                address: str,
+                user_id: str,
                 user_name: str,
                 passwort: str,
                 is_admin: bool) -> str:
@@ -48,13 +49,14 @@ def delete_user(token: str, address: str, user_id: str) -> str:
     values = f'id={user_id}'
     return hanami_request.send_delete_request(token, address, path, values)
 
+
 def add_roject_to_user(token: str,
-                       address: str, 
-                       user_id: str, 
+                       address: str,
+                       user_id: str,
                        project_id: str,
                        role: str,
                        is_project_admin: bool) -> str:
-    path = "/control/v1/user/project";
+    path = "/control/v1/user/project"
     json_body = {
         "id": user_id,
         "project_id": project_id,
@@ -64,11 +66,12 @@ def add_roject_to_user(token: str,
     body_str = json.dumps(json_body)
     return hanami_request.send_post_request(token, address, path, body_str)
 
+
 def remove_project_fromUser(token: str,
-                            address: str, 
-                            user_id: str, 
-                            project_id: str)-> str:
-    path = "/control/v1/user/project";
+                            address: str,
+                            user_id: str,
+                            project_id: str) -> str:
+    path = "/control/v1/user/project"
     values = f'project_id={project_id}&id={user_id}'
     return hanami_request.send_delete_request(token, address, path, values)
 
@@ -79,11 +82,11 @@ def list_projects_of_user(token: str, address: str) -> str:
 
 
 def switch_project(token: str,
-                   address: str, 
+                   address: str,
                    project_id: str) -> str:
-    path = "/control/v1/user/project";
+    path = "/control/v1/user/project"
     json_body = {
-        "project_id": user_name,
+        "project_id": project_id,
     }
     body_str = json.dumps(json_body)
     return hanami_request.send_post_request(token, address, path, body_str)

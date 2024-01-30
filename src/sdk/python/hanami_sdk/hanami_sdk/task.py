@@ -17,9 +17,9 @@ import json
 
 
 def create_task(token: str,
-                address: str, 
+                address: str,
                 name: str,
-                task_type: str, 
+                task_type: str,
                 cluster_uuid: str,
                 dataset_uuid: str) -> str:
     path = "/control/v1/task"
