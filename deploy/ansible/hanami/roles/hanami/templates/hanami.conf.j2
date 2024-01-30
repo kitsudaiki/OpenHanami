@@ -1,25 +1,25 @@
 [DEFAULT] 
-debug = {{debug}} 
-log_path = {{log_dir}} 
+debug = {{hanami_debug}} 
+log_path = {{hanami_log_dir}} 
 database = "/etc/hanami/hanami_db" 
 socket_path = "/tmp/hanami"
 
 [storage] 
-dataset_location = {{dataset_location}} 
-checkpoint_location = {{checkpoint_location}}
-tempfile_location = {{tempfile_location}}
+dataset_location = {{hanami_dataset_location}} 
+checkpoint_location = {{hanami_checkpoint_location}}
+tempfile_location = {{hanami_tempfile_location}}
 tempfile_timeout = 10
 
 [auth] 
 policies = "/etc/hanami/policies" 
-token_key_path = {{token_key_path}} 
+token_key_path = {{hanami_token_key_path}} 
 token_expire_time = 3600
 
 [http] 
 enable = True 
-ip = {{listen_address}}
-certificate = {{ssl_cert_path}} 
-key = {{ssl_key_path}} 
+ip = {{hanami_listen_address}}
+certificate = {{hanami_ssl_cert_path}} 
+key = {{hanami_ssl_key_path}} 
 dashboard_files = "/etc/Hanami-Dashboard/src" 
 port = 11418
 enable_dashboard = True
