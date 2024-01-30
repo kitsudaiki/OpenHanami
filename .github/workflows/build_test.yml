@@ -5,7 +5,7 @@ jobs:
   clang-format-check:
     runs-on: ubuntu-latest
     container:
-      image: kitsudaiki/ci-check:0.2.0
+      image: kitsudaiki/ci-check:0.3.0
     name: "clang-format check"
     steps:
       - name: "Checkout repository"
@@ -26,7 +26,7 @@ jobs:
   cpp-check:
     runs-on: ubuntu-latest
     container:
-      image: kitsudaiki/ci-check:0.2.0
+      image: kitsudaiki/ci-check:0.3.0
     name: "cppcheck"
     steps:
       - name: "Checkout repository"
