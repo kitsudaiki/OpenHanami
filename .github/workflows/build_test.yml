@@ -52,8 +52,23 @@ jobs:
         run: |
            ansible-lint deploy/ansible/hanami
 
+  flake8-check:
+    runs-on: ubuntu-latest
+    container:
+      image: kitsudaiki/ci-check:0.3.0
+    name: "flake8"
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v4
+      - name: "ls"
+        run: ls -l
+      - name: "Run tests"
+        run: |
+           flake8 testing/python_sdk_api/sdk_api_test.py
+           flake8 src/sdk/python
+
   build:
-    needs: [ cpp-check, clang-format-check, ansible-lint ]
+    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check ]
     runs-on: ubuntu-latest
     container:
       image: kitsudaiki/hanami_builder:0.6.1
