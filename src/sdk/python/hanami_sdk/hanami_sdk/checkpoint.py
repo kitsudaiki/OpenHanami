@@ -13,7 +13,6 @@
 # limitations under the License.
 
 from . import hanami_request
-import json
 
 
 def list_checkpoints(token: str, address: str) -> str:
@@ -22,8 +21,8 @@ def list_checkpoints(token: str, address: str) -> str:
 
 
 def delete_checkpoint(token: str,
-                      address: str, 
+                      address: str,
                       checkpoint_uuid: str) -> str:
-    path = "/control/v1/checkpoint";
+    path = "/control/v1/checkpoint"
     values = f'uuid={checkpoint_uuid}'
     return hanami_request.send_delete_request(token, address, path, values)

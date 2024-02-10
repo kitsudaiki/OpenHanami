@@ -2,6 +2,7 @@ from setuptools import setup
 from setuptools.command.install import install
 from subprocess import check_call
 
+
 class GenerateProtobufMessages(install):
     def run(self):
         # Run your custom command here
@@ -13,6 +14,7 @@ class GenerateProtobufMessages(install):
 
         # Continue with the default installation process
         install.run(self)
+
 
 setup(
     name='hanami_sdk',

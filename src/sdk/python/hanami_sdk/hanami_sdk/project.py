@@ -17,8 +17,8 @@ import json
 
 
 def create_project(token: str,
-                   address: str, 
-                   project_id: str, 
+                   address: str,
+                   project_id: str,
                    project_name: str) -> str:
     path = "/control/v1/project"
     json_body = {

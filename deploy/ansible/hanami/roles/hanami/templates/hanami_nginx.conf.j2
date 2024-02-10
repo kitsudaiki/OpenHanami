@@ -2,21 +2,21 @@ server
 {
     listen 80;
     server_tokens off;
-    server_name {{listen_address}};
+    server_name {{hanami_listen_address}};
     return 301 https://$host$request_uri;
 }
 
 server
 {
     server_tokens off;
-    server_name {{listen_address}};
+    server_name {{hanami_listen_address}};
 
     listen 443 ssl http2;
     listen [::]:443 ssl http2;
 
     #certs sent to the client in SERVER HELLO are concatenated in ssl_certificate
-    ssl_certificate {{ ssl_cert_path }};
-    ssl_certificate_key {{ ssl_key_path }};
+    ssl_certificate {{ hanami_ssl_cert_path }};
+    ssl_certificate_key {{ hanami_ssl_key_path }};
     ssl_session_timeout 1d;
     ssl_session_cache shared:SSL:50m;
     ssl_session_tickets off;

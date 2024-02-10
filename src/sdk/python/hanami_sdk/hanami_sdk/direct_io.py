@@ -12,9 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from websockets.sync.client import connect
 from .hanami_messages import proto3_pb2
-import asyncio
 
 
 def send_train_input(ws, brick_name, values, is_last):
@@ -26,7 +24,7 @@ def send_train_input(ws, brick_name, values, is_last):
     cluster_io_msg.numberOfValues = len(values)
     cluster_io_msg.values.extend(values)
     ws.send(cluster_io_msg.SerializeToString())
-    message = ws.recv()
+    ws.recv()
 
 
 def send_request_input(ws, brick_name, values, is_last):

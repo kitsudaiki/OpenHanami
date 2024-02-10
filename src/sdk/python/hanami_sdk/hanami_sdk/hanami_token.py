@@ -13,12 +13,11 @@
 # limitations under the License.
 
 import requests
-import json
 from . import hanami_exceptions
 
 
-def request_token(address: str, 
-                  user_id: str, 
+def request_token(address: str,
+                  user_id: str,
                   pw: str) -> str:
     url = f'{address}/control/v1/token'
     json_body = {
@@ -26,7 +25,7 @@ def request_token(address: str,
         "password": pw,
     }
 
-    response = requests.post(url, json=json_body, verify=False) 
+    response = requests.post(url, json=json_body, verify=False)
     if response.status_code == 200:
         return response.json()["token"]
     if response.status_code == 400:
