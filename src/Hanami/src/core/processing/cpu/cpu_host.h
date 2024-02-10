@@ -58,6 +58,8 @@ class CpuHost : public LogicalHost
     void initBuffer(const uint32_t id);
     bool initWorkerThreads();
 
+    void continueAllThreads();
+
     std::vector<WorkerThread*> m_workerThreads;
     std::deque<WorkerTask> m_workerTaskQueue;
     std::mutex m_queue_lock;
