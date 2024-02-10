@@ -55,6 +55,7 @@ class WorkerThread : public Hanami::Thread
     bool handleOutputBackward(Cluster& cluster);
 
     CpuHost* m_host = nullptr;
+    uint32_t m_inactiveCounter = 0;
 };
 
 #endif  // WORKERTHREAD_H

@@ -54,7 +54,14 @@ WorkerThread::run()
             handleTask(task);
         }
         else {
-            usleep(10);
+            if (m_inactiveCounter < 100) {
+                usleep(10);
+                m_inactiveCounter++;
+            }
+            else {
+                m_inactiveCounter = 0;
+                blockThread();
+            }
         }
     }
 }
