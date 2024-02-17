@@ -53,7 +53,7 @@ class Host
     bool hasHyperThrading;
     std::vector<CpuPackage*> cpuPackages;
 
-    CpuPackage* getPackage(const uint32_t packageId) const;
+    CpuPackage* getPackage(const uint32_t pos) const;
     CpuPackage* addPackage(const uint32_t packageId);
 
     double getTotalTemperature(ErrorContainer& error);
