@@ -59,6 +59,8 @@ class CpuThread
     json toJson();
 
    private:
+    bool m_speedInitialized = true;
+    bool m_powerInitialized = true;
 #if (defined(__i386__)) || (defined(__x86_64__))
     Rapl m_rapl;
 #endif
