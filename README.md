@@ -3,7 +3,7 @@
 ![Github workfloat status](https://img.shields.io/github/actions/workflow/status/kitsudaiki/Hanami/build_test.yml?branch=develop&style=flat-square&label=build%20and%20test)
 ![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/kitsudaiki/Hanami?label=version&style=flat-square)
 ![GitHub](https://img.shields.io/github/license/kitsudaiki/Hanami-AI?style=flat-square)
-![Platform](https://img.shields.io/badge/platform-Linux--x64-lightgrey?style=flat-square)
+![Platform](https://img.shields.io/badge/Platform-Linux--x64|arm64-lightgrey?style=flat-square)
 
 <p align="center">
   <img src="assets/hanami-logo-with-text.png" width="500" height="594" />
