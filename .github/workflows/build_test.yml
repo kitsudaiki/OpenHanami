@@ -245,7 +245,7 @@ jobs:
       - name: "Build project"
         run:  |
           cd ${GITHUB_REPOSITORY#*/}
-          cmake -DCMAKE_BUILD_TYPE=Release "$PARENT_DIR/Hanami"
+          cmake -DCMAKE_BUILD_TYPE=Release .
           make -j8
       - name: Docker meta
         id: meta
