@@ -8,77 +8,64 @@ env:
 jobs:
   clang-format-check:
     runs-on: ubuntu-latest
-    container:
-      image: kitsudaiki/ci-check:0.3.0
-    name: "clang-format check"
+    env:
+      FORCE_COLOR: 1
     steps:
-      - name: "Checkout repository"
-        uses: actions/checkout@v4
-      - name: "ls"
-        run: ls -l
-      - name: "Run tests"
-        run: |
-          find . -regex '.*\.\(h$\|c$\|hpp$\|cpp$\)' | while read f
-          do
-              clang-format-15 -style=file:.clang-format --dry-run --Werror $f
-              if [ $? -ne 0 ]
-              then
-                  exit 1
-              fi
-          done
+      - uses: earthly/actions-setup@v1
+        with:
+          version: v0.8.0
+      - uses: actions/checkout@v4
+      - name: Run check
+        run: earthly --ci +clang-format
 
   cpp-check:
     runs-on: ubuntu-latest
-    container:
-      image: kitsudaiki/ci-check:0.3.0
-    name: "cppcheck"
+    env:
+      FORCE_COLOR: 1
     steps:
-      - name: "Checkout repository"
-        uses: actions/checkout@v4
-      - name: "ls"
-        run: ls -l
-      - name: "Run tests"
-        run: |
-           cppcheck --error-exitcode=1 src/Hanami
-           cppcheck --error-exitcode=1 src/libraries
+      - uses: earthly/actions-setup@v1
+        with:
+          version: v0.8.0
+      - uses: actions/checkout@v4
+      - name: Run check
+        run: earthly --ci +cppcheck
 
   ansible-lint:
     runs-on: ubuntu-latest
-    container:
-      image: kitsudaiki/ci-check:0.3.0
-    name: "ansible-lint"
+    env:
+      FORCE_COLOR: 1
     steps:
-      - name: "Checkout repository"
-        uses: actions/checkout@v4
-      - name: "ls"
-        run: ls -l
-      - name: "Run tests"
-        run: |
-           ansible-lint deploy/ansible/hanami
+      - uses: earthly/actions-setup@v1
+        with:
+          version: v0.8.0
+      - uses: actions/checkout@v4
+      - name: Run check
+        run: earthly --ci +ansible-lint
 
   flake8-check:
     runs-on: ubuntu-latest
-    container:
-      image: kitsudaiki/ci-check:0.3.0
-    name: "flake8"
+    env:
+      FORCE_COLOR: 1
     steps:
-      - name: "Checkout repository"
-        uses: actions/checkout@v4
-      - name: "ls"
-        run: ls -l
-      - name: "Run tests"
-        run: |
-           flake8 testing/python_sdk_api/sdk_api_test.py
-           flake8 src/sdk/python
+      - uses: earthly/actions-setup@v1
+        with:
+          version: v0.8.0
+      - uses: actions/checkout@v4
+      - name: Run check
+        run: earthly --ci +flake8
+
 
   build:
+    name: "Compile code"
     needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check ]
     runs-on: ubuntu-latest
-    container:
-      image: kitsudaiki/hanami_builder:0.6.1
-    name: "Compile code"
+    env:
+      FORCE_COLOR: 1
     steps:
-      - name: "Checkout repository"
+      - uses: earthly/actions-setup@v1
+        with:
+          version: v0.8.0
+      - name: Checkout repository
         run: |
           # use manually clone, because with the "actions/checkout@v3" action the name of the
           # branch can not be read by the git commands, which is necessary for the build-script
@@ -87,128 +74,134 @@ jobs:
           git checkout ${GITHUB_REF#refs/heads/}
           git submodule init
           git submodule update --recursive
-      - name: "Build project"
-        run:  |
-          cd ${GITHUB_REPOSITORY#*/}
-          ./build.sh test
-      - name: "Copy files"
+      - name: Compile code
         run: |
-          mkdir /build_result
           cd ${GITHUB_REPOSITORY#*/}
-          # Workaround, because I hadn'd found a way to define a build-target directory when using plain qmake and make
-          # and keeping all files in the directory is horrible slow in the articats
-          find ./src/ -type f -name "*.cpp" -exec rm {} \;
-          find ./src/ -type f -name "*.h" -exec rm {} \;
-          find ./src/ -type f -name "*.o" -exec rm {} \;
-          find ./src/ -type f -name "*.a" -exec rm {} \;
-          cp -r src/* /build_result/
+          earthly --artifact +compile-code/tmp/Hanami ./builds/binaries
+      - name: Copy files
+        run: |
+          mkdir /tmp/build_result
+          cd ${GITHUB_REPOSITORY#*/}
+          cp -r builds/binaries/* /tmp/build_result/
       - name: Create artifact
         uses: actions/upload-artifact@v4
         with:
           name: result
-          path: /build_result
+          path: /tmp/build_result
 
   unit_tests:
     needs: build
     runs-on: ubuntu-latest
     container:
-      image: kitsudaiki/hanami_base:develop
+      image: ubuntu:22.04
     name: "Unit-Tests"
     steps:
+      - name: Install dependencies
+        run: |
+          apt-get update
+          apt-get install -y openssl libuuid1 libcrypto++8 libsqlite3-0 libprotobuf23 libboost1.74 libcudart11.0
       - name: Get artifact
         uses: actions/download-artifact@v4
         with:
           name: result
-          path: /build_result
+          path: /tmp/build_result
       - name: "Check target-directory"
-        run: ls -l /build_result
+        run: ls -l /tmp/build_result
       - name: "Run test: hanami_common"
         run: |
-          chmod +x /build_result/libraries/hanami_common/tests/unit_tests/hanami_common_unit_tests
-          /build_result/libraries/hanami_common/tests/unit_tests/hanami_common_unit_tests
+          chmod +x /tmp/build_result/hanami_common_unit_tests
+          /tmp/build_result/hanami_common_unit_tests
       - name: "Run test: hanami_config"
         run: |
-          chmod +x /build_result/libraries/hanami_config/tests/unit_tests/hanami_config_unit_tests
-          /build_result/libraries/hanami_config/tests/unit_tests/hanami_config_unit_tests
+          chmod +x /tmp/build_result/hanami_config_unit_tests
+          /tmp/build_result/hanami_config_unit_tests
       - name: "Run test: hanami_crypto"
         run: |
-          chmod +x /build_result/libraries/hanami_crypto/tests/unit_tests/hanami_crypto_unit_tests
-          /build_result/libraries/hanami_crypto/tests/unit_tests/hanami_crypto_unit_tests
+          chmod +x /tmp/build_result/hanami_crypto_unit_tests
+          /tmp/build_result/hanami_crypto_unit_tests
       - name: "Run test: hanami_ini"
         run: |
-          chmod +x /build_result/libraries/hanami_ini/tests/unit_tests/hanami_ini_unit_tests
-          /build_result/libraries/hanami_ini/tests/unit_tests/hanami_ini_unit_tests
+          chmod +x /tmp/build_result/hanami_ini_unit_tests
+          /tmp/build_result/hanami_ini_unit_tests
       - name: "Run test: hanami_sqlite"
         run: |
-          chmod +x /build_result/libraries/hanami_sqlite/tests/unit_tests/hanami_sqlite_unit_tests
-          /build_result/libraries/hanami_sqlite/tests/unit_tests/hanami_sqlite_unit_tests
+          chmod +x /tmp/build_result/hanami_sqlite_unit_tests
+          /tmp/build_result/hanami_sqlite_unit_tests
       - name: "Run test: hanami_cluster_parser"
         run: |
-          chmod +x /build_result/libraries/hanami_cluster_parser/tests/unit_tests/hanami_cluster_parser_unit_tests
-          /build_result/libraries/hanami_cluster_parser/tests/unit_tests/hanami_cluster_parser_unit_tests
+          chmod +x /tmp/build_result/hanami_cluster_parser_unit_tests
+          /tmp/build_result/hanami_cluster_parser_unit_tests
       - name: "Run test: hanami_policies"
         run: |
-          chmod +x /build_result/libraries/hanami_policies/tests/unit_tests/hanami_policies_unit_tests
-          /build_result/libraries/hanami_policies/tests/unit_tests/hanami_policies_unit_tests
+          chmod +x /tmp/build_result/hanami_policies_unit_tests
+          /tmp/build_result/hanami_policies_unit_tests
       - name: "Run test: hanami_args"
         run: |
-          chmod +x /build_result/libraries/hanami_args/tests/unit_tests/hanami_args_unit_tests
-          /build_result/libraries/hanami_args/tests/unit_tests/hanami_args_unit_tests
+          chmod +x  /tmp/build_result/hanami_args_unit_tests
+          /tmp/build_result/hanami_args_unit_tests
 
   memory_leak_tests:
     needs: build
     runs-on: ubuntu-latest
     container:
-      image: kitsudaiki/hanami_base:develop
+      image: ubuntu:22.04
     name: "Memory-Leak-Tests"
     steps:
+      - name: Install dependencies
+        run: |
+          apt-get update
+          apt-get install -y openssl libuuid1 libcrypto++8 libsqlite3-0 libprotobuf23 libboost1.74 libcudart11.0
       - name: Get artifact
         uses: actions/download-artifact@v4
         with:
           name: result
-          path: /build_result
+          path: /tmp/build_result
       - name: "Check target-directory"
-        run: ls -l /build_result
+        run: ls -l /tmp/build_result
       - name: "Run test: hanami_common"
         run: |
-          chmod +x /build_result/libraries/hanami_common/tests/memory_leak_tests/hanami_common_memory_leak_tests
-          /build_result/libraries/hanami_common/tests/memory_leak_tests/hanami_common_memory_leak_tests
+          chmod +x /tmp/build_result/hanami_common_memory_leak_tests
+          /tmp/build_result/hanami_common_memory_leak_tests
       - name: "Run test: hanami_cluster_parser"
         run: |
-          chmod +x /build_result/libraries/hanami_cluster_parser/tests/memory_leak_tests/hanami_cluster_parser_memory_leak_tests
-          /build_result/libraries/hanami_cluster_parser/tests/memory_leak_tests/hanami_cluster_parser_memory_leak_tests
+          chmod +x /tmp/build_result/hanami_cluster_parser_memory_leak_tests
+          /tmp/build_result/hanami_cluster_parser_memory_leak_tests
 
 
   functional_tests:
     needs: build
     runs-on: ubuntu-latest
     container:
-      image: kitsudaiki/hanami_base:develop
+      image: ubuntu:22.04
     name: "Functional-Tests"
     steps:
+      - name: Install dependencies
+        run: |
+          apt-get update
+          apt-get install -y openssl libuuid1 libcrypto++8 libsqlite3-0 libprotobuf23 libboost1.74 libcudart11.0
       - name: Get artifact
         uses: actions/download-artifact@v4
         with:
           name: result
-          path: /build_result
+          path: /tmp/build_result
       - name: "Check target-directory"
-        run: ls -l /build_result
+        run: ls -l /tmp/build_result
       - name: "Run test: hanami_config"
         run: |
-          chmod +x /build_result/libraries/hanami_config/tests/functional_tests/hanami_config_functional_tests
-          /build_result/libraries/hanami_config/tests/functional_tests/hanami_config_functional_tests
+          chmod +x /tmp/build_result/hanami_config_functional_tests
+          /tmp/build_result/hanami_config_functional_tests
       # - name: "Run test: hanami_obj"
       #   run: |
-      #     chmod +x /build_result/libraries/hanami_obj/tests/functional_tests/functional_tests
-      #     /build_result/libraries/hanami_obj/tests/functional_tests/functional_tests
+      #     chmod +x /tmp/build_result/libraries/hanami_obj/tests/functional_tests/functional_tests
+      #     /tmp/build_result/libraries/hanami_obj/tests/functional_tests/functional_tests
       - name: "Run test: hanami_database"
         run: |
-          chmod +x /build_result/libraries/hanami_database/tests/functional_tests/hanami_database_functional_tests
-          /build_result/libraries/hanami_database/tests/functional_tests/hanami_database_functional_tests
+          chmod +x /tmp/build_result/hanami_database_functional_tests
+          /tmp/build_result/hanami_database_functional_tests
       # - name: "Run test: hanami_network"
       #   run: |
-      #     chmod +x /build_result/libraries/hanami_network/tests/functional_tests/functional_tests
-      #     /build_result/libraries/hanami_network/tests/functional_tests/functional_tests
+      #     chmod +x /tmp/build_result/libraries/hanami_network/tests/functional_tests/functional_tests
+      #     /tmp/build_result/libraries/hanami_network/tests/functional_tests/functional_tests
 
   cleanup:
     needs: [ unit_tests, memory_leak_tests, functional_tests ]
@@ -252,7 +245,8 @@ jobs:
       - name: "Build project"
         run:  |
           cd ${GITHUB_REPOSITORY#*/}
-          ./build.sh
+          cmake -DCMAKE_BUILD_TYPE=Release "$PARENT_DIR/Hanami"
+          make -j8
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
