@@ -66,12 +66,6 @@ ansible-lint:
     RUN ansible-lint deploy/ansible/hanami
 
 
-
-
-
-
-
-
 prepare-build-dependencies:
     RUN apt-get update && \
         apt-get install -y clang-15 \
