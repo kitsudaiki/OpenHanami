@@ -18,5 +18,5 @@ COPY src/libraries/hanami_messages /etc/Hanami-Dashboard/src/hanami_messages
 COPY src/frontend/Hanami-Dashboard-Dependencies /etc/Hanami-Dashboard/src/Hanami-Dashboard-Dependencies
 
 # Hanami
-COPY src/Hanami/Hanami /usr/bin/Hanami
+COPY ./builds/binaries/Hanami /usr/bin/Hanami
 CMD Hanami
