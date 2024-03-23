@@ -15,7 +15,7 @@
 from .hanami_messages import proto3_pb2
 
 
-def send_train_input(ws, brick_name, values, is_last):
+def send_train_input(ws, brick_name, values, is_last, verify_connection: bool = True):
 
     cluster_io_msg = proto3_pb2.ClusterIO_Message()
     cluster_io_msg.brickName = brick_name
@@ -27,7 +27,7 @@ def send_train_input(ws, brick_name, values, is_last):
     ws.recv()
 
 
-def send_request_input(ws, brick_name, values, is_last):
+def send_request_input(ws, brick_name, values, is_last, verify_connection: bool = True):
 
     cluster_io_msg = proto3_pb2.ClusterIO_Message()
     cluster_io_msg.brickName = brick_name

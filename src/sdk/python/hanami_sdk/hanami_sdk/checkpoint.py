@@ -15,14 +15,25 @@
 from . import hanami_request
 
 
-def list_checkpoints(token: str, address: str) -> str:
+def list_checkpoints(token: str,
+                     address: str,
+                     verify_connection: bool = True) -> str:
     path = "/control/v1/checkpoint/all"
-    return hanami_request.send_get_request(token, address, path, "")
+    return hanami_request.send_get_request(token,
+                                           address,
+                                           path,
+                                           "",
+                                           verify=verify_connection)
 
 
 def delete_checkpoint(token: str,
                       address: str,
-                      checkpoint_uuid: str) -> str:
+                      checkpoint_uuid: str,
+                      verify_connection: bool = True) -> str:
     path = "/control/v1/checkpoint"
     values = f'uuid={checkpoint_uuid}'
-    return hanami_request.send_delete_request(token, address, path, values)
+    return hanami_request.send_delete_request(token,
+                                              address,
+                                              path,
+                                              values,
+                                              verify=verify_connection)

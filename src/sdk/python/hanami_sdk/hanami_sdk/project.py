@@ -19,28 +19,53 @@ import json
 def create_project(token: str,
                    address: str,
                    project_id: str,
-                   project_name: str) -> str:
+                   project_name: str,
+                   verify_connection: bool = True) -> str:
     path = "/control/v1/project"
     json_body = {
         "id": project_id,
         "name": project_name,
     }
     body_str = json.dumps(json_body)
-    return hanami_request.send_post_request(token, address, path, body_str)
+    return hanami_request.send_post_request(token,
+                                            address,
+                                            path,
+                                            body_str,
+                                            verify=verify_connection)
 
 
-def get_project(token: str, address: str, project_id: str) -> str:
+def get_project(token: str,
+                address: str,
+                project_id: str,
+                verify_connection: bool = True) -> str:
     path = "/control/v1/project"
     values = f'id={project_id}'
-    return hanami_request.send_get_request(token, address, path, values)
+    return hanami_request.send_get_request(token,
+                                           address,
+                                           path,
+                                           values,
+                                           verify=verify_connection)
 
 
-def list_projects(token: str, address: str) -> str:
+def list_projects(token: str,
+                  address: str,
+                  verify_connection: bool = True) -> str:
     path = "/control/v1/project/all"
-    return hanami_request.send_get_request(token, address, path, "")
+    return hanami_request.send_get_request(token,
+                                           address,
+                                           path,
+                                           "",
+                                           verify=verify_connection)
 
 
-def delete_project(token: str, address: str, project_id: str) -> str:
+def delete_project(token: str,
+                   address: str,
+                   project_id: str,
+                   verify_connection: bool = True) -> str:
     path = "/control/v1/project"
     values = f'id={project_id}'
-    return hanami_request.send_delete_request(token, address, path, values)
+    return hanami_request.send_delete_request(token,
+                                              address,
+                                              path,
+                                              values,
+                                              verify=verify_connection)

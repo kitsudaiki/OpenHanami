@@ -21,7 +21,8 @@ def create_task(token: str,
                 name: str,
                 task_type: str,
                 cluster_uuid: str,
-                dataset_uuid: str) -> str:
+                dataset_uuid: str,
+                verify_connection: bool = True) -> str:
     path = "/control/v1/task"
     json_body = {
         "name": name,
@@ -30,22 +31,49 @@ def create_task(token: str,
         "dataset_uuid": dataset_uuid,
     }
     body_str = json.dumps(json_body)
-    return hanami_request.send_post_request(token, address, path, body_str)
+    return hanami_request.send_post_request(token,
+                                            address,
+                                            path,
+                                            body_str,
+                                            verify=verify_connection)
 
 
-def get_task(token: str, address: str, task_uuid: str, cluster_uuid: str) -> str:
+def get_task(token: str,
+             address: str,
+             task_uuid: str,
+             cluster_uuid: str,
+             verify_connection: bool = True) -> str:
     path = "/control/v1/task"
     values = f'uuid={task_uuid}&cluster_uuid={cluster_uuid}'
-    return hanami_request.send_get_request(token, address, path, values)
+    return hanami_request.send_get_request(token,
+                                           address,
+                                           path,
+                                           values,
+                                           verify=verify_connection)
 
 
-def list_tasks(token: str, address: str, cluster_uuid: str) -> str:
+def list_tasks(token: str,
+               address: str,
+               cluster_uuid: str,
+               verify_connection: bool = True) -> str:
     path = "/control/v1/task/all"
     values = f'cluster_uuid={cluster_uuid}'
-    return hanami_request.send_get_request(token, address, path, values)
+    return hanami_request.send_get_request(token,
+                                           address,
+                                           path,
+                                           values,
+                                           verify=verify_connection)
 
 
-def delete_task(token: str, address: str, task_uuid: str, cluster_uuid: str) -> str:
+def delete_task(token: str,
+                address: str,
+                task_uuid: str,
+                cluster_uuid: str,
+                verify_connection: bool = True) -> str:
     path = "/control/v1/task"
     values = f'uuid={task_uuid}&cluster_uuid={cluster_uuid}'
-    return hanami_request.send_delete_request(token, address, path, values)
+    return hanami_request.send_delete_request(token,
+                                              address,
+                                              path,
+                                              values,
+                                              verify=verify_connection)

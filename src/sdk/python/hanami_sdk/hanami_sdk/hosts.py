@@ -15,6 +15,12 @@
 from . import hanami_request
 
 
-def list_hosts(token: str, address: str) -> str:
+def list_hosts(token: str,
+               address: str,
+               verify_connection: bool = True) -> str:
     path = "/control/v1/host/all"
-    return hanami_request.send_get_request(token, address, path, "")
+    return hanami_request.send_get_request(token,
+                                           address,
+                                           path,
+                                           "",
+                                           verify=verify_connection)
