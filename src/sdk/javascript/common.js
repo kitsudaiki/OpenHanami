@@ -35,7 +35,7 @@ function makeHttpRequest(outputFunc, path, type, payload, token)
     // callback for fail
     requestConnection.onerror = function(e) 
     {
-        console.log("Failed to request request-results from shiori.");
+        console.log("Failed to request request-results from hanami.");
     };
 
     requestConnection.send(payload);

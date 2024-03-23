@@ -13,7 +13,6 @@ The SDK-library privides functions to interact with the API of the backend. At t
 ## Installation
 
 
-
 === "Python"
 
     ```bash
@@ -56,6 +55,9 @@ Each of the used HTTP-error codes results in a different exception. For the avai
 
         The `InternalServerErrorException` doesn't contain a message. If this exception appears, you have have to look into the logs on the server.
 
+## For insecure connections
+
+In case the server use self-signed certificates for its https-connection, the ssl verification can be disabled. Each functions has a paramater `verify_connection`, wich is per default `True`. This validation can be disabled by adding `,verify_connection=False` to the end of a function-call.
 
 ## Request Token
 

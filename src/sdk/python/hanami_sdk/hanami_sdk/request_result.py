@@ -16,28 +16,56 @@ from . import hanami_request
 import json
 
 
-def get_request_result(token: str, address: str, request_result_uuid: str) -> str:
+def get_request_result(token: str,
+                       address: str,
+                       request_result_uuid: str,
+                       verify_connection: bool = True) -> str:
     path = "/control/v1/request_result"
     values = f'uuid={request_result_uuid}'
-    return hanami_request.send_get_request(token, address, path, values)
+    return hanami_request.send_get_request(token,
+                                           address,
+                                           path,
+                                           values,
+                                           verify=verify_connection)
 
 
-def list_request_results(token: str, address: str) -> str:
+def list_request_results(token: str,
+                         address: str,
+                         verify_connection: bool = True) -> str:
     path = "/control/v1/request_result/all"
-    return hanami_request.send_get_request(token, address, path, "")
+    return hanami_request.send_get_request(token,
+                                           address,
+                                           path,
+                                           "",
+                                           verify=verify_connection)
 
 
-def delete_request_result(token: str, address: str, request_result_uuid: str) -> str:
+def delete_request_result(token: str,
+                          address: str,
+                          request_result_uuid: str,
+                          verify_connection: bool = True) -> str:
     path = "/control/v1/request_result"
     values = f'uuid={request_result_uuid}'
-    return hanami_request.send_delete_request(token, address, path, values)
+    return hanami_request.send_delete_request(token,
+                                              address,
+                                              path,
+                                              values,
+                                              verify=verify_connection)
 
 
-def check_against_dataset(token: str, address: str, result_uuid: str, dataset_uuid: str) -> str:
+def check_against_dataset(token: str,
+                          address: str,
+                          result_uuid: str,
+                          dataset_uuid: str,
+                          verify_connection: bool = True) -> str:
     path = "/control/v1/dataset/check"
     json_body = {
         "result_uuid": result_uuid,
         "dataset_uuid": dataset_uuid,
     }
     body_str = json.dumps(json_body)
-    return hanami_request.send_post_request(token, address, path, body_str)
+    return hanami_request.send_post_request(token,
+                                            address,
+                                            path,
+                                            body_str,
+                                            verify=verify_connection)
