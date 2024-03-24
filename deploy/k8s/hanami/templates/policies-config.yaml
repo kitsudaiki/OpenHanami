@@ -36,6 +36,9 @@ data:
     v1/foreward
     - GET: admin, member
 
+    v1/host/all
+    - GET: admin, member
+
     v1/mnist/dataset
     - POST: admin, member
     - PUT: admin, member
@@ -113,6 +116,9 @@ data:
     - POST: admin, member
 
     v1/cluster/set_mode
+    - PUT: admin, member
+
+    v1/cluster/switch_host
     - PUT: admin, member
 
     v1/cluster/all

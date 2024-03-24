@@ -148,6 +148,17 @@ CpuHost::initWorkerThreads()
 }
 
 /**
+ * @brief re-activate all blocked threads
+ */
+void
+CpuHost::continueAllThreads()
+{
+    for (WorkerThread* worker : m_workerThreads) {
+        worker->continueThread();
+    }
+}
+
+/**
  * @brief move the data of a cluster to this host
  *
  * @param cluster cluster to move
@@ -211,7 +222,7 @@ CpuHost::removeCluster(Cluster* cluster)
  * @brief empty in this case, because this is done by the worker-threads
  */
 void
-CpuHost::trainClusterForward(Cluster* cluster)
+CpuHost::trainClusterForward(Cluster*)
 {
 }
 
@@ -219,7 +230,7 @@ CpuHost::trainClusterForward(Cluster* cluster)
  * @brief empty in this case, because this is done by the worker-threads
  */
 void
-CpuHost::trainClusterBackward(Cluster* cluster)
+CpuHost::trainClusterBackward(Cluster*)
 {
 }
 
@@ -227,7 +238,7 @@ CpuHost::trainClusterBackward(Cluster* cluster)
  * @brief empty in this case, because this is done by the worker-threads
  */
 void
-CpuHost::requestCluster(Cluster* cluster)
+CpuHost::requestCluster(Cluster*)
 {
 }
 
@@ -242,6 +253,7 @@ CpuHost::addWorkerTaskToQueue(const WorkerTask task)
     const std::lock_guard<std::mutex> lock(m_queue_lock);
 
     m_workerTaskQueue.push_back(task);
+    continueAllThreads();
 }
 
 /**

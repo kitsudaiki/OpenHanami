@@ -18,14 +18,15 @@ from . import hanami_exceptions
 
 def request_token(address: str,
                   user_id: str,
-                  pw: str) -> str:
+                  pw: str,
+                  verify_connection: bool = True) -> str:
     url = f'{address}/control/v1/token'
     json_body = {
         "id": user_id,
         "password": pw,
     }
 
-    response = requests.post(url, json=json_body, verify=False)
+    response = requests.post(url, json=json_body, verify=verify_connection)
     if response.status_code == 200:
         return response.json()["token"]
     if response.status_code == 400:

@@ -61,24 +61,28 @@ CpuThread::initThread(Host* host)
     if (getMinimumSpeed(minSpeed, threadId, error) == false) {
         LOG_WARNING(error.toString());
         error.reset();
+        m_speedInitialized = false;
     }
 
     // max-speed
     if (getMaximumSpeed(maxSpeed, threadId, error) == false) {
         LOG_WARNING(error.toString());
         error.reset();
+        m_speedInitialized = false;
     }
 
     // current-min-speed
     if (getCurrentMinimumSpeed(currentMinSpeed, threadId, error) == false) {
         LOG_WARNING(error.toString());
         error.reset();
+        m_speedInitialized = false;
     }
 
     // current-max-speed
     if (getCurrentMaximumSpeed(currentMaxSpeed, threadId, error) == false) {
         LOG_WARNING(error.toString());
         error.reset();
+        m_speedInitialized = false;
     }
 
     // core-id
@@ -100,7 +104,10 @@ CpuThread::initThread(Host* host)
     if (m_rapl.initRapl(error) == false) {
         LOG_WARNING(error.toString());
         error.reset();
+        m_powerInitialized = false;
     }
+#else
+    m_powerInitialized = false;
 #endif
 
     // add thread to the topological overview
@@ -119,6 +126,10 @@ CpuThread::initThread(Host* host)
 uint64_t
 CpuThread::getCurrentThreadSpeed() const
 {
+    if (m_speedInitialized == false) {
+        return 0;
+    }
+
     ErrorContainer error;
 
     uint64_t speed = 0;
@@ -138,6 +149,10 @@ CpuThread::getCurrentThreadSpeed() const
 double
 CpuThread::getThermalSpec() const
 {
+    if (m_powerInitialized == false) {
+        return 0.0;
+    }
+
 #if (defined(__i386__)) || (defined(__x86_64__))
     // check if RAPL was successfully initialized
     if (m_rapl.isActive() == false) {
@@ -158,6 +173,10 @@ CpuThread::getThermalSpec() const
 double
 CpuThread::getTotalPackagePower()
 {
+    if (m_powerInitialized == false) {
+        return 0.0;
+    }
+
 #if (defined(__i386__)) || (defined(__x86_64__))
     // check if RAPL was successfully initialized
     if (m_rapl.isActive() == false) {
