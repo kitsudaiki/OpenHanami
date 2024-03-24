@@ -1,5 +1,32 @@
 # Changelog
 
+## v0.4.1
+
+- **Date**: 2024-03-23
+
+### Added
+
+- new steps were added to the CI-pipeline:
+    - added automatic build and push of amd64 and arm64 docker-images to docker hub
+    - added automatic build and push for the documentation to docker hub
+    - added SDK-API-Test
+    - added integration-tests for kubernetes- and ansible-setup with amd64 and arm64 docker-images
+    - added flake8 to lint python-code
+    - added ansible-lint to lint ansible-code
+
+### Changed
+
+- reduce cpu usage in idle state by blocking inactive threads
+- use [earthly](https://github.com/earthly/earthly) as new build-script and replace old pre-build docker-images in CI
+- use random instead of static salt-value for password-hashes
+- websocket-connections in SDK use now async-functions
+
+### Fixed
+
+- fixed linting-errors
+- fixes to run code in virtual machines, where reading system information had broke the setup
+
+
 ## v0.4.0
 
 - **Date**: 2024-01-21
