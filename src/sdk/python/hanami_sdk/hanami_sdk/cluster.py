@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from . import hanami_request
-from websockets.sync.client import connect
+import websockets
 import json
 import base64
 import ssl
@@ -150,10 +150,10 @@ def switch_host(token: str,
                                            verify=verify_connection)
 
 
-def switch_to_direct_mode(token: str,
-                          address: str,
-                          cluster_uuid: str,
-                          verify_connection: bool = True):
+async def switch_to_direct_mode(token: str,
+                                address: str,
+                                cluster_uuid: str,
+                                verify_connection: bool = True):
     path = "/control/v1/cluster/set_mode"
     json_body = {
         "new_state": "DIRECT",
@@ -185,9 +185,10 @@ def switch_to_direct_mode(token: str,
             ssl_context.verify_mode = ssl.CERT_NONE
 
     base_address = address.split('/')[2]
-    ws = connect(websocket_begin + "://" + base_address, ssl_context=ssl_context)
-    ws.send(body_str)
-    message = ws.recv()
+    ws = await websockets.connect(websocket_begin + "://" + base_address, ssl=ssl_context)
+
+    await ws.send(body_str)
+    message = await ws.recv()
     result_json = json.loads(message)
 
     if result_json["success"] is False:
