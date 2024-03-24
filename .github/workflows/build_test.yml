@@ -329,7 +329,7 @@ jobs:
 
   docker_build:
     name: "Build Docker-images"
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'create' && startsWith(github.ref, 'refs/tags/') }}
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
     needs: [ sdk_api_tests ]
     runs-on: ubuntu-22.04
     strategy:
@@ -415,7 +415,7 @@ jobs:
 
   docker_merge:
     name: "Merge and push Docker-image"
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'create' && startsWith(github.ref, 'refs/tags/') }}
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
     runs-on: ubuntu-22.04
     needs: [ docker_build ]
     steps:
@@ -456,7 +456,7 @@ jobs:
 
   kubernetes_test:
     name: "Integration-Tests (Kubernetes)"
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'create' && startsWith(github.ref, 'refs/tags/') }}
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
     needs: [ docker_merge ]
     runs-on: ubuntu-22.04
     strategy:
@@ -559,7 +559,7 @@ jobs:
 
   ansible_test:
     name: "Integration-Tests (Ansible)"
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'create' && startsWith(github.ref, 'refs/tags/') }}
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
     needs: [ docker_merge ]
     runs-on: ubuntu-22.04
     strategy:
@@ -655,7 +655,7 @@ jobs:
     name: Build and push docs
     needs: [ docker_merge ]
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'create' && startsWith(github.ref, 'refs/tags/') }}
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
     env:
       FORCE_COLOR: 1
     steps:
