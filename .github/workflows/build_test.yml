@@ -1,80 +1,85 @@
 name: build-and-test
+
 on: [push]
 
+env:
+  REGISTRY_IMAGE: kitsudaiki/hanami
+  REGISTRY_DOCS_IMAGE: kitsudaiki/hanami_docs
+
 jobs:
+
   clang-format-check:
     runs-on: ubuntu-latest
-    container:
-      image: kitsudaiki/ci-check:0.3.0
-    name: "clang-format check"
+    env:
+      FORCE_COLOR: 1
     steps:
-      - name: "Checkout repository"
-        uses: actions/checkout@v4
-      - name: "ls"
-        run: ls -l
-      - name: "Run tests"
-        run: |
-          find . -regex '.*\.\(h$\|c$\|hpp$\|cpp$\)' | while read f
-          do
-              clang-format-15 -style=file:.clang-format --dry-run --Werror $f
-              if [ $? -ne 0 ]
-              then
-                  exit 1
-              fi
-          done
+      - uses: earthly/actions-setup@v1
+        with:
+          version: v0.8.0
+      - uses: actions/checkout@v4
+      - 
+        name: Run check
+        run: earthly --ci +clang-format
+
+
 
   cpp-check:
     runs-on: ubuntu-latest
-    container:
-      image: kitsudaiki/ci-check:0.3.0
-    name: "cppcheck"
+    env:
+      FORCE_COLOR: 1
     steps:
-      - name: "Checkout repository"
-        uses: actions/checkout@v4
-      - name: "ls"
-        run: ls -l
-      - name: "Run tests"
-        run: |
-           cppcheck --error-exitcode=1 src/Hanami
-           cppcheck --error-exitcode=1 src/libraries
+      - uses: earthly/actions-setup@v1
+        with:
+          version: v0.8.0
+      - uses: actions/checkout@v4
+      - 
+        name: Run check
+        run: earthly --ci +cppcheck
+
+
 
   ansible-lint:
     runs-on: ubuntu-latest
-    container:
-      image: kitsudaiki/ci-check:0.3.0
-    name: "ansible-lint"
+    env:
+      FORCE_COLOR: 1
     steps:
-      - name: "Checkout repository"
-        uses: actions/checkout@v4
-      - name: "ls"
-        run: ls -l
-      - name: "Run tests"
-        run: |
-           ansible-lint deploy/ansible/hanami
+      - uses: earthly/actions-setup@v1
+        with:
+          version: v0.8.0
+      - uses: actions/checkout@v4
+      - 
+        name: Run check
+        run: earthly --ci +ansible-lint
+
+
 
   flake8-check:
     runs-on: ubuntu-latest
-    container:
-      image: kitsudaiki/ci-check:0.3.0
-    name: "flake8"
+    env:
+      FORCE_COLOR: 1
     steps:
-      - name: "Checkout repository"
-        uses: actions/checkout@v4
-      - name: "ls"
-        run: ls -l
-      - name: "Run tests"
-        run: |
-           flake8 testing/python_sdk_api/sdk_api_test.py
-           flake8 src/sdk/python
+      - uses: earthly/actions-setup@v1
+        with:
+          version: v0.8.0
+      - uses: actions/checkout@v4
+      - 
+        name: Run check
+        run: earthly --ci +flake8
+
+
 
   build:
+    name: "Compile code"
     needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check ]
     runs-on: ubuntu-latest
-    container:
-      image: kitsudaiki/hanami_builder:0.6.1
-    name: "build repository"
+    env:
+      FORCE_COLOR: 1
     steps:
-      - name: "Checkout repository"
+      - uses: earthly/actions-setup@v1
+        with:
+          version: v0.8.0
+      - 
+        name: Checkout repository
         run: |
           # use manually clone, because with the "actions/checkout@v3" action the name of the
           # branch can not be read by the git commands, which is necessary for the build-script
@@ -83,135 +88,637 @@ jobs:
           git checkout ${GITHUB_REF#refs/heads/}
           git submodule init
           git submodule update --recursive
-      - name: "Build project"
-        run:  |
-          cd ${GITHUB_REPOSITORY#*/}
-          ./build.sh test
-      - name: "Copy files"
+      - 
+        name: Compile code
         run: |
-          mkdir /build_result
           cd ${GITHUB_REPOSITORY#*/}
-          # Workaround, because I hadn'd found a way to define a build-target directory when using plain qmake and make
-          # and keeping all files in the directory is horrible slow in the articats
-          find ./src/ -type f -name "*.cpp" -exec rm {} \;
-          find ./src/ -type f -name "*.h" -exec rm {} \;
-          find ./src/ -type f -name "*.o" -exec rm {} \;
-          find ./src/ -type f -name "*.a" -exec rm {} \;
-          cp -r src/* /build_result/
-      - name: Create artifact
+          earthly --artifact +compile-code/tmp/Hanami ./builds/binaries
+      - 
+        name: Copy files
+        run: |
+          mkdir /tmp/build_result
+          cd ${GITHUB_REPOSITORY#*/}
+          cp -r builds/binaries/* /tmp/build_result/
+      - 
+        name: Create artifact
         uses: actions/upload-artifact@v4
         with:
           name: result
-          path: /build_result
+          path: /tmp/build_result
+
+
 
   unit_tests:
+    name: "Unit-Tests"
     needs: build
     runs-on: ubuntu-latest
     container:
-      image: kitsudaiki/hanami_base:develop
-    name: "Unit-Tests"
+      image: ubuntu:22.04
     steps:
-      - name: Get artifact
+      - 
+        name: Install dependencies
+        run: |
+          apt-get update
+          apt-get install -y openssl libuuid1 libcrypto++8 libsqlite3-0 libprotobuf23 libboost1.74 libcudart11.0
+      - 
+        name: Get artifact
         uses: actions/download-artifact@v4
         with:
           name: result
-          path: /build_result
-      - name: "Check target-directory"
-        run: ls -l /build_result
-      - name: "Run test: hanami_common"
+          path: /tmp/build_result
+      - 
+        name: "Check target-directory"
+        run: ls -l /tmp/build_result
+      - 
+        name: "Run test: hanami_common"
         run: |
-          chmod +x /build_result/libraries/hanami_common/tests/unit_tests/hanami_common_unit_tests
-          /build_result/libraries/hanami_common/tests/unit_tests/hanami_common_unit_tests
-      - name: "Run test: hanami_config"
+          chmod +x /tmp/build_result/hanami_common_unit_tests
+          /tmp/build_result/hanami_common_unit_tests
+      - 
+        name: "Run test: hanami_config"
         run: |
-          chmod +x /build_result/libraries/hanami_config/tests/unit_tests/hanami_config_unit_tests
-          /build_result/libraries/hanami_config/tests/unit_tests/hanami_config_unit_tests
-      - name: "Run test: hanami_crypto"
+          chmod +x /tmp/build_result/hanami_config_unit_tests
+          /tmp/build_result/hanami_config_unit_tests
+      - 
+        name: "Run test: hanami_crypto"
         run: |
-          chmod +x /build_result/libraries/hanami_crypto/tests/unit_tests/hanami_crypto_unit_tests
-          /build_result/libraries/hanami_crypto/tests/unit_tests/hanami_crypto_unit_tests
-      - name: "Run test: hanami_ini"
+          chmod +x /tmp/build_result/hanami_crypto_unit_tests
+          /tmp/build_result/hanami_crypto_unit_tests
+      - 
+        name: "Run test: hanami_ini"
         run: |
-          chmod +x /build_result/libraries/hanami_ini/tests/unit_tests/hanami_ini_unit_tests
-          /build_result/libraries/hanami_ini/tests/unit_tests/hanami_ini_unit_tests
-      - name: "Run test: hanami_sqlite"
+          chmod +x /tmp/build_result/hanami_ini_unit_tests
+          /tmp/build_result/hanami_ini_unit_tests
+      - 
+        name: "Run test: hanami_sqlite"
         run: |
-          chmod +x /build_result/libraries/hanami_sqlite/tests/unit_tests/hanami_sqlite_unit_tests
-          /build_result/libraries/hanami_sqlite/tests/unit_tests/hanami_sqlite_unit_tests
-      - name: "Run test: hanami_cluster_parser"
+          chmod +x /tmp/build_result/hanami_sqlite_unit_tests
+          /tmp/build_result/hanami_sqlite_unit_tests
+      - 
+        name: "Run test: hanami_cluster_parser"
         run: |
-          chmod +x /build_result/libraries/hanami_cluster_parser/tests/unit_tests/hanami_cluster_parser_unit_tests
-          /build_result/libraries/hanami_cluster_parser/tests/unit_tests/hanami_cluster_parser_unit_tests
-      - name: "Run test: hanami_policies"
+          chmod +x /tmp/build_result/hanami_cluster_parser_unit_tests
+          /tmp/build_result/hanami_cluster_parser_unit_tests
+      - 
+        name: "Run test: hanami_policies"
         run: |
-          chmod +x /build_result/libraries/hanami_policies/tests/unit_tests/hanami_policies_unit_tests
-          /build_result/libraries/hanami_policies/tests/unit_tests/hanami_policies_unit_tests
-      - name: "Run test: hanami_args"
+          chmod +x /tmp/build_result/hanami_policies_unit_tests
+          /tmp/build_result/hanami_policies_unit_tests
+      - 
+        name: "Run test: hanami_args"
         run: |
-          chmod +x /build_result/libraries/hanami_args/tests/unit_tests/hanami_args_unit_tests
-          /build_result/libraries/hanami_args/tests/unit_tests/hanami_args_unit_tests
+          chmod +x  /tmp/build_result/hanami_args_unit_tests
+          /tmp/build_result/hanami_args_unit_tests
+
+
 
   memory_leak_tests:
+    name: "Memory-Leak-Tests"
     needs: build
     runs-on: ubuntu-latest
     container:
-      image: kitsudaiki/hanami_base:develop
-    name: "Memory-Leak-Tests"
+      image: ubuntu:22.04
     steps:
-      - name: Get artifact
+      - 
+        name: Install dependencies
+        run: |
+          apt-get update
+          apt-get install -y openssl libuuid1 libcrypto++8 libsqlite3-0 libprotobuf23 libboost1.74 libcudart11.0
+      - 
+        name: Get artifact
         uses: actions/download-artifact@v4
         with:
           name: result
-          path: /build_result
-      - name: "Check target-directory"
-        run: ls -l /build_result
-      - name: "Run test: hanami_common"
+          path: /tmp/build_result
+      - 
+        name: "Check target-directory"
+        run: ls -l /tmp/build_result
+      - 
+        name: "Run test: hanami_common"
         run: |
-          chmod +x /build_result/libraries/hanami_common/tests/memory_leak_tests/hanami_common_memory_leak_tests
-          /build_result/libraries/hanami_common/tests/memory_leak_tests/hanami_common_memory_leak_tests
-      - name: "Run test: hanami_cluster_parser"
+          chmod +x /tmp/build_result/hanami_common_memory_leak_tests
+          /tmp/build_result/hanami_common_memory_leak_tests
+      - 
+        name: "Run test: hanami_cluster_parser"
         run: |
-          chmod +x /build_result/libraries/hanami_cluster_parser/tests/memory_leak_tests/hanami_cluster_parser_memory_leak_tests
-          /build_result/libraries/hanami_cluster_parser/tests/memory_leak_tests/hanami_cluster_parser_memory_leak_tests
+          chmod +x /tmp/build_result/hanami_cluster_parser_memory_leak_tests
+          /tmp/build_result/hanami_cluster_parser_memory_leak_tests
+
 
 
   functional_tests:
+    name: "Functional-Tests"
     needs: build
     runs-on: ubuntu-latest
     container:
-      image: kitsudaiki/hanami_base:develop
-    name: "Functional-Tests"
+      image: ubuntu:22.04
     steps:
-      - name: Get artifact
+      - 
+        name: Install dependencies
+        run: |
+          apt-get update
+          apt-get install -y openssl libuuid1 libcrypto++8 libsqlite3-0 libprotobuf23 libboost1.74 libcudart11.0
+      - 
+        name: Get artifact
         uses: actions/download-artifact@v4
         with:
           name: result
-          path: /build_result
-      - name: "Check target-directory"
-        run: ls -l /build_result
-      - name: "Run test: hanami_config"
+          path: /tmp/build_result
+      - 
+        name: "Check target-directory"
+        run: ls -l /tmp/build_result
+      - 
+        name: "Run test: hanami_config"
         run: |
-          chmod +x /build_result/libraries/hanami_config/tests/functional_tests/hanami_config_functional_tests
-          /build_result/libraries/hanami_config/tests/functional_tests/hanami_config_functional_tests
-      # - name: "Run test: hanami_obj"
+          chmod +x /tmp/build_result/hanami_config_functional_tests
+          /tmp/build_result/hanami_config_functional_tests
+      # - 
+      #  name: "Run test: hanami_obj"
       #   run: |
-      #     chmod +x /build_result/libraries/hanami_obj/tests/functional_tests/functional_tests
-      #     /build_result/libraries/hanami_obj/tests/functional_tests/functional_tests
-      - name: "Run test: hanami_database"
+      #     chmod +x /tmp/build_result/libraries/hanami_obj/tests/functional_tests/functional_tests
+      #     /tmp/build_result/libraries/hanami_obj/tests/functional_tests/functional_tests
+      - 
+        name: "Run test: hanami_database"
         run: |
-          chmod +x /build_result/libraries/hanami_database/tests/functional_tests/hanami_database_functional_tests
-          /build_result/libraries/hanami_database/tests/functional_tests/hanami_database_functional_tests
-      # - name: "Run test: hanami_network"
+          chmod +x /tmp/build_result/hanami_database_functional_tests
+          /tmp/build_result/hanami_database_functional_tests
+      # - 
+      #  name: "Run test: hanami_network"
       #   run: |
-      #     chmod +x /build_result/libraries/hanami_network/tests/functional_tests/functional_tests
-      #     /build_result/libraries/hanami_network/tests/functional_tests/functional_tests
+      #     chmod +x /tmp/build_result/libraries/hanami_network/tests/functional_tests/functional_tests
+      #     /tmp/build_result/libraries/hanami_network/tests/functional_tests/functional_tests
 
-  cleanup:
+
+
+  sdk_api_tests:
+    name: "SDK-API-Tests"
     needs: [ unit_tests, memory_leak_tests, functional_tests ]
     runs-on: ubuntu-latest
-    name: cleanup-job
     steps:
-      - name: "Delete artifacts"
-        uses: geekyeggo/delete-artifact@v2
+      - 
+        name: Checkout repository
+        run: |
+          # use manually clone, because with the "actions/checkout@v3" action the name of the
+          # branch can not be read by the git commands, which is necessary for the build-script
+          git clone https://github.com/kitsudaiki/${GITHUB_REPOSITORY#*/}.git
+          cd ${GITHUB_REPOSITORY#*/}
+          git checkout ${GITHUB_REF#refs/heads/}
+          git submodule init
+          git submodule update --recursive
+      - 
+        name: Get artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: result
+          path: /tmp/build_result
+      - 
+        name: Install dependencies for SDK
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y protobuf-compiler wget gzip python3 python3-pip
+          cd ${GITHUB_REPOSITORY#*/}/src/sdk/python/hanami_sdk
+          pip3 install -U .
+      - 
+        name: Build local docker-image
+        run: |
+          cd ${GITHUB_REPOSITORY#*/}
+          chmod +x /tmp/build_result/Hanami
+          mkdir -p builds/binaries
+          cp /tmp/build_result/Hanami ./builds/binaries/
+          # IMPORTANT: use the Dockerfile instead of the Earthfile here, 
+          # because the Dockerfile is also used in the final build-process.
+          # So using the Dockerfile here to ensure, the final build after 
+          # merge doesn't fail.
+          docker build -t kitsudaiki/hanami:test .
+      - 
+        name: Download mnist-files
+        run: |
+          cd /tmp/
+          wget https://storage.googleapis.com/cvdf-datasets/mnist/train-images-idx3-ubyte.gz
+          wget https://storage.googleapis.com/cvdf-datasets/mnist/train-labels-idx1-ubyte.gz
+          wget https://storage.googleapis.com/cvdf-datasets/mnist/t10k-images-idx3-ubyte.gz
+          wget https://storage.googleapis.com/cvdf-datasets/mnist/t10k-labels-idx1-ubyte.gz
+          gzip -d train-images-idx3-ubyte.gz
+          gzip -d train-labels-idx1-ubyte.gz
+          gzip -d t10k-images-idx3-ubyte.gz
+          gzip -d t10k-labels-idx1-ubyte.gz
+      - 
+        name: Start Hanami-docker-container
+        run: |
+          cd ${GITHUB_REPOSITORY#*/}
+          sudo cp -r ./example_configs/hanami /etc/
+          docker run -d -v \
+            ./example_configs/hanami:/etc/hanami \
+            -p 127.0.0.1:11418:11418 \
+            --env HANAMI_ADMIN_USER_ID=asdf \
+            --env HANAMI_ADMIN_USER_NAME=asdf \
+            --env HANAMI_ADMIN_PASSWORD=asdfasdf \
+            kitsudaiki/hanami:test
+      - 
+        name: Sleep for 15 seconds
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '15s'
+      - 
+        name: Run test
+        run: |
+          cd ${GITHUB_REPOSITORY#*/}/testing/python_sdk_api
+          /usr/bin/python3 sdk_api_test.py
+
+
+
+  docker_build:
+    name: "Build Docker-images"
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'create' && startsWith(github.ref, 'refs/tags/') }}
+    needs: [ sdk_api_tests ]
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - linux/amd64
+          - linux/arm64
+    steps:
+      - 
+        name: Prepare
+        run: |
+          platform=${{ matrix.platform }}
+          echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV          
+      - 
+        uses: earthly/actions-setup@v1
+        with:
+          version: v0.8.0
+      - 
+        name: Checkout repository
+        run: |
+          # use manually clone, because with the "actions/checkout@v3" action the name of the
+          # branch can not be read by the git commands, which is necessary for the build-script
+          git clone https://github.com/kitsudaiki/${GITHUB_REPOSITORY#*/}.git
+          cd ${GITHUB_REPOSITORY#*/}
+          git checkout ${GITHUB_REF#refs/heads/}
+          git submodule init
+          git submodule update --recursive
+      - 
+        name: Compile code
+        run: |
+          cd ${GITHUB_REPOSITORY#*/}
+          earthly --artifact +compile-code/tmp/Hanami ./builds/binaries
+      - 
+        name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY_IMAGE }}
+      - 
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - 
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - 
+        name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - 
+        name: Check location
+        run: |
+          pwd
+          cd Hanami
+          ls -l
+      - 
+        name: Build and push by digest
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: ./Hanami
+          platforms: ${{ matrix.platform }}
+          labels: ${{ steps.meta.outputs.labels }}
+          outputs: type=image,name=${{ env.REGISTRY_IMAGE }},push-by-digest=true,name-canonical=true,push=true
+      - 
+        name: Export digest
+        run: |
+          mkdir -p /tmp/digests
+          digest="${{ steps.build.outputs.digest }}"
+          touch "/tmp/digests/${digest#sha256:}"          
+      - 
+        name: Upload digest
+        uses: actions/upload-artifact@v4
+        with:
+          name: digests-${{ env.PLATFORM_PAIR }}
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+
+
+  docker_merge:
+    name: "Merge and push Docker-image"
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'create' && startsWith(github.ref, 'refs/tags/') }}
+    runs-on: ubuntu-22.04
+    needs: [ docker_build ]
+    steps:
+      - 
+        name: Download digests
+        uses: actions/download-artifact@v4
+        with:
+          path: /tmp/digests
+          pattern: digests-*
+          merge-multiple: true
+      - 
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - 
+        name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY_IMAGE }}
+      - 
+        name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - 
+        name: Create manifest list and push
+        working-directory: /tmp/digests
+        run: |
+          docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
+            $(printf '${{ env.REGISTRY_IMAGE }}@sha256:%s ' *)          
+      - 
+        name: Inspect image
+        run: |
+          docker buildx imagetools inspect ${{ env.REGISTRY_IMAGE }}:${{ steps.meta.outputs.version }}       
+
+
+
+  kubernetes_test:
+    name: "Integration-Tests (Kubernetes)"
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'create' && startsWith(github.ref, 'refs/tags/') }}
+    needs: [ docker_merge ]
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - linux/amd64
+          - linux/arm64
+    env:
+      KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+    steps:
+      - 
+        name: Set branch name as environment variable
+        run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV
+      - 
+        name: Checkout repository
+        run: |
+          # use manually clone, because with the "actions/checkout@v3" action the name of the
+          # branch can not be read by the git commands, which is necessary for the build-script
+          git clone https://github.com/kitsudaiki/${GITHUB_REPOSITORY#*/}.git
+          cd ${GITHUB_REPOSITORY#*/}
+          git checkout ${GITHUB_REF#refs/heads/}
+          git submodule init
+          git submodule update --recursive
+      - 
+        name: Install dependencies for SDK
+        run: |
+          sudo snap install helm --classic
+          sudo snap install kubectl --classic
+      -
+        name: Install k3s
+        run: |
+          sudo curl -sfL https://get.k3s.io | sh -
+      - 
+        name: Sleep for 60 seconds
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '60s'
+      -
+        name: Install cert-manager in kubernetes_test
+        run: |
+          sudo chmod -R +r /etc/rancher/k3s
+          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+          helm repo add jetstack https://charts.jetstack.io
+          helm repo update
+          kubectl create namespace cert-manager
+          helm install cert-manager jetstack/cert-manager --namespace cert-manager --set installCRDs=true
+      -
+        name: Label nodes
+        run: |
+          kubectl label nodes --all hanami-node=true
+      -
+        name: Install Hanami
+        run: |
+          cd ${GITHUB_REPOSITORY#*/}/deploy/k8s
+          helm install --set docker.tag="${{ env.BRANCH_NAME }}" --set user.id=asdf --set user.name="test user" --set user.pw="asdfasdf" --set token.pw="11111111" --set api.domain=local-hanami  hanami ./hanami/
+      - 
+        name: Sleep for 60 seconds
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '60s'
+      -
+        name: Update hosts-file
+        run: |
+          ingress_ip=$(kubectl get ingress hanami-ingress -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+          echo "$ingress_ip  local-hanami" | sudo tee -a /etc/hosts
+          cat /etc/hosts
+      -
+        name: Install dependencies for SDK
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y protobuf-compiler wget gzip python3 python3-pip
+          cd ${GITHUB_REPOSITORY#*/}/src/sdk/python/hanami_sdk
+          pip3 install -U .
+      - 
+        name: Download mnist-files
+        run: |
+          cd /tmp/
+          wget https://storage.googleapis.com/cvdf-datasets/mnist/train-images-idx3-ubyte.gz
+          wget https://storage.googleapis.com/cvdf-datasets/mnist/train-labels-idx1-ubyte.gz
+          wget https://storage.googleapis.com/cvdf-datasets/mnist/t10k-images-idx3-ubyte.gz
+          wget https://storage.googleapis.com/cvdf-datasets/mnist/t10k-labels-idx1-ubyte.gz
+          gzip -d train-images-idx3-ubyte.gz
+          gzip -d train-labels-idx1-ubyte.gz
+          gzip -d t10k-images-idx3-ubyte.gz
+          gzip -d t10k-labels-idx1-ubyte.gz
+      - 
+        name: Prepare test-config
+        run: |
+          cd ${GITHUB_REPOSITORY#*/}
+          sudo cp -r ./example_configs/hanami /etc/
+          sudo sed -i 's/address = http:\/\/127\.0\.0\.1:11418/address = https:\/\/local-hanami/g' /etc/hanami/hanami_testing.conf
+      - 
+        name: Run test
+        run: |
+          cd ${GITHUB_REPOSITORY#*/}/testing/python_sdk_api
+          /usr/bin/python3 sdk_api_test.py
+
+
+
+  ansible_test:
+    name: "Integration-Tests (Ansible)"
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'create' && startsWith(github.ref, 'refs/tags/') }}
+    needs: [ docker_merge ]
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - linux/amd64
+          - linux/arm64
+    env:
+      ADMIN_USER_ID: "asdf"
+      ADMIN_USER_NAME: "test-user"
+      ADMIN_PASSWORD: "asdfasdf"
+      TOKEN_KEY: "111111111"
+    steps:
+      - 
+        name: Set branch name as environment variable
+        run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV
+      - 
+        name: Checkout repository
+        run: |
+          # use manually clone, because with the "actions/checkout@v3" action the name of the
+          # branch can not be read by the git commands, which is necessary for the build-script
+          git clone https://github.com/kitsudaiki/${GITHUB_REPOSITORY#*/}.git
+          cd ${GITHUB_REPOSITORY#*/}
+          git checkout ${GITHUB_REF#refs/heads/}
+          git submodule init
+          git submodule update --recursive
+      -
+        name: Install Ansible
+        run: |
+          sudo apt-add-repository -y ppa:ansible/ansible
+          sudo apt update
+          sudo apt install ansible
+      - 
+        name: Install Hanami via Ansible
+        run: |
+          cd ${GITHUB_REPOSITORY#*/}/deploy/ansible/
+          ansible-playbook --connection=local -e "hanami_docker_tag=$BRANCH_NAME" -i hanami/inventory.yml hanami/deploy.yml -vvv
+      -
+        name: Sleep for 60 seconds
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '60s'
+      -
+        name: Update hosts-file
+        run: |
+          echo "127.0.0.1  local-hanami" | sudo tee -a /etc/hosts
+          cat /etc/hosts
+      -
+        name: Install dependencies for SDK
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y protobuf-compiler wget gzip python3 python3-pip
+          cd ${GITHUB_REPOSITORY#*/}/src/sdk/python/hanami_sdk
+          pip3 install -U .
+      - 
+        name: Download mnist-files
+        run: |
+          cd /tmp/
+          wget https://storage.googleapis.com/cvdf-datasets/mnist/train-images-idx3-ubyte.gz
+          wget https://storage.googleapis.com/cvdf-datasets/mnist/train-labels-idx1-ubyte.gz
+          wget https://storage.googleapis.com/cvdf-datasets/mnist/t10k-images-idx3-ubyte.gz
+          wget https://storage.googleapis.com/cvdf-datasets/mnist/t10k-labels-idx1-ubyte.gz
+          gzip -d train-images-idx3-ubyte.gz
+          gzip -d train-labels-idx1-ubyte.gz
+          gzip -d t10k-images-idx3-ubyte.gz
+          gzip -d t10k-labels-idx1-ubyte.gz
+      - 
+        name: Prepare test-config
+        run: |
+          cd ${GITHUB_REPOSITORY#*/}
+          sudo cp -r ./example_configs/hanami /etc/
+          sudo sed -i 's/address = http:\/\/127\.0\.0\.1:11418/address = https:\/\/local-hanami/g' /etc/hanami/hanami_testing.conf
+      - 
+        name: Check docker-container
+        if: success() || failure()
+        run: docker ps -a
+      - 
+        name: Run test
+        run: |
+          cd ${GITHUB_REPOSITORY#*/}/testing/python_sdk_api
+          /usr/bin/python3 sdk_api_test.py
+      - 
+        name: Check docker-container
+        if: success() || failure()
+        run: |
+          docker ps -a
+          docker logs Hanami
+
+
+
+  build_docs:
+    name: Build and push docs
+    needs: [ docker_merge ]
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'create' && startsWith(github.ref, 'refs/tags/') }}
+    env:
+      FORCE_COLOR: 1
+    steps:
+      - 
+        name: Set branch name as environment variable
+        run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV
+      - 
+        uses: earthly/actions-setup@v1
+        with:
+          version: v0.8.0
+      - 
+        name: Get artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: result
+          path: /tmp/build_result
+      - 
+        name: Checkout repository
+        run: |
+          # use manually clone, because with the "actions/checkout@v3" action the name of the
+          # branch can not be read by the git commands, which is necessary for the build-script
+          git clone https://github.com/kitsudaiki/${GITHUB_REPOSITORY#*/}.git
+          cd ${GITHUB_REPOSITORY#*/}
+          git checkout ${GITHUB_REF#refs/heads/}
+          git submodule init
+          git submodule update --recursive
+      - 
+        name: Prepare Binary
+        run: |
+          cd ${GITHUB_REPOSITORY#*/}
+          chmod +x /tmp/build_result/Hanami
+          mkdir -p builds/binaries
+          cp /tmp/build_result/Hanami ./builds/binaries/
+      - 
+        name: Generate code-docs
+        run: |
+          cd ${GITHUB_REPOSITORY#*/}
+          earthly --artifact +generate-code-docu/tmp/Hanami_docs ./builds/docs
+      - 
+        name: Build docs
+        run: |
+          cd ${GITHUB_REPOSITORY#*/}
+          earthly  +build-docs --image_name=${{ env.REGISTRY_DOCS_IMAGE }}:${{ env.BRANCH_NAME }}
+      - 
+        name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - 
+        name: Push image
+        run: docker push ${{ env.REGISTRY_DOCS_IMAGE }}:${{ env.BRANCH_NAME }}
+
+
+
+  cleanup:
+    name: Delete build artifacts
+    needs: [ build_docs, kubernetes_test, ansible_test ]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - 
+        name: "Delete artifacts"
+        uses: geekyeggo/delete-artifact@v4
         with:
           name: result

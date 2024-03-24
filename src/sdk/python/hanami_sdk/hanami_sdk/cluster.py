@@ -13,15 +13,17 @@
 # limitations under the License.
 
 from . import hanami_request
-from websockets.sync.client import connect
+import websockets
 import json
 import base64
+import ssl
 
 
 def create_cluster(token: str,
                    address: str,
                    name: str,
-                   template: str) -> str:
+                   template: str,
+                   verify_connection: bool = True) -> str:
     # convert template to base64
     template_bytes = template.encode("ascii")
     base64_bytes = base64.b64encode(template_bytes)
@@ -33,74 +35,136 @@ def create_cluster(token: str,
         "template": base64_string,
     }
     body_str = json.dumps(json_body)
-    return hanami_request.send_post_request(token, address, path, body_str)
+    return hanami_request.send_post_request(token,
+                                            address,
+                                            path,
+                                            body_str,
+                                            verify=verify_connection)
 
 
-def save_cluster(token: str, address: str, name: str, cluster_uuid: str) -> str:
+def save_cluster(token: str,
+                 address: str,
+                 name: str,
+                 cluster_uuid: str,
+                 verify_connection: bool = True) -> str:
     path = "/control/v1/cluster/save"
     json_body = {
         "name": name,
         "cluster_uuid": cluster_uuid,
     }
     body_str = json.dumps(json_body)
-    return hanami_request.send_post_request(token, address, path, body_str)
+    return hanami_request.send_post_request(token,
+                                            address,
+                                            path,
+                                            body_str,
+                                            verify=verify_connection)
 
 
-def restore_cluster(token: str, address: str, checkpoint_uuid: str, cluster_uuid: str) -> str:
+def restore_cluster(token: str,
+                    address: str,
+                    checkpoint_uuid: str,
+                    cluster_uuid: str,
+                    verify_connection: bool = True) -> str:
     path = "/control/v1/cluster/load"
     json_body = {
         "checkpoint_uuid": checkpoint_uuid,
         "cluster_uuid": cluster_uuid,
     }
     body_str = json.dumps(json_body)
-    return hanami_request.send_post_request(token, address, path, body_str)
+    return hanami_request.send_post_request(token,
+                                            address,
+                                            path,
+                                            body_str,
+                                            verify=verify_connection)
 
 
-def get_cluster(token: str, address: str, cluster_uuid: str) -> str:
+def get_cluster(token: str,
+                address: str,
+                cluster_uuid: str,
+                verify_connection: bool = True) -> str:
     path = "/control/v1/cluster"
     values = f'uuid={cluster_uuid}'
-    return hanami_request.send_get_request(token, address, path, values)
+    return hanami_request.send_get_request(token,
+                                           address,
+                                           path,
+                                           values,
+                                           verify=verify_connection)
 
 
-def list_clusters(token: str, address: str) -> str:
+def list_clusters(token: str,
+                  address: str,
+                  verify_connection: bool = True) -> str:
     path = "/control/v1/cluster/all"
-    return hanami_request.send_get_request(token, address, path, "")
+    return hanami_request.send_get_request(token,
+                                           address,
+                                           path,
+                                           "",
+                                           verify=verify_connection)
 
 
-def delete_cluster(token: str, address: str, cluster_uuid: str) -> str:
+def delete_cluster(token: str,
+                   address: str,
+                   cluster_uuid: str,
+                   verify_connection: bool = True) -> str:
     path = "/control/v1/cluster"
     values = f'uuid={cluster_uuid}'
-    return hanami_request.send_delete_request(token, address, path, values)
+    return hanami_request.send_delete_request(token,
+                                              address,
+                                              path,
+                                              values,
+                                              verify=verify_connection)
 
 
-def switch_to_task_mode(token: str, address: str, cluster_uuid: str):
+def switch_to_task_mode(token: str,
+                        address: str,
+                        cluster_uuid: str,
+                        verify_connection: bool = True):
     path = "/control/v1/cluster/set_mode"
     json_body = {
         "new_state": "TASK",
         "uuid": cluster_uuid,
     }
     body_str = json.dumps(json_body)
-    return hanami_request.send_put_request(token, address, path, body_str)
+    return hanami_request.send_put_request(token,
+                                           address,
+                                           path,
+                                           body_str,
+                                           verify=verify_connection)
 
 
-def switch_host(token: str, address: str, cluster_uuid: str, host_uuid: str):
+def switch_host(token: str,
+                address: str,
+                cluster_uuid: str,
+                host_uuid: str,
+                verify_connection: bool = True):
     path = "/control/v1/cluster/switch_host"
     json_body = {
         "cluster_uuid": cluster_uuid,
         "host_uuid": host_uuid,
     }
     body_str = json.dumps(json_body)
-    return hanami_request.send_put_request(token, address, path, body_str)
+    return hanami_request.send_put_request(token,
+                                           address,
+                                           path,
+                                           body_str,
+                                           verify=verify_connection)
 
 
-def switch_to_direct_mode(token: str, address: str, cluster_uuid: str):
+async def switch_to_direct_mode(token: str,
+                                address: str,
+                                cluster_uuid: str,
+                                verify_connection: bool = True):
     path = "/control/v1/cluster/set_mode"
     json_body = {
         "new_state": "DIRECT",
         "uuid": cluster_uuid,
     }
     body_str = json.dumps(json_body)
-    hanami_request.send_put_request(token, address, path, body_str)
+    hanami_request.send_put_request(token,
+                                    address,
+                                    path,
+                                    body_str,
+                                    verify=verify_connection)
 
     # create initial request for the websocket-connection
     initial_ws_msg = {
@@ -110,10 +174,21 @@ def switch_to_direct_mode(token: str, address: str, cluster_uuid: str):
     }
     body_str = json.dumps(initial_ws_msg)
 
+    ssl_context = None
+    websocket_begin = "ws"
+    if address.startswith("https"):
+        websocket_begin = "wss"
+
+        # Disable SSL verification
+        if not verify_connection:
+            ssl_context = ssl.SSLContext()
+            ssl_context.verify_mode = ssl.CERT_NONE
+
     base_address = address.split('/')[2]
-    ws = connect("ws://" + base_address)
-    ws.send(body_str)
-    message = ws.recv()
+    ws = await websockets.connect(websocket_begin + "://" + base_address, ssl=ssl_context)
+
+    await ws.send(body_str)
+    message = await ws.recv()
     result_json = json.loads(message)
 
     if result_json["success"] is False:

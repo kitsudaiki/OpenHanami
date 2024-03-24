@@ -15,7 +15,7 @@
 from .hanami_messages import proto3_pb2
 
 
-def send_train_input(ws, brick_name, values, is_last):
+async def send_train_input(ws, brick_name, values, is_last, verify_connection: bool = True):
 
     cluster_io_msg = proto3_pb2.ClusterIO_Message()
     cluster_io_msg.brickName = brick_name
@@ -23,11 +23,11 @@ def send_train_input(ws, brick_name, values, is_last):
     cluster_io_msg.processType = proto3_pb2.ClusterProcessType.TRAIN_TYPE
     cluster_io_msg.numberOfValues = len(values)
     cluster_io_msg.values.extend(values)
-    ws.send(cluster_io_msg.SerializeToString())
-    ws.recv()
+    await ws.send(cluster_io_msg.SerializeToString())
+    await ws.recv()
 
 
-def send_request_input(ws, brick_name, values, is_last):
+async def send_request_input(ws, brick_name, values, is_last, verify_connection: bool = True):
 
     cluster_io_msg = proto3_pb2.ClusterIO_Message()
     cluster_io_msg.brickName = brick_name
@@ -35,9 +35,9 @@ def send_request_input(ws, brick_name, values, is_last):
     cluster_io_msg.processType = proto3_pb2.ClusterProcessType.REQUEST_TYPE
     cluster_io_msg.numberOfValues = len(values)
     cluster_io_msg.values.extend(values)
-    ws.send(cluster_io_msg.SerializeToString())
+    await ws.send(cluster_io_msg.SerializeToString())
 
-    response = ws.recv()
+    response = await ws.recv()
 
     if is_last:
         response_message = proto3_pb2.ClusterIO_Message()

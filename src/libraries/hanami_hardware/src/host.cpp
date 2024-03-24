@@ -69,20 +69,14 @@ Host::initHost(ErrorContainer& error)
 /**
  * @brief get a package by id
  *
- * @param packageId id of the requested package
+ * @param pos position in list (this is not the package-id)
  *
  * @return nullptr, if there is no package with the id, else pointer to the package
  */
 CpuPackage*
-Host::getPackage(const uint32_t packageId) const
+Host::getPackage(const uint32_t pos) const
 {
-    for (CpuPackage* package : cpuPackages) {
-        if (package->packageId == packageId) {
-            return package;
-        }
-    }
-
-    return nullptr;
+    return cpuPackages.at(pos);
 }
 
 /**
@@ -96,12 +90,14 @@ Host::getPackage(const uint32_t packageId) const
 CpuPackage*
 Host::addPackage(const uint32_t packageId)
 {
-    CpuPackage* package = getPackage(packageId);
-
-    if (package == nullptr) {
-        package = new CpuPackage(packageId);
-        cpuPackages.push_back(package);
+    for (CpuPackage* package : cpuPackages) {
+        if (package->packageId == packageId) {
+            return package;
+        }
     }
+
+    CpuPackage* package = new CpuPackage(packageId);
+    cpuPackages.push_back(package);
 
     return package;
 }

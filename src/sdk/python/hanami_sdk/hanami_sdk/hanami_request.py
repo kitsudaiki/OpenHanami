@@ -34,44 +34,48 @@ def _handle_response(response) -> str:
 def send_post_request(token: str,
                       address: str,
                       path: str,
-                      body: str) -> str:
+                      body: str,
+                      verify: bool) -> str:
     url = f'{address}{path}'
     headers = {'content-type': 'application/json'}
     headers = {'X-Auth-Token': token}
-    response = requests.post(url, data=body, headers=headers, verify=False)
+    response = requests.post(url, data=body, headers=headers, verify=verify)
     return _handle_response(response)
 
 
 def send_get_request(token: str,
                      address: str,
                      path: str,
-                     values: str) -> str:
+                     values: str,
+                     verify: bool) -> str:
     if values:
         url = f'{address}{path}?{values}'
     else:
         url = f'{address}{path}'
 
     headers = {'X-Auth-Token': token}
-    response = requests.get(url, headers=headers, verify=False)
+    response = requests.get(url, headers=headers, verify=verify)
     return _handle_response(response)
 
 
 def send_put_request(token: str,
                      address: str,
                      path: str,
-                     body: str) -> str:
+                     body: str,
+                     verify: bool) -> str:
     url = f'{address}{path}'
     headers = {'content-type': 'application/json'}
     headers = {'X-Auth-Token': token}
-    response = requests.put(url, data=body, headers=headers, verify=False)
+    response = requests.put(url, data=body, headers=headers, verify=verify)
     return _handle_response(response)
 
 
 def send_delete_request(token: str,
                         address: str,
                         path: str,
-                        values: str) -> str:
+                        values: str,
+                        verify: bool) -> str:
     url = f'{address}{path}?{values}'
     headers = {'X-Auth-Token': token}
-    response = requests.delete(url, headers=headers, verify=False)
+    response = requests.delete(url, headers=headers, verify=verify)
     return _handle_response(response)

@@ -3,7 +3,7 @@
 ![Github workfloat status](https://img.shields.io/github/actions/workflow/status/kitsudaiki/Hanami/build_test.yml?branch=develop&style=flat-square&label=build%20and%20test)
 ![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/kitsudaiki/Hanami?label=version&style=flat-square)
 ![GitHub](https://img.shields.io/github/license/kitsudaiki/Hanami-AI?style=flat-square)
-![Platform](https://img.shields.io/badge/platform-Linux--x64-lightgrey?style=flat-square)
+![Platform](https://img.shields.io/badge/Platform-Linux--x64|arm64-lightgrey?style=flat-square)
 
 <p align="center">
   <img src="assets/hanami-logo-with-text.png" width="500" height="594" />
@@ -163,7 +163,7 @@ If you need help to setup things, have a question or something like this, feel f
 
 ## This repository
 
-**Required packages:**
+**Required packages for development:**
 
 ```
 sudo apt-get install -y git ssh gcc g++ clang-15 clang-format-15 make cmake bison flex libssl-dev libcrypto++-dev libboost1.74-dev uuid-dev  libsqlite3-dev protobuf-compiler nvidia-cuda-toolkit
@@ -193,6 +193,46 @@ pip3 install mkdocs-material mkdocs-swagger-ui-tag mkdocs-drawio-exporter
 ```
 
 (to build the documentation `Draw.io` also has to be installed on the system)
+
+## Build
+
+For the build of the docker-images, [earthly](https://github.com/earthly/earthly) is used.
+
+### Build Hanami
+
+The code can be build as image like this:
+
+```
+earthly +image --image_name=<DOCKER_IMAGE_NAME>
+```
+
+Example:
+
+```
+earthly +image --image_name=hanami:test
+```
+
+### Build Hanami-docs
+
+The documenation can be build as image like this:
+
+```
+earthly +docs --image_name=<DOCKER_IMAGE_NAME>
+```
+
+Example:
+
+```
+earthly +docs --image_name=hanami_docs:test
+```
+
+The documentation listen on port 8000 within the docker-container. So the port has to be forwarded into the container:
+
+```
+docker run -p 127.0.0.1:8080:8000 hanami_docs:test
+```
+
+After this within the browser the addess `127.0.0.1:8080` can be entered to call the documenation within the browser.
 
 ## Contributing
 

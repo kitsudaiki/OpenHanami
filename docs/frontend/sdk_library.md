@@ -13,7 +13,6 @@ The SDK-library privides functions to interact with the API of the backend. At t
 ## Installation
 
 
-
 === "Python"
 
     ```bash
@@ -56,6 +55,9 @@ Each of the used HTTP-error codes results in a different exception. For the avai
 
         The `InternalServerErrorException` doesn't contain a message. If this exception appears, you have have to look into the logs on the server.
 
+## For insecure connections
+
+In case the server use self-signed certificates for its https-connection, the ssl verification can be disabled. Each functions has a paramater `verify_connection`, wich is per default `True`. This validation can be disabled by adding `,verify_connection=False` to the end of a function-call.
 
 ## Request Token
 
@@ -956,29 +958,34 @@ It is possible to directly connect via websocket to the cluster on the server to
 
     ```python
     from hanami_sdk import direct_io
+    import asyncio
 
-    address = "http://127.0.0.1:11418"
-    cluster_uuid = "9f86921d-9a7c-44a2-836c-1683928d9354"
-    input_values = [0.0, 2.0, 0.0, 10.0, 0.5]
-    exprected_values = [1.0, 0.0]
+    async def main():
+        address = "http://127.0.0.1:11418"
+        cluster_uuid = "9f86921d-9a7c-44a2-836c-1683928d9354"
+        input_values = [0.0, 2.0, 0.0, 10.0, 0.5]
+        exprected_values = [1.0, 0.0]
 
-    # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+        # request a token for a user, who has admin-permissions
+        # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
 
-    # initial request of a websocket connection to a specific cluster
-    # this websocket can be used for multiple request
-    ws = cluster.switch_to_direct_mode(token, address, cluster_uuid)
+        # initial request of a websocket connection to a specific cluster
+        # this websocket can be used for multiple request
+        ws = await cluster.switch_to_direct_mode(token, address, cluster_uuid)
 
-    # names "test_input" and "test_output" are the names of the bricks within the cluster
-    # for the mapping of the input-data
-    # if the last argument is set to "True", it says that there are no more data to 
-    # apply to the cluster and that the train-process can start
-    direct_io.send_train_input(ws, "test_input", input_values, False)
-    direct_io.send_train_input(ws, "test_output", exprected_values, True)
+        # names "test_input" and "test_output" are the names of the bricks within the cluster
+        # for the mapping of the input-data
+        # if the last argument is set to "True", it says that there are no more data to 
+        # apply to the cluster and that the train-process can start
+        await direct_io.send_train_input(ws, "test_input", input_values, False)
+        await direct_io.send_train_input(ws, "test_output", exprected_values, True)
 
-    cluster.switch_to_task_mode(token, address, cluster_uuid)
+        await ws.close()
 
-    ws.close()
+        cluster.switch_to_task_mode(token, address, cluster_uuid)
+
+
+    asyncio.run(main())
     ```
 
 ### direct request
@@ -987,30 +994,35 @@ It is possible to directly connect via websocket to the cluster on the server to
 
     ```python
     from hanami_sdk import direct_io
+    import asyncio
 
-    address = "http://127.0.0.1:11418"
-    cluster_uuid = "9f86921d-9a7c-44a2-836c-1683928d9354"
-    input_values = [0.0, 2.0, 0.0, 10.0, 0.5]
+    async def main():
+        address = "http://127.0.0.1:11418"
+        cluster_uuid = "9f86921d-9a7c-44a2-836c-1683928d9354"
+        input_values = [0.0, 2.0, 0.0, 10.0, 0.5]
 
-    # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+        # request a token for a user, who has admin-permissions
+        # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
 
-    # initial request of a websocket connection to a specific cluster
-    # this websocket can be used for multiple request
-    ws = cluster.switch_to_direct_mode(token, address, cluster_uuid)
+        # initial request of a websocket connection to a specific cluster
+        # this websocket can be used for multiple request
+        ws = await cluster.switch_to_direct_mode(token, address, cluster_uuid)
 
-    # names "test_input" is the names of the bricks within the cluster
-    # for the mapping of the input-data
-    # if the last argument is set to "True", it says that there are no more data to 
-    # apply to the cluster and that the train-process can start
-    output_values = direct_io.send_request_input(ws, "test_input", input_values, True)
+        # names "test_input" is the names of the bricks within the cluster
+        # for the mapping of the input-data
+        # if the last argument is set to "True", it says that there are no more data to 
+        # apply to the cluster and that the train-process can start
+        output_values = await direct_io.send_request_input(ws, "test_input", input_values, True)
 
-    # output_values is an array like this:
-    #    [0.8, 0.0]
+        # output_values is an array like this:
+        #    [0.8, 0.0]
 
-    cluster.switch_to_task_mode(token, address, cluster_uuid)
+        await ws.close()
 
-    ws.close()
+        cluster.switch_to_task_mode(token, address, cluster_uuid)
+
+
+    asyncio.run(main())
     ```
 
 
