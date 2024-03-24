@@ -7,6 +7,7 @@ env:
   REGISTRY_DOCS_IMAGE: kitsudaiki/hanami_docs
 
 jobs:
+
   clang-format-check:
     runs-on: ubuntu-latest
     env:
@@ -326,79 +327,6 @@ jobs:
 
 
 
-  build_docs:
-    name: Build and push docs
-    needs: [ sdk_api_tests ]
-    runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'create' && startsWith(github.ref, 'refs/tags/') }}
-    env:
-      FORCE_COLOR: 1
-    steps:
-      - 
-        name: Set branch name as environment variable
-        run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV
-      - 
-        uses: earthly/actions-setup@v1
-        with:
-          version: v0.8.0
-      - 
-        name: Get artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: result
-          path: /tmp/build_result
-      - 
-        name: Checkout repository
-        run: |
-          # use manually clone, because with the "actions/checkout@v3" action the name of the
-          # branch can not be read by the git commands, which is necessary for the build-script
-          git clone https://github.com/kitsudaiki/${GITHUB_REPOSITORY#*/}.git
-          cd ${GITHUB_REPOSITORY#*/}
-          git checkout ${GITHUB_REF#refs/heads/}
-          git submodule init
-          git submodule update --recursive
-      - 
-        name: Prepare Binary
-        run: |
-          cd ${GITHUB_REPOSITORY#*/}
-          chmod +x /tmp/build_result/Hanami
-          mkdir -p builds/binaries
-          cp /tmp/build_result/Hanami ./builds/binaries/
-      - 
-        name: Generate code-docs
-        run: |
-          cd ${GITHUB_REPOSITORY#*/}
-          earthly --artifact +generate-code-docu/tmp/Hanami_docs ./builds/docs
-      - 
-        name: Build docs
-        run: |
-          cd ${GITHUB_REPOSITORY#*/}
-          earthly  +build-docs --image_name=${{ env.REGISTRY_DOCS_IMAGE }}:${{ env.BRANCH_NAME }}
-      - 
-        name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - 
-        name: Push image
-        run: docker push ${{ env.REGISTRY_DOCS_IMAGE }}:${{ env.BRANCH_NAME }}
-
-
-
-  cleanup:
-    name: cleanup-job
-    needs: [ build_docs ]
-    runs-on: ubuntu-latest
-    steps:
-      - 
-        name: "Delete artifacts"
-        uses: geekyeggo/delete-artifact@v4
-        with:
-          name: result
-
-
-
   docker_build:
     name: "Build Docker-images"
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'create' && startsWith(github.ref, 'refs/tags/') }}
@@ -489,8 +417,7 @@ jobs:
     name: "Merge and push Docker-image"
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'create' && startsWith(github.ref, 'refs/tags/') }}
     runs-on: ubuntu-22.04
-    needs:
-      - docker_build
+    needs: [ docker_build ]
     steps:
       - 
         name: Download digests
@@ -524,3 +451,274 @@ jobs:
         name: Inspect image
         run: |
           docker buildx imagetools inspect ${{ env.REGISTRY_IMAGE }}:${{ steps.meta.outputs.version }}       
+
+
+
+  kubernetes_test:
+    name: "Integration-Tests (Kubernetes)"
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'create' && startsWith(github.ref, 'refs/tags/') }}
+    needs: [ docker_merge ]
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - linux/amd64
+          - linux/arm64
+    env:
+      KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+    steps:
+      - 
+        name: Set branch name as environment variable
+        run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV
+      - 
+        name: Checkout repository
+        run: |
+          # use manually clone, because with the "actions/checkout@v3" action the name of the
+          # branch can not be read by the git commands, which is necessary for the build-script
+          git clone https://github.com/kitsudaiki/${GITHUB_REPOSITORY#*/}.git
+          cd ${GITHUB_REPOSITORY#*/}
+          git checkout ${GITHUB_REF#refs/heads/}
+          git submodule init
+          git submodule update --recursive
+      - 
+        name: Install dependencies for SDK
+        run: |
+          sudo snap install helm --classic
+          sudo snap install kubectl --classic
+      -
+        name: Install k3s
+        run: |
+          sudo curl -sfL https://get.k3s.io | sh -
+      - 
+        name: Sleep for 60 seconds
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '60s'
+      -
+        name: Install cert-manager in kubernetes_test
+        run: |
+          sudo chmod -R +r /etc/rancher/k3s
+          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+          helm repo add jetstack https://charts.jetstack.io
+          helm repo update
+          kubectl create namespace cert-manager
+          helm install cert-manager jetstack/cert-manager --namespace cert-manager --set installCRDs=true
+      -
+        name: Label nodes
+        run: |
+          kubectl label nodes --all hanami-node=true
+      -
+        name: Install Hanami
+        run: |
+          cd ${GITHUB_REPOSITORY#*/}/deploy/k8s
+          helm install --set docker.tag="${{ env.BRANCH_NAME }}" --set user.id=asdf --set user.name="test user" --set user.pw="asdfasdf" --set token.pw="11111111" --set api.domain=local-hanami  hanami ./hanami/
+      - 
+        name: Sleep for 60 seconds
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '60s'
+      -
+        name: Update hosts-file
+        run: |
+          ingress_ip=$(kubectl get ingress hanami-ingress -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+          echo "$ingress_ip  local-hanami" | sudo tee -a /etc/hosts
+          cat /etc/hosts
+      -
+        name: Install dependencies for SDK
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y protobuf-compiler wget gzip python3 python3-pip
+          cd ${GITHUB_REPOSITORY#*/}/src/sdk/python/hanami_sdk
+          pip3 install -U .
+      - 
+        name: Download mnist-files
+        run: |
+          cd /tmp/
+          wget https://storage.googleapis.com/cvdf-datasets/mnist/train-images-idx3-ubyte.gz
+          wget https://storage.googleapis.com/cvdf-datasets/mnist/train-labels-idx1-ubyte.gz
+          wget https://storage.googleapis.com/cvdf-datasets/mnist/t10k-images-idx3-ubyte.gz
+          wget https://storage.googleapis.com/cvdf-datasets/mnist/t10k-labels-idx1-ubyte.gz
+          gzip -d train-images-idx3-ubyte.gz
+          gzip -d train-labels-idx1-ubyte.gz
+          gzip -d t10k-images-idx3-ubyte.gz
+          gzip -d t10k-labels-idx1-ubyte.gz
+      - 
+        name: Prepare test-config
+        run: |
+          cd ${GITHUB_REPOSITORY#*/}
+          sudo cp -r ./example_configs/hanami /etc/
+          sudo sed -i 's/address = http:\/\/127\.0\.0\.1:11418/address = https:\/\/local-hanami/g' /etc/hanami/hanami_testing.conf
+      - 
+        name: Run test
+        run: |
+          cd ${GITHUB_REPOSITORY#*/}/testing/python_sdk_api
+          /usr/bin/python3 sdk_api_test.py
+
+
+
+  ansible_test:
+    name: "Integration-Tests (Ansible)"
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'create' && startsWith(github.ref, 'refs/tags/') }}
+    needs: [ docker_merge ]
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - linux/amd64
+          - linux/arm64
+    env:
+      ADMIN_USER_ID: "asdf"
+      ADMIN_USER_NAME: "test-user"
+      ADMIN_PASSWORD: "asdfasdf"
+      TOKEN_KEY: "111111111"
+    steps:
+      - 
+        name: Set branch name as environment variable
+        run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV
+      - 
+        name: Checkout repository
+        run: |
+          # use manually clone, because with the "actions/checkout@v3" action the name of the
+          # branch can not be read by the git commands, which is necessary for the build-script
+          git clone https://github.com/kitsudaiki/${GITHUB_REPOSITORY#*/}.git
+          cd ${GITHUB_REPOSITORY#*/}
+          git checkout ${GITHUB_REF#refs/heads/}
+          git submodule init
+          git submodule update --recursive
+      -
+        name: Install Ansible
+        run: |
+          sudo apt-add-repository -y ppa:ansible/ansible
+          sudo apt update
+          sudo apt install ansible
+      - 
+        name: Install Hanami via Ansible
+        run: |
+          cd ${GITHUB_REPOSITORY#*/}/deploy/ansible/
+          ansible-playbook --connection=local -e "hanami_docker_tag=$BRANCH_NAME" -i hanami/inventory.yml hanami/deploy.yml -vvv
+      -
+        name: Sleep for 60 seconds
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '60s'
+      -
+        name: Update hosts-file
+        run: |
+          echo "127.0.0.1  local-hanami" | sudo tee -a /etc/hosts
+          cat /etc/hosts
+      -
+        name: Install dependencies for SDK
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y protobuf-compiler wget gzip python3 python3-pip
+          cd ${GITHUB_REPOSITORY#*/}/src/sdk/python/hanami_sdk
+          pip3 install -U .
+      - 
+        name: Download mnist-files
+        run: |
+          cd /tmp/
+          wget https://storage.googleapis.com/cvdf-datasets/mnist/train-images-idx3-ubyte.gz
+          wget https://storage.googleapis.com/cvdf-datasets/mnist/train-labels-idx1-ubyte.gz
+          wget https://storage.googleapis.com/cvdf-datasets/mnist/t10k-images-idx3-ubyte.gz
+          wget https://storage.googleapis.com/cvdf-datasets/mnist/t10k-labels-idx1-ubyte.gz
+          gzip -d train-images-idx3-ubyte.gz
+          gzip -d train-labels-idx1-ubyte.gz
+          gzip -d t10k-images-idx3-ubyte.gz
+          gzip -d t10k-labels-idx1-ubyte.gz
+      - 
+        name: Prepare test-config
+        run: |
+          cd ${GITHUB_REPOSITORY#*/}
+          sudo cp -r ./example_configs/hanami /etc/
+          sudo sed -i 's/address = http:\/\/127\.0\.0\.1:11418/address = https:\/\/local-hanami/g' /etc/hanami/hanami_testing.conf
+      - 
+        name: Check docker-container
+        if: success() || failure()
+        run: docker ps -a
+      - 
+        name: Run test
+        run: |
+          cd ${GITHUB_REPOSITORY#*/}/testing/python_sdk_api
+          /usr/bin/python3 sdk_api_test.py
+      - 
+        name: Check docker-container
+        if: success() || failure()
+        run: |
+          docker ps -a
+          docker logs Hanami
+
+
+
+  build_docs:
+    name: Build and push docs
+    needs: [ docker_merge ]
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'create' && startsWith(github.ref, 'refs/tags/') }}
+    env:
+      FORCE_COLOR: 1
+    steps:
+      - 
+        name: Set branch name as environment variable
+        run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV
+      - 
+        uses: earthly/actions-setup@v1
+        with:
+          version: v0.8.0
+      - 
+        name: Get artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: result
+          path: /tmp/build_result
+      - 
+        name: Checkout repository
+        run: |
+          # use manually clone, because with the "actions/checkout@v3" action the name of the
+          # branch can not be read by the git commands, which is necessary for the build-script
+          git clone https://github.com/kitsudaiki/${GITHUB_REPOSITORY#*/}.git
+          cd ${GITHUB_REPOSITORY#*/}
+          git checkout ${GITHUB_REF#refs/heads/}
+          git submodule init
+          git submodule update --recursive
+      - 
+        name: Prepare Binary
+        run: |
+          cd ${GITHUB_REPOSITORY#*/}
+          chmod +x /tmp/build_result/Hanami
+          mkdir -p builds/binaries
+          cp /tmp/build_result/Hanami ./builds/binaries/
+      - 
+        name: Generate code-docs
+        run: |
+          cd ${GITHUB_REPOSITORY#*/}
+          earthly --artifact +generate-code-docu/tmp/Hanami_docs ./builds/docs
+      - 
+        name: Build docs
+        run: |
+          cd ${GITHUB_REPOSITORY#*/}
+          earthly  +build-docs --image_name=${{ env.REGISTRY_DOCS_IMAGE }}:${{ env.BRANCH_NAME }}
+      - 
+        name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - 
+        name: Push image
+        run: docker push ${{ env.REGISTRY_DOCS_IMAGE }}:${{ env.BRANCH_NAME }}
+
+
+
+  cleanup:
+    name: Delete build artifacts
+    needs: [ build_docs, kubernetes_test, ansible_test ]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - 
+        name: "Delete artifacts"
+        uses: geekyeggo/delete-artifact@v4
+        with:
+          name: result

@@ -30,6 +30,8 @@ import json
 import time
 import configparser
 import urllib3
+import asyncio
+
 
 # the test use insecure connections, which is totally ok for the tests
 # and neaded for testings endpoints with self-signed certificastes,
@@ -214,6 +216,33 @@ def test_cluster():
         pass
 
 
+async def test_direct_io(token, address, cluster_uuid):
+    # check direct-mode
+    ws = await cluster.switch_to_direct_mode(token, address, cluster_uuid, False)
+    for i in range(0, 100):
+        await direct_io.send_train_input(ws,
+                                         "test_input",
+                                         test_values.get_direct_io_test_intput(),
+                                         False,
+                                         False)
+        await direct_io.send_train_input(ws,
+                                         "test_output",
+                                         test_values.get_direct_io_test_output(),
+                                         True,
+                                         False)
+    output_values = await direct_io.send_request_input(ws,
+                                                       "test_input",
+                                                       test_values.get_direct_io_test_intput(),
+                                                       True,
+                                                       False)
+    # print(output_values)
+    await ws.close()
+
+    cluster.switch_to_task_mode(token, address, cluster_uuid, False)
+
+    assert list(output_values).index(max(output_values)) == 5
+
+
 def test_workflow():
     print("test workflow")
 
@@ -291,27 +320,7 @@ def test_workflow():
     assert accuracy > 90.0
     result = request_result.delete_request_result(token, address, task_uuid, False)
 
-    # check direct-mode
-    ws = cluster.switch_to_direct_mode(token, address, cluster_uuid, False)
-    for i in range(0, 100):
-        direct_io.send_train_input(ws,
-                                   "test_input",
-                                   test_values.get_direct_io_test_intput(),
-                                   False,
-                                   False)
-        direct_io.send_train_input(ws,
-                                   "test_output",
-                                   test_values.get_direct_io_test_output(),
-                                   True,
-                                   False)
-    output_values = direct_io.send_request_input(
-        ws, "test_input", test_values.get_direct_io_test_intput(), True, False)
-    # print(output_values)
-    ws.close()
-
-    cluster.switch_to_task_mode(token, address, cluster_uuid, False)
-
-    assert list(output_values).index(max(output_values)) == 5
+    asyncio.run(test_direct_io(token, address, cluster_uuid))
 
     # cleanup
     dataset.delete_dataset(token, address, train_dataset_uuid, False)
