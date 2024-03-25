@@ -329,7 +329,7 @@ jobs:
 
   docker_build:
     name: "Build Docker-images"
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'create' && startsWith(github.ref, 'refs/tags/') }}
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
     needs: [ sdk_api_tests ]
     runs-on: ubuntu-22.04
     strategy:
@@ -415,7 +415,7 @@ jobs:
 
   docker_merge:
     name: "Merge and push Docker-image"
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'create' && startsWith(github.ref, 'refs/tags/') }}
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
     runs-on: ubuntu-22.04
     needs: [ docker_build ]
     steps:
@@ -456,7 +456,7 @@ jobs:
 
   kubernetes_test:
     name: "Integration-Tests (Kubernetes)"
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'create' && startsWith(github.ref, 'refs/tags/') }}
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
     needs: [ docker_merge ]
     runs-on: ubuntu-22.04
     strategy:
@@ -470,7 +470,15 @@ jobs:
     steps:
       - 
         name: Set branch name as environment variable
-        run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV
+        run: |
+          if [[ ${GITHUB_REF#} == refs/tags/* ]]; then \
+              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/tags/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          else \
+              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          fi
+      - 
+        name: Check docker-tag
+        run: echo "Docker-tag=$BRANCH_NAME"
       - 
         name: Checkout repository
         run: |
@@ -559,7 +567,7 @@ jobs:
 
   ansible_test:
     name: "Integration-Tests (Ansible)"
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'create' && startsWith(github.ref, 'refs/tags/') }}
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
     needs: [ docker_merge ]
     runs-on: ubuntu-22.04
     strategy:
@@ -576,7 +584,15 @@ jobs:
     steps:
       - 
         name: Set branch name as environment variable
-        run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV
+        run: |
+          if [[ ${GITHUB_REF#} == refs/tags/* ]]; then \
+              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/tags/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          else \
+              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          fi
+      - 
+        name: Check docker-tag
+        run: echo "Docker-tag=$BRANCH_NAME"
       - 
         name: Checkout repository
         run: |
@@ -655,13 +671,21 @@ jobs:
     name: Build and push docs
     needs: [ docker_merge ]
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'create' && startsWith(github.ref, 'refs/tags/') }}
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
     env:
       FORCE_COLOR: 1
     steps:
       - 
         name: Set branch name as environment variable
-        run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV
+        run: |
+          if [[ ${GITHUB_REF#} == refs/tags/* ]]; then \
+              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/tags/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          else \
+              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          fi
+      - 
+        name: Check docker-tag
+        run: echo "Docker-tag=$BRANCH_NAME"
       - 
         uses: earthly/actions-setup@v1
         with:
