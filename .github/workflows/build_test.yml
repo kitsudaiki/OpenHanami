@@ -472,10 +472,10 @@ jobs:
         name: Set branch name as environment variable
         run: |
           if [[ $github_event_name == 'push' && $github_ref == 'refs/heads/develop' ]]; then \
-              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV \
+              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
           fi
           if [[ $github_event_name == 'push' && $github_ref == refs/tags/* ]]; then \
-              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/tags/})" | sed 's#/#\-#' >> $GITHUB_ENV \
+              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/tags/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
           fi
       - 
         name: Checkout repository
@@ -584,10 +584,10 @@ jobs:
         name: Set branch name as environment variable
         run: |
           if [[ $github_event_name == 'push' && $github_ref == 'refs/heads/develop' ]]; then \
-              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV \
+              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
           fi
           if [[ $github_event_name == 'push' && $github_ref == refs/tags/* ]]; then \
-              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/tags/})" | sed 's#/#\-#' >> $GITHUB_ENV \
+              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/tags/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
           fi
       - 
         name: Checkout repository
@@ -675,10 +675,10 @@ jobs:
         name: Set branch name as environment variable
         run: |
           if [[ $github_event_name == 'push' && $github_ref == 'refs/heads/develop' ]]; then \
-              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV \
+              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
           fi
           if [[ $github_event_name == 'push' && $github_ref == refs/tags/* ]]; then \
-              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/tags/})" | sed 's#/#\-#' >> $GITHUB_ENV \
+              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/tags/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
           fi
       - 
         uses: earthly/actions-setup@v1
