@@ -1,7 +1,7 @@
 # Hanami
 
 ![Github workfloat status](https://img.shields.io/github/actions/workflow/status/kitsudaiki/Hanami/build_test.yml?branch=develop&style=flat-square&label=build%20and%20test)
-![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/kitsudaiki/Hanami?label=version&style=flat-square)
+![GitHub release](https://img.shields.io/github/v/release/kitsudaiki/Hanami?include_prereleases&label=version&style=flat-square)
 ![GitHub](https://img.shields.io/github/license/kitsudaiki/Hanami-AI?style=flat-square)
 ![Platform](https://img.shields.io/badge/Platform-Linux--x64|arm64-lightgrey?style=flat-square)
 
