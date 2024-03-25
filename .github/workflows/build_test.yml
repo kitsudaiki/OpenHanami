@@ -471,12 +471,14 @@ jobs:
       - 
         name: Set branch name as environment variable
         run: |
-          if [[ $github_event_name == 'push' && $github_ref == 'refs/heads/develop' ]]; then \
+          if [[ ${GITHUB_REF#} == refs/tags/* ]]; then \
+              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/tags/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          else \
               echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
           fi
-          if [[ $github_event_name == 'push' && $github_ref == refs/tags/* ]]; then \
-              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/tags/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
-          fi
+      - 
+        name: Check docker-tag
+        run: echo "Docker-tag=$BRANCH_NAME"
       - 
         name: Checkout repository
         run: |
@@ -583,12 +585,14 @@ jobs:
       - 
         name: Set branch name as environment variable
         run: |
-          if [[ $github_event_name == 'push' && $github_ref == 'refs/heads/develop' ]]; then \
+          if [[ ${GITHUB_REF#} == refs/tags/* ]]; then \
+              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/tags/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          else \
               echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
           fi
-          if [[ $github_event_name == 'push' && $github_ref == refs/tags/* ]]; then \
-              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/tags/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
-          fi
+      - 
+        name: Check docker-tag
+        run: echo "Docker-tag=$BRANCH_NAME"
       - 
         name: Checkout repository
         run: |
@@ -674,12 +678,14 @@ jobs:
       - 
         name: Set branch name as environment variable
         run: |
-          if [[ $github_event_name == 'push' && $github_ref == 'refs/heads/develop' ]]; then \
+          if [[ ${GITHUB_REF#} == refs/tags/* ]]; then \
+              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/tags/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          else \
               echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
           fi
-          if [[ $github_event_name == 'push' && $github_ref == refs/tags/* ]]; then \
-              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/tags/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
-          fi
+      - 
+        name: Check docker-tag
+        run: echo "Docker-tag=$BRANCH_NAME"
       - 
         uses: earthly/actions-setup@v1
         with:
