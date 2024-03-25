@@ -1,11 +1,12 @@
 # Changelog
 
-## v0.4.1
+## 0.4.1
 
-- **Date**: 2024-03-23
+**Release-Date**: 2024-03-25
 
 ### Added
 
+- provide docker-images also for arm64 architecture
 - new steps were added to the CI-pipeline:
     - added automatic build and push of amd64 and arm64 docker-images to docker hub
     - added automatic build and push for the documentation to docker hub
@@ -23,13 +24,14 @@
 
 ### Fixed
 
-- fixed linting-errors
+- fixed linting-errors in python- and ansbile-scripts
 - fixes to run code in virtual machines, where reading system information had broke the setup
+
 
 
 ## v0.4.0
 
-- **Date**: 2024-01-21
+**Release-Date**: 2024-01-21
 
 ### Breaking-Changes
 
@@ -71,7 +73,7 @@
 
 ## v0.3.3
 
-- **Date**: 2023-11-17
+**Release-Date**: 2023-11-17
 
 ### Fixed
 
@@ -82,7 +84,7 @@
 
 ## v0.3.2
 
-- **Date**: 2023-11-10
+**Release-Date**: 2023-11-10
 
 ### Added
 
@@ -119,7 +121,7 @@
 
 ## v0.3.1
 
-- **Date**: 2023-09-24
+**Release-Date**: 2023-09-24
 
 ### Changed
 
@@ -139,7 +141,7 @@
 
 ## v0.3.0 
 
-- **Date**: 2023-09-05
+**Release-Date**: 2023-09-05
 
 ### Breaking-Changes
 
@@ -198,7 +200,7 @@
 
 ## v0.2.0 
 
-- **Date**: 2023-03-15
+**Release-Date**: 2023-03-15
 
 ### Breaking-Changes
 
@@ -246,7 +248,7 @@
 
 ## v0.1.0
 
-- **Date**: 2022-10-18
+**Release-Date**: 2022-10-18
 
 ### Added
 
