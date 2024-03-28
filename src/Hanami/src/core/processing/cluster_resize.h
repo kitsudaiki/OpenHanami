@@ -125,7 +125,8 @@ resizeConnections(Brick* targetBrick)
  *
  * @param cluster cluster to update
  * @param originLocation position of the soruce-neuron, which require the resize
- * @param offset action-offset of the new section
+ * @param lowerBound action-offset of the new section
+ * @param potentialRange range of the potential, suppored by the section
  * @param synapseBlockBuffer synapse-block-buffer to allocate new blocks, if necessary
  *
  * @return true, if successful, else false
@@ -133,12 +134,14 @@ resizeConnections(Brick* targetBrick)
 inline bool
 createNewSection(Cluster& cluster,
                  const SourceLocationPtr& originLocation,
-                 const float offset,
+                 const float lowerBound,
+                 const float potentialRange,
                  ItemBuffer& synapseBlockBuffer)
 {
-    // get origin objects
+    // get origin object
     NeuronBlock* originBlock = &cluster.neuronBlocks[originLocation.blockId];
     Neuron* originNeuron = &originBlock->neurons[originLocation.neuronId];
+    const bool inputConnected = cluster.bricks[originBlock->brickId].isInputBrick;
     const uint8_t newPosInNeuron = originNeuron->getFirstZeroBit();
     if (newPosInNeuron == UNINIT_STATE_8) {
         return false;
@@ -165,8 +168,10 @@ createNewSection(Cluster& cluster,
 
     // initialize connection
     targetConnection->origin = originLocation;
-    targetConnection->offset = offset;
+    targetConnection->lowerBound = lowerBound;
+    targetConnection->potentialRange = potentialRange;
     targetConnection->origin.posInNeuron = newPosInNeuron;
+    targetConnection->origin.isInput = inputConnected;
     originNeuron->setInUse(newPosInNeuron);
 
     return true;
@@ -205,10 +210,11 @@ updateCluster(Cluster& cluster)
 
                 createNewSection(cluster,
                                  originLocation,
-                                 neuron->newOffset,
+                                 neuron->newLowerBound,
+                                 neuron->potentialRange,
                                  cluster.attachedHost->synapseBlocks);
 
-                neuron->newOffset = 0.0f;
+                neuron->newLowerBound = 0.0f;
                 neuron->isNew = 0;
             }
         }

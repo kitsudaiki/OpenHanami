@@ -113,7 +113,7 @@ synapseProcessingBackward(SynapseSection* synapseSection,
                           float* localMem)
 {
     __shared__ float localPotential[64];
-    localPotential[threadIdx.x] = sourceNeuron->potential - connection->offset;
+    localPotential[threadIdx.x] = sourceNeuron->potential - connection->lowerBound;
 
     float val = 0.0f;
     uint16_t pos = 0;
@@ -160,7 +160,7 @@ synapseProcessingBackward(SynapseSection* synapseSection,
     // mark source-neuron for updates, if necessary and training is active
     if constexpr (doTrain) {
         sourceNeuron->isNew = localPotential[threadIdx.x] > 0.01f && synapseSection->hasNext == false;
-        sourceNeuron->newOffset = (sourceNeuron->potential - localPotential[threadIdx.x]) + connection->offset;
+        sourceNeuron->newLowerBound = (sourceNeuron->potential - localPotential[threadIdx.x]) + connection->lowerBound;
         synapseSection->hasNext = synapseSection->hasNext || sourceNeuron->isNew;
     }
 }
@@ -296,7 +296,7 @@ processNeurons(NeuronBlock* neuronBlocks,
 
         if constexpr (doTrain) {
             neuron->isNew = neuron->active != 0 && neuron->inUse == 0;
-            neuron->newOffset = 0.0f;
+            neuron->newLowerBound = 0.0f;
         }
     }
 }
@@ -365,7 +365,7 @@ backpropagateNeuron(SynapseSection* section,
     __shared__ float localPotential[64];
 
     // init values
-    localPotential[threadIdx.x] = sourceNeuron->potential - connection->offset;
+    localPotential[threadIdx.x] = sourceNeuron->potential - connection->lowerBound;
     Synapse* synapse = nullptr;
     Neuron* targetNeuron = nullptr;
     TempNeuron* targetTempNeuron = nullptr;
@@ -511,7 +511,7 @@ reduceConnections(ConnectionBlock* connectionBlocks,
         if (reduceSection(synapseSection) == false) {
             // initialize the creation of a new section
             sourceNeuron->isNew = 1;
-            sourceNeuron->newOffset = connection->offset;
+            sourceNeuron->newLowerBound = connection->lowerBound;
             sourceNeuron->inUse &= (~(1 << connection->origin.posInNeuron));
 
             // mark current connection as available again

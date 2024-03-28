@@ -59,7 +59,7 @@ processNeuronsOfInputBrickBackward(const Brick* brick,
             neuron->active = neuron->potential > 0.0f;
             if constexpr (doTrain) {
                 neuron->isNew = neuron->active != 0 && neuron->inUse == 0;
-                neuron->newOffset = 0.0f;
+                neuron->newLowerBound = 0.0f;
             }
             counter++;
         }

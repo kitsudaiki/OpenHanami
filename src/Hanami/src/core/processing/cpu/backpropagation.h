@@ -101,7 +101,7 @@ backpropagateSection(SynapseSection* section,
                      Neuron* sourceNeuron,
                      TempNeuron* sourceTempNeuron)
 {
-    float potential = sourceNeuron->potential - connection->offset;
+    float potential = sourceNeuron->potential - connection->lowerBound;
     uint8_t pos = 0;
     Synapse* synapse;
     Neuron* targetNeuron = nullptr;

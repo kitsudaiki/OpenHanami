@@ -109,7 +109,7 @@ reduceConnections(Brick* brick,
             if (reduceSection(synapseSection) == false) {
                 // initialize the creation of a new section
                 sourceNeuron->isNew = 1;
-                sourceNeuron->newOffset = connection->offset;
+                sourceNeuron->newLowerBound = connection->lowerBound;
                 sourceNeuron->inUse &= (~(1 << connection->origin.posInNeuron));
 
                 // mark current connection as available again
