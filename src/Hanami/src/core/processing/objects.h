@@ -30,6 +30,7 @@
 #include <uuid/uuid.h>
 
 #include <cstdlib>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -167,7 +168,7 @@ struct SourceLocationPtr {
     uint32_t blockId;
     uint16_t neuronId;
     uint8_t posInNeuron;
-    uint8_t padding[1];
+    bool isInput;
 };
 static_assert(sizeof(SourceLocationPtr) == 8);
 
@@ -182,11 +183,10 @@ struct Neuron {
     uint8_t refractoryTime = 1;
     uint8_t active = 0;
 
-    float newOffset = 0.0f;
+    float newLowerBound = 0.0f;
+    float potentialRange = 0.0f;
     uint8_t isNew = 0;
     uint8_t inUse = 0;
-
-    uint8_t padding[4];
 
     void setInUse(const uint8_t pos) { inUse |= (1 << pos); }
 
@@ -240,14 +240,15 @@ static_assert(sizeof(TempNeuronBlock) == 2048);
 
 struct SynapseConnection {
     SourceLocationPtr origin;
-    float offset = 0.0f;
-    uint8_t padding[4];
+    float lowerBound = 0.0f;
+    float potentialRange = std::numeric_limits<float>::max();
 
     SynapseConnection()
     {
         origin.blockId = UNINIT_STATE_32;
         origin.neuronId = UNINIT_STATE_16;
         origin.posInNeuron = 0;
+        origin.isInput = false;
     }
 };
 static_assert(sizeof(SynapseConnection) == 16);

@@ -70,8 +70,11 @@ processNeuronsOfInputBrick(Cluster& cluster, const Brick* brick)
                     SourceLocationPtr originLocation;
                     originLocation.blockId = blockId;
                     originLocation.neuronId = neuronIdInBlock;
-                    createNewSection(
-                        cluster, originLocation, 0.0f, cluster.attachedHost->synapseBlocks);
+                    createNewSection(cluster,
+                                     originLocation,
+                                     0.0f,
+                                     std::numeric_limits<float>::max(),
+                                     cluster.attachedHost->synapseBlocks);
                 }
             }
             counter++;
@@ -139,29 +142,40 @@ synapseProcessingBackward(Cluster& cluster,
                           Neuron* sourceNeuron,
                           const SourceLocationPtr originLocation,
                           ClusterSettings* clusterSettings,
+                          const bool inputConnected,
                           uint32_t& randomSeed)
 {
-    float potential = sourceNeuron->potential - connection->offset;
+    float potential = sourceNeuron->potential - connection->lowerBound;
     float val = 0.0f;
     uint8_t pos = 0;
     Synapse* synapse = nullptr;
     Neuron* targetNeuron = nullptr;
+    bool condition = false;
+    float halfPotential = 0.0f;
+
+    if (potential > connection->potentialRange) {
+        potential = connection->potentialRange;
+    }
 
     // iterate over all synapses in the section
     while (pos < SYNAPSES_PER_SYNAPSESECTION && potential > 0.01f) {
         synapse = &synapseSection->synapses[pos];
 
         if constexpr (doTrain) {
-            // create new synapse if necesarry and training is active
-            if (synapse->targetNeuronId == UNINIT_STATE_8) {
-                createNewSynapse(
-                    targetNeuronBlock, synapse, clusterSettings, potential, randomSeed);
+            if (inputConnected || cluster.enableCreation) {
+                // create new synapse if necesarry and training is active
+                if (synapse->targetNeuronId == UNINIT_STATE_8) {
+                    createNewSynapse(
+                        targetNeuronBlock, synapse, clusterSettings, potential, randomSeed);
+                    cluster.enableCreation = true;
+                }
             }
-
-            if (synapse->border > 2.0f * potential && pos < SYNAPSES_PER_SYNAPSESECTION - 2) {
-                const float val = synapse->border / 2.0f;
-                synapseSection->synapses[pos + 1].border += val;
-                synapse->border -= val;
+            if (inputConnected && potential < 0.51f * synapse->border
+                && potential > 0.49f * synapse->border)
+            {
+                synapse->border /= 2.0f;
+                synapse->weight /= 2.0f;
+                cluster.enableCreation = true;
             }
         }
 
@@ -176,14 +190,19 @@ synapseProcessingBackward(Cluster& cluster,
         }
 
         // update loop-counter
+        halfPotential
+            += static_cast<float>(pos < SYNAPSES_PER_SYNAPSESECTION / 2) * synapse->border;
         potential -= synapse->border;
         ++pos;
     }
 
     if constexpr (doTrain) {
-        sourceNeuron->isNew = potential > 0.01f && synapseSection->hasNext == false;
-        sourceNeuron->newOffset = (sourceNeuron->potential - potential) + connection->offset;
-        synapseSection->hasNext = synapseSection->hasNext || sourceNeuron->isNew;
+        if (potential > 0.01f && (inputConnected || cluster.enableCreation)) {
+            sourceNeuron->isNew = true;
+            sourceNeuron->newLowerBound = connection->lowerBound + halfPotential;
+            sourceNeuron->potentialRange = connection->potentialRange - halfPotential;
+            connection->potentialRange = halfPotential;
+        }
     }
 }
 
@@ -211,6 +230,8 @@ processSynapses(Cluster& cluster, Brick* brick, const uint32_t blockId)
     const uint32_t dimY = brick->dimY;
     const uint32_t dimX = brick->dimX;
 
+    bool inputConnected = false;
+
     if (blockId >= dimX) {
         return;
     }
@@ -225,6 +246,7 @@ processSynapses(Cluster& cluster, Brick* brick, const uint32_t blockId)
                 continue;
             }
 
+            inputConnected = scon->origin.isInput;
             sourceNeuronBlock = &neuronBlocks[scon->origin.blockId];
             sourceNeuron = &sourceNeuronBlock->neurons[scon->origin.neuronId];
             if (sourceNeuron->active == 0) {
@@ -242,6 +264,7 @@ processSynapses(Cluster& cluster, Brick* brick, const uint32_t blockId)
                                                sourceNeuron,
                                                scon->origin,
                                                clusterSettings,
+                                               inputConnected,
                                                randomeSeed);
         }
     }
@@ -283,7 +306,8 @@ processNeurons(Cluster& cluster, Brick* brick, const uint32_t blockId)
 
         if constexpr (doTrain) {
             neuron->isNew = neuron->active != 0 && neuron->inUse == 0;
-            neuron->newOffset = 0.0f;
+            neuron->newLowerBound = 0.0f;
+            neuron->potentialRange = std::numeric_limits<float>::max();
         }
     }
 }
