@@ -49,10 +49,10 @@ sendClusterOutputMessage(const Cluster* cluster)
         msg.set_islast(false);
         msg.set_brickname(name);
         msg.set_processtype(ClusterProcessType::REQUEST_TYPE);
-        msg.set_numberofvalues(cluster->clusterHeader->numberOfOutputs);
+        msg.set_numberofvalues(cluster->clusterHeader.numberOfOutputs);
 
         for (uint64_t outputNeuronId = brick->ioBufferPos;
-             outputNeuronId < brick->ioBufferPos + cluster->clusterHeader->numberOfOutputs;
+             outputNeuronId < brick->ioBufferPos + cluster->clusterHeader.numberOfOutputs;
              outputNeuronId++)
         {
             msg.add_values(cluster->outputValues[outputNeuronId]);

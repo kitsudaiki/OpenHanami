@@ -60,69 +60,75 @@ SaveCluster_State::~SaveCluster_State() {}
 bool
 SaveCluster_State::processEvent()
 {
-    bool result = false;
     Hanami::ErrorContainer error;
+    Task* currentTask = m_cluster->getCurrentTask();
 
-    do {
-        Task* actualTask = m_cluster->getActualTask();
-
-        // send checkpoint to shiori
-        std::string fileUuid = "";
-        // checkpoints are created by another internal process, which gives the id's not in the
-        // context object, but as normal values
-        UserContext userContext;
-        userContext.userId = actualTask->userId;
-        userContext.projectId = actualTask->projectId;
-
-        // get directory to store data from config
-        bool success = false;
-        std::filesystem::path targetFilePath
-            = GET_STRING_CONFIG("storage", "checkpoint_location", success);
-        if (success == false) {
-            error.addMessage("checkpoint-location to store checkpoint is missing in the config");
-            break;
-        }
-
-        // build absolut file-path to store the file
-        targetFilePath = targetFilePath
-                         / std::filesystem::path(actualTask->uuid.toString() + "_checkpoint_"
-                                                 + actualTask->userId);
-
-        // register in database
-        json dbEntry;
-        dbEntry["uuid"] = actualTask->uuid.toString();
-        dbEntry["name"] = actualTask->checkpointName;
-        dbEntry["location"] = targetFilePath.generic_string();
-        dbEntry["project_id"] = actualTask->projectId;
-        dbEntry["owner_id"] = actualTask->userId;
-        dbEntry["visibility"] = "private";
-
-        // add to database
-        if (CheckpointTable::getInstance()->addCheckpoint(dbEntry, userContext, error) == false) {
-            break;
-        }
-
-        // write data of cluster to disc
-        m_cluster->attachedHost->syncWithHost(m_cluster);
-        if (writeCheckpointToFile(targetFilePath, error) == false) {
-            break;
-        }
-
-        result = true;
-        break;
-    }
-    while (true);
+    const bool success = saveClusterToCheckpoint(currentTask, error);
 
     m_cluster->goToNextState(FINISH_TASK);
 
-    if (result == false) {
+    if (success == false) {
         error.addMessage("Failed to create checkpoint of cluster with UUID '" + m_cluster->getUuid()
                          + "'");
         // TODO: cleanup in error-case
         // TODO: give the user a feedback by setting the task to failed-state
     }
 
-    return result;
+    return success;
+}
+
+/**
+ * @brief SaveCluster_State::saveClusterToCheckpoint
+ * @param currentTask
+ * @param error
+ * @return
+ */
+bool
+SaveCluster_State::saveClusterToCheckpoint(Task* currentTask, Hanami::ErrorContainer& error)
+{
+    // send checkpoint to shiori
+    std::string fileUuid = "";
+    // checkpoints are created by another internal process, which gives the id's not in the
+    // context object, but as normal values
+    UserContext userContext;
+    userContext.userId = currentTask->userId;
+    userContext.projectId = currentTask->projectId;
+
+    // get directory to store data from config
+    bool success = false;
+    std::filesystem::path targetFilePath
+        = GET_STRING_CONFIG("storage", "checkpoint_location", success);
+    if (success == false) {
+        error.addMessage("checkpoint-location to store checkpoint is missing in the config");
+        return false;
+    }
+
+    // build absolut file-path to store the file
+    targetFilePath = targetFilePath
+                     / std::filesystem::path(currentTask->uuid.toString() + "_checkpoint_"
+                                             + currentTask->userId);
+
+    // register in database
+    json dbEntry;
+    dbEntry["uuid"] = currentTask->uuid.toString();
+    dbEntry["name"] = currentTask->checkpointName;
+    dbEntry["location"] = targetFilePath.generic_string();
+    dbEntry["project_id"] = currentTask->projectId;
+    dbEntry["owner_id"] = currentTask->userId;
+    dbEntry["visibility"] = "private";
+
+    // add to database
+    if (CheckpointTable::getInstance()->addCheckpoint(dbEntry, userContext, error) == false) {
+        return false;
+    }
+
+    // write data of cluster to disc
+    m_cluster->attachedHost->syncWithHost(m_cluster);
+    if (writeCheckpointToFile(targetFilePath, error) == false) {
+        return false;
+    }
+
+    return true;
 }
 
 /**
@@ -136,101 +142,93 @@ SaveCluster_State::processEvent()
 bool
 SaveCluster_State::writeCheckpointToFile(const std::string& filePath, Hanami::ErrorContainer& error)
 {
-    const uint64_t clusterSize = m_cluster->getDataSize() + sizeof(CheckpointHeader);
-    uint64_t position = 0;
+    const uint64_t totalFileSize = m_cluster->getDataSize() + sizeof(CheckpointHeader);
 
     // initialize checkpoint-file
     Hanami::BinaryFile checkpointFile(filePath);
-    if (checkpointFile.allocateStorage(clusterSize, error) == false) {
-        error.addMessage("Failed to allocate '" + std::to_string(clusterSize)
+    if (checkpointFile.allocateStorage(totalFileSize, error) == false) {
+        error.addMessage("Failed to allocate '" + std::to_string(totalFileSize)
                          + "' bytes for checkpointfile at path '" + filePath + "'");
         return false;
     }
 
-    // header
-    if (writeHeaderToFile(checkpointFile, position, error) == false) {
+    // create header
+    CheckpointHeader header;
+    header.setName(m_cluster->getName());
+    header.setUuid(m_cluster->clusterHeader.uuid);
+    header.fileSize = totalFileSize;
+    header.numberOfBricks = m_cluster->bricks.size();
+    header.numberOfNeuronBrocks = m_cluster->neuronBlocks.size();
+
+    uint64_t position = sizeof(CheckpointHeader);
+
+    // cluster-header
+    header.clusterHeaderPos = position;
+    if (writeClusterHeaderToFile(checkpointFile, position, error) == false) {
         return false;
     }
 
-    // cluster
-    if (writeClusterToFile(checkpointFile, position, error) == false) {
+    // neuron-blocks
+    header.neuronBlocksPos = position;
+    if (writeNeuronBlocksToFile(checkpointFile, position, error) == false) {
         return false;
     }
 
     // bricks
+    header.bricksPos = position;
     if (writeBricksToFile(checkpointFile, position, error) == false) {
         return false;
     }
 
-    return true;
-}
-
-/**
- * @brief write checkpoint-header into the file
- *
- * @param file reference to file-handler
- * @param position reference for position-counter to identify the position where to write into the
- * file
- * @param error reference for error-output
- *
- * @return true, if successful, else false
- */
-bool
-SaveCluster_State::writeHeaderToFile(Hanami::BinaryFile& file,
-                                     uint64_t& position,
-                                     Hanami::ErrorContainer& error)
-{
-    // create header
-    CheckpointHeader header;
-    header.setName(m_cluster->getName());
-    header.setUuid(m_cluster->clusterHeader->uuid);
-    header.metaSize = m_cluster->clusterData.totalBufferSize;
-    header.blockSize = m_cluster->getDataSize() - header.metaSize;
+    // connection-blocks
+    header.connectionBlocks = position;
+    if (writeConnectionBlocksOfBricksToFile(checkpointFile, position, error) == false) {
+        return false;
+    }
 
     // write header of cluster to file
-    if (file.writeDataIntoFile(&header, position, sizeof(CheckpointHeader), error) == false) {
+    if (checkpointFile.writeDataIntoFile(&header, 0, sizeof(CheckpointHeader), error) == false) {
         error.addMessage("Failed to write cluster-header for checkpoint into file");
         return false;
     }
-    position += sizeof(CheckpointHeader);
 
     return true;
 }
 
 /**
- * @brief write cluster-body into the file
+ * @brief write cluster-header into the file
  *
  * @param file reference to file-handler
  * @param position reference for position-counter to identify the position where to write into the
- * file
+ *                 file
  * @param error reference for error-output
  *
  * @return true, if successful, else false
  */
 bool
-SaveCluster_State::writeClusterToFile(Hanami::BinaryFile& file,
-                                      uint64_t& position,
-                                      Hanami::ErrorContainer& error)
+SaveCluster_State::writeClusterHeaderToFile(Hanami::BinaryFile& file,
+                                            uint64_t& position,
+                                            Hanami::ErrorContainer& error)
 {
+    const uint64_t numberOfBytes = sizeof(ClusterHeader);
+
     // write static data of cluster to file
-    if (file.writeDataIntoFile(
-            m_cluster->clusterData.data, position, m_cluster->clusterData.totalBufferSize, error)
-        == false)
+    if (file.writeDataIntoFile(&m_cluster->clusterHeader, position, numberOfBytes, error) == false)
     {
-        error.addMessage("Failed to write cluster-meta for checkpoint into file");
+        error.addMessage("Failed to write cluster-header for checkpoint into file");
         return false;
     }
-    position += m_cluster->clusterData.totalBufferSize;
+    position += numberOfBytes;
 
     return true;
 }
 
 /**
- * @brief write content of the bricks into the file
+ * @brief write bricks into the file
  *
  * @param file reference to file-handler
  * @param position reference for position-counter to identify the position where to write into the
- * file
+ *                 file
  * @param error reference for error-output
  *
  * @return true, if successful, else false
@@ -240,8 +238,64 @@ SaveCluster_State::writeBricksToFile(Hanami::BinaryFile& file,
                                      uint64_t& position,
                                      Hanami::ErrorContainer& error)
 {
-    for (uint64_t i = 0; i < m_cluster->clusterHeader->bricks.count; i++) {
-        const uint64_t numberOfConnections = m_cluster->bricks[i].connectionBlocks.size();
+    const uint64_t numberOfBytes = m_cluster->bricks.size() * sizeof(Brick);
+
+    // write static data of cluster to file
+    if (file.writeDataIntoFile(&m_cluster->bricks[0], position, numberOfBytes, error) == false) {
+        error.addMessage("Failed to write bricks for checkpoint into file");
+        return false;
+    }
+    position += numberOfBytes;
+
+    return true;
+}
+
+/**
+ * @brief write neuron-blocks into the file
+ *
+ * @param file reference to file-handler
+ * @param position reference for position-counter to identify the position where to write into the
+ *                 file
+ * @param error reference for error-output
+ *
+ * @return true, if successful, else false
+ */
+bool
+SaveCluster_State::writeNeuronBlocksToFile(Hanami::BinaryFile& file,
+                                           uint64_t& position,
+                                           Hanami::ErrorContainer& error)
+{
+    const uint64_t numberOfBytes = m_cluster->neuronBlocks.size() * sizeof(NeuronBlock);
+
+    // write static data of cluster to file
+    if (file.writeDataIntoFile(&m_cluster->neuronBlocks[0], position, numberOfBytes, error)
+        == false)
+    {
+        error.addMessage("Failed to write neuron-blocks for checkpoint into file");
+        return false;
+    }
+    position += numberOfBytes;
+
+    return true;
+}
+
+/**
+ * @brief write connection-blocks of the bricks into the file
+ *
+ * @param file reference to file-handler
+ * @param position reference for position-counter to identify the position where to write into the
+ *                 file
+ * @param error reference for error-output
+ *
+ * @return true, if successful, else false
+ */
+bool
+SaveCluster_State::writeConnectionBlocksOfBricksToFile(Hanami::BinaryFile& file,
+                                                       uint64_t& position,
+                                                       Hanami::ErrorContainer& error)
+{
+    for (uint64_t i = 0; i < m_cluster->bricks.size(); i++) {
+        const uint64_t numberOfConnections = m_cluster->bricks[i].connectionBlocks->size();
         for (uint64_t c = 0; c < numberOfConnections; c++) {
             if (writeConnectionBlockToFile(file, position, i, c, error) == false) {
                 return true;
@@ -257,7 +311,7 @@ SaveCluster_State::writeBricksToFile(Hanami::BinaryFile& file,
  *
  * @param file reference to file-handler
  * @param position reference for position-counter to identify the position where to write into the
- * file
+ *                 file
  * @param brickId id of the brick
  * @param blockid id of the block within the brick
  * @param error reference for error-output
@@ -272,7 +326,7 @@ SaveCluster_State::writeConnectionBlockToFile(Hanami::BinaryFile& file,
                                               Hanami::ErrorContainer& error)
 {
     // write connection-blocks of brick to file
-    ConnectionBlock* connectionBlock = &m_cluster->bricks[brickId].connectionBlocks[blockid];
+    ConnectionBlock* connectionBlock = &m_cluster->bricks[brickId].connectionBlocks->at(blockid);
     if (file.writeDataIntoFile(connectionBlock, position, sizeof(ConnectionBlock), error) == false)
     {
         error.addMessage("Failed to write connection-blocks for checkpoint into file");
@@ -295,7 +349,7 @@ SaveCluster_State::writeConnectionBlockToFile(Hanami::BinaryFile& file,
  *
  * @param file reference to file-handler
  * @param position reference for position-counter to identify the position where to write into the
- * file
+ *                 file
  * @param targetSynapseBlockPos position of the synapse-block within the global buffer
  * @param error reference for error-output
  *

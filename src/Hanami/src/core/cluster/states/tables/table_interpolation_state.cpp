@@ -44,7 +44,7 @@ TableInterpolation_State::~TableInterpolation_State() {}
 bool
 TableInterpolation_State::processEvent()
 {
-    Task* actualTask = m_cluster->getActualTask();
+    Task* actualTask = m_cluster->getCurrentTask();
     const uint64_t numberOfInputsPerCycle = actualTask->numberOfInputsPerCycle;
     const uint64_t numberOfOuputsPerCycle = actualTask->numberOfOuputsPerCycle;
     uint64_t offset = actualTask->actualCycle;

@@ -53,102 +53,212 @@ RestoreCluster_State::~RestoreCluster_State() {}
 bool
 RestoreCluster_State::processEvent()
 {
-    Task* actualTask = m_cluster->getActualTask();
+    Task* currentTask = m_cluster->getCurrentTask();
     Hanami::ErrorContainer error;
-    const std::string originalUuid = m_cluster->getUuid();
 
-    bool success = false;
-
-    do {
-        // get initial logical host
-        LogicalHost* host = HanamiRoot::physicalHost->getFirstHost();
-        if (host == nullptr) {
-            error.addMessage("No logical host found for new cluster.");
-            break;
-        }
-
-        // get meta-infos of dataset from shiori
-        json parsedCheckpointInfo;
-        try {
-            parsedCheckpointInfo = json::parse(actualTask->checkpointInfo);
-        }
-        catch (const json::parse_error& ex) {
-            error.addMessage("json-parser error: " + std::string(ex.what()));
-            break;
-        }
-
-        // get other information
-        if (parsedCheckpointInfo.contains("location") == false) {
-            break;
-        }
-        const std::string location = parsedCheckpointInfo["location"];
-
-        // get checkpoint-data
-        Hanami::BinaryFile checkpointFile(location);
-        Hanami::DataBuffer checkpointBuffer;
-        if (checkpointFile.readCompleteFile(checkpointBuffer, error) == false) {
-            error.addMessage("failed to load checkpoint-data");
-            break;
-        }
-
-        uint8_t* u8Data = static_cast<uint8_t*>(checkpointBuffer.data);
-        uint64_t position = 0;
-
-        // convert checkpoint-header
-        CheckpointHeader header;
-        memcpy(&header, &u8Data[position], sizeof(CheckpointHeader));
-        position += sizeof(CheckpointHeader);
-
-        // convert cluster-body
-        if (Hanami::reset_DataBuffer(m_cluster->clusterData,
-                                     Hanami::calcBytesToBlocks(header.metaSize))
-            == false)
-        {
-            error.addMessage("failed to allocate cluster-data for write-back of checkpoint");
-            break;
-        }
-        memcpy(m_cluster->clusterData.data, &u8Data[position], header.metaSize);
-        if (reinitPointer(m_cluster, header.metaSize) == false) {
-            error.addMessage("failed to re-init cluster from checkpoint");
-            break;
-        }
-        position += header.metaSize;
-
-        // convert payload of bricks
-        for (uint32_t i = 0; i < m_cluster->clusterHeader->bricks.count; i++) {
-            Brick* brick = &m_cluster->bricks[i];
-            brick->connectionBlocks.resize(brick->dimX * brick->dimY);
-
-            const uint64_t numberOfConnections = brick->connectionBlocks.size();
-            for (uint64_t c = 0; c < numberOfConnections; c++) {
-                // convert connection-block
-                memcpy(&brick->connectionBlocks[c], &u8Data[position], sizeof(ConnectionBlock));
-                position += sizeof(ConnectionBlock);
-
-                // convert synapse-block
-                SynapseBlock newSynapseBlock;
-                memcpy(&newSynapseBlock, &u8Data[position], sizeof(SynapseBlock));
-                const uint64_t itemPos = host->synapseBlocks.addNewItem(newSynapseBlock);
-                if (itemPos == UNINIT_STATE_64) {
-                    error.addMessage("failed allocate synapse-block for checkpoint");
-                    break;
-                }
-
-                // write new position into the related connection-block
-                brick->connectionBlocks[c].targetSynapseBlockPos = itemPos;
-
-                position += sizeof(SynapseBlock);
-            }
-        }
-
-        // update uuid
-        strncpy(m_cluster->clusterHeader->uuid.uuid, originalUuid.c_str(), originalUuid.size());
-        success = true;
-        break;
-    }
-    while (true);
+    const bool success = restoreClusterFromCheckpoint(currentTask, error);
 
     m_cluster->goToNextState(FINISH_TASK);
 
     return success;
+}
+
+/**
+ * @brief RestoreCluster_State::restoreCluster
+ * @param currentTask
+ * @param error
+ * @return
+ */
+bool
+RestoreCluster_State::restoreClusterFromCheckpoint(Task* currentTask, Hanami::ErrorContainer& error)
+{
+    // get meta-infos of dataset from shiori
+    json parsedCheckpointInfo;
+    try {
+        parsedCheckpointInfo = json::parse(currentTask->checkpointInfo);
+    }
+    catch (const json::parse_error& ex) {
+        error.addMessage("json-parser error: " + std::string(ex.what()));
+        return false;
+    }
+
+    // get other information
+    if (parsedCheckpointInfo.contains("location") == false) {
+        return false;
+    }
+    const std::string location = parsedCheckpointInfo["location"];
+
+    if (restoreClusterFromFile(location, error) == false) {
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * @brief RestoreCluster_State::restoreClusterFromFile
+ * @param fileLocation
+ * @param error
+ * @return
+ */
+bool
+RestoreCluster_State::restoreClusterFromFile(const std::string fileLocation,
+                                             Hanami::ErrorContainer& error)
+{
+    const std::string originalUuid = m_cluster->getUuid();
+
+    // get checkpoint-data
+    Hanami::BinaryFile checkpointFile(fileLocation);
+    Hanami::DataBuffer checkpointBuffer;
+    if (checkpointFile.readCompleteFile(checkpointBuffer, error) == false) {
+        error.addMessage("failed to load checkpoint-data");
+        return false;
+    }
+
+    uint8_t* u8Data = static_cast<uint8_t*>(checkpointBuffer.data);
+
+    // convert checkpoint-header
+    CheckpointHeader header;
+    memcpy(&header, &u8Data[0], sizeof(CheckpointHeader));
+
+    if (restoreClusterHeader(header, u8Data, error) == false) {
+        return false;
+    }
+
+    if (restoreNeuronBlocks(header, u8Data, error) == false) {
+        return false;
+    }
+
+    if (restoreBricks(header, u8Data, error) == false) {
+        return false;
+    }
+
+    if (restoreConnectionBlocks(header, u8Data, error) == false) {
+        return false;
+    }
+
+    // update uuid
+    strncpy(m_cluster->clusterHeader.uuid.uuid, originalUuid.c_str(), originalUuid.size());
+
+    return true;
+}
+
+/**
+ * @brief RestoreCluster_State::restoreClusterHeader
+ * @param header
+ * @param u8Data
+ * @param error
+ * @return
+ */
+bool
+RestoreCluster_State::restoreClusterHeader(const CheckpointHeader& header,
+                                           uint8_t* u8Data,
+                                           Hanami::ErrorContainer& error)
+{
+    const uint64_t position = header.clusterHeaderPos;
+    const uint64_t size = sizeof(ClusterHeader);
+
+    memcpy(&m_cluster->clusterHeader, &u8Data[position], size);
+
+    return true;
+}
+
+/**
+ * @brief RestoreCluster_State::restoreNeuronBlocks
+ * @param header
+ * @param u8Data
+ * @param error
+ * @return
+ */
+bool
+RestoreCluster_State::restoreNeuronBlocks(const CheckpointHeader& header,
+                                          uint8_t* u8Data,
+                                          Hanami::ErrorContainer& error)
+{
+    const uint64_t position = header.neuronBlocksPos;
+    const uint64_t size = header.numberOfNeuronBrocks * sizeof(NeuronBlock);
+
+    m_cluster->neuronBlocks.clear();
+    m_cluster->neuronBlocks.resize(header.numberOfNeuronBrocks);
+
+    memcpy(&m_cluster->neuronBlocks[0], &u8Data[position], size);
+
+    return true;
+}
+
+/**
+ * @brief RestoreCluster_State::restoreBricks
+ * @param header
+ * @param u8Data
+ * @param error
+ * @return
+ */
+bool
+RestoreCluster_State::restoreBricks(const CheckpointHeader& header,
+                                    uint8_t* u8Data,
+                                    Hanami::ErrorContainer& error)
+{
+    const uint64_t position = header.bricksPos;
+    const uint64_t size = header.numberOfBricks * sizeof(Brick);
+
+    m_cluster->bricks.clear();
+    m_cluster->bricks.resize(header.numberOfBricks);
+
+    memcpy(&m_cluster->bricks[0], &u8Data[position], size);
+
+    for (Brick& brick : m_cluster->bricks) {
+        brick.connectionBlocks = new std::vector<ConnectionBlock>();
+    }
+
+    return true;
+}
+
+/**
+ * @brief RestoreCluster_State::restoreConnectionBlocks
+ * @param header
+ * @param u8Data
+ * @param error
+ * @return
+ */
+bool
+RestoreCluster_State::restoreConnectionBlocks(const CheckpointHeader& header,
+                                              uint8_t* u8Data,
+                                              Hanami::ErrorContainer& error)
+{
+    uint64_t position = header.connectionBlocks;
+
+    // get initial logical host
+    LogicalHost* host = HanamiRoot::physicalHost->getFirstHost();
+    if (host == nullptr) {
+        error.addMessage("No logical host found for new cluster.");
+        return false;
+    }
+
+    // convert payload of bricks
+    for (Brick& brick : m_cluster->bricks) {
+        brick.connectionBlocks->resize(brick.dimX * brick.dimY);
+
+        const uint64_t numberOfConnections = brick.connectionBlocks->size();
+        for (uint64_t c = 0; c < numberOfConnections; c++) {
+            // convert connection-block
+            memcpy(&brick.connectionBlocks[0][c], &u8Data[position], sizeof(ConnectionBlock));
+            position += sizeof(ConnectionBlock);
+
+            // convert synapse-block
+            SynapseBlock newSynapseBlock;
+            memcpy(&newSynapseBlock, &u8Data[position], sizeof(SynapseBlock));
+            const uint64_t itemPos = host->synapseBlocks.addNewItem(newSynapseBlock);
+            if (itemPos == UNINIT_STATE_64) {
+                error.addMessage("failed allocate synapse-block for checkpoint");
+                return false;
+            }
+
+            // write new position into the related connection-block
+            brick.connectionBlocks[0][c].targetSynapseBlockPos = itemPos;
+
+            position += sizeof(SynapseBlock);
+        }
+    }
+
+    return true;
 }

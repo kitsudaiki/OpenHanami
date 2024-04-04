@@ -49,10 +49,7 @@
 #define NEURONS_PER_NEURONSECTION 64
 #define POSSIBLE_NEXT_AXON_STEP 80
 #define NUMBER_OF_POSSIBLE_NEXT 64
-
-// processing
-#define NUMBER_OF_PROCESSING_UNITS 1
-#define NUMBER_OF_RAND_VALUES 10485760
+#define NUMBER_OF_OUTPUT_CONNECTIONS 8
 
 //==================================================================================================
 
@@ -111,14 +108,12 @@ struct ClusterHeader {
 
     uint32_t numberOfInputs = 0;
     uint32_t numberOfOutputs = 0;
-
-    // synapse-cluster
-    HeaderEntry bricks;
-    HeaderEntry neuronBlocks;
+    uint32_t numberOfNeuronBlocks = 0;
+    uint32_t numberOfBricks = 0;
 
     ClusterSettings settings;
 
-    uint8_t padding2[96];
+    uint8_t padding2[120];
 };
 static_assert(sizeof(ClusterHeader) == 512);
 
@@ -290,9 +285,93 @@ struct Brick {
     uint32_t dimX = 0;
     uint32_t dimY = 0;
 
-    std::vector<ConnectionBlock> connectionBlocks;
+    std::vector<ConnectionBlock>* connectionBlocks = nullptr;
 
-    Brick() { std::fill_n(name, 128, '\0'); }
+    uint8_t padding3[16];
+
+    Brick()
+    {
+        std::fill_n(name, 128, '\0');
+        connectionBlocks = new std::vector<ConnectionBlock>();
+    }
+
+    ~Brick() { delete connectionBlocks; }
+
+    Brick(const Brick& other)
+    {
+        connectionBlocks = new std::vector<ConnectionBlock>();
+
+        copyNormalPayload(other);
+
+        if (other.connectionBlocks != nullptr) {
+            for (ConnectionBlock& block : other.connectionBlocks[0]) {
+                connectionBlocks->push_back(block);
+            }
+        }
+    }
+
+    Brick& operator=(const Brick& other)
+    {
+        if (this != &other) {
+            if (connectionBlocks != nullptr) {
+                connectionBlocks->clear();
+            }
+
+            copyNormalPayload(other);
+
+            if (other.connectionBlocks != nullptr) {
+                for (ConnectionBlock& block : other.connectionBlocks[0]) {
+                    connectionBlocks->push_back(block);
+                }
+            }
+        }
+        return *this;
+    }
+
+    Brick& operator=(Brick&& other)
+    {
+        if (this != &other) {
+            if (connectionBlocks != nullptr) {
+                delete connectionBlocks;
+            }
+
+            copyNormalPayload(other);
+
+            connectionBlocks = other.connectionBlocks;
+
+            if (other.connectionBlocks != nullptr) {
+                delete other.connectionBlocks;
+            }
+        }
+        return *this;
+    }
+
+    void copyNormalPayload(const Brick& other)
+    {
+        brickId = other.brickId;
+        isOutputBrick = other.isOutputBrick;
+        isInputBrick = other.isInputBrick;
+        wasResized = other.wasResized;
+
+        memcpy(name, other.name, 128);
+
+        nameSize = other.nameSize;
+
+        ioBufferPos = other.ioBufferPos;
+        neuronBlockPos = other.neuronBlockPos;
+
+        numberOfNeurons = other.numberOfNeurons;
+        numberOfNeuronBlocks = other.numberOfNeuronBlocks;
+
+        brickPos = other.brickPos;
+        memcpy(neighbors, other.neighbors, 12 * sizeof(uint32_t));
+        memcpy(possibleTargetNeuronBrickIds,
+               other.possibleTargetNeuronBrickIds,
+               NUMBER_OF_POSSIBLE_NEXT * sizeof(uint32_t));
+
+        dimX = other.dimX;
+        dimY = other.dimY;
+    }
 
     /**
      * @brief get the name of the brick
@@ -339,14 +418,27 @@ struct CudaPointerHandle {
 //==================================================================================================
 
 struct CheckpointHeader {
-    uint64_t metaSize = 0;
-    uint64_t blockSize = 0;
+    uint8_t version = 1;
+    uint8_t padding1[7];
+
+    const char typeIdentifier[8] = "hanami";
+    const char fileIdentifier[32] = "checkpoint";
+
+    uint64_t fileSize = 0;
+
+    uint64_t numberOfNeuronBrocks = 0;
+    uint64_t numberOfBricks = 0;
+
+    uint64_t clusterHeaderPos = 0;
+    uint64_t neuronBlocksPos = 0;
+    uint64_t bricksPos = 0;
+    uint64_t connectionBlocks = 0;
 
     char name[256];
     uint32_t nameSize = 0;
     char uuid[40];
 
-    uint8_t padding[3780];
+    uint8_t padding2[3692];
 
     CheckpointHeader()
     {

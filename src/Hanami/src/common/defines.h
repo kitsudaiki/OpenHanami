@@ -41,13 +41,3 @@
 #define INT_VALUE_REGEX "^-?([0-9]+)$"
 #define FLOAT_VALUE_REGEX "^-?([0-9]+)\\.([0-9]+)$"
 #define IPV4_REGEX "\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b"
-
-// network-predefines
-#define SYNAPSES_PER_SYNAPSESECTION 63
-#define NEURONS_PER_NEURONSECTION 64
-#define POSSIBLE_NEXT_AXON_STEP 80
-#define NEURON_CONNECTIONS 512
-
-// processing
-#define NUMBER_OF_PROCESSING_UNITS 1
-#define NUMBER_OF_RAND_VALUES 10485760

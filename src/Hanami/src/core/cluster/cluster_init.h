@@ -38,22 +38,18 @@ bool initNewCluster(Cluster* cluster,
                     const Hanami::ClusterMeta& clusterMeta,
                     const std::string& uuid);
 
-ClusterHeader createNewHeader(const uint32_t numberOfBricks,
-                              const uint32_t numberOfNeuronBlocks,
-                              const uint64_t numberOfInputs,
-                              const uint64_t numberOfOutputs);
-void initSegmentPointer(Cluster* cluster, const ClusterHeader& header);
+void initSegmentPointer(Cluster* cluster);
 bool connectBorderBuffer(Cluster* cluster);
 // void initOpencl(Hanami::GpuData &data);
-ClusterSettings initSettings(const Hanami::ClusterMeta& clusterMeta);
+void initSettings(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta);
 
 void addBricksToCluster(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta);
 bool initTargetBrickList(Cluster* cluster);
 
 Brick createNewBrick(const Hanami::BrickMeta& brickMeta, const uint32_t id);
-void connectBrick(Cluster* cluster, Brick* sourceBrick, const uint8_t side);
+void connectBrick(Cluster* cluster, Brick& sourceBrick, const uint8_t side);
 void connectAllBricks(Cluster* cluster);
 bool initializeNeurons(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta);
-uint32_t goToNextInitBrick(Cluster* cluster, Brick* currentBrick, uint32_t* maxPathLength);
+uint32_t goToNextInitBrick(Cluster* cluster, Brick& currentBrick, uint32_t* maxPathLength);
 
 #endif  // HANAMI_CLUSTERINIT_H

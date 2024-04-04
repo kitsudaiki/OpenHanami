@@ -27,6 +27,7 @@
 #include <hanami_common/threading/event.h>
 
 class Cluster;
+class Task;
 
 namespace Hanami
 {
@@ -46,17 +47,21 @@ class SaveCluster_State : public Hanami::Event
 
     bool writeCheckpointToFile(const std::string& filePath, Hanami::ErrorContainer& error);
 
-    bool writeHeaderToFile(Hanami::BinaryFile& file,
-                           uint64_t& position,
-                           Hanami::ErrorContainer& error);
-
-    bool writeClusterToFile(Hanami::BinaryFile& file,
-                            uint64_t& position,
-                            Hanami::ErrorContainer& error);
+    bool writeClusterHeaderToFile(Hanami::BinaryFile& file,
+                                  uint64_t& position,
+                                  Hanami::ErrorContainer& error);
 
     bool writeBricksToFile(Hanami::BinaryFile& file,
                            uint64_t& position,
                            Hanami::ErrorContainer& error);
+
+    bool writeNeuronBlocksToFile(Hanami::BinaryFile& file,
+                                 uint64_t& position,
+                                 Hanami::ErrorContainer& error);
+
+    bool writeConnectionBlocksOfBricksToFile(Hanami::BinaryFile& file,
+                                             uint64_t& position,
+                                             Hanami::ErrorContainer& error);
 
     bool writeConnectionBlockToFile(Hanami::BinaryFile& file,
                                     uint64_t& position,
@@ -68,6 +73,7 @@ class SaveCluster_State : public Hanami::Event
                                  uint64_t& position,
                                  const uint64_t targetSynapseBlockPos,
                                  Hanami::ErrorContainer& error);
+    bool saveClusterToCheckpoint(Task* currentTask, Hanami::ErrorContainer& error);
 };
 
 #endif  // HANAMI_SAVECLUSTERSTATE_H
