@@ -132,6 +132,17 @@ BinaryFile::updateFileSize(ErrorContainer& error)
 bool
 BinaryFile::readCompleteFile(DataBuffer& buffer, ErrorContainer& error)
 {
+    // precheck file-location
+    std::filesystem::path pathObj(m_filePath);
+    if (std::filesystem::exists(pathObj) == false) {
+        error.addMessage("Path '" + m_filePath + "' doesn't exist.");
+        return false;
+    }
+    if (std::filesystem::exists(pathObj) == false) {
+        error.addMessage("Path '" + m_filePath + "' is not a regular file.");
+        return false;
+    }
+
     // go to the end of the file to get the size of the file
     const long size = lseek(m_fileDescriptor, 0, SEEK_END);
     if (size <= 0) {

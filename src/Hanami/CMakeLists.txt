@@ -78,6 +78,7 @@ set(SOURCES
     src/common/typedefs.h
     src/common/using.h
     src/config.h
+    src/core/io/disc/checkpoint_io.h
     src/core/cluster/add_tasks.h
     src/core/cluster/cluster.h
     src/core/cluster/cluster_handler.h
@@ -216,6 +217,7 @@ set(SOURCES
     src/database/users_table.cpp
     src/documentation/generate_rest_api_docu.cpp
     src/hanami_root.cpp
+    src/core/io/disc/checkpoint_io.cpp
     src/main.cpp
 )
 

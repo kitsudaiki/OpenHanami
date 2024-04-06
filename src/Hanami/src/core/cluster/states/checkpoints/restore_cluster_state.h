@@ -23,6 +23,7 @@
 #ifndef HANAMI_RESTORECLUSTERSTATE_H
 #define HANAMI_RESTORECLUSTERSTATE_H
 
+#include <core/io/disc/checkpoint_io.h>
 #include <hanami_common/logger.h>
 #include <hanami_common/threading/event.h>
 
@@ -43,24 +44,9 @@ class RestoreCluster_State : public Hanami::Event
    private:
     Cluster* m_cluster = nullptr;
 
+    CheckpointIO m_clusterIO;
+
     bool restoreClusterFromCheckpoint(Task* currentTask, Hanami::ErrorContainer& error);
-
-    bool restoreClusterFromFile(const std::string fileLocation, Hanami::ErrorContainer& error);
-    bool restoreClusterHeader(const CheckpointHeader& header,
-                              uint8_t* u8Data,
-                              Hanami::ErrorContainer& error);
-
-    bool restoreBricks(const CheckpointHeader& header,
-                       uint8_t* u8Data,
-                       Hanami::ErrorContainer& error);
-
-    bool restoreNeuronBlocks(const CheckpointHeader& header,
-                             uint8_t* u8Data,
-                             Hanami::ErrorContainer& error);
-
-    bool restoreConnectionBlocks(const CheckpointHeader& header,
-                                 uint8_t* u8Data,
-                                 Hanami::ErrorContainer& error);
 };
 
 #endif  // HANAMI_RESTORECLUSTERSTATE_H
