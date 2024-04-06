@@ -115,7 +115,7 @@ getHighestOutput(const Cluster& cluster)
     uint32_t hightestPos = 0;
     float value = 0.0f;
 
-    for (uint32_t outputNeuronId = 0; outputNeuronId < cluster.clusterHeader->numberOfOutputs;
+    for (uint32_t outputNeuronId = 0; outputNeuronId < cluster.clusterHeader.numberOfOutputs;
          outputNeuronId++)
     {
         value = cluster.outputValues[outputNeuronId];
@@ -142,7 +142,7 @@ handleClientOutput(const Cluster& cluster)
         sendClusterOutputMessage(&cluster);
     }
     else {
-        Task* actualTask = cluster.getActualTask();
+        Task* actualTask = cluster.getCurrentTask();
         const uint64_t cycle = actualTask->actualCycle;
         if (actualTask->type == IMAGE_REQUEST_TASK) {
             // TODO: check for cluster-state instead of client
@@ -151,7 +151,7 @@ handleClientOutput(const Cluster& cluster)
         }
         else if (actualTask->type == TABLE_REQUEST_TASK) {
             float val = 0.0f;
-            for (uint64_t i = 0; i < cluster.clusterHeader->numberOfOutputs; i++) {
+            for (uint64_t i = 0; i < cluster.clusterHeader.numberOfOutputs; i++) {
                 const float temp = actualTask->resultData[cycle];
                 val = temp + cluster.outputValues[i];
                 actualTask->resultData[cycle] = val;

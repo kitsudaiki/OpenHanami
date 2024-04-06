@@ -23,11 +23,15 @@
 #ifndef HANAMI_RESTORECLUSTERSTATE_H
 #define HANAMI_RESTORECLUSTERSTATE_H
 
+#include <core/io/disc/checkpoint_io.h>
+#include <hanami_common/logger.h>
 #include <hanami_common/threading/event.h>
 
 #include <nlohmann/json.hpp>
 
 class Cluster;
+class Task;
+struct CheckpointHeader;
 
 class RestoreCluster_State : public Hanami::Event
 {
@@ -39,6 +43,10 @@ class RestoreCluster_State : public Hanami::Event
 
    private:
     Cluster* m_cluster = nullptr;
+
+    CheckpointIO m_clusterIO;
+
+    bool restoreClusterFromCheckpoint(Task* currentTask, Hanami::ErrorContainer& error);
 };
 
 #endif  // HANAMI_RESTORECLUSTERSTATE_H

@@ -44,7 +44,7 @@ template <bool doTrain>
 inline void
 processNeuronsOfInputBrick(Cluster& cluster, const Brick* brick)
 {
-    NeuronBlock* neuronBlocks = cluster.neuronBlocks;
+    NeuronBlock* neuronBlocks = &cluster.neuronBlocks[0];
     float* inputValues = cluster.inputValues;
     Neuron* neuron = nullptr;
     NeuronBlock* block = nullptr;
@@ -175,7 +175,6 @@ synapseProcessingBackward(Cluster& cluster,
             {
                 synapse->border /= 2.0f;
                 synapse->weight /= 2.0f;
-                cluster.enableCreation = true;
             }
         }
 
@@ -197,6 +196,7 @@ synapseProcessingBackward(Cluster& cluster,
     }
 
     if constexpr (doTrain) {
+        sourceNeuron->isNew = false;
         if (potential > 0.01f && (inputConnected || cluster.enableCreation)) {
             sourceNeuron->isNew = true;
             sourceNeuron->newLowerBound = connection->lowerBound + halfPotential;
@@ -217,9 +217,9 @@ template <bool doTrain>
 inline void
 processSynapses(Cluster& cluster, Brick* brick, const uint32_t blockId)
 {
-    NeuronBlock* neuronBlocks = cluster.neuronBlocks;
+    NeuronBlock* neuronBlocks = &cluster.neuronBlocks[0];
     SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(cluster.attachedHost->synapseBlocks);
-    ClusterSettings* clusterSettings = &cluster.clusterHeader->settings;
+    ClusterSettings* clusterSettings = &cluster.clusterHeader.settings;
     SynapseConnection* scon = nullptr;
     NeuronBlock* sourceNeuronBlock = nullptr;
     NeuronBlock* targetNeuronBlock = nullptr;
@@ -237,8 +237,8 @@ processSynapses(Cluster& cluster, Brick* brick, const uint32_t blockId)
     }
 
     for (uint32_t c = blockId * dimY; c < (blockId * dimY) + dimY; ++c) {
-        assert(c < brick->connectionBlocks.size());
-        connectionBlock = &brick->connectionBlocks[c];
+        assert(c < brick->connectionBlocks->size());
+        connectionBlock = &brick->connectionBlocks[0][c];
 
         for (uint16_t i = 0; i < NUMBER_OF_SYNAPSESECTION; i++) {
             scon = &connectionBlock->connections[i];
@@ -281,8 +281,8 @@ template <bool doTrain>
 inline void
 processNeurons(Cluster& cluster, Brick* brick, const uint32_t blockId)
 {
-    NeuronBlock* neuronBlocks = cluster.neuronBlocks;
-    ClusterSettings* clusterSettings = &cluster.clusterHeader->settings;
+    NeuronBlock* neuronBlocks = &cluster.neuronBlocks[0];
+    ClusterSettings* clusterSettings = &cluster.clusterHeader.settings;
     Neuron* neuron = nullptr;
     NeuronBlock* targetNeuronBlock = nullptr;
     const uint32_t neuronBlockId = brick->neuronBlockPos + blockId;

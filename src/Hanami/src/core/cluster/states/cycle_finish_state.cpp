@@ -46,7 +46,7 @@ CycleFinish_State::~CycleFinish_State() {}
 bool
 CycleFinish_State::processEvent()
 {
-    Task* actualTask = m_cluster->getActualTask();
+    Task* actualTask = m_cluster->getCurrentTask();
     const uint64_t numberOfCycles = actualTask->numberOfCycles;
 
     // update progress-counter

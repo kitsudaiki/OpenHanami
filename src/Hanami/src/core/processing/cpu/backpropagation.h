@@ -166,8 +166,8 @@ backpropagateConnections(Brick* brick,
     }
 
     for (uint32_t c = blockId * dimY; c < (blockId * dimY) + dimY; ++c) {
-        assert(c < brick->connectionBlocks.size());
-        connectionBlock = &brick->connectionBlocks[c];
+        assert(c < brick->connectionBlocks->size());
+        connectionBlock = &brick->connectionBlocks[0][c];
 
         for (uint16_t i = 0; i < NUMBER_OF_SYNAPSESECTION; i++) {
             connection = &connectionBlock->connections[i];

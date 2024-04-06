@@ -29,19 +29,14 @@ namespace Hanami
 bool
 readFile(std::string& readContent, const std::string& filePath, ErrorContainer& error)
 {
-    // check if exist
-    if (std::filesystem::exists(filePath)) {
-        // check for directory
-        if (std::filesystem::is_directory(filePath)) {
-            error.addMessage("failed to read destination of path \""
-                             + filePath +
-                             "\", because it already exist and it is a directory, "
-                             "but must be a file or not existing");
-            return false;
-        }
+    // precheck file-location
+    std::filesystem::path pathObj(filePath);
+    if (std::filesystem::exists(pathObj) == false) {
+        error.addMessage("Path '" + filePath + "' doesn't exist.");
+        return false;
     }
-    else {
-        error.addMessage("destination of path \"" + filePath + "\", doesn't exist");
+    if (std::filesystem::exists(pathObj) == false) {
+        error.addMessage("Path '" + filePath + "' is not a regular file.");
         return false;
     }
 
@@ -137,10 +132,14 @@ writeFile(const std::string& filePath,
 bool
 appendText(const std::string& filePath, const std::string& newText, ErrorContainer& error)
 {
-    // check for directory
-    if (std::filesystem::is_regular_file(filePath) == false) {
-        error.addMessage("Failed to append text to file \"" + filePath
-                         + "\", because it is not a regular file.");
+    // precheck file-location
+    std::filesystem::path pathObj(filePath);
+    if (std::filesystem::exists(pathObj) == false) {
+        error.addMessage("Path '" + filePath + "' doesn't exist.");
+        return false;
+    }
+    if (std::filesystem::exists(pathObj) == false) {
+        error.addMessage("Path '" + filePath + "' is not a regular file.");
         return false;
     }
 
@@ -176,6 +175,17 @@ replaceLine(const std::string& filePath,
             const std::string& newLineContent,
             ErrorContainer& error)
 {
+    // precheck file-location
+    std::filesystem::path pathObj(filePath);
+    if (std::filesystem::exists(pathObj) == false) {
+        error.addMessage("Path '" + filePath + "' doesn't exist.");
+        return false;
+    }
+    if (std::filesystem::exists(pathObj) == false) {
+        error.addMessage("Path '" + filePath + "' is not a regular file.");
+        return false;
+    }
+
     // read file
     std::string fileContent = "";
     bool result = readFile(fileContent, filePath, error);
@@ -222,6 +232,17 @@ replaceContent(const std::string& filePath,
                const std::string& newContent,
                ErrorContainer& error)
 {
+    // precheck file-location
+    std::filesystem::path pathObj(filePath);
+    if (std::filesystem::exists(pathObj) == false) {
+        error.addMessage("Path '" + filePath + "' doesn't exist.");
+        return false;
+    }
+    if (std::filesystem::exists(pathObj) == false) {
+        error.addMessage("Path '" + filePath + "' is not a regular file.");
+        return false;
+    }
+
     // read file
     std::string fileContent = "";
     bool result = readFile(fileContent, filePath, error);

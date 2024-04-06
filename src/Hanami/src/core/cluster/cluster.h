@@ -59,15 +59,14 @@ class Cluster
     bool enableCreation = false;
 
     // cluster-data
-    Hanami::DataBuffer clusterData;
-    ClusterHeader* clusterHeader = nullptr;
+    ClusterHeader clusterHeader;
     float* inputValues = nullptr;
     float* outputValues = nullptr;
     float* expectedValues = nullptr;
     std::map<std::string, Brick*> namedBricks;
-    Brick* bricks = nullptr;
-    NeuronBlock* neuronBlocks = nullptr;
-    TempNeuronBlock* tempNeuronBlocks = nullptr;
+    std::vector<Brick> bricks;
+    std::vector<NeuronBlock> neuronBlocks;
+    std::vector<TempNeuronBlock> tempNeuronBlocks;
     uint32_t numberOfNeuronBlocks = 0;
 
     // meta
@@ -80,7 +79,7 @@ class Cluster
     uint64_t getDataSize() const;
 
     // tasks
-    Task* getActualTask() const;
+    Task* getCurrentTask() const;
     uint64_t getActualTaskCycle() const;
     const TaskProgress getProgress(const std::string& taskUuid);
     bool removeTask(const std::string& taskUuid);

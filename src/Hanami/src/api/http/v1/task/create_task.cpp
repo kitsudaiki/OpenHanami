@@ -241,8 +241,8 @@ CreateTask::tableTask(std::string& taskUuid,
                       Hanami::ErrorContainer& error)
 {
     // init request-task
-    const uint64_t numberOfInputs = cluster->clusterHeader->numberOfInputs;
-    const uint64_t numberOfOutputs = cluster->clusterHeader->numberOfOutputs;
+    const uint64_t numberOfInputs = cluster->clusterHeader.numberOfInputs;
+    const uint64_t numberOfOutputs = cluster->clusterHeader.numberOfOutputs;
     const uint64_t numberOfLines = dataSetInfo["lines"];
 
     const std::string dataSetLocation = dataSetInfo["location"];

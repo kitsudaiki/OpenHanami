@@ -173,8 +173,8 @@ CpuHost::moveCluster(Cluster* cluster)
     SynapseBlock tempBlock;
 
     // copy synapse-blocks from the old host to this one here
-    for (uint64_t i = 0; i < cluster->clusterHeader->bricks.count; i++) {
-        for (ConnectionBlock& block : cluster->bricks[i].connectionBlocks) {
+    for (Brick& brick : cluster->bricks) {
+        for (ConnectionBlock& block : brick.connectionBlocks[0]) {
             if (block.targetSynapseBlockPos != UNINIT_STATE_64) {
                 tempBlock = cpuSynapseBlocks[block.targetSynapseBlockPos];
                 originHost->synapseBlocks.deleteItem(block.targetSynapseBlockPos);
@@ -209,8 +209,8 @@ CpuHost::syncWithHost(Cluster*)
 void
 CpuHost::removeCluster(Cluster* cluster)
 {
-    for (uint64_t i = 0; i < cluster->clusterHeader->bricks.count; i++) {
-        for (ConnectionBlock& block : cluster->bricks[i].connectionBlocks) {
+    for (Brick& brick : cluster->bricks) {
+        for (ConnectionBlock& block : brick.connectionBlocks[0]) {
             if (block.targetSynapseBlockPos != UNINIT_STATE_64) {
                 synapseBlocks.deleteItem(block.targetSynapseBlockPos);
             }

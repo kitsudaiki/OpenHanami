@@ -44,14 +44,14 @@
 inline SynapseConnection*
 searchTargetInBrick(Brick* targetBrick, ItemBuffer& synapseBlockBuffer)
 {
-    const uint64_t numberOfConnectionsBlocks = targetBrick->connectionBlocks.size();
+    const uint64_t numberOfConnectionsBlocks = targetBrick->connectionBlocks->size();
     if (numberOfConnectionsBlocks == 0) {
         return nullptr;
     }
 
     uint64_t pos = rand() % numberOfConnectionsBlocks;
     for (uint64_t i = 0; i < numberOfConnectionsBlocks; i++) {
-        ConnectionBlock* connectionBlock = &targetBrick->connectionBlocks[pos];
+        ConnectionBlock* connectionBlock = &targetBrick->connectionBlocks[0][pos];
 
         for (uint16_t j = 0; j < NUMBER_OF_SYNAPSESECTION; j++) {
             if (connectionBlock->connections[j].origin.blockId == UNINIT_STATE_32) {
@@ -95,7 +95,7 @@ resizeConnections(Brick* targetBrick)
     targetBrick->dimY++;
 
     // resize list
-    targetBrick->connectionBlocks.resize(targetBrick->dimX * targetBrick->dimY);
+    targetBrick->connectionBlocks->resize(targetBrick->dimX * targetBrick->dimY);
 
     // if there was no scaling in x-dimension, then no re-ordering necessary
     if (targetBrick->dimX == dimXold) {
@@ -114,8 +114,8 @@ resizeConnections(Brick* targetBrick)
             newPos = (y * targetBrick->dimX) + x;
             oldPos = (y * dimXold) + x;
 
-            targetBrick->connectionBlocks[newPos] = targetBrick->connectionBlocks[oldPos];
-            targetBrick->connectionBlocks[oldPos] = ConnectionBlock();
+            targetBrick->connectionBlocks[0][newPos] = targetBrick->connectionBlocks[0][oldPos];
+            targetBrick->connectionBlocks[0][oldPos] = ConnectionBlock();
         }
     }
 }
@@ -195,8 +195,7 @@ updateCluster(Cluster& cluster)
     bool found = false;
 
     // iterate over all neurons and add new synapse-section, if required
-    const uint32_t numberOfBlocks = cluster.clusterHeader->neuronBlocks.count;
-    for (uint32_t neuronBlockId = 0; neuronBlockId < numberOfBlocks; neuronBlockId++) {
+    for (uint32_t neuronBlockId = 0; neuronBlockId < cluster.neuronBlocks.size(); neuronBlockId++) {
         neuronBlock = &cluster.neuronBlocks[neuronBlockId];
 
         for (uint32_t sourceId = 0; sourceId < neuronBlock->numberOfNeurons; sourceId++) {

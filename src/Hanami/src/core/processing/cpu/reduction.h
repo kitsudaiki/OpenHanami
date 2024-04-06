@@ -93,7 +93,7 @@ reduceConnections(Brick* brick,
     }
 
     for (uint32_t c = blockId * dimY; c < (blockId * dimY) + dimY; ++c) {
-        connectionBlock = &brick->connectionBlocks[c];
+        connectionBlock = &brick->connectionBlocks[0][c];
 
         for (uint16_t i = 0; i < NUMBER_OF_SYNAPSESECTION; i++) {
             connection = &connectionBlock->connections[i];
@@ -125,7 +125,7 @@ reduceConnections(Brick* brick,
  * @brief reduce all synapses within the cluster and delete them, if the reach a deletion-border
  */
 inline void
-reduceCluster(const Cluster& cluster, const uint32_t brickId, const uint32_t blockId)
+reduceCluster(Cluster& cluster, const uint32_t brickId, const uint32_t blockId)
 {
     Brick* brick = &cluster.bricks[brickId];
     if (brick->isInputBrick) {
@@ -133,8 +133,8 @@ reduceCluster(const Cluster& cluster, const uint32_t brickId, const uint32_t blo
     }
 
     SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(cluster.attachedHost->synapseBlocks);
-    const uint32_t numberOfBricks = cluster.clusterHeader->bricks.count;
-    reduceConnections(brick, cluster.neuronBlocks, synapseBlocks, blockId);
+    const uint32_t numberOfBricks = cluster.bricks.size();
+    reduceConnections(brick, &cluster.neuronBlocks[0], synapseBlocks, blockId);
 }
 
 #endif  // HANAMI_CORE_REDUCTION_H

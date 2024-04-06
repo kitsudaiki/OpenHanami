@@ -44,7 +44,7 @@ ImageTrainForward_State::~ImageTrainForward_State() {}
 bool
 ImageTrainForward_State::processEvent()
 {
-    Task* actualTask = m_cluster->getActualTask();
+    Task* actualTask = m_cluster->getCurrentTask();
     const uint64_t numberOfInputsPerCycle = actualTask->numberOfInputsPerCycle;
     const uint64_t numberOfOuputsPerCycle = actualTask->numberOfOuputsPerCycle;
     const uint64_t entriesPerCycle = numberOfInputsPerCycle + numberOfOuputsPerCycle;

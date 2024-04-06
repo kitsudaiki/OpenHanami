@@ -106,7 +106,7 @@ WorkerThread::handleTrainForwardTask(const CpuHost::WorkerTask task)
         if (task.cluster->incrementAndCompare(
                 task.cluster->bricks[task.brickId].numberOfNeuronBlocks))
         {
-            if (task.brickId == task.cluster->clusterHeader->bricks.count - 1) {
+            if (task.brickId == task.cluster->bricks.size() - 1) {
                 updateCluster(*task.cluster);
                 task.cluster->updateClusterState();
             }
@@ -128,7 +128,7 @@ WorkerThread::handleTrainBackwardTask(const CpuHost::WorkerTask task)
 {
     if (task.brickId == UNINIT_STATE_32) {
         WorkerThread::handleOutputBackward(*task.cluster);
-        m_host->addBrickToTaskQueue(task.cluster, task.cluster->clusterHeader->bricks.count - 1);
+        m_host->addBrickToTaskQueue(task.cluster, task.cluster->bricks.size() - 1);
         return;
     }
     else {
@@ -158,7 +158,7 @@ WorkerThread::handleReductionTask(const CpuHost::WorkerTask task)
     reduceCluster(*task.cluster, task.brickId, task.blockId);
     if (task.cluster->incrementAndCompare(task.cluster->bricks[task.brickId].numberOfNeuronBlocks))
     {
-        if (task.brickId == task.cluster->clusterHeader->bricks.count - 1) {
+        if (task.brickId == task.cluster->bricks.size() - 1) {
             task.cluster->updateClusterState();
         }
         else {
@@ -186,7 +186,7 @@ WorkerThread::handleProcessTask(const CpuHost::WorkerTask task)
         if (task.cluster->incrementAndCompare(
                 task.cluster->bricks[task.brickId].numberOfNeuronBlocks))
         {
-            if (task.brickId == task.cluster->clusterHeader->bricks.count - 1) {
+            if (task.brickId == task.cluster->bricks.size() - 1) {
                 handleClientOutput(*task.cluster);
                 task.cluster->updateClusterState();
             }
@@ -208,7 +208,7 @@ void
 WorkerThread::handleInputForward(Cluster& cluster, const bool doTrain)
 {
     Brick* brick = nullptr;
-    const uint32_t numberOfBricks = cluster.clusterHeader->bricks.count;
+    const uint32_t numberOfBricks = cluster.bricks.size();
 
     // process input-bricks
     for (uint32_t brickId = 0; brickId < numberOfBricks; ++brickId) {
@@ -236,18 +236,18 @@ bool
 WorkerThread::handleOutputBackward(Cluster& cluster)
 {
     Brick* brick = nullptr;
-    const uint32_t numberOfBricks = cluster.clusterHeader->bricks.count;
+    const uint32_t numberOfBricks = cluster.bricks.size();
 
     for (int32_t brickId = numberOfBricks - 1; brickId >= 0; --brickId) {
         brick = &cluster.bricks[brickId];
 
         if (brick->isOutputBrick) {
             if (backpropagateOutput(brick,
-                                    cluster.neuronBlocks,
-                                    cluster.tempNeuronBlocks,
+                                    &cluster.neuronBlocks[0],
+                                    &cluster.tempNeuronBlocks[0],
                                     cluster.outputValues,
                                     cluster.expectedValues,
-                                    &cluster.clusterHeader->settings)
+                                    &cluster.clusterHeader.settings)
                 == false)
             {
                 return false;
@@ -274,7 +274,7 @@ WorkerThread::processClusterForward(Cluster& cluster,
 {
     Hanami::ErrorContainer error;
     float* outputValues = cluster.outputValues;
-    NeuronBlock* neuronBlocks = cluster.neuronBlocks;
+    NeuronBlock* neuronBlocks = &cluster.neuronBlocks[0];
     Brick* brick = &cluster.bricks[brickId];
 
     if (brick->isInputBrick) {
@@ -318,7 +318,7 @@ WorkerThread::processClusterBackward(Cluster& cluster,
     }
 
     SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(cluster.attachedHost->synapseBlocks);
-    backpropagateNeuron(brick, cluster.neuronBlocks, cluster.tempNeuronBlocks, blockId);
+    backpropagateNeuron(brick, &cluster.neuronBlocks[0], &cluster.tempNeuronBlocks[0], blockId);
     backpropagateConnections(
-        brick, cluster.neuronBlocks, cluster.tempNeuronBlocks, synapseBlocks, blockId);
+        brick, &cluster.neuronBlocks[0], &cluster.tempNeuronBlocks[0], synapseBlocks, blockId);
 }

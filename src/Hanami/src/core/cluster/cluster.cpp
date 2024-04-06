@@ -58,8 +58,6 @@ Cluster::Cluster(LogicalHost* host, const void* data, const uint64_t dataSize)
     attachedHost = host;
 
     counter.store(0, std::memory_order_relaxed);
-    Hanami::allocateBlocks_DataBuffer(clusterData, Hanami::calcBytesToBlocks(dataSize));
-    memcpy(clusterData.data, data, dataSize);
 }
 
 /**
@@ -73,7 +71,6 @@ Cluster::~Cluster()
     delete inputValues;
     delete outputValues;
     delete expectedValues;
-    delete tempNeuronBlocks;
 }
 
 /**
@@ -100,7 +97,7 @@ Cluster::incrementAndCompare(const uint32_t referenceValue)
 const std::string
 Cluster::getUuid()
 {
-    return clusterHeader->uuid.toString();
+    return clusterHeader.uuid.toString();
 }
 
 /**
@@ -126,9 +123,13 @@ Cluster::init(const Hanami::ClusterMeta& clusterTemplate, const std::string& uui
 uint64_t
 Cluster::getDataSize() const
 {
-    uint64_t size = clusterData.totalBufferSize;
-    for (uint64_t i = 0; i < clusterHeader->bricks.count; i++) {
-        const uint64_t numberOfConnections = bricks[i].connectionBlocks.size();
+    uint64_t size = 0;
+    size += sizeof(ClusterHeader);
+    size += bricks.size() * sizeof(Brick);
+    size += neuronBlocks.size() * sizeof(NeuronBlock);
+
+    for (const Brick& brick : bricks) {
+        const uint64_t numberOfConnections = brick.connectionBlocks->size();
         size += numberOfConnections * sizeof(ConnectionBlock);
         size += numberOfConnections * sizeof(SynapseBlock);
     }
@@ -145,11 +146,11 @@ const std::string
 Cluster::getName()
 {
     // precheck
-    if (clusterHeader == nullptr) {
+    if (clusterHeader.nameSize == 0) {
         return std::string("");
     }
 
-    return std::string(clusterHeader->name, clusterHeader->nameSize);
+    return std::string(clusterHeader.name, clusterHeader.nameSize);
 }
 
 /**
@@ -163,15 +164,15 @@ bool
 Cluster::setName(const std::string& newName)
 {
     // precheck
-    if (clusterHeader == nullptr || newName.size() > 255 || newName.size() == 0) {
+    if (newName.size() > 255 || newName.size() == 0) {
         return false;
     }
 
     // copy string into char-buffer and set explicit the escape symbol to be absolut sure
     // that it is set to absolut avoid buffer-overflows
-    strncpy(clusterHeader->name, newName.c_str(), newName.size());
-    clusterHeader->name[newName.size()] = '\0';
-    clusterHeader->nameSize = newName.size();
+    strncpy(clusterHeader.name, newName.c_str(), newName.size());
+    clusterHeader.name[newName.size()] = '\0';
+    clusterHeader.nameSize = newName.size();
 
     return true;
 }
@@ -241,7 +242,7 @@ Cluster::updateClusterState()
     }
     else if (mode == ClusterProcessingMode::TRAIN_BACKWARD_MODE) {
         reductionCounter++;
-        if (reductionCounter >= 100 && clusterHeader->settings.enableReduction) {
+        if (reductionCounter >= 100 && clusterHeader.settings.enableReduction) {
             mode = ClusterProcessingMode::REDUCTION_MODE;
             startReductionCycle();
             reductionCounter = 0;
@@ -267,7 +268,7 @@ Cluster::updateClusterState()
  * @return pointer to the actual task
  */
 Task*
-Cluster::getActualTask() const
+Cluster::getCurrentTask() const
 {
     return taskHandleState->getActualTask();
 }
