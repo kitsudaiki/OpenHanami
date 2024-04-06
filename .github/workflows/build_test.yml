@@ -420,6 +420,17 @@ jobs:
     needs: [ docker_build ]
     steps:
       - 
+        name: Set branch name as environment variable
+        run: |
+          if [[ ${GITHUB_REF#} == refs/tags/* ]]; then \
+              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/tags/} | sed 's/^v//')" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          else \
+              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          fi
+      - 
+        name: Check docker-tag
+        run: echo "Docker-tag=$BRANCH_NAME"
+      - 
         name: Download digests
         uses: actions/download-artifact@v4
         with:
@@ -445,12 +456,12 @@ jobs:
         name: Create manifest list and push
         working-directory: /tmp/digests
         run: |
-          docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
+          docker buildx imagetools create -t ${{ env.REGISTRY_IMAGE }}:${{ env.BRANCH_NAME }} \
             $(printf '${{ env.REGISTRY_IMAGE }}@sha256:%s ' *)          
       - 
         name: Inspect image
         run: |
-          docker buildx imagetools inspect ${{ env.REGISTRY_IMAGE }}:${{ steps.meta.outputs.version }}       
+          docker buildx imagetools inspect ${{ env.REGISTRY_IMAGE }}:${{ env.BRANCH_NAME }}
 
 
 
@@ -472,7 +483,7 @@ jobs:
         name: Set branch name as environment variable
         run: |
           if [[ ${GITHUB_REF#} == refs/tags/* ]]; then \
-              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/tags/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
+              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/tags/} | sed 's/^v//')" | sed 's#/#\-#' >> $GITHUB_ENV; \
           else \
               echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
           fi
@@ -586,7 +597,7 @@ jobs:
         name: Set branch name as environment variable
         run: |
           if [[ ${GITHUB_REF#} == refs/tags/* ]]; then \
-              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/tags/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
+              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/tags/} | sed 's/^v//')" | sed 's#/#\-#' >> $GITHUB_ENV; \
           else \
               echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
           fi
@@ -679,7 +690,7 @@ jobs:
         name: Set branch name as environment variable
         run: |
           if [[ ${GITHUB_REF#} == refs/tags/* ]]; then \
-              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/tags/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
+              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/tags/} | sed 's/^v//')" | sed 's#/#\-#' >> $GITHUB_ENV; \
           else \
               echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
           fi
