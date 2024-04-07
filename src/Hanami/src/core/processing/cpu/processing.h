@@ -170,11 +170,14 @@ synapseProcessingBackward(Cluster& cluster,
                     cluster.enableCreation = true;
                 }
             }
-            if (inputConnected && potential < 0.51f * synapse->border
-                && potential > 0.49f * synapse->border)
+            if ((inputConnected || cluster.enableCreation)
+                && potential < (0.5f + synapseSection->tollerance) * synapse->border
+                && potential > (0.5f - synapseSection->tollerance) * synapse->border)
             {
-                synapse->border /= 2.0f;
-                synapse->weight /= 2.0f;
+                synapse->border /= 1.5f;
+                synapse->weight /= 1.5f;
+                synapseSection->tollerance /= 1.2f;
+                cluster.enableCreation = true;
             }
         }
 

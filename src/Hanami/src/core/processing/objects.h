@@ -133,7 +133,9 @@ static_assert(sizeof(Synapse) == 16);
 
 struct SynapseSection {
     Synapse synapses[SYNAPSES_PER_SYNAPSESECTION];
-    uint8_t padding[15];
+    float tollerance = 0.499f;
+
+    uint8_t padding[11];
     bool hasNext = false;
 
     SynapseSection() { std::fill_n(synapses, SYNAPSES_PER_SYNAPSESECTION, Synapse()); }
