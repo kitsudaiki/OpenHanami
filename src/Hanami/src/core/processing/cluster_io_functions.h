@@ -39,7 +39,7 @@
 template <bool doTrain>
 inline void
 processNeuronsOfInputBrickBackward(const Brick* brick,
-                                   float* inputValues,
+                                   std::vector<float>& inputValues,
                                    NeuronBlock* neuronBlocks)
 {
     Neuron* neuron = nullptr;
@@ -66,6 +66,13 @@ processNeuronsOfInputBrickBackward(const Brick* brick,
     }
 }
 
+// Derivative of the activation function
+inline float
+sigmoidDerivative(const float x)
+{
+    return x * (1 - x);
+}
+
 /**
  * @brief processNeuronsOfOutputBrick
  *
@@ -73,28 +80,73 @@ processNeuronsOfInputBrickBackward(const Brick* brick,
  * @param outputValues
  * @param neuronBlocks
  */
+template <bool doTrain>
 inline void
-processNeuronsOfOutputBrick(const Brick* brick,
-                            float* outputValues,
-                            NeuronBlock* neuronBlocks,
-                            const uint32_t blockId)
+processNeuronsOfOutputBrick(std::vector<Brick>& bricks,
+                            std::vector<OutputNeuron>& outputNeurons,
+                            std::vector<NeuronBlock>& neuronBlocks,
+                            std::vector<float>& outputValues,
+                            const std::vector<float>& expectedValues,
+                            const uint32_t brickId)
 {
     Neuron* neuron = nullptr;
     NeuronBlock* block = nullptr;
-    uint32_t counter = 0;
-    float* brickBuffer = &outputValues[brick->ioBufferPos];
-    const uint32_t neuronBlockId = brick->neuronBlockPos + blockId;
+    const uint64_t numberOfOutputs = outputNeurons.size();
+    Brick* brick = nullptr;
+    OutputNeuron* out = nullptr;
+    TargetLocationPtr* target = nullptr;
+    float weightSum = 0.0f;
+    bool found = false;
 
-    block = &neuronBlocks[neuronBlockId];
-    for (uint32_t neuronId = 0; neuronId < block->numberOfNeurons; ++neuronId) {
-        neuron = &block->neurons[neuronId];
-        neuron->potential = neuron->input;
-        if (neuron->potential != 0.0f) {
-            neuron->potential = 1.0f / (1.0f + exp(-1.0f * neuron->potential));
-        }
-        brickBuffer[counter + (blockId * NEURONS_PER_NEURONSECTION)] = neuron->potential;
+    for (uint64_t i = 0; i < numberOfOutputs; ++i) {
+        brick = &bricks[brickId];
+        const uint32_t neuronBlockId = brick->neuronBlockPos + 0;
+        neuron = &neuronBlocks[neuronBlockId].neurons[i];
+        neuron->potential = 1.0f / (1.0f + exp(-1.0f * neuron->input));
         neuron->input = 0.0f;
-        counter++;
+    }
+
+    for (uint64_t i = 0; i < 10; ++i) {
+        out = &outputNeurons[i];
+        brick = &bricks[out->brickId];
+        weightSum = 0.0f;
+
+        for (uint8_t j = 0; j < NUMBER_OF_OUTPUT_CONNECTIONS; ++j) {
+            target = &out->targets[j];
+
+            if constexpr (doTrain) {
+                found = false;
+                if (found == false && target->blockId == UNINIT_STATE_32 && expectedValues[i] > 0.0
+                    && rand() % 10 == 0)
+                {
+                    const uint32_t blockId = 0;
+                    const uint16_t neuronId = rand() % 30;
+
+                    const uint32_t totalBlockId = brick->neuronBlockPos + blockId;
+                    const float potential = neuronBlocks[totalBlockId].neurons[neuronId].potential;
+
+                    if (potential != 0.5f) {
+                        target->blockId = blockId;
+                        target->neuronId = neuronId;
+                        target->weight = ((float)rand() / (float)RAND_MAX);
+                        found = true;
+                    }
+                }
+            }
+
+            if (target->blockId == UNINIT_STATE_32) {
+                continue;
+            }
+
+            const uint32_t neuronBlockId = brick->neuronBlockPos + target->blockId;
+            neuron = &neuronBlocks[neuronBlockId].neurons[target->neuronId];
+            weightSum += neuron->potential * target->weight;
+        }
+
+        outputValues[i] = 0.0f;
+        if (weightSum != 0.0f) {
+            outputValues[i] = 1.0f / (1.0f + exp(-1.0f * weightSum));
+        }
     }
 }
 
@@ -111,41 +163,63 @@ processNeuronsOfOutputBrick(const Brick* brick,
  * @return
  */
 inline bool
-backpropagateOutput(const Brick* brick,
-                    NeuronBlock* neuronBlocks,
-                    TempNeuronBlock* tempNeuronBlocks,
-                    float* outputValues,
-                    float* expectedValues,
-                    ClusterSettings* settings)
+backpropagateOutput(std::vector<Brick>& bricks,
+                    std::vector<OutputNeuron>& outputNeurons,
+                    std::vector<NeuronBlock>& neuronBlocks,
+                    std::vector<TempNeuronBlock>& tempNeuronBlocks,
+                    const std::vector<float>& outputValues,
+                    const std::vector<float>& expectedValues,
+                    const ClusterSettings* settings,
+                    const uint32_t brickId)
 {
-    NeuronBlock* block = nullptr;
+    Neuron* neuron = nullptr;
     TempNeuron* tempNeuron = nullptr;
-    TempNeuronBlock* tempBlock = nullptr;
+    const uint64_t numberOfOutputs = outputNeurons.size();
+    Brick* brick = nullptr;
+    OutputNeuron* out = nullptr;
     float totalDelta = 0.0f;
-    uint32_t counter = 0;
-    float* outputBuffer = &outputValues[brick->ioBufferPos];
-    float* expectedBuffer = &expectedValues[brick->ioBufferPos];
+    float learnValue = 0.0f;
+    TargetLocationPtr* target = nullptr;
 
-    // iterate over all neurons within the brick
-    for (uint32_t neuronSectionId = brick->neuronBlockPos;
-         neuronSectionId < brick->numberOfNeuronBlocks + brick->neuronBlockPos;
-         neuronSectionId++)
-    {
-        block = &neuronBlocks[neuronSectionId];
-        tempBlock = &tempNeuronBlocks[neuronSectionId];
+    for (uint64_t i = 0; i < 10; ++i) {
+        out = &outputNeurons[i];
+        brick = &bricks[out->brickId];
+        const float delta = outputValues[i] - expectedValues[i];
+        const float update = delta * sigmoidDerivative(outputValues[i]);
 
-        for (uint32_t neuronIdInBlock = 0; neuronIdInBlock < block->numberOfNeurons;
-             neuronIdInBlock++)
-        {
-            tempNeuron = &tempBlock->neurons[neuronIdInBlock];
-            tempNeuron->delta[0] = outputBuffer[counter] - expectedBuffer[counter];
-            tempNeuron->delta[0] *= outputBuffer[counter] * (1.0f - outputBuffer[counter]);
-            totalDelta += abs(tempNeuron->delta[0]);
-            counter++;
+        learnValue = abs(delta) + 0.1f;
+
+        for (uint8_t j = 0; j < NUMBER_OF_OUTPUT_CONNECTIONS; ++j) {
+            target = &out->targets[j];
+
+            if (target->blockId == UNINIT_STATE_32) {
+                continue;
+            }
+
+            const uint32_t neuronBlockId = brick->neuronBlockPos + target->blockId;
+
+            tempNeuron = &tempNeuronBlocks[neuronBlockId].neurons[target->neuronId];
+            neuron = &neuronBlocks[neuronBlockId].neurons[target->neuronId];
+
+            tempNeuron->delta[0] += update * target->weight;
+            target->weight -= update * learnValue * neuron->potential;
+
+            totalDelta += abs(delta);
         }
     }
 
-    return totalDelta > settings->backpropagationBorder;
+    for (uint64_t i = 0; i < numberOfOutputs; ++i) {
+        brick = &bricks[brickId];
+        const uint32_t neuronBlockId = brick->neuronBlockPos + 0;
+        tempNeuron = &tempNeuronBlocks[neuronBlockId].neurons[i];
+        neuron = &neuronBlocks[neuronBlockId].neurons[i];
+
+        tempNeuron->delta[0] *= sigmoidDerivative(neuron->potential);
+    }
+
+    // std::cout << "totalDelta: " << totalDelta << std::endl;
+    // return totalDelta > settings->backpropagationBorder;
+    return true;
 }
 
 #endif  // HANAMI_CORE_CLUSTER_IO_FUNCTIONS_H

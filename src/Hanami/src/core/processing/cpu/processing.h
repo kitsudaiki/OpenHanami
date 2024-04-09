@@ -45,11 +45,10 @@ inline void
 processNeuronsOfInputBrick(Cluster& cluster, const Brick* brick)
 {
     NeuronBlock* neuronBlocks = &cluster.neuronBlocks[0];
-    float* inputValues = cluster.inputValues;
     Neuron* neuron = nullptr;
     NeuronBlock* block = nullptr;
     uint32_t counter = 0;
-    float* brickBuffer = &inputValues[brick->ioBufferPos];
+    float* brickBuffer = &cluster.inputValues[brick->ioBufferPos];
 
     // iterate over all neurons within the brick
     for (uint32_t blockId = brick->neuronBlockPos;
@@ -152,17 +151,18 @@ synapseProcessingBackward(Cluster& cluster,
     Neuron* targetNeuron = nullptr;
     bool condition = false;
     float halfPotential = 0.0f;
+    const bool isAbleToCreate = inputConnected || cluster.enableCreation;
 
     if (potential > connection->potentialRange) {
         potential = connection->potentialRange;
     }
 
     // iterate over all synapses in the section
-    while (pos < SYNAPSES_PER_SYNAPSESECTION && potential > 0.01f) {
+    while (pos < SYNAPSES_PER_SYNAPSESECTION && potential > 0.00001f) {
         synapse = &synapseSection->synapses[pos];
 
         if constexpr (doTrain) {
-            if (inputConnected || cluster.enableCreation) {
+            if (isAbleToCreate) {
                 // create new synapse if necesarry and training is active
                 if (synapse->targetNeuronId == UNINIT_STATE_8) {
                     createNewSynapse(
@@ -170,8 +170,7 @@ synapseProcessingBackward(Cluster& cluster,
                     cluster.enableCreation = true;
                 }
             }
-            if ((inputConnected || cluster.enableCreation)
-                && potential < (0.5f + synapseSection->tollerance) * synapse->border
+            if (isAbleToCreate && potential < (0.5f + synapseSection->tollerance) * synapse->border
                 && potential > (0.5f - synapseSection->tollerance) * synapse->border)
             {
                 synapse->border /= 1.5f;
@@ -200,7 +199,7 @@ synapseProcessingBackward(Cluster& cluster,
 
     if constexpr (doTrain) {
         sourceNeuron->isNew = false;
-        if (potential > 0.01f && (inputConnected || cluster.enableCreation)) {
+        if (potential > 0.00001f && isAbleToCreate) {
             sourceNeuron->isNew = true;
             sourceNeuron->newLowerBound = connection->lowerBound + halfPotential;
             sourceNeuron->potentialRange = connection->potentialRange - halfPotential;
@@ -284,13 +283,17 @@ template <bool doTrain>
 inline void
 processNeurons(Cluster& cluster, Brick* brick, const uint32_t blockId)
 {
-    NeuronBlock* neuronBlocks = &cluster.neuronBlocks[0];
     ClusterSettings* clusterSettings = &cluster.clusterHeader.settings;
     Neuron* neuron = nullptr;
+    TempNeuron* tempNeuron = nullptr;
     NeuronBlock* targetNeuronBlock = nullptr;
+    TempNeuronBlock* tempNeuronBlock = nullptr;
     const uint32_t neuronBlockId = brick->neuronBlockPos + blockId;
 
-    targetNeuronBlock = &neuronBlocks[neuronBlockId];
+    targetNeuronBlock = &cluster.neuronBlocks[neuronBlockId];
+    if constexpr (doTrain) {
+        tempNeuronBlock = &cluster.tempNeuronBlocks[neuronBlockId];
+    }
     for (uint32_t neuronId = 0; neuronId < NEURONS_PER_NEURONSECTION; ++neuronId) {
         neuron = &targetNeuronBlock->neurons[neuronId];
         neuron->potential /= clusterSettings->neuronCooldown;
@@ -308,6 +311,9 @@ processNeurons(Cluster& cluster, Brick* brick, const uint32_t blockId)
         neuron->potential = log2(neuron->potential + 1.0f);
 
         if constexpr (doTrain) {
+            tempNeuron = &tempNeuronBlock->neurons[neuronId];
+            tempNeuron->delta[0] = 0.0f;
+
             neuron->isNew = neuron->active != 0 && neuron->inUse == 0;
             neuron->newLowerBound = 0.0f;
             neuron->potentialRange = std::numeric_limits<float>::max();

@@ -1,3 +1,25 @@
+/**
+ * @file        checkpoint_io.cpp
+ *
+ * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
+ *
+ * @copyright   Apache License Version 2.0
+ *
+ *      Copyright 2022 Tobias Anker
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *          http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 #include "checkpoint_io.h"
 
 #include <core/cluster/cluster.h>
@@ -22,10 +44,12 @@ struct CheckpointHeader {
     uint64_t fileSize = 0;
 
     uint64_t numberOfNeuronBrocks = 0;
+    uint64_t numberOfOutputNeurons = 0;
     uint64_t numberOfBricks = 0;
 
     uint64_t clusterHeaderPos = 0;
     uint64_t neuronBlocksPos = 0;
+    uint64_t outputNeuronsPos = 0;
     uint64_t bricksPos = 0;
     uint64_t connectionBlocks = 0;
 
@@ -33,7 +57,7 @@ struct CheckpointHeader {
     uint32_t nameSize = 0;
     char uuid[40];
 
-    uint8_t padding2[3692];
+    uint8_t padding2[3676];
 
     CheckpointHeader()
     {
@@ -138,6 +162,12 @@ CheckpointIO::writeClusterToFile(Cluster* cluster,
         return false;
     }
 
+    // output-neurons
+    header.outputNeuronsPos = position;
+    if (writeOutputNeuronsToFile(cluster, checkpointFile, position, error) == false) {
+        return false;
+    }
+
     // bricks
     header.bricksPos = position;
     if (writeBricksToFile(cluster, checkpointFile, position, error) == false) {
@@ -237,6 +267,35 @@ CheckpointIO::writeNeuronBlocksToFile(Cluster* cluster,
     if (file.writeDataIntoFile(&cluster->neuronBlocks[0], position, numberOfBytes, error) == false)
     {
         error.addMessage("Failed to write neuron-blocks for checkpoint into file");
+        return false;
+    }
+    position += numberOfBytes;
+
+    return true;
+}
+
+/**
+ * @brief write output-neurons into the file
+ *
+ * @param cluster pointer to the cluster, which should be written to a checkpoint file
+ * @param file reference to file-handler
+ * @param position position-counter to identify the position where to write into the file
+ * @param error reference for error-output
+ *
+ * @return true, if successful, else false
+ */
+bool
+CheckpointIO::writeOutputNeuronsToFile(Cluster* cluster,
+                                       Hanami::BinaryFile& file,
+                                       uint64_t& position,
+                                       Hanami::ErrorContainer& error)
+{
+    const uint64_t numberOfBytes = cluster->outputNeurons.size() * sizeof(OutputNeuron);
+
+    // write static data of cluster to file
+    if (file.writeDataIntoFile(&cluster->outputNeurons[0], position, numberOfBytes, error) == false)
+    {
+        error.addMessage("Failed to write output-neurons for checkpoint into file");
         return false;
     }
     position += numberOfBytes;
@@ -408,6 +467,9 @@ CheckpointIO::restoreClusterFromFile(Cluster* cluster,
     if (restoreNeuronBlocks(cluster, header, u8Data, error) == false) {
         return false;
     }
+    if (restoreOutputNeurons(cluster, header, u8Data, error) == false) {
+        return false;
+    }
     if (restoreBricks(cluster, header, u8Data, error) == false) {
         return false;
     }
@@ -468,6 +530,33 @@ CheckpointIO::restoreNeuronBlocks(Cluster* cluster,
     cluster->neuronBlocks.resize(header.numberOfNeuronBrocks);
 
     memcpy(&cluster->neuronBlocks[0], &u8Data[position], size);
+
+    return true;
+}
+
+/**
+ * @brief restore output-neurons from the checkpoint
+ *
+ * @param cluster pointer to cluster, in which the data should be restored
+ * @param header header of the checkpoint
+ * @param u8Data pointer to buffer with data of the checkpoint
+ * @param error reference for error-output
+ *
+ * @return true, if successful, else false
+ */
+bool
+CheckpointIO::restoreOutputNeurons(Cluster* cluster,
+                                   const CheckpointHeader& header,
+                                   uint8_t* u8Data,
+                                   Hanami::ErrorContainer& error)
+{
+    const uint64_t position = header.outputNeuronsPos;
+    const uint64_t size = header.numberOfOutputNeurons * sizeof(OutputNeuron);
+
+    cluster->outputNeurons.clear();
+    cluster->outputNeurons.resize(header.numberOfOutputNeurons);
+
+    memcpy(&cluster->outputNeurons[0], &u8Data[position], size);
 
     return true;
 }

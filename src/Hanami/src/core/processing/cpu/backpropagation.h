@@ -112,7 +112,7 @@ backpropagateSection(SynapseSection* section,
     uint8_t active = 0;
 
     // iterate over all synapses in the section
-    while (pos < SYNAPSES_PER_SYNAPSESECTION && potential > 0.01f) {
+    while (pos < SYNAPSES_PER_SYNAPSESECTION && potential > 0.00001f) {
         synapse = &section->synapses[pos];
 
         if (synapse->targetNeuronId != UNINIT_STATE_8) {

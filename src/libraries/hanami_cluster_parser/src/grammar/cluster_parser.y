@@ -107,6 +107,7 @@ YY_DECL;
 //     3,1,1
 //         output: test_output
 //         number_of_neurons: 5
+//         number_of_outputs: 2
 
 startpoint:
     "version1" linebreaks "settings" ":" linebreaks settings "bricks" ":" linebreaks bricks
@@ -288,6 +289,10 @@ brick_settings:
         if($2 == "number_of_neurons")
         {
             $1.numberOfNeurons = $4;
+        }
+        else if($2 == "number_of_outputs")
+        {
+            $1.numberOfOutputs = $4;
         }
         else
         {

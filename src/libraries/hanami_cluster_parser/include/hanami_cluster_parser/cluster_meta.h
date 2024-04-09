@@ -46,6 +46,7 @@ struct BrickMeta {
     std::string name = "";
     BrickType type = CENTRAL_BRICK_TYPE;
     uint64_t numberOfNeurons = 0;
+    uint64_t numberOfOutputs = 0;
 };
 
 struct ClusterMeta {

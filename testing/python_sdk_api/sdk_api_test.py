@@ -65,7 +65,7 @@ cluster_template = \
     "        number_of_neurons: 400\n" \
     "    3,1,1\n" \
     "        output: test_output\n" \
-    "        number_of_neurons: 10"
+    "        number_of_neurons: 30"
 
 user_id = "tsugumi"
 user_name = "Tsugumi"
@@ -262,7 +262,7 @@ def test_workflow():
         cluster.switch_host(token, address, cluster_uuid, target_host_uuid, False)
 
     # run training
-    for i in range(0, 1):
+    for i in range(0, 50):
         result = task.create_task(
             token, address, generic_task_name, "train", cluster_uuid, train_dataset_uuid, False)
         task_uuid = json.loads(result)["uuid"]
@@ -277,21 +277,21 @@ def test_workflow():
         result = task.delete_task(token, address, task_uuid, cluster_uuid, False)
 
     # save and reload checkpoint
-    result = cluster.save_cluster(token, address, checkpoint_name, cluster_uuid, False)
-    checkpoint_uuid = json.loads(result)["uuid"]
-    result = checkpoint.list_checkpoints(token, address, False)
+    #result = cluster.save_cluster(token, address, checkpoint_name, cluster_uuid, False)
+    #checkpoint_uuid = json.loads(result)["uuid"]
+    #result = checkpoint.list_checkpoints(token, address, False)
     # print(json.dumps(json.loads(result), indent=4))
 
-    cluster.delete_cluster(token, address, cluster_uuid, False)
-    result = cluster.create_cluster(token, address, cluster_name, cluster_template, False)
-    cluster_uuid = json.loads(result)["uuid"]
+    #cluster.delete_cluster(token, address, cluster_uuid, False)
+    #result = cluster.create_cluster(token, address, cluster_name, cluster_template, False)
+    #cluster_uuid = json.loads(result)["uuid"]
 
-    result = cluster.restore_cluster(token, address, checkpoint_uuid, cluster_uuid, False)
-    result = checkpoint.delete_checkpoint(token, address, checkpoint_uuid, False)
-    try:
-        result = checkpoint.delete_checkpoint(token, address, checkpoint_uuid, False)
-    except hanami_exceptions.NotFoundException:
-        pass
+    #result = cluster.restore_cluster(token, address, checkpoint_uuid, cluster_uuid, False)
+    #result = checkpoint.delete_checkpoint(token, address, checkpoint_uuid, False)
+    #try:
+    #    result = checkpoint.delete_checkpoint(token, address, checkpoint_uuid, False)
+    #except hanami_exceptions.NotFoundException:
+    #    pass
 
     # run testing
     result = task.create_task(

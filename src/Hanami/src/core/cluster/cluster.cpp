@@ -63,15 +63,7 @@ Cluster::Cluster(LogicalHost* host, const void* data, const uint64_t dataSize)
 /**
  * @brief destructor
  */
-Cluster::~Cluster()
-{
-    attachedHost->removeCluster(this);
-
-    delete stateMachine;
-    delete inputValues;
-    delete outputValues;
-    delete expectedValues;
-}
+Cluster::~Cluster() { attachedHost->removeCluster(this); }
 
 /**
  * @brief Cluster::incrementAndCompare
@@ -127,6 +119,7 @@ Cluster::getDataSize() const
     size += sizeof(ClusterHeader);
     size += bricks.size() * sizeof(Brick);
     size += neuronBlocks.size() * sizeof(NeuronBlock);
+    size += outputNeurons.size() * sizeof(OutputNeuron);
 
     for (const Brick& brick : bricks) {
         const uint64_t numberOfConnections = brick.connectionBlocks->size();
@@ -225,6 +218,36 @@ Cluster::setClusterState(const std::string& newState)
     return false;
 }
 
+void
+countSynapses(const Cluster& cluster)
+{
+    SynapseBlock* synapseBlocks
+        = Hanami::getItemData<SynapseBlock>(cluster.attachedHost->synapseBlocks);
+    uint64_t synapseCounter = 0;
+    uint64_t sectionCounter = 0;
+
+    for (const Brick& brick : cluster.bricks) {
+        for (const ConnectionBlock& block : brick.connectionBlocks[0]) {
+            SynapseBlock* synapseBlock = &synapseBlocks[block.targetSynapseBlockPos];
+            for (uint32_t i = 0; i < 64; i++) {
+                if (block.connections[i].origin.blockId != UNINIT_STATE_32) {
+                    sectionCounter++;
+                    for (uint32_t j = 0; j < 64; j++) {
+                        Synapse* synpase = &synapseBlock->sections[i].synapses[j];
+                        if (synpase->targetNeuronId != UNINIT_STATE_8) {
+                            synapseCounter++;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    std::cout << "section-counter: " << sectionCounter << std::endl;
+
+    std::cout << "synpase-counter: " << synapseCounter << std::endl;
+}
+
 /**
  * @brief update state of the cluster, which is caled for each finalized cluster
  */
@@ -249,6 +272,7 @@ Cluster::updateClusterState()
         }
         else {
             sendClusterTrainEndMessage(this);
+            // countSynapses(*this);
             goToNextState(NEXT);
         }
     }

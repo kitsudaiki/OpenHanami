@@ -107,6 +107,12 @@ WorkerThread::handleTrainForwardTask(const CpuHost::WorkerTask task)
                 task.cluster->bricks[task.brickId].numberOfNeuronBlocks))
         {
             if (task.brickId == task.cluster->bricks.size() - 1) {
+                processNeuronsOfOutputBrick<true>(task.cluster->bricks,
+                                                  task.cluster->outputNeurons,
+                                                  task.cluster->neuronBlocks,
+                                                  task.cluster->outputValues,
+                                                  task.cluster->expectedValues,
+                                                  task.brickId);
                 updateCluster(*task.cluster);
                 task.cluster->updateClusterState();
             }
@@ -127,7 +133,14 @@ void
 WorkerThread::handleTrainBackwardTask(const CpuHost::WorkerTask task)
 {
     if (task.brickId == UNINIT_STATE_32) {
-        WorkerThread::handleOutputBackward(*task.cluster);
+        backpropagateOutput(task.cluster->bricks,
+                            task.cluster->outputNeurons,
+                            task.cluster->neuronBlocks,
+                            task.cluster->tempNeuronBlocks,
+                            task.cluster->outputValues,
+                            task.cluster->expectedValues,
+                            &task.cluster->clusterHeader.settings,
+                            task.cluster->bricks.size() - 1);
         m_host->addBrickToTaskQueue(task.cluster, task.cluster->bricks.size() - 1);
         return;
     }
@@ -187,6 +200,12 @@ WorkerThread::handleProcessTask(const CpuHost::WorkerTask task)
                 task.cluster->bricks[task.brickId].numberOfNeuronBlocks))
         {
             if (task.brickId == task.cluster->bricks.size() - 1) {
+                processNeuronsOfOutputBrick<false>(task.cluster->bricks,
+                                                   task.cluster->outputNeurons,
+                                                   task.cluster->neuronBlocks,
+                                                   task.cluster->outputValues,
+                                                   task.cluster->expectedValues,
+                                                   task.brickId);
                 handleClientOutput(*task.cluster);
                 task.cluster->updateClusterState();
             }
@@ -226,39 +245,6 @@ WorkerThread::handleInputForward(Cluster& cluster, const bool doTrain)
 }
 
 /**
- * @brief run backpropagation over the output-bricks
- *
- * @param cluster pointer to cluster to process
- *
- * @return false, if threshold of the full backpropagion is not reached
- */
-bool
-WorkerThread::handleOutputBackward(Cluster& cluster)
-{
-    Brick* brick = nullptr;
-    const uint32_t numberOfBricks = cluster.bricks.size();
-
-    for (int32_t brickId = numberOfBricks - 1; brickId >= 0; --brickId) {
-        brick = &cluster.bricks[brickId];
-
-        if (brick->isOutputBrick) {
-            if (backpropagateOutput(brick,
-                                    &cluster.neuronBlocks[0],
-                                    &cluster.tempNeuronBlocks[0],
-                                    cluster.outputValues,
-                                    cluster.expectedValues,
-                                    &cluster.clusterHeader.settings)
-                == false)
-            {
-                return false;
-            }
-        }
-    }
-
-    return true;
-}
-
-/**
  * @brief process cluster and train it be creating new synapses
  *
  * @param cluster pointer to cluster to process
@@ -273,8 +259,6 @@ WorkerThread::processClusterForward(Cluster& cluster,
                                     const bool doTrain)
 {
     Hanami::ErrorContainer error;
-    float* outputValues = cluster.outputValues;
-    NeuronBlock* neuronBlocks = &cluster.neuronBlocks[0];
     Brick* brick = &cluster.bricks[brickId];
 
     if (brick->isInputBrick) {
@@ -292,10 +276,6 @@ WorkerThread::processClusterForward(Cluster& cluster,
         if (brick->isOutputBrick == false) {
             processNeurons<false>(cluster, brick, blockId);
         }
-    }
-
-    if (brick->isOutputBrick) {
-        processNeuronsOfOutputBrick(brick, outputValues, neuronBlocks, blockId);
     }
 }
 

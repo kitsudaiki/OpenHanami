@@ -38,18 +38,19 @@ bool initNewCluster(Cluster* cluster,
                     const Hanami::ClusterMeta& clusterMeta,
                     const std::string& uuid);
 
-void initSegmentPointer(Cluster* cluster);
+void initializeSegmentPointer(Cluster* cluster);
 bool connectBorderBuffer(Cluster* cluster);
 // void initOpencl(Hanami::GpuData &data);
-void initSettings(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta);
+void initializeSettings(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta);
 
 void addBricksToCluster(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta);
-bool initTargetBrickList(Cluster* cluster);
+bool initializeTargetBrickList(Cluster* cluster);
+void initializeOutputNeurons(Cluster* cluster);
 
 Brick createNewBrick(const Hanami::BrickMeta& brickMeta, const uint32_t id);
 void connectBrick(Cluster* cluster, Brick& sourceBrick, const uint8_t side);
 void connectAllBricks(Cluster* cluster);
 bool initializeNeurons(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta);
-uint32_t goToNextInitBrick(Cluster* cluster, Brick& currentBrick, uint32_t* maxPathLength);
+uint32_t goToNextInitBrick(Cluster* cluster, Brick& currentBrick, uint32_t& maxPathLength);
 
 #endif  // HANAMI_CLUSTERINIT_H

@@ -52,7 +52,6 @@ class WorkerThread : public Hanami::Thread
     void handleProcessTask(const CpuHost::WorkerTask task);
 
     void handleInputForward(Cluster& cluster, const bool doTrain);
-    bool handleOutputBackward(Cluster& cluster);
 
     CpuHost* m_host = nullptr;
     uint32_t m_inactiveCounter = 0;

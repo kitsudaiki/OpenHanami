@@ -81,7 +81,7 @@ static_assert(sizeof(HeaderEntry) == 16);
 //==================================================================================================
 
 struct ClusterSettings {
-    float backpropagationBorder = 0.01f;
+    float backpropagationBorder = 0.001f;
     float potentialOverflow = 1.0f;
 
     float neuronCooldown = 1000000000.0f;
@@ -133,7 +133,7 @@ static_assert(sizeof(Synapse) == 16);
 
 struct SynapseSection {
     Synapse synapses[SYNAPSES_PER_SYNAPSESECTION];
-    float tollerance = 0.499f;
+    float tollerance = 0.49f;
 
     uint8_t padding[11];
     bool hasNext = false;
@@ -168,6 +168,16 @@ struct SourceLocationPtr {
     bool isInput;
 };
 static_assert(sizeof(SourceLocationPtr) == 8);
+
+//==================================================================================================
+
+struct TargetLocationPtr {
+    float weight = 0.0f;
+    uint32_t blockId = UNINIT_STATE_32;
+    uint16_t neuronId = UNINIT_STATE_16;
+    uint8_t padding[6];
+};
+static_assert(sizeof(TargetLocationPtr) == 16);
 
 //==================================================================================================
 
@@ -232,6 +242,17 @@ struct TempNeuronBlock {
     TempNeuronBlock() { std::fill_n(neurons, NEURONS_PER_NEURONSECTION, TempNeuron()); }
 };
 static_assert(sizeof(TempNeuronBlock) == 2048);
+
+//==================================================================================================
+
+struct OutputNeuron {
+    TargetLocationPtr targets[NUMBER_OF_OUTPUT_CONNECTIONS];
+    uint32_t brickId = UNINIT_STATE_32;
+    float bias = 0.0f;
+    float delta = 0.0f;
+    uint8_t padding[4];
+};
+static_assert(sizeof(OutputNeuron) == 144);
 
 //==================================================================================================
 

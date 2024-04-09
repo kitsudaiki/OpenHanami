@@ -60,12 +60,13 @@ class Cluster
 
     // cluster-data
     ClusterHeader clusterHeader;
-    float* inputValues = nullptr;
-    float* outputValues = nullptr;
-    float* expectedValues = nullptr;
+    std::vector<float> inputValues;
+    std::vector<float> outputValues;
+    std::vector<float> expectedValues;
     std::map<std::string, Brick*> namedBricks;
     std::vector<Brick> bricks;
     std::vector<NeuronBlock> neuronBlocks;
+    std::vector<OutputNeuron> outputNeurons;
     std::vector<TempNeuronBlock> tempNeuronBlocks;
     uint32_t numberOfNeuronBlocks = 0;
 
@@ -96,10 +97,10 @@ class Cluster
 
     // counter for parallel-processing
     bool incrementAndCompare(const uint32_t referenceValue);
-    std::atomic<int> counter;
 
    private:
     std::mutex m_clusterStateLock;
+    std::atomic<int> counter;
 };
 
 #endif  // HANAMI_CLUSTER_H

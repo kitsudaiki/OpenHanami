@@ -24,6 +24,7 @@
 
 #include <api/websocket/cluster_io.h>
 #include <core/cluster/cluster.h>
+#include <core/processing/cluster_io_functions.h>
 #include <core/processing/objects.h>
 #include <hanami_common/buffer/item_buffer.h>
 
@@ -84,12 +85,15 @@ LogicalHost::run()
             // handle type of processing
             if (cluster->mode == ClusterProcessingMode::TRAIN_FORWARD_MODE) {
                 trainClusterForward(cluster);
+                // processNeuronsOfOutputBrick<true>();
             }
             else if (cluster->mode == ClusterProcessingMode::TRAIN_BACKWARD_MODE) {
+                // backpropagateOutput(*cluster);
                 trainClusterBackward(cluster);
             }
             else {
                 requestCluster(cluster);
+                // processNeuronsOfOutputBrick<false>(*cluster);
                 handleClientOutput(*cluster);
             }
             cluster->updateClusterState();

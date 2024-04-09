@@ -233,10 +233,10 @@ CudaHost::trainClusterForward(Cluster* cluster)
             continue;
         }
 
-        for (uint32_t blockId = 0; blockId < cluster->numberOfNeuronBlocks; ++blockId) {
+        /*for (uint32_t blockId = 0; blockId < cluster->numberOfNeuronBlocks; ++blockId) {
             processNeuronsOfOutputBrick(
                 brick, cluster->outputValues, &cluster->neuronBlocks[0], blockId);
-        }
+        }*/
     }
 
     // update cluster
@@ -265,7 +265,8 @@ CudaHost::trainClusterBackward(Cluster* cluster)
     for (uint32_t brickId = 0; brickId < cluster->bricks.size(); ++brickId) {
         Brick* brick = &cluster->bricks[brickId];
         if (brick->isOutputBrick) {
-            if (backpropagateOutput(brick,
+            /*if (backpropagateOutput(&cluster->bricks[0],
+                                    &cluster->outputNeurons[0],
                                     &cluster->neuronBlocks[0],
                                     &cluster->tempNeuronBlocks[0],
                                     cluster->outputValues,
@@ -274,7 +275,7 @@ CudaHost::trainClusterBackward(Cluster* cluster)
                 == false)
             {
                 return;
-            }
+            }*/
         }
     }
 
@@ -344,9 +345,9 @@ CudaHost::requestCluster(Cluster* cluster)
         if (brick->isOutputBrick == false) {
             continue;
         }
-        for (uint32_t blockId = 0; blockId < cluster->numberOfNeuronBlocks; ++blockId) {
+        /*for (uint32_t blockId = 0; blockId < cluster->numberOfNeuronBlocks; ++blockId) {
             processNeuronsOfOutputBrick(
                 brick, cluster->outputValues, &cluster->neuronBlocks[0], blockId);
-        }
+        }*/
     }
 }
