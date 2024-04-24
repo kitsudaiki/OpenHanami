@@ -35,17 +35,20 @@
 namespace Hanami
 {
 
-enum BrickType {
-    CENTRAL_BRICK_TYPE = 0,
-    INPUT_BRICK_TYPE = 1,
-    OUTPUT_BRICK_TYPE = 2,
-};
-
 struct BrickMeta {
     Position position;
-    std::string name = "";
-    BrickType type = CENTRAL_BRICK_TYPE;
     uint64_t numberOfNeurons = 0;
+};
+
+struct InputMeta {
+    std::string name = "";
+    uint32_t targetBrickId = UNINTI_POINT_32;
+    uint64_t numberOfInputs = 0;
+};
+
+struct OutputMeta {
+    std::string name = "";
+    uint32_t targetBrickId = UNINTI_POINT_32;
     uint64_t numberOfOutputs = 0;
 };
 
@@ -57,18 +60,8 @@ struct ClusterMeta {
     bool enableReduction = false;
 
     std::vector<BrickMeta> bricks;
-
-    BrickMeta* getBrick(const std::string& name)
-    {
-        BrickMeta* tempBrick = nullptr;
-        for (uint64_t i = 0; i < bricks.size(); i++) {
-            tempBrick = &bricks[i];
-            if (tempBrick->name == name) {
-                return tempBrick;
-            }
-        }
-        return tempBrick;
-    }
+    std::vector<InputMeta> inputs;
+    std::vector<OutputMeta> outputs;
 };
 
 bool parseCluster(ClusterMeta* result, const std::string& input, ErrorContainer& error);

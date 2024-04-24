@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#include <string>
+
 #define UNINTI_POINT_32 0x0FFFFFFF
 
 namespace Hanami
@@ -34,7 +36,7 @@ struct Position {
         return *this;
     }
 
-    bool operator==(const Position& other)
+    bool operator==(const Position& other) const
     {
         return (this->x == other.x && this->y == other.y && this->z == other.z);
     }
@@ -42,6 +44,12 @@ struct Position {
     bool isValid() const
     {
         return (x != UNINTI_POINT_32 && y != UNINTI_POINT_32 && z != UNINTI_POINT_32);
+    }
+
+    const std::string toString() const
+    {
+        return "[ " + std::to_string(x) + " , " + std::to_string(y) + " , " + std::to_string(z)
+               + " ]";
     }
 };
 

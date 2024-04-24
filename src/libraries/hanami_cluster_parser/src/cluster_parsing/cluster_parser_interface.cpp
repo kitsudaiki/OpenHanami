@@ -172,4 +172,23 @@ ClusterParserInterface::error(const Hanami::location& location, const std::strin
     }
 }
 
+/**
+ * @brief Get brick-id at a specific position
+ *
+ * @param position requested postion
+ *
+ * @return id of the brick, which belongs to the given position, else UNINTI_POINT_32
+ */
+uint32_t
+ClusterParserInterface::getBrickId(const Hanami::Position& position)
+{
+    for (uint32_t i = 0; i < output->bricks.size(); i++) {
+        if (position == output->bricks[i].position) {
+            return i;
+        }
+    }
+
+    return UNINTI_POINT_32;
+}
+
 }  // namespace Hanami
