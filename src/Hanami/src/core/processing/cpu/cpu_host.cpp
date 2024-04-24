@@ -112,7 +112,7 @@ void
 CpuHost::initBuffer(const uint32_t id)
 {
     m_totalMemory = getFreeMemory();
-    const uint64_t usedMemory = (m_totalMemory / 100) * 80;  // use 80% for synapse-blocks
+    const uint64_t usedMemory = (m_totalMemory / 100) * 10;  // use 10% for synapse-blocks
     synapseBlocks.initBuffer<SynapseBlock>(usedMemory / sizeof(SynapseBlock));
     synapseBlocks.deleteAll();
 

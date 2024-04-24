@@ -82,6 +82,10 @@ ClusterParserInterface::parse(ClusterMeta* result,
 {
     output = result;
 
+    output->bricks.clear();
+    output->inputs.clear();
+    output->outputs.clear();
+
     std::lock_guard<std::mutex> guard(m_lock);
 
     // init global values

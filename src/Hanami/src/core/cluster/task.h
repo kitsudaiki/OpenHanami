@@ -47,7 +47,8 @@ enum TaskState {
 
 struct TaskProgress {
     TaskState state = UNDEFINED_TASK_STATE;
-    float percentageFinished = 0.0f;
+    uint64_t totalNumberOfCycles = 0;
+    uint64_t currentCyle = 0;
     std::chrono::high_resolution_clock::time_point queuedTimeStamp;
     std::chrono::high_resolution_clock::time_point startActiveTimeStamp;
     std::chrono::high_resolution_clock::time_point endActiveTimeStamp;

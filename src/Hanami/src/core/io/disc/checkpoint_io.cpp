@@ -290,7 +290,7 @@ CheckpointIO::writeOutputNeuronsToFile(Cluster* cluster,
                                        uint64_t& position,
                                        Hanami::ErrorContainer& error)
 {
-    const uint64_t numberOfBytes = cluster->outputNeurons.size() * sizeof(OutputNeuron);
+    /*const uint64_t numberOfBytes = cluster->outputNeurons.size() * sizeof(OutputNeuron);
 
     // write static data of cluster to file
     if (file.writeDataIntoFile(&cluster->outputNeurons[0], position, numberOfBytes, error) == false)
@@ -298,7 +298,7 @@ CheckpointIO::writeOutputNeuronsToFile(Cluster* cluster,
         error.addMessage("Failed to write output-neurons for checkpoint into file");
         return false;
     }
-    position += numberOfBytes;
+    position += numberOfBytes;*/
 
     return true;
 }
@@ -553,10 +553,10 @@ CheckpointIO::restoreOutputNeurons(Cluster* cluster,
     const uint64_t position = header.outputNeuronsPos;
     const uint64_t size = header.numberOfOutputNeurons * sizeof(OutputNeuron);
 
-    cluster->outputNeurons.clear();
+    /*cluster->outputNeurons.clear();
     cluster->outputNeurons.resize(header.numberOfOutputNeurons);
 
-    memcpy(&cluster->outputNeurons[0], &u8Data[position], size);
+    memcpy(&cluster->outputNeurons[0], &u8Data[position], size);*/
 
     return true;
 }

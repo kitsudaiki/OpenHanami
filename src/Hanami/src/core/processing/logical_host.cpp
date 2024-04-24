@@ -113,16 +113,17 @@ LogicalHost::run()
  * @return position of the highest output.
  */
 uint32_t
-getHighestOutput(const Cluster& cluster)
+getHighestOutput(Cluster& cluster)
 {
     float hightest = -0.1f;
     uint32_t hightestPos = 0;
     float value = 0.0f;
 
-    for (uint32_t outputNeuronId = 0; outputNeuronId < cluster.clusterHeader.numberOfOutputs;
+    OutputInterface* outputInterface = &cluster.outputInterfaces.begin()->second;
+    for (uint32_t outputNeuronId = 0; outputNeuronId < outputInterface->numberOfNeurons;
          outputNeuronId++)
     {
-        value = cluster.outputValues[outputNeuronId];
+        value = outputInterface->outputNeurons[outputNeuronId].outputVal;
         if (value > hightest) {
             hightest = value;
             hightestPos = outputNeuronId;
@@ -139,7 +140,7 @@ getHighestOutput(const Cluster& cluster)
  * @param cluster cluster to handle
  */
 void
-handleClientOutput(const Cluster& cluster)
+handleClientOutput(Cluster& cluster)
 {
     // send output back if a client-connection is set
     if (cluster.msgClient != nullptr) {
@@ -155,9 +156,10 @@ handleClientOutput(const Cluster& cluster)
         }
         else if (actualTask->type == TABLE_REQUEST_TASK) {
             float val = 0.0f;
-            for (uint64_t i = 0; i < cluster.clusterHeader.numberOfOutputs; i++) {
+            OutputInterface* outputInterface = &cluster.outputInterfaces.begin()->second;
+            for (uint64_t i = 0; i < outputInterface->numberOfNeurons; i++) {
                 const float temp = actualTask->resultData[cycle];
-                val = temp + cluster.outputValues[i];
+                val = temp + outputInterface->outputNeurons[i].outputVal;
                 actualTask->resultData[cycle] = val;
             }
         }

@@ -46,10 +46,10 @@
 // network-predefines
 #define SYNAPSES_PER_SYNAPSESECTION 63
 #define NUMBER_OF_SYNAPSESECTION 64
-#define NEURONS_PER_NEURONSECTION 64
+#define NEURONS_PER_NEURONBLOCK 64
 #define POSSIBLE_NEXT_AXON_STEP 80
-#define NUMBER_OF_POSSIBLE_NEXT 64
-#define NUMBER_OF_OUTPUT_CONNECTIONS 8
+#define NUMBER_OF_POSSIBLE_NEXT 102
+#define NUMBER_OF_OUTPUT_CONNECTIONS 7
 
 //==================================================================================================
 
@@ -106,14 +106,9 @@ struct ClusterHeader {
     uint64_t staticDataSize = 0;
     kuuid uuid;
 
-    uint32_t numberOfInputs = 0;
-    uint32_t numberOfOutputs = 0;
-    uint32_t numberOfNeuronBlocks = 0;
-    uint32_t numberOfBricks = 0;
-
     ClusterSettings settings;
 
-    uint8_t padding2[120];
+    uint8_t padding2[136];
 };
 static_assert(sizeof(ClusterHeader) == 512);
 
@@ -146,12 +141,12 @@ static_assert(sizeof(SynapseSection) == 1024);
 
 struct SynapseBlock {
     SynapseSection sections[NUMBER_OF_SYNAPSESECTION];
-    float tempValues[NEURONS_PER_NEURONSECTION];
+    float tempValues[NEURONS_PER_NEURONBLOCK];
 
     SynapseBlock()
     {
         std::fill_n(sections, NUMBER_OF_SYNAPSESECTION, SynapseSection());
-        std::fill_n(tempValues, NEURONS_PER_NEURONSECTION, 0.0f);
+        std::fill_n(tempValues, NEURONS_PER_NEURONBLOCK, 0.0f);
     }
 };
 static_assert(sizeof(SynapseBlock) == 64 * 1024 + 256);
@@ -171,19 +166,19 @@ static_assert(sizeof(SourceLocationPtr) == 8);
 
 //==================================================================================================
 
-struct TargetLocationPtr {
-    float weight = 0.0f;
+struct OutputTargetLocationPtr {
+    float connectionWeight = 0.0f;
     uint32_t blockId = UNINIT_STATE_32;
     uint16_t neuronId = UNINIT_STATE_16;
     uint8_t padding[6];
 };
-static_assert(sizeof(TargetLocationPtr) == 16);
+static_assert(sizeof(OutputTargetLocationPtr) == 16);
 
 //==================================================================================================
 
 struct Neuron {
     float input = 0.0f;
-    float border = 100.0f;
+    float border = 0.0f;
     float potential = 0.0f;
     float delta = 0.0f;
 
@@ -215,13 +210,12 @@ static_assert(sizeof(Neuron) == 32);
 //==================================================================================================
 
 struct NeuronBlock {
-    uint32_t numberOfNeurons = 0;
     uint32_t brickId = 0;
-    uint8_t padding[8];
+    uint8_t padding[12];
 
-    Neuron neurons[NEURONS_PER_NEURONSECTION];
+    Neuron neurons[NEURONS_PER_NEURONBLOCK];
 
-    NeuronBlock() { std::fill_n(neurons, NEURONS_PER_NEURONSECTION, Neuron()); }
+    NeuronBlock() { std::fill_n(neurons, NEURONS_PER_NEURONBLOCK, Neuron()); }
 };
 static_assert(sizeof(NeuronBlock) == 2064);
 
@@ -237,22 +231,48 @@ static_assert(sizeof(TempNeuron) == 32);
 //==================================================================================================
 
 struct TempNeuronBlock {
-    TempNeuron neurons[NEURONS_PER_NEURONSECTION];
+    TempNeuron neurons[NEURONS_PER_NEURONBLOCK];
 
-    TempNeuronBlock() { std::fill_n(neurons, NEURONS_PER_NEURONSECTION, TempNeuron()); }
+    TempNeuronBlock() { std::fill_n(neurons, NEURONS_PER_NEURONBLOCK, TempNeuron()); }
 };
 static_assert(sizeof(TempNeuronBlock) == 2048);
 
 //==================================================================================================
 
 struct OutputNeuron {
-    TargetLocationPtr targets[NUMBER_OF_OUTPUT_CONNECTIONS];
-    uint32_t brickId = UNINIT_STATE_32;
-    float bias = 0.0f;
-    float delta = 0.0f;
-    uint8_t padding[4];
+    OutputTargetLocationPtr targets[NUMBER_OF_OUTPUT_CONNECTIONS];
+    float outputVal = 0.0f;
+    float exprectedVal = 0.0f;
+    uint8_t padding[8];
 };
-static_assert(sizeof(OutputNeuron) == 144);
+static_assert(sizeof(OutputNeuron) == 128);
+
+//==================================================================================================
+
+struct InputNeuron {
+    uint16_t neuronId = UNINIT_STATE_16;
+    uint8_t padding[2];
+    float value = 0.0f;
+};
+static_assert(sizeof(InputNeuron) == 8);
+
+//==================================================================================================
+
+struct OutputInterface {
+    uint32_t targetBrickId = UNINIT_STATE_32;
+    uint32_t numberOfNeurons = 0;
+    OutputNeuron* outputNeurons = nullptr;
+};
+static_assert(sizeof(OutputInterface) == 16);
+
+//==================================================================================================
+
+struct InputInterface {
+    uint32_t targetBrickId = UNINIT_STATE_32;
+    uint32_t numberOfNeurons = 0;
+    InputNeuron* inputNeurons = nullptr;
+};
+static_assert(sizeof(InputInterface) == 16);
 
 //==================================================================================================
 
@@ -289,34 +309,21 @@ struct Brick {
     bool isOutputBrick = false;
     bool isInputBrick = false;
     bool wasResized = false;
-    uint8_t padding1[1];
+    uint8_t padding1[9];
 
-    char name[128];
-    uint32_t nameSize = 0;
-
-    uint8_t padding2[4];
-    uint32_t ioBufferPos = UNINIT_STATE_32;
     uint32_t neuronBlockPos = UNINIT_STATE_32;
-
-    uint32_t numberOfNeurons = 0;
     uint32_t numberOfNeuronBlocks = 0;
 
     Hanami::Position brickPos;
     uint32_t neighbors[12];
-    uint32_t possibleTargetNeuronBrickIds[NUMBER_OF_POSSIBLE_NEXT];
+    uint32_t possibleBrickTargetIds[NUMBER_OF_POSSIBLE_NEXT];
 
     uint32_t dimX = 0;
     uint32_t dimY = 0;
 
     std::vector<ConnectionBlock>* connectionBlocks = nullptr;
 
-    uint8_t padding3[16];
-
-    Brick()
-    {
-        std::fill_n(name, 128, '\0');
-        connectionBlocks = new std::vector<ConnectionBlock>();
-    }
+    Brick() { connectionBlocks = new std::vector<ConnectionBlock>(); }
 
     ~Brick() { delete connectionBlocks; }
 
@@ -376,52 +383,17 @@ struct Brick {
         isInputBrick = other.isInputBrick;
         wasResized = other.wasResized;
 
-        memcpy(name, other.name, 128);
-
-        nameSize = other.nameSize;
-
-        ioBufferPos = other.ioBufferPos;
         neuronBlockPos = other.neuronBlockPos;
-
-        numberOfNeurons = other.numberOfNeurons;
         numberOfNeuronBlocks = other.numberOfNeuronBlocks;
 
         brickPos = other.brickPos;
         memcpy(neighbors, other.neighbors, 12 * sizeof(uint32_t));
-        memcpy(possibleTargetNeuronBrickIds,
-               other.possibleTargetNeuronBrickIds,
+        memcpy(possibleBrickTargetIds,
+               other.possibleBrickTargetIds,
                NUMBER_OF_POSSIBLE_NEXT * sizeof(uint32_t));
 
         dimX = other.dimX;
         dimY = other.dimY;
-    }
-
-    /**
-     * @brief get the name of the brick
-     */
-    const std::string getName() { return std::string(name, nameSize); }
-
-    /**
-     * @brief set new name for the brick
-     *
-     * @param newName new name
-     *
-     * @return true, if successful, else false
-     */
-    bool setName(const std::string& newName)
-    {
-        // precheck
-        if (newName.size() > 127 || newName.size() == 0) {
-            return false;
-        }
-
-        // copy string into char-buffer and set explicit the escape symbol to be absolut sure
-        // that it is set to absolut avoid buffer-overflows
-        strncpy(name, newName.c_str(), newName.size());
-        name[newName.size()] = '\0';
-        nameSize = newName.size();
-
-        return true;
     }
 };
 static_assert(sizeof(Brick) == 512);

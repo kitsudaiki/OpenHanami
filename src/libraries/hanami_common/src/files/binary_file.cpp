@@ -222,7 +222,7 @@ BinaryFile::writeDataIntoFile(const void* data,
                               const uint64_t numberOfBytes,
                               ErrorContainer& error)
 {
-    if (numberOfBytes == 0) {
+    if (numberOfBytes == 0 || data == nullptr) {
         return true;
     }
 

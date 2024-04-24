@@ -61,6 +61,7 @@ addImageTrainTask(Cluster& cluster,
     newTask.type = IMAGE_TRAIN_TASK;
     newTask.progress.state = QUEUED_TASK_STATE;
     newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
+    newTask.progress.totalNumberOfCycles = numberOfCycles;
 
     // fill metadata
     newTask.numberOfCycles = numberOfCycles;
@@ -113,6 +114,7 @@ addImageRequestTask(Cluster& cluster,
     newTask.type = IMAGE_REQUEST_TASK;
     newTask.progress.state = QUEUED_TASK_STATE;
     newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
+    newTask.progress.totalNumberOfCycles = numberOfCycles;
 
     // fill metadata
     newTask.numberOfCycles = numberOfCycles;
@@ -165,6 +167,7 @@ addTableTrainTask(Cluster& cluster,
     newTask.type = TABLE_TRAIN_TASK;
     newTask.progress.state = QUEUED_TASK_STATE;
     newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
+    newTask.progress.totalNumberOfCycles = numberOfCycles;
 
     // fill metadata
     newTask.numberOfCycles = numberOfCycles;
@@ -217,6 +220,7 @@ addTableRequestTask(Cluster& cluster,
     newTask.type = TABLE_REQUEST_TASK;
     newTask.progress.state = QUEUED_TASK_STATE;
     newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
+    newTask.progress.totalNumberOfCycles = numberOfCycles;
 
     // fill metadata
     newTask.numberOfCycles = numberOfCycles;
@@ -257,6 +261,7 @@ addCheckpointSaveTask(Cluster& cluster,
     newTask.type = CLUSTER_CHECKPOINT_SAVE_TASK;
     newTask.progress.state = QUEUED_TASK_STATE;
     newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
+    newTask.progress.totalNumberOfCycles = 1;
 
     // fill metadata
     newTask.checkpointName = checkpointName;
@@ -297,6 +302,7 @@ addCheckpointRestoreTask(Cluster& cluster,
     newTask.type = CLUSTER_CHECKPOINT_RESTORE_TASK;
     newTask.progress.state = QUEUED_TASK_STATE;
     newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
+    newTask.progress.totalNumberOfCycles = 1;
 
     // fill metadata
     newTask.checkpointInfo = checkpointInfo;

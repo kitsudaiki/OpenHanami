@@ -39,8 +39,9 @@ reduceSection(SynapseSection* section)
 {
     Synapse* synapse;
     uint8_t exist = 0;
+    uint8_t pos = 0;
 
-    for (uint8_t pos = 0; pos < SYNAPSES_PER_SYNAPSESECTION; pos++) {
+    for (pos = 0; pos < SYNAPSES_PER_SYNAPSESECTION; ++pos) {
         synapse = &section->synapses[pos];
 
         if (synapse->targetNeuronId != UNINIT_STATE_8) {
@@ -87,15 +88,16 @@ reduceConnections(Brick* brick,
     SynapseSection* synapseSection = nullptr;
     const uint32_t dimY = brick->dimY;
     const uint32_t dimX = brick->dimX;
+    uint32_t c, i = 0;
 
     if (blockId >= dimX) {
         return;
     }
 
-    for (uint32_t c = blockId * dimY; c < (blockId * dimY) + dimY; ++c) {
+    for (c = blockId * dimY; c < (blockId * dimY) + dimY; ++c) {
         connectionBlock = &brick->connectionBlocks[0][c];
 
-        for (uint16_t i = 0; i < NUMBER_OF_SYNAPSESECTION; i++) {
+        for (i = 0; i < NUMBER_OF_SYNAPSESECTION; ++i) {
             connection = &connectionBlock->connections[i];
             if (connection->origin.blockId == UNINIT_STATE_32) {
                 continue;

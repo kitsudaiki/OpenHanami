@@ -108,11 +108,10 @@ WorkerThread::handleTrainForwardTask(const CpuHost::WorkerTask task)
         {
             if (task.brickId == task.cluster->bricks.size() - 1) {
                 processNeuronsOfOutputBrick<true>(task.cluster->bricks,
-                                                  task.cluster->outputNeurons,
+                                                  task.cluster->outputInterfaces.begin()->second,
                                                   task.cluster->neuronBlocks,
-                                                  task.cluster->outputValues,
-                                                  task.cluster->expectedValues,
-                                                  task.brickId);
+                                                  task.brickId,
+                                                  rand());
                 updateCluster(*task.cluster);
                 task.cluster->updateClusterState();
             }
@@ -134,11 +133,9 @@ WorkerThread::handleTrainBackwardTask(const CpuHost::WorkerTask task)
 {
     if (task.brickId == UNINIT_STATE_32) {
         backpropagateOutput(task.cluster->bricks,
-                            task.cluster->outputNeurons,
+                            task.cluster->outputInterfaces.begin()->second,
                             task.cluster->neuronBlocks,
                             task.cluster->tempNeuronBlocks,
-                            task.cluster->outputValues,
-                            task.cluster->expectedValues,
                             &task.cluster->clusterHeader.settings,
                             task.cluster->bricks.size() - 1);
         m_host->addBrickToTaskQueue(task.cluster, task.cluster->bricks.size() - 1);
@@ -201,11 +198,10 @@ WorkerThread::handleProcessTask(const CpuHost::WorkerTask task)
         {
             if (task.brickId == task.cluster->bricks.size() - 1) {
                 processNeuronsOfOutputBrick<false>(task.cluster->bricks,
-                                                   task.cluster->outputNeurons,
+                                                   task.cluster->outputInterfaces.begin()->second,
                                                    task.cluster->neuronBlocks,
-                                                   task.cluster->outputValues,
-                                                   task.cluster->expectedValues,
-                                                   task.brickId);
+                                                   task.brickId,
+                                                   rand());
                 handleClientOutput(*task.cluster);
                 task.cluster->updateClusterState();
             }

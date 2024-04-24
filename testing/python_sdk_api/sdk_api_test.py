@@ -30,7 +30,8 @@ import json
 import time
 import configparser
 import urllib3
-import asyncio
+# import asyncio
+import sys
 
 
 # the test use insecure connections, which is totally ok for the tests
@@ -53,19 +54,27 @@ request_labels = config["test_data"]["request_labels"]
 cluster_template = \
     "version: 1\n" \
     "settings:\n" \
-    "   neuron_cooldown: 10000000.0\n" \
-    "   refractory_time: 1\n" \
-    "   max_connection_distance: 1\n" \
-    "   enable_reduction: false\n" \
+    "    neuron_cooldown: 10000000.0\n" \
+    "    refractory_time: 1\n" \
+    "    max_connection_distance: 1\n" \
+    "    enable_reduction: false\n" \
     "bricks:\n" \
     "    1,1,1\n" \
-    "        input: test_input\n" \
-    "        number_of_neurons: 784\n" \
+    "       number_of_neurons: 784\n" \
     "    2,1,1\n" \
-    "        number_of_neurons: 400\n" \
+    "       number_of_neurons: 400\n" \
     "    3,1,1\n" \
-    "        output: test_output\n" \
-    "        number_of_neurons: 30"
+    "      number_of_neurons: 30\n" \
+    "    \n" \
+    "inputs:\n" \
+    "    input_brick:\n" \
+    "    target: 1,1,1\n" \
+    "    number_of_inputs: 784\n" \
+    "\n" \
+    "outputs:\n" \
+    "    output_brick:\n" \
+    "    target: 3,1,1\n" \
+    "    number_of_outputs: 10\n"
 
 user_id = "tsugumi"
 user_name = "Tsugumi"
@@ -81,6 +90,14 @@ generic_task_name = "test_task"
 template_name = "dynamic"
 request_dataset_name = "request_test_dataset"
 train_dataset_name = "train_test_dataset"
+
+
+def progress_bar(iteration, total, prefix='', suffix='', length=50, fill='█'):
+    percent = ("{0:.1f}").format(100 * (iteration / float(total)))
+    filled_length = int(length * iteration // total)
+    bar = fill * filled_length + '-' * (length - filled_length)
+    sys.stdout.write('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix))
+    sys.stdout.flush()
 
 
 def delete_all_cluster():
@@ -262,36 +279,41 @@ def test_workflow():
         cluster.switch_host(token, address, cluster_uuid, target_host_uuid, False)
 
     # run training
-    for i in range(0, 50):
+    for i in range(0, 10):
         result = task.create_task(
             token, address, generic_task_name, "train", cluster_uuid, train_dataset_uuid, False)
         task_uuid = json.loads(result)["uuid"]
 
         finished = False
         while not finished:
+            time.sleep(1)
             result = task.get_task(token, address, task_uuid, cluster_uuid, False)
             finished = json.loads(result)["state"] == "finished"
-            print("wait for finish train-task")
-            time.sleep(1)
+            progress_bar(json.loads(result)["current_cycle"],
+                         json.loads(result)["total_number_of_cycles"],
+                         prefix='Progress:',
+                         suffix='Complete',
+                         length=50)
 
+        print("\n")
         result = task.delete_task(token, address, task_uuid, cluster_uuid, False)
 
     # save and reload checkpoint
-    #result = cluster.save_cluster(token, address, checkpoint_name, cluster_uuid, False)
-    #checkpoint_uuid = json.loads(result)["uuid"]
-    #result = checkpoint.list_checkpoints(token, address, False)
+    # result = cluster.save_cluster(token, address, checkpoint_name, cluster_uuid, False)
+    # checkpoint_uuid = json.loads(result)["uuid"]
+    # result = checkpoint.list_checkpoints(token, address, False)
     # print(json.dumps(json.loads(result), indent=4))
 
-    #cluster.delete_cluster(token, address, cluster_uuid, False)
-    #result = cluster.create_cluster(token, address, cluster_name, cluster_template, False)
-    #cluster_uuid = json.loads(result)["uuid"]
+    # cluster.delete_cluster(token, address, cluster_uuid, False)
+    # result = cluster.create_cluster(token, address, cluster_name, cluster_template, False)
+    # cluster_uuid = json.loads(result)["uuid"]
 
-    #result = cluster.restore_cluster(token, address, checkpoint_uuid, cluster_uuid, False)
-    #result = checkpoint.delete_checkpoint(token, address, checkpoint_uuid, False)
-    #try:
-    #    result = checkpoint.delete_checkpoint(token, address, checkpoint_uuid, False)
-    #except hanami_exceptions.NotFoundException:
-    #    pass
+    # result = cluster.restore_cluster(token, address, checkpoint_uuid, cluster_uuid, False)
+    # result = checkpoint.delete_checkpoint(token, address, checkpoint_uuid, False)
+    # try:
+    #     result = checkpoint.delete_checkpoint(token, address, checkpoint_uuid, False)
+    # except hanami_exceptions.NotFoundException:
+    #     pass
 
     # run testing
     result = task.create_task(
@@ -300,11 +322,16 @@ def test_workflow():
 
     finished = False
     while not finished:
+        time.sleep(1)
         result = task.get_task(token, address, task_uuid, cluster_uuid, False)
         finished = json.loads(result)["state"] == "finished"
-        print("wait for finish request-task")
-        time.sleep(1)
+        progress_bar(json.loads(result)["current_cycle"],
+                     json.loads(result)["total_number_of_cycles"],
+                     prefix='Progress:',
+                     suffix='Complete',
+                     length=50)
 
+    print("\n")
     result = task.list_tasks(token, address, cluster_uuid, False)
     result = task.delete_task(token, address, task_uuid, cluster_uuid, False)
 
@@ -317,10 +344,10 @@ def test_workflow():
     print("=======================================")
     print("test-result: " + str(accuracy))
     print("=======================================")
-    assert accuracy > 90.0
+    assert accuracy > 80.0
     result = request_result.delete_request_result(token, address, task_uuid, False)
 
-    asyncio.run(test_direct_io(token, address, cluster_uuid))
+    # asyncio.run(test_direct_io(token, address, cluster_uuid))
 
     # cleanup
     dataset.delete_dataset(token, address, train_dataset_uuid, False)

@@ -36,8 +36,8 @@
 
 class Cluster;
 
-void handleClientOutput(const Cluster& cluster);
-uint32_t getHighestOutput(const Cluster& cluster);
+void handleClientOutput(Cluster& cluster);
+uint32_t getHighestOutput(Cluster& cluster);
 
 class LogicalHost : public Hanami::Thread
 {

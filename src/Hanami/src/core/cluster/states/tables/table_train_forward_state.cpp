@@ -56,13 +56,16 @@ TableTrainForward_State::processEvent()
     }
 
     // set input
-    for (uint64_t i = 0; i < numberOfInputsPerCycle; i++) {
-        m_cluster->inputValues[i] = actualTask->inputData[(offset - numberOfInputsPerCycle) + i];
+    InputInterface* inputInterface = &m_cluster->inputInterfaces.begin()->second;
+    for (uint64_t i = 0; i < actualTask->numberOfInputsPerCycle; i++) {
+        inputInterface->inputNeurons[i].value
+            = actualTask->inputData[(offset - numberOfInputsPerCycle) + i];
     }
 
     // set exprected output
-    for (uint64_t i = 0; i < numberOfOuputsPerCycle; i++) {
-        m_cluster->expectedValues[i]
+    OutputInterface* outputInterface = &m_cluster->outputInterfaces.begin()->second;
+    for (uint64_t i = 0; i < actualTask->numberOfInputsPerCycle; i++) {
+        outputInterface->outputNeurons[i].exprectedVal
             = actualTask->outputData[(offset - numberOfOuputsPerCycle) + i];
     }
 

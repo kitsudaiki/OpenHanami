@@ -218,11 +218,19 @@ set(SOURCES
     src/documentation/generate_rest_api_docu.cpp
     src/hanami_root.cpp
     src/core/io/disc/checkpoint_io.cpp
-    src/main.cpp
 )
 
 # Adding the executable
-add_executable(Hanami ${SOURCES} ${CUDA_OBJECTS})
+add_executable(Hanami
+    ${SOURCES}
+    src/main.cpp
+    ${CUDA_OBJECTS})
+add_executable(Hanami_unittests
+    ${SOURCES}
+    tests/unit_tests/cluster_test.h
+    tests/unit_tests/cluster_test.cpp
+    tests/unit_tests/main.cpp
+    ${CUDA_OBJECTS})
 
 # Including directories
 include_directories(
@@ -258,6 +266,29 @@ find_library(PROTOBUF_LIB protobuf)
 
 # Linking libraries to the executable
 target_link_libraries(Hanami
+    hanami_cpu
+    hanami_hardware
+    hanami_common
+    hanami_ini
+    hanami_config
+    hanami_sqlite
+    hanami_database
+    hanami_files
+    hanami_crypto
+    hanami_args
+    hanami_policies
+    hanami_cluster_parser
+    ${SSL_LIB}
+    ${CRYPTO_LIB}
+    ${SQLITE3_LIB}
+    ${UUID_LIB}
+    ${CUDA_LIB}
+    ${CUDART_LIB}
+    ${PROTOBUF_LIB}
+    Threads::Threads
+    OpenSSL::SSL
+)
+target_link_libraries(Hanami_unittests
     hanami_cpu
     hanami_hardware
     hanami_common
@@ -319,6 +350,12 @@ add_custom_target(generate_protobuf_files DEPENDS
 )
 add_dependencies(Hanami generate_protobuf_files)
 target_sources(Hanami PRIVATE
+    ${PROTO_OUTPUT_HEADER}
+    ${PROTO_OUTPUT_SOURCE}
+    ${CUDA_SOURCES}
+)
+add_dependencies(Hanami_unittests generate_protobuf_files)
+target_sources(Hanami_unittests PRIVATE
     ${PROTO_OUTPUT_HEADER}
     ${PROTO_OUTPUT_SOURCE}
     ${CUDA_SOURCES}

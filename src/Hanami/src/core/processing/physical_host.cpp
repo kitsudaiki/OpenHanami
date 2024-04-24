@@ -44,12 +44,13 @@ PhysicalHost::init(Hanami::ErrorContainer& error)
 
     // identify and init cuda gpu's
     // IMPORTANT: these are initialized first, because they also need memory on the host
-    const uint32_t numberOfCudaGpus = getNumberOfDevices_CUDA();
+    // TODO: re-enable gpu-support
+    /*const uint32_t numberOfCudaGpus = getNumberOfDevices_CUDA();
     for (uint32_t i = 0; i < numberOfCudaGpus; i++) {
         CudaHost* newHost = new CudaHost(i);
         newHost->startThread();
         m_cudaHosts.push_back(newHost);
-    }
+    }*/
 
     // get information of all available cpus and their threads
     if (Hanami::Host::getInstance()->initHost(error) == false) {
@@ -102,12 +103,13 @@ PhysicalHost::getHost(const std::string& uuid) const
         }
     }
 
+    // TODO: re-enable gpu-support
     // check cuda gpu
-    for (LogicalHost* host : m_cudaHosts) {
+    /*for (LogicalHost* host : m_cudaHosts) {
         if (host->getUuid() == uuid) {
             return host;
         }
-    }
+    }*/
 
     return nullptr;
 }

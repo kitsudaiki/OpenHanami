@@ -119,7 +119,6 @@ Cluster::getDataSize() const
     size += sizeof(ClusterHeader);
     size += bricks.size() * sizeof(Brick);
     size += neuronBlocks.size() * sizeof(NeuronBlock);
-    size += outputNeurons.size() * sizeof(OutputNeuron);
 
     for (const Brick& brick : bricks) {
         const uint64_t numberOfConnections = brick.connectionBlocks->size();

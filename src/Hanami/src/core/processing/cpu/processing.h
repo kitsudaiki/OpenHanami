@@ -48,20 +48,19 @@ processNeuronsOfInputBrick(Cluster& cluster, const Brick* brick)
     Neuron* neuron = nullptr;
     NeuronBlock* block = nullptr;
     uint32_t counter = 0;
-    float* brickBuffer = &cluster.inputValues[brick->ioBufferPos];
+    InputInterface* inputInterface = &cluster.inputInterfaces.begin()->second;
+    uint32_t blockId, neuronIdInBlock = 0;
 
     // iterate over all neurons within the brick
-    for (uint32_t blockId = brick->neuronBlockPos;
+    for (blockId = brick->neuronBlockPos;
          blockId < brick->numberOfNeuronBlocks + brick->neuronBlockPos;
          ++blockId)
     {
         block = &neuronBlocks[blockId];
 
-        for (uint32_t neuronIdInBlock = 0; neuronIdInBlock < block->numberOfNeurons;
-             neuronIdInBlock++)
-        {
+        for (neuronIdInBlock = 0; neuronIdInBlock < NEURONS_PER_NEURONBLOCK; ++neuronIdInBlock) {
             neuron = &block->neurons[neuronIdInBlock];
-            neuron->potential = brickBuffer[counter];
+            neuron->potential = inputInterface->inputNeurons[counter].value;
             neuron->active = neuron->potential > 0.0f;
 
             if constexpr (doTrain) {
@@ -109,7 +108,7 @@ createNewSynapse(NeuronBlock* block,
 
     // set target neuron
     randomSeed = pcg_hash(randomSeed);
-    synapse->targetNeuronId = static_cast<uint16_t>(randomSeed % block->numberOfNeurons);
+    synapse->targetNeuronId = static_cast<uint16_t>(randomSeed % NEURONS_PER_NEURONBLOCK);
 
     randomSeed = pcg_hash(randomSeed);
     synapse->weight = (static_cast<float>(randomSeed) / randMax) / 10.0f;
@@ -231,6 +230,7 @@ processSynapses(Cluster& cluster, Brick* brick, const uint32_t blockId)
     uint32_t randomeSeed = rand();
     const uint32_t dimY = brick->dimY;
     const uint32_t dimX = brick->dimX;
+    uint32_t c, i = 0;
 
     bool inputConnected = false;
 
@@ -238,11 +238,11 @@ processSynapses(Cluster& cluster, Brick* brick, const uint32_t blockId)
         return;
     }
 
-    for (uint32_t c = blockId * dimY; c < (blockId * dimY) + dimY; ++c) {
+    for (c = blockId * dimY; c < (blockId * dimY) + dimY; ++c) {
         assert(c < brick->connectionBlocks->size());
         connectionBlock = &brick->connectionBlocks[0][c];
 
-        for (uint16_t i = 0; i < NUMBER_OF_SYNAPSESECTION; i++) {
+        for (i = 0; i < NUMBER_OF_SYNAPSESECTION; ++i) {
             scon = &connectionBlock->connections[i];
             if (scon->origin.blockId == UNINIT_STATE_32) {
                 continue;
@@ -294,7 +294,7 @@ processNeurons(Cluster& cluster, Brick* brick, const uint32_t blockId)
     if constexpr (doTrain) {
         tempNeuronBlock = &cluster.tempNeuronBlocks[neuronBlockId];
     }
-    for (uint32_t neuronId = 0; neuronId < NEURONS_PER_NEURONSECTION; ++neuronId) {
+    for (uint32_t neuronId = 0; neuronId < NEURONS_PER_NEURONBLOCK; ++neuronId) {
         neuron = &targetNeuronBlock->neurons[neuronId];
         neuron->potential /= clusterSettings->neuronCooldown;
         neuron->refractoryTime = neuron->refractoryTime >> 1;

@@ -22,12 +22,19 @@ enum ClusterProcessType {
     TRAIN_TYPE = 1;
 }
 
+enum TargetBufferType {
+    INPUT_BUFFER_TYPE = 0;
+    OUTPUT_BUFFER_TYPE = 1;
+    EXPECTED_BUFFER_TYPE = 2;
+}
+
 message ClusterIO_Message {
-    string brickName = 1;
+    string bufferName = 1;
     bool isLast = 2;
     ClusterProcessType processType = 3;
-    uint64 numberOfValues = 4;
-    repeated float values = 5 [packed=true];
+    TargetBufferType targetBufferType = 4;
+    uint64 numberOfValues = 5;
+    repeated float values = 6 [packed=true];
 }
 
 message FileUpload_Message 

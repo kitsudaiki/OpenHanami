@@ -78,7 +78,7 @@ createNewSynapse(NeuronBlock* block,
 
     // set target neuron
     randomSeed = pcg_hash(randomSeed);
-    synapse->targetNeuronId = static_cast<uint16_t>(randomSeed % block->numberOfNeurons);
+    synapse->targetNeuronId = static_cast<uint16_t>(randomSeed % NEURONS_PER_NEURONBLOCK);
 
     randomSeed = pcg_hash(randomSeed);
     synapse->weight = (static_cast<float>(randomSeed) / randMax) / 10.0f;

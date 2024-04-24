@@ -60,15 +60,13 @@ class Cluster
 
     // cluster-data
     ClusterHeader clusterHeader;
-    std::vector<float> inputValues;
-    std::vector<float> outputValues;
-    std::vector<float> expectedValues;
-    std::map<std::string, Brick*> namedBricks;
+
     std::vector<Brick> bricks;
     std::vector<NeuronBlock> neuronBlocks;
-    std::vector<OutputNeuron> outputNeurons;
     std::vector<TempNeuronBlock> tempNeuronBlocks;
-    uint32_t numberOfNeuronBlocks = 0;
+
+    std::map<std::string, InputInterface> inputInterfaces;
+    std::map<std::string, OutputInterface> outputInterfaces;
 
     // meta
     const std::string getUuid();
