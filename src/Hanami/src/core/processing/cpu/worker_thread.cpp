@@ -94,7 +94,7 @@ WorkerThread::handleTask(const CpuHost::WorkerTask task)
  * @param task task to handle
  */
 void
-WorkerThread::handleTrainForwardTask(const CpuHost::WorkerTask task)
+WorkerThread::handleTrainForwardTask(CpuHost::WorkerTask task)
 {
     if (task.brickId == UNINIT_STATE_32) {
         WorkerThread::handleInputForward(*task.cluster, true);
@@ -104,23 +104,37 @@ WorkerThread::handleTrainForwardTask(const CpuHost::WorkerTask task)
     else {
         processClusterForward(*task.cluster, task.brickId, task.blockId, true);
         if (task.cluster->incrementAndCompare(
-                task.cluster->bricks[task.brickId].numberOfNeuronBlocks))
+                task.cluster->bricks[task.brickId].neuronBlocks.size()))
         {
-            if (task.brickId == task.cluster->bricks.size() - 1) {
-                processNeuronsOfOutputBrick<true>(task.cluster->bricks,
-                                                  task.cluster->outputInterfaces.begin()->second,
-                                                  task.cluster->neuronBlocks,
-                                                  task.brickId,
-                                                  rand());
-                updateCluster(*task.cluster);
-                task.cluster->updateClusterState();
-            }
-            else {
-                m_host->addBrickToTaskQueue(task.cluster, task.brickId + 1);
-                return;
-            }
+            goToNext(task);
         }
     }
+}
+
+/**
+ * @brief WorkerThread::goToNext
+ * @param task
+ */
+void
+WorkerThread::goToNext(CpuHost::WorkerTask& task)
+{
+    if (task.brickId == task.cluster->bricks.size() - 1) {
+        processNeuronsOfOutputBrick<true>(task.cluster->bricks,
+                                          task.cluster->outputInterfaces.begin()->second,
+                                          task.brickId,
+                                          rand());
+        updateCluster(*task.cluster);
+        task.cluster->updateClusterState();
+        return;
+    }
+
+    task.brickId += 1;
+    if (task.cluster->bricks[task.brickId].neuronBlocks.size() == 0) {
+        goToNext(task);
+        return;
+    }
+
+    m_host->addBrickToTaskQueue(task.cluster, task.brickId);
 }
 
 /**
@@ -129,13 +143,11 @@ WorkerThread::handleTrainForwardTask(const CpuHost::WorkerTask task)
  * @param task task to handle
  */
 void
-WorkerThread::handleTrainBackwardTask(const CpuHost::WorkerTask task)
+WorkerThread::handleTrainBackwardTask(CpuHost::WorkerTask task)
 {
     if (task.brickId == UNINIT_STATE_32) {
         backpropagateOutput(task.cluster->bricks,
                             task.cluster->outputInterfaces.begin()->second,
-                            task.cluster->neuronBlocks,
-                            task.cluster->tempNeuronBlocks,
                             &task.cluster->clusterHeader.settings,
                             task.cluster->bricks.size() - 1);
         m_host->addBrickToTaskQueue(task.cluster, task.cluster->bricks.size() - 1);
@@ -144,17 +156,32 @@ WorkerThread::handleTrainBackwardTask(const CpuHost::WorkerTask task)
     else {
         processClusterBackward(*task.cluster, task.brickId, task.blockId);
         if (task.cluster->incrementAndCompare(
-                task.cluster->bricks[task.brickId].numberOfNeuronBlocks))
+                task.cluster->bricks[task.brickId].neuronBlocks.size()))
         {
-            if (task.brickId == 0) {
-                task.cluster->updateClusterState();
-            }
-            else {
-                m_host->addBrickToTaskQueue(task.cluster, task.brickId - 1);
-                return;
-            }
+            goToPrev(task);
         }
     }
+}
+
+/**
+ * @brief WorkerThread::goToPrev
+ * @param task
+ */
+void
+WorkerThread::goToPrev(CpuHost::WorkerTask& task)
+{
+    if (task.brickId == 0) {
+        task.cluster->updateClusterState();
+        return;
+    }
+
+    task.brickId -= 1;
+    if (task.cluster->bricks[task.brickId].neuronBlocks.size() == 0) {
+        goToNext(task);
+        return;
+    }
+
+    m_host->addBrickToTaskQueue(task.cluster, task.brickId);
 }
 
 /**
@@ -166,8 +193,7 @@ void
 WorkerThread::handleReductionTask(const CpuHost::WorkerTask task)
 {
     reduceCluster(*task.cluster, task.brickId, task.blockId);
-    if (task.cluster->incrementAndCompare(task.cluster->bricks[task.brickId].numberOfNeuronBlocks))
-    {
+    if (task.cluster->incrementAndCompare(task.cluster->bricks[task.brickId].neuronBlocks.size())) {
         if (task.brickId == task.cluster->bricks.size() - 1) {
             task.cluster->updateClusterState();
         }
@@ -194,12 +220,11 @@ WorkerThread::handleProcessTask(const CpuHost::WorkerTask task)
     else {
         processClusterForward(*task.cluster, task.brickId, task.blockId, false);
         if (task.cluster->incrementAndCompare(
-                task.cluster->bricks[task.brickId].numberOfNeuronBlocks))
+                task.cluster->bricks[task.brickId].neuronBlocks.size()))
         {
             if (task.brickId == task.cluster->bricks.size() - 1) {
                 processNeuronsOfOutputBrick<false>(task.cluster->bricks,
                                                    task.cluster->outputInterfaces.begin()->second,
-                                                   task.cluster->neuronBlocks,
                                                    task.brickId,
                                                    rand());
                 handleClientOutput(*task.cluster);
@@ -294,7 +319,6 @@ WorkerThread::processClusterBackward(Cluster& cluster,
     }
 
     SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(cluster.attachedHost->synapseBlocks);
-    backpropagateNeuron(brick, &cluster.neuronBlocks[0], &cluster.tempNeuronBlocks[0], blockId);
-    backpropagateConnections(
-        brick, &cluster.neuronBlocks[0], &cluster.tempNeuronBlocks[0], synapseBlocks, blockId);
+    backpropagateNeuron(brick, blockId);
+    backpropagateConnections(brick, &cluster.bricks[0], synapseBlocks, blockId);
 }

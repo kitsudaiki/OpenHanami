@@ -48,7 +48,7 @@
 #define NUMBER_OF_SYNAPSESECTION 64
 #define NEURONS_PER_NEURONBLOCK 64
 #define POSSIBLE_NEXT_AXON_STEP 80
-#define NUMBER_OF_POSSIBLE_NEXT 102
+#define NUMBER_OF_POSSIBLE_NEXT 90
 #define NUMBER_OF_OUTPUT_CONNECTIONS 7
 
 //==================================================================================================
@@ -157,7 +157,8 @@ struct SourceLocationPtr {
     // HINT (kitsudaiki): not initialized here, because they are used in shared memory in cuda
     //                    which doesn't support initializing of the values, when defining the
     //                    shared-memory-object
-    uint32_t blockId;
+    uint16_t brickId;
+    uint16_t blockId;
     uint16_t neuronId;
     uint8_t posInNeuron;
     bool isInput;
@@ -168,7 +169,7 @@ static_assert(sizeof(SourceLocationPtr) == 8);
 
 struct OutputTargetLocationPtr {
     float connectionWeight = 0.0f;
-    uint32_t blockId = UNINIT_STATE_32;
+    uint16_t blockId = UNINIT_STATE_16;
     uint16_t neuronId = UNINIT_STATE_16;
     uint8_t padding[6];
 };
@@ -210,14 +211,11 @@ static_assert(sizeof(Neuron) == 32);
 //==================================================================================================
 
 struct NeuronBlock {
-    uint32_t brickId = 0;
-    uint8_t padding[12];
-
     Neuron neurons[NEURONS_PER_NEURONBLOCK];
 
     NeuronBlock() { std::fill_n(neurons, NEURONS_PER_NEURONBLOCK, Neuron()); }
 };
-static_assert(sizeof(NeuronBlock) == 2064);
+static_assert(sizeof(NeuronBlock) == 2048);
 
 //==================================================================================================
 
@@ -250,8 +248,7 @@ static_assert(sizeof(OutputNeuron) == 128);
 //==================================================================================================
 
 struct InputNeuron {
-    uint16_t neuronId = UNINIT_STATE_16;
-    uint8_t padding[2];
+    uint32_t neuronId = UNINIT_STATE_32;
     float value = 0.0f;
 };
 static_assert(sizeof(InputNeuron) == 8);
@@ -260,7 +257,7 @@ static_assert(sizeof(InputNeuron) == 8);
 
 struct OutputInterface {
     uint32_t targetBrickId = UNINIT_STATE_32;
-    uint32_t numberOfNeurons = 0;
+    uint32_t numberOfOutputNeurons = 0;
     OutputNeuron* outputNeurons = nullptr;
 };
 static_assert(sizeof(OutputInterface) == 16);
@@ -269,7 +266,7 @@ static_assert(sizeof(OutputInterface) == 16);
 
 struct InputInterface {
     uint32_t targetBrickId = UNINIT_STATE_32;
-    uint32_t numberOfNeurons = 0;
+    uint32_t numberOfInputNeurons = 0;
     InputNeuron* inputNeurons = nullptr;
 };
 static_assert(sizeof(InputInterface) == 16);
@@ -283,7 +280,8 @@ struct SynapseConnection {
 
     SynapseConnection()
     {
-        origin.blockId = UNINIT_STATE_32;
+        origin.brickId = UNINIT_STATE_16;
+        origin.blockId = UNINIT_STATE_16;
         origin.neuronId = UNINIT_STATE_16;
         origin.posInNeuron = 0;
         origin.isInput = false;
@@ -304,15 +302,11 @@ static_assert(sizeof(ConnectionBlock) == 1032);
 //==================================================================================================
 
 struct Brick {
-    // common
     uint32_t brickId = UNINIT_STATE_32;
     bool isOutputBrick = false;
     bool isInputBrick = false;
     bool wasResized = false;
-    uint8_t padding1[9];
-
-    uint32_t neuronBlockPos = UNINIT_STATE_32;
-    uint32_t numberOfNeuronBlocks = 0;
+    uint8_t padding1[1];
 
     Hanami::Position brickPos;
     uint32_t neighbors[12];
@@ -321,38 +315,50 @@ struct Brick {
     uint32_t dimX = 0;
     uint32_t dimY = 0;
 
-    std::vector<ConnectionBlock>* connectionBlocks = nullptr;
+    std::vector<ConnectionBlock> connectionBlocks;
+    std::vector<NeuronBlock> neuronBlocks;
+    std::vector<TempNeuronBlock> tempNeuronBlocks;
 
-    Brick() { connectionBlocks = new std::vector<ConnectionBlock>(); }
+    Brick() { std::fill_n(neighbors, 12, UNINIT_STATE_32); }
 
-    ~Brick() { delete connectionBlocks; }
+    ~Brick() {}
 
     Brick(const Brick& other)
     {
-        connectionBlocks = new std::vector<ConnectionBlock>();
-
         copyNormalPayload(other);
 
-        if (other.connectionBlocks != nullptr) {
-            for (ConnectionBlock& block : other.connectionBlocks[0]) {
-                connectionBlocks->push_back(block);
-            }
+        for (const ConnectionBlock& block : other.connectionBlocks) {
+            connectionBlocks.push_back(block);
+        }
+
+        for (const NeuronBlock& block : other.neuronBlocks) {
+            neuronBlocks.push_back(block);
+        }
+
+        for (const TempNeuronBlock& block : other.tempNeuronBlocks) {
+            tempNeuronBlocks.push_back(block);
         }
     }
 
     Brick& operator=(const Brick& other)
     {
         if (this != &other) {
-            if (connectionBlocks != nullptr) {
-                connectionBlocks->clear();
-            }
+            connectionBlocks.clear();
+            neuronBlocks.clear();
+            tempNeuronBlocks.clear();
 
             copyNormalPayload(other);
 
-            if (other.connectionBlocks != nullptr) {
-                for (ConnectionBlock& block : other.connectionBlocks[0]) {
-                    connectionBlocks->push_back(block);
-                }
+            for (const ConnectionBlock& block : other.connectionBlocks) {
+                connectionBlocks.push_back(block);
+            }
+
+            for (const NeuronBlock& block : other.neuronBlocks) {
+                neuronBlocks.push_back(block);
+            }
+
+            for (const TempNeuronBlock& block : other.tempNeuronBlocks) {
+                tempNeuronBlocks.push_back(block);
             }
         }
         return *this;
@@ -361,16 +367,22 @@ struct Brick {
     Brick& operator=(Brick&& other)
     {
         if (this != &other) {
-            if (connectionBlocks != nullptr) {
-                delete connectionBlocks;
-            }
+            connectionBlocks.clear();
+            neuronBlocks.clear();
+            tempNeuronBlocks.clear();
 
             copyNormalPayload(other);
 
-            connectionBlocks = other.connectionBlocks;
+            for (ConnectionBlock& block : other.connectionBlocks) {
+                connectionBlocks.push_back(block);
+            }
 
-            if (other.connectionBlocks != nullptr) {
-                delete other.connectionBlocks;
+            for (NeuronBlock& block : other.neuronBlocks) {
+                neuronBlocks.push_back(block);
+            }
+
+            for (TempNeuronBlock& block : other.tempNeuronBlocks) {
+                tempNeuronBlocks.push_back(block);
             }
         }
         return *this;
@@ -382,9 +394,6 @@ struct Brick {
         isOutputBrick = other.isOutputBrick;
         isInputBrick = other.isInputBrick;
         wasResized = other.wasResized;
-
-        neuronBlockPos = other.neuronBlockPos;
-        numberOfNeuronBlocks = other.numberOfNeuronBlocks;
 
         brickPos = other.brickPos;
         memcpy(neighbors, other.neighbors, 12 * sizeof(uint32_t));
@@ -411,5 +420,28 @@ struct CudaPointerHandle {
 };
 
 //==================================================================================================
+
+struct SourceLocation {
+    Brick* brick = nullptr;
+    NeuronBlock* neuronBlock = nullptr;
+    TempNeuronBlock* tempNeuronBlock = nullptr;
+    Neuron* neuron = nullptr;
+    TempNeuron* tempNeuron = nullptr;
+};
+
+inline SourceLocation
+getSourceNeuron(const SourceLocationPtr& location, Brick* bricks)
+{
+    SourceLocation sourceLoc;
+    sourceLoc.brick = &bricks[location.brickId];
+
+    sourceLoc.neuronBlock = &sourceLoc.brick->neuronBlocks[location.blockId];
+    sourceLoc.tempNeuronBlock = &sourceLoc.brick->tempNeuronBlocks[location.blockId];
+
+    sourceLoc.neuron = &sourceLoc.neuronBlock->neurons[location.neuronId];
+    sourceLoc.tempNeuron = &sourceLoc.tempNeuronBlock->neurons[location.neuronId];
+
+    return sourceLoc;
+}
 
 #endif  // HANAMI_CORE_SEGMENT_OBJECTS_H

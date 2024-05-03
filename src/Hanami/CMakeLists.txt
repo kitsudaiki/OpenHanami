@@ -224,13 +224,15 @@ set(SOURCES
 add_executable(Hanami
     ${SOURCES}
     src/main.cpp
-    ${CUDA_OBJECTS})
+    # ${CUDA_OBJECTS}
+    )
 add_executable(Hanami_unittests
     ${SOURCES}
     tests/unit_tests/cluster_test.h
     tests/unit_tests/cluster_test.cpp
     tests/unit_tests/main.cpp
-    ${CUDA_OBJECTS})
+    # ${CUDA_OBJECTS}
+    )
 
 # Including directories
 include_directories(
@@ -319,9 +321,9 @@ set(PROTO_FILE ../libraries/hanami_messages/protobuffers)
 set(PROTO_OUTPUT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(PROTO_OUTPUT_HEADER ${PROTO_OUTPUT_DIR}/${PROTO_FILE}/hanami_messages.proto3.pb.h)
 set(PROTO_OUTPUT_SOURCE ${PROTO_OUTPUT_DIR}/${PROTO_FILE}/hanami_messages.proto3.pb.cc)
-set(CUDA_SOURCES src/core/processing/cuda/gpu_kernel.cu)
-get_filename_component(CUDA_SRC_NAME ${CUDA_SOURCES} NAME_WE)
-set(CUDA_OUTPUT_OBJ ${CMAKE_CURRENT_BINARY_DIR}/${CUDA_SRC_NAME}.o)
+# set(CUDA_SOURCES src/core/processing/cuda/gpu_kernel.cu)
+# get_filename_component(CUDA_SRC_NAME ${CUDA_SOURCES} NAME_WE)
+# set(CUDA_OUTPUT_OBJ ${CMAKE_CURRENT_BINARY_DIR}/${CUDA_SRC_NAME}.o)
 
 # Generate C++ headers and sources from the .proto file
 add_custom_command(
@@ -332,12 +334,12 @@ add_custom_command(
         --cpp_out=${PROTO_OUTPUT_DIR}/${PROTO_FILE}
         --proto_path=${CMAKE_CURRENT_SOURCE_DIR}/${PROTO_FILE}
         ${CMAKE_CURRENT_SOURCE_DIR}/${PROTO_FILE}/hanami_messages.proto3
-    COMMAND nvcc
-        -O3
-        -c
-        -I${CMAKE_CURRENT_SOURCE_DIR}/../libraries/hanami_common/include
-        -o ${CUDA_OUTPUT_OBJ}
-        ${CMAKE_CURRENT_SOURCE_DIR}/${CUDA_SOURCES}
+    # COMMAND nvcc
+    #     -O3
+    #     -c
+    #     -I${CMAKE_CURRENT_SOURCE_DIR}/../libraries/hanami_common/include
+    #     -o ${CUDA_OUTPUT_OBJ}
+    #     ${CMAKE_CURRENT_SOURCE_DIR}/${CUDA_SOURCES}
     DEPENDS
         ${CMAKE_CURRENT_SOURCE_DIR}/${PROTO_FILE}/hanami_messages.proto3
 )
@@ -346,18 +348,18 @@ add_custom_command(
 add_custom_target(generate_protobuf_files DEPENDS
     ${PROTO_OUTPUT_HEADER}
     ${PROTO_OUTPUT_SOURCE}
-    ${CUDA_SOURCES}
+    # ${CUDA_SOURCES}
 )
 add_dependencies(Hanami generate_protobuf_files)
 target_sources(Hanami PRIVATE
     ${PROTO_OUTPUT_HEADER}
     ${PROTO_OUTPUT_SOURCE}
-    ${CUDA_SOURCES}
+    # ${CUDA_SOURCES}
 )
 add_dependencies(Hanami_unittests generate_protobuf_files)
 target_sources(Hanami_unittests PRIVATE
     ${PROTO_OUTPUT_HEADER}
     ${PROTO_OUTPUT_SOURCE}
-    ${CUDA_SOURCES}
+    # ${CUDA_SOURCES}
 )
 

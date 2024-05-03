@@ -93,7 +93,7 @@ CpuHost::addBrickToTaskQueue(Cluster* cluster, const u_int32_t brickId)
         addWorkerTaskToQueue(task);
     }
     else {
-        for (uint32_t i = 0; i < cluster->bricks[brickId].numberOfNeuronBlocks; i++) {
+        for (uint32_t i = 0; i < cluster->bricks[brickId].neuronBlocks.size(); i++) {
             WorkerTask task;
             task.cluster = cluster;
             task.brickId = brickId;
@@ -174,7 +174,7 @@ CpuHost::moveCluster(Cluster* cluster)
 
     // copy synapse-blocks from the old host to this one here
     for (Brick& brick : cluster->bricks) {
-        for (ConnectionBlock& block : brick.connectionBlocks[0]) {
+        for (ConnectionBlock& block : brick.connectionBlocks) {
             if (block.targetSynapseBlockPos != UNINIT_STATE_64) {
                 tempBlock = cpuSynapseBlocks[block.targetSynapseBlockPos];
                 originHost->synapseBlocks.deleteItem(block.targetSynapseBlockPos);
@@ -210,7 +210,7 @@ void
 CpuHost::removeCluster(Cluster* cluster)
 {
     for (Brick& brick : cluster->bricks) {
-        for (ConnectionBlock& block : brick.connectionBlocks[0]) {
+        for (ConnectionBlock& block : brick.connectionBlocks) {
             if (block.targetSynapseBlockPos != UNINIT_STATE_64) {
                 synapseBlocks.deleteItem(block.targetSynapseBlockPos);
             }

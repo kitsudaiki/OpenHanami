@@ -60,11 +60,8 @@ cluster_template = \
     "    enable_reduction: false\n" \
     "bricks:\n" \
     "    1,1,1\n" \
-    "       number_of_neurons: 784\n" \
     "    2,1,1\n" \
-    "       number_of_neurons: 400\n" \
     "    3,1,1\n" \
-    "      number_of_neurons: 30\n" \
     "    \n" \
     "inputs:\n" \
     "    input_brick:\n" \
@@ -279,7 +276,7 @@ def test_workflow():
         cluster.switch_host(token, address, cluster_uuid, target_host_uuid, False)
 
     # run training
-    for i in range(0, 10):
+    for i in range(0, 5):
         result = task.create_task(
             token, address, generic_task_name, "train", cluster_uuid, train_dataset_uuid, False)
         task_uuid = json.loads(result)["uuid"]

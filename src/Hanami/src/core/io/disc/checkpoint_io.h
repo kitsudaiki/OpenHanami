@@ -106,6 +106,8 @@ class CheckpointIO
                                  const CheckpointHeader& header,
                                  uint8_t* u8Data,
                                  Hanami::ErrorContainer& error);
+
+    uint64_t getDataSize(Cluster* cluster) const;
 };
 
 #endif  // CHECKPOINTIO_H

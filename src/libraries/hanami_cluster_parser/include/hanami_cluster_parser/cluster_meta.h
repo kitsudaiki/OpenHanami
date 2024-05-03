@@ -37,7 +37,6 @@ namespace Hanami
 
 struct BrickMeta {
     Position position;
-    uint64_t numberOfNeurons = 0;
 };
 
 struct InputMeta {

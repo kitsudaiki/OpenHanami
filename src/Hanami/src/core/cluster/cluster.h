@@ -62,9 +62,6 @@ class Cluster
     ClusterHeader clusterHeader;
 
     std::vector<Brick> bricks;
-    std::vector<NeuronBlock> neuronBlocks;
-    std::vector<TempNeuronBlock> tempNeuronBlocks;
-
     std::map<std::string, InputInterface> inputInterfaces;
     std::map<std::string, OutputInterface> outputInterfaces;
 
@@ -73,9 +70,6 @@ class Cluster
     const std::string getName();
     bool setName(const std::string& newName);
     bool init(const Hanami::ClusterMeta& clusterTemplate, const std::string& uuid);
-
-    // stats
-    uint64_t getDataSize() const;
 
     // tasks
     Task* getCurrentTask() const;

@@ -108,28 +108,6 @@ Cluster::init(const Hanami::ClusterMeta& clusterTemplate, const std::string& uui
 }
 
 /**
- * @brief get total size of data of the cluster
- *
- * @return size of cluster in bytes
- */
-uint64_t
-Cluster::getDataSize() const
-{
-    uint64_t size = 0;
-    size += sizeof(ClusterHeader);
-    size += bricks.size() * sizeof(Brick);
-    size += neuronBlocks.size() * sizeof(NeuronBlock);
-
-    for (const Brick& brick : bricks) {
-        const uint64_t numberOfConnections = brick.connectionBlocks->size();
-        size += numberOfConnections * sizeof(ConnectionBlock);
-        size += numberOfConnections * sizeof(SynapseBlock);
-    }
-
-    return size;
-}
-
-/**
  * @brief get the name of the clsuter
  *
  * @return name of the cluster
@@ -226,10 +204,10 @@ countSynapses(const Cluster& cluster)
     uint64_t sectionCounter = 0;
 
     for (const Brick& brick : cluster.bricks) {
-        for (const ConnectionBlock& block : brick.connectionBlocks[0]) {
+        for (const ConnectionBlock& block : brick.connectionBlocks) {
             SynapseBlock* synapseBlock = &synapseBlocks[block.targetSynapseBlockPos];
             for (uint32_t i = 0; i < 64; i++) {
-                if (block.connections[i].origin.blockId != UNINIT_STATE_32) {
+                if (block.connections[i].origin.blockId != UNINIT_STATE_16) {
                     sectionCounter++;
                     for (uint32_t j = 0; j < 64; j++) {
                         Synapse* synpase = &synapseBlock->sections[i].synapses[j];

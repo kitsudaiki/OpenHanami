@@ -26,13 +26,8 @@ Cluster_Init_Test::init()
           "\n"
           "bricks:\n"
           "    1,1,1\n"
-          "        number_of_neurons: 70\n"
-          "         \n "
           "    2,1,1\n"
-          "        number_of_neurons: 70\n"
-          "          \n"
           "    3,1,1\n"
-          "        number_of_neurons: 10\n"
           "\n"
           "inputs:\n"
           "    input_brick: \n"
@@ -93,8 +88,6 @@ Cluster_Init_Test::createCluster_Test()
     TEST_EQUAL(newCluster->bricks.at(2).isOutputBrick, true);
 
     // test neighbors of brick 0
-    TEST_EQUAL(newCluster->bricks.at(0).neuronBlockPos, 0);
-    TEST_EQUAL(newCluster->bricks.at(0).numberOfNeuronBlocks, 2);
     TEST_EQUAL(newCluster->bricks.at(0).neighbors[0], UNINIT_STATE_32);
     TEST_EQUAL(newCluster->bricks.at(0).neighbors[1], UNINIT_STATE_32);
     TEST_EQUAL(newCluster->bricks.at(0).neighbors[2], UNINIT_STATE_32);
@@ -115,8 +108,6 @@ Cluster_Init_Test::createCluster_Test()
     TEST_EQUAL(success, true);
 
     // test neighbors of brick 1
-    TEST_EQUAL(newCluster->bricks.at(1).neuronBlockPos, 2);
-    TEST_EQUAL(newCluster->bricks.at(1).numberOfNeuronBlocks, 2);
     TEST_EQUAL(newCluster->bricks.at(1).neighbors[0], UNINIT_STATE_32);
     TEST_EQUAL(newCluster->bricks.at(1).neighbors[1], UNINIT_STATE_32);
     TEST_EQUAL(newCluster->bricks.at(1).neighbors[2], UNINIT_STATE_32);
@@ -137,8 +128,6 @@ Cluster_Init_Test::createCluster_Test()
     TEST_EQUAL(success, true);
 
     // test neighbors of brick 2
-    TEST_EQUAL(newCluster->bricks.at(2).neuronBlockPos, 4);
-    TEST_EQUAL(newCluster->bricks.at(2).numberOfNeuronBlocks, 1);
     TEST_EQUAL(newCluster->bricks.at(2).neighbors[0], UNINIT_STATE_32);
     TEST_EQUAL(newCluster->bricks.at(2).neighbors[1], UNINIT_STATE_32);
     TEST_EQUAL(newCluster->bricks.at(2).neighbors[2], UNINIT_STATE_32);
@@ -159,24 +148,15 @@ Cluster_Init_Test::createCluster_Test()
 
     // test input-interfaces
     TEST_EQUAL(newCluster->inputInterfaces.size(), 1);
-    TEST_EQUAL(newCluster->inputInterfaces.begin()->second.numberOfNeurons, 20);
+    TEST_EQUAL(newCluster->inputInterfaces.begin()->second.numberOfInputNeurons, 20);
     TEST_EQUAL(newCluster->inputInterfaces.begin()->second.targetBrickId, 0);
     success = newCluster->inputInterfaces.begin()->second.inputNeurons != nullptr;
     TEST_EQUAL(success, true);
 
     // test output-interfaces
     TEST_EQUAL(newCluster->outputInterfaces.size(), 1);
-    TEST_EQUAL(newCluster->outputInterfaces.begin()->second.numberOfNeurons, 5);
+    TEST_EQUAL(newCluster->outputInterfaces.begin()->second.numberOfOutputNeurons, 5);
     TEST_EQUAL(newCluster->outputInterfaces.begin()->second.targetBrickId, 2);
     success = newCluster->outputInterfaces.begin()->second.outputNeurons != nullptr;
     TEST_EQUAL(success, true);
-
-    // test neuron-blocks
-    TEST_EQUAL(newCluster->tempNeuronBlocks.size(), 5);
-    TEST_EQUAL(newCluster->neuronBlocks.size(), 5);
-    TEST_EQUAL(newCluster->neuronBlocks.at(0).brickId, 0);
-    TEST_EQUAL(newCluster->neuronBlocks.at(1).brickId, 0);
-    TEST_EQUAL(newCluster->neuronBlocks.at(2).brickId, 1);
-    TEST_EQUAL(newCluster->neuronBlocks.at(3).brickId, 1);
-    TEST_EQUAL(newCluster->neuronBlocks.at(4).brickId, 2);
 }

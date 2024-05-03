@@ -41,23 +41,34 @@ struct CheckpointHeader {
     uint8_t version = 1;
     uint8_t padding1[7];
 
-    uint64_t fileSize = 0;
-
-    uint64_t numberOfNeuronBrocks = 0;
-    uint64_t numberOfOutputNeurons = 0;
-    uint64_t numberOfBricks = 0;
-
-    uint64_t clusterHeaderPos = 0;
-    uint64_t neuronBlocksPos = 0;
-    uint64_t outputNeuronsPos = 0;
-    uint64_t bricksPos = 0;
-    uint64_t connectionBlocks = 0;
+    uint64_t totalFileSize = 0;
 
     char name[256];
     uint32_t nameSize = 0;
     char uuid[40];
+    uint8_t padding2[4];
 
-    uint8_t padding2[3676];
+    uint64_t clusterHeaderPos = 0;
+
+    uint64_t neuronBlocksPos = 0;
+    uint64_t numberOfNeuronBlocks = 0;
+
+    uint64_t connectionBlocks = 0;
+    uint64_t numberOfConnectionBlocks = 0;
+
+    uint64_t synapseBlocksPos = 0;
+    uint64_t numberOfSynapseBlocksPos = 0;
+
+    uint64_t bricksPos = 0;
+    uint64_t numberOfBricks = 0;
+
+    uint64_t inputInterfacesPos = 0;
+    uint64_t numberOfInputInterfaces = 0;
+
+    uint64_t outputsInterfacesPos = 0;
+    uint64_t numberOfOutputsInterfaces = 0;
+
+    uint8_t padding3[3632];
 
     CheckpointHeader()
     {
@@ -100,6 +111,18 @@ struct CheckpointHeader {
 };
 static_assert(sizeof(CheckpointHeader) == 4096);
 
+struct CheckpointInputEntry {
+    char name[256];
+    uint32_t numberOfInputs = 0;
+    uint32_t targetBrickId = UNINIT_STATE_32;
+};
+
+struct CheckpointOutputEntry {
+    char name[256];
+    uint32_t numberOfOutputs = 0;
+    uint32_t targetBrickId = UNINIT_STATE_32;
+};
+
 //=========================================================================================================
 //=========================================================================================================
 //=========================================================================================================
@@ -109,6 +132,38 @@ CheckpointIO::CheckpointIO() {}
 //=========================================================================================================
 //=========================================================================================================
 //=========================================================================================================
+
+/**
+ * @brief get total size of data of the cluster
+ *
+ * @return size of cluster in bytes
+ */
+uint64_t
+CheckpointIO::getDataSize(Cluster* cluster) const
+{
+    uint64_t size = 0;
+    size += sizeof(ClusterHeader);
+    size += cluster->bricks.size() * sizeof(Brick);
+
+    for (const Brick& brick : cluster->bricks) {
+        const uint64_t numberOfConnections = brick.connectionBlocks.size();
+        size += numberOfConnections * sizeof(ConnectionBlock);
+        size += numberOfConnections * sizeof(SynapseBlock);
+        size += brick.neuronBlocks.size() * sizeof(NeuronBlock);
+    }
+
+    for (const auto& [name, input] : cluster->inputInterfaces) {
+        size += sizeof(CheckpointInputEntry);
+        size += input.numberOfInputNeurons * sizeof(InputNeuron);
+    }
+
+    for (const auto& [name, output] : cluster->outputInterfaces) {
+        size += sizeof(CheckpointOutputEntry);
+        size += output.numberOfOutputNeurons * sizeof(OutputNeuron);
+    }
+
+    return size;
+}
 
 /**
  * @brief write the checkpoint of the cluster into a local file
@@ -130,7 +185,7 @@ CheckpointIO::writeClusterToFile(Cluster* cluster,
         return false;
     }
 
-    const uint64_t totalFileSize = cluster->getDataSize() + sizeof(CheckpointHeader);
+    const uint64_t totalFileSize = getDataSize(cluster) + sizeof(CheckpointHeader);
 
     // initialize checkpoint-file
     Hanami::BinaryFile checkpointFile(filePath);
@@ -144,9 +199,9 @@ CheckpointIO::writeClusterToFile(Cluster* cluster,
     CheckpointHeader header;
     header.setName(cluster->getName());
     header.setUuid(cluster->clusterHeader.uuid);
-    header.fileSize = totalFileSize;
+    header.totalFileSize = totalFileSize;
     header.numberOfBricks = cluster->bricks.size();
-    header.numberOfNeuronBrocks = cluster->neuronBlocks.size();
+    /*header.numberOfNeuronBlocks = cluster->neuronBlocks.size();*/
 
     uint64_t position = sizeof(CheckpointHeader);
 
@@ -162,8 +217,8 @@ CheckpointIO::writeClusterToFile(Cluster* cluster,
         return false;
     }
 
-    // output-neurons
-    header.outputNeuronsPos = position;
+    // output-interfaces
+    header.outputsInterfacesPos = position;
     if (writeOutputNeuronsToFile(cluster, checkpointFile, position, error) == false) {
         return false;
     }
@@ -261,15 +316,15 @@ CheckpointIO::writeNeuronBlocksToFile(Cluster* cluster,
                                       uint64_t& position,
                                       Hanami::ErrorContainer& error)
 {
-    const uint64_t numberOfBytes = cluster->neuronBlocks.size() * sizeof(NeuronBlock);
+    /*const uint64_t numberOfBytes = cluster->neuronBlocks.size() * sizeof(NeuronBlock);
 
     // write static data of cluster to file
-    if (file.writeDataIntoFile(&cluster->neuronBlocks[0], position, numberOfBytes, error) == false)
+    if (file.writeDataIntoFile(&cluster->neuronBlocks, position, numberOfBytes, error) == false)
     {
         error.addMessage("Failed to write neuron-blocks for checkpoint into file");
         return false;
     }
-    position += numberOfBytes;
+    position += numberOfBytes;*/
 
     return true;
 }
@@ -320,7 +375,7 @@ CheckpointIO::writeConnectionBlocksOfBricksToFile(Cluster* cluster,
                                                   Hanami::ErrorContainer& error)
 {
     for (uint64_t i = 0; i < cluster->bricks.size(); i++) {
-        const uint64_t numberOfConnections = cluster->bricks[i].connectionBlocks->size();
+        const uint64_t numberOfConnections = cluster->bricks[i].connectionBlocks.size();
         for (uint64_t c = 0; c < numberOfConnections; c++) {
             if (writeConnectionBlockToFile(cluster, file, position, i, c, error) == false) {
                 return true;
@@ -352,7 +407,7 @@ CheckpointIO::writeConnectionBlockToFile(Cluster* cluster,
                                          Hanami::ErrorContainer& error)
 {
     // write connection-blocks of brick to file
-    ConnectionBlock* connectionBlock = &cluster->bricks[brickId].connectionBlocks->at(blockid);
+    ConnectionBlock* connectionBlock = &cluster->bricks[brickId].connectionBlocks[blockid];
     if (file.writeDataIntoFile(connectionBlock, position, sizeof(ConnectionBlock), error) == false)
     {
         error.addMessage("Failed to write connection-blocks for checkpoint into file");
@@ -452,7 +507,7 @@ CheckpointIO::restoreClusterFromFile(Cluster* cluster,
     memcpy(&header, &u8Data[0], sizeof(CheckpointHeader));
 
     // check size of the read file compared to the expaced size of the header
-    if (header.fileSize != checkpointBuffer.usedBufferSize) {
+    if (header.totalFileSize != checkpointBuffer.usedBufferSize) {
         error.addMessage("Given checkpoint-file '"
                          + fileLocation
                          + "' can not be restored, because the size doesn't "
@@ -523,13 +578,13 @@ CheckpointIO::restoreNeuronBlocks(Cluster* cluster,
                                   uint8_t* u8Data,
                                   Hanami::ErrorContainer& error)
 {
-    const uint64_t position = header.neuronBlocksPos;
-    const uint64_t size = header.numberOfNeuronBrocks * sizeof(NeuronBlock);
+    /*const uint64_t position = header.neuronBlocksPos;
+    const uint64_t size = header.numberOfNeuronBlocks * sizeof(NeuronBlock);
 
     cluster->neuronBlocks.clear();
-    cluster->neuronBlocks.resize(header.numberOfNeuronBrocks);
+    cluster->neuronBlocks.resize(header.numberOfNeuronBlocks);
 
-    memcpy(&cluster->neuronBlocks[0], &u8Data[position], size);
+    memcpy(&cluster->neuronBlocks, &u8Data[position], size);*/
 
     return true;
 }
@@ -550,10 +605,10 @@ CheckpointIO::restoreOutputNeurons(Cluster* cluster,
                                    uint8_t* u8Data,
                                    Hanami::ErrorContainer& error)
 {
-    const uint64_t position = header.outputNeuronsPos;
+    /*const uint64_t position = header.outputNeuronsPos;
     const uint64_t size = header.numberOfOutputNeurons * sizeof(OutputNeuron);
 
-    /*cluster->outputNeurons.clear();
+    cluster->outputNeurons.clear();
     cluster->outputNeurons.resize(header.numberOfOutputNeurons);
 
     memcpy(&cluster->outputNeurons[0], &u8Data[position], size);*/
@@ -586,7 +641,7 @@ CheckpointIO::restoreBricks(Cluster* cluster,
     memcpy(&cluster->bricks[0], &u8Data[position], size);
 
     for (Brick& brick : cluster->bricks) {
-        brick.connectionBlocks = new std::vector<ConnectionBlock>();
+        /*brick.connectionBlocks = new std::vector<ConnectionBlock>();*/
     }
 
     return true;
@@ -608,7 +663,7 @@ CheckpointIO::restoreConnectionBlocks(Cluster* cluster,
                                       uint8_t* u8Data,
                                       Hanami::ErrorContainer& error)
 {
-    uint64_t position = header.connectionBlocks;
+    /*uint64_t position = header.connectionBlocks;
 
     // get initial logical host
     LogicalHost* host = HanamiRoot::physicalHost->getFirstHost();
@@ -621,10 +676,10 @@ CheckpointIO::restoreConnectionBlocks(Cluster* cluster,
     for (Brick& brick : cluster->bricks) {
         brick.connectionBlocks->resize(brick.dimX * brick.dimY);
 
-        const uint64_t numberOfConnections = brick.connectionBlocks->size();
+        const uint64_t numberOfConnections = brick.connectionBlocks.size();
         for (uint64_t c = 0; c < numberOfConnections; c++) {
             // convert connection-block
-            memcpy(&brick.connectionBlocks[0][c], &u8Data[position], sizeof(ConnectionBlock));
+            memcpy(&brick.connectionBlocks[c], &u8Data[position], sizeof(ConnectionBlock));
             position += sizeof(ConnectionBlock);
 
             // convert synapse-block
@@ -637,11 +692,11 @@ CheckpointIO::restoreConnectionBlocks(Cluster* cluster,
             }
 
             // write new position into the related connection-block
-            brick.connectionBlocks[0][c].targetSynapseBlockPos = itemPos;
+            brick.connectionBlocks[c].targetSynapseBlockPos = itemPos;
 
             position += sizeof(SynapseBlock);
         }
-    }
+    }*/
 
     return true;
 }

@@ -46,8 +46,8 @@ class WorkerThread : public Hanami::Thread
     void processClusterBackward(Cluster& cluster, const uint32_t brickId, const uint32_t blockId);
 
     void handleTask(const CpuHost::WorkerTask task);
-    void handleTrainForwardTask(const CpuHost::WorkerTask task);
-    void handleTrainBackwardTask(const CpuHost::WorkerTask task);
+    void handleTrainForwardTask(CpuHost::WorkerTask task);
+    void handleTrainBackwardTask(CpuHost::WorkerTask task);
     void handleReductionTask(const CpuHost::WorkerTask task);
     void handleProcessTask(const CpuHost::WorkerTask task);
 
@@ -55,6 +55,8 @@ class WorkerThread : public Hanami::Thread
 
     CpuHost* m_host = nullptr;
     uint32_t m_inactiveCounter = 0;
+    void goToNext(CpuHost::WorkerTask& task);
+    void goToPrev(CpuHost::WorkerTask& task);
 };
 
 #endif  // WORKERTHREAD_H

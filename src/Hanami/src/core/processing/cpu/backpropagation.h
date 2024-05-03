@@ -43,10 +43,7 @@
  * @param blockId id of the current block within the brick
  */
 inline void
-backpropagateNeuron(Brick* brick,
-                    NeuronBlock* neuronBlocks,
-                    TempNeuronBlock* tempNeuronBlocks,
-                    const uint32_t blockId)
+backpropagateNeuron(Brick* brick, const uint32_t blockId)
 {
     SynapseConnection* scon = nullptr;
     Neuron* targetNeuron = nullptr;
@@ -54,11 +51,11 @@ backpropagateNeuron(Brick* brick,
     TempNeuron* targetTempNeuron = nullptr;
     TempNeuronBlock* targetTempBlock = nullptr;
     float delta = 0.0f;
-    const uint32_t neuronBlockId = brick->neuronBlockPos + blockId;
+    const uint32_t neuronBlockId = blockId;
     uint32_t neuronId = 0;
 
-    targetNeuronBlock = &neuronBlocks[neuronBlockId];
-    targetTempBlock = &tempNeuronBlocks[neuronBlockId];
+    targetNeuronBlock = &brick->neuronBlocks[neuronBlockId];
+    targetTempBlock = &brick->tempNeuronBlocks[neuronBlockId];
 
     for (neuronId = 0; neuronId < NEURONS_PER_NEURONBLOCK; ++neuronId) {
         targetNeuron = &targetNeuronBlock->neurons[neuronId];
@@ -144,13 +141,13 @@ backpropagateSection(SynapseSection* section,
  */
 inline void
 backpropagateConnections(Brick* brick,
-                         NeuronBlock* neuronBlocks,
-                         TempNeuronBlock* tempNeuronBlocks,
+                         Brick* bricks,
                          SynapseBlock* synapseBlocks,
                          const uint32_t blockId)
 {
     SynapseConnection* connection = nullptr;
     Neuron* sourceNeuron = nullptr;
+    Brick* sourceBrick = nullptr;
     NeuronBlock* sourceNeuronBlock = nullptr;
     TempNeuron* sourceTempNeuron = nullptr;
     TempNeuronBlock* sourceTempBlock = nullptr;
@@ -160,39 +157,37 @@ backpropagateConnections(Brick* brick,
     SynapseSection* synapseSection = nullptr;
     const uint32_t dimY = brick->dimY;
     const uint32_t dimX = brick->dimX;
-    uint32_t c, i = 0;
+    SourceLocation sourceLoc;
+    uint32_t c = 0;
+    uint32_t i = 0;
 
     if (blockId >= dimX) {
         return;
     }
 
     for (c = blockId * dimY; c < (blockId * dimY) + dimY; ++c) {
-        assert(c < brick->connectionBlocks->size());
-        connectionBlock = &brick->connectionBlocks[0][c];
+        assert(c < brick->connectionBlocks.size());
+        connectionBlock = &brick->connectionBlocks[c];
 
         for (i = 0; i < NUMBER_OF_SYNAPSESECTION; ++i) {
             connection = &connectionBlock->connections[i];
 
-            if (connection->origin.blockId == UNINIT_STATE_32) {
+            if (connection->origin.blockId == UNINIT_STATE_16) {
                 continue;
             }
 
             synapseSection = &synapseBlocks[connectionBlock->targetSynapseBlockPos].sections[i];
+            sourceLoc = getSourceNeuron(connection->origin, bricks);
 
-            sourceNeuronBlock = &neuronBlocks[connection->origin.blockId];
-            sourceTempBlock = &tempNeuronBlocks[connection->origin.blockId];
-            sourceNeuron = &sourceNeuronBlock->neurons[connection->origin.neuronId];
-            sourceTempNeuron = &sourceTempBlock->neurons[connection->origin.neuronId];
-
-            targetTempBlock = &tempNeuronBlocks[brick->neuronBlockPos + (c / brick->dimY)];
-            targetNeuronBlock = &neuronBlocks[brick->neuronBlockPos + (c / brick->dimY)];
+            targetTempBlock = &brick->tempNeuronBlocks[(c / brick->dimY)];
+            targetNeuronBlock = &brick->neuronBlocks[(c / brick->dimY)];
 
             backpropagateSection(synapseSection,
                                  connection,
                                  targetNeuronBlock,
                                  targetTempBlock,
-                                 sourceNeuron,
-                                 sourceTempNeuron);
+                                 sourceLoc.neuron,
+                                 sourceLoc.tempNeuron);
         }
     }
 }

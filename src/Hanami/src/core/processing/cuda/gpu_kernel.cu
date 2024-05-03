@@ -571,12 +571,12 @@ copyToDevice_CUDA(CudaPointerHandle* gpuPointer,
         gpuPointer->connectionBlocks[brickId] = nullptr;
 
         Brick* brick = &bricks[brickId];
-        if(brick->connectionBlocks->size() > 0) {
+        if(brick.connectionBlocks.size() > 0) {
             cudaMalloc(&gpuPointer->connectionBlocks[brickId],
-                       brick->connectionBlocks->size() * sizeof(ConnectionBlock));
+                       brick.connectionBlocks.size() * sizeof(ConnectionBlock));
             cudaMemcpy(gpuPointer->connectionBlocks[brickId],
-                       &brick->connectionBlocks[0][0],
-                       brick->connectionBlocks->size() * sizeof(ConnectionBlock),
+                       &brick.connectionBlocks[0],
+                       brick.connectionBlocks.size() * sizeof(ConnectionBlock),
                        cudaMemcpyHostToDevice);
         }
     }
@@ -671,12 +671,12 @@ update_CUDA(CudaPointerHandle* gpuPointer,
 
             // allocate to resized memory for the connectionblocks on gpu
             cudaMalloc(&gpuPointer->connectionBlocks[brickId],
-                       brick->connectionBlocks->size() * sizeof(ConnectionBlock));
+                       brick.connectionBlocks.size() * sizeof(ConnectionBlock));
         }
 
         cudaMemcpy(gpuPointer->connectionBlocks[brickId],
-                   &brick->connectionBlocks[0][0],
-                   brick->connectionBlocks->size() * sizeof(ConnectionBlock),
+                   &brick.connectionBlocks[0],
+                   brick.connectionBlocks.size() * sizeof(ConnectionBlock),
                    cudaMemcpyHostToDevice);
 
         brick->wasResized = false;
@@ -870,9 +870,9 @@ reduction_CUDA(CudaPointerHandle* gpuPointer,
                 gpuPointer->synapseBlocks);
 
 
-        cudaMemcpy(&brick->connectionBlocks[0][0],
+        cudaMemcpy(&brick.connectionBlocks[0],
                    gpuPointer->connectionBlocks[brickId],
-                   brick->connectionBlocks->size() * sizeof(ConnectionBlock),
+                   brick.connectionBlocks.size() * sizeof(ConnectionBlock),
                    cudaMemcpyDeviceToHost);
     }
 

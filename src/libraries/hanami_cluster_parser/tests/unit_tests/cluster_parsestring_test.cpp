@@ -49,13 +49,8 @@ Cluster_ParseString_Test::parseString_test()
         "\n"
         "bricks:\n"
         "    1,1,1\n"
-        "        number_of_neurons: 20\n"
-        "         \n "
         "    2,1,1\n"
-        "        number_of_neurons: 10\n"
-        "          \n"
         "    3,1,1\n"
-        "        number_of_neurons: 5\n"
         "\n"
         "inputs:\n"
         "    input_brick: \n"
@@ -88,17 +83,14 @@ Cluster_ParseString_Test::parseString_test()
     TEST_EQUAL(result.bricks.at(0).position.x, 1);
     TEST_EQUAL(result.bricks.at(0).position.y, 1);
     TEST_EQUAL(result.bricks.at(0).position.z, 1);
-    TEST_EQUAL(result.bricks.at(0).numberOfNeurons, 20);
 
     TEST_EQUAL(result.bricks.at(1).position.x, 2);
     TEST_EQUAL(result.bricks.at(1).position.y, 1);
     TEST_EQUAL(result.bricks.at(1).position.z, 1);
-    TEST_EQUAL(result.bricks.at(1).numberOfNeurons, 10);
 
     TEST_EQUAL(result.bricks.at(2).position.x, 3);
     TEST_EQUAL(result.bricks.at(2).position.y, 1);
     TEST_EQUAL(result.bricks.at(2).position.z, 1);
-    TEST_EQUAL(result.bricks.at(2).numberOfNeurons, 5);
 
     TEST_EQUAL(result.inputs.size(), 1);
     TEST_EQUAL(result.inputs.at(0).name, "input_brick");
@@ -120,13 +112,8 @@ Cluster_ParseString_Test::parseString_test()
           "\n"
           "bricks:\n"
           "    1,1,1\n"
-          "        number_of_neurons: 20\n"
-          "         \n "
           "    2,1,1\n"
-          "        number_of_neurons: 10\n"
-          "          \n"
           "    3,1,1\n"
-          "        number_of_neurons: 5\n"
           "\n"
           "inputs:\n"
           "    input_brick: \n"
@@ -152,13 +139,8 @@ Cluster_ParseString_Test::parseString_test()
           "\n"
           "bricks:\n"
           "    1,1,1\n"
-          "        number_of_neurons: 20\n"
-          "         \n "
           "    2,1,1\n"
-          "        number_of_neurons: 10\n"
-          "          \n"
           "    3,1,1\n"
-          "        number_of_neurons: 5\n"
           "\n"
           "inputs:\n"
           "    input_brick: \n"
@@ -184,13 +166,8 @@ Cluster_ParseString_Test::parseString_test()
           "\n"
           "bricks:\n"
           "    1,1,a\n"  // <-- error (invalid position)
-          "        number_of_neurons: 20\n"
-          "         \n "
           "    2,1,1\n"
-          "        number_of_neurons: 10\n"
-          "          \n"
           "    3,1,1\n"
-          "        number_of_neurons: 5\n"
           "\n"
           "inputs:\n"
           "    input_brick: \n"
@@ -216,13 +193,8 @@ Cluster_ParseString_Test::parseString_test()
           "\n"
           "asdf:\n"  // <-- error (unknown keyword here)
           "    1,1,1\n"
-          "        number_of_neurons: 20\n"
-          "         \n "
           "    2,1,1\n"
-          "        number_of_neurons: 10\n"
-          "          \n"
           "    3,1,1\n"
-          "        number_of_neurons: 5\n"
           "\n"
           "inputs:\n"
           "    input_brick: \n"
@@ -248,13 +220,8 @@ Cluster_ParseString_Test::parseString_test()
           "\n"
           "bricks:\n"
           "    1,1,1\n"
-          "        number_of_neurons: 20\n"
-          "         \n "
           "    2,1,1\n"
-          "        number_of_neurons: 10\n"
-          "          \n"
           "    3,1,1\n"
-          "        number_of_neurons: 5\n"
           "\n"
           "inputs:\n"
           "    input_brick: \n"
@@ -280,77 +247,8 @@ Cluster_ParseString_Test::parseString_test()
           "\n"
           "bricks:\n"
           "    1,1,1\n"
-          "        number_of_neurons: 20\n"
-          "         \n "
           "    2,1,1\n"
-          "        number_of_neurons: 10\n"
-          "          \n"
           "    3,1,1\n"
-          "        number_of_neurons: x\n"  // <-- error (no int as value)
-          "\n"
-          "inputs:\n"
-          "    input_brick: \n"
-          "        target: 1,1,1\n"
-          "        number_of_inputs: 20\n"
-          "\n"
-          "outputs:\n"
-          "    output_brick: \n"
-          "        target: 3,1,1\n"
-          "        number_of_outputs: 5\n"
-          "\n";
-
-    ret = parseCluster(&result, input, error);
-    TEST_EQUAL(ret, false);
-
-    input
-        = "version: 1\n"
-          "settings:\n"
-          "    refractory_time: 1\n"
-          "    neuron_cooldown: 10000000.0\n"
-          "    max_connection_distance: 1\n"
-          "    enable_reduction: false\n"
-          "\n"
-          "bricks:\n"
-          "    1,1,1\n"
-          "        number_of_neurons: 20\n"
-          "         \n "
-          "    2,1,1\n"
-          "        number_of_neurons: 10\n"
-          "          \n"
-          "    3,1,1\n"
-          "        number_of_neurons: -5\n"  // <-- error (negative value invalid)
-          "\n"
-          "inputs:\n"
-          "    input_brick: \n"
-          "        target: 1,1,1\n"
-          "        number_of_inputs: 20\n"
-          "\n"
-          "outputs:\n"
-          "    output_brick: \n"
-          "        target: 3,1,1\n"
-          "        number_of_outputs: 5\n"
-          "\n";
-
-    ret = parseCluster(&result, input, error);
-    TEST_EQUAL(ret, false);
-
-    input
-        = "version: 1\n"
-          "settings:\n"
-          "    refractory_time: 1\n"
-          "    neuron_cooldown: 10000000.0\n"
-          "    max_connection_distance: 1\n"
-          "    enable_reduction: false\n"
-          "\n"
-          "bricks:\n"
-          "    1,1,1\n"
-          "        number_of_neurons: 20\n"
-          "         \n "
-          "    2,1,1\n"
-          "        number_of_neurons: 10\n"
-          "          \n"
-          "    3,1,1\n"
-          "        number_of_neurons: 5\n"
           "\n"
           "inputs:\n"
           "    input_brick: \n"
@@ -376,13 +274,8 @@ Cluster_ParseString_Test::parseString_test()
           "\n"
           "bricks:\n"
           "    1,1,1\n"
-          "        number_of_neurons: 20\n"
-          "         \n "
           "    2,1,1\n"
-          "        number_of_neurons: 10\n"
-          "          \n"
           "    1,1,1\n"  // <-- error (position already exist)
-          "        number_of_neurons: 5\n"
           "\n"
           "inputs:\n"
           "    input_brick: \n"

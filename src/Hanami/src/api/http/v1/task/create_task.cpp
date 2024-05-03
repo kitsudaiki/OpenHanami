@@ -254,15 +254,15 @@ CreateTask::tableTask(std::string& taskUuid,
         }
 
         if (taskType == "request") {
-            taskUuid
-                = addTableRequestTask(*cluster,
-                                      name,
-                                      userContext.userId,
-                                      userContext.projectId,
-                                      static_cast<float*>(inputBuffer.data),
-                                      inputInterface.numberOfNeurons,
-                                      cluster->outputInterfaces.begin()->second.numberOfNeurons,
-                                      numberOfLines - inputInterface.numberOfNeurons);
+            taskUuid = addTableRequestTask(
+                *cluster,
+                name,
+                userContext.userId,
+                userContext.projectId,
+                static_cast<float*>(inputBuffer.data),
+                inputInterface.numberOfInputNeurons,
+                cluster->outputInterfaces.begin()->second.numberOfOutputNeurons,
+                numberOfLines - inputInterface.numberOfInputNeurons);
             inputBuffer.data = nullptr;
 
             // TODO: support more than 1 input
@@ -287,9 +287,9 @@ CreateTask::tableTask(std::string& taskUuid,
                                              userContext.projectId,
                                              static_cast<float*>(inputBuffer.data),
                                              static_cast<float*>(outputBuffer.data),
-                                             inputInterface.numberOfNeurons,
-                                             outputInterface.numberOfNeurons,
-                                             numberOfLines - inputInterface.numberOfNeurons);
+                                             inputInterface.numberOfInputNeurons,
+                                             outputInterface.numberOfOutputNeurons,
+                                             numberOfLines - inputInterface.numberOfInputNeurons);
                 inputBuffer.data = nullptr;
                 outputBuffer.data = nullptr;
 

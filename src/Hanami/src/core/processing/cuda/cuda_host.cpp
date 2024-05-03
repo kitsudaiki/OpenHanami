@@ -91,7 +91,7 @@ CudaHost::initBuffer(const uint32_t id)
 {
     const std::lock_guard<std::mutex> lock(m_cudaMutex);
 
-    m_totalMemory = getAvailableMemory_CUDA(id);
+    // m_totalMemory = getAvailableMemory_CUDA(id);
     const uint64_t usedMemory = (m_totalMemory / 100) * 10;  // use 30% for synapse-blocks
     synapseBlocks.initBuffer<SynapseBlock>(usedMemory / sizeof(SynapseBlock));
     synapseBlocks.deleteAll();
@@ -113,11 +113,11 @@ CudaHost::moveCluster(Cluster* cluster)
     const std::lock_guard<std::mutex> lock(m_cudaMutex);
 
     // sync data from gpu to host, in order to have a consistent state
-    copyFromGpu_CUDA(&cluster->gpuPointer,
-                     &cluster->neuronBlocks[0],
+    /*copyFromGpu_CUDA(&cluster->gpuPointer,
+                     &cluster->neuronBlocks,
                      cluster->neuronBlocks.size(),
                      getItemData<SynapseBlock>(synapseBlocks),
-                     synapseBlocks.metaData->itemCapacity);
+                     synapseBlocks.metaData->itemCapacity);*/
 
     LogicalHost* originHost = cluster->attachedHost;
     SynapseBlock* cpuSynapseBlocks = Hanami::getItemData<SynapseBlock>(synapseBlocks);
@@ -125,7 +125,7 @@ CudaHost::moveCluster(Cluster* cluster)
 
     // copy synapse-blocks from the old host to this one here
     for (uint64_t i = 0; i < cluster->bricks.size(); i++) {
-        for (ConnectionBlock& block : cluster->bricks[i].connectionBlocks[0]) {
+        for (ConnectionBlock& block : cluster->bricks[i].connectionBlocks) {
             if (block.targetSynapseBlockPos != UNINIT_STATE_64) {
                 tempBlock = cpuSynapseBlocks[block.targetSynapseBlockPos];
                 originHost->synapseBlocks.deleteItem(block.targetSynapseBlockPos);
@@ -141,15 +141,15 @@ CudaHost::moveCluster(Cluster* cluster)
 
     // update data on gpu
     cluster->gpuPointer.deviceId = m_localId;
-    copyToDevice_CUDA(&cluster->gpuPointer,
+    /*copyToDevice_CUDA(&cluster->gpuPointer,
                       &cluster->clusterHeader.settings,
-                      &cluster->neuronBlocks[0],
-                      &cluster->tempNeuronBlocks[0],
+                      &cluster->neuronBlocks,
+                      &cluster->tempNeuronBlocks,
                       cluster->neuronBlocks.size(),
                       getItemData<SynapseBlock>(synapseBlocks),
                       synapseBlocks.metaData->itemCapacity,
                       &cluster->bricks[0],
-                      cluster->bricks.size());
+                      cluster->bricks.size());*/
 
     cluster->attachedHost = this;
 
@@ -165,11 +165,11 @@ CudaHost::syncWithHost(Cluster* cluster)
 {
     const std::lock_guard<std::mutex> lock(m_cudaMutex);
 
-    copyFromGpu_CUDA(&cluster->gpuPointer,
-                     &cluster->neuronBlocks[0],
+    /*copyFromGpu_CUDA(&cluster->gpuPointer,
+                     &cluster->neuronBlocks,
                      cluster->neuronBlocks.size(),
                      getItemData<SynapseBlock>(synapseBlocks),
-                     synapseBlocks.metaData->itemCapacity);
+                     synapseBlocks.metaData->itemCapacity);*/
 }
 
 /**
@@ -184,7 +184,7 @@ CudaHost::removeCluster(Cluster* cluster)
 
     // remove synapse-blocks
     for (uint64_t i = 0; i < cluster->bricks.size(); i++) {
-        for (ConnectionBlock& block : cluster->bricks[i].connectionBlocks[0]) {
+        for (ConnectionBlock& block : cluster->bricks[i].connectionBlocks) {
             if (block.targetSynapseBlockPos != UNINIT_STATE_64) {
                 synapseBlocks.deleteItem(block.targetSynapseBlockPos);
             }
@@ -192,7 +192,7 @@ CudaHost::removeCluster(Cluster* cluster)
     }
 
     // remove other data of the cluster, which are no synapse-blocks, from gpu
-    removeFromDevice_CUDA(&cluster->gpuPointer);
+    // removeFromDevice_CUDA(&cluster->gpuPointer);
 }
 
 /**
@@ -215,14 +215,14 @@ CudaHost::trainClusterForward(Cluster* cluster)
          }
 
          processNeuronsOfInputBrickBackward<true>(
-             brick, cluster->inputValues, &cluster->neuronBlocks[0]);
+             brick, cluster->inputValues, &cluster->neuronBlocks);
      }
 
      // process all bricks on cpu
      processing_CUDA(&cluster->gpuPointer,
                      &cluster->bricks[0],
                      cluster->bricks.size(),
-                     &cluster->neuronBlocks[0],
+                     &cluster->neuronBlocks,
                      cluster->numberOfNeuronBlocks,
                      true);
 
@@ -237,7 +237,7 @@ CudaHost::trainClusterForward(Cluster* cluster)
      // update cluster
      if (updateCluster(*cluster)) {
          update_CUDA(&cluster->gpuPointer,
-                     &cluster->neuronBlocks[0],
+                     &cluster->neuronBlocks,
                      cluster->numberOfNeuronBlocks,
                      &cluster->bricks[0],
                      cluster->bricks.size());
@@ -262,8 +262,8 @@ CudaHost::trainClusterBackward(Cluster* cluster)
         if (brick->isOutputBrick) {
             /*if (backpropagateOutput(&cluster->bricks[0],
                                     &cluster->outputNeurons[0],
-                                    &cluster->neuronBlocks[0],
-                                    &cluster->tempNeuronBlocks[0],
+                                    &cluster->neuronBlocks,
+                                    &cluster->tempNeuronBlocks,
                                     cluster->outputValues,
                                     cluster->expectedValues,
                                     &cluster->clusterHeader.settings)
@@ -278,8 +278,8 @@ CudaHost::trainClusterBackward(Cluster* cluster)
     /*backpropagation_CUDA(&cluster->gpuPointer,
                          &cluster->bricks[0],
                          cluster->bricks.size(),
-                         &cluster->neuronBlocks[0],
-                         &cluster->tempNeuronBlocks[0],
+                         &cluster->neuronBlocks,
+                         &cluster->tempNeuronBlocks,
                          cluster->numberOfNeuronBlocks);
 
     // run reduction-process if enabled
@@ -288,11 +288,11 @@ CudaHost::trainClusterBackward(Cluster* cluster)
             reduction_CUDA(&cluster->gpuPointer,
                            &cluster->bricks[0],
                            cluster->bricks.size(),
-                           &cluster->neuronBlocks[0],
+                           &cluster->neuronBlocks,
                            cluster->numberOfNeuronBlocks);
             if (updateCluster(*cluster)) {
                 update_CUDA(&cluster->gpuPointer,
-                            &cluster->neuronBlocks[0],
+                            &cluster->neuronBlocks,
                             cluster->numberOfNeuronBlocks,
                             &cluster->bricks[0],
                             cluster->bricks.size());
@@ -323,14 +323,14 @@ CudaHost::requestCluster(Cluster* cluster)
         }
 
         processNeuronsOfInputBrickBackward<false>(
-            brick, cluster->inputValues, &cluster->neuronBlocks[0]);
+            brick, cluster->inputValues, &cluster->neuronBlocks);
     }
 
     // process all bricks on gpu
     processing_CUDA(&cluster->gpuPointer,
                     &cluster->bricks[0],
                     cluster->bricks.size(),
-                    &cluster->neuronBlocks[0],
+                    &cluster->neuronBlocks,
                     cluster->numberOfNeuronBlocks,
                     false);*/
 
@@ -342,7 +342,7 @@ CudaHost::requestCluster(Cluster* cluster)
         }
         /*for (uint32_t blockId = 0; blockId < cluster->numberOfNeuronBlocks; ++blockId) {
             processNeuronsOfOutputBrick(
-                brick, cluster->outputValues, &cluster->neuronBlocks[0], blockId);
+                brick, cluster->outputValues, &cluster->neuronBlocks, blockId);
         }*/
     }
 }

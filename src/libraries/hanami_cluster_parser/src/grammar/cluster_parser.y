@@ -110,11 +110,8 @@ YY_DECL;
 //
 // bricks:
 //     1,1,1
-//         number_of_neurons: 20
 //     2,1,1
-//         number_of_neurons": 10
 //     3,1,1
-//         number_of_neurons: 5
 //
 // inputs:
 //     "input_brick":
@@ -204,7 +201,7 @@ bricks:
     }
 
 brick:
-    position "number_of_neurons" ":" "number"
+    position
     {
         const Hanami::Position pos = $1;
         const uint32_t brickId = driver.getBrickId(pos);
@@ -212,13 +209,7 @@ brick:
             driver.error(yyla.location, "Brick with the position " + pos.toString() + " already exist.");
             return 1;
         }
-
-        if($4 < 0) {
-            driver.error(yyla.location, "number_of_neurons must be >= 1");
-            return 1;
-        }
         $$.position = $1;
-        $$.numberOfNeurons = $4;
     }
 
 inputs:
@@ -239,6 +230,10 @@ input:
         const uint32_t brickId = driver.getBrickId($5);
         if(brickId == UNINTI_POINT_32) {
             driver.error(yyla.location, "Brick with the position " + pos.toString() + " doesn't exist.");
+            return 1;
+        }
+        if($1.size() > 255) {
+            driver.error(yyla.location, "Name '" + $1 + "' is longer than 255 characters.");
             return 1;
         }
         $$.name = $1;
@@ -264,6 +259,10 @@ output:
         const uint32_t brickId = driver.getBrickId($5);
         if(brickId == UNINTI_POINT_32) {
             driver.error(yyla.location, "Brick with the position " + pos.toString() + " doesn't exist.");
+            return 1;
+        }
+        if($1.size() > 255) {
+            driver.error(yyla.location, "Name '" + $1 + "' is longer than 255 characters.");
             return 1;
         }
         $$.name = $1;

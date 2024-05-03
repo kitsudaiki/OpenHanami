@@ -47,10 +47,8 @@ void initializeOutputNeurons(Cluster* cluster);
 void initializeInputs(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta);
 void initializeOutputs(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta);
 
-Brick createNewBrick(const Hanami::BrickMeta& brickMeta, const uint32_t id);
 void connectBrick(Cluster* cluster, Brick& sourceBrick, const uint8_t side);
 void connectAllBricks(Cluster* cluster);
-bool initializeNeurons(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta);
 uint32_t goToNextInitBrick(Cluster* cluster, Brick& currentBrick, uint32_t& maxPathLength);
 
 #endif  // HANAMI_CLUSTERINIT_H
