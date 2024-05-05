@@ -64,7 +64,7 @@ TableTrainForward_State::processEvent()
 
     // set exprected output
     OutputInterface* outputInterface = &m_cluster->outputInterfaces.begin()->second;
-    for (uint64_t i = 0; i < actualTask->numberOfInputsPerCycle; i++) {
+    for (uint64_t i = 0; i < actualTask->numberOfOuputsPerCycle; i++) {
         outputInterface->outputNeurons[i].exprectedVal
             = actualTask->outputData[(offset - numberOfOuputsPerCycle) + i];
     }

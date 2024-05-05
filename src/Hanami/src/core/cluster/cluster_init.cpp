@@ -115,15 +115,21 @@ void
 initializeInputs(Cluster* cluster, const ClusterMeta& clusterMeta)
 {
     for (const InputMeta& inputMeta : clusterMeta.inputs) {
-        uint32_t numberOfNeuronBlocks = (inputMeta.numberOfInputs / NEURONS_PER_NEURONBLOCK) + 1;
+        const uint32_t numberOfNeuronBlocks
+            = (inputMeta.numberOfInputs / NEURONS_PER_NEURONBLOCK) + 1;
+
         InputInterface inputInterface;
         inputInterface.targetBrickId = inputMeta.targetBrickId;
         inputInterface.numberOfInputNeurons = inputMeta.numberOfInputs;
         inputInterface.inputNeurons = new InputNeuron[inputMeta.numberOfInputs];
+
+        cluster->inputInterfaces.try_emplace(inputMeta.name, inputInterface);
+
         cluster->bricks[inputInterface.targetBrickId].isInputBrick = true;
         cluster->bricks[inputInterface.targetBrickId].neuronBlocks.resize(numberOfNeuronBlocks);
         cluster->bricks[inputInterface.targetBrickId].tempNeuronBlocks.resize(numberOfNeuronBlocks);
-        cluster->inputInterfaces.try_emplace(inputMeta.name, inputInterface);
+        cluster->bricks[inputInterface.targetBrickId].inputInterface
+            = &cluster->inputInterfaces[inputMeta.name];
     }
 }
 
@@ -140,8 +146,12 @@ initializeOutputs(Cluster* cluster, const ClusterMeta& clusterMeta)
         outputInterface.targetBrickId = outputMeta.targetBrickId;
         outputInterface.numberOfOutputNeurons = outputMeta.numberOfOutputs;
         outputInterface.outputNeurons = new OutputNeuron[outputMeta.numberOfOutputs];
-        cluster->bricks[outputInterface.targetBrickId].isOutputBrick = true;
+
         cluster->outputInterfaces.try_emplace(outputMeta.name, outputInterface);
+
+        cluster->bricks[outputInterface.targetBrickId].isOutputBrick = true;
+        cluster->bricks[outputInterface.targetBrickId].outputInterface
+            = &cluster->outputInterfaces[outputMeta.name];
     }
 }
 

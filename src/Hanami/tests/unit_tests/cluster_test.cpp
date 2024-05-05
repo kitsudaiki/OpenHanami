@@ -100,6 +100,10 @@ Cluster_Init_Test::createCluster_Test()
     TEST_EQUAL(newCluster->bricks.at(0).neighbors[9], UNINIT_STATE_32);
     TEST_EQUAL(newCluster->bricks.at(0).neighbors[10], UNINIT_STATE_32);
     TEST_EQUAL(newCluster->bricks.at(0).neighbors[11], UNINIT_STATE_32);
+    success = newCluster->bricks.at(0).inputInterface != nullptr;
+    TEST_EQUAL(success, true);
+    success = newCluster->bricks.at(0).outputInterface == nullptr;
+    TEST_EQUAL(success, true);
     success = true;
     for (uint32_t i = 0; i < NUMBER_OF_POSSIBLE_NEXT; i++) {
         success &= newCluster->bricks.at(0).possibleBrickTargetIds[i] < 3
@@ -120,6 +124,10 @@ Cluster_Init_Test::createCluster_Test()
     TEST_EQUAL(newCluster->bricks.at(1).neighbors[9], UNINIT_STATE_32);
     TEST_EQUAL(newCluster->bricks.at(1).neighbors[10], UNINIT_STATE_32);
     TEST_EQUAL(newCluster->bricks.at(1).neighbors[11], UNINIT_STATE_32);
+    success = newCluster->bricks.at(1).inputInterface == nullptr;
+    TEST_EQUAL(success, true);
+    success = newCluster->bricks.at(1).outputInterface == nullptr;
+    TEST_EQUAL(success, true);
     success = true;
     for (uint32_t i = 0; i < NUMBER_OF_POSSIBLE_NEXT; i++) {
         success &= newCluster->bricks.at(1).possibleBrickTargetIds[i] < 3
@@ -140,6 +148,10 @@ Cluster_Init_Test::createCluster_Test()
     TEST_EQUAL(newCluster->bricks.at(2).neighbors[9], UNINIT_STATE_32);
     TEST_EQUAL(newCluster->bricks.at(2).neighbors[10], UNINIT_STATE_32);
     TEST_EQUAL(newCluster->bricks.at(2).neighbors[11], UNINIT_STATE_32);
+    success = newCluster->bricks.at(2).inputInterface == nullptr;
+    TEST_EQUAL(success, true);
+    success = newCluster->bricks.at(2).outputInterface != nullptr;
+    TEST_EQUAL(success, true);
     success = true;
     for (uint32_t i = 0; i < NUMBER_OF_POSSIBLE_NEXT; i++) {
         success &= newCluster->bricks.at(2).possibleBrickTargetIds[i] == UNINIT_STATE_32;

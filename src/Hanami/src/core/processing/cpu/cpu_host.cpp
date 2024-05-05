@@ -58,11 +58,19 @@ CpuHost::~CpuHost() {}
 void
 CpuHost::addClusterToHost(Cluster* cluster)
 {
-    if (cluster->mode == ClusterProcessingMode::REDUCTION_MODE) {
-        addBrickToTaskQueue(cluster, 0);
+    if (cluster->mode == ClusterProcessingMode::TRAIN_BACKWARD_MODE) {
+        WorkerTask task;
+        task.cluster = cluster;
+        task.brickId = cluster->bricks.size() - 1;
+        task.blockId = UNINIT_STATE_16;
+        addWorkerTaskToQueue(task);
     }
     else {
-        addBrickToTaskQueue(cluster, UNINIT_STATE_32);
+        WorkerTask task;
+        task.cluster = cluster;
+        task.brickId = 0;
+        task.blockId = UNINIT_STATE_16;
+        addWorkerTaskToQueue(task);
     }
 }
 
@@ -73,34 +81,6 @@ Cluster*
 CpuHost::getClusterFromQueue()
 {
     return nullptr;
-}
-
-/**
- * @brief add a brick to the task-queue, which is used source source for the worker-threads
- *
- * @param cluster related cluster
- * @param brickId brick-id to process
- */
-void
-CpuHost::addBrickToTaskQueue(Cluster* cluster, const u_int32_t brickId)
-{
-    if (brickId == UNINIT_STATE_32) {
-        // special case, where based on the cluster-mode, the whole firsth or last
-        // brick should be processed by a single worker-threads
-        WorkerTask task;
-        task.cluster = cluster;
-        task.brickId = brickId;
-        addWorkerTaskToQueue(task);
-    }
-    else {
-        for (uint32_t i = 0; i < cluster->bricks[brickId].neuronBlocks.size(); i++) {
-            WorkerTask task;
-            task.cluster = cluster;
-            task.brickId = brickId;
-            task.blockId = i;
-            addWorkerTaskToQueue(task);
-        }
-    }
 }
 
 /**

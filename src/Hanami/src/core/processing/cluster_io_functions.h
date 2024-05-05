@@ -96,7 +96,7 @@ sigmoidDerivative(const float x)
 template <bool doTrain>
 inline void
 processNeuronsOfOutputBrick(std::vector<Brick>& bricks,
-                            OutputInterface& outputInterface,
+                            OutputInterface* outputInterface,
                             const uint32_t brickId,
                             uint32_t randomSeed)
 {
@@ -118,9 +118,9 @@ processNeuronsOfOutputBrick(std::vector<Brick>& bricks,
         }
     }
 
-    for (uint64_t i = 0; i < outputInterface.numberOfOutputNeurons; ++i) {
-        out = &outputInterface.outputNeurons[i];
-        brick = &bricks[outputInterface.targetBrickId];
+    for (uint64_t i = 0; i < outputInterface->numberOfOutputNeurons; ++i) {
+        out = &outputInterface->outputNeurons[i];
+        brick = &bricks[outputInterface->targetBrickId];
         weightSum = 0.0f;
 
         for (uint8_t j = 0; j < NUMBER_OF_OUTPUT_CONNECTIONS; ++j) {
@@ -165,7 +165,9 @@ processNeuronsOfOutputBrick(std::vector<Brick>& bricks,
         if (weightSum != 0.0f) {
             out->outputVal = 1.0f / (1.0f + exp(-1.0f * weightSum));
         }
+        // std::cout<<out->outputVal<<" : "<<out->exprectedVal<<std::endl;
     }
+    //   std::cout<<"-------------------------------------"<<std::endl;
 }
 
 /**
@@ -182,7 +184,7 @@ processNeuronsOfOutputBrick(std::vector<Brick>& bricks,
  */
 inline bool
 backpropagateOutput(std::vector<Brick>& bricks,
-                    OutputInterface& outputInterface,
+                    OutputInterface* outputInterface,
                     const ClusterSettings* settings,
                     const uint32_t brickId)
 {
@@ -192,19 +194,17 @@ backpropagateOutput(std::vector<Brick>& bricks,
     TempNeuron* tempNeuron = nullptr;
     OutputTargetLocationPtr* target = nullptr;
     float totalDelta = 0.0f;
-    float learnValue = 0.0f;
+    float learnValue = 0.1f;
     float delta = 0.0f;
     float update = 0.0f;
     uint64_t i = 0;
     uint64_t j = 0;
 
-    for (i = 0; i < outputInterface.numberOfOutputNeurons; ++i) {
-        out = &outputInterface.outputNeurons[i];
-        brick = &bricks[outputInterface.targetBrickId];
+    for (i = 0; i < outputInterface->numberOfOutputNeurons; ++i) {
+        out = &outputInterface->outputNeurons[i];
+        brick = &bricks[outputInterface->targetBrickId];
         delta = out->outputVal - out->exprectedVal;
         update = delta * sigmoidDerivative(out->outputVal);
-
-        learnValue = abs(delta) + 0.1f;
 
         for (j = 0; j < NUMBER_OF_OUTPUT_CONNECTIONS; ++j) {
             target = &out->targets[j];
@@ -232,7 +232,8 @@ backpropagateOutput(std::vector<Brick>& bricks,
         }
     }
 
-    return totalDelta > settings->backpropagationBorder;
+    return true;
+    // return totalDelta > settings->backpropagationBorder;
 }
 
 #endif  // HANAMI_CORE_CLUSTER_IO_FUNCTIONS_H

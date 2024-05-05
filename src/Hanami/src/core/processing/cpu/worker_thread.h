@@ -51,12 +51,10 @@ class WorkerThread : public Hanami::Thread
     void handleReductionTask(const CpuHost::WorkerTask task);
     void handleProcessTask(const CpuHost::WorkerTask task);
 
-    void handleInputForward(Cluster& cluster, const bool doTrain);
+    void handleInputForward(Cluster& cluster, InputInterface* inputInterface, const bool doTrain);
 
     CpuHost* m_host = nullptr;
     uint32_t m_inactiveCounter = 0;
-    void goToNext(CpuHost::WorkerTask& task);
-    void goToPrev(CpuHost::WorkerTask& task);
 };
 
 #endif  // WORKERTHREAD_H

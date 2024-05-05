@@ -11,6 +11,31 @@ import time
 import configparser
 
 
+def delete_all_cluster():
+    result = cluster.list_clusters(token, address, False)
+    body = json.loads(result)["body"]
+
+    for entry in body:
+        cluster.delete_cluster(token, address, entry[0], False)
+
+
+def delete_all_datasets():
+    result = dataset.list_datasets(token, address, False)
+    body = json.loads(result)["body"]
+
+    for entry in body:
+        dataset.delete_dataset(token, address, entry[0], False)
+
+
+def delete_all_results():
+    result = request_result.list_request_results(token, address, False)
+    print(result)
+    body = json.loads(result)["body"]
+
+    for entry in body:
+        request_result.delete_request_result(token, address, entry[0], False)
+
+
 config = configparser.ConfigParser()
 config.read('/etc/hanami/hanami_testing.conf')
 
@@ -30,15 +55,18 @@ cluster_template = \
     "   enable_reduction: false\n" \
     "bricks:\n" \
     "    1,1,1\n" \
-    "        input: test_input\n" \
-    "        number_of_neurons: 25\n" \
     "    2,1,1\n" \
-    "        number_of_neurons: 128\n" \
     "    3,1,1\n" \
-    "        number_of_neurons: 128\n" \
-    "    4,1,1\n" \
-    "        output: test_output\n" \
-    "        number_of_neurons: 5"
+    "    \n" \
+    "inputs:\n" \
+    "    test_input:\n" \
+    "        target: 1,1,1\n" \
+    "        number_of_inputs: 25\n" \
+    "\n" \
+    "outputs:\n" \
+    "    test_output:\n" \
+    "        target: 3,1,1\n" \
+    "        number_of_outputs: 5\n"
 
 cluster_name = "test_cluster"
 generic_task_name = "test_task"
@@ -47,6 +75,13 @@ request_dataset_name = "request_test_dataset"
 train_dataset_name = "train_test_dataset"
 
 token = hanami_token.request_token(address, test_user_id, test_user_pw)
+
+
+
+delete_all_results()
+delete_all_datasets()
+delete_all_cluster()
+
 
 result = cluster.create_cluster(token, address, cluster_name, cluster_template)
 cluster_uuid = json.loads(result)["uuid"]
@@ -66,6 +101,7 @@ for i in range(0, 100):
     while not finished:
         result = task.get_task(token, address, task_uuid, cluster_uuid)
         finished = json.loads(result)["state"] == "finished"
+        print(result)
         print("wait for finish train-task")
         time.sleep(0.2)
     result = task.delete_task(token, address, task_uuid, cluster_uuid)
@@ -80,6 +116,7 @@ finished = False
 while not finished:
     result = task.get_task(token, address, task_uuid, cluster_uuid)
     finished = json.loads(result)["state"] == "finished"
+    print(result)
     print("wait for finish request-task")
     time.sleep(0.2)
 result = task.delete_task(token, address, task_uuid, cluster_uuid)

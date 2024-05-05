@@ -48,7 +48,7 @@
 #define NUMBER_OF_SYNAPSESECTION 64
 #define NEURONS_PER_NEURONBLOCK 64
 #define POSSIBLE_NEXT_AXON_STEP 80
-#define NUMBER_OF_POSSIBLE_NEXT 90
+#define NUMBER_OF_POSSIBLE_NEXT 86
 #define NUMBER_OF_OUTPUT_CONNECTIONS 7
 
 //==================================================================================================
@@ -315,6 +315,9 @@ struct Brick {
     uint32_t dimX = 0;
     uint32_t dimY = 0;
 
+    InputInterface* inputInterface = nullptr;
+    OutputInterface* outputInterface = nullptr;
+
     std::vector<ConnectionBlock> connectionBlocks;
     std::vector<NeuronBlock> neuronBlocks;
     std::vector<TempNeuronBlock> tempNeuronBlocks;
@@ -403,6 +406,9 @@ struct Brick {
 
         dimX = other.dimX;
         dimY = other.dimY;
+
+        inputInterface = other.inputInterface;
+        outputInterface = other.outputInterface;
     }
 };
 static_assert(sizeof(Brick) == 512);

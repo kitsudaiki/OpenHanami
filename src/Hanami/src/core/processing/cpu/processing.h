@@ -42,12 +42,11 @@
  */
 template <bool doTrain>
 inline void
-processNeuronsOfInputBrick(Cluster& cluster, Brick* brick)
+processNeuronsOfInputBrick(Cluster& cluster, InputInterface* inputInterface, Brick* brick)
 {
     Neuron* neuron = nullptr;
     NeuronBlock* block = nullptr;
     uint32_t counter = 0;
-    InputInterface* inputInterface = &cluster.inputInterfaces.begin()->second;
     uint32_t blockId = 0;
     uint32_t neuronId = 0;
 
