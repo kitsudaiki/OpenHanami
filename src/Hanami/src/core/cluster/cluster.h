@@ -25,6 +25,7 @@
 
 #include <api/endpoint_processing/http_websocket_thread.h>
 #include <common.h>
+#include <core/cluster/brick.h>
 #include <core/cluster/task.h>
 #include <core/processing/objects.h>
 #include <hanami_cluster_parser/cluster_meta.h>

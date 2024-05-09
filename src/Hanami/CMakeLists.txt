@@ -124,6 +124,8 @@ set(SOURCES
     src/database/users_table.h
     src/documentation/generate_rest_api_docu.h
     src/hanami_root.h
+    src/core/cluster/brick.h
+    src/core/cluster/brick.cpp
     src/api/endpoint_processing/blossom.cpp
     src/api/endpoint_processing/http_processing/file_send.cpp
     src/api/endpoint_processing/http_processing/http_processing.cpp

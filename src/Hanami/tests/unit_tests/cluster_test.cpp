@@ -77,15 +77,15 @@ Cluster_Init_Test::createCluster_Test()
 
     // test bricks
     TEST_EQUAL(newCluster->bricks.size(), 3);
-    TEST_EQUAL(newCluster->bricks.at(0).brickId, 0);
-    TEST_EQUAL(newCluster->bricks.at(1).brickId, 1);
-    TEST_EQUAL(newCluster->bricks.at(2).brickId, 2);
-    TEST_EQUAL(newCluster->bricks.at(0).isInputBrick, true);
-    TEST_EQUAL(newCluster->bricks.at(0).isOutputBrick, false);
-    TEST_EQUAL(newCluster->bricks.at(1).isInputBrick, false);
-    TEST_EQUAL(newCluster->bricks.at(1).isOutputBrick, false);
-    TEST_EQUAL(newCluster->bricks.at(2).isInputBrick, false);
-    TEST_EQUAL(newCluster->bricks.at(2).isOutputBrick, true);
+    TEST_EQUAL(newCluster->bricks.at(0).header.brickId, 0);
+    TEST_EQUAL(newCluster->bricks.at(1).header.brickId, 1);
+    TEST_EQUAL(newCluster->bricks.at(2).header.brickId, 2);
+    TEST_EQUAL(newCluster->bricks.at(0).header.isInputBrick, true);
+    TEST_EQUAL(newCluster->bricks.at(0).header.isOutputBrick, false);
+    TEST_EQUAL(newCluster->bricks.at(1).header.isInputBrick, false);
+    TEST_EQUAL(newCluster->bricks.at(1).header.isOutputBrick, false);
+    TEST_EQUAL(newCluster->bricks.at(2).header.isInputBrick, false);
+    TEST_EQUAL(newCluster->bricks.at(2).header.isOutputBrick, true);
 
     // test neighbors of brick 0
     TEST_EQUAL(newCluster->bricks.at(0).neighbors[0], UNINIT_STATE_32);

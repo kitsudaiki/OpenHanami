@@ -60,7 +60,7 @@ processNeuronsOfInputBrick(Cluster& cluster, InputInterface* inputInterface, Bri
             if constexpr (doTrain) {
                 if (neuron->active != 0 && neuron->inUse == 0) {
                     SourceLocationPtr originLocation;
-                    originLocation.brickId = brick->brickId;
+                    originLocation.brickId = brick->header.brickId;
                     originLocation.blockId = blockId;
                     originLocation.neuronId = neuronId;
                     createNewSection(cluster,
@@ -225,8 +225,8 @@ processSynapses(Cluster& cluster, Brick* brick, const uint32_t blockId)
     SynapseSection* section = nullptr;
     Brick* sourceBrick = nullptr;
     uint32_t randomeSeed = rand();
-    const uint32_t dimY = brick->dimY;
-    const uint32_t dimX = brick->dimX;
+    const uint32_t dimY = brick->header.dimY;
+    const uint32_t dimX = brick->header.dimX;
     SourceLocation sourceLoc;
     uint32_t c = 0;
     uint32_t i = 0;
@@ -255,7 +255,7 @@ processSynapses(Cluster& cluster, Brick* brick, const uint32_t blockId)
             }
 
             section = &synapseBlocks[connectionBlock->targetSynapseBlockPos].sections[i];
-            targetNeuronBlock = &neuronBlocks[(c / brick->dimY)];
+            targetNeuronBlock = &neuronBlocks[(c / brick->header.dimY)];
             randomeSeed += (c * NUMBER_OF_SYNAPSESECTION) + i;
 
             synapseProcessingBackward<doTrain>(cluster,

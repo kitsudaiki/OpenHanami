@@ -125,7 +125,7 @@ initializeInputs(Cluster* cluster, const ClusterMeta& clusterMeta)
 
         cluster->inputInterfaces.try_emplace(inputMeta.name, inputInterface);
 
-        cluster->bricks[inputInterface.targetBrickId].isInputBrick = true;
+        cluster->bricks[inputInterface.targetBrickId].header.isInputBrick = true;
         cluster->bricks[inputInterface.targetBrickId].neuronBlocks.resize(numberOfNeuronBlocks);
         cluster->bricks[inputInterface.targetBrickId].tempNeuronBlocks.resize(numberOfNeuronBlocks);
         cluster->bricks[inputInterface.targetBrickId].inputInterface
@@ -149,7 +149,7 @@ initializeOutputs(Cluster* cluster, const ClusterMeta& clusterMeta)
 
         cluster->outputInterfaces.try_emplace(outputMeta.name, outputInterface);
 
-        cluster->bricks[outputInterface.targetBrickId].isOutputBrick = true;
+        cluster->bricks[outputInterface.targetBrickId].header.isOutputBrick = true;
         cluster->bricks[outputInterface.targetBrickId].outputInterface
             = &cluster->outputInterfaces[outputMeta.name];
     }
@@ -167,8 +167,8 @@ initializeBricks(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta)
 
     for (uint32_t i = 0; i < clusterMeta.bricks.size(); i++) {
         Brick newBrick;
-        newBrick.brickId = i;
-        newBrick.brickPos = clusterMeta.bricks.at(i).position;
+        newBrick.header.brickId = i;
+        newBrick.header.brickPos = clusterMeta.bricks.at(i).position;
         std::fill_n(newBrick.neighbors, 12, UNINIT_STATE_32);
 
         cluster->bricks[i] = newBrick;
@@ -189,15 +189,15 @@ initializeBricks(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta)
 void
 connectBrick(Cluster* cluster, Brick& sourceBrick, const uint8_t side)
 {
-    const Hanami::Position next = getNeighborPos(sourceBrick.brickPos, side);
+    const Hanami::Position next = getNeighborPos(sourceBrick.header.brickPos, side);
     // debug-output
     // std::cout<<next.x<<" : "<<next.y<<" : "<<next.z<<std::endl;
 
     if (next.isValid()) {
         for (Brick& targetBrick : cluster->bricks) {
-            if (targetBrick.brickPos == next) {
-                sourceBrick.neighbors[side] = targetBrick.brickId;
-                targetBrick.neighbors[11 - side] = sourceBrick.brickId;
+            if (targetBrick.header.brickPos == next) {
+                sourceBrick.neighbors[side] = targetBrick.header.brickId;
+                targetBrick.neighbors[11 - side] = sourceBrick.header.brickId;
             }
         }
     }
@@ -230,13 +230,13 @@ goToNextInitBrick(Cluster* cluster, Brick& currentBrick, uint32_t& maxPathLength
     // check path-length to not go too far
     maxPathLength--;
     if (maxPathLength == 0) {
-        return currentBrick.brickId;
+        return currentBrick.header.brickId;
     }
 
     // check based on the chance, if you go to the next, or not
     const float chanceForNext = 0.0f;  // TODO: make hard-coded value configurable
     if (1000.0f * chanceForNext > (rand() % 1000)) {
-        return currentBrick.brickId;
+        return currentBrick.header.brickId;
     }
 
     // get a random possible next brick
@@ -251,7 +251,7 @@ goToNextInitBrick(Cluster* cluster, Brick& currentBrick, uint32_t& maxPathLength
     }
 
     // if no further next brick was found, the give back tha actual one as end of the path
-    return currentBrick.brickId;
+    return currentBrick.header.brickId;
 }
 
 /**
@@ -264,7 +264,7 @@ initializeTargetBrickList(Cluster* cluster)
         for (uint32_t counter = 0; counter < NUMBER_OF_POSSIBLE_NEXT; counter++) {
             uint32_t maxPathLength = cluster->clusterHeader.settings.maxConnectionDistance + 1;
             const uint32_t brickId = goToNextInitBrick(cluster, baseBrick, maxPathLength);
-            if (baseBrick.brickId != brickId) {
+            if (baseBrick.header.brickId != brickId) {
                 baseBrick.possibleBrickTargetIds[counter] = brickId;
             }
             else {

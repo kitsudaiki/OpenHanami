@@ -259,7 +259,7 @@ CudaHost::trainClusterBackward(Cluster* cluster)
     // process output-bricks on cpu
     for (uint32_t brickId = 0; brickId < cluster->bricks.size(); ++brickId) {
         Brick* brick = &cluster->bricks[brickId];
-        if (brick->isOutputBrick) {
+        if (brick->header.isOutputBrick) {
             /*if (backpropagateOutput(&cluster->bricks[0],
                                     &cluster->outputNeurons[0],
                                     &cluster->neuronBlocks,
@@ -337,7 +337,7 @@ CudaHost::requestCluster(Cluster* cluster)
     // process output-bricks
     for (uint32_t brickId = 0; brickId < cluster->bricks.size(); ++brickId) {
         Brick* brick = &cluster->bricks[brickId];
-        if (brick->isOutputBrick == false) {
+        if (brick->header.isOutputBrick == false) {
             continue;
         }
         /*for (uint32_t blockId = 0; blockId < cluster->numberOfNeuronBlocks; ++blockId) {

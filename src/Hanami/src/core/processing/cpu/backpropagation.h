@@ -155,8 +155,8 @@ backpropagateConnections(Brick* brick,
     NeuronBlock* targetNeuronBlock = nullptr;
     ConnectionBlock* connectionBlock = nullptr;
     SynapseSection* synapseSection = nullptr;
-    const uint32_t dimY = brick->dimY;
-    const uint32_t dimX = brick->dimX;
+    const uint32_t dimY = brick->header.dimY;
+    const uint32_t dimX = brick->header.dimX;
     SourceLocation sourceLoc;
     uint32_t c = 0;
     uint32_t i = 0;
@@ -179,8 +179,8 @@ backpropagateConnections(Brick* brick,
             synapseSection = &synapseBlocks[connectionBlock->targetSynapseBlockPos].sections[i];
             sourceLoc = getSourceNeuron(connection->origin, bricks);
 
-            targetTempBlock = &brick->tempNeuronBlocks[(c / brick->dimY)];
-            targetNeuronBlock = &brick->neuronBlocks[(c / brick->dimY)];
+            targetTempBlock = &brick->tempNeuronBlocks[(c / brick->header.dimY)];
+            targetNeuronBlock = &brick->neuronBlocks[(c / brick->header.dimY)];
 
             backpropagateSection(synapseSection,
                                  connection,

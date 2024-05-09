@@ -315,7 +315,7 @@ WorkerThread::handleInputForward(Cluster& cluster,
     for (uint32_t brickId = 0; brickId < numberOfBricks; ++brickId) {
         brick = &cluster.bricks[brickId];
 
-        if (brick->isInputBrick) {
+        if (brick->header.isInputBrick) {
             if (doTrain) {
                 processNeuronsOfInputBrick<true>(cluster, inputInterface, brick);
             }
@@ -343,19 +343,19 @@ WorkerThread::processClusterForward(Cluster& cluster,
     Hanami::ErrorContainer error;
     Brick* brick = &cluster.bricks[brickId];
 
-    if (brick->isInputBrick) {
+    if (brick->header.isInputBrick) {
         return;
     }
 
     if (doTrain) {
         processSynapses<true>(cluster, brick, blockId);
-        if (brick->isOutputBrick == false) {
+        if (brick->header.isOutputBrick == false) {
             processNeurons<true>(cluster, brick, blockId);
         }
     }
     else {
         processSynapses<false>(cluster, brick, blockId);
-        if (brick->isOutputBrick == false) {
+        if (brick->header.isOutputBrick == false) {
             processNeurons<false>(cluster, brick, blockId);
         }
     }
@@ -375,7 +375,7 @@ WorkerThread::processClusterBackward(Cluster& cluster,
 {
     Hanami::ErrorContainer error;
     Brick* brick = &cluster.bricks[brickId];
-    if (brick->isInputBrick) {
+    if (brick->header.isInputBrick) {
         return;
     }
 

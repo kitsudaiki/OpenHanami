@@ -84,8 +84,8 @@ reduceConnections(Brick* brick, Brick* bricks, SynapseBlock* synapseBlocks, cons
     Brick* sourceBrick = nullptr;
     ConnectionBlock* connectionBlock = nullptr;
     SynapseSection* synapseSection = nullptr;
-    const uint32_t dimY = brick->dimY;
-    const uint32_t dimX = brick->dimX;
+    const uint32_t dimY = brick->header.dimY;
+    const uint32_t dimX = brick->header.dimX;
     uint32_t c = 0;
     uint32_t i = 0;
 
@@ -130,7 +130,7 @@ inline void
 reduceCluster(Cluster& cluster, const uint32_t brickId, const uint32_t blockId)
 {
     Brick* brick = &cluster.bricks[brickId];
-    if (brick->isInputBrick) {
+    if (brick->header.isInputBrick) {
         return;
     }
 

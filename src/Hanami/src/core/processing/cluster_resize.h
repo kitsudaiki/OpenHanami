@@ -83,31 +83,31 @@ searchTargetInBrick(Brick* targetBrick, ItemBuffer& synapseBlockBuffer)
 inline void
 resizeConnections(Brick* targetBrick)
 {
-    const uint32_t dimXold = targetBrick->dimX;
-    const uint32_t dimYold = targetBrick->dimY;
+    const uint32_t dimXold = targetBrick->header.dimX;
+    const uint32_t dimYold = targetBrick->header.dimY;
     int32_t x, y = 0;
 
-    targetBrick->dimX++;
-    targetBrick->dimY++;
+    targetBrick->header.dimX++;
+    targetBrick->header.dimY++;
 
     // resize list
-    targetBrick->connectionBlocks.resize(targetBrick->dimX * targetBrick->dimY);
+    targetBrick->connectionBlocks.resize(targetBrick->header.dimX * targetBrick->header.dimY);
 
     // if there was no scaling in x-dimension, then no re-ordering necessary
-    if (targetBrick->dimX == dimXold) {
+    if (targetBrick->header.dimX == dimXold) {
         return;
     }
 
     LOG_DEBUG("resized connection-Block: " + std::to_string(dimXold) + ":" + std::to_string(dimYold)
-              + " -> " + std::to_string(targetBrick->dimX) + ":"
-              + std::to_string(targetBrick->dimY));
+              + " -> " + std::to_string(targetBrick->header.dimX) + ":"
+              + std::to_string(targetBrick->header.dimY));
     uint32_t newPos = 0;
     uint32_t oldPos = 0;
 
     // update content of list for the new size
     for (y = dimYold - 1; y >= 1; --y) {
         for (x = dimXold - 1; x >= 0; --x) {
-            newPos = (y * targetBrick->dimX) + x;
+            newPos = (y * targetBrick->header.dimX) + x;
             oldPos = (y * dimXold) + x;
 
             targetBrick->connectionBlocks[newPos] = targetBrick->connectionBlocks[oldPos];
@@ -115,8 +115,8 @@ resizeConnections(Brick* targetBrick)
         }
     }
 
-    targetBrick->neuronBlocks.resize(targetBrick->dimX);
-    targetBrick->tempNeuronBlocks.resize(targetBrick->dimX);
+    targetBrick->neuronBlocks.resize(targetBrick->header.dimX);
+    targetBrick->tempNeuronBlocks.resize(targetBrick->header.dimX);
 }
 
 /**
@@ -143,7 +143,7 @@ createNewSection(Cluster& cluster,
     if (newPosInNeuron == UNINIT_STATE_8) {
         return false;
     }
-    if (sourceLoc.brick->isOutputBrick) {
+    if (sourceLoc.brick->header.isOutputBrick) {
         return false;
     }
 
@@ -165,7 +165,7 @@ createNewSection(Cluster& cluster,
     targetConnection->lowerBound = lowerBound;
     targetConnection->potentialRange = potentialRange;
     targetConnection->origin.posInNeuron = newPosInNeuron;
-    targetConnection->origin.isInput = sourceLoc.brick->isInputBrick;
+    targetConnection->origin.isInput = sourceLoc.brick->header.isInputBrick;
     sourceLoc.neuron->setInUse(newPosInNeuron);
 
     return true;
