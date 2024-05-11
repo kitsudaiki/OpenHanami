@@ -40,7 +40,7 @@ class CompareTestHelper
         std::cout << "   Method: " << __PRETTY_FUNCTION__ << std::endl; \
         std::cout << "   Line: " << __LINE__ << std::endl;              \
         std::cout << "   Variable: " << #IS_VAL << std::endl;           \
-        std::cout << "   Should-Value: " << SHOULD_VAL << std::endl;    \
+        std::cout << "   Expected-Value: " << SHOULD_VAL << std::endl;  \
         std::cout << "   Is-Value: " << IS_VAL << std::endl;            \
         std::cout << std::endl;                                         \
     }                                                                   \
@@ -48,21 +48,21 @@ class CompareTestHelper
         m_successfulTests++;                                            \
     }
 
-#define TEST_NOT_EQUAL(IS_VAL, SHOULD_NOT_VAL)                               \
-    if (IS_VAL == SHOULD_NOT_VAL) {                                          \
-        m_failedTests++;                                                     \
-        std::cout << std::endl;                                              \
-        std::cout << "Error in Test" << std::endl;                           \
-        std::cout << "   File: " << __FILE__ << std::endl;                   \
-        std::cout << "   Method: " << __PRETTY_FUNCTION__ << std::endl;      \
-        std::cout << "   Line: " << __LINE__ << std::endl;                   \
-        std::cout << "   Variable: " << #IS_VAL << std::endl;                \
-        std::cout << "   Should-NOT-Value: " << SHOULD_NOT_VAL << std::endl; \
-        std::cout << "   Is-Value: " << IS_VAL << std::endl;                 \
-        std::cout << std::endl;                                              \
-    }                                                                        \
-    else {                                                                   \
-        m_successfulTests++;                                                 \
+#define TEST_NOT_EQUAL(IS_VAL, SHOULD_NOT_VAL)                                 \
+    if (IS_VAL == SHOULD_NOT_VAL) {                                            \
+        m_failedTests++;                                                       \
+        std::cout << std::endl;                                                \
+        std::cout << "Error in Test" << std::endl;                             \
+        std::cout << "   File: " << __FILE__ << std::endl;                     \
+        std::cout << "   Method: " << __PRETTY_FUNCTION__ << std::endl;        \
+        std::cout << "   Line: " << __LINE__ << std::endl;                     \
+        std::cout << "   Variable: " << #IS_VAL << std::endl;                  \
+        std::cout << "   Expected-NOT-Value: " << SHOULD_NOT_VAL << std::endl; \
+        std::cout << "   Is-Value: " << IS_VAL << std::endl;                   \
+        std::cout << std::endl;                                                \
+    }                                                                          \
+    else {                                                                     \
+        m_successfulTests++;                                                   \
     }
 
    public:

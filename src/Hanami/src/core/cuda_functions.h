@@ -23,8 +23,7 @@
 #ifndef CUDA_FUNCTIONS_H
 #define CUDA_FUNCTIONS_H
 
-#include <core/cluster/brick.h>
-#include <core/processing/objects.h>
+#include <core/cluster/objects.h>
 
 extern "C" void copyToDevice_CUDA(CudaPointerHandle* gpuPointer,
                                   ClusterSettings* clusterSettings,

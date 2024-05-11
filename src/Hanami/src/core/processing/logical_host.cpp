@@ -24,8 +24,8 @@
 
 #include <api/websocket/cluster_io.h>
 #include <core/cluster/cluster.h>
+#include <core/cluster/objects.h>
 #include <core/processing/cluster_io_functions.h>
-#include <core/processing/objects.h>
 #include <hanami_common/buffer/item_buffer.h>
 
 /**
@@ -120,7 +120,7 @@ getHighestOutput(Cluster& cluster)
     float value = 0.0f;
 
     OutputInterface* outputInterface = &cluster.outputInterfaces.begin()->second;
-    for (uint32_t outputNeuronId = 0; outputNeuronId < outputInterface->numberOfOutputNeurons;
+    for (uint32_t outputNeuronId = 0; outputNeuronId < outputInterface->outputNeurons.size();
          outputNeuronId++)
     {
         value = outputInterface->outputNeurons[outputNeuronId].outputVal;
@@ -157,7 +157,7 @@ handleClientOutput(Cluster& cluster)
         else if (actualTask->type == TABLE_REQUEST_TASK) {
             float val = 0.0f;
             OutputInterface* outputInterface = &cluster.outputInterfaces.begin()->second;
-            for (uint64_t i = 0; i < outputInterface->numberOfOutputNeurons; i++) {
+            for (uint64_t i = 0; i < outputInterface->outputNeurons.size(); i++) {
                 const float temp = actualTask->resultData[cycle];
                 val = temp + outputInterface->outputNeurons[i].outputVal;
                 actualTask->resultData[cycle] = val;

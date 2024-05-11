@@ -25,8 +25,9 @@ class DataBuffer_Test : public Hanami::CompareTestHelper
     void copy_assingment_constructor_test();
     void copy_assingment_operator_test();
     void addObject_DataBuffer_test();
-    void getBlock_DataBuffer_test();
     void reset_DataBuffer_test();
+    void getPosition_DataBuffer_test();
+    void getObject_DataBuffer_test();
 
     void addData_DataBuffer_test();
     void allocateBlocks_DataBuffer_test();

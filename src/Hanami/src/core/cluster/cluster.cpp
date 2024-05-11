@@ -116,7 +116,7 @@ const std::string
 Cluster::getName()
 {
     // precheck
-    if (clusterHeader.nameSize == 0) {
+    if (clusterHeader.nameSize == 0 || clusterHeader.nameSize > 255) {
         return std::string("");
     }
 

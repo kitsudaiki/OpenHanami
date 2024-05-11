@@ -24,7 +24,7 @@
 
 #include <core/cluster/cluster.h>
 #include <core/cluster/cluster_init.h>
-#include <core/processing/objects.h>
+#include <core/cluster/objects.h>
 #include <core/routing_functions.h>
 #include <hanami_common/logger.h>
 #include <hanami_config/config_handler.h>
@@ -120,8 +120,8 @@ initializeInputs(Cluster* cluster, const ClusterMeta& clusterMeta)
 
         InputInterface inputInterface;
         inputInterface.targetBrickId = inputMeta.targetBrickId;
-        inputInterface.numberOfInputNeurons = inputMeta.numberOfInputs;
-        inputInterface.inputNeurons = new InputNeuron[inputMeta.numberOfInputs];
+        inputInterface.name = inputMeta.name;
+        inputInterface.inputNeurons.resize(inputMeta.numberOfInputs);
 
         cluster->inputInterfaces.try_emplace(inputMeta.name, inputInterface);
 
@@ -144,8 +144,8 @@ initializeOutputs(Cluster* cluster, const ClusterMeta& clusterMeta)
     for (const OutputMeta& outputMeta : clusterMeta.outputs) {
         OutputInterface outputInterface;
         outputInterface.targetBrickId = outputMeta.targetBrickId;
-        outputInterface.numberOfOutputNeurons = outputMeta.numberOfOutputs;
-        outputInterface.outputNeurons = new OutputNeuron[outputMeta.numberOfOutputs];
+        outputInterface.name = outputMeta.name;
+        outputInterface.outputNeurons.resize(outputMeta.numberOfOutputs);
 
         cluster->outputInterfaces.try_emplace(outputMeta.name, outputInterface);
 
@@ -166,12 +166,11 @@ initializeBricks(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta)
     cluster->bricks.resize(clusterMeta.bricks.size());
 
     for (uint32_t i = 0; i < clusterMeta.bricks.size(); i++) {
-        Brick newBrick;
-        newBrick.header.brickId = i;
-        newBrick.header.brickPos = clusterMeta.bricks.at(i).position;
-        std::fill_n(newBrick.neighbors, 12, UNINIT_STATE_32);
-
-        cluster->bricks[i] = newBrick;
+        Brick* newBrick = &cluster->bricks[i];
+        newBrick->cluster = cluster;
+        newBrick->header.brickId = i;
+        newBrick->header.brickPos = clusterMeta.bricks.at(i).position;
+        std::fill_n(newBrick->neighbors, 12, UNINIT_STATE_32);
     }
 
     connectAllBricks(cluster);

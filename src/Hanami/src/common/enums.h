@@ -23,8 +23,10 @@
 #ifndef HANAMI_ENUMS_H
 #define HANAMI_ENUMS_H
 
-enum ObjectTypes {
-    CLUSTER_OBJECT = 0,
+enum ReturnStatus {
+    OK = 0,
+    INVALID_INPUT = 1,
+    ERROR = 2,
 };
 
 enum HttpResponseTypes {

@@ -25,12 +25,11 @@
 
 #include <common.h>
 #include <core/cluster/cluster.h>
+#include <core/cluster/objects.h>
 #include <core/processing/cpu/cpu_host.h>
 #include <core/processing/cuda/cuda_host.h>
 #include <core/processing/logical_host.h>
 #include <hanami_root.h>
-
-#include "objects.h"
 
 /**
  * @brief search for an empty target-connection within a target-brick

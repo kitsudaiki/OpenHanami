@@ -23,11 +23,10 @@
 #ifndef HANAMI_CORE_CLUSTER_IO_FUNCTIONS_H
 #define HANAMI_CORE_CLUSTER_IO_FUNCTIONS_H
 
+#include <core/cluster/objects.h>
 #include <math.h>
 
 #include <iostream>
-
-#include "objects.h"
 
 /**
  * @brief function for generating random-values
@@ -118,7 +117,7 @@ processNeuronsOfOutputBrick(std::vector<Brick>& bricks,
         }
     }
 
-    for (uint64_t i = 0; i < outputInterface->numberOfOutputNeurons; ++i) {
+    for (uint64_t i = 0; i < outputInterface->outputNeurons.size(); ++i) {
         out = &outputInterface->outputNeurons[i];
         brick = &bricks[outputInterface->targetBrickId];
         weightSum = 0.0f;
@@ -200,7 +199,7 @@ backpropagateOutput(std::vector<Brick>& bricks,
     uint64_t i = 0;
     uint64_t j = 0;
 
-    for (i = 0; i < outputInterface->numberOfOutputNeurons; ++i) {
+    for (i = 0; i < outputInterface->outputNeurons.size(); ++i) {
         out = &outputInterface->outputNeurons[i];
         brick = &bricks[outputInterface->targetBrickId];
         delta = out->outputVal - out->exprectedVal;

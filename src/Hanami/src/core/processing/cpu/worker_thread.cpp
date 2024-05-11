@@ -22,13 +22,13 @@
 
 #include "worker_thread.h"
 
+#include <core/cluster/objects.h>
 #include <core/processing/cluster_io_functions.h>
 #include <core/processing/cluster_resize.h>
 #include <core/processing/cpu/backpropagation.h>
 #include <core/processing/cpu/processing.h>
 #include <core/processing/cpu/reduction.h>
 #include <core/processing/logical_host.h>
-#include <core/processing/objects.h>
 
 /**
  * @brief constructor

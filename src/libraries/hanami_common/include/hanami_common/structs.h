@@ -41,6 +41,11 @@ struct Position {
         return (this->x == other.x && this->y == other.y && this->z == other.z);
     }
 
+    bool operator!=(const Position& other) const
+    {
+        return (this->x != other.x || this->y != other.y || this->z != other.z);
+    }
+
     bool isValid() const
     {
         return (x != UNINTI_POINT_32 && y != UNINTI_POINT_32 && z != UNINTI_POINT_32);

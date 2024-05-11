@@ -5,6 +5,8 @@
 
 #include <string>
 
+class LogicalHost;
+
 class Cluster_Init_Test : public Hanami::CompareTestHelper
 {
    public:
@@ -12,10 +14,13 @@ class Cluster_Init_Test : public Hanami::CompareTestHelper
 
    private:
     std::string m_clusterTemplate = "";
+    LogicalHost* m_logicalHost = nullptr;
 
     void init();
 
-    void createCluster_Test();
+    void initHost_test();
+    void createCluster_test();
+    void serialize_test();
 };
 
 #endif  // CLUSTER_TEST_H

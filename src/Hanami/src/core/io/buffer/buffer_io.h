@@ -1,5 +1,5 @@
 /**
- * @file        checkpoint_io.h
+ * @file        buffer_io.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,37 +20,31 @@
  *      limitations under the License.
  */
 
-#ifndef CHECKPOINTIO_H
-#define CHECKPOINTIO_H
+#ifndef BUFFERIO_H
+#define BUFFERIO_H
 
 #include <core/io/io_interface.h>
-#include <hanami_common/files/binary_file.h>
-#include <hanami_common/logger.h>
+#include <hanami_common/buffer/data_buffer.h>
 
-#include <string>
-
-class Cluster;
-struct CheckpointHeader;
-
-class CheckpointIO : public IO_Interface
+class BufferIO : public IO_Interface
 {
    public:
-    CheckpointIO();
-    ~CheckpointIO();
+    BufferIO();
+    ~BufferIO();
 
-    ReturnStatus writeClusterToFile(Cluster& cluster,
-                                    const std::string& filePath,
-                                    Hanami::ErrorContainer& error);
-    ReturnStatus restoreClusterFromFile(Cluster& cluster,
-                                        const std::string& fileLocation,
+    ReturnStatus writeClusterIntoBuffer(Hanami::DataBuffer& target,
+                                        const Cluster& cluster,
                                         Hanami::ErrorContainer& error);
+    ReturnStatus readClusterFromBuffer(Cluster& cluster,
+                                       Hanami::DataBuffer& input,
+                                       Hanami::ErrorContainer& error);
 
    private:
     bool initializeTarget(const uint64_t size, Hanami::ErrorContainer& error);
-    bool writeFromLocalBuffer(const LocalBuffer& localBuffer, Hanami::ErrorContainer& error);
-    bool readToLocalBuffer(LocalBuffer& localBuffer, Hanami::ErrorContainer& error);
+    bool writeFromLocalBuffer(const LocalBuffer& localBuffer, Hanami::ErrorContainer&);
+    bool readToLocalBuffer(LocalBuffer& localBuffer, Hanami::ErrorContainer&);
 
-    Hanami::BinaryFile* m_checkpointFile = nullptr;
+    Hanami::DataBuffer* m_buffer = nullptr;
 };
 
-#endif  // CHECKPOINTIO_H
+#endif  // BUFFERIO_H

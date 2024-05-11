@@ -26,9 +26,9 @@
 #include <api/websocket/cluster_io.h>
 #include <common.h>
 #include <core/cluster/cluster.h>
+#include <core/cluster/objects.h>
 #include <core/processing/cluster_io_functions.h>
 #include <core/processing/cluster_resize.h>
-#include <core/processing/objects.h>
 #include <hanami_root.h>
 #include <math.h>
 
@@ -53,6 +53,9 @@ processNeuronsOfInputBrick(Cluster& cluster, InputInterface* inputInterface, Bri
     // iterate over all neurons within the brick
     for (NeuronBlock& neuronBlock : brick->neuronBlocks) {
         for (neuronId = 0; neuronId < NEURONS_PER_NEURONBLOCK; ++neuronId) {
+            if (counter >= inputInterface->inputNeurons.size()) {
+                return;
+            }
             neuron = &neuronBlock.neurons[neuronId];
             neuron->potential = inputInterface->inputNeurons[counter].value;
             neuron->active = neuron->potential > 0.0f;

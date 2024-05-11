@@ -45,9 +45,9 @@ sendClusterOutputMessage(const Cluster* cluster)
         msg.set_islast(false);
         msg.set_buffername(name);
         msg.set_processtype(ClusterProcessType::REQUEST_TYPE);
-        msg.set_numberofvalues(outputInterface.numberOfOutputNeurons);
+        msg.set_numberofvalues(outputInterface.outputNeurons.size());
 
-        for (uint64_t outputNeuronId = 0; outputNeuronId < outputInterface.numberOfOutputNeurons;
+        for (uint64_t outputNeuronId = 0; outputNeuronId < outputInterface.outputNeurons.size();
              outputNeuronId++)
         {
             msg.add_values(outputInterface.outputNeurons[outputNeuronId].outputVal);

@@ -25,10 +25,10 @@
 
 #include <common.h>
 #include <core/cluster/cluster.h>
+#include <core/cluster/objects.h>
 #include <core/processing/cluster_io_functions.h>
 #include <core/processing/cpu/cpu_host.h>
 #include <core/processing/logical_host.h>
-#include <core/processing/objects.h>
 #include <hanami_root.h>
 #include <math.h>
 

@@ -78,11 +78,11 @@ set(SOURCES
     src/common/typedefs.h
     src/common/using.h
     src/config.h
-    src/core/io/disc/checkpoint_io.h
     src/core/cluster/add_tasks.h
     src/core/cluster/cluster.h
     src/core/cluster/cluster_handler.h
     src/core/cluster/cluster_init.h
+    src/core/cluster/objects.h
     src/core/cluster/statemachine_init.h
     src/core/cluster/states/checkpoints/restore_cluster_state.h
     src/core/cluster/states/checkpoints/save_cluster_state.h
@@ -96,6 +96,9 @@ set(SOURCES
     src/core/cluster/states/task_handle_state.h
     src/core/cluster/task.h
     src/core/cuda_functions.h
+    src/core/io/buffer/buffer_io.h
+    src/core/io/disc/checkpoint_io.h
+    src/core/io/io_interface.h
     src/core/processing/cluster_io_functions.h
     src/core/processing/cluster_resize.h
     src/core/processing/cpu/backpropagation.h
@@ -105,7 +108,6 @@ set(SOURCES
     src/core/processing/cpu/worker_thread.h
     src/core/processing/cuda/cuda_host.h
     src/core/processing/logical_host.h
-    src/core/processing/objects.h
     src/core/processing/physical_host.h
     src/core/routing_functions.h
     src/core/temp_file_handler.h
@@ -124,8 +126,6 @@ set(SOURCES
     src/database/users_table.h
     src/documentation/generate_rest_api_docu.h
     src/hanami_root.h
-    src/core/cluster/brick.h
-    src/core/cluster/brick.cpp
     src/api/endpoint_processing/blossom.cpp
     src/api/endpoint_processing/http_processing/file_send.cpp
     src/api/endpoint_processing/http_processing/http_processing.cpp
@@ -198,6 +198,9 @@ set(SOURCES
     src/core/cluster/states/tables/table_interpolation_state.cpp
     src/core/cluster/states/tables/table_train_forward_state.cpp
     src/core/cluster/states/task_handle_state.cpp
+    src/core/io/buffer/buffer_io.cpp
+    src/core/io/disc/checkpoint_io.cpp
+    src/core/io/io_interface.cpp
     src/core/processing/cpu/cpu_host.cpp
     src/core/processing/cpu/worker_thread.cpp
     src/core/processing/cuda/cuda_host.cpp
@@ -219,7 +222,6 @@ set(SOURCES
     src/database/users_table.cpp
     src/documentation/generate_rest_api_docu.cpp
     src/hanami_root.cpp
-    src/core/io/disc/checkpoint_io.cpp
 )
 
 # Adding the executable

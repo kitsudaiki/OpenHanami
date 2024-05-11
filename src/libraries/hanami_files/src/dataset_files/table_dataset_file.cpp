@@ -194,7 +194,8 @@ TableDataSetFile::print()
     // read dataset-header
     DataSetHeader dataSetHeader;
     memcpy(&dataSetHeader, completeFile.data, sizeof(DataSetHeader));
-    std::cout << "name: " << dataSetHeader.name << std::endl;
+    const std::string name(dataSetHeader.name, dataSetHeader.nameSize);
+    std::cout << "name: " << name << std::endl;
 
     // read table-header
     const uint8_t* u8buffer = static_cast<uint8_t*>(completeFile.data);

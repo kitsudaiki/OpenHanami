@@ -260,9 +260,9 @@ CreateTask::tableTask(std::string& taskUuid,
                 userContext.userId,
                 userContext.projectId,
                 static_cast<float*>(inputBuffer.data),
-                inputInterface.numberOfInputNeurons,
-                cluster->outputInterfaces.begin()->second.numberOfOutputNeurons,
-                numberOfLines - inputInterface.numberOfInputNeurons);
+                inputInterface.inputNeurons.size(),
+                cluster->outputInterfaces.begin()->second.outputNeurons.size(),
+                numberOfLines - inputInterface.inputNeurons.size());
             inputBuffer.data = nullptr;
 
             // TODO: support more than 1 input
@@ -287,9 +287,9 @@ CreateTask::tableTask(std::string& taskUuid,
                                              userContext.projectId,
                                              static_cast<float*>(inputBuffer.data),
                                              static_cast<float*>(outputBuffer.data),
-                                             inputInterface.numberOfInputNeurons,
-                                             outputInterface.numberOfOutputNeurons,
-                                             numberOfLines - inputInterface.numberOfInputNeurons);
+                                             inputInterface.inputNeurons.size(),
+                                             outputInterface.outputNeurons.size(),
+                                             numberOfLines - inputInterface.inputNeurons.size());
                 inputBuffer.data = nullptr;
                 outputBuffer.data = nullptr;
 

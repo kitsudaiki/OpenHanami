@@ -25,7 +25,7 @@
 
 #include <common/defines.h>
 #include <common/structs.h>
-#include <core/processing/objects.h>
+#include <core/cluster/objects.h>
 
 #include <chrono>
 #include <ctime>

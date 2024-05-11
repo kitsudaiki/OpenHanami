@@ -34,6 +34,8 @@
 #include <string>
 #include <vector>
 
+class Cluster;
+
 // const predefined values
 #define UNINIT_STATE_64 0xFFFFFFFFFFFFFFFF
 #define UNINIT_STATE_32 0xFFFFFFFF
@@ -90,6 +92,32 @@ struct ClusterSettings {
     bool enableReduction = false;
 
     uint8_t padding[43];
+
+    bool operator==(ClusterSettings& rhs)
+    {
+        if (backpropagationBorder != rhs.backpropagationBorder) {
+            return false;
+        }
+        if (potentialOverflow != rhs.potentialOverflow) {
+            return false;
+        }
+        if (neuronCooldown != rhs.neuronCooldown) {
+            return false;
+        }
+        if (refractoryTime != rhs.refractoryTime) {
+            return false;
+        }
+        if (maxConnectionDistance != rhs.maxConnectionDistance) {
+            return false;
+        }
+        if (enableReduction != rhs.enableReduction) {
+            return false;
+        }
+
+        return true;
+    }
+
+    bool operator!=(ClusterSettings& rhs) { return (*this == rhs) == false; }
 };
 static_assert(sizeof(ClusterSettings) == 64);
 
@@ -109,6 +137,33 @@ struct ClusterHeader {
     ClusterSettings settings;
 
     uint8_t padding2[136];
+
+    bool operator==(ClusterHeader& rhs)
+    {
+        if (objectType != rhs.objectType) {
+            return false;
+        }
+        if (version != rhs.version) {
+            return false;
+        }
+        if (nameSize != rhs.nameSize) {
+            return false;
+        }
+        if (strncmp(name, rhs.name, nameSize) != 0) {
+            return false;
+        }
+        if (staticDataSize != rhs.staticDataSize) {
+            return false;
+        }
+        if (strncmp(uuid.uuid, rhs.uuid.uuid, UUID_STR_LEN) != 0) {
+            return false;
+        }
+        if (settings != rhs.settings) {
+            return false;
+        }
+
+        return true;
+    }
 };
 static_assert(sizeof(ClusterHeader) == 512);
 
@@ -256,20 +311,18 @@ static_assert(sizeof(InputNeuron) == 8);
 //==================================================================================================
 
 struct OutputInterface {
+    std::string name = "";
     uint32_t targetBrickId = UNINIT_STATE_32;
-    uint32_t numberOfOutputNeurons = 0;
-    OutputNeuron* outputNeurons = nullptr;
+    std::vector<OutputNeuron> outputNeurons;
 };
-static_assert(sizeof(OutputInterface) == 16);
 
 //==================================================================================================
 
 struct InputInterface {
+    std::string name = "";
     uint32_t targetBrickId = UNINIT_STATE_32;
-    uint32_t numberOfInputNeurons = 0;
-    InputNeuron* inputNeurons = nullptr;
+    std::vector<InputNeuron> inputNeurons;
 };
-static_assert(sizeof(InputInterface) == 16);
 
 //==================================================================================================
 
@@ -312,5 +365,97 @@ struct CudaPointerHandle {
 };
 
 //==================================================================================================
+
+struct BrickHeader {
+   public:
+    uint32_t brickId = UNINIT_STATE_32;
+    bool isInputBrick = false;
+    bool isOutputBrick = false;
+    uint8_t padding1[2];
+    uint32_t dimX = 0;
+    uint32_t dimY = 0;
+    Hanami::Position brickPos;
+
+    bool operator==(BrickHeader& rhs)
+    {
+        if (brickId != rhs.brickId) {
+            return false;
+        }
+        if (isInputBrick != rhs.isInputBrick) {
+            return false;
+        }
+        if (isOutputBrick != rhs.isOutputBrick) {
+            return false;
+        }
+        if (dimX != rhs.dimX) {
+            return false;
+        }
+        if (dimY != rhs.dimY) {
+            return false;
+        }
+        if (brickPos != rhs.brickPos) {
+            return false;
+        }
+
+        return true;
+    }
+};
+static_assert(sizeof(BrickHeader) == 32);
+
+//==================================================================================================
+
+class Brick
+{
+   public:
+    BrickHeader header;
+
+    Cluster* cluster = nullptr;
+    InputInterface* inputInterface = nullptr;
+    OutputInterface* outputInterface = nullptr;
+
+    std::vector<ConnectionBlock> connectionBlocks;
+    std::vector<NeuronBlock> neuronBlocks;
+    std::vector<TempNeuronBlock> tempNeuronBlocks;
+
+    bool wasResized = false;
+    uint32_t possibleBrickTargetIds[NUMBER_OF_POSSIBLE_NEXT];
+    uint32_t neighbors[12];
+
+    Brick() { std::fill_n(neighbors, 12, UNINIT_STATE_32); }
+    ~Brick(){};
+
+    Brick& operator=(const Brick&) = delete;
+};
+
+//==================================================================================================
+
+struct SourceLocation {
+    Brick* brick = nullptr;
+    NeuronBlock* neuronBlock = nullptr;
+    TempNeuronBlock* tempNeuronBlock = nullptr;
+    Neuron* neuron = nullptr;
+    TempNeuron* tempNeuron = nullptr;
+};
+
+/**
+ * @brief getSourceNeuron
+ * @param location
+ * @param bricks
+ * @return
+ */
+inline SourceLocation
+getSourceNeuron(const SourceLocationPtr& location, Brick* bricks)
+{
+    SourceLocation sourceLoc;
+    sourceLoc.brick = &bricks[location.brickId];
+
+    sourceLoc.neuronBlock = &sourceLoc.brick->neuronBlocks[location.blockId];
+    sourceLoc.tempNeuronBlock = &sourceLoc.brick->tempNeuronBlocks[location.blockId];
+
+    sourceLoc.neuron = &sourceLoc.neuronBlock->neurons[location.neuronId];
+    sourceLoc.tempNeuron = &sourceLoc.tempNeuronBlock->neurons[location.neuronId];
+
+    return sourceLoc;
+}
 
 #endif  // HANAMI_CORE_SEGMENT_OBJECTS_H
