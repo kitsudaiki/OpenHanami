@@ -25,6 +25,7 @@
 
 #include <database/generic_tables/hanami_sql_table.h>
 #include <hanami_common/logger.h>
+#include <hanami_common/structs.h>
 
 class CheckpointTable : public HanamiSqlTable
 {
@@ -39,17 +40,19 @@ class CheckpointTable : public HanamiSqlTable
 
     ~CheckpointTable();
 
-    bool addCheckpoint(json& data, const UserContext& userContext, Hanami::ErrorContainer& error);
+    bool addCheckpoint(json& data,
+                       const Hanami::UserContext& userContext,
+                       Hanami::ErrorContainer& error);
     bool getCheckpoint(json& result,
                        const std::string& checkpointUuid,
-                       const UserContext& userContext,
+                       const Hanami::UserContext& userContext,
                        Hanami::ErrorContainer& error,
                        const bool showHiddenValues);
     bool getAllCheckpoint(Hanami::TableItem& result,
-                          const UserContext& userContext,
+                          const Hanami::UserContext& userContext,
                           Hanami::ErrorContainer& error);
     bool deleteCheckpoint(const std::string& checkpointUuid,
-                          const UserContext& userContext,
+                          const Hanami::UserContext& userContext,
                           Hanami::ErrorContainer& error);
 
    private:

@@ -77,7 +77,7 @@ SetClusterMode::runTask(BlossomIO& blossomIO,
     const std::string clusterUuid = blossomIO.input["uuid"];
     // const std::string connectionUuid = blossomIO.input["connection_uuid"];
     const std::string newState = blossomIO.input["new_state"];
-    const UserContext userContext(context);
+    const Hanami::UserContext userContext = convertContext(context);
 
     // get data from table
     if (ClusterTable::getInstance()->getCluster(blossomIO.output, clusterUuid, userContext, error)

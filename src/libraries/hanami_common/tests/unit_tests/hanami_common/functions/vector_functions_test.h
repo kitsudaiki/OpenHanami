@@ -1,23 +1,23 @@
 /**
- *  @file    vector_methods_test.h
+ *  @file    vector_functions_test.h
  *
  *  @author  Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
  *  @copyright MIT License
  */
 
-#ifndef VECTOR_METHODS_TEST_H
-#define VECTOR_METHODS_TEST_H
+#ifndef VECTOR_functions_TEST_H
+#define VECTOR_functions_TEST_H
 
 #include <hanami_common/test_helper/compare_test_helper.h>
 
 namespace Hanami
 {
 
-class VectorMethods_Test : public Hanami::CompareTestHelper
+class Vectorfunctions_Test : public Hanami::CompareTestHelper
 {
    public:
-    VectorMethods_Test();
+    Vectorfunctions_Test();
 
    private:
     void removeEmptyStrings_test();
@@ -25,4 +25,4 @@ class VectorMethods_Test : public Hanami::CompareTestHelper
 
 }  // namespace Hanami
 
-#endif  // VECTORMETHODS_TEST_H
+#endif  // VECTORfunctions_TEST_H

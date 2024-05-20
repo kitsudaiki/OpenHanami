@@ -23,10 +23,11 @@
 #ifndef HANAMI_GENERATERESTAPIDOCU_H
 #define HANAMI_GENERATERESTAPIDOCU_H
 
-#include <common.h>
-
 #include <map>
+#include <nlohmann/json.hpp>
 #include <string>
+
+using json = nlohmann::json;
 
 struct FieldDef;
 

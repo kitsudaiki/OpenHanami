@@ -23,13 +23,22 @@
 #ifndef HANAMI_LANG_BLOSSOM_H
 #define HANAMI_LANG_BLOSSOM_H
 
-#include <common.h>
+#include <hanami_common/functions/time_functions.h>
 #include <hanami_common/logger.h>
+#include <hanami_common/structs.h>
+#include <hanami_common/uuid.h>
 
 class BlossomItem;
 class SakuraThread;
 class InitialValidator;
 class HttpProcessing;
+
+//--------------------------------------------------------------------------------------------------
+
+struct BlossomStatus {
+    uint64_t statusCode = OK_RTYPE;
+    std::string errorMessage = "";
+};
 
 //--------------------------------------------------------------------------------------------------
 
@@ -121,6 +130,23 @@ struct FieldDef {
         return *this;
     }
 };
+
+//--------------------------------------------------------------------------------------------------
+
+inline const Hanami::UserContext
+convertContext(const json& inputContext)
+{
+    Hanami::UserContext context;
+    context.userId = inputContext["id"];
+    context.projectId = inputContext["project_id"];
+    context.isAdmin = inputContext["is_admin"];
+    context.isProjectAdmin = inputContext["is_project_admin"];
+    if (inputContext.contains("token")) {
+        context.token = inputContext["token"];
+    }
+
+    return context;
+}
 
 //--------------------------------------------------------------------------------------------------
 

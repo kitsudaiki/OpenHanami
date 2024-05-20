@@ -1,19 +1,19 @@
 /**
- *  @file    string_methods_test.cpp
+ *  @file    string_functions_test.cpp
  *
  *  @author  Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
  *  @copyright MIT License
  */
 
-#include "string_methods_test.h"
+#include "string_functions_test.h"
 
-#include <hanami_common/methods/string_methods.h>
+#include <hanami_common/functions/string_functions.h>
 
 namespace Hanami
 {
 
-StringMethods_Test::StringMethods_Test() : Hanami::CompareTestHelper("StringMethods_Test")
+Stringfunctions_Test::Stringfunctions_Test() : Hanami::CompareTestHelper("Stringfunctions_Test")
 {
     splitStringByDelimiter_test();
     splitStringByLength_test();
@@ -32,7 +32,7 @@ StringMethods_Test::StringMethods_Test() : Hanami::CompareTestHelper("StringMeth
  * splitStringByDelimiter_test
  */
 void
-StringMethods_Test::splitStringByDelimiter_test()
+Stringfunctions_Test::splitStringByDelimiter_test()
 {
     // init
     std::string testString = "this is a test-string";
@@ -60,7 +60,7 @@ StringMethods_Test::splitStringByDelimiter_test()
  * splitStringByLength_test
  */
 void
-StringMethods_Test::splitStringByLength_test()
+Stringfunctions_Test::splitStringByLength_test()
 {
     // init
     std::string testString = "this is a test-string";
@@ -82,7 +82,7 @@ StringMethods_Test::splitStringByLength_test()
  * replaceSubstring_test
  */
 void
-StringMethods_Test::replaceSubstring_test()
+Stringfunctions_Test::replaceSubstring_test()
 {
     // init
     std::string testString = "this is a test-string";
@@ -98,7 +98,7 @@ StringMethods_Test::replaceSubstring_test()
  * removeWhitespaces_test
  */
 void
-StringMethods_Test::removeWhitespaces_test()
+Stringfunctions_Test::removeWhitespaces_test()
 {
     // init
     std::string testString = "this is a test-string";
@@ -114,7 +114,7 @@ StringMethods_Test::removeWhitespaces_test()
  * ltrim_test
  */
 void
-StringMethods_Test::ltrim_test()
+Stringfunctions_Test::ltrim_test()
 {
     // init
     std::string testString = "  \t  \n \r  this is a test-string  \t  \n \r  ";
@@ -130,7 +130,7 @@ StringMethods_Test::ltrim_test()
  * rtrim_test
  */
 void
-StringMethods_Test::rtrim_test()
+Stringfunctions_Test::rtrim_test()
 {
     // init
     std::string testString = "  \t  \n \r  this is a test-string  \t  \n \r  ";
@@ -146,7 +146,7 @@ StringMethods_Test::rtrim_test()
  * trim_test
  */
 void
-StringMethods_Test::trim_test()
+Stringfunctions_Test::trim_test()
 {
     // init
     std::string testString = "  \t  \n \r  this is a test-string  \t  \n \r  ";
@@ -162,7 +162,7 @@ StringMethods_Test::trim_test()
  * @brief toUpperCase_test
  */
 void
-StringMethods_Test::toUpperCase_test()
+Stringfunctions_Test::toUpperCase_test()
 {
     // init
     std::string testString = "1234 this is A test-string _ !?";
@@ -178,7 +178,7 @@ StringMethods_Test::toUpperCase_test()
  * @brief toLowerCase_test
  */
 void
-StringMethods_Test::toLowerCase_test()
+Stringfunctions_Test::toLowerCase_test()
 {
     // init
     std::string testString = "1234 THIS is A TEST-STRING _ !?";

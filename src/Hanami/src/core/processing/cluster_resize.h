@@ -23,7 +23,6 @@
 #ifndef HANAMI_SECTION_UPDATE_H
 #define HANAMI_SECTION_UPDATE_H
 
-#include <common.h>
 #include <core/cluster/cluster.h>
 #include <core/cluster/objects.h>
 #include <core/processing/cpu/cpu_host.h>

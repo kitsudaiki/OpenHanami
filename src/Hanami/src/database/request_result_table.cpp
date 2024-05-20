@@ -21,8 +21,8 @@
  */
 
 #include <database/request_result_table.h>
+#include <hanami_common/functions/string_functions.h>
 #include <hanami_common/items/table_item.h>
-#include <hanami_common/methods/string_methods.h>
 #include <hanami_database/sql_database.h>
 
 RequestResultTable* RequestResultTable::instance = nullptr;
@@ -58,7 +58,7 @@ RequestResultTable::~RequestResultTable() {}
  */
 bool
 RequestResultTable::addRequestResult(json& data,
-                                     const UserContext& userContext,
+                                     const Hanami::UserContext& userContext,
                                      Hanami::ErrorContainer& error)
 {
     if (add(data, userContext, error) == false) {
@@ -83,7 +83,7 @@ RequestResultTable::addRequestResult(json& data,
 bool
 RequestResultTable::getRequestResult(json& result,
                                      const std::string& resultUuid,
-                                     const UserContext& userContext,
+                                     const Hanami::UserContext& userContext,
                                      Hanami::ErrorContainer& error,
                                      const bool showHiddenValues)
 {
@@ -113,7 +113,7 @@ RequestResultTable::getRequestResult(json& result,
  */
 bool
 RequestResultTable::getAllRequestResult(Hanami::TableItem& result,
-                                        const UserContext& userContext,
+                                        const Hanami::UserContext& userContext,
                                         Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
@@ -136,7 +136,7 @@ RequestResultTable::getAllRequestResult(Hanami::TableItem& result,
  */
 bool
 RequestResultTable::deleteRequestResult(const std::string& resultUuid,
-                                        const UserContext& userContext,
+                                        const Hanami::UserContext& userContext,
                                         Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;

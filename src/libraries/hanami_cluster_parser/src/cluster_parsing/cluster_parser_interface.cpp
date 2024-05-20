@@ -22,7 +22,7 @@
 
 #include <cluster_parser.h>
 #include <cluster_parsing/cluster_parser_interface.h>
-#include <hanami_common/methods/string_methods.h>
+#include <hanami_common/functions/string_functions.h>
 
 #define YY_DECL \
     Hanami::ClusterParser::symbol_type clusterlex(Hanami::ClusterParserInterface& driver)
@@ -184,7 +184,7 @@ ClusterParserInterface::error(const Hanami::location& location, const std::strin
  * @return id of the brick, which belongs to the given position, else UNINTI_POINT_32
  */
 uint32_t
-ClusterParserInterface::getBrickId(const Hanami::Position& position)
+ClusterParserInterface::getBrickId(const Position& position)
 {
     for (uint32_t i = 0; i < output->bricks.size(); i++) {
         if (position == output->bricks[i].position) {

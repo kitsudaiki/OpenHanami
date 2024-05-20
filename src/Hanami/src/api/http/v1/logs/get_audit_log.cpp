@@ -78,7 +78,7 @@ GetAuditLog::runTask(BlossomIO& blossomIO,
                      BlossomStatus& status,
                      Hanami::ErrorContainer& error)
 {
-    const UserContext userContext(context);
+    const Hanami::UserContext userContext = convertContext(context);
     const uint64_t page = blossomIO.input["page"];
 
     std::string userId = "";

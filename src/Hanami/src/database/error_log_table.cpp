@@ -21,8 +21,8 @@
  */
 
 #include <database/error_log_table.h>
+#include <hanami_common/functions/string_functions.h>
 #include <hanami_common/items/table_item.h>
-#include <hanami_common/methods/string_methods.h>
 #include <hanami_crypto/common.h>
 #include <hanami_database/sql_database.h>
 

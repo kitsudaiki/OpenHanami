@@ -22,7 +22,6 @@
 
 #include <api/endpoint_processing/blossom.h>
 #include <api/endpoint_processing/runtime_validation.h>
-#include <common.h>
 #include <hanami_common/logger.h>
 
 /**

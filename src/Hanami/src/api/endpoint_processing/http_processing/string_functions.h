@@ -23,9 +23,9 @@
 #ifndef TORIIGATEWAY_STRING_FUNCTIONS_H
 #define TORIIGATEWAY_STRING_FUNCTIONS_H
 
-#include <common.h>
+#include <api/endpoint_processing/blossom.h>
+#include <hanami_common/functions/string_functions.h>
 #include <hanami_common/logger.h>
-#include <hanami_common/methods/string_methods.h>
 
 #include <regex>
 #include <string>
@@ -60,7 +60,7 @@ checkPath(const std::string& path)
  */
 inline bool
 parseUri(const std::string& token,
-         RequestMessage& request,
+         Hanami::RequestMessage& request,
          const std::string& uri,
          BlossomStatus& status)
 {

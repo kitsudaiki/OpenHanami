@@ -23,9 +23,11 @@
 #ifndef HANAMI_TASK_H
 #define HANAMI_TASK_H
 
-#include <common.h>
+#include <hanami_common/uuid.h>
 
 #include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 enum TaskType {
     UNDEFINED_TASK = 0,
@@ -57,7 +59,7 @@ struct TaskProgress {
 
 struct Task {
     // task-identification
-    kuuid uuid;
+    UUID uuid;
     TaskType type = UNDEFINED_TASK;
     std::string name = "";
     std::string userId = "";

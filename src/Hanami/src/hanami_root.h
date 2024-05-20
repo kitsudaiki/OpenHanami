@@ -23,7 +23,6 @@
 #ifndef HANAMI_HANAMI_ROOT_H
 #define HANAMI_HANAMI_ROOT_H
 
-#include <common.h>
 #include <cryptopp/secblock.h>
 #include <hanami_common/buffer/item_buffer.h>
 

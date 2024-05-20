@@ -23,7 +23,7 @@
 #include "create_user.h"
 
 #include <database/users_table.h>
-#include <hanami_common/methods/string_methods.h>
+#include <hanami_common/functions/string_functions.h>
 #include <hanami_crypto/hashes.h>
 #include <hanami_root.h>
 

@@ -70,13 +70,6 @@ set(SOURCES
     src/api/websocket/cluster_io.h
     src/api/websocket/file_upload.h
     src/args.h
-    src/common.h
-    src/common/defines.h
-    src/common/enums.h
-    src/common/functions.h
-    src/common/structs.h
-    src/common/typedefs.h
-    src/common/using.h
     src/config.h
     src/core/cluster/add_tasks.h
     src/core/cluster/cluster.h

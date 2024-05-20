@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef PROGRESS_BAR_H
-#define PROGRESS_BAR_H
+#ifndef HANAMI_PROGRESS_BAR_H
+#define HANAMI_PROGRESS_BAR_H
 
 #include <stdint.h>
 #include <unistd.h>
@@ -48,4 +48,4 @@ class ProgressBar
 
 }  // namespace Hanami
 
-#endif  // PROGRESS_BAR_H
+#endif  // HANAMI_PROGRESS_BAR_H

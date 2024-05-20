@@ -38,12 +38,12 @@ class ConfigHandler_Test : public Hanami::CompareTestHelper
 
     void readConfig_test();
 
-    // private methods
+    // private functions
     void isRegistered_test();
     void getRegisteredType_test();
     void checkType_test();
 
-    // public methods
+    // public functions
     void registerString_test();
     void registerInteger_test();
     void registerFloat_test();

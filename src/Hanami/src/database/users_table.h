@@ -23,7 +23,6 @@
 #ifndef HANAMI_USERS_TABLE_H
 #define HANAMI_USERS_TABLE_H
 
-#include <common.h>
 #include <database/generic_tables/hanami_sql_admin_table.h>
 #include <hanami_common/logger.h>
 

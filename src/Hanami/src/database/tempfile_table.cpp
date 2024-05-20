@@ -21,8 +21,8 @@
  */
 
 #include <database/tempfile_table.h>
+#include <hanami_common/functions/string_functions.h>
 #include <hanami_common/items/table_item.h>
-#include <hanami_common/methods/string_methods.h>
 #include <hanami_database/sql_database.h>
 
 TempfileTable* TempfileTable::instance = nullptr;
@@ -79,7 +79,7 @@ TempfileTable::addTempfile(const std::string& uuid,
                            const std::string& name,
                            const uint64_t fileSize,
                            const std::string& location,
-                           const UserContext& userContext,
+                           const Hanami::UserContext& userContext,
                            Hanami::ErrorContainer& error)
 {
     json data;
@@ -113,7 +113,7 @@ TempfileTable::addTempfile(const std::string& uuid,
 bool
 TempfileTable::getTempfile(json& result,
                            const std::string& tempfileUuid,
-                           const UserContext& userContext,
+                           const Hanami::UserContext& userContext,
                            Hanami::ErrorContainer& error,
                            const bool showHiddenValues)
 {
@@ -142,7 +142,7 @@ TempfileTable::getTempfile(json& result,
  */
 bool
 TempfileTable::getAllTempfile(Hanami::TableItem& result,
-                              const UserContext& userContext,
+                              const Hanami::UserContext& userContext,
                               Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
@@ -165,7 +165,7 @@ TempfileTable::getAllTempfile(Hanami::TableItem& result,
  */
 bool
 TempfileTable::deleteTempfile(const std::string& tempfileUuid,
-                              const UserContext& userContext,
+                              const Hanami::UserContext& userContext,
                               Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
@@ -194,7 +194,7 @@ bool
 TempfileTable::getRelatedResourceUuids(std::vector<std::string>& relatedUuids,
                                        const std::string& resourceType,
                                        const std::string& resourceUuid,
-                                       const UserContext& userContext,
+                                       const Hanami::UserContext& userContext,
                                        Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;

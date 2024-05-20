@@ -23,7 +23,6 @@
 #ifndef HANAMI_ADD_TASKS_H
 #define HANAMI_ADD_TASKS_H
 
-#include <common.h>
 #include <core/cluster/task.h>
 
 class Cluster;

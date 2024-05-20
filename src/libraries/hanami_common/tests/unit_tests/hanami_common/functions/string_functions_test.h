@@ -1,23 +1,23 @@
 /**
- *  @file    string_methods_test.h
+ *  @file    string_functions_test.h
  *
  *  @author  Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
  *  @copyright MIT License
  */
 
-#ifndef STRING_METHODS_TEST_H
-#define STRING_METHODS_TEST_H
+#ifndef STRING_functions_TEST_H
+#define STRING_functions_TEST_H
 
 #include <hanami_common/test_helper/compare_test_helper.h>
 
 namespace Hanami
 {
 
-class StringMethods_Test : public Hanami::CompareTestHelper
+class Stringfunctions_Test : public Hanami::CompareTestHelper
 {
    public:
-    StringMethods_Test();
+    Stringfunctions_Test();
 
    private:
     void splitStringByDelimiter_test();
@@ -35,4 +35,4 @@ class StringMethods_Test : public Hanami::CompareTestHelper
 
 }  // namespace Hanami
 
-#endif  // STRINGMETHODS_TEST_H
+#endif  // STRINGfunctions_TEST_H

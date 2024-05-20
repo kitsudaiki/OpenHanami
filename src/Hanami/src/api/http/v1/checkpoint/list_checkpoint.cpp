@@ -59,7 +59,7 @@ ListCheckpoint::runTask(BlossomIO& blossomIO,
                         BlossomStatus& status,
                         Hanami::ErrorContainer& error)
 {
-    const UserContext userContext(context);
+    const Hanami::UserContext userContext = convertContext(context);
 
     // get data from table
     Hanami::TableItem table;

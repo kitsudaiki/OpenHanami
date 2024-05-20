@@ -24,10 +24,10 @@
 #define HANAMI_CORE_SEGMENT_OBJECTS_H
 
 #include <hanami_common/structs.h>
+#include <hanami_common/uuid.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-#include <uuid/uuid.h>
 
 #include <cstdlib>
 #include <limits>
@@ -61,24 +61,6 @@ enum ClusterProcessingMode {
     TRAIN_BACKWARD_MODE = 2,
     REDUCTION_MODE = 3,
 };
-
-//==================================================================================================
-
-struct kuuid {
-    char uuid[UUID_STR_LEN];
-    uint8_t padding[3];
-
-    const std::string toString() const { return std::string(uuid, UUID_STR_LEN - 1); }
-};
-static_assert(sizeof(kuuid) == 40);
-
-//==================================================================================================
-
-struct HeaderEntry {
-    uint64_t bytePos = 0;
-    uint64_t count = 0;
-};
-static_assert(sizeof(HeaderEntry) == 16);
 
 //==================================================================================================
 
@@ -132,7 +114,7 @@ struct ClusterHeader {
     uint32_t nameSize = 0;
 
     uint64_t staticDataSize = 0;
-    kuuid uuid;
+    UUID uuid;
 
     ClusterSettings settings;
 

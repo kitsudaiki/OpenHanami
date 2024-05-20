@@ -23,7 +23,7 @@
 #include "delete_dataset.h"
 
 #include <database/dataset_table.h>
-#include <hanami_common/methods/file_methods.h>
+#include <hanami_common/functions/file_functions.h>
 #include <hanami_root.h>
 
 DeleteDataSet::DeleteDataSet() : Blossom("Delete a speific dataset.")
@@ -53,7 +53,7 @@ DeleteDataSet::runTask(BlossomIO& blossomIO,
                        Hanami::ErrorContainer& error)
 {
     const std::string dataUuid = blossomIO.input["uuid"];
-    const UserContext userContext(context);
+    const Hanami::UserContext userContext = convertContext(context);
 
     // get location from database
     json result;

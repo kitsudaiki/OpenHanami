@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef MEMORY_COUNTER_H
-#define MEMORY_COUNTER_H
+#ifndef HANAMI_MEMORY_COUNTER_H
+#define HANAMI_MEMORY_COUNTER_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -47,4 +47,4 @@ void decreaseGlobalMemoryCounter(const size_t size);
 
 }  // namespace Hanami
 
-#endif  // MEMORY_COUNTER_H
+#endif  // HANAMI_MEMORY_COUNTER_H

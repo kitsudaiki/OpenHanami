@@ -15,11 +15,11 @@
 #include <hanami_common/files/binary_file_with_directIO_test.h>
 #include <hanami_common/files/binary_file_without_directIO_test.h>
 #include <hanami_common/files/text_file_test.h>
+#include <hanami_common/functions/file_functions_test.h>
+#include <hanami_common/functions/string_functions_test.h>
+#include <hanami_common/functions/vector_functions_test.h>
 #include <hanami_common/items/table_item_test.h>
 #include <hanami_common/logger_test.h>
-#include <hanami_common/methods/file_methods_test.h>
-#include <hanami_common/methods/string_methods_test.h>
-#include <hanami_common/methods/vector_methods_test.h>
 #include <hanami_common/progress_bar_test.h>
 #include <hanami_common/state_test.h>
 #include <hanami_common/statemachine_test.h>
@@ -37,9 +37,9 @@ main()
     Hanami::StackBufferReserve_Test();
     Hanami::StackBuffer_Test();
 
-    Hanami::StringMethods_Test();
-    Hanami::VectorMethods_Test();
-    Hanami::FileMethods_Test();
+    Hanami::Stringfunctions_Test();
+    Hanami::Vectorfunctions_Test();
+    Hanami::Filefunctions_Test();
 
     Hanami::State_Test();
     Hanami::Statemachine_Test();

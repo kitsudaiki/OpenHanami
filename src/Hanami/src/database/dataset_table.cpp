@@ -20,9 +20,10 @@
  *      limitations under the License.
  */
 
+#include <api/endpoint_processing/blossom.h>
 #include <database/dataset_table.h>
+#include <hanami_common/functions/string_functions.h>
 #include <hanami_common/items/table_item.h>
-#include <hanami_common/methods/string_methods.h>
 #include <hanami_database/sql_database.h>
 #include <hanami_files/dataset_files/dataset_functions.h>
 
@@ -63,7 +64,9 @@ DataSetTable::~DataSetTable() {}
  * @return true, if successful, else false
  */
 bool
-DataSetTable::addDataSet(json& data, const UserContext& userContext, Hanami::ErrorContainer& error)
+DataSetTable::addDataSet(json& data,
+                         const Hanami::UserContext& userContext,
+                         Hanami::ErrorContainer& error)
 {
     if (add(data, userContext, error) == false) {
         error.addMessage("Failed to add checkpoint to database");
@@ -87,7 +90,7 @@ DataSetTable::addDataSet(json& data, const UserContext& userContext, Hanami::Err
 bool
 DataSetTable::getDataSet(json& result,
                          const std::string& datasetUuid,
-                         const UserContext& userContext,
+                         const Hanami::UserContext& userContext,
                          Hanami::ErrorContainer& error,
                          const bool showHiddenValues)
 {
@@ -116,7 +119,7 @@ DataSetTable::getDataSet(json& result,
  */
 bool
 DataSetTable::getAllDataSet(Hanami::TableItem& result,
-                            const UserContext& userContext,
+                            const Hanami::UserContext& userContext,
                             Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
@@ -139,7 +142,7 @@ DataSetTable::getAllDataSet(Hanami::TableItem& result,
  */
 bool
 DataSetTable::deleteDataSet(const std::string& datasetUuid,
-                            const UserContext& userContext,
+                            const Hanami::UserContext& userContext,
                             Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
@@ -164,7 +167,7 @@ DataSetTable::getDateSetInfo(json& result,
                              const json& context,
                              Hanami::ErrorContainer& error)
 {
-    const UserContext userContext(context);
+    const Hanami::UserContext userContext = convertContext(context);
 
     if (getDataSet(result, dataUuid, userContext, error, true) == false) {
         return false;

@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef STATEMACHINE_H
-#define STATEMACHINE_H
+#ifndef HANAMI_STATEMACHINE_H
+#define HANAMI_STATEMACHINE_H
 
 #include <atomic>
 #include <iostream>
@@ -67,4 +67,4 @@ class Statemachine
 
 }  // namespace Hanami
 
-#endif  // STATEMACHINE_H
+#endif  // HANAMI_STATEMACHINE_H

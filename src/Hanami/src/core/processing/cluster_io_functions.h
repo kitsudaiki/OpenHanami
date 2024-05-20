@@ -24,26 +24,10 @@
 #define HANAMI_CORE_CLUSTER_IO_FUNCTIONS_H
 
 #include <core/cluster/objects.h>
+#include <hanami_crypto/hashes.h>
 #include <math.h>
 
 #include <iostream>
-
-/**
- * @brief function for generating random-values
- *        coming from this website:
- *            https://www.reedbeta.com/blog/hash-functions-for-gpu-rendering/
- *
- * @param input seed for random value
- *
- * @return random value
- */
-inline uint32_t
-pcg_hash2(const uint32_t input)
-{
-    const uint32_t state = input * 747796405u + 2891336453u;
-    const uint32_t word = ((state >> ((state >> 28u) + 4u)) ^ state) * 277803737u;
-    return (word >> 22u) ^ word;
-}
 
 /**
  * @brief processNeuronsOfInputBrickBackward
@@ -127,13 +111,13 @@ processNeuronsOfOutputBrick(std::vector<Brick>& bricks,
 
             if constexpr (doTrain) {
                 found = false;
-                randomSeed = pcg_hash2(randomSeed);
+                randomSeed = Hanami::pcg_hash(randomSeed);
                 if (found == false && target->blockId == UNINIT_STATE_16 && out->exprectedVal > 0.0
                     && randomSeed % 50 == 0)
                 {
-                    randomSeed = pcg_hash2(randomSeed);
+                    randomSeed = Hanami::pcg_hash(randomSeed);
                     const uint32_t blockId = randomSeed % brick->neuronBlocks.size();
-                    randomSeed = pcg_hash2(randomSeed);
+                    randomSeed = Hanami::pcg_hash(randomSeed);
                     const uint16_t neuronId = randomSeed % NEURONS_PER_NEURONBLOCK;
                     const float potential
                         = brick->neuronBlocks[blockId].neurons[neuronId].potential;
@@ -141,7 +125,7 @@ processNeuronsOfOutputBrick(std::vector<Brick>& bricks,
                     if (potential != 0.5f) {
                         target->blockId = blockId;
                         target->neuronId = neuronId;
-                        randomSeed = pcg_hash2(randomSeed);
+                        randomSeed = Hanami::pcg_hash(randomSeed);
                         target->connectionWeight = ((float)randomSeed / (float)RAND_MAX);
                         found = true;
 

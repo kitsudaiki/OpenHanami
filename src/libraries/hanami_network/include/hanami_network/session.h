@@ -93,7 +93,7 @@ class Session
     uint32_t increaseMessageIdCounter();
 
     //=====================================================================
-    // ALL BELOW IS INTERNAL AND SHOULD NEVER BE USED BY EXTERNAL METHODS!
+    // ALL BELOW IS INTERNAL AND SHOULD NEVER BE USED BY EXTERNAL functions!
     //=====================================================================
     Session(AbstractSocket* socket);
 

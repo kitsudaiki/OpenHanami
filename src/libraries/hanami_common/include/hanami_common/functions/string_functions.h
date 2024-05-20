@@ -1,5 +1,5 @@
 /**
- *  @file       string_methods.h
+ *  @file       string_functions.h
  *
  *  @author     Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef STRING_METHODS_H
-#define STRING_METHODS_H
+#ifndef STRING_FUNCTIONS_H
+#define STRING_FUNCTIONS_H
 
 #include <algorithm>
 #include <iostream>
@@ -52,4 +52,4 @@ void toLowerCase(std::string& original);
 
 }  // namespace Hanami
 
-#endif  // STRINGMETHODS_H
+#endif  // STRINGFUNCTIONS_H

@@ -1,5 +1,5 @@
 /**
- *  @file       vector_methods.h
+ *  @file       vector_functions.h
  *
  *  @author     Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef VECTOR_METHODS_H
-#define VECTOR_METHODS_H
+#ifndef VECTOR_FUNCTIONS_H
+#define VECTOR_FUNCTIONS_H
 
 #include <algorithm>
 #include <iostream>
@@ -35,4 +35,4 @@ void removeEmptyStrings(std::vector<std::string>& inputVector);
 
 }
 
-#endif  // VECTORMETHODS_H
+#endif  // VECTORFUNCTIONS_H

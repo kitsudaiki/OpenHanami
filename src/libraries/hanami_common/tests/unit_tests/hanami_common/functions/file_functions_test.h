@@ -1,23 +1,23 @@
 /**
- *  @file      file_methods_test.h
+ *  @file      file_functions_test.h
  *
  *  @author    Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
  *  @copyright MIT License
  */
 
-#ifndef FILE_METHODS_TEST_H
-#define FILE_METHODS_TEST_H
+#ifndef FILE_functions_TEST_H
+#define FILE_functions_TEST_H
 
 #include <hanami_common/test_helper/compare_test_helper.h>
 
 namespace Hanami
 {
 
-class FileMethods_Test : public Hanami::CompareTestHelper
+class Filefunctions_Test : public Hanami::CompareTestHelper
 {
    public:
-    FileMethods_Test();
+    Filefunctions_Test();
 
    private:
     void listFiles_test();
@@ -29,4 +29,4 @@ class FileMethods_Test : public Hanami::CompareTestHelper
 
 }  // namespace Hanami
 
-#endif  // FILE_METHODS_TEST_H
+#endif  // FILE_functions_TEST_H

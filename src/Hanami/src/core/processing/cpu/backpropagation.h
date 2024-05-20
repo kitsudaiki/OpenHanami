@@ -23,7 +23,6 @@
 #ifndef HANAMI_CORE_BACKPROPAGATION_H
 #define HANAMI_CORE_BACKPROPAGATION_H
 
-#include <common.h>
 #include <core/cluster/cluster.h>
 #include <core/cluster/objects.h>
 #include <core/processing/cluster_io_functions.h>

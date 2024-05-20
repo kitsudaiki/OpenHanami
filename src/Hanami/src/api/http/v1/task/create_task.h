@@ -24,7 +24,6 @@
 #define HANAMI_CREATE_IMAGE_TRAINTASK_H
 
 #include <api/endpoint_processing/blossom.h>
-#include <common.h>
 
 class Cluster;
 
@@ -43,7 +42,7 @@ class CreateTask : public Blossom
     bool imageTask(std::string& taskUuid,
                    const std::string& name,
                    const std::string& taskType,
-                   const UserContext& userContext,
+                   const Hanami::UserContext& userContext,
                    Cluster* cluster,
                    json& dataSetInfo,
                    BlossomStatus& status,
@@ -52,7 +51,7 @@ class CreateTask : public Blossom
     bool tableTask(std::string& taskUuid,
                    const std::string& name,
                    const std::string& taskType,
-                   const UserContext& userContext,
+                   const Hanami::UserContext& userContext,
                    Cluster* cluster,
                    json& dataSetInfo,
                    BlossomStatus& status,

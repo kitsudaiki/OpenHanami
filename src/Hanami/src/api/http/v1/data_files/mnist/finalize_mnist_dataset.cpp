@@ -25,7 +25,7 @@
 #include <core/temp_file_handler.h>
 #include <database/dataset_table.h>
 #include <hanami_common/files/binary_file.h>
-#include <hanami_common/methods/file_methods.h>
+#include <hanami_common/functions/file_functions.h>
 #include <hanami_crypto/common.h>
 #include <hanami_files/dataset_files/dataset_file.h>
 #include <hanami_files/dataset_files/image_dataset_file.h>
@@ -77,7 +77,7 @@ FinalizeMnistDataSet::runTask(BlossomIO& blossomIO,
     const std::string uuid = blossomIO.input["uuid"];
     const std::string inputUuid = blossomIO.input["uuid_input_file"];
     const std::string labelUuid = blossomIO.input["uuid_label_file"];
-    const UserContext userContext(context);
+    const Hanami::UserContext userContext = convertContext(context);
 
     // get location from database
     json result;

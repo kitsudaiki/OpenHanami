@@ -40,18 +40,18 @@ class RequestResultTable : public HanamiSqlTable
     ~RequestResultTable();
 
     bool addRequestResult(json& data,
-                          const UserContext& userContext,
+                          const Hanami::UserContext& userContext,
                           Hanami::ErrorContainer& error);
     bool getRequestResult(json& result,
                           const std::string& resultUuid,
-                          const UserContext& userContext,
+                          const Hanami::UserContext& userContext,
                           Hanami::ErrorContainer& error,
                           const bool showHiddenValues);
     bool getAllRequestResult(Hanami::TableItem& result,
-                             const UserContext& userContext,
+                             const Hanami::UserContext& userContext,
                              Hanami::ErrorContainer& error);
     bool deleteRequestResult(const std::string& resultUuid,
-                             const UserContext& userContext,
+                             const Hanami::UserContext& userContext,
                              Hanami::ErrorContainer& error);
 
    private:

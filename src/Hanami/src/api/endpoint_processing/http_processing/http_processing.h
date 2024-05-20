@@ -23,7 +23,7 @@
 #ifndef TORIIGATEWAY_HTTP_PROCESSING_H
 #define TORIIGATEWAY_HTTP_PROCESSING_H
 
-#include <common.h>
+#include <api/endpoint_processing/blossom.h>
 #include <hanami_common/logger.h>
 #include <hanami_policies/policy.h>
 
@@ -50,6 +50,11 @@ namespace ssl = boost::asio::ssl;        // from <boost/asio/ssl.hpp>
 class Blossom;
 struct BlossomIO;
 
+struct EndpointEntry {
+    std::string group = "-";
+    std::string name = "";
+};
+
 class HttpProcessing
 {
    public:
@@ -58,12 +63,9 @@ class HttpProcessing
                         Hanami::ErrorContainer& error);
 
     // endpoints
-    bool mapEndpoint(EndpointEntry& result,
-                     const std::string& id,
-                     const Hanami::HttpRequestType type);
+    bool mapEndpoint(EndpointEntry& result, const std::string& id, const HttpRequestType type);
     bool addEndpoint(const std::string& id,
-                     const Hanami::HttpRequestType& httpType,
-                     const SakuraObjectType& sakuraType,
+                     const HttpRequestType& httpType,
                      const std::string& group,
                      const std::string& name);
 
@@ -79,7 +81,7 @@ class HttpProcessing
     bool addBlossom(const std::string& groupName, const std::string& itemName, Blossom* newBlossom);
     Blossom* getBlossom(const std::string& groupName, const std::string& itemName);
 
-    std::map<std::string, std::map<Hanami::HttpRequestType, EndpointEntry>> endpointRules;
+    std::map<std::string, std::map<HttpRequestType, EndpointEntry>> endpointRules;
 
    private:
     enum OverrideType { ALL, ONLY_EXISTING, ONLY_NON_EXISTING };
@@ -89,7 +91,7 @@ class HttpProcessing
                                const std::string& uri,
                                const std::string& token,
                                const std::string& inputValues,
-                               const Hanami::HttpRequestType httpType,
+                               const HttpRequestType httpType,
                                Hanami::ErrorContainer& error);
     bool checkStatusCode(Blossom* blossom,
                          const std::string& blossomName,

@@ -23,7 +23,8 @@
 #include "temp_file_handler.h"
 
 #include <database/tempfile_table.h>
-#include <hanami_common/methods/file_methods.h>
+#include <hanami_common/functions/file_functions.h>
+#include <hanami_common/uuid.h>
 #include <hanami_config/config_handler.h>
 
 TempFileHandler* TempFileHandler::instance = nullptr;
@@ -49,7 +50,7 @@ TempFileHandler::initNewFile(std::string& uuid,
                              const std::string& name,
                              const std::string& relatedUuid,
                              const uint64_t size,
-                             const UserContext& userContext,
+                             const Hanami::UserContext& userContext,
                              Hanami::ErrorContainer& error)
 {
     const std::lock_guard<std::mutex> lock(m_fileHandleMutex);
@@ -78,7 +79,7 @@ TempFileHandler::initNewFile(std::string& uuid,
         }
 
         // create file-handle object
-        FileHandle fileHandle;
+        Hanami::FileHandle fileHandle;
         fileHandle.userContext = userContext;
         fileHandle.file = tempfile;
         fileHandle.bitBuffer = new Hanami::BitBuffer(numberOfInputSegments);
@@ -129,8 +130,8 @@ TempFileHandler::initNewFile(std::string& uuid,
  *
  * @return pointer to handle if uuid found, else nullptr
  */
-FileHandle*
-TempFileHandler::getFileHandle(const std::string& uuid, const UserContext& context)
+Hanami::FileHandle*
+TempFileHandler::getFileHandle(const std::string& uuid, const Hanami::UserContext& context)
 {
     const std::lock_guard<std::mutex> lock(m_fileHandleMutex);
 
@@ -221,7 +222,7 @@ TempFileHandler::getData(Hanami::DataBuffer& result, const std::string& uuid)
  */
 bool
 TempFileHandler::removeData(const std::string& uuid,
-                            const UserContext& userContext,
+                            const Hanami::UserContext& userContext,
                             Hanami::ErrorContainer& error)
 {
     const std::lock_guard<std::mutex> lock(m_fileHandleMutex);
@@ -250,7 +251,7 @@ TempFileHandler::removeData(const std::string& uuid,
  */
 bool
 TempFileHandler::removeTempfile(const std::string& uuid,
-                                const UserContext& userContext,
+                                const Hanami::UserContext& userContext,
                                 Hanami::ErrorContainer& error)
 {
     // check tempfile-database form entry
@@ -290,7 +291,7 @@ TempFileHandler::removeTempfile(const std::string& uuid,
 bool
 TempFileHandler::moveData(const std::string& uuid,
                           const std::string& targetLocation,
-                          const UserContext& userContext,
+                          const Hanami::UserContext& userContext,
                           Hanami::ErrorContainer& error)
 {
     const std::lock_guard<std::mutex> lock(m_fileHandleMutex);

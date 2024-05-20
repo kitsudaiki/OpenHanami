@@ -20,7 +20,7 @@
  *      limitations under the License.
  */
 
-#include <hanami_common/methods/string_methods.h>
+#include <hanami_common/functions/string_functions.h>
 #include <policy_parser.h>
 #include <policy_parsing/policy_parser_interface.h>
 

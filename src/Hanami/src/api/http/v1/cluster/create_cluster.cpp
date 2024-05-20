@@ -80,7 +80,7 @@ CreateCluster::runTask(BlossomIO& blossomIO,
 {
     const std::string clusterName = blossomIO.input["name"];
     const std::string base64Template = blossomIO.input["template"];
-    const UserContext userContext(context);
+    const Hanami::UserContext userContext = convertContext(context);
 
     // check if user already exist within the table
     json getResult;

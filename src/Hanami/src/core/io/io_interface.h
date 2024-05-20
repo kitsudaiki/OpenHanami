@@ -24,7 +24,6 @@
 #define IO_INTERFACE_H
 
 #include <assert.h>
-#include <common/enums.h>
 #include <core/cluster/objects.h>
 #include <hanami_common/logger.h>
 #include <stdint.h>

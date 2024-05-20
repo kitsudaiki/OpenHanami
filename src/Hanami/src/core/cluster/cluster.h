@@ -24,7 +24,6 @@
 #define HANAMI_CLUSTER_H
 
 #include <api/endpoint_processing/http_websocket_thread.h>
-#include <common.h>
 #include <core/cluster/objects.h>
 #include <core/cluster/task.h>
 #include <hanami_cluster_parser/cluster_meta.h>

@@ -21,8 +21,8 @@
  */
 
 #include <database/users_table.h>
+#include <hanami_common/functions/string_functions.h>
 #include <hanami_common/items/table_item.h>
-#include <hanami_common/methods/string_methods.h>
 #include <hanami_crypto/hashes.h>
 #include <hanami_database/sql_database.h>
 
@@ -170,7 +170,7 @@ UsersTable::initNewAdminUser(Hanami::ErrorContainer& error)
     userData["name"] = userName;
     userData["projects"] = "[]";
     userData["is_admin"] = true;
-    userData["creator_id"] = "MISAKI";
+    userData["creator_id"] = "HANAMI_INIT";
     userData["pw_hash"] = pwHash;
     userData["salt"] = salt;
 

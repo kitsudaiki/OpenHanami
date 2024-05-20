@@ -29,6 +29,23 @@
 namespace Hanami
 {
 
+/**
+ * @brief function for generating random-values
+ *        coming from this website:
+ *            https://www.reedbeta.com/blog/hash-functions-for-gpu-rendering/
+ *
+ * @param input seed for random value
+ *
+ * @return random value
+ */
+inline uint32_t
+pcg_hash(const uint32_t input)
+{
+    const uint32_t state = input * 747796405u + 2891336453u;
+    const uint32_t word = ((state >> ((state >> 28u) + 4u)) ^ state) * 277803737u;
+    return (word >> 22u) ^ word;
+}
+
 //--------------------------------------------------------------------------------------------------
 // SHA256
 //--------------------------------------------------------------------------------------------------

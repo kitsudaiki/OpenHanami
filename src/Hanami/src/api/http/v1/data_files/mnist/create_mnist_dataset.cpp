@@ -88,7 +88,7 @@ CreateMnistDataSet::runTask(BlossomIO& blossomIO,
     const long inputDataSize = blossomIO.input["input_data_size"];
     const long labelDataSize = blossomIO.input["label_data_size"];
     const std::string uuid = generateUuid().toString();
-    const UserContext userContext(context);
+    const Hanami::UserContext userContext = convertContext(context);
 
     // get directory to store data from config
     bool success = false;

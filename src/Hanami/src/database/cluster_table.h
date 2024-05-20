@@ -40,23 +40,23 @@ class ClusterTable : public HanamiSqlTable
     ~ClusterTable();
 
     bool addCluster(json& clusterData,
-                    const UserContext& userContext,
+                    const Hanami::UserContext& userContext,
                     Hanami::ErrorContainer& error);
     bool getCluster(json& result,
                     const std::string& clusterUuid,
-                    const UserContext& userContext,
+                    const Hanami::UserContext& userContext,
                     Hanami::ErrorContainer& error,
                     const bool showHiddenValues = false);
     bool getClusterByName(json& result,
                           const std::string& clusterName,
-                          const UserContext& userContext,
+                          const Hanami::UserContext& userContext,
                           Hanami::ErrorContainer& error,
                           const bool showHiddenValues = false);
     bool getAllCluster(Hanami::TableItem& result,
-                       const UserContext& userContext,
+                       const Hanami::UserContext& userContext,
                        Hanami::ErrorContainer& error);
     bool deleteCluster(const std::string& clusterUuid,
-                       const UserContext& userContext,
+                       const Hanami::UserContext& userContext,
                        Hanami::ErrorContainer& error);
     bool deleteAllCluster(Hanami::ErrorContainer& error);
 

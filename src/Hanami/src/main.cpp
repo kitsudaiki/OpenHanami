@@ -22,7 +22,6 @@
 
 #include <api/websocket/cluster_io.h>
 #include <args.h>
-#include <common.h>
 #include <config.h>
 #include <database/audit_log_table.h>
 #include <database/checkpoint_table.h>
@@ -35,6 +34,7 @@
 #include <documentation/generate_rest_api_docu.h>
 #include <hanami_args/arg_parser.h>
 #include <hanami_common/files/text_file.h>
+#include <hanami_common/functions/time_functions.h>
 #include <hanami_common/logger.h>
 #include <hanami_config/config_handler.h>
 #include <hanami_root.h>

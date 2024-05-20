@@ -23,8 +23,8 @@
 #ifndef TORIIGATEWAY_HTTP_THREAD_H
 #define TORIIGATEWAY_HTTP_THREAD_H
 
-#include <common.h>
 #include <hanami_common/logger.h>
+#include <hanami_common/structs.h>
 #include <hanami_common/threading/thread.h>
 #include <hanami_messages.proto3.pb.h>
 
@@ -57,7 +57,7 @@ class HttpWebsocketThread : public Hanami::Thread
 
     bool sendData(const void* data, const uint64_t dataSize);
     Cluster* m_targetCluster = nullptr;
-    FileHandle* m_fileHandle = nullptr;
+    Hanami::FileHandle* m_fileHandle = nullptr;
     void closeClient();
 
    protected:

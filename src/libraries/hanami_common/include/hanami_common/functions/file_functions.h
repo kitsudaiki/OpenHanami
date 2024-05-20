@@ -1,5 +1,5 @@
 /**
- *  @file       file_methods.h
+ *  @file       file_functions.h
  *
  *  @author     Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef FILE_METHODS_H
-#define FILE_METHODS_H
+#ifndef FILE_FUNCTIONS_H
+#define FILE_FUNCTIONS_H
 
 #include <assert.h>
 #include <hanami_common/logger.h>
@@ -51,4 +51,4 @@ bool deleteFileOrDir(const std::filesystem::path& path, ErrorContainer& error);
 
 }  // namespace Hanami
 
-#endif  // FILE_METHODS_H
+#endif  // FILE_FUNCTIONS_H

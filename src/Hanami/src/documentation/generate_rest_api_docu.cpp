@@ -26,8 +26,8 @@
 #include <api/endpoint_processing/http_processing/http_processing.h>
 #include <api/endpoint_processing/http_server.h>
 #include <api/endpoint_processing/http_websocket_thread.h>
-#include <hanami_common/methods/file_methods.h>
-#include <hanami_common/methods/string_methods.h>
+#include <hanami_common/functions/file_functions.h>
+#include <hanami_common/functions/string_functions.h>
 #include <hanami_crypto/common.h>
 #include <hanami_root.h>
 

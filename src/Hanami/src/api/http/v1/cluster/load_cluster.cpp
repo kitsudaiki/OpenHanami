@@ -71,7 +71,7 @@ LoadCluster::runTask(BlossomIO& blossomIO,
 {
     const std::string clusterUuid = blossomIO.input["cluster_uuid"];
     const std::string checkpointUuid = blossomIO.input["checkpoint_uuid"];
-    const UserContext userContext(context);
+    const Hanami::UserContext userContext = convertContext(context);
 
     // get data from table
     json clusterInfo;
