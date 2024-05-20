@@ -78,11 +78,11 @@ set(SOURCES
     src/common/typedefs.h
     src/common/using.h
     src/config.h
-    src/core/io/disc/checkpoint_io.h
     src/core/cluster/add_tasks.h
     src/core/cluster/cluster.h
     src/core/cluster/cluster_handler.h
     src/core/cluster/cluster_init.h
+    src/core/cluster/objects.h
     src/core/cluster/statemachine_init.h
     src/core/cluster/states/checkpoints/restore_cluster_state.h
     src/core/cluster/states/checkpoints/save_cluster_state.h
@@ -96,6 +96,9 @@ set(SOURCES
     src/core/cluster/states/task_handle_state.h
     src/core/cluster/task.h
     src/core/cuda_functions.h
+    src/core/io/buffer/buffer_io.h
+    src/core/io/disc/checkpoint_io.h
+    src/core/io/io_interface.h
     src/core/processing/cluster_io_functions.h
     src/core/processing/cluster_resize.h
     src/core/processing/cpu/backpropagation.h
@@ -105,7 +108,6 @@ set(SOURCES
     src/core/processing/cpu/worker_thread.h
     src/core/processing/cuda/cuda_host.h
     src/core/processing/logical_host.h
-    src/core/processing/objects.h
     src/core/processing/physical_host.h
     src/core/routing_functions.h
     src/core/temp_file_handler.h
@@ -196,6 +198,9 @@ set(SOURCES
     src/core/cluster/states/tables/table_interpolation_state.cpp
     src/core/cluster/states/tables/table_train_forward_state.cpp
     src/core/cluster/states/task_handle_state.cpp
+    src/core/io/buffer/buffer_io.cpp
+    src/core/io/disc/checkpoint_io.cpp
+    src/core/io/io_interface.cpp
     src/core/processing/cpu/cpu_host.cpp
     src/core/processing/cpu/worker_thread.cpp
     src/core/processing/cuda/cuda_host.cpp
@@ -217,12 +222,21 @@ set(SOURCES
     src/database/users_table.cpp
     src/documentation/generate_rest_api_docu.cpp
     src/hanami_root.cpp
-    src/core/io/disc/checkpoint_io.cpp
-    src/main.cpp
 )
 
 # Adding the executable
-add_executable(Hanami ${SOURCES} ${CUDA_OBJECTS})
+add_executable(Hanami
+    ${SOURCES}
+    src/main.cpp
+    # ${CUDA_OBJECTS}
+    )
+add_executable(Hanami_unittests
+    ${SOURCES}
+    tests/unit_tests/cluster_test.h
+    tests/unit_tests/cluster_test.cpp
+    tests/unit_tests/main.cpp
+    # ${CUDA_OBJECTS}
+    )
 
 # Including directories
 include_directories(
@@ -280,6 +294,29 @@ target_link_libraries(Hanami
     Threads::Threads
     OpenSSL::SSL
 )
+target_link_libraries(Hanami_unittests
+    hanami_cpu
+    hanami_hardware
+    hanami_common
+    hanami_ini
+    hanami_config
+    hanami_sqlite
+    hanami_database
+    hanami_files
+    hanami_crypto
+    hanami_args
+    hanami_policies
+    hanami_cluster_parser
+    ${SSL_LIB}
+    ${CRYPTO_LIB}
+    ${SQLITE3_LIB}
+    ${UUID_LIB}
+    ${CUDA_LIB}
+    ${CUDART_LIB}
+    ${PROTOBUF_LIB}
+    Threads::Threads
+    OpenSSL::SSL
+)
 
 # Set the path to your .proto file
 set(PROTO_FILE ../libraries/hanami_messages/protobuffers)
@@ -288,9 +325,9 @@ set(PROTO_FILE ../libraries/hanami_messages/protobuffers)
 set(PROTO_OUTPUT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(PROTO_OUTPUT_HEADER ${PROTO_OUTPUT_DIR}/${PROTO_FILE}/hanami_messages.proto3.pb.h)
 set(PROTO_OUTPUT_SOURCE ${PROTO_OUTPUT_DIR}/${PROTO_FILE}/hanami_messages.proto3.pb.cc)
-set(CUDA_SOURCES src/core/processing/cuda/gpu_kernel.cu)
-get_filename_component(CUDA_SRC_NAME ${CUDA_SOURCES} NAME_WE)
-set(CUDA_OUTPUT_OBJ ${CMAKE_CURRENT_BINARY_DIR}/${CUDA_SRC_NAME}.o)
+# set(CUDA_SOURCES src/core/processing/cuda/gpu_kernel.cu)
+# get_filename_component(CUDA_SRC_NAME ${CUDA_SOURCES} NAME_WE)
+# set(CUDA_OUTPUT_OBJ ${CMAKE_CURRENT_BINARY_DIR}/${CUDA_SRC_NAME}.o)
 
 # Generate C++ headers and sources from the .proto file
 add_custom_command(
@@ -301,12 +338,12 @@ add_custom_command(
         --cpp_out=${PROTO_OUTPUT_DIR}/${PROTO_FILE}
         --proto_path=${CMAKE_CURRENT_SOURCE_DIR}/${PROTO_FILE}
         ${CMAKE_CURRENT_SOURCE_DIR}/${PROTO_FILE}/hanami_messages.proto3
-    COMMAND nvcc
-        -O3
-        -c
-        -I${CMAKE_CURRENT_SOURCE_DIR}/../libraries/hanami_common/include
-        -o ${CUDA_OUTPUT_OBJ}
-        ${CMAKE_CURRENT_SOURCE_DIR}/${CUDA_SOURCES}
+    # COMMAND nvcc
+    #     -O3
+    #     -c
+    #     -I${CMAKE_CURRENT_SOURCE_DIR}/../libraries/hanami_common/include
+    #     -o ${CUDA_OUTPUT_OBJ}
+    #     ${CMAKE_CURRENT_SOURCE_DIR}/${CUDA_SOURCES}
     DEPENDS
         ${CMAKE_CURRENT_SOURCE_DIR}/${PROTO_FILE}/hanami_messages.proto3
 )
@@ -315,12 +352,18 @@ add_custom_command(
 add_custom_target(generate_protobuf_files DEPENDS
     ${PROTO_OUTPUT_HEADER}
     ${PROTO_OUTPUT_SOURCE}
-    ${CUDA_SOURCES}
+    # ${CUDA_SOURCES}
 )
 add_dependencies(Hanami generate_protobuf_files)
 target_sources(Hanami PRIVATE
     ${PROTO_OUTPUT_HEADER}
     ${PROTO_OUTPUT_SOURCE}
-    ${CUDA_SOURCES}
+    # ${CUDA_SOURCES}
+)
+add_dependencies(Hanami_unittests generate_protobuf_files)
+target_sources(Hanami_unittests PRIVATE
+    ${PROTO_OUTPUT_HEADER}
+    ${PROTO_OUTPUT_SOURCE}
+    # ${CUDA_SOURCES}
 )
 

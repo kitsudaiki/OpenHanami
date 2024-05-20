@@ -25,12 +25,11 @@
 
 #include <common.h>
 #include <core/cluster/cluster.h>
+#include <core/cluster/objects.h>
 #include <core/processing/cpu/cpu_host.h>
 #include <core/processing/cuda/cuda_host.h>
 #include <core/processing/logical_host.h>
 #include <hanami_root.h>
-
-#include "objects.h"
 
 /**
  * @brief search for an empty target-connection within a target-brick
@@ -44,17 +43,20 @@
 inline SynapseConnection*
 searchTargetInBrick(Brick* targetBrick, ItemBuffer& synapseBlockBuffer)
 {
-    const uint64_t numberOfConnectionsBlocks = targetBrick->connectionBlocks->size();
+    uint64_t i = 0;
+    uint64_t j = 0;
+
+    const uint64_t numberOfConnectionsBlocks = targetBrick->connectionBlocks.size();
     if (numberOfConnectionsBlocks == 0) {
         return nullptr;
     }
 
     uint64_t pos = rand() % numberOfConnectionsBlocks;
-    for (uint64_t i = 0; i < numberOfConnectionsBlocks; i++) {
-        ConnectionBlock* connectionBlock = &targetBrick->connectionBlocks[0][pos];
+    for (i = 0; i < numberOfConnectionsBlocks; ++i) {
+        ConnectionBlock* connectionBlock = &targetBrick->connectionBlocks[pos];
 
-        for (uint16_t j = 0; j < NUMBER_OF_SYNAPSESECTION; j++) {
-            if (connectionBlock->connections[j].origin.blockId == UNINIT_STATE_32) {
+        for (j = 0; j < NUMBER_OF_SYNAPSESECTION; ++j) {
+            if (connectionBlock->connections[j].origin.blockId == UNINIT_STATE_16) {
                 // initialize a synapse-block if necessary
                 if (connectionBlock->targetSynapseBlockPos == UNINIT_STATE_64) {
                     SynapseBlock block;
@@ -80,44 +82,40 @@ searchTargetInBrick(Brick* targetBrick, ItemBuffer& synapseBlockBuffer)
 inline void
 resizeConnections(Brick* targetBrick)
 {
-    const uint32_t dimXold = targetBrick->dimX;
-    const uint32_t dimYold = targetBrick->dimY;
+    const uint32_t dimXold = targetBrick->header.dimX;
+    const uint32_t dimYold = targetBrick->header.dimY;
+    int32_t x, y = 0;
 
-    // output-bricks must cover the whole output
-    if (targetBrick->isOutputBrick) {
-        targetBrick->dimX = targetBrick->numberOfNeuronBlocks;
-    }
-
-    // update brick-dimensions
-    if (targetBrick->dimX < targetBrick->numberOfNeuronBlocks) {
-        targetBrick->dimX++;
-    }
-    targetBrick->dimY++;
+    targetBrick->header.dimX++;
+    targetBrick->header.dimY++;
 
     // resize list
-    targetBrick->connectionBlocks->resize(targetBrick->dimX * targetBrick->dimY);
+    targetBrick->connectionBlocks.resize(targetBrick->header.dimX * targetBrick->header.dimY);
 
     // if there was no scaling in x-dimension, then no re-ordering necessary
-    if (targetBrick->dimX == dimXold) {
+    if (targetBrick->header.dimX == dimXold) {
         return;
     }
 
     LOG_DEBUG("resized connection-Block: " + std::to_string(dimXold) + ":" + std::to_string(dimYold)
-              + " -> " + std::to_string(targetBrick->dimX) + ":"
-              + std::to_string(targetBrick->dimY));
+              + " -> " + std::to_string(targetBrick->header.dimX) + ":"
+              + std::to_string(targetBrick->header.dimY));
     uint32_t newPos = 0;
     uint32_t oldPos = 0;
 
     // update content of list for the new size
-    for (int32_t y = dimYold - 1; y >= 1; y--) {
-        for (int32_t x = dimXold - 1; x >= 0; x--) {
-            newPos = (y * targetBrick->dimX) + x;
+    for (y = dimYold - 1; y >= 1; --y) {
+        for (x = dimXold - 1; x >= 0; --x) {
+            newPos = (y * targetBrick->header.dimX) + x;
             oldPos = (y * dimXold) + x;
 
-            targetBrick->connectionBlocks[0][newPos] = targetBrick->connectionBlocks[0][oldPos];
-            targetBrick->connectionBlocks[0][oldPos] = ConnectionBlock();
+            targetBrick->connectionBlocks[newPos] = targetBrick->connectionBlocks[oldPos];
+            targetBrick->connectionBlocks[oldPos] = ConnectionBlock();
         }
     }
+
+    targetBrick->neuronBlocks.resize(targetBrick->header.dimX);
+    targetBrick->tempNeuronBlocks.resize(targetBrick->header.dimX);
 }
 
 /**
@@ -133,29 +131,24 @@ resizeConnections(Brick* targetBrick)
  */
 inline bool
 createNewSection(Cluster& cluster,
-                 const SourceLocationPtr& originLocation,
+                 const SourceLocationPtr& sourceLocPtr,
                  const float lowerBound,
                  const float potentialRange,
                  ItemBuffer& synapseBlockBuffer)
 {
     // get origin object
-    NeuronBlock* originBlock = &cluster.neuronBlocks[originLocation.blockId];
-    Neuron* originNeuron = &originBlock->neurons[originLocation.neuronId];
-    const bool inputConnected = cluster.bricks[originBlock->brickId].isInputBrick;
-    const uint8_t newPosInNeuron = originNeuron->getFirstZeroBit();
+    SourceLocation sourceLoc = getSourceNeuron(sourceLocPtr, &cluster.bricks[0]);
+    const uint8_t newPosInNeuron = sourceLoc.neuron->getFirstZeroBit();
     if (newPosInNeuron == UNINIT_STATE_8) {
         return false;
     }
-
-    const uint32_t originBrickId = cluster.neuronBlocks[originLocation.blockId].brickId;
-    const Brick* originBrick = &cluster.bricks[originBrickId];
-    if (originBrick->isOutputBrick) {
+    if (sourceLoc.brick->header.isOutputBrick) {
         return false;
     }
 
     // get target objects
     const uint32_t targetBrickId
-        = originBrick->possibleTargetNeuronBrickIds[rand() % NUMBER_OF_POSSIBLE_NEXT];
+        = sourceLoc.brick->possibleBrickTargetIds[rand() % NUMBER_OF_POSSIBLE_NEXT];
     Brick* targetBrick = &cluster.bricks[targetBrickId];
 
     // get target-connection
@@ -166,13 +159,13 @@ createNewSection(Cluster& cluster,
         targetBrick->wasResized = true;
     }
 
-    // initialize connection
-    targetConnection->origin = originLocation;
+    // initialize new connection
+    targetConnection->origin = sourceLocPtr;
     targetConnection->lowerBound = lowerBound;
     targetConnection->potentialRange = potentialRange;
     targetConnection->origin.posInNeuron = newPosInNeuron;
-    targetConnection->origin.isInput = inputConnected;
-    originNeuron->setInUse(newPosInNeuron);
+    targetConnection->origin.isInput = sourceLoc.brick->header.isInputBrick;
+    sourceLoc.neuron->setInUse(newPosInNeuron);
 
     return true;
 }
@@ -193,32 +186,37 @@ updateCluster(Cluster& cluster)
     Neuron* neuron = nullptr;
     Brick* brick = nullptr;
     bool found = false;
+    uint32_t brickId, blockId, sourceId = 0;
 
     // iterate over all neurons and add new synapse-section, if required
-    for (uint32_t neuronBlockId = 0; neuronBlockId < cluster.neuronBlocks.size(); neuronBlockId++) {
-        neuronBlock = &cluster.neuronBlocks[neuronBlockId];
+    for (brickId = 0; brickId < cluster.bricks.size(); ++brickId) {
+        brick = &cluster.bricks[brickId];
 
-        for (uint32_t sourceId = 0; sourceId < neuronBlock->numberOfNeurons; sourceId++) {
-            neuron = &neuronBlock->neurons[sourceId];
+        for (blockId = 0; blockId < brick->neuronBlocks.size(); ++blockId) {
+            neuronBlock = &brick->neuronBlocks[blockId];
 
-            if (neuron->isNew > 0) {
-                found = true;
-                SourceLocationPtr originLocation;
-                originLocation.blockId = neuronBlockId;
-                originLocation.neuronId = sourceId;
+            for (sourceId = 0; sourceId < NEURONS_PER_NEURONBLOCK; ++sourceId) {
+                neuron = &neuronBlock->neurons[sourceId];
 
-                createNewSection(cluster,
-                                 originLocation,
-                                 neuron->newLowerBound,
-                                 neuron->potentialRange,
-                                 cluster.attachedHost->synapseBlocks);
+                if (neuron->isNew > 0) {
+                    found = true;
+                    SourceLocationPtr originLocation;
+                    originLocation.brickId = brickId;
+                    originLocation.blockId = blockId;
+                    originLocation.neuronId = sourceId;
 
-                neuron->newLowerBound = 0.0f;
-                neuron->isNew = 0;
+                    createNewSection(cluster,
+                                     originLocation,
+                                     neuron->newLowerBound,
+                                     neuron->potentialRange,
+                                     cluster.attachedHost->synapseBlocks);
+
+                    neuron->newLowerBound = 0.0f;
+                    neuron->isNew = 0;
+                }
             }
         }
     }
-
     return found;
 }
 

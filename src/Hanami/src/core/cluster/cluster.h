@@ -25,8 +25,8 @@
 
 #include <api/endpoint_processing/http_websocket_thread.h>
 #include <common.h>
+#include <core/cluster/objects.h>
 #include <core/cluster/task.h>
-#include <core/processing/objects.h>
 #include <hanami_cluster_parser/cluster_meta.h>
 #include <hanami_common/buffer/data_buffer.h>
 #include <hanami_common/buffer/item_buffer.h>
@@ -60,23 +60,16 @@ class Cluster
 
     // cluster-data
     ClusterHeader clusterHeader;
-    float* inputValues = nullptr;
-    float* outputValues = nullptr;
-    float* expectedValues = nullptr;
-    std::map<std::string, Brick*> namedBricks;
+
     std::vector<Brick> bricks;
-    std::vector<NeuronBlock> neuronBlocks;
-    std::vector<TempNeuronBlock> tempNeuronBlocks;
-    uint32_t numberOfNeuronBlocks = 0;
+    std::map<std::string, InputInterface> inputInterfaces;
+    std::map<std::string, OutputInterface> outputInterfaces;
 
     // meta
     const std::string getUuid();
     const std::string getName();
     bool setName(const std::string& newName);
     bool init(const Hanami::ClusterMeta& clusterTemplate, const std::string& uuid);
-
-    // stats
-    uint64_t getDataSize() const;
 
     // tasks
     Task* getCurrentTask() const;
@@ -96,10 +89,10 @@ class Cluster
 
     // counter for parallel-processing
     bool incrementAndCompare(const uint32_t referenceValue);
-    std::atomic<int> counter;
 
    private:
     std::mutex m_clusterStateLock;
+    std::atomic<int> counter;
 };
 
 #endif  // HANAMI_CLUSTER_H

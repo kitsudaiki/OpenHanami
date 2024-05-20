@@ -240,18 +240,10 @@ CreateTask::tableTask(std::string& taskUuid,
                       BlossomStatus& status,
                       Hanami::ErrorContainer& error)
 {
-    // init request-task
-    const uint64_t numberOfInputs = cluster->clusterHeader.numberOfInputs;
-    const uint64_t numberOfOutputs = cluster->clusterHeader.numberOfOutputs;
     const uint64_t numberOfLines = dataSetInfo["lines"];
-
     const std::string dataSetLocation = dataSetInfo["location"];
 
-    for (auto& [name, brick] : cluster->namedBricks) {
-        if (brick->isInputBrick == false) {
-            continue;
-        }
-
+    for (const auto& [name, inputInterface] : cluster->inputInterfaces) {
         // get input-data
         Hanami::DataBuffer inputBuffer;
         if (getDataSetPayload(inputBuffer, dataSetLocation, error, name) == false) {
@@ -262,25 +254,22 @@ CreateTask::tableTask(std::string& taskUuid,
         }
 
         if (taskType == "request") {
-            taskUuid = addTableRequestTask(*cluster,
-                                           name,
-                                           userContext.userId,
-                                           userContext.projectId,
-                                           static_cast<float*>(inputBuffer.data),
-                                           numberOfInputs,
-                                           numberOfOutputs,
-                                           numberOfLines - numberOfInputs);
+            taskUuid = addTableRequestTask(
+                *cluster,
+                name,
+                userContext.userId,
+                userContext.projectId,
+                static_cast<float*>(inputBuffer.data),
+                inputInterface.inputNeurons.size(),
+                cluster->outputInterfaces.begin()->second.outputNeurons.size(),
+                numberOfLines - inputInterface.inputNeurons.size());
             inputBuffer.data = nullptr;
 
             // TODO: support more than 1 input
             break;
         }
         else {
-            for (auto& [name, brick] : cluster->namedBricks) {
-                if (brick->isOutputBrick == false) {
-                    continue;
-                }
-
+            for (auto& [name, outputInterface] : cluster->outputInterfaces) {
                 // get output-data
                 Hanami::DataBuffer outputBuffer;
                 if (getDataSetPayload(outputBuffer, dataSetLocation, error, name) == false) {
@@ -298,9 +287,9 @@ CreateTask::tableTask(std::string& taskUuid,
                                              userContext.projectId,
                                              static_cast<float*>(inputBuffer.data),
                                              static_cast<float*>(outputBuffer.data),
-                                             numberOfInputs,
-                                             numberOfOutputs,
-                                             numberOfLines - numberOfInputs);
+                                             inputInterface.inputNeurons.size(),
+                                             outputInterface.outputNeurons.size(),
+                                             numberOfLines - inputInterface.inputNeurons.size());
                 inputBuffer.data = nullptr;
                 outputBuffer.data = nullptr;
 

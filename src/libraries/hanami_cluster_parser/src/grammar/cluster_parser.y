@@ -76,6 +76,16 @@ YY_DECL;
     VERSION_1 "version1"
     SETTINGS "settings"
     BRICKS "bricks"
+    INPUTS "inputs"
+    OUTPUTS "outputs"
+    NUM_NEURONS "number_of_neurons"
+    NUM_INPUTS "number_of_inputs"
+    NUM_OUTPUTS "number_of_outputs"
+    TARGET "target"
+    COOLDOWN "neuron_cooldown"
+    MAX_DISTANCE "max_connection_distance"
+    REFRACTORY_TIME "refractory_time"
+    ENABLE_REDUCTION "enable_reduction"
     BOOL_TRUE  "true"
     BOOL_FALSE "false"
 ;
@@ -86,7 +96,9 @@ YY_DECL;
 %token <double> FLOAT "float"
 
 %type  <Hanami::Position> position
-%type  <Hanami::BrickMeta> brick_settings
+%type  <Hanami::BrickMeta> brick
+%type  <Hanami::InputMeta> input
+%type  <Hanami::OutputMeta> output
 
 %%
 %start startpoint;
@@ -98,244 +110,164 @@ YY_DECL;
 //
 // bricks:
 //     1,1,1
-//         input: test_input
-//         number_of_neurons: 20
-//
 //     2,1,1
-//         number_of_neurons": 10
-//
 //     3,1,1
-//         output: test_output
-//         number_of_neurons: 5
+//
+// inputs:
+//     "input_brick":
+//         target: 1,1,1
+//         number_of_inputs: 20
+//
+// outputs:
+//     "output_brick":
+//         target: 3,1,1
+//         number_of_outputs: 5
+//
 
 startpoint:
-    "version1" linebreaks "settings" ":" linebreaks settings "bricks" ":" linebreaks bricks
+    "version 1" "settings" ":" settings "bricks" ":" bricks "inputs" ":" inputs "outputs" ":" outputs
     {
         driver.output->version = 1;
     }
 |
-    "version1" linebreaks "bricks" ":" linebreaks bricks
+    "version1" "settings" ":" settings "bricks" ":" bricks "inputs" ":" inputs "outputs" ":" outputs
     {
         driver.output->version = 1;
     }
 
 settings:
-    settings "identifier" ":" "number" linebreaks
+    settings setting
+    {}
+|
+    setting
+    {}
+
+setting:
+    "neuron_cooldown" ":" "number"
     {
-        if($2 == "neuron_cooldown")
-        {
-            driver.output->neuronCooldown = $4;
-        }
-        else if($2 == "max_connection_distance")
-        {
-            driver.output->maxConnectionDistance = $4;
-        }
-        else if($2 == "refractory_time")
-        {
-            if($4 < 1) {
-                driver.error(yyla.location, "refractory_time must be >= 1");
-                return 1;
-            }
-            driver.output->refractoryTime = $4;
-        }
-        else
-        {
-            driver.error(yyla.location, "unkown settings-field '" + $2 + "'");
+        if($3 <= 1) {
+            driver.error(yyla.location, "neuron_cooldown must be > 1.0");
             return 1;
         }
+        driver.output->neuronCooldown = $3;
     }
 |
-    settings "identifier" ":" "float" linebreaks
+    "neuron_cooldown" ":" "float"
     {
-        if($2 == "neuron_cooldown")
-        {
-            driver.output->neuronCooldown = $4;
-        }
-        else
-        {
-            driver.error(yyla.location, "unkown settings-field '" + $2 + "'");
+        if($3 <= 1.0) {
+            driver.error(yyla.location, "neuron_cooldown must be > 1.0");
             return 1;
         }
+        driver.output->neuronCooldown = $3;
     }
 |
-    settings "identifier" ":" "true" linebreaks
+    "max_connection_distance" ":" "number"
     {
-        if($2 == "enable_reduction")
-        {
-            driver.output->enableReduction = true;
-        }
-        else
-        {
-            driver.error(yyla.location, "unkown settings-field '" + $2 + "'");
+        if($3 < 1) {
+            driver.error(yyla.location, "max_connection_distance must be >= 1");
             return 1;
         }
+        driver.output->maxConnectionDistance = $3;
     }
 |
-    settings "identifier" ":" "false" linebreaks
+    "refractory_time" ":" "number"
     {
-        if($2 == "enable_reduction")
-        {
-            driver.output->enableReduction = false;
-        }
-        else
-        {
-            driver.error(yyla.location, "unkown settings-field '" + $2 + "'");
+        if($3 < 1) {
+            driver.error(yyla.location, "refractory_time must be >= 1");
             return 1;
         }
+        driver.output->refractoryTime = $3;
     }
 |
-    "identifier" ":" "number" linebreaks
+    "enable_reduction" ":" "true"
     {
-        if($1 == "neuron_cooldown")
-        {
-            driver.output->neuronCooldown = $3;
-        }
-        else if($1 == "max_connection_distance")
-        {
-            driver.output->maxConnectionDistance = $3;
-        }
-        else if($1 == "refractory_time")
-        {
-            if($3 < 1) {
-                driver.error(yyla.location, "refractory_time must be >= 1");
-                return 1;
-            }
-            driver.output->refractoryTime = $3;
-        }
-        else
-        {
-            driver.error(yyla.location, "unkown settings-field '" + $1 + "'");
-            return 1;
-        }
+        driver.output->enableReduction = true;
     }
 |
-    "identifier" ":" "float" linebreaks
+    "enable_reduction" ":" "false"
     {
-        if($1 == "neuron_cooldown")
-        {
-            driver.output->neuronCooldown = $3;
-        }
-        else
-        {
-            driver.error(yyla.location, "unkown settings-field '" + $1 + "'");
-            return 1;
-        }
-    }
-|
-    "identifier" ":" "true" linebreaks
-    {
-        if($1 == "enable_reduction")
-        {
-            driver.output->enableReduction = true;
-        }
-        else
-        {
-            driver.error(yyla.location, "unkown settings-field '" + $1 + "'");
-            return 1;
-        }
-    }
-|
-    "identifier" ":" "false" linebreaks
-    {
-        if($1 == "enable_reduction")
-        {
-            driver.output->enableReduction = false;
-        }
-        else
-        {
-            driver.error(yyla.location, "unkown settings-field '" + $1 + "'");
-            return 1;
-        }
+        driver.output->enableReduction = false;
     }
 
 bricks:
-    bricks position linebreaks brick_settings
+    bricks brick
     {
-        $4.position = $2;
-        driver.output->bricks.push_back($4);
+        driver.output->bricks.push_back($2);
     }
 |
-    position linebreaks brick_settings
+    brick
     {
-        $3.position = $1;
-        driver.output->bricks.push_back($3);
+        driver.output->bricks.push_back($1);
     }
 
-brick_settings:
-    brick_settings "identifier" ":" "identifier" linebreaks_eno
+brick:
+    position
     {
-        if($2 == "input")
-        {
-            $1.type = INPUT_BRICK_TYPE;
-            $1.name = $4;
-        }
-        else if($2 == "output")
-        {
-            $1.type = OUTPUT_BRICK_TYPE;
-            $1.name = $4;
-        }
-        else
-        {
-            driver.error(yyla.location, "unkown brick-field '" + $2 + "'");
+        const Hanami::Position pos = $1;
+        const uint32_t brickId = driver.getBrickId(pos);
+        if(brickId != UNINTI_POINT_32) {
+            driver.error(yyla.location, "Brick with the position " + pos.toString() + " already exist.");
             return 1;
         }
+        $$.position = $1;
+    }
 
-        $$ = $1;
+inputs:
+    inputs input
+    {
+        driver.output->inputs.push_back($2);
     }
 |
-    brick_settings "identifier" ":" "number" linebreaks_eno
+    input
     {
-        if($2 == "number_of_neurons")
-        {
-            $1.numberOfNeurons = $4;
-        }
-        else
-        {
-            driver.error(yyla.location, "unkown brick-field '" + $2 + "'");
+        driver.output->inputs.push_back($1);
+    }
+
+input:
+    "identifier" ":" "target" ":" position "number_of_inputs" ":" "number"
+    {
+        const Hanami::Position pos = $5;
+        const uint32_t brickId = driver.getBrickId($5);
+        if(brickId == UNINTI_POINT_32) {
+            driver.error(yyla.location, "Brick with the position " + pos.toString() + " doesn't exist.");
             return 1;
         }
+        if($1.size() > 255) {
+            driver.error(yyla.location, "Name '" + $1 + "' is longer than 255 characters.");
+            return 1;
+        }
+        $$.name = $1;
+        $$.targetBrickId = brickId;
+        $$.numberOfInputs = $8;
+    }
 
-        $$ = $1;
+outputs:
+    outputs output
+    {
+        driver.output->outputs.push_back($2);
     }
 |
-    "identifier" ":" "identifier" linebreaks
+    output
     {
-        Hanami::BrickMeta brickMeta;
-
-        if($1 == "input")
-        {
-            brickMeta.type = INPUT_BRICK_TYPE;
-            brickMeta.name = $3;
-        }
-        else if($1 == "output")
-        {
-            brickMeta.type = OUTPUT_BRICK_TYPE;
-            brickMeta.name = $3;
-        }
-        else
-        {
-            driver.error(yyla.location, "unkown brick-field '" + $1 + "'");
-            return 1;
-        }
-
-        $$ = brickMeta;
+        driver.output->outputs.push_back($1);
     }
-|
-    "identifier" ":" "number" linebreaks
-    {
-        Hanami::BrickMeta brickMeta;
 
-        if($1 == "number_of_neurons")
-        {
-            brickMeta.numberOfNeurons = $3;
-        }
-        else
-        {
-            driver.error(yyla.location, "unkown brick-field '" + $1 + "'");
+output:
+    "identifier" ":" "target" ":" position "number_of_outputs" ":" "number"
+    {
+        const Hanami::Position pos = $5;
+        const uint32_t brickId = driver.getBrickId($5);
+        if(brickId == UNINTI_POINT_32) {
+            driver.error(yyla.location, "Brick with the position " + pos.toString() + " doesn't exist.");
             return 1;
         }
-
-        $$ = brickMeta;
+        if($1.size() > 255) {
+            driver.error(yyla.location, "Name '" + $1 + "' is longer than 255 characters.");
+            return 1;
+        }
+        $$.name = $1;
+        $$.targetBrickId = brickId;
+        $$.numberOfOutputs = $8;
     }
 
 position:
@@ -347,27 +279,10 @@ position:
         pos.z = $5;
         $$ = pos;
     }
-
-linebreaks:
-    linebreaks "linebreak"
-    {}
-|
-    "linebreak"
-    {}
-
-linebreaks_eno:
-    linebreaks "linebreak"
-    {}
-|
-    "linebreak"
-    {}
-|
-    "end of file"
-    {}
 %%
 
 void Hanami::ClusterParser::error(const Hanami::location& location,
-                                               const std::string& message)
+                                  const std::string& message)
 {
     driver.error(location, message);
 }

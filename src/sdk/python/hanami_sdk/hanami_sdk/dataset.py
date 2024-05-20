@@ -219,7 +219,11 @@ def upload_csv_files(token: str,
         "input_data_size": len(input_file_data),
     }
     body_str = json.dumps(json_body)
-    result = hanami_request.send_post_request(token, address, path, body_str)
+    result = hanami_request.send_post_request(token,
+                                              address,
+                                              path,
+                                              body_str,
+                                              verify=verify_connection)
 
     # process init-result
     result_json = json.loads(result)

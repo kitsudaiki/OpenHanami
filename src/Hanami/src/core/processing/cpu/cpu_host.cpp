@@ -58,11 +58,19 @@ CpuHost::~CpuHost() {}
 void
 CpuHost::addClusterToHost(Cluster* cluster)
 {
-    if (cluster->mode == ClusterProcessingMode::REDUCTION_MODE) {
-        addBrickToTaskQueue(cluster, 0);
+    if (cluster->mode == ClusterProcessingMode::TRAIN_BACKWARD_MODE) {
+        WorkerTask task;
+        task.cluster = cluster;
+        task.brickId = cluster->bricks.size() - 1;
+        task.blockId = UNINIT_STATE_16;
+        addWorkerTaskToQueue(task);
     }
     else {
-        addBrickToTaskQueue(cluster, UNINIT_STATE_32);
+        WorkerTask task;
+        task.cluster = cluster;
+        task.brickId = 0;
+        task.blockId = UNINIT_STATE_16;
+        addWorkerTaskToQueue(task);
     }
 }
 
@@ -76,34 +84,6 @@ CpuHost::getClusterFromQueue()
 }
 
 /**
- * @brief add a brick to the task-queue, which is used source source for the worker-threads
- *
- * @param cluster related cluster
- * @param brickId brick-id to process
- */
-void
-CpuHost::addBrickToTaskQueue(Cluster* cluster, const u_int32_t brickId)
-{
-    if (brickId == UNINIT_STATE_32) {
-        // special case, where based on the cluster-mode, the whole firsth or last
-        // brick should be processed by a single worker-threads
-        WorkerTask task;
-        task.cluster = cluster;
-        task.brickId = brickId;
-        addWorkerTaskToQueue(task);
-    }
-    else {
-        for (uint32_t i = 0; i < cluster->bricks[brickId].numberOfNeuronBlocks; i++) {
-            WorkerTask task;
-            task.cluster = cluster;
-            task.brickId = brickId;
-            task.blockId = i;
-            addWorkerTaskToQueue(task);
-        }
-    }
-}
-
-/**
  * @brief initialize synpase-block-buffer based on the avaialble size of memory
  *
  * @param id local device-id
@@ -112,7 +92,7 @@ void
 CpuHost::initBuffer(const uint32_t id)
 {
     m_totalMemory = getFreeMemory();
-    const uint64_t usedMemory = (m_totalMemory / 100) * 80;  // use 80% for synapse-blocks
+    const uint64_t usedMemory = (m_totalMemory / 100) * 10;  // use 10% for synapse-blocks
     synapseBlocks.initBuffer<SynapseBlock>(usedMemory / sizeof(SynapseBlock));
     synapseBlocks.deleteAll();
 
@@ -174,7 +154,7 @@ CpuHost::moveCluster(Cluster* cluster)
 
     // copy synapse-blocks from the old host to this one here
     for (Brick& brick : cluster->bricks) {
-        for (ConnectionBlock& block : brick.connectionBlocks[0]) {
+        for (ConnectionBlock& block : brick.connectionBlocks) {
             if (block.targetSynapseBlockPos != UNINIT_STATE_64) {
                 tempBlock = cpuSynapseBlocks[block.targetSynapseBlockPos];
                 originHost->synapseBlocks.deleteItem(block.targetSynapseBlockPos);
@@ -210,7 +190,7 @@ void
 CpuHost::removeCluster(Cluster* cluster)
 {
     for (Brick& brick : cluster->bricks) {
-        for (ConnectionBlock& block : brick.connectionBlocks[0]) {
+        for (ConnectionBlock& block : brick.connectionBlocks) {
             if (block.targetSynapseBlockPos != UNINIT_STATE_64) {
                 synapseBlocks.deleteItem(block.targetSynapseBlockPos);
             }

@@ -42,21 +42,26 @@ Cluster_ParseString_Test::parseString_test()
     const std::string input(
         "version: 1\n"
         "settings:\n"
-        "   neuron_cooldown: 10000000.0\n"
-        "   refractory_time: 1\n"
-        "   max_connection_distance: 1\n"
-        "   enable_reduction: false\n"
+        "    refractory_time: 1\n"
+        "    neuron_cooldown: 10000000.0\n"
+        "    max_connection_distance: 1\n"
+        "    enable_reduction: false\n"
+        "\n"
         "bricks:\n"
         "    1,1,1\n"
-        "        input: test_input\n"
-        "        number_of_neurons: 20\n"
-        "         \n "
         "    2,1,1\n"
-        "        number_of_neurons: 10\n"
-        "          \n"
         "    3,1,1\n"
-        "        output: test_output\n"
-        "        number_of_neurons: 5");
+        "\n"
+        "inputs:\n"
+        "    input_brick: \n"
+        "        target: 1,1,1\n"
+        "        number_of_inputs: 20\n"
+        "\n"
+        "outputs:\n"
+        "    output_brick: \n"
+        "        target: 3,1,1\n"
+        "        number_of_outputs: 5\n"
+        "\n");
 
     ClusterMeta result;
     ErrorContainer error;

@@ -34,6 +34,8 @@
 #include <string>
 #include <vector>
 
+class Cluster;
+
 // const predefined values
 #define UNINIT_STATE_64 0xFFFFFFFFFFFFFFFF
 #define UNINIT_STATE_32 0xFFFFFFFF
@@ -46,10 +48,10 @@
 // network-predefines
 #define SYNAPSES_PER_SYNAPSESECTION 63
 #define NUMBER_OF_SYNAPSESECTION 64
-#define NEURONS_PER_NEURONSECTION 64
+#define NEURONS_PER_NEURONBLOCK 64
 #define POSSIBLE_NEXT_AXON_STEP 80
-#define NUMBER_OF_POSSIBLE_NEXT 64
-#define NUMBER_OF_OUTPUT_CONNECTIONS 8
+#define NUMBER_OF_POSSIBLE_NEXT 86
+#define NUMBER_OF_OUTPUT_CONNECTIONS 7
 
 //==================================================================================================
 
@@ -81,7 +83,7 @@ static_assert(sizeof(HeaderEntry) == 16);
 //==================================================================================================
 
 struct ClusterSettings {
-    float backpropagationBorder = 0.01f;
+    float backpropagationBorder = 0.001f;
     float potentialOverflow = 1.0f;
 
     float neuronCooldown = 1000000000.0f;
@@ -90,6 +92,32 @@ struct ClusterSettings {
     bool enableReduction = false;
 
     uint8_t padding[43];
+
+    bool operator==(ClusterSettings& rhs)
+    {
+        if (backpropagationBorder != rhs.backpropagationBorder) {
+            return false;
+        }
+        if (potentialOverflow != rhs.potentialOverflow) {
+            return false;
+        }
+        if (neuronCooldown != rhs.neuronCooldown) {
+            return false;
+        }
+        if (refractoryTime != rhs.refractoryTime) {
+            return false;
+        }
+        if (maxConnectionDistance != rhs.maxConnectionDistance) {
+            return false;
+        }
+        if (enableReduction != rhs.enableReduction) {
+            return false;
+        }
+
+        return true;
+    }
+
+    bool operator!=(ClusterSettings& rhs) { return (*this == rhs) == false; }
 };
 static_assert(sizeof(ClusterSettings) == 64);
 
@@ -106,14 +134,36 @@ struct ClusterHeader {
     uint64_t staticDataSize = 0;
     kuuid uuid;
 
-    uint32_t numberOfInputs = 0;
-    uint32_t numberOfOutputs = 0;
-    uint32_t numberOfNeuronBlocks = 0;
-    uint32_t numberOfBricks = 0;
-
     ClusterSettings settings;
 
-    uint8_t padding2[120];
+    uint8_t padding2[136];
+
+    bool operator==(ClusterHeader& rhs)
+    {
+        if (objectType != rhs.objectType) {
+            return false;
+        }
+        if (version != rhs.version) {
+            return false;
+        }
+        if (nameSize != rhs.nameSize) {
+            return false;
+        }
+        if (strncmp(name, rhs.name, nameSize) != 0) {
+            return false;
+        }
+        if (staticDataSize != rhs.staticDataSize) {
+            return false;
+        }
+        if (strncmp(uuid.uuid, rhs.uuid.uuid, UUID_STR_LEN) != 0) {
+            return false;
+        }
+        if (settings != rhs.settings) {
+            return false;
+        }
+
+        return true;
+    }
 };
 static_assert(sizeof(ClusterHeader) == 512);
 
@@ -133,7 +183,9 @@ static_assert(sizeof(Synapse) == 16);
 
 struct SynapseSection {
     Synapse synapses[SYNAPSES_PER_SYNAPSESECTION];
-    uint8_t padding[15];
+    float tollerance = 0.49f;
+
+    uint8_t padding[11];
     bool hasNext = false;
 
     SynapseSection() { std::fill_n(synapses, SYNAPSES_PER_SYNAPSESECTION, Synapse()); }
@@ -144,12 +196,12 @@ static_assert(sizeof(SynapseSection) == 1024);
 
 struct SynapseBlock {
     SynapseSection sections[NUMBER_OF_SYNAPSESECTION];
-    float tempValues[NEURONS_PER_NEURONSECTION];
+    float tempValues[NEURONS_PER_NEURONBLOCK];
 
     SynapseBlock()
     {
         std::fill_n(sections, NUMBER_OF_SYNAPSESECTION, SynapseSection());
-        std::fill_n(tempValues, NEURONS_PER_NEURONSECTION, 0.0f);
+        std::fill_n(tempValues, NEURONS_PER_NEURONBLOCK, 0.0f);
     }
 };
 static_assert(sizeof(SynapseBlock) == 64 * 1024 + 256);
@@ -160,7 +212,8 @@ struct SourceLocationPtr {
     // HINT (kitsudaiki): not initialized here, because they are used in shared memory in cuda
     //                    which doesn't support initializing of the values, when defining the
     //                    shared-memory-object
-    uint32_t blockId;
+    uint16_t brickId;
+    uint16_t blockId;
     uint16_t neuronId;
     uint8_t posInNeuron;
     bool isInput;
@@ -169,9 +222,19 @@ static_assert(sizeof(SourceLocationPtr) == 8);
 
 //==================================================================================================
 
+struct OutputTargetLocationPtr {
+    float connectionWeight = 0.0f;
+    uint16_t blockId = UNINIT_STATE_16;
+    uint16_t neuronId = UNINIT_STATE_16;
+    uint8_t padding[6];
+};
+static_assert(sizeof(OutputTargetLocationPtr) == 16);
+
+//==================================================================================================
+
 struct Neuron {
     float input = 0.0f;
-    float border = 100.0f;
+    float border = 0.0f;
     float potential = 0.0f;
     float delta = 0.0f;
 
@@ -203,15 +266,11 @@ static_assert(sizeof(Neuron) == 32);
 //==================================================================================================
 
 struct NeuronBlock {
-    uint32_t numberOfNeurons = 0;
-    uint32_t brickId = 0;
-    uint8_t padding[8];
+    Neuron neurons[NEURONS_PER_NEURONBLOCK];
 
-    Neuron neurons[NEURONS_PER_NEURONSECTION];
-
-    NeuronBlock() { std::fill_n(neurons, NEURONS_PER_NEURONSECTION, Neuron()); }
+    NeuronBlock() { std::fill_n(neurons, NEURONS_PER_NEURONBLOCK, Neuron()); }
 };
-static_assert(sizeof(NeuronBlock) == 2064);
+static_assert(sizeof(NeuronBlock) == 2048);
 
 //==================================================================================================
 
@@ -225,11 +284,45 @@ static_assert(sizeof(TempNeuron) == 32);
 //==================================================================================================
 
 struct TempNeuronBlock {
-    TempNeuron neurons[NEURONS_PER_NEURONSECTION];
+    TempNeuron neurons[NEURONS_PER_NEURONBLOCK];
 
-    TempNeuronBlock() { std::fill_n(neurons, NEURONS_PER_NEURONSECTION, TempNeuron()); }
+    TempNeuronBlock() { std::fill_n(neurons, NEURONS_PER_NEURONBLOCK, TempNeuron()); }
 };
 static_assert(sizeof(TempNeuronBlock) == 2048);
+
+//==================================================================================================
+
+struct OutputNeuron {
+    OutputTargetLocationPtr targets[NUMBER_OF_OUTPUT_CONNECTIONS];
+    float outputVal = 0.0f;
+    float exprectedVal = 0.0f;
+    uint8_t padding[8];
+};
+static_assert(sizeof(OutputNeuron) == 128);
+
+//==================================================================================================
+
+struct InputNeuron {
+    uint32_t neuronId = UNINIT_STATE_32;
+    float value = 0.0f;
+};
+static_assert(sizeof(InputNeuron) == 8);
+
+//==================================================================================================
+
+struct OutputInterface {
+    std::string name = "";
+    uint32_t targetBrickId = UNINIT_STATE_32;
+    std::vector<OutputNeuron> outputNeurons;
+};
+
+//==================================================================================================
+
+struct InputInterface {
+    std::string name = "";
+    uint32_t targetBrickId = UNINIT_STATE_32;
+    std::vector<InputNeuron> inputNeurons;
+};
 
 //==================================================================================================
 
@@ -240,7 +333,8 @@ struct SynapseConnection {
 
     SynapseConnection()
     {
-        origin.blockId = UNINIT_STATE_32;
+        origin.brickId = UNINIT_STATE_16;
+        origin.blockId = UNINIT_STATE_16;
         origin.neuronId = UNINIT_STATE_16;
         origin.posInNeuron = 0;
         origin.isInput = false;
@@ -260,151 +354,6 @@ static_assert(sizeof(ConnectionBlock) == 1032);
 
 //==================================================================================================
 
-struct Brick {
-    // common
-    uint32_t brickId = UNINIT_STATE_32;
-    bool isOutputBrick = false;
-    bool isInputBrick = false;
-    bool wasResized = false;
-    uint8_t padding1[1];
-
-    char name[128];
-    uint32_t nameSize = 0;
-
-    uint8_t padding2[4];
-    uint32_t ioBufferPos = UNINIT_STATE_32;
-    uint32_t neuronBlockPos = UNINIT_STATE_32;
-
-    uint32_t numberOfNeurons = 0;
-    uint32_t numberOfNeuronBlocks = 0;
-
-    Hanami::Position brickPos;
-    uint32_t neighbors[12];
-    uint32_t possibleTargetNeuronBrickIds[NUMBER_OF_POSSIBLE_NEXT];
-
-    uint32_t dimX = 0;
-    uint32_t dimY = 0;
-
-    std::vector<ConnectionBlock>* connectionBlocks = nullptr;
-
-    uint8_t padding3[16];
-
-    Brick()
-    {
-        std::fill_n(name, 128, '\0');
-        connectionBlocks = new std::vector<ConnectionBlock>();
-    }
-
-    ~Brick() { delete connectionBlocks; }
-
-    Brick(const Brick& other)
-    {
-        connectionBlocks = new std::vector<ConnectionBlock>();
-
-        copyNormalPayload(other);
-
-        if (other.connectionBlocks != nullptr) {
-            for (ConnectionBlock& block : other.connectionBlocks[0]) {
-                connectionBlocks->push_back(block);
-            }
-        }
-    }
-
-    Brick& operator=(const Brick& other)
-    {
-        if (this != &other) {
-            if (connectionBlocks != nullptr) {
-                connectionBlocks->clear();
-            }
-
-            copyNormalPayload(other);
-
-            if (other.connectionBlocks != nullptr) {
-                for (ConnectionBlock& block : other.connectionBlocks[0]) {
-                    connectionBlocks->push_back(block);
-                }
-            }
-        }
-        return *this;
-    }
-
-    Brick& operator=(Brick&& other)
-    {
-        if (this != &other) {
-            if (connectionBlocks != nullptr) {
-                delete connectionBlocks;
-            }
-
-            copyNormalPayload(other);
-
-            connectionBlocks = other.connectionBlocks;
-
-            if (other.connectionBlocks != nullptr) {
-                delete other.connectionBlocks;
-            }
-        }
-        return *this;
-    }
-
-    void copyNormalPayload(const Brick& other)
-    {
-        brickId = other.brickId;
-        isOutputBrick = other.isOutputBrick;
-        isInputBrick = other.isInputBrick;
-        wasResized = other.wasResized;
-
-        memcpy(name, other.name, 128);
-
-        nameSize = other.nameSize;
-
-        ioBufferPos = other.ioBufferPos;
-        neuronBlockPos = other.neuronBlockPos;
-
-        numberOfNeurons = other.numberOfNeurons;
-        numberOfNeuronBlocks = other.numberOfNeuronBlocks;
-
-        brickPos = other.brickPos;
-        memcpy(neighbors, other.neighbors, 12 * sizeof(uint32_t));
-        memcpy(possibleTargetNeuronBrickIds,
-               other.possibleTargetNeuronBrickIds,
-               NUMBER_OF_POSSIBLE_NEXT * sizeof(uint32_t));
-
-        dimX = other.dimX;
-        dimY = other.dimY;
-    }
-
-    /**
-     * @brief get the name of the brick
-     */
-    const std::string getName() { return std::string(name, nameSize); }
-
-    /**
-     * @brief set new name for the brick
-     *
-     * @param newName new name
-     *
-     * @return true, if successful, else false
-     */
-    bool setName(const std::string& newName)
-    {
-        // precheck
-        if (newName.size() > 127 || newName.size() == 0) {
-            return false;
-        }
-
-        // copy string into char-buffer and set explicit the escape symbol to be absolut sure
-        // that it is set to absolut avoid buffer-overflows
-        strncpy(name, newName.c_str(), newName.size());
-        name[newName.size()] = '\0';
-        nameSize = newName.size();
-
-        return true;
-    }
-};
-static_assert(sizeof(Brick) == 512);
-
-//==================================================================================================
-
 struct CudaPointerHandle {
     uint32_t deviceId = 0;
     NeuronBlock* neuronBlocks = nullptr;
@@ -416,5 +365,97 @@ struct CudaPointerHandle {
 };
 
 //==================================================================================================
+
+struct BrickHeader {
+   public:
+    uint32_t brickId = UNINIT_STATE_32;
+    bool isInputBrick = false;
+    bool isOutputBrick = false;
+    uint8_t padding1[2];
+    uint32_t dimX = 0;
+    uint32_t dimY = 0;
+    Hanami::Position brickPos;
+
+    bool operator==(BrickHeader& rhs)
+    {
+        if (brickId != rhs.brickId) {
+            return false;
+        }
+        if (isInputBrick != rhs.isInputBrick) {
+            return false;
+        }
+        if (isOutputBrick != rhs.isOutputBrick) {
+            return false;
+        }
+        if (dimX != rhs.dimX) {
+            return false;
+        }
+        if (dimY != rhs.dimY) {
+            return false;
+        }
+        if (brickPos != rhs.brickPos) {
+            return false;
+        }
+
+        return true;
+    }
+};
+static_assert(sizeof(BrickHeader) == 32);
+
+//==================================================================================================
+
+class Brick
+{
+   public:
+    BrickHeader header;
+
+    Cluster* cluster = nullptr;
+    InputInterface* inputInterface = nullptr;
+    OutputInterface* outputInterface = nullptr;
+
+    std::vector<ConnectionBlock> connectionBlocks;
+    std::vector<NeuronBlock> neuronBlocks;
+    std::vector<TempNeuronBlock> tempNeuronBlocks;
+
+    bool wasResized = false;
+    uint32_t possibleBrickTargetIds[NUMBER_OF_POSSIBLE_NEXT];
+    uint32_t neighbors[12];
+
+    Brick() { std::fill_n(neighbors, 12, UNINIT_STATE_32); }
+    ~Brick(){};
+
+    Brick& operator=(const Brick&) = delete;
+};
+
+//==================================================================================================
+
+struct SourceLocation {
+    Brick* brick = nullptr;
+    NeuronBlock* neuronBlock = nullptr;
+    TempNeuronBlock* tempNeuronBlock = nullptr;
+    Neuron* neuron = nullptr;
+    TempNeuron* tempNeuron = nullptr;
+};
+
+/**
+ * @brief getSourceNeuron
+ * @param location
+ * @param bricks
+ * @return
+ */
+inline SourceLocation
+getSourceNeuron(const SourceLocationPtr& location, Brick* bricks)
+{
+    SourceLocation sourceLoc;
+    sourceLoc.brick = &bricks[location.brickId];
+
+    sourceLoc.neuronBlock = &sourceLoc.brick->neuronBlocks[location.blockId];
+    sourceLoc.tempNeuronBlock = &sourceLoc.brick->tempNeuronBlocks[location.blockId];
+
+    sourceLoc.neuron = &sourceLoc.neuronBlock->neurons[location.neuronId];
+    sourceLoc.tempNeuron = &sourceLoc.tempNeuronBlock->neurons[location.neuronId];
+
+    return sourceLoc;
+}
 
 #endif  // HANAMI_CORE_SEGMENT_OBJECTS_H

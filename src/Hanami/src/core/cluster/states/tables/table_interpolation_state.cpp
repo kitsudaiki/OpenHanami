@@ -56,8 +56,10 @@ TableInterpolation_State::processEvent()
     }
 
     // set input
+    InputInterface* inputInterface = &m_cluster->inputInterfaces.begin()->second;
     for (uint64_t i = 0; i < numberOfInputsPerCycle; i++) {
-        m_cluster->inputValues[i] = actualTask->inputData[(offset - numberOfInputsPerCycle) + i];
+        inputInterface->inputNeurons[i].value
+            = actualTask->inputData[(offset - numberOfInputsPerCycle) + i];
     }
 
     m_cluster->mode = ClusterProcessingMode::NORMAL_MODE;

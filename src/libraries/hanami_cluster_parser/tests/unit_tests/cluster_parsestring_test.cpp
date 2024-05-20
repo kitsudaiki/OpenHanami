@@ -42,21 +42,26 @@ Cluster_ParseString_Test::parseString_test()
     std::string input(
         "version: 1\n"
         "settings:\n"
-        "   neuron_cooldown: 10000000.0\n"
-        "   refractory_time: 1\n"
-        "   max_connection_distance: 1\n"
-        "   enable_reduction: false\n"
+        "    refractory_time: 1\n"
+        "    neuron_cooldown: 10000000.0\n"
+        "    max_connection_distance: 1\n"
+        "    enable_reduction: false\n"
+        "\n"
         "bricks:\n"
         "    1,1,1\n"
-        "        input: test_input\n"
-        "        number_of_neurons: 20\n"
-        "         \n "
         "    2,1,1\n"
-        "        number_of_neurons: 10\n"
-        "          \n"
         "    3,1,1\n"
-        "        output: test_output\n"
-        "        number_of_neurons: 5");
+        "\n"
+        "inputs:\n"
+        "    input_brick: \n"
+        "        target: 1,1,1\n"
+        "        number_of_inputs: 20\n"
+        "\n"
+        "outputs:\n"
+        "    output_brick: \n"
+        "        target: 3,1,1\n"
+        "        number_of_outputs: 5\n"
+        "\n");
 
     ClusterMeta result;
     ErrorContainer error;
@@ -68,51 +73,58 @@ Cluster_ParseString_Test::parseString_test()
 
     TEST_EQUAL(result.version, 1);
 
-    // TEST_EQUAL(result.maxSynapseSections, 100000);
-    // TEST_EQUAL(result.synapseSegmentation, 10);
-    // TEST_EQUAL(result.signNeg, 0.5);
+    TEST_EQUAL(result.refractoryTime, 1);
+    TEST_EQUAL(result.neuronCooldown, 10000000.0f);
+    TEST_EQUAL(result.maxConnectionDistance, 1);
+    TEST_EQUAL(result.enableReduction, false);
 
     TEST_EQUAL(result.bricks.size(), 3);
 
     TEST_EQUAL(result.bricks.at(0).position.x, 1);
     TEST_EQUAL(result.bricks.at(0).position.y, 1);
     TEST_EQUAL(result.bricks.at(0).position.z, 1);
-    TEST_EQUAL(result.bricks.at(0).numberOfNeurons, 20);
-    TEST_EQUAL(result.bricks.at(0).name, "test_input");
-    TEST_EQUAL(result.bricks.at(0).type, INPUT_BRICK_TYPE);
 
     TEST_EQUAL(result.bricks.at(1).position.x, 2);
     TEST_EQUAL(result.bricks.at(1).position.y, 1);
     TEST_EQUAL(result.bricks.at(1).position.z, 1);
-    TEST_EQUAL(result.bricks.at(1).numberOfNeurons, 10);
-    TEST_EQUAL(result.bricks.at(1).name, "");
-    TEST_EQUAL(result.bricks.at(1).type, CENTRAL_BRICK_TYPE);
 
     TEST_EQUAL(result.bricks.at(2).position.x, 3);
     TEST_EQUAL(result.bricks.at(2).position.y, 1);
     TEST_EQUAL(result.bricks.at(2).position.z, 1);
-    TEST_EQUAL(result.bricks.at(2).numberOfNeurons, 5);
-    TEST_EQUAL(result.bricks.at(2).name, "test_output");
-    TEST_EQUAL(result.bricks.at(2).type, OUTPUT_BRICK_TYPE);
+
+    TEST_EQUAL(result.inputs.size(), 1);
+    TEST_EQUAL(result.inputs.at(0).name, "input_brick");
+    TEST_EQUAL(result.inputs.at(0).numberOfInputs, 20);
+    TEST_EQUAL(result.inputs.at(0).targetBrickId, 0);
+
+    TEST_EQUAL(result.outputs.size(), 1);
+    TEST_EQUAL(result.outputs.at(0).name, "output_brick");
+    TEST_EQUAL(result.outputs.at(0).numberOfOutputs, 5);
+    TEST_EQUAL(result.outputs.at(0).targetBrickId, 2);
 
     input
-        = "version: 2\n"  // <-- error
+        = "version: 2\n"  // <-- error (invalid version-number)
           "settings:\n"
-          "    max_synapse_sections: 100000\n"
-          "    synapse_clusteration: 10\n"
-          "    sign_neg: 0.5\n"
-          "        \n"
+          "    refractory_time: 1\n"
+          "    neuron_cooldown: 10000000.0\n"
+          "    max_connection_distance: 1\n"
+          "    enable_reduction: false\n"
+          "\n"
           "bricks:\n"
           "    1,1,1\n"
-          "        input: test_input\n"
-          "        number_of_neurons: 20\n"
-          "         \n "
           "    2,1,1\n"
-          "        number_of_neurons: 10\n"
-          "          \n"
           "    3,1,1\n"
-          "        output: test_output\n"
-          "        number_of_neurons: 5\n";
+          "\n"
+          "inputs:\n"
+          "    input_brick: \n"
+          "        target: 1,1,1\n"
+          "        number_of_inputs: 20\n"
+          "\n"
+          "outputs:\n"
+          "    output_brick: \n"
+          "        target: 3,1,1\n"
+          "        number_of_outputs: 5\n"
+          "\n";
 
     ret = parseCluster(&result, input, error);
     TEST_EQUAL(ret, false);
@@ -120,21 +132,26 @@ Cluster_ParseString_Test::parseString_test()
     input
         = "version: 1\n"
           "settings:\n"
-          "    max_synapse_sections: 100000\n"  // <-- error
-          "    asdf_clusteration: 10\n"
-          "    sign_neg: 0.5\n"
-          "        \n"
+          "    refractory_time: 1\n"
+          "    neuron_cooldown: 10000000.0\n"
+          "    asdf_config: 1\n"  // <-- error (unknown keyword here)
+          "    enable_reduction: false\n"
+          "\n"
           "bricks:\n"
           "    1,1,1\n"
-          "        input: test_input\n"
-          "        number_of_neurons: 20\n"
-          "         \n "
           "    2,1,1\n"
-          "        number_of_neurons: 10\n"
-          "          \n"
           "    3,1,1\n"
-          "        output: test_output\n"
-          "        number_of_neurons: 5\n";
+          "\n"
+          "inputs:\n"
+          "    input_brick: \n"
+          "        target: 1,1,1\n"
+          "        number_of_inputs: 20\n"
+          "\n"
+          "outputs:\n"
+          "    output_brick: \n"
+          "        target: 3,1,1\n"
+          "        number_of_outputs: 5\n"
+          "\n";
 
     ret = parseCluster(&result, input, error);
     TEST_EQUAL(ret, false);
@@ -142,21 +159,26 @@ Cluster_ParseString_Test::parseString_test()
     input
         = "version: 1\n"
           "settings:\n"
-          "    max_synapse_sections: 100000\n"
-          "    synapse_clusteration: 10\n"
-          "    sign_neg: 123\n"
-          "        \n"
+          "    refractory_time: 1\n"
+          "    neuron_cooldown: 10000000.0\n"
+          "    max_connection_distance: 1\n"
+          "    enable_reduction: false\n"
+          "\n"
           "bricks:\n"
-          "    1,1,1\n"
-          "        input: test_input\n"
-          "        number_of_neurons: 20\n"
-          "         \n "
+          "    1,1,a\n"  // <-- error (invalid position)
           "    2,1,1\n"
-          "        number_of_neurons: 10\n"
-          "          \n"
           "    3,1,1\n"
-          "        output: test_output\n"
-          "        number_of_neurons: 5\n";
+          "\n"
+          "inputs:\n"
+          "    input_brick: \n"
+          "        target: 1,1,1\n"
+          "        number_of_inputs: 20\n"
+          "\n"
+          "outputs:\n"
+          "    output_brick: \n"
+          "        target: 3,1,1\n"
+          "        number_of_outputs: 5\n"
+          "\n";
 
     ret = parseCluster(&result, input, error);
     TEST_EQUAL(ret, false);
@@ -164,21 +186,26 @@ Cluster_ParseString_Test::parseString_test()
     input
         = "version: 1\n"
           "settings:\n"
-          "    max_synapse_sections: 100000\n"
-          "    synapse_clusteration: 10\n"
-          "    sign_neg: 0.5\n"
-          "        \n"
-          "bricks:\n"
-          "    1,1,a\n"  // <-- error
-          "        input: test_input\n"
-          "        number_of_neurons: 20\n"
-          "         \n "
+          "    refractory_time: 1\n"
+          "    neuron_cooldown: 10000000.0\n"
+          "    max_connection_distance: 1\n"
+          "    enable_reduction: false\n"
+          "\n"
+          "asdf:\n"  // <-- error (unknown keyword here)
+          "    1,1,1\n"
           "    2,1,1\n"
-          "        number_of_neurons: 10\n"
-          "          \n"
           "    3,1,1\n"
-          "        output: test_output\n"
-          "        number_of_neurons: 5\n";
+          "\n"
+          "inputs:\n"
+          "    input_brick: \n"
+          "        target: 1,1,1\n"
+          "        number_of_inputs: 20\n"
+          "\n"
+          "outputs:\n"
+          "    output_brick: \n"
+          "        target: 3,1,1\n"
+          "        number_of_outputs: 5\n"
+          "\n";
 
     ret = parseCluster(&result, input, error);
     TEST_EQUAL(ret, false);
@@ -186,21 +213,26 @@ Cluster_ParseString_Test::parseString_test()
     input
         = "version: 1\n"
           "settings:\n"
-          "    max_synapse_sections: 100000\n"
-          "    synapse_clusteration: 10\n"
-          "    sign_neg: 0.5\n"
-          "        \n"
-          "asdf:\n"  // <-- error
+          "    refractory_time: 1\n"
+          "    neuron_cooldown: 10000000.0\n"
+          "    max_connection_distance: 1\n"
+          "    enable_reduction: false\n"
+          "\n"
+          "bricks:\n"
           "    1,1,1\n"
-          "        input: test_input\n"
-          "        number_of_neurons: 20\n"
-          "         \n "
           "    2,1,1\n"
-          "        number_of_neurons: 10\n"
-          "          \n"
           "    3,1,1\n"
-          "        output: test_output\n"
-          "        number_of_neurons: 5\n";
+          "\n"
+          "inputs:\n"
+          "    input_brick: \n"
+          "        asdf: 1,1,1\n"  // <-- error (unknown keyword here)
+          "        number_of_inputs: 20\n"
+          "\n"
+          "outputs:\n"
+          "    output_brick: \n"
+          "        target: 3,1,1\n"
+          "        number_of_outputs: 5\n"
+          "\n";
 
     ret = parseCluster(&result, input, error);
     TEST_EQUAL(ret, false);
@@ -208,21 +240,26 @@ Cluster_ParseString_Test::parseString_test()
     input
         = "version: 1\n"
           "settings:\n"
-          "    max_synapse_sections: 100000\n"
-          "    synapse_clusteration: 10\n"
-          "    sign_neg: 0.5\n"
-          "        \n"
+          "    refractory_time: 1\n"
+          "    neuron_cooldown: 10000000.0\n"
+          "    max_connection_distance: 1\n"
+          "    enable_reduction: false\n"
+          "\n"
           "bricks:\n"
           "    1,1,1\n"
-          "        asdf: test_input\n"  // <-- error
-          "        number_of_neurons: 20\n"
-          "         \n "
           "    2,1,1\n"
-          "        number_of_neurons: 10\n"
-          "          \n"
           "    3,1,1\n"
-          "        output: test_output\n"
-          "        number_of_neurons: 5\n";
+          "\n"
+          "inputs:\n"
+          "    input_brick: \n"
+          "        target: 1,1,1\n"
+          "        number_of_inputs: 20\n"
+          "\n"
+          "outputs:\n"
+          "    output_brick: \n"
+          "        target: 10000,1,1\n"  // <-- error (position does not exist)
+          "        number_of_outputs: 5\n"
+          "\n";
 
     ret = parseCluster(&result, input, error);
     TEST_EQUAL(ret, false);
@@ -230,43 +267,26 @@ Cluster_ParseString_Test::parseString_test()
     input
         = "version: 1\n"
           "settings:\n"
-          "    max_synapse_sections: 100000\n"
-          "    synapse_clusteration: 10\n"
-          "    sign_neg: 0.5\n"
-          "        \n"
+          "    refractory_time: 1\n"
+          "    neuron_cooldown: 10000000.0\n"
+          "    max_connection_distance: 1\n"
+          "    enable_reduction: false\n"
+          "\n"
           "bricks:\n"
           "    1,1,1\n"
-          "        input: test_input\n"
-          "        number_of_neurons: 20\n"
-          "         \n "
           "    2,1,1\n"
-          "        number_of_neurons: 10\n"
-          "          \n"
-          "    3,1,1\n"
-          "        asdf: test_output\n"  // <-- error
-          "        number_of_neurons: 5\n";
-
-    ret = parseCluster(&result, input, error);
-    TEST_EQUAL(ret, false);
-
-    input
-        = "version: 1\n"
-          "settings:\n"
-          "    max_synapse_sections: 100000\n"
-          "    synapse_clusteration: 10\n"
-          "    sign_neg: 0.5\n"
-          "        \n"
-          "bricks:\n"
-          "    1,1,1\n"
-          "        input: test_input\n"
-          "        number_of_neurons: 20\n"
-          "         \n "
-          "    2,1,1\n"
-          "        number_of_neurons: a\n"  // <-- error
-          "          \n"
-          "    3,1,1\n"
-          "        output: test_output\n"
-          "        number_of_neurons: 5\n";
+          "    1,1,1\n"  // <-- error (position already exist)
+          "\n"
+          "inputs:\n"
+          "    input_brick: \n"
+          "        target: 1,1,1\n"
+          "        number_of_inputs: 20\n"
+          "\n"
+          "outputs:\n"
+          "    output_brick: \n"
+          "        target: 3,1,1\n"
+          "        number_of_outputs: 5\n"
+          "\n";
 
     ret = parseCluster(&result, input, error);
     TEST_EQUAL(ret, false);

@@ -62,17 +62,27 @@ blank [ \t]
 %}
 
 {blank}+  clusterloc.step();
-[\n]      {clusterloc.lines(1); return Hanami::ClusterParser::make_LINEBREAK (clusterloc); }
-"version:1"    return Hanami::ClusterParser::make_VERSION_1 (clusterloc);
-"version: 1"   return Hanami::ClusterParser::make_VERSION_1 (clusterloc);
-"settings"     return Hanami::ClusterParser::make_SETTINGS (clusterloc);
-"bricks"       return Hanami::ClusterParser::make_BRICKS (clusterloc);
-"true"         return Hanami::ClusterParser::make_BOOL_TRUE (clusterloc);
-"false"        return Hanami::ClusterParser::make_BOOL_FALSE (clusterloc);
-"True"         return Hanami::ClusterParser::make_BOOL_TRUE (clusterloc);
-"False"        return Hanami::ClusterParser::make_BOOL_FALSE (clusterloc);
-","            return Hanami::ClusterParser::make_COMMA (clusterloc);
-":"            return Hanami::ClusterParser::make_ASSIGN (clusterloc);
+[\n]      {clusterloc.lines(1); clusterloc.step(); }
+"version:1"               return Hanami::ClusterParser::make_VERSION_1 (clusterloc);
+"version: 1"              return Hanami::ClusterParser::make_VERSION_1 (clusterloc);
+"settings"                return Hanami::ClusterParser::make_SETTINGS (clusterloc);
+"bricks"                  return Hanami::ClusterParser::make_BRICKS (clusterloc);
+"inputs"                  return Hanami::ClusterParser::make_INPUTS (clusterloc);
+"outputs"                 return Hanami::ClusterParser::make_OUTPUTS (clusterloc);
+"number_of_neurons"       return Hanami::ClusterParser::make_NUM_NEURONS (clusterloc);
+"number_of_inputs"        return Hanami::ClusterParser::make_NUM_INPUTS (clusterloc);
+"number_of_outputs"       return Hanami::ClusterParser::make_NUM_OUTPUTS (clusterloc);
+"target"                  return Hanami::ClusterParser::make_TARGET (clusterloc);
+"neuron_cooldown"         return Hanami::ClusterParser::make_COOLDOWN (clusterloc);
+"max_connection_distance" return Hanami::ClusterParser::make_MAX_DISTANCE (clusterloc);
+"refractory_time"         return Hanami::ClusterParser::make_REFRACTORY_TIME (clusterloc);
+"enable_reduction"        return Hanami::ClusterParser::make_ENABLE_REDUCTION (clusterloc);
+"true"                    return Hanami::ClusterParser::make_BOOL_TRUE (clusterloc);
+"false"                   return Hanami::ClusterParser::make_BOOL_FALSE (clusterloc);
+"True"                    return Hanami::ClusterParser::make_BOOL_TRUE (clusterloc);
+"False"                   return Hanami::ClusterParser::make_BOOL_FALSE (clusterloc);
+","                       return Hanami::ClusterParser::make_COMMA (clusterloc);
+":"                       return Hanami::ClusterParser::make_ASSIGN (clusterloc);
 
 \"(\\.|[^"\\])*\" { return Hanami::ClusterParser::make_STRING(yytext, clusterloc); }
 

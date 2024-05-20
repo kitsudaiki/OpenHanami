@@ -116,10 +116,12 @@ ListTask::runTask(BlossomIO& blossomIO,
 
     // build table-content
     for (const auto& [id, progress] : progressOverview) {
+        const float percentage
+            = (1.0f / (float)progress.totalNumberOfCycles) * (float)progress.currentCyle;
         if (progress.state == QUEUED_TASK_STATE) {
             result.addRow(std::vector<std::string>{id,
                                                    "queued",
-                                                   std::to_string(progress.percentageFinished),
+                                                   std::to_string(percentage),
                                                    serializeTimePoint(progress.queuedTimeStamp),
                                                    "-",
                                                    "-"});
@@ -128,7 +130,7 @@ ListTask::runTask(BlossomIO& blossomIO,
             result.addRow(
                 std::vector<std::string>{id,
                                          "active",
-                                         std::to_string(progress.percentageFinished),
+                                         std::to_string(percentage),
                                          serializeTimePoint(progress.queuedTimeStamp),
                                          serializeTimePoint(progress.startActiveTimeStamp),
                                          "-"});
@@ -137,7 +139,7 @@ ListTask::runTask(BlossomIO& blossomIO,
             result.addRow(
                 std::vector<std::string>{id,
                                          "aborted",
-                                         std::to_string(progress.percentageFinished),
+                                         std::to_string(percentage),
                                          serializeTimePoint(progress.queuedTimeStamp),
                                          serializeTimePoint(progress.startActiveTimeStamp),
                                          "-"});
@@ -146,7 +148,7 @@ ListTask::runTask(BlossomIO& blossomIO,
             result.addRow(
                 std::vector<std::string>{id,
                                          "finished",
-                                         std::to_string(progress.percentageFinished),
+                                         std::to_string(percentage),
                                          serializeTimePoint(progress.queuedTimeStamp),
                                          serializeTimePoint(progress.startActiveTimeStamp),
                                          serializeTimePoint(progress.endActiveTimeStamp)});

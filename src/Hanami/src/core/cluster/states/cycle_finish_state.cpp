@@ -51,9 +51,7 @@ CycleFinish_State::processEvent()
 
     // update progress-counter
     actualTask->actualCycle++;
-    const float actualF = static_cast<float>(actualTask->actualCycle);
-    const float shouldF = static_cast<float>(numberOfCycles);
-    actualTask->progress.percentageFinished = actualF / shouldF;
+    actualTask->progress.currentCyle = actualTask->actualCycle;
 
     // to go next state of finish the task to goal is reached
     if (actualTask->actualCycle == numberOfCycles) {

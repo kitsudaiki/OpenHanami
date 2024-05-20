@@ -45,6 +45,7 @@ class DataSetFile
     struct DataSetHeader {
         uint8_t type = UNDEFINED_TYPE;
         char name[256];
+        uint32_t nameSize = 0;
     };
 
     DataSetFile(const std::string& filePath);

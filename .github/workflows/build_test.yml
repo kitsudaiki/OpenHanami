@@ -169,6 +169,11 @@ jobs:
         run: |
           chmod +x  /tmp/build_result/hanami_args_unit_tests
           /tmp/build_result/hanami_args_unit_tests
+      - 
+        name: "Run test: Hanami"
+        run: |
+          chmod +x  /tmp/build_result/Hanami_unittests
+          /tmp/build_result/Hanami_unittests
 
 
 

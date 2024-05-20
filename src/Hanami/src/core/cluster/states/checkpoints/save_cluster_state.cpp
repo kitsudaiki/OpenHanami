@@ -124,7 +124,8 @@ SaveCluster_State::saveClusterToCheckpoint(Task* currentTask, Hanami::ErrorConta
 
     // write data of cluster to disc
     m_cluster->attachedHost->syncWithHost(m_cluster);
-    if (m_clusterIO.writeClusterToFile(m_cluster, targetFilePath, error) == false) {
+    const ReturnStatus ret = m_clusterIO.writeClusterToFile(*m_cluster, targetFilePath, error);
+    if (ret != OK) {
         return false;
     }
 

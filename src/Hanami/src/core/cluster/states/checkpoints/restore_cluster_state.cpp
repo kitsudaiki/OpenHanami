@@ -88,7 +88,8 @@ RestoreCluster_State::restoreClusterFromCheckpoint(Task* currentTask, Hanami::Er
     }
     const std::string location = parsedCheckpointInfo["location"];
 
-    if (m_clusterIO.restoreClusterFromFile(m_cluster, location, error) == false) {
+    const ReturnStatus ret = m_clusterIO.restoreClusterFromFile(*m_cluster, location, error);
+    if (ret != OK) {
         return false;
     }
 

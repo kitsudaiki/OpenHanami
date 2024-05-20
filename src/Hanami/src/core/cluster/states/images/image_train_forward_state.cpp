@@ -51,14 +51,16 @@ ImageTrainForward_State::processEvent()
     const uint64_t offsetInput = entriesPerCycle * actualTask->actualCycle;
 
     // set input
+    InputInterface* inputInterface = &m_cluster->inputInterfaces.begin()->second;
     for (uint64_t i = 0; i < numberOfInputsPerCycle; i++) {
-        m_cluster->inputValues[i] = actualTask->inputData[offsetInput + i];
+        inputInterface->inputNeurons[i].value = actualTask->inputData[offsetInput + i];
     }
 
     // set exprected output
+    OutputInterface* outputInterface = &m_cluster->outputInterfaces.begin()->second;
     for (uint64_t i = 0; i < numberOfOuputsPerCycle; i++) {
-        const uint64_t numberOfCycles = numberOfInputsPerCycle;
-        m_cluster->expectedValues[i] = actualTask->inputData[offsetInput + numberOfCycles + i];
+        outputInterface->outputNeurons[i].exprectedVal
+            = actualTask->inputData[offsetInput + numberOfInputsPerCycle + i];
     }
 
     m_cluster->mode = ClusterProcessingMode::TRAIN_FORWARD_MODE;

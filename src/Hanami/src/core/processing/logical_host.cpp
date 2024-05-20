@@ -24,7 +24,8 @@
 
 #include <api/websocket/cluster_io.h>
 #include <core/cluster/cluster.h>
-#include <core/processing/objects.h>
+#include <core/cluster/objects.h>
+#include <core/processing/cluster_io_functions.h>
 #include <hanami_common/buffer/item_buffer.h>
 
 /**
@@ -84,12 +85,15 @@ LogicalHost::run()
             // handle type of processing
             if (cluster->mode == ClusterProcessingMode::TRAIN_FORWARD_MODE) {
                 trainClusterForward(cluster);
+                // processNeuronsOfOutputBrick<true>();
             }
             else if (cluster->mode == ClusterProcessingMode::TRAIN_BACKWARD_MODE) {
+                // backpropagateOutput(*cluster);
                 trainClusterBackward(cluster);
             }
             else {
                 requestCluster(cluster);
+                // processNeuronsOfOutputBrick<false>(*cluster);
                 handleClientOutput(*cluster);
             }
             cluster->updateClusterState();
@@ -109,16 +113,17 @@ LogicalHost::run()
  * @return position of the highest output.
  */
 uint32_t
-getHighestOutput(const Cluster& cluster)
+getHighestOutput(Cluster& cluster)
 {
     float hightest = -0.1f;
     uint32_t hightestPos = 0;
     float value = 0.0f;
 
-    for (uint32_t outputNeuronId = 0; outputNeuronId < cluster.clusterHeader.numberOfOutputs;
+    OutputInterface* outputInterface = &cluster.outputInterfaces.begin()->second;
+    for (uint32_t outputNeuronId = 0; outputNeuronId < outputInterface->outputNeurons.size();
          outputNeuronId++)
     {
-        value = cluster.outputValues[outputNeuronId];
+        value = outputInterface->outputNeurons[outputNeuronId].outputVal;
         if (value > hightest) {
             hightest = value;
             hightestPos = outputNeuronId;
@@ -135,7 +140,7 @@ getHighestOutput(const Cluster& cluster)
  * @param cluster cluster to handle
  */
 void
-handleClientOutput(const Cluster& cluster)
+handleClientOutput(Cluster& cluster)
 {
     // send output back if a client-connection is set
     if (cluster.msgClient != nullptr) {
@@ -151,9 +156,10 @@ handleClientOutput(const Cluster& cluster)
         }
         else if (actualTask->type == TABLE_REQUEST_TASK) {
             float val = 0.0f;
-            for (uint64_t i = 0; i < cluster.clusterHeader.numberOfOutputs; i++) {
+            OutputInterface* outputInterface = &cluster.outputInterfaces.begin()->second;
+            for (uint64_t i = 0; i < outputInterface->outputNeurons.size(); i++) {
                 const float temp = actualTask->resultData[cycle];
-                val = temp + cluster.outputValues[i];
+                val = temp + outputInterface->outputNeurons[i].outputVal;
                 actualTask->resultData[cycle] = val;
             }
         }

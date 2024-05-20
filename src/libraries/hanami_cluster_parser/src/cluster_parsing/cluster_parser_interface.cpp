@@ -82,6 +82,10 @@ ClusterParserInterface::parse(ClusterMeta* result,
 {
     output = result;
 
+    output->bricks.clear();
+    output->inputs.clear();
+    output->outputs.clear();
+
     std::lock_guard<std::mutex> guard(m_lock);
 
     // init global values
@@ -170,6 +174,25 @@ ClusterParserInterface::error(const Hanami::location& location, const std::strin
     else {
         m_errorMessage.append("position in line: UNKNOWN POSITION (maybe a string was not closed)");
     }
+}
+
+/**
+ * @brief Get brick-id at a specific position
+ *
+ * @param position requested postion
+ *
+ * @return id of the brick, which belongs to the given position, else UNINTI_POINT_32
+ */
+uint32_t
+ClusterParserInterface::getBrickId(const Hanami::Position& position)
+{
+    for (uint32_t i = 0; i < output->bricks.size(); i++) {
+        if (position == output->bricks[i].position) {
+            return i;
+        }
+    }
+
+    return UNINTI_POINT_32;
 }
 
 }  // namespace Hanami

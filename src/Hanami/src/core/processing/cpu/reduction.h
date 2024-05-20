@@ -25,8 +25,8 @@
 
 #include <common.h>
 #include <core/cluster/cluster.h>
+#include <core/cluster/objects.h>
 #include <core/processing/logical_host.h>
-#include <core/processing/objects.h>
 #include <hanami_root.h>
 
 /**
@@ -39,8 +39,9 @@ reduceSection(SynapseSection* section)
 {
     Synapse* synapse;
     uint8_t exist = 0;
+    uint8_t pos = 0;
 
-    for (uint8_t pos = 0; pos < SYNAPSES_PER_SYNAPSESECTION; pos++) {
+    for (pos = 0; pos < SYNAPSES_PER_SYNAPSESECTION; ++pos) {
         synapse = &section->synapses[pos];
 
         if (synapse->targetNeuronId != UNINIT_STATE_8) {
@@ -75,34 +76,35 @@ reduceSection(SynapseSection* section)
  * @param blockId id of the current block within the brick
  */
 inline void
-reduceConnections(Brick* brick,
-                  NeuronBlock* neuronBlocks,
-                  SynapseBlock* synapseBlocks,
-                  const uint32_t blockId)
+reduceConnections(Brick* brick, Brick* bricks, SynapseBlock* synapseBlocks, const uint32_t blockId)
 {
     SynapseConnection* connection = nullptr;
     Neuron* sourceNeuron = nullptr;
     NeuronBlock* sourceNeuronBlock = nullptr;
+    Brick* sourceBrick = nullptr;
     ConnectionBlock* connectionBlock = nullptr;
     SynapseSection* synapseSection = nullptr;
-    const uint32_t dimY = brick->dimY;
-    const uint32_t dimX = brick->dimX;
+    const uint32_t dimY = brick->header.dimY;
+    const uint32_t dimX = brick->header.dimX;
+    uint32_t c = 0;
+    uint32_t i = 0;
 
     if (blockId >= dimX) {
         return;
     }
 
-    for (uint32_t c = blockId * dimY; c < (blockId * dimY) + dimY; ++c) {
-        connectionBlock = &brick->connectionBlocks[0][c];
+    for (c = blockId * dimY; c < (blockId * dimY) + dimY; ++c) {
+        connectionBlock = &brick->connectionBlocks[c];
 
-        for (uint16_t i = 0; i < NUMBER_OF_SYNAPSESECTION; i++) {
+        for (i = 0; i < NUMBER_OF_SYNAPSESECTION; ++i) {
             connection = &connectionBlock->connections[i];
-            if (connection->origin.blockId == UNINIT_STATE_32) {
+            if (connection->origin.blockId == UNINIT_STATE_16) {
                 continue;
             }
 
             synapseSection = &synapseBlocks[connectionBlock->targetSynapseBlockPos].sections[i];
-            sourceNeuronBlock = &neuronBlocks[connection->origin.blockId];
+            sourceBrick = &bricks[connection->origin.brickId];
+            sourceNeuronBlock = &sourceBrick->neuronBlocks[connection->origin.blockId];
             sourceNeuron = &sourceNeuronBlock->neurons[connection->origin.neuronId];
 
             // if section is complete empty, then erase it
@@ -113,7 +115,7 @@ reduceConnections(Brick* brick,
                 sourceNeuron->inUse &= (~(1 << connection->origin.posInNeuron));
 
                 // mark current connection as available again
-                connection->origin.blockId = UNINIT_STATE_32;
+                connection->origin.blockId = UNINIT_STATE_16;
                 connection->origin.neuronId = UNINIT_STATE_16;
                 connection->origin.posInNeuron = 0;
             }
@@ -128,13 +130,13 @@ inline void
 reduceCluster(Cluster& cluster, const uint32_t brickId, const uint32_t blockId)
 {
     Brick* brick = &cluster.bricks[brickId];
-    if (brick->isInputBrick) {
+    if (brick->header.isInputBrick) {
         return;
     }
 
     SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(cluster.attachedHost->synapseBlocks);
     const uint32_t numberOfBricks = cluster.bricks.size();
-    reduceConnections(brick, &cluster.neuronBlocks[0], synapseBlocks, blockId);
+    reduceConnections(brick, &cluster.bricks[0], synapseBlocks, blockId);
 }
 
 #endif  // HANAMI_CORE_REDUCTION_H

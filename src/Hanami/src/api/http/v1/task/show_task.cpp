@@ -47,8 +47,11 @@ ShowTask::ShowTask() : Blossom("Show information of a specific task.")
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("percentage_finished", SAKURA_FLOAT_TYPE)
-        .setComment("Percentation of the progress between 0.0 and 1.0.");
+    registerOutputField("current_cycle", SAKURA_INT_TYPE)
+        .setComment("Current cycle of the current task.");
+
+    registerOutputField("total_number_of_cycles", SAKURA_INT_TYPE)
+        .setComment("Total number of cycles requred by the task.");
 
     registerOutputField("state", SAKURA_STRING_TYPE)
         .setComment("Actual state of the task (queued, active, aborted or finished).");
@@ -111,7 +114,8 @@ ShowTask::runTask(BlossomIO& blossomIO,
     const TaskProgress progress = cluster->getProgress(taskUuid);
 
     // get basic information
-    blossomIO.output["percentage_finished"] = progress.percentageFinished;
+    blossomIO.output["current_cycle"] = progress.currentCyle;
+    blossomIO.output["total_number_of_cycles"] = progress.totalNumberOfCycles;
     blossomIO.output["queue_timestamp"] = serializeTimePoint(progress.queuedTimeStamp);
 
     // get timestamps

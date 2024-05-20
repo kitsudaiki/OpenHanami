@@ -39,23 +39,18 @@ sendClusterOutputMessage(const Cluster* cluster)
 
     uint8_t buffer[TRANSFER_SEGMENT_SIZE];
 
-    for (const auto& [name, brick] : cluster->namedBricks) {
-        if (brick->isOutputBrick == false) {
-            continue;
-        }
-
+    for (const auto& [name, outputInterface] : cluster->outputInterfaces) {
         // build message
         ClusterIO_Message msg;
         msg.set_islast(false);
-        msg.set_brickname(name);
+        msg.set_buffername(name);
         msg.set_processtype(ClusterProcessType::REQUEST_TYPE);
-        msg.set_numberofvalues(cluster->clusterHeader.numberOfOutputs);
+        msg.set_numberofvalues(outputInterface.outputNeurons.size());
 
-        for (uint64_t outputNeuronId = brick->ioBufferPos;
-             outputNeuronId < brick->ioBufferPos + cluster->clusterHeader.numberOfOutputs;
+        for (uint64_t outputNeuronId = 0; outputNeuronId < outputInterface.outputNeurons.size();
              outputNeuronId++)
         {
-            msg.add_values(cluster->outputValues[outputNeuronId]);
+            msg.add_values(outputInterface.outputNeurons[outputNeuronId].outputVal);
         }
 
         // serialize message
@@ -190,27 +185,40 @@ recvClusterInputMessage(Cluster* cluster, const void* data, const uint64_t dataS
         return false;
     }
 
-    auto it = cluster->namedBricks.find(msg.brickname());
-    if (it == cluster->namedBricks.end()) {
+    // fill given data into the target-cluster
+    if (msg.targetbuffertype() != TargetBufferType::INPUT_BUFFER_TYPE) {
+        auto it = cluster->inputInterfaces.find(msg.buffername());
+        if (it == cluster->inputInterfaces.end()) {
+            Hanami::ErrorContainer error;
+            error.addMessage("Brick with name '" + msg.buffername() + "' not found for direct-io");
+            LOG_ERROR(error);
+            return false;
+        }
+
+        InputInterface* inputInterface = &it->second;
+        for (uint64_t i = 0; i < msg.numberofvalues(); i++) {
+            inputInterface->inputNeurons[i].value = msg.values(i);
+        }
+    }
+    else if (msg.targetbuffertype() != TargetBufferType::EXPECTED_BUFFER_TYPE) {
+        auto it = cluster->outputInterfaces.find(msg.buffername());
+        if (it == cluster->outputInterfaces.end()) {
+            Hanami::ErrorContainer error;
+            error.addMessage("Brick with name '" + msg.buffername() + "' not found for direct-io");
+            LOG_ERROR(error);
+            return false;
+        }
+
+        OutputInterface* outputInterface = &it->second;
+        for (uint64_t i = 0; i < msg.numberofvalues(); i++) {
+            outputInterface->outputNeurons[i].exprectedVal = msg.values(i);
+        }
+    }
+    else {
         Hanami::ErrorContainer error;
-        error.addMessage("Brick with name '" + msg.brickname() + "' not found for direct-io");
+        error.addMessage("Got invalid Protobuf-ClusterIO Target-Buffer-Type");
         LOG_ERROR(error);
         return false;
-    }
-
-    // fill given data into the target-cluster
-    Brick* brick = it->second;
-    if (brick->isInputBrick) {
-        float* buffer = &cluster->inputValues[brick->ioBufferPos];
-        for (uint64_t i = 0; i < msg.numberofvalues(); i++) {
-            buffer[i] = msg.values(i);
-        }
-    }
-    if (brick->isOutputBrick) {
-        float* buffer = &cluster->expectedValues[brick->ioBufferPos];
-        for (uint64_t i = 0; i < msg.numberofvalues(); i++) {
-            buffer[i] = msg.values(i);
-        }
     }
 
     if (msg.islast()) {

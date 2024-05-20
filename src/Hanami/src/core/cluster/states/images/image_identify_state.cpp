@@ -51,8 +51,9 @@ ImageIdentify_State::processEvent()
     const uint64_t offsetInput = entriesPerCycle * actualTask->actualCycle;
 
     // set input
-    for (uint64_t i = 0; i < actualTask->numberOfInputsPerCycle; i++) {
-        m_cluster->inputValues[i] = actualTask->inputData[offsetInput + i];
+    InputInterface* inputInterface = &m_cluster->inputInterfaces.begin()->second;
+    for (uint64_t i = 0; i < numberOfInputsPerCycle; i++) {
+        inputInterface->inputNeurons[i].value = actualTask->inputData[offsetInput + i];
     }
 
     m_cluster->mode = ClusterProcessingMode::NORMAL_MODE;

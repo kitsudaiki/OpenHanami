@@ -39,7 +39,6 @@ struct DataBuffer;
 inline bool allocateBlocks_DataBuffer(DataBuffer& buffer, const uint64_t numberOfBlocks);
 inline bool addData_DataBuffer(DataBuffer& buffer, const void* data, const uint64_t dataSize);
 inline bool reset_DataBuffer(DataBuffer& buffer, const uint64_t numberOfBlocks);
-inline uint8_t* getBlock_DataBuffer(DataBuffer& buffer, const uint64_t blockPosition);
 inline void* alignedMalloc(const uint16_t blockSize, const uint64_t numberOfBytes);
 inline bool alignedFree(void* ptr, const uint64_t numberOfBytes);
 
@@ -301,6 +300,29 @@ addData_DataBuffer(DataBuffer& buffer, const void* data, const uint64_t dataSize
 }
 
 /**
+ * @brief get pointer to a specific position within the buffer
+ *
+ * @param buffer reference to buffer-object
+ * @param bytePostion requested byte-position in buffer
+ * @param numberOfBytes check if number of bytes behind the position are available
+ *
+ * @return nullptr if position is invalid, else pointer to requested position in buffer
+ */
+inline void*
+getPosition_DataBuffer(DataBuffer& buffer,
+                       const uint64_t bytePostion,
+                       const uint64_t numberOfBytes = 1)
+{
+    if (bytePostion + numberOfBytes > buffer.usedBufferSize
+        || bytePostion + numberOfBytes > buffer.totalBufferSize)
+    {
+        return nullptr;
+    }
+
+    return static_cast<void*>(&static_cast<uint8_t*>(buffer.data)[bytePostion]);
+}
+
+/**
  * @brief add an object to the buffer
  *
  * @param buffer reference to buffer-object
@@ -313,6 +335,31 @@ inline bool
 addObject_DataBuffer(DataBuffer& buffer, T* data)
 {
     return addData_DataBuffer(buffer, data, sizeof(T));
+}
+
+/**
+ * @brief get a specific object from a specific location of the buffer
+ *
+ * @param buffer reference to buffer-object
+ * @param bytePosition reference for byte-position in the buffer, where the object is located.
+ *                     Will be updated to the end of the read object.
+ * @param data pointer the object, where the result should be written into
+ *
+ * @return false, if location is invalid, else true
+ */
+template <typename T>
+inline bool
+getObject_DataBuffer(DataBuffer& buffer, uint64_t& bytePosition, T* data)
+{
+    void* tempTarget = getPosition_DataBuffer(buffer, bytePosition, sizeof(T));
+    if (tempTarget == nullptr) {
+        return false;
+    }
+
+    memcpy(data, tempTarget, sizeof(T));
+    bytePosition += sizeof(T);
+
+    return true;
 }
 
 /**
@@ -350,27 +397,6 @@ reset_DataBuffer(DataBuffer& buffer, const uint64_t numberOfBlocks)
     buffer.numberOfBlocks = numberOfBlocks;
 
     return true;
-}
-
-/**
- * @brief get a pointer to a specific block inside the buffer
- *
- * @param buffer reference to buffer-object
- * @param blockPosition number of the block inside the buffer
- *
- * @return pointer to the buffer-position
- */
-inline uint8_t*
-getBlock_DataBuffer(DataBuffer& buffer, const uint64_t blockPosition)
-{
-    // precheck
-    if (blockPosition >= buffer.numberOfBlocks) {
-        return nullptr;
-    }
-
-    // get specific block of the data
-    uint8_t* dataByte = static_cast<uint8_t*>(buffer.data);
-    return &dataByte[blockPosition * buffer.blockSize];
 }
 
 }  // namespace Hanami

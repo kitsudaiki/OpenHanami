@@ -42,7 +42,6 @@ class CpuHost : public LogicalHost
 
     void addClusterToHost(Cluster* cluster);
     Cluster* getClusterFromQueue();
-    void addBrickToTaskQueue(Cluster* cluster, const u_int32_t brickId);
 
     bool moveCluster(Cluster* cluster);
     void syncWithHost(Cluster*);

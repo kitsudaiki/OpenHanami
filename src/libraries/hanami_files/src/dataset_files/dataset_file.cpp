@@ -69,12 +69,12 @@ DataSetFile::initNewFile(Hanami::ErrorContainer& error)
     // prepare dataset-header
     DataSetHeader dataSetHeader;
     dataSetHeader.type = type;
-    uint32_t nameSize = name.size();
-    if (nameSize > 255) {
-        nameSize = 255;
+    dataSetHeader.nameSize = name.size();
+    if (dataSetHeader.nameSize > 255) {
+        dataSetHeader.nameSize = 255;
     }
-    memcpy(dataSetHeader.name, name.c_str(), nameSize);
-    dataSetHeader.name[nameSize] = '\0';
+    memcpy(dataSetHeader.name, name.c_str(), dataSetHeader.nameSize);
+    dataSetHeader.name[dataSetHeader.nameSize] = '\0';
 
     // write dataset-header to file
     if (m_targetFile->writeDataIntoFile(&dataSetHeader, 0, sizeof(DataSetHeader), error) == false) {
@@ -110,7 +110,7 @@ DataSetFile::readFromFile(Hanami::ErrorContainer& error)
     DataSetHeader dataSetHeader;
     memcpy(&dataSetHeader, u8buffer, sizeof(DataSetHeader));
     type = static_cast<DataSetType>(dataSetHeader.type);
-    name = dataSetHeader.name;
+    name = std::string(dataSetHeader.name, dataSetHeader.nameSize);
 
     readHeader(u8buffer);
 

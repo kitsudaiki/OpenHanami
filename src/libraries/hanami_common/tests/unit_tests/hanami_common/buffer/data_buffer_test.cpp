@@ -26,8 +26,9 @@ DataBuffer_Test::DataBuffer_Test() : Hanami::CompareTestHelper("DataBuffer_Test"
     copy_assingment_constructor_test();
     copy_assingment_operator_test();
     addObject_DataBuffer_test();
-    getBlock_DataBuffer_test();
     reset_DataBuffer_test();
+    getPosition_DataBuffer_test();
+    getObject_DataBuffer_test();
 
     addData_DataBuffer_test();
     allocateBlocks_DataBuffer_test();
@@ -149,24 +150,6 @@ DataBuffer_Test::addObject_DataBuffer_test()
 }
 
 /**
- * getBlock_DataBuffer_test
- */
-void
-DataBuffer_Test::getBlock_DataBuffer_test()
-{
-    // init
-    DataBuffer testBuffer(10);
-    TestStruct testStruct;
-    testStruct.b = 42;
-
-    uint8_t* dataByte = static_cast<uint8_t*>(testBuffer.data);
-    memcpy(&dataByte[4096], &testStruct, sizeof(TestStruct));
-
-    // check content of the buffer with getBlock-method
-    TEST_EQUAL(static_cast<int>(getBlock_DataBuffer(testBuffer, 1)[1]), 42);
-}
-
-/**
  * reset_DataBuffer_test
  */
 void
@@ -191,6 +174,55 @@ DataBuffer_Test::reset_DataBuffer_test()
     // check content of the buffer
     uint8_t* dataByte = static_cast<uint8_t*>(testBuffer.data);
     TEST_EQUAL(static_cast<int>(dataByte[1]), 0);
+}
+
+/**
+ * @brief getPosition_DataBuffer_test
+ */
+void
+DataBuffer_Test::getPosition_DataBuffer_test()
+{
+    DataBuffer testBuffer(1);
+    bool isNullptr = false;
+
+    isNullptr = getPosition_DataBuffer(testBuffer, 0) == nullptr;
+    TEST_EQUAL(isNullptr, true);
+
+    testBuffer.usedBufferSize = testBuffer.totalBufferSize;
+
+    isNullptr = getPosition_DataBuffer(testBuffer, 0) == nullptr;
+    TEST_EQUAL(isNullptr, false);
+
+    isNullptr = getPosition_DataBuffer(testBuffer, 0, 1024) == nullptr;
+    TEST_EQUAL(isNullptr, false);
+
+    isNullptr = getPosition_DataBuffer(testBuffer, 5000) == nullptr;
+    TEST_EQUAL(isNullptr, true);
+
+    isNullptr = getPosition_DataBuffer(testBuffer, 1024, 5000) == nullptr;
+    TEST_EQUAL(isNullptr, true);
+}
+
+/**
+ * @brief getObject_DataBuffer_test
+ */
+void
+DataBuffer_Test::getObject_DataBuffer_test()
+{
+    DataBuffer testBuffer(1);
+    bool isNullptr = false;
+    TestStruct testStruct;
+    testStruct.c = 42;
+    uint64_t positionPtr = 0;
+
+    TEST_EQUAL(getObject_DataBuffer(testBuffer, positionPtr, &testStruct), false);
+
+    addObject_DataBuffer(testBuffer, &testStruct);
+
+    TestStruct getStruct;
+    TEST_EQUAL(getObject_DataBuffer(testBuffer, positionPtr, &getStruct), true);
+    TEST_EQUAL(getStruct.c, 42);
+    TEST_EQUAL(positionPtr, sizeof(TestStruct));
 }
 
 /**
