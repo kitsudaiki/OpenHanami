@@ -27,7 +27,7 @@
 #include <hanami_common/buffer/data_buffer.h>
 #include <hanami_common/files/binary_file.h>
 #include <hanami_common/files/text_file.h>
-#include <hanami_common/methods/file_methods.h>
+#include <hanami_common/functions/file_functions.h>
 #include <hanami_config/config_handler.h>
 #include <hanami_files/dataset_files/dataset_file.h>
 #include <hanami_files/dataset_files/image_dataset_file.h>
@@ -72,7 +72,7 @@ CheckDataSet::runTask(BlossomIO& blossomIO,
 {
     const std::string resultUuid = blossomIO.input["result_uuid"];
     const std::string dataUuid = blossomIO.input["dataset_uuid"];
-    const UserContext userContext(context);
+    const Hanami::UserContext userContext = convertContext(context);
 
     // get result
     // check if request-result exist within the table

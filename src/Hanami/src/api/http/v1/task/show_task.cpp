@@ -83,7 +83,7 @@ ShowTask::runTask(BlossomIO& blossomIO,
 {
     const std::string clusterUuid = blossomIO.input["cluster_uuid"];
     const std::string taskUuid = blossomIO.input["uuid"];
-    const UserContext userContext(context);
+    const Hanami::UserContext userContext = convertContext(context);
 
     // check if user exist within the table
     json getResult;

@@ -86,7 +86,7 @@ std::vector<std::string> tempRules;
 %token <std::string> IDENTIFIER "identifier"
 %token <std::string> PATH "path"
 
-%type  <Hanami::HttpRequestType> request_type
+%type  <HttpRequestType> request_type
 %type  <std::string> endpoint;
 
 %%
@@ -127,16 +127,16 @@ policy_entry:
         tempPolicyEntry.putRules.clear();
         tempPolicyEntry.deleteRules.clear();
 
-        if($2 == Hanami::HttpRequestType::GET_TYPE) {
+        if($2 == HttpRequestType::GET_TYPE) {
             tempPolicyEntry.getRules = tempRules;
         }
-        if($2 == Hanami::HttpRequestType::POST_TYPE) {
+        if($2 == HttpRequestType::POST_TYPE) {
             tempPolicyEntry.postRules = tempRules;
         }
-        if($2 == Hanami::HttpRequestType::PUT_TYPE) {
+        if($2 == HttpRequestType::PUT_TYPE) {
             tempPolicyEntry.putRules = tempRules;
         }
-        if($2 == Hanami::HttpRequestType::DELETE_TYPE) {
+        if($2 == HttpRequestType::DELETE_TYPE) {
             tempPolicyEntry.deleteRules = tempRules;
         }
     }
@@ -168,22 +168,22 @@ endpoint:
 request_type:
     "GET"
     {
-        $$ = Hanami::HttpRequestType::GET_TYPE;
+        $$ = HttpRequestType::GET_TYPE;
     }
 |
     "POST"
     {
-        $$ = Hanami::HttpRequestType::POST_TYPE;
+        $$ = HttpRequestType::POST_TYPE;
     }
 |
     "PUT"
     {
-        $$ = Hanami::HttpRequestType::PUT_TYPE;
+        $$ = HttpRequestType::PUT_TYPE;
     }
 |
     "DELETE"
     {
-        $$ = Hanami::HttpRequestType::DELETE_TYPE;
+        $$ = HttpRequestType::DELETE_TYPE;
     }
 
 %%

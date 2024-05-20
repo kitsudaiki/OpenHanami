@@ -5,6 +5,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_library(hanami_common STATIC
+    include/hanami_common/defines.h
+    include/hanami_common/uuid.h
+    include/hanami_common/enums.h
     include/hanami_common/buffer/data_buffer.h
     include/hanami_common/buffer/item_buffer.h
     include/hanami_common/buffer/ring_buffer.h
@@ -16,9 +19,10 @@ add_library(hanami_common STATIC
     include/hanami_common/items/table_item.h
     include/hanami_common/logger.h
     include/hanami_common/memory_counter.h
-    include/hanami_common/methods/file_methods.h
-    include/hanami_common/methods/string_methods.h
-    include/hanami_common/methods/vector_methods.h
+    include/hanami_common/functions/file_functions.h
+    include/hanami_common/functions/string_functions.h
+    include/hanami_common/functions/vector_functions.h
+    include/hanami_common/functions/time_functions.h
     include/hanami_common/process_execution.h
     include/hanami_common/progress_bar.h
     include/hanami_common/statemachine.h
@@ -40,9 +44,9 @@ add_library(hanami_common STATIC
     src/items/table_item.cpp
     src/logger.cpp
     src/memory_counter.cpp
-    src/methods/file_methods.cpp
-    src/methods/string_methods.cpp
-    src/methods/vector_methods.cpp
+    src/functions/file_functions.cpp
+    src/functions/string_functions.cpp
+    src/functions/vector_functions.cpp
     src/process_execution.cpp
     src/progress_bar.cpp
     src/state.h

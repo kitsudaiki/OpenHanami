@@ -95,7 +95,7 @@ YY_DECL;
 %token <long> NUMBER "number"
 %token <double> FLOAT "float"
 
-%type  <Hanami::Position> position
+%type  <Position> position
 %type  <Hanami::BrickMeta> brick
 %type  <Hanami::InputMeta> input
 %type  <Hanami::OutputMeta> output

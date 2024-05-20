@@ -20,7 +20,7 @@
  *      limitations under the License.
  */
 
-#include <hanami_common/methods/string_methods.h>
+#include <hanami_common/functions/string_functions.h>
 #include <hanami_common/process_execution.h>
 
 namespace Hanami

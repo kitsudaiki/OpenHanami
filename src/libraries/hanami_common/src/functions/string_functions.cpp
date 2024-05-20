@@ -1,5 +1,5 @@
 /**
- *  @file       string_methods.cpp
+ *  @file       string_functions.cpp
  *
  *  @author     Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,7 +20,7 @@
  *      limitations under the License.
  */
 
-#include <hanami_common/methods/string_methods.h>
+#include <hanami_common/functions/string_functions.h>
 
 namespace Hanami
 {

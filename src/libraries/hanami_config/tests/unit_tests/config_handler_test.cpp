@@ -23,7 +23,7 @@
 #include "config_handler_test.h"
 
 #include <hanami_common/files/text_file.h>
-#include <hanami_common/methods/file_methods.h>
+#include <hanami_common/functions/file_functions.h>
 #include <hanami_config/config_handler.h>
 
 namespace Hanami
@@ -35,12 +35,12 @@ ConfigHandler_Test::ConfigHandler_Test() : Hanami::CompareTestHelper("ConfigHand
 
     readConfig_test();
 
-    // private methods
+    // private functions
     isRegistered_test();
     getRegisteredType_test();
     checkType_test();
 
-    // public methods
+    // public functions
     registerString_test();
     registerInteger_test();
     registerFloat_test();

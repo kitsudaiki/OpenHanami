@@ -45,23 +45,23 @@ class TempfileTable : public HanamiSqlTable
                      const std::string& name,
                      const uint64_t fileSize,
                      const std::string& location,
-                     const UserContext& userContext,
+                     const Hanami::UserContext& userContext,
                      Hanami::ErrorContainer& error);
     bool getTempfile(json& result,
                      const std::string& tempfileUuid,
-                     const UserContext& userContext,
+                     const Hanami::UserContext& userContext,
                      Hanami::ErrorContainer& error,
                      const bool showHiddenValues = false);
     bool getAllTempfile(Hanami::TableItem& result,
-                        const UserContext& userContext,
+                        const Hanami::UserContext& userContext,
                         Hanami::ErrorContainer& error);
     bool deleteTempfile(const std::string& tempfileUuid,
-                        const UserContext& userContext,
+                        const Hanami::UserContext& userContext,
                         Hanami::ErrorContainer& error);
     bool getRelatedResourceUuids(std::vector<std::string>& relatedUuids,
                                  const std::string& resourceType,
                                  const std::string& resourceUuid,
-                                 const UserContext& userContext,
+                                 const Hanami::UserContext& userContext,
                                  Hanami::ErrorContainer& error);
 
    private:

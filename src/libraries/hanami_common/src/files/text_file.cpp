@@ -7,12 +7,12 @@
  *
  *  @brief data-items for universal data-structures
  *
- *  @detail different methods for simple text-file-operations
+ *  @detail different functions for simple text-file-operations
  */
 
 #include <hanami_common/files/text_file.h>
-#include <hanami_common/methods/file_methods.h>
-#include <hanami_common/methods/string_methods.h>
+#include <hanami_common/functions/file_functions.h>
+#include <hanami_common/functions/string_functions.h>
 
 namespace Hanami
 {

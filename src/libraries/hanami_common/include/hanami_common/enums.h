@@ -23,6 +23,15 @@
 #ifndef HANAMI_ENUMS_H
 #define HANAMI_ENUMS_H
 
+enum HttpRequestType {
+    UNKNOWN_HTTP_TYPE = 0,
+    DELETE_TYPE = 1,
+    GET_TYPE = 2,
+    HEAD_TYPE = 3,
+    POST_TYPE = 4,
+    PUT_TYPE = 5,
+};
+
 enum ReturnStatus {
     OK = 0,
     INVALID_INPUT = 1,
@@ -102,11 +111,6 @@ enum HttpResponseTypes {
     LOOP_DETECTED_RTYPE = 508,
     NOT_EXTENDED_RTYPE = 510,
     NETWORK_AUTHENTICATION_REQUIRED_RTYPE = 511
-};
-
-enum SakuraObjectType {
-    TREE_TYPE = 0,
-    BLOSSOM_TYPE = 1,
 };
 
 #endif  // HANAMI_ENUMS_H

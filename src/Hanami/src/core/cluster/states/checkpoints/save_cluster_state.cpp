@@ -90,7 +90,7 @@ SaveCluster_State::saveClusterToCheckpoint(Task* currentTask, Hanami::ErrorConta
     std::string fileUuid = "";
     // checkpoints are created by another internal process, which gives the id's not in the
     // context object, but as normal values
-    UserContext userContext;
+    Hanami::UserContext userContext;
     userContext.userId = currentTask->userId;
     userContext.projectId = currentTask->projectId;
 

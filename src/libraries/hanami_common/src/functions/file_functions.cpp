@@ -1,5 +1,5 @@
 /**
- *  @file       file_methods.cpp
+ *  @file       file_functions.cpp
  *
  *  @author     Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,7 +20,7 @@
  *      limitations under the License.
  */
 
-#include <hanami_common/methods/file_methods.h>
+#include <hanami_common/functions/file_functions.h>
 
 namespace Hanami
 {

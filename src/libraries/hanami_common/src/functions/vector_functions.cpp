@@ -1,5 +1,5 @@
 /**
- *  @file       vector_methods.cpp
+ *  @file       vector_functions.cpp
  *
  *  @author     Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,7 +20,7 @@
  *      limitations under the License.
  */
 
-#include <hanami_common/methods/vector_methods.h>
+#include <hanami_common/functions/vector_functions.h>
 
 namespace Hanami
 {

@@ -24,11 +24,11 @@
 #define HANAMI_CORE_PROCESSING_H
 
 #include <api/websocket/cluster_io.h>
-#include <common.h>
 #include <core/cluster/cluster.h>
 #include <core/cluster/objects.h>
 #include <core/processing/cluster_io_functions.h>
 #include <core/processing/cluster_resize.h>
+#include <hanami_crypto/hashes.h>
 #include <hanami_root.h>
 #include <math.h>
 
@@ -106,14 +106,14 @@ createNewSynapse(NeuronBlock* block,
     synapse->activeCounter = 5;
 
     // set target neuron
-    randomSeed = pcg_hash(randomSeed);
+    randomSeed = Hanami::pcg_hash(randomSeed);
     synapse->targetNeuronId = static_cast<uint16_t>(randomSeed % NEURONS_PER_NEURONBLOCK);
 
-    randomSeed = pcg_hash(randomSeed);
+    randomSeed = Hanami::pcg_hash(randomSeed);
     synapse->weight = (static_cast<float>(randomSeed) / randMax) / 10.0f;
 
     // update weight with sign
-    randomSeed = pcg_hash(randomSeed);
+    randomSeed = Hanami::pcg_hash(randomSeed);
     signRand = randomSeed % 1000;
     synapse->weight *= static_cast<float>(1.0f - (1000.0f * sigNeg > signRand) * 2);
 }

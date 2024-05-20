@@ -23,9 +23,12 @@
 #ifndef HANAMI_ROUTING_FUNCTIONS_H
 #define HANAMI_ROUTING_FUNCTIONS_H
 
-#include <common.h>
 #include <hanami_cluster_parser/cluster_meta.h>
 #include <stdint.h>
+
+struct NextSides {
+    uint8_t sides[5];
+};
 
 /**
  * @brief get neighbor-position for a specific side in the hexagon-grid

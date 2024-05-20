@@ -66,7 +66,7 @@ GetProgressDataSet::runTask(BlossomIO& blossomIO,
                             Hanami::ErrorContainer& error)
 {
     const std::string datasetUuid = blossomIO.input["uuid"];
-    const UserContext userContext(context);
+    const Hanami::UserContext userContext = convertContext(context);
 
     json databaseOutput;
     if (DataSetTable::getInstance()->getDataSet(
@@ -98,7 +98,8 @@ GetProgressDataSet::runTask(BlossomIO& blossomIO,
     // check if upload complete
     bool isComplete = true;
     for (const std::string& uuid : relatedUuids) {
-        FileHandle* fileHandle = TempFileHandler::getInstance()->getFileHandle(uuid, userContext);
+        Hanami::FileHandle* fileHandle
+            = TempFileHandler::getInstance()->getFileHandle(uuid, userContext);
         if (fileHandle->bitBuffer->isComplete() == false) {
             isComplete = false;
         }

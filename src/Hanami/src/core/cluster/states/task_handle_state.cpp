@@ -247,7 +247,7 @@ TaskHandle_State::finishTask()
         resultData["data"] = actualTask->resultData;
         resultData["visibility"] = "private";
 
-        UserContext userContext;
+        Hanami::UserContext userContext;
         userContext.userId = actualTask->userId;
         userContext.projectId = actualTask->projectId;
 

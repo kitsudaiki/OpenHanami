@@ -22,13 +22,11 @@
 
 #include "validate_access.h"
 
-#include <hanami_common/methods/string_methods.h>
+#include <hanami_common/functions/string_functions.h>
 #include <hanami_policies/policy.h>
 #include <hanami_root.h>
 #include <jwt-cpp/jwt.h>
 // #include <jwt-cpp/traits/nlohmann-json/defaults.h>
-
-using Hanami::HttpRequestType;
 
 /**
  * @brief constructor

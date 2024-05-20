@@ -39,17 +39,19 @@ class DataSetTable : public HanamiSqlTable
 
     ~DataSetTable();
 
-    bool addDataSet(json& data, const UserContext& userContext, Hanami::ErrorContainer& error);
+    bool addDataSet(json& data,
+                    const Hanami::UserContext& userContext,
+                    Hanami::ErrorContainer& error);
     bool getDataSet(json& result,
                     const std::string& datasetUuid,
-                    const UserContext& userContext,
+                    const Hanami::UserContext& userContext,
                     Hanami::ErrorContainer& error,
                     const bool showHiddenValues);
     bool getAllDataSet(Hanami::TableItem& result,
-                       const UserContext& userContext,
+                       const Hanami::UserContext& userContext,
                        Hanami::ErrorContainer& error);
     bool deleteDataSet(const std::string& uuid,
-                       const UserContext& userContext,
+                       const Hanami::UserContext& userContext,
                        Hanami::ErrorContainer& error);
 
     bool getDateSetInfo(json& result,

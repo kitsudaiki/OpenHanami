@@ -1,14 +1,14 @@
 /**
- *  @file      file_methods_test.cpp
+ *  @file      file_functions_test.cpp
  *
  *  @author    Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
  *  @copyright MIT License
  */
 
-#include "file_methods_test.h"
+#include "file_functions_test.h"
 
-#include <hanami_common/methods/file_methods.h>
+#include <hanami_common/functions/file_functions.h>
 #include <hanami_common/process_execution.h>
 
 using Hanami::runSyncProcess;
@@ -19,7 +19,7 @@ namespace Hanami
 /**
  * @brief constructor
  */
-FileMethods_Test::FileMethods_Test() : Hanami::CompareTestHelper("FileMethods_Test")
+Filefunctions_Test::Filefunctions_Test() : Hanami::CompareTestHelper("Filefunctions_Test")
 {
     listFiles_test();
     renameFileOrDir_test();
@@ -32,7 +32,7 @@ FileMethods_Test::FileMethods_Test() : Hanami::CompareTestHelper("FileMethods_Te
  * @brief listFiles_test
  */
 void
-FileMethods_Test::listFiles_test()
+Filefunctions_Test::listFiles_test()
 {
     runSyncProcess(std::string("rm -r /tmp/listFiles_test/").c_str());
     runSyncProcess(std::string("mkdir /tmp/listFiles_test/").c_str());
@@ -74,7 +74,7 @@ FileMethods_Test::listFiles_test()
  * @brief renameFileOrDir_test
  */
 void
-FileMethods_Test::renameFileOrDir_test()
+Filefunctions_Test::renameFileOrDir_test()
 {
     bool result = false;
 
@@ -103,7 +103,7 @@ FileMethods_Test::renameFileOrDir_test()
  * @brief copyPath_test
  */
 void
-FileMethods_Test::copyPath_test()
+Filefunctions_Test::copyPath_test()
 {
     bool result = false;
 
@@ -132,7 +132,7 @@ FileMethods_Test::copyPath_test()
  * @brief createDirectory_test
  */
 void
-FileMethods_Test::createDirectory_test()
+Filefunctions_Test::createDirectory_test()
 {
     bool result = false;
 
@@ -158,7 +158,7 @@ FileMethods_Test::createDirectory_test()
  * @brief deleteFileOrDir_test
  */
 void
-FileMethods_Test::deleteFileOrDir_test()
+Filefunctions_Test::deleteFileOrDir_test()
 {
     bool result = false;
 

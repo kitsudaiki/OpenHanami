@@ -23,7 +23,7 @@
 #include "list_user_projects.h"
 
 #include <database/users_table.h>
-#include <hanami_common/methods/string_methods.h>
+#include <hanami_common/functions/string_functions.h>
 #include <hanami_crypto/hashes.h>
 #include <hanami_root.h>
 
@@ -68,7 +68,7 @@ ListUserProjects::runTask(BlossomIO& blossomIO,
                           BlossomStatus& status,
                           Hanami::ErrorContainer& error)
 {
-    const UserContext userContext(context);
+    const Hanami::UserContext userContext = convertContext(context);
     std::string userId = blossomIO.input["user_id"];
 
     // only admin is allowed to request the project-list of other users

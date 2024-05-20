@@ -36,7 +36,7 @@ namespace Hanami
 {
 
 struct BrickMeta {
-    Position position;
+    Hanami::Position position;
 };
 
 struct InputMeta {

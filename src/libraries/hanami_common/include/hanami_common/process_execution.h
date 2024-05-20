@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef PROCESS_HANDLING_H
-#define PROCESS_HANDLING_H
+#ifndef HANAMI_PROCESS_HANDLING_H
+#define HANAMI_PROCESS_HANDLING_H
 
 #include <iostream>
 #include <map>
@@ -43,4 +43,4 @@ ProcessResult runSyncProcess(const std::string& programm, const std::vector<std:
 
 }  // namespace Hanami
 
-#endif  // PROCESS_HANDLING_H
+#endif  // HANAMI_PROCESS_HANDLING_H

@@ -1,5 +1,5 @@
 /**
- * @file        functions.h
+ * @file        time.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,20 +20,23 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_FUNCTIONS_H
-#define HANAMI_FUNCTIONS_H
-
-#include <common/defines.h>
-#include <common/structs.h>
-#include <core/cluster/objects.h>
+#ifndef HANAMI_TIME_H
+#define HANAMI_TIME_H
 
 #include <chrono>
-#include <ctime>
 #include <iomanip>
-#include <iostream>
-#include <regex>
 #include <sstream>
 #include <string>
+
+typedef std::chrono::milliseconds chronoMilliSec;
+typedef std::chrono::microseconds chronoMicroSec;
+typedef std::chrono::nanoseconds chronoNanoSec;
+typedef std::chrono::seconds chronoSec;
+typedef std::chrono::high_resolution_clock::time_point chronoTimePoint;
+typedef std::chrono::high_resolution_clock chronoClock;
+
+namespace Hanami
+{
 
 /**
  * @brief get the current datetime of the system
@@ -73,52 +76,6 @@ serializeTimePoint(const std::chrono::high_resolution_clock::time_point& time,
     return ss.str();
 }
 
-/**
- * @brief check if an id is an uuid
- *
- * @param id id to check
- *
- * @return true, if id is an uuid, else false
- */
-inline bool
-isUuid(const std::string& id)
-{
-    const std::regex uuidRegex(UUID_REGEX);
-    return regex_match(id, uuidRegex);
-}
+}  // namespace Hanami
 
-/**
- * @brief generate a new uuid with external library
- *
- * @return new uuid
- */
-inline const kuuid
-generateUuid()
-{
-    uuid_t binaryUuid;
-    kuuid result;
-
-    uuid_generate_random(binaryUuid);
-    uuid_unparse_lower(binaryUuid, result.uuid);
-
-    return result;
-}
-
-/**
- * @brief function for generating random-values
- *        coming from this website:
- *            https://www.reedbeta.com/blog/hash-functions-for-gpu-rendering/
- *
- * @param input seed for random value
- *
- * @return random value
- */
-inline uint32_t
-pcg_hash(const uint32_t input)
-{
-    const uint32_t state = input * 747796405u + 2891336453u;
-    const uint32_t word = ((state >> ((state >> 28u) + 4u)) ^ state) * 277803737u;
-    return (word >> 22u) ^ word;
-}
-
-#endif  // HANAMI_FUNCTIONS_H
+#endif  // HANAMI_TIME_H

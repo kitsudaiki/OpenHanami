@@ -52,7 +52,7 @@ DeleteRequestResult::runTask(BlossomIO& blossomIO,
                              Hanami::ErrorContainer& error)
 {
     const std::string uuid = blossomIO.input["uuid"];
-    const UserContext userContext(context);
+    const Hanami::UserContext userContext = convertContext(context);
 
     // check if request-result exist within the table
     json result;

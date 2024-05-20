@@ -23,7 +23,6 @@
 #ifndef WORKERTHREAD_H
 #define WORKERTHREAD_H
 
-#include <common.h>
 #include <core/processing/cpu/cpu_host.h>
 #include <hanami_common/threading/thread.h>
 

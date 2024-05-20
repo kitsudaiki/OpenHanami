@@ -23,7 +23,7 @@
 #ifndef TORIIGATEWAY_RESPONSE_BUILDS_H
 #define TORIIGATEWAY_RESPONSE_BUILDS_H
 
-#include <common/enums.h>
+#include <hanami_common/enums.h>
 #include <hanami_common/logger.h>
 
 #include <boost/beast/core.hpp>

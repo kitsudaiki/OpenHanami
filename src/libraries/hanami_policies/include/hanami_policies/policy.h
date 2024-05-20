@@ -23,6 +23,7 @@
 #ifndef POLICY_H
 #define POLICY_H
 
+#include <hanami_common/enums.h>
 #include <hanami_common/logger.h>
 
 #include <map>
@@ -32,15 +33,6 @@
 namespace Hanami
 {
 class Policy_Test;
-
-enum HttpRequestType {
-    UNKNOWN_HTTP_TYPE = 0,
-    DELETE_TYPE = 1,
-    GET_TYPE = 2,
-    HEAD_TYPE = 3,
-    POST_TYPE = 4,
-    PUT_TYPE = 5,
-};
 
 struct PolicyEntry {
     std::vector<std::string> getRules;

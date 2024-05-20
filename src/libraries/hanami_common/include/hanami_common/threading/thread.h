@@ -65,7 +65,7 @@ class Thread
     bool m_abort = false;
     bool m_block = false;
 
-    // lock methods
+    // lock functions
     void blockThread();
     void sleepThread(const uint32_t microSeconds);
     void spinLock();

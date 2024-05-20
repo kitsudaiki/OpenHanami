@@ -53,7 +53,7 @@ DeleteCluster::runTask(BlossomIO& blossomIO,
                        BlossomStatus& status,
                        Hanami::ErrorContainer& error)
 {
-    const UserContext userContext(context);
+    const Hanami::UserContext userContext = convertContext(context);
     const std::string clusterUuid = blossomIO.input["uuid"];
 
     // check if user exist within the table

@@ -23,7 +23,7 @@
 #include "delete_checkpoint.h"
 
 #include <database/checkpoint_table.h>
-#include <hanami_common/methods/file_methods.h>
+#include <hanami_common/functions/file_functions.h>
 #include <hanami_root.h>
 
 DeleteCheckpoint::DeleteCheckpoint() : Blossom("Delete a result-set from shiori.")
@@ -53,7 +53,7 @@ DeleteCheckpoint::runTask(BlossomIO& blossomIO,
                           Hanami::ErrorContainer& error)
 {
     const std::string checkpointUuid = blossomIO.input["uuid"];
-    const UserContext userContext(context);
+    const Hanami::UserContext userContext = convertContext(context);
 
     // get location from database
     json result;

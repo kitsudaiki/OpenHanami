@@ -22,7 +22,7 @@
 
 #include "hanami_sql_table.h"
 
-#include <hanami_common/methods/string_methods.h>
+#include <hanami_common/functions/string_functions.h>
 #include <hanami_database/sql_database.h>
 #include <uuid/uuid.h>
 
@@ -75,7 +75,9 @@ HanamiSqlTable::~HanamiSqlTable() {}
  * @return true, if successful, else false
  */
 bool
-HanamiSqlTable::add(json& values, const UserContext& userContext, Hanami::ErrorContainer& error)
+HanamiSqlTable::add(json& values,
+                    const Hanami::UserContext& userContext,
+                    Hanami::ErrorContainer& error)
 {
     // generate new uuid if the is no predefined
     if (values.contains("uuid") == false) {
@@ -111,7 +113,7 @@ HanamiSqlTable::add(json& values, const UserContext& userContext, Hanami::ErrorC
  */
 bool
 HanamiSqlTable::get(json& result,
-                    const UserContext& userContext,
+                    const Hanami::UserContext& userContext,
                     std::vector<RequestCondition>& conditions,
                     Hanami::ErrorContainer& error,
                     const bool showHiddenValues)
@@ -132,7 +134,7 @@ HanamiSqlTable::get(json& result,
  */
 bool
 HanamiSqlTable::update(json& values,
-                       const UserContext& userContext,
+                       const Hanami::UserContext& userContext,
                        std::vector<RequestCondition>& conditions,
                        Hanami::ErrorContainer& error)
 {
@@ -153,7 +155,7 @@ HanamiSqlTable::update(json& values,
  */
 bool
 HanamiSqlTable::getAll(Hanami::TableItem& result,
-                       const UserContext& userContext,
+                       const Hanami::UserContext& userContext,
                        std::vector<RequestCondition>& conditions,
                        Hanami::ErrorContainer& error,
                        const bool showHiddenValues)
@@ -173,7 +175,7 @@ HanamiSqlTable::getAll(Hanami::TableItem& result,
  */
 bool
 HanamiSqlTable::del(std::vector<RequestCondition>& conditions,
-                    const UserContext& userContext,
+                    const Hanami::UserContext& userContext,
                     Hanami::ErrorContainer& error)
 {
     fillCondition(conditions, userContext);
@@ -188,7 +190,7 @@ HanamiSqlTable::del(std::vector<RequestCondition>& conditions,
  */
 void
 HanamiSqlTable::fillCondition(std::vector<RequestCondition>& conditions,
-                              const UserContext& userContext)
+                              const Hanami::UserContext& userContext)
 {
     if (userContext.isAdmin) {
         return;

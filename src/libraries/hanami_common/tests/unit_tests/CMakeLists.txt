@@ -21,12 +21,12 @@ add_executable(hanami_common_unit_tests
     hanami_common/items/table_item_test.h
     hanami_common/logger_test.cpp 
     hanami_common/logger_test.h
-    hanami_common/methods/file_methods_test.cpp 
-    hanami_common/methods/file_methods_test.h
-    hanami_common/methods/string_methods_test.cpp 
-    hanami_common/methods/string_methods_test.h
-    hanami_common/methods/vector_methods_test.cpp 
-    hanami_common/methods/vector_methods_test.h
+    hanami_common/functions/file_functions_test.cpp 
+    hanami_common/functions/file_functions_test.h
+    hanami_common/functions/string_functions_test.cpp 
+    hanami_common/functions/string_functions_test.h
+    hanami_common/functions/vector_functions_test.cpp 
+    hanami_common/functions/vector_functions_test.h
     hanami_common/progress_bar_test.cpp 
     hanami_common/progress_bar_test.h
     hanami_common/state_test.cpp 

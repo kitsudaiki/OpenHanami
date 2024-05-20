@@ -23,7 +23,6 @@
 #ifndef CPUHOST_H
 #define CPUHOST_H
 
-#include <common.h>
 #include <core/processing/logical_host.h>
 
 class WorkerThread;

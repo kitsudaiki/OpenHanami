@@ -23,7 +23,6 @@
 #ifndef HANAMI_CORE_REDUCTION_H
 #define HANAMI_CORE_REDUCTION_H
 
-#include <common.h>
 #include <core/cluster/cluster.h>
 #include <core/cluster/objects.h>
 #include <core/processing/logical_host.h>

@@ -21,8 +21,8 @@
  */
 
 #include <database/checkpoint_table.h>
+#include <hanami_common/functions/string_functions.h>
 #include <hanami_common/items/table_item.h>
-#include <hanami_common/methods/string_methods.h>
 #include <hanami_database/sql_database.h>
 
 CheckpointTable* CheckpointTable::instance = nullptr;
@@ -58,7 +58,7 @@ CheckpointTable::~CheckpointTable() {}
  */
 bool
 CheckpointTable::addCheckpoint(json& data,
-                               const UserContext& userContext,
+                               const Hanami::UserContext& userContext,
                                Hanami::ErrorContainer& error)
 {
     if (add(data, userContext, error) == false) {
@@ -83,7 +83,7 @@ CheckpointTable::addCheckpoint(json& data,
 bool
 CheckpointTable::getCheckpoint(json& result,
                                const std::string& checkpointUuid,
-                               const UserContext& userContext,
+                               const Hanami::UserContext& userContext,
                                Hanami::ErrorContainer& error,
                                const bool showHiddenValues)
 {
@@ -113,7 +113,7 @@ CheckpointTable::getCheckpoint(json& result,
  */
 bool
 CheckpointTable::getAllCheckpoint(Hanami::TableItem& result,
-                                  const UserContext& userContext,
+                                  const Hanami::UserContext& userContext,
                                   Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
@@ -136,7 +136,7 @@ CheckpointTable::getAllCheckpoint(Hanami::TableItem& result,
  */
 bool
 CheckpointTable::deleteCheckpoint(const std::string& checkpointUuid,
-                                  const UserContext& userContext,
+                                  const Hanami::UserContext& userContext,
                                   Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;

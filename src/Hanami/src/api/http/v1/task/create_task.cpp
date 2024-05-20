@@ -83,7 +83,7 @@ CreateTask::runTask(BlossomIO& blossomIO,
     const std::string clusterUuid = blossomIO.input["cluster_uuid"];
     const std::string dataSetUuid = blossomIO.input["dataset_uuid"];
     const std::string taskType = blossomIO.input["type"];
-    const UserContext userContext(context);
+    const Hanami::UserContext userContext = convertContext(context);
 
     // check if user exist within the table
     json getResult;
@@ -169,7 +169,7 @@ bool
 CreateTask::imageTask(std::string& taskUuid,
                       const std::string& name,
                       const std::string& taskType,
-                      const UserContext& userContext,
+                      const Hanami::UserContext& userContext,
                       Cluster* cluster,
                       json& dataSetInfo,
                       BlossomStatus& status,
@@ -234,7 +234,7 @@ bool
 CreateTask::tableTask(std::string& taskUuid,
                       const std::string& name,
                       const std::string& taskType,
-                      const UserContext& userContext,
+                      const Hanami::UserContext& userContext,
                       Cluster* cluster,
                       json& dataSetInfo,
                       BlossomStatus& status,

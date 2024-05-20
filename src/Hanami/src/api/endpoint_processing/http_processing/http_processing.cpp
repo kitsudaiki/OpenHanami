@@ -28,6 +28,7 @@
 #include <api/endpoint_processing/http_processing/string_functions.h>
 #include <api/endpoint_processing/http_server.h>
 #include <database/audit_log_table.h>
+#include <hanami_common/functions/time_functions.h>
 #include <hanami_common/logger.h>
 #include <hanami_root.h>
 #include <jwt-cpp/jwt.h>
@@ -124,10 +125,10 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
                                       const std::string& uri,
                                       const std::string& token,
                                       const std::string& inputValues,
-                                      const Hanami::HttpRequestType httpType,
+                                      const HttpRequestType httpType,
                                       Hanami::ErrorContainer& error)
 {
-    RequestMessage hanamiRequest;
+    Hanami::RequestMessage hanamiRequest;
     BlossomStatus status;
     json result = json::object();
     json inputValuesJson;
@@ -153,7 +154,7 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
         }
 
         // handle token-request
-        if (uri == "v1/token" && hanamiRequest.httpType == Hanami::POST_TYPE) {
+        if (uri == "v1/token" && hanamiRequest.httpType == POST_TYPE) {
             inputValuesJson.erase("token");
 
             if (triggerBlossom(
@@ -184,24 +185,24 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
 
         // convert http-type to string
         std::string httpTypeStr = "GET";
-        if (hanamiRequest.httpType == Hanami::DELETE_TYPE) {
+        if (hanamiRequest.httpType == DELETE_TYPE) {
             httpTypeStr = "DELETE";
         }
-        if (hanamiRequest.httpType == Hanami::GET_TYPE) {
+        if (hanamiRequest.httpType == GET_TYPE) {
             httpTypeStr = "GET";
         }
-        if (hanamiRequest.httpType == Hanami::HEAD_TYPE) {
+        if (hanamiRequest.httpType == HEAD_TYPE) {
             httpTypeStr = "HEAD";
         }
-        if (hanamiRequest.httpType == Hanami::POST_TYPE) {
+        if (hanamiRequest.httpType == POST_TYPE) {
             httpTypeStr = "POST";
         }
-        if (hanamiRequest.httpType == Hanami::PUT_TYPE) {
+        if (hanamiRequest.httpType == PUT_TYPE) {
             httpTypeStr = "PUT";
         }
 
         // write new audit-entry to database
-        if (hanamiRequest.httpType != Hanami::GET_TYPE) {
+        if (hanamiRequest.httpType != GET_TYPE) {
             if (AuditLogTable::getInstance()->addAuditLogEntry(
                     getDatetime(), userId, hanamiRequest.id, httpTypeStr, error)
                 == false)
@@ -472,7 +473,6 @@ HttpProcessing::mapEndpoint(EndpointEntry& result,
     if (id_it != endpointRules.end()) {
         auto type_it = id_it->second.find(type);
         if (type_it != id_it->second.end()) {
-            result.type = type_it->second.type;
             result.group = type_it->second.group;
             result.name = type_it->second.name;
 
@@ -488,7 +488,6 @@ HttpProcessing::mapEndpoint(EndpointEntry& result,
  *
  * @param id identifier for the new entry
  * @param httpType http-type (get, post, put, delete)
- * @param sakuraType sakura-type (tree or blossom)
  * @param group blossom-group
  * @param name tree- or blossom-id
  *
@@ -497,12 +496,10 @@ HttpProcessing::mapEndpoint(EndpointEntry& result,
 bool
 HttpProcessing::addEndpoint(const std::string& id,
                             const HttpRequestType& httpType,
-                            const SakuraObjectType& sakuraType,
                             const std::string& group,
                             const std::string& name)
 {
     EndpointEntry newEntry;
-    newEntry.type = sakuraType;
     newEntry.group = group;
     newEntry.name = name;
 

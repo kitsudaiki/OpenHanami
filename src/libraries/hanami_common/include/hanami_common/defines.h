@@ -1,5 +1,5 @@
 /**
- * @file        typedefs.h
+ * @file        defines.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,16 +20,18 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_TYPEDEFS_H
-#define HANAMI_TYPEDEFS_H
+// const predefined values
+#define UNINIT_STATE_64 0xFFFFFFFFFFFFFFFF
+#define UNINIT_STATE_32 0xFFFFFFFF
+#define UNINIT_STATE_24 0xFFFFFF
+#define UNINIT_STATE_16 0xFFFF
+#define UNINIT_STATE_8 0xFF
 
-#include <chrono>
-
-typedef std::chrono::milliseconds chronoMilliSec;
-typedef std::chrono::microseconds chronoMicroSec;
-typedef std::chrono::nanoseconds chronoNanoSec;
-typedef std::chrono::seconds chronoSec;
-typedef std::chrono::high_resolution_clock::time_point chronoTimePoint;
-typedef std::chrono::high_resolution_clock chronoClock;
-
-#endif  // HANAMI_TYPEDEFS_H
+// regex
+#define UUID_REGEX "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+#define ID_REGEX "[a-zA-Z][a-zA-Z_0-9]*"
+#define ID_EXT_REGEX "[a-zA-Z][a-zA-Z_0-9@]*"
+#define NAME_REGEX "[a-zA-Z][a-zA-Z_0-9 ]*"
+#define INT_VALUE_REGEX "^-?([0-9]+)$"
+#define FLOAT_VALUE_REGEX "^-?([0-9]+)\\.([0-9]+)$"
+#define IPV4_REGEX "\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b"

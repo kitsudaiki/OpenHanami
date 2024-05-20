@@ -38,14 +38,15 @@
 #include <database/tempfile_table.h>
 #include <database/users_table.h>
 #include <hanami_common/files/text_file.h>
+#include <hanami_common/functions/file_functions.h>
 #include <hanami_common/logger.h>
-#include <hanami_common/methods/file_methods.h>
 #include <hanami_config/config_handler.h>
 #include <hanami_database/sql_database.h>
 #include <hanami_hardware/host.h>
 #include <hanami_hardware/power_measuring.h>
 #include <hanami_hardware/speed_measuring.h>
 #include <hanami_hardware/temperature_measuring.h>
+#include <hanami_policies/policy.h>
 #include <hanami_root.h>
 
 // init static variables

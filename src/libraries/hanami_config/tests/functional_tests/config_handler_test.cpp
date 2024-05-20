@@ -23,7 +23,7 @@
 #include "config_handler_test.h"
 
 #include <hanami_common/files/text_file.h>
-#include <hanami_common/methods/file_methods.h>
+#include <hanami_common/functions/file_functions.h>
 #include <hanami_config/config_handler.h>
 
 namespace Hanami

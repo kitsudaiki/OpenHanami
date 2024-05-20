@@ -27,7 +27,7 @@
 #include <core/processing/logical_host.h>
 #include <core/processing/physical_host.h>
 #include <hanami_common/buffer/item_buffer.h>
-#include <hanami_common/methods/file_methods.h>
+#include <hanami_common/functions/file_functions.h>
 #include <hanami_root.h>
 
 struct CheckpointHeader {

@@ -22,6 +22,7 @@
 
 #include "http_websocket_thread.h"
 
+#include <api/endpoint_processing/blossom.h>
 #include <api/endpoint_processing/http_processing/http_processing.h>
 #include <api/endpoint_processing/http_server.h>
 #include <api/websocket/cluster_io.h>
@@ -313,7 +314,7 @@ HttpWebsocketThread::processInitialMessage(const std::string& message, std::stri
         return false;
     }
 
-    const UserContext userContext(tokenData);
+    const Hanami::UserContext userContext = convertContext(tokenData);
 
     // forward connection to shiori or hanami
     if (content["target"] == "cluster") {

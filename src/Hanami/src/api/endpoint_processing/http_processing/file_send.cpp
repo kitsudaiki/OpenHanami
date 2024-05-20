@@ -23,8 +23,8 @@
 #include "file_send.h"
 
 #include <hanami_common/files/text_file.h>
+#include <hanami_common/functions/string_functions.h>
 #include <hanami_common/logger.h>
-#include <hanami_common/methods/string_methods.h>
 #include <hanami_config/config_handler.h>
 
 /**

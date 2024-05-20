@@ -24,7 +24,7 @@
 #define HANAMI_DATABASE_SQL_TABLE_H
 
 #include <hanami_common/logger.h>
-#include <uuid/uuid.h>
+#include <hanami_common/uuid.h>
 
 #include <nlohmann/json.hpp>
 #include <string>

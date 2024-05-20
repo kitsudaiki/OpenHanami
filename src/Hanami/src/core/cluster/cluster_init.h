@@ -23,7 +23,6 @@
 #ifndef HANAMI_CLUSTERINIT_H
 #define HANAMI_CLUSTERINIT_H
 
-#include <common.h>
 #include <core/cluster/objects.h>
 #include <hanami_cluster_parser/cluster_meta.h>
 

@@ -64,7 +64,7 @@ GetCheckpoint::runTask(BlossomIO& blossomIO,
                        Hanami::ErrorContainer& error)
 {
     const std::string checkpointUuid = blossomIO.input["uuid"];
-    const UserContext userContext(context);
+    const Hanami::UserContext userContext = convertContext(context);
 
     // get checkpoint-info from database
     if (CheckpointTable::getInstance()->getCheckpoint(

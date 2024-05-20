@@ -22,8 +22,8 @@
 
 #include "cluster_table.h"
 
+#include <hanami_common/functions/string_functions.h>
 #include <hanami_common/items/table_item.h>
-#include <hanami_common/methods/string_methods.h>
 #include <hanami_database/sql_database.h>
 
 ClusterTable* ClusterTable::instance = nullptr;
@@ -52,7 +52,7 @@ ClusterTable::~ClusterTable() {}
  */
 bool
 ClusterTable::addCluster(json& clusterData,
-                         const UserContext& userContext,
+                         const Hanami::UserContext& userContext,
                          Hanami::ErrorContainer& error)
 {
     if (add(clusterData, userContext, error) == false) {
@@ -77,7 +77,7 @@ ClusterTable::addCluster(json& clusterData,
 bool
 ClusterTable::getCluster(json& result,
                          const std::string& clusterUuid,
-                         const UserContext& userContext,
+                         const Hanami::UserContext& userContext,
                          Hanami::ErrorContainer& error,
                          const bool showHiddenValues)
 {
@@ -108,7 +108,7 @@ ClusterTable::getCluster(json& result,
 bool
 ClusterTable::getClusterByName(json& result,
                                const std::string& clusterName,
-                               const UserContext& userContext,
+                               const Hanami::UserContext& userContext,
                                Hanami::ErrorContainer& error,
                                const bool showHiddenValues)
 {
@@ -135,7 +135,7 @@ ClusterTable::getClusterByName(json& result,
  */
 bool
 ClusterTable::getAllCluster(Hanami::TableItem& result,
-                            const UserContext& userContext,
+                            const Hanami::UserContext& userContext,
                             Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
@@ -158,7 +158,7 @@ ClusterTable::getAllCluster(Hanami::TableItem& result,
  */
 bool
 ClusterTable::deleteCluster(const std::string& clusterUuid,
-                            const UserContext& userContext,
+                            const Hanami::UserContext& userContext,
                             Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;

@@ -73,7 +73,7 @@ RenewToken::runTask(BlossomIO& blossomIO,
                     BlossomStatus& status,
                     Hanami::ErrorContainer& error)
 {
-    const UserContext userContext(context);
+    const Hanami::UserContext userContext = convertContext(context);
     const std::string projectId = blossomIO.input["project_id"];
 
     // get data from table

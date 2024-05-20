@@ -6,7 +6,7 @@
  *  @copyright MIT License
  */
 
-#include <hanami_common/methods/string_methods.h>
+#include <hanami_common/functions/string_functions.h>
 #include <ini_parser.h>
 #include <ini_parsing/ini_parser_interface.h>
 

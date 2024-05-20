@@ -23,11 +23,11 @@
 #ifndef FILE_UPLOAD_H
 #define FILE_UPLOAD_H
 
-#include <common.h>
+#include <hanami_common/structs.h>
 
 class HttpWebsocketThread;
 
-bool recvFileUploadPackage(FileHandle* fileHandle,
+bool recvFileUploadPackage(Hanami::FileHandle* fileHandle,
                            const void* data,
                            const uint64_t dataSize,
                            std::string& errorMessage);

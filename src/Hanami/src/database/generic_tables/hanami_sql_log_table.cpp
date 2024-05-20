@@ -22,7 +22,7 @@
 
 #include "hanami_sql_log_table.h"
 
-#include <hanami_common/methods/string_methods.h>
+#include <hanami_common/functions/string_functions.h>
 #include <hanami_database/sql_database.h>
 #include <uuid/uuid.h>
 

@@ -23,7 +23,7 @@
 #include <cryptopp/filters.h>
 #include <cryptopp/modes.h>
 #include <cryptopp/sha.h>
-#include <hanami_common/methods/string_methods.h>
+#include <hanami_common/functions/string_functions.h>
 #include <hanami_crypto/common.h>
 #include <hanami_crypto/hashes.h>
 

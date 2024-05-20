@@ -23,10 +23,10 @@
 #ifndef HANAMI_TEMPFILEHANDLER_H
 #define HANAMI_TEMPFILEHANDLER_H
 
-#include <common.h>
 #include <hanami_common/buffer/bit_buffer.h>
 #include <hanami_common/files/binary_file.h>
 #include <hanami_common/logger.h>
+#include <hanami_common/structs.h>
 #include <hanami_common/threading/thread.h>
 
 #include <chrono>
@@ -57,10 +57,10 @@ class TempFileHandler : Hanami::Thread
                      const std::string& name,
                      const std::string& relatedUuid,
                      const uint64_t size,
-                     const UserContext& userContext,
+                     const Hanami::UserContext& userContext,
                      Hanami::ErrorContainer& error);
 
-    FileHandle* getFileHandle(const std::string& uuid, const UserContext& context);
+    Hanami::FileHandle* getFileHandle(const std::string& uuid, const Hanami::UserContext& context);
 
     bool addDataToPos(const std::string& uuid,
                       const uint64_t pos,
@@ -68,11 +68,11 @@ class TempFileHandler : Hanami::Thread
                       const uint64_t size);
     bool getData(Hanami::DataBuffer& result, const std::string& uuid);
     bool removeData(const std::string& uuid,
-                    const UserContext& userContext,
+                    const Hanami::UserContext& userContext,
                     Hanami::ErrorContainer& error);
     bool moveData(const std::string& uuid,
                   const std::string& targetLocation,
-                  const UserContext& userContext,
+                  const Hanami::UserContext& userContext,
                   Hanami::ErrorContainer& error);
 
    protected:
@@ -83,11 +83,11 @@ class TempFileHandler : Hanami::Thread
     static TempFileHandler* instance;
 
     bool removeTempfile(const std::string& uuid,
-                        const UserContext& userContext,
+                        const Hanami::UserContext& userContext,
                         Hanami::ErrorContainer& error);
 
     std::mutex m_fileHandleMutex;
-    std::map<std::string, FileHandle> m_tempFiles;
+    std::map<std::string, Hanami::FileHandle> m_tempFiles;
 };
 
 #endif  // HANAMI_TEMPFILEHANDLER_H

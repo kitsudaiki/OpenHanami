@@ -8,6 +8,7 @@
  *  @brief simple logger for events
  */
 
+#include <hanami_common/functions/time_functions.h>
 #include <hanami_common/logger.h>
 
 namespace Hanami
@@ -292,25 +293,6 @@ Logger::logData(const std::string& message,
     }
 
     return true;
-}
-
-/**
- * @brief get the current datetime of the system
- *
- * @return datetime as string
- */
-const std::string
-Logger::getDatetime()
-{
-    const time_t now = time(nullptr);
-    tm* ltm = localtime(&now);
-
-    const std::string datatime
-        = std::to_string(1900 + ltm->tm_year) + "-" + std::to_string(1 + ltm->tm_mon) + "-"
-          + std::to_string(ltm->tm_mday) + " " + std::to_string(ltm->tm_hour) + ":"
-          + std::to_string(ltm->tm_min) + ":" + std::to_string(ltm->tm_sec);
-
-    return datatime;
 }
 
 /**

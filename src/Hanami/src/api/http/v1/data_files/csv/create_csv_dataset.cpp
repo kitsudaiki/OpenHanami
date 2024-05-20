@@ -25,6 +25,7 @@
 #include <core/temp_file_handler.h>
 #include <database/dataset_table.h>
 #include <hanami_common/files/binary_file.h>
+#include <hanami_common/uuid.h>
 #include <hanami_config/config_handler.h>
 #include <hanami_crypto/common.h>
 #include <hanami_root.h>
@@ -80,7 +81,7 @@ CreateCsvDataSet::runTask(BlossomIO& blossomIO,
     const std::string name = blossomIO.input["name"];
     const long inputDataSize = blossomIO.input["input_data_size"];
     const std::string uuid = generateUuid().toString();
-    const UserContext userContext(context);
+    const Hanami::UserContext userContext = convertContext(context);
 
     // get directory to store data from config
     bool success = false;
