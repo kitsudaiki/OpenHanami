@@ -622,9 +622,8 @@ jobs:
       -
         name: Install Ansible
         run: |
-          sudo apt-add-repository -y ppa:ansible/ansible
-          sudo apt update
-          sudo apt install ansible
+          sudo pip3 install -U ansible requests==2.31.0
+          sudo pip3 list
       - 
         name: Install Hanami via Ansible
         run: |
