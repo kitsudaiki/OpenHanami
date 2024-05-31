@@ -80,17 +80,17 @@ FinalizeMnistDataSet::runTask(BlossomIO& blossomIO,
     const Hanami::UserContext userContext = convertContext(context);
 
     // get location from database
-    json result;
-    if (DataSetTable::getInstance()->getDataSet(result, uuid, userContext, error, true) == false) {
-        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        return false;
-    }
-
-    // handle not found
-    if (result.size() == 0) {
+    DataSetTable::DataSetDbEntry result;
+    const ReturnStatus ret
+        = DataSetTable::getInstance()->getDataSet(result, uuid, userContext, error);
+    if (ret == INVALID_INPUT) {
         status.errorMessage = "Data-set with uuid '" + uuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         LOG_DEBUG(status.errorMessage);
+        return false;
+    }
+    if (ret == ERROR) {
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
@@ -113,7 +113,7 @@ FinalizeMnistDataSet::runTask(BlossomIO& blossomIO,
     }
 
     // write data to file
-    if (convertMnistData(result["location"], result["name"], inputBuffer, labelBuffer) == false) {
+    if (convertMnistData(result.location, result.name, inputBuffer, labelBuffer) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMessage("Failed to convert mnist-data");
         return false;

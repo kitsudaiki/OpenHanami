@@ -77,16 +77,16 @@ GetProject::runTask(BlossomIO& blossomIO,
     const std::string projectId = blossomIO.input["id"];
 
     // get data from table
-    if (ProjectsTable::getInstance()->getProject(blossomIO.output, projectId, error) == false) {
-        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        return false;
-    }
-
-    // handle not found
-    if (blossomIO.output.size() == 0) {
+    const ReturnStatus ret
+        = ProjectTable::getInstance()->getProject(blossomIO.output, projectId, false, error);
+    if (ret == INVALID_INPUT) {
         status.errorMessage = "Project with id '" + projectId + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         LOG_DEBUG(status.errorMessage);
+        return false;
+    }
+    if (ret == ERROR) {
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 

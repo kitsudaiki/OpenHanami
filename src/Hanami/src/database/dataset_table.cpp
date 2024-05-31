@@ -57,23 +57,32 @@ DataSetTable::~DataSetTable() {}
 /**
  * @brief add new metadata of a dataset into the database
  *
- * @param data json-item with all information of the data to add to database
+ * @param datasetData dataset-entry to add to database
  * @param userContext context-object with all user specific information
  * @param error reference for error-output
  *
- * @return true, if successful, else false
+ * @return OK if found, INVALID_INPUT if conflict, ERROR in case of internal error
  */
-bool
-DataSetTable::addDataSet(json& data,
+ReturnStatus
+DataSetTable::addDataSet(const DataSetDbEntry& datasetData,
                          const Hanami::UserContext& userContext,
                          Hanami::ErrorContainer& error)
 {
-    if (add(data, userContext, error) == false) {
+    json datasetDataJson;
+
+    datasetDataJson["name"] = datasetData.name;
+    datasetDataJson["uuid"] = datasetData.uuid;
+    datasetDataJson["visibility"] = datasetData.visibility;
+    datasetDataJson["type"] = datasetData.type;
+    datasetDataJson["location"] = datasetData.location;
+
+    const ReturnStatus ret = addWithContext(datasetDataJson, userContext, error);
+    if (ret != OK) {
         error.addMessage("Failed to add checkpoint to database");
-        return false;
+        return ret;
     }
 
-    return true;
+    return OK;
 }
 
 /**
@@ -82,30 +91,65 @@ DataSetTable::addDataSet(json& data,
  * @param result reference for the result-output
  * @param datasetUuid uuid of the data
  * @param userContext context-object with all user specific information
- * @param error reference for error-output
  * @param showHiddenValues set to true to also show as hidden marked fields
+ * @param error reference for error-output
  *
- * @return true, if successful, else false
+ * @return OK if found, INVALID_INPUT if not found, ERROR in case of internal error
  */
-bool
+ReturnStatus
+DataSetTable::getDataSet(DataSetDbEntry& result,
+                         const std::string& datasetUuid,
+                         const Hanami::UserContext& userContext,
+                         Hanami::ErrorContainer& error)
+{
+    json jsonRet;
+    const ReturnStatus ret = getDataSet(jsonRet, datasetUuid, userContext, true, error);
+    if (ret != OK) {
+        return ret;
+    }
+
+    result.name = jsonRet["name"];
+    result.ownerId = jsonRet["owner_id"];
+    result.projectId = jsonRet["project_id"];
+    result.uuid = jsonRet["uuid"];
+    result.visibility = jsonRet["visibility"];
+    result.type = jsonRet["type"];
+    result.location = jsonRet["location"];
+
+    return OK;
+}
+
+/**
+ * @brief get a metadata-entry for a specific dataset from the database
+ *
+ * @param result reference for the result-output
+ * @param datasetUuid uuid of the data
+ * @param userContext context-object with all user specific information
+ * @param showHiddenValues set to true to also show as hidden marked fields
+ * @param error reference for error-output
+ *
+ * @return OK if found, INVALID_INPUT if not found, ERROR in case of internal error
+ */
+ReturnStatus
 DataSetTable::getDataSet(json& result,
                          const std::string& datasetUuid,
                          const Hanami::UserContext& userContext,
-                         Hanami::ErrorContainer& error,
-                         const bool showHiddenValues)
+                         const bool showHiddenValues,
+                         Hanami::ErrorContainer& error)
 {
     // get user from db
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", datasetUuid);
 
     // get dataset from db
-    if (get(result, userContext, conditions, error, showHiddenValues) == false) {
+    const ReturnStatus ret
+        = getWithContext(result, userContext, conditions, error, showHiddenValues);
+    if (ret != OK) {
         error.addMessage("Failed to get dataset with UUID '" + datasetUuid + "' from database");
-        LOG_ERROR(error);
-        return false;
+        return ret;
     }
 
-    return true;
+    return OK;
 }
 
 /**
@@ -123,7 +167,7 @@ DataSetTable::getAllDataSet(Hanami::TableItem& result,
                             Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
-    if (getAll(result, userContext, conditions, error) == false) {
+    if (getAllWithContext(result, userContext, conditions, error, false) != OK) {
         error.addMessage("Failed to get all datasets from database");
         return false;
     }
@@ -138,47 +182,52 @@ DataSetTable::getAllDataSet(Hanami::TableItem& result,
  * @param userContext context-object with all user specific information
  * @param error reference for error-output
  *
- * @return true, if successful, else false
+ * @return OK if found, INVALID_INPUT if not found, ERROR in case of internal error
  */
-bool
+ReturnStatus
 DataSetTable::deleteDataSet(const std::string& datasetUuid,
                             const Hanami::UserContext& userContext,
                             Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", datasetUuid);
-    if (del(conditions, userContext, error) == false) {
+
+    const ReturnStatus ret = deleteFromDbWithContext(conditions, userContext, error);
+    if (ret != OK) {
         error.addMessage("Failed to delete dataset with UUID '" + datasetUuid + "' from database");
-        return false;
+        return ret;
     }
 
-    return true;
+    return OK;
 }
 
 /**
- * @brief getDateSetInfo
- * @param dataUuid
- * @param error
- * @return
+ * @brief get infos of dataset including information from file-header
+ *
+ * @param result reference for result-output
+ * @param datasetUuid uuid of the data
+ * @param userContext context-object with all user specific information
+ * @param error reference for error-output
+ *
+ * @return OK if found, INVALID_INPUT if not found, ERROR in case of internal error
  */
-bool
+ReturnStatus
 DataSetTable::getDateSetInfo(json& result,
                              const std::string& dataUuid,
-                             const json& context,
+                             const Hanami::UserContext& userContext,
                              Hanami::ErrorContainer& error)
 {
-    const Hanami::UserContext userContext = convertContext(context);
-
-    if (getDataSet(result, dataUuid, userContext, error, true) == false) {
-        return false;
+    ReturnStatus ret = getDataSet(result, dataUuid, userContext, true, error);
+    if (ret != OK) {
+        return ret;
     }
 
     // get file information
     const std::string location = result["location"];
     if (getHeaderInformation(result, location, error) == false) {
         error.addMessage("Failed the read information from file '" + location + "'");
-        return false;
+        return ERROR;
     }
 
-    return true;
+    return OK;
 }

@@ -63,40 +63,33 @@ TempfileTable::~TempfileTable() {}
 /**
  * @brief add metadata of a new tempfile to the database
  *
- * @param relatedResourceType type of the related resource of the tempfile (for example: dataset)
- * @param relatedResourceUuid uuid of the related resource of the tempfile
- * @param fileSize size of the tempfile in number of bytes
- * @param location location of the tempfile on the disc
+ * @param tempfileData tempfile-entry to add to database
  * @param userContext context-object with all user specific information
  * @param error reference for error-output
  *
- * @return true, if successful, else false
+ * @return OK if found, INVALID_INPUT if conflict, ERROR in case of internal error
  */
-bool
-TempfileTable::addTempfile(const std::string& uuid,
-                           const std::string& relatedResourceType,
-                           const std::string& relatedResourceUuid,
-                           const std::string& name,
-                           const uint64_t fileSize,
-                           const std::string& location,
+ReturnStatus
+TempfileTable::addTempfile(const TempfileDbEntry& tempfileData,
                            const Hanami::UserContext& userContext,
                            Hanami::ErrorContainer& error)
 {
-    json data;
-    data["uuid"] = uuid;
-    data["related_resource_type"] = relatedResourceType;
-    data["related_resource_uuid"] = relatedResourceUuid;
-    data["name"] = name;
-    data["file_size"] = fileSize;
-    data["location"] = location;
-    data["visibility"] = "private";
+    json tempfileDataJson;
+    tempfileDataJson["uuid"] = tempfileData.uuid;
+    tempfileDataJson["related_resource_type"] = tempfileData.relatedResourceType;
+    tempfileDataJson["related_resource_uuid"] = tempfileData.relatedResourceUuid;
+    tempfileDataJson["name"] = tempfileData.name;
+    tempfileDataJson["file_size"] = tempfileData.fileSize;
+    tempfileDataJson["location"] = tempfileData.location;
+    tempfileDataJson["visibility"] = tempfileData.visibility;
 
-    if (add(data, userContext, error) == false) {
+    const ReturnStatus ret = addWithContext(tempfileDataJson, userContext, error);
+    if (ret != OK) {
         error.addMessage("Failed to add tempfile to database");
-        return false;
+        return ret;
     }
 
-    return true;
+    return OK;
 }
 
 /**
@@ -106,29 +99,65 @@ TempfileTable::addTempfile(const std::string& uuid,
  * @param tempfileUuid uuid of the data
  * @param userContext context-object with all user specific information
  * @param error reference for error-output
- * @param showHiddenValues set to true to also show as hidden marked fields
  *
- * @return true, if successful, else false
+ * @return OK if found, INVALID_INPUT if not found, ERROR in case of internal error
  */
-bool
+ReturnStatus
+TempfileTable::getTempfile(TempfileDbEntry& result,
+                           const std::string& tempfileUuid,
+                           const Hanami::UserContext& userContext,
+                           Hanami::ErrorContainer& error)
+{
+    json jsonRet;
+    const ReturnStatus ret = getTempfile(jsonRet, tempfileUuid, userContext, true, error);
+    if (ret != OK) {
+        return ret;
+    }
+
+    result.name = jsonRet["name"];
+    result.ownerId = jsonRet["owner_id"];
+    result.projectId = jsonRet["project_id"];
+    result.uuid = jsonRet["uuid"];
+    result.visibility = jsonRet["visibility"];
+    result.relatedResourceType = jsonRet["related_resource_type"];
+    result.relatedResourceUuid = jsonRet["related_resource_uuid"];
+    result.fileSize = jsonRet["file_size"];
+    result.location = jsonRet["location"];
+
+    return OK;
+}
+
+/**
+ * @brief get a metadata-entry for a specific tempfile from the database
+ *
+ * @param result reference for the result-output
+ * @param tempfileUuid uuid of the data
+ * @param userContext context-object with all user specific information
+ * @param showHiddenValues set to true to also show as hidden marked fields
+ * @param error reference for error-output
+ *
+ * @return OK if found, INVALID_INPUT if not found, ERROR in case of internal error
+ */
+ReturnStatus
 TempfileTable::getTempfile(json& result,
                            const std::string& tempfileUuid,
                            const Hanami::UserContext& userContext,
-                           Hanami::ErrorContainer& error,
-                           const bool showHiddenValues)
+                           const bool showHiddenValues,
+                           Hanami::ErrorContainer& error)
 {
     // get user from db
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", tempfileUuid);
 
     // get dataset from db
-    if (get(result, userContext, conditions, error, showHiddenValues) == false) {
+    const ReturnStatus ret
+        = getWithContext(result, userContext, conditions, error, showHiddenValues);
+    if (ret != OK) {
         error.addMessage("Failed to get tempfile with UUID '" + tempfileUuid + "' from database");
-        LOG_ERROR(error);
-        return false;
+        return ret;
     }
 
-    return true;
+    return OK;
 }
 
 /**
@@ -146,7 +175,7 @@ TempfileTable::getAllTempfile(Hanami::TableItem& result,
                               Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
-    if (getAll(result, userContext, conditions, error) == false) {
+    if (getAllWithContext(result, userContext, conditions, error, false) != OK) {
         error.addMessage("Failed to get all tempfiles from database");
         return false;
     }
@@ -161,22 +190,24 @@ TempfileTable::getAllTempfile(Hanami::TableItem& result,
  * @param userContext context-object with all user specific information
  * @param error reference for error-output
  *
- * @return true, if successful, else false
+ * @return OK if found, INVALID_INPUT if not found, ERROR in case of internal error
  */
-bool
+ReturnStatus
 TempfileTable::deleteTempfile(const std::string& tempfileUuid,
                               const Hanami::UserContext& userContext,
                               Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", tempfileUuid);
-    if (del(conditions, userContext, error) == false) {
+
+    const ReturnStatus ret = deleteFromDbWithContext(conditions, userContext, error);
+    if (ret != OK) {
         error.addMessage("Failed to delete tempfile with UUID '" + tempfileUuid
                          + "' from database");
-        return false;
+        return ret;
     }
 
-    return true;
+    return OK;
 }
 
 /**
@@ -188,9 +219,9 @@ TempfileTable::deleteTempfile(const std::string& tempfileUuid,
  * @param userContext context-object with all user specific information
  * @param error reference for error-output
  *
- * @return true, if successful, else false
+ * @return OK if found, INVALID_INPUT if not found, ERROR in case of internal error
  */
-bool
+ReturnStatus
 TempfileTable::getRelatedResourceUuids(std::vector<std::string>& relatedUuids,
                                        const std::string& resourceType,
                                        const std::string& resourceUuid,
@@ -203,15 +234,16 @@ TempfileTable::getRelatedResourceUuids(std::vector<std::string>& relatedUuids,
 
     // get tempfile from db
     Hanami::TableItem result;
-    if (getAll(result, userContext, conditions, error, true) == false) {
+    const ReturnStatus ret = getAllWithContext(result, userContext, conditions, error, true);
+    if (ret != OK) {
         error.addMessage("Failed to get related recources for UUID '" + resourceUuid
                          + "' and type '" + resourceType + "' from database");
-        return false;
+        return ret;
     }
 
     for (uint64_t i = 0; i < result.getNumberOfRows(); i++) {
         relatedUuids.push_back(result.getCell(0, i));
     }
 
-    return true;
+    return OK;
 }

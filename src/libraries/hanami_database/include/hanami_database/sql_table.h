@@ -23,6 +23,7 @@
 #ifndef HANAMI_DATABASE_SQL_TABLE_H
 #define HANAMI_DATABASE_SQL_TABLE_H
 
+#include <hanami_common/enums.h>
 #include <hanami_common/logger.h>
 #include <hanami_common/uuid.h>
 
@@ -44,6 +45,8 @@ class SqlTable
 
     bool initTable(ErrorContainer& error);
     void createDocumentation(std::string& docu);
+
+    uint64_t getNumberOfColumns() const;
 
    protected:
     enum DbVataValueTypes { STRING_TYPE = 0, INT_TYPE = 1, BOOL_TYPE = 2, FLOAT_TYPE = 3 };
@@ -77,24 +80,26 @@ class SqlTable
                     ErrorContainer& error);
     bool getAllFromDb(TableItem& resultTable,
                       ErrorContainer& error,
-                      const bool showHiddenValues = false,
+                      const bool showHiddenValues,
                       const uint64_t positionOffset = 0,
                       const uint64_t numberOfRows = 0);
-    bool getFromDb(TableItem& resultTable,
-                   const std::vector<RequestCondition>& conditions,
-                   ErrorContainer& error,
-                   const bool showHiddenValues = false,
-                   const uint64_t positionOffset = 0,
-                   const uint64_t numberOfRows = 0);
-    bool getFromDb(json& result,
-                   const std::vector<RequestCondition>& conditions,
-                   ErrorContainer& error,
-                   const bool showHiddenValues = false,
-                   const uint64_t positionOffset = 0,
-                   const uint64_t numberOfRows = 0);
+    ReturnStatus getFromDb(TableItem& resultTable,
+                           const std::vector<RequestCondition>& conditions,
+                           ErrorContainer& error,
+                           const bool showHiddenValues,
+                           const uint64_t positionOffset = 0,
+                           const uint64_t numberOfRows = 0);
+    ReturnStatus getFromDb(json& result,
+                           const std::vector<RequestCondition>& conditions,
+                           ErrorContainer& error,
+                           const bool showHiddenValues,
+                           const bool expectAtLeastOne = false,
+                           const uint64_t positionOffset = 0,
+                           const uint64_t numberOfRows = 0);
     long getNumberOfRows(ErrorContainer& error);
     bool deleteAllFromDb(ErrorContainer& error);
-    bool deleteFromDb(const std::vector<RequestCondition>& conditions, ErrorContainer& error);
+    ReturnStatus deleteFromDb(const std::vector<RequestCondition>& conditions,
+                              ErrorContainer& error);
 
    private:
     SqlDatabase* m_db = nullptr;

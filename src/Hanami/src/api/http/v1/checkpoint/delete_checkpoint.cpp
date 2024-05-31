@@ -56,36 +56,29 @@ DeleteCheckpoint::runTask(BlossomIO& blossomIO,
     const Hanami::UserContext userContext = convertContext(context);
 
     // get location from database
-    json result;
-    if (CheckpointTable::getInstance()->getCheckpoint(
-            result, checkpointUuid, userContext, error, true)
-        == false)
-    {
+    CheckpointTable::CheckpointDbEntry result;
+    ReturnStatus ret
+        = CheckpointTable::getInstance()->getCheckpoint(result, checkpointUuid, userContext, error);
+    if (ret == ERROR) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
-
-    // handle not found
-    if (result.size() == 0) {
+    if (ret == INVALID_INPUT) {
         status.errorMessage = "Chekckpoint with uuid '" + checkpointUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         LOG_DEBUG(status.errorMessage);
         return false;
     }
 
-    // get location from response
-    const std::string location = result["location"];
-
     // delete entry from db
-    if (CheckpointTable::getInstance()->deleteCheckpoint(checkpointUuid, userContext, error)
-        == false)
-    {
+    ret = CheckpointTable::getInstance()->deleteCheckpoint(checkpointUuid, userContext, error);
+    if (ret != OK) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // delete local files
-    if (Hanami::deleteFileOrDir(location, error) == false) {
+    if (Hanami::deleteFileOrDir(result.location, error) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

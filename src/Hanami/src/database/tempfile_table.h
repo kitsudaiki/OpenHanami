@@ -37,32 +37,43 @@ class TempfileTable : public HanamiSqlTable
         return instance;
     }
 
+    struct TempfileDbEntry {
+        std::string uuid = "";
+        std::string projectId = "";
+        std::string ownerId = "";
+        std::string visibility = "";
+        std::string name = "";
+        std::string relatedResourceType = "";
+        std::string relatedResourceUuid = "";
+        std::string location = "";
+        uint64_t fileSize = 0;
+    };
+
     ~TempfileTable();
 
-    bool addTempfile(const std::string& uuid,
-                     const std::string& relatedResourceType,
-                     const std::string& relatedResourceUuid,
-                     const std::string& name,
-                     const uint64_t fileSize,
-                     const std::string& location,
-                     const Hanami::UserContext& userContext,
-                     Hanami::ErrorContainer& error);
-    bool getTempfile(json& result,
-                     const std::string& tempfileUuid,
-                     const Hanami::UserContext& userContext,
-                     Hanami::ErrorContainer& error,
-                     const bool showHiddenValues = false);
+    ReturnStatus addTempfile(const TempfileDbEntry& tempfileData,
+                             const Hanami::UserContext& userContext,
+                             Hanami::ErrorContainer& error);
+    ReturnStatus getTempfile(TempfileDbEntry& result,
+                             const std::string& tempfileUuid,
+                             const Hanami::UserContext& userContext,
+                             Hanami::ErrorContainer& error);
+    ReturnStatus getTempfile(json& result,
+                             const std::string& tempfileUuid,
+                             const Hanami::UserContext& userContext,
+                             const bool showHiddenValues,
+                             Hanami::ErrorContainer& error);
     bool getAllTempfile(Hanami::TableItem& result,
                         const Hanami::UserContext& userContext,
                         Hanami::ErrorContainer& error);
-    bool deleteTempfile(const std::string& tempfileUuid,
-                        const Hanami::UserContext& userContext,
-                        Hanami::ErrorContainer& error);
-    bool getRelatedResourceUuids(std::vector<std::string>& relatedUuids,
-                                 const std::string& resourceType,
-                                 const std::string& resourceUuid,
-                                 const Hanami::UserContext& userContext,
-                                 Hanami::ErrorContainer& error);
+    ReturnStatus deleteTempfile(const std::string& tempfileUuid,
+                                const Hanami::UserContext& userContext,
+                                Hanami::ErrorContainer& error);
+    ReturnStatus getRelatedResourceUuids(std::vector<std::string>& relatedUuids,
+                                         const std::string& resourceType,
+                                         const std::string& resourceUuid,
+                                         const Hanami::UserContext& userContext,
+                                         Hanami::ErrorContainer& error);
 
    private:
     TempfileTable();

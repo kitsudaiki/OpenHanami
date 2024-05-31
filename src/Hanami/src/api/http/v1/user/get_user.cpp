@@ -85,16 +85,16 @@ GetUser::runTask(BlossomIO& blossomIO,
     const std::string userId = blossomIO.input["id"];
 
     // get data from table
-    if (UsersTable::getInstance()->getUser(blossomIO.output, userId, error, false) == false) {
-        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        return false;
-    }
-
-    // handle not found
-    if (blossomIO.output.size() == 0) {
+    const ReturnStatus ret
+        = UserTable::getInstance()->getUser(blossomIO.output, userId, false, error);
+    if (ret == INVALID_INPUT) {
         status.errorMessage = "User with id '" + userId + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         LOG_DEBUG(status.errorMessage);
+        return false;
+    }
+    if (ret == ERROR) {
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 

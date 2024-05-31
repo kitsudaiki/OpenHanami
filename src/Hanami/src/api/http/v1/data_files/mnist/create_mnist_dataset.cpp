@@ -101,10 +101,9 @@ CreateMnistDataSet::runTask(BlossomIO& blossomIO,
 
     // init temp-file for input-data
     std::string inputUuid;
-    if (TempFileHandler::getInstance()->initNewFile(
-            inputUuid, "input-file", uuid, inputDataSize, userContext, error)
-        == false)
-    {
+    ReturnStatus ret = TempFileHandler::getInstance()->initNewFile(
+        inputUuid, "input-file", uuid, inputDataSize, userContext, error);
+    if (ret != OK) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMessage("Failed to initialize temporary file for new input-data.");
         return false;
@@ -112,10 +111,9 @@ CreateMnistDataSet::runTask(BlossomIO& blossomIO,
 
     // init temp-file for label-data
     std::string labelUuid;
-    if (TempFileHandler::getInstance()->initNewFile(
-            labelUuid, "label-file", uuid, labelDataSize, userContext, error)
-        == false)
-    {
+    ret = TempFileHandler::getInstance()->initNewFile(
+        labelUuid, "label-file", uuid, labelDataSize, userContext, error);
+    if (ret != OK) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMessage("Failed to initialize temporary file for new label-data.");
         return false;
@@ -128,16 +126,24 @@ CreateMnistDataSet::runTask(BlossomIO& blossomIO,
     targetFilePath.append(uuid + "_mnist_" + userContext.userId);
 
     // register in database
-    blossomIO.output["uuid"] = uuid;
-    blossomIO.output["name"] = name;
-    blossomIO.output["type"] = "mnist";
-    blossomIO.output["location"] = targetFilePath;
-    blossomIO.output["project_id"] = userContext.projectId;
-    blossomIO.output["owner_id"] = userContext.userId;
-    blossomIO.output["visibility"] = "private";
+    DataSetTable::DataSetDbEntry dbEntry;
+    dbEntry.name = name;
+    dbEntry.ownerId = userContext.userId;
+    dbEntry.projectId = userContext.projectId;
+    dbEntry.uuid = uuid;
+    dbEntry.visibility = "private";
+    dbEntry.type = "mnist";
+    dbEntry.location = targetFilePath;
 
     // add to database
-    if (DataSetTable::getInstance()->addDataSet(blossomIO.output, userContext, error) == false) {
+    if (DataSetTable::getInstance()->addDataSet(dbEntry, userContext, error) != OK) {
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    if (DataSetTable::getInstance()->getDataSet(blossomIO.output, uuid, userContext, true, error)
+        != OK)
+    {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

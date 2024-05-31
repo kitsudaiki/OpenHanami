@@ -75,16 +75,13 @@ GetRequestResult::runTask(BlossomIO& blossomIO,
     const Hanami::UserContext userContext = convertContext(context);
 
     // check if request-result exist within the table
-    if (RequestResultTable::getInstance()->getRequestResult(
-            blossomIO.output, uuid, userContext, error, true)
-        == false)
-    {
+    const ReturnStatus ret = RequestResultTable::getInstance()->getRequestResult(
+        blossomIO.output, uuid, userContext, true, error);
+    if (ret == ERROR) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
-
-    // handle not found
-    if (blossomIO.output.size() == 0) {
+    if (ret == INVALID_INPUT) {
         status.errorMessage = "Request-result with uuid '" + uuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         LOG_DEBUG(status.errorMessage);

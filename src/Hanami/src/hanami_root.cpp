@@ -167,14 +167,14 @@ HanamiRoot::initDatabase(Hanami::ErrorContainer& error)
     }
 
     // initialize projects-table
-    ProjectsTable* projectsTable = ProjectsTable::getInstance();
+    ProjectTable* projectsTable = ProjectTable::getInstance();
     if (projectsTable->initTable(error) == false) {
         error.addMessage("Failed to initialize project-table in database.");
         return false;
     }
 
     // initialize users-table
-    UsersTable* usersTable = UsersTable::getInstance();
+    UserTable* usersTable = UserTable::getInstance();
     if (usersTable->initTable(error) == false) {
         error.addMessage("Failed to initialize user-table in database.");
         return false;

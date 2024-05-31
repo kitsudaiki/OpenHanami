@@ -26,39 +26,58 @@
 #include <database/generic_tables/hanami_sql_admin_table.h>
 #include <hanami_common/logger.h>
 
-class UsersTable : public HanamiSqlAdminTable
+class UserTable : public HanamiSqlAdminTable
 {
    public:
-    static UsersTable* getInstance()
+    static UserTable* getInstance()
     {
         if (instance == nullptr) {
-            instance = new UsersTable();
+            instance = new UserTable();
         }
         return instance;
     }
 
-    ~UsersTable();
+    struct UserProjectDbEntry {
+        std::string projectId = "";
+        std::string role = "";
+        bool isProjectAdmin = false;
+    };
+
+    struct UserDbEntry {
+        std::string id = "";
+        std::string name = "";
+        std::string creatorId = "";
+        std::string salt = "";
+        std::string pwHash = "";
+        std::vector<UserProjectDbEntry> projects;
+        bool isAdmin = false;
+    };
+
+    ~UserTable();
 
     bool initNewAdminUser(Hanami::ErrorContainer& error);
 
-    bool addUser(json& userData, Hanami::ErrorContainer& error);
-    bool getUser(json& result,
-                 const std::string& userId,
-                 Hanami::ErrorContainer& error,
-                 const bool showHiddenValues);
+    ReturnStatus addUser(const UserDbEntry& userData, Hanami::ErrorContainer& error);
+    ReturnStatus getUser(UserDbEntry& result,
+                         const std::string& userId,
+                         Hanami::ErrorContainer& error);
+    ReturnStatus getUser(json& result,
+                         const std::string& userId,
+                         const bool showHiddenValues,
+                         Hanami::ErrorContainer& error);
     bool getAllUser(Hanami::TableItem& result, Hanami::ErrorContainer& error);
-    bool deleteUser(const std::string& userId, Hanami::ErrorContainer& error);
-    bool updateProjectsOfUser(const std::string& userId,
-                              const std::string& newProjects,
-                              Hanami::ErrorContainer& error);
+    ReturnStatus deleteUser(const std::string& userId, Hanami::ErrorContainer& error);
+    ReturnStatus updateProjectsOfUser(const std::string& userId,
+                                      const std::vector<UserProjectDbEntry>& newProjects,
+                                      Hanami::ErrorContainer& error);
 
    private:
-    UsersTable();
-    static UsersTable* instance;
+    UserTable();
+    static UserTable* instance;
 
     bool getEnvVar(std::string& content, const std::string& key) const;
 
-    bool getAllAdminUser(Hanami::ErrorContainer& error);
+    ReturnStatus getAllAdminUser(Hanami::ErrorContainer& error);
 };
 
 #endif  // HANAMI_USERS_TABLE_H

@@ -87,15 +87,13 @@ CreateTask::runTask(BlossomIO& blossomIO,
 
     // check if user exist within the table
     json getResult;
-    if (ClusterTable::getInstance()->getCluster(getResult, clusterUuid, userContext, error)
-        == false)
-    {
+    ReturnStatus ret = ClusterTable::getInstance()->getCluster(
+        getResult, clusterUuid, userContext, false, error);
+    if (ret == ERROR) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
-
-    // handle not found
-    if (getResult.size() == 0) {
+    if (ret == INVALID_INPUT) {
         status.errorMessage = "Cluster with uuid '" + clusterUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         LOG_DEBUG(status.errorMessage);
@@ -113,15 +111,12 @@ CreateTask::runTask(BlossomIO& blossomIO,
 
     // get meta-infos of dataset from shiori
     json dataSetInfo;
-    if (DataSetTable::getInstance()->getDateSetInfo(dataSetInfo, dataSetUuid, context, error)
-        == false)
-    {
+    ret = DataSetTable::getInstance()->getDateSetInfo(dataSetInfo, dataSetUuid, userContext, error);
+    if (ret == ERROR) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
-
-    // handle not found
-    if (dataSetInfo.size() == 0) {
+    if (ret == INVALID_INPUT) {
         status.errorMessage = "Data-set with uuid '" + dataSetUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         LOG_DEBUG(status.errorMessage);

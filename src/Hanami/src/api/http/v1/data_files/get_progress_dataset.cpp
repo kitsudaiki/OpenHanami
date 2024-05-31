@@ -69,16 +69,13 @@ GetProgressDataSet::runTask(BlossomIO& blossomIO,
     const Hanami::UserContext userContext = convertContext(context);
 
     json databaseOutput;
-    if (DataSetTable::getInstance()->getDataSet(
-            databaseOutput, datasetUuid, userContext, error, true)
-        == false)
-    {
+    ReturnStatus ret = DataSetTable::getInstance()->getDataSet(
+        databaseOutput, datasetUuid, userContext, true, error);
+    if (ret == ERROR) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
-
-    // handle not found
-    if (databaseOutput.size() == 0) {
+    if (ret == INVALID_INPUT) {
         status.errorMessage = "Data-set with uuid '" + datasetUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         LOG_DEBUG(status.errorMessage);
@@ -89,7 +86,7 @@ GetProgressDataSet::runTask(BlossomIO& blossomIO,
     std::vector<std::string> relatedUuids;
     if (TempfileTable::getInstance()->getRelatedResourceUuids(
             relatedUuids, "dataset", datasetUuid, userContext, error)
-        == false)
+        != OK)
     {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;

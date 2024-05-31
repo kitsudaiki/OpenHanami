@@ -94,10 +94,9 @@ CreateCsvDataSet::runTask(BlossomIO& blossomIO,
 
     // init temp-file for input-data
     std::string inputUuid;
-    if (TempFileHandler::getInstance()->initNewFile(
-            inputUuid, "input-file", uuid, inputDataSize, userContext, error)
-        == false)
-    {
+    ReturnStatus ret = TempFileHandler::getInstance()->initNewFile(
+        inputUuid, "input-file", uuid, inputDataSize, userContext, error);
+    if (ret != OK) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMessage("Failed to initialize temporary file for new input-data.");
         return false;
@@ -110,16 +109,24 @@ CreateCsvDataSet::runTask(BlossomIO& blossomIO,
     targetFilePath.append(name + "_csv_" + userContext.userId);
 
     // register in database
-    blossomIO.output["uuid"] = uuid;
-    blossomIO.output["name"] = name;
-    blossomIO.output["type"] = "csv";
-    blossomIO.output["location"] = targetFilePath;
-    blossomIO.output["project_id"] = userContext.projectId;
-    blossomIO.output["owner_id"] = userContext.userId;
-    blossomIO.output["visibility"] = "private";
+    DataSetTable::DataSetDbEntry dbEntry;
+    dbEntry.name = name;
+    dbEntry.ownerId = userContext.userId;
+    dbEntry.projectId = userContext.projectId;
+    dbEntry.uuid = uuid;
+    dbEntry.visibility = "private";
+    dbEntry.type = "csv";
+    dbEntry.location = targetFilePath;
 
     // add to database
-    if (DataSetTable::getInstance()->addDataSet(blossomIO.output, userContext, error) == false) {
+    if (DataSetTable::getInstance()->addDataSet(dbEntry, userContext, error) != OK) {
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    if (DataSetTable::getInstance()->getDataSet(blossomIO.output, uuid, userContext, true, error)
+        != OK)
+    {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

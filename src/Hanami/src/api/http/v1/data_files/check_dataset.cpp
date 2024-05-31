@@ -76,17 +76,14 @@ CheckDataSet::runTask(BlossomIO& blossomIO,
 
     // get result
     // check if request-result exist within the table
-    json requestResult;
-    if (RequestResultTable::getInstance()->getRequestResult(
-            requestResult, resultUuid, userContext, error, true)
-        == false)
-    {
+    RequestResultTable::ResultDbEntry requestResult;
+    ReturnStatus ret = RequestResultTable::getInstance()->getRequestResult(
+        requestResult, resultUuid, userContext, error);
+    if (ret == ERROR) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
-
-    // handle not found
-    if (requestResult.size() == 0) {
+    if (ret == INVALID_INPUT) {
         status.errorMessage = "Result with uuid '" + resultUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         LOG_DEBUG(status.errorMessage);
@@ -95,10 +92,15 @@ CheckDataSet::runTask(BlossomIO& blossomIO,
 
     // get data-info from database
     json dbOutput;
-    if (DataSetTable::getInstance()->getDataSet(dbOutput, dataUuid, userContext, error, true)
-        == false)
-    {
+    ret = DataSetTable::getInstance()->getDataSet(dbOutput, dataUuid, userContext, true, error);
+    if (ret == ERROR) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+    if (ret == INVALID_INPUT) {
+        status.errorMessage = "Dataset with uuid '" + dataUuid + "' not found";
+        status.statusCode = NOT_FOUND_RTYPE;
+        LOG_DEBUG(status.errorMessage);
         return false;
     }
 
@@ -131,18 +133,17 @@ CheckDataSet::runTask(BlossomIO& blossomIO,
     const float* content = reinterpret_cast<const float*>(&u8Data[dataPos]);
 
     // iterate over all values and check
-    json compareData = requestResult["data"];
-    for (uint64_t i = 0; i < compareData.size(); i++) {
+    for (uint64_t i = 0; i < requestResult.data.size(); i++) {
         const uint64_t actualPos = (i * lineSize) + lineOffset;
-        const uint64_t checkVal = compareData[i];
+        const uint64_t checkVal = requestResult.data[i];
         if (content[actualPos + checkVal] > 0.0f) {
             correctValues++;
         }
     }
 
     // add result to output
-    const float accuracy
-        = (100.0f / static_cast<float>(compareData.size())) * static_cast<float>(correctValues);
+    const float accuracy = (100.0f / static_cast<float>(requestResult.data.size()))
+                           * static_cast<float>(correctValues);
     blossomIO.output["accuracy"] = accuracy;
 
     return true;

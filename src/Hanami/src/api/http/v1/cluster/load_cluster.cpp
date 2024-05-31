@@ -74,16 +74,14 @@ LoadCluster::runTask(BlossomIO& blossomIO,
     const Hanami::UserContext userContext = convertContext(context);
 
     // get data from table
-    json clusterInfo;
-    if (ClusterTable::getInstance()->getCluster(clusterInfo, clusterUuid, userContext, error)
-        == false)
-    {
+    ClusterTable::ClusterDbEntry clusterInfo;
+    ReturnStatus ret
+        = ClusterTable::getInstance()->getCluster(clusterInfo, clusterUuid, userContext, error);
+    if (ret == ERROR) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
-
-    // handle not found
-    if (clusterInfo.size() == 0) {
+    if (ret == INVALID_INPUT) {
         status.errorMessage = "Cluster with uuid '" + clusterUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         LOG_DEBUG(status.errorMessage);
@@ -101,18 +99,15 @@ LoadCluster::runTask(BlossomIO& blossomIO,
 
     // get meta-infos of dataset from shiori
     json parsedCheckpointInfo;
-    if (CheckpointTable::getInstance()->getCheckpoint(
-            parsedCheckpointInfo, checkpointUuid, userContext, error, true)
-        == false)
-    {
+    ret = CheckpointTable::getInstance()->getCheckpoint(
+        parsedCheckpointInfo, checkpointUuid, userContext, true, error);
+    if (ret == ERROR) {
         error.addMessage("Failed to get information from database for UUID '" + checkpointUuid
                          + "'");
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
-
-    // handle not found
-    if (clusterInfo.size() == 0) {
+    if (ret == INVALID_INPUT) {
         status.errorMessage = "Checkpoint with uuid '" + checkpointUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         LOG_DEBUG(status.errorMessage);
@@ -123,6 +118,7 @@ LoadCluster::runTask(BlossomIO& blossomIO,
     const std::string infoStr = parsedCheckpointInfo.dump();
     const std::string taskUuid = addCheckpointRestoreTask(
         *cluster, "", infoStr, userContext.userId, userContext.projectId);
+
     blossomIO.output["uuid"] = taskUuid;
 
     return true;

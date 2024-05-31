@@ -122,7 +122,7 @@ ErrorLogTable::getAllErrorLogEntries(Hanami::TableItem& result,
                                      const uint64_t page,
                                      Hanami::ErrorContainer& error)
 {
-    if (getPageFromDb(result, userId, page, error) == false) {
+    if (getPageFromDb(result, userId, page, error) != OK) {
         error.addMessage("Failed to get all error-log-entries from database");
         return false;
     }

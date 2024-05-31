@@ -26,30 +26,39 @@
 #include <database/generic_tables/hanami_sql_admin_table.h>
 #include <hanami_common/logger.h>
 
-class ProjectsTable : public HanamiSqlAdminTable
+class ProjectTable : public HanamiSqlAdminTable
 {
    public:
-    static ProjectsTable* getInstance()
+    static ProjectTable* getInstance()
     {
         if (instance == nullptr) {
-            instance = new ProjectsTable();
+            instance = new ProjectTable();
         }
         return instance;
     }
 
-    ~ProjectsTable();
+    struct ProjectDbEntry {
+        std::string id = "";
+        std::string name = "";
+        std::string creatorId = "";
+    };
 
-    bool addProject(json& userData, Hanami::ErrorContainer& error);
-    bool getProject(json& result,
-                    const std::string& projectName,
-                    Hanami::ErrorContainer& error,
-                    const bool showHiddenValues = false);
+    ~ProjectTable();
+
+    ReturnStatus addProject(const ProjectDbEntry& userData, Hanami::ErrorContainer& error);
+    ReturnStatus getProject(ProjectDbEntry& result,
+                            const std::string& projectName,
+                            Hanami::ErrorContainer& error);
+    ReturnStatus getProject(json& result,
+                            const std::string& projectName,
+                            const bool showHiddenValues,
+                            Hanami::ErrorContainer& error);
     bool getAllProjects(Hanami::TableItem& result, Hanami::ErrorContainer& error);
-    bool deleteProject(const std::string& projectName, Hanami::ErrorContainer& error);
+    ReturnStatus deleteProject(const std::string& projectName, Hanami::ErrorContainer& error);
 
    private:
-    ProjectsTable();
-    static ProjectsTable* instance;
+    ProjectTable();
+    static ProjectTable* instance;
 };
 
 #endif  // HANAMI_PROJECTS_TABLE_H

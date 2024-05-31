@@ -35,9 +35,7 @@ GetCheckpoint::GetCheckpoint() : Blossom("Get checkpoint of a cluster.")
 
     registerInputField("uuid", SAKURA_STRING_TYPE)
         .setComment("UUID of the original request-task, which placed the result in shiori.")
-        .setRegex(
-            "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
-            "[a-fA-F0-9]{4}-[a-fA-F0-9]{12}");
+        .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
@@ -67,16 +65,13 @@ GetCheckpoint::runTask(BlossomIO& blossomIO,
     const Hanami::UserContext userContext = convertContext(context);
 
     // get checkpoint-info from database
-    if (CheckpointTable::getInstance()->getCheckpoint(
-            blossomIO.output, checkpointUuid, userContext, error, true)
-        == false)
-    {
+    const ReturnStatus ret = CheckpointTable::getInstance()->getCheckpoint(
+        blossomIO.output, checkpointUuid, userContext, false, error);
+    if (ret == ERROR) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
-
-    // handle not found
-    if (blossomIO.output.size() == 0) {
+    if (ret == INVALID_INPUT) {
         status.errorMessage = "Checkpoint with uuid '" + checkpointUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         LOG_DEBUG(status.errorMessage);

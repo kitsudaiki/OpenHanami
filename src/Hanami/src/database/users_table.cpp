@@ -26,12 +26,12 @@
 #include <hanami_crypto/hashes.h>
 #include <hanami_database/sql_database.h>
 
-UsersTable* UsersTable::instance = nullptr;
+UserTable* UserTable::instance = nullptr;
 
 /**
  * @brief constructor
  */
-UsersTable::UsersTable() : HanamiSqlAdminTable(Hanami::SqlDatabase::getInstance())
+UserTable::UserTable() : HanamiSqlAdminTable(Hanami::SqlDatabase::getInstance())
 {
     m_tableName = "users";
 
@@ -60,7 +60,7 @@ UsersTable::UsersTable() : HanamiSqlAdminTable(Hanami::SqlDatabase::getInstance(
 /**
  * @brief destructor
  */
-UsersTable::~UsersTable() {}
+UserTable::~UserTable() {}
 
 /**
  * @brief get content of an environment-variable
@@ -71,7 +71,7 @@ UsersTable::~UsersTable() {}
  * @return false, if varibale is not set, else true
  */
 bool
-UsersTable::getEnvVar(std::string& content, const std::string& key) const
+UserTable::getEnvVar(std::string& content, const std::string& key) const
 {
     const char* val = getenv(key.c_str());
     if (val == NULL) {
@@ -87,28 +87,29 @@ UsersTable::getEnvVar(std::string& content, const std::string& key) const
  *
  * @param error reference for error-output
  *
- * @return true, if seccuessful, else false
+ * @return OK if found, INVALID_INPUT if not found, ERROR in case of internal error
  */
-bool
-UsersTable::getAllAdminUser(Hanami::ErrorContainer& error)
+ReturnStatus
+UserTable::getAllAdminUser(Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("is_admin", "true");
 
     // get admin-user from db
     json users;
-    if (getFromDb(users, conditions, error, false) == false) {
+    const ReturnStatus ret = getFromDb(users, conditions, error, false);
+    if (ret != OK) {
         error.addMessage("Failed to get admin-users from database");
         LOG_ERROR(error);
-        return false;
+        return ret;
     }
 
     if (users.size() == 0) {
         LOG_WARNING("No admin-user found in database");
-        return false;
+        return INVALID_INPUT;
     }
 
-    return true;
+    return OK;
 }
 
 /**
@@ -119,14 +120,18 @@ UsersTable::getAllAdminUser(Hanami::ErrorContainer& error)
  * @return true, if seccuessful, else false
  */
 bool
-UsersTable::initNewAdminUser(Hanami::ErrorContainer& error)
+UserTable::initNewAdminUser(Hanami::ErrorContainer& error)
 {
     std::string userId = "";
     std::string userName = "";
     std::string pw = "";
 
     // check if there is already an admin-user in the databasae
-    if (getAllAdminUser(error)) {
+    const ReturnStatus ret = getAllAdminUser(error);
+    if (ret == OK) {
+        return true;
+    }
+    if (ret == ERROR) {
         return true;
     }
     LOG_DEBUG("Found no admin-users in database, so try to create a new one");
@@ -165,17 +170,16 @@ UsersTable::initNewAdminUser(Hanami::ErrorContainer& error)
     const std::string saltedPw = pw + salt;
     Hanami::generate_SHA_256(pwHash, saltedPw);
 
-    json userData;
-    userData["id"] = userId;
-    userData["name"] = userName;
-    userData["projects"] = "[]";
-    userData["is_admin"] = true;
-    userData["creator_id"] = "HANAMI_INIT";
-    userData["pw_hash"] = pwHash;
-    userData["salt"] = salt;
+    UserDbEntry userData;
+    userData.id = userId;
+    userData.name = userName;
+    userData.isAdmin = true;
+    userData.creatorId = "HANAMI_INIT";
+    userData.pwHash = pwHash;
+    userData.salt = salt;
 
     // add new admin-user to db
-    if (addUser(userData, error) == false) {
+    if (addUser(userData, error) != OK) {
         error.addMessage("Failed to add new initial admin-user to database");
         LOG_ERROR(error);
         return false;
@@ -187,20 +191,50 @@ UsersTable::initNewAdminUser(Hanami::ErrorContainer& error)
 /**
  * @brief add a new user to the database
  *
- * @param userData json-item with all information of the user to add to database
+ * @param userData user-entry to add to database
  * @param error reference for error-output
  *
- * @return true, if successful, else false
+ * @return OK if found, INVALID_INPUT if not conflict, ERROR in case of internal error
  */
-bool
-UsersTable::addUser(json& userData, Hanami::ErrorContainer& error)
+ReturnStatus
+UserTable::addUser(const UserDbEntry& userData, Hanami::ErrorContainer& error)
 {
-    if (insertToDb(userData, error) == false) {
-        error.addMessage("Failed to add user to database");
-        return false;
+    json userDataJson;
+
+    userDataJson["id"] = userData.id;
+    userDataJson["name"] = userData.name;
+    userDataJson["is_admin"] = userData.isAdmin;
+    userDataJson["creator_id"] = userData.creatorId;
+    userDataJson["pw_hash"] = userData.pwHash;
+    userDataJson["salt"] = userData.salt;
+
+    // convert project-IDs
+    json projectIds = json::array();
+    for (const UserProjectDbEntry& project : userData.projects) {
+        json newEntry;
+        newEntry["project_id"] = project.projectId;
+        newEntry["role"] = project.role;
+        newEntry["is_project_admin"] = project.isProjectAdmin;
+        projectIds.push_back(newEntry);
+    }
+    userDataJson["projects"] = projectIds;
+
+    // check if ID already exist
+    const ReturnStatus ret = doesIdAlreadyExist(userData.id, error);
+    if (ret == OK) {
+        return INVALID_INPUT;
+    }
+    if (ret == ERROR) {
+        return ERROR;
     }
 
-    return true;
+    // add to db
+    if (insertToDb(userDataJson, error) == false) {
+        error.addMessage("Failed to add user to database");
+        return ERROR;
+    }
+
+    return OK;
 }
 
 /**
@@ -209,27 +243,63 @@ UsersTable::addUser(json& userData, Hanami::ErrorContainer& error)
  * @param result reference for the result-output in case that a user with this name was found
  * @param userId id of the requested user
  * @param error reference for error-output
- * @param showHiddenValues set to true to also show as hidden marked fields
  *
- * @return true, if successful, else false
+ * @return OK if found, INVALID_INPUT if not found, ERROR in case of internal error
  */
-bool
-UsersTable::getUser(json& result,
-                    const std::string& userId,
-                    Hanami::ErrorContainer& error,
-                    const bool showHiddenValues)
+ReturnStatus
+UserTable::getUser(UserDbEntry& result, const std::string& userId, Hanami::ErrorContainer& error)
+{
+    json jsonRet;
+    const ReturnStatus ret = getUser(jsonRet, userId, true, error);
+    if (ret != OK) {
+        return ret;
+    }
+
+    result.id = jsonRet["id"];
+    result.name = jsonRet["name"];
+    result.creatorId = jsonRet["creator_id"];
+    result.isAdmin = jsonRet["is_admin"];
+    result.pwHash = jsonRet["pw_hash"];
+    result.salt = jsonRet["salt"];
+
+    for (const json& project : jsonRet["projects"]) {
+        UserProjectDbEntry newEntry;
+        newEntry.projectId = project["project_id"];
+        newEntry.role = project["role"];
+        newEntry.isProjectAdmin = project["is_project_admin"];
+        result.projects.push_back(newEntry);
+    }
+
+    return OK;
+}
+
+/**
+ * @brief get a user from the database
+ *
+ * @param result reference for the result-output in case that a user with this name was found
+ * @param userId id of the requested user
+ * @param showHiddenValues set to true to also show as hidden marked fields
+ * @param error reference for error-output
+ *
+ * @return OK if found, INVALID_INPUT if not found, ERROR in case of internal error
+ */
+ReturnStatus
+UserTable::getUser(json& result,
+                   const std::string& userId,
+                   const bool showHiddenValues,
+                   Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("id", userId);
 
     // get user from db
-    if (getFromDb(result, conditions, error, showHiddenValues) == false) {
+    const ReturnStatus ret = getFromDb(result, conditions, error, showHiddenValues, true);
+    if (ret != OK) {
         error.addMessage("Failed to get user with id '" + userId + "' from database");
-        LOG_ERROR(error);
-        return false;
+        return ret;
     }
 
-    return true;
+    return OK;
 }
 
 /**
@@ -241,10 +311,11 @@ UsersTable::getUser(json& result,
  * @return true, if successful, else false
  */
 bool
-UsersTable::getAllUser(Hanami::TableItem& result, Hanami::ErrorContainer& error)
+UserTable::getAllUser(Hanami::TableItem& result, Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
-    if (getFromDb(result, conditions, error, false) == false) {
+    const ReturnStatus ret = getFromDb(result, conditions, error, false);
+    if (ret != OK) {
         error.addMessage("Failed to get all users from database");
         return false;
     }
@@ -258,20 +329,28 @@ UsersTable::getAllUser(Hanami::TableItem& result, Hanami::ErrorContainer& error)
  * @param userId id of the user to delete
  * @param error reference for error-output
  *
- * @return true, if successful, else false
+ * @return OK if found, INVALID_INPUT if not found, ERROR in case of internal error
  */
-bool
-UsersTable::deleteUser(const std::string& userId, Hanami::ErrorContainer& error)
+ReturnStatus
+UserTable::deleteUser(const std::string& userId, Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("id", userId);
 
-    if (deleteFromDb(conditions, error) == false) {
-        error.addMessage("Failed to delete user with id '" + userId + "' from database");
-        return false;
+    // check if ID exist
+    ReturnStatus ret = doesIdAlreadyExist(userId, error);
+    if (ret != OK) {
+        return ret;
     }
 
-    return true;
+    // delete ID
+    ret = deleteFromDb(conditions, error);
+    if (ret != OK) {
+        error.addMessage("Failed to delete user with id '" + userId + "' from database");
+        return ret;
+    }
+
+    return OK;
 }
 
 /**
@@ -281,24 +360,40 @@ UsersTable::deleteUser(const std::string& userId, Hanami::ErrorContainer& error)
  * @param newProjects new projects-entry for the database
  * @param error reference for error-output
  *
- * @return true, if successful, else false
+ * @return OK if found, INVALID_INPUT if not found, ERROR in case of internal error
  */
-bool
-UsersTable::updateProjectsOfUser(const std::string& userId,
-                                 const std::string& newProjects,
-                                 Hanami::ErrorContainer& error)
+ReturnStatus
+UserTable::updateProjectsOfUser(const std::string& userId,
+                                const std::vector<UserProjectDbEntry>& newProjects,
+                                Hanami::ErrorContainer& error)
 {
+    // convert project-list
+    json newProjectsJson = json::array();
+    for (const UserProjectDbEntry& project : newProjects) {
+        json newEntry;
+        newEntry["project_id"] = project.projectId;
+        newEntry["role"] = project.role;
+        newEntry["is_project_admin"] = project.isProjectAdmin;
+        newProjectsJson.push_back(newEntry);
+    }
     json newValues;
-    newValues["projects"] = json(newProjects);
+    newValues["projects"] = newProjectsJson;
 
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("id", userId);
 
+    // check if ID exist
+    ReturnStatus ret = doesIdAlreadyExist(userId, error);
+    if (ret != OK) {
+        return ret;
+    }
+
+    // update projects
     if (updateInDb(conditions, newValues, error) == false) {
         error.addMessage("Failed to update projects for user with id '" + userId
                          + "' from database");
-        return false;
+        return ERROR;
     }
 
-    return true;
+    return OK;
 }

@@ -56,15 +56,13 @@ DeleteRequestResult::runTask(BlossomIO& blossomIO,
 
     // check if request-result exist within the table
     json result;
-    if (RequestResultTable::getInstance()->getRequestResult(result, uuid, userContext, error, false)
-        == false)
-    {
+    const ReturnStatus ret = RequestResultTable::getInstance()->getRequestResult(
+        result, uuid, userContext, false, error);
+    if (ret == ERROR) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
-
-    // handle not found
-    if (result.size() == 0) {
+    if (ret == INVALID_INPUT) {
         status.errorMessage = "Request-result with uuid '" + uuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         LOG_DEBUG(status.errorMessage);
@@ -72,7 +70,7 @@ DeleteRequestResult::runTask(BlossomIO& blossomIO,
     }
 
     // delete entry from db
-    if (RequestResultTable::getInstance()->deleteRequestResult(uuid, userContext, error) == false) {
+    if (RequestResultTable::getInstance()->deleteRequestResult(uuid, userContext, error) != OK) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

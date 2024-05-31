@@ -37,6 +37,8 @@ class HanamiSqlAdminTable : public Hanami::SqlTable
    public:
     HanamiSqlAdminTable(Hanami::SqlDatabase* db);
     virtual ~HanamiSqlAdminTable();
+
+    ReturnStatus doesIdAlreadyExist(const std::string& id, Hanami::ErrorContainer& error);
 };
 
 #endif  // HANAMI_DATABASE_SQL_ADMIN_TABLE_H

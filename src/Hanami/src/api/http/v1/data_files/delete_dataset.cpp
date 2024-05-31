@@ -56,33 +56,28 @@ DeleteDataSet::runTask(BlossomIO& blossomIO,
     const Hanami::UserContext userContext = convertContext(context);
 
     // get location from database
-    json result;
-    if (DataSetTable::getInstance()->getDataSet(result, dataUuid, userContext, error, true)
-        == false)
-    {
-        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        return false;
-    }
-
-    // handle not found
-    if (result.size() == 0) {
+    DataSetTable::DataSetDbEntry result;
+    const ReturnStatus ret
+        = DataSetTable::getInstance()->getDataSet(result, dataUuid, userContext, error);
+    if (ret == INVALID_INPUT) {
         status.errorMessage = "Data-set with uuid '" + dataUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         LOG_DEBUG(status.errorMessage);
         return false;
     }
-
-    // get location from response
-    const std::string location = result["location"];
+    if (ret == ERROR) {
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
 
     // delete entry from db
-    if (DataSetTable::getInstance()->deleteDataSet(dataUuid, userContext, error) == false) {
+    if (DataSetTable::getInstance()->deleteDataSet(dataUuid, userContext, error) != OK) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // delete local files
-    if (Hanami::deleteFileOrDir(location, error) == false) {
+    if (Hanami::deleteFileOrDir(result.location, error) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

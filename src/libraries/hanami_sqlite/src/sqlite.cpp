@@ -166,7 +166,6 @@ Sqlite::execSqlCommand(TableItem* resultTable, const std::string& command, Error
     if (m_rc != SQLITE_OK) {
         error.addMessage("SQL error: " + std::string(err));
         sqlite3_free(err);
-        LOG_ERROR(error);
         return false;
     }
 

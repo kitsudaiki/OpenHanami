@@ -82,17 +82,10 @@ CreateCluster::runTask(BlossomIO& blossomIO,
     const std::string base64Template = blossomIO.input["template"];
     const Hanami::UserContext userContext = convertContext(context);
 
-    // check if user already exist within the table
-    json getResult;
-    if (ClusterTable::getInstance()->getClusterByName(getResult, clusterName, userContext, error)
-        == false)
-    {
-        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        return false;
-    }
-
-    // handle not found
-    if (getResult.size() != 0) {
+    // check if cluster-name already exist within the table
+    ReturnStatus ret
+        = ClusterTable::getInstance()->doesNameAlreadyExist(clusterName, userContext, error);
+    if (ret == OK) {
         status.errorMessage = "Cluster with name '" + clusterName + "' already exist.";
         status.statusCode = CONFLICT_RTYPE;
         LOG_DEBUG(status.errorMessage);
@@ -122,24 +115,24 @@ CreateCluster::runTask(BlossomIO& blossomIO,
         }
     }
 
-    // convert values
-    json clusterData;
-    clusterData["name"] = clusterName;
-    clusterData["project_id"] = userContext.projectId;
-    clusterData["owner_id"] = userContext.userId;
-    clusterData["visibility"] = "private";
+    ClusterTable::ClusterDbEntry dbEntry;
+    dbEntry.uuid = generateUuid().toString();
+    dbEntry.name = clusterName;
+    dbEntry.projectId = userContext.projectId;
+    dbEntry.ownerId = userContext.userId;
+    dbEntry.visibility = "private";
 
     // add new user to table
-    if (ClusterTable::getInstance()->addCluster(clusterData, userContext, error) == false) {
+    if (ClusterTable::getInstance()->addCluster(dbEntry, userContext, error) != OK) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMessage("Failed to add cluster to database");
         return false;
     }
 
     // get new created user from database
-    if (ClusterTable::getInstance()->getClusterByName(
-            blossomIO.output, clusterName, userContext, error)
-        == false)
+    if (ClusterTable::getInstance()->getCluster(
+            blossomIO.output, dbEntry.uuid, userContext, false, error)
+        != OK)
     {
         error.addMessage("Failed to get cluster from database by name '" + clusterName + "'");
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -169,7 +162,12 @@ CreateCluster::runTask(BlossomIO& blossomIO,
         }
     }
 
-    ClusterHandler::getInstance()->addCluster(uuid, newCluster);
+    // add to cluster-handler
+    if (ClusterHandler::getInstance()->addCluster(uuid, newCluster) == false) {
+        error.addMessage("Failed to add cluster to cluster-handler.");
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
 
     return true;
 }

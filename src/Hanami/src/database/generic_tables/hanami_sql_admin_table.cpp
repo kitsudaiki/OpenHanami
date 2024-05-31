@@ -54,3 +54,31 @@ HanamiSqlAdminTable::HanamiSqlAdminTable(Hanami::SqlDatabase* db) : SqlTable(db)
  * @brief destructor
  */
 HanamiSqlAdminTable::~HanamiSqlAdminTable() {}
+
+/**
+ * @brief check if a specific id already exist within the table
+ *
+ * @param id id to check
+ * @param error reference for error-output
+ *
+ * @return true, if name is already in use, else false
+ */
+ReturnStatus
+HanamiSqlAdminTable::doesIdAlreadyExist(const std::string& id, Hanami::ErrorContainer& error)
+{
+    json result;
+    std::vector<RequestCondition> conditions;
+    conditions.emplace_back("id", id);
+
+    // get user from db
+    const ReturnStatus ret = getFromDb(result, conditions, error, false);
+    if (ret != OK) {
+        return ret;
+    }
+
+    if (result.size() != 0) {
+        return OK;
+    }
+
+    return INVALID_INPUT;
+}

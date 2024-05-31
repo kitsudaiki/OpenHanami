@@ -74,30 +74,33 @@ HanamiSqlTable::~HanamiSqlTable() {}
  *
  * @return true, if successful, else false
  */
-bool
-HanamiSqlTable::add(json& values,
-                    const Hanami::UserContext& userContext,
-                    Hanami::ErrorContainer& error)
+ReturnStatus
+HanamiSqlTable::addWithContext(json& values,
+                               const Hanami::UserContext& userContext,
+                               Hanami::ErrorContainer& error)
 {
     // generate new uuid if the is no predefined
     if (values.contains("uuid") == false) {
-        // create uuid
-        char uuid[UUID_STR_LEN];
-        uuid_t binaryUuid;
-        uuid_generate_random(binaryUuid);
-        uuid_unparse_lower(binaryUuid, uuid);
-
-        // fill into string, but must be reduced by 1 to remove the escate-character
-        std::string uuidString = std::string(uuid, UUID_STR_LEN - 1);
-        Hanami::toLowerCase(uuidString);
-        values["uuid"] = uuidString;
+        values["uuid"] = generateUuid().toString();
     }
 
     // add user-ids
     values["owner_id"] = userContext.userId;
     values["project_id"] = userContext.projectId;
 
-    return insertToDb(values, error);
+    const ReturnStatus ret = doesUuidAlreadyExist(values["uuid"], userContext, error);
+    if (ret == OK) {
+        return INVALID_INPUT;
+    }
+    if (ret == ERROR) {
+        return ERROR;
+    }
+
+    if (insertToDb(values, error) == false) {
+        return ERROR;
+    }
+
+    return OK;
 }
 
 /**
@@ -111,15 +114,15 @@ HanamiSqlTable::add(json& values,
  *
  * @return true, if successful, else false
  */
-bool
-HanamiSqlTable::get(json& result,
-                    const Hanami::UserContext& userContext,
-                    std::vector<RequestCondition>& conditions,
-                    Hanami::ErrorContainer& error,
-                    const bool showHiddenValues)
+ReturnStatus
+HanamiSqlTable::getWithContext(json& result,
+                               const Hanami::UserContext& userContext,
+                               std::vector<RequestCondition>& conditions,
+                               Hanami::ErrorContainer& error,
+                               const bool showHiddenValues)
 {
     fillCondition(conditions, userContext);
-    return getFromDb(result, conditions, error, showHiddenValues);
+    return getFromDb(result, conditions, error, showHiddenValues, true);
 }
 
 /**
@@ -133,10 +136,10 @@ HanamiSqlTable::get(json& result,
  * @return true, if successful, else false
  */
 bool
-HanamiSqlTable::update(json& values,
-                       const Hanami::UserContext& userContext,
-                       std::vector<RequestCondition>& conditions,
-                       Hanami::ErrorContainer& error)
+HanamiSqlTable::updateWithContext(json& values,
+                                  const Hanami::UserContext& userContext,
+                                  std::vector<RequestCondition>& conditions,
+                                  Hanami::ErrorContainer& error)
 {
     fillCondition(conditions, userContext);
     return updateInDb(conditions, values, error);
@@ -153,12 +156,12 @@ HanamiSqlTable::update(json& values,
  *
  * @return true, if successful, else false
  */
-bool
-HanamiSqlTable::getAll(Hanami::TableItem& result,
-                       const Hanami::UserContext& userContext,
-                       std::vector<RequestCondition>& conditions,
-                       Hanami::ErrorContainer& error,
-                       const bool showHiddenValues)
+ReturnStatus
+HanamiSqlTable::getAllWithContext(Hanami::TableItem& result,
+                                  const Hanami::UserContext& userContext,
+                                  std::vector<RequestCondition>& conditions,
+                                  Hanami::ErrorContainer& error,
+                                  const bool showHiddenValues)
 {
     fillCondition(conditions, userContext);
     return getFromDb(result, conditions, error, showHiddenValues);
@@ -173,13 +176,73 @@ HanamiSqlTable::getAll(Hanami::TableItem& result,
  *
  * @return true, if successful, else false
  */
-bool
-HanamiSqlTable::del(std::vector<RequestCondition>& conditions,
-                    const Hanami::UserContext& userContext,
-                    Hanami::ErrorContainer& error)
+ReturnStatus
+HanamiSqlTable::deleteFromDbWithContext(std::vector<RequestCondition>& conditions,
+                                        const Hanami::UserContext& userContext,
+                                        Hanami::ErrorContainer& error)
 {
     fillCondition(conditions, userContext);
     return deleteFromDb(conditions, error);
+}
+
+/**
+ * @brief check if a specific name already exist within the table
+ *
+ * @param name name to check
+ * @param userContext context-object with all user specific information
+ * @param error reference for error-output
+ *
+ * @return true, if name is already in use, else false
+ */
+ReturnStatus
+HanamiSqlTable::doesNameAlreadyExist(const std::string& name,
+                                     const Hanami::UserContext& userContext,
+                                     Hanami::ErrorContainer& error)
+{
+    json result;
+    std::vector<RequestCondition> conditions;
+    conditions.emplace_back("name", name);
+
+    // get user from db
+    const ReturnStatus ret = getWithContext(result, userContext, conditions, error, false);
+    if (ret != OK) {
+        return ret;
+    }
+
+    if (result.size() != 0) {
+        return OK;
+    }
+
+    return INVALID_INPUT;
+}
+
+/**
+ * @brief HanamiSqlTable::doesIdAlreadyExist
+ * @param uuid
+ * @param userContext
+ * @param error
+ * @return
+ */
+ReturnStatus
+HanamiSqlTable::doesUuidAlreadyExist(const std::string& uuid,
+                                     const Hanami::UserContext& userContext,
+                                     Hanami::ErrorContainer& error)
+{
+    json result;
+    std::vector<RequestCondition> conditions;
+    conditions.emplace_back("uuid", uuid);
+
+    // get user from db
+    const ReturnStatus ret = getWithContext(result, userContext, conditions, error, false);
+    if (ret != OK) {
+        return ret;
+    }
+
+    if (result.size() != 0) {
+        return OK;
+    }
+
+    return INVALID_INPUT;
 }
 
 /**

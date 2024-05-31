@@ -115,6 +115,15 @@ SqlTable::createDocumentation(std::string& docu)
 }
 
 /**
+ * @brief get number of columns of the database-table
+ */
+uint64_t
+SqlTable::getNumberOfColumns() const
+{
+    return m_tableHeader.size();
+}
+
+/**
  * @brief insert values into the table
  *
  * @param values string-list with values to insert
@@ -234,7 +243,7 @@ SqlTable::getAllFromDb(TableItem& resultTable,
  *
  * @return true, if successful, else false
  */
-bool
+ReturnStatus
 SqlTable::getFromDb(TableItem& resultTable,
                     const std::vector<RequestCondition>& conditions,
                     ErrorContainer& error,
@@ -247,7 +256,7 @@ SqlTable::getFromDb(TableItem& resultTable,
         == false)
     {
         LOG_ERROR(error);
-        return false;
+        return ERROR;
     }
 
     // if header is missing in result, because there are no entries to list, add a default-header
@@ -266,7 +275,7 @@ SqlTable::getFromDb(TableItem& resultTable,
         }
     }
 
-    return true;
+    return OK;
 }
 
 /**
@@ -276,16 +285,18 @@ SqlTable::getFromDb(TableItem& resultTable,
  * @param conditions conditions to filter table
  * @param error reference for error-output
  * @param showHiddenValues include values in output, which should normally be hidden
+ * @param expectAtLeastOne if false, there is no return false, if the db doesn't return any results
  * @param positionOffset offset of the rows to return
  * @param numberOfRows maximum number of results. if 0 then this value and the offset are ignored
  *
- * @return true, if successful, else false
+ * @return OK if found, INVALID_INPUT if not found, ERROR in case of internal error
  */
-bool
+ReturnStatus
 SqlTable::getFromDb(json& result,
                     const std::vector<RequestCondition>& conditions,
                     ErrorContainer& error,
                     const bool showHiddenValues,
+                    const bool expectAtLeastOne,
                     const uint64_t positionOffset,
                     const uint64_t numberOfRows)
 {
@@ -293,7 +304,7 @@ SqlTable::getFromDb(json& result,
     if (conditions.size() == 0) {
         error.addMessage("no conditions given for table-access.");
         LOG_ERROR(error);
-        return false;
+        return INVALID_INPUT;
     }
 
     // run select-query
@@ -303,11 +314,16 @@ SqlTable::getFromDb(json& result,
         == false)
     {
         LOG_ERROR(error);
-        return false;
+        return ERROR;
     }
 
     if (tableResult.getNumberOfRows() == 0) {
-        return true;
+        if (expectAtLeastOne) {
+            return INVALID_INPUT;
+        }
+        else {
+            return OK;
+        }
     }
 
     // convert table-row to json
@@ -322,7 +338,7 @@ SqlTable::getFromDb(json& result,
         }
     }
 
-    return true;
+    return OK;
 }
 
 /**
@@ -364,20 +380,30 @@ SqlTable::deleteAllFromDb(ErrorContainer& error)
  * @param conditions conditions to filter table
  * @param error reference for error-output
  *
- * @return true, if successful, else false
+ * @return OK if found, INVALID_INPUT if not found, ERROR in case of internal error
  */
-bool
+ReturnStatus
 SqlTable::deleteFromDb(const std::vector<RequestCondition>& conditions, ErrorContainer& error)
 {
     // precheck
     if (conditions.size() == 0) {
         error.addMessage("no conditions given for table-access.");
         LOG_ERROR(error);
-        return false;
+        return INVALID_INPUT;
+    }
+
+    json getResult;
+    const ReturnStatus ret = getFromDb(getResult, conditions, error, false);
+    if (ret != OK) {
+        return ret;
     }
 
     Hanami::TableItem resultItem;
-    return m_db->execSqlCommand(&resultItem, createDeleteQuery(conditions), error);
+    if (m_db->execSqlCommand(&resultItem, createDeleteQuery(conditions), error) == false) {
+        return ERROR;
+    }
+
+    return OK;
 }
 
 /**

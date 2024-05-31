@@ -8,6 +8,7 @@ add_library(hanami_common STATIC
     include/hanami_common/defines.h
     include/hanami_common/uuid.h
     include/hanami_common/enums.h
+    include/hanami_common/buffer/bit_buffer.h
     include/hanami_common/buffer/data_buffer.h
     include/hanami_common/buffer/item_buffer.h
     include/hanami_common/buffer/ring_buffer.h

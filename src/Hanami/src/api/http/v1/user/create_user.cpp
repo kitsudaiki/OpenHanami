@@ -98,21 +98,6 @@ CreateUser::runTask(BlossomIO& blossomIO,
     const std::string newUserId = blossomIO.input["id"];
     const std::string creatorId = context["id"];
 
-    // check if user already exist within the table
-    json getResult;
-    if (UsersTable::getInstance()->getUser(getResult, newUserId, error, false) == false) {
-        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        return false;
-    }
-
-    // handle not found
-    if (getResult.size() != 0) {
-        status.errorMessage = "User with id '" + newUserId + "' already exist.";
-        status.statusCode = CONFLICT_RTYPE;
-        LOG_DEBUG(status.errorMessage);
-        return false;
-    }
-
     // genreate hash from password and random salt
     std::string pwHash;
     const std::string salt = generateUuid().toString();
@@ -120,25 +105,29 @@ CreateUser::runTask(BlossomIO& blossomIO,
     Hanami::generate_SHA_256(pwHash, saltedPw);
 
     // convert values
-    std::vector<json> projects;
-    json userData;
-    userData["id"] = newUserId;
-    userData["name"] = blossomIO.input["name"];
-    userData["projects"] = json(projects);
-    userData["pw_hash"] = pwHash;
-    userData["is_admin"] = blossomIO.input["is_admin"];
-    userData["creator_id"] = creatorId;
-    userData["salt"] = salt;
+    UserTable::UserDbEntry dbEntry;
+    dbEntry.id = newUserId;
+    dbEntry.name = blossomIO.input["name"];
+    dbEntry.pwHash = pwHash;
+    dbEntry.isAdmin = blossomIO.input["is_admin"];
+    dbEntry.creatorId = creatorId;
+    dbEntry.salt = salt;
 
     // add new user to table
-    if (UsersTable::getInstance()->addUser(userData, error) == false) {
-        status.errorMessage = error.toString();
+    const ReturnStatus ret = UserTable::getInstance()->addUser(dbEntry, error);
+    if (ret == INVALID_INPUT) {
+        status.errorMessage = "User with id '" + newUserId + "' already exist.";
+        status.statusCode = CONFLICT_RTYPE;
+        LOG_DEBUG(status.errorMessage);
+        return false;
+    }
+    if (ret == ERROR) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // get new created user from database
-    if (UsersTable::getInstance()->getUser(blossomIO.output, newUserId, error, false) == false) {
+    if (UserTable::getInstance()->getUser(blossomIO.output, newUserId, false, error) != OK) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

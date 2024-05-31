@@ -63,7 +63,8 @@ ListCheckpoint::runTask(BlossomIO& blossomIO,
 
     // get data from table
     Hanami::TableItem table;
-    if (CheckpointTable::getInstance()->getAllCheckpoint(table, userContext, error) == false) {
+    if (CheckpointTable::getInstance()->getAllCheckpoint(table, userContext, false, error) == false)
+    {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

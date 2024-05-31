@@ -57,16 +57,14 @@ DeleteCluster::runTask(BlossomIO& blossomIO,
     const std::string clusterUuid = blossomIO.input["uuid"];
 
     // check if user exist within the table
-    json getResult;
-    if (ClusterTable::getInstance()->getCluster(getResult, clusterUuid, userContext, error)
-        == false)
-    {
+    ClusterTable::ClusterDbEntry getResult;
+    const ReturnStatus ret
+        = ClusterTable::getInstance()->getCluster(getResult, clusterUuid, userContext, error);
+    if (ret == ERROR) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
-
-    // handle not found
-    if (getResult.size() == 0) {
+    if (ret == INVALID_INPUT) {
         status.errorMessage = "Cluster with uuid '" + clusterUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         LOG_DEBUG(status.errorMessage);
@@ -74,14 +72,14 @@ DeleteCluster::runTask(BlossomIO& blossomIO,
     }
 
     // remove data from table
-    if (ClusterTable::getInstance()->deleteCluster(clusterUuid, userContext, error) == false) {
+    if (ClusterTable::getInstance()->deleteCluster(clusterUuid, userContext, error) != OK) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMessage("Failed to delete cluster with UUID '" + clusterUuid + "' from database");
         return false;
     }
 
     // remove internal data
-    const std::string uuid = getResult["uuid"];
+    const std::string uuid = getResult.uuid;
     if (ClusterHandler::getInstance()->removeCluster(uuid) == false) {
         // should never be false, because the uuid is already defined as unique by the database
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;

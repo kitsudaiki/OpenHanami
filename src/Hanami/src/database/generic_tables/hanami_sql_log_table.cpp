@@ -72,7 +72,7 @@ HanamiSqlLogTable::getNumberOfPages(Hanami::ErrorContainer& error)
  *
  * @return true, if successful, else false
  */
-bool
+ReturnStatus
 HanamiSqlLogTable::getPageFromDb(Hanami::TableItem& resultTable,
                                  const std::string& userId,
                                  const uint64_t page,
@@ -81,13 +81,13 @@ HanamiSqlLogTable::getPageFromDb(Hanami::TableItem& resultTable,
     // get number of pages of the log-table
     const long numberOfPages = getNumberOfPages(error);
     if (numberOfPages == -1) {
-        return false;
+        return INVALID_INPUT;
     }
 
     // check if requested page-number is in range
     if (page > static_cast<uint64_t>(numberOfPages)) {
         error.addMessage("Give page '" + std::to_string(page) + "' is too big");
-        return false;
+        return INVALID_INPUT;
     }
 
     // get requested page of log-entries from database-table

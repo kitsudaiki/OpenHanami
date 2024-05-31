@@ -69,7 +69,7 @@ ListProjects::runTask(BlossomIO& blossomIO,
 
     // get data from table
     Hanami::TableItem table;
-    if (ProjectsTable::getInstance()->getAllProjects(table, error) == false) {
+    if (ProjectTable::getInstance()->getAllProjects(table, error) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

@@ -85,36 +85,27 @@ CreateProject::runTask(BlossomIO& blossomIO,
     const std::string projectName = blossomIO.input["name"];
     const std::string creatorId = context["id"];
 
-    // check if user already exist within the table
-    json getResult;
-    if (ProjectsTable::getInstance()->getProject(getResult, projectId, error) == false) {
-        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        return false;
-    }
+    // convert values
+    ProjectTable::ProjectDbEntry dbEntry;
+    dbEntry.id = projectId;
+    dbEntry.name = projectName;
+    dbEntry.creatorId = creatorId;
 
-    // handle not found
-    if (getResult.size() != 0) {
+    // add new project to table
+    const ReturnStatus ret = ProjectTable::getInstance()->addProject(dbEntry, error);
+    if (ret == INVALID_INPUT) {
         status.errorMessage = "Project with id '" + projectId + "' already exist.";
         status.statusCode = CONFLICT_RTYPE;
         LOG_DEBUG(status.errorMessage);
         return false;
     }
-
-    // convert values
-    json userData;
-    userData["id"] = projectId;
-    userData["name"] = projectName;
-    userData["creator_id"] = creatorId;
-
-    // add new user to table
-    if (ProjectsTable::getInstance()->addProject(userData, error) == false) {
-        status.errorMessage = error.toString();
+    if (ret == ERROR) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // get new created user from database
-    if (ProjectsTable::getInstance()->getProject(blossomIO.output, projectId, error) == false) {
+    if (ProjectTable::getInstance()->getProject(blossomIO.output, projectId, false, error) != OK) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

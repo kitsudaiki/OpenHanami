@@ -82,15 +82,15 @@ GetDataSet::runTask(BlossomIO& blossomIO,
                     Hanami::ErrorContainer& error)
 {
     const std::string dataUuid = blossomIO.input["uuid"];
-    if (DataSetTable::getInstance()->getDateSetInfo(blossomIO.output, dataUuid, context, error)
-        == false)
-    {
+    const Hanami::UserContext userContext = convertContext(context);
+
+    const ReturnStatus ret = DataSetTable::getInstance()->getDateSetInfo(
+        blossomIO.output, dataUuid, userContext, error);
+    if (ret == ERROR) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
-
-    // handle not found
-    if (blossomIO.output.size() == 0) {
+    if (ret == INVALID_INPUT) {
         status.errorMessage = "Data-set with uuid '" + dataUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         LOG_DEBUG(status.errorMessage);

@@ -41,7 +41,7 @@ TestTable::addUser(json& data, ErrorContainer& error)
 /**
  * @brief getUser
  */
-bool
+ReturnStatus
 TestTable::getUser(TableItem& resultTable,
                    const std::string& userID,
                    ErrorContainer& error,
@@ -55,11 +55,11 @@ TestTable::getUser(TableItem& resultTable,
 /**
  * @brief getUser
  */
-bool
+ReturnStatus
 TestTable::getUser(json& resultItem,
                    const std::string& userID,
-                   ErrorContainer& error,
-                   const bool withHideValues)
+                   const bool withHideValues,
+                   ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("name", userID);
@@ -102,7 +102,7 @@ TestTable::getAllUser(TableItem& resultItem,
 /**
  * @brief deleteUser
  */
-bool
+ReturnStatus
 TestTable::deleteUser(const std::string& userID, ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;

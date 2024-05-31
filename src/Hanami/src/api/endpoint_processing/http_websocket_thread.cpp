@@ -322,10 +322,14 @@ HttpWebsocketThread::processInitialMessage(const std::string& message, std::stri
 
         // check if uuid exist in context of the user and project
         json clusterData = json::object();
-        if (ClusterTable::getInstance()->getCluster(clusterData, clusterUuid, userContext, error)
-            == false)
-        {
+        const ReturnStatus ret = ClusterTable::getInstance()->getCluster(
+            clusterData, clusterUuid, userContext, false, error);
+        if (ret == INVALID_INPUT) {
             errorMessage = "Cluster with UUID '" + clusterUuid + "' not found";
+            return false;
+        }
+        if (ret == ERROR) {
+            errorMessage = "Internal error.";
             return false;
         }
 
@@ -342,10 +346,14 @@ HttpWebsocketThread::processInitialMessage(const std::string& message, std::stri
 
         // check if uuid exist in context of the user and project
         json tempfileData = json::object();
-        if (TempfileTable::getInstance()->getTempfile(tempfileData, fileUuid, userContext, error)
-            == false)
-        {
+        const ReturnStatus ret = TempfileTable::getInstance()->getTempfile(
+            tempfileData, fileUuid, userContext, false, error);
+        if (ret == INVALID_INPUT) {
             errorMessage = "Tempfile with UUID '" + fileUuid + "' not found";
+            return false;
+        }
+        if (ret == ERROR) {
+            errorMessage = "Internal error";
             return false;
         }
 

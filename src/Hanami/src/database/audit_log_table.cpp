@@ -105,7 +105,7 @@ AuditLogTable::getAllAuditLogEntries(Hanami::TableItem& result,
                                      const uint64_t page,
                                      Hanami::ErrorContainer& error)
 {
-    if (getPageFromDb(result, userId, page, error) == false) {
+    if (getPageFromDb(result, userId, page, error) != OK) {
         error.addMessage("Failed to get all audit-log-entries from database");
         return false;
     }
