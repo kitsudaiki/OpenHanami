@@ -54,7 +54,7 @@ class SqlTable
         INT_TYPE = 1,
         BOOL_TYPE = 2,
         FLOAT_TYPE = 3,
-        HASH_TYPE = 4
+        BASE64_TYPE = 4
     };
 
     struct DbHeaderEntry {
@@ -130,6 +130,7 @@ class SqlTable
    protected:
     std::string m_tableName = "";
     std::vector<DbHeaderEntry> m_tableHeader;
+    bool m_hasBase64Column = false;
 
    private:
     SqlDatabase* m_db = nullptr;
@@ -145,6 +146,7 @@ class SqlTable
     const std::string createCountQuery();
 
     void processGetResult(json& result, TableItem& tableContent, const bool showHiddenValues);
+    bool processBase64Entries(TableItem& tableContent, const bool showHiddenValues);
 };
 
 }  // namespace Hanami

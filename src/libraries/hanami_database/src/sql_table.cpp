@@ -22,6 +22,7 @@
 
 #include <hanami_common/functions/string_functions.h>
 #include <hanami_common/functions/time_functions.h>
+#include <hanami_crypto/common.h>
 #include <hanami_database/sql_database.h>
 #include <hanami_database/sql_table.h>
 
@@ -100,8 +101,8 @@ SqlTable::createDocumentation(std::string& docu)
             case FLOAT_TYPE:
                 docu.append("real | ");
                 break;
-            case HASH_TYPE:
-                docu.append("hash | ");
+            case BASE64_TYPE:
+                docu.append("text | ");
                 break;
         }
 
@@ -147,6 +148,10 @@ SqlTable::getNumberOfColumns() const
 SqlTable::DbHeaderEntry&
 SqlTable::registerColumn(const std::string& name, const DbVataValueTypes type)
 {
+    if (type == BASE64_TYPE) {
+        m_hasBase64Column = true;
+    }
+
     DbHeaderEntry newEntry;
     newEntry.name = name;
     newEntry.type = type;
@@ -179,6 +184,12 @@ SqlTable::insertToDb(json& values, ErrorContainer& error)
             error.addMessage("insert into dabase failed, because '" + entry.name
                              + "' is required, but missing in the input-values.");
             return false;
+        }
+        if (entry.type == BASE64_TYPE) {
+            const std::string orig = values[entry.name];
+            std::string base64Msg;
+            Hanami::encodeBase64(base64Msg, orig.c_str(), orig.size());
+            values[entry.name] = base64Msg;
         }
         if (values[entry.name].is_string()) {
             dbValues.push_back(values[entry.name]);
@@ -231,8 +242,8 @@ SqlTable::updateInDb(std::vector<RequestCondition>& conditions,
  * @brief get all rows from table
  *
  * @param resultTable pointer to table for the resuld of the query
- * @param error reference for error-output
  * @param showHiddenValues include values in output, which should normally be hidden
+ * @param error reference for error-output
  * @param positionOffset offset of the rows to return
  * @param numberOfRows maximum number of results. if 0 then this value and the offset are ignored
  *
@@ -261,8 +272,8 @@ SqlTable::getAllFromDb(TableItem& resultTable,
  *
  * @param resultTable pointer to table for the resuld of the query
  * @param conditions conditions to filter table
- * @param error reference for error-output
  * @param showHiddenValues include values in output, which should normally be hidden
+ * @param error reference for error-output
  * @param positionOffset offset of the rows to return
  * @param numberOfRows maximum number of results. if 0 then this value and the offset are ignored
  *
@@ -304,6 +315,14 @@ SqlTable::getFromDb(TableItem& resultTable,
         }
     }
 
+    // convert all base64-values back to normal strings
+    if (m_hasBase64Column) {
+        if (processBase64Entries(resultTable, showHiddenValues) == false) {
+            error.addMessage("Base64-decoding of database-table failed");
+            return ERROR;
+        }
+    }
+
     return OK;
 }
 
@@ -312,9 +331,9 @@ SqlTable::getFromDb(TableItem& resultTable,
  *
  * @param resultTable pointer to table for the resuld of the query
  * @param conditions conditions to filter table
- * @param error reference for error-output
  * @param showHiddenValues include values in output, which should normally be hidden
  * @param expectAtLeastOne if false, there is no return false, if the db doesn't return any results
+ * @param error reference for error-output
  * @param positionOffset offset of the rows to return
  * @param numberOfRows maximum number of results. if 0 then this value and the offset are ignored
  *
@@ -445,7 +464,7 @@ SqlTable::createTableCreateQuery()
             case FLOAT_TYPE:
                 command.append("real ");
                 break;
-            case HASH_TYPE:
+            case BASE64_TYPE:
                 command.append("text ");
                 break;
         }
@@ -640,6 +659,7 @@ SqlTable::createCountQuery()
  *
  * @param result reference for json-formated output
  * @param tableContent table-input with at least one row
+ * @param showHiddenValues include values in output, which should normally be hidden
  */
 void
 SqlTable::processGetResult(json& result, TableItem& tableContent, const bool showHiddenValues)
@@ -660,6 +680,40 @@ SqlTable::processGetResult(json& result, TableItem& tableContent, const bool sho
             pos++;
         }
     }
+}
+
+/**
+ * @brief convert base64-entries of the table back into normal string
+ *
+ * @param tableContent table-content to check and convert
+ * @param showHiddenValues include values in output, which should normally be hidden
+ *
+ * @param true, if successful, else false
+ */
+bool
+SqlTable::processBase64Entries(TableItem& tableContent, const bool showHiddenValues)
+{
+    uint32_t x = 0;
+    for (const DbHeaderEntry& entry : m_tableHeader) {
+        if (entry.name == "status" || entry.name == "deleted_at") {
+            continue;
+        }
+        if (showHiddenValues || entry.hide == false) {
+            if (entry.type == BASE64_TYPE) {
+                for (uint64_t y = 0; y < tableContent.getNumberOfRows(); y++) {
+                    const std::string base64Val = tableContent.getCell(x, y);
+                    std::string val;
+                    if (Hanami::decodeBase64(val, base64Val) == false) {
+                        return false;
+                    }
+                    tableContent.setCell(x, y, val);
+                }
+            }
+            x++;
+        }
+    }
+
+    return true;
 }
 
 }  // namespace Hanami

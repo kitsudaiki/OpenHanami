@@ -127,7 +127,7 @@ ErrorLogTable_Test::getAllErrorLog_test()
     TEST_EQUAL(result.getCell(2, 0), "hanami");
     TEST_EQUAL(result.getCell(3, 0), "example-context");
     TEST_EQUAL(result.getCell(4, 0), "values");
-    // TEST_EQUAL(result.getCell(5,0), "this is a test-message");
+    TEST_EQUAL(result.getCell(5, 0), "this is a test-message");
 
     cleanupTest();
 }

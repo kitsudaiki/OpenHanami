@@ -22,6 +22,7 @@ target_include_directories(hanami_database PUBLIC
 target_link_libraries(hanami_database PUBLIC
     hanami_common
     hanami_sqlite
+    hanami_crypto
 )
 
 if(run_tests)

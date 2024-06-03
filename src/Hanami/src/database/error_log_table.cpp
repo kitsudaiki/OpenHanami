@@ -24,7 +24,6 @@
 #include <hanami_common/functions/string_functions.h>
 #include <hanami_common/functions/time_functions.h>
 #include <hanami_common/items/table_item.h>
-#include <hanami_crypto/common.h>
 #include <hanami_database/sql_database.h>
 
 ErrorLogTable* ErrorLogTable::instance = nullptr;
@@ -46,7 +45,7 @@ ErrorLogTable::ErrorLogTable() : HanamiSqlLogTable(Hanami::SqlDatabase::getInsta
 
     registerColumn("input_values", STRING_TYPE);
 
-    registerColumn("message", HASH_TYPE);
+    registerColumn("message", BASE64_TYPE);
 }
 
 /**
@@ -79,10 +78,7 @@ ErrorLogTable::addErrorLogEntry(const std::string& userid,
     data["component"] = component;
     data["context"] = context;
     data["input_values"] = values;
-
-    std::string base64Msg;
-    Hanami::encodeBase64(base64Msg, message.c_str(), message.size());
-    data["message"] = base64Msg;
+    data["message"] = message;
 
     if (insertToDb(data, error) == false) {
         error.addMessage("Failed to add error-log-entry to database");
