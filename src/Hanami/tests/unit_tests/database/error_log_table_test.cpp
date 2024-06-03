@@ -123,7 +123,6 @@ ErrorLogTable_Test::getAllErrorLog_test()
     TEST_EQUAL(result.getNumberOfRows(), 1);
     TEST_EQUAL(result.getNumberOfColums(), errorLogTable->getNumberOfColumns());
 
-    TEST_EQUAL(result.getCell(0, 0), "today");
     TEST_EQUAL(result.getCell(1, 0), "test-user");
     TEST_EQUAL(result.getCell(2, 0), "hanami");
     TEST_EQUAL(result.getCell(3, 0), "example-context");

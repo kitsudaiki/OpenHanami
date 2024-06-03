@@ -171,6 +171,7 @@ RenewToken::runTask(BlossomIO& blossomIO,
     blossomIO.output["is_admin"] = userData.isAdmin;
     blossomIO.output["name"] = userData.name;
     blossomIO.output["token"] = jwtToken;
+    blossomIO.output.erase("created_at");
 
     return true;
 }

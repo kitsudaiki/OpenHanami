@@ -130,7 +130,7 @@ CheckpointTable::getCheckpoint(json& result,
 
     // get dataset from db
     const ReturnStatus ret
-        = getWithContext(result, userContext, conditions, error, showHiddenValues);
+        = getWithContext(result, userContext, conditions, showHiddenValues, error);
     if (ret != OK) {
         error.addMessage("Failed to get checkpoint with UUID '" + checkpointUuid
                          + "' from database");

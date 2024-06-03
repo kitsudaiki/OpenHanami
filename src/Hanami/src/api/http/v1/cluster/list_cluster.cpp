@@ -32,6 +32,7 @@ ListCluster::ListCluster() : Blossom("List all visible clusters.")
     //----------------------------------------------------------------------------------------------
 
     json headerMatch = json::array();
+    headerMatch.push_back("created_at");
     headerMatch.push_back("uuid");
     headerMatch.push_back("project_id");
     headerMatch.push_back("owner_id");

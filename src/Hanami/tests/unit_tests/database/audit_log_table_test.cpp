@@ -118,7 +118,6 @@ AuditLogTable_Test::getAllAuditLog_test()
     TEST_EQUAL(result.getNumberOfRows(), 1);
     TEST_EQUAL(result.getNumberOfColums(), auditLogTable->getNumberOfColumns());
 
-    TEST_EQUAL(result.getCell(0, 0), "today");
     TEST_EQUAL(result.getCell(1, 0), "test-user");
     TEST_EQUAL(result.getCell(2, 0), "test-endpoint");
     TEST_EQUAL(result.getCell(3, 0), "get");

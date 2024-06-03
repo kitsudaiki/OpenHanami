@@ -141,7 +141,7 @@ TempfileTable::getTempfile(json& result,
 
     // get dataset from db
     const ReturnStatus ret
-        = getWithContext(result, userContext, conditions, error, showHiddenValues);
+        = getWithContext(result, userContext, conditions, showHiddenValues, error);
     if (ret != OK) {
         error.addMessage("Failed to get tempfile with UUID '" + tempfileUuid + "' from database");
         return ret;
@@ -232,7 +232,7 @@ TempfileTable::getRelatedResourceUuids(std::vector<std::string>& relatedUuids,
     }
 
     for (uint64_t i = 0; i < result.getNumberOfRows(); i++) {
-        relatedUuids.push_back(result.getCell(0, i));
+        relatedUuids.push_back(result.getCell(1, i));
     }
 
     return OK;

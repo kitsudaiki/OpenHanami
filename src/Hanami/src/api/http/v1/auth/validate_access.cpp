@@ -146,6 +146,7 @@ ValidateAccess::runTask(BlossomIO& blossomIO,
     blossomIO.output.erase("exp");
     blossomIO.output.erase("iat");
     blossomIO.output.erase("nbf");
+    blossomIO.output.erase("created_at");
 
     return true;
 }

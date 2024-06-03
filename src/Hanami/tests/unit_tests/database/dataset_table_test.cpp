@@ -201,7 +201,7 @@ DataSetTable_Test::deleteDataSet_test()
 
     DataSetTable::DataSetDbEntry result;
     TEST_EQUAL(datasetTable->deleteDataSet(m_testUuid, m_userContext, error), OK);
-    TEST_EQUAL(datasetTable->deleteDataSet(m_testUuid, m_userContext, error), OK);
+    TEST_EQUAL(datasetTable->deleteDataSet(m_testUuid, m_userContext, error), INVALID_INPUT);
     TEST_EQUAL(datasetTable->getDataSet(result, m_testUuid, m_userContext, error), INVALID_INPUT);
 
     Hanami::TableItem result2;

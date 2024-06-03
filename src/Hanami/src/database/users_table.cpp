@@ -85,7 +85,7 @@ UserTable::getAllAdminUser(Hanami::ErrorContainer& error)
 
     // get admin-user from db
     json users;
-    const ReturnStatus ret = getFromDb(users, conditions, error, false);
+    const ReturnStatus ret = getFromDb(users, conditions, false, true, error);
     if (ret != OK) {
         error.addMessage("Failed to get admin-users from database");
         LOG_ERROR(error);
@@ -282,7 +282,7 @@ UserTable::getUser(json& result,
     conditions.emplace_back("id", userId);
 
     // get user from db
-    const ReturnStatus ret = getFromDb(result, conditions, error, showHiddenValues, true);
+    const ReturnStatus ret = getFromDb(result, conditions, showHiddenValues, true, error);
     if (ret != OK) {
         error.addMessage("Failed to get user with id '" + userId + "' from database");
         return ret;
@@ -303,7 +303,7 @@ bool
 UserTable::getAllUser(Hanami::TableItem& result, Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
-    const ReturnStatus ret = getFromDb(result, conditions, error, false);
+    const ReturnStatus ret = getFromDb(result, conditions, false, false, error);
     if (ret != OK) {
         error.addMessage("Failed to get all users from database");
         return false;
@@ -378,10 +378,11 @@ UserTable::updateProjectsOfUser(const std::string& userId,
     }
 
     // update projects
-    if (updateInDb(conditions, newValues, error) == false) {
+    ret = updateInDb(conditions, newValues, error);
+    if (ret != OK) {
         error.addMessage("Failed to update projects for user with id '" + userId
                          + "' from database");
-        return ERROR;
+        return ret;
     }
 
     return OK;

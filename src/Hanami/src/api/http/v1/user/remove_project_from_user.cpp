@@ -53,6 +53,9 @@ RemoveProjectFromUser::RemoveProjectFromUser() : Blossom("Remove a project from 
     // output
     //----------------------------------------------------------------------------------------------
 
+    registerOutputField("created_at", SAKURA_STRING_TYPE)
+        .setComment("Timestamp, when user was created.");
+
     registerOutputField("id", SAKURA_STRING_TYPE).setComment("ID of the user.");
 
     registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the user.");

@@ -208,7 +208,7 @@ TempfileTable_Test::deleteTempfile_test()
 
     TempfileTable::TempfileDbEntry result;
     TEST_EQUAL(tempfileTable->deleteTempfile(m_testUuid1, m_userContext, error), OK);
-    TEST_EQUAL(tempfileTable->deleteTempfile(m_testUuid1, m_userContext, error), OK);
+    TEST_EQUAL(tempfileTable->deleteTempfile(m_testUuid1, m_userContext, error), INVALID_INPUT);
     TEST_EQUAL(tempfileTable->getTempfile(result, m_testUuid1, m_userContext, error),
                INVALID_INPUT);
 

@@ -67,7 +67,6 @@ AuditLogTable::addAuditLogEntry(const std::string& timestamp,
                                 Hanami::ErrorContainer& error)
 {
     json data;
-    data["timestamp"] = timestamp;
     data["user_id"] = userId;
     data["endpoint"] = endpoint;
     data["request_type"] = requestType;

@@ -41,6 +41,9 @@ ShowCluster::ShowCluster() : Blossom("Show information of a specific cluster.")
     // output
     //----------------------------------------------------------------------------------------------
 
+    registerOutputField("created_at", SAKURA_STRING_TYPE)
+        .setComment("Timestamp, when cluster was created.");
+
     registerOutputField("uuid", SAKURA_STRING_TYPE).setComment("UUID of the cluster.");
 
     registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the cluster.");

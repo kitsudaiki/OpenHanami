@@ -46,6 +46,9 @@ GetUser::GetUser() : Blossom("Show information of a specific user.")
     // output
     //----------------------------------------------------------------------------------------------
 
+    registerOutputField("created_at", SAKURA_STRING_TYPE)
+        .setComment("Timestamp, when user was created.");
+
     registerOutputField("id", SAKURA_STRING_TYPE).setComment("ID of the user.");
 
     registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the user.");

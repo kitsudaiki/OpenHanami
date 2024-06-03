@@ -124,7 +124,7 @@ ClusterTable::getCluster(json& result,
 
     // get user from db
     const ReturnStatus ret
-        = getWithContext(result, userContext, conditions, error, showHiddenValues);
+        = getWithContext(result, userContext, conditions, showHiddenValues, error);
     if (ret != OK) {
         error.addMessage("Failed to get cluster-meta with UUID '" + clusterUuid
                          + "' from database");

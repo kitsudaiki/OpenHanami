@@ -137,7 +137,7 @@ DataSetTable::getDataSet(json& result,
 
     // get dataset from db
     const ReturnStatus ret
-        = getWithContext(result, userContext, conditions, error, showHiddenValues);
+        = getWithContext(result, userContext, conditions, showHiddenValues, error);
     if (ret != OK) {
         error.addMessage("Failed to get dataset with UUID '" + datasetUuid + "' from database");
         return ret;

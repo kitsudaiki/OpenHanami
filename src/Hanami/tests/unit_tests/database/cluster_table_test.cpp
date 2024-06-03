@@ -196,7 +196,7 @@ ClusterTable_Test::deleteCluster_test()
 
     ClusterTable::ClusterDbEntry result;
     TEST_EQUAL(clusterTable->deleteCluster(m_testUuid, m_userContext, error), OK);
-    TEST_EQUAL(clusterTable->deleteCluster(m_testUuid, m_userContext, error), OK);
+    TEST_EQUAL(clusterTable->deleteCluster(m_testUuid, m_userContext, error), INVALID_INPUT);
     TEST_EQUAL(clusterTable->getCluster(result, m_testUuid, m_userContext, error), INVALID_INPUT);
 
     Hanami::TableItem result2;
@@ -221,7 +221,7 @@ ClusterTable_Test::deleteAllCluster_test()
     createTestDb();
 
     ClusterTable::ClusterDbEntry result;
-    TEST_EQUAL(clusterTable->deleteAllCluster(error), true);
+    TEST_EQUAL(clusterTable->deleteAllCluster(error), OK);
     TEST_EQUAL(clusterTable->getCluster(result, m_testUuid, m_userContext, error), INVALID_INPUT);
 
     Hanami::TableItem result2;

@@ -124,7 +124,7 @@ ProjectTable::getProject(json& result,
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("id", projectId);
 
-    const ReturnStatus ret = getFromDb(result, conditions, error, showHiddenValues, true);
+    const ReturnStatus ret = getFromDb(result, conditions, showHiddenValues, true, error);
     if (ret != OK) {
         error.addMessage("Failed to get user with id '" + projectId + "' from database");
         return ret;
@@ -145,7 +145,7 @@ bool
 ProjectTable::getAllProjects(Hanami::TableItem& result, Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
-    const ReturnStatus ret = getFromDb(result, conditions, error, false);
+    const ReturnStatus ret = getFromDb(result, conditions, false, false, error);
     if (ret != OK) {
         error.addMessage("Failed to get all users from database");
         return false;

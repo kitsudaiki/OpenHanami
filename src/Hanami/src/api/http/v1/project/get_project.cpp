@@ -46,9 +46,12 @@ GetProject::GetProject() : Blossom("Show information of a specific registered us
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("id", SAKURA_STRING_TYPE).setComment("ID of the new user.");
+    registerOutputField("created_at", SAKURA_STRING_TYPE)
+        .setComment("Timestamp, when project was created.");
 
-    registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the new user.");
+    registerOutputField("id", SAKURA_STRING_TYPE).setComment("ID of the new project.");
+
+    registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the new project.");
 
     registerOutputField("creator_id", SAKURA_STRING_TYPE)
         .setComment("Id of the creator of the user.");

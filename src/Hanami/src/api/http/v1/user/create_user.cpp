@@ -61,6 +61,9 @@ CreateUser::CreateUser() : Blossom("Register a new user within Misaki.")
     // output
     //----------------------------------------------------------------------------------------------
 
+    registerOutputField("created_at", SAKURA_STRING_TYPE)
+        .setComment("Timestamp, when user was created.");
+
     registerOutputField("id", SAKURA_STRING_TYPE).setComment("ID of the new user.");
 
     registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the new user.");

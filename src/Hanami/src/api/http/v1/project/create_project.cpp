@@ -53,6 +53,9 @@ CreateProject::CreateProject() : Blossom("Register a new project within Misaki."
     // output
     //----------------------------------------------------------------------------------------------
 
+    registerOutputField("created_at", SAKURA_STRING_TYPE)
+        .setComment("Timestamp, when project was created.");
+
     registerOutputField("id", SAKURA_STRING_TYPE).setComment("ID of the new project.");
 
     registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the new project.");

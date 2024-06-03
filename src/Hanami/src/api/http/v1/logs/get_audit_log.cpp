@@ -52,7 +52,7 @@ GetAuditLog::GetAuditLog() : Blossom("Get audit-log of a user.")
     //----------------------------------------------------------------------------------------------
 
     json headerMatch = json::array();
-    headerMatch.push_back("timestamp");
+    headerMatch.push_back("created_at");
     headerMatch.push_back("user_id");
     headerMatch.push_back("endpoint");
     headerMatch.push_back("request_type");

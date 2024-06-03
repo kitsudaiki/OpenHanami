@@ -23,7 +23,6 @@
 #include "hanami_sql_table.h"
 
 #include <hanami_common/functions/string_functions.h>
-#include <hanami_common/functions/time_functions.h>
 #include <hanami_database/sql_database.h>
 #include <uuid/uuid.h>
 
@@ -43,8 +42,6 @@ HanamiSqlTable::HanamiSqlTable(Hanami::SqlDatabase* db) : SqlTable(db)
     registerColumn("visibility", STRING_TYPE).setMaxLength(10);
 
     registerColumn("name", STRING_TYPE).setMaxLength(256);
-
-    registerColumn("created_at", STRING_TYPE).setMaxLength(64);
 }
 
 /**
@@ -70,8 +67,12 @@ HanamiSqlTable::addWithContext(json& values,
     if (values.contains("uuid") == false) {
         values["uuid"] = generateUuid().toString();
     }
-
-    values["created_at"] = Hanami::getDatetime();
+    else {
+        const std::string uuid = values["uuid"];
+        if (uuid == "") {
+            values["uuid"] = generateUuid().toString();
+        }
+    }
 
     // add user-ids
     values["owner_id"] = userContext.userId;
@@ -107,11 +108,11 @@ ReturnStatus
 HanamiSqlTable::getWithContext(json& result,
                                const Hanami::UserContext& userContext,
                                std::vector<RequestCondition>& conditions,
-                               Hanami::ErrorContainer& error,
-                               const bool showHiddenValues)
+                               const bool showHiddenValues,
+                               Hanami::ErrorContainer& error)
 {
     fillCondition(conditions, userContext);
-    return getFromDb(result, conditions, error, showHiddenValues, true);
+    return getFromDb(result, conditions, showHiddenValues, true, error);
 }
 
 /**
@@ -124,7 +125,7 @@ HanamiSqlTable::getWithContext(json& result,
  *
  * @return true, if successful, else false
  */
-bool
+ReturnStatus
 HanamiSqlTable::updateWithContext(json& values,
                                   const Hanami::UserContext& userContext,
                                   std::vector<RequestCondition>& conditions,
@@ -153,7 +154,7 @@ HanamiSqlTable::getAllWithContext(Hanami::TableItem& result,
                                   const bool showHiddenValues)
 {
     fillCondition(conditions, userContext);
-    return getFromDb(result, conditions, error, showHiddenValues);
+    return getFromDb(result, conditions, showHiddenValues, false, error);
 }
 
 /**
@@ -193,7 +194,7 @@ HanamiSqlTable::doesNameAlreadyExist(const std::string& name,
     conditions.emplace_back("name", name);
 
     // get user from db
-    const ReturnStatus ret = getWithContext(result, userContext, conditions, error, false);
+    const ReturnStatus ret = getWithContext(result, userContext, conditions, false, error);
     if (ret != OK) {
         return ret;
     }
@@ -222,7 +223,7 @@ HanamiSqlTable::doesUuidAlreadyExist(const std::string& uuid,
     conditions.emplace_back("uuid", uuid);
 
     // get user from db
-    const ReturnStatus ret = getWithContext(result, userContext, conditions, error, false);
+    const ReturnStatus ret = getWithContext(result, userContext, conditions, false, error);
     if (ret != OK) {
         return ret;
     }

@@ -42,6 +42,9 @@ GetDataSet::GetDataSet() : Blossom("Get information of a specific dataset.")
     // output
     //----------------------------------------------------------------------------------------------
 
+    registerOutputField("created_at", SAKURA_STRING_TYPE)
+        .setComment("Timestamp, when dataset was created.");
+
     registerOutputField("uuid", SAKURA_STRING_TYPE).setComment("UUID of the dataset.");
 
     registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the dataset.");

@@ -37,6 +37,7 @@ ListUsers::ListUsers() : Blossom("Get information of all registered users.")
     //----------------------------------------------------------------------------------------------
 
     json headerMatch = json::array();
+    headerMatch.push_back("created_at");
     headerMatch.push_back("id");
     headerMatch.push_back("name");
     headerMatch.push_back("creator_id");

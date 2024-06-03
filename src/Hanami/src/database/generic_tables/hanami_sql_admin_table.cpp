@@ -38,8 +38,6 @@ HanamiSqlAdminTable::HanamiSqlAdminTable(Hanami::SqlDatabase* db) : SqlTable(db)
     registerColumn("name", STRING_TYPE).setMaxLength(256);
 
     registerColumn("creator_id", STRING_TYPE).setMaxLength(256);
-
-    registerColumn("created_at", STRING_TYPE).setMaxLength(64);
 }
 
 /**
@@ -63,7 +61,7 @@ HanamiSqlAdminTable::doesIdAlreadyExist(const std::string& id, Hanami::ErrorCont
     conditions.emplace_back("id", id);
 
     // get user from db
-    const ReturnStatus ret = getFromDb(result, conditions, error, false);
+    const ReturnStatus ret = getFromDb(result, conditions, false, true, error);
     if (ret != OK) {
         return ret;
     }

@@ -53,12 +53,12 @@ class HanamiSqlTable : public Hanami::SqlTable
     ReturnStatus getWithContext(json& result,
                                 const Hanami::UserContext& userContext,
                                 std::vector<RequestCondition>& conditions,
-                                Hanami::ErrorContainer& error,
-                                const bool showHiddenValues);
-    bool updateWithContext(json& values,
-                           const Hanami::UserContext& userContext,
-                           std::vector<RequestCondition>& conditions,
-                           Hanami::ErrorContainer& error);
+                                const bool showHiddenValues,
+                                Hanami::ErrorContainer& error);
+    ReturnStatus updateWithContext(json& values,
+                                   const Hanami::UserContext& userContext,
+                                   std::vector<RequestCondition>& conditions,
+                                   Hanami::ErrorContainer& error);
     ReturnStatus getAllWithContext(Hanami::TableItem& result,
                                    const Hanami::UserContext& userContext,
                                    std::vector<RequestCondition>& conditions,

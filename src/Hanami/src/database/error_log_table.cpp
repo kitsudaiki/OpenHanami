@@ -46,7 +46,7 @@ ErrorLogTable::ErrorLogTable() : HanamiSqlLogTable(Hanami::SqlDatabase::getInsta
 
     registerColumn("input_values", STRING_TYPE);
 
-    registerColumn("message", STRING_TYPE);
+    registerColumn("message", HASH_TYPE);
 }
 
 /**
@@ -75,7 +75,6 @@ ErrorLogTable::addErrorLogEntry(const std::string& userid,
                                 Hanami::ErrorContainer& error)
 {
     json data;
-    data["timestamp"] = Hanami::getDatetime();
     data["user_id"] = userid;
     data["component"] = component;
     data["context"] = context;

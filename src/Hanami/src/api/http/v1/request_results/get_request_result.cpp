@@ -41,6 +41,9 @@ GetRequestResult::GetRequestResult() : Blossom("Get a specific request-result")
     // output
     //----------------------------------------------------------------------------------------------
 
+    registerOutputField("created_at", SAKURA_STRING_TYPE)
+        .setComment("Timestamp, when request-result was created.");
+
     registerOutputField("uuid", SAKURA_STRING_TYPE).setComment("UUID of the request-result.");
 
     registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the request-result.");

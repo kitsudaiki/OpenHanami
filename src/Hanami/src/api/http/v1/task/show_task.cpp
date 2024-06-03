@@ -138,6 +138,5 @@ ShowTask::runTask(BlossomIO& blossomIO,
         blossomIO.output["end_timestamp"] = serializeTimePoint(progress.endActiveTimeStamp);
     }
 
-    std::cout << blossomIO.output.dump(4) << std::endl;
     return true;
 }

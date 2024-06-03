@@ -31,10 +31,7 @@
  *
  * @param db pointer to database
  */
-HanamiSqlLogTable::HanamiSqlLogTable(Hanami::SqlDatabase* db) : SqlTable(db)
-{
-    registerColumn("timestamp", STRING_TYPE).setMaxLength(64);
-}
+HanamiSqlLogTable::HanamiSqlLogTable(Hanami::SqlDatabase* db) : SqlTable(db) {}
 
 /**
  * @brief destructor
@@ -90,5 +87,5 @@ HanamiSqlLogTable::getPageFromDb(Hanami::TableItem& resultTable,
     // get requested page of log-entries from database-table
     std::vector<RequestCondition> conditions;
     conditions.push_back(RequestCondition("user_id", userId));
-    return getFromDb(resultTable, conditions, error, true, page * 100, 100);
+    return getFromDb(resultTable, conditions, true, false, error, page * 100, 100);
 }

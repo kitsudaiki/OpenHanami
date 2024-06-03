@@ -201,7 +201,8 @@ RequestResultTable_Test::deleteRequestResult_test()
 
     RequestResultTable::ResultDbEntry result;
     TEST_EQUAL(requestResultTable->deleteRequestResult(m_testUuid, m_userContext, error), OK);
-    TEST_EQUAL(requestResultTable->deleteRequestResult(m_testUuid, m_userContext, error), OK);
+    TEST_EQUAL(requestResultTable->deleteRequestResult(m_testUuid, m_userContext, error),
+               INVALID_INPUT);
     TEST_EQUAL(requestResultTable->getRequestResult(result, m_testUuid, m_userContext, error),
                INVALID_INPUT);
 

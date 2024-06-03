@@ -21,6 +21,7 @@
  */
 
 #include <hanami_common/functions/string_functions.h>
+#include <hanami_common/functions/time_functions.h>
 #include <hanami_database/sql_database.h>
 #include <hanami_database/sql_table.h>
 
@@ -32,7 +33,16 @@ namespace Hanami
  *
  * @param db pointer to database
  */
-SqlTable::SqlTable(SqlDatabase* db) { m_db = db; }
+SqlTable::SqlTable(SqlDatabase* db)
+{
+    m_db = db;
+
+    registerColumn("status", STRING_TYPE).setMaxLength(10);
+
+    registerColumn("deleted_at", STRING_TYPE).setMaxLength(64);
+
+    registerColumn("created_at", STRING_TYPE).setMaxLength(64);
+}
 
 /**
  * @brief destructor
@@ -90,6 +100,9 @@ SqlTable::createDocumentation(std::string& docu)
             case FLOAT_TYPE:
                 docu.append("real | ");
                 break;
+            case HASH_TYPE:
+                docu.append("hash | ");
+                break;
         }
 
         // primary
@@ -120,7 +133,7 @@ SqlTable::createDocumentation(std::string& docu)
 uint64_t
 SqlTable::getNumberOfColumns() const
 {
-    return m_tableHeader.size();
+    return m_tableHeader.size() - 2;
 }
 
 /**
@@ -155,6 +168,10 @@ SqlTable::insertToDb(json& values, ErrorContainer& error)
 {
     Hanami::TableItem resultItem;
 
+    values["created_at"] = Hanami::getDatetime();
+    values["status"] = "active";
+    values["deleted_at"] = "";
+
     // get values from input to check if all required values are set
     std::vector<std::string> dbValues;
     for (const DbHeaderEntry& entry : m_tableHeader) {
@@ -188,20 +205,29 @@ SqlTable::insertToDb(json& values, ErrorContainer& error)
  *
  * @return true, if successful, else false
  */
-bool
-SqlTable::updateInDb(const std::vector<RequestCondition>& conditions,
+ReturnStatus
+SqlTable::updateInDb(std::vector<RequestCondition>& conditions,
                      const json& updates,
                      ErrorContainer& error)
 {
-    // precheck
-    if (conditions.size() == 0) {
-        error.addMessage("no conditions given for table-access.");
-        LOG_ERROR(error);
-        return false;
+    if (conditions.size() != 0) {
+        // precheck
+        json getResult;
+        const ReturnStatus ret = getFromDb(getResult, conditions, false, true, error);
+        if (ret != OK) {
+            return ret;
+        }
     }
 
     Hanami::TableItem resultItem;
-    return m_db->execSqlCommand(&resultItem, createUpdateQuery(conditions, updates), error);
+    if (m_db->execSqlCommand(&resultItem, createUpdateQuery(conditions, updates), error) == false) {
+        return ERROR;
+    }
+
+    resultItem.deleteColumn("status");
+    resultItem.deleteColumn("deleted_at");
+
+    return OK;
 }
 
 /**
@@ -223,28 +249,11 @@ SqlTable::getAllFromDb(TableItem& resultTable,
                        const uint64_t numberOfRows)
 {
     std::vector<RequestCondition> conditions;
-    if (m_db->execSqlCommand(
-            &resultTable, createSelectQuery(conditions, positionOffset, numberOfRows), error)
-        == false)
+    if (getFromDb(
+            resultTable, conditions, showHiddenValues, false, error, positionOffset, numberOfRows)
+        == ERROR)
     {
-        LOG_ERROR(error);
         return false;
-    }
-
-    // if header is missing in result, because there are no entries to list, add a default-header
-    if (resultTable.getNumberOfColums() == 0) {
-        for (const DbHeaderEntry& entry : m_tableHeader) {
-            resultTable.addColumn(entry.name);
-        }
-    }
-
-    // remove all values, which should be hide
-    if (showHiddenValues == false) {
-        for (const DbHeaderEntry& entry : m_tableHeader) {
-            if (entry.hide) {
-                resultTable.deleteColumn(entry.name);
-            }
-        }
     }
 
     return true;
@@ -264,12 +273,15 @@ SqlTable::getAllFromDb(TableItem& resultTable,
  */
 ReturnStatus
 SqlTable::getFromDb(TableItem& resultTable,
-                    const std::vector<RequestCondition>& conditions,
-                    ErrorContainer& error,
+                    std::vector<RequestCondition>& conditions,
                     const bool showHiddenValues,
+                    const bool expectAtLeastOne,
+                    ErrorContainer& error,
                     const uint64_t positionOffset,
                     const uint64_t numberOfRows)
 {
+    conditions.emplace_back("status", "active");
+
     if (m_db->execSqlCommand(
             &resultTable, createSelectQuery(conditions, positionOffset, numberOfRows), error)
         == false)
@@ -280,6 +292,9 @@ SqlTable::getFromDb(TableItem& resultTable,
 
     // if header is missing in result, because there are no entries to list, add a default-header
     if (resultTable.getNumberOfColums() == 0) {
+        if (expectAtLeastOne) {
+            return INVALID_INPUT;
+        }
         for (const DbHeaderEntry& entry : m_tableHeader) {
             resultTable.addColumn(entry.name);
         }
@@ -293,6 +308,9 @@ SqlTable::getFromDb(TableItem& resultTable,
             }
         }
     }
+
+    resultTable.deleteColumn("status");
+    resultTable.deleteColumn("deleted_at");
 
     return OK;
 }
@@ -312,10 +330,10 @@ SqlTable::getFromDb(TableItem& resultTable,
  */
 ReturnStatus
 SqlTable::getFromDb(json& result,
-                    const std::vector<RequestCondition>& conditions,
-                    ErrorContainer& error,
+                    std::vector<RequestCondition>& conditions,
                     const bool showHiddenValues,
                     const bool expectAtLeastOne,
+                    ErrorContainer& error,
                     const uint64_t positionOffset,
                     const uint64_t numberOfRows)
 {
@@ -326,36 +344,20 @@ SqlTable::getFromDb(json& result,
         return INVALID_INPUT;
     }
 
-    // run select-query
-    TableItem tableResult;
-    if (m_db->execSqlCommand(
-            &tableResult, createSelectQuery(conditions, positionOffset, numberOfRows), error)
-        == false)
-    {
-        LOG_ERROR(error);
-        return ERROR;
-    }
-
-    if (tableResult.getNumberOfRows() == 0) {
-        if (expectAtLeastOne) {
-            return INVALID_INPUT;
-        }
-        else {
-            return OK;
-        }
+    TableItem resultTable;
+    const ReturnStatus ret = getFromDb(resultTable,
+                                       conditions,
+                                       showHiddenValues,
+                                       expectAtLeastOne,
+                                       error,
+                                       positionOffset,
+                                       numberOfRows);
+    if (ret != OK) {
+        return ret;
     }
 
     // convert table-row to json
-    processGetResult(result, tableResult);
-
-    // remove all values, which should be hide
-    if (showHiddenValues == false) {
-        for (const DbHeaderEntry& entry : m_tableHeader) {
-            if (entry.hide) {
-                result.erase(entry.name);
-            }
-        }
-    }
+    processGetResult(result, resultTable, showHiddenValues);
 
     return OK;
 }
@@ -388,9 +390,8 @@ SqlTable::getNumberOfRows(ErrorContainer& error)
 bool
 SqlTable::deleteAllFromDb(ErrorContainer& error)
 {
-    const std::vector<RequestCondition> conditions;
-    Hanami::TableItem resultItem;
-    return m_db->execSqlCommand(&resultItem, createDeleteQuery(conditions), error);
+    std::vector<RequestCondition> conditions;
+    return deleteFromDb(conditions, error);
 }
 
 /**
@@ -402,27 +403,13 @@ SqlTable::deleteAllFromDb(ErrorContainer& error)
  * @return OK if found, INVALID_INPUT if not found, ERROR in case of internal error
  */
 ReturnStatus
-SqlTable::deleteFromDb(const std::vector<RequestCondition>& conditions, ErrorContainer& error)
+SqlTable::deleteFromDb(std::vector<RequestCondition>& conditions, ErrorContainer& error)
 {
-    // precheck
-    if (conditions.size() == 0) {
-        error.addMessage("no conditions given for table-access.");
-        LOG_ERROR(error);
-        return INVALID_INPUT;
-    }
+    json update;
+    update["status"] = "deleted";
+    update["deleted_at"] = getDatetime();
 
-    json getResult;
-    const ReturnStatus ret = getFromDb(getResult, conditions, error, false);
-    if (ret != OK) {
-        return ret;
-    }
-
-    Hanami::TableItem resultItem;
-    if (m_db->execSqlCommand(&resultItem, createDeleteQuery(conditions), error) == false) {
-        return ERROR;
-    }
-
-    return OK;
+    return updateInDb(conditions, update, error);
 }
 
 /**
@@ -465,6 +452,9 @@ SqlTable::createTableCreateQuery()
                 break;
             case FLOAT_TYPE:
                 command.append("real ");
+                break;
+            case HASH_TYPE:
+                command.append("text ");
                 break;
         }
 
@@ -664,7 +654,7 @@ SqlTable::createCountQuery()
 {
     std::string command = "SELECT COUNT(*) as number_of_rows FROM ";
     command.append(m_tableName);
-    command.append(";");
+    command.append(" where status='active';");
 
     return command;
 }
@@ -676,7 +666,7 @@ SqlTable::createCountQuery()
  * @param tableContent table-input with at least one row
  */
 void
-SqlTable::processGetResult(json& result, TableItem& tableContent)
+SqlTable::processGetResult(json& result, TableItem& tableContent, const bool showHiddenValues)
 {
     if (tableContent.getNumberOfRows() == 0) {
         return;
@@ -685,8 +675,14 @@ SqlTable::processGetResult(json& result, TableItem& tableContent)
     // prepare result
     const json firstRow = tableContent.getBody()[0];
 
-    for (uint32_t i = 0; i < m_tableHeader.size(); i++) {
-        result[m_tableHeader.at(i).name] = firstRow[i];
+    // offset of 2, because status and deleted_at are removed from result
+    uint32_t pos = 0;
+    for (uint32_t i = 2; i < m_tableHeader.size(); i++) {
+        const DbHeaderEntry& entry = m_tableHeader.at(i);
+        if (entry.hide == false || showHiddenValues == true) {
+            result[entry.name] = firstRow[pos];
+            pos++;
+        }
     }
 }
 

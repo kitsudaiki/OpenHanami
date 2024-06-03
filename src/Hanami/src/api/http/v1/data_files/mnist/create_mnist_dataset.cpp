@@ -52,6 +52,9 @@ CreateMnistDataSet::CreateMnistDataSet() : Blossom("Init new mnist-file dataset.
     // output
     //----------------------------------------------------------------------------------------------
 
+    registerOutputField("created_at", SAKURA_STRING_TYPE)
+        .setComment("Timestamp, when dataset was created.");
+
     registerOutputField("uuid", SAKURA_STRING_TYPE).setComment("UUID of the new dataset.");
 
     registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the new dataset.");

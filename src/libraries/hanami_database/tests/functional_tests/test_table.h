@@ -29,7 +29,7 @@ class TestTable : public Hanami::SqlTable
                     const uint64_t positionOffset = 0,
                     const uint64_t numberOfRows = 0);
     ReturnStatus deleteUser(const std::string& userID, ErrorContainer& error);
-    bool updateUser(const std::string& userID, const json& values, ErrorContainer& error);
+    ReturnStatus updateUser(const std::string& userID, const json& values, ErrorContainer& error);
     long getNumberOfUsers(ErrorContainer& error);
 };
 

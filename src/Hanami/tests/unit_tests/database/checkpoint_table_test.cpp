@@ -205,7 +205,7 @@ CheckpointTable_Test::deleteCheckpoint_test()
 
     CheckpointTable::CheckpointDbEntry result;
     TEST_EQUAL(checkpointTable->deleteCheckpoint(m_testUuid, m_userContext, error), OK);
-    TEST_EQUAL(checkpointTable->deleteCheckpoint(m_testUuid, m_userContext, error), OK);
+    TEST_EQUAL(checkpointTable->deleteCheckpoint(m_testUuid, m_userContext, error), INVALID_INPUT);
     TEST_EQUAL(checkpointTable->getCheckpoint(result, m_testUuid, m_userContext, error),
                INVALID_INPUT);
 

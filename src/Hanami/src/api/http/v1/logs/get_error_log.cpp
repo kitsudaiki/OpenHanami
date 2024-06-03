@@ -50,7 +50,7 @@ GetErrorLog::GetErrorLog()
     //----------------------------------------------------------------------------------------------
 
     json headerMatch = json::array();
-    headerMatch.push_back("timestamp");
+    headerMatch.push_back("created_at");
     headerMatch.push_back("user_id");
     headerMatch.push_back("component");
     headerMatch.push_back("context");
