@@ -181,11 +181,11 @@ SqlTable_Test::delete_test()
     TEST_EQUAL(result2.getNumberOfColums(), 2);
 
     TableItem result3;
-    m_table->getUser(result3, m_name1, error, OK);
+    m_table->getAllUser(result3, error, OK);
     result3.deleteColumn("created_at");
 
-    TEST_EQUAL(result2.getNumberOfRows(), 0);
-    TEST_EQUAL(result2.getNumberOfColums(), 2);
+    TEST_EQUAL(result3.getNumberOfRows(), 0);
+    TEST_EQUAL(result3.getNumberOfColums(), 2);
 }
 
 /**

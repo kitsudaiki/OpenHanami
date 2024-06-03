@@ -224,9 +224,6 @@ SqlTable::updateInDb(std::vector<RequestCondition>& conditions,
         return ERROR;
     }
 
-    resultItem.deleteColumn("status");
-    resultItem.deleteColumn("deleted_at");
-
     return OK;
 }
 
@@ -283,7 +280,9 @@ SqlTable::getFromDb(TableItem& resultTable,
     conditions.emplace_back("status", "active");
 
     if (m_db->execSqlCommand(
-            &resultTable, createSelectQuery(conditions, positionOffset, numberOfRows), error)
+            &resultTable,
+            createSelectQuery(conditions, showHiddenValues, positionOffset, numberOfRows),
+            error)
         == false)
     {
         LOG_ERROR(error);
@@ -296,21 +295,14 @@ SqlTable::getFromDb(TableItem& resultTable,
             return INVALID_INPUT;
         }
         for (const DbHeaderEntry& entry : m_tableHeader) {
-            resultTable.addColumn(entry.name);
-        }
-    }
-
-    // remove all values, which should be hide
-    if (showHiddenValues == false) {
-        for (const DbHeaderEntry& entry : m_tableHeader) {
-            if (entry.hide) {
-                resultTable.deleteColumn(entry.name);
+            if (entry.name == "status" || entry.name == "deleted_at") {
+                continue;
+            }
+            if (showHiddenValues || entry.hide == false) {
+                resultTable.addColumn(entry.name);
             }
         }
     }
-
-    resultTable.deleteColumn("status");
-    resultTable.deleteColumn("deleted_at");
 
     return OK;
 }
@@ -485,10 +477,26 @@ SqlTable::createTableCreateQuery()
  */
 const std::string
 SqlTable::createSelectQuery(const std::vector<RequestCondition>& conditions,
+                            const bool showHiddenValues,
                             const uint64_t positionOffset,
                             const uint64_t numberOfRows)
 {
-    std::string command = "SELECT * from " + m_tableName;
+    // add select
+    std::string command = "SELECT ";
+    // offset of 2, because status and deleted_at are removed
+    for (uint64_t i = 2; i < m_tableHeader.size(); i++) {
+        if (showHiddenValues || m_tableHeader.at(i).hide == false) {
+            if (i != 2) {
+                command.append(", ");
+            }
+
+            command.append(m_tableHeader.at(i).name);
+        }
+    }
+
+    // add from
+    command.append(" FROM ");
+    command.append(m_tableName);
 
     // filter
     if (conditions.size() > 0) {
@@ -608,38 +616,6 @@ SqlTable::createInsertQuery(const std::vector<std::string>& values)
     }
 
     command.append(" );");
-
-    return command;
-}
-
-/**
- * @brief create query to delete rows from table
- *
- * @param conditions conditions to filter table
- *
- * @return created sql-query
- */
-const std::string
-SqlTable::createDeleteQuery(const std::vector<RequestCondition>& conditions)
-{
-    std::string command = "DELETE FROM ";
-    command.append(m_tableName);
-
-    if (conditions.size() > 0) {
-        command.append(" WHERE ");
-
-        for (uint32_t i = 0; i < conditions.size(); i++) {
-            if (i > 0) {
-                command.append(" AND ");
-            }
-            const RequestCondition* condition = &conditions.at(i);
-            command.append(condition->colName);
-            command.append("='");
-            command.append(condition->value);
-            command.append("' ");
-        }
-    }
-    command.append(" ;");
 
     return command;
 }

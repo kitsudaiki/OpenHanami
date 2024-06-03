@@ -136,12 +136,12 @@ class SqlTable
 
     const std::string createTableCreateQuery();
     const std::string createSelectQuery(const std::vector<RequestCondition>& conditions,
+                                        const bool showHiddenValues,
                                         const uint64_t positionOffset,
                                         const uint64_t numberOfRows);
     const std::string createUpdateQuery(const std::vector<RequestCondition>& conditions,
                                         const json& updates);
     const std::string createInsertQuery(const std::vector<std::string>& values);
-    const std::string createDeleteQuery(const std::vector<RequestCondition>& conditions);
     const std::string createCountQuery();
 
     void processGetResult(json& result, TableItem& tableContent, const bool showHiddenValues);
