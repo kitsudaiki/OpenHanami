@@ -36,20 +36,11 @@ AuditLogTable::AuditLogTable() : HanamiSqlLogTable(Hanami::SqlDatabase::getInsta
 {
     m_tableName = "audit_log";
 
-    DbHeaderEntry userid;
-    userid.name = "user_id";
-    userid.maxLength = 256;
-    m_tableHeader.push_back(userid);
+    registerColumn("user_id", STRING_TYPE).setMaxLength(256);
 
-    DbHeaderEntry endpoint;
-    endpoint.name = "endpoint";
-    endpoint.maxLength = 1024;
-    m_tableHeader.push_back(endpoint);
+    registerColumn("endpoint", STRING_TYPE).setMaxLength(1024);
 
-    DbHeaderEntry requestType;
-    requestType.name = "request_type";
-    requestType.maxLength = 16;
-    m_tableHeader.push_back(requestType);
+    registerColumn("request_type", STRING_TYPE).setMaxLength(16);
 }
 
 /**

@@ -33,31 +33,15 @@
  */
 HanamiSqlTable::HanamiSqlTable(Hanami::SqlDatabase* db) : SqlTable(db)
 {
-    DbHeaderEntry uuid;
-    uuid.name = "uuid";
-    uuid.maxLength = 36;
-    uuid.isPrimary = true;
-    m_tableHeader.push_back(uuid);
+    registerColumn("uuid", STRING_TYPE).setMaxLength(36).setIsPrimary();
 
-    DbHeaderEntry projectId;
-    projectId.name = "project_id";
-    projectId.maxLength = 256;
-    m_tableHeader.push_back(projectId);
+    registerColumn("project_id", STRING_TYPE).setMaxLength(256);
 
-    DbHeaderEntry ownerId;
-    ownerId.name = "owner_id";
-    ownerId.maxLength = 256;
-    m_tableHeader.push_back(ownerId);
+    registerColumn("owner_id", STRING_TYPE).setMaxLength(256);
 
-    DbHeaderEntry visibility;
-    visibility.name = "visibility";
-    visibility.maxLength = 10;
-    m_tableHeader.push_back(visibility);
+    registerColumn("visibility", STRING_TYPE).setMaxLength(10);
 
-    DbHeaderEntry name;
-    name.name = "name";
-    name.maxLength = 256;
-    m_tableHeader.push_back(name);
+    registerColumn("name", STRING_TYPE).setMaxLength(256);
 }
 
 /**

@@ -124,6 +124,25 @@ SqlTable::getNumberOfColumns() const
 }
 
 /**
+ * @brief register a new column in the table
+ *
+ * @param name name of the colume
+ * @param type type of the column
+ *
+ * @return reference to new entry
+ */
+SqlTable::DbHeaderEntry&
+SqlTable::registerColumn(const std::string& name, const DbVataValueTypes type)
+{
+    DbHeaderEntry newEntry;
+    newEntry.name = name;
+    newEntry.type = type;
+    m_tableHeader.push_back(newEntry);
+
+    return m_tableHeader[m_tableHeader.size() - 1];
+}
+
+/**
  * @brief insert values into the table
  *
  * @param values string-list with values to insert

@@ -38,15 +38,9 @@ DataSetTable::DataSetTable() : HanamiSqlTable(Hanami::SqlDatabase::getInstance()
 {
     m_tableName = "dataset";
 
-    DbHeaderEntry type;
-    type.name = "type";
-    type.maxLength = 64;
-    m_tableHeader.push_back(type);
+    registerColumn("type", STRING_TYPE).setMaxLength(64);
 
-    DbHeaderEntry location;
-    location.name = "location";
-    location.hide = true;
-    m_tableHeader.push_back(location);
+    registerColumn("location", STRING_TYPE).hideValue();
 }
 
 /**

@@ -37,27 +37,15 @@ ErrorLogTable::ErrorLogTable() : HanamiSqlLogTable(Hanami::SqlDatabase::getInsta
 {
     m_tableName = "error_log";
 
-    DbHeaderEntry userid;
-    userid.name = "user_id";
-    userid.maxLength = 256;
-    m_tableHeader.push_back(userid);
+    registerColumn("user_id", STRING_TYPE).setMaxLength(256);
 
-    DbHeaderEntry component;
-    component.name = "component";
-    component.maxLength = 128;
-    m_tableHeader.push_back(component);
+    registerColumn("component", STRING_TYPE).setMaxLength(128);
 
-    DbHeaderEntry context;
-    context.name = "context";
-    m_tableHeader.push_back(context);
+    registerColumn("context", STRING_TYPE);
 
-    DbHeaderEntry values;
-    values.name = "input_values";
-    m_tableHeader.push_back(values);
+    registerColumn("input_values", STRING_TYPE);
 
-    DbHeaderEntry message;
-    message.name = "message";
-    m_tableHeader.push_back(message);
+    registerColumn("message", STRING_TYPE);
 }
 
 /**

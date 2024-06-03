@@ -58,6 +58,27 @@ class SqlTable
         bool isPrimary = false;
         bool allowNull = false;
         bool hide = false;
+
+        DbHeaderEntry& setMaxLength(const int maxLength)
+        {
+            this->maxLength = maxLength;
+            return *this;
+        }
+        DbHeaderEntry& setAllowNull()
+        {
+            this->allowNull = true;
+            return *this;
+        }
+        DbHeaderEntry& setIsPrimary()
+        {
+            this->isPrimary = true;
+            return *this;
+        }
+        DbHeaderEntry& hideValue()
+        {
+            this->hide = true;
+            return *this;
+        }
     };
 
     struct RequestCondition {
@@ -71,8 +92,7 @@ class SqlTable
         }
     };
 
-    std::vector<DbHeaderEntry> m_tableHeader;
-    std::string m_tableName = "";
+    DbHeaderEntry& registerColumn(const std::string& name, const DbVataValueTypes type);
 
     bool insertToDb(json& values, ErrorContainer& error);
     bool updateInDb(const std::vector<RequestCondition>& conditions,
@@ -100,6 +120,10 @@ class SqlTable
     bool deleteAllFromDb(ErrorContainer& error);
     ReturnStatus deleteFromDb(const std::vector<RequestCondition>& conditions,
                               ErrorContainer& error);
+
+   protected:
+    std::string m_tableName = "";
+    std::vector<DbHeaderEntry> m_tableHeader;
 
    private:
     SqlDatabase* m_db = nullptr;

@@ -36,10 +36,7 @@ RequestResultTable::RequestResultTable() : HanamiSqlTable(Hanami::SqlDatabase::g
 {
     m_tableName = "request_result";
 
-    DbHeaderEntry data;
-    data.name = "data";
-    data.hide = true;
-    m_tableHeader.push_back(data);
+    registerColumn("data", STRING_TYPE).hideValue();
 }
 
 /**

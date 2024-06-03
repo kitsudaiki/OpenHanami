@@ -35,26 +35,13 @@ UserTable::UserTable() : HanamiSqlAdminTable(Hanami::SqlDatabase::getInstance())
 {
     m_tableName = "users";
 
-    DbHeaderEntry projects;
-    projects.name = "projects";
-    m_tableHeader.push_back(projects);
+    registerColumn("projects", STRING_TYPE);
 
-    DbHeaderEntry isAdmin;
-    isAdmin.name = "is_admin";
-    isAdmin.type = BOOL_TYPE;
-    m_tableHeader.push_back(isAdmin);
+    registerColumn("is_admin", BOOL_TYPE);
 
-    DbHeaderEntry pwHash;
-    pwHash.name = "pw_hash";
-    pwHash.maxLength = 64;
-    pwHash.hide = true;
-    m_tableHeader.push_back(pwHash);
+    registerColumn("pw_hash", STRING_TYPE).setMaxLength(64).hideValue();
 
-    DbHeaderEntry saltVal;
-    saltVal.name = "salt";
-    saltVal.maxLength = 64;
-    saltVal.hide = true;
-    m_tableHeader.push_back(saltVal);
+    registerColumn("salt", STRING_TYPE).setMaxLength(64).hideValue();
 }
 
 /**

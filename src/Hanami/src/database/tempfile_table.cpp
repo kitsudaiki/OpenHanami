@@ -36,23 +36,13 @@ TempfileTable::TempfileTable() : HanamiSqlTable(Hanami::SqlDatabase::getInstance
 {
     m_tableName = "tempfile";
 
-    DbHeaderEntry relatedResouceType;
-    relatedResouceType.name = "related_resource_type";
-    m_tableHeader.push_back(relatedResouceType);
+    registerColumn("related_resource_type", STRING_TYPE).setMaxLength(16);
 
-    DbHeaderEntry relatedResouceUuid;
-    relatedResouceUuid.name = "related_resource_uuid";
-    m_tableHeader.push_back(relatedResouceUuid);
+    registerColumn("related_resource_uuid", STRING_TYPE).setMaxLength(36);
 
-    DbHeaderEntry fileSize;
-    fileSize.name = "file_size";
-    fileSize.type = INT_TYPE;
-    m_tableHeader.push_back(fileSize);
+    registerColumn("file_size", INT_TYPE);
 
-    DbHeaderEntry location;
-    location.name = "location";
-    location.hide = true;
-    m_tableHeader.push_back(location);
+    registerColumn("location", STRING_TYPE).hideValue();
 }
 
 /**

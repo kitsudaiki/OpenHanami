@@ -36,10 +36,7 @@ CheckpointTable::CheckpointTable() : HanamiSqlTable(Hanami::SqlDatabase::getInst
 {
     m_tableName = "checkpoints";
 
-    DbHeaderEntry location;
-    location.name = "location";
-    location.hide = true;
-    m_tableHeader.push_back(location);
+    registerColumn("location", STRING_TYPE).hideValue();
 }
 
 /**

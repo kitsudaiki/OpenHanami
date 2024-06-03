@@ -33,10 +33,7 @@
  */
 HanamiSqlLogTable::HanamiSqlLogTable(Hanami::SqlDatabase* db) : SqlTable(db)
 {
-    DbHeaderEntry id;
-    id.name = "timestamp";
-    id.maxLength = 128;
-    m_tableHeader.push_back(id);
+    registerColumn("timestamp", STRING_TYPE).setMaxLength(128);
 }
 
 /**

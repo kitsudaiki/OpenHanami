@@ -33,21 +33,11 @@
  */
 HanamiSqlAdminTable::HanamiSqlAdminTable(Hanami::SqlDatabase* db) : SqlTable(db)
 {
-    DbHeaderEntry id;
-    id.name = "id";
-    id.maxLength = 256;
-    id.isPrimary = true;
-    m_tableHeader.push_back(id);
+    registerColumn("id", STRING_TYPE).setMaxLength(256).setIsPrimary();
 
-    DbHeaderEntry name;
-    name.name = "name";
-    name.maxLength = 256;
-    m_tableHeader.push_back(name);
+    registerColumn("name", STRING_TYPE).setMaxLength(256);
 
-    DbHeaderEntry creatorId;
-    creatorId.name = "creator_id";
-    creatorId.maxLength = 256;
-    m_tableHeader.push_back(creatorId);
+    registerColumn("creator_id", STRING_TYPE).setMaxLength(256);
 }
 
 /**
