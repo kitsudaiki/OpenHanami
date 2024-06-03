@@ -47,8 +47,7 @@ handleErrorCallback(const std::string& errorMessage,
                     const std::string& values)
 {
     ErrorContainer error;
-    ErrorLogTable::getInstance()->addErrorLogEntry(
-        getDatetime(), userId, "", "", values, errorMessage, error);
+    ErrorLogTable::getInstance()->addErrorLogEntry(userId, "", "", values, errorMessage, error);
 }
 
 int

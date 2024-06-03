@@ -22,6 +22,7 @@
 
 #include <database/projects_table.h>
 #include <hanami_common/functions/string_functions.h>
+#include <hanami_common/functions/time_functions.h>
 #include <hanami_common/items/table_item.h>
 #include <hanami_crypto/hashes.h>
 #include <hanami_database/sql_database.h>
@@ -57,6 +58,7 @@ ProjectTable::addProject(const ProjectDbEntry& projectData, Hanami::ErrorContain
     projectDataJson["id"] = projectData.id;
     projectDataJson["name"] = projectData.name;
     projectDataJson["creator_id"] = projectData.creatorId;
+    projectDataJson["created_at"] = Hanami::getDatetime();
 
     // check if ID already exist
     const ReturnStatus ret = doesIdAlreadyExist(projectData.id, error);

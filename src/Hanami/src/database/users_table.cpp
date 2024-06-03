@@ -22,6 +22,7 @@
 
 #include <database/users_table.h>
 #include <hanami_common/functions/string_functions.h>
+#include <hanami_common/functions/time_functions.h>
 #include <hanami_common/items/table_item.h>
 #include <hanami_crypto/hashes.h>
 #include <hanami_database/sql_database.h>
@@ -194,6 +195,7 @@ UserTable::addUser(const UserDbEntry& userData, Hanami::ErrorContainer& error)
     userDataJson["creator_id"] = userData.creatorId;
     userDataJson["pw_hash"] = userData.pwHash;
     userDataJson["salt"] = userData.salt;
+    userDataJson["created_at"] = Hanami::getDatetime();
 
     // convert project-IDs
     json projectIds = json::array();

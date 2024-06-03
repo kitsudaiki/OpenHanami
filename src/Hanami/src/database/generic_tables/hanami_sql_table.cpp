@@ -23,6 +23,7 @@
 #include "hanami_sql_table.h"
 
 #include <hanami_common/functions/string_functions.h>
+#include <hanami_common/functions/time_functions.h>
 #include <hanami_database/sql_database.h>
 #include <uuid/uuid.h>
 
@@ -42,6 +43,8 @@ HanamiSqlTable::HanamiSqlTable(Hanami::SqlDatabase* db) : SqlTable(db)
     registerColumn("visibility", STRING_TYPE).setMaxLength(10);
 
     registerColumn("name", STRING_TYPE).setMaxLength(256);
+
+    registerColumn("created_at", STRING_TYPE).setMaxLength(64);
 }
 
 /**
@@ -67,6 +70,8 @@ HanamiSqlTable::addWithContext(json& values,
     if (values.contains("uuid") == false) {
         values["uuid"] = generateUuid().toString();
     }
+
+    values["created_at"] = Hanami::getDatetime();
 
     // add user-ids
     values["owner_id"] = userContext.userId;

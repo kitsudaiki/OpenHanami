@@ -22,6 +22,7 @@
 
 #include <database/error_log_table.h>
 #include <hanami_common/functions/string_functions.h>
+#include <hanami_common/functions/time_functions.h>
 #include <hanami_common/items/table_item.h>
 #include <hanami_crypto/common.h>
 #include <hanami_database/sql_database.h>
@@ -56,7 +57,6 @@ ErrorLogTable::~ErrorLogTable() {}
 /**
  * @brief add new error-log-entry into the database
  *
- * @param timestamp UTC-timestamp of the error
  * @param userid id of the user, who had the error
  * @param component component, where the error appeared
  * @param context
@@ -67,8 +67,7 @@ ErrorLogTable::~ErrorLogTable() {}
  * @return true, if successful, else false
  */
 bool
-ErrorLogTable::addErrorLogEntry(const std::string& timestamp,
-                                const std::string& userid,
+ErrorLogTable::addErrorLogEntry(const std::string& userid,
                                 const std::string& component,
                                 const std::string& context,
                                 const std::string& values,
@@ -76,7 +75,7 @@ ErrorLogTable::addErrorLogEntry(const std::string& timestamp,
                                 Hanami::ErrorContainer& error)
 {
     json data;
-    data["timestamp"] = timestamp;
+    data["timestamp"] = Hanami::getDatetime();
     data["user_id"] = userid;
     data["component"] = component;
     data["context"] = context;

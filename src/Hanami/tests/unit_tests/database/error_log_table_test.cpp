@@ -89,22 +89,14 @@ ErrorLogTable_Test::addErrorLog_test()
 
     ErrorLogTable* errorLogTable = ErrorLogTable::getInstance();
     TEST_EQUAL(errorLogTable->initTable(error), true);
-    TEST_EQUAL(errorLogTable->addErrorLogEntry("today",
-                                               "test-user",
-                                               "hanami",
-                                               "example-context",
-                                               "values",
-                                               "this is a test-message",
-                                               error),
-               true);
-    TEST_EQUAL(errorLogTable->addErrorLogEntry("yesterday",
-                                               "test-user2",
-                                               "hanami",
-                                               "example-context",
-                                               "values",
-                                               "this is a test-message",
-                                               error),
-               true);
+    TEST_EQUAL(
+        errorLogTable->addErrorLogEntry(
+            "test-user", "hanami", "example-context", "values", "this is a test-message", error),
+        true);
+    TEST_EQUAL(
+        errorLogTable->addErrorLogEntry(
+            "test-user2", "hanami", "example-context", "values", "this is a test-message", error),
+        true);
 
     cleanupTest();
 }
@@ -121,20 +113,10 @@ ErrorLogTable_Test::getAllErrorLog_test()
     ErrorLogTable* errorLogTable = ErrorLogTable::getInstance();
 
     errorLogTable->initTable(error);
-    errorLogTable->addErrorLogEntry("today",
-                                    "test-user",
-                                    "hanami",
-                                    "example-context",
-                                    "values",
-                                    "this is a test-message",
-                                    error);
-    errorLogTable->addErrorLogEntry("yesterday",
-                                    "test-user2",
-                                    "hanami",
-                                    "example-context",
-                                    "values",
-                                    "this is a test-message",
-                                    error);
+    errorLogTable->addErrorLogEntry(
+        "test-user", "hanami", "example-context", "values", "this is a test-message", error);
+    errorLogTable->addErrorLogEntry(
+        "test-user2", "hanami", "example-context", "values", "this is a test-message", error);
 
     Hanami::TableItem result;
     TEST_EQUAL(errorLogTable->getAllErrorLogEntries(result, "test-user", 0, error), true);

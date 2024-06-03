@@ -39,8 +39,7 @@ class ErrorLogTable : public HanamiSqlLogTable
 
     ~ErrorLogTable();
 
-    bool addErrorLogEntry(const std::string& timestamp,
-                          const std::string& userid,
+    bool addErrorLogEntry(const std::string& userid,
                           const std::string& component,
                           const std::string& context,
                           const std::string& values,
