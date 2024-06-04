@@ -225,8 +225,26 @@ add_executable(Hanami
     )
 add_executable(Hanami_unittests
     ${SOURCES}
-    tests/unit_tests/cluster_test.h
-    tests/unit_tests/cluster_test.cpp
+    tests/unit_tests/database/cluster_table_test.h
+    tests/unit_tests/database/cluster_table_test.cpp
+    tests/unit_tests/database/audit_log_table_test.h
+    tests/unit_tests/database/audit_log_table_test.cpp
+    tests/unit_tests/database/checkpoint_table_test.h
+    tests/unit_tests/database/checkpoint_table_test.cpp
+    tests/unit_tests/database/dataset_table_test.h
+    tests/unit_tests/database/dataset_table_test.cpp
+    tests/unit_tests/database/error_log_table_test.h
+    tests/unit_tests/database/error_log_table_test.cpp
+    tests/unit_tests/database/projects_table_test.h
+    tests/unit_tests/database/projects_table_test.cpp
+    tests/unit_tests/database/request_result_table_test.h
+    tests/unit_tests/database/request_result_table_test.cpp
+    tests/unit_tests/database/tempfile_table_test.h
+    tests/unit_tests/database/tempfile_table_test.cpp
+    tests/unit_tests/database/users_table_test.h
+    tests/unit_tests/database/users_table_test.cpp
+    tests/unit_tests/core/cluster_test.h
+    tests/unit_tests/core/cluster_test.cpp
     tests/unit_tests/main.cpp
     # ${CUDA_OBJECTS}
     )

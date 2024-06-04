@@ -33,31 +33,15 @@
  */
 HanamiSqlTable::HanamiSqlTable(Hanami::SqlDatabase* db) : SqlTable(db)
 {
-    DbHeaderEntry uuid;
-    uuid.name = "uuid";
-    uuid.maxLength = 36;
-    uuid.isPrimary = true;
-    m_tableHeader.push_back(uuid);
+    registerColumn("uuid", STRING_TYPE).setMaxLength(36).setIsPrimary();
 
-    DbHeaderEntry projectId;
-    projectId.name = "project_id";
-    projectId.maxLength = 256;
-    m_tableHeader.push_back(projectId);
+    registerColumn("project_id", STRING_TYPE).setMaxLength(256);
 
-    DbHeaderEntry ownerId;
-    ownerId.name = "owner_id";
-    ownerId.maxLength = 256;
-    m_tableHeader.push_back(ownerId);
+    registerColumn("owner_id", STRING_TYPE).setMaxLength(256);
 
-    DbHeaderEntry visibility;
-    visibility.name = "visibility";
-    visibility.maxLength = 10;
-    m_tableHeader.push_back(visibility);
+    registerColumn("visibility", STRING_TYPE).setMaxLength(10);
 
-    DbHeaderEntry name;
-    name.name = "name";
-    name.maxLength = 256;
-    m_tableHeader.push_back(name);
+    registerColumn("name", STRING_TYPE).setMaxLength(256);
 }
 
 /**
@@ -74,30 +58,39 @@ HanamiSqlTable::~HanamiSqlTable() {}
  *
  * @return true, if successful, else false
  */
-bool
-HanamiSqlTable::add(json& values,
-                    const Hanami::UserContext& userContext,
-                    Hanami::ErrorContainer& error)
+ReturnStatus
+HanamiSqlTable::addWithContext(json& values,
+                               const Hanami::UserContext& userContext,
+                               Hanami::ErrorContainer& error)
 {
     // generate new uuid if the is no predefined
     if (values.contains("uuid") == false) {
-        // create uuid
-        char uuid[UUID_STR_LEN];
-        uuid_t binaryUuid;
-        uuid_generate_random(binaryUuid);
-        uuid_unparse_lower(binaryUuid, uuid);
-
-        // fill into string, but must be reduced by 1 to remove the escate-character
-        std::string uuidString = std::string(uuid, UUID_STR_LEN - 1);
-        Hanami::toLowerCase(uuidString);
-        values["uuid"] = uuidString;
+        values["uuid"] = generateUuid().toString();
+    }
+    else {
+        const std::string uuid = values["uuid"];
+        if (uuid == "") {
+            values["uuid"] = generateUuid().toString();
+        }
     }
 
     // add user-ids
     values["owner_id"] = userContext.userId;
     values["project_id"] = userContext.projectId;
 
-    return insertToDb(values, error);
+    const ReturnStatus ret = doesUuidAlreadyExist(values["uuid"], userContext, error);
+    if (ret == OK) {
+        return INVALID_INPUT;
+    }
+    if (ret == ERROR) {
+        return ERROR;
+    }
+
+    if (insertToDb(values, error) == false) {
+        return ERROR;
+    }
+
+    return OK;
 }
 
 /**
@@ -111,15 +104,15 @@ HanamiSqlTable::add(json& values,
  *
  * @return true, if successful, else false
  */
-bool
-HanamiSqlTable::get(json& result,
-                    const Hanami::UserContext& userContext,
-                    std::vector<RequestCondition>& conditions,
-                    Hanami::ErrorContainer& error,
-                    const bool showHiddenValues)
+ReturnStatus
+HanamiSqlTable::getWithContext(json& result,
+                               const Hanami::UserContext& userContext,
+                               std::vector<RequestCondition>& conditions,
+                               const bool showHiddenValues,
+                               Hanami::ErrorContainer& error)
 {
     fillCondition(conditions, userContext);
-    return getFromDb(result, conditions, error, showHiddenValues);
+    return getFromDb(result, conditions, showHiddenValues, true, error);
 }
 
 /**
@@ -132,11 +125,11 @@ HanamiSqlTable::get(json& result,
  *
  * @return true, if successful, else false
  */
-bool
-HanamiSqlTable::update(json& values,
-                       const Hanami::UserContext& userContext,
-                       std::vector<RequestCondition>& conditions,
-                       Hanami::ErrorContainer& error)
+ReturnStatus
+HanamiSqlTable::updateWithContext(json& values,
+                                  const Hanami::UserContext& userContext,
+                                  std::vector<RequestCondition>& conditions,
+                                  Hanami::ErrorContainer& error)
 {
     fillCondition(conditions, userContext);
     return updateInDb(conditions, values, error);
@@ -153,15 +146,15 @@ HanamiSqlTable::update(json& values,
  *
  * @return true, if successful, else false
  */
-bool
-HanamiSqlTable::getAll(Hanami::TableItem& result,
-                       const Hanami::UserContext& userContext,
-                       std::vector<RequestCondition>& conditions,
-                       Hanami::ErrorContainer& error,
-                       const bool showHiddenValues)
+ReturnStatus
+HanamiSqlTable::getAllWithContext(Hanami::TableItem& result,
+                                  const Hanami::UserContext& userContext,
+                                  std::vector<RequestCondition>& conditions,
+                                  Hanami::ErrorContainer& error,
+                                  const bool showHiddenValues)
 {
     fillCondition(conditions, userContext);
-    return getFromDb(result, conditions, error, showHiddenValues);
+    return getFromDb(result, conditions, showHiddenValues, false, error);
 }
 
 /**
@@ -173,13 +166,73 @@ HanamiSqlTable::getAll(Hanami::TableItem& result,
  *
  * @return true, if successful, else false
  */
-bool
-HanamiSqlTable::del(std::vector<RequestCondition>& conditions,
-                    const Hanami::UserContext& userContext,
-                    Hanami::ErrorContainer& error)
+ReturnStatus
+HanamiSqlTable::deleteFromDbWithContext(std::vector<RequestCondition>& conditions,
+                                        const Hanami::UserContext& userContext,
+                                        Hanami::ErrorContainer& error)
 {
     fillCondition(conditions, userContext);
     return deleteFromDb(conditions, error);
+}
+
+/**
+ * @brief check if a specific name already exist within the table
+ *
+ * @param name name to check
+ * @param userContext context-object with all user specific information
+ * @param error reference for error-output
+ *
+ * @return true, if name is already in use, else false
+ */
+ReturnStatus
+HanamiSqlTable::doesNameAlreadyExist(const std::string& name,
+                                     const Hanami::UserContext& userContext,
+                                     Hanami::ErrorContainer& error)
+{
+    json result;
+    std::vector<RequestCondition> conditions;
+    conditions.emplace_back("name", name);
+
+    // get user from db
+    const ReturnStatus ret = getWithContext(result, userContext, conditions, false, error);
+    if (ret != OK) {
+        return ret;
+    }
+
+    if (result.size() != 0) {
+        return OK;
+    }
+
+    return INVALID_INPUT;
+}
+
+/**
+ * @brief HanamiSqlTable::doesIdAlreadyExist
+ * @param uuid
+ * @param userContext
+ * @param error
+ * @return
+ */
+ReturnStatus
+HanamiSqlTable::doesUuidAlreadyExist(const std::string& uuid,
+                                     const Hanami::UserContext& userContext,
+                                     Hanami::ErrorContainer& error)
+{
+    json result;
+    std::vector<RequestCondition> conditions;
+    conditions.emplace_back("uuid", uuid);
+
+    // get user from db
+    const ReturnStatus ret = getWithContext(result, userContext, conditions, false, error);
+    if (ret != OK) {
+        return ret;
+    }
+
+    if (result.size() != 0) {
+        return OK;
+    }
+
+    return INVALID_INPUT;
 }
 
 /**

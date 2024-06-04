@@ -22,16 +22,17 @@
 
 #include <database/projects_table.h>
 #include <hanami_common/functions/string_functions.h>
+#include <hanami_common/functions/time_functions.h>
 #include <hanami_common/items/table_item.h>
 #include <hanami_crypto/hashes.h>
 #include <hanami_database/sql_database.h>
 
-ProjectsTable* ProjectsTable::instance = nullptr;
+ProjectTable* ProjectTable::instance = nullptr;
 
 /**
  * @brief constructor
  */
-ProjectsTable::ProjectsTable() : HanamiSqlAdminTable(Hanami::SqlDatabase::getInstance())
+ProjectTable::ProjectTable() : HanamiSqlAdminTable(Hanami::SqlDatabase::getInstance())
 {
     m_tableName = "projects";
 }
@@ -39,25 +40,42 @@ ProjectsTable::ProjectsTable() : HanamiSqlAdminTable(Hanami::SqlDatabase::getIns
 /**
  * @brief destructor
  */
-ProjectsTable::~ProjectsTable() {}
+ProjectTable::~ProjectTable() {}
 
 /**
  * @brief add a new project to the database
  *
- * @param userData json-item with all information of the project to add to database
+ * @param projectData project-entry to add to database
  * @param error reference for error-output
  *
- * @return true, if successful, else false
+ * @return OK if found, INVALID_INPUT if conflict, ERROR in case of internal error
  */
-bool
-ProjectsTable::addProject(json& userData, Hanami::ErrorContainer& error)
+ReturnStatus
+ProjectTable::addProject(const ProjectDbEntry& projectData, Hanami::ErrorContainer& error)
 {
-    if (insertToDb(userData, error) == false) {
-        error.addMessage("Failed to add user to database");
-        return false;
+    json projectDataJson;
+
+    projectDataJson["id"] = projectData.id;
+    projectDataJson["name"] = projectData.name;
+    projectDataJson["creator_id"] = projectData.creatorId;
+    projectDataJson["created_at"] = Hanami::getDatetime();
+
+    // check if ID already exist
+    const ReturnStatus ret = doesIdAlreadyExist(projectData.id, error);
+    if (ret == OK) {
+        return INVALID_INPUT;
+    }
+    if (ret == ERROR) {
+        return ERROR;
     }
 
-    return true;
+    // add to db
+    if (insertToDb(projectDataJson, error) == false) {
+        error.addMessage("Failed to add user to database");
+        return ERROR;
+    }
+
+    return OK;
 }
 
 /**
@@ -66,26 +84,53 @@ ProjectsTable::addProject(json& userData, Hanami::ErrorContainer& error)
  * @param result reference for the result-output in case that a project with this name was found
  * @param projectId id of the requested project
  * @param error reference for error-output
- * @param showHiddenValues set to true to also show as hidden marked fields
  *
- * @return true, if successful, else false
+ * @return OK if found, INVALID_INPUT if not found, ERROR in case of internal error
  */
-bool
-ProjectsTable::getProject(json& result,
-                          const std::string& projectId,
-                          Hanami::ErrorContainer& error,
-                          const bool showHiddenValues)
+ReturnStatus
+ProjectTable::getProject(ProjectDbEntry& result,
+                         const std::string& projectName,
+                         Hanami::ErrorContainer& error)
+{
+    json jsonRet;
+    const ReturnStatus ret = getProject(jsonRet, projectName, true, error);
+    if (ret != OK) {
+        return ret;
+    }
+
+    result.id = jsonRet["id"];
+    result.name = jsonRet["name"];
+    result.creatorId = jsonRet["creator_id"];
+
+    return OK;
+}
+
+/**
+ * @brief get a project from the database by its id
+ *
+ * @param result reference for the result-output in case that a project with this name was found
+ * @param projectId id of the requested project
+ * @param showHiddenValues set to true to also show as hidden marked fields
+ * @param error reference for error-output
+ *
+ * @return OK if found, INVALID_INPUT if not found, ERROR in case of internal error
+ */
+ReturnStatus
+ProjectTable::getProject(json& result,
+                         const std::string& projectId,
+                         const bool showHiddenValues,
+                         Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("id", projectId);
 
-    if (getFromDb(result, conditions, error, showHiddenValues) == false) {
+    const ReturnStatus ret = getFromDb(result, conditions, showHiddenValues, true, error);
+    if (ret != OK) {
         error.addMessage("Failed to get user with id '" + projectId + "' from database");
-        LOG_ERROR(error);
-        return false;
+        return ret;
     }
 
-    return true;
+    return OK;
 }
 
 /**
@@ -97,10 +142,11 @@ ProjectsTable::getProject(json& result,
  * @return true, if successful, else false
  */
 bool
-ProjectsTable::getAllProjects(Hanami::TableItem& result, Hanami::ErrorContainer& error)
+ProjectTable::getAllProjects(Hanami::TableItem& result, Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
-    if (getFromDb(result, conditions, error, false) == false) {
+    const ReturnStatus ret = getFromDb(result, conditions, false, false, error);
+    if (ret != OK) {
         error.addMessage("Failed to get all users from database");
         return false;
     }
@@ -114,18 +160,26 @@ ProjectsTable::getAllProjects(Hanami::TableItem& result, Hanami::ErrorContainer&
  * @param projectId id of the project to delete
  * @param error reference for error-output
  *
- * @return true, if successful, else false
+ * @return OK if found, INVALID_INPUT if not found, ERROR in case of internal error
  */
-bool
-ProjectsTable::deleteProject(const std::string& projectId, Hanami::ErrorContainer& error)
+ReturnStatus
+ProjectTable::deleteProject(const std::string& projectId, Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("id", projectId);
 
-    if (deleteFromDb(conditions, error) == false) {
-        error.addMessage("Failed to delete user with id '" + projectId + "' from database");
-        return false;
+    // check if ID exist
+    ReturnStatus ret = doesIdAlreadyExist(projectId, error);
+    if (ret != OK) {
+        return ret;
     }
 
-    return true;
+    // delete ID
+    ret = deleteFromDb(conditions, error);
+    if (ret != OK) {
+        error.addMessage("Failed to delete user with id '" + projectId + "' from database");
+        return ret;
+    }
+
+    return OK;
 }

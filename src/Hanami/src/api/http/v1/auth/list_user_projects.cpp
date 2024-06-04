@@ -84,13 +84,12 @@ ListUserProjects::runTask(BlossomIO& blossomIO,
 
     // get data from table
     json userData;
-    if (UsersTable::getInstance()->getUser(userData, userId, error, false) == false) {
+    const ReturnStatus ret = UserTable::getInstance()->getUser(userData, userId, false, error);
+    if (ret == ERROR) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
-
-    // handle not found
-    if (userData.size() == 0) {
+    if (ret == INVALID_INPUT) {
         status.errorMessage = "User with id '" + userId + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         LOG_DEBUG(status.errorMessage);

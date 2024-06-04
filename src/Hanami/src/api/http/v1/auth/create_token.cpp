@@ -78,16 +78,16 @@ CreateToken::runTask(BlossomIO& blossomIO,
                      Hanami::ErrorContainer& error)
 {
     const std::string userId = blossomIO.input["id"];
+    const std::string password = blossomIO.input["password"];
 
     // get data from table
-    json userData;
-    if (UsersTable::getInstance()->getUser(userData, userId, error, true) == false) {
+    UserTable::UserDbEntry userData;
+    ReturnStatus ret = UserTable::getInstance()->getUser(userData, userId, error);
+    if (ret == ERROR) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
-
-    // handle not found
-    if (userData.size() == 0) {
+    if (ret == INVALID_INPUT) {
         status.errorMessage
             = "ACCESS DENIED!\n"
               "User or password is incorrect.";
@@ -98,12 +98,11 @@ CreateToken::runTask(BlossomIO& blossomIO,
 
     // regenerate password-hash for comparism
     std::string compareHash = "";
-    const std::string saltedPw
-        = std::string(blossomIO.input["password"]) + std::string(userData["salt"]);
+    const std::string saltedPw = password + userData.salt;
     Hanami::generate_SHA_256(compareHash, saltedPw);
 
     // check password
-    const std::string pwHash = userData["pw_hash"];
+    const std::string pwHash = userData.pwHash;
     if (pwHash.size() != compareHash.size()
         || memcmp(pwHash.c_str(), compareHash.c_str(), pwHash.size()) != 0)
     {
@@ -115,27 +114,28 @@ CreateToken::runTask(BlossomIO& blossomIO,
         return false;
     }
 
-    // remove entries, which are NOT allowed to be part of the token
-    userData.erase("pw_hash");
-    userData.erase("salt");
-
-    json parsedProjects = userData["projects"];
+    // get reduced user-data as json from db
+    json tokenUserData;
+    ret = UserTable::getInstance()->getUser(tokenUserData, userId, false, error);
+    if (ret != OK) {
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
 
     // get project
-    const bool isAdmin = userData["is_admin"];
-    if (isAdmin) {
+    if (userData.isAdmin) {
         // admin user get alway the admin-project per default
-        userData["project_id"] = "admin";
-        userData["role"] = "admin";
-        userData["is_project_admin"] = true;
-        userData.erase("projects");
+        tokenUserData["project_id"] = "admin";
+        tokenUserData["role"] = "admin";
+        tokenUserData["is_project_admin"] = true;
+        tokenUserData.erase("projects");
     }
-    else if (parsedProjects.size() != 0) {
+    else if (userData.projects.size() > 0) {
         // normal user get assigned to first project in their project-list at beginning
-        userData["project_id"] = parsedProjects[0]["project_id"];
-        userData["role"] = parsedProjects[0]["role"];
-        userData["is_project_admin"] = parsedProjects[0]["is_project_admin"];
-        userData.erase("projects");
+        tokenUserData["project_id"] = userData.projects.at(0).projectId;
+        tokenUserData["role"] = userData.projects.at(0).role;
+        tokenUserData["is_project_admin"] = userData.projects.at(0).isProjectAdmin;
+        tokenUserData.erase("projects");
     }
     else {
         status.errorMessage = "User with id '" + userId + "' has no project assigned.";
@@ -160,13 +160,14 @@ CreateToken::runTask(BlossomIO& blossomIO,
         = jwt::create()
               .set_type("JWT")
               .set_expires_at(expireTimePoint)
-              .set_payload_claim("user", jwt::claim(userData.dump()))
+              .set_payload_claim("user", jwt::claim(tokenUserData.dump()))
               .sign(jwt::algorithm::hs256{(const char*)HanamiRoot::tokenKey.data()});
 
     blossomIO.output["id"] = userId;
-    blossomIO.output["is_admin"] = isAdmin;
-    blossomIO.output["name"] = userData["name"];
+    blossomIO.output["is_admin"] = userData.isAdmin;
+    blossomIO.output["name"] = userData.name;
     blossomIO.output["token"] = jwtToken;
+    blossomIO.output.erase("created_at");
 
     return true;
 }

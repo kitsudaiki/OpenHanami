@@ -382,7 +382,7 @@ HttpProcessing::triggerBlossom(json& result,
         LOG_DEBUG(
             "check of completeness of input-fields failed"
             "Check of blossom '"
-            + blossomName + " in group '" + blossomGroupName + "' failed.");
+            + blossomName + "' in group '" + blossomGroupName + "' failed.");
         return false;
     }
 
@@ -400,7 +400,7 @@ HttpProcessing::triggerBlossom(json& result,
     {
         error.addMessage(errorMessage);
         error.addMessage("check of completeness of output-fields failed");
-        error.addMessage("Check of blossom '" + blossomName + " in group '" + blossomGroupName
+        error.addMessage("Check of blossom '" + blossomName + "' in group '" + blossomGroupName
                          + "' failed.");
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         status.errorMessage = "";

@@ -47,8 +47,7 @@ handleErrorCallback(const std::string& errorMessage,
                     const std::string& values)
 {
     ErrorContainer error;
-    ErrorLogTable::getInstance()->addErrorLogEntry(
-        getDatetime(), userId, "", "", values, errorMessage, error);
+    ErrorLogTable::getInstance()->addErrorLogEntry(userId, "", "", values, errorMessage, error);
 }
 
 int
@@ -110,8 +109,8 @@ main(int argc, char* argv[])
             "    This documeation was generated from the source-code to "
             "provide a maximum of consistency.\n\n");
         ClusterTable::getInstance()->createDocumentation(dbDocu);
-        ProjectsTable::getInstance()->createDocumentation(dbDocu);
-        UsersTable::getInstance()->createDocumentation(dbDocu);
+        ProjectTable::getInstance()->createDocumentation(dbDocu);
+        UserTable::getInstance()->createDocumentation(dbDocu);
         DataSetTable::getInstance()->createDocumentation(dbDocu);
         RequestResultTable::getInstance()->createDocumentation(dbDocu);
         CheckpointTable::getInstance()->createDocumentation(dbDocu);

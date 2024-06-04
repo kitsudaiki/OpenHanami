@@ -53,6 +53,9 @@ RemoveProjectFromUser::RemoveProjectFromUser() : Blossom("Remove a project from 
     // output
     //----------------------------------------------------------------------------------------------
 
+    registerOutputField("created_at", SAKURA_STRING_TYPE)
+        .setComment("Timestamp, when user was created.");
+
     registerOutputField("id", SAKURA_STRING_TYPE).setComment("ID of the user.");
 
     registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the user.");
@@ -92,14 +95,13 @@ RemoveProjectFromUser::runTask(BlossomIO& blossomIO,
     const std::string creatorId = context["id"];
 
     // check if user already exist within the table
-    json getResult;
-    if (UsersTable::getInstance()->getUser(getResult, userId, error, false) == false) {
+    UserTable::UserDbEntry getResult;
+    ReturnStatus ret = UserTable::getInstance()->getUser(getResult, userId, error);
+    if (ret == ERROR) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
-
-    // handle not found
-    if (getResult.size() == 0) {
+    if (ret == INVALID_INPUT) {
         status.errorMessage = "User with id '" + userId + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         LOG_DEBUG(status.errorMessage);
@@ -108,10 +110,9 @@ RemoveProjectFromUser::runTask(BlossomIO& blossomIO,
 
     // check if project is assigned to user and remove it if found
     bool found = false;
-    json parsedProjects = getResult["projects"];
-    for (uint64_t i = 0; i < parsedProjects.size(); i++) {
-        if (parsedProjects[i]["project_id"] == projectId) {
-            parsedProjects.erase(i);
+    for (uint64_t i = 0; i < getResult.projects.size(); i++) {
+        if (getResult.projects[i].projectId == projectId) {
+            getResult.projects.erase(getResult.projects.begin() + i);
             found = true;
             break;
         }
@@ -128,8 +129,7 @@ RemoveProjectFromUser::runTask(BlossomIO& blossomIO,
     }
 
     // updated projects of user in database
-    if (UsersTable::getInstance()->updateProjectsOfUser(userId, parsedProjects.dump(), error)
-        == false)
+    if (UserTable::getInstance()->updateProjectsOfUser(userId, getResult.projects, error) == false)
     {
         error.addMessage("Failed to update projects of user with id '" + userId + "'.");
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
@@ -137,7 +137,7 @@ RemoveProjectFromUser::runTask(BlossomIO& blossomIO,
     }
 
     // get new created user from database
-    if (UsersTable::getInstance()->getUser(blossomIO.output, userId, error, false) == false) {
+    if (UserTable::getInstance()->getUser(blossomIO.output, userId, false, error) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

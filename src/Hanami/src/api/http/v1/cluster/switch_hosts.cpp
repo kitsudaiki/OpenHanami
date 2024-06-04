@@ -83,15 +83,14 @@ SwitchHosts::runTask(BlossomIO& blossomIO,
     const std::string hostUuid = blossomIO.input["host_uuid"];
 
     // get data from table
-    if (ClusterTable::getInstance()->getCluster(blossomIO.output, clusterUuid, userContext, error)
-        == false)
-    {
+    json clusterResult;
+    ReturnStatus ret = ClusterTable::getInstance()->getCluster(
+        blossomIO.output, clusterUuid, userContext, false, error);
+    if (ret == ERROR) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
-
-    // handle not found
-    if (blossomIO.output.size() == 0) {
+    if (ret == INVALID_INPUT) {
         status.errorMessage = "Cluster with uuid '" + clusterUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         LOG_DEBUG(status.errorMessage);

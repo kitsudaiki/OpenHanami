@@ -39,25 +39,34 @@ class HanamiSqlTable : public Hanami::SqlTable
     HanamiSqlTable(Hanami::SqlDatabase* db);
     virtual ~HanamiSqlTable();
 
+    ReturnStatus doesNameAlreadyExist(const std::string& name,
+                                      const Hanami::UserContext& userContext,
+                                      Hanami::ErrorContainer& error);
+    ReturnStatus doesUuidAlreadyExist(const std::string& uuid,
+                                      const Hanami::UserContext& userContext,
+                                      Hanami::ErrorContainer& error);
+
    protected:
-    bool add(json& values, const Hanami::UserContext& userContext, Hanami::ErrorContainer& error);
-    bool get(json& result,
-             const Hanami::UserContext& userContext,
-             std::vector<RequestCondition>& conditions,
-             Hanami::ErrorContainer& error,
-             const bool showHiddenValues = false);
-    bool update(json& values,
-                const Hanami::UserContext& userContext,
-                std::vector<RequestCondition>& conditions,
-                Hanami::ErrorContainer& error);
-    bool getAll(Hanami::TableItem& result,
-                const Hanami::UserContext& userContext,
-                std::vector<RequestCondition>& conditions,
-                Hanami::ErrorContainer& error,
-                const bool showHiddenValues = false);
-    bool del(std::vector<RequestCondition>& conditions,
-             const Hanami::UserContext& userContext,
-             Hanami::ErrorContainer& error);
+    ReturnStatus addWithContext(json& values,
+                                const Hanami::UserContext& userContext,
+                                Hanami::ErrorContainer& error);
+    ReturnStatus getWithContext(json& result,
+                                const Hanami::UserContext& userContext,
+                                std::vector<RequestCondition>& conditions,
+                                const bool showHiddenValues,
+                                Hanami::ErrorContainer& error);
+    ReturnStatus updateWithContext(json& values,
+                                   const Hanami::UserContext& userContext,
+                                   std::vector<RequestCondition>& conditions,
+                                   Hanami::ErrorContainer& error);
+    ReturnStatus getAllWithContext(Hanami::TableItem& result,
+                                   const Hanami::UserContext& userContext,
+                                   std::vector<RequestCondition>& conditions,
+                                   Hanami::ErrorContainer& error,
+                                   const bool showHiddenValues);
+    ReturnStatus deleteFromDbWithContext(std::vector<RequestCondition>& conditions,
+                                         const Hanami::UserContext& userContext,
+                                         Hanami::ErrorContainer& error);
 
    private:
     void fillCondition(std::vector<RequestCondition>& conditions,

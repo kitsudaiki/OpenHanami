@@ -87,10 +87,12 @@ SqlTable_Test::get_test()
     TableItem resultTable;
     ErrorContainer error;
 
-    TEST_EQUAL(m_table->getUser(resultItem, m_name1, error), true);
+    TEST_EQUAL(m_table->getUser(resultItem, m_name1, false, error), OK);
+    resultItem.erase("created_at");
     TEST_EQUAL(resultItem.dump(), std::string("{\"is_admin\":true,\"name\":\"user0815\"}"));
 
-    TEST_EQUAL(m_table->getUser(resultTable, m_name1, error), true);
+    TEST_EQUAL(m_table->getUser(resultTable, m_name1, error), OK);
+    resultTable.deleteColumn("created_at");
     std::string compare
         = "+----------+----------+\n"
           "| name     | is_admin |\n"
@@ -109,18 +111,24 @@ SqlTable_Test::getAll_test()
     TableItem result;
     ErrorContainer error;
 
-    TEST_EQUAL(m_table->getAllUser(result, error), true);
+    TEST_EQUAL(m_table->getAllUser(result, error, false), true);
+    result.deleteColumn("created_at");
+
     TEST_EQUAL(result.getNumberOfRows(), 2);
     TEST_EQUAL(result.getNumberOfColums(), 2);
 
     result.clearTable();
     TEST_EQUAL(m_table->getAllUser(result, error, true), true);
+    result.deleteColumn("created_at");
+
     TEST_EQUAL(result.getNumberOfRows(), 2);
     TEST_EQUAL(result.getNumberOfColums(), 3);
 
     // test with limitation
     result.clearTable();
     TEST_EQUAL(m_table->getAllUser(result, error, true, 1, 10), true);
+    result.deleteColumn("created_at");
+
     TEST_EQUAL(result.getNumberOfRows(), 1);
     TEST_EQUAL(result.getNumberOfColums(), 3);
     TEST_EQUAL(result.getCell(0, 0), m_name2);
@@ -137,12 +145,13 @@ SqlTable_Test::update_test()
     json updateDate;
     updateDate["pw_hash"] = "secret2";
     updateDate["is_admin"] = false;
-    TEST_EQUAL(m_table->updateUser(m_name1, updateDate, error), true);
+    TEST_EQUAL(m_table->updateUser(m_name1, updateDate, error), OK);
 
     json resultItem;
     TableItem resultTable;
 
-    TEST_EQUAL(m_table->getUser(resultItem, m_name1, error, true), true);
+    TEST_EQUAL(m_table->getUser(resultItem, m_name1, true, error), OK);
+    resultItem.erase("created_at");
     TEST_EQUAL(resultItem.dump(),
                std::string("{\"is_admin\":false,\"name\":\"user0815\",\"pw_hash\":\"secret2\"}"));
 }
@@ -155,22 +164,28 @@ SqlTable_Test::delete_test()
 {
     ErrorContainer error;
 
-    TEST_EQUAL(m_table->deleteUser(m_name1, error), true);
+    TEST_EQUAL(m_table->deleteUser(m_name1, error), OK);
     TableItem result1;
-    m_table->getAllUser(result1, error);
+    m_table->getAllUser(result1, error, false);
+    result1.deleteColumn("created_at");
+
     TEST_EQUAL(result1.getNumberOfRows(), 1);
     TEST_EQUAL(result1.getNumberOfColums(), 2);
 
-    TEST_EQUAL(m_table->deleteUser(m_name2, error), true);
+    TEST_EQUAL(m_table->deleteUser(m_name2, error), OK);
     TableItem result2;
-    m_table->getAllUser(result2, error);
+    m_table->getAllUser(result2, error, false);
+    result2.deleteColumn("created_at");
+
     TEST_EQUAL(result2.getNumberOfRows(), 0);
     TEST_EQUAL(result2.getNumberOfColums(), 2);
 
     TableItem result3;
-    m_table->getUser(result3, m_name1, error, true);
-    TEST_EQUAL(result2.getNumberOfRows(), 0);
-    TEST_EQUAL(result2.getNumberOfColums(), 2);
+    m_table->getAllUser(result3, error, OK);
+    result3.deleteColumn("created_at");
+
+    TEST_EQUAL(result3.getNumberOfRows(), 0);
+    TEST_EQUAL(result3.getNumberOfColums(), 2);
 }
 
 /**

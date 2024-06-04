@@ -44,23 +44,30 @@ ClusterTable::~ClusterTable() {}
 /**
  * @brief add a new cluster to the database
  *
- * @param userData json-item with all information of the cluster to add to database
+ * @param clusterData cluster-entry to add to database
  * @param userContext context-object with all user specific information
  * @param error reference for error-output
  *
- * @return true, if successful, else false
+ * @return OK if found, INVALID_INPUT if conflict, ERROR in case of internal error
  */
-bool
-ClusterTable::addCluster(json& clusterData,
+ReturnStatus
+ClusterTable::addCluster(const ClusterDbEntry& clusterData,
                          const Hanami::UserContext& userContext,
                          Hanami::ErrorContainer& error)
 {
-    if (add(clusterData, userContext, error) == false) {
+    json clusterDataJson;
+
+    clusterDataJson["name"] = clusterData.name;
+    clusterDataJson["uuid"] = clusterData.uuid;
+    clusterDataJson["visibility"] = clusterData.visibility;
+
+    const ReturnStatus ret = addWithContext(clusterDataJson, userContext, error);
+    if (ret != OK) {
         error.addMessage("Failed to add cluster-meta to database");
-        return false;
+        return ret;
     }
 
-    return true;
+    return OK;
 }
 
 /**
@@ -70,58 +77,61 @@ ClusterTable::addCluster(json& clusterData,
  * @param clusterUuid uuid of the requested cluster
  * @param userContext context-object with all user specific information
  * @param error reference for error-output
- * @param showHiddenValues set to true to also show as hidden marked fields
  *
- * @return true, if successful, else false
+ * @return OK if found, INVALID_INPUT if not found, ERROR in case of internal error
  */
-bool
-ClusterTable::getCluster(json& result,
+ReturnStatus
+ClusterTable::getCluster(ClusterDbEntry& result,
                          const std::string& clusterUuid,
                          const Hanami::UserContext& userContext,
-                         Hanami::ErrorContainer& error,
-                         const bool showHiddenValues)
+                         Hanami::ErrorContainer& error)
 {
-    std::vector<RequestCondition> conditions;
-    conditions.emplace_back("uuid", clusterUuid);
-
-    // get user from db
-    if (get(result, userContext, conditions, error, showHiddenValues) == false) {
-        error.addMessage("Failed to get cluster-meta with UUID '" + clusterUuid
-                         + "' from database");
-        return false;
+    json jsonRet;
+    const ReturnStatus ret = getCluster(jsonRet, clusterUuid, userContext, true, error);
+    if (ret != OK) {
+        return ret;
     }
 
-    return true;
+    result.name = jsonRet["name"];
+    result.ownerId = jsonRet["owner_id"];
+    result.projectId = jsonRet["project_id"];
+    result.uuid = jsonRet["uuid"];
+    result.visibility = jsonRet["visibility"];
+
+    return OK;
 }
 
 /**
  * @brief get a cluster from the database by his name
  *
  * @param result reference for the result-output in case that a cluster with this name was found
- * @param clusterName name of the requested cluster
+ * @param clusterUuid uuid of the requested cluster
  * @param userContext context-object with all user specific information
- * @param error reference for error-output
  * @param showHiddenValues set to true to also show as hidden marked fields
+ * @param error reference for error-output
  *
- * @return true, if successful, else false
+ * @return OK if found, INVALID_INPUT if not found, ERROR in case of internal error
  */
-bool
-ClusterTable::getClusterByName(json& result,
-                               const std::string& clusterName,
-                               const Hanami::UserContext& userContext,
-                               Hanami::ErrorContainer& error,
-                               const bool showHiddenValues)
+ReturnStatus
+ClusterTable::getCluster(json& result,
+                         const std::string& clusterUuid,
+                         const Hanami::UserContext& userContext,
+                         const bool showHiddenValues,
+                         Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
-    conditions.emplace_back("name", clusterName);
+    conditions.emplace_back("uuid", clusterUuid);
 
     // get user from db
-    if (get(result, userContext, conditions, error, showHiddenValues) == false) {
-        error.addMessage("Failed to get cluster-meta from database by name '" + clusterName + "'");
-        return false;
+    const ReturnStatus ret
+        = getWithContext(result, userContext, conditions, showHiddenValues, error);
+    if (ret != OK) {
+        error.addMessage("Failed to get cluster-meta with UUID '" + clusterUuid
+                         + "' from database");
+        return ret;
     }
 
-    return true;
+    return OK;
 }
 
 /**
@@ -139,7 +149,7 @@ ClusterTable::getAllCluster(Hanami::TableItem& result,
                             Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
-    if (getAll(result, userContext, conditions, error) == false) {
+    if (getAllWithContext(result, userContext, conditions, error, false) != OK) {
         error.addMessage("Failed to get all cluster-meta from database");
         return false;
     }
@@ -154,9 +164,9 @@ ClusterTable::getAllCluster(Hanami::TableItem& result,
  * @param userContext context-object with all user specific information
  * @param error reference for error-output
  *
- * @return true, if successful, else false
+ * @return OK if found, INVALID_INPUT if not found, ERROR in case of internal error
  */
-bool
+ReturnStatus
 ClusterTable::deleteCluster(const std::string& clusterUuid,
                             const Hanami::UserContext& userContext,
                             Hanami::ErrorContainer& error)
@@ -164,13 +174,14 @@ ClusterTable::deleteCluster(const std::string& clusterUuid,
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", clusterUuid);
 
-    if (del(conditions, userContext, error) == false) {
+    const ReturnStatus ret = deleteFromDbWithContext(conditions, userContext, error);
+    if (ret != OK) {
         error.addMessage("Failed to delete cluster-meta with UUID '" + clusterUuid
                          + "' from database");
-        return false;
+        return ret;
     }
 
-    return true;
+    return OK;
 }
 
 /**

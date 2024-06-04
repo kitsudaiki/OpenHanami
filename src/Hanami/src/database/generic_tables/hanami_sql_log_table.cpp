@@ -31,13 +31,7 @@
  *
  * @param db pointer to database
  */
-HanamiSqlLogTable::HanamiSqlLogTable(Hanami::SqlDatabase* db) : SqlTable(db)
-{
-    DbHeaderEntry id;
-    id.name = "timestamp";
-    id.maxLength = 128;
-    m_tableHeader.push_back(id);
-}
+HanamiSqlLogTable::HanamiSqlLogTable(Hanami::SqlDatabase* db) : SqlTable(db) {}
 
 /**
  * @brief destructor
@@ -72,7 +66,7 @@ HanamiSqlLogTable::getNumberOfPages(Hanami::ErrorContainer& error)
  *
  * @return true, if successful, else false
  */
-bool
+ReturnStatus
 HanamiSqlLogTable::getPageFromDb(Hanami::TableItem& resultTable,
                                  const std::string& userId,
                                  const uint64_t page,
@@ -81,17 +75,17 @@ HanamiSqlLogTable::getPageFromDb(Hanami::TableItem& resultTable,
     // get number of pages of the log-table
     const long numberOfPages = getNumberOfPages(error);
     if (numberOfPages == -1) {
-        return false;
+        return INVALID_INPUT;
     }
 
     // check if requested page-number is in range
     if (page > static_cast<uint64_t>(numberOfPages)) {
         error.addMessage("Give page '" + std::to_string(page) + "' is too big");
-        return false;
+        return INVALID_INPUT;
     }
 
     // get requested page of log-entries from database-table
     std::vector<RequestCondition> conditions;
     conditions.push_back(RequestCondition("user_id", userId));
-    return getFromDb(resultTable, conditions, error, true, page * 100, 100);
+    return getFromDb(resultTable, conditions, true, false, error, page * 100, 100);
 }

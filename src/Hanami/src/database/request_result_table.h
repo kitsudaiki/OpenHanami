@@ -37,22 +37,35 @@ class RequestResultTable : public HanamiSqlTable
         return instance;
     }
 
+    struct ResultDbEntry {
+        std::string uuid = "";
+        std::string projectId = "";
+        std::string ownerId = "";
+        std::string visibility = "";
+        std::string name = "";
+        json data;
+    };
+
     ~RequestResultTable();
 
-    bool addRequestResult(json& data,
-                          const Hanami::UserContext& userContext,
-                          Hanami::ErrorContainer& error);
-    bool getRequestResult(json& result,
-                          const std::string& resultUuid,
-                          const Hanami::UserContext& userContext,
-                          Hanami::ErrorContainer& error,
-                          const bool showHiddenValues);
+    ReturnStatus addRequestResult(ResultDbEntry& resultData,
+                                  const Hanami::UserContext& userContext,
+                                  Hanami::ErrorContainer& error);
+    ReturnStatus getRequestResult(ResultDbEntry& result,
+                                  const std::string& resultUuid,
+                                  const Hanami::UserContext& userContext,
+                                  Hanami::ErrorContainer& error);
+    ReturnStatus getRequestResult(json& result,
+                                  const std::string& resultUuid,
+                                  const Hanami::UserContext& userContext,
+                                  const bool showHiddenValues,
+                                  Hanami::ErrorContainer& error);
     bool getAllRequestResult(Hanami::TableItem& result,
                              const Hanami::UserContext& userContext,
                              Hanami::ErrorContainer& error);
-    bool deleteRequestResult(const std::string& resultUuid,
-                             const Hanami::UserContext& userContext,
-                             Hanami::ErrorContainer& error);
+    ReturnStatus deleteRequestResult(const std::string& resultUuid,
+                                     const Hanami::UserContext& userContext,
+                                     Hanami::ErrorContainer& error);
 
    private:
     RequestResultTable();

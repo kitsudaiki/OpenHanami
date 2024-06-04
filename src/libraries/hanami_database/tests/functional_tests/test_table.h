@@ -15,21 +15,21 @@ class TestTable : public Hanami::SqlTable
     ~TestTable();
 
     bool addUser(json& data, ErrorContainer& error);
-    bool getUser(TableItem& resultTable,
-                 const std::string& userID,
-                 ErrorContainer& error,
-                 const bool withHideValues = false);
-    bool getUser(json& resultItem,
-                 const std::string& userID,
-                 ErrorContainer& error,
-                 const bool showHiddenValues = false);
+    ReturnStatus getUser(TableItem& resultTable,
+                         const std::string& userID,
+                         ErrorContainer& error,
+                         const bool withHideValues = false);
+    ReturnStatus getUser(json& resultItem,
+                         const std::string& userID,
+                         const bool showHiddenValues,
+                         ErrorContainer& error);
     bool getAllUser(TableItem& resultItem,
                     ErrorContainer& error,
-                    const bool showHiddenValues = false,
+                    const bool showHiddenValues,
                     const uint64_t positionOffset = 0,
                     const uint64_t numberOfRows = 0);
-    bool deleteUser(const std::string& userID, ErrorContainer& error);
-    bool updateUser(const std::string& userID, const json& values, ErrorContainer& error);
+    ReturnStatus deleteUser(const std::string& userID, ErrorContainer& error);
+    ReturnStatus updateUser(const std::string& userID, const json& values, ErrorContainer& error);
     long getNumberOfUsers(ErrorContainer& error);
 };
 

@@ -46,9 +46,12 @@ GetProject::GetProject() : Blossom("Show information of a specific registered us
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("id", SAKURA_STRING_TYPE).setComment("ID of the new user.");
+    registerOutputField("created_at", SAKURA_STRING_TYPE)
+        .setComment("Timestamp, when project was created.");
 
-    registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the new user.");
+    registerOutputField("id", SAKURA_STRING_TYPE).setComment("ID of the new project.");
+
+    registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the new project.");
 
     registerOutputField("creator_id", SAKURA_STRING_TYPE)
         .setComment("Id of the creator of the user.");
@@ -77,16 +80,16 @@ GetProject::runTask(BlossomIO& blossomIO,
     const std::string projectId = blossomIO.input["id"];
 
     // get data from table
-    if (ProjectsTable::getInstance()->getProject(blossomIO.output, projectId, error) == false) {
-        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        return false;
-    }
-
-    // handle not found
-    if (blossomIO.output.size() == 0) {
+    const ReturnStatus ret
+        = ProjectTable::getInstance()->getProject(blossomIO.output, projectId, false, error);
+    if (ret == INVALID_INPUT) {
         status.errorMessage = "Project with id '" + projectId + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         LOG_DEBUG(status.errorMessage);
+        return false;
+    }
+    if (ret == ERROR) {
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 

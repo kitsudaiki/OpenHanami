@@ -241,18 +241,17 @@ TaskHandle_State::finishTask()
 
         // write result to database
         Hanami::ErrorContainer error;
-        json resultData;
-        resultData["uuid"] = actualTask->uuid.toString();
-        resultData["name"] = actualTask->name;
-        resultData["data"] = actualTask->resultData;
-        resultData["visibility"] = "private";
+        RequestResultTable::ResultDbEntry dbEntry;
+        dbEntry.uuid = actualTask->uuid.toString();
+        dbEntry.name = actualTask->name;
+        dbEntry.data = actualTask->resultData;
+        dbEntry.visibility = "private";
 
         Hanami::UserContext userContext;
         userContext.userId = actualTask->userId;
         userContext.projectId = actualTask->projectId;
 
-        if (RequestResultTable::getInstance()->addRequestResult(resultData, userContext, error)
-            == false)
+        if (RequestResultTable::getInstance()->addRequestResult(dbEntry, userContext, error) != OK)
         {
             LOG_ERROR(error);
             return;

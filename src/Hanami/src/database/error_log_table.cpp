@@ -22,8 +22,8 @@
 
 #include <database/error_log_table.h>
 #include <hanami_common/functions/string_functions.h>
+#include <hanami_common/functions/time_functions.h>
 #include <hanami_common/items/table_item.h>
-#include <hanami_crypto/common.h>
 #include <hanami_database/sql_database.h>
 
 ErrorLogTable* ErrorLogTable::instance = nullptr;
@@ -37,27 +37,15 @@ ErrorLogTable::ErrorLogTable() : HanamiSqlLogTable(Hanami::SqlDatabase::getInsta
 {
     m_tableName = "error_log";
 
-    DbHeaderEntry userid;
-    userid.name = "user_id";
-    userid.maxLength = 256;
-    m_tableHeader.push_back(userid);
+    registerColumn("user_id", STRING_TYPE).setMaxLength(256);
 
-    DbHeaderEntry component;
-    component.name = "component";
-    component.maxLength = 128;
-    m_tableHeader.push_back(component);
+    registerColumn("component", STRING_TYPE).setMaxLength(128);
 
-    DbHeaderEntry context;
-    context.name = "context";
-    m_tableHeader.push_back(context);
+    registerColumn("context", STRING_TYPE);
 
-    DbHeaderEntry values;
-    values.name = "input_values";
-    m_tableHeader.push_back(values);
+    registerColumn("input_values", STRING_TYPE);
 
-    DbHeaderEntry message;
-    message.name = "message";
-    m_tableHeader.push_back(message);
+    registerColumn("message", BASE64_TYPE);
 }
 
 /**
@@ -68,7 +56,6 @@ ErrorLogTable::~ErrorLogTable() {}
 /**
  * @brief add new error-log-entry into the database
  *
- * @param timestamp UTC-timestamp of the error
  * @param userid id of the user, who had the error
  * @param component component, where the error appeared
  * @param context
@@ -79,8 +66,7 @@ ErrorLogTable::~ErrorLogTable() {}
  * @return true, if successful, else false
  */
 bool
-ErrorLogTable::addErrorLogEntry(const std::string& timestamp,
-                                const std::string& userid,
+ErrorLogTable::addErrorLogEntry(const std::string& userid,
                                 const std::string& component,
                                 const std::string& context,
                                 const std::string& values,
@@ -88,15 +74,11 @@ ErrorLogTable::addErrorLogEntry(const std::string& timestamp,
                                 Hanami::ErrorContainer& error)
 {
     json data;
-    data["timestamp"] = timestamp;
     data["user_id"] = userid;
     data["component"] = component;
     data["context"] = context;
     data["input_values"] = values;
-
-    std::string base64Msg;
-    Hanami::encodeBase64(base64Msg, message.c_str(), message.size());
-    data["message"] = base64Msg;
+    data["message"] = message;
 
     if (insertToDb(data, error) == false) {
         error.addMessage("Failed to add error-log-entry to database");
@@ -122,7 +104,7 @@ ErrorLogTable::getAllErrorLogEntries(Hanami::TableItem& result,
                                      const uint64_t page,
                                      Hanami::ErrorContainer& error)
 {
-    if (getPageFromDb(result, userId, page, error) == false) {
+    if (getPageFromDb(result, userId, page, error) != OK) {
         error.addMessage("Failed to get all error-log-entries from database");
         return false;
     }

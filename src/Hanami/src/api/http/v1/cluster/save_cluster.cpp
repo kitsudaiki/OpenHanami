@@ -77,15 +77,13 @@ SaveCluster::runTask(BlossomIO& blossomIO,
 
     // get data from table
     json clusterResult;
-    if (ClusterTable::getInstance()->getCluster(clusterResult, clusterUuid, userContext, error)
-        == false)
-    {
+    ReturnStatus ret = ClusterTable::getInstance()->getCluster(
+        clusterResult, clusterUuid, userContext, false, error);
+    if (ret == ERROR) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
-
-    // handle not found
-    if (clusterResult.size() == 0) {
+    if (ret == INVALID_INPUT) {
         status.errorMessage = "Cluster with uuid '" + clusterUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         LOG_DEBUG(status.errorMessage);
@@ -104,6 +102,7 @@ SaveCluster::runTask(BlossomIO& blossomIO,
     // init request-task
     const std::string taskUuid
         = addCheckpointSaveTask(*cluster, name, userContext.userId, userContext.projectId);
+
     blossomIO.output["uuid"] = taskUuid;
     blossomIO.output["name"] = name;
 

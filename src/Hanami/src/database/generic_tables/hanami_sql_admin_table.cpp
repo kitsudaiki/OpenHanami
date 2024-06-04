@@ -33,24 +33,42 @@
  */
 HanamiSqlAdminTable::HanamiSqlAdminTable(Hanami::SqlDatabase* db) : SqlTable(db)
 {
-    DbHeaderEntry id;
-    id.name = "id";
-    id.maxLength = 256;
-    id.isPrimary = true;
-    m_tableHeader.push_back(id);
+    registerColumn("id", STRING_TYPE).setMaxLength(256).setIsPrimary();
 
-    DbHeaderEntry name;
-    name.name = "name";
-    name.maxLength = 256;
-    m_tableHeader.push_back(name);
+    registerColumn("name", STRING_TYPE).setMaxLength(256);
 
-    DbHeaderEntry creatorId;
-    creatorId.name = "creator_id";
-    creatorId.maxLength = 256;
-    m_tableHeader.push_back(creatorId);
+    registerColumn("creator_id", STRING_TYPE).setMaxLength(256);
 }
 
 /**
  * @brief destructor
  */
 HanamiSqlAdminTable::~HanamiSqlAdminTable() {}
+
+/**
+ * @brief check if a specific id already exist within the table
+ *
+ * @param id id to check
+ * @param error reference for error-output
+ *
+ * @return true, if name is already in use, else false
+ */
+ReturnStatus
+HanamiSqlAdminTable::doesIdAlreadyExist(const std::string& id, Hanami::ErrorContainer& error)
+{
+    json result;
+    std::vector<RequestCondition> conditions;
+    conditions.emplace_back("id", id);
+
+    // get user from db
+    const ReturnStatus ret = getFromDb(result, conditions, false, true, error);
+    if (ret != OK) {
+        return ret;
+    }
+
+    if (result.size() != 0) {
+        return OK;
+    }
+
+    return INVALID_INPUT;
+}

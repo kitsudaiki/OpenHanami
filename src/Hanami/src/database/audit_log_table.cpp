@@ -36,20 +36,11 @@ AuditLogTable::AuditLogTable() : HanamiSqlLogTable(Hanami::SqlDatabase::getInsta
 {
     m_tableName = "audit_log";
 
-    DbHeaderEntry userid;
-    userid.name = "user_id";
-    userid.maxLength = 256;
-    m_tableHeader.push_back(userid);
+    registerColumn("user_id", STRING_TYPE).setMaxLength(256);
 
-    DbHeaderEntry endpoint;
-    endpoint.name = "endpoint";
-    endpoint.maxLength = 1024;
-    m_tableHeader.push_back(endpoint);
+    registerColumn("endpoint", STRING_TYPE).setMaxLength(1024);
 
-    DbHeaderEntry requestType;
-    requestType.name = "request_type";
-    requestType.maxLength = 16;
-    m_tableHeader.push_back(requestType);
+    registerColumn("request_type", STRING_TYPE).setMaxLength(16);
 }
 
 /**
@@ -76,7 +67,6 @@ AuditLogTable::addAuditLogEntry(const std::string& timestamp,
                                 Hanami::ErrorContainer& error)
 {
     json data;
-    data["timestamp"] = timestamp;
     data["user_id"] = userId;
     data["endpoint"] = endpoint;
     data["request_type"] = requestType;
@@ -105,7 +95,7 @@ AuditLogTable::getAllAuditLogEntries(Hanami::TableItem& result,
                                      const uint64_t page,
                                      Hanami::ErrorContainer& error)
 {
-    if (getPageFromDb(result, userId, page, error) == false) {
+    if (getPageFromDb(result, userId, page, error) != OK) {
         error.addMessage("Failed to get all audit-log-entries from database");
         return false;
     }

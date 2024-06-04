@@ -102,7 +102,7 @@ def delete_all_cluster():
     body = json.loads(result)["body"]
 
     for entry in body:
-        cluster.delete_cluster(token, address, entry[0], False)
+        cluster.delete_cluster(token, address, entry[1], False)
 
 
 def delete_all_projects():
@@ -110,7 +110,7 @@ def delete_all_projects():
     body = json.loads(result)["body"]
 
     for entry in body:
-        project.delete_project(token, address, entry[0], False)
+        project.delete_project(token, address, entry[1], False)
 
 
 def delete_all_user():
@@ -119,7 +119,7 @@ def delete_all_user():
 
     for entry in body:
         try:
-            user.delete_user(token, address, entry[0], False)
+            user.delete_user(token, address, entry[1], False)
         except hanami_exceptions.ConflictException:
             pass
 
@@ -129,7 +129,7 @@ def delete_all_datasets():
     body = json.loads(result)["body"]
 
     for entry in body:
-        dataset.delete_dataset(token, address, entry[0], False)
+        dataset.delete_dataset(token, address, entry[1], False)
 
 
 def delete_all_checkpoints():
@@ -137,7 +137,7 @@ def delete_all_checkpoints():
     body = json.loads(result)["body"]
 
     for entry in body:
-        checkpoint.delete_checkpoint(token, address, entry[0], False)
+        checkpoint.delete_checkpoint(token, address, entry[1], False)
 
 
 def delete_all_results():
@@ -146,7 +146,7 @@ def delete_all_results():
     body = json.loads(result)["body"]
 
     for entry in body:
-        request_result.delete_request_result(token, address, entry[0], False)
+        request_result.delete_request_result(token, address, entry[1], False)
 
 
 def test_project():
@@ -272,7 +272,7 @@ def test_workflow():
     hosts_json = json.loads(result)["body"]
     if len(hosts_json) > 1:
         print("test move cluster to gpu")
-        target_host_uuid = hosts_json[1][0]
+        target_host_uuid = hosts_json[1][1]
         cluster.switch_host(token, address, cluster_uuid, target_host_uuid, False)
 
     # run training

@@ -39,10 +39,10 @@ class HanamiSqlLogTable : public Hanami::SqlTable
     virtual ~HanamiSqlLogTable();
 
     long getNumberOfPages(Hanami::ErrorContainer& error);
-    bool getPageFromDb(Hanami::TableItem& resultTable,
-                       const std::string& userId,
-                       const uint64_t page,
-                       Hanami::ErrorContainer& error);
+    ReturnStatus getPageFromDb(Hanami::TableItem& resultTable,
+                               const std::string& userId,
+                               const uint64_t page,
+                               Hanami::ErrorContainer& error);
 };
 
 #endif  // HANAMI_DATABASE_SQL_LOG_TABLE_H

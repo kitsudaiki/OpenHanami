@@ -45,7 +45,7 @@ TempFileHandler::~TempFileHandler() {}
  *
  * @return true, if successful, else false
  */
-bool
+ReturnStatus
 TempFileHandler::initNewFile(std::string& uuid,
                              const std::string& name,
                              const std::string& relatedUuid,
@@ -62,7 +62,7 @@ TempFileHandler::initNewFile(std::string& uuid,
         = GET_STRING_CONFIG("storage", "tempfile_location", success);
     targetFilePath = targetFilePath / std::filesystem::path(uuid);
 
-    bool result = false;
+    ReturnStatus result = ERROR;
 
     Hanami::BinaryFile* tempfile = nullptr;
     do {
@@ -95,23 +95,32 @@ TempFileHandler::initNewFile(std::string& uuid,
             fileHandle.file = nullptr;
         }
 
+        TempfileTable::TempfileDbEntry dbEntry;
+        dbEntry.uuid = uuid;
+        dbEntry.name = name;
+        dbEntry.projectId = userContext.projectId;
+        dbEntry.ownerId = userContext.userId;
+        dbEntry.visibility = "private";
+        dbEntry.fileSize = size;
+        dbEntry.location = targetFilePath;
+        dbEntry.relatedResourceType = "dataset";
+        dbEntry.relatedResourceUuid = relatedUuid;
+
         // create database-endtry
-        if (TempfileTable::getInstance()->addTempfile(
-                uuid, "dataset", relatedUuid, name, size, targetFilePath, userContext, error)
-            == false)
-        {
+        result = TempfileTable::getInstance()->addTempfile(dbEntry, userContext, error);
+        if (result != OK) {
             error.addMessage("Failed to add tempfile-entry with UUID '" + uuid + "' to database");
             LOG_ERROR(error);
             break;
         }
 
-        result = true;
+        result = OK;
         break;
     }
     while (true);
 
     // cleanup if failed
-    if (result == false) {
+    if (result != OK) {
         auto it = m_tempFiles.find(uuid);
         if (it != m_tempFiles.end()) {
             m_tempFiles.erase(it);
@@ -255,25 +264,34 @@ TempFileHandler::removeTempfile(const std::string& uuid,
                                 Hanami::ErrorContainer& error)
 {
     // check tempfile-database form entry
-    json tempfileData;
-    if (TempfileTable::getInstance()->getTempfile(tempfileData, uuid, userContext, error, true)
-        == false)
-    {
+    TempfileTable::TempfileDbEntry tempfileData;
+    ReturnStatus ret
+        = TempfileTable::getInstance()->getTempfile(tempfileData, uuid, userContext, error);
+    if (ret == INVALID_INPUT) {
         error.addMessage("Tempfile with '" + uuid + "' not found in database");
+        return false;
+    }
+    if (ret == ERROR) {
+        error.addMessage("Internal error");
         return false;
     }
 
     // delete file from disc
-    const std::string targetFilePath = tempfileData["location"];
+    const std::string targetFilePath = tempfileData.location;
     if (Hanami::deleteFileOrDir(targetFilePath, error) == false) {
         error.addMessage("Failed to delete file '" + targetFilePath + "' from disc");
         LOG_ERROR(error);
     }
 
     // delete from tempfile-database
-    if (TempfileTable::getInstance()->deleteTempfile(uuid, userContext, error) == false) {
-        error.addMessage("Filed to delete tempfile with UUID '" + uuid + "' from database");
-        LOG_ERROR(error);
+    ret = TempfileTable::getInstance()->deleteTempfile(uuid, userContext, error);
+    if (ret == INVALID_INPUT) {
+        error.addMessage("Tempfile with '" + uuid + "' not found in database");
+        return false;
+    }
+    if (ret == ERROR) {
+        error.addMessage("Internal error");
+        return false;
     }
 
     return true;
@@ -297,13 +315,19 @@ TempFileHandler::moveData(const std::string& uuid,
     const std::lock_guard<std::mutex> lock(m_fileHandleMutex);
 
     // get location of the tempfile of the uuid
-    json tempfileMeta;
-    if (TempfileTable::getInstance()->getTempfile(tempfileMeta, uuid, userContext, error) == false)
-    {
-        error.addMessage("Tempfile with UUID '" + uuid + "' can not be found in database.");
+    TempfileTable::TempfileDbEntry tempfileData;
+    const ReturnStatus ret
+        = TempfileTable::getInstance()->getTempfile(tempfileData, uuid, userContext, error);
+    if (ret == INVALID_INPUT) {
+        error.addMessage("Tempfile with '" + uuid + "' not found in database");
         return false;
     }
-    const std::filesystem::path tempfileLocation(tempfileMeta["location"]);
+    if (ret == ERROR) {
+        error.addMessage("Internal error");
+        return false;
+    }
+
+    const std::filesystem::path tempfileLocation(tempfileData.location);
 
     const auto it = m_tempFiles.find(uuid);
     if (it != m_tempFiles.end()) {

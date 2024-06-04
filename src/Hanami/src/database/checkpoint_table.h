@@ -38,22 +38,36 @@ class CheckpointTable : public HanamiSqlTable
         return instance;
     }
 
+    struct CheckpointDbEntry {
+        std::string uuid = "";
+        std::string projectId = "";
+        std::string ownerId = "";
+        std::string visibility = "";
+        std::string name = "";
+        std::string location = "";
+    };
+
     ~CheckpointTable();
 
-    bool addCheckpoint(json& data,
-                       const Hanami::UserContext& userContext,
-                       Hanami::ErrorContainer& error);
-    bool getCheckpoint(json& result,
-                       const std::string& checkpointUuid,
-                       const Hanami::UserContext& userContext,
-                       Hanami::ErrorContainer& error,
-                       const bool showHiddenValues);
+    ReturnStatus addCheckpoint(const CheckpointDbEntry& checkpointData,
+                               const Hanami::UserContext& userContext,
+                               Hanami::ErrorContainer& error);
+    ReturnStatus getCheckpoint(CheckpointDbEntry& result,
+                               const std::string& checkpointUuid,
+                               const Hanami::UserContext& userContext,
+                               Hanami::ErrorContainer& error);
+    ReturnStatus getCheckpoint(json& result,
+                               const std::string& checkpointUuid,
+                               const Hanami::UserContext& userContext,
+                               const bool showHiddenValues,
+                               Hanami::ErrorContainer& error);
     bool getAllCheckpoint(Hanami::TableItem& result,
                           const Hanami::UserContext& userContext,
+                          const bool showHiddenValues,
                           Hanami::ErrorContainer& error);
-    bool deleteCheckpoint(const std::string& checkpointUuid,
-                          const Hanami::UserContext& userContext,
-                          Hanami::ErrorContainer& error);
+    ReturnStatus deleteCheckpoint(const std::string& checkpointUuid,
+                                  const Hanami::UserContext& userContext,
+                                  Hanami::ErrorContainer& error);
 
    private:
     CheckpointTable();

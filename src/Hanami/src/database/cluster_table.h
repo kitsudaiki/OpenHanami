@@ -37,27 +37,34 @@ class ClusterTable : public HanamiSqlTable
         return instance;
     }
 
+    struct ClusterDbEntry {
+        std::string uuid = "";
+        std::string projectId = "";
+        std::string ownerId = "";
+        std::string visibility = "";
+        std::string name = "";
+    };
+
     ~ClusterTable();
 
-    bool addCluster(json& clusterData,
-                    const Hanami::UserContext& userContext,
-                    Hanami::ErrorContainer& error);
-    bool getCluster(json& result,
-                    const std::string& clusterUuid,
-                    const Hanami::UserContext& userContext,
-                    Hanami::ErrorContainer& error,
-                    const bool showHiddenValues = false);
-    bool getClusterByName(json& result,
-                          const std::string& clusterName,
-                          const Hanami::UserContext& userContext,
-                          Hanami::ErrorContainer& error,
-                          const bool showHiddenValues = false);
+    ReturnStatus addCluster(const ClusterDbEntry& clusterData,
+                            const Hanami::UserContext& userContext,
+                            Hanami::ErrorContainer& error);
+    ReturnStatus getCluster(ClusterDbEntry& result,
+                            const std::string& clusterUuid,
+                            const Hanami::UserContext& userContext,
+                            Hanami::ErrorContainer& error);
+    ReturnStatus getCluster(json& result,
+                            const std::string& clusterUuid,
+                            const Hanami::UserContext& userContext,
+                            const bool showHiddenValues,
+                            Hanami::ErrorContainer& error);
     bool getAllCluster(Hanami::TableItem& result,
                        const Hanami::UserContext& userContext,
                        Hanami::ErrorContainer& error);
-    bool deleteCluster(const std::string& clusterUuid,
-                       const Hanami::UserContext& userContext,
-                       Hanami::ErrorContainer& error);
+    ReturnStatus deleteCluster(const std::string& clusterUuid,
+                               const Hanami::UserContext& userContext,
+                               Hanami::ErrorContainer& error);
     bool deleteAllCluster(Hanami::ErrorContainer& error);
 
    private:

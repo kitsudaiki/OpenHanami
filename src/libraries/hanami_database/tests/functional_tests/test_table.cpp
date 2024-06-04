@@ -10,21 +10,9 @@ TestTable::TestTable(Hanami::SqlDatabase* db) : SqlTable(db)
 {
     m_tableName = "users";
 
-    DbHeaderEntry userName;
-    userName.name = "name";
-    userName.maxLength = 256;
-    m_tableHeader.push_back(userName);
-
-    DbHeaderEntry pwHash;
-    pwHash.name = "pw_hash";
-    pwHash.maxLength = 64;
-    pwHash.hide = true;
-    m_tableHeader.push_back(pwHash);
-
-    DbHeaderEntry isAdmin;
-    isAdmin.name = "is_admin";
-    isAdmin.type = BOOL_TYPE;
-    m_tableHeader.push_back(isAdmin);
+    registerColumn("name", STRING_TYPE).setMaxLength(256);
+    registerColumn("pw_hash", STRING_TYPE).setMaxLength(64).hideValue();
+    registerColumn("is_admin", BOOL_TYPE);
 }
 
 TestTable::~TestTable() {}
@@ -41,7 +29,7 @@ TestTable::addUser(json& data, ErrorContainer& error)
 /**
  * @brief getUser
  */
-bool
+ReturnStatus
 TestTable::getUser(TableItem& resultTable,
                    const std::string& userID,
                    ErrorContainer& error,
@@ -49,27 +37,27 @@ TestTable::getUser(TableItem& resultTable,
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("name", userID);
-    return getFromDb(resultTable, conditions, error, withHideValues);
+    return getFromDb(resultTable, conditions, withHideValues, true, error);
 }
 
 /**
  * @brief getUser
  */
-bool
+ReturnStatus
 TestTable::getUser(json& resultItem,
                    const std::string& userID,
-                   ErrorContainer& error,
-                   const bool withHideValues)
+                   const bool withHideValues,
+                   ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("name", userID);
-    return getFromDb(resultItem, conditions, error, withHideValues);
+    return getFromDb(resultItem, conditions, withHideValues, true, error);
 }
 
 /**
  * @brief updateUser
  */
-bool
+ReturnStatus
 TestTable::updateUser(const std::string& userID, const json& values, ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
@@ -102,7 +90,7 @@ TestTable::getAllUser(TableItem& resultItem,
 /**
  * @brief deleteUser
  */
-bool
+ReturnStatus
 TestTable::deleteUser(const std::string& userID, ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;

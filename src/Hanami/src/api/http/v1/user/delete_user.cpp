@@ -66,23 +66,8 @@ DeleteUser::runTask(BlossomIO& blossomIO,
     const std::string deleterId = context["id"];
     const std::string userId = blossomIO.input["id"];
 
-    // check if user exist within the table
-    json result;
-    if (UsersTable::getInstance()->getUser(result, userId, error, false) == false) {
-        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        return false;
-    }
-
-    // handle not found
-    if (result.size() == 0) {
-        status.errorMessage = "User with id '" + userId + "' not found";
-        status.statusCode = NOT_FOUND_RTYPE;
-        LOG_DEBUG(status.errorMessage);
-        return false;
-    }
-
     // prevent user from deleting himself
-    if (result["id"] == deleterId) {
+    if (userId == deleterId) {
         status.errorMessage
             = "User with id '" + userId + "' tries to delete himself, which is not allowed.";
         status.statusCode = CONFLICT_RTYPE;
@@ -90,8 +75,15 @@ DeleteUser::runTask(BlossomIO& blossomIO,
         return false;
     }
 
-    // get data from table
-    if (UsersTable::getInstance()->deleteUser(userId, error) == false) {
+    // delete data from table
+    const ReturnStatus ret = UserTable::getInstance()->deleteUser(userId, error);
+    if (ret == INVALID_INPUT) {
+        status.errorMessage = "User with id '" + userId + "' not found";
+        status.statusCode = NOT_FOUND_RTYPE;
+        LOG_DEBUG(status.errorMessage);
+        return false;
+    }
+    if (ret == ERROR) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

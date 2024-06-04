@@ -36,10 +36,7 @@ RequestResultTable::RequestResultTable() : HanamiSqlTable(Hanami::SqlDatabase::g
 {
     m_tableName = "request_result";
 
-    DbHeaderEntry data;
-    data.name = "data";
-    data.hide = true;
-    m_tableHeader.push_back(data);
+    registerColumn("data", STRING_TYPE).hideValue();
 }
 
 /**
@@ -50,23 +47,31 @@ RequestResultTable::~RequestResultTable() {}
 /**
  * @brief add new metadata of a dataset into the database
  *
- * @param data json-item with all information of the data to add to database
+ * @param resultData result-entry to add to database
  * @param userContext context-object with all user specific information
  * @param error reference for error-output
  *
- * @return true, if successful, else false
+ * @return OK if found, INVALID_INPUT if conflict, ERROR in case of internal error
  */
-bool
-RequestResultTable::addRequestResult(json& data,
+ReturnStatus
+RequestResultTable::addRequestResult(ResultDbEntry& resultData,
                                      const Hanami::UserContext& userContext,
                                      Hanami::ErrorContainer& error)
 {
-    if (add(data, userContext, error) == false) {
+    json resultDataJson;
+
+    resultDataJson["name"] = resultData.name;
+    resultDataJson["uuid"] = resultData.uuid;
+    resultDataJson["visibility"] = resultData.visibility;
+    resultDataJson["data"] = resultData.data;
+
+    const ReturnStatus ret = addWithContext(resultDataJson, userContext, error);
+    if (ret != OK) {
         error.addMessage("Failed to add checkpoint to database");
-        return false;
+        return ret;
     }
 
-    return true;
+    return OK;
 }
 
 /**
@@ -76,30 +81,63 @@ RequestResultTable::addRequestResult(json& data,
  * @param resultUuid uuid of the data
  * @param userContext context-object with all user specific information
  * @param error reference for error-output
- * @param showHiddenValues set to true to also show as hidden marked fields
  *
- * @return true, if successful, else false
+ * @return OK if found, INVALID_INPUT if not found, ERROR in case of internal error
  */
-bool
+ReturnStatus
+RequestResultTable::getRequestResult(ResultDbEntry& result,
+                                     const std::string& resultUuid,
+                                     const Hanami::UserContext& userContext,
+                                     Hanami::ErrorContainer& error)
+{
+    json jsonRet;
+    const ReturnStatus ret = getRequestResult(jsonRet, resultUuid, userContext, true, error);
+    if (ret != OK) {
+        return ret;
+    }
+
+    result.name = jsonRet["name"];
+    result.ownerId = jsonRet["owner_id"];
+    result.projectId = jsonRet["project_id"];
+    result.uuid = jsonRet["uuid"];
+    result.visibility = jsonRet["visibility"];
+    result.data = jsonRet["data"];
+
+    return OK;
+}
+
+/**
+ * @brief get a metadata-entry for a specific dataset from the database
+ *
+ * @param result reference for the result-output
+ * @param resultUuid uuid of the data
+ * @param userContext context-object with all user specific information
+ * @param showHiddenValues set to true to also show as hidden marked fields
+ * @param error reference for error-output
+ *
+ * @return OK if found, INVALID_INPUT if not found, ERROR in case of internal error
+ */
+ReturnStatus
 RequestResultTable::getRequestResult(json& result,
                                      const std::string& resultUuid,
                                      const Hanami::UserContext& userContext,
-                                     Hanami::ErrorContainer& error,
-                                     const bool showHiddenValues)
+                                     const bool showHiddenValues,
+                                     Hanami::ErrorContainer& error)
 {
     // get user from db
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", resultUuid);
 
     // get dataset from db
-    if (get(result, userContext, conditions, error, showHiddenValues) == false) {
+    const ReturnStatus ret
+        = getWithContext(result, userContext, conditions, showHiddenValues, error);
+    if (ret != OK) {
         error.addMessage("Failed to get request-result with UUID '" + resultUuid
                          + "' from database");
-        LOG_ERROR(error);
-        return false;
+        return ret;
     }
 
-    return true;
+    return OK;
 }
 
 /**
@@ -117,7 +155,7 @@ RequestResultTable::getAllRequestResult(Hanami::TableItem& result,
                                         Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
-    if (getAll(result, userContext, conditions, error) == false) {
+    if (getAllWithContext(result, userContext, conditions, error, false) != OK) {
         error.addMessage("Failed to get all request-results from database");
         return false;
     }
@@ -132,20 +170,22 @@ RequestResultTable::getAllRequestResult(Hanami::TableItem& result,
  * @param userContext context-object with all user specific information
  * @param error reference for error-output
  *
- * @return true, if successful, else false
+ * @return OK if found, INVALID_INPUT if not found, ERROR in case of internal error
  */
-bool
+ReturnStatus
 RequestResultTable::deleteRequestResult(const std::string& resultUuid,
                                         const Hanami::UserContext& userContext,
                                         Hanami::ErrorContainer& error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", resultUuid);
-    if (del(conditions, userContext, error) == false) {
+
+    const ReturnStatus ret = deleteFromDbWithContext(conditions, userContext, error);
+    if (ret != OK) {
         error.addMessage("Failed to delete request-result with UUID '" + resultUuid
                          + "' from database");
-        return false;
+        return ret;
     }
 
-    return true;
+    return OK;
 }

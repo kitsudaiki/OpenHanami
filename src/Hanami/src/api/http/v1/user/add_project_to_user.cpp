@@ -65,6 +65,9 @@ AddProjectToUser::AddProjectToUser() : Blossom("Add a project to a specific user
     // output
     //----------------------------------------------------------------------------------------------
 
+    registerOutputField("created_at", SAKURA_STRING_TYPE)
+        .setComment("Timestamp, when user was created.");
+
     registerOutputField("id", SAKURA_STRING_TYPE).setComment("ID of the user.");
 
     registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the user.");
@@ -106,14 +109,13 @@ AddProjectToUser::runTask(BlossomIO& blossomIO,
     const std::string creatorId = context["id"];
 
     // check if user already exist within the table
-    json getResult;
-    if (UsersTable::getInstance()->getUser(getResult, userId, error, false) == false) {
+    UserTable::UserDbEntry getResult;
+    ReturnStatus ret = UserTable::getInstance()->getUser(getResult, userId, error);
+    if (ret == ERROR) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
-
-    // handle not found
-    if (getResult.size() == 0) {
+    if (ret == INVALID_INPUT) {
         status.errorMessage = "User with id '" + userId + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         LOG_DEBUG(status.errorMessage);
@@ -121,9 +123,8 @@ AddProjectToUser::runTask(BlossomIO& blossomIO,
     }
 
     // check if project is already assigned to user
-    json parsedProjects = getResult["projects"];
-    for (uint64_t i = 0; i < parsedProjects.size(); i++) {
-        if (parsedProjects[i]["project_id"] == projectId) {
+    for (const UserTable::UserProjectDbEntry& entry : getResult.projects) {
+        if (entry.projectId == projectId) {
             status.errorMessage = "Project with ID '" + projectId
                                   + "' is already assigned to user with id '" + userId + "'.";
             status.statusCode = CONFLICT_RTYPE;
@@ -133,23 +134,21 @@ AddProjectToUser::runTask(BlossomIO& blossomIO,
     }
 
     // create new entry
-    json newEntry;
-    newEntry["project_id"] = projectId;
-    newEntry["role"] = role;
-    newEntry["is_project_admin"] = isProjectAdmin;
-    parsedProjects.push_back(newEntry);
+    UserTable::UserProjectDbEntry newEntry;
+    newEntry.projectId = projectId;
+    newEntry.role = role;
+    newEntry.isProjectAdmin = isProjectAdmin;
+    getResult.projects.push_back(newEntry);
 
     // updated projects of user in database
-    if (UsersTable::getInstance()->updateProjectsOfUser(userId, parsedProjects.dump(), error)
-        == false)
-    {
+    if (UserTable::getInstance()->updateProjectsOfUser(userId, getResult.projects, error) != OK) {
         error.addMessage("Failed to update projects of user with id '" + userId + "'.");
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // get new created user from database
-    if (UsersTable::getInstance()->getUser(blossomIO.output, userId, error, false) == false) {
+    if (UserTable::getInstance()->getUser(blossomIO.output, userId, false, error) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

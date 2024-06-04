@@ -32,6 +32,7 @@ ListCheckpoint::ListCheckpoint() : Blossom("List checkpoints of all visible clus
     //----------------------------------------------------------------------------------------------
 
     json headerMatch = json::array();
+    headerMatch.push_back("created_at");
     headerMatch.push_back("uuid");
     headerMatch.push_back("project_id");
     headerMatch.push_back("owner_id");
@@ -63,7 +64,8 @@ ListCheckpoint::runTask(BlossomIO& blossomIO,
 
     // get data from table
     Hanami::TableItem table;
-    if (CheckpointTable::getInstance()->getAllCheckpoint(table, userContext, error) == false) {
+    if (CheckpointTable::getInstance()->getAllCheckpoint(table, userContext, false, error) == false)
+    {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

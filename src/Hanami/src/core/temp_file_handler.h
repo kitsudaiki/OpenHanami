@@ -53,12 +53,12 @@ class TempFileHandler : Hanami::Thread
     }
     ~TempFileHandler();
 
-    bool initNewFile(std::string& uuid,
-                     const std::string& name,
-                     const std::string& relatedUuid,
-                     const uint64_t size,
-                     const Hanami::UserContext& userContext,
-                     Hanami::ErrorContainer& error);
+    ReturnStatus initNewFile(std::string& uuid,
+                             const std::string& name,
+                             const std::string& relatedUuid,
+                             const uint64_t size,
+                             const Hanami::UserContext& userContext,
+                             Hanami::ErrorContainer& error);
 
     Hanami::FileHandle* getFileHandle(const std::string& uuid, const Hanami::UserContext& context);
 

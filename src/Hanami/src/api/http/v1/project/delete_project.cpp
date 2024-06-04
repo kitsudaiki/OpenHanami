@@ -65,23 +65,15 @@ DeleteProject::runTask(BlossomIO& blossomIO,
     // get information from request
     const std::string projectId = blossomIO.input["id"];
 
-    // check if user exist within the table
-    json result;
-    if (ProjectsTable::getInstance()->getProject(result, projectId, error) == false) {
-        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        return false;
-    }
-
-    // handle not found
-    if (result.size() == 0) {
+    // delete data from table
+    const ReturnStatus ret = ProjectTable::getInstance()->deleteProject(projectId, error);
+    if (ret == INVALID_INPUT) {
         status.errorMessage = "Project with id '" + projectId + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         LOG_DEBUG(status.errorMessage);
         return false;
     }
-
-    // get data from table
-    if (ProjectsTable::getInstance()->deleteProject(projectId, error) == false) {
+    if (ret == ERROR) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

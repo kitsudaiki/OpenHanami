@@ -46,15 +46,16 @@ namespace Hanami
 inline const std::string
 getDatetime()
 {
-    const time_t now = time(nullptr);
-    tm* ltm = localtime(&now);
+    std::time_t now = std::time(nullptr);
 
-    const std::string datatime
-        = std::to_string(1900 + ltm->tm_year) + "-" + std::to_string(1 + ltm->tm_mon) + "-"
-          + std::to_string(ltm->tm_mday) + " " + std::to_string(ltm->tm_hour) + ":"
-          + std::to_string(ltm->tm_min) + ":" + std::to_string(ltm->tm_sec);
+    // convert to UTC time
+    std::tm* gmtime = std::gmtime(&now);
 
-    return datatime;
+    // convert to string
+    std::ostringstream oss;
+    oss << std::put_time(gmtime, "%Y-%m-%d %H:%M:%S");
+
+    return oss.str();
 }
 
 /**

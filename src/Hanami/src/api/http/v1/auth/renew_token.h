@@ -35,9 +35,6 @@ class RenewToken : public Blossom
                  const json& context,
                  BlossomStatus& status,
                  Hanami::ErrorContainer& error);
-
-   private:
-    bool chooseProject(json& userData, json& parsedProjects, const std::string selectedProjectId);
 };
 
 #endif  // HANAMI_RENEW_TOKEN_H

@@ -37,6 +37,7 @@ ListProjects::ListProjects() : Blossom("Get information of all registered user a
     //----------------------------------------------------------------------------------------------
 
     json headerMatch = json::array();
+    headerMatch.push_back("created_at");
     headerMatch.push_back("id");
     headerMatch.push_back("name");
     headerMatch.push_back("creator_id");
@@ -69,7 +70,7 @@ ListProjects::runTask(BlossomIO& blossomIO,
 
     // get data from table
     Hanami::TableItem table;
-    if (ProjectsTable::getInstance()->getAllProjects(table, error) == false) {
+    if (ProjectTable::getInstance()->getAllProjects(table, error) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }

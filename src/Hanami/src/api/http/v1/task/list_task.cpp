@@ -77,15 +77,13 @@ ListTask::runTask(BlossomIO& blossomIO,
 
     // check if user exist within the table
     json getResult;
-    if (ClusterTable::getInstance()->getCluster(getResult, clusterUuid, userContext, error)
-        == false)
-    {
+    ReturnStatus ret = ClusterTable::getInstance()->getCluster(
+        getResult, clusterUuid, userContext, false, error);
+    if (ret == ERROR) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
-
-    // handle not found
-    if (getResult.size() == 0) {
+    if (ret == INVALID_INPUT) {
         status.errorMessage = "Cluster with uuid '" + clusterUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         LOG_DEBUG(status.errorMessage);

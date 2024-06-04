@@ -65,6 +65,34 @@ RenewToken::RenewToken() : Blossom("Renew a JWT-access-token for a specific user
 }
 
 /**
+ * @brief get project information for a new selected project from the user-assigned data
+ *
+ * @param tokenUserData user-data coming from database
+ * @param parsedProjects list of projects, which are assigned to the user
+ * @param selectedProjectId new desired project-id for the new token
+ *
+ * @return true, if selectedProjectId is available for the user, else false
+ */
+bool
+chooseProject(json& tokenUserData,
+              const std::vector<UserTable::UserProjectDbEntry>& parsedProjects,
+              const std::string selectedProjectId)
+{
+    for (const UserTable::UserProjectDbEntry project : parsedProjects) {
+        if (project.projectId == selectedProjectId) {
+            tokenUserData["project_id"] = project.projectId;
+            tokenUserData["role"] = project.role;
+            tokenUserData["is_project_admin"] = project.isProjectAdmin;
+            tokenUserData.erase("projects");
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/**
  * @brief runTask
  */
 bool
@@ -77,14 +105,13 @@ RenewToken::runTask(BlossomIO& blossomIO,
     const std::string projectId = blossomIO.input["project_id"];
 
     // get data from table
-    json userData;
-    if (UsersTable::getInstance()->getUser(userData, userContext.userId, error, false) == false) {
+    UserTable::UserDbEntry userData;
+    ReturnStatus ret = UserTable::getInstance()->getUser(userData, userContext.userId, error);
+    if (ret == ERROR) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
-
-    // handle not found
-    if (userData.size() == 0) {
+    if (ret == INVALID_INPUT) {
         status.errorMessage
             = "ACCESS DENIED!\n"
               "User or password is incorrect.";
@@ -93,20 +120,25 @@ RenewToken::runTask(BlossomIO& blossomIO,
         return false;
     }
 
-    json parsedProjects = userData["projects"];
+    // get reduced user-data as json from db
+    json tokenUserData;
+    ret = UserTable::getInstance()->getUser(tokenUserData, userContext.userId, false, error);
+    if (ret != OK) {
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
 
     // if user is global admin, add the admin-project to the list of choosable projects
-    const bool isAdmin = userData["is_admin"];
-    if (isAdmin) {
-        json adminProject = json::object();
-        adminProject["project_id"] = "admin";
-        adminProject["role"] = "admin";
-        adminProject["is_project_admin"] = true;
-        parsedProjects.push_back(adminProject);
+    if (userData.isAdmin) {
+        UserTable::UserProjectDbEntry adminProject;
+        adminProject.projectId = "admin";
+        adminProject.role = "admin";
+        adminProject.isProjectAdmin = true;
+        userData.projects.push_back(adminProject);
     }
 
     // select project
-    if (chooseProject(userData, parsedProjects, projectId) == false) {
+    if (chooseProject(tokenUserData, userData.projects, projectId) == false) {
         status.errorMessage = "User with id '" + userContext.userId
                               + "' is not assigned to the project with id '" + projectId + "'.";
         status.statusCode = UNAUTHORIZED_RTYPE;
@@ -132,39 +164,14 @@ RenewToken::runTask(BlossomIO& blossomIO,
         = jwt::create()
               .set_type("JWT")
               .set_expires_at(expireTimePoint)
-              .set_payload_claim("user", jwt::claim(userData.dump()))
+              .set_payload_claim("user", jwt::claim(tokenUserData.dump()))
               .sign(jwt::algorithm::hs256{(const char*)HanamiRoot::tokenKey.data()});
 
     blossomIO.output["id"] = userContext.userId;
-    blossomIO.output["is_admin"] = isAdmin;
-    blossomIO.output["name"] = userData["name"];
+    blossomIO.output["is_admin"] = userData.isAdmin;
+    blossomIO.output["name"] = userData.name;
     blossomIO.output["token"] = jwtToken;
+    blossomIO.output.erase("created_at");
 
     return true;
-}
-
-/**
- * @brief get project information for a new selected project from the user-assigned data
- *
- * @param userData user-data coming from database
- * @param parsedProjects list of projects, which are assigned to the user
- * @param selectedProjectId new desired project-id for the new token
- *
- * @return true, if selectedProjectId is available for the user, else false
- */
-bool
-RenewToken::chooseProject(json& userData, json& parsedProjects, const std::string selectedProjectId)
-{
-    for (uint64_t i = 0; i < parsedProjects.size(); i++) {
-        if (parsedProjects[i]["project_id"] == selectedProjectId) {
-            userData["project_id"] = parsedProjects[i]["project_id"];
-            userData["role"] = parsedProjects[i]["role"];
-            userData["is_project_admin"] = parsedProjects[i]["is_project_admin"];
-            userData.erase("projects");
-
-            return true;
-        }
-    }
-
-    return false;
 }
