@@ -26,7 +26,6 @@
 #include <api/endpoint_processing/http_processing/http_processing.h>
 #include <api/endpoint_processing/http_server.h>
 #include <api/http/v1/auth/create_token.h>
-#include <api/http/v1/auth/list_user_projects.h>
 #include <api/http/v1/auth/renew_token.h>
 #include <api/http/v1/auth/validate_access.h>
 #include <api/http/v1/checkpoint/delete_checkpoint.h>
@@ -72,6 +71,7 @@
 #include <api/http/v1/user/create_user.h>
 #include <api/http/v1/user/delete_user.h>
 #include <api/http/v1/user/get_user.h>
+#include <api/http/v1/user/list_user_projects.h>
 #include <api/http/v1/user/list_users.h>
 #include <api/http/v1/user/remove_project_from_user.h>
 #include <hanami_common/files/text_file.h>
@@ -197,8 +197,6 @@ userBlossomes()
 
     httpProcessing->addEndpoint("v1/user/project", POST_TYPE, group, new AddProjectToUser());
     httpProcessing->addEndpoint("v1/user/project", DELETE_TYPE, group, new RemoveProjectFromUser());
-
-    // TODO: move ListUserProjects-class in user-directory
     httpProcessing->addEndpoint("v1/user/project", GET_TYPE, group, new ListUserProjects());
 }
 
