@@ -157,6 +157,7 @@ class Blossom
     virtual ~Blossom();
 
     const std::string comment;
+    std::string tag;
     const bool requiresAuthToken;
     std::vector<HttpResponseTypes> errorCodes = {INTERNAL_SERVER_ERROR_RTYPE};
 

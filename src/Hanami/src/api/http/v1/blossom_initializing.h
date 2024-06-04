@@ -26,7 +26,6 @@
 #include <api/endpoint_processing/http_processing/http_processing.h>
 #include <api/endpoint_processing/http_server.h>
 #include <api/http/v1/auth/create_token.h>
-#include <api/http/v1/auth/list_user_projects.h>
 #include <api/http/v1/auth/renew_token.h>
 #include <api/http/v1/auth/validate_access.h>
 #include <api/http/v1/checkpoint/delete_checkpoint.h>
@@ -72,6 +71,7 @@
 #include <api/http/v1/user/create_user.h>
 #include <api/http/v1/user/delete_user.h>
 #include <api/http/v1/user/get_user.h>
+#include <api/http/v1/user/list_user_projects.h>
 #include <api/http/v1/user/list_users.h>
 #include <api/http/v1/user/remove_project_from_user.h>
 #include <hanami_common/files/text_file.h>
@@ -88,30 +88,14 @@ initClusterBlossoms()
 {
     const std::string group = "Cluster";
     HttpProcessing* httpProcessing = HanamiRoot::httpServer->httpProcessing;
-
-    httpProcessing->addBlossom(group, "create", new CreateCluster());
-    httpProcessing->addEndpoint("v1/cluster", POST_TYPE, group, "create");
-
-    httpProcessing->addBlossom(group, "show", new ShowCluster());
-    httpProcessing->addEndpoint("v1/cluster", GET_TYPE, group, "show");
-
-    httpProcessing->addBlossom(group, "list", new ListCluster());
-    httpProcessing->addEndpoint("v1/cluster/all", GET_TYPE, group, "list");
-
-    httpProcessing->addBlossom(group, "delete", new DeleteCluster());
-    httpProcessing->addEndpoint("v1/cluster", DELETE_TYPE, group, "delete");
-
-    httpProcessing->addBlossom(group, "save", new SaveCluster());
-    httpProcessing->addEndpoint("v1/cluster/save", POST_TYPE, group, "save");
-
-    httpProcessing->addBlossom(group, "load", new LoadCluster());
-    httpProcessing->addEndpoint("v1/cluster/load", POST_TYPE, group, "load");
-
-    httpProcessing->addBlossom(group, "set_mode", new SetClusterMode());
-    httpProcessing->addEndpoint("v1/cluster/set_mode", PUT_TYPE, group, "set_mode");
-
-    httpProcessing->addBlossom(group, "switch_host", new SwitchHosts());
-    httpProcessing->addEndpoint("v1/cluster/switch_host", PUT_TYPE, group, "switch_host");
+    httpProcessing->addEndpoint("v1/cluster", POST_TYPE, group, new CreateCluster());
+    httpProcessing->addEndpoint("v1/cluster", GET_TYPE, group, new ShowCluster());
+    httpProcessing->addEndpoint("v1/cluster/all", GET_TYPE, group, new ListCluster());
+    httpProcessing->addEndpoint("v1/cluster", DELETE_TYPE, group, new DeleteCluster());
+    httpProcessing->addEndpoint("v1/cluster/save", POST_TYPE, group, new SaveCluster());
+    httpProcessing->addEndpoint("v1/cluster/load", POST_TYPE, group, new LoadCluster());
+    httpProcessing->addEndpoint("v1/cluster/set_mode", PUT_TYPE, group, new SetClusterMode());
+    httpProcessing->addEndpoint("v1/cluster/switch_host", PUT_TYPE, group, new SwitchHosts());
 }
 
 /**
@@ -122,18 +106,10 @@ initTaskBlossoms()
 {
     const std::string group = "Task";
     HttpProcessing* httpProcessing = HanamiRoot::httpServer->httpProcessing;
-
-    httpProcessing->addBlossom(group, "create", new CreateTask());
-    httpProcessing->addEndpoint("v1/task", POST_TYPE, group, "create");
-
-    httpProcessing->addBlossom(group, "show", new ShowTask());
-    httpProcessing->addEndpoint("v1/task", GET_TYPE, group, "show");
-
-    httpProcessing->addBlossom(group, "list", new ListTask());
-    httpProcessing->addEndpoint("v1/task/all", GET_TYPE, group, "list");
-
-    httpProcessing->addBlossom(group, "delete", new DeleteTask());
-    httpProcessing->addEndpoint("v1/task", DELETE_TYPE, group, "delete");
+    httpProcessing->addEndpoint("v1/task", POST_TYPE, group, new CreateTask());
+    httpProcessing->addEndpoint("v1/task", GET_TYPE, group, new ShowTask());
+    httpProcessing->addEndpoint("v1/task/all", GET_TYPE, group, new ListTask());
+    httpProcessing->addEndpoint("v1/task", DELETE_TYPE, group, new DeleteTask());
 }
 
 /**
@@ -144,33 +120,15 @@ dataSetBlossoms()
 {
     const std::string group = "Data Set";
     HttpProcessing* httpProcessing = HanamiRoot::httpServer->httpProcessing;
-
-    httpProcessing->addBlossom(group, "create_mnist", new CreateMnistDataSet());
-    httpProcessing->addEndpoint("v1/mnist/dataset", POST_TYPE, group, "create_mnist");
-
-    httpProcessing->addBlossom(group, "finalize_mnist", new FinalizeMnistDataSet());
-    httpProcessing->addEndpoint("v1/mnist/dataset", PUT_TYPE, group, "finalize_mnist");
-
-    httpProcessing->addBlossom(group, "create_csv", new CreateCsvDataSet());
-    httpProcessing->addEndpoint("v1/csv/dataset", POST_TYPE, group, "create_csv");
-
-    httpProcessing->addBlossom(group, "finalize_csv", new FinalizeCsvDataSet());
-    httpProcessing->addEndpoint("v1/csv/dataset", PUT_TYPE, group, "finalize_csv");
-
-    httpProcessing->addBlossom(group, "check", new CheckDataSet());
-    httpProcessing->addEndpoint("v1/dataset/check", POST_TYPE, group, "check");
-
-    httpProcessing->addBlossom(group, "progress", new GetProgressDataSet());
-    httpProcessing->addEndpoint("v1/dataset/progress", GET_TYPE, group, "progress");
-
-    httpProcessing->addBlossom(group, "get", new GetDataSet());
-    httpProcessing->addEndpoint("v1/dataset", GET_TYPE, group, "get");
-
-    httpProcessing->addBlossom(group, "delete", new DeleteDataSet());
-    httpProcessing->addEndpoint("v1/dataset", DELETE_TYPE, group, "delete");
-
-    httpProcessing->addBlossom(group, "list", new ListDataSet());
-    httpProcessing->addEndpoint("v1/dataset/all", GET_TYPE, group, "list");
+    httpProcessing->addEndpoint("v1/mnist/dataset", POST_TYPE, group, new CreateMnistDataSet());
+    httpProcessing->addEndpoint("v1/mnist/dataset", PUT_TYPE, group, new FinalizeMnistDataSet());
+    httpProcessing->addEndpoint("v1/csv/dataset", POST_TYPE, group, new CreateCsvDataSet());
+    httpProcessing->addEndpoint("v1/csv/dataset", PUT_TYPE, group, new FinalizeCsvDataSet());
+    httpProcessing->addEndpoint("v1/dataset/check", POST_TYPE, group, new CheckDataSet());
+    httpProcessing->addEndpoint("v1/dataset/progress", GET_TYPE, group, new GetProgressDataSet());
+    httpProcessing->addEndpoint("v1/dataset", GET_TYPE, group, new GetDataSet());
+    httpProcessing->addEndpoint("v1/dataset", DELETE_TYPE, group, new DeleteDataSet());
+    httpProcessing->addEndpoint("v1/dataset/all", GET_TYPE, group, new ListDataSet());
 }
 
 /**
@@ -181,15 +139,9 @@ clusterCheckpointBlossoms()
 {
     const std::string group = "Checkpoint";
     HttpProcessing* httpProcessing = HanamiRoot::httpServer->httpProcessing;
-
-    httpProcessing->addBlossom(group, "get", new GetCheckpoint());
-    httpProcessing->addEndpoint("v1/checkpoint", GET_TYPE, group, "get");
-
-    httpProcessing->addBlossom(group, "delete", new DeleteCheckpoint());
-    httpProcessing->addEndpoint("v1/checkpoint", DELETE_TYPE, group, "delete");
-
-    httpProcessing->addBlossom(group, "list", new ListCheckpoint());
-    httpProcessing->addEndpoint("v1/checkpoint/all", GET_TYPE, group, "list");
+    httpProcessing->addEndpoint("v1/checkpoint", GET_TYPE, group, new GetCheckpoint());
+    httpProcessing->addEndpoint("v1/checkpoint", DELETE_TYPE, group, new DeleteCheckpoint());
+    httpProcessing->addEndpoint("v1/checkpoint/all", GET_TYPE, group, new ListCheckpoint());
 }
 
 /**
@@ -200,15 +152,9 @@ resultBlossoms()
 {
     const std::string group = "Request-Result";
     HttpProcessing* httpProcessing = HanamiRoot::httpServer->httpProcessing;
-
-    httpProcessing->addBlossom(group, "get", new GetRequestResult());
-    httpProcessing->addEndpoint("v1/request_result", GET_TYPE, group, "get");
-
-    httpProcessing->addBlossom(group, "list", new ListRequestResult());
-    httpProcessing->addEndpoint("v1/request_result/all", GET_TYPE, group, "list");
-
-    httpProcessing->addBlossom(group, "delete", new DeleteRequestResult());
-    httpProcessing->addEndpoint("v1/request_result", DELETE_TYPE, group, "delete");
+    httpProcessing->addEndpoint("v1/request_result", GET_TYPE, group, new GetRequestResult());
+    httpProcessing->addEndpoint("v1/request_result/all", GET_TYPE, group, new ListRequestResult());
+    httpProcessing->addEndpoint("v1/request_result", DELETE_TYPE, group, new DeleteRequestResult());
 }
 
 /**
@@ -219,12 +165,8 @@ logsBlossoms()
 {
     const std::string group = "Logs";
     HttpProcessing* httpProcessing = HanamiRoot::httpServer->httpProcessing;
-
-    httpProcessing->addBlossom(group, "get_audit_log", new GetAuditLog());
-    httpProcessing->addEndpoint("v1/audit_log", GET_TYPE, group, "get_audit_log");
-
-    httpProcessing->addBlossom(group, "get_error_log", new GetErrorLog());
-    httpProcessing->addEndpoint("v1/error_log", GET_TYPE, group, "get_error_log");
+    httpProcessing->addEndpoint("v1/audit_log", GET_TYPE, group, new GetAuditLog());
+    httpProcessing->addEndpoint("v1/error_log", GET_TYPE, group, new GetErrorLog());
 }
 
 /**
@@ -235,15 +177,9 @@ tokenBlossomes()
 {
     const std::string group = "Token";
     HttpProcessing* httpProcessing = HanamiRoot::httpServer->httpProcessing;
-
-    httpProcessing->addBlossom(group, "create", new CreateToken());
-    httpProcessing->addEndpoint("v1/token", POST_TYPE, group, "create");
-
-    httpProcessing->addBlossom(group, "renew", new RenewToken());
-    httpProcessing->addEndpoint("v1/token", PUT_TYPE, group, "renew");
-
-    httpProcessing->addBlossom(group, "validate", new ValidateAccess());
-    httpProcessing->addEndpoint("v1/auth", GET_TYPE, group, "validate");
+    httpProcessing->addEndpoint("v1/token", POST_TYPE, group, new CreateToken());
+    httpProcessing->addEndpoint("v1/token", PUT_TYPE, group, new RenewToken());
+    httpProcessing->addEndpoint("v1/auth", GET_TYPE, group, new ValidateAccess());
 }
 
 /**
@@ -252,34 +188,16 @@ tokenBlossomes()
 void
 userBlossomes()
 {
-    const std::string userGroup = "User";
+    const std::string group = "User";
     HttpProcessing* httpProcessing = HanamiRoot::httpServer->httpProcessing;
+    httpProcessing->addEndpoint("v1/user", POST_TYPE, group, new CreateUser());
+    httpProcessing->addEndpoint("v1/user", GET_TYPE, group, new GetUser());
+    httpProcessing->addEndpoint("v1/user/all", GET_TYPE, group, new ListUsers());
+    httpProcessing->addEndpoint("v1/user", DELETE_TYPE, group, new DeleteUser());
 
-    httpProcessing->addBlossom(userGroup, "create", new CreateUser());
-    httpProcessing->addEndpoint("v1/user", POST_TYPE, userGroup, "create");
-
-    httpProcessing->addBlossom(userGroup, "get", new GetUser());
-    httpProcessing->addEndpoint("v1/user", GET_TYPE, userGroup, "get");
-
-    httpProcessing->addBlossom(userGroup, "list", new ListUsers());
-    httpProcessing->addEndpoint("v1/user/all", GET_TYPE, userGroup, "list");
-
-    httpProcessing->addBlossom(userGroup, "delete", new DeleteUser());
-    httpProcessing->addEndpoint("v1/user", DELETE_TYPE, userGroup, "delete");
-
-    const std::string userProjectGroup = "User-Projects";
-
-    httpProcessing->addBlossom(userProjectGroup, "add_project", new AddProjectToUser());
-    httpProcessing->addEndpoint("v1/user/project", POST_TYPE, userProjectGroup, "add_project");
-
-    httpProcessing->addBlossom(userProjectGroup, "remove_project", new RemoveProjectFromUser());
-    httpProcessing->addEndpoint("v1/user/project", DELETE_TYPE, userProjectGroup, "remove_project");
-
-    // TODO: move ListUserProjects-class in user-directory
-
-    httpProcessing->addBlossom(userProjectGroup, "list_user_projects", new ListUserProjects());
-    httpProcessing->addEndpoint(
-        "v1/user/project", GET_TYPE, userProjectGroup, "list_user_projects");
+    httpProcessing->addEndpoint("v1/user/project", POST_TYPE, group, new AddProjectToUser());
+    httpProcessing->addEndpoint("v1/user/project", DELETE_TYPE, group, new RemoveProjectFromUser());
+    httpProcessing->addEndpoint("v1/user/project", GET_TYPE, group, new ListUserProjects());
 }
 
 /**
@@ -290,18 +208,10 @@ projectBlossomes()
 {
     const std::string group = "Project";
     HttpProcessing* httpProcessing = HanamiRoot::httpServer->httpProcessing;
-
-    httpProcessing->addBlossom(group, "create", new CreateProject());
-    httpProcessing->addEndpoint("v1/project", POST_TYPE, group, "create");
-
-    httpProcessing->addBlossom(group, "get", new GetProject());
-    httpProcessing->addEndpoint("v1/project", GET_TYPE, group, "get");
-
-    httpProcessing->addBlossom(group, "list", new ListProjects());
-    httpProcessing->addEndpoint("v1/project/all", GET_TYPE, group, "list");
-
-    httpProcessing->addBlossom(group, "delete", new DeleteProject());
-    httpProcessing->addEndpoint("v1/project", DELETE_TYPE, group, "delete");
+    httpProcessing->addEndpoint("v1/project", POST_TYPE, group, new CreateProject());
+    httpProcessing->addEndpoint("v1/project", GET_TYPE, group, new GetProject());
+    httpProcessing->addEndpoint("v1/project/all", GET_TYPE, group, new ListProjects());
+    httpProcessing->addEndpoint("v1/project", DELETE_TYPE, group, new DeleteProject());
 }
 
 /**
@@ -312,16 +222,10 @@ measuringBlossomes()
 {
     const std::string group = "Measurements";
     HttpProcessing* httpProcessing = HanamiRoot::httpServer->httpProcessing;
-
-    httpProcessing->addBlossom(group, "get_power_consumption", new PowerConsumption());
-    httpProcessing->addEndpoint("v1/power_consumption", GET_TYPE, group, "get_power_consumption");
-
-    httpProcessing->addBlossom(group, "get_speed", new Speed());
-    httpProcessing->addEndpoint("v1/speed", GET_TYPE, group, "get_speed");
-
-    httpProcessing->addBlossom(group, "get_temperature_production", new ThermalProduction());
+    httpProcessing->addEndpoint("v1/power_consumption", GET_TYPE, group, new PowerConsumption());
+    httpProcessing->addEndpoint("v1/speed", GET_TYPE, group, new Speed());
     httpProcessing->addEndpoint(
-        "v1/temperature_production", GET_TYPE, group, "get_temperature_production");
+        "v1/temperature_production", GET_TYPE, group, new ThermalProduction());
 }
 
 /**
@@ -332,9 +236,7 @@ hostBlossoms()
 {
     const std::string group = "Hosts";
     HttpProcessing* httpProcessing = HanamiRoot::httpServer->httpProcessing;
-
-    httpProcessing->addBlossom(group, "list_hosts", new ListHosts());
-    httpProcessing->addEndpoint("v1/host/all", GET_TYPE, group, "list_hosts");
+    httpProcessing->addEndpoint("v1/host/all", GET_TYPE, group, new ListHosts());
 }
 
 /**
@@ -356,12 +258,8 @@ initBlossoms()
     userBlossomes();
 
     HttpProcessing* httpProcessing = HanamiRoot::httpServer->httpProcessing;
-
-    httpProcessing->addBlossom("System", "get_info", new GetSystemInfo());
-    httpProcessing->addEndpoint("v1/system_info", GET_TYPE, "System", "get_info");
-
-    httpProcessing->addBlossom("Threading", "get_mapping", new GetThreadMapping());
-    httpProcessing->addEndpoint("v1/threading", GET_TYPE, "Threading", "get_mapping");
+    httpProcessing->addEndpoint("v1/system_info", GET_TYPE, "System", new GetSystemInfo());
+    httpProcessing->addEndpoint("v1/threading", GET_TYPE, "Threading", new GetThreadMapping());
 }
 
 #endif  // HANAMI_BLOSSOM_INITIALIZING_H

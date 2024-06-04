@@ -18,7 +18,6 @@ set(SOURCES
     src/api/endpoint_processing/http_websocket_thread.h
     src/api/endpoint_processing/runtime_validation.h
     src/api/http/v1/auth/create_token.h
-    src/api/http/v1/auth/list_user_projects.h
     src/api/http/v1/auth/renew_token.h
     src/api/http/v1/auth/validate_access.h
     src/api/http/v1/blossom_initializing.h
@@ -66,6 +65,7 @@ set(SOURCES
     src/api/http/v1/user/delete_user.h
     src/api/http/v1/user/get_user.h
     src/api/http/v1/user/list_users.h
+    src/api/http/v1/user/list_user_projects.h
     src/api/http/v1/user/remove_project_from_user.h
     src/api/websocket/cluster_io.h
     src/api/websocket/file_upload.h
@@ -126,7 +126,6 @@ set(SOURCES
     src/api/endpoint_processing/http_websocket_thread.cpp
     src/api/endpoint_processing/runtime_validation.cpp
     src/api/http/v1/auth/create_token.cpp
-    src/api/http/v1/auth/list_user_projects.cpp
     src/api/http/v1/auth/renew_token.cpp
     src/api/http/v1/auth/validate_access.cpp
     src/api/http/v1/checkpoint/delete_checkpoint.cpp
@@ -173,6 +172,7 @@ set(SOURCES
     src/api/http/v1/user/delete_user.cpp
     src/api/http/v1/user/get_user.cpp
     src/api/http/v1/user/list_users.cpp
+    src/api/http/v1/user/list_user_projects.cpp
     src/api/http/v1/user/remove_project_from_user.cpp
     src/api/websocket/cluster_io.cpp
     src/api/websocket/file_upload.cpp
