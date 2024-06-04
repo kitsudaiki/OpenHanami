@@ -358,8 +358,8 @@ generateEndpointDocu_openapi(json& result)
         for (const auto& [type, endpointEntry] : httpDef) {
             json endpointType;
 
-            Blossom* blossom = HanamiRoot::httpServer->httpProcessing->getBlossom(
-                endpointEntry.group, endpointEntry.name);
+            Blossom* blossom
+                = HanamiRoot::httpServer->httpProcessing->mapEndpoint(endpointPath, type);
             if (blossom == nullptr) {
                 // TODO: handle error
                 return;
@@ -369,7 +369,7 @@ generateEndpointDocu_openapi(json& result)
             endpointType["summary"] = blossom->comment;
 
             json tags;
-            tags.push_back(endpointEntry.group);
+            tags.push_back(blossom->tag);
             endpointType["tags"] = tags;
 
             json parameters;

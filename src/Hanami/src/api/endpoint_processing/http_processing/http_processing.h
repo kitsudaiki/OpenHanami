@@ -50,11 +50,6 @@ namespace ssl = boost::asio::ssl;        // from <boost/asio/ssl.hpp>
 class Blossom;
 struct BlossomIO;
 
-struct EndpointEntry {
-    std::string group = "-";
-    std::string name = "";
-};
-
 class HttpProcessing
 {
    public:
@@ -63,25 +58,21 @@ class HttpProcessing
                         Hanami::ErrorContainer& error);
 
     // endpoints
-    bool mapEndpoint(EndpointEntry& result, const std::string& id, const HttpRequestType type);
     bool addEndpoint(const std::string& id,
                      const HttpRequestType& httpType,
                      const std::string& group,
-                     const std::string& name);
+                     Blossom* newBlossom);
 
     // blossoms
+    Blossom* mapEndpoint(const std::string& id, const HttpRequestType type);
     bool triggerBlossom(json& result,
-                        const std::string& blossomName,
-                        const std::string& blossomGroupName,
+                        const std::string& id,
+                        const HttpRequestType type,
                         const json& context,
                         const json& initialValues,
                         BlossomStatus& status,
                         Hanami::ErrorContainer& error);
-    bool doesBlossomExist(const std::string& groupName, const std::string& itemName);
-    bool addBlossom(const std::string& groupName, const std::string& itemName, Blossom* newBlossom);
-    Blossom* getBlossom(const std::string& groupName, const std::string& itemName);
-
-    std::map<std::string, std::map<HttpRequestType, EndpointEntry>> endpointRules;
+    std::map<std::string, std::map<HttpRequestType, Blossom*>> endpointRules;
 
    private:
     enum OverrideType { ALL, ONLY_EXISTING, ONLY_NON_EXISTING };
@@ -94,12 +85,12 @@ class HttpProcessing
                                const HttpRequestType httpType,
                                Hanami::ErrorContainer& error);
     bool checkStatusCode(Blossom* blossom,
-                         const std::string& blossomName,
-                         const std::string& blossomGroupName,
+                         const std::string& id,
+                         const std::string& type,
                          BlossomStatus& status,
                          Hanami::ErrorContainer& error);
 
-    std::map<std::string, std::map<std::string, Blossom*>> m_registeredBlossoms;
+    const std::string convertType(const HttpRequestType type);
 };
 
 #endif  // TORIIGATEWAY_HTTP_PROCESSING_H

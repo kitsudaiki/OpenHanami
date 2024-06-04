@@ -158,7 +158,7 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
             inputValuesJson.erase("token");
 
             if (triggerBlossom(
-                    result, "create", "Token", json::object(), inputValuesJson, status, error)
+                    result, "v1/token", POST_TYPE, json::object(), inputValuesJson, status, error)
                 == false)
             {
                 error.addMessage("Token request failed");
@@ -174,7 +174,7 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
         tokenInputValues["http_type"] = static_cast<uint32_t>(hanamiRequest.httpType);
         tokenInputValues["endpoint"] = hanamiRequest.id;
         if (triggerBlossom(
-                tokenData, "validate", "Token", json::object(), tokenInputValues, status, error)
+                tokenData, "v1/auth", GET_TYPE, json::object(), tokenInputValues, status, error)
             == false)
         {
             error.addMessage("Permission-check failed");
@@ -184,24 +184,7 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
         userId = tokenData["id"];
 
         // convert http-type to string
-        std::string httpTypeStr = "GET";
-        if (hanamiRequest.httpType == DELETE_TYPE) {
-            httpTypeStr = "DELETE";
-        }
-        if (hanamiRequest.httpType == GET_TYPE) {
-            httpTypeStr = "GET";
-        }
-        if (hanamiRequest.httpType == HEAD_TYPE) {
-            httpTypeStr = "HEAD";
-        }
-        if (hanamiRequest.httpType == POST_TYPE) {
-            httpTypeStr = "POST";
-        }
-        if (hanamiRequest.httpType == PUT_TYPE) {
-            httpTypeStr = "PUT";
-        }
-
-        // write new audit-entry to database
+        const std::string httpTypeStr = convertType(hanamiRequest.httpType);
         if (hanamiRequest.httpType != GET_TYPE) {
             if (AuditLogTable::getInstance()->addAuditLogEntry(
                     getDatetime(), userId, hanamiRequest.id, httpTypeStr, error)
@@ -217,17 +200,14 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
             inputValuesJson.erase("token");
         }
 
-        // map endpoint to blossom
-        EndpointEntry endpoint;
-        if (mapEndpoint(endpoint, hanamiRequest.id, hanamiRequest.httpType) == false) {
-            status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-            error.addMessage("Failed to map endpoint with id '" + hanamiRequest.id + "'");
-            break;
-        }
-
         // make real request
-        if (triggerBlossom(
-                result, endpoint.name, endpoint.group, tokenData, inputValuesJson, status, error)
+        if (triggerBlossom(result,
+                           hanamiRequest.id,
+                           hanamiRequest.httpType,
+                           tokenData,
+                           inputValuesJson,
+                           status,
+                           error)
             == false)
         {
             error.addMessage("Blossom-trigger failed");
@@ -253,86 +233,6 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
 }
 
 /**
- * @brief check if a specific blossom was registered
- *
- * @param groupName group-identifier of the blossom
- * @param itemName item-identifier of the blossom
- *
- * @return true, if blossom with the given group- and item-name exist, else false
- */
-bool
-HttpProcessing::doesBlossomExist(const std::string& groupName, const std::string& itemName)
-{
-    auto groupIt = m_registeredBlossoms.find(groupName);
-    if (groupIt != m_registeredBlossoms.end()) {
-        if (groupIt->second.find(itemName) != groupIt->second.end()) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-/**
- * @brief SakuraLangInterface::addBlossom
- *
- * @param groupName group-identifier of the blossom
- * @param itemName item-identifier of the blossom
- * @param newBlossom pointer to the new blossom
- *
- * @return true, if blossom was registered or false, if the group- and item-name are already
- *         registered
- */
-bool
-HttpProcessing::addBlossom(const std::string& groupName,
-                           const std::string& itemName,
-                           Blossom* newBlossom)
-{
-    // check if already used
-    if (doesBlossomExist(groupName, itemName) == true) {
-        return false;
-    }
-
-    // create internal group-map, if not already exist
-    auto groupIt = m_registeredBlossoms.find(groupName);
-    if (groupIt == m_registeredBlossoms.end()) {
-        std::map<std::string, Blossom*> newMap;
-        m_registeredBlossoms.try_emplace(groupName, newMap);
-    }
-
-    // add item to group
-    groupIt = m_registeredBlossoms.find(groupName);
-    groupIt->second.try_emplace(itemName, newBlossom);
-
-    return true;
-}
-
-/**
- * @brief request a registered blossom
- *
- * @param groupName group-identifier of the blossom
- * @param itemName item-identifier of the blossom
- *
- * @return pointer to the blossom or
- *         nullptr, if blossom the given group- and item-name was not found
- */
-Blossom*
-HttpProcessing::getBlossom(const std::string& groupName, const std::string& itemName)
-{
-    // search for group
-    auto groupIt = m_registeredBlossoms.find(groupName);
-    if (groupIt != m_registeredBlossoms.end()) {
-        // search for item within group
-        auto itemIt = groupIt->second.find(itemName);
-        if (itemIt != groupIt->second.end()) {
-            return itemIt->second;
-        }
-    }
-
-    return nullptr;
-}
-
-/**
  * @brief trigger existing blossom
  *
  * @param result map with resulting items
@@ -346,8 +246,8 @@ HttpProcessing::getBlossom(const std::string& groupName, const std::string& item
  */
 bool
 HttpProcessing::triggerBlossom(json& result,
-                               const std::string& blossomName,
-                               const std::string& blossomGroupName,
+                               const std::string& id,
+                               const HttpRequestType type,
                                const json& context,
                                const json& initialValues,
                                BlossomStatus& status,
@@ -356,9 +256,9 @@ HttpProcessing::triggerBlossom(json& result,
     LOG_DEBUG("trigger blossom");
 
     // get initial blossom-item
-    Blossom* blossom = getBlossom(blossomGroupName, blossomName);
+    Blossom* blossom = mapEndpoint(id, type);
     if (blossom == nullptr) {
-        error.addMessage("No blosom found for the id " + blossomName);
+        error.addMessage("No blosom found for the id " + id);
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         status.errorMessage = "";
         return false;
@@ -366,8 +266,8 @@ HttpProcessing::triggerBlossom(json& result,
 
     // inialize a new blossom-leaf for processing
     BlossomIO blossomIO;
-    blossomIO.blossomName = blossomName;
-    blossomIO.blossomGroupType = blossomGroupName;
+    blossomIO.blossomName = id;
+    blossomIO.blossomGroupType = convertType(type);
     blossomIO.input = initialValues;
 
     // check input to be complete
@@ -382,7 +282,7 @@ HttpProcessing::triggerBlossom(json& result,
         LOG_DEBUG(
             "check of completeness of input-fields failed"
             "Check of blossom '"
-            + blossomName + "' in group '" + blossomGroupName + "' failed.");
+            + id + "' in group '" + convertType(type) + "' failed.");
         return false;
     }
 
@@ -400,7 +300,7 @@ HttpProcessing::triggerBlossom(json& result,
     {
         error.addMessage(errorMessage);
         error.addMessage("check of completeness of output-fields failed");
-        error.addMessage("Check of blossom '" + blossomName + "' in group '" + blossomGroupName
+        error.addMessage("Check of blossom '" + id + "' in group '" + convertType(type)
                          + "' failed.");
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         status.errorMessage = "";
@@ -411,22 +311,22 @@ HttpProcessing::triggerBlossom(json& result,
     result.clear();
     overrideItems(result, blossomIO.output, ALL);
 
-    return checkStatusCode(blossom, blossomName, blossomGroupName, status, error);
+    return checkStatusCode(blossom, id, convertType(type), status, error);
 }
 
 /**
  * @brief check if the given status-code is allowed for the endpoint
  *
  * @param blossom pointer to related blossom
- * @param blossomName name of blossom for error-message
- * @param blossomGroupName group of the blossom for error-message
+ * @param id name of blossom
+ * @param type type of the blossom
  * @param status status to check
  * @param error reference for error-output
  */
 bool
 HttpProcessing::checkStatusCode(Blossom* blossom,
-                                const std::string& blossomName,
-                                const std::string& blossomGroupName,
+                                const std::string& id,
+                                const std::string& type,
                                 BlossomStatus& status,
                                 Hanami::ErrorContainer& error)
 {
@@ -445,8 +345,8 @@ HttpProcessing::checkStatusCode(Blossom* blossom,
     // to avoid leaking unwanted information
     if (found == false) {
         error.addMessage("Status-code '" + std::to_string(status.statusCode)
-                         + "' is not allowed as output for blossom '" + blossomName + "' in group '"
-                         + blossomGroupName + "'");
+                         + "' is not allowed as output for blossom '" + id + "' in group '" + type
+                         + "'");
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         status.errorMessage = "";
         return false;
@@ -456,31 +356,55 @@ HttpProcessing::checkStatusCode(Blossom* blossom,
 }
 
 /**
+ * @brief convert http-type into string
+ *
+ * @param type type to convert
+ *
+ * @return string-result
+ */
+const std::string
+HttpProcessing::convertType(const HttpRequestType type)
+{
+    std::string httpTypeStr = "GET";
+    if (type == DELETE_TYPE) {
+        httpTypeStr = "DELETE";
+    }
+    if (type == GET_TYPE) {
+        httpTypeStr = "GET";
+    }
+    if (type == HEAD_TYPE) {
+        httpTypeStr = "HEAD";
+    }
+    if (type == POST_TYPE) {
+        httpTypeStr = "POST";
+    }
+    if (type == PUT_TYPE) {
+        httpTypeStr = "PUT";
+    }
+
+    return httpTypeStr;
+}
+
+/**
  * @brief map the endpoint to the real target
  *
- * @param result reference to the result to identify the target
  * @param id request-id
  * @param type requested http-request-type
  *
- * @return false, if mapping failes, else true
+ * @return pointer to target
  */
-bool
-HttpProcessing::mapEndpoint(EndpointEntry& result,
-                            const std::string& id,
-                            const HttpRequestType type)
+Blossom*
+HttpProcessing::mapEndpoint(const std::string& id, const HttpRequestType type)
 {
     const auto id_it = endpointRules.find(id);
     if (id_it != endpointRules.end()) {
         auto type_it = id_it->second.find(type);
         if (type_it != id_it->second.end()) {
-            result.group = type_it->second.group;
-            result.name = type_it->second.name;
-
-            return true;
+            return type_it->second;
         }
     }
 
-    return false;
+    return nullptr;
 }
 
 /**
@@ -489,7 +413,7 @@ HttpProcessing::mapEndpoint(EndpointEntry& result,
  * @param id identifier for the new entry
  * @param httpType http-type (get, post, put, delete)
  * @param group blossom-group
- * @param name tree- or blossom-id
+ * @param newBlossom pointer to endpoint action
  *
  * @return false, if id together with http-type is already registered, else true
  */
@@ -497,11 +421,9 @@ bool
 HttpProcessing::addEndpoint(const std::string& id,
                             const HttpRequestType& httpType,
                             const std::string& group,
-                            const std::string& name)
+                            Blossom* newBlossom)
 {
-    EndpointEntry newEntry;
-    newEntry.group = group;
-    newEntry.name = name;
+    newBlossom->tag = group;
 
     // search for id
     auto id_it = endpointRules.find(id);
@@ -512,12 +434,12 @@ HttpProcessing::addEndpoint(const std::string& id,
         }
 
         // add new
-        id_it->second.emplace(httpType, newEntry);
+        id_it->second.emplace(httpType, newBlossom);
     }
     else {
         // add new
-        std::map<HttpRequestType, EndpointEntry> typeEntry;
-        typeEntry.emplace(httpType, newEntry);
+        std::map<HttpRequestType, Blossom*> typeEntry;
+        typeEntry.emplace(httpType, newBlossom);
         endpointRules.emplace(id, typeEntry);
     }
 

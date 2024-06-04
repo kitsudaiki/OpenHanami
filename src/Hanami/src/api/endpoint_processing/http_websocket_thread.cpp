@@ -307,7 +307,7 @@ HttpWebsocketThread::processInitialMessage(const std::string& message, std::stri
     tokenInputValues["token"] = content["token"];
     tokenInputValues["http_type"] = static_cast<uint32_t>(HttpRequestType::GET_TYPE);
     if (HanamiRoot::httpServer->httpProcessing->triggerBlossom(
-            tokenData, "validate", "Token", json::object(), tokenInputValues, status, error)
+            tokenData, "v1/auth", GET_TYPE, json::object(), tokenInputValues, status, error)
         == false)
     {
         errorMessage = "Token invalid";
