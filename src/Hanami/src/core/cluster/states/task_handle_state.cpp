@@ -232,7 +232,8 @@ TaskHandle_State::finishTask()
     if (actualTask->resultData.size() != 0) {
         // results of tables a aggregated values, so they have to be fixed to its average value
         if (actualTask->type == TABLE_REQUEST_TASK) {
-            const float numberOfOutputs = static_cast<float>(actualTask->numberOfOuputsPerCycle);
+            const TableRequestInfo info = std::get<TableRequestInfo>(actualTask->info);
+            const float numberOfOutputs = static_cast<float>(info.numberOfOuputsPerCycle);
             for (uint64_t i = 0; i < actualTask->resultData.size(); i++) {
                 float value = actualTask->resultData[i];
                 actualTask->resultData[i] = value / numberOfOutputs;
@@ -263,7 +264,7 @@ TaskHandle_State::finishTask()
     // remove task from map and free its data
     auto it = m_taskMap.find(actualTask->uuid.toString());
     if (it != m_taskMap.end()) {
-        delete[] it->second.inputData;
+        it->second.deleteData();
         it->second.progress.state = FINISHED_TASK_STATE;
         it->second.progress.endActiveTimeStamp = std::chrono::system_clock::now();
     }
@@ -345,7 +346,6 @@ TaskHandle_State::removeTask(const std::string& taskUuid)
 
         // if only queue but not activly processed at the moment, it can easily deleted
         if (state == QUEUED_TASK_STATE) {
-            delete itMap->second.inputData;
             m_taskMap.erase(itMap);
 
             // update queue

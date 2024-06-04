@@ -45,15 +45,16 @@ bool
 ImageIdentify_State::processEvent()
 {
     Task* actualTask = m_cluster->getCurrentTask();
-    const uint64_t numberOfInputsPerCycle = actualTask->numberOfInputsPerCycle;
-    const uint64_t numberOfOuputsPerCycle = actualTask->numberOfOuputsPerCycle;
+    const ImageRequestInfo info = std::get<ImageRequestInfo>(actualTask->info);
+    const uint64_t numberOfInputsPerCycle = info.numberOfInputsPerCycle;
+    const uint64_t numberOfOuputsPerCycle = info.numberOfOuputsPerCycle;
     const uint64_t entriesPerCycle = numberOfInputsPerCycle + numberOfOuputsPerCycle;
     const uint64_t offsetInput = entriesPerCycle * actualTask->actualCycle;
 
     // set input
     InputInterface* inputInterface = &m_cluster->inputInterfaces.begin()->second;
     for (uint64_t i = 0; i < numberOfInputsPerCycle; i++) {
-        inputInterface->inputNeurons[i].value = actualTask->inputData[offsetInput + i];
+        inputInterface->inputNeurons[i].value = info.inputData[offsetInput + i];
     }
 
     m_cluster->mode = ClusterProcessingMode::NORMAL_MODE;

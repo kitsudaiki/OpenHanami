@@ -25,6 +25,7 @@
 #include <core/cluster/cluster.h>
 #include <core/cluster/statemachine_init.h>
 #include <core/cluster/states/task_handle_state.h>
+#include <database/checkpoint_table.h>
 #include <hanami_common/statemachine.h>
 
 /**
@@ -53,20 +54,19 @@ addImageTrainTask(Cluster& cluster,
 {
     // create new train-task
     Task newTask;
-    newTask.uuid = generateUuid();
     newTask.name = name;
     newTask.userId = userId;
     newTask.projectId = projectId;
-    newTask.inputData = inputData;
     newTask.type = IMAGE_TRAIN_TASK;
-    newTask.progress.state = QUEUED_TASK_STATE;
     newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
     newTask.progress.totalNumberOfCycles = numberOfCycles;
 
-    // fill metadata
-    newTask.numberOfCycles = numberOfCycles;
-    newTask.numberOfInputsPerCycle = numberOfInputsPerCycle;
-    newTask.numberOfOuputsPerCycle = numberOfOuputsPerCycle;
+    ImageTrainInfo info;
+    info.inputData = inputData;
+    info.numberOfCycles = numberOfCycles;
+    info.numberOfInputsPerCycle = numberOfInputsPerCycle;
+    info.numberOfOuputsPerCycle = numberOfOuputsPerCycle;
+    newTask.info = info;
 
     // add task to queue
     const std::string uuid = newTask.uuid.toString();
@@ -103,23 +103,25 @@ addImageRequestTask(Cluster& cluster,
 {
     // create new request-task
     Task newTask;
-    newTask.uuid = generateUuid();
     newTask.name = name;
     newTask.userId = userId;
     newTask.projectId = projectId;
-    newTask.inputData = inputData;
-    for (uint64_t i = 0; i < numberOfCycles; i++) {
-        newTask.resultData.push_back(0);
-    }
+
     newTask.type = IMAGE_REQUEST_TASK;
-    newTask.progress.state = QUEUED_TASK_STATE;
     newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
     newTask.progress.totalNumberOfCycles = numberOfCycles;
 
+    for (uint64_t i = 0; i < numberOfCycles; i++) {
+        newTask.resultData.push_back(0);
+    }
+
     // fill metadata
-    newTask.numberOfCycles = numberOfCycles;
-    newTask.numberOfInputsPerCycle = numberOfInputsPerCycle;
-    newTask.numberOfOuputsPerCycle = numberOfOuputsPerCycle;
+    ImageRequestInfo info;
+    info.inputData = inputData;
+    info.numberOfCycles = numberOfCycles;
+    info.numberOfInputsPerCycle = numberOfInputsPerCycle;
+    info.numberOfOuputsPerCycle = numberOfOuputsPerCycle;
+    newTask.info = info;
 
     // add task to queue
     const std::string uuid = newTask.uuid.toString();
@@ -158,21 +160,21 @@ addTableTrainTask(Cluster& cluster,
 {
     // create new train-task
     Task newTask;
-    newTask.uuid = generateUuid();
     newTask.name = name;
     newTask.userId = userId;
     newTask.projectId = projectId;
-    newTask.inputData = inputData;
-    newTask.outputData = outputData;
     newTask.type = TABLE_TRAIN_TASK;
-    newTask.progress.state = QUEUED_TASK_STATE;
     newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
     newTask.progress.totalNumberOfCycles = numberOfCycles;
 
     // fill metadata
-    newTask.numberOfCycles = numberOfCycles;
-    newTask.numberOfInputsPerCycle = numberOfInputs;
-    newTask.numberOfOuputsPerCycle = numberOfOutputs;
+    TableTrainInfo info;
+    info.inputData = inputData;
+    info.outputData = outputData;
+    info.numberOfCycles = numberOfCycles;
+    info.numberOfInputsPerCycle = numberOfInputs;
+    info.numberOfOuputsPerCycle = numberOfOutputs;
+    newTask.info = info;
 
     // add task to queue
     const std::string uuid = newTask.uuid.toString();
@@ -209,23 +211,23 @@ addTableRequestTask(Cluster& cluster,
 {
     // create new request-task
     Task newTask;
-    newTask.uuid = generateUuid();
     newTask.name = name;
     newTask.userId = userId;
     newTask.projectId = projectId;
-    newTask.inputData = inputData;
-    for (uint64_t i = 0; i < numberOfCycles; i++) {
-        newTask.resultData.push_back(0.0f);
-    }
     newTask.type = TABLE_REQUEST_TASK;
-    newTask.progress.state = QUEUED_TASK_STATE;
-    newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
     newTask.progress.totalNumberOfCycles = numberOfCycles;
 
+    for (uint64_t i = 0; i < numberOfCycles; i++) {
+        newTask.resultData.push_back(0);
+    }
+
     // fill metadata
-    newTask.numberOfCycles = numberOfCycles;
-    newTask.numberOfInputsPerCycle = numberOfInputs;
-    newTask.numberOfOuputsPerCycle = numberOfOutputs;
+    TableRequestInfo info;
+    info.inputData = inputData;
+    info.numberOfCycles = numberOfCycles;
+    info.numberOfInputsPerCycle = numberOfInputs;
+    info.numberOfOuputsPerCycle = numberOfOutputs;
+    newTask.info = info;
 
     // add tasgetNextTaskk to queue
     const std::string uuid = newTask.uuid.toString();
@@ -254,17 +256,17 @@ addCheckpointSaveTask(Cluster& cluster,
 {
     // create new request-task
     Task newTask;
-    newTask.uuid = generateUuid();
     newTask.name = checkpointName;
     newTask.userId = userId;
     newTask.projectId = projectId;
     newTask.type = CLUSTER_CHECKPOINT_SAVE_TASK;
-    newTask.progress.state = QUEUED_TASK_STATE;
     newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
     newTask.progress.totalNumberOfCycles = 1;
 
     // fill metadata
-    newTask.checkpointName = checkpointName;
+    CheckpointSaveInfo info;
+    info.checkpointName = checkpointName;
+    newTask.info = info;
 
     // add tasgetNextTaskk to queue
     const std::string uuid = newTask.uuid.toString();
@@ -288,24 +290,23 @@ addCheckpointSaveTask(Cluster& cluster,
  */
 const std::string
 addCheckpointRestoreTask(Cluster& cluster,
-                         const std::string& name,
-                         const std::string& checkpointInfo,
+                         const CheckpointTable::CheckpointDbEntry& checkpointInfo,
                          const std::string& userId,
                          const std::string& projectId)
 {
     // create new request-task
     Task newTask;
-    newTask.uuid = generateUuid();
-    newTask.name = name;
+    newTask.name = "";
     newTask.userId = userId;
     newTask.projectId = projectId;
     newTask.type = CLUSTER_CHECKPOINT_RESTORE_TASK;
-    newTask.progress.state = QUEUED_TASK_STATE;
     newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
     newTask.progress.totalNumberOfCycles = 1;
 
     // fill metadata
-    newTask.checkpointInfo = checkpointInfo;
+    CheckpointRestoreInfo info;
+    info.checkpointInfo = checkpointInfo;
+    newTask.info = info;
 
     // add tasgetNextTaskk to queue
     const std::string uuid = newTask.uuid.toString();

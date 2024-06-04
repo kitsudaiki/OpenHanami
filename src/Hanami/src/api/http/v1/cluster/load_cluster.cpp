@@ -98,9 +98,9 @@ LoadCluster::runTask(BlossomIO& blossomIO,
     }
 
     // get meta-infos of dataset from shiori
-    json parsedCheckpointInfo;
+    CheckpointTable::CheckpointDbEntry checkpointInfo;
     ret = CheckpointTable::getInstance()->getCheckpoint(
-        parsedCheckpointInfo, checkpointUuid, userContext, true, error);
+        checkpointInfo, checkpointUuid, userContext, error);
     if (ret == ERROR) {
         error.addMessage("Failed to get information from database for UUID '" + checkpointUuid
                          + "'");
@@ -115,9 +115,8 @@ LoadCluster::runTask(BlossomIO& blossomIO,
     }
 
     // init request-task
-    const std::string infoStr = parsedCheckpointInfo.dump();
     const std::string taskUuid = addCheckpointRestoreTask(
-        *cluster, "", infoStr, userContext.userId, userContext.projectId);
+        *cluster, checkpointInfo, userContext.userId, userContext.projectId);
 
     blossomIO.output["uuid"] = taskUuid;
 

@@ -45,22 +45,23 @@ bool
 ImageTrainForward_State::processEvent()
 {
     Task* actualTask = m_cluster->getCurrentTask();
-    const uint64_t numberOfInputsPerCycle = actualTask->numberOfInputsPerCycle;
-    const uint64_t numberOfOuputsPerCycle = actualTask->numberOfOuputsPerCycle;
+    const ImageTrainInfo info = std::get<ImageTrainInfo>(actualTask->info);
+    const uint64_t numberOfInputsPerCycle = info.numberOfInputsPerCycle;
+    const uint64_t numberOfOuputsPerCycle = info.numberOfOuputsPerCycle;
     const uint64_t entriesPerCycle = numberOfInputsPerCycle + numberOfOuputsPerCycle;
     const uint64_t offsetInput = entriesPerCycle * actualTask->actualCycle;
 
     // set input
     InputInterface* inputInterface = &m_cluster->inputInterfaces.begin()->second;
     for (uint64_t i = 0; i < numberOfInputsPerCycle; i++) {
-        inputInterface->inputNeurons[i].value = actualTask->inputData[offsetInput + i];
+        inputInterface->inputNeurons[i].value = info.inputData[offsetInput + i];
     }
 
     // set exprected output
     OutputInterface* outputInterface = &m_cluster->outputInterfaces.begin()->second;
     for (uint64_t i = 0; i < numberOfOuputsPerCycle; i++) {
         outputInterface->outputNeurons[i].exprectedVal
-            = actualTask->inputData[offsetInput + numberOfInputsPerCycle + i];
+            = info.inputData[offsetInput + numberOfInputsPerCycle + i];
     }
 
     m_cluster->mode = ClusterProcessingMode::TRAIN_FORWARD_MODE;
