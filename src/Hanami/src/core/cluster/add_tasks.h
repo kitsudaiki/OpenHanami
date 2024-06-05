@@ -65,8 +65,7 @@ const std::string addCheckpointSaveTask(Cluster& cluster,
                                         const std::string& userId,
                                         const std::string& projectId);
 const std::string addCheckpointRestoreTask(Cluster& cluster,
-                                           const std::string& name,
-                                           const std::string& checkpointInfo,
+                                           const CheckpointTable::CheckpointDbEntry& checkpointInfo,
                                            const std::string& userId,
                                            const std::string& projectId);
 

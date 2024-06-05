@@ -48,7 +48,7 @@ RestoreCluster_State::~RestoreCluster_State() {}
 /**
  * @brief prcess event
  *
- * @return alway true
+ * @return true, if successful, else false
  */
 bool
 RestoreCluster_State::processEvent()
@@ -64,30 +64,18 @@ RestoreCluster_State::processEvent()
 }
 
 /**
- * @brief RestoreCluster_State::restoreCluster
- * @param currentTask
- * @param error
- * @return
+ * @brief restore cluster from a checkpoint-file
+ *
+ * @param currentTask pointer to task
+ * @param error reference for error-output
+ *
+ * @return true, if successful, else false
  */
 bool
 RestoreCluster_State::restoreClusterFromCheckpoint(Task* currentTask, Hanami::ErrorContainer& error)
 {
-    // get meta-infos of dataset from shiori
-    json parsedCheckpointInfo;
-    try {
-        parsedCheckpointInfo = json::parse(currentTask->checkpointInfo);
-    }
-    catch (const json::parse_error& ex) {
-        error.addMessage("json-parser error: " + std::string(ex.what()));
-        return false;
-    }
-
-    // get other information
-    if (parsedCheckpointInfo.contains("location") == false) {
-        return false;
-    }
-    const std::string location = parsedCheckpointInfo["location"];
-
+    const CheckpointRestoreInfo info = std::get<CheckpointRestoreInfo>(currentTask->info);
+    const std::string location = info.checkpointInfo.location;
     const ReturnStatus ret = m_clusterIO.restoreClusterFromFile(*m_cluster, location, error);
     if (ret != OK) {
         return false;

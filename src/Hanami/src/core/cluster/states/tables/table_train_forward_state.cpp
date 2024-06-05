@@ -45,8 +45,9 @@ bool
 TableTrainForward_State::processEvent()
 {
     Task* actualTask = m_cluster->getCurrentTask();
-    const uint64_t numberOfInputsPerCycle = actualTask->numberOfInputsPerCycle;
-    const uint64_t numberOfOuputsPerCycle = actualTask->numberOfOuputsPerCycle;
+    const TableTrainInfo info = std::get<TableTrainInfo>(actualTask->info);
+    const uint64_t numberOfInputsPerCycle = info.numberOfInputsPerCycle;
+    const uint64_t numberOfOuputsPerCycle = info.numberOfOuputsPerCycle;
     uint64_t offset = actualTask->actualCycle;
     if (numberOfInputsPerCycle > numberOfOuputsPerCycle) {
         offset += numberOfInputsPerCycle;
@@ -57,16 +58,16 @@ TableTrainForward_State::processEvent()
 
     // set input
     InputInterface* inputInterface = &m_cluster->inputInterfaces.begin()->second;
-    for (uint64_t i = 0; i < actualTask->numberOfInputsPerCycle; i++) {
+    for (uint64_t i = 0; i < info.numberOfInputsPerCycle; i++) {
         inputInterface->inputNeurons[i].value
-            = actualTask->inputData[(offset - numberOfInputsPerCycle) + i];
+            = info.inputData[(offset - numberOfInputsPerCycle) + i];
     }
 
     // set exprected output
     OutputInterface* outputInterface = &m_cluster->outputInterfaces.begin()->second;
-    for (uint64_t i = 0; i < actualTask->numberOfOuputsPerCycle; i++) {
+    for (uint64_t i = 0; i < info.numberOfOuputsPerCycle; i++) {
         outputInterface->outputNeurons[i].exprectedVal
-            = actualTask->outputData[(offset - numberOfOuputsPerCycle) + i];
+            = info.outputData[(offset - numberOfOuputsPerCycle) + i];
     }
 
     m_cluster->mode = ClusterProcessingMode::TRAIN_FORWARD_MODE;

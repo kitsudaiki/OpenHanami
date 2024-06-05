@@ -45,8 +45,9 @@ bool
 TableInterpolation_State::processEvent()
 {
     Task* actualTask = m_cluster->getCurrentTask();
-    const uint64_t numberOfInputsPerCycle = actualTask->numberOfInputsPerCycle;
-    const uint64_t numberOfOuputsPerCycle = actualTask->numberOfOuputsPerCycle;
+    const TableRequestInfo info = std::get<TableRequestInfo>(actualTask->info);
+    const uint64_t numberOfInputsPerCycle = info.numberOfInputsPerCycle;
+    const uint64_t numberOfOuputsPerCycle = info.numberOfOuputsPerCycle;
     uint64_t offset = actualTask->actualCycle;
     if (numberOfInputsPerCycle > numberOfOuputsPerCycle) {
         offset += numberOfInputsPerCycle;
@@ -59,7 +60,7 @@ TableInterpolation_State::processEvent()
     InputInterface* inputInterface = &m_cluster->inputInterfaces.begin()->second;
     for (uint64_t i = 0; i < numberOfInputsPerCycle; i++) {
         inputInterface->inputNeurons[i].value
-            = actualTask->inputData[(offset - numberOfInputsPerCycle) + i];
+            = info.inputData[(offset - numberOfInputsPerCycle) + i];
     }
 
     m_cluster->mode = ClusterProcessingMode::NORMAL_MODE;

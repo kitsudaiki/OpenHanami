@@ -78,10 +78,12 @@ SaveCluster_State::processEvent()
 }
 
 /**
- * @brief SaveCluster_State::saveClusterToCheckpoint
- * @param currentTask
- * @param error
- * @return
+ * @brief store cluster into a checkpoint-file
+ *
+ * @param currentTask pointer to task
+ * @param error reference for error-output
+ *
+ * @return true, if successful, else false
  */
 bool
 SaveCluster_State::saveClusterToCheckpoint(Task* currentTask, Hanami::ErrorContainer& error)
@@ -108,10 +110,12 @@ SaveCluster_State::saveClusterToCheckpoint(Task* currentTask, Hanami::ErrorConta
                      / std::filesystem::path(currentTask->uuid.toString() + "_checkpoint_"
                                              + currentTask->userId);
 
+    const CheckpointSaveInfo info = std::get<CheckpointSaveInfo>(currentTask->info);
+
     // register in database
     CheckpointTable::CheckpointDbEntry checkpointData;
     checkpointData.uuid = currentTask->uuid.toString();
-    checkpointData.name = currentTask->checkpointName;
+    checkpointData.name = info.checkpointName;
     checkpointData.location = targetFilePath.generic_string();
     checkpointData.projectId = currentTask->projectId;
     checkpointData.ownerId = currentTask->userId;
