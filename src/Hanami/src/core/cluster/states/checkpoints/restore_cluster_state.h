@@ -23,7 +23,7 @@
 #ifndef HANAMI_RESTORECLUSTERSTATE_H
 #define HANAMI_RESTORECLUSTERSTATE_H
 
-#include <core/io/disc/checkpoint_io.h>
+#include <core/io/checkpoint/disc/checkpoint_io.h>
 #include <hanami_common/logger.h>
 #include <hanami_common/threading/event.h>
 

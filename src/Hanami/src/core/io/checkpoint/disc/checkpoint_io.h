@@ -23,7 +23,7 @@
 #ifndef CHECKPOINTIO_H
 #define CHECKPOINTIO_H
 
-#include <core/io/io_interface.h>
+#include <core/io/checkpoint/io_interface.h>
 #include <hanami_common/files/binary_file.h>
 #include <hanami_common/logger.h>
 

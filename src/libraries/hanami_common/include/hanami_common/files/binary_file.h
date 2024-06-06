@@ -33,6 +33,7 @@ class BinaryFile
     BinaryFile(const std::string& filePath);
     ~BinaryFile();
 
+    bool isOpen() const;
     bool allocateStorage(const uint64_t numberOfBytes, ErrorContainer& error);
     bool updateFileSize(ErrorContainer& error);
 
@@ -51,8 +52,8 @@ class BinaryFile
     bool closeFile(ErrorContainer& error);
 
     // public variables to avoid stupid getter
-    uint64_t m_totalFileSize = 0;
-    std::string m_filePath = "";
+    uint64_t fileSize = 0;
+    std::string filePath = "";
 
    private:
     int m_fileDescriptor = -1;

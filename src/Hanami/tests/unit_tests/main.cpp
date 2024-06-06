@@ -21,6 +21,7 @@
  */
 
 #include "core/cluster_test.h"
+#include "core/dataset_io_test.h"
 #include "database/audit_log_table_test.h"
 #include "database/checkpoint_table_test.h"
 #include "database/cluster_table_test.h"
@@ -37,6 +38,7 @@ main()
     Hanami::initConsoleLogger(false);
 
     Cluster_Init_Test();
+    DataSetIO_Test();
 
     ClusterTable_Test();
     CheckpointTable_Test();

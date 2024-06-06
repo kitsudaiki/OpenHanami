@@ -89,9 +89,10 @@ set(SOURCES
     src/core/cluster/states/task_handle_state.h
     src/core/cluster/task.h
     src/core/cuda_functions.h
-    src/core/io/buffer/buffer_io.h
-    src/core/io/disc/checkpoint_io.h
-    src/core/io/io_interface.h
+    src/core/io/checkpoint/buffer/buffer_io.h
+    src/core/io/checkpoint/disc/checkpoint_io.h
+    src/core/io/checkpoint/io_interface.h
+    src/core/io/data_set/dataset_file_io.h
     src/core/processing/cluster_io_functions.h
     src/core/processing/cluster_resize.h
     src/core/processing/cpu/backpropagation.h
@@ -191,9 +192,10 @@ set(SOURCES
     src/core/cluster/states/tables/table_interpolation_state.cpp
     src/core/cluster/states/tables/table_train_forward_state.cpp
     src/core/cluster/states/task_handle_state.cpp
-    src/core/io/buffer/buffer_io.cpp
-    src/core/io/disc/checkpoint_io.cpp
-    src/core/io/io_interface.cpp
+    src/core/io/checkpoint/buffer/buffer_io.cpp
+    src/core/io/checkpoint/disc/checkpoint_io.cpp
+    src/core/io/checkpoint/io_interface.cpp
+    src/core/io/data_set/dataset_file_io.cpp
     src/core/processing/cpu/cpu_host.cpp
     src/core/processing/cpu/worker_thread.cpp
     src/core/processing/cuda/cuda_host.cpp
@@ -225,26 +227,28 @@ add_executable(Hanami
     )
 add_executable(Hanami_unittests
     ${SOURCES}
-    tests/unit_tests/database/cluster_table_test.h
-    tests/unit_tests/database/cluster_table_test.cpp
-    tests/unit_tests/database/audit_log_table_test.h
-    tests/unit_tests/database/audit_log_table_test.cpp
-    tests/unit_tests/database/checkpoint_table_test.h
-    tests/unit_tests/database/checkpoint_table_test.cpp
-    tests/unit_tests/database/dataset_table_test.h
-    tests/unit_tests/database/dataset_table_test.cpp
-    tests/unit_tests/database/error_log_table_test.h
-    tests/unit_tests/database/error_log_table_test.cpp
-    tests/unit_tests/database/projects_table_test.h
-    tests/unit_tests/database/projects_table_test.cpp
-    tests/unit_tests/database/request_result_table_test.h
-    tests/unit_tests/database/request_result_table_test.cpp
-    tests/unit_tests/database/tempfile_table_test.h
-    tests/unit_tests/database/tempfile_table_test.cpp
-    tests/unit_tests/database/users_table_test.h
-    tests/unit_tests/database/users_table_test.cpp
-    tests/unit_tests/core/cluster_test.h
     tests/unit_tests/core/cluster_test.cpp
+    tests/unit_tests/core/cluster_test.h
+    tests/unit_tests/core/dataset_io_test.cpp
+    tests/unit_tests/core/dataset_io_test.h
+    tests/unit_tests/database/audit_log_table_test.cpp
+    tests/unit_tests/database/audit_log_table_test.h
+    tests/unit_tests/database/checkpoint_table_test.cpp
+    tests/unit_tests/database/checkpoint_table_test.h
+    tests/unit_tests/database/cluster_table_test.cpp
+    tests/unit_tests/database/cluster_table_test.h
+    tests/unit_tests/database/dataset_table_test.cpp
+    tests/unit_tests/database/dataset_table_test.h
+    tests/unit_tests/database/error_log_table_test.cpp
+    tests/unit_tests/database/error_log_table_test.h
+    tests/unit_tests/database/projects_table_test.cpp
+    tests/unit_tests/database/projects_table_test.h
+    tests/unit_tests/database/request_result_table_test.cpp
+    tests/unit_tests/database/request_result_table_test.h
+    tests/unit_tests/database/tempfile_table_test.cpp
+    tests/unit_tests/database/tempfile_table_test.h
+    tests/unit_tests/database/users_table_test.cpp
+    tests/unit_tests/database/users_table_test.h
     tests/unit_tests/main.cpp
     # ${CUDA_OBJECTS}
     )

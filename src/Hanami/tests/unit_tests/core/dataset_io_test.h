@@ -1,5 +1,5 @@
 /**
- * @file        cluster_test.h
+ * @file        dataset_io_test.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,27 +20,26 @@
  *      limitations under the License.
  */
 
-#ifndef CLUSTER_TEST_H
-#define CLUSTER_TEST_H
+#ifndef DATASETIO_TEST_H
+#define DATASETIO_TEST_H
 
 #include <hanami_common/test_helper/compare_test_helper.h>
 
-class LogicalHost;
+#include <nlohmann/json.hpp>
 
-class Cluster_Init_Test : public Hanami::CompareTestHelper
+class DataSetIO_Test : public Hanami::CompareTestHelper
 {
    public:
-    Cluster_Init_Test();
+    DataSetIO_Test();
+
+    void write_test();
+    void read_test();
 
    private:
-    std::string m_clusterTemplate = "";
-    LogicalHost* m_logicalHost = nullptr;
-
-    void initTest();
-
-    void initHost_test();
-    void createCluster_test();
-    void serialize_test();
+    const std::string m_testFilePath = "/tmp/dataset";
+    const std::string m_fileName = "test-file";
+    const uint64_t m_numberOfColumns = 3;
+    nlohmann::json m_input;
 };
 
-#endif  // CLUSTER_TEST_H
+#endif  // DATASETIO_TEST_H

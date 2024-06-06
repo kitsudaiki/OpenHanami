@@ -100,14 +100,14 @@ CheckpointIO::restoreClusterFromFile(Cluster& cluster,
     m_checkpointFile = new Hanami::BinaryFile(fileLocation);
 
     // check for minimal-size to read at least the size of the checkpoint-header
-    if (m_checkpointFile->m_totalFileSize < sizeof(CheckpointHeader)) {
+    if (m_checkpointFile->fileSize < sizeof(CheckpointHeader)) {
         error.addMessage("Given checkpoint-file '" + fileLocation
                          + "' is too small or even empty.");
         return INVALID_INPUT;
     }
 
     const ReturnStatus ret
-        = deserialize(cluster, m_checkpointFile->m_totalFileSize - sizeof(CheckpointHeader), error);
+        = deserialize(cluster, m_checkpointFile->fileSize - sizeof(CheckpointHeader), error);
     if (ret != OK) {
         error.addMessage("Failed to read checkpoint");
         return ret;

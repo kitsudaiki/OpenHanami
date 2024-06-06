@@ -23,7 +23,7 @@
 #ifndef BUFFERIO_H
 #define BUFFERIO_H
 
-#include <core/io/io_interface.h>
+#include <core/io/checkpoint/io_interface.h>
 #include <hanami_common/buffer/data_buffer.h>
 
 class BufferIO : public IO_Interface

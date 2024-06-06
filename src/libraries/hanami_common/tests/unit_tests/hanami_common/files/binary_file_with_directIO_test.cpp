@@ -75,6 +75,7 @@ BinaryFile_withDirectIO_Test::updateFileSize_test()
     binaryFile.closeFile(error);
 
     BinaryFileDirect binaryFileNew(m_filePath);
+    TEST_EQUAL(binaryFileNew.isOpen(), true);
     TEST_EQUAL(binaryFileNew.updateFileSize(error), true);
     TEST_EQUAL(binaryFileNew.m_totalFileSize, 4 * 4096);
 
