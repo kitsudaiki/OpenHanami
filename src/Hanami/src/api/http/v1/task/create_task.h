@@ -24,6 +24,7 @@
 #define HANAMI_CREATE_IMAGE_TRAINTASK_H
 
 #include <api/endpoint_processing/blossom.h>
+#include <core/cluster/task.h>
 
 class Cluster;
 
@@ -48,14 +49,22 @@ class CreateTask : public Blossom
                    BlossomStatus& status,
                    Hanami::ErrorContainer& error);
 
-    bool tableTask(std::string& taskUuid,
-                   const std::string& name,
-                   const std::string& taskType,
-                   const Hanami::UserContext& userContext,
-                   Cluster* cluster,
-                   json& dataSetInfo,
-                   BlossomStatus& status,
-                   Hanami::ErrorContainer& error);
+    const std::string addImageTrainTask(Cluster& cluster,
+                                        const std::string& name,
+                                        const std::string& userId,
+                                        const std::string& projectId,
+                                        float* inputData,
+                                        const uint64_t numberOfInputsPerCycle,
+                                        const uint64_t numberOfOuputsPerCycle,
+                                        const uint64_t numberOfCycle);
+    const std::string addImageRequestTask(Cluster& cluster,
+                                          const std::string& name,
+                                          const std::string& userId,
+                                          const std::string& projectId,
+                                          float* inputData,
+                                          const uint64_t numberOfInputsPerCycle,
+                                          const uint64_t numberOfOuputsPerCycle,
+                                          const uint64_t numberOfCycle);
 };
 
 #endif  // HANAMI_CREATE_IMAGE_TRAINTASK_H

@@ -24,6 +24,9 @@
 #define LOADCLUSTER_H
 
 #include <api/endpoint_processing/blossom.h>
+#include <core/cluster/task.h>
+
+class Cluster;
 
 class LoadCluster : public Blossom
 {
@@ -35,6 +38,13 @@ class LoadCluster : public Blossom
                  const json& context,
                  BlossomStatus& status,
                  Hanami::ErrorContainer& error);
+
+   private:
+    const std::string addCheckpointRestoreTask(
+        Cluster& cluster,
+        const CheckpointTable::CheckpointDbEntry& checkpointInfo,
+        const std::string& userId,
+        const std::string& projectId);
 };
 
 #endif  // LOADCLUSTER_H

@@ -22,10 +22,11 @@
 
 #include "save_cluster.h"
 
-#include <core/cluster/add_tasks.h>
 #include <core/cluster/cluster.h>
 #include <core/cluster/cluster_handler.h>
+#include <core/cluster/statemachine_init.h>
 #include <database/cluster_table.h>
+#include <hanami_common/statemachine.h>
 #include <hanami_root.h>
 
 SaveCluster::SaveCluster() : Blossom("Save a cluster.")
@@ -107,4 +108,43 @@ SaveCluster::runTask(BlossomIO& blossomIO,
     blossomIO.output["name"] = name;
 
     return true;
+}
+
+/**
+ * @brief create task to create a checkpoint from a cluster and add it to the task-queue
+ *
+ * @param cluster reference to the cluster, which should run the task
+ * @param checkpointName name for the checkpoint
+ * @param userId uuid of the user, where the checkpoint belongs to
+ * @param projectId uuid of the project, where the checkpoint belongs to
+ *
+ * @return uuid of the new task
+ */
+const std::string
+SaveCluster::addCheckpointSaveTask(Cluster& cluster,
+                                   const std::string& checkpointName,
+                                   const std::string& userId,
+                                   const std::string& projectId)
+{
+    // create new request-task
+    Task newTask;
+    newTask.name = checkpointName;
+    newTask.userId = userId;
+    newTask.projectId = projectId;
+    newTask.type = CLUSTER_CHECKPOINT_SAVE_TASK;
+    newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
+    newTask.progress.totalNumberOfCycles = 1;
+
+    // fill metadata
+    CheckpointSaveInfo info;
+    info.checkpointName = checkpointName;
+    newTask.info = info;
+
+    // add tasgetNextTaskk to queue
+    const std::string uuid = newTask.uuid.toString();
+    cluster.addTask(uuid, newTask);
+
+    cluster.stateMachine->goToNextState(PROCESS_TASK);
+
+    return uuid;
 }

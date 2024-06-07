@@ -49,17 +49,11 @@ CycleFinish_State::processEvent()
     uint64_t numberOfCycles = 0;
     Task* actualTask = m_cluster->getCurrentTask();
     switch (actualTask->type) {
-        case IMAGE_TRAIN_TASK:
-            numberOfCycles = std::get<ImageTrainInfo>(actualTask->info).numberOfCycles;
+        case TRAIN_TASK:
+            numberOfCycles = std::get<TrainInfo>(actualTask->info).numberOfCycles;
             break;
-        case IMAGE_REQUEST_TASK:
-            numberOfCycles = std::get<ImageRequestInfo>(actualTask->info).numberOfCycles;
-            break;
-        case TABLE_TRAIN_TASK:
-            numberOfCycles = std::get<TableTrainInfo>(actualTask->info).numberOfCycles;
-            break;
-        case TABLE_REQUEST_TASK:
-            numberOfCycles = std::get<TableRequestInfo>(actualTask->info).numberOfCycles;
+        case REQUEST_TASK:
+            numberOfCycles = std::get<RequestInfo>(actualTask->info).numberOfCycles;
             break;
         case CLUSTER_CHECKPOINT_SAVE_TASK:
             return false;

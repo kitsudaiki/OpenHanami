@@ -49,14 +49,12 @@ TaskHandle_State::processEvent()
 {
     Hanami::ErrorContainer error;
     const TaskType nextTaskType = m_cluster->finishTask();
-
-    // handle empty queue
-    if (nextTaskType == NO_TASK) {
-        return true;
-    }
-
     switch (nextTaskType) {
-        case IMAGE_TRAIN_TASK:
+        case NO_TASK:
+        {
+            return true;
+        }
+        case TRAIN_TASK:
         {
             if (m_cluster->goToNextState(TRAIN)) {
                 m_cluster->goToNextState(IMAGE);
@@ -67,32 +65,10 @@ TaskHandle_State::processEvent()
             }
             break;
         }
-        case IMAGE_REQUEST_TASK:
+        case REQUEST_TASK:
         {
             if (m_cluster->goToNextState(REQUEST)) {
                 m_cluster->goToNextState(IMAGE);
-            }
-            else {
-                // TODO: error-message
-                return false;
-            }
-            break;
-        }
-        case TABLE_TRAIN_TASK:
-        {
-            if (m_cluster->goToNextState(TRAIN)) {
-                m_cluster->goToNextState(TABLE);
-            }
-            else {
-                // TODO: error-message
-                return false;
-            }
-            break;
-        }
-        case TABLE_REQUEST_TASK:
-        {
-            if (m_cluster->goToNextState(REQUEST)) {
-                m_cluster->goToNextState(TABLE);
             }
             else {
                 // TODO: error-message

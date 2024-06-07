@@ -22,12 +22,13 @@
 
 #include "create_task.h"
 
-#include <core/cluster/add_tasks.h>
 #include <core/cluster/cluster.h>
 #include <core/cluster/cluster_handler.h>
+#include <core/cluster/statemachine_init.h>
 #include <database/cluster_table.h>
 #include <database/dataset_table.h>
 #include <hanami_common/files/binary_file.h>
+#include <hanami_common/statemachine.h>
 #include <hanami_crypto/common.h>
 #include <hanami_files/dataset_files/dataset_functions.h>
 #include <hanami_root.h>
@@ -128,9 +129,6 @@ CreateTask::runTask(BlossomIO& blossomIO,
     if (dataSetInfo["type"] == "mnist") {
         imageTask(taskUuid, name, taskType, userContext, cluster, dataSetInfo, status, error);
     }
-    else if (dataSetInfo["type"] == "csv") {
-        tableTask(taskUuid, name, taskType, userContext, cluster, dataSetInfo, status, error);
-    }
     else {
         status.errorMessage = "Invalid dataset-type '" + std::string(dataSetInfo["type"])
                               + "' given for to create new task";
@@ -212,89 +210,105 @@ CreateTask::imageTask(std::string& taskUuid,
 }
 
 /**
- * @brief add table-task to queue of cluster
+ * @brief create image training task
  *
- * @param taskUuid reference for the output of the uuid of the new task
+ * @param cluster reference to the cluster, which should run the task
  * @param name name of the task
- * @param taskType type of the task (train or request)
- * @param userContext user-context
- * @param cluster pointer to the cluster, which should process the new task
- * @param dataSetInfo info-object with information about the dataset
- * @param status reference for status-output in error-case
- * @param error reference for error-output
+ * @param userId id of the user, who started the task
+ * @param projectId id of the project, where the user is
+ * @param inputData pointer to the input training-data
+ * @param numberOfInputsPerCycle number of input-values per iteration
+ * @param numberOfOuputsPerCycle number of output-values per iteration
+ * @param numberOfCycles number of iterations
  *
- * @return true, if successful, else false
+ * @return uuid of the new task
  */
-bool
-CreateTask::tableTask(std::string& taskUuid,
-                      const std::string& name,
-                      const std::string& taskType,
-                      const Hanami::UserContext& userContext,
-                      Cluster* cluster,
-                      json& dataSetInfo,
-                      BlossomStatus& status,
-                      Hanami::ErrorContainer& error)
+const std::string
+CreateTask::addImageTrainTask(Cluster& cluster,
+                              const std::string& name,
+                              const std::string& userId,
+                              const std::string& projectId,
+                              float* inputData,
+                              const uint64_t numberOfInputsPerCycle,
+                              const uint64_t numberOfOuputsPerCycle,
+                              const uint64_t numberOfCycles)
 {
-    const uint64_t numberOfLines = dataSetInfo["lines"];
-    const std::string dataSetLocation = dataSetInfo["location"];
+    // create new train-task
+    Task newTask;
+    newTask.name = name;
+    newTask.userId = userId;
+    newTask.projectId = projectId;
+    newTask.type = TRAIN_TASK;
+    newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
+    newTask.progress.totalNumberOfCycles = numberOfCycles;
 
-    for (const auto& [name, inputInterface] : cluster->inputInterfaces) {
-        // get input-data
-        Hanami::DataBuffer inputBuffer;
-        if (getDataSetPayload(inputBuffer, dataSetLocation, error, name) == false) {
-            error.addMessage("Failed to get data of dataset from location '" + dataSetLocation
-                             + "' and column with name '" + name + "'");
-            status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-            return false;
-        }
+    TrainInfo info;
+    info.inputData = inputData;
+    info.numberOfCycles = numberOfCycles;
+    info.numberOfInputsPerCycle = numberOfInputsPerCycle;
+    info.numberOfOuputsPerCycle = numberOfOuputsPerCycle;
+    newTask.info = info;
 
-        if (taskType == "request") {
-            taskUuid = addTableRequestTask(
-                *cluster,
-                name,
-                userContext.userId,
-                userContext.projectId,
-                static_cast<float*>(inputBuffer.data),
-                inputInterface.inputNeurons.size(),
-                cluster->outputInterfaces.begin()->second.outputNeurons.size(),
-                numberOfLines - inputInterface.inputNeurons.size());
-            inputBuffer.data = nullptr;
+    // add task to queue
+    const std::string uuid = newTask.uuid.toString();
+    cluster.addTask(uuid, newTask);
 
-            // TODO: support more than 1 input
-            break;
-        }
-        else {
-            for (auto& [name, outputInterface] : cluster->outputInterfaces) {
-                // get output-data
-                Hanami::DataBuffer outputBuffer;
-                if (getDataSetPayload(outputBuffer, dataSetLocation, error, name) == false) {
-                    error.addMessage("Failed to get data of dataset from location '"
-                                     + dataSetLocation + "' and column with name '" + name + "'");
-                    status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-                    return false;
-                }
+    cluster.stateMachine->goToNextState(PROCESS_TASK);
 
-                // create task
-                const uint64_t numberOfLines = dataSetInfo["lines"];
-                taskUuid = addTableTrainTask(*cluster,
-                                             name,
-                                             userContext.userId,
-                                             userContext.projectId,
-                                             static_cast<float*>(inputBuffer.data),
-                                             static_cast<float*>(outputBuffer.data),
-                                             inputInterface.inputNeurons.size(),
-                                             outputInterface.outputNeurons.size(),
-                                             numberOfLines - inputInterface.inputNeurons.size());
-                inputBuffer.data = nullptr;
-                outputBuffer.data = nullptr;
+    return uuid;
+}
 
-                // TODO: support more than 1 output
-                break;
-            }
-        }
+/**
+ * @brief create image request task
+ *
+ * @param cluster reference to the cluster, which should run the task
+ * @param name name of the task
+ * @param userId id of the user, who started the task
+ * @param projectId id of the project, where the user is
+ * @param inputData pointer to the input test-data
+ * @param numberOfInputsPerCycle number of input-values per iteration
+ * @param numberOfOuputsPerCycle number of output-values per iteration
+ * @param numberOfCycles number of iterations
+ *
+ * @return uuid of the new task
+ */
+const std::string
+CreateTask::addImageRequestTask(Cluster& cluster,
+                                const std::string& name,
+                                const std::string& userId,
+                                const std::string& projectId,
+                                float* inputData,
+                                const uint64_t numberOfInputsPerCycle,
+                                const uint64_t numberOfOuputsPerCycle,
+                                const uint64_t numberOfCycles)
+{
+    // create new request-task
+    Task newTask;
+    newTask.name = name;
+    newTask.userId = userId;
+    newTask.projectId = projectId;
 
-        return true;
+    newTask.type = REQUEST_TASK;
+    newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
+    newTask.progress.totalNumberOfCycles = numberOfCycles;
+
+    for (uint64_t i = 0; i < numberOfCycles; i++) {
+        newTask.resultData.push_back(0);
     }
 
-    return true;
+    // fill metadata
+    RequestInfo info;
+    info.inputData = inputData;
+    info.numberOfCycles = numberOfCycles;
+    info.numberOfInputsPerCycle = numberOfInputsPerCycle;
+    info.numberOfOuputsPerCycle = numberOfOuputsPerCycle;
+    newTask.info = info;
+
+    // add task to queue
+    const std::string uuid = newTask.uuid.toString();
+    cluster.addTask(uuid, newTask);
+
+    cluster.stateMachine->goToNextState(PROCESS_TASK);
+
+    return uuid;
 }

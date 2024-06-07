@@ -44,7 +44,7 @@ TableTrainForward_State::~TableTrainForward_State() {}
 bool
 TableTrainForward_State::processEvent()
 {
-    Task* actualTask = m_cluster->getCurrentTask();
+    /*Task* actualTask = m_cluster->getCurrentTask();
     const TableTrainInfo info = std::get<TableTrainInfo>(actualTask->info);
     const uint64_t numberOfInputsPerCycle = info.numberOfInputsPerCycle;
     const uint64_t numberOfOuputsPerCycle = info.numberOfOuputsPerCycle;
@@ -71,7 +71,7 @@ TableTrainForward_State::processEvent()
     }
 
     m_cluster->mode = ClusterProcessingMode::TRAIN_FORWARD_MODE;
-    m_cluster->startForwardCycle();
+    m_cluster->startForwardCycle();*/
 
     return true;
 }

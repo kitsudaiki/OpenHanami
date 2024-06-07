@@ -45,7 +45,7 @@ bool
 ImageTrainForward_State::processEvent()
 {
     Task* actualTask = m_cluster->getCurrentTask();
-    const ImageTrainInfo info = std::get<ImageTrainInfo>(actualTask->info);
+    const TrainInfo info = std::get<TrainInfo>(actualTask->info);
     const uint64_t numberOfInputsPerCycle = info.numberOfInputsPerCycle;
     const uint64_t numberOfOuputsPerCycle = info.numberOfOuputsPerCycle;
     const uint64_t entriesPerCycle = numberOfInputsPerCycle + numberOfOuputsPerCycle;

@@ -470,14 +470,14 @@ Cluster::finishTask()
         // send results to shiori, if some are attached to the task
         if (m_currentTask->resultData.size() != 0) {
             // results of tables a aggregated values, so they have to be fixed to its average value
-            if (m_currentTask->type == TABLE_REQUEST_TASK) {
+            /*if (m_currentTask->type == TABLE_REQUEST_TASK) {
                 const TableRequestInfo info = std::get<TableRequestInfo>(m_currentTask->info);
                 const float numberOfOutputs = static_cast<float>(info.numberOfOuputsPerCycle);
                 for (uint64_t i = 0; i < m_currentTask->resultData.size(); i++) {
                     float value = m_currentTask->resultData[i];
                     m_currentTask->resultData[i] = value / numberOfOutputs;
                 }
-            }
+            }*/
 
             // write result to database
             Hanami::ErrorContainer error;

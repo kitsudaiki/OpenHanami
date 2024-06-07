@@ -34,12 +34,10 @@ using json = nlohmann::json;
 
 enum TaskType {
     NO_TASK = 0,
-    IMAGE_TRAIN_TASK = 1,
-    IMAGE_REQUEST_TASK = 2,
-    TABLE_TRAIN_TASK = 3,
-    TABLE_REQUEST_TASK = 4,
-    CLUSTER_CHECKPOINT_SAVE_TASK = 5,
-    CLUSTER_CHECKPOINT_RESTORE_TASK = 6,
+    TRAIN_TASK = 1,
+    REQUEST_TASK = 2,
+    CLUSTER_CHECKPOINT_SAVE_TASK = 3,
+    CLUSTER_CHECKPOINT_RESTORE_TASK = 4,
 };
 
 enum TaskState {
@@ -60,7 +58,7 @@ struct TaskProgress {
     uint64_t estimatedRemaningTime = 0;
 };
 
-struct ImageTrainInfo {
+struct TrainInfo {
     float* inputData = nullptr;
     float* outputData = nullptr;
 
@@ -69,24 +67,7 @@ struct ImageTrainInfo {
     uint64_t numberOfOuputsPerCycle = 0;
 };
 
-struct ImageRequestInfo {
-    float* inputData = nullptr;
-
-    uint64_t numberOfCycles = 0;
-    uint64_t numberOfInputsPerCycle = 0;
-    uint64_t numberOfOuputsPerCycle = 0;
-};
-
-struct TableTrainInfo {
-    float* inputData = nullptr;
-    float* outputData = nullptr;
-
-    uint64_t numberOfCycles = 0;
-    uint64_t numberOfInputsPerCycle = 0;
-    uint64_t numberOfOuputsPerCycle = 0;
-};
-
-struct TableRequestInfo {
+struct RequestInfo {
     float* inputData = nullptr;
 
     uint64_t numberOfCycles = 0;
@@ -114,13 +95,7 @@ struct Task {
     TaskProgress progress;
     json resultData;
 
-    std::variant<ImageTrainInfo,
-                 ImageRequestInfo,
-                 TableTrainInfo,
-                 TableRequestInfo,
-                 CheckpointSaveInfo,
-                 CheckpointRestoreInfo>
-        info;
+    std::variant<TrainInfo, RequestInfo, CheckpointSaveInfo, CheckpointRestoreInfo> info;
 
     Task()
     {
@@ -132,37 +107,20 @@ struct Task {
     void deleteData()
     {
         switch (type) {
-            case IMAGE_TRAIN_TASK:
-                if (std::get<ImageTrainInfo>(info).inputData != nullptr) {
-                    delete[] std::get<ImageTrainInfo>(info).inputData;
-                    std::get<ImageTrainInfo>(info).inputData = nullptr;
+            case TRAIN_TASK:
+                if (std::get<TrainInfo>(info).inputData != nullptr) {
+                    delete[] std::get<TrainInfo>(info).inputData;
+                    std::get<TrainInfo>(info).inputData = nullptr;
                 }
-                if (std::get<ImageTrainInfo>(info).outputData != nullptr) {
-                    delete[] std::get<ImageTrainInfo>(info).outputData;
-                    std::get<ImageTrainInfo>(info).outputData = nullptr;
-                }
-                break;
-            case IMAGE_REQUEST_TASK:
-                if (std::get<ImageRequestInfo>(info).inputData != nullptr) {
-                    delete[] std::get<ImageRequestInfo>(info).inputData;
-                    std::get<ImageRequestInfo>(info).inputData = nullptr;
+                if (std::get<TrainInfo>(info).outputData != nullptr) {
+                    delete[] std::get<TrainInfo>(info).outputData;
+                    std::get<TrainInfo>(info).outputData = nullptr;
                 }
                 break;
-            case TABLE_TRAIN_TASK:
-
-                if (std::get<TableTrainInfo>(info).inputData != nullptr) {
-                    delete[] std::get<TableTrainInfo>(info).inputData;
-                    std::get<TableTrainInfo>(info).inputData = nullptr;
-                }
-                if (std::get<TableTrainInfo>(info).outputData != nullptr) {
-                    delete[] std::get<TableTrainInfo>(info).outputData;
-                    std::get<TableTrainInfo>(info).outputData = nullptr;
-                }
-                break;
-            case TABLE_REQUEST_TASK:
-                if (std::get<TableRequestInfo>(info).inputData != nullptr) {
-                    delete[] std::get<TableRequestInfo>(info).inputData;
-                    std::get<TableRequestInfo>(info).inputData = nullptr;
+            case REQUEST_TASK:
+                if (std::get<RequestInfo>(info).inputData != nullptr) {
+                    delete[] std::get<RequestInfo>(info).inputData;
+                    std::get<RequestInfo>(info).inputData = nullptr;
                 }
                 break;
             case CLUSTER_CHECKPOINT_SAVE_TASK:

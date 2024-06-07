@@ -24,6 +24,9 @@
 #define SAVECLUSTER_H
 
 #include <api/endpoint_processing/blossom.h>
+#include <core/cluster/task.h>
+
+class Cluster;
 
 class SaveCluster : public Blossom
 {
@@ -35,6 +38,12 @@ class SaveCluster : public Blossom
                  const json& context,
                  BlossomStatus& status,
                  Hanami::ErrorContainer& error);
+
+   private:
+    const std::string addCheckpointSaveTask(Cluster& cluster,
+                                            const std::string& checkpointName,
+                                            const std::string& userId,
+                                            const std::string& projectId);
 };
 
 #endif  // SAVECLUSTER_H

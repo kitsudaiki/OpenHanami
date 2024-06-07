@@ -45,7 +45,7 @@ bool
 ImageIdentify_State::processEvent()
 {
     Task* actualTask = m_cluster->getCurrentTask();
-    const ImageRequestInfo info = std::get<ImageRequestInfo>(actualTask->info);
+    const RequestInfo info = std::get<RequestInfo>(actualTask->info);
     const uint64_t numberOfInputsPerCycle = info.numberOfInputsPerCycle;
     const uint64_t numberOfOuputsPerCycle = info.numberOfOuputsPerCycle;
     const uint64_t entriesPerCycle = numberOfInputsPerCycle + numberOfOuputsPerCycle;

@@ -44,7 +44,7 @@ TableInterpolation_State::~TableInterpolation_State() {}
 bool
 TableInterpolation_State::processEvent()
 {
-    Task* actualTask = m_cluster->getCurrentTask();
+    /*Task* actualTask = m_cluster->getCurrentTask();
     const TableRequestInfo info = std::get<TableRequestInfo>(actualTask->info);
     const uint64_t numberOfInputsPerCycle = info.numberOfInputsPerCycle;
     const uint64_t numberOfOuputsPerCycle = info.numberOfOuputsPerCycle;
@@ -64,7 +64,7 @@ TableInterpolation_State::processEvent()
     }
 
     m_cluster->mode = ClusterProcessingMode::NORMAL_MODE;
-    m_cluster->startForwardCycle();
+    m_cluster->startForwardCycle();*/
 
     return true;
 }
