@@ -33,7 +33,7 @@
 using json = nlohmann::json;
 
 enum TaskType {
-    UNDEFINED_TASK = 0,
+    NO_TASK = 0,
     IMAGE_TRAIN_TASK = 1,
     IMAGE_REQUEST_TASK = 2,
     TABLE_TRAIN_TASK = 3,
@@ -104,13 +104,13 @@ struct CheckpointRestoreInfo {
 
 struct Task {
     UUID uuid;
-    TaskType type = UNDEFINED_TASK;
+    TaskType type = NO_TASK;
     std::string name = "";
     std::string userId = "";
     std::string projectId = "";
 
     // progress
-    uint64_t actualCycle = 0;
+    uint64_t currentCycle = 0;
     TaskProgress progress;
     json resultData;
 
@@ -169,7 +169,7 @@ struct Task {
                 return;
             case CLUSTER_CHECKPOINT_RESTORE_TASK:
                 return;
-            case UNDEFINED_TASK:
+            case NO_TASK:
                 return;
         }
     }

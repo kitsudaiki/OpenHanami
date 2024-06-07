@@ -70,7 +70,7 @@ addImageTrainTask(Cluster& cluster,
 
     // add task to queue
     const std::string uuid = newTask.uuid.toString();
-    cluster.taskHandleState->addTask(uuid, newTask);
+    cluster.addTask(uuid, newTask);
 
     cluster.stateMachine->goToNextState(PROCESS_TASK);
 
@@ -125,7 +125,7 @@ addImageRequestTask(Cluster& cluster,
 
     // add task to queue
     const std::string uuid = newTask.uuid.toString();
-    cluster.taskHandleState->addTask(uuid, newTask);
+    cluster.addTask(uuid, newTask);
 
     cluster.stateMachine->goToNextState(PROCESS_TASK);
 
@@ -178,7 +178,7 @@ addTableTrainTask(Cluster& cluster,
 
     // add task to queue
     const std::string uuid = newTask.uuid.toString();
-    cluster.taskHandleState->addTask(uuid, newTask);
+    cluster.addTask(uuid, newTask);
 
     cluster.stateMachine->goToNextState(PROCESS_TASK);
 
@@ -231,7 +231,7 @@ addTableRequestTask(Cluster& cluster,
 
     // add tasgetNextTaskk to queue
     const std::string uuid = newTask.uuid.toString();
-    cluster.taskHandleState->addTask(uuid, newTask);
+    cluster.addTask(uuid, newTask);
 
     cluster.stateMachine->goToNextState(PROCESS_TASK);
 
@@ -270,7 +270,7 @@ addCheckpointSaveTask(Cluster& cluster,
 
     // add tasgetNextTaskk to queue
     const std::string uuid = newTask.uuid.toString();
-    cluster.taskHandleState->addTask(uuid, newTask);
+    cluster.addTask(uuid, newTask);
 
     cluster.stateMachine->goToNextState(PROCESS_TASK);
 
@@ -310,7 +310,7 @@ addCheckpointRestoreTask(Cluster& cluster,
 
     // add tasgetNextTaskk to queue
     const std::string uuid = newTask.uuid.toString();
-    cluster.taskHandleState->addTask(uuid, newTask);
+    cluster.addTask(uuid, newTask);
 
     cluster.stateMachine->goToNextState(PROCESS_TASK);
 

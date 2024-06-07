@@ -48,7 +48,7 @@ TableTrainForward_State::processEvent()
     const TableTrainInfo info = std::get<TableTrainInfo>(actualTask->info);
     const uint64_t numberOfInputsPerCycle = info.numberOfInputsPerCycle;
     const uint64_t numberOfOuputsPerCycle = info.numberOfOuputsPerCycle;
-    uint64_t offset = actualTask->actualCycle;
+    uint64_t offset = actualTask->currentCycle;
     if (numberOfInputsPerCycle > numberOfOuputsPerCycle) {
         offset += numberOfInputsPerCycle;
     }

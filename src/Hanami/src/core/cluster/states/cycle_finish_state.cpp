@@ -65,16 +65,16 @@ CycleFinish_State::processEvent()
             return false;
         case CLUSTER_CHECKPOINT_RESTORE_TASK:
             return false;
-        case UNDEFINED_TASK:
+        case NO_TASK:
             return false;
     }
 
     // update progress-counter
-    actualTask->actualCycle++;
-    actualTask->progress.currentCyle = actualTask->actualCycle;
+    actualTask->currentCycle++;
+    actualTask->progress.currentCyle = actualTask->currentCycle;
 
     // to go next state of finish the task to goal is reached
-    if (actualTask->actualCycle == numberOfCycles) {
+    if (actualTask->currentCycle == numberOfCycles) {
         m_cluster->goToNextState(FINISH_TASK);
     }
     else {

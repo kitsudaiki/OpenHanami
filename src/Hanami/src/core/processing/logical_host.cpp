@@ -148,7 +148,7 @@ handleClientOutput(Cluster& cluster)
     }
     else {
         Task* actualTask = cluster.getCurrentTask();
-        const uint64_t cycle = actualTask->actualCycle;
+        const uint64_t cycle = actualTask->currentCycle;
         if (actualTask->type == IMAGE_REQUEST_TASK) {
             // TODO: check for cluster-state instead of client
             const uint32_t hightest = getHighestOutput(cluster);

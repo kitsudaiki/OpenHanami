@@ -49,7 +49,7 @@ ImageTrainForward_State::processEvent()
     const uint64_t numberOfInputsPerCycle = info.numberOfInputsPerCycle;
     const uint64_t numberOfOuputsPerCycle = info.numberOfOuputsPerCycle;
     const uint64_t entriesPerCycle = numberOfInputsPerCycle + numberOfOuputsPerCycle;
-    const uint64_t offsetInput = entriesPerCycle * actualTask->actualCycle;
+    const uint64_t offsetInput = entriesPerCycle * actualTask->currentCycle;
 
     // set input
     InputInterface* inputInterface = &m_cluster->inputInterfaces.begin()->second;
