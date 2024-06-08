@@ -1,5 +1,5 @@
 /**
- * @file        image_train_forward_state.h
+ * @file        train_forward_state.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,18 +20,18 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_IMAGETRAINFORWARD_STATE_H
-#define HANAMI_IMAGETRAINFORWARD_STATE_H
+#ifndef HANAMI_TRAINFORWARD_STATE_H
+#define HANAMI_TRAINFORWARD_STATE_H
 
 #include <hanami_common/threading/event.h>
 
 class Cluster;
 
-class ImageTrainForward_State : public Hanami::Event
+class TrainForward_State : public Hanami::Event
 {
    public:
-    ImageTrainForward_State(Cluster* cluster);
-    ~ImageTrainForward_State();
+    TrainForward_State(Cluster* cluster);
+    ~TrainForward_State();
 
     bool processEvent();
 
@@ -39,4 +39,4 @@ class ImageTrainForward_State : public Hanami::Event
     Cluster* m_cluster = nullptr;
 };
 
-#endif  // HANAMI_IMAGETRAINFORWARD_STATE_H
+#endif  // HANAMI_TRAINFORWARD_STATE_H

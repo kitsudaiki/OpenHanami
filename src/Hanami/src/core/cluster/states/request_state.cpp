@@ -1,5 +1,5 @@
 /**
- * @file        image_train_forward_state.cpp
+ * @file        request_state.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,7 +20,7 @@
  *      limitations under the License.
  */
 
-#include "image_train_forward_state.h"
+#include "request_state.h"
 
 #include <core/cluster/cluster.h>
 
@@ -29,12 +29,12 @@
  *
  * @param cluster pointer to the cluster, where the event and the statemachine belongs to
  */
-ImageTrainForward_State::ImageTrainForward_State(Cluster* cluster) { m_cluster = cluster; }
+Request_State::Request_State(Cluster* cluster) { m_cluster = cluster; }
 
 /**
  * @brief destructor
  */
-ImageTrainForward_State::~ImageTrainForward_State() {}
+Request_State::~Request_State() {}
 
 /**
  * @brief prcess event
@@ -42,10 +42,10 @@ ImageTrainForward_State::~ImageTrainForward_State() {}
  * @return alway true
  */
 bool
-ImageTrainForward_State::processEvent()
+Request_State::processEvent()
 {
     Task* actualTask = m_cluster->getCurrentTask();
-    const TrainInfo info = std::get<TrainInfo>(actualTask->info);
+    const RequestInfo info = std::get<RequestInfo>(actualTask->info);
     const uint64_t numberOfInputsPerCycle = info.numberOfInputsPerCycle;
     const uint64_t numberOfOuputsPerCycle = info.numberOfOuputsPerCycle;
     const uint64_t entriesPerCycle = numberOfInputsPerCycle + numberOfOuputsPerCycle;
@@ -57,14 +57,7 @@ ImageTrainForward_State::processEvent()
         inputInterface->inputNeurons[i].value = info.inputData[offsetInput + i];
     }
 
-    // set exprected output
-    OutputInterface* outputInterface = &m_cluster->outputInterfaces.begin()->second;
-    for (uint64_t i = 0; i < numberOfOuputsPerCycle; i++) {
-        outputInterface->outputNeurons[i].exprectedVal
-            = info.inputData[offsetInput + numberOfInputsPerCycle + i];
-    }
-
-    m_cluster->mode = ClusterProcessingMode::TRAIN_FORWARD_MODE;
+    m_cluster->mode = ClusterProcessingMode::NORMAL_MODE;
     m_cluster->startForwardCycle();
 
     return true;

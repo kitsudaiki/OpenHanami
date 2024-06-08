@@ -23,14 +23,12 @@
 #include "statemachine_init.h"
 
 #include <core/cluster/cluster.h>
-#include <core/cluster/states/checkpoints/restore_cluster_state.h>
-#include <core/cluster/states/checkpoints/save_cluster_state.h>
 #include <core/cluster/states/cycle_finish_state.h>
-#include <core/cluster/states/images/image_identify_state.h>
-#include <core/cluster/states/images/image_train_forward_state.h>
-#include <core/cluster/states/tables/table_interpolation_state.h>
-#include <core/cluster/states/tables/table_train_forward_state.h>
+#include <core/cluster/states/request_state.h>
+#include <core/cluster/states/restore_cluster_state.h>
+#include <core/cluster/states/save_cluster_state.h>
 #include <core/cluster/states/task_handle_state.h>
+#include <core/cluster/states/train_forward_state.h>
 #include <hanami_common/statemachine.h>
 
 /**
@@ -43,19 +41,11 @@ initStates(Hanami::Statemachine& sm)
 {
     sm.createNewState(TASK_STATE, "Task-handling mode");
     sm.createNewState(TRAIN_STATE, "Train-State");
-    sm.createNewState(IMAGE_TRAIN_STATE, "Image-train state");
-    sm.createNewState(IMAGE_TRAIN_FORWARD_STATE, "Image-train state: run");
-    sm.createNewState(IMAGE_TRAIN_CYCLE_FINISH_STATE, "Image-train state: finish-cycle");
-    sm.createNewState(TABLE_TRAIN_STATE, "Table-train state");
-    sm.createNewState(TABLE_TRAIN_FORWARD_STATE, "Table-train state: run");
-    sm.createNewState(TABLE_TRAIN_CYCLE_FINISH_STATE, "Table-train state: finish-cycle");
+    sm.createNewState(TRAIN_FORWARD_STATE, "Train state: run");
+    sm.createNewState(TRAIN_CYCLE_FINISH_STATE, "Train state: finish-cycle");
     sm.createNewState(REQUEST_STATE, "Request-State");
-    sm.createNewState(IMAGE_REQUEST_STATE, "Image-request state");
-    sm.createNewState(IMAGE_REQUEST_FORWARD_STATE, "Image-request state: forward-propagation");
-    sm.createNewState(IMAGE_REQUEST_CYCLE_FINISH_STATE, "Image-request state: finish-cycle");
-    sm.createNewState(TABLE_REQUEST_STATE, "Table-request state");
-    sm.createNewState(TABLE_REQUEST_FORWARD_STATE, "Table-request state: forward-propagation");
-    sm.createNewState(TABLE_REQUEST_CYCLE_FINISH_STATE, "Table-request state: finish-cycle");
+    sm.createNewState(REQUEST_FORWARD_STATE, "Request state: forward-propagation");
+    sm.createNewState(REQUEST_CYCLE_FINISH_STATE, "Request state: finish-cycle");
     sm.createNewState(CHECKPOINT_STATE, "Checkpoint state");
     sm.createNewState(CLUSTER_CHECKPOINT_STATE, "Cluster-checkpoint state");
     sm.createNewState(CLUSTER_CHECKPOINT_SAVE_STATE, "Cluster-checkpoint state: save");
@@ -74,14 +64,10 @@ void
 initEvents(Hanami::Statemachine& sm, Cluster* cluster, TaskHandle_State* taskState)
 {
     sm.addEventToState(TASK_STATE, taskState);
-    sm.addEventToState(IMAGE_TRAIN_FORWARD_STATE, new ImageTrainForward_State(cluster));
-    sm.addEventToState(TABLE_TRAIN_FORWARD_STATE, new TableTrainForward_State(cluster));
-    sm.addEventToState(IMAGE_REQUEST_FORWARD_STATE, new ImageIdentify_State(cluster));
-    sm.addEventToState(TABLE_REQUEST_FORWARD_STATE, new TableInterpolation_State(cluster));
-    sm.addEventToState(IMAGE_TRAIN_CYCLE_FINISH_STATE, new CycleFinish_State(cluster));
-    sm.addEventToState(TABLE_TRAIN_CYCLE_FINISH_STATE, new CycleFinish_State(cluster));
-    sm.addEventToState(IMAGE_REQUEST_CYCLE_FINISH_STATE, new CycleFinish_State(cluster));
-    sm.addEventToState(TABLE_REQUEST_CYCLE_FINISH_STATE, new CycleFinish_State(cluster));
+    sm.addEventToState(TRAIN_FORWARD_STATE, new TrainForward_State(cluster));
+    sm.addEventToState(REQUEST_FORWARD_STATE, new Request_State(cluster));
+    sm.addEventToState(TRAIN_CYCLE_FINISH_STATE, new CycleFinish_State(cluster));
+    sm.addEventToState(REQUEST_CYCLE_FINISH_STATE, new CycleFinish_State(cluster));
     sm.addEventToState(CLUSTER_CHECKPOINT_SAVE_STATE, new SaveCluster_State(cluster));
     sm.addEventToState(CLUSTER_CHECKPOINT_RESTORE_STATE, new RestoreCluster_State(cluster));
 }
@@ -94,25 +80,13 @@ initEvents(Hanami::Statemachine& sm, Cluster* cluster, TaskHandle_State* taskSta
 void
 initChildStates(Hanami::Statemachine& sm)
 {
-    // child states image train
-    sm.addChildState(TRAIN_STATE, IMAGE_TRAIN_STATE);
-    sm.addChildState(IMAGE_TRAIN_STATE, IMAGE_TRAIN_FORWARD_STATE);
-    sm.addChildState(IMAGE_TRAIN_STATE, IMAGE_TRAIN_CYCLE_FINISH_STATE);
-
-    // child states table train
-    sm.addChildState(TRAIN_STATE, TABLE_TRAIN_STATE);
-    sm.addChildState(TABLE_TRAIN_STATE, TABLE_TRAIN_FORWARD_STATE);
-    sm.addChildState(TABLE_TRAIN_STATE, TABLE_TRAIN_CYCLE_FINISH_STATE);
+    // child states training
+    sm.addChildState(TRAIN_STATE, TRAIN_FORWARD_STATE);
+    sm.addChildState(TRAIN_STATE, TRAIN_CYCLE_FINISH_STATE);
 
     // child states image request
-    sm.addChildState(REQUEST_STATE, IMAGE_REQUEST_STATE);
-    sm.addChildState(IMAGE_REQUEST_STATE, IMAGE_REQUEST_FORWARD_STATE);
-    sm.addChildState(IMAGE_REQUEST_STATE, IMAGE_REQUEST_CYCLE_FINISH_STATE);
-
-    // child states table request
-    sm.addChildState(REQUEST_STATE, TABLE_REQUEST_STATE);
-    sm.addChildState(TABLE_REQUEST_STATE, TABLE_REQUEST_FORWARD_STATE);
-    sm.addChildState(TABLE_REQUEST_STATE, TABLE_REQUEST_CYCLE_FINISH_STATE);
+    sm.addChildState(REQUEST_STATE, REQUEST_FORWARD_STATE);
+    sm.addChildState(REQUEST_STATE, REQUEST_CYCLE_FINISH_STATE);
 
     // child states checkpoint
     sm.addChildState(CHECKPOINT_STATE, CLUSTER_CHECKPOINT_STATE);
@@ -128,10 +102,8 @@ initChildStates(Hanami::Statemachine& sm)
 void
 initInitialChildStates(Hanami::Statemachine& sm)
 {
-    sm.setInitialChildState(IMAGE_TRAIN_STATE, IMAGE_TRAIN_FORWARD_STATE);
-    sm.setInitialChildState(TABLE_TRAIN_STATE, TABLE_TRAIN_FORWARD_STATE);
-    sm.setInitialChildState(IMAGE_REQUEST_STATE, IMAGE_REQUEST_FORWARD_STATE);
-    sm.setInitialChildState(TABLE_REQUEST_STATE, TABLE_REQUEST_FORWARD_STATE);
+    sm.setInitialChildState(TRAIN_STATE, TRAIN_FORWARD_STATE);
+    sm.setInitialChildState(REQUEST_STATE, REQUEST_FORWARD_STATE);
 }
 
 /**
@@ -144,13 +116,9 @@ initTransitions(Hanami::Statemachine& sm)
 {
     // transtions train init
     sm.addTransition(TASK_STATE, TRAIN, TRAIN_STATE);
-    sm.addTransition(TRAIN_STATE, IMAGE, IMAGE_TRAIN_STATE);
-    sm.addTransition(TRAIN_STATE, TABLE, TABLE_TRAIN_STATE);
 
     // transitions request init
     sm.addTransition(TASK_STATE, REQUEST, REQUEST_STATE);
-    sm.addTransition(REQUEST_STATE, IMAGE, IMAGE_REQUEST_STATE);
-    sm.addTransition(REQUEST_STATE, TABLE, TABLE_REQUEST_STATE);
 
     // transitions checkpoint init
     sm.addTransition(TASK_STATE, CHECKPOINT, CHECKPOINT_STATE);
@@ -159,16 +127,12 @@ initTransitions(Hanami::Statemachine& sm)
     sm.addTransition(CLUSTER_CHECKPOINT_STATE, RESTORE, CLUSTER_CHECKPOINT_RESTORE_STATE);
 
     // trainsition train-internal
-    sm.addTransition(IMAGE_TRAIN_FORWARD_STATE, NEXT, IMAGE_TRAIN_CYCLE_FINISH_STATE);
-    sm.addTransition(IMAGE_TRAIN_CYCLE_FINISH_STATE, NEXT, IMAGE_TRAIN_FORWARD_STATE);
-    sm.addTransition(TABLE_TRAIN_FORWARD_STATE, NEXT, TABLE_TRAIN_CYCLE_FINISH_STATE);
-    sm.addTransition(TABLE_TRAIN_CYCLE_FINISH_STATE, NEXT, TABLE_TRAIN_FORWARD_STATE);
+    sm.addTransition(TRAIN_FORWARD_STATE, NEXT, TRAIN_CYCLE_FINISH_STATE);
+    sm.addTransition(TRAIN_CYCLE_FINISH_STATE, NEXT, TRAIN_FORWARD_STATE);
 
     // trainsition request-internal
-    sm.addTransition(IMAGE_REQUEST_FORWARD_STATE, NEXT, IMAGE_REQUEST_CYCLE_FINISH_STATE);
-    sm.addTransition(IMAGE_REQUEST_CYCLE_FINISH_STATE, NEXT, IMAGE_REQUEST_FORWARD_STATE);
-    sm.addTransition(TABLE_REQUEST_FORWARD_STATE, NEXT, TABLE_REQUEST_CYCLE_FINISH_STATE);
-    sm.addTransition(TABLE_REQUEST_CYCLE_FINISH_STATE, NEXT, TABLE_REQUEST_FORWARD_STATE);
+    sm.addTransition(REQUEST_FORWARD_STATE, NEXT, REQUEST_CYCLE_FINISH_STATE);
+    sm.addTransition(REQUEST_CYCLE_FINISH_STATE, NEXT, REQUEST_FORWARD_STATE);
 
     // transition finish back to task-state
     sm.addTransition(TRAIN_STATE, FINISH_TASK, TASK_STATE);

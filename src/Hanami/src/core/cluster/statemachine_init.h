@@ -28,9 +28,9 @@ class CycleFinish_State;
 class TableInterpolation_State;
 class TableTrainBackward_State;
 class TableTrainForward_State;
-class ImageIdentify_State;
+class Request_State;
 class ImageTrainBackward_State;
-class ImageTrainForward_State;
+class TrainForward_State;
 class Cluster;
 
 namespace Hanami
@@ -42,32 +42,22 @@ class Statemachine;
 enum ClusterStates {
     TASK_STATE = 0,
     TRAIN_STATE = 1,
-    IMAGE_TRAIN_STATE = 2,
-    IMAGE_TRAIN_FORWARD_STATE = 3,
-    IMAGE_TRAIN_CYCLE_FINISH_STATE = 5,
-    TABLE_TRAIN_STATE = 6,
-    TABLE_TRAIN_FORWARD_STATE = 7,
-    TABLE_TRAIN_CYCLE_FINISH_STATE = 9,
-    REQUEST_STATE = 10,
-    IMAGE_REQUEST_STATE = 11,
-    IMAGE_REQUEST_FORWARD_STATE = 12,
-    IMAGE_REQUEST_CYCLE_FINISH_STATE = 13,
-    TABLE_REQUEST_STATE = 14,
-    TABLE_REQUEST_FORWARD_STATE = 15,
-    TABLE_REQUEST_CYCLE_FINISH_STATE = 16,
-    CHECKPOINT_STATE = 17,
-    CLUSTER_CHECKPOINT_STATE = 18,
-    CLUSTER_CHECKPOINT_SAVE_STATE = 19,
-    CLUSTER_CHECKPOINT_RESTORE_STATE = 20,
-    DIRECT_STATE = 21,
+    TRAIN_FORWARD_STATE = 2,
+    TRAIN_CYCLE_FINISH_STATE = 3,
+    REQUEST_STATE = 4,
+    REQUEST_FORWARD_STATE = 5,
+    REQUEST_CYCLE_FINISH_STATE = 6,
+    CHECKPOINT_STATE = 7,
+    CLUSTER_CHECKPOINT_STATE = 8,
+    CLUSTER_CHECKPOINT_SAVE_STATE = 9,
+    CLUSTER_CHECKPOINT_RESTORE_STATE = 10,
+    DIRECT_STATE = 11,
 };
 
 enum ClusterTransitions {
     TRAIN = 100,
     REQUEST = 101,
     CHECKPOINT = 102,
-    IMAGE = 103,
-    TABLE = 104,
     CLUSTER = 105,
     SAVE = 106,
     RESTORE = 107,

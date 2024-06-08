@@ -76,15 +76,11 @@ set(SOURCES
     src/core/cluster/cluster_init.h
     src/core/cluster/objects.h
     src/core/cluster/statemachine_init.h
-    src/core/cluster/states/checkpoints/restore_cluster_state.h
-    src/core/cluster/states/checkpoints/save_cluster_state.h
+    src/core/cluster/states/restore_cluster_state.h
+    src/core/cluster/states/save_cluster_state.h
     src/core/cluster/states/cycle_finish_state.h
-    src/core/cluster/states/graphs/graph_interpolation_state.h
-    src/core/cluster/states/graphs/graph_train_forward_state.h
-    src/core/cluster/states/images/image_identify_state.h
-    src/core/cluster/states/images/image_train_forward_state.h
-    src/core/cluster/states/tables/table_interpolation_state.h
-    src/core/cluster/states/tables/table_train_forward_state.h
+    src/core/cluster/states/request_state.h
+    src/core/cluster/states/train_forward_state.h
     src/core/cluster/states/task_handle_state.h
     src/core/cluster/task.h
     src/core/cuda_functions.h
@@ -180,15 +176,11 @@ set(SOURCES
     src/core/cluster/cluster_handler.cpp
     src/core/cluster/cluster_init.cpp
     src/core/cluster/statemachine_init.cpp
-    src/core/cluster/states/checkpoints/restore_cluster_state.cpp
-    src/core/cluster/states/checkpoints/save_cluster_state.cpp
+    src/core/cluster/states/restore_cluster_state.cpp
+    src/core/cluster/states/save_cluster_state.cpp
     src/core/cluster/states/cycle_finish_state.cpp
-    src/core/cluster/states/graphs/graph_interpolation_state.cpp
-    src/core/cluster/states/graphs/graph_train_forward_state.cpp
-    src/core/cluster/states/images/image_identify_state.cpp
-    src/core/cluster/states/images/image_train_forward_state.cpp
-    src/core/cluster/states/tables/table_interpolation_state.cpp
-    src/core/cluster/states/tables/table_train_forward_state.cpp
+    src/core/cluster/states/request_state.cpp
+    src/core/cluster/states/train_forward_state.cpp
     src/core/cluster/states/task_handle_state.cpp
     src/core/io/checkpoint/buffer/buffer_io.cpp
     src/core/io/checkpoint/disc/checkpoint_io.cpp

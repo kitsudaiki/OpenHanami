@@ -1,5 +1,5 @@
 /**
- * @file        table_interpolation_state.cpp
+ * @file        train_forward_state.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,7 +20,7 @@
  *      limitations under the License.
  */
 
-#include "table_interpolation_state.h"
+#include "train_forward_state.h"
 
 #include <core/cluster/cluster.h>
 
@@ -29,12 +29,12 @@
  *
  * @param cluster pointer to the cluster, where the event and the statemachine belongs to
  */
-TableInterpolation_State::TableInterpolation_State(Cluster* cluster) { m_cluster = cluster; }
+TrainForward_State::TrainForward_State(Cluster* cluster) { m_cluster = cluster; }
 
 /**
  * @brief destructor
  */
-TableInterpolation_State::~TableInterpolation_State() {}
+TrainForward_State::~TrainForward_State() {}
 
 /**
  * @brief prcess event
@@ -42,29 +42,30 @@ TableInterpolation_State::~TableInterpolation_State() {}
  * @return alway true
  */
 bool
-TableInterpolation_State::processEvent()
+TrainForward_State::processEvent()
 {
-    /*Task* actualTask = m_cluster->getCurrentTask();
-    const TableRequestInfo info = std::get<TableRequestInfo>(actualTask->info);
+    Task* actualTask = m_cluster->getCurrentTask();
+    const TrainInfo info = std::get<TrainInfo>(actualTask->info);
     const uint64_t numberOfInputsPerCycle = info.numberOfInputsPerCycle;
     const uint64_t numberOfOuputsPerCycle = info.numberOfOuputsPerCycle;
-    uint64_t offset = actualTask->currentCycle;
-    if (numberOfInputsPerCycle > numberOfOuputsPerCycle) {
-        offset += numberOfInputsPerCycle;
-    }
-    else {
-        offset += numberOfOuputsPerCycle;
-    }
+    const uint64_t entriesPerCycle = numberOfInputsPerCycle + numberOfOuputsPerCycle;
+    const uint64_t offsetInput = entriesPerCycle * actualTask->currentCycle;
 
     // set input
     InputInterface* inputInterface = &m_cluster->inputInterfaces.begin()->second;
     for (uint64_t i = 0; i < numberOfInputsPerCycle; i++) {
-        inputInterface->inputNeurons[i].value
-            = info.inputData[(offset - numberOfInputsPerCycle) + i];
+        inputInterface->inputNeurons[i].value = info.inputData[offsetInput + i];
     }
 
-    m_cluster->mode = ClusterProcessingMode::NORMAL_MODE;
-    m_cluster->startForwardCycle();*/
+    // set exprected output
+    OutputInterface* outputInterface = &m_cluster->outputInterfaces.begin()->second;
+    for (uint64_t i = 0; i < numberOfOuputsPerCycle; i++) {
+        outputInterface->outputNeurons[i].exprectedVal
+            = info.inputData[offsetInput + numberOfInputsPerCycle + i];
+    }
+
+    m_cluster->mode = ClusterProcessingMode::TRAIN_FORWARD_MODE;
+    m_cluster->startForwardCycle();
 
     return true;
 }

@@ -1,5 +1,5 @@
 /**
- * @file        image_identify_state.h
+ * @file        request_state.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,18 +20,18 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_IMAGEIDENTIFY_STATE_H
-#define HANAMI_IMAGEIDENTIFY_STATE_H
+#ifndef HANAMI_REQUEST_STATE_H
+#define HANAMI_REQUEST_STATE_H
 
 #include <hanami_common/threading/event.h>
 
 class Cluster;
 
-class ImageIdentify_State : public Hanami::Event
+class Request_State : public Hanami::Event
 {
    public:
-    ImageIdentify_State(Cluster* cluster);
-    ~ImageIdentify_State();
+    Request_State(Cluster* cluster);
+    ~Request_State();
 
     bool processEvent();
 

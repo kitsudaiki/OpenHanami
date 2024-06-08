@@ -57,7 +57,7 @@ TaskHandle_State::processEvent()
         case TRAIN_TASK:
         {
             if (m_cluster->goToNextState(TRAIN)) {
-                m_cluster->goToNextState(IMAGE);
+                return true;
             }
             else {
                 // TODO: error-message
@@ -68,7 +68,7 @@ TaskHandle_State::processEvent()
         case REQUEST_TASK:
         {
             if (m_cluster->goToNextState(REQUEST)) {
-                m_cluster->goToNextState(IMAGE);
+                return true;
             }
             else {
                 // TODO: error-message
