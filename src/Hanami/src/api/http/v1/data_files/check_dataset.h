@@ -25,16 +25,25 @@
 
 #include <api/endpoint_processing/blossom.h>
 
-class CheckDataSet : public Blossom
+struct DataSetFileHandle;
+
+class CheckMnistDataSet : public Blossom
 {
    public:
-    CheckDataSet();
+    CheckMnistDataSet();
 
    protected:
     bool runTask(BlossomIO& blossomIO,
                  const json& context,
                  BlossomStatus& status,
                  Hanami::ErrorContainer& error);
+
+   private:
+    ReturnStatus getFileHandle(DataSetFileHandle& fileHandle,
+                               const std::string uuid,
+                               const Hanami::UserContext userContext,
+                               BlossomStatus& status,
+                               Hanami::ErrorContainer& error);
 };
 
 #endif  // HANAMI_CHECKDATASET_H

@@ -389,6 +389,7 @@ IO_Interface::deserialize(Brick& brick, uint64_t& positionPtr, Hanami::ErrorCont
         inputIf.targetBrickId = brick.header.brickId;
 
         inputIf.inputNeurons.resize(inputEntry.numberOfInputs);
+        inputIf.ioBuffer.resize(inputEntry.numberOfInputs);
         for (InputNeuron& inputNeuron : inputIf.inputNeurons) {
             ret = getObjectFromLocalBuffer(positionPtr, &inputNeuron, error);
             if (ret != OK) {
@@ -429,6 +430,7 @@ IO_Interface::deserialize(Brick& brick, uint64_t& positionPtr, Hanami::ErrorCont
         outputIf.targetBrickId = brick.header.brickId;
 
         outputIf.outputNeurons.resize(outputEntry.numberOfOutputs);
+        outputIf.ioBuffer.resize(outputEntry.numberOfOutputs);
         for (OutputNeuron& outputNeuron : outputIf.outputNeurons) {
             ret = getObjectFromLocalBuffer(positionPtr, &outputNeuron, error);
             if (ret != OK) {

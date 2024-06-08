@@ -25,9 +25,6 @@
 #include <core/temp_file_handler.h>
 #include <database/dataset_table.h>
 #include <database/tempfile_table.h>
-#include <hanami_files/dataset_files/dataset_file.h>
-#include <hanami_files/dataset_files/image_dataset_file.h>
-#include <hanami_files/dataset_files/table_dataset_file.h>
 #include <hanami_root.h>
 
 GetProgressDataSet::GetProgressDataSet() : Blossom("Get upload progress of a specific dataset.")
@@ -95,7 +92,7 @@ GetProgressDataSet::runTask(BlossomIO& blossomIO,
     // check if upload complete
     bool isComplete = true;
     for (const std::string& uuid : relatedUuids) {
-        Hanami::FileHandle* fileHandle
+        Hanami::UploadFileHandle* fileHandle
             = TempFileHandler::getInstance()->getFileHandle(uuid, userContext);
         if (fileHandle->bitBuffer->isComplete() == false) {
             isComplete = false;

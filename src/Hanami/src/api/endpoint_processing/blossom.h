@@ -43,9 +43,8 @@ struct BlossomStatus {
 //--------------------------------------------------------------------------------------------------
 
 struct BlossomIO {
-    std::string blossomType = "";
-    std::string blossomName = "";
-    std::string blossomGroupType = "";
+    std::string endpoint = "";
+    std::string requestType = "";
 
     json output;
     json input;
@@ -192,9 +191,7 @@ class Blossom
                                     const FieldDef::IO_ValueType valueType,
                                     std::string& errorMessage);
     void fillDefaultValues(json& values);
-    void createError(const BlossomIO& blossomIO,
-                     const std::string& errorLocation,
-                     Hanami::ErrorContainer& error);
+    void createError(const BlossomIO& blossomIO, Hanami::ErrorContainer& error);
 };
 
 #endif  // HANAMI_LANG_BLOSSOM_H

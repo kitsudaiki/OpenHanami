@@ -68,11 +68,6 @@ class DataSetTable : public HanamiSqlTable
                                const Hanami::UserContext& userContext,
                                Hanami::ErrorContainer& error);
 
-    ReturnStatus getDateSetInfo(json& result,
-                                const std::string& dataUuid,
-                                const Hanami::UserContext& userContext,
-                                Hanami::ErrorContainer& error);
-
    private:
     DataSetTable();
     static DataSetTable* instance;

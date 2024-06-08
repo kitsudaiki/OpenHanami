@@ -37,7 +37,7 @@ class Cluster;
  * @return
  */
 bool
-recvFileUploadPackage(Hanami::FileHandle* fileHandle,
+recvFileUploadPackage(Hanami::UploadFileHandle* fileHandle,
                       const void* data,
                       const uint64_t dataSize,
                       std::string& errorMessage)

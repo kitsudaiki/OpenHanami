@@ -29,7 +29,6 @@
 #include <database/dataset_table.h>
 #include <database/error_log_table.h>
 #include <database/projects_table.h>
-#include <database/request_result_table.h>
 #include <database/users_table.h>
 #include <documentation/generate_rest_api_docu.h>
 #include <hanami_args/arg_parser.h>
@@ -112,7 +111,6 @@ main(int argc, char* argv[])
         ProjectTable::getInstance()->createDocumentation(dbDocu);
         UserTable::getInstance()->createDocumentation(dbDocu);
         DataSetTable::getInstance()->createDocumentation(dbDocu);
-        RequestResultTable::getInstance()->createDocumentation(dbDocu);
         CheckpointTable::getInstance()->createDocumentation(dbDocu);
         ErrorLogTable::getInstance()->createDocumentation(dbDocu);
         AuditLogTable::getInstance()->createDocumentation(dbDocu);

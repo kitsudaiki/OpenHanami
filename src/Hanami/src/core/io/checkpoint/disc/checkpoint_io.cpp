@@ -33,9 +33,10 @@
 struct CheckpointHeader {
     const char typeIdentifier[8] = "hanami";
     const char fileIdentifier[32] = "checkpoint";
+    const char version[8] = "v1";
+    const char minorVersion[8] = "alpha";
 
-    uint8_t version = 1;
-    uint8_t padding1[471];
+    uint8_t padding1[456];
 };
 static_assert(sizeof(CheckpointHeader) == 512);
 

@@ -57,7 +57,7 @@ class HttpWebsocketThread : public Hanami::Thread
 
     bool sendData(const void* data, const uint64_t dataSize);
     Cluster* m_targetCluster = nullptr;
-    Hanami::FileHandle* m_fileHandle = nullptr;
+    Hanami::UploadFileHandle* m_fileHandle = nullptr;
     void closeClient();
 
    protected:

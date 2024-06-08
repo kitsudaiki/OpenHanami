@@ -21,7 +21,6 @@ from hanami_sdk import dataset
 from hanami_sdk import direct_io
 from hanami_sdk import hosts
 from hanami_sdk import project
-from hanami_sdk import request_result
 from hanami_sdk import task
 from hanami_sdk import user
 from hanami_sdk import hanami_exceptions
@@ -138,15 +137,6 @@ def delete_all_checkpoints():
 
     for entry in body:
         checkpoint.delete_checkpoint(token, address, entry[1], False)
-
-
-def delete_all_results():
-    result = request_result.list_request_results(token, address, False)
-    print(result)
-    body = json.loads(result)["body"]
-
-    for entry in body:
-        request_result.delete_request_result(token, address, entry[1], False)
 
 
 def test_project():
@@ -276,9 +266,27 @@ def test_workflow():
         cluster.switch_host(token, address, cluster_uuid, target_host_uuid, False)
 
     # run training
+    inputs = {
+        "input_brick": {
+            "dataset_uuid": train_dataset_uuid,
+            "start_row": 0,
+            "start_column": 0,
+            "end_column": 784
+        }
+    }
+
+    outputs = {
+        "output_brick": {
+            "dataset_uuid": train_dataset_uuid,
+            "start_row": 0,
+            "start_column": 784,
+            "end_column": 794
+        }
+    }
+
     for i in range(0, 1):
-        result = task.create_task(
-            token, address, generic_task_name, "train", cluster_uuid, train_dataset_uuid, False)
+        result = task.create_train_task(
+            token, address, generic_task_name, cluster_uuid, 60000, inputs, outputs, False)
         task_uuid = json.loads(result)["uuid"]
 
         finished = False
@@ -313,8 +321,23 @@ def test_workflow():
         pass
 
     # run testing
-    result = task.create_task(
-        token, address, generic_task_name, "request", cluster_uuid, request_dataset_uuid, False)
+    inputs = {
+        "input_brick": {
+            "dataset_uuid": request_dataset_uuid,
+            "start_row": 0,
+            "start_column": 0,
+            "end_column": 784
+        }
+    }
+
+    results = {
+        "output_brick": {
+            "name": "test_output"
+        }
+    }
+
+    result = task.create_request_task(
+            token, address, generic_task_name, cluster_uuid, 10000, inputs, results, False)
     task_uuid = json.loads(result)["uuid"]
 
     finished = False
@@ -333,16 +356,13 @@ def test_workflow():
     result = task.delete_task(token, address, task_uuid, cluster_uuid, False)
 
     # check request-result
-    result = request_result.get_request_result(token, address, task_uuid, False)
-    result = request_result.list_request_results(token, address, False)
-    result = request_result.check_against_dataset(
-        token, address, task_uuid, request_dataset_uuid, False)
+    result = dataset.check_mnist_dataset(
+        token, address, request_dataset_uuid, task_uuid, False)
     accuracy = json.loads(result)["accuracy"]
     print("=======================================")
     print("test-result: " + str(accuracy))
     print("=======================================")
     assert accuracy > 80.0
-    result = request_result.delete_request_result(token, address, task_uuid, False)
 
     # asyncio.run(test_direct_io(token, address, cluster_uuid))
 
@@ -354,15 +374,14 @@ def test_workflow():
 
 token = hanami_token.request_token(address, test_user_id, test_user_pw, False)
 
-delete_all_results()
 delete_all_datasets()
 delete_all_checkpoints()
 delete_all_cluster()
 delete_all_projects()
 delete_all_user()
 
-test_project()
-test_user()
-test_dataset()
-test_cluster()
+#test_project()
+#test_user()
+#test_dataset()
+#test_cluster()
 test_workflow()

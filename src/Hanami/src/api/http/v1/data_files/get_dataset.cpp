@@ -22,8 +22,8 @@
 
 #include "get_dataset.h"
 
+#include <core/io/data_set/dataset_file_io.h>
 #include <database/dataset_table.h>
-#include <hanami_files/dataset_files/dataset_functions.h>
 #include <hanami_root.h>
 
 GetDataSet::GetDataSet() : Blossom("Get information of a specific dataset.")
@@ -42,9 +42,6 @@ GetDataSet::GetDataSet() : Blossom("Get information of a specific dataset.")
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("created_at", SAKURA_STRING_TYPE)
-        .setComment("Timestamp, when dataset was created.");
-
     registerOutputField("uuid", SAKURA_STRING_TYPE).setComment("UUID of the dataset.");
 
     registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the dataset.");
@@ -58,17 +55,11 @@ GetDataSet::GetDataSet() : Blossom("Get information of a specific dataset.")
     registerOutputField("visibility", SAKURA_STRING_TYPE)
         .setComment("Visibility of the dataset (private, shared, public).");
 
-    registerOutputField("location", SAKURA_STRING_TYPE)
-        .setComment("Local file-path of the dataset.");
+    registerOutputField("version", SAKURA_INT_TYPE).setComment("Version of the data-set file.");
 
-    registerOutputField("type", SAKURA_STRING_TYPE)
-        .setComment("Type of the new set (csv or mnist)");
+    registerOutputField("number_of_rows", SAKURA_INT_TYPE).setComment("Number of rows.");
 
-    registerOutputField("inputs", SAKURA_INT_TYPE).setComment("Number of inputs.");
-
-    registerOutputField("outputs", SAKURA_INT_TYPE).setComment("Number of outputs.");
-
-    registerOutputField("lines", SAKURA_INT_TYPE).setComment("Number of lines.");
+    registerOutputField("number_of_columns", SAKURA_INT_TYPE).setComment("Number of columns.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -84,21 +75,40 @@ GetDataSet::runTask(BlossomIO& blossomIO,
                     BlossomStatus& status,
                     Hanami::ErrorContainer& error)
 {
-    const std::string dataUuid = blossomIO.input["uuid"];
+    const std::string datasetUuid = blossomIO.input["uuid"];
     const Hanami::UserContext userContext = convertContext(context);
 
-    const ReturnStatus ret = DataSetTable::getInstance()->getDateSetInfo(
-        blossomIO.output, dataUuid, userContext, error);
+    // get data-set information from database
+    DataSetTable::DataSetDbEntry entry;
+    const ReturnStatus ret
+        = DataSetTable::getInstance()->getDataSet(entry, datasetUuid, userContext, error);
     if (ret == ERROR) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
     if (ret == INVALID_INPUT) {
-        status.errorMessage = "Data-set with uuid '" + dataUuid + "' not found";
+        status.errorMessage = "Data-set with uuid '" + datasetUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         LOG_DEBUG(status.errorMessage);
         return false;
     }
+
+    // read header of file
+    DataSetFileHandle fileHandle;
+    if (openDataSetFile(fileHandle, entry.location, error) != OK) {
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // create output
+    blossomIO.output["uuid"] = datasetUuid;
+    blossomIO.output["name"] = fileHandle.header.getName();
+    blossomIO.output["owner_id"] = entry.ownerId;
+    blossomIO.output["project_id"] = entry.projectId;
+    blossomIO.output["visibility"] = entry.visibility;
+    blossomIO.output["version"] = fileHandle.header.version;
+    blossomIO.output["number_of_rows"] = fileHandle.header.numberOfRows;
+    blossomIO.output["number_of_columns"] = fileHandle.header.numberOfColumns;
 
     return true;
 }

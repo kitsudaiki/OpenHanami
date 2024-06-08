@@ -27,7 +27,7 @@
 
 class HttpWebsocketThread;
 
-bool recvFileUploadPackage(Hanami::FileHandle* fileHandle,
+bool recvFileUploadPackage(Hanami::UploadFileHandle* fileHandle,
                            const void* data,
                            const uint64_t dataSize,
                            std::string& errorMessage);

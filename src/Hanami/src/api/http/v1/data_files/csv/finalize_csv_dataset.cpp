@@ -29,8 +29,6 @@
 #include <hanami_common/functions/string_functions.h>
 #include <hanami_common/functions/vector_functions.h>
 #include <hanami_crypto/common.h>
-#include <hanami_files/dataset_files/dataset_file.h>
-#include <hanami_files/dataset_files/table_dataset_file.h>
 #include <hanami_root.h>
 
 FinalizeCsvDataSet::FinalizeCsvDataSet()
@@ -160,7 +158,7 @@ FinalizeCsvDataSet::convertCsvData(const std::string& filePath,
                                    const std::string& name,
                                    const Hanami::DataBuffer& inputBuffer)
 {
-    Hanami::ErrorContainer error;
+    /*Hanami::ErrorContainer error;
 
     TableDataSetFile file(filePath);
     file.type = DataSetFile::TABLE_TYPE;
@@ -256,7 +254,7 @@ FinalizeCsvDataSet::convertCsvData(const std::string& filePath,
     // that there were invalid lines
     if (file.updateHeader(error) == false) {
         return false;
-    }
+    }*/
 
     // debug-output
     // file.print();

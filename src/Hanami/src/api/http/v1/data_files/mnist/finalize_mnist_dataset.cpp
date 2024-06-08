@@ -22,13 +22,12 @@
 
 #include "finalize_mnist_dataset.h"
 
+#include <core/io/data_set/dataset_file_io.h>
 #include <core/temp_file_handler.h>
 #include <database/dataset_table.h>
 #include <hanami_common/files/binary_file.h>
 #include <hanami_common/functions/file_functions.h>
 #include <hanami_crypto/common.h>
-#include <hanami_files/dataset_files/dataset_file.h>
-#include <hanami_files/dataset_files/image_dataset_file.h>
 #include <hanami_root.h>
 
 FinalizeMnistDataSet::FinalizeMnistDataSet()
@@ -113,7 +112,7 @@ FinalizeMnistDataSet::runTask(BlossomIO& blossomIO,
     }
 
     // write data to file
-    if (convertMnistData(result.location, result.name, inputBuffer, labelBuffer) == false) {
+    if (convertMnistData(result.location, result.name, inputBuffer, labelBuffer, error) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMessage("Failed to convert mnist-data");
         return false;
@@ -137,6 +136,7 @@ FinalizeMnistDataSet::runTask(BlossomIO& blossomIO,
  * @param name dataset name
  * @param inputBuffer buffer with input-data
  * @param labelBuffer buffer with label-data
+ * @param error reference for error-output
  *
  * @return true, if successfull, else false
  */
@@ -144,13 +144,9 @@ bool
 FinalizeMnistDataSet::convertMnistData(const std::string& filePath,
                                        const std::string& name,
                                        const Hanami::DataBuffer& inputBuffer,
-                                       const Hanami::DataBuffer& labelBuffer)
+                                       const Hanami::DataBuffer& labelBuffer,
+                                       Hanami::ErrorContainer& error)
 {
-    Hanami::ErrorContainer error;
-    ImageDataSetFile file(filePath);
-    file.type = DataSetFile::IMAGE_TYPE;
-    file.name = name;
-
     // source-data
     const uint64_t dataOffset = 16;
     const uint64_t labelOffset = 8;
@@ -178,68 +174,40 @@ FinalizeMnistDataSet::convertMnistData(const std::string& filePath,
     numberOfColumns |= static_cast<uint32_t>(dataBufferPtr[13]) << 16;
     numberOfColumns |= static_cast<uint32_t>(dataBufferPtr[12]) << 24;
 
-    // set information in header
-    file.imageHeader.numberOfInputsX = numberOfColumns;
-    file.imageHeader.numberOfInputsY = numberOfRows;
-    // TODO: read number of labels from file
-    file.imageHeader.numberOfOutputs = 10;
-    file.imageHeader.numberOfImages = numberOfImages;
+    const uint32_t pictureSize = numberOfRows * numberOfColumns;
+    const uint64_t lineSize = pictureSize + 10;
 
-    // buffer for values to reduce write-access to file
-    const uint64_t lineSize = (numberOfColumns * numberOfRows) * 10;
-    const uint32_t segmentSize = lineSize * 10000;
-    std::vector<float> cluster(segmentSize, 0.0f);
-    uint64_t segmentPos = 0;
-    uint64_t segmentCounter = 0;
-
-    // init file
-    if (file.initNewFile(error) == false) {
+    // initialize file
+    DataSetFileHandle fileHandle;
+    if (initNewDataSetFile(fileHandle, filePath, name, DataSetType::UINT8_TYPE, lineSize, error)
+        != OK)
+    {
         return false;
     }
+    fileHandle.initReadWriteBuffer(10);
 
-    // get pictures
-    const uint32_t pictureSize = numberOfRows * numberOfColumns;
+    // buffer for values
+    std::vector<uint8_t> line(lineSize, 0.0f);
 
     // copy values of each pixel into the resulting file
     for (uint32_t pic = 0; pic < numberOfImages; pic++) {
         // input
         for (uint32_t i = 0; i < pictureSize; i++) {
             const uint32_t pos = pic * pictureSize + i + dataOffset;
-            cluster[segmentPos] = static_cast<float>(dataBufferPtr[pos]);
-            segmentPos++;
+            line[i] = dataBufferPtr[pos];
         }
 
         // label
         for (uint32_t i = 0; i < 10; i++) {
-            cluster[segmentPos] = 0.0f;
-            segmentPos++;
+            line[pictureSize + i] = 0;
         }
+
         const uint32_t label = labelBufferPtr[pic + labelOffset];
-        cluster[(segmentPos - 10) + label] = 1;
+        line[pictureSize + label] = 1;
 
-        // write line to file, if cluster is full
-        if (segmentPos == segmentSize) {
-            if (file.addBlock(segmentCounter * segmentSize, &cluster[0], segmentSize, error)
-                == false)
-            {
-                return false;
-            }
-            segmentPos = 0;
-            segmentCounter++;
-        }
-    }
-
-    // write last incomplete cluster to file
-    if (segmentPos != 0) {
-        if (file.addBlock(segmentCounter * segmentSize, &cluster[0], segmentPos, error) == false) {
+        if (appendToDataSet(fileHandle, &line[0], line.size(), error) != OK) {
             return false;
         }
-    }
-
-    // update header in file for the final number of lines for the case,
-    // that there were invalid lines
-    if (file.updateHeader(error) == false) {
-        return false;
     }
 
     return true;

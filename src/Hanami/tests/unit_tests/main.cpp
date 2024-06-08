@@ -28,7 +28,6 @@
 #include "database/dataset_table_test.h"
 #include "database/error_log_table_test.h"
 #include "database/projects_table_test.h"
-#include "database/request_result_table_test.h"
 #include "database/tempfile_table_test.h"
 #include "database/users_table_test.h"
 
@@ -45,7 +44,6 @@ main()
     UserTable_Test();
     ProjectTable_Test();
     DataSetTable_Test();
-    RequestResultTable_Test();
     TempfileTable_Test();
 
     AuditLogTable_Test();

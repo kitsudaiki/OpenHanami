@@ -43,7 +43,7 @@ v1/csv/dataset
 - PUT: admin, member
 
 v1/dataset/check
-- POST: admin, member
+- GET: admin, member
 
 v1/dataset/progress
 - GET: admin, member
@@ -132,16 +132,15 @@ v1/template
 v1/template/all
 - GET : admin, member
 
-v1/task/image/learn
+
+
+v1/task/train
 - POST: admin, member
 
-v1/task/image/request
+v1/task/request
 - POST: admin, member
-
-
 
 v1/task
-- POST: admin, member
 - GET : admin, member
 - DELETE: admin, member
 

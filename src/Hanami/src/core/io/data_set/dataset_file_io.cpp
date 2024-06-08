@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file        dataset_file_io.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
@@ -21,6 +21,102 @@
  */
 
 #include "dataset_file_io.h"
+
+/**
+ * @brief internal function to append new data to the data-set-file
+ *
+ * @param fileHandle handle of the data-set file, where the new data should be appended
+ * @param input new data to append to the data-set
+ * @paran inputSize number of bytes of the new input
+ * @param error reference for error-output
+ *
+ * @return OK, INVALID_INPUT or ERROR
+ */
+ReturnStatus
+_appendToDataSetFile(DataSetFileHandle& fileHandle,
+                     const void* input,
+                     const uint64_t inputSize,
+                     Hanami::ErrorContainer& error)
+{
+    const uint64_t offset = fileHandle.targetFile->fileSize;
+    if (fileHandle.targetFile->allocateStorage(inputSize, error) == false) {
+        return ERROR;
+    }
+
+    if (fileHandle.targetFile->writeDataIntoFile(input, offset, inputSize, error) == false) {
+        return ERROR;
+    }
+
+    fileHandle.header.fileSize = fileHandle.targetFile->fileSize;
+    fileHandle.header.numberOfRows
+        += (inputSize / fileHandle.header.typeSize) / fileHandle.header.numberOfColumns;
+
+    return OK;
+}
+
+/**
+ * @brief append new data
+ *
+ * @param fileHandle handle of the data-set file, where the new data should be appended
+ * @param input new data to append to the data-set
+ * @paran inputSize number of bytes of the new input
+ * @param error reference for error-output
+ *
+ * @return OK, INVALID_INPUT or ERROR
+ */
+ReturnStatus
+appendToDataSet(DataSetFileHandle& fileHandle,
+                const void* input,
+                const uint64_t inputSize,
+                Hanami::ErrorContainer& error)
+{
+    // check if new data still fit into the write-buffer
+    if (fileHandle.rwBuffer.usedBufferSize + inputSize > fileHandle.rwBuffer.totalBufferSize) {
+        // write data from write-buffer into file, if exist
+        if (fileHandle.rwBuffer.usedBufferSize > 0) {
+            ReturnStatus ret = _appendToDataSetFile(
+                fileHandle, fileHandle.rwBuffer.data, fileHandle.rwBuffer.usedBufferSize, error);
+            if (ret != OK) {
+                return ret;
+            }
+            fileHandle.rwBuffer.usedBufferSize = 0;
+        }
+
+        // check if the new data even fit into the complete write-buffer
+        if (inputSize > fileHandle.rwBuffer.totalBufferSize) {
+            ReturnStatus ret = _appendToDataSetFile(fileHandle, input, inputSize, error);
+            if (ret != OK) {
+                return ret;
+            }
+            fileHandle.rwBuffer.usedBufferSize = 0;
+        }
+        else {
+            Hanami::addData_DataBuffer(fileHandle.rwBuffer, input, inputSize);
+        }
+    }
+    else {
+        Hanami::addData_DataBuffer(fileHandle.rwBuffer, input, inputSize);
+    }
+
+    return OK;
+}
+
+/**
+ * @brief append single value
+ *
+ * @param fileHandle handle of the data-set file, where the new data should be appended
+ * @param input single value to append to the data-set
+ * @param error reference for error-output
+ *
+ * @return OK, INVALID_INPUT or ERROR
+ */
+ReturnStatus
+appendValueToDataSet(DataSetFileHandle& fileHandle,
+                     const float input,
+                     Hanami::ErrorContainer& error)
+{
+    return appendToDataSet(fileHandle, &input, 4, error);
+}
 
 /**
  * @brief open a data-set file
@@ -86,6 +182,10 @@ initNewDataSetFile(DataSetFileHandle& result,
                    const uint64_t numberOfColumns,
                    Hanami::ErrorContainer& error)
 {
+    if (type == UNDEFINED_TYPE) {
+        return INVALID_INPUT;
+    }
+
     // check source
     if (std::filesystem::exists(filePath) == true) {
         error.addMessage("Data-set file '" + filePath + "' already exist.");
@@ -115,6 +215,8 @@ initNewDataSetFile(DataSetFileHandle& result,
     // write header to target
     result.header.dataType = type;
     result.header.numberOfColumns = numberOfColumns;
+    result.header.typeSize = type;
+
     if (result.updateHeaderInFile(error) == false) {
         error.addMessage("Failed to update data-set header in file");
         return ERROR;
@@ -125,85 +227,35 @@ initNewDataSetFile(DataSetFileHandle& result,
 }
 
 /**
- * @brief get a section of data from the data-set
+ * @brief fill the read-buffer of the file-handle with a new chunk of data from the file
  *
- * @param result reference to list with all read values
- * @param fileHandle handle to the file and header
- * @param selector object to select a section within the dataset
+ * @param fileHandle handle of the data-set file, where the new data should be read
+ * @param newStartRow start-row to load into the buffer
  * @param error reference for error-output
  *
  * @return OK, INVALID_INPUT or ERROR
  */
 ReturnStatus
-getDataFromDataSet(std::vector<float>& result,
-                   const DataSetFileHandle& fileHandle,
-                   const DataSetSelector selector,
-                   Hanami::ErrorContainer& error)
+_fillDataSetReadBuffer(DataSetFileHandle& fileHandle,
+                       const uint64_t newStartRow,
+                       Hanami::ErrorContainer& error)
 {
-    if (fileHandle.targetFile->isOpen() == false) {
-        error.addMessage("Data-set file '" + fileHandle.targetFile->filePath + "' is not open");
+    if (newStartRow > fileHandle.header.numberOfRows) {
         return INVALID_INPUT;
     }
-
-    if (fileHandle.header.numberOfColumns == 0) {
-        return INVALID_INPUT;
-    }
-
-    // check ranges
-    if (selector.endColumn > fileHandle.header.numberOfColumns
-        || selector.startColumn > fileHandle.header.numberOfColumns)
-    {
-        return INVALID_INPUT;
-    }
-    if (selector.endRow > fileHandle.header.numberOfRows
-        || selector.startRow > fileHandle.header.numberOfRows)
-    {
-        return INVALID_INPUT;
-    }
-
-    const uint64_t numberOfValues
-        = (selector.endRow - selector.startRow) * (selector.endColumn - selector.startColumn);
-    result.clear();
-    // TODO: check if resize successful
-    result.resize(numberOfValues);
 
     // read block from file into buffer
-    uint64_t numberOfBytes
-        = (selector.endRow - selector.startRow) * fileHandle.header.numberOfColumns;
-    uint64_t byteOffset = selector.startRow * fileHandle.header.numberOfColumns;
-    switch (fileHandle.header.dataType) {
-        case UNDEFINED_TYPE:
-            error.addMessage("Invalid data-type defined in file '" + fileHandle.targetFile->filePath
-                             + "'");
-            return ERROR;
-        case UNIN8_TYPE:
-            break;
-        case UNIN32_TYPE:
-            numberOfBytes *= sizeof(uint32_t);
-            byteOffset *= sizeof(uint32_t);
-            break;
-        case UNIN64_TYPE:
-            numberOfBytes *= sizeof(uint64_t);
-            byteOffset *= sizeof(uint64_t);
-            break;
-        case FLOAT_TYPE:
-            numberOfBytes *= sizeof(float);
-            byteOffset *= sizeof(float);
-            break;
-    }
-    byteOffset += sizeof(DataSetHeader);
+    const uint64_t rowByteCount = fileHandle.header.numberOfColumns * fileHandle.header.dataType;
+    const uint64_t byteOffset = sizeof(DataSetHeader) + (newStartRow * rowByteCount);
 
-    // prepare temp-buffer
-    Hanami::DataBuffer buffer;
-    if (Hanami::allocateBlocks_DataBuffer(buffer, Hanami::calcBytesToBlocks(numberOfBytes))
-        == false)
-    {
-        error.addMessage("Failed to allocate buffer to read from dataset-file '"
-                         + fileHandle.targetFile->filePath + "'");
-        return ERROR;
+    uint64_t numberOfRowsForBuffer = fileHandle.rwBuffer.totalBufferSize / rowByteCount;
+    if (numberOfRowsForBuffer > fileHandle.readSelector.endRow - newStartRow) {
+        numberOfRowsForBuffer = fileHandle.readSelector.endRow - newStartRow;
     }
+    fileHandle.rwBuffer.usedBufferSize = numberOfRowsForBuffer * rowByteCount;
 
-    if (fileHandle.targetFile->readDataFromFile(buffer.data, byteOffset, numberOfBytes, error)
+    if (fileHandle.targetFile->readDataFromFile(
+            fileHandle.rwBuffer.data, byteOffset, fileHandle.rwBuffer.usedBufferSize, error)
         == false)
     {
         error.addMessage("Failed to read data of dataset-file '" + fileHandle.targetFile->filePath
@@ -211,24 +263,8 @@ getDataFromDataSet(std::vector<float>& result,
         return ERROR;
     }
 
-    switch (fileHandle.header.dataType) {
-        case UNDEFINED_TYPE:
-            error.addMessage("Invalid data-type defined in file '" + fileHandle.targetFile->filePath
-                             + "'");
-            return ERROR;
-        case UNIN8_TYPE:
-            copyDataSetDate<uint8_t>(result, buffer, selector, fileHandle.header.numberOfColumns);
-            break;
-        case UNIN32_TYPE:
-            copyDataSetDate<uint32_t>(result, buffer, selector, fileHandle.header.numberOfColumns);
-            break;
-        case UNIN64_TYPE:
-            copyDataSetDate<uint64_t>(result, buffer, selector, fileHandle.header.numberOfColumns);
-            break;
-        case FLOAT_TYPE:
-            copyDataSetDate<float>(result, buffer, selector, fileHandle.header.numberOfColumns);
-            break;
-    }
+    fileHandle.bufferStartRow = newStartRow;
+    fileHandle.bufferEndRow = newStartRow + numberOfRowsForBuffer;
 
     return OK;
 }

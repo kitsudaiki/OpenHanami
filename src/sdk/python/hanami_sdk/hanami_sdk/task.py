@@ -16,19 +16,45 @@ from . import hanami_request
 import json
 
 
-def create_task(token: str,
-                address: str,
-                name: str,
-                task_type: str,
-                cluster_uuid: str,
-                dataset_uuid: str,
-                verify_connection: bool = True) -> str:
-    path = "/control/v1/task"
+def create_train_task(token: str,
+                      address: str,
+                      name: str,
+                      cluster_uuid: str,
+                      number_of_cycles: int,
+                      inputs: dict,
+                      outputs: dict,
+                      verify_connection: bool = True) -> str:
+    path = "/control/v1/task/train"
     json_body = {
         "name": name,
-        "type": task_type,
         "cluster_uuid": cluster_uuid,
-        "dataset_uuid": dataset_uuid,
+        "number_of_cycles": number_of_cycles,
+        "inputs": inputs,
+        "outputs": outputs
+    }
+    body_str = json.dumps(json_body)
+    return hanami_request.send_post_request(token,
+                                            address,
+                                            path,
+                                            body_str,
+                                            verify=verify_connection)
+
+
+def create_request_task(token: str,
+                        address: str,
+                        name: str,
+                        cluster_uuid: str,
+                        number_of_cycles: int,
+                        inputs: dict,
+                        results: dict,
+                        verify_connection: bool = True) -> str:
+    path = "/control/v1/task/request"
+    json_body = {
+        "name": name,
+        "cluster_uuid": cluster_uuid,
+        "number_of_cycles": number_of_cycles,
+        "inputs": inputs,
+        "results": results
     }
     body_str = json.dumps(json_body)
     return hanami_request.send_post_request(token,

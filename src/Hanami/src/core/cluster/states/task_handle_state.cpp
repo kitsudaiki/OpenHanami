@@ -24,7 +24,6 @@
 
 #include <core/cluster/cluster.h>
 #include <core/cluster/statemachine_init.h>
-#include <database/request_result_table.h>
 #include <hanami_root.h>
 
 /**

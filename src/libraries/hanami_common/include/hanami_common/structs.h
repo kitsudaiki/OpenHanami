@@ -101,23 +101,23 @@ struct Position {
     }
 };
 
-struct FileHandle {
+struct UploadFileHandle {
     Hanami::UserContext userContext;
     Hanami::BinaryFile* file = nullptr;
     Hanami::BitBuffer* bitBuffer = nullptr;
     uint64_t timeoutCounter = 0;
     bool lock = false;
 
-    FileHandle() {}
+    UploadFileHandle() {}
 
-    FileHandle(const FileHandle& other)
+    UploadFileHandle(const UploadFileHandle& other)
     {
         userContext = other.userContext;
         file = other.file;
         bitBuffer = other.bitBuffer;
     }
 
-    ~FileHandle()
+    ~UploadFileHandle()
     {
         if (file != nullptr) {
             delete file;
@@ -127,7 +127,7 @@ struct FileHandle {
         }
     }
 
-    FileHandle& operator=(const FileHandle& other)
+    UploadFileHandle& operator=(const UploadFileHandle& other)
     {
         userContext = other.userContext;
         file = other.file;

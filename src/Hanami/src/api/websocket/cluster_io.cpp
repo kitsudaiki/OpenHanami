@@ -30,11 +30,11 @@
  *
  * @param cluster cluster, which output-data should send
  */
-void
+bool
 sendClusterOutputMessage(const Cluster* cluster)
 {
     if (cluster->msgClient == nullptr) {
-        return;
+        return false;
     }
 
     uint8_t buffer[TRANSFER_SEGMENT_SIZE];
@@ -58,7 +58,7 @@ sendClusterOutputMessage(const Cluster* cluster)
         if (msg.SerializeToArray(buffer, size) == false) {
             Hanami::ErrorContainer error;
             error.addMessage("Failed to serialize request-message");
-            return;
+            return false;
         }
 
         // send message
@@ -66,10 +66,12 @@ sendClusterOutputMessage(const Cluster* cluster)
         Hanami::ErrorContainer error;
         client->sendData(buffer, size);
     }
+
+    return true;
 }
 
 void
-sendProtobufGotInputMessage(Cluster* cluster)
+sendInputAckMessage(Cluster* cluster)
 {
     if (cluster->msgClient == nullptr) {
         return;
@@ -235,7 +237,7 @@ recvClusterInputMessage(Cluster* cluster, const void* data, const uint64_t dataS
         }
     }
     else {
-        sendProtobufGotInputMessage(cluster);
+        sendInputAckMessage(cluster);
     }
 
     return true;

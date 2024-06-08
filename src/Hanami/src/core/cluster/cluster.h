@@ -71,9 +71,8 @@ class Cluster
     bool init(const Hanami::ClusterMeta& clusterTemplate, const std::string& uuid);
 
     // tasks
-    bool addTask(const std::string& uuid, const Task& task);
+    Task* addNewTask();
     Task* getCurrentTask();
-    uint64_t getActualTaskCycle();
     const TaskProgress getProgress(const std::string& taskUuid);
     bool removeTask(const std::string& taskUuid);
     bool isFinish(const std::string& taskUuid);

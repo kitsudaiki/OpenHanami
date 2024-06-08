@@ -38,12 +38,6 @@ class SaveCluster : public Blossom
                  const json& context,
                  BlossomStatus& status,
                  Hanami::ErrorContainer& error);
-
-   private:
-    const std::string addCheckpointSaveTask(Cluster& cluster,
-                                            const std::string& checkpointName,
-                                            const std::string& userId,
-                                            const std::string& projectId);
 };
 
 #endif  // SAVECLUSTER_H

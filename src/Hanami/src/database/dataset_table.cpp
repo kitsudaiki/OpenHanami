@@ -25,7 +25,6 @@
 #include <hanami_common/functions/string_functions.h>
 #include <hanami_common/items/table_item.h>
 #include <hanami_database/sql_database.h>
-#include <hanami_files/dataset_files/dataset_functions.h>
 
 DataSetTable* DataSetTable::instance = nullptr;
 
@@ -190,37 +189,6 @@ DataSetTable::deleteDataSet(const std::string& datasetUuid,
     if (ret != OK) {
         error.addMessage("Failed to delete dataset with UUID '" + datasetUuid + "' from database");
         return ret;
-    }
-
-    return OK;
-}
-
-/**
- * @brief get infos of dataset including information from file-header
- *
- * @param result reference for result-output
- * @param datasetUuid uuid of the data
- * @param userContext context-object with all user specific information
- * @param error reference for error-output
- *
- * @return OK if found, INVALID_INPUT if not found, ERROR in case of internal error
- */
-ReturnStatus
-DataSetTable::getDateSetInfo(json& result,
-                             const std::string& dataUuid,
-                             const Hanami::UserContext& userContext,
-                             Hanami::ErrorContainer& error)
-{
-    ReturnStatus ret = getDataSet(result, dataUuid, userContext, true, error);
-    if (ret != OK) {
-        return ret;
-    }
-
-    // get file information
-    const std::string location = result["location"];
-    if (getHeaderInformation(result, location, error) == false) {
-        error.addMessage("Failed the read information from file '" + location + "'");
-        return ERROR;
     }
 
     return OK;

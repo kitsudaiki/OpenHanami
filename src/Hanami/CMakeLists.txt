@@ -51,11 +51,9 @@ set(SOURCES
     src/api/http/v1/project/delete_project.h
     src/api/http/v1/project/get_project.h
     src/api/http/v1/project/list_projects.h
-    src/api/http/v1/request_results/delete_request_result.h
-    src/api/http/v1/request_results/get_request_result.h
-    src/api/http/v1/request_results/list_request_result.h
     src/api/http/v1/system_info/get_system_info.h
-    src/api/http/v1/task/create_task.h
+    src/api/http/v1/task/create_request_task.h
+    src/api/http/v1/task/create_train_task.h
     src/api/http/v1/task/delete_task.h
     src/api/http/v1/task/list_task.h
     src/api/http/v1/task/show_task.h
@@ -110,7 +108,6 @@ set(SOURCES
     src/database/generic_tables/hanami_sql_log_table.h
     src/database/generic_tables/hanami_sql_table.h
     src/database/projects_table.h
-    src/database/request_result_table.h
     src/database/tempfile_table.h
     src/database/users_table.h
     src/documentation/generate_rest_api_docu.h
@@ -154,11 +151,9 @@ set(SOURCES
     src/api/http/v1/project/delete_project.cpp
     src/api/http/v1/project/get_project.cpp
     src/api/http/v1/project/list_projects.cpp
-    src/api/http/v1/request_results/delete_request_result.cpp
-    src/api/http/v1/request_results/get_request_result.cpp
-    src/api/http/v1/request_results/list_request_result.cpp
     src/api/http/v1/system_info/get_system_info.cpp
-    src/api/http/v1/task/create_task.cpp
+    src/api/http/v1/task/create_request_task.cpp
+    src/api/http/v1/task/create_train_task.cpp
     src/api/http/v1/task/delete_task.cpp
     src/api/http/v1/task/list_task.cpp
     src/api/http/v1/task/show_task.cpp
@@ -202,7 +197,6 @@ set(SOURCES
     src/database/generic_tables/hanami_sql_log_table.cpp
     src/database/generic_tables/hanami_sql_table.cpp
     src/database/projects_table.cpp
-    src/database/request_result_table.cpp
     src/database/tempfile_table.cpp
     src/database/users_table.cpp
     src/documentation/generate_rest_api_docu.cpp
@@ -233,8 +227,6 @@ add_executable(Hanami_unittests
     tests/unit_tests/database/error_log_table_test.h
     tests/unit_tests/database/projects_table_test.cpp
     tests/unit_tests/database/projects_table_test.h
-    tests/unit_tests/database/request_result_table_test.cpp
-    tests/unit_tests/database/request_result_table_test.h
     tests/unit_tests/database/tempfile_table_test.cpp
     tests/unit_tests/database/tempfile_table_test.h
     tests/unit_tests/database/users_table_test.cpp
@@ -254,7 +246,6 @@ include_directories(
     ../libraries/hanami_config/include
     ../libraries/hanami_sqlite/include
     ../libraries/hanami_database/include
-    ../libraries/hanami_files/include
     ../libraries/hanami_crypto/include
     ../libraries/hanami_args/include
     ../libraries/hanami_policies/include
@@ -284,7 +275,6 @@ target_link_libraries(Hanami
     hanami_config
     hanami_sqlite
     hanami_database
-    hanami_files
     hanami_crypto
     hanami_args
     hanami_policies
@@ -307,7 +297,6 @@ target_link_libraries(Hanami_unittests
     hanami_config
     hanami_sqlite
     hanami_database
-    hanami_files
     hanami_crypto
     hanami_args
     hanami_policies

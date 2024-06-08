@@ -1,5 +1,5 @@
 /**
- * @file        load_cluster.h
+ * @file        create_request_task.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,24 +20,40 @@
  *      limitations under the License.
  */
 
-#ifndef LOADCLUSTER_H
-#define LOADCLUSTER_H
+#ifndef CREATEREQUESTTASK_H
+#define CREATEREQUESTTASK_H
 
 #include <api/endpoint_processing/blossom.h>
 #include <core/cluster/task.h>
 
 class Cluster;
 
-class LoadCluster : public Blossom
+class CreateRequestTask : public Blossom
 {
    public:
-    LoadCluster();
+    CreateRequestTask();
 
    protected:
     bool runTask(BlossomIO& blossomIO,
                  const json& context,
                  BlossomStatus& status,
                  Hanami::ErrorContainer& error);
+
+   private:
+    ReturnStatus fillTaskIo(DataSetFileHandle& fileHandle,
+                            const Hanami::UserContext& userContext,
+                            const json& settings,
+                            const uint64_t numberOfCycles,
+                            BlossomStatus& status,
+                            Hanami::ErrorContainer& error);
+
+    ReturnStatus createResultTarget(DataSetFileHandle& fileHandle,
+                                    const std::string& datasetUuid,
+                                    const std::string& name,
+                                    const Hanami::UserContext& userContext,
+                                    const uint64_t numberOfOutputs,
+                                    BlossomStatus& status,
+                                    Hanami::ErrorContainer& error);
 };
 
-#endif  // LOADCLUSTER_H
+#endif  // CREATEREQUESTTASK_H

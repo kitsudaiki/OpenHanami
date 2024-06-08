@@ -27,7 +27,7 @@
 
 DataSetIO_Test::DataSetIO_Test() : Hanami::CompareTestHelper("DataSetIO_Test")
 {
-    m_input = json::array({1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f});
+    m_input = json::array({1, 2, 3, 4, 5, 6, 7, 8, 9});
     assert(m_input.size() > 0 && m_input.size() % 3 == 0);
 
     write_test();
@@ -41,29 +41,30 @@ void
 DataSetIO_Test::write_test()
 {
     Hanami::ErrorContainer error;
-    DataSetFileHandle fileHandle;
+    DataSetFileHandle fileHandle(1);
 
     Hanami::deleteFileOrDir(m_testFilePath, error);
 
     TEST_EQUAL(initNewDataSetFile(
-                   fileHandle, m_testFilePath, m_fileName, FLOAT_TYPE, m_numberOfColumns, error),
+                   fileHandle, m_testFilePath, m_fileName, UINT8_TYPE, m_numberOfColumns, error),
                OK);
     TEST_EQUAL(initNewDataSetFile(
-                   fileHandle, m_testFilePath, m_fileName, FLOAT_TYPE, m_numberOfColumns, error),
+                   fileHandle, m_testFilePath, m_fileName, UINT8_TYPE, m_numberOfColumns, error),
                INVALID_INPUT);
 
     TEST_EQUAL(fileHandle.header.getName(), m_fileName);
     TEST_EQUAL(fileHandle.header.fileSize, sizeof(DataSetHeader));
-    TEST_EQUAL(fileHandle.header.dataType, FLOAT_TYPE);
+    TEST_EQUAL(fileHandle.header.dataType, UINT8_TYPE);
     TEST_EQUAL(fileHandle.header.numberOfColumns, m_numberOfColumns);
     TEST_EQUAL(fileHandle.header.numberOfRows, 0);
 
-    TEST_EQUAL(appendToDataSet<float>(fileHandle, m_input, error), OK);
+    TEST_EQUAL(appendToDataSet<uint8_t>(fileHandle, m_input, error), OK);
+    TEST_EQUAL(fileHandle.writeRemainingBufferToFile(error), true);
 
     TEST_EQUAL(fileHandle.header.getName(), m_fileName);
     TEST_EQUAL(fileHandle.header.fileSize,
-               sizeof(DataSetHeader) + (m_input.size() * sizeof(float)));
-    TEST_EQUAL(fileHandle.header.dataType, FLOAT_TYPE);
+               sizeof(DataSetHeader) + (m_input.size() * sizeof(uint8_t)));
+    TEST_EQUAL(fileHandle.header.dataType, UINT8_TYPE);
     TEST_EQUAL(fileHandle.header.numberOfColumns, m_numberOfColumns);
     TEST_EQUAL(fileHandle.header.numberOfRows, 3);
 }
@@ -75,41 +76,41 @@ void
 DataSetIO_Test::read_test()
 {
     Hanami::ErrorContainer error;
-    DataSetFileHandle fileHandle;
+    DataSetFileHandle fileHandle(1);
 
     TEST_EQUAL(openDataSetFile(fileHandle, m_testFilePath, error), OK);
 
     TEST_EQUAL(fileHandle.header.getName(), m_fileName);
     TEST_EQUAL(fileHandle.header.fileSize,
-               sizeof(DataSetHeader) + (m_input.size() * sizeof(float)));
-    TEST_EQUAL(fileHandle.header.dataType, FLOAT_TYPE);
+               sizeof(DataSetHeader) + (m_input.size() * sizeof(uint8_t)));
+    TEST_EQUAL(fileHandle.header.dataType, UINT8_TYPE);
     TEST_EQUAL(fileHandle.header.numberOfColumns, m_numberOfColumns);
     TEST_EQUAL(fileHandle.header.numberOfRows, 3);
 
-    std::vector<float> output;
+    std::vector<float> output(3, 0.0f);
     DataSetSelector selector;
+    selector.startColumn = 1;
     selector.endColumn = 3;
     selector.endRow = 3;
-    TEST_EQUAL(getDataFromDataSet(output, fileHandle, selector, error), OK);
-    TEST_EQUAL(output.size(), m_input.size());
+    fileHandle.readSelector = selector;
 
-    for (uint64_t i = 0; i < output.size(); i++) {
-        TEST_EQUAL(output[i], static_cast<float>(m_input[i]));
-    }
+    uint64_t row = 0;
 
-    selector.endRow = 2;
-    TEST_EQUAL(getDataFromDataSet(output, fileHandle, selector, error), OK);
-    TEST_EQUAL(output.size(), m_input.size() - 3);
+    TEST_EQUAL(getDataFromDataSet(output, fileHandle, row, error), OK);
+    TEST_EQUAL(output[0], 2.0f);
+    TEST_EQUAL(output[1], 3.0f);
 
-    for (uint64_t i = 0; i < output.size() - 3; i++) {
-        TEST_EQUAL(output[i], static_cast<float>(m_input[i]));
-    }
+    row = 1;
+    TEST_EQUAL(getDataFromDataSet(output, fileHandle, row, error), OK);
+    TEST_EQUAL(output[0], 5.0f);
+    TEST_EQUAL(output[1], 6.0f);
 
-    selector.startRow = 1;
-    selector.endRow = 2;
-    selector.startColumn = 1;
-    selector.endColumn = 2;
-    TEST_EQUAL(getDataFromDataSet(output, fileHandle, selector, error), OK);
-    TEST_EQUAL(output.size(), 1);
-    TEST_EQUAL(output[0], static_cast<float>(m_input[4]));
+    row = 2;
+    TEST_EQUAL(getDataFromDataSet(output, fileHandle, row, error), OK);
+    TEST_EQUAL(output[0], 8.0f);
+    TEST_EQUAL(output[1], 9.0f);
+
+    TEST_EQUAL(getDataFromDataSet(output, fileHandle, 4, error), INVALID_INPUT);
+    output.resize(1);
+    TEST_EQUAL(getDataFromDataSet(output, fileHandle, 0, error), INVALID_INPUT);
 }

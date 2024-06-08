@@ -36,25 +36,75 @@
 
 enum DataSetType : uint8_t {
     UNDEFINED_TYPE = 0,
-    UNIN8_TYPE = 1,
-    UNIN32_TYPE = 2,
-    UNIN64_TYPE = 4,
-    FLOAT_TYPE = 5,
+    UINT8_TYPE = 1,
+    FLOAT_TYPE = 4,
 };
+
+struct DataSetFileHandle;
+ReturnStatus openDataSetFile(DataSetFileHandle& result,
+                             const std::string& filePath,
+                             Hanami::ErrorContainer& error);
+
+ReturnStatus initNewDataSetFile(DataSetFileHandle& result,
+                                const std::string& filePath,
+                                const std::string& name,
+                                const DataSetType type,
+                                const uint64_t numberOfColumns,
+                                Hanami::ErrorContainer& error);
+
+ReturnStatus appendToDataSet(DataSetFileHandle& fileHandle,
+                             const void* input,
+                             const uint64_t inputSize,
+                             Hanami::ErrorContainer& error);
+
+ReturnStatus appendValueToDataSet(DataSetFileHandle& fileHandle,
+                                  const float input,
+                                  Hanami::ErrorContainer& error);
+
+ReturnStatus _appendToDataSetFile(DataSetFileHandle& fileHandle,
+                                  const void* input,
+                                  const uint64_t inputSize,
+                                  Hanami::ErrorContainer& error);
+
+ReturnStatus _fillDataSetReadBuffer(DataSetFileHandle& fileHandle,
+                                    const uint64_t newStartRow,
+                                    Hanami::ErrorContainer& error);
 
 struct DataSetSelector {
     uint64_t startRow = 0;
     uint64_t endRow = 0;
     uint64_t startColumn = 0;
     uint64_t endColumn = 0;
+
+    DataSetSelector() {}
+
+    ReturnStatus fromJson(const json& input)
+    {
+        if (input.contains("start_row")) {
+            startRow = input["start_row"];
+        }
+        if (input.contains("start_column")) {
+            startColumn = input["start_column"];
+        }
+
+        if (input.contains("end_column") == false) {
+            return INVALID_INPUT;
+        }
+
+        endColumn = input["end_column"];
+
+        return OK;
+    }
 };
 
 struct DataSetHeader {
     const char typeIdentifier[8] = "hanami";
     const char fileIdentifier[32] = "data-set";
+    const char version[8] = "v1";
+    const char minorVersion[8] = "alpha";
 
-    uint8_t version = 1;
     DataSetType dataType = UNDEFINED_TYPE;
+    uint8_t typeSize = 1;
 
     uint8_t padding1[6];
 
@@ -65,7 +115,7 @@ struct DataSetHeader {
     char name[256];
     uint32_t nameSize = 0;
 
-    uint8_t padding2[180];
+    uint8_t padding2[164];
 
     DataSetHeader() { memset(name, 0, 256); }
 
@@ -111,11 +161,22 @@ static_assert(sizeof(DataSetHeader) == 512);
 struct DataSetFileHandle {
     DataSetHeader header;
     Hanami::BinaryFile* targetFile = nullptr;
+    Hanami::DataBuffer rwBuffer;
+    DataSetSelector readSelector;
+    int64_t bufferStartRow = -1;
+    int64_t bufferEndRow = -1;
+
+    DataSetFileHandle() { initReadWriteBuffer(1); }
+
+    DataSetFileHandle(const uint64_t bufferSizeMiB) { initReadWriteBuffer(bufferSizeMiB); }
 
     ~DataSetFileHandle()
     {
         if (targetFile != nullptr) {
             Hanami::ErrorContainer error;
+            if (writeRemainingBufferToFile(error) == false) {
+                LOG_ERROR(error);
+            }
             if (updateHeaderInFile(error) == false) {
                 error.addMessage("Failed to update data-set header in file while closing");
                 LOG_ERROR(error);
@@ -124,7 +185,54 @@ struct DataSetFileHandle {
                 error.addMessage("Failed to close data-set-file");
                 LOG_ERROR(error);
             }
+
+            delete targetFile;
         }
+    }
+
+    DataSetFileHandle(DataSetFileHandle&& otherObf)
+    {
+        memcpy(&header, &otherObf.header, sizeof(header));
+
+        targetFile = otherObf.targetFile;
+        otherObf.targetFile = nullptr;
+
+        rwBuffer = otherObf.rwBuffer;
+        otherObf.rwBuffer.data = nullptr;
+
+        readSelector = otherObf.readSelector;
+
+        bufferStartRow = otherObf.bufferStartRow;
+        bufferEndRow = otherObf.bufferEndRow;
+    }
+
+    DataSetFileHandle& operator=(DataSetFileHandle&& otherObf)
+    {
+        memcpy(&header, &otherObf.header, sizeof(header));
+
+        targetFile = otherObf.targetFile;
+        otherObf.targetFile = nullptr;
+
+        rwBuffer = otherObf.rwBuffer;
+        otherObf.rwBuffer.data = nullptr;
+
+        readSelector = otherObf.readSelector;
+
+        bufferStartRow = otherObf.bufferStartRow;
+        bufferEndRow = otherObf.bufferEndRow;
+
+        return *this;
+    }
+
+    bool initReadWriteBuffer(const uint64_t sizeMiB)
+    {
+        if (Hanami::reset_DataBuffer(rwBuffer, Hanami::calcBytesToBlocks(sizeMiB * 1024 * 1024))
+            == false)
+        {
+            return false;
+        }
+        rwBuffer.usedBufferSize = 0;
+        return true;
     }
 
     bool updateHeaderInFile(Hanami::ErrorContainer& error)
@@ -138,34 +246,23 @@ struct DataSetFileHandle {
         }
         return true;
     }
-};
 
-/**
- * @brief copy data from the temporary buffer into the final output
- *
- * @param result reference to the output-list for the final values
- * @param buffer temporary buffer with the data
- * @param selector selector with the range-values of the selected area
- * @param maxColumns maximum amount of columns in the data-set
- */
-template <typename T>
-void
-copyDataSetDate(std::vector<float>& result,
-                const Hanami::DataBuffer& buffer,
-                const DataSetSelector selector,
-                const uint64_t maxColumns)
-{
-    const T* data = static_cast<const T*>(buffer.data);
-    uint64_t counter = 0;
-    uint64_t currentPos = 0;
-    for (uint64_t y = 0; y < (selector.endRow - selector.startRow); y++) {
-        for (uint64_t x = selector.startColumn; x < selector.endColumn; x++) {
-            currentPos = (y * maxColumns) + x;
-            result[counter] = static_cast<float>(data[currentPos]);
-            counter++;
+    bool writeRemainingBufferToFile(Hanami::ErrorContainer& error)
+    {
+        if (targetFile == nullptr) {
+            return true;
         }
+        if (rwBuffer.usedBufferSize > 0) {
+            if (_appendToDataSetFile(*this, rwBuffer.data, rwBuffer.usedBufferSize, error) != OK) {
+                error.addMessage(
+                    "Failed write remaining write-buffer-data into data-set file while closing");
+                return false;
+            }
+        }
+        rwBuffer.usedBufferSize = 0;
+        return true;
     }
-}
+};
 
 /**
  * @brief append new row
@@ -189,6 +286,7 @@ appendToDataSet(DataSetFileHandle& fileHandle, const json& input, Hanami::ErrorC
         return INVALID_INPUT;
     }
 
+    // convert json-data
     std::vector<T> temp;
     temp.resize(input.size());
     for (uint64_t i = 0; i < input.size(); i++) {
@@ -199,37 +297,103 @@ appendToDataSet(DataSetFileHandle& fileHandle, const json& input, Hanami::ErrorC
         temp[i] = input[i];
     }
 
-    const uint64_t offset = fileHandle.targetFile->fileSize;
-    const uint64_t additionalSize = temp.size() * sizeof(T);
-    if (fileHandle.targetFile->allocateStorage(additionalSize, error) == false) {
-        return ERROR;
-    }
+    return appendToDataSet(fileHandle, &temp[0], temp.size() * sizeof(T), error);
+}
 
-    if (fileHandle.targetFile->writeDataIntoFile(&temp[0], offset, additionalSize, error) == false)
+/**
+ * @brief internal function to convert the buffer to the outputW
+ */
+template <typename IN_T, typename OUT_T>
+void
+_convert(std::vector<OUT_T>& result, const DataSetFileHandle& fileHandle, const uint64_t byteOffset)
+{
+    const IN_T* data = static_cast<const IN_T*>(fileHandle.rwBuffer.data);
+    uint64_t counter = 0;
+    for (uint64_t x = fileHandle.readSelector.startColumn; x < fileHandle.readSelector.endColumn;
+         x++)
     {
-        return ERROR;
+        result[counter] = static_cast<OUT_T>(data[(byteOffset / sizeof(IN_T)) + x]);
+        counter++;
+    }
+}
+
+/**
+ * @brief get a section of data from the data-set
+ *
+ * @param result reference to list with all read values
+ * @param fileHandle handle to the file and header
+ * @param selector object to select a section within the dataset
+ * @param error reference for error-output
+ *
+ * @return OK, INVALID_INPUT or ERROR
+ */
+template <typename T>
+ReturnStatus
+getDataFromDataSet(std::vector<T>& result,
+                   DataSetFileHandle& fileHandle,
+                   const uint64_t row,
+                   Hanami::ErrorContainer& error)
+{
+    // check if file is open
+    if (fileHandle.targetFile->isOpen() == false) {
+        error.addMessage("Data-set file '" + fileHandle.targetFile->filePath + "' is not open");
+        return INVALID_INPUT;
     }
 
-    fileHandle.header.fileSize = fileHandle.targetFile->fileSize;
-    fileHandle.header.numberOfRows += temp.size() / fileHandle.header.numberOfColumns;
+    // check type
+    const bool invalidType
+        = fileHandle.header.dataType != UINT8_TYPE && fileHandle.header.dataType != FLOAT_TYPE;
+    if (fileHandle.header.numberOfColumns == 0 || invalidType) {
+        return INVALID_INPUT;
+    }
+
+    // check ranges
+    if (fileHandle.readSelector.endColumn > fileHandle.header.numberOfColumns
+        || fileHandle.readSelector.startColumn > fileHandle.header.numberOfColumns)
+    {
+        return INVALID_INPUT;
+    }
+    if (fileHandle.readSelector.endRow > fileHandle.header.numberOfRows
+        || fileHandle.readSelector.startRow > fileHandle.header.numberOfRows)
+    {
+        return INVALID_INPUT;
+    }
+
+    // check if requested row is in selected range
+    if (row >= (fileHandle.readSelector.endRow - fileHandle.readSelector.startRow)) {
+        return INVALID_INPUT;
+    }
+
+    // check if given buffer is big enough
+    if (result.size() < fileHandle.readSelector.endColumn - fileHandle.readSelector.startColumn) {
+        return INVALID_INPUT;
+    }
+
+    // check if requested row is inside of the read-buffer. If not, then load it from file into the
+    // buffer
+    if (row < fileHandle.bufferStartRow || row >= fileHandle.bufferEndRow) {
+        if (_fillDataSetReadBuffer(fileHandle, row, error) != OK) {
+            return ERROR;
+        }
+    }
+
+    // convert data from buffer to output-list
+    const uint64_t byteOffset = (row - fileHandle.bufferStartRow)
+                                * fileHandle.header.numberOfColumns * fileHandle.header.dataType;
+    switch (fileHandle.header.dataType) {
+        case UNDEFINED_TYPE:
+            error.addMessage("Invalid data-type defined in file '" + fileHandle.targetFile->filePath
+                             + "'");
+            return ERROR;
+        case UINT8_TYPE:
+            _convert<uint8_t, T>(result, fileHandle, byteOffset);
+            break;
+        case FLOAT_TYPE:
+            _convert<float, T>(result, fileHandle, byteOffset);
+            break;
+    }
 
     return OK;
 }
-
-ReturnStatus openDataSetFile(DataSetFileHandle& result,
-                             const std::string& filePath,
-                             Hanami::ErrorContainer& error);
-
-ReturnStatus initNewDataSetFile(DataSetFileHandle& result,
-                                const std::string& filePath,
-                                const std::string& name,
-                                const DataSetType type,
-                                const uint64_t numberOfColumns,
-                                Hanami::ErrorContainer& error);
-
-ReturnStatus getDataFromDataSet(std::vector<float>& result,
-                                const DataSetFileHandle& fileHandle,
-                                const DataSetSelector selector,
-                                Hanami::ErrorContainer& error);
 
 #endif  // HANAMI_DATASETFILE_H

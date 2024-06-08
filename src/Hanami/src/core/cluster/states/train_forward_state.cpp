@@ -44,24 +44,32 @@ TrainForward_State::~TrainForward_State() {}
 bool
 TrainForward_State::processEvent()
 {
+    Hanami::ErrorContainer error;
     Task* actualTask = m_cluster->getCurrentTask();
-    const TrainInfo info = std::get<TrainInfo>(actualTask->info);
-    const uint64_t numberOfInputsPerCycle = info.numberOfInputsPerCycle;
-    const uint64_t numberOfOuputsPerCycle = info.numberOfOuputsPerCycle;
-    const uint64_t entriesPerCycle = numberOfInputsPerCycle + numberOfOuputsPerCycle;
-    const uint64_t offsetInput = entriesPerCycle * actualTask->currentCycle;
+    TrainInfo* info = &std::get<TrainInfo>(actualTask->info);
 
-    // set input
-    InputInterface* inputInterface = &m_cluster->inputInterfaces.begin()->second;
-    for (uint64_t i = 0; i < numberOfInputsPerCycle; i++) {
-        inputInterface->inputNeurons[i].value = info.inputData[offsetInput + i];
+    for (auto& [brickName, input] : info->inputs) {
+        InputInterface* inputInterface = &m_cluster->inputInterfaces[brickName];
+        // TODO: check response
+        assert(getDataFromDataSet(inputInterface->ioBuffer, input, info->currentCycle, error)
+               == OK);
+        uint64_t counter = 0;
+        for (const float val : inputInterface->ioBuffer) {
+            inputInterface->inputNeurons[counter].value = val;
+            counter++;
+        }
     }
 
-    // set exprected output
-    OutputInterface* outputInterface = &m_cluster->outputInterfaces.begin()->second;
-    for (uint64_t i = 0; i < numberOfOuputsPerCycle; i++) {
-        outputInterface->outputNeurons[i].exprectedVal
-            = info.inputData[offsetInput + numberOfInputsPerCycle + i];
+    for (auto& [brickName, output] : info->outputs) {
+        OutputInterface* outputInterface = &m_cluster->outputInterfaces[brickName];
+        // TODO: check response
+        assert(getDataFromDataSet(outputInterface->ioBuffer, output, info->currentCycle, error)
+               == OK);
+        uint64_t counter = 0;
+        for (const float val : outputInterface->ioBuffer) {
+            outputInterface->outputNeurons[counter].exprectedVal = val;
+            counter++;
+        }
     }
 
     m_cluster->mode = ClusterProcessingMode::TRAIN_FORWARD_MODE;

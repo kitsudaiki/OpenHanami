@@ -79,7 +79,7 @@ TempFileHandler::initNewFile(std::string& uuid,
         }
 
         // create file-handle object
-        Hanami::FileHandle fileHandle;
+        Hanami::UploadFileHandle fileHandle;
         fileHandle.userContext = userContext;
         fileHandle.file = tempfile;
         fileHandle.bitBuffer = new Hanami::BitBuffer(numberOfInputSegments);
@@ -139,7 +139,7 @@ TempFileHandler::initNewFile(std::string& uuid,
  *
  * @return pointer to handle if uuid found, else nullptr
  */
-Hanami::FileHandle*
+Hanami::UploadFileHandle*
 TempFileHandler::getFileHandle(const std::string& uuid, const Hanami::UserContext& context)
 {
     const std::lock_guard<std::mutex> lock(m_fileHandleMutex);

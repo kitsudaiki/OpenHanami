@@ -106,31 +106,29 @@ LogicalHost::run()
 }
 
 /**
- * @brief get position of the highest output-position
+ * @brief set highest output to 1 and other to 0
  *
- * @param cluster output-cluster to check
- *
- * @return position of the highest output.
+ * @param outputInterface interface to process
  */
-uint32_t
-getHighestOutput(Cluster& cluster)
+void
+setHighest(OutputInterface& outputInterface)
 {
     float hightest = -0.1f;
     uint32_t hightestPos = 0;
     float value = 0.0f;
 
-    OutputInterface* outputInterface = &cluster.outputInterfaces.begin()->second;
-    for (uint32_t outputNeuronId = 0; outputNeuronId < outputInterface->outputNeurons.size();
+    for (uint32_t outputNeuronId = 0; outputNeuronId < outputInterface.outputNeurons.size();
          outputNeuronId++)
     {
-        value = outputInterface->outputNeurons[outputNeuronId].outputVal;
+        value = outputInterface.outputNeurons[outputNeuronId].outputVal;
+
         if (value > hightest) {
             hightest = value;
             hightestPos = outputNeuronId;
         }
+        outputInterface.outputNeurons[outputNeuronId].outputVal = 0.0f;
     }
-
-    return hightestPos;
+    outputInterface.outputNeurons[hightestPos].outputVal = 1.0f;
 }
 
 /**
@@ -142,26 +140,26 @@ getHighestOutput(Cluster& cluster)
 void
 handleClientOutput(Cluster& cluster)
 {
+    Hanami::ErrorContainer error;
     // send output back if a client-connection is set
-    if (cluster.msgClient != nullptr) {
-        sendClusterOutputMessage(&cluster);
-    }
-    else {
-        Task* actualTask = cluster.getCurrentTask();
-        const uint64_t cycle = actualTask->currentCycle;
-        if (actualTask->type == REQUEST_TASK) {
-            // TODO: check for cluster-state instead of client
-            const uint32_t hightest = getHighestOutput(cluster);
-            actualTask->resultData[cycle] = static_cast<long>(hightest);
+
+    Task* actualTask = cluster.getCurrentTask();
+    if (actualTask->type == REQUEST_TASK) {
+        if (cluster.msgClient != nullptr) {
+            // TODO: handle return status
+            sendClusterOutputMessage(&cluster);
         }
-        /*else if (actualTask->type == REQUEST_TASK) {
-            float val = 0.0f;
-            OutputInterface* outputInterface = &cluster.outputInterfaces.begin()->second;
-            for (uint64_t i = 0; i < outputInterface->outputNeurons.size(); i++) {
-                const float temp = actualTask->resultData[cycle];
-                val = temp + outputInterface->outputNeurons[i].outputVal;
-                actualTask->resultData[cycle] = val;
+        else {
+            RequestInfo* info = &std::get<RequestInfo>(actualTask->info);
+
+            for (auto& [name, outputInterface] : cluster.outputInterfaces) {
+                setHighest(outputInterface);
+                DataSetFileHandle* fileHandle = &info->results[name];
+                for (const OutputNeuron& outputNeuron : outputInterface.outputNeurons) {
+                    // TODO: handle return value
+                    appendValueToDataSet(*fileHandle, outputNeuron.outputVal, error);
+                }
             }
-        }*/
+        }
     }
 }

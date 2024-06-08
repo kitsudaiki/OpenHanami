@@ -41,7 +41,8 @@ class FinalizeMnistDataSet : public Blossom
     bool convertMnistData(const std::string& filePath,
                           const std::string& name,
                           const Hanami::DataBuffer& inputBuffer,
-                          const Hanami::DataBuffer& labelBuffer);
+                          const Hanami::DataBuffer& labelBuffer,
+                          Hanami::ErrorContainer& error);
 };
 
 #endif  // HANAMI_MNIST_FINALIZE_DATA_SET_H

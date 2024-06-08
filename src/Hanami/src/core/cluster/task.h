@@ -23,14 +23,12 @@
 #ifndef HANAMI_TASK_H
 #define HANAMI_TASK_H
 
+#include <core/io/data_set/dataset_file_io.h>
 #include <database/checkpoint_table.h>
 #include <hanami_common/uuid.h>
 
 #include <chrono>
-#include <nlohmann/json.hpp>
 #include <variant>
-
-using json = nlohmann::json;
 
 enum TaskType {
     NO_TASK = 0,
@@ -59,28 +57,89 @@ struct TaskProgress {
 };
 
 struct TrainInfo {
-    float* inputData = nullptr;
-    float* outputData = nullptr;
-
+    std::map<std::string, DataSetFileHandle> inputs;
+    std::map<std::string, DataSetFileHandle> outputs;
     uint64_t numberOfCycles = 0;
-    uint64_t numberOfInputsPerCycle = 0;
-    uint64_t numberOfOuputsPerCycle = 0;
+    uint64_t currentCycle = 0;
+    TrainInfo() {}
+
+    TrainInfo(TrainInfo&& otherObf)
+    {
+        inputs = std::move(otherObf.inputs);
+        outputs = std::move(otherObf.outputs);
+        numberOfCycles = otherObf.numberOfCycles;
+        currentCycle = otherObf.currentCycle;
+    }
+
+    TrainInfo& operator=(TrainInfo&& otherObf)
+    {
+        inputs = std::move(otherObf.inputs);
+        outputs = std::move(otherObf.outputs);
+        numberOfCycles = otherObf.numberOfCycles;
+        currentCycle = otherObf.currentCycle;
+
+        return *this;
+    }
 };
 
 struct RequestInfo {
-    float* inputData = nullptr;
-
+    std::map<std::string, DataSetFileHandle> inputs;
+    std::map<std::string, DataSetFileHandle> results;
     uint64_t numberOfCycles = 0;
-    uint64_t numberOfInputsPerCycle = 0;
-    uint64_t numberOfOuputsPerCycle = 0;
+    uint64_t currentCycle = 0;
+    RequestInfo() {}
+
+    RequestInfo(RequestInfo&& otherObf)
+    {
+        inputs = std::move(otherObf.inputs);
+        results = std::move(otherObf.results);
+        numberOfCycles = otherObf.numberOfCycles;
+        currentCycle = otherObf.currentCycle;
+    }
+
+    RequestInfo& operator=(RequestInfo&& otherObf)
+    {
+        inputs = std::move(otherObf.inputs);
+        results = std::move(otherObf.results);
+        numberOfCycles = otherObf.numberOfCycles;
+        currentCycle = otherObf.currentCycle;
+
+        return *this;
+    }
 };
 
 struct CheckpointSaveInfo {
     std::string checkpointName = "";
+    CheckpointSaveInfo() {}
+
+    CheckpointSaveInfo(CheckpointSaveInfo&& otherObf)
+    {
+        checkpointName = std::move(otherObf.checkpointName);
+    }
+
+    CheckpointSaveInfo& operator=(CheckpointSaveInfo&& otherObf)
+    {
+        checkpointName = std::move(otherObf.checkpointName);
+
+        return *this;
+    }
 };
 
 struct CheckpointRestoreInfo {
     CheckpointTable::CheckpointDbEntry checkpointInfo;
+    CheckpointRestoreInfo() {}
+
+    CheckpointRestoreInfo(CheckpointRestoreInfo&& otherObf)
+    {
+        checkpointInfo = std::move(otherObf.checkpointInfo);
+    }
+
+    CheckpointRestoreInfo& operator=(CheckpointRestoreInfo&& otherObf)
+    {
+        checkpointInfo = std::move(otherObf.checkpointInfo);
+
+        return *this;
+    }
 };
 
 struct Task {
@@ -91,9 +150,7 @@ struct Task {
     std::string projectId = "";
 
     // progress
-    uint64_t currentCycle = 0;
     TaskProgress progress;
-    json resultData;
 
     std::variant<TrainInfo, RequestInfo, CheckpointSaveInfo, CheckpointRestoreInfo> info;
 
@@ -104,37 +161,34 @@ struct Task {
         progress.queuedTimeStamp = std::chrono::system_clock::now();
     }
 
-    void deleteData()
+    Task(Task&& otherObf)
     {
-        switch (type) {
-            case TRAIN_TASK:
-                if (std::get<TrainInfo>(info).inputData != nullptr) {
-                    delete[] std::get<TrainInfo>(info).inputData;
-                    std::get<TrainInfo>(info).inputData = nullptr;
-                }
-                if (std::get<TrainInfo>(info).outputData != nullptr) {
-                    delete[] std::get<TrainInfo>(info).outputData;
-                    std::get<TrainInfo>(info).outputData = nullptr;
-                }
-                break;
-            case REQUEST_TASK:
-                if (std::get<RequestInfo>(info).inputData != nullptr) {
-                    delete[] std::get<RequestInfo>(info).inputData;
-                    std::get<RequestInfo>(info).inputData = nullptr;
-                }
-                break;
-            case CLUSTER_CHECKPOINT_SAVE_TASK:
-                return;
-            case CLUSTER_CHECKPOINT_RESTORE_TASK:
-                return;
-            case NO_TASK:
-                return;
-        }
+        uuid = otherObf.uuid;
+        type = otherObf.type;
+        name = std::move(otherObf.name);
+        userId = std::move(otherObf.userId);
+        projectId = std::move(otherObf.projectId);
+
+        // progress
+        progress = otherObf.progress;
+
+        info = std::move(info);
     }
 
-    ~Task()
+    Task& operator=(Task&& otherObf)
     {
-        // deleteData();
+        uuid = otherObf.uuid;
+        type = otherObf.type;
+        name = std::move(otherObf.name);
+        userId = std::move(otherObf.userId);
+        projectId = std::move(otherObf.projectId);
+
+        // progress
+        progress = otherObf.progress;
+
+        info = std::move(info);
+
+        return *this;
     }
 };
 

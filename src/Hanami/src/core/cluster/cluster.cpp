@@ -28,7 +28,6 @@
 #include <core/cluster/states/task_handle_state.h>
 #include <core/cuda_functions.h>
 #include <core/processing/logical_host.h>
-#include <database/request_result_table.h>
 #include <hanami_common/logger.h>
 #include <hanami_common/statemachine.h>
 #include <hanami_common/threading/thread.h>
@@ -278,19 +277,6 @@ Cluster::getCurrentTask()
 }
 
 /**
- * @brief get cycle of the actual task
- *
- * @return cycle of the actual task
- */
-uint64_t
-Cluster::getActualTaskCycle()
-{
-    std::lock_guard<std::mutex> guard(m_taskMutex);
-
-    return m_currentTask->currentCycle;
-}
-
-/**
  * @brief get task-progress
  *
  * @param taskUuid UUID of the task
@@ -403,19 +389,21 @@ Cluster::getAllProgress(std::map<std::string, TaskProgress>& result)
  *
  * @return false, if uuid already exist, else true
  */
-bool
-Cluster::addTask(const std::string& uuid, const Task& task)
+Task*
+Cluster::addNewTask()
 {
     std::lock_guard<std::mutex> guard(m_taskMutex);
 
-    auto ret = m_taskMap.try_emplace(uuid, task);
+    Task newTask;
+    const std::string taskUuid = newTask.uuid.toString();
+    auto ret = m_taskMap.try_emplace(taskUuid, std::move(newTask));
     if (ret.second == false) {
-        return false;
+        return nullptr;
     }
 
-    m_taskQueue.push_back(uuid);
+    m_taskQueue.push_back(taskUuid);
 
-    return true;
+    return &m_taskMap[taskUuid];
 }
 
 /**
@@ -467,46 +455,10 @@ Cluster::finishTask()
 
     // precheck
     if (m_currentTask != nullptr) {
-        // send results to shiori, if some are attached to the task
-        if (m_currentTask->resultData.size() != 0) {
-            // results of tables a aggregated values, so they have to be fixed to its average value
-            /*if (m_currentTask->type == TABLE_REQUEST_TASK) {
-                const TableRequestInfo info = std::get<TableRequestInfo>(m_currentTask->info);
-                const float numberOfOutputs = static_cast<float>(info.numberOfOuputsPerCycle);
-                for (uint64_t i = 0; i < m_currentTask->resultData.size(); i++) {
-                    float value = m_currentTask->resultData[i];
-                    m_currentTask->resultData[i] = value / numberOfOutputs;
-                }
-            }*/
-
-            // write result to database
-            Hanami::ErrorContainer error;
-            RequestResultTable::ResultDbEntry dbEntry;
-            dbEntry.uuid = m_currentTask->uuid.toString();
-            dbEntry.name = m_currentTask->name;
-            dbEntry.data = m_currentTask->resultData;
-            dbEntry.visibility = "private";
-
-            Hanami::UserContext userContext;
-            userContext.userId = m_currentTask->userId;
-            userContext.projectId = m_currentTask->projectId;
-
-            if (RequestResultTable::getInstance()->addRequestResult(dbEntry, userContext, error)
-                != OK)
-            {
-                LOG_ERROR(error);
-            }
-
-            m_currentTask->resultData = nullptr;
-        }
-
-        // remove task from map and free its data
-        auto it = m_taskMap.find(m_currentTask->uuid.toString());
-        if (it != m_taskMap.end()) {
-            it->second.deleteData();
-            it->second.progress.state = FINISHED_TASK_STATE;
-            it->second.progress.endActiveTimeStamp = std::chrono::system_clock::now();
-        }
+        Hanami::ErrorContainer error;
+        // TODO: handle error-ourpur
+        m_currentTask->progress.state = FINISHED_TASK_STATE;
+        m_currentTask->progress.endActiveTimeStamp = std::chrono::system_clock::now();
 
         m_currentTask = nullptr;
     }

@@ -22,18 +22,17 @@
 
 #include "check_dataset.h"
 
+#include <core/io/data_set/dataset_file_io.h>
 #include <database/dataset_table.h>
-#include <database/request_result_table.h>
 #include <hanami_common/buffer/data_buffer.h>
 #include <hanami_common/files/binary_file.h>
 #include <hanami_common/files/text_file.h>
 #include <hanami_common/functions/file_functions.h>
 #include <hanami_config/config_handler.h>
-#include <hanami_files/dataset_files/dataset_file.h>
-#include <hanami_files/dataset_files/image_dataset_file.h>
 #include <hanami_root.h>
 
-CheckDataSet::CheckDataSet() : Blossom("Compare a list of values with a dataset to check accuracy.")
+CheckMnistDataSet::CheckMnistDataSet()
+    : Blossom("Compare a list of values with a dataset to check accuracy.")
 {
     errorCodes.push_back(NOT_FOUND_RTYPE);
 
@@ -46,7 +45,7 @@ CheckDataSet::CheckDataSet() : Blossom("Compare a list of values with a dataset 
         .setRegex(UUID_REGEX);
 
     registerInputField("dataset_uuid", SAKURA_STRING_TYPE)
-        .setComment("UUID of the dataset to compare to.")
+        .setComment("UUID of the dataset with the results, which should be checked.")
         .setRegex(UUID_REGEX);
 
     //----------------------------------------------------------------------------------------------
@@ -65,86 +64,111 @@ CheckDataSet::CheckDataSet() : Blossom("Compare a list of values with a dataset 
  * @brief runTask
  */
 bool
-CheckDataSet::runTask(BlossomIO& blossomIO,
-                      const json& context,
-                      BlossomStatus& status,
-                      Hanami::ErrorContainer& error)
+CheckMnistDataSet::runTask(BlossomIO& blossomIO,
+                           const json& context,
+                           BlossomStatus& status,
+                           Hanami::ErrorContainer& error)
 {
     const std::string resultUuid = blossomIO.input["result_uuid"];
-    const std::string dataUuid = blossomIO.input["dataset_uuid"];
+    const std::string datasetUuid = blossomIO.input["dataset_uuid"];
     const Hanami::UserContext userContext = convertContext(context);
 
-    // get result
-    // check if request-result exist within the table
-    RequestResultTable::ResultDbEntry requestResult;
-    ReturnStatus ret = RequestResultTable::getInstance()->getRequestResult(
-        requestResult, resultUuid, userContext, error);
-    if (ret == ERROR) {
-        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+    DataSetFileHandle datasetFileHandle;
+    DataSetFileHandle resultFileHandle;
+
+    // open files
+    ReturnStatus ret = getFileHandle(datasetFileHandle, datasetUuid, userContext, status, error);
+    if (ret != OK) {
         return false;
     }
-    if (ret == INVALID_INPUT) {
-        status.errorMessage = "Result with uuid '" + resultUuid + "' not found";
-        status.statusCode = NOT_FOUND_RTYPE;
-        LOG_DEBUG(status.errorMessage);
+    ret = getFileHandle(resultFileHandle, resultUuid, userContext, status, error);
+    if (ret != OK) {
         return false;
     }
 
-    // get data-info from database
+    // set file-selectors
+    resultFileHandle.readSelector.endColumn = 10;
+    resultFileHandle.readSelector.endRow = 10000;
+    datasetFileHandle.readSelector.startColumn = 784;
+    datasetFileHandle.readSelector.endColumn = 794;
+    datasetFileHandle.readSelector.endRow = 10000;
+
+    // init buffer for output
+    std::vector<float> datasetOutput(10, 0.0f);
+    std::vector<float> resultOutput(10, 0.0f);
+
+    float accuracy = 0.0f;
+
+    // check files
+    for (uint64_t row = 0; row < 10000; row++) {
+        if (getDataFromDataSet(datasetOutput, datasetFileHandle, row, error) != OK) {
+            status.statusCode = INVALID_INPUT;
+            status.errorMessage
+                = "Dataset with UUID '" + datasetUuid + "' is invalid and can not be compared";
+            error.addMessage(status.errorMessage);
+            return false;
+        }
+        if (getDataFromDataSet(resultOutput, resultFileHandle, row, error) != OK) {
+            status.statusCode = INVALID_INPUT;
+            status.errorMessage = "Dataset with result with UUID '" + resultUuid
+                                  + "' is invalid and can not be checked";
+            error.addMessage(status.errorMessage);
+            return false;
+        }
+
+        bool allCorrect = true;
+        for (uint64_t i = 0; i < 10; i++) {
+            if (datasetOutput[i] != resultOutput[i]) {
+                allCorrect = false;
+            }
+        }
+
+        if (allCorrect) {
+            accuracy += 1.0f;
+        }
+    }
+
+    blossomIO.output["accuracy"] = (100.0f / 10000.0f) * accuracy;
+
+    return true;
+}
+
+/**
+ * @brief CheckMnistDataSet::getFileHandle
+ * @param fileHandle
+ * @param uuid
+ * @param context
+ * @param status
+ * @param error
+ * @return
+ */
+ReturnStatus
+CheckMnistDataSet::getFileHandle(DataSetFileHandle& fileHandle,
+                                 const std::string uuid,
+                                 const Hanami::UserContext userContext,
+                                 BlossomStatus& status,
+                                 Hanami::ErrorContainer& error)
+{
     json dbOutput;
-    ret = DataSetTable::getInstance()->getDataSet(dbOutput, dataUuid, userContext, true, error);
+    ReturnStatus ret
+        = DataSetTable::getInstance()->getDataSet(dbOutput, uuid, userContext, true, error);
     if (ret == ERROR) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        return false;
+        return ret;
     }
     if (ret == INVALID_INPUT) {
-        status.errorMessage = "Dataset with uuid '" + dataUuid + "' not found";
+        status.errorMessage = "Dataset with uuid '" + uuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
         LOG_DEBUG(status.errorMessage);
-        return false;
+        return ret;
     }
 
     // get file information
     const std::string location = dbOutput["location"];
-
-    Hanami::DataBuffer buffer;
-    DataSetFile::DataSetHeader dataSetHeader;
-    ImageDataSetFile::ImageTypeHeader imageTypeHeader;
-    Hanami::BinaryFile file(location);
-
-    // read dataset-header
-    if (file.readCompleteFile(buffer, error) == false) {
-        error.addMessage("Failed to read dataset-header from file '" + location + "'");
-        return false;
+    if (openDataSetFile(fileHandle, location, error) != OK) {
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return ERROR;
     }
 
-    // prepare values
-    uint64_t correctValues = 0;
-    uint64_t dataPos
-        = sizeof(DataSetFile::DataSetHeader) + sizeof(ImageDataSetFile::ImageTypeHeader);
-    const uint8_t* u8Data = static_cast<const uint8_t*>(buffer.data);
-    memcpy(&dataSetHeader, buffer.data, sizeof(DataSetFile::DataSetHeader));
-    memcpy(&imageTypeHeader,
-           &u8Data[sizeof(DataSetFile::DataSetHeader)],
-           sizeof(ImageDataSetFile::ImageTypeHeader));
-    const uint64_t lineOffset = imageTypeHeader.numberOfInputsX * imageTypeHeader.numberOfInputsY;
-    const uint64_t lineSize = (imageTypeHeader.numberOfInputsX * imageTypeHeader.numberOfInputsY)
-                              + imageTypeHeader.numberOfOutputs;
-    const float* content = reinterpret_cast<const float*>(&u8Data[dataPos]);
-
-    // iterate over all values and check
-    for (uint64_t i = 0; i < requestResult.data.size(); i++) {
-        const uint64_t actualPos = (i * lineSize) + lineOffset;
-        const uint64_t checkVal = requestResult.data[i];
-        if (content[actualPos + checkVal] > 0.0f) {
-            correctValues++;
-        }
-    }
-
-    // add result to output
-    const float accuracy = (100.0f / static_cast<float>(requestResult.data.size()))
-                           * static_cast<float>(correctValues);
-    blossomIO.output["accuracy"] = accuracy;
-
-    return true;
+    return OK;
 }

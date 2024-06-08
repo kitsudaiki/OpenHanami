@@ -296,6 +296,7 @@ struct OutputInterface {
     std::string name = "";
     uint32_t targetBrickId = UNINIT_STATE_32;
     std::vector<OutputNeuron> outputNeurons;
+    std::vector<float> ioBuffer;
 };
 
 //==================================================================================================
@@ -304,6 +305,7 @@ struct InputInterface {
     std::string name = "";
     uint32_t targetBrickId = UNINIT_STATE_32;
     std::vector<InputNeuron> inputNeurons;
+    std::vector<float> ioBuffer;
 };
 
 //==================================================================================================

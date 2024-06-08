@@ -1,5 +1,5 @@
 /**
- * @file        list_request_result.h
+ * @file        create_train_task.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,21 +20,32 @@
  *      limitations under the License.
  */
 
-#ifndef LISTREQUESTRESULT_H
-#define LISTREQUESTRESULT_H
+#ifndef HANAMI_CREATE_IMAGE_TRAINTASK_H
+#define HANAMI_CREATE_IMAGE_TRAINTASK_H
 
 #include <api/endpoint_processing/blossom.h>
+#include <core/cluster/task.h>
 
-class ListRequestResult : public Blossom
+class Cluster;
+
+class CreateTrainTask : public Blossom
 {
    public:
-    ListRequestResult();
+    CreateTrainTask();
 
    protected:
     bool runTask(BlossomIO& blossomIO,
-                 const json&,
+                 const json& context,
                  BlossomStatus& status,
                  Hanami::ErrorContainer& error);
+
+   private:
+    ReturnStatus fillTaskIo(DataSetFileHandle& taskIo,
+                            const Hanami::UserContext& userContext,
+                            const json& settings,
+                            const uint64_t numberOfCycles,
+                            BlossomStatus& status,
+                            Hanami::ErrorContainer& error);
 };
 
-#endif  // LISTREQUESTRESULT_H
+#endif  // HANAMI_CREATE_IMAGE_TRAINTASK_H

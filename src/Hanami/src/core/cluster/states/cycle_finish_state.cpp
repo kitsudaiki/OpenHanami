@@ -47,13 +47,20 @@ bool
 CycleFinish_State::processEvent()
 {
     uint64_t numberOfCycles = 0;
+    uint64_t currentCycle = 0;
     Task* actualTask = m_cluster->getCurrentTask();
     switch (actualTask->type) {
         case TRAIN_TASK:
+            currentCycle = std::get<TrainInfo>(actualTask->info).currentCycle + 1;
             numberOfCycles = std::get<TrainInfo>(actualTask->info).numberOfCycles;
+            std::get<TrainInfo>(actualTask->info).currentCycle = currentCycle;
+            actualTask->progress.currentCyle = currentCycle;
             break;
         case REQUEST_TASK:
+            currentCycle = std::get<RequestInfo>(actualTask->info).currentCycle + 1;
             numberOfCycles = std::get<RequestInfo>(actualTask->info).numberOfCycles;
+            std::get<RequestInfo>(actualTask->info).currentCycle = currentCycle;
+            actualTask->progress.currentCyle = currentCycle;
             break;
         case CLUSTER_CHECKPOINT_SAVE_TASK:
             return false;
@@ -63,12 +70,8 @@ CycleFinish_State::processEvent()
             return false;
     }
 
-    // update progress-counter
-    actualTask->currentCycle++;
-    actualTask->progress.currentCyle = actualTask->currentCycle;
-
     // to go next state of finish the task to goal is reached
-    if (actualTask->currentCycle == numberOfCycles) {
+    if (currentCycle == numberOfCycles) {
         m_cluster->goToNextState(FINISH_TASK);
     }
     else {

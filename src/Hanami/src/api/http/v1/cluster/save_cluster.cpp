@@ -100,51 +100,28 @@ SaveCluster::runTask(BlossomIO& blossomIO,
         return false;
     }
 
-    // init request-task
-    const std::string taskUuid
-        = addCheckpointSaveTask(*cluster, name, userContext.userId, userContext.projectId);
-
-    blossomIO.output["uuid"] = taskUuid;
-    blossomIO.output["name"] = name;
-
-    return true;
-}
-
-/**
- * @brief create task to create a checkpoint from a cluster and add it to the task-queue
- *
- * @param cluster reference to the cluster, which should run the task
- * @param checkpointName name for the checkpoint
- * @param userId uuid of the user, where the checkpoint belongs to
- * @param projectId uuid of the project, where the checkpoint belongs to
- *
- * @return uuid of the new task
- */
-const std::string
-SaveCluster::addCheckpointSaveTask(Cluster& cluster,
-                                   const std::string& checkpointName,
-                                   const std::string& userId,
-                                   const std::string& projectId)
-{
-    // create new request-task
-    Task newTask;
-    newTask.name = checkpointName;
-    newTask.userId = userId;
-    newTask.projectId = projectId;
-    newTask.type = CLUSTER_CHECKPOINT_SAVE_TASK;
-    newTask.progress.queuedTimeStamp = std::chrono::system_clock::now();
-    newTask.progress.totalNumberOfCycles = 1;
+    // create new task
+    Task* newTask = cluster->addNewTask();
+    if (newTask == nullptr) {
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+    newTask->name = name;
+    newTask->userId = userContext.userId;
+    newTask->projectId = userContext.projectId;
+    newTask->type = CLUSTER_CHECKPOINT_SAVE_TASK;
+    newTask->progress.queuedTimeStamp = std::chrono::system_clock::now();
+    newTask->progress.totalNumberOfCycles = 1;
 
     // fill metadata
     CheckpointSaveInfo info;
-    info.checkpointName = checkpointName;
-    newTask.info = info;
+    info.checkpointName = name;
+    newTask->info = std::move(info);
 
-    // add tasgetNextTaskk to queue
-    const std::string uuid = newTask.uuid.toString();
-    cluster.addTask(uuid, newTask);
+    cluster->stateMachine->goToNextState(PROCESS_TASK);
 
-    cluster.stateMachine->goToNextState(PROCESS_TASK);
+    blossomIO.output["uuid"] = newTask->uuid.toString();
+    blossomIO.output["name"] = name;
 
-    return uuid;
+    return true;
 }
