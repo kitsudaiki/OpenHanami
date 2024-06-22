@@ -34,11 +34,11 @@ v1/foreward
 v1/host/all
 - GET: admin, member
 
-v1/mnist/dataset
+v1/dataset/upload/mnist
 - POST: admin, member
 - PUT: admin, member
 
-v1/csv/dataset
+v1/dataset/upload/csv
 - POST: admin, member
 - PUT: admin, member
 

@@ -119,10 +119,12 @@ datasetBlossoms()
 {
     const std::string group = "Data Set";
     HttpProcessing* httpProcessing = HanamiRoot::httpServer->httpProcessing;
-    httpProcessing->addEndpoint("v1/mnist/dataset", POST_TYPE, group, new CreateMnistDataSet());
-    httpProcessing->addEndpoint("v1/mnist/dataset", PUT_TYPE, group, new FinalizeMnistDataSet());
-    httpProcessing->addEndpoint("v1/csv/dataset", POST_TYPE, group, new CreateCsvDataSet());
-    httpProcessing->addEndpoint("v1/csv/dataset", PUT_TYPE, group, new FinalizeCsvDataSet());
+    httpProcessing->addEndpoint(
+        "v1/dataset/upload/mnist", POST_TYPE, group, new CreateMnistDataSet());
+    httpProcessing->addEndpoint(
+        "v1/dataset/upload/mnist", PUT_TYPE, group, new FinalizeMnistDataSet());
+    httpProcessing->addEndpoint("v1/dataset/upload/csv", POST_TYPE, group, new CreateCsvDataSet());
+    httpProcessing->addEndpoint("v1/dataset/upload/csv", PUT_TYPE, group, new FinalizeCsvDataSet());
     httpProcessing->addEndpoint("v1/dataset/check", GET_TYPE, group, new CheckMnistDataSet());
     httpProcessing->addEndpoint("v1/dataset/progress", GET_TYPE, group, new GetProgressDataSet());
     httpProcessing->addEndpoint("v1/dataset", GET_TYPE, group, new GetDataSet());

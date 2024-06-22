@@ -165,7 +165,7 @@ def upload_mnist_files(token: str,
         label_file_data = l_f.read()
 
     # initialize
-    path = "/control/v1/mnist/dataset"
+    path = "/control/v1/dataset/upload/mnist"
     json_body = {
         "name": name,
         "input_data_size": len(input_file_data),
@@ -205,7 +205,7 @@ def upload_mnist_files(token: str,
         raise hanami_exceptions.InternalServerErrorException()
 
     # finalize
-    path = "/control/v1/mnist/dataset"
+    path = "/control/v1/dataset/upload/mnist"
     json_body = {
         "uuid": uuid,
         "uuid_input_file": input_file_uuid,
@@ -229,7 +229,7 @@ def upload_csv_files(token: str,
         input_file_data = i_f.read()
 
     # initialize
-    path = "/control/v1/csv/dataset"
+    path = "/control/v1/dataset/upload/csv"
     json_body = {
         "name": name,
         "input_data_size": len(input_file_data),
@@ -262,7 +262,7 @@ def upload_csv_files(token: str,
         raise hanami_exceptions.InternalServerErrorException()
 
     # finalize
-    path = "/control/v1/csv/dataset"
+    path = "/control/v1/dataset/upload/csv"
     json_body = {
         "uuid": uuid,
         "uuid_input_file": input_file_uuid,
