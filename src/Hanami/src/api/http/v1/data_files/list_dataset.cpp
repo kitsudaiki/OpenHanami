@@ -38,7 +38,6 @@ ListDataSet::ListDataSet() : Blossom("List all visible datasets.")
     headerMatch.push_back("owner_id");
     headerMatch.push_back("visibility");
     headerMatch.push_back("name");
-    headerMatch.push_back("type");
 
     registerOutputField("header", SAKURA_ARRAY_TYPE)
         .setComment("Array with the namings all columns of the table.")

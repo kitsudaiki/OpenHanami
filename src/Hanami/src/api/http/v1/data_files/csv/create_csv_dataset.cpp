@@ -65,8 +65,6 @@ CreateCsvDataSet::CreateCsvDataSet() : Blossom("Init new csv-file dataset.")
     registerOutputField("visibility", SAKURA_STRING_TYPE)
         .setComment("Visibility of the dataset (private, shared, public).");
 
-    registerOutputField("type", SAKURA_STRING_TYPE).setComment("Type of the new set (csv)");
-
     registerOutputField("uuid_input_file", SAKURA_STRING_TYPE)
         .setComment("UUID to identify the file for date upload of input-data.");
 
@@ -118,7 +116,6 @@ CreateCsvDataSet::runTask(BlossomIO& blossomIO,
     dbEntry.projectId = userContext.projectId;
     dbEntry.uuid = uuid;
     dbEntry.visibility = "private";
-    dbEntry.type = "csv";
     dbEntry.location = targetFilePath;
 
     // add to database

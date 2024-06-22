@@ -37,8 +37,6 @@ DataSetTable::DataSetTable() : HanamiSqlTable(Hanami::SqlDatabase::getInstance()
 {
     m_tableName = "dataset";
 
-    registerColumn("type", STRING_TYPE).setMaxLength(64);
-
     registerColumn("location", STRING_TYPE).hideValue();
 }
 
@@ -66,7 +64,6 @@ DataSetTable::addDataSet(const DataSetDbEntry& datasetData,
     datasetDataJson["name"] = datasetData.name;
     datasetDataJson["uuid"] = datasetData.uuid;
     datasetDataJson["visibility"] = datasetData.visibility;
-    datasetDataJson["type"] = datasetData.type;
     datasetDataJson["location"] = datasetData.location;
 
     const ReturnStatus ret = addWithContext(datasetDataJson, userContext, error);
@@ -106,7 +103,6 @@ DataSetTable::getDataSet(DataSetDbEntry& result,
     result.projectId = jsonRet["project_id"];
     result.uuid = jsonRet["uuid"];
     result.visibility = jsonRet["visibility"];
-    result.type = jsonRet["type"];
     result.location = jsonRet["location"];
 
     return OK;

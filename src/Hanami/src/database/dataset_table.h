@@ -43,7 +43,6 @@ class DataSetTable : public HanamiSqlTable
         std::string ownerId = "";
         std::string visibility = "";
         std::string name = "";
-        std::string type = "";
         std::string location = "";
     };
 

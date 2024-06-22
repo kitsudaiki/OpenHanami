@@ -291,7 +291,6 @@ CreateRequestTask::createResultTarget(DataSetFileHandle& fileHandle,
     dbEntry.projectId = userContext.projectId;
     dbEntry.uuid = datasetUuid;
     dbEntry.visibility = "private";
-    dbEntry.type = "csv";
     dbEntry.location = targetFilePath;
 
     if (DataSetTable::getInstance()->addDataSet(dbEntry, userContext, error) != OK) {

@@ -68,8 +68,6 @@ CreateMnistDataSet::CreateMnistDataSet() : Blossom("Init new mnist-file dataset.
     registerOutputField("visibility", SAKURA_STRING_TYPE)
         .setComment("Visibility of the dataset (private, shared, public).");
 
-    registerOutputField("type", SAKURA_STRING_TYPE).setComment("Type of the new set (mnist)");
-
     registerOutputField("uuid_input_file", SAKURA_STRING_TYPE)
         .setComment("UUID to identify the file for date upload of input-data.");
 
@@ -126,7 +124,7 @@ CreateMnistDataSet::runTask(BlossomIO& blossomIO,
     if (targetFilePath.at(targetFilePath.size() - 1) != '/') {
         targetFilePath.append("/");
     }
-    targetFilePath.append(uuid + "_mnist_" + userContext.userId);
+    targetFilePath.append(uuid + "_" + userContext.userId);
 
     // register in database
     DataSetTable::DataSetDbEntry dbEntry;
@@ -135,7 +133,7 @@ CreateMnistDataSet::runTask(BlossomIO& blossomIO,
     dbEntry.projectId = userContext.projectId;
     dbEntry.uuid = uuid;
     dbEntry.visibility = "private";
-    dbEntry.type = "mnist";
+
     dbEntry.location = targetFilePath;
 
     // add to database
