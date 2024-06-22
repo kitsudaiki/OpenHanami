@@ -45,15 +45,29 @@ DataSetIO_Test::write_test()
 
     Hanami::deleteFileOrDir(m_testFilePath, error);
 
-    TEST_EQUAL(initNewDataSetFile(
-                   fileHandle, m_testFilePath, m_fileName, UINT8_TYPE, m_numberOfColumns, error),
+    json description;
+    description["test"] = "asdf";
+    const std::string descriptionStr = description.dump();
+
+    TEST_EQUAL(initNewDataSetFile(fileHandle,
+                                  m_testFilePath,
+                                  m_fileName,
+                                  description,
+                                  UINT8_TYPE,
+                                  m_numberOfColumns,
+                                  error),
                OK);
-    TEST_EQUAL(initNewDataSetFile(
-                   fileHandle, m_testFilePath, m_fileName, UINT8_TYPE, m_numberOfColumns, error),
+    TEST_EQUAL(initNewDataSetFile(fileHandle,
+                                  m_testFilePath,
+                                  m_fileName,
+                                  description,
+                                  UINT8_TYPE,
+                                  m_numberOfColumns,
+                                  error),
                INVALID_INPUT);
 
     TEST_EQUAL(fileHandle.header.name.getName(), m_fileName);
-    TEST_EQUAL(fileHandle.header.fileSize, sizeof(DataSetHeader));
+    TEST_EQUAL(fileHandle.header.fileSize, sizeof(DataSetHeader) + descriptionStr.size());
     TEST_EQUAL(fileHandle.header.dataType, UINT8_TYPE);
     TEST_EQUAL(fileHandle.header.numberOfColumns, m_numberOfColumns);
     TEST_EQUAL(fileHandle.header.numberOfRows, 0);
@@ -63,10 +77,11 @@ DataSetIO_Test::write_test()
 
     TEST_EQUAL(fileHandle.header.name.getName(), m_fileName);
     TEST_EQUAL(fileHandle.header.fileSize,
-               sizeof(DataSetHeader) + (m_input.size() * sizeof(uint8_t)));
+               sizeof(DataSetHeader) + descriptionStr.size() + (m_input.size() * sizeof(uint8_t)));
     TEST_EQUAL(fileHandle.header.dataType, UINT8_TYPE);
     TEST_EQUAL(fileHandle.header.numberOfColumns, m_numberOfColumns);
     TEST_EQUAL(fileHandle.header.numberOfRows, 3);
+    TEST_EQUAL(fileHandle.description, description);
 }
 
 /**
@@ -78,11 +93,15 @@ DataSetIO_Test::read_test()
     Hanami::ErrorContainer error;
     DataSetFileHandle fileHandle(1);
 
+    json description;
+    description["test"] = "asdf";
+    const std::string descriptionStr = description.dump();
+
     TEST_EQUAL(openDataSetFile(fileHandle, m_testFilePath, error), OK);
 
     TEST_EQUAL(fileHandle.header.name.getName(), m_fileName);
     TEST_EQUAL(fileHandle.header.fileSize,
-               sizeof(DataSetHeader) + (m_input.size() * sizeof(uint8_t)));
+               sizeof(DataSetHeader) + descriptionStr.size() + (m_input.size() * sizeof(uint8_t)));
     TEST_EQUAL(fileHandle.header.dataType, UINT8_TYPE);
     TEST_EQUAL(fileHandle.header.numberOfColumns, m_numberOfColumns);
     TEST_EQUAL(fileHandle.header.numberOfRows, 3);

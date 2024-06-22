@@ -49,6 +49,7 @@ ReturnStatus openDataSetFile(DataSetFileHandle& result,
 ReturnStatus initNewDataSetFile(DataSetFileHandle& result,
                                 const std::string& filePath,
                                 const std::string& name,
+                                const json& description,
                                 const DataSetType type,
                                 const uint64_t numberOfColumns,
                                 Hanami::ErrorContainer& error);
@@ -106,8 +107,8 @@ struct DataSetHeader {
 
     DataSetType dataType = UNDEFINED_TYPE;
     uint8_t typeSize = 1;
-
-    uint8_t padding1[6];
+    uint8_t padding1[2];
+    uint32_t descriptionSize = 0;
 
     uint64_t fileSize = 0;
     uint64_t numberOfRows = 0;
@@ -134,6 +135,7 @@ static_assert(sizeof(DataSetHeader) == 4096);
 
 struct DataSetFileHandle {
     DataSetHeader header;
+    json description;
     Hanami::BinaryFile* targetFile = nullptr;
     Hanami::DataBuffer rwBuffer;
     DataSetSelector readSelector;
@@ -178,6 +180,8 @@ struct DataSetFileHandle {
 
         bufferStartRow = otherObf.bufferStartRow;
         bufferEndRow = otherObf.bufferEndRow;
+
+        description = otherObf.description;
     }
 
     DataSetFileHandle& operator=(DataSetFileHandle&& otherObf)
@@ -194,6 +198,8 @@ struct DataSetFileHandle {
 
         bufferStartRow = otherObf.bufferStartRow;
         bufferEndRow = otherObf.bufferEndRow;
+
+        description = otherObf.description;
 
         return *this;
     }

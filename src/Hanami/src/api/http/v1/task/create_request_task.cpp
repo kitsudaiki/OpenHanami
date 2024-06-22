@@ -56,32 +56,22 @@ CreateRequestTask::CreateRequestTask()
         .setLimit(0, 1000000000);
 
     registerInputField("inputs", SAKURA_MAP_TYPE)
-        .setComment("UUID of the dataset with the input, which coming from shiori.");
+        .setComment(
+            "key-value list with the names of the input-bricks as key and the dataset-UUID, which "
+            "should be used for the input, as value.");
 
     registerInputField("results", SAKURA_MAP_TYPE)
-        .setComment("UUID of the dataset with the input, which coming from shiori.");
+        .setComment(
+            "key-value list with the names of the ouput-bricks as key and the name for the "
+            "resulting dataset of this output as value.");
 
     /*inputs: {
-        test_brick: {
-            dataset_uuid: asfd,
-            start_row: 0,
-            start_column: 0,
-            end_column: 50,
-        },
-        test_brick2: {
-            dataset_uuid: poi,
-            start_row: 0,
-            start_column: 0,
-            end_column: 100,
-        }
+        test_brick: asfd,
+        test_brick2: asdf2
     },
     results: {
-        test_brick_out: {
-            name: poi
-        }
-        test_brick_out2: {
-            name: poi2
-        }
+        test_brick_out: dataset_uuid,
+        test_brick_out2: poi2
     }*/
 
     //----------------------------------------------------------------------------------------------
@@ -154,15 +144,12 @@ CreateRequestTask::runTask(BlossomIO& blossomIO,
 
     // prepare input
     const json inputs = blossomIO.input["inputs"];
-    for (const auto& [brickName, settings] : inputs.items()) {
+    for (const auto& [brickName, datasetUuid] : inputs.items()) {
         DataSetFileHandle fileHandle;
-
-        if (settings.contains("dataset_uuid") == false) {
-            status.statusCode = BAD_REQUEST_RTYPE;
-            return INVALID_INPUT;
-        }
-
-        if (fillTaskIo(fileHandle, userContext, settings, numberOfCycles, status, error) != OK) {
+        if (fillTaskIo(
+                fileHandle, userContext, brickName, datasetUuid, numberOfCycles, status, error)
+            != OK)
+        {
             return false;
         }
         info->inputs.try_emplace(brickName, std::move(fileHandle));
@@ -170,14 +157,8 @@ CreateRequestTask::runTask(BlossomIO& blossomIO,
 
     // prepare result
     const json results = blossomIO.input["results"];
-    for (const auto& [brickName, settings] : results.items()) {
-        if (settings.contains("name") == false) {
-            status.statusCode = BAD_REQUEST_RTYPE;
-            return INVALID_INPUT;
-        }
-
+    for (const auto& [brickName, name] : results.items()) {
         const uint64_t numberOfOutputs = cluster->outputInterfaces[brickName].outputNeurons.size();
-        const std::string name = settings["name"];
 
         DataSetFileHandle fileHandle;
         const std::string datasetUuid = newTask->uuid.toString();
@@ -214,26 +195,15 @@ CreateRequestTask::runTask(BlossomIO& blossomIO,
 ReturnStatus
 CreateRequestTask::fillTaskIo(DataSetFileHandle& fileHandle,
                               const Hanami::UserContext& userContext,
-                              const json& settings,
+                              const std::string& brickName,
+                              const std::string& datasetUuid,
                               const uint64_t numberOfCycles,
                               BlossomStatus& status,
                               Hanami::ErrorContainer& error)
 {
-    ReturnStatus ret = fileHandle.readSelector.fromJson(settings);
-    if (ret != OK) {
-        status.statusCode = BAD_REQUEST_RTYPE;
-        return INVALID_INPUT;
-    }
-    fileHandle.readSelector.endRow = fileHandle.readSelector.startRow + numberOfCycles;
-
-    if (settings.contains("dataset_uuid") == false) {
-        status.statusCode = BAD_REQUEST_RTYPE;
-        return INVALID_INPUT;
-    }
-
-    const std::string datasetUuid = settings["dataset_uuid"];
     DataSetTable::DataSetDbEntry getResult;
-    ret = DataSetTable::getInstance()->getDataSet(getResult, datasetUuid, userContext, error);
+    ReturnStatus ret
+        = DataSetTable::getInstance()->getDataSet(getResult, datasetUuid, userContext, error);
     if (ret == ERROR) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return ret;
@@ -250,6 +220,16 @@ CreateRequestTask::fillTaskIo(DataSetFileHandle& fileHandle,
         status.errorMessage = "Data-set with uuid '" + datasetUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
     }
+
+    if (fileHandle.description.contains(brickName) == false) {
+        status.errorMessage = "Dataset has no input for brick names '" + brickName + "'";
+        status.statusCode = NOT_FOUND_RTYPE;
+        return INVALID_INPUT;
+    }
+
+    fileHandle.readSelector.startColumn = fileHandle.description[brickName]["start_column"];
+    fileHandle.readSelector.endColumn = fileHandle.description[brickName]["end_column"];
+    fileHandle.readSelector.endRow = fileHandle.readSelector.startRow + numberOfCycles;
 
     return ret;
 }
@@ -285,6 +265,7 @@ CreateRequestTask::createResultTarget(DataSetFileHandle& fileHandle,
     }
     targetFilePath.append(name + "_result_" + datasetUuid);
 
+    // create new database-entry
     DataSetTable::DataSetDbEntry dbEntry;
     dbEntry.name = name + "_result";
     dbEntry.ownerId = userContext.userId;
@@ -293,13 +274,22 @@ CreateRequestTask::createResultTarget(DataSetFileHandle& fileHandle,
     dbEntry.visibility = "private";
     dbEntry.location = targetFilePath;
 
+    // update database
     if (DataSetTable::getInstance()->addDataSet(dbEntry, userContext, error) != OK) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return ERROR;
     }
 
-    ReturnStatus ret
-        = initNewDataSetFile(fileHandle, targetFilePath, name, FLOAT_TYPE, numberOfOutputs, error);
+    // prepare description of the dataset
+    json description;
+    json descriptionEntry;
+    descriptionEntry["start_column"] = 0;
+    descriptionEntry["end_column"] = numberOfOutputs;
+    description[name] = descriptionEntry;
+
+    // initialize dataset-file
+    ReturnStatus ret = initNewDataSetFile(
+        fileHandle, targetFilePath, name, description, FLOAT_TYPE, numberOfOutputs, error);
     if (ret == INVALID_INPUT) {
         status.errorMessage = "Data-set with uuid '" + datasetUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;

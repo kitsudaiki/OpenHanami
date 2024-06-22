@@ -151,12 +151,33 @@ openDataSetFile(DataSetFileHandle& result,
         return INVALID_INPUT;
     }
 
-    // read header of file to identify type
+    // read header of file to identify type and get description-info
     if (result.targetFile->readDataFromFile(&result.header, 0, sizeof(DataSetHeader), error)
         == false)
     {
         error.addMessage("Failed to read header of data-set-file");
         return ERROR;
+    }
+
+    // read description from file
+    Hanami::DataBuffer descriptionBuffer(Hanami::calcBytesToBlocks(result.header.descriptionSize));
+    if (result.targetFile->readDataFromFile(
+            descriptionBuffer.data, sizeof(DataSetHeader), result.header.descriptionSize, error)
+        == false)
+    {
+        error.addMessage("Failed to read description of data-set-file");
+        return ERROR;
+    }
+
+    // parse description
+    const std::string description
+        = std::string(static_cast<char*>(descriptionBuffer.data), result.header.descriptionSize);
+    try {
+        result.description = json::parse(description);
+    }
+    catch (const json::parse_error& ex) {
+        error.addMessage("Invalid dataset-description '" + description + "'");
+        return INVALID_INPUT;
     }
 
     return OK;
@@ -168,6 +189,7 @@ openDataSetFile(DataSetFileHandle& result,
  * @param result handle to the new created file
  * @param filePath path on the local disc, where the file should be created
  * @param name name of the new data-set
+ * @param description description of the content
  * @param type tpe of the new data-set
  * @param numberOfColumns maximum number of columns, which should be stored by the data-set
  * @param error reference for error-output
@@ -178,6 +200,7 @@ ReturnStatus
 initNewDataSetFile(DataSetFileHandle& result,
                    const std::string& filePath,
                    const std::string& name,
+                   const json& description,
                    const DataSetType type,
                    const uint64_t numberOfColumns,
                    Hanami::ErrorContainer& error)
@@ -185,6 +208,9 @@ initNewDataSetFile(DataSetFileHandle& result,
     if (type == UNDEFINED_TYPE) {
         return INVALID_INPUT;
     }
+
+    const std::string descriptionStr = description.dump();
+    result.header.descriptionSize = descriptionStr.size();
 
     // check source
     if (std::filesystem::exists(filePath) == true) {
@@ -200,7 +226,10 @@ initNewDataSetFile(DataSetFileHandle& result,
     }
 
     // allocate initaial storage for the header
-    if (result.targetFile->allocateStorage(sizeof(DataSetHeader), error) == false) {
+    if (result.targetFile->allocateStorage(sizeof(DataSetHeader) + result.header.descriptionSize,
+                                           error)
+        == false)
+    {
         error.addMessage("Failed to allocate storage in file '" + filePath
                          + "' for the data-set header");
         return ERROR;
@@ -210,6 +239,15 @@ initNewDataSetFile(DataSetFileHandle& result,
     if (result.header.name.setName(name) == false) {
         error.addMessage("New data-set name '" + name + "' is invalid");
         return INVALID_INPUT;
+    }
+
+    // write description to target
+    if (result.targetFile->writeDataIntoFile(
+            descriptionStr.c_str(), sizeof(DataSetHeader), result.header.descriptionSize, error)
+        == false)
+    {
+        error.addMessage("Failed to write dataset-description to disc");
+        return ERROR;
     }
 
     // write header to target
@@ -222,6 +260,7 @@ initNewDataSetFile(DataSetFileHandle& result,
         return ERROR;
     }
     result.header.fileSize = result.targetFile->fileSize;
+    result.description = description;
 
     return OK;
 }
@@ -246,7 +285,8 @@ _fillDataSetReadBuffer(DataSetFileHandle& fileHandle,
 
     // read block from file into buffer
     const uint64_t rowByteCount = fileHandle.header.numberOfColumns * fileHandle.header.dataType;
-    const uint64_t byteOffset = sizeof(DataSetHeader) + (newStartRow * rowByteCount);
+    const uint64_t byteOffset
+        = sizeof(DataSetHeader) + fileHandle.header.descriptionSize + (newStartRow * rowByteCount);
 
     uint64_t numberOfRowsForBuffer = fileHandle.rwBuffer.totalBufferSize / rowByteCount;
     if (numberOfRowsForBuffer > fileHandle.readSelector.endRow - newStartRow) {

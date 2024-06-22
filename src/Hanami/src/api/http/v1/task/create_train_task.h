@@ -42,7 +42,8 @@ class CreateTrainTask : public Blossom
    private:
     ReturnStatus fillTaskIo(DataSetFileHandle& taskIo,
                             const Hanami::UserContext& userContext,
-                            const json& settings,
+                            const std::string& brickName,
+                            const std::string& settings,
                             const uint64_t numberOfCycles,
                             BlossomStatus& status,
                             Hanami::ErrorContainer& error);

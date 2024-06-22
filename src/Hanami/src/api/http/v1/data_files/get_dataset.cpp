@@ -46,6 +46,9 @@ GetDataSet::GetDataSet() : Blossom("Get information of a specific dataset.")
 
     registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the dataset.");
 
+    registerOutputField("description", SAKURA_MAP_TYPE)
+        .setComment("Description of the dataset content.");
+
     registerOutputField("owner_id", SAKURA_STRING_TYPE)
         .setComment("ID of the user, who created the dataset.");
 
@@ -102,6 +105,7 @@ GetDataSet::runTask(BlossomIO& blossomIO,
 
     // create output
     blossomIO.output["uuid"] = datasetUuid;
+    blossomIO.output["description"] = fileHandle.description;
     blossomIO.output["name"] = fileHandle.header.name.getName();
     blossomIO.output["owner_id"] = entry.ownerId;
     blossomIO.output["project_id"] = entry.projectId;

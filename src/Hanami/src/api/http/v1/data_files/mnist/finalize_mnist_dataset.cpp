@@ -177,9 +177,21 @@ FinalizeMnistDataSet::convertMnistData(const std::string& filePath,
     const uint32_t pictureSize = numberOfRows * numberOfColumns;
     const uint64_t lineSize = pictureSize + 10;
 
+    // create description
+    json description;
+    json inputDescrEntry;
+    inputDescrEntry["start_column"] = 0;
+    inputDescrEntry["end_column"] = pictureSize;
+    description["picture"] = inputDescrEntry;
+    json outputDescrEntry;
+    outputDescrEntry["start_column"] = pictureSize;
+    outputDescrEntry["end_column"] = pictureSize + 10;
+    description["label"] = outputDescrEntry;
+
     // initialize file
     DataSetFileHandle fileHandle;
-    if (initNewDataSetFile(fileHandle, filePath, name, DataSetType::UINT8_TYPE, lineSize, error)
+    if (initNewDataSetFile(
+            fileHandle, filePath, name, description, DataSetType::UINT8_TYPE, lineSize, error)
         != OK)
     {
         return false;

@@ -42,7 +42,8 @@ class CreateRequestTask : public Blossom
    private:
     ReturnStatus fillTaskIo(DataSetFileHandle& fileHandle,
                             const Hanami::UserContext& userContext,
-                            const json& settings,
+                            const std::string& brickName,
+                            const std::string& datasetUuid,
                             const uint64_t numberOfCycles,
                             BlossomStatus& status,
                             Hanami::ErrorContainer& error);

@@ -54,24 +54,22 @@ CreateTrainTask::CreateTrainTask() : Blossom("Add new train-task to the task-que
         .setLimit(0, 1000000000);
 
     registerInputField("inputs", SAKURA_MAP_TYPE)
-        .setComment("UUID of the dataset with the input, which coming from shiori.");
+        .setComment(
+            "key-value list with the names of the input-bricks as key and the dataset-UUID, which "
+            "should be used for the input, as value.");
 
     registerInputField("outputs", SAKURA_MAP_TYPE)
-        .setComment("UUID of the dataset with the input, which coming from shiori.");
+        .setComment(
+            "key-value list with the names of the output-bricks as key and the dataset-UUID, which "
+            "should be used for the expected output, as value.");
 
-    /*inputs: {
-        test_brick: {
-            dataset_uuid: asfd,
-            start_row: 0,
-            start_column: 0,
-            end_column: 50,
-        },
-        test_brick2: {
-            dataset_uuid: poi,
-            start_row: 0,
-            start_column: 0,
-            end_column: 100,
-        }
+    /*"inputs": {
+        "test_brick": "asfd",
+        "test_brick2": "asdf2"
+    },
+    "outputs": {
+        "test_brick3": "asfd",
+        "test_brick4": "asdf2"
     }*/
 
     //----------------------------------------------------------------------------------------------
@@ -144,9 +142,12 @@ CreateTrainTask::runTask(BlossomIO& blossomIO,
 
     // prepare inputs
     const json inputs = blossomIO.input["inputs"];
-    for (const auto& [brickName, settings] : inputs.items()) {
+    for (const auto& [brickName, datasetUuid] : inputs.items()) {
         DataSetFileHandle fileHandle;
-        if (fillTaskIo(fileHandle, userContext, settings, numberOfCycles, status, error) != OK) {
+        if (fillTaskIo(
+                fileHandle, userContext, brickName, datasetUuid, numberOfCycles, status, error)
+            != OK)
+        {
             return false;
         }
         info->inputs.try_emplace(brickName, std::move(fileHandle));
@@ -154,9 +155,12 @@ CreateTrainTask::runTask(BlossomIO& blossomIO,
 
     // prepare outputs
     const json outputs = blossomIO.input["outputs"];
-    for (const auto& [brickName, settings] : outputs.items()) {
+    for (const auto& [brickName, datasetUuid] : outputs.items()) {
         DataSetFileHandle fileHandle;
-        if (fillTaskIo(fileHandle, userContext, settings, numberOfCycles, status, error) != OK) {
+        if (fillTaskIo(
+                fileHandle, userContext, brickName, datasetUuid, numberOfCycles, status, error)
+            != OK)
+        {
             return false;
         }
         info->outputs.try_emplace(brickName, std::move(fileHandle));
@@ -186,26 +190,15 @@ CreateTrainTask::runTask(BlossomIO& blossomIO,
 ReturnStatus
 CreateTrainTask::fillTaskIo(DataSetFileHandle& fileHandle,
                             const Hanami::UserContext& userContext,
-                            const json& settings,
+                            const std::string& brickName,
+                            const std::string& datasetUuid,
                             const uint64_t numberOfCycles,
                             BlossomStatus& status,
                             Hanami::ErrorContainer& error)
 {
-    ReturnStatus ret = fileHandle.readSelector.fromJson(settings);
-    if (ret != OK) {
-        status.statusCode = BAD_REQUEST_RTYPE;
-        return INVALID_INPUT;
-    }
-    fileHandle.readSelector.endRow = fileHandle.readSelector.startRow + numberOfCycles;
-
-    if (settings.contains("dataset_uuid") == false) {
-        status.statusCode = BAD_REQUEST_RTYPE;
-        return INVALID_INPUT;
-    }
-
-    const std::string datasetUuid = settings["dataset_uuid"];
     DataSetTable::DataSetDbEntry getResult;
-    ret = DataSetTable::getInstance()->getDataSet(getResult, datasetUuid, userContext, error);
+    ReturnStatus ret
+        = DataSetTable::getInstance()->getDataSet(getResult, datasetUuid, userContext, error);
     if (ret == ERROR) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return ret;
@@ -222,6 +215,16 @@ CreateTrainTask::fillTaskIo(DataSetFileHandle& fileHandle,
         status.errorMessage = "Data-set with uuid '" + datasetUuid + "' not found";
         status.statusCode = NOT_FOUND_RTYPE;
     }
+
+    if (fileHandle.description.contains(brickName) == false) {
+        status.errorMessage = "Dataset has no input for brick names '" + brickName + "'";
+        status.statusCode = NOT_FOUND_RTYPE;
+        return INVALID_INPUT;
+    }
+
+    fileHandle.readSelector.startColumn = fileHandle.description[brickName]["start_column"];
+    fileHandle.readSelector.endColumn = fileHandle.description[brickName]["end_column"];
+    fileHandle.readSelector.endRow = fileHandle.readSelector.startRow + numberOfCycles;
 
     return ret;
 }

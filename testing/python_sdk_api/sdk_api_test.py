@@ -63,12 +63,12 @@ cluster_template = \
     "    3,1,1\n" \
     "    \n" \
     "inputs:\n" \
-    "    input_brick:\n" \
+    "    picture:\n" \
     "        target: 1,1,1\n" \
     "        number_of_inputs: 784\n" \
     "\n" \
     "outputs:\n" \
-    "    output_brick:\n" \
+    "    label:\n" \
     "        target: 3,1,1\n" \
     "        number_of_outputs: 10\n"
 
@@ -267,21 +267,11 @@ def test_workflow():
 
     # run training
     inputs = {
-        "input_brick": {
-            "dataset_uuid": train_dataset_uuid,
-            "start_row": 0,
-            "start_column": 0,
-            "end_column": 784
-        }
+        "picture": train_dataset_uuid
     }
 
     outputs = {
-        "output_brick": {
-            "dataset_uuid": train_dataset_uuid,
-            "start_row": 0,
-            "start_column": 784,
-            "end_column": 794
-        }
+        "label": train_dataset_uuid
     }
 
     for i in range(0, 1):
@@ -322,18 +312,11 @@ def test_workflow():
 
     # run testing
     inputs = {
-        "input_brick": {
-            "dataset_uuid": request_dataset_uuid,
-            "start_row": 0,
-            "start_column": 0,
-            "end_column": 784
-        }
+        "picture": request_dataset_uuid
     }
 
     results = {
-        "output_brick": {
-            "name": "test_output"
-        }
+        "label": "test_output"
     }
 
     result = task.create_request_task(
