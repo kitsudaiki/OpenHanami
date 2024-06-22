@@ -144,12 +144,8 @@ handleClientOutput(Cluster& cluster)
     // send output back if a client-connection is set
 
     Task* actualTask = cluster.getCurrentTask();
-    if (actualTask->type == REQUEST_TASK) {
-        if (cluster.msgClient != nullptr) {
-            // TODO: handle return status
-            sendClusterOutputMessage(&cluster);
-        }
-        else {
+    if (actualTask != nullptr) {
+        if (actualTask->type == REQUEST_TASK) {
             RequestInfo* info = &std::get<RequestInfo>(actualTask->info);
 
             for (auto& [name, outputInterface] : cluster.outputInterfaces) {
@@ -161,5 +157,9 @@ handleClientOutput(Cluster& cluster)
                 }
             }
         }
+    }
+    if (cluster.msgClient != nullptr) {
+        // TODO: handle return status
+        sendClusterOutputMessage(&cluster);
     }
 }

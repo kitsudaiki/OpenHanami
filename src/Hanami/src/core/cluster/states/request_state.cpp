@@ -50,9 +50,9 @@ Request_State::processEvent()
 
     for (auto& [brickName, input] : info->inputs) {
         InputInterface* inputInterface = &m_cluster->inputInterfaces[brickName];
-        // TODO: check response
-        assert(getDataFromDataSet(inputInterface->ioBuffer, input, info->currentCycle, error)
-               == OK);
+        if (getDataFromDataSet(inputInterface->ioBuffer, input, info->currentCycle, error) != OK) {
+            return false;
+        }
         uint64_t counter = 0;
         for (const float val : inputInterface->ioBuffer) {
             inputInterface->inputNeurons[counter].value = val;

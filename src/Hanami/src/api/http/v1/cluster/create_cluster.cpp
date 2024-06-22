@@ -52,7 +52,7 @@ CreateCluster::CreateCluster() : Blossom("Create new cluster.")
     //----------------------------------------------------------------------------------------------
 
     registerOutputField("created_at", SAKURA_STRING_TYPE)
-        .setComment("Timestamp, when dataset was created.");
+        .setComment("Timestamp, when cluster was created.");
 
     registerOutputField("uuid", SAKURA_STRING_TYPE).setComment("UUID of the new created cluster.");
 

@@ -50,9 +50,9 @@ TrainForward_State::processEvent()
 
     for (auto& [brickName, input] : info->inputs) {
         InputInterface* inputInterface = &m_cluster->inputInterfaces[brickName];
-        // TODO: check response
-        assert(getDataFromDataSet(inputInterface->ioBuffer, input, info->currentCycle, error)
-               == OK);
+        if (getDataFromDataSet(inputInterface->ioBuffer, input, info->currentCycle, error) != OK) {
+            return false;
+        }
         uint64_t counter = 0;
         for (const float val : inputInterface->ioBuffer) {
             inputInterface->inputNeurons[counter].value = val;
@@ -62,9 +62,10 @@ TrainForward_State::processEvent()
 
     for (auto& [brickName, output] : info->outputs) {
         OutputInterface* outputInterface = &m_cluster->outputInterfaces[brickName];
-        // TODO: check response
-        assert(getDataFromDataSet(outputInterface->ioBuffer, output, info->currentCycle, error)
-               == OK);
+        if (getDataFromDataSet(outputInterface->ioBuffer, output, info->currentCycle, error) != OK)
+        {
+            return false;
+        }
         uint64_t counter = 0;
         for (const float val : outputInterface->ioBuffer) {
             outputInterface->outputNeurons[counter].exprectedVal = val;

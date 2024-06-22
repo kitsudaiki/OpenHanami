@@ -29,7 +29,7 @@ import json
 import time
 import configparser
 import urllib3
-# import asyncio
+import asyncio
 import sys
 
 
@@ -225,17 +225,19 @@ async def test_direct_io(token, address, cluster_uuid):
     ws = await cluster.switch_to_direct_mode(token, address, cluster_uuid, False)
     for i in range(0, 100):
         await direct_io.send_train_input(ws,
-                                         "test_input",
+                                         "picture",
                                          test_values.get_direct_io_test_intput(),
+                                         True,
                                          False,
                                          False)
         await direct_io.send_train_input(ws,
-                                         "test_output",
+                                         "label",
                                          test_values.get_direct_io_test_output(),
+                                         False,
                                          True,
                                          False)
     output_values = await direct_io.send_request_input(ws,
-                                                       "test_input",
+                                                       "picture",
                                                        test_values.get_direct_io_test_intput(),
                                                        True,
                                                        False)
@@ -320,7 +322,7 @@ def test_workflow():
     }
 
     result = task.create_request_task(
-            token, address, generic_task_name, cluster_uuid, 10000, inputs, results, False)
+        token, address, generic_task_name, cluster_uuid, 10000, inputs, results, False)
     task_uuid = json.loads(result)["uuid"]
 
     finished = False
@@ -337,7 +339,7 @@ def test_workflow():
     print("\n")
     result = task.list_tasks(token, address, cluster_uuid, False)
     result = task.delete_task(token, address, task_uuid, cluster_uuid, False)
-
+    time.sleep(1)
     # check request-result
     result = dataset.check_mnist_dataset(
         token, address, request_dataset_uuid, task_uuid, False)
@@ -347,7 +349,7 @@ def test_workflow():
     print("=======================================")
     assert accuracy > 80.0
 
-    # asyncio.run(test_direct_io(token, address, cluster_uuid))
+    asyncio.run(test_direct_io(token, address, cluster_uuid))
 
     # cleanup
     dataset.delete_dataset(token, address, train_dataset_uuid, False)
@@ -363,8 +365,8 @@ delete_all_cluster()
 delete_all_projects()
 delete_all_user()
 
-#test_project()
-#test_user()
-#test_dataset()
-#test_cluster()
+test_project()
+test_user()
+test_dataset()
+test_cluster()
 test_workflow()

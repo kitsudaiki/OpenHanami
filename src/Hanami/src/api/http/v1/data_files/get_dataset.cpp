@@ -58,7 +58,7 @@ GetDataSet::GetDataSet() : Blossom("Get information of a specific dataset.")
     registerOutputField("visibility", SAKURA_STRING_TYPE)
         .setComment("Visibility of the dataset (private, shared, public).");
 
-    registerOutputField("version", SAKURA_INT_TYPE).setComment("Version of the data-set file.");
+    registerOutputField("version", SAKURA_STRING_TYPE).setComment("Version of the data-set file.");
 
     registerOutputField("number_of_rows", SAKURA_INT_TYPE).setComment("Number of rows.");
 
@@ -110,7 +110,8 @@ GetDataSet::runTask(BlossomIO& blossomIO,
     blossomIO.output["owner_id"] = entry.ownerId;
     blossomIO.output["project_id"] = entry.projectId;
     blossomIO.output["visibility"] = entry.visibility;
-    blossomIO.output["version"] = fileHandle.header.version;
+    blossomIO.output["version"] = std::string(fileHandle.header.version) + "."
+                                  + std::string(fileHandle.header.minorVersion);
     blossomIO.output["number_of_rows"] = fileHandle.header.numberOfRows;
     blossomIO.output["number_of_columns"] = fileHandle.header.numberOfColumns;
 

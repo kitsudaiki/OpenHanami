@@ -22,6 +22,7 @@
 
 #include "finalize_csv_dataset.h"
 
+#include <core/io/data_set/dataset_file_io.h>
 #include <core/temp_file_handler.h>
 #include <database/dataset_table.h>
 #include <hanami_common/files/binary_file.h>
@@ -99,7 +100,7 @@ FinalizeCsvDataSet::runTask(BlossomIO& blossomIO,
     }
 
     // write data to file
-    if (convertCsvData(result.location, result.name, inputBuffer) == false) {
+    if (convertCsvData(result.location, result.name, inputBuffer, error) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMessage("Failed to convert csv-data");
         return false;
@@ -115,32 +116,33 @@ FinalizeCsvDataSet::runTask(BlossomIO& blossomIO,
     return true;
 }
 
-void
-FinalizeCsvDataSet::convertField(float* segmentPos, const std::string& cell, const float lastVal)
+float
+FinalizeCsvDataSet::convertField(std::string& cell)
 {
-    // true
-    if (cell == "Null" || cell == "null" || cell == "NULL") {
-        *segmentPos = lastVal;
-    }
-    // true
-    else if (cell == "True" || cell == "true" || cell == "TRUE") {
-        *segmentPos = 1.0f;
-    }
-    // false
-    else if (cell == "False" || cell == "false" || cell == "FALSE") {
-        *segmentPos = 0.0f;
-    }
     // int/long
-    else if (regex_match(cell, std::regex(INT_VALUE_REGEX))) {
-        *segmentPos = static_cast<float>(std::stoi(cell.c_str()));
+    if (regex_match(cell, std::regex(INT_VALUE_REGEX))) {
+        return static_cast<float>(std::stoi(cell.c_str()));
     }
     // float/double
     else if (regex_match(cell, std::regex(FLOAT_VALUE_REGEX))) {
-        *segmentPos = std::strtof(cell.c_str(), NULL);
+        return std::strtof(cell.c_str(), NULL);
+    }
+
+    Hanami::toLowerCase(cell);
+    if (cell == "null") {
+        return 0.0f;
+    }
+    // true
+    else if (cell == "true") {
+        return 1.0f;
+    }
+    // false
+    else if (cell == "false") {
+        return 0.0f;
     }
     else {
         // ignore other lines
-        *segmentPos = 0.0f;
+        return 0.0f;
     }
 }
 
@@ -150,20 +152,16 @@ FinalizeCsvDataSet::convertField(float* segmentPos, const std::string& cell, con
  * @param filePath path to the resulting file
  * @param name dataset name
  * @param inputBuffer buffer with input-data
+ * @param error reference for error-output
  *
  * @return true, if successfull, else false
  */
 bool
 FinalizeCsvDataSet::convertCsvData(const std::string& filePath,
                                    const std::string& name,
-                                   const Hanami::DataBuffer& inputBuffer)
+                                   const Hanami::DataBuffer& inputBuffer,
+                                   Hanami::ErrorContainer& error)
 {
-    /*Hanami::ErrorContainer error;
-
-    TableDataSetFile file(filePath);
-    file.type = DataSetFile::TABLE_TYPE;
-    file.name = name;
-
     // prepare content-processing
     const std::string stringContent(static_cast<char*>(inputBuffer.data),
                                     inputBuffer.usedBufferSize);
@@ -171,9 +169,8 @@ FinalizeCsvDataSet::convertCsvData(const std::string& filePath,
     // buffer for values to reduce write-access to file
     const uint32_t segmentSize = 10000000;
     std::vector<float> cluster(segmentSize, 0.0f);
-    std::vector<float> lastLine;
-    uint64_t segmentPos = 0;
-    uint64_t segmentCounter = 0;
+    std::vector<float> lineBuffer;
+    DataSetFileHandle fileHandle;
 
     // split content
     std::vector<std::string> lines;
@@ -195,69 +192,52 @@ FinalizeCsvDataSet::convertCsvData(const std::string& filePath,
         Hanami::splitStringByDelimiter(lineContent, *line, ',');
 
         if (isHeader) {
-            file.tableHeader.numberOfColumns = numberOfColumns;
-            file.tableHeader.numberOfLines = lines.size();
+            json description;
 
-            for (const std::string& col : lineContent) {
-                // create and add header-entry
-                TableDataSetFile::TableHeaderEntry entry;
-                entry.setName(col);
-                file.tableColumns.push_back(entry);
+            uint64_t counter = 0;
+            for (const std::string& colName : lineContent) {
+                json inputDescrEntry;
+                inputDescrEntry["start_column"] = counter;
+                inputDescrEntry["end_column"] = counter + 1;
+                description[colName] = inputDescrEntry;
+                counter++;
             }
             isHeader = false;
 
-            if (file.initNewFile(error) == false) {
+            // initialize file
+            if (initNewDataSetFile(fileHandle,
+                                   filePath,
+                                   name,
+                                   description,
+                                   DataSetType::FLOAT_TYPE,
+                                   numberOfColumns,
+                                   error)
+                != OK)
+            {
                 return false;
             }
+            fileHandle.initReadWriteBuffer(10);
 
-            // this was the max value. While iterating over all lines, this value will be new
-            // calculated with the correct value
-            file.tableHeader.numberOfLines = 0;
-            lastLine = std::vector<float>(numberOfColumns, 0.0f);
+            lineBuffer = std::vector<float>(numberOfColumns, 0.0f);
         }
         else {
+            std::fill(lineBuffer.begin(), lineBuffer.end(), 0.0f);
+
             for (uint64_t colNum = 0; colNum < lineContent.size(); colNum++) {
-                const std::string* cell = &lineContent[colNum];
-                if (lastLine.size() > 0) {
-                    const float lastVal = lastLine[colNum];
-                    convertField(&cluster[segmentPos], *cell, lastVal);
-                }
-                else {
-                    convertField(&cluster[segmentPos], *cell, 0.0f);
-                }
-
-                lastLine[colNum] = cluster[segmentPos];
-
-                // write next cluster to file
-                segmentPos++;
-                if (segmentPos == segmentSize) {
-                    if (file.addBlock(segmentCounter, &cluster[0], segmentSize, error) == false) {
-                        return false;
-                    }
-                    segmentPos = 0;
-                    segmentCounter++;
+                std::string* cell = &lineContent[colNum];
+                if (colNum < lineBuffer.size()) {
+                    lineBuffer[colNum] = convertField(*cell);
                 }
             }
 
-            file.tableHeader.numberOfLines++;
+            if (appendToDataSet(
+                    fileHandle, &lineBuffer[0], lineBuffer.size() * sizeof(float), error)
+                != OK)
+            {
+                return false;
+            }
         }
     }
-
-    // write last incomplete cluster to file
-    if (segmentPos != 0) {
-        if (file.addBlock(segmentCounter, &cluster[0], segmentPos, error) == false) {
-            return false;
-        }
-    }
-
-    // update header in file for the final number of lines for the case,
-    // that there were invalid lines
-    if (file.updateHeader(error) == false) {
-        return false;
-    }*/
-
-    // debug-output
-    // file.print();
 
     return true;
 }

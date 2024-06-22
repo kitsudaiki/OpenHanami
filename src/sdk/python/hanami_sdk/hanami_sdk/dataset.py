@@ -55,8 +55,8 @@ def delete_dataset(token: str,
     values = f'uuid={checkpoint_uuid}'
     return hanami_request.send_delete_request(token,
                                               address,
-                                              path, 
-                                              values, 
+                                              path,
+                                              values,
                                               verify=verify_connection)
 
 
@@ -69,8 +69,8 @@ def check_mnist_dataset(token: str,
     values = f'dataset_uuid={dataset_uuid}&result_uuid={result_dataset_uuid}'
     return hanami_request.send_get_request(token,
                                            address,
-                                           path, 
-                                           values, 
+                                           path,
+                                           values,
                                            verify=verify_connection)
 
 
