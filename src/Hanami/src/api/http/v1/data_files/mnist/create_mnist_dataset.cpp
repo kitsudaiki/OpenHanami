@@ -37,7 +37,7 @@ CreateMnistDataSet::CreateMnistDataSet() : Blossom("Init new mnist-file dataset.
 
     registerInputField("name", SAKURA_STRING_TYPE)
         .setComment("Name of the new set.")
-        .setLimit(4, 256)
+        .setLimit(4, 254)
         .setRegex(NAME_REGEX);
 
     registerInputField("input_data_size", SAKURA_INT_TYPE)

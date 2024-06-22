@@ -27,6 +27,7 @@
 #include <hanami_common/enums.h>
 #include <hanami_common/files/binary_file.h>
 #include <hanami_common/logger.h>
+#include <hanami_common/structs.h>
 #include <stdint.h>
 
 #include <cstring>
@@ -112,51 +113,24 @@ struct DataSetHeader {
     uint64_t numberOfRows = 0;
     uint64_t numberOfColumns = 0;
 
-    char name[256];
-    uint32_t nameSize = 0;
+    Hanami::NameEntry name;
 
-    uint8_t padding2[164];
+    uint8_t padding2[3752];
 
-    DataSetHeader() { memset(name, 0, 256); }
-
-    bool setName(const std::string& newName)
-    {
-        // precheck
-        if (newName.size() > 255 || newName.size() == 0) {
-            return false;
-        }
-
-        // copy string into char-buffer and set explicit the escape symbol to be absolut sure
-        // that it is set to absolut avoid buffer-overflows
-        strncpy(name, newName.c_str(), newName.size());
-        name[newName.size()] = '\0';
-        nameSize = newName.size();
-
-        return true;
-    }
-
-    const std::string getName() const
-    {
-        // precheck
-        if (nameSize == 0 || nameSize > 255) {
-            return std::string("");
-        }
-
-        return std::string(name, nameSize);
-    }
+    DataSetHeader() {}
 
     void toJson(json& result) const
     {
         result = json::object();
         result["version"] = version;
-        result["name"] = getName();
+        result["name"] = name.getName();
         result["data_type"] = dataType;
         result["file_size"] = fileSize;
         result["number_of_rows"] = numberOfRows;
         result["number_of_columns"] = numberOfColumns;
     }
 };
-static_assert(sizeof(DataSetHeader) == 512);
+static_assert(sizeof(DataSetHeader) == 4096);
 
 struct DataSetFileHandle {
     DataSetHeader header;

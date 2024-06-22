@@ -38,7 +38,7 @@ CreateCsvDataSet::CreateCsvDataSet() : Blossom("Init new csv-file dataset.")
 
     registerInputField("name", SAKURA_STRING_TYPE)
         .setComment("Name of the new dataset.")
-        .setLimit(4, 256)
+        .setLimit(4, 254)
         .setRegex(NAME_REGEX);
 
     registerInputField("input_data_size", SAKURA_INT_TYPE)

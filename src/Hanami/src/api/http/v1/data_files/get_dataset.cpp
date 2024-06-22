@@ -102,7 +102,7 @@ GetDataSet::runTask(BlossomIO& blossomIO,
 
     // create output
     blossomIO.output["uuid"] = datasetUuid;
-    blossomIO.output["name"] = fileHandle.header.getName();
+    blossomIO.output["name"] = fileHandle.header.name.getName();
     blossomIO.output["owner_id"] = entry.ownerId;
     blossomIO.output["project_id"] = entry.projectId;
     blossomIO.output["visibility"] = entry.visibility;

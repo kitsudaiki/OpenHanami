@@ -108,46 +108,6 @@ Cluster::init(const Hanami::ClusterMeta& clusterTemplate, const std::string& uui
 }
 
 /**
- * @brief get the name of the clsuter
- *
- * @return name of the cluster
- */
-const std::string
-Cluster::getName()
-{
-    // precheck
-    if (clusterHeader.nameSize == 0 || clusterHeader.nameSize > 255) {
-        return std::string("");
-    }
-
-    return std::string(clusterHeader.name, clusterHeader.nameSize);
-}
-
-/**
- * @brief set new name for the cluster
- *
- * @param newName new name
- *
- * @return true, if successful, else false
- */
-bool
-Cluster::setName(const std::string& newName)
-{
-    // precheck
-    if (newName.size() > 255 || newName.size() == 0) {
-        return false;
-    }
-
-    // copy string into char-buffer and set explicit the escape symbol to be absolut sure
-    // that it is set to absolut avoid buffer-overflows
-    strncpy(clusterHeader.name, newName.c_str(), newName.size());
-    clusterHeader.name[newName.size()] = '\0';
-    clusterHeader.nameSize = newName.size();
-
-    return true;
-}
-
-/**
  * @brief start a new forward train-cycle
  */
 void

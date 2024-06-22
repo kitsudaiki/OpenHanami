@@ -36,9 +36,9 @@ struct CheckpointHeader {
     const char version[8] = "v1";
     const char minorVersion[8] = "alpha";
 
-    uint8_t padding1[456];
+    uint8_t padding1[4040];
 };
-static_assert(sizeof(CheckpointHeader) == 512);
+static_assert(sizeof(CheckpointHeader) == 4096);
 
 /**
  * @brief constructor

@@ -40,7 +40,7 @@ CreateCluster::CreateCluster() : Blossom("Create new cluster.")
 
     registerInputField("name", SAKURA_STRING_TYPE)
         .setComment("Name for the new cluster.")
-        .setLimit(4, 256)
+        .setLimit(4, 254)
         .setRegex(NAME_REGEX);
 
     registerInputField("template", SAKURA_STRING_TYPE)
@@ -154,6 +154,11 @@ CreateCluster::runTask(BlossomIO& blossomIO,
 
     // create new cluster
     Cluster* newCluster = new Cluster(host);
+    if (newCluster->clusterHeader.name.setName(clusterName) == false) {
+        error.addMessage("New cluster-name '" + clusterName
+                         + "' too long, even this should be avoided by the API.");
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+    }
     if (base64Template != "") {
         // generate and initialize the cluster based on the cluster-templates
         if (newCluster->init(parsedCluster, uuid) == false) {

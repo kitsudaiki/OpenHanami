@@ -47,15 +47,13 @@ class IO_Interface
     };
 
     struct InputEntry {
-        char name[256];
-        uint32_t nameSize = 0;
+        Hanami::NameEntry name;
         uint32_t numberOfInputs = 0;
         uint32_t targetBrickId = UNINIT_STATE_32;
     };
 
     struct OutputEntry {
-        char name[256];
-        uint32_t nameSize = 0;
+        Hanami::NameEntry name;
         uint32_t numberOfOutputs = 0;
         uint32_t targetBrickId = UNINIT_STATE_32;
     };

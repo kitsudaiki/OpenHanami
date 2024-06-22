@@ -42,7 +42,7 @@ CreateTrainTask::CreateTrainTask() : Blossom("Add new train-task to the task-que
 
     registerInputField("name", SAKURA_STRING_TYPE)
         .setComment("Name for the new task for better identification.")
-        .setLimit(4, 256)
+        .setLimit(4, 254)
         .setRegex(NAME_REGEX);
 
     registerInputField("cluster_uuid", SAKURA_STRING_TYPE)
@@ -177,11 +177,11 @@ CreateTrainTask::runTask(BlossomIO& blossomIO,
  * @param taskIo
  * @param userContext
  * @param settings
- * @param numberOfCycles
- * @param status
- * @param error
+ * @param numberOfCycles number of cycles of the request
+ * @param status reference to return status of the request
+ * @param error reference for error-output
  *
- * @return
+ * @return OK, INVALID_INPUT or ERROR
  */
 ReturnStatus
 CreateTrainTask::fillTaskIo(DataSetFileHandle& fileHandle,

@@ -36,7 +36,7 @@ GetErrorLog::GetErrorLog()
     registerInputField("user_id", SAKURA_STRING_TYPE)
         .setComment("ID of the user, whos entries are requested.")
         .setRequired(false)
-        .setLimit(4, 256)
+        .setLimit(4, 254)
         .setRegex(ID_EXT_REGEX);
 
     registerInputField("page", SAKURA_INT_TYPE)

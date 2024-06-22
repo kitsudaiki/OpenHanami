@@ -207,7 +207,7 @@ initNewDataSetFile(DataSetFileHandle& result,
     }
 
     // set name in header
-    if (result.header.setName(name) == false) {
+    if (result.header.name.setName(name) == false) {
         error.addMessage("New data-set name '" + name + "' is invalid");
         return INVALID_INPUT;
     }

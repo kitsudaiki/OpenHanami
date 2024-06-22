@@ -39,7 +39,7 @@ SaveCluster::SaveCluster() : Blossom("Save a cluster.")
 
     registerInputField("name", SAKURA_STRING_TYPE)
         .setComment("Name for task, which is place in the task-queue and for the new checkpoint.")
-        .setLimit(4, 256)
+        .setLimit(4, 254)
         .setRegex(NAME_REGEX);
 
     registerInputField("cluster_uuid", SAKURA_STRING_TYPE)

@@ -41,12 +41,12 @@ RemoveProjectFromUser::RemoveProjectFromUser() : Blossom("Remove a project from 
 
     registerInputField("id", SAKURA_STRING_TYPE)
         .setComment("ID of the user.")
-        .setLimit(4, 256)
+        .setLimit(4, 254)
         .setRegex(ID_EXT_REGEX);
 
     registerInputField("project_id", SAKURA_STRING_TYPE)
         .setComment("ID of the project, which has to be removed from the user.")
-        .setLimit(4, 256)
+        .setLimit(4, 254)
         .setRegex(ID_REGEX);
 
     //----------------------------------------------------------------------------------------------

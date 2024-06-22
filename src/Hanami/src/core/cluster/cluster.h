@@ -66,8 +66,6 @@ class Cluster
 
     // meta
     const std::string getUuid();
-    const std::string getName();
-    bool setName(const std::string& newName);
     bool init(const Hanami::ClusterMeta& clusterTemplate, const std::string& uuid);
 
     // tasks

@@ -52,7 +52,7 @@ DataSetIO_Test::write_test()
                    fileHandle, m_testFilePath, m_fileName, UINT8_TYPE, m_numberOfColumns, error),
                INVALID_INPUT);
 
-    TEST_EQUAL(fileHandle.header.getName(), m_fileName);
+    TEST_EQUAL(fileHandle.header.name.getName(), m_fileName);
     TEST_EQUAL(fileHandle.header.fileSize, sizeof(DataSetHeader));
     TEST_EQUAL(fileHandle.header.dataType, UINT8_TYPE);
     TEST_EQUAL(fileHandle.header.numberOfColumns, m_numberOfColumns);
@@ -61,7 +61,7 @@ DataSetIO_Test::write_test()
     TEST_EQUAL(appendToDataSet<uint8_t>(fileHandle, m_input, error), OK);
     TEST_EQUAL(fileHandle.writeRemainingBufferToFile(error), true);
 
-    TEST_EQUAL(fileHandle.header.getName(), m_fileName);
+    TEST_EQUAL(fileHandle.header.name.getName(), m_fileName);
     TEST_EQUAL(fileHandle.header.fileSize,
                sizeof(DataSetHeader) + (m_input.size() * sizeof(uint8_t)));
     TEST_EQUAL(fileHandle.header.dataType, UINT8_TYPE);
@@ -80,7 +80,7 @@ DataSetIO_Test::read_test()
 
     TEST_EQUAL(openDataSetFile(fileHandle, m_testFilePath, error), OK);
 
-    TEST_EQUAL(fileHandle.header.getName(), m_fileName);
+    TEST_EQUAL(fileHandle.header.name.getName(), m_fileName);
     TEST_EQUAL(fileHandle.header.fileSize,
                sizeof(DataSetHeader) + (m_input.size() * sizeof(uint8_t)));
     TEST_EQUAL(fileHandle.header.dataType, UINT8_TYPE);

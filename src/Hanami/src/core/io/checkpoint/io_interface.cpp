@@ -240,12 +240,9 @@ IO_Interface::serialize(const Brick& brick, Hanami::ErrorContainer& error)
     if (brick.inputInterface != nullptr) {
         // create input-entry and write it to the buffer
         InputEntry inputEntry;
-        uint32_t nameSize = brick.inputInterface->name.size();
-        if (nameSize > 255) {
-            nameSize = 255;
+        if (inputEntry.name.setName(brick.inputInterface->name) == false) {
+            return INVALID_INPUT;
         }
-        strncpy(inputEntry.name, brick.inputInterface->name.c_str(), nameSize);
-        inputEntry.nameSize = nameSize;
         inputEntry.numberOfInputs = brick.inputInterface->inputNeurons.size();
         inputEntry.targetBrickId = brick.header.brickId;
         if (addObjectToLocalBuffer(&inputEntry, error) == false) {
@@ -264,12 +261,9 @@ IO_Interface::serialize(const Brick& brick, Hanami::ErrorContainer& error)
     if (brick.outputInterface != nullptr) {
         // create output-entry and write it to the buffer
         OutputEntry outputEntry;
-        uint32_t nameSize = brick.outputInterface->name.size();
-        if (nameSize > 255) {
-            nameSize = 255;
+        if (outputEntry.name.setName(brick.outputInterface->name) == false) {
+            return INVALID_INPUT;
         }
-        strncpy(outputEntry.name, brick.outputInterface->name.c_str(), nameSize);
-        outputEntry.nameSize = nameSize;
         outputEntry.numberOfOutputs = brick.outputInterface->outputNeurons.size();
         outputEntry.targetBrickId = brick.header.brickId;
         if (addObjectToLocalBuffer(&outputEntry, error) == false) {
@@ -379,13 +373,8 @@ IO_Interface::deserialize(Brick& brick, uint64_t& positionPtr, Hanami::ErrorCont
             return ret;
         }
 
-        if (inputEntry.nameSize > 255) {
-            error.addMessage("Input-data invalid");
-            return INVALID_INPUT;
-        }
-
         InputInterface inputIf;
-        inputIf.name = std::string(inputEntry.name, inputEntry.nameSize);
+        inputIf.name = inputEntry.name.getName();
         inputIf.targetBrickId = brick.header.brickId;
 
         inputIf.inputNeurons.resize(inputEntry.numberOfInputs);
@@ -420,13 +409,8 @@ IO_Interface::deserialize(Brick& brick, uint64_t& positionPtr, Hanami::ErrorCont
             return ret;
         }
 
-        if (outputEntry.nameSize > 255) {
-            error.addMessage("Input-data invalid");
-            return INVALID_INPUT;
-        }
-
         OutputInterface outputIf;
-        outputIf.name = std::string(outputEntry.name, outputEntry.nameSize);
+        outputIf.name = outputEntry.name.getName();
         outputIf.targetBrickId = brick.header.brickId;
 
         outputIf.outputNeurons.resize(outputEntry.numberOfOutputs);
