@@ -23,8 +23,8 @@ package hanami_sdk
 import (
 )
 
-func GetThreadMapping(address string, token string) (bool, string) {
-    path := "control/v1.0alpha/threading"
-    vars := ""
+func GetThreadMapping(address string, token string) (map[string]interface{}, error) {
+    path := "v1.0alpha/threading"
+    vars := map[string]string{}
     return SendGet(address, token, path, vars)
 }

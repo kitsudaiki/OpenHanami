@@ -72,6 +72,7 @@ class Cluster
     Task* addNewTask();
     Task* getCurrentTask();
     const TaskProgress getProgress(const std::string& taskUuid);
+    const Task* getTask(const std::string& taskUuid);
     bool removeTask(const std::string& taskUuid);
     bool isFinish(const std::string& taskUuid);
     void getAllProgress(std::map<std::string, TaskProgress>& result);

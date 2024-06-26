@@ -24,8 +24,8 @@ import (
     "fmt"
 )
 
-func ListHosts(address string, token string) (bool, string) {
-    path := fmt.Sprintf("control/v1.0alpha/host/all")
-    vars := ""
+func ListHosts(address string, token string) (map[string]interface{}, error) {
+    path := fmt.Sprintf("v1.0alpha/host/all")
+    vars := map[string]string{}
     return SendGet(address, token, path, vars)
 }

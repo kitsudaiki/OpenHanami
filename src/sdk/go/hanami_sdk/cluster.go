@@ -25,42 +25,47 @@ import (
     "fmt"
 )
 
-func CreateCluster(address string, token string, name string, template string) (bool, string) {
-    sEnc := b64.StdEncoding.EncodeToString([]byte(template))
-    jsonBody := fmt.Sprintf("{\"name\":\"%s\", \"template\":\"%s\"}", name, sEnc)
-    path := "control/v1.0alpha/cluster"
-    vars := ""
-    return SendPost(address, token, path, vars, jsonBody)
+func CreateCluster(address string, token string, name string, template string) (map[string]interface{}, error) {
+    path := "v1.0alpha/cluster"
+    jsonBody := map[string]interface{}{ 
+        "name": name,
+        "template": b64.StdEncoding.EncodeToString([]byte(template)),
+    }
+    return SendPost(address, token, path, jsonBody)
 }
 
-func GetCluster(address string, token string, clusterUuid string) (bool, string) {
-    path := "control/v1.0alpha/cluster"
-    vars := fmt.Sprintf("uuid=%s", clusterUuid)
+func GetCluster(address string, token string, clusterUuid string) (map[string]interface{}, error) {
+    path := "v1.0alpha/cluster"
+    vars := map[string]string{ "uuid": clusterUuid }
     return SendGet(address, token, path, vars)
 }
 
-func ListCluster(address string, token string) (bool, string) {
-    path := fmt.Sprintf("control/v1.0alpha/cluster/all")
-    vars := ""
+func ListCluster(address string, token string) (map[string]interface{}, error) {
+    path := fmt.Sprintf("v1.0alpha/cluster/all")
+    vars := map[string]string{}
     return SendGet(address, token, path, vars)
 }
 
-func DeleteCluster(address string, token string, clusterUuid string) (bool, string) {
-    path := "control/v1.0alpha/cluster"
-    vars := fmt.Sprintf("uuid=%s", clusterUuid)
+func DeleteCluster(address string, token string, clusterUuid string) (map[string]interface{}, error) {
+    path := "v1.0alpha/cluster"
+    vars := map[string]string{ "uuid": clusterUuid }
     return SendDelete(address, token, path, vars)
 }
  
-func SaveCluster(address string, token string, clusterUuid string, checkpointName string) (bool, string) {
-    jsonBody := fmt.Sprintf("{\"name\":\"%s\", \"cluster_uuid\":\"%s\"}", checkpointName, clusterUuid)
-    path := "/control/v1.0alpha/cluster/save"
-    vars := ""
-    return SendPost(address, token, path, vars, jsonBody)
+func SaveCluster(address string, token string, clusterUuid string, checkpointName string) (map[string]interface{}, error) {
+    path := "v1.0alpha/cluster/save"
+    jsonBody := map[string]interface{}{ 
+        "name": checkpointName,
+        "cluster_uuid": clusterUuid,
+    }
+    return SendPost(address, token, path, jsonBody)
 }
 
-func RestoreCluster(address string, token string, clusterUuid string, checkpointUuid string) (bool, string) {
-    jsonBody := fmt.Sprintf("{\"checkpoint_uuid\":\"%s\", \"cluster_uuid\":\"%s\"}", checkpointUuid, clusterUuid)
-    path := "/control/v1.0alpha/cluster/load"
-    vars := ""
-    return SendPost(address, token, path, vars, jsonBody)
+func RestoreCluster(address string, token string, clusterUuid string, checkpointUuid string) (map[string]interface{}, error) {
+    path := "v1.0alpha/cluster/load"
+    jsonBody := map[string]interface{}{ 
+        "checkpoint_uuid": checkpointUuid,
+        "cluster_uuid": clusterUuid,
+    }
+    return SendPost(address, token, path, jsonBody)
 }

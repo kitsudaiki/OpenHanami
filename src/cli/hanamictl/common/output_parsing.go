@@ -21,68 +21,99 @@
 package hanamictl_common
 
 import (
-    "fmt"
-    "os"
-    "strings"
-    "encoding/json"
-    "github.com/olekukonko/tablewriter"
+	"encoding/json"
+	"fmt"
+	"os"
+	"reflect"
+	"strings"
+
+	"github.com/olekukonko/tablewriter"
 )
 
-func parseJson(input string) map[string]interface{} {
-    // parse json and fill into map
-    outputMap := map[string]interface{}{}
-    err := json.Unmarshal([]byte(input), &outputMap)
-    if err != nil {
-        panic(err)
-    }
+var PrintAsJson bool = false
 
-    return outputMap
+func ParseSingle(input map[string]interface{} , outputFields []string) {
+	if PrintAsJson {
+		jsonData, _ := json.MarshalIndent(input, "", "    ")
+		fmt.Println(string(jsonData))
+		return
+	}
+
+	table := tablewriter.NewWriter(os.Stdout)
+
+	for _, element := range outputFields {
+		v := input[element]
+		lineData := []string{}
+		lineData = append(lineData, strings.ToUpper(strings.ReplaceAll(element, "_", " ")))
+		val := fmt.Sprintf("%v", v)
+		if reflect.ValueOf(v).Kind() == reflect.Map {
+			jsonData, _ := json.Marshal(v)
+			lineData = append(lineData, string(jsonData))
+		} else {
+			lineData = append(lineData, val)
+		}
+		table.Append(lineData)
+	}
+
+	table.SetRowLine(false)
+	table.SetAlignment(tablewriter.ALIGN_LEFT)
+	// table.EnableBorder(false)
+	table.Render()
 }
 
-func ParseSingle(input string) {
-    outputMap := parseJson(input)
-    table := tablewriter.NewWriter(os.Stdout)
+func searchInHeader(headerArray []interface{}, name string) int {
+	for index, val := range headerArray {
+		str := fmt.Sprintf("%v", val)
+		if str == name {
+			return index
+		}
+	}
 
-    for k, v := range outputMap { 
-        lineData := []string{}
-        lineData = append(lineData, strings.ToUpper(k))
-        lineData = append(lineData, fmt.Sprintf("%v", v))
-        table.Append(lineData)
-    }
-    
-    table.SetRowLine(true)
-    table.Render()
+	return -1
 }
 
-func ParseList(input string) {
-    outputMap := parseJson(input)
-    table := tablewriter.NewWriter(os.Stdout)
+func ParseList(input map[string]interface{}, outputFields []string) {
+	if PrintAsJson {
+		jsonData, _ := json.MarshalIndent(input, "", "    ")
+		fmt.Println(string(jsonData))
+		return
+	}
 
-    // add header to table
-    headerData := []string{}
-    headerArray := outputMap["header"].([]interface{})
-    for _, val := range headerArray {
-        str := fmt.Sprintf("%v", val)
-        headerData = append(headerData, str)
-    }
-    table.SetHeader(headerData)
-    
-    // add body to table
-    bodyArray := outputMap["body"].([]interface{})
-    for _, line := range bodyArray {
-        lineData := []string{}
-        for _, val := range line.([]interface{}) {
-            if strVal, ok := val.(string); ok {
-                lineData = append(lineData, strVal)
-            } else {
-                str := fmt.Sprintf("%v", val)
-                lineData = append(lineData, str)
-            }
-        }        
-        table.Append(lineData)
-    }
-    
-    table.SetRowLine(true)
-    table.Render()
+	table := tablewriter.NewWriter(os.Stdout)
+	headerArray := input["header"].([]interface{})
+	bodyArray := input["body"].([]interface{})
+
+	// fill and add table header
+	headerPositions := []int{}
+	headerData := []string{}
+	for _, element := range outputFields {
+		pos := searchInHeader(headerArray, element)
+		if pos == -1 {
+			continue
+		}
+
+		str := fmt.Sprintf("%v", headerArray[pos])
+		headerData = append(headerData, str)
+		headerPositions = append(headerPositions, pos)
+	}
+	table.SetHeader(headerData)
+
+	// fill and add body to table
+	for _, line := range bodyArray {
+		lineData := []string{}
+		for _, pos := range headerPositions {
+			val := line.([]interface{})[pos]
+			if strVal, ok := val.(string); ok {
+				lineData = append(lineData, strVal)
+			} else {
+				str := fmt.Sprintf("%v", val)
+				lineData = append(lineData, str)
+			}
+		}
+		table.Append(lineData)
+	}
+
+	table.SetRowLine(false)
+	table.SetAlignment(tablewriter.ALIGN_LEFT)
+	table.Render()
 }
-

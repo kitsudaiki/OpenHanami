@@ -258,6 +258,26 @@ Cluster::getProgress(const std::string& taskUuid)
 }
 
 /**
+ * @brief get task-progress
+ *
+ * @param taskUuid UUID of the task
+ *
+ * @return task-progress
+ */
+const Task*
+Cluster::getTask(const std::string& taskUuid)
+{
+    std::lock_guard<std::mutex> guard(m_taskMutex);
+
+    const auto it = m_taskMap.find(taskUuid);
+    if (it != m_taskMap.end()) {
+        return &it->second;
+    }
+
+    return nullptr;
+}
+
+/**
  * @brief remove task from queue of abort the task, if actual in progress
  *
  * @param taskUuid UUID of the task

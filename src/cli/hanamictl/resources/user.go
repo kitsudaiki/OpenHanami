@@ -35,8 +35,18 @@ import (
 
 var (
     userName    string
+    password    string
     isAdmin     bool
 )
+
+var userHeader = []string{
+    "id",
+    "name",
+    "is_admin",
+    "projects",
+    "creator_id",
+    "created_at",
+}
 
 var createUserCmd = &cobra.Command {
     Use:   "create USER_ID",
@@ -45,19 +55,24 @@ var createUserCmd = &cobra.Command {
     Run:   func(cmd *cobra.Command, args []string) {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
-        pw, err := getPassword()
-        userId := args[0]
-
-        if err == nil {
-            success, content := hanami_sdk.CreateUser(address, token, userId, userName, pw, isAdmin)
-            if success {
-                hanamictl_common.ParseSingle(content)
-            } else {
-                fmt.Println(content)
+        var pw string
+        var err error
+        if len(password) == 0 {
+            pw, err = getPassword()
+            if err == nil {
+                fmt.Printf("error: %s\n", err)
             }
         } else {
-            fmt.Printf("error: %s\n", err)
+            pw = password
         }
+        userId := args[0]
+
+        content, err := hanami_sdk.CreateUser(address, token, userId, userName, pw, isAdmin)
+        if err != nil {
+            fmt.Println(err)
+            os.Exit(1)
+        }
+        hanamictl_common.ParseSingle(content, userHeader)
     },
 }
 
@@ -69,12 +84,12 @@ var getUserCmd = &cobra.Command {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
         userId := args[0]
-        success, content := hanami_sdk.GetUser(address, token, userId)
-        if success {
-            hanamictl_common.ParseSingle(content)
-        } else {
-            fmt.Println(content)
+        content, err := hanami_sdk.GetUser(address, token, userId)
+        if err != nil {
+            fmt.Println(err)
+            os.Exit(1)
         }
+        hanamictl_common.ParseSingle(content, userHeader)
     },
 }
 
@@ -84,12 +99,12 @@ var listUserCmd = &cobra.Command {
     Run:   func(cmd *cobra.Command, args []string) {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
-        success, content := hanami_sdk.ListUser(address, token)
-        if success {
-            hanamictl_common.ParseList(content)
-        } else {
-            fmt.Println(content)
+        content, err := hanami_sdk.ListUser(address, token)
+        if err != nil {
+            fmt.Println(err)
+            os.Exit(1)
         }
+        hanamictl_common.ParseList(content, userHeader)
     },
 }
 
@@ -101,12 +116,12 @@ var deleteUserCmd = &cobra.Command {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
         userId := args[0]
-        success, content := hanami_sdk.DeleteUser(address, token, userId)
-        if success {
-            fmt.Println("successfully deleted user '%s'", userId)
-        } else {
-            fmt.Println(content)
+        _, err := hanami_sdk.DeleteUser(address, token, userId)
+        if err != nil {
+            fmt.Println(err)
+            os.Exit(1)
         }
+        fmt.Printf("successfully deleted user '%v'\n", userId)
     },
 }
 
@@ -147,8 +162,14 @@ func getPassword() (string, error) {
 func Init_User_Commands(rootCmd *cobra.Command) {
     rootCmd.AddCommand(userCmd)
 
+    passwordFlagText := "Password for the new user. " + 
+        "If not given by this flag, the password will be automatically requested after entering the command. " +
+        "This flag is quite unsave, because this way the password is visible in the command-line and " +
+        "printed into the history. So this flag should be only used for automated testing, " +
+        "but NEVER in a productive environment."
     userCmd.AddCommand(createUserCmd)
     createUserCmd.Flags().StringVarP(&userName, "name", "n", "", "User name (mandatory)")
+    createUserCmd.Flags().StringVarP(&password, "password", "p", "", passwordFlagText)
     createUserCmd.Flags().BoolVar(&isAdmin, "is_admin", false, "Set user as admin (default: false)")
     createUserCmd.MarkFlagRequired("name")
 

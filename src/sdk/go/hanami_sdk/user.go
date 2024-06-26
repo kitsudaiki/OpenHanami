@@ -24,28 +24,31 @@ import (
     "fmt"
 )
 
-func CreateUser(address string, token string, userId string, userName string, pw string, is_admin bool) (bool, string) {
-    path := "control/v1.0alpha/user"
-    vars := ""
-    jsonBody := fmt.Sprintf("{\"id\":\"%s\",\"name\":\"%s\",\"password\":\"%s\",\"is_admin\":%v}", 
-                            userId, userName, pw, is_admin)
-    return SendPost(address, token, path, vars, jsonBody)
+func CreateUser(address string, token string, userId string, userName string, pw string, is_admin bool) (map[string]interface{}, error) {
+    path := "v1.0alpha/user"
+    jsonBody := map[string]interface{}{ 
+        "id": userId,
+        "name": userName,
+        "password": pw,
+        "is_admin": is_admin,
+    }
+    return SendPost(address, token, path, jsonBody)
 }
 
-func GetUser(address string, token string, userId string) (bool, string) {
-    path := "control/v1.0alpha/user"
-    vars := fmt.Sprintf("id=%s", userId)
+func GetUser(address string, token string, userId string) (map[string]interface{}, error) {
+    path := "v1.0alpha/user"
+    vars := map[string]string{ "id": userId }
     return SendGet(address, token, path, vars)
 }
 
-func ListUser(address string, token string) (bool, string) {
-    path := fmt.Sprintf("control/v1.0alpha/user/all")
-    vars := ""
+func ListUser(address string, token string) (map[string]interface{}, error) {
+    path := fmt.Sprintf("v1.0alpha/user/all")
+    vars := map[string]string{}
     return SendGet(address, token, path, vars)
 }
 
-func DeleteUser(address string, token string, userId string) (bool, string) {
-    path := "control/v1.0alpha/user"
-    vars := fmt.Sprintf("id=%s", userId)
+func DeleteUser(address string, token string, userId string) (map[string]interface{}, error) {
+    path := "v1.0alpha/user"
+    vars := map[string]string{ "id": userId }
     return SendDelete(address, token, path, vars)
 }

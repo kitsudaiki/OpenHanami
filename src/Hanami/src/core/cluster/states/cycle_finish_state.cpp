@@ -72,6 +72,11 @@ CycleFinish_State::processEvent()
 
     // to go next state of finish the task to goal is reached
     if (currentCycle == numberOfCycles) {
+        // in case of a request, write remainging results of the write-buffer into the final dataset
+        if (actualTask->type == REQUEST_TASK) {
+            RequestInfo* info = &std::get<RequestInfo>(actualTask->info);
+            info->results.clear();
+        }
         m_cluster->goToNextState(FINISH_TASK);
     }
     else {

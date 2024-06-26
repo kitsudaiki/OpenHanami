@@ -35,6 +35,51 @@ import (
 
 const chunkSize = 128 * 1024 // 128 KiB
 
+func GetDataset(address string, token string, datasetUuid string) (map[string]interface{}, error) {
+    path := "v1.0alpha/dataset"
+    vars := map[string]string{ "uuid": datasetUuid }
+    return SendGet(address, token, path, vars)
+}
+
+func ListDataset(address string, token string) (map[string]interface{}, error) {
+    path := fmt.Sprintf("v1.0alpha/dataset/all")
+    vars := map[string]string{}
+    return SendGet(address, token, path, vars)
+}
+
+func DeleteDataset(address string, token string, datasetUuid string) (map[string]interface{}, error){
+    path := "v1.0alpha/dataset"
+    vars := map[string]string{ "uuid": datasetUuid }
+    return SendDelete(address, token, path, vars)
+}
+ 
+func CheckDataset(address string, token string, datasetUuid string, resultDatasetUuid string) (map[string]interface{}, error){
+    path := "v1.0alpha/dataset/check"
+    vars := map[string]string{ 
+        "dataset_uuid": datasetUuid,
+        "result_uuid": resultDatasetUuid,
+    }
+    return SendGet(address, token, path, vars)
+}
+
+func waitUntilUploadComplete(token string, address string, uuid string) error {
+    for true {
+        path := fmt.Sprintf("v1.0alpha/dataset/progress")
+        vars := map[string]string{ "uuid": uuid }
+        content, err := SendGet(address, token, path, vars)
+        if err != nil {
+            return err
+        }
+
+        if content["complete"].(bool) {
+            return nil
+        }
+
+        time.Sleep(time.Second)
+    }
+
+    return nil
+}
 
 func parseJson2(input string) map[string]interface{} {
     // parse json and fill into map
@@ -47,85 +92,50 @@ func parseJson2(input string) map[string]interface{} {
     return outputMap
 }
 
-func GetDataset(address string, token string, datasetUuid string) (bool, string) {
-    path := "control/v1.0alpha/dataset"
-    vars := fmt.Sprintf("uuid=%s", datasetUuid)
-    return SendGet(address, token, path, vars)
-}
-
-func ListDataset(address string, token string) (bool, string) {
-    path := fmt.Sprintf("control/v1.0alpha/dataset/all")
-    vars := ""
-    return SendGet(address, token, path, vars)
-}
-
-func DeleteDataset(address string, token string, datasetUuid string) (bool, string) {
-    path := "control/v1.0alpha/dataset"
-    vars := fmt.Sprintf("uuid=%s", datasetUuid)
-    return SendDelete(address, token, path, vars)
-}
- 
-func waitUntilUploadComplete(token string, address string, uuid string) bool {
-    for true {
-        path := fmt.Sprintf("control/v1.0alpha/dataset/progress")
-        vars := fmt.Sprintf("uuid=%s", uuid)
-        success, content := SendGet(address, token, path, vars)
-        if success == false {
-            fmt.Println("fail: ", content)
-            return false
-        }
-
-        outputMap := parseJson2(content)
-        if outputMap["complete"].(bool) {
-            return true
-        }
-
-        time.Sleep(time.Second)
-    }
-
-    return true
-}
-
-
-func sendFile(token string, address string, datasetUuid string, fileUuid string, file *os.File) bool {
-    // Parse the URL
+func sendFile(token string, address string, datasetUuid string, fileUuid string, file *os.File) error {
     parsedURL, err := url.Parse(address)
     if err != nil {
-        fmt.Println("Error parsing URL:", err)
-        return false
+        return err
     }
 
-    // Extract the host
     host := parsedURL.Host
-
-    // Create a buffered reader for efficient reading
     reader := bufio.NewReader(file)
 
     // Create a connection to the server
     conn, _, err := websocket.DefaultDialer.Dial("ws://" + host, nil)
     if err != nil {
-        fmt.Println("Error connecting to server:", err)
-        return false
+        return err
     }
     defer conn.Close()
 
 
     // Send the serialized message to the server
-    initBody := fmt.Sprintf("{\"token\":\"%s\", \"target\":\"file_upload\", \"uuid\":\"%s\"}", token, fileUuid)
-    err = conn.WriteMessage(websocket.TextMessage, []byte(initBody))
+    initBody := map[string]interface{}{ 
+        "token": token,
+        "target": "file_upload",
+        "uuid": fileUuid,
+    }
+    jsonData, err := json.Marshal(initBody)
     if err != nil {
-        fmt.Println("Error sending data to server:", err)
-        return false
+        return err
+    }
+
+    err = conn.WriteMessage(websocket.TextMessage, []byte(string(jsonData)))
+    if err != nil {
+        return err
     }
 
     // Read message from WebSocket
     _, p, err := conn.ReadMessage()
     if err != nil {
-        return false
+        return err
     }
     response := parseJson2(string(p))
     if response["success"].(bool) == false {
-        return false
+        return &RequestError{
+            StatusCode: 403,
+            Err:        "Initialize WebSocket failed",
+        }
     }
 
     // Create a Protocol Buffers message
@@ -141,8 +151,7 @@ func sendFile(token string, address string, datasetUuid string, fileUuid string,
         if err == io.EOF {
             break;
         } else if err != nil {
-            fmt.Println("Error reading from file:", err)
-            return false
+            return err
         }
 
         // Set the chunk data in the Protocol Buffers message
@@ -152,15 +161,13 @@ func sendFile(token string, address string, datasetUuid string, fileUuid string,
         // Serialize the message
         data, err := proto.Marshal(message)
         if err != nil {
-            fmt.Println("Error marshaling protobuf message:", err)
-            return false
+            return err
         }
 
         // Send the serialized message to the server
         err = conn.WriteMessage(websocket.BinaryMessage, []byte(data))
         if err != nil {
-            fmt.Println("Error sending data to server:", err)
-            return false
+            return err
         }
 
         conn.ReadMessage()
@@ -168,123 +175,126 @@ func sendFile(token string, address string, datasetUuid string, fileUuid string,
         counter++;
     }
 
-    return true
+    return nil
 }
 
-func UploadMnistFiles(address string, token string, name string, inputFilePath string, labelFilePath string) (bool, string) {
+func UploadMnistFiles(address string, token string, name string, inputFilePath string, labelFilePath string) (string, error) {
     // Open the binary input-file
     inputFile, err := os.Open(inputFilePath)
     if err != nil {
-        fmt.Printf("Error opening file: %v\n", err)
-        return false, ""
+        return "", err
     }
     defer inputFile.Close()
 
     inputFileInfo, err := inputFile.Stat()
     if err != nil {
-        fmt.Println("Error getting file info:", err)
-        return false, ""
+        return "", err
     }
 
     // Open the binary label-file
     labelFile, err := os.Open(labelFilePath)
     if err != nil {
-        fmt.Printf("Error opening file: %v\n", err)
-        return false, ""
+        return "", err
     }
     defer labelFile.Close()
 
     labelFileInfo, err := labelFile.Stat()
     if err != nil {
-        fmt.Println("Error getting file info:", err)
-        return false, ""
+        return "", err
     }
 
-    jsonBody := fmt.Sprintf("{\"name\":\"%s\", \"input_data_size\":%d, \"label_data_size\":%d}", name, inputFileInfo.Size(), labelFileInfo.Size())
-    path := "control/v1.0alpha/mnist/dataset"
-    vars := ""
-    success, content := SendPost(address, token, path, vars, jsonBody)
-    if success == false {
-        fmt.Println("Failed to init file-upload:", content)
-        return false, ""
+    path := "v1.0alpha/dataset/upload/mnist"
+    jsonBody := map[string]interface{}{ 
+        "name": name,
+        "input_data_size": inputFileInfo.Size(),
+        "label_data_size": labelFileInfo.Size(),
+    }
+    datasetInfo, err := SendPost(address, token, path, jsonBody)
+    if err != nil {
+        return "", err
     }
 
-    datasetInfo := parseJson2(content)
     uuid := datasetInfo["uuid"].(string)
     inputFileUuid := datasetInfo["uuid_input_file"].(string)
     labelFileUuid := datasetInfo["uuid_label_file"].(string)
 
     // send data
-    if sendFile(token, address, uuid, inputFileUuid, inputFile) == false {
-        return false, ""
+    err = sendFile(token, address, uuid, inputFileUuid, inputFile)
+    if err != nil {
+        return "", err
     }
 
-    if sendFile(token, address, uuid, labelFileUuid, labelFile) == false {
-        return false, ""
+    err = sendFile(token, address, uuid, labelFileUuid, labelFile)
+    if err != nil {
+        return "", err
     }
 
-    if waitUntilUploadComplete(token, address, uuid) == false {
-        return false, ""
+    err = waitUntilUploadComplete(token, address, uuid)
+    if err != nil {
+        return "", err
     }
 
-    jsonBody = fmt.Sprintf("{\"uuid\":\"%s\", \"uuid_input_file\":\"%s\", \"uuid_label_file\":\"%s\"}", uuid, inputFileUuid, labelFileUuid)
-    path = "control/v1.0alpha/mnist/dataset"
-    vars = ""
-    success, content = SendPut(address, token, path, vars, jsonBody)
-    if success == false {
-        fmt.Println("Failed to finalize file-upload:", content)
-        return false, ""
+    path = "v1.0alpha/dataset/upload/mnist"
+    jsonBody = map[string]interface{}{ 
+        "uuid": uuid,
+        "uuid_input_file": inputFileUuid,
+        "uuid_label_file": labelFileUuid,
+    }
+    _, err = SendPut(address, token, path, jsonBody)
+    if err != nil {
+        return "", err
     }
 
-    return true, uuid
+    return uuid, nil
 }
 
-func UploadCsvFiles(address string, token string, name string, inputFilePath string) (bool, string) {
+func UploadCsvFiles(address string, token string, name string, inputFilePath string) (string, error) {
     // Open the binary input-file
     inputFile, err := os.Open(inputFilePath)
     if err != nil {
-        fmt.Printf("Error opening file: %v\n", err)
-        return false, ""
+        return "", err
     }
     defer inputFile.Close()
 
     inputFileInfo, err := inputFile.Stat()
     if err != nil {
-        fmt.Println("Error getting file info:", err)
-        return false, ""
+        return "", err
     }
 
-    jsonBody := fmt.Sprintf("{\"name\":\"%s\", \"input_data_size\":%d}", name, inputFileInfo.Size())
-    path := "control/v1.0alpha/csv/dataset"
-    vars := ""
-    success, content := SendPost(address, token, path, vars, jsonBody)
-    if success == false {
-        fmt.Println("Failed to init file-upload:", content)
-        return false, ""
+    path := "v1.0alpha/dataset/upload/csv"
+    jsonBody := map[string]interface{}{ 
+        "name": name,
+        "input_data_size": inputFileInfo.Size(),
+    }
+    datasetInfo, err := SendPost(address, token, path, jsonBody)
+    if err != nil {
+        return "", err
     }
 
-    datasetInfo := parseJson2(content)
     uuid := datasetInfo["uuid"].(string)
     inputFileUuid := datasetInfo["uuid_input_file"].(string)
 
     // send data
-    if sendFile(token, address, uuid, inputFileUuid, inputFile) == false {
-        return false, ""
+    err = sendFile(token, address, uuid, inputFileUuid, inputFile)
+    if err != nil {
+        return "", err
     }
 
-    if waitUntilUploadComplete(token, address, uuid) == false {
-        return false, ""
+    err = waitUntilUploadComplete(token, address, uuid)
+    if err != nil {
+        return "", err
     }
 
-    jsonBody = fmt.Sprintf("{\"uuid\":\"%s\", \"uuid_input_file\":\"%s\"}", uuid, inputFileUuid)
-    path = "control/v1.0alpha/csv/dataset"
-    vars = ""
-    success, content = SendPut(address, token, path, vars, jsonBody)
-    if success == false {
-        fmt.Println("Failed to finalize file-upload:", content)
-        return false, ""
+    path = "v1.0alpha/dataset/upload/csv"
+    jsonBody = map[string]interface{}{ 
+        "uuid": uuid,
+        "uuid_input_file": inputFileUuid,
+    }
+    _, err = SendPut(address, token, path, jsonBody)
+    if err != nil {
+        return "", err
     }
 
-    return true, uuid
+    return uuid, nil
 }
 
