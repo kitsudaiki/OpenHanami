@@ -49,10 +49,6 @@ CreateTrainTask::CreateTrainTask() : Blossom("Add new train-task to the task-que
         .setComment("UUID of the cluster, which should process the request")
         .setRegex(UUID_REGEX);
 
-    registerInputField("number_of_cycles", SAKURA_INT_TYPE)
-        .setComment("Number of cycles")
-        .setLimit(0, 1000000000);
-
     registerInputField("inputs", SAKURA_MAP_TYPE)
         .setComment(
             "key-value list with the names of the input-bricks as key and the dataset-UUID, which "
@@ -97,7 +93,8 @@ CreateTrainTask::runTask(BlossomIO& blossomIO,
     const std::string taskName = blossomIO.input["name"];
     const std::string clusterUuid = blossomIO.input["cluster_uuid"];
     const Hanami::UserContext userContext = convertContext(context);
-    const uint64_t numberOfCycles = blossomIO.input["number_of_cycles"];
+    const json inputs = blossomIO.input["inputs"];
+    const json outputs = blossomIO.input["outputs"];
 
     // check if user exist within the table
     ClusterTable::ClusterDbEntry getResult;
@@ -134,37 +131,44 @@ CreateTrainTask::runTask(BlossomIO& blossomIO,
     newTask->projectId = userContext.projectId;
     newTask->type = TRAIN_TASK;
     newTask->progress.queuedTimeStamp = std::chrono::system_clock::now();
-    newTask->progress.totalNumberOfCycles = numberOfCycles;
     newTask->info = TrainInfo();
-
     TrainInfo* info = &std::get<TrainInfo>(newTask->info);
-    info->numberOfCycles = numberOfCycles;
+    u_int64_t numberOfCycles = std::numeric_limits<uint64_t>::max();
 
     // prepare inputs
-    const json inputs = blossomIO.input["inputs"];
     for (const auto& [brickName, datasetUuid] : inputs.items()) {
         DataSetFileHandle fileHandle;
-        if (fillTaskIo(
-                fileHandle, userContext, brickName, datasetUuid, numberOfCycles, status, error)
-            != OK)
-        {
+        if (fillTaskIo(fileHandle, userContext, brickName, datasetUuid, status, error) != OK) {
             return false;
+        }
+        if (numberOfCycles > fileHandle.header.numberOfRows) {
+            numberOfCycles = fileHandle.header.numberOfRows;
         }
         info->inputs.try_emplace(brickName, std::move(fileHandle));
     }
 
     // prepare outputs
-    const json outputs = blossomIO.input["outputs"];
     for (const auto& [brickName, datasetUuid] : outputs.items()) {
         DataSetFileHandle fileHandle;
-        if (fillTaskIo(
-                fileHandle, userContext, brickName, datasetUuid, numberOfCycles, status, error)
-            != OK)
-        {
+        if (fillTaskIo(fileHandle, userContext, brickName, datasetUuid, status, error) != OK) {
             return false;
+        }
+        if (numberOfCycles > fileHandle.header.numberOfRows) {
+            numberOfCycles = fileHandle.header.numberOfRows;
         }
         info->outputs.try_emplace(brickName, std::move(fileHandle));
     }
+
+    for (auto& [brickName, file_handle] : info->inputs) {
+        file_handle.readSelector.endRow = numberOfCycles;
+    }
+    for (auto& [brickName, file_handle] : info->outputs) {
+        file_handle.readSelector.endRow = numberOfCycles;
+    }
+
+    // set number of cycles
+    newTask->progress.totalNumberOfCycles = numberOfCycles;
+    info->numberOfCycles = numberOfCycles;
 
     cluster->stateMachine->goToNextState(PROCESS_TASK);
 
@@ -181,7 +185,6 @@ CreateTrainTask::runTask(BlossomIO& blossomIO,
  * @param taskIo
  * @param userContext
  * @param settings
- * @param numberOfCycles number of cycles of the request
  * @param status reference to return status of the request
  * @param error reference for error-output
  *
@@ -192,7 +195,6 @@ CreateTrainTask::fillTaskIo(DataSetFileHandle& fileHandle,
                             const Hanami::UserContext& userContext,
                             const std::string& brickName,
                             const std::string& datasetUuid,
-                            const uint64_t numberOfCycles,
                             BlossomStatus& status,
                             Hanami::ErrorContainer& error)
 {
@@ -224,7 +226,6 @@ CreateTrainTask::fillTaskIo(DataSetFileHandle& fileHandle,
 
     fileHandle.readSelector.startColumn = fileHandle.description[brickName]["start_column"];
     fileHandle.readSelector.endColumn = fileHandle.description[brickName]["end_column"];
-    fileHandle.readSelector.endRow = fileHandle.readSelector.startRow + numberOfCycles;
 
     return ret;
 }

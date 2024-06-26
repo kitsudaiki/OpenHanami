@@ -20,7 +20,6 @@ def create_train_task(token: str,
                       address: str,
                       name: str,
                       cluster_uuid: str,
-                      number_of_cycles: int,
                       inputs: dict,
                       outputs: dict,
                       verify_connection: bool = True) -> str:
@@ -28,7 +27,6 @@ def create_train_task(token: str,
     json_body = {
         "name": name,
         "cluster_uuid": cluster_uuid,
-        "number_of_cycles": number_of_cycles,
         "inputs": inputs,
         "outputs": outputs
     }
@@ -44,7 +42,6 @@ def create_request_task(token: str,
                         address: str,
                         name: str,
                         cluster_uuid: str,
-                        number_of_cycles: int,
                         inputs: dict,
                         results: dict,
                         verify_connection: bool = True) -> str:
@@ -52,7 +49,6 @@ def create_request_task(token: str,
     json_body = {
         "name": name,
         "cluster_uuid": cluster_uuid,
-        "number_of_cycles": number_of_cycles,
         "inputs": inputs,
         "results": results
     }

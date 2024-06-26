@@ -44,7 +44,6 @@ class CreateRequestTask : public Blossom
                             const Hanami::UserContext& userContext,
                             const std::string& brickName,
                             const std::string& datasetUuid,
-                            const uint64_t numberOfCycles,
                             BlossomStatus& status,
                             Hanami::ErrorContainer& error);
 

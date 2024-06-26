@@ -51,10 +51,6 @@ CreateRequestTask::CreateRequestTask()
         .setComment("UUID of the cluster, which should process the request")
         .setRegex(UUID_REGEX);
 
-    registerInputField("number_of_cycles", SAKURA_INT_TYPE)
-        .setComment("Number of cycles")
-        .setLimit(0, 1000000000);
-
     registerInputField("inputs", SAKURA_MAP_TYPE)
         .setComment(
             "key-value list with the names of the input-bricks as key and the dataset-UUID, which "
@@ -99,7 +95,7 @@ CreateRequestTask::runTask(BlossomIO& blossomIO,
     const std::string name = blossomIO.input["name"];
     const std::string clusterUuid = blossomIO.input["cluster_uuid"];
     const Hanami::UserContext userContext = convertContext(context);
-    const uint64_t numberOfCycles = blossomIO.input["number_of_cycles"];
+    const json inputs = blossomIO.input["inputs"];
 
     // check if user exist within the table
     json getResult;
@@ -136,23 +132,24 @@ CreateRequestTask::runTask(BlossomIO& blossomIO,
     newTask->projectId = userContext.projectId;
     newTask->type = REQUEST_TASK;
     newTask->progress.queuedTimeStamp = std::chrono::system_clock::now();
-    newTask->progress.totalNumberOfCycles = numberOfCycles;
     newTask->info = RequestInfo();
-
     RequestInfo* info = &std::get<RequestInfo>(newTask->info);
-    info->numberOfCycles = numberOfCycles;
+    u_int64_t numberOfCycles = std::numeric_limits<uint64_t>::max();
 
     // prepare input
-    const json inputs = blossomIO.input["inputs"];
     for (const auto& [brickName, datasetUuid] : inputs.items()) {
         DataSetFileHandle fileHandle;
-        if (fillTaskIo(
-                fileHandle, userContext, brickName, datasetUuid, numberOfCycles, status, error)
-            != OK)
-        {
+        if (fillTaskIo(fileHandle, userContext, brickName, datasetUuid, status, error) != OK) {
             return false;
         }
+        if (numberOfCycles > fileHandle.header.numberOfRows) {
+            numberOfCycles = fileHandle.header.numberOfRows;
+        }
         info->inputs.try_emplace(brickName, std::move(fileHandle));
+    }
+
+    for (auto& [brickName, file_handle] : info->inputs) {
+        file_handle.readSelector.endRow = numberOfCycles;
     }
 
     // prepare result
@@ -171,6 +168,10 @@ CreateRequestTask::runTask(BlossomIO& blossomIO,
         info->results.try_emplace(brickName, std::move(fileHandle));
     }
 
+    // set number of cycles
+    info->numberOfCycles = numberOfCycles;
+    newTask->progress.totalNumberOfCycles = numberOfCycles;
+
     cluster->stateMachine->goToNextState(PROCESS_TASK);
 
     // create output
@@ -186,7 +187,6 @@ CreateRequestTask::runTask(BlossomIO& blossomIO,
  * @param taskIo
  * @param userContext
  * @param settings
- * @param numberOfCycles number of cycles of the request
  * @param status reference to return status of the request
  * @param error reference for error-output
  *
@@ -197,7 +197,6 @@ CreateRequestTask::fillTaskIo(DataSetFileHandle& fileHandle,
                               const Hanami::UserContext& userContext,
                               const std::string& brickName,
                               const std::string& datasetUuid,
-                              const uint64_t numberOfCycles,
                               BlossomStatus& status,
                               Hanami::ErrorContainer& error)
 {
@@ -229,7 +228,6 @@ CreateRequestTask::fillTaskIo(DataSetFileHandle& fileHandle,
 
     fileHandle.readSelector.startColumn = fileHandle.description[brickName]["start_column"];
     fileHandle.readSelector.endColumn = fileHandle.description[brickName]["end_column"];
-    fileHandle.readSelector.endRow = fileHandle.readSelector.startRow + numberOfCycles;
 
     return ret;
 }

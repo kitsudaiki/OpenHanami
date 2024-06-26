@@ -278,7 +278,7 @@ def test_workflow():
 
     for i in range(0, 1):
         result = task.create_train_task(
-            token, address, generic_task_name, cluster_uuid, 60000, inputs, outputs, False)
+            token, address, generic_task_name, cluster_uuid, inputs, outputs, False)
         task_uuid = json.loads(result)["uuid"]
 
         finished = False
@@ -322,7 +322,7 @@ def test_workflow():
     }
 
     result = task.create_request_task(
-        token, address, generic_task_name, cluster_uuid, 10000, inputs, results, False)
+        token, address, generic_task_name, cluster_uuid, inputs, results, False)
     task_uuid = json.loads(result)["uuid"]
 
     finished = False
