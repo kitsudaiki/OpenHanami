@@ -34,16 +34,16 @@ v1/foreward
 v1/host/all
 - GET: admin, member
 
-v1/mnist/dataset
+v1/dataset/upload/mnist
 - POST: admin, member
 - PUT: admin, member
 
-v1/csv/dataset
+v1/dataset/upload/csv
 - POST: admin, member
 - PUT: admin, member
 
 v1/dataset/check
-- POST: admin, member
+- GET: admin, member
 
 v1/dataset/progress
 - GET: admin, member
@@ -76,7 +76,7 @@ v1/request_result/all
 v1/audit_log
 - GET: admin, member
 
-v1/error_log
+v1/error_log         
 - GET: admin
 
 
@@ -132,19 +132,19 @@ v1/template
 v1/template/all
 - GET : admin, member
 
-v1/task/image/learn
+
+
+v1/task/train
 - POST: admin, member
 
-v1/task/image/request
+v1/task/request
 - POST: admin, member
-
-
 
 v1/task
-- POST: admin, member
 - GET : admin, member
 - DELETE: admin, member
 
 v1/task/all
 - GET : admin, member
+
 
