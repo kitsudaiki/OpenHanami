@@ -38,7 +38,7 @@ GetAuditLog::GetAuditLog() : Blossom("Get audit-log of a user.")
             "set this values. Any other user get only its own log output based on the "
             "token-context.")
         .setRequired(false)
-        .setLimit(4, 256)
+        .setLimit(4, 254)
         .setRegex(ID_EXT_REGEX);
 
     registerInputField("page", SAKURA_INT_TYPE)

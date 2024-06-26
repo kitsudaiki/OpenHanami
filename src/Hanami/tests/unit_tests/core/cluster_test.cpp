@@ -25,7 +25,7 @@
 #include <core/cluster/cluster.h>
 #include <core/cluster/cluster_init.h>
 #include <core/cluster/objects.h>
-#include <core/io/buffer/buffer_io.h>
+#include <core/io/checkpoint/buffer/buffer_io.h>
 #include <core/processing/logical_host.h>
 #include <core/processing/physical_host.h>
 #include <hanami_hardware/host.h>
@@ -38,6 +38,9 @@ Cluster_Init_Test::Cluster_Init_Test() : Hanami::CompareTestHelper("Cluster_Init
     serialize_test();
 }
 
+/**
+ * @brief initTest
+ */
 void
 Cluster_Init_Test::initTest()
 {

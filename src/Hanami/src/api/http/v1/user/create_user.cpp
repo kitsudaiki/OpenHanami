@@ -41,12 +41,12 @@ CreateUser::CreateUser() : Blossom("Register a new user within Misaki.")
 
     registerInputField("id", SAKURA_STRING_TYPE)
         .setComment("ID of the new user.")
-        .setLimit(4, 256)
+        .setLimit(4, 254)
         .setRegex(ID_EXT_REGEX);
 
     registerInputField("name", SAKURA_STRING_TYPE)
         .setComment("Name of the new user.")
-        .setLimit(4, 256)
+        .setLimit(4, 254)
         .setRegex(NAME_REGEX);
 
     registerInputField("password", SAKURA_STRING_TYPE)

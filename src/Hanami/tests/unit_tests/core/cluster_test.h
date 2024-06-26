@@ -25,8 +25,6 @@
 
 #include <hanami_common/test_helper/compare_test_helper.h>
 
-#include <string>
-
 class LogicalHost;
 
 class Cluster_Init_Test : public Hanami::CompareTestHelper

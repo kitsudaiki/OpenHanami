@@ -39,7 +39,7 @@ DeleteProject::DeleteProject() : Blossom("Delete a specific user from the databa
 
     registerInputField("id", SAKURA_STRING_TYPE)
         .setComment("ID of the project.")
-        .setLimit(4, 256)
+        .setLimit(4, 254)
         .setRegex(ID_REGEX);
 
     //----------------------------------------------------------------------------------------------

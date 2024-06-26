@@ -1,5 +1,46 @@
 # Changelog
 
+## [Unreleased]
+
+### BREAKING-CHANGES
+
+- number of neurons per brick now grows dynamically and doesn't have to be defined in the cluster-templates anymore
+- cluster-templates were modified
+- changed output-bricks to modifiy the size of the output-brick independently from the number of output-neurons
+- updated buffer in clusters to remove the old byte-arrays
+- new implementation for the checkpoints for the new data-structure of the clusters and for more and better error-handling
+- new implementation for the data-sets for a more generic handling of data and read-function to allow get specific sections from the data-set file
+- database-tables now have a `created_at`-timestamp for the entry
+- entries of the database-tables are now deleted anymore, but instead are only marked as deleted with a `deleted_at`-timestamp
+- request-results were removed from the databases and api, because results are now also stored as data-sets again
+
+### Added
+
+- database-tables now have proper functions to add and get structs from/to the database instead of only json-objects, which makes the code more explizit
+- added unit-tests for:
+    - clusters
+    - ckeckpoint create and restore
+    - data-sets read and write
+    - all database-tables
+- added base64-type database-entries to easier store and get more complex strings from the database
+
+### Changed
+
+- the registration of new endpoints within the code were updated by removing old leftovers
+- the registration of new database-columns within the code were updated to look like the style of config-registrations and so on
+- internal handling of tasks was updated for cleaner code
+- endpoint to list projects of a user, were moved within the code
+
+### Fixed
+
+- fixed csv-upload in python-sdk-lib
+
+### Removed
+
+- the `common`-directory in Hanami was removed and most of the functions were moved to the `hanami_common`-lib
+
+
+
 ## 0.4.1
 
 **Release-Date**: 2024-03-25
@@ -33,7 +74,7 @@
 
 **Release-Date**: 2024-01-21
 
-### Breaking-Changes
+### BREAKING-CHANGES
 
 #### Checkpoint-Breaking
 
@@ -143,7 +184,7 @@
 
 **Release-Date**: 2023-09-05
 
-### Breaking-Changes
+### BREAKING-CHANGES
 
 #### All breaking
 

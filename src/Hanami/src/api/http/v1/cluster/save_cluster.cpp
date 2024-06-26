@@ -22,10 +22,11 @@
 
 #include "save_cluster.h"
 
-#include <core/cluster/add_tasks.h>
 #include <core/cluster/cluster.h>
 #include <core/cluster/cluster_handler.h>
+#include <core/cluster/statemachine_init.h>
 #include <database/cluster_table.h>
+#include <hanami_common/statemachine.h>
 #include <hanami_root.h>
 
 SaveCluster::SaveCluster() : Blossom("Save a cluster.")
@@ -38,7 +39,7 @@ SaveCluster::SaveCluster() : Blossom("Save a cluster.")
 
     registerInputField("name", SAKURA_STRING_TYPE)
         .setComment("Name for task, which is place in the task-queue and for the new checkpoint.")
-        .setLimit(4, 256)
+        .setLimit(4, 254)
         .setRegex(NAME_REGEX);
 
     registerInputField("cluster_uuid", SAKURA_STRING_TYPE)
@@ -99,11 +100,27 @@ SaveCluster::runTask(BlossomIO& blossomIO,
         return false;
     }
 
-    // init request-task
-    const std::string taskUuid
-        = addCheckpointSaveTask(*cluster, name, userContext.userId, userContext.projectId);
+    // create new task
+    Task* newTask = cluster->addNewTask();
+    if (newTask == nullptr) {
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+    newTask->name = name;
+    newTask->userId = userContext.userId;
+    newTask->projectId = userContext.projectId;
+    newTask->type = CLUSTER_CHECKPOINT_SAVE_TASK;
+    newTask->progress.queuedTimeStamp = std::chrono::system_clock::now();
+    newTask->progress.totalNumberOfCycles = 1;
 
-    blossomIO.output["uuid"] = taskUuid;
+    // fill metadata
+    CheckpointSaveInfo info;
+    info.checkpointName = name;
+    newTask->info = std::move(info);
+
+    cluster->stateMachine->goToNextState(PROCESS_TASK);
+
+    blossomIO.output["uuid"] = newTask->uuid.toString();
     blossomIO.output["name"] = name;
 
     return true;

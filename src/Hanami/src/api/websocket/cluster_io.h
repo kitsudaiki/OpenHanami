@@ -25,7 +25,7 @@
 
 #include <core/cluster/cluster.h>
 
-void sendClusterOutputMessage(const Cluster* cluster);
+bool sendClusterOutputMessage(const Cluster* cluster);
 void sendClusterNormalEndMessage(Cluster* cluster);
 void sendClusterTrainEndMessage(Cluster* cluster);
 

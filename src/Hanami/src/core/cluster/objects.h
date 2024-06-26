@@ -110,8 +110,7 @@ struct ClusterHeader {
     uint8_t version = 1;
     uint8_t padding[2];
 
-    char name[256];
-    uint32_t nameSize = 0;
+    Hanami::NameEntry name;
 
     uint64_t staticDataSize = 0;
     UUID uuid;
@@ -128,10 +127,7 @@ struct ClusterHeader {
         if (version != rhs.version) {
             return false;
         }
-        if (nameSize != rhs.nameSize) {
-            return false;
-        }
-        if (strncmp(name, rhs.name, nameSize) != 0) {
+        if (name != rhs.name) {
             return false;
         }
         if (staticDataSize != rhs.staticDataSize) {
@@ -296,6 +292,7 @@ struct OutputInterface {
     std::string name = "";
     uint32_t targetBrickId = UNINIT_STATE_32;
     std::vector<OutputNeuron> outputNeurons;
+    std::vector<float> ioBuffer;
 };
 
 //==================================================================================================
@@ -304,6 +301,7 @@ struct InputInterface {
     std::string name = "";
     uint32_t targetBrickId = UNINIT_STATE_32;
     std::vector<InputNeuron> inputNeurons;
+    std::vector<float> ioBuffer;
 };
 
 //==================================================================================================

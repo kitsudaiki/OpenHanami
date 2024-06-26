@@ -34,7 +34,6 @@
 #include <database/dataset_table.h>
 #include <database/error_log_table.h>
 #include <database/projects_table.h>
-#include <database/request_result_table.h>
 #include <database/tempfile_table.h>
 #include <database/users_table.h>
 #include <hanami_common/files/text_file.h>
@@ -185,17 +184,9 @@ HanamiRoot::initDatabase(Hanami::ErrorContainer& error)
     }
 
     // initialize dataset-table
-    DataSetTable* dataSetTable = DataSetTable::getInstance();
-    if (dataSetTable->initTable(error) == false) {
+    DataSetTable* datasetTable = DataSetTable::getInstance();
+    if (datasetTable->initTable(error) == false) {
         error.addMessage("Failed to initialize dataset-table in database.");
-        LOG_ERROR(error);
-        return false;
-    }
-
-    // initialize request-result-table
-    RequestResultTable* requestResultTable = RequestResultTable::getInstance();
-    if (requestResultTable->initTable(error) == false) {
-        error.addMessage("Failed to initialize request-result-table in database.");
         LOG_ERROR(error);
         return false;
     }

@@ -122,6 +122,7 @@ initializeInputs(Cluster* cluster, const ClusterMeta& clusterMeta)
         inputInterface.targetBrickId = inputMeta.targetBrickId;
         inputInterface.name = inputMeta.name;
         inputInterface.inputNeurons.resize(inputMeta.numberOfInputs);
+        inputInterface.ioBuffer.resize(inputMeta.numberOfInputs);
 
         cluster->inputInterfaces.try_emplace(inputMeta.name, inputInterface);
 
@@ -146,6 +147,7 @@ initializeOutputs(Cluster* cluster, const ClusterMeta& clusterMeta)
         outputInterface.targetBrickId = outputMeta.targetBrickId;
         outputInterface.name = outputMeta.name;
         outputInterface.outputNeurons.resize(outputMeta.numberOfOutputs);
+        outputInterface.ioBuffer.resize(outputMeta.numberOfOutputs);
 
         cluster->outputInterfaces.try_emplace(outputMeta.name, outputInterface);
 

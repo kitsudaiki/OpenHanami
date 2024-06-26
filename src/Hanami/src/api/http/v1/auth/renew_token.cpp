@@ -42,7 +42,7 @@ RenewToken::RenewToken() : Blossom("Renew a JWT-access-token for a specific user
 
     registerInputField("project_id", SAKURA_STRING_TYPE)
         .setComment("ID of the project, which has to be used for the new token.")
-        .setLimit(4, 256)
+        .setLimit(4, 254)
         .setRegex(ID_REGEX);
 
     //----------------------------------------------------------------------------------------------

@@ -39,11 +39,65 @@
 namespace Hanami
 {
 
+//==================================================================================================
+
+struct NameEntry {
+    char name[255];
+    uint8_t nameSize = 0;
+
+    NameEntry() { memset(name, 0, 255); }
+
+    const std::string getName() const
+    {
+        // precheck
+        if (nameSize == 0 || nameSize > 254) {
+            return std::string("");
+        }
+
+        return std::string(name, nameSize);
+    }
+
+    bool setName(const std::string& newName)
+    {
+        // precheck
+        if (newName.size() > 254 || newName.size() == 0) {
+            return false;
+        }
+
+        // copy string into char-buffer and set explicit the escape symbol to be absolut sure
+        // that it is set to absolut avoid buffer-overflows
+        strncpy(name, newName.c_str(), newName.size());
+        name[newName.size()] = '\0';
+        nameSize = newName.size();
+
+        return true;
+    }
+
+    bool operator==(NameEntry& rhs)
+    {
+        if (nameSize != rhs.nameSize) {
+            return false;
+        }
+        if (strncmp(name, rhs.name, nameSize) != 0) {
+            return false;
+        }
+
+        return true;
+    }
+
+    bool operator!=(NameEntry& rhs) { return (*this == rhs) == false; }
+};
+static_assert(sizeof(NameEntry) == 256);
+
+//==================================================================================================
+
 struct RequestMessage {
     HttpRequestType httpType = GET_TYPE;
     std::string id = "";
     std::string inputValues = "{}";
 };
+
+//==================================================================================================
 
 struct UserContext {
     std::string userId = "";
@@ -52,6 +106,8 @@ struct UserContext {
     bool isProjectAdmin = false;
     std::string token = "";
 };
+
+//==================================================================================================
 
 struct Position {
     uint32_t x = UNINTI_POINT_32;
@@ -101,23 +157,25 @@ struct Position {
     }
 };
 
-struct FileHandle {
+//==================================================================================================
+
+struct UploadFileHandle {
     Hanami::UserContext userContext;
     Hanami::BinaryFile* file = nullptr;
     Hanami::BitBuffer* bitBuffer = nullptr;
     uint64_t timeoutCounter = 0;
     bool lock = false;
 
-    FileHandle() {}
+    UploadFileHandle() {}
 
-    FileHandle(const FileHandle& other)
+    UploadFileHandle(const UploadFileHandle& other)
     {
         userContext = other.userContext;
         file = other.file;
         bitBuffer = other.bitBuffer;
     }
 
-    ~FileHandle()
+    ~UploadFileHandle()
     {
         if (file != nullptr) {
             delete file;
@@ -127,7 +185,7 @@ struct FileHandle {
         }
     }
 
-    FileHandle& operator=(const FileHandle& other)
+    UploadFileHandle& operator=(const UploadFileHandle& other)
     {
         userContext = other.userContext;
         file = other.file;
@@ -165,6 +223,8 @@ struct FileHandle {
         return true;
     }
 };
+
+//==================================================================================================
 
 }  // namespace Hanami
 

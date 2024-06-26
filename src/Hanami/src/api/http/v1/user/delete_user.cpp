@@ -39,7 +39,7 @@ DeleteUser::DeleteUser() : Blossom("Delete a specific user from the database.")
 
     registerInputField("id", SAKURA_STRING_TYPE)
         .setComment("ID of the user.")
-        .setLimit(4, 256)
+        .setLimit(4, 254)
         .setRegex(ID_EXT_REGEX);
 
     //----------------------------------------------------------------------------------------------

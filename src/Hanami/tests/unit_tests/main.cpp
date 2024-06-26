@@ -21,13 +21,13 @@
  */
 
 #include "core/cluster_test.h"
+#include "core/dataset_io_test.h"
 #include "database/audit_log_table_test.h"
 #include "database/checkpoint_table_test.h"
 #include "database/cluster_table_test.h"
 #include "database/dataset_table_test.h"
 #include "database/error_log_table_test.h"
 #include "database/projects_table_test.h"
-#include "database/request_result_table_test.h"
 #include "database/tempfile_table_test.h"
 #include "database/users_table_test.h"
 
@@ -37,13 +37,13 @@ main()
     Hanami::initConsoleLogger(false);
 
     Cluster_Init_Test();
+    DataSetIO_Test();
 
     ClusterTable_Test();
     CheckpointTable_Test();
     UserTable_Test();
     ProjectTable_Test();
     DataSetTable_Test();
-    RequestResultTable_Test();
     TempfileTable_Test();
 
     AuditLogTable_Test();

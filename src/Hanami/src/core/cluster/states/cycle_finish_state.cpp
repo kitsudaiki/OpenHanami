@@ -47,34 +47,31 @@ bool
 CycleFinish_State::processEvent()
 {
     uint64_t numberOfCycles = 0;
+    uint64_t currentCycle = 0;
     Task* actualTask = m_cluster->getCurrentTask();
     switch (actualTask->type) {
-        case IMAGE_TRAIN_TASK:
-            numberOfCycles = std::get<ImageTrainInfo>(actualTask->info).numberOfCycles;
+        case TRAIN_TASK:
+            currentCycle = std::get<TrainInfo>(actualTask->info).currentCycle + 1;
+            numberOfCycles = std::get<TrainInfo>(actualTask->info).numberOfCycles;
+            std::get<TrainInfo>(actualTask->info).currentCycle = currentCycle;
+            actualTask->progress.currentCyle = currentCycle;
             break;
-        case IMAGE_REQUEST_TASK:
-            numberOfCycles = std::get<ImageRequestInfo>(actualTask->info).numberOfCycles;
-            break;
-        case TABLE_TRAIN_TASK:
-            numberOfCycles = std::get<TableTrainInfo>(actualTask->info).numberOfCycles;
-            break;
-        case TABLE_REQUEST_TASK:
-            numberOfCycles = std::get<TableRequestInfo>(actualTask->info).numberOfCycles;
+        case REQUEST_TASK:
+            currentCycle = std::get<RequestInfo>(actualTask->info).currentCycle + 1;
+            numberOfCycles = std::get<RequestInfo>(actualTask->info).numberOfCycles;
+            std::get<RequestInfo>(actualTask->info).currentCycle = currentCycle;
+            actualTask->progress.currentCyle = currentCycle;
             break;
         case CLUSTER_CHECKPOINT_SAVE_TASK:
             return false;
         case CLUSTER_CHECKPOINT_RESTORE_TASK:
             return false;
-        case UNDEFINED_TASK:
+        case NO_TASK:
             return false;
     }
 
-    // update progress-counter
-    actualTask->actualCycle++;
-    actualTask->progress.currentCyle = actualTask->actualCycle;
-
     // to go next state of finish the task to goal is reached
-    if (actualTask->actualCycle == numberOfCycles) {
+    if (currentCycle == numberOfCycles) {
         m_cluster->goToNextState(FINISH_TASK);
     }
     else {

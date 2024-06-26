@@ -76,7 +76,6 @@ DataSetTable_Test::createTestDb()
     datasetData.uuid = m_testUuid;
     datasetData.name = m_testName;
     datasetData.visibility = "private";
-    datasetData.type = "csv";
     datasetData.location = "/etc/temp";
 
     DataSetTable* datasetTable = DataSetTable::getInstance();
@@ -123,7 +122,6 @@ DataSetTable_Test::addDataSet_test()
     datasetData.uuid = generateUuid().toString();
     datasetData.name = "test-dataset";
     datasetData.visibility = "private";
-    datasetData.type = "csv";
     datasetData.location = "/etc/temp";
 
     DataSetTable* datasetTable = DataSetTable::getInstance();
@@ -155,7 +153,6 @@ DataSetTable_Test::getDataSet_test()
     TEST_EQUAL(result.visibility, "private");
     TEST_EQUAL(result.ownerId, m_userContext.userId);
     TEST_EQUAL(result.projectId, m_userContext.projectId);
-    TEST_EQUAL(result.type, "csv");
     TEST_EQUAL(result.location, "/etc/temp");
 
     // negative test

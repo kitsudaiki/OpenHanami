@@ -21,7 +21,6 @@ from hanami_sdk import dataset
 from hanami_sdk import direct_io
 from hanami_sdk import hosts
 from hanami_sdk import project
-from hanami_sdk import request_result
 from hanami_sdk import task
 from hanami_sdk import user
 from hanami_sdk import hanami_exceptions
@@ -30,7 +29,7 @@ import json
 import time
 import configparser
 import urllib3
-# import asyncio
+import asyncio
 import sys
 
 
@@ -64,12 +63,12 @@ cluster_template = \
     "    3,1,1\n" \
     "    \n" \
     "inputs:\n" \
-    "    input_brick:\n" \
+    "    picture:\n" \
     "        target: 1,1,1\n" \
     "        number_of_inputs: 784\n" \
     "\n" \
     "outputs:\n" \
-    "    output_brick:\n" \
+    "    label:\n" \
     "        target: 3,1,1\n" \
     "        number_of_outputs: 10\n"
 
@@ -138,15 +137,6 @@ def delete_all_checkpoints():
 
     for entry in body:
         checkpoint.delete_checkpoint(token, address, entry[1], False)
-
-
-def delete_all_results():
-    result = request_result.list_request_results(token, address, False)
-    print(result)
-    body = json.loads(result)["body"]
-
-    for entry in body:
-        request_result.delete_request_result(token, address, entry[1], False)
 
 
 def test_project():
@@ -235,17 +225,19 @@ async def test_direct_io(token, address, cluster_uuid):
     ws = await cluster.switch_to_direct_mode(token, address, cluster_uuid, False)
     for i in range(0, 100):
         await direct_io.send_train_input(ws,
-                                         "test_input",
+                                         "picture",
                                          test_values.get_direct_io_test_intput(),
+                                         True,
                                          False,
                                          False)
         await direct_io.send_train_input(ws,
-                                         "test_output",
+                                         "label",
                                          test_values.get_direct_io_test_output(),
+                                         False,
                                          True,
                                          False)
     output_values = await direct_io.send_request_input(ws,
-                                                       "test_input",
+                                                       "picture",
                                                        test_values.get_direct_io_test_intput(),
                                                        True,
                                                        False)
@@ -276,9 +268,17 @@ def test_workflow():
         cluster.switch_host(token, address, cluster_uuid, target_host_uuid, False)
 
     # run training
+    inputs = {
+        "picture": train_dataset_uuid
+    }
+
+    outputs = {
+        "label": train_dataset_uuid
+    }
+
     for i in range(0, 1):
-        result = task.create_task(
-            token, address, generic_task_name, "train", cluster_uuid, train_dataset_uuid, False)
+        result = task.create_train_task(
+            token, address, generic_task_name, cluster_uuid, inputs, outputs, False)
         task_uuid = json.loads(result)["uuid"]
 
         finished = False
@@ -313,8 +313,16 @@ def test_workflow():
         pass
 
     # run testing
-    result = task.create_task(
-        token, address, generic_task_name, "request", cluster_uuid, request_dataset_uuid, False)
+    inputs = {
+        "picture": request_dataset_uuid
+    }
+
+    results = {
+        "label": "test_output"
+    }
+
+    result = task.create_request_task(
+        token, address, generic_task_name, cluster_uuid, inputs, results, False)
     task_uuid = json.loads(result)["uuid"]
 
     finished = False
@@ -331,20 +339,17 @@ def test_workflow():
     print("\n")
     result = task.list_tasks(token, address, cluster_uuid, False)
     result = task.delete_task(token, address, task_uuid, cluster_uuid, False)
-
+    time.sleep(1)
     # check request-result
-    result = request_result.get_request_result(token, address, task_uuid, False)
-    result = request_result.list_request_results(token, address, False)
-    result = request_result.check_against_dataset(
-        token, address, task_uuid, request_dataset_uuid, False)
+    result = dataset.check_mnist_dataset(
+        token, address, request_dataset_uuid, task_uuid, False)
     accuracy = json.loads(result)["accuracy"]
     print("=======================================")
     print("test-result: " + str(accuracy))
     print("=======================================")
     assert accuracy > 80.0
-    result = request_result.delete_request_result(token, address, task_uuid, False)
 
-    # asyncio.run(test_direct_io(token, address, cluster_uuid))
+    asyncio.run(test_direct_io(token, address, cluster_uuid))
 
     # cleanup
     dataset.delete_dataset(token, address, train_dataset_uuid, False)
@@ -354,7 +359,6 @@ def test_workflow():
 
 token = hanami_token.request_token(address, test_user_id, test_user_pw, False)
 
-delete_all_results()
 delete_all_datasets()
 delete_all_checkpoints()
 delete_all_cluster()

@@ -33,6 +33,7 @@ class BinaryFileDirect
     BinaryFileDirect(const std::string& filePath);
     ~BinaryFileDirect();
 
+    bool isOpen() const;
     bool allocateStorage(const uint64_t numberOfBlocks,
                          const uint32_t blockSize,
                          ErrorContainer& error);

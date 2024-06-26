@@ -33,7 +33,7 @@
  */
 HanamiSqlAdminTable::HanamiSqlAdminTable(Hanami::SqlDatabase* db) : SqlTable(db)
 {
-    registerColumn("id", STRING_TYPE).setMaxLength(256).setIsPrimary();
+    registerColumn("id", STRING_TYPE).setMaxLength(256);
 
     registerColumn("name", STRING_TYPE).setMaxLength(256);
 

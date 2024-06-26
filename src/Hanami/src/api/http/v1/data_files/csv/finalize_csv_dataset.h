@@ -42,8 +42,9 @@ class FinalizeCsvDataSet : public Blossom
    private:
     bool convertCsvData(const std::string& filePath,
                         const std::string& name,
-                        const Hanami::DataBuffer& inputBuffer);
-    void convertField(float* segmentPos, const std::string& cell, const float lastVal);
+                        const Hanami::DataBuffer& inputBuffer,
+                        Hanami::ErrorContainer& error);
+    float convertField(std::string& cell);
 };
 
 #endif  // HANAMI_CSV_FINALIZE_DATA_SET_H

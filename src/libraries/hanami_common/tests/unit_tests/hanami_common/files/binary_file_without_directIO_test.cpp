@@ -76,10 +76,11 @@ BinaryFile_withoutDirectIO_Test::updateFileSize_test()
     binaryFile.closeFile(error);
 
     BinaryFile binaryFileNew(m_filePath);
+    TEST_EQUAL(binaryFileNew.isOpen(), true);
     TEST_EQUAL(binaryFileNew.updateFileSize(error), true);
-    TEST_EQUAL(binaryFileNew.m_totalFileSize, 4 * 4096);
+    TEST_EQUAL(binaryFileNew.fileSize, 4 * 4096);
 
-    TEST_EQUAL(binaryFileNew.m_totalFileSize, binaryFileNew.m_totalFileSize);
+    TEST_EQUAL(binaryFileNew.fileSize, binaryFileNew.fileSize);
 }
 
 /**
@@ -100,7 +101,7 @@ BinaryFile_withoutDirectIO_Test::allocateStorage_test()
     TEST_EQUAL(binaryFile.allocateStorage(0, error), true);
 
     // check meta-data
-    TEST_EQUAL(binaryFile.m_totalFileSize, 8 * 4000);
+    TEST_EQUAL(binaryFile.fileSize, 8 * 4000);
 
     binaryFile.closeFile(error);
 

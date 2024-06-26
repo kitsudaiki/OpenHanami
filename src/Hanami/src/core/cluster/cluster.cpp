@@ -42,7 +42,7 @@ Cluster::Cluster(LogicalHost* host)
     stateMachine = new Hanami::Statemachine();
     taskHandleState = new TaskHandle_State(this);
 
-    counter.store(0, std::memory_order_relaxed);
+    m_counter.store(0, std::memory_order_relaxed);
 
     initStatemachine(*stateMachine, this, taskHandleState);
 }
@@ -57,7 +57,7 @@ Cluster::Cluster(LogicalHost* host, const void* data, const uint64_t dataSize)
 {
     attachedHost = host;
 
-    counter.store(0, std::memory_order_relaxed);
+    m_counter.store(0, std::memory_order_relaxed);
 }
 
 /**
@@ -72,9 +72,9 @@ Cluster::~Cluster() { attachedHost->removeCluster(this); }
 bool
 Cluster::incrementAndCompare(const uint32_t referenceValue)
 {
-    const int incrementedValue = counter.fetch_add(1, std::memory_order_relaxed);
+    const int incrementedValue = m_counter.fetch_add(1, std::memory_order_relaxed);
     if (incrementedValue == referenceValue - 1) {
-        counter.store(0, std::memory_order_relaxed);
+        m_counter.store(0, std::memory_order_relaxed);
         return true;
     }
 
@@ -105,46 +105,6 @@ bool
 Cluster::init(const Hanami::ClusterMeta& clusterTemplate, const std::string& uuid)
 {
     return initNewCluster(this, clusterTemplate, uuid);
-}
-
-/**
- * @brief get the name of the clsuter
- *
- * @return name of the cluster
- */
-const std::string
-Cluster::getName()
-{
-    // precheck
-    if (clusterHeader.nameSize == 0 || clusterHeader.nameSize > 255) {
-        return std::string("");
-    }
-
-    return std::string(clusterHeader.name, clusterHeader.nameSize);
-}
-
-/**
- * @brief set new name for the cluster
- *
- * @param newName new name
- *
- * @return true, if successful, else false
- */
-bool
-Cluster::setName(const std::string& newName)
-{
-    // precheck
-    if (newName.size() > 255 || newName.size() == 0) {
-        return false;
-    }
-
-    // copy string into char-buffer and set explicit the escape symbol to be absolut sure
-    // that it is set to absolut avoid buffer-overflows
-    strncpy(clusterHeader.name, newName.c_str(), newName.size());
-    clusterHeader.name[newName.size()] = '\0';
-    clusterHeader.nameSize = newName.size();
-
-    return true;
 }
 
 /**
@@ -269,20 +229,11 @@ Cluster::updateClusterState()
  * @return pointer to the actual task
  */
 Task*
-Cluster::getCurrentTask() const
+Cluster::getCurrentTask()
 {
-    return taskHandleState->getActualTask();
-}
+    std::lock_guard<std::mutex> guard(m_taskMutex);
 
-/**
- * @brief get cycle of the actual task
- *
- * @return cycle of the actual task
- */
-uint64_t
-Cluster::getActualTaskCycle() const
-{
-    return taskHandleState->getActualTask()->actualCycle;
+    return m_currentTask;
 }
 
 /**
@@ -295,7 +246,15 @@ Cluster::getActualTaskCycle() const
 const TaskProgress
 Cluster::getProgress(const std::string& taskUuid)
 {
-    return taskHandleState->getProgress(taskUuid);
+    std::lock_guard<std::mutex> guard(m_taskMutex);
+
+    const auto it = m_taskMap.find(taskUuid);
+    if (it != m_taskMap.end()) {
+        return it->second.progress;
+    }
+
+    TaskProgress progress;
+    return progress;
 }
 
 /**
@@ -308,7 +267,44 @@ Cluster::getProgress(const std::string& taskUuid)
 bool
 Cluster::removeTask(const std::string& taskUuid)
 {
-    return taskHandleState->removeTask(taskUuid);
+    std::lock_guard<std::mutex> guard(m_taskMutex);
+
+    TaskState state = UNDEFINED_TASK_STATE;
+
+    // check and update map
+    auto itMap = m_taskMap.find(taskUuid);
+    if (itMap != m_taskMap.end()) {
+        state = itMap->second.progress.state;
+
+        // if only queue but not activly processed at the moment, it can easily deleted
+        if (state == QUEUED_TASK_STATE) {
+            m_taskMap.erase(itMap);
+
+            // update queue
+            const auto itQueue = std::find(m_taskQueue.begin(), m_taskQueue.end(), taskUuid);
+            if (itQueue != m_taskQueue.end()) {
+                m_taskQueue.erase(itQueue);
+            }
+
+            return true;
+        }
+
+        // if task is active at the moment, then only mark it as aborted
+        if (state == ACTIVE_TASK_STATE) {
+            itMap->second.progress.state = ABORTED_TASK_STATE;
+            return true;
+        }
+
+        // handle finished and aborted state
+        if (state == FINISHED_TASK_STATE || state == ABORTED_TASK_STATE) {
+            // input-data are automatically deleted, when the task was finished,
+            // so removing from the list is enough
+            m_taskMap.erase(itMap);
+            return true;
+        }
+    }
+
+    return false;
 }
 
 /**
@@ -321,7 +317,16 @@ Cluster::removeTask(const std::string& taskUuid)
 bool
 Cluster::isFinish(const std::string& taskUuid)
 {
-    return taskHandleState->isFinish(taskUuid);
+    std::lock_guard<std::mutex> guard(m_taskMutex);
+
+    TaskState state = UNDEFINED_TASK_STATE;
+
+    const auto it = m_taskMap.find(taskUuid);
+    if (it != m_taskMap.end()) {
+        state = it->second.progress.state;
+    }
+
+    return state == FINISHED_TASK_STATE;
 }
 
 /**
@@ -331,7 +336,60 @@ Cluster::isFinish(const std::string& taskUuid)
 void
 Cluster::getAllProgress(std::map<std::string, TaskProgress>& result)
 {
-    return taskHandleState->getAllProgress(result);
+    for (const auto& [name, task] : m_taskMap) {
+        result.emplace(task.uuid.toString(), task.progress);
+    }
+}
+
+/**
+ * @brief add new task
+ *
+ * @param uuid uuid of the new task for identification
+ * @param task task itself
+ *
+ * @return false, if uuid already exist, else true
+ */
+Task*
+Cluster::addNewTask()
+{
+    std::lock_guard<std::mutex> guard(m_taskMutex);
+
+    Task newTask;
+    const std::string taskUuid = newTask.uuid.toString();
+    auto ret = m_taskMap.try_emplace(taskUuid, std::move(newTask));
+    if (ret.second == false) {
+        return nullptr;
+    }
+
+    m_taskQueue.push_back(taskUuid);
+
+    return &m_taskMap[taskUuid];
+}
+
+/**
+ * @brief run next task from the queue
+ *
+ * @return false, if task-queue if empty, else true
+ */
+bool
+Cluster::getNextTask()
+{
+    // check number of tasks in queue
+    if (m_taskQueue.size() == 0) {
+        return false;
+    }
+
+    // remove task from queue
+    const std::string nextUuid = m_taskQueue.front();
+    m_taskQueue.pop_front();
+
+    // init the new task
+    auto it = m_taskMap.find(nextUuid);
+    it->second.progress.state = ACTIVE_TASK_STATE;
+    it->second.progress.startActiveTimeStamp = std::chrono::system_clock::now();
+    m_currentTask = &it->second;
+
+    return true;
 }
 
 /**
@@ -345,4 +403,31 @@ bool
 Cluster::goToNextState(const uint32_t nextStateId)
 {
     return stateMachine->goToNextState(nextStateId);
+}
+
+/**
+ * @brief finish current task
+ */
+TaskType
+Cluster::finishTask()
+{
+    std::lock_guard<std::mutex> guard(m_taskMutex);
+
+    // precheck
+    if (m_currentTask != nullptr) {
+        Hanami::ErrorContainer error;
+        // TODO: handle error-ourpur
+        m_currentTask->progress.state = FINISHED_TASK_STATE;
+        m_currentTask->progress.endActiveTimeStamp = std::chrono::system_clock::now();
+
+        m_currentTask = nullptr;
+    }
+
+    getNextTask();
+
+    if (m_currentTask == nullptr) {
+        return NO_TASK;
+    }
+
+    return m_currentTask->type;
 }

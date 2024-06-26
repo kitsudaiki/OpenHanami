@@ -60,7 +60,8 @@ class TempFileHandler : Hanami::Thread
                              const Hanami::UserContext& userContext,
                              Hanami::ErrorContainer& error);
 
-    Hanami::FileHandle* getFileHandle(const std::string& uuid, const Hanami::UserContext& context);
+    Hanami::UploadFileHandle* getFileHandle(const std::string& uuid,
+                                            const Hanami::UserContext& context);
 
     bool addDataToPos(const std::string& uuid,
                       const uint64_t pos,
@@ -87,7 +88,7 @@ class TempFileHandler : Hanami::Thread
                         Hanami::ErrorContainer& error);
 
     std::mutex m_fileHandleMutex;
-    std::map<std::string, Hanami::FileHandle> m_tempFiles;
+    std::map<std::string, Hanami::UploadFileHandle> m_tempFiles;
 };
 
 #endif  // HANAMI_TEMPFILEHANDLER_H

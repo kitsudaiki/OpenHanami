@@ -258,16 +258,17 @@ HttpProcessing::triggerBlossom(json& result,
     // get initial blossom-item
     Blossom* blossom = mapEndpoint(id, type);
     if (blossom == nullptr) {
-        error.addMessage("No blosom found for the id " + id);
-        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        status.errorMessage = "";
+        status.statusCode = BAD_REQUEST_RTYPE;
+        status.errorMessage
+            = "No endpoint found for path '" + id + "' and type " + convertType(type);
+        error.addMessage(status.errorMessage);
         return false;
     }
 
     // inialize a new blossom-leaf for processing
     BlossomIO blossomIO;
-    blossomIO.blossomName = id;
-    blossomIO.blossomGroupType = convertType(type);
+    blossomIO.endpoint = id;
+    blossomIO.requestType = convertType(type);
     blossomIO.input = initialValues;
 
     // check input to be complete

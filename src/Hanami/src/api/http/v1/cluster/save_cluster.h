@@ -24,6 +24,9 @@
 #define SAVECLUSTER_H
 
 #include <api/endpoint_processing/blossom.h>
+#include <core/cluster/task.h>
+
+class Cluster;
 
 class SaveCluster : public Blossom
 {

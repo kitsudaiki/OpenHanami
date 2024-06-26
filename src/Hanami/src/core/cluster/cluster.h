@@ -66,18 +66,17 @@ class Cluster
 
     // meta
     const std::string getUuid();
-    const std::string getName();
-    bool setName(const std::string& newName);
     bool init(const Hanami::ClusterMeta& clusterTemplate, const std::string& uuid);
 
     // tasks
-    Task* getCurrentTask() const;
-    uint64_t getActualTaskCycle() const;
+    Task* addNewTask();
+    Task* getCurrentTask();
     const TaskProgress getProgress(const std::string& taskUuid);
     bool removeTask(const std::string& taskUuid);
     bool isFinish(const std::string& taskUuid);
     void getAllProgress(std::map<std::string, TaskProgress>& result);
     void updateClusterState();
+    TaskType finishTask();
 
     // states
     bool goToNextState(const uint32_t nextStateId);
@@ -91,7 +90,14 @@ class Cluster
 
    private:
     std::mutex m_clusterStateLock;
-    std::atomic<int> counter;
+    std::atomic<int> m_counter;
+
+    std::deque<std::string> m_taskQueue;
+    std::map<std::string, Task> m_taskMap;
+    std::mutex m_taskMutex;
+    Task* m_currentTask = nullptr;
+
+    bool getNextTask();
 };
 
 #endif  // HANAMI_CLUSTER_H

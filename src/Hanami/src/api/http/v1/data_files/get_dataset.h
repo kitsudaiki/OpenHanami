@@ -35,11 +35,6 @@ class GetDataSet : public Blossom
                  const json&,
                  BlossomStatus& status,
                  Hanami::ErrorContainer& error);
-
-   private:
-    bool getHeaderInformation(json& result,
-                              const std::string& location,
-                              Hanami::ErrorContainer& error);
 };
 
 #endif  // HANAMI_GET_DATA_SET_H

@@ -22,11 +22,12 @@
 
 #include "load_cluster.h"
 
-#include <core/cluster/add_tasks.h>
 #include <core/cluster/cluster.h>
 #include <core/cluster/cluster_handler.h>
+#include <core/cluster/statemachine_init.h>
 #include <database/checkpoint_table.h>
 #include <database/cluster_table.h>
+#include <hanami_common/statemachine.h>
 #include <hanami_root.h>
 
 LoadCluster::LoadCluster()
@@ -114,11 +115,27 @@ LoadCluster::runTask(BlossomIO& blossomIO,
         return false;
     }
 
-    // init request-task
-    const std::string taskUuid = addCheckpointRestoreTask(
-        *cluster, checkpointInfo, userContext.userId, userContext.projectId);
+    // create new task
+    Task* newTask = cluster->addNewTask();
+    if (newTask == nullptr) {
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+    newTask->name = "";
+    newTask->userId = userContext.userId;
+    newTask->projectId = userContext.projectId;
+    newTask->type = CLUSTER_CHECKPOINT_RESTORE_TASK;
+    newTask->progress.queuedTimeStamp = std::chrono::system_clock::now();
+    newTask->progress.totalNumberOfCycles = 1;
 
-    blossomIO.output["uuid"] = taskUuid;
+    // fill metadata
+    CheckpointRestoreInfo info;
+    info.checkpointInfo = checkpointInfo;
+    newTask->info = std::move(info);
+
+    cluster->stateMachine->goToNextState(PROCESS_TASK);
+
+    blossomIO.output["uuid"] = newTask->uuid.toString();
 
     return true;
 }

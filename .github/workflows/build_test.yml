@@ -315,6 +315,7 @@ jobs:
           docker run -d -v \
             ./example_configs/hanami:/etc/hanami \
             -p 127.0.0.1:11418:11418 \
+            --name=hanami \
             --env HANAMI_ADMIN_USER_ID=asdf \
             --env HANAMI_ADMIN_USER_NAME=asdf \
             --env HANAMI_ADMIN_PASSWORD=asdfasdf \
@@ -329,6 +330,10 @@ jobs:
         run: |
           cd ${GITHUB_REPOSITORY#*/}/testing/python_sdk_api
           /usr/bin/python3 sdk_api_test.py
+      - 
+        name: Get log of the docker-container, even if the test failed
+        if: always()
+        run: docker logs hanami
 
 
 
@@ -758,6 +763,6 @@ jobs:
     steps:
       - 
         name: "Delete artifacts"
-        uses: geekyeggo/delete-artifact@v4
+        uses: geekyeggo/delete-artifact@v5
         with:
           name: result

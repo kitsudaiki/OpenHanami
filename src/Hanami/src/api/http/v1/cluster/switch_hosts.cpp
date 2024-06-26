@@ -51,15 +51,18 @@ SwitchHosts::SwitchHosts() : Blossom("Switch the host, where the cluster should 
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("uuid", SAKURA_STRING_TYPE).setComment("UUID of the new created cluster.");
+    registerOutputField("created_at", SAKURA_STRING_TYPE)
+        .setComment("Timestamp, when cluster was created.");
 
-    registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the new created cluster.");
+    registerOutputField("uuid", SAKURA_STRING_TYPE).setComment("UUID of the moved cluster.");
+
+    registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the moved cluster.");
 
     registerOutputField("owner_id", SAKURA_STRING_TYPE)
-        .setComment("ID of the user, who created the new cluster.");
+        .setComment("ID of the user, who created the cluster.");
 
     registerOutputField("project_id", SAKURA_STRING_TYPE)
-        .setComment("ID of the project, where the new cluster belongs to.");
+        .setComment("ID of the project, where the cluster belongs to.");
 
     registerOutputField("visibility", SAKURA_STRING_TYPE)
         .setComment("Visibility of the new created cluster (private, shared, public).");

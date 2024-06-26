@@ -55,7 +55,23 @@ def delete_dataset(token: str,
     values = f'uuid={checkpoint_uuid}'
     return hanami_request.send_delete_request(token,
                                               address,
-                                              path, values, verify=verify_connection)
+                                              path,
+                                              values,
+                                              verify=verify_connection)
+
+
+def check_mnist_dataset(token: str,
+                        address: str,
+                        dataset_uuid: str,
+                        result_dataset_uuid: str,
+                        verify_connection: bool = True) -> str:
+    path = "/control/v1/dataset/check"
+    values = f'dataset_uuid={dataset_uuid}&result_uuid={result_dataset_uuid}'
+    return hanami_request.send_get_request(token,
+                                           address,
+                                           path,
+                                           values,
+                                           verify=verify_connection)
 
 
 def wait_until_upload_complete(token: str,
@@ -149,7 +165,7 @@ def upload_mnist_files(token: str,
         label_file_data = l_f.read()
 
     # initialize
-    path = "/control/v1/mnist/dataset"
+    path = "/control/v1/dataset/upload/mnist"
     json_body = {
         "name": name,
         "input_data_size": len(input_file_data),
@@ -189,7 +205,7 @@ def upload_mnist_files(token: str,
         raise hanami_exceptions.InternalServerErrorException()
 
     # finalize
-    path = "/control/v1/mnist/dataset"
+    path = "/control/v1/dataset/upload/mnist"
     json_body = {
         "uuid": uuid,
         "uuid_input_file": input_file_uuid,
@@ -213,7 +229,7 @@ def upload_csv_files(token: str,
         input_file_data = i_f.read()
 
     # initialize
-    path = "/control/v1/csv/dataset"
+    path = "/control/v1/dataset/upload/csv"
     json_body = {
         "name": name,
         "input_data_size": len(input_file_data),
@@ -246,7 +262,7 @@ def upload_csv_files(token: str,
         raise hanami_exceptions.InternalServerErrorException()
 
     # finalize
-    path = "/control/v1/csv/dataset"
+    path = "/control/v1/dataset/upload/csv"
     json_body = {
         "uuid": uuid,
         "uuid_input_file": input_file_uuid,

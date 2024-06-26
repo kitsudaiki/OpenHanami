@@ -795,17 +795,27 @@ Create a new task to train the cluster with the data of a dataset, which was upl
     address = "http://127.0.0.1:11418"
     task_name = "test_task"
     cluster_uuid = "9f86921d-9a7c-44a2-836c-1683928d9354"
-    dataset_uuid = "6f2bbcd2-7081-4b08-ae1d-16e6cd6f54c4"
+    inputs = {
+        "picture": "6f2bbcd2-7081-4b08-ae1d-16e6cd6f54c4"
+    }
+    outputs = {
+        "label": "6f2bbcd2-7081-4b08-ae1d-16e6cd6f54c4"
+    }
+
+    # inputs and outputs are maps with key-value-pairs, 
+    # where the key is the name of the brick of the matching 
+    # field within the dataset and the value is the UUID of 
+    # the used dataset for the input- and output-data
 
     # request a token for a user, who has admin-permissions
     # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
 
-    result = task.create_task(token, 
-                              address, 
-                              task_name, 
-                              "train", 
-                              cluster_uuid, 
-                              dataset_uuid)
+    result = task.create_train_task(token, 
+                                    address, 
+                                    task_name, 
+                                    cluster_uuid, 
+                                    inputs,
+                                    outputs)
     task_uuid = json.loads(result)["uuid"]
 
     # optional you can wait until the task is finished
@@ -829,17 +839,28 @@ Create a new task to request information from a trained cluster. As input the da
     address = "http://127.0.0.1:11418"
     task_name = "test_task"
     cluster_uuid = "9f86921d-9a7c-44a2-836c-1683928d9354"
-    dataset_uuid = "6f2bbcd2-7081-4b08-ae1d-16e6cd6f54c4"
+    inputs = {
+        "picture": "6f2bbcd2-7081-4b08-ae1d-16e6cd6f54c4"
+    }
+
+    results = {
+        "label": "test_output"
+    }
+
+    # inputs and results are maps with key-value-pairs, 
+    # where the key is the name of the brick of the matching 
+    # field within the dataset and the value is the UUID of 
+    # the used dataset for the input- and output-data
 
     # request a token for a user, who has admin-permissions
     # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
 
-    result = task.create_task(token, 
-                              address, 
-                              task_name, 
-                              "request", 
-                              cluster_uuid, 
-                              dataset_uuid)
+    result = task.create_request_task(token, 
+                                      address, 
+                                      task_name, 
+                                      cluster_uuid, 
+                                      inputs,
+                                      results)
     task_uuid = json.loads(result)["uuid"]
 
     # optional you can wait until the task is finished

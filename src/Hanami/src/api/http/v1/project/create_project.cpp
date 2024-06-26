@@ -41,12 +41,12 @@ CreateProject::CreateProject() : Blossom("Register a new project within Misaki."
 
     registerInputField("id", SAKURA_STRING_TYPE)
         .setComment("ID of the new project.")
-        .setLimit(4, 256)
+        .setLimit(4, 254)
         .setRegex(ID_REGEX);
 
     registerInputField("name", SAKURA_STRING_TYPE)
         .setComment("Name of the new project.")
-        .setLimit(4, 256)
+        .setLimit(4, 254)
         .setRegex(NAME_REGEX);
 
     //----------------------------------------------------------------------------------------------

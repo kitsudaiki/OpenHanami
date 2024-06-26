@@ -58,11 +58,9 @@
 #include <api/http/v1/project/delete_project.h>
 #include <api/http/v1/project/get_project.h>
 #include <api/http/v1/project/list_projects.h>
-#include <api/http/v1/request_results/delete_request_result.h>
-#include <api/http/v1/request_results/get_request_result.h>
-#include <api/http/v1/request_results/list_request_result.h>
 #include <api/http/v1/system_info/get_system_info.h>
-#include <api/http/v1/task/create_task.h>
+#include <api/http/v1/task/create_request_task.h>
+#include <api/http/v1/task/create_train_task.h>
 #include <api/http/v1/task/delete_task.h>
 #include <api/http/v1/task/list_task.h>
 #include <api/http/v1/task/show_task.h>
@@ -106,7 +104,8 @@ initTaskBlossoms()
 {
     const std::string group = "Task";
     HttpProcessing* httpProcessing = HanamiRoot::httpServer->httpProcessing;
-    httpProcessing->addEndpoint("v1/task", POST_TYPE, group, new CreateTask());
+    httpProcessing->addEndpoint("v1/task/train", POST_TYPE, group, new CreateTrainTask());
+    httpProcessing->addEndpoint("v1/task/request", POST_TYPE, group, new CreateRequestTask());
     httpProcessing->addEndpoint("v1/task", GET_TYPE, group, new ShowTask());
     httpProcessing->addEndpoint("v1/task/all", GET_TYPE, group, new ListTask());
     httpProcessing->addEndpoint("v1/task", DELETE_TYPE, group, new DeleteTask());
@@ -116,15 +115,17 @@ initTaskBlossoms()
  * @brief init dataset blossoms
  */
 void
-dataSetBlossoms()
+datasetBlossoms()
 {
     const std::string group = "Data Set";
     HttpProcessing* httpProcessing = HanamiRoot::httpServer->httpProcessing;
-    httpProcessing->addEndpoint("v1/mnist/dataset", POST_TYPE, group, new CreateMnistDataSet());
-    httpProcessing->addEndpoint("v1/mnist/dataset", PUT_TYPE, group, new FinalizeMnistDataSet());
-    httpProcessing->addEndpoint("v1/csv/dataset", POST_TYPE, group, new CreateCsvDataSet());
-    httpProcessing->addEndpoint("v1/csv/dataset", PUT_TYPE, group, new FinalizeCsvDataSet());
-    httpProcessing->addEndpoint("v1/dataset/check", POST_TYPE, group, new CheckDataSet());
+    httpProcessing->addEndpoint(
+        "v1/dataset/upload/mnist", POST_TYPE, group, new CreateMnistDataSet());
+    httpProcessing->addEndpoint(
+        "v1/dataset/upload/mnist", PUT_TYPE, group, new FinalizeMnistDataSet());
+    httpProcessing->addEndpoint("v1/dataset/upload/csv", POST_TYPE, group, new CreateCsvDataSet());
+    httpProcessing->addEndpoint("v1/dataset/upload/csv", PUT_TYPE, group, new FinalizeCsvDataSet());
+    httpProcessing->addEndpoint("v1/dataset/check", GET_TYPE, group, new CheckMnistDataSet());
     httpProcessing->addEndpoint("v1/dataset/progress", GET_TYPE, group, new GetProgressDataSet());
     httpProcessing->addEndpoint("v1/dataset", GET_TYPE, group, new GetDataSet());
     httpProcessing->addEndpoint("v1/dataset", DELETE_TYPE, group, new DeleteDataSet());
@@ -142,19 +143,6 @@ clusterCheckpointBlossoms()
     httpProcessing->addEndpoint("v1/checkpoint", GET_TYPE, group, new GetCheckpoint());
     httpProcessing->addEndpoint("v1/checkpoint", DELETE_TYPE, group, new DeleteCheckpoint());
     httpProcessing->addEndpoint("v1/checkpoint/all", GET_TYPE, group, new ListCheckpoint());
-}
-
-/**
- * @brief init request_result blossoms
- */
-void
-resultBlossoms()
-{
-    const std::string group = "Request-Result";
-    HttpProcessing* httpProcessing = HanamiRoot::httpServer->httpProcessing;
-    httpProcessing->addEndpoint("v1/request_result", GET_TYPE, group, new GetRequestResult());
-    httpProcessing->addEndpoint("v1/request_result/all", GET_TYPE, group, new ListRequestResult());
-    httpProcessing->addEndpoint("v1/request_result", DELETE_TYPE, group, new DeleteRequestResult());
 }
 
 /**
@@ -246,14 +234,13 @@ void
 initBlossoms()
 {
     clusterCheckpointBlossoms();
-    dataSetBlossoms();
+    datasetBlossoms();
     hostBlossoms();
     initClusterBlossoms();
     initTaskBlossoms();
     logsBlossoms();
     measuringBlossomes();
     projectBlossomes();
-    resultBlossoms();
     tokenBlossomes();
     userBlossomes();
 

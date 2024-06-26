@@ -43,7 +43,6 @@ class DataSetTable : public HanamiSqlTable
         std::string ownerId = "";
         std::string visibility = "";
         std::string name = "";
-        std::string type = "";
         std::string location = "";
     };
 
@@ -67,11 +66,6 @@ class DataSetTable : public HanamiSqlTable
     ReturnStatus deleteDataSet(const std::string& uuid,
                                const Hanami::UserContext& userContext,
                                Hanami::ErrorContainer& error);
-
-    ReturnStatus getDateSetInfo(json& result,
-                                const std::string& dataUuid,
-                                const Hanami::UserContext& userContext,
-                                Hanami::ErrorContainer& error);
 
    private:
     DataSetTable();

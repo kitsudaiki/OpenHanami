@@ -43,7 +43,7 @@ CreateToken::CreateToken() : Blossom("Create a JWT-access-token for a specific u
     registerInputField("id", SAKURA_STRING_TYPE)
         .setComment("ID of the user.")
         .setRegex(ID_EXT_REGEX)
-        .setLimit(4, 256);
+        .setLimit(4, 254);
 
     registerInputField("password", SAKURA_STRING_TYPE)
         .setComment("Passphrase of the user, to verify the access.")

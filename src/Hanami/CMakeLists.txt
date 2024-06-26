@@ -51,11 +51,9 @@ set(SOURCES
     src/api/http/v1/project/delete_project.h
     src/api/http/v1/project/get_project.h
     src/api/http/v1/project/list_projects.h
-    src/api/http/v1/request_results/delete_request_result.h
-    src/api/http/v1/request_results/get_request_result.h
-    src/api/http/v1/request_results/list_request_result.h
     src/api/http/v1/system_info/get_system_info.h
-    src/api/http/v1/task/create_task.h
+    src/api/http/v1/task/create_request_task.h
+    src/api/http/v1/task/create_train_task.h
     src/api/http/v1/task/delete_task.h
     src/api/http/v1/task/list_task.h
     src/api/http/v1/task/show_task.h
@@ -71,27 +69,23 @@ set(SOURCES
     src/api/websocket/file_upload.h
     src/args.h
     src/config.h
-    src/core/cluster/add_tasks.h
     src/core/cluster/cluster.h
     src/core/cluster/cluster_handler.h
     src/core/cluster/cluster_init.h
     src/core/cluster/objects.h
     src/core/cluster/statemachine_init.h
-    src/core/cluster/states/checkpoints/restore_cluster_state.h
-    src/core/cluster/states/checkpoints/save_cluster_state.h
+    src/core/cluster/states/restore_cluster_state.h
+    src/core/cluster/states/save_cluster_state.h
     src/core/cluster/states/cycle_finish_state.h
-    src/core/cluster/states/graphs/graph_interpolation_state.h
-    src/core/cluster/states/graphs/graph_train_forward_state.h
-    src/core/cluster/states/images/image_identify_state.h
-    src/core/cluster/states/images/image_train_forward_state.h
-    src/core/cluster/states/tables/table_interpolation_state.h
-    src/core/cluster/states/tables/table_train_forward_state.h
+    src/core/cluster/states/request_state.h
+    src/core/cluster/states/train_forward_state.h
     src/core/cluster/states/task_handle_state.h
     src/core/cluster/task.h
     src/core/cuda_functions.h
-    src/core/io/buffer/buffer_io.h
-    src/core/io/disc/checkpoint_io.h
-    src/core/io/io_interface.h
+    src/core/io/checkpoint/buffer/buffer_io.h
+    src/core/io/checkpoint/disc/checkpoint_io.h
+    src/core/io/checkpoint/io_interface.h
+    src/core/io/data_set/dataset_file_io.h
     src/core/processing/cluster_io_functions.h
     src/core/processing/cluster_resize.h
     src/core/processing/cpu/backpropagation.h
@@ -114,7 +108,6 @@ set(SOURCES
     src/database/generic_tables/hanami_sql_log_table.h
     src/database/generic_tables/hanami_sql_table.h
     src/database/projects_table.h
-    src/database/request_result_table.h
     src/database/tempfile_table.h
     src/database/users_table.h
     src/documentation/generate_rest_api_docu.h
@@ -158,11 +151,9 @@ set(SOURCES
     src/api/http/v1/project/delete_project.cpp
     src/api/http/v1/project/get_project.cpp
     src/api/http/v1/project/list_projects.cpp
-    src/api/http/v1/request_results/delete_request_result.cpp
-    src/api/http/v1/request_results/get_request_result.cpp
-    src/api/http/v1/request_results/list_request_result.cpp
     src/api/http/v1/system_info/get_system_info.cpp
-    src/api/http/v1/task/create_task.cpp
+    src/api/http/v1/task/create_request_task.cpp
+    src/api/http/v1/task/create_train_task.cpp
     src/api/http/v1/task/delete_task.cpp
     src/api/http/v1/task/list_task.cpp
     src/api/http/v1/task/show_task.cpp
@@ -176,24 +167,20 @@ set(SOURCES
     src/api/http/v1/user/remove_project_from_user.cpp
     src/api/websocket/cluster_io.cpp
     src/api/websocket/file_upload.cpp
-    src/core/cluster/add_tasks.cpp
     src/core/cluster/cluster.cpp
     src/core/cluster/cluster_handler.cpp
     src/core/cluster/cluster_init.cpp
     src/core/cluster/statemachine_init.cpp
-    src/core/cluster/states/checkpoints/restore_cluster_state.cpp
-    src/core/cluster/states/checkpoints/save_cluster_state.cpp
+    src/core/cluster/states/restore_cluster_state.cpp
+    src/core/cluster/states/save_cluster_state.cpp
     src/core/cluster/states/cycle_finish_state.cpp
-    src/core/cluster/states/graphs/graph_interpolation_state.cpp
-    src/core/cluster/states/graphs/graph_train_forward_state.cpp
-    src/core/cluster/states/images/image_identify_state.cpp
-    src/core/cluster/states/images/image_train_forward_state.cpp
-    src/core/cluster/states/tables/table_interpolation_state.cpp
-    src/core/cluster/states/tables/table_train_forward_state.cpp
+    src/core/cluster/states/request_state.cpp
+    src/core/cluster/states/train_forward_state.cpp
     src/core/cluster/states/task_handle_state.cpp
-    src/core/io/buffer/buffer_io.cpp
-    src/core/io/disc/checkpoint_io.cpp
-    src/core/io/io_interface.cpp
+    src/core/io/checkpoint/buffer/buffer_io.cpp
+    src/core/io/checkpoint/disc/checkpoint_io.cpp
+    src/core/io/checkpoint/io_interface.cpp
+    src/core/io/data_set/dataset_file_io.cpp
     src/core/processing/cpu/cpu_host.cpp
     src/core/processing/cpu/worker_thread.cpp
     src/core/processing/cuda/cuda_host.cpp
@@ -210,7 +197,6 @@ set(SOURCES
     src/database/generic_tables/hanami_sql_log_table.cpp
     src/database/generic_tables/hanami_sql_table.cpp
     src/database/projects_table.cpp
-    src/database/request_result_table.cpp
     src/database/tempfile_table.cpp
     src/database/users_table.cpp
     src/documentation/generate_rest_api_docu.cpp
@@ -225,26 +211,26 @@ add_executable(Hanami
     )
 add_executable(Hanami_unittests
     ${SOURCES}
-    tests/unit_tests/database/cluster_table_test.h
-    tests/unit_tests/database/cluster_table_test.cpp
-    tests/unit_tests/database/audit_log_table_test.h
-    tests/unit_tests/database/audit_log_table_test.cpp
-    tests/unit_tests/database/checkpoint_table_test.h
-    tests/unit_tests/database/checkpoint_table_test.cpp
-    tests/unit_tests/database/dataset_table_test.h
-    tests/unit_tests/database/dataset_table_test.cpp
-    tests/unit_tests/database/error_log_table_test.h
-    tests/unit_tests/database/error_log_table_test.cpp
-    tests/unit_tests/database/projects_table_test.h
-    tests/unit_tests/database/projects_table_test.cpp
-    tests/unit_tests/database/request_result_table_test.h
-    tests/unit_tests/database/request_result_table_test.cpp
-    tests/unit_tests/database/tempfile_table_test.h
-    tests/unit_tests/database/tempfile_table_test.cpp
-    tests/unit_tests/database/users_table_test.h
-    tests/unit_tests/database/users_table_test.cpp
-    tests/unit_tests/core/cluster_test.h
     tests/unit_tests/core/cluster_test.cpp
+    tests/unit_tests/core/cluster_test.h
+    tests/unit_tests/core/dataset_io_test.cpp
+    tests/unit_tests/core/dataset_io_test.h
+    tests/unit_tests/database/audit_log_table_test.cpp
+    tests/unit_tests/database/audit_log_table_test.h
+    tests/unit_tests/database/checkpoint_table_test.cpp
+    tests/unit_tests/database/checkpoint_table_test.h
+    tests/unit_tests/database/cluster_table_test.cpp
+    tests/unit_tests/database/cluster_table_test.h
+    tests/unit_tests/database/dataset_table_test.cpp
+    tests/unit_tests/database/dataset_table_test.h
+    tests/unit_tests/database/error_log_table_test.cpp
+    tests/unit_tests/database/error_log_table_test.h
+    tests/unit_tests/database/projects_table_test.cpp
+    tests/unit_tests/database/projects_table_test.h
+    tests/unit_tests/database/tempfile_table_test.cpp
+    tests/unit_tests/database/tempfile_table_test.h
+    tests/unit_tests/database/users_table_test.cpp
+    tests/unit_tests/database/users_table_test.h
     tests/unit_tests/main.cpp
     # ${CUDA_OBJECTS}
     )
@@ -260,7 +246,6 @@ include_directories(
     ../libraries/hanami_config/include
     ../libraries/hanami_sqlite/include
     ../libraries/hanami_database/include
-    ../libraries/hanami_files/include
     ../libraries/hanami_crypto/include
     ../libraries/hanami_args/include
     ../libraries/hanami_policies/include
@@ -290,7 +275,6 @@ target_link_libraries(Hanami
     hanami_config
     hanami_sqlite
     hanami_database
-    hanami_files
     hanami_crypto
     hanami_args
     hanami_policies
@@ -313,7 +297,6 @@ target_link_libraries(Hanami_unittests
     hanami_config
     hanami_sqlite
     hanami_database
-    hanami_files
     hanami_crypto
     hanami_args
     hanami_policies

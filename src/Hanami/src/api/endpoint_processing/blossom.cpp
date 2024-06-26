@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file        blossom.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
@@ -126,7 +126,7 @@ Blossom::growBlossom(BlossomIO& blossomIO,
                      BlossomStatus& status,
                      Hanami::ErrorContainer& error)
 {
-    LOG_DEBUG("runTask " + blossomIO.blossomName);
+    LOG_DEBUG("runTask " + blossomIO.endpoint);
 
     // set default-values
     fillDefaultValues(blossomIO.input);
@@ -146,7 +146,7 @@ Blossom::growBlossom(BlossomIO& blossomIO,
     // handle result
     if (runTask(blossomIO, context, status, error) == false) {
         if (status.statusCode == INTERNAL_SERVER_ERROR_RTYPE) {
-            createError(blossomIO, "blossom execute", error);
+            createError(blossomIO, error);
         }
         return false;
     }
@@ -211,33 +211,18 @@ Blossom::validateFieldsCompleteness(const json& input,
  * @brief create an error-output
  *
  * @param blossomIO blossom-item with information of the error-location
- * @param errorLocation location where the error appeared
  * @param error reference for error-output
  */
 void
-Blossom::createError(const BlossomIO& blossomIO,
-                     const std::string& errorLocation,
-                     Hanami::ErrorContainer& error)
+Blossom::createError(const BlossomIO& blossomIO, Hanami::ErrorContainer& error)
 {
     Hanami::TableItem errorOutput;
     // initialize error-output
     errorOutput.addColumn("Field");
     errorOutput.addColumn("Value");
 
-    if (errorLocation.size() > 0) {
-        errorOutput.addRow(std::vector<std::string>{"location", errorLocation});
-    }
-
-    if (blossomIO.blossomType.size() > 0) {
-        errorOutput.addRow(std::vector<std::string>{"blossom-type", blossomIO.blossomType});
-    }
-    if (blossomIO.blossomGroupType.size() > 0) {
-        errorOutput.addRow(
-            std::vector<std::string>{"blossom-group-type", blossomIO.blossomGroupType});
-    }
-    if (blossomIO.blossomName.size() > 0) {
-        errorOutput.addRow(std::vector<std::string>{"blossom-name", blossomIO.blossomName});
-    }
+    errorOutput.addRow(std::vector<std::string>{"endpoint", blossomIO.endpoint});
+    errorOutput.addRow(std::vector<std::string>{"request-type", blossomIO.requestType});
 
     error.addMessage("Error in location: \n" + errorOutput.toString(200, true));
 }

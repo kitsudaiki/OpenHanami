@@ -42,6 +42,17 @@ BinaryFileDirect::~BinaryFileDirect()
 }
 
 /**
+ * @brief check if file is open
+ *
+ * @return true, if file is open
+ */
+bool
+BinaryFileDirect::isOpen() const
+{
+    return m_fileDescriptor != -1;
+}
+
+/**
  * @brief create a new file or open an existing file
  *
  * @param error reference for error-output
