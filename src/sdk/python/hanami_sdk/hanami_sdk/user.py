@@ -23,7 +23,7 @@ def create_user(token: str,
                 passwort: str,
                 is_admin: bool,
                 verify_connection: bool = True) -> str:
-    path = "/control/v1/user"
+    path = "/v1/user"
     json_body = {
         "id": user_id,
         "name": user_name,
@@ -42,7 +42,7 @@ def get_user(token: str,
              address: str,
              user_id: str,
              verify_connection: bool = True) -> str:
-    path = "/control/v1/user"
+    path = "/v1/user"
     values = f'id={user_id}'
     return hanami_request.send_get_request(token,
                                            address,
@@ -54,7 +54,7 @@ def get_user(token: str,
 def list_users(token: str,
                address: str,
                verify_connection: bool = True) -> str:
-    path = "/control/v1/user/all"
+    path = "/v1/user/all"
     return hanami_request.send_get_request(token,
                                            address,
                                            path,
@@ -66,7 +66,7 @@ def delete_user(token: str,
                 address: str,
                 user_id: str,
                 verify_connection: bool = True) -> str:
-    path = "/control/v1/user"
+    path = "/v1/user"
     values = f'id={user_id}'
     return hanami_request.send_delete_request(token,
                                               address,
@@ -82,7 +82,7 @@ def add_roject_to_user(token: str,
                        role: str,
                        is_project_admin: bool,
                        verify_connection: bool = True) -> str:
-    path = "/control/v1/user/project"
+    path = "/v1/user/project"
     json_body = {
         "id": user_id,
         "project_id": project_id,
@@ -102,7 +102,7 @@ def remove_project_fromUser(token: str,
                             user_id: str,
                             project_id: str,
                             verify_connection: bool = True) -> str:
-    path = "/control/v1/user/project"
+    path = "/v1/user/project"
     values = f'project_id={project_id}&id={user_id}'
     return hanami_request.send_delete_request(token,
                                               address,
@@ -114,7 +114,7 @@ def remove_project_fromUser(token: str,
 def list_projects_of_user(token: str,
                           address: str,
                           verify_connection: bool = True) -> str:
-    path = "/control/v1/user/project"
+    path = "/v1/user/project"
     return hanami_request.send_get_request(token,
                                            address,
                                            path,
@@ -126,7 +126,7 @@ def switch_project(token: str,
                    address: str,
                    project_id: str,
                    verify_connection: bool = True) -> str:
-    path = "/control/v1/user/project"
+    path = "/v1/user/project"
     json_body = {
         "project_id": project_id,
     }

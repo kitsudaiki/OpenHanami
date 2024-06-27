@@ -20,7 +20,7 @@ def request_token(address: str,
                   user_id: str,
                   pw: str,
                   verify_connection: bool = True) -> str:
-    url = f'{address}/control/v1/token'
+    url = f'{address}/v1/token'
     json_body = {
         "id": user_id,
         "password": pw,
