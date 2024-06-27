@@ -23,7 +23,6 @@
 #include "http_processing.h"
 
 #include <api/endpoint_processing/blossom.h>
-#include <api/endpoint_processing/http_processing/file_send.h>
 #include <api/endpoint_processing/http_processing/response_builds.h>
 #include <api/endpoint_processing/http_processing/string_functions.h>
 #include <api/endpoint_processing/http_server.h>
@@ -72,15 +71,6 @@ HttpProcessing::processRequest(http::request<http::string_body>& httpRequest,
         return false;
     }
 
-    // check for dashboard-client-request
-    if (messageType == http::verb::get && path.compare(0, 8, "/control") != 0) {
-        if (processClientRequest(httpResponse, path, error) == false) {
-            error.addMessage("Failed to send dashboard-files");
-            return false;
-        }
-        return true;
-    }
-
     // get payload of message
     if (messageType == http::verb::post || messageType == http::verb::put) {
         payload = httpRequest.body().data();
@@ -93,14 +83,12 @@ HttpProcessing::processRequest(http::request<http::string_body>& httpRequest,
     }
 
     // handle control-messages
-    if (cutPath(path, "/control/")) {
-        HttpRequestType hType = static_cast<HttpRequestType>(messageType);
-        if (processControlRequest(httpResponse, path, token, payload, hType, error) == false) {
-            error.addMessage("Failed to process control-request");
-            return false;
-        }
-        return true;
+    HttpRequestType hType = static_cast<HttpRequestType>(messageType);
+    if (processControlRequest(httpResponse, path, token, payload, hType, error) == false) {
+        error.addMessage("Failed to process control-request");
+        return false;
     }
+    return true;
 
     // handle default, if nothing was found
     error.addMessage("no matching endpoint found for path '" + path + "'");

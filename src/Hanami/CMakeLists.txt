@@ -10,7 +10,6 @@ set(CMAKE_CXX_COMPILER "clang++-15")
 # Adding source files
 set(SOURCES
     src/api/endpoint_processing/blossom.h
-    src/api/endpoint_processing/http_processing/file_send.h
     src/api/endpoint_processing/http_processing/http_processing.h
     src/api/endpoint_processing/http_processing/response_builds.h
     src/api/endpoint_processing/http_processing/string_functions.h
@@ -113,7 +112,6 @@ set(SOURCES
     src/documentation/generate_rest_api_docu.h
     src/hanami_root.h
     src/api/endpoint_processing/blossom.cpp
-    src/api/endpoint_processing/http_processing/file_send.cpp
     src/api/endpoint_processing/http_processing/http_processing.cpp
     src/api/endpoint_processing/http_server.cpp
     src/api/endpoint_processing/http_websocket_thread.cpp

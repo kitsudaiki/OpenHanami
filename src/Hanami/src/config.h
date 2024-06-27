@@ -89,14 +89,6 @@ registerConfigs()
         .setComment("Flag to enable the http-endpoint.")
         .setDefault(false);
 
-    REGISTER_BOOL_CONFIG(httpGroup, "enable_dashboard")
-        .setComment("Flag to enable the dashboard.")
-        .setDefault(false);
-
-    REGISTER_STRING_CONFIG(httpGroup, "dashboard_files")
-        .setComment("Local path to the directory, which contains the files of the dashboard.")
-        .setRequired();
-
     REGISTER_STRING_CONFIG(httpGroup, "ip")
         .setComment("IP-address, where the http-server should listen.")
         .setDefault("0.0.0.0");
