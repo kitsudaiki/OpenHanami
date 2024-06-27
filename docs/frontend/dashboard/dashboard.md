@@ -6,7 +6,7 @@ The dashboard is one way to interact with Hanami.
 
 !!! warning
 
-    The current dashboard is only a first prototypical implementation and NOT maintained at the momentan due to a lack of time. This documentation is not up-to-date at the moment, I'm very sorry, but it should be still enough to give a basic impression of the current state and workflow.
+    The current dashboard is only a first prototypical implementation and NOT maintained at the moment due to a lack of time. Because of this, the dashboard was disabled at the moment, but it is planned to completely refactor the dashboard in the near future. It will look similar to the following example-workflow of the prototype.
 
 ## Example workflow
 

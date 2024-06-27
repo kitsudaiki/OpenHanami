@@ -76,7 +76,13 @@ parseUri(const std::string& token,
         LOG_DEBUG(status.errorMessage);
         return false;
     }
-    if (parts.at(0).find("/") == std::string::npos) {
+    if (parts.at(0).size() <= 5) {
+        status.errorMessage = "Uri is too short.";
+        status.statusCode = BAD_REQUEST_RTYPE;
+        LOG_DEBUG(status.errorMessage);
+        return false;
+    }
+    if (parts.at(0).at(0) != '/') {
         status.errorMessage = "Uri doesn't start with '/'";
         status.statusCode = BAD_REQUEST_RTYPE;
         LOG_DEBUG(status.errorMessage);
@@ -95,8 +101,8 @@ parseUri(const std::string& token,
         return false;
     }
 
-    // split first part again to get target and real part
-    request.id = parts[0];
+    // get path, but without the starting "/"
+    request.targetEndpoint = std::string(&parts[0][1], parts[0].size() - 1);
 
     // prepare payload, if exist
     if (parts.size() > 1) {

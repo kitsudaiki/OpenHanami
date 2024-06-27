@@ -14,11 +14,11 @@ Steps:
 
     `{"name": "<NAME>", "input_data_size": <SIZE>, "label_data_size": <SIZE>}` 
 
-    to `<ADDRESS>/control/v1/mnist/dataset` in init an upload of a MNIST-dataset or 
+    to `<ADDRESS>/v1/mnist/dataset` in init an upload of a MNIST-dataset or 
 
     `{"name": "<NAME>", "input_data_size": <SIZE>}`
 
-    to `<ADDRESS/control/v1/csv/dataset` to upload a CSV-file.
+    to `<ADDRESS/v1/csv/dataset` to upload a CSV-file.
     The `<SIZE>` is the size of the file in number of bytes to allocate the memory in the backend. 
 
     The response is a json with the content:
@@ -42,9 +42,9 @@ Steps:
 
     The response is the `FileUploadResponse_Message`-message.
 
-4. After all is uploade, it can be checked, if the backend has registered all packages, with a GET-request against `<ADDRESS>/control/v1/dataset/progress?uuid=<UUID>` and returns a json like `{"complete": true }`, which says it is fully uploaded or not.
+4. After all is uploade, it can be checked, if the backend has registered all packages, with a GET-request against `<ADDRESS>/v1/dataset/progress?uuid=<UUID>` and returns a json like `{"complete": true }`, which says it is fully uploaded or not.
 
-5. After everything was uploaded and the progress says, it is complete, a PUT-request to `<ADDRESS>/control/v1/mnist/dataset` or  `<ADDRESS>/control/v1/csv/dataset` has to be send with a file like this:
+5. After everything was uploaded and the progress says, it is complete, a PUT-request to `<ADDRESS>/v1/mnist/dataset` or  `<ADDRESS>/v1/csv/dataset` has to be send with a file like this:
 
     `{"uuid": "<DATASET_UUID>", "uuid_input_file": "<FILE_UUID>", "uuid_label_file": "<FILE_UUID>"}`
 
@@ -59,7 +59,7 @@ Steps:
 Steps:
 
 1. send PUT-request with json-body `{"uuid": "<CLUSTER_UUID>",
-"new_state": "DIRECT"}` to `<ADDRESS>/control/v1/cluster/set_mode` to swtich the cluster from the task-mode to the direct-mode
+"new_state": "DIRECT"}` to `<ADDRESS>/v1/cluster/set_mode` to swtich the cluster from the task-mode to the direct-mode
 
 2. create a websocket-connection to `ws://<ADDRESS>` and send as first message `{"token": "<TOKEN>", "uuid": "<CLUSTER_UUID>", "target": "cluster"}` to request a connection of the websocket to the requested cluster. If the connection is accepted, it returns a json with success = 1.
 

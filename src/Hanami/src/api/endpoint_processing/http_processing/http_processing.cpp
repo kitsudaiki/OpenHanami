@@ -23,7 +23,6 @@
 #include "http_processing.h"
 
 #include <api/endpoint_processing/blossom.h>
-#include <api/endpoint_processing/http_processing/file_send.h>
 #include <api/endpoint_processing/http_processing/response_builds.h>
 #include <api/endpoint_processing/http_processing/string_functions.h>
 #include <api/endpoint_processing/http_server.h>
@@ -72,15 +71,6 @@ HttpProcessing::processRequest(http::request<http::string_body>& httpRequest,
         return false;
     }
 
-    // check for dashboard-client-request
-    if (messageType == http::verb::get && path.compare(0, 8, "/control") != 0) {
-        if (processClientRequest(httpResponse, path, error) == false) {
-            error.addMessage("Failed to send dashboard-files");
-            return false;
-        }
-        return true;
-    }
-
     // get payload of message
     if (messageType == http::verb::post || messageType == http::verb::put) {
         payload = httpRequest.body().data();
@@ -93,14 +83,12 @@ HttpProcessing::processRequest(http::request<http::string_body>& httpRequest,
     }
 
     // handle control-messages
-    if (cutPath(path, "/control/")) {
-        HttpRequestType hType = static_cast<HttpRequestType>(messageType);
-        if (processControlRequest(httpResponse, path, token, payload, hType, error) == false) {
-            error.addMessage("Failed to process control-request");
-            return false;
-        }
-        return true;
+    HttpRequestType hType = static_cast<HttpRequestType>(messageType);
+    if (processControlRequest(httpResponse, path, token, payload, hType, error) == false) {
+        error.addMessage("Failed to process control-request");
+        return false;
     }
+    return true;
 
     // handle default, if nothing was found
     error.addMessage("no matching endpoint found for path '" + path + "'");
@@ -154,7 +142,7 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
         }
 
         // handle token-request
-        if (uri == "v1/token" && hanamiRequest.httpType == POST_TYPE) {
+        if (hanamiRequest.targetEndpoint == "v1/token" && hanamiRequest.httpType == POST_TYPE) {
             inputValuesJson.erase("token");
 
             if (triggerBlossom(
@@ -172,7 +160,7 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
         json tokenInputValues = json::object();
         tokenInputValues["token"] = token;
         tokenInputValues["http_type"] = static_cast<uint32_t>(hanamiRequest.httpType);
-        tokenInputValues["endpoint"] = hanamiRequest.id;
+        tokenInputValues["endpoint"] = hanamiRequest.targetEndpoint;
         if (triggerBlossom(
                 tokenData, "v1/auth", GET_TYPE, json::object(), tokenInputValues, status, error)
             == false)
@@ -187,7 +175,7 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
         const std::string httpTypeStr = convertType(hanamiRequest.httpType);
         if (hanamiRequest.httpType != GET_TYPE) {
             if (AuditLogTable::getInstance()->addAuditLogEntry(
-                    getDatetime(), userId, hanamiRequest.id, httpTypeStr, error)
+                    getDatetime(), userId, hanamiRequest.targetEndpoint, httpTypeStr, error)
                 == false)
             {
                 error.addMessage("ERROR: Failed to write audit-log into database");
@@ -196,13 +184,13 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
             }
         }
 
-        if (hanamiRequest.id != "v1/auth") {
+        if (hanamiRequest.targetEndpoint != "v1/auth") {
             inputValuesJson.erase("token");
         }
 
         // make real request
         if (triggerBlossom(result,
-                           hanamiRequest.id,
+                           hanamiRequest.targetEndpoint,
                            hanamiRequest.httpType,
                            tokenData,
                            inputValuesJson,

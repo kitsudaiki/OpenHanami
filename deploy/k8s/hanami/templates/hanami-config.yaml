@@ -23,8 +23,6 @@ data:
     [http]
     enable = True
     ip = {{ .Values.api.ip }}
-    dashboard_files = "/etc/Hanami-Dashboard/src"
     port = {{ .Values.api.port }}
-    enable_dashboard = True
 
 kind: ConfigMap

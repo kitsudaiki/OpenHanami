@@ -93,7 +93,7 @@ static_assert(sizeof(NameEntry) == 256);
 
 struct RequestMessage {
     HttpRequestType httpType = GET_TYPE;
-    std::string id = "";
+    std::string targetEndpoint = "";
     std::string inputValues = "{}";
 };
 

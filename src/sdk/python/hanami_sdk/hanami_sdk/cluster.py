@@ -29,7 +29,7 @@ def create_cluster(token: str,
     base64_bytes = base64.b64encode(template_bytes)
     base64_string = base64_bytes.decode("ascii")
 
-    path = "/control/v1/cluster"
+    path = "/v1/cluster"
     json_body = {
         "name": name,
         "template": base64_string,
@@ -47,7 +47,7 @@ def save_cluster(token: str,
                  name: str,
                  cluster_uuid: str,
                  verify_connection: bool = True) -> str:
-    path = "/control/v1/cluster/save"
+    path = "/v1/cluster/save"
     json_body = {
         "name": name,
         "cluster_uuid": cluster_uuid,
@@ -65,7 +65,7 @@ def restore_cluster(token: str,
                     checkpoint_uuid: str,
                     cluster_uuid: str,
                     verify_connection: bool = True) -> str:
-    path = "/control/v1/cluster/load"
+    path = "/v1/cluster/load"
     json_body = {
         "checkpoint_uuid": checkpoint_uuid,
         "cluster_uuid": cluster_uuid,
@@ -82,7 +82,7 @@ def get_cluster(token: str,
                 address: str,
                 cluster_uuid: str,
                 verify_connection: bool = True) -> str:
-    path = "/control/v1/cluster"
+    path = "/v1/cluster"
     values = f'uuid={cluster_uuid}'
     return hanami_request.send_get_request(token,
                                            address,
@@ -94,7 +94,7 @@ def get_cluster(token: str,
 def list_clusters(token: str,
                   address: str,
                   verify_connection: bool = True) -> str:
-    path = "/control/v1/cluster/all"
+    path = "/v1/cluster/all"
     return hanami_request.send_get_request(token,
                                            address,
                                            path,
@@ -106,7 +106,7 @@ def delete_cluster(token: str,
                    address: str,
                    cluster_uuid: str,
                    verify_connection: bool = True) -> str:
-    path = "/control/v1/cluster"
+    path = "/v1/cluster"
     values = f'uuid={cluster_uuid}'
     return hanami_request.send_delete_request(token,
                                               address,
@@ -119,7 +119,7 @@ def switch_to_task_mode(token: str,
                         address: str,
                         cluster_uuid: str,
                         verify_connection: bool = True):
-    path = "/control/v1/cluster/set_mode"
+    path = "/v1/cluster/set_mode"
     json_body = {
         "new_state": "TASK",
         "uuid": cluster_uuid,
@@ -137,7 +137,7 @@ def switch_host(token: str,
                 cluster_uuid: str,
                 host_uuid: str,
                 verify_connection: bool = True):
-    path = "/control/v1/cluster/switch_host"
+    path = "/v1/cluster/switch_host"
     json_body = {
         "cluster_uuid": cluster_uuid,
         "host_uuid": host_uuid,
@@ -154,7 +154,7 @@ async def switch_to_direct_mode(token: str,
                                 address: str,
                                 cluster_uuid: str,
                                 verify_connection: bool = True):
-    path = "/control/v1/cluster/set_mode"
+    path = "/v1/cluster/set_mode"
     json_body = {
         "new_state": "DIRECT",
         "uuid": cluster_uuid,
