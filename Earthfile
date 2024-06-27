@@ -109,16 +109,6 @@ build-image:
 
     COPY ./builds/binaries/Hanami  /usr/bin/Hanami
 
-    COPY src/frontend/Hanami-Dashboard /etc/Hanami-Dashboard
-
-    # Remove symlinks in order to replace them by the real repos
-    RUN rm /etc/Hanami-Dashboard/src/sdk /etc/Hanami-Dashboard/src/hanami_messages /etc/Hanami-Dashboard/src/Hanami-Dashboard-Dependencies
-
-    # copy real-data to where the symlinks were
-    COPY src/sdk /etc/Hanami-Dashboard/src/sdk
-    COPY src/libraries/hanami_messages /etc/Hanami-Dashboard/src/hanami_messages
-    COPY src/frontend/Hanami-Dashboard-Dependencies /etc/Hanami-Dashboard/src/Hanami-Dashboard-Dependencies
-
     # run Hanami
     ENTRYPOINT ["/usr/bin/Hanami"]
 
