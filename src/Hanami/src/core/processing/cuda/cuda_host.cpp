@@ -22,9 +22,9 @@
 
 #include "cuda_host.h"
 
-#include <core/cuda_functions.h>
 #include <core/processing/cluster_io_functions.h>
 #include <core/processing/cluster_resize.h>
+#include <core/processing/cuda/cuda_functions.h>
 
 /**
  * @brief constructor
@@ -113,11 +113,10 @@ CudaHost::moveCluster(Cluster* cluster)
     const std::lock_guard<std::mutex> lock(m_cudaMutex);
 
     // sync data from gpu to host, in order to have a consistent state
-    /*copyFromGpu_CUDA(&cluster->gpuPointer,
-                     &cluster->neuronBlocks,
-                     cluster->neuronBlocks.size(),
+    copyFromGpu_CUDA(&cluster->gpuPointer,
+                     cluster->bricks,
                      getItemData<SynapseBlock>(synapseBlocks),
-                     synapseBlocks.metaData->itemCapacity);*/
+                     synapseBlocks.metaData->itemCapacity);
 
     LogicalHost* originHost = cluster->attachedHost;
     SynapseBlock* cpuSynapseBlocks = Hanami::getItemData<SynapseBlock>(synapseBlocks);
@@ -141,15 +140,11 @@ CudaHost::moveCluster(Cluster* cluster)
 
     // update data on gpu
     cluster->gpuPointer.deviceId = m_localId;
-    /*copyToDevice_CUDA(&cluster->gpuPointer,
+    copyToDevice_CUDA(&cluster->gpuPointer,
                       &cluster->clusterHeader.settings,
-                      &cluster->neuronBlocks,
-                      &cluster->tempNeuronBlocks,
-                      cluster->neuronBlocks.size(),
+                      cluster->bricks,
                       getItemData<SynapseBlock>(synapseBlocks),
-                      synapseBlocks.metaData->itemCapacity,
-                      &cluster->bricks[0],
-                      cluster->bricks.size());*/
+                      synapseBlocks.metaData->itemCapacity);
 
     cluster->attachedHost = this;
 
@@ -165,11 +160,10 @@ CudaHost::syncWithHost(Cluster* cluster)
 {
     const std::lock_guard<std::mutex> lock(m_cudaMutex);
 
-    /*copyFromGpu_CUDA(&cluster->gpuPointer,
-                     &cluster->neuronBlocks,
-                     cluster->neuronBlocks.size(),
+    copyFromGpu_CUDA(&cluster->gpuPointer,
+                     cluster->bricks,
                      getItemData<SynapseBlock>(synapseBlocks),
-                     synapseBlocks.metaData->itemCapacity);*/
+                     synapseBlocks.metaData->itemCapacity);
 }
 
 /**
@@ -318,7 +312,7 @@ CudaHost::requestCluster(Cluster* cluster)
     // process input-bricks
     /*for (uint32_t brickId = 0; brickId < cluster->bricks.size(); ++brickId) {
         Brick* brick = &cluster->bricks[brickId];
-        if (brick->isInputBrick == false) {
+        if (brick->header.isInputBrick == false) {
             continue;
         }
 

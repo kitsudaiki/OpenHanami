@@ -35,51 +35,6 @@
 #include <cmath>
 
 /**
- * @brief process all neurons of an input-brick
- *
- * @param cluster cluster, where the brick belongs to
- * @param brick input-brick to process
- */
-template <bool doTrain>
-inline void
-processNeuronsOfInputBrick(Cluster& cluster, InputInterface* inputInterface, Brick* brick)
-{
-    Neuron* neuron = nullptr;
-    NeuronBlock* block = nullptr;
-    uint32_t counter = 0;
-    uint16_t blockId = 0;
-    uint8_t neuronId = 0;
-
-    // iterate over all neurons within the brick
-    for (NeuronBlock& neuronBlock : brick->neuronBlocks) {
-        for (neuronId = 0; neuronId < NEURONS_PER_NEURONBLOCK; ++neuronId) {
-            if (counter >= inputInterface->inputNeurons.size()) {
-                return;
-            }
-            neuron = &neuronBlock.neurons[neuronId];
-            neuron->potential = inputInterface->inputNeurons[counter].value;
-            neuron->active = neuron->potential > 0.0f;
-
-            if constexpr (doTrain) {
-                if (neuron->active != 0 && neuron->inUse == 0) {
-                    SourceLocationPtr originLocation;
-                    originLocation.brickId = brick->header.brickId;
-                    originLocation.blockId = blockId;
-                    originLocation.neuronId = neuronId;
-                    createNewSection(cluster,
-                                     originLocation,
-                                     0.0f,
-                                     std::numeric_limits<float>::max(),
-                                     cluster.attachedHost->synapseBlocks);
-                }
-            }
-            counter++;
-        }
-        blockId++;
-    }
-}
-
-/**
  * @brief initialize a new synpase
  *
  * @param block source-neuron-block, which is only used to hold the randamo-value

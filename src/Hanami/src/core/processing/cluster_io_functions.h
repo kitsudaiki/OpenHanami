@@ -23,7 +23,10 @@
 #ifndef HANAMI_CORE_CLUSTER_IO_FUNCTIONS_H
 #define HANAMI_CORE_CLUSTER_IO_FUNCTIONS_H
 
+#include <core/cluster/cluster.h>
 #include <core/cluster/objects.h>
+#include <core/processing/cluster_resize.h>
+#include <core/processing/logical_host.h>
 #include <hanami_crypto/hashes.h>
 #include <math.h>
 
@@ -38,26 +41,40 @@
  */
 template <bool doTrain>
 inline void
-processNeuronsOfInputBrickBackward(Brick* brick,
-                                   InputInterface& inputInterface,
-                                   NeuronBlock* neuronBlocks)
+processNeuronsOfInputBrick(Cluster& cluster, InputInterface* inputInterface, Brick* brick)
 {
     Neuron* neuron = nullptr;
     NeuronBlock* block = nullptr;
     uint32_t counter = 0;
+    uint16_t blockId = 0;
+    uint8_t neuronId = 0;
 
     // iterate over all neurons within the brick
-    for (NeuronBlock& block : brick->neuronBlocks) {
-        for (uint32_t neuronId = 0; neuronId < NEURONS_PER_NEURONBLOCK; ++neuronId) {
-            neuron = &block.neurons[neuronId];
-            neuron->potential = inputInterface.inputNeurons[counter].value;
+    for (NeuronBlock& neuronBlock : brick->neuronBlocks) {
+        for (neuronId = 0; neuronId < NEURONS_PER_NEURONBLOCK; ++neuronId) {
+            if (counter >= inputInterface->inputNeurons.size()) {
+                return;
+            }
+            neuron = &neuronBlock.neurons[neuronId];
+            neuron->potential = inputInterface->inputNeurons[counter].value;
             neuron->active = neuron->potential > 0.0f;
+
             if constexpr (doTrain) {
-                neuron->isNew = neuron->active != 0 && neuron->inUse == 0;
-                neuron->newLowerBound = 0.0f;
+                if (neuron->active != 0 && neuron->inUse == 0) {
+                    SourceLocationPtr originLocation;
+                    originLocation.brickId = brick->header.brickId;
+                    originLocation.blockId = blockId;
+                    originLocation.neuronId = neuronId;
+                    createNewSection(cluster,
+                                     originLocation,
+                                     0.0f,
+                                     std::numeric_limits<float>::max(),
+                                     cluster.attachedHost->synapseBlocks);
+                }
             }
             counter++;
         }
+        blockId++;
     }
 }
 

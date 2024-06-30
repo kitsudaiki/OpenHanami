@@ -26,7 +26,7 @@
 #include <core/cluster/cluster_init.h>
 #include <core/cluster/statemachine_init.h>
 #include <core/cluster/states/task_handle_state.h>
-#include <core/cuda_functions.h>
+#include <core/processing/cuda/cuda_functions.h>
 #include <core/processing/logical_host.h>
 #include <hanami_common/logger.h>
 #include <hanami_common/statemachine.h>

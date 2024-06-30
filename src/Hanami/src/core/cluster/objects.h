@@ -72,8 +72,9 @@ struct ClusterSettings {
     uint32_t refractoryTime = 1;
     uint32_t maxConnectionDistance = 1;
     bool enableReduction = false;
+    bool enableCreation = false;
 
-    uint8_t padding[43];
+    uint8_t padding[42];
 
     bool operator==(ClusterSettings& rhs)
     {
@@ -95,7 +96,7 @@ struct ClusterSettings {
         if (enableReduction != rhs.enableReduction) {
             return false;
         }
-
+        // enableCreation is only a temporary value and not relevant for this comparism
         return true;
     }
 
@@ -133,7 +134,7 @@ struct ClusterHeader {
         if (staticDataSize != rhs.staticDataSize) {
             return false;
         }
-        if (strncmp(uuid.uuid, rhs.uuid.uuid, UUID_STR_LEN) != 0) {
+        if (strncmp(uuid.uuid, rhs.uuid.uuid, 37) != 0) {
             return false;
         }
         if (settings != rhs.settings) {
@@ -292,13 +293,19 @@ static_assert(sizeof(ConnectionBlock) == 1544);
 
 //==================================================================================================
 
-struct CudaPointerHandle {
-    uint32_t deviceId = 0;
+struct CudaBrickPointer {
     NeuronBlock* neuronBlocks = nullptr;
-    SynapseBlock* synapseBlocks = nullptr;
-    std::vector<ConnectionBlock*> connectionBlocks;
+    ConnectionBlock* connectionBlocks = nullptr;
+};
 
+//==================================================================================================
+
+struct CudaClusterPointer {
+    uint32_t deviceId = 0;
     ClusterSettings* clusterSettings = nullptr;
+    SynapseBlock* synapseBlocks = nullptr;
+
+    std::vector<CudaBrickPointer> brickPointer;
 };
 
 //==================================================================================================

@@ -48,7 +48,7 @@ class Cluster
     ~Cluster();
 
     // processing
-    CudaPointerHandle gpuPointer;
+    CudaClusterPointer gpuPointer;
     LogicalHost* attachedHost;
     uint32_t reductionCounter = 0;
     ClusterProcessingMode mode = NORMAL_MODE;
