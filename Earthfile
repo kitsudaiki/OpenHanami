@@ -80,6 +80,7 @@ prepare-build-dependencies:
                            libssl-dev \
                            libcrypto++-dev \
                            libboost1.74-dev \
+                           nlohmann-json3-dev \
                            uuid-dev  \
                            libsqlite3-dev \
                            protobuf-compiler \

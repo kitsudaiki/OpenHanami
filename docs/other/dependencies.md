@@ -42,6 +42,7 @@ Installed packages under the actual used Ubuntu 23.04
 | libprotobuf23 | Runtime-library for protobuffers | 
 | libboost1.74 | Provides the Beast-library of Boost, which is used for the REST-API within Hanami |
 | libcudart11.0 | Runtime-library for CUDA | 
+| nlohmann-json3-dev | Json-parser |
 
 ### Python-SDK
 
