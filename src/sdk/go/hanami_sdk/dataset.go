@@ -48,26 +48,26 @@ func parseJson2(input string) map[string]interface{} {
 }
 
 func GetDataset(address string, token string, datasetUuid string) (bool, string) {
-    path := "control/v1/dataset"
+    path := "control/v1.0alpha/dataset"
     vars := fmt.Sprintf("uuid=%s", datasetUuid)
     return SendGet(address, token, path, vars)
 }
 
 func ListDataset(address string, token string) (bool, string) {
-    path := fmt.Sprintf("control/v1/dataset/all")
+    path := fmt.Sprintf("control/v1.0alpha/dataset/all")
     vars := ""
     return SendGet(address, token, path, vars)
 }
 
 func DeleteDataset(address string, token string, datasetUuid string) (bool, string) {
-    path := "control/v1/dataset"
+    path := "control/v1.0alpha/dataset"
     vars := fmt.Sprintf("uuid=%s", datasetUuid)
     return SendDelete(address, token, path, vars)
 }
  
 func waitUntilUploadComplete(token string, address string, uuid string) bool {
     for true {
-        path := fmt.Sprintf("control/v1/dataset/progress")
+        path := fmt.Sprintf("control/v1.0alpha/dataset/progress")
         vars := fmt.Sprintf("uuid=%s", uuid)
         success, content := SendGet(address, token, path, vars)
         if success == false {
@@ -201,7 +201,7 @@ func UploadMnistFiles(address string, token string, name string, inputFilePath s
     }
 
     jsonBody := fmt.Sprintf("{\"name\":\"%s\", \"input_data_size\":%d, \"label_data_size\":%d}", name, inputFileInfo.Size(), labelFileInfo.Size())
-    path := "control/v1/mnist/dataset"
+    path := "control/v1.0alpha/mnist/dataset"
     vars := ""
     success, content := SendPost(address, token, path, vars, jsonBody)
     if success == false {
@@ -228,7 +228,7 @@ func UploadMnistFiles(address string, token string, name string, inputFilePath s
     }
 
     jsonBody = fmt.Sprintf("{\"uuid\":\"%s\", \"uuid_input_file\":\"%s\", \"uuid_label_file\":\"%s\"}", uuid, inputFileUuid, labelFileUuid)
-    path = "control/v1/mnist/dataset"
+    path = "control/v1.0alpha/mnist/dataset"
     vars = ""
     success, content = SendPut(address, token, path, vars, jsonBody)
     if success == false {
@@ -255,7 +255,7 @@ func UploadCsvFiles(address string, token string, name string, inputFilePath str
     }
 
     jsonBody := fmt.Sprintf("{\"name\":\"%s\", \"input_data_size\":%d}", name, inputFileInfo.Size())
-    path := "control/v1/csv/dataset"
+    path := "control/v1.0alpha/csv/dataset"
     vars := ""
     success, content := SendPost(address, token, path, vars, jsonBody)
     if success == false {
@@ -277,7 +277,7 @@ func UploadCsvFiles(address string, token string, name string, inputFilePath str
     }
 
     jsonBody = fmt.Sprintf("{\"uuid\":\"%s\", \"uuid_input_file\":\"%s\"}", uuid, inputFileUuid)
-    path = "control/v1/csv/dataset"
+    path = "control/v1.0alpha/csv/dataset"
     vars = ""
     success, content = SendPut(address, token, path, vars, jsonBody)
     if success == false {

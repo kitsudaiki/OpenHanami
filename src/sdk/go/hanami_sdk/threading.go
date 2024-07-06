@@ -24,7 +24,7 @@ import (
 )
 
 func GetThreadMapping(address string, token string) (bool, string) {
-    path := "control/v1/threading"
+    path := "control/v1.0alpha/threading"
     vars := ""
     return SendGet(address, token, path, vars)
 }

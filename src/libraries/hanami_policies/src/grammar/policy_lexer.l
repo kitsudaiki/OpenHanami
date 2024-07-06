@@ -46,7 +46,7 @@ Hanami::location policyloc;
 
 %option noyywrap nounput batch debug yylineno prefix="policy"
 
-path  [a-zA-Z_0-9\/\-_]*
+path  [a-zA-Z_0-9\/\-._]*
 id    [a-zA-Z_0-9]*
 long  -?([0-9]+)
 blank [ \t]

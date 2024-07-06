@@ -25,7 +25,7 @@ import (
 )
 
 func CreateProject(address string, token string, projectId string, projectName string) (bool, string) {
-    path := "control/v1/project"
+    path := "control/v1.0alpha/project"
     vars := ""
     jsonBody := fmt.Sprintf("{\"id\":\"%s\",\"name\":\"%s\"}", 
                             projectId, projectName)
@@ -33,19 +33,19 @@ func CreateProject(address string, token string, projectId string, projectName s
 }
 
 func GetProject(address string, token string, projectId string) (bool, string) {
-    path := "control/v1/project"
+    path := "control/v1.0alpha/project"
     vars := fmt.Sprintf("id=%s", projectId)
     return SendGet(address, token, path, vars)
 }
 
 func ListProject(address string, token string) (bool, string) {
-    path := fmt.Sprintf("control/v1/project/all")
+    path := fmt.Sprintf("control/v1.0alpha/project/all")
     vars := ""
     return SendGet(address, token, path, vars)
 }
 
 func DeleteProject(address string, token string, projectId string) (bool, string) {
-    path := "control/v1/project"
+    path := "control/v1.0alpha/project"
     vars := fmt.Sprintf("id=%s", projectId)
     return SendDelete(address, token, path, vars)
 }

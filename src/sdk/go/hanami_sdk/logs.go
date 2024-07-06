@@ -25,7 +25,7 @@ import (
 )
 
 func listAuditLogs(address string, token string, userId string, page int) (bool, string) {
-    path := "/control/v1/audit_log?";
+    path := "/control/v1.0alpha/audit_log?";
     vars := "";
     if(userId != "") {
         vars = fmt.Sprintf("user_id=%s&page=%d", userId, page)
@@ -36,7 +36,7 @@ func listAuditLogs(address string, token string, userId string, page int) (bool,
 }
 
 func listErrorLogs(address string, token string, userId string, page int)  (bool, string) {
-    path := "/control/v1/error_log";
+    path := "/control/v1.0alpha/error_log";
     vars := fmt.Sprintf("user_id=%s&page=%d", userId, page)
     return SendGet(address, token, path, vars)
 }

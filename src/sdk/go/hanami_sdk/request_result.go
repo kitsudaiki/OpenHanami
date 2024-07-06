@@ -25,19 +25,19 @@ import (
 )
 
 func GetRequestResult(address string, token string, requestResultUuid string) (bool, string) {
-    path := "control/v1/request_result"
+    path := "control/v1.0alpha/request_result"
     vars := fmt.Sprintf("uuid=%s", requestResultUuid)
     return SendGet(address, token, path, vars)
 }
 
 func ListRequestResult(address string, token string) (bool, string) {
-    path := fmt.Sprintf("control/v1/request_result/all")
+    path := fmt.Sprintf("control/v1.0alpha/request_result/all")
     vars := ""
     return SendGet(address, token, path, vars)
 }
 
 func DeleteRequestResult(address string, token string, requestResultUuid string) (bool, string) {
-    path := "control/v1/request_result"
+    path := "control/v1.0alpha/request_result"
     vars := fmt.Sprintf("uuid=%s", requestResultUuid)
     return SendDelete(address, token, path, vars)
 }

@@ -25,7 +25,7 @@ import (
 )
 
 func ListHosts(address string, token string) (bool, string) {
-    path := fmt.Sprintf("control/v1/host/all")
+    path := fmt.Sprintf("control/v1.0alpha/host/all")
     vars := ""
     return SendGet(address, token, path, vars)
 }
