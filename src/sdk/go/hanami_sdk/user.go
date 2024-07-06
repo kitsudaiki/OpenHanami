@@ -25,7 +25,7 @@ import (
 )
 
 func CreateUser(address string, token string, userId string, userName string, pw string, is_admin bool) (bool, string) {
-    path := "control/v1/user"
+    path := "control/v1.0alpha/user"
     vars := ""
     jsonBody := fmt.Sprintf("{\"id\":\"%s\",\"name\":\"%s\",\"password\":\"%s\",\"is_admin\":%v}", 
                             userId, userName, pw, is_admin)
@@ -33,19 +33,19 @@ func CreateUser(address string, token string, userId string, userName string, pw
 }
 
 func GetUser(address string, token string, userId string) (bool, string) {
-    path := "control/v1/user"
+    path := "control/v1.0alpha/user"
     vars := fmt.Sprintf("id=%s", userId)
     return SendGet(address, token, path, vars)
 }
 
 func ListUser(address string, token string) (bool, string) {
-    path := fmt.Sprintf("control/v1/user/all")
+    path := fmt.Sprintf("control/v1.0alpha/user/all")
     vars := ""
     return SendGet(address, token, path, vars)
 }
 
 func DeleteUser(address string, token string, userId string) (bool, string) {
-    path := "control/v1/user"
+    path := "control/v1.0alpha/user"
     vars := fmt.Sprintf("id=%s", userId)
     return SendDelete(address, token, path, vars)
 }

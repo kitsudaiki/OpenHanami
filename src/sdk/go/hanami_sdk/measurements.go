@@ -21,19 +21,19 @@
 package hanami_sdk
 
 func getPowerData(address string, token string) (bool, string) {
-    path := "/control/v1/power_consumption";
+    path := "/control/v1.0alpha/power_consumption";
     vars := ""
     return SendGet(address, token, path, vars)
 }
 
 func getTemperatureData_request(address string, token string) (bool, string) {
-    path := "/control/v1/temperature_production";
+    path := "/control/v1.0alpha/temperature_production";
     vars := ""
     return SendGet(address, token, path, vars)
 }
 
 func getSpeedData_request(address string, token string) (bool, string) {
-    path := "/control/v1/speed";
+    path := "/control/v1.0alpha/speed";
     vars := ""
     return SendGet(address, token, path, vars)
 }

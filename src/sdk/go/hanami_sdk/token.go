@@ -38,7 +38,7 @@ func parseJson(input string) map[string]interface{} {
 }
 
 func RequestToken(address string, user string, pw string) string {
-    path := fmt.Sprintf("control/v1/token")
+    path := fmt.Sprintf("control/v1.0alpha/token")
     body := fmt.Sprintf("{\"id\":\"%s\",\"password\":\"%s\"}", user, pw)
 
     success, content := sendGenericRequest(address, "", "POST", path, body)

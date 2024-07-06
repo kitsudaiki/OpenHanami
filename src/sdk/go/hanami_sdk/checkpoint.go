@@ -25,19 +25,19 @@ import (
 )
 
 func GetCheckpoint(address string, token string, checkpointUuid string) (bool, string) {
-    path := "control/v1/checkpoint"
+    path := "control/v1.0alpha/checkpoint"
     vars := fmt.Sprintf("uuid=%s", checkpointUuid)
     return SendGet(address, token, path, vars)
 }
 
 func ListCheckpoint(address string, token string) (bool, string) {
-    path := fmt.Sprintf("control/v1/checkpoint/all")
+    path := fmt.Sprintf("control/v1.0alpha/checkpoint/all")
     vars := ""
     return SendGet(address, token, path, vars)
 }
 
 func DeleteCheckpoint(address string, token string, checkpointUuid string) (bool, string) {
-    path := "control/v1/checkpoint"
+    path := "control/v1.0alpha/checkpoint"
     vars := fmt.Sprintf("uuid=%s", checkpointUuid)
     return SendDelete(address, token, path, vars)
 }
