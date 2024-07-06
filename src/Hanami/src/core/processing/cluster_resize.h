@@ -114,7 +114,6 @@ resizeConnections(Brick* targetBrick)
     }
 
     targetBrick->neuronBlocks.resize(targetBrick->header.dimX);
-    targetBrick->tempNeuronBlocks.resize(targetBrick->header.dimX);
 }
 
 /**
@@ -137,10 +136,6 @@ createNewSection(Cluster& cluster,
 {
     // get origin object
     SourceLocation sourceLoc = getSourceNeuron(sourceLocPtr, &cluster.bricks[0]);
-    const uint8_t newPosInNeuron = sourceLoc.neuron->getFirstZeroBit();
-    if (newPosInNeuron == UNINIT_STATE_8) {
-        return false;
-    }
     if (sourceLoc.brick->header.isOutputBrick) {
         return false;
     }
@@ -162,9 +157,8 @@ createNewSection(Cluster& cluster,
     targetConnection->origin = sourceLocPtr;
     targetConnection->lowerBound = lowerBound;
     targetConnection->potentialRange = potentialRange;
-    targetConnection->origin.posInNeuron = newPosInNeuron;
     targetConnection->origin.isInput = sourceLoc.brick->header.isInputBrick;
-    sourceLoc.neuron->setInUse(newPosInNeuron);
+    sourceLoc.neuron->inUse = 1;
 
     return true;
 }
@@ -185,7 +179,9 @@ updateCluster(Cluster& cluster)
     Neuron* neuron = nullptr;
     Brick* brick = nullptr;
     bool found = false;
-    uint32_t brickId, blockId, sourceId = 0;
+    uint32_t brickId = 0;
+    uint16_t blockId = 0;
+    uint8_t sourceId = 0;
 
     // iterate over all neurons and add new synapse-section, if required
     for (brickId = 0; brickId < cluster.bricks.size(); ++brickId) {

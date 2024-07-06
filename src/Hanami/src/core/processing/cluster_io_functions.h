@@ -174,7 +174,6 @@ backpropagateOutput(std::vector<Brick>& bricks,
     Neuron* neuron = nullptr;
     Brick* brick = nullptr;
     OutputNeuron* out = nullptr;
-    TempNeuron* tempNeuron = nullptr;
     OutputTargetLocationPtr* target = nullptr;
     float totalDelta = 0.0f;
     float learnValue = 0.1f;
@@ -196,10 +195,8 @@ backpropagateOutput(std::vector<Brick>& bricks,
                 continue;
             }
 
-            tempNeuron = &brick->tempNeuronBlocks[target->blockId].neurons[target->neuronId];
             neuron = &brick->neuronBlocks[target->blockId].neurons[target->neuronId];
-
-            tempNeuron->delta[0] += update * target->connectionWeight;
+            neuron->delta += update * target->connectionWeight;
             target->connectionWeight -= update * learnValue * neuron->potential;
 
             totalDelta += abs(delta);
@@ -210,8 +207,7 @@ backpropagateOutput(std::vector<Brick>& bricks,
     for (i = 0; i < brick->neuronBlocks.size(); ++i) {
         for (j = 0; j < NEURONS_PER_NEURONBLOCK; ++j) {
             neuron = &brick->neuronBlocks[i].neurons[j];
-            tempNeuron = &brick->tempNeuronBlocks[i].neurons[j];
-            tempNeuron->delta[0] *= sigmoidDerivative(neuron->potential);
+            neuron->delta *= sigmoidDerivative(neuron->potential);
         }
     }
 

@@ -319,7 +319,6 @@ IO_Interface::deserialize(Brick& brick, uint64_t& positionPtr, Hanami::ErrorCont
         brick.neuronBlocks.clear();
         const uint64_t numberOfNeuronBlocks = brickEntry.numberOfNeuronBytes / sizeof(NeuronBlock);
         brick.neuronBlocks.resize(numberOfNeuronBlocks);
-        brick.tempNeuronBlocks.resize(numberOfNeuronBlocks);
         for (uint64_t i = 0; i < numberOfNeuronBlocks; i++) {
             ret = getObjectFromLocalBuffer(positionPtr, &brick.neuronBlocks[i], error);
             if (ret != OK) {

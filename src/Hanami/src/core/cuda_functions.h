@@ -28,7 +28,6 @@
 extern "C" void copyToDevice_CUDA(CudaPointerHandle* gpuPointer,
                                   ClusterSettings* clusterSettings,
                                   NeuronBlock* neuronBlocks,
-                                  TempNeuronBlock* tempNeuronBlocks,
                                   const uint32_t numberOfNeuronBlocks,
                                   SynapseBlock* synapseBlocks,
                                   const uint32_t numberOfSynapseBlocks,
@@ -54,7 +53,6 @@ extern "C" void backpropagation_CUDA(CudaPointerHandle* gpuPointer,
                                      Brick* bricks,
                                      const uint32_t uint64_t,
                                      NeuronBlock* neuronBlocks,
-                                     TempNeuronBlock* tempNeuronBlocks,
                                      const uint32_t numberOfNeuronBlocks);
 
 extern "C" void update_CUDA(CudaPointerHandle* gpuPointer,

@@ -111,12 +111,10 @@ reduceConnections(Brick* brick, Brick* bricks, SynapseBlock* synapseBlocks, cons
                 // initialize the creation of a new section
                 sourceNeuron->isNew = 1;
                 sourceNeuron->newLowerBound = connection->lowerBound;
-                sourceNeuron->inUse &= (~(1 << connection->origin.posInNeuron));
 
                 // mark current connection as available again
                 connection->origin.blockId = UNINIT_STATE_16;
-                connection->origin.neuronId = UNINIT_STATE_16;
-                connection->origin.posInNeuron = 0;
+                connection->origin.neuronId = UNINIT_STATE_8;
             }
         }
     }

@@ -128,7 +128,6 @@ initializeInputs(Cluster* cluster, const ClusterMeta& clusterMeta)
 
         cluster->bricks[inputInterface.targetBrickId].header.isInputBrick = true;
         cluster->bricks[inputInterface.targetBrickId].neuronBlocks.resize(numberOfNeuronBlocks);
-        cluster->bricks[inputInterface.targetBrickId].tempNeuronBlocks.resize(numberOfNeuronBlocks);
         cluster->bricks[inputInterface.targetBrickId].inputInterface
             = &cluster->inputInterfaces[inputMeta.name];
     }
