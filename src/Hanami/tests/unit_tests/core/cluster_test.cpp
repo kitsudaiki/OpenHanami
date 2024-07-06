@@ -252,7 +252,5 @@ Cluster_Init_Test::serialize_test()
                    baseCluster.bricks[i].connectionBlocks.size());
         TEST_EQUAL(copyCluster.bricks[i].neuronBlocks.size(),
                    baseCluster.bricks[i].neuronBlocks.size());
-        TEST_EQUAL(copyCluster.bricks[i].tempNeuronBlocks.size(),
-                   baseCluster.bricks[i].tempNeuronBlocks.size());
     }
 }

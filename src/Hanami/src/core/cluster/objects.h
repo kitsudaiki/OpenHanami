@@ -46,7 +46,7 @@ class Cluster;
 #define UNINTI_POINT_32 0x0FFFFFFF
 
 // network-predefines
-#define SYNAPSES_PER_SYNAPSESECTION 63
+#define SYNAPSES_PER_SYNAPSESECTION 64
 #define NUMBER_OF_SYNAPSESECTION 64
 #define NEURONS_PER_NEURONBLOCK 64
 #define POSSIBLE_NEXT_AXON_STEP 80
@@ -150,8 +150,8 @@ static_assert(sizeof(ClusterHeader) == 512);
 struct Synapse {
     float weight = 0.0f;
     float border = 0.0f;
-
-    uint8_t padding2[6];
+    float tempValue = 0.0f;
+    uint8_t padding2[2];
     uint8_t activeCounter = 0;
     uint8_t targetNeuronId = UNINIT_STATE_8;
 };
@@ -161,10 +161,6 @@ static_assert(sizeof(Synapse) == 16);
 
 struct SynapseSection {
     Synapse synapses[SYNAPSES_PER_SYNAPSESECTION];
-    float tollerance = 0.49f;
-
-    uint8_t padding[11];
-    bool hasNext = false;
 
     SynapseSection() { std::fill_n(synapses, SYNAPSES_PER_SYNAPSESECTION, Synapse()); }
 };
@@ -174,15 +170,10 @@ static_assert(sizeof(SynapseSection) == 1024);
 
 struct SynapseBlock {
     SynapseSection sections[NUMBER_OF_SYNAPSESECTION];
-    float tempValues[NEURONS_PER_NEURONBLOCK];
 
-    SynapseBlock()
-    {
-        std::fill_n(sections, NUMBER_OF_SYNAPSESECTION, SynapseSection());
-        std::fill_n(tempValues, NEURONS_PER_NEURONBLOCK, 0.0f);
-    }
+    SynapseBlock() { std::fill_n(sections, NUMBER_OF_SYNAPSESECTION, SynapseSection()); }
 };
-static_assert(sizeof(SynapseBlock) == 64 * 1024 + 256);
+static_assert(sizeof(SynapseBlock) == 64 * 1024);
 
 //==================================================================================================
 
@@ -190,10 +181,9 @@ struct SourceLocationPtr {
     // HINT (kitsudaiki): not initialized here, because they are used in shared memory in cuda
     //                    which doesn't support initializing of the values, when defining the
     //                    shared-memory-object
-    uint16_t brickId;
+    uint32_t brickId;
     uint16_t blockId;
-    uint16_t neuronId;
-    uint8_t posInNeuron;
+    uint8_t neuronId;
     bool isInput;
 };
 static_assert(sizeof(SourceLocationPtr) == 8);
@@ -203,7 +193,7 @@ static_assert(sizeof(SourceLocationPtr) == 8);
 struct OutputTargetLocationPtr {
     float connectionWeight = 0.0f;
     uint16_t blockId = UNINIT_STATE_16;
-    uint16_t neuronId = UNINIT_STATE_16;
+    uint16_t neuronId = UNINIT_STATE_8;
     uint8_t padding[6];
 };
 static_assert(sizeof(OutputTargetLocationPtr) == 16);
@@ -223,21 +213,6 @@ struct Neuron {
     float potentialRange = 0.0f;
     uint8_t isNew = 0;
     uint8_t inUse = 0;
-
-    void setInUse(const uint8_t pos) { inUse |= (1 << pos); }
-
-    void deleteInUse(const uint8_t pos) { inUse &= (~(1 << pos)); }
-
-    uint8_t getFirstZeroBit()
-    {
-        for (int i = 0; i < 8; ++i) {
-            if ((inUse & (1 << i)) == 0) {
-                return i;
-            }
-        }
-
-        return UNINIT_STATE_8;
-    }
 };
 static_assert(sizeof(Neuron) == 32);
 
@@ -249,24 +224,6 @@ struct NeuronBlock {
     NeuronBlock() { std::fill_n(neurons, NEURONS_PER_NEURONBLOCK, Neuron()); }
 };
 static_assert(sizeof(NeuronBlock) == 2048);
-
-//==================================================================================================
-
-struct TempNeuron {
-    float delta[8];
-
-    TempNeuron() { std::fill_n(delta, 8, 0.0f); }
-};
-static_assert(sizeof(TempNeuron) == 32);
-
-//==================================================================================================
-
-struct TempNeuronBlock {
-    TempNeuron neurons[NEURONS_PER_NEURONBLOCK];
-
-    TempNeuronBlock() { std::fill_n(neurons, NEURONS_PER_NEURONBLOCK, TempNeuron()); }
-};
-static_assert(sizeof(TempNeuronBlock) == 2048);
 
 //==================================================================================================
 
@@ -310,17 +267,18 @@ struct SynapseConnection {
     SourceLocationPtr origin;
     float lowerBound = 0.0f;
     float potentialRange = std::numeric_limits<float>::max();
+    float tollerance = 0.49f;
+    uint8_t padding[4];
 
     SynapseConnection()
     {
-        origin.brickId = UNINIT_STATE_16;
+        origin.brickId = UNINIT_STATE_32;
         origin.blockId = UNINIT_STATE_16;
-        origin.neuronId = UNINIT_STATE_16;
-        origin.posInNeuron = 0;
+        origin.neuronId = UNINIT_STATE_8;
         origin.isInput = false;
     }
 };
-static_assert(sizeof(SynapseConnection) == 16);
+static_assert(sizeof(SynapseConnection) == 24);
 
 //==================================================================================================
 
@@ -330,14 +288,13 @@ struct ConnectionBlock {
 
     ConnectionBlock() { std::fill_n(connections, NUMBER_OF_SYNAPSESECTION, SynapseConnection()); }
 };
-static_assert(sizeof(ConnectionBlock) == 1032);
+static_assert(sizeof(ConnectionBlock) == 1544);
 
 //==================================================================================================
 
 struct CudaPointerHandle {
     uint32_t deviceId = 0;
     NeuronBlock* neuronBlocks = nullptr;
-    TempNeuronBlock* tempNeuronBlock = nullptr;
     SynapseBlock* synapseBlocks = nullptr;
     std::vector<ConnectionBlock*> connectionBlocks;
 
@@ -395,7 +352,6 @@ class Brick
 
     std::vector<ConnectionBlock> connectionBlocks;
     std::vector<NeuronBlock> neuronBlocks;
-    std::vector<TempNeuronBlock> tempNeuronBlocks;
 
     bool wasResized = false;
     uint32_t possibleBrickTargetIds[NUMBER_OF_POSSIBLE_NEXT];
@@ -412,9 +368,7 @@ class Brick
 struct SourceLocation {
     Brick* brick = nullptr;
     NeuronBlock* neuronBlock = nullptr;
-    TempNeuronBlock* tempNeuronBlock = nullptr;
     Neuron* neuron = nullptr;
-    TempNeuron* tempNeuron = nullptr;
 };
 
 /**
@@ -428,12 +382,8 @@ getSourceNeuron(const SourceLocationPtr& location, Brick* bricks)
 {
     SourceLocation sourceLoc;
     sourceLoc.brick = &bricks[location.brickId];
-
     sourceLoc.neuronBlock = &sourceLoc.brick->neuronBlocks[location.blockId];
-    sourceLoc.tempNeuronBlock = &sourceLoc.brick->tempNeuronBlocks[location.blockId];
-
     sourceLoc.neuron = &sourceLoc.neuronBlock->neurons[location.neuronId];
-    sourceLoc.tempNeuron = &sourceLoc.tempNeuronBlock->neurons[location.neuronId];
 
     return sourceLoc;
 }
