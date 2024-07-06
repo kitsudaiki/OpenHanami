@@ -25,6 +25,7 @@
 #include <api/endpoint_processing/blossom.h>
 #include <api/endpoint_processing/http_processing/http_processing.h>
 #include <api/endpoint_processing/http_server.h>
+#include <api/http/endpoint_init.h>
 #include <api/websocket/cluster_io.h>
 #include <api/websocket/file_upload.h>
 #include <core/cluster/cluster.h>
@@ -307,7 +308,7 @@ HttpWebsocketThread::processInitialMessage(const std::string& message, std::stri
     tokenInputValues["token"] = content["token"];
     tokenInputValues["http_type"] = static_cast<uint32_t>(HttpRequestType::GET_TYPE);
     if (HanamiRoot::httpServer->httpProcessing->triggerBlossom(
-            tokenData, "v1/auth", GET_TYPE, json::object(), tokenInputValues, status, error)
+            tokenData, authEndpointPath, GET_TYPE, json::object(), tokenInputValues, status, error)
         == false)
     {
         errorMessage = "Token invalid";

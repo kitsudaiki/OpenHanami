@@ -24,7 +24,7 @@
 
 #include <api/endpoint_processing/http_processing/http_processing.h>
 #include <api/endpoint_processing/http_websocket_thread.h>
-#include <api/http/v1/blossom_initializing.h>
+#include <api/http/endpoint_init.h>
 #include <hanami_common/files/text_file.h>
 #include <hanami_common/logger.h>
 #include <hanami_root.h>
@@ -45,7 +45,7 @@ HttpServer::HttpServer(const std::string& address, const uint16_t port)
 {
     HanamiRoot::httpServer = this;
     httpProcessing = new HttpProcessing();
-    initBlossoms();
+    initEndpoints();
 }
 
 /**

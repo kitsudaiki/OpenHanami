@@ -1,150 +1,150 @@
-v1/auth
+v1.0alpha/auth
 - GET: admin, member
 
-v1/token
+v1.0alpha/token
 - PUT: admin, member
 
-v1/user
+v1.0alpha/user
 - GET: admin
 - POST: admin
 - DELETE: admin
 
-v1/user/project
+v1.0alpha/user/project
 - POST: admin, member
 - GET: admin, member
 - DELETE: admin, member
 
-v1/user/all
+v1.0alpha/user/all
 - GET: admin
 
-v1/project
+v1.0alpha/project
 - GET: admin
 - POST: admin
 - DELETE: admin
 
-v1/project/all
+v1.0alpha/project/all
 - GET: admin
 
-v1/documentation/api/rest
+v1.0alpha/documentation/api/rest
 - GET: admin, member
 
-v1/foreward
+v1.0alpha/foreward
 - GET: admin, member
 
-v1/host/all
+v1.0alpha/host/all
 - GET: admin, member
 
-v1/dataset/upload/mnist
+v1.0alpha/dataset/upload/mnist
 - POST: admin, member
 - PUT: admin, member
 
-v1/dataset/upload/csv
+v1.0alpha/dataset/upload/csv
 - POST: admin, member
 - PUT: admin, member
 
-v1/dataset/check
+v1.0alpha/dataset/check
 - GET: admin, member
 
-v1/dataset/progress
+v1.0alpha/dataset/progress
 - GET: admin, member
 
-v1/dataset
-- POST: admin, member
-- PUT: admin, member
-- GET: admin, member
-- DELETE: admin, member
-
-v1/dataset/all
-- GET: admin, member
-
-v1/checkpoint
+v1.0alpha/dataset
 - POST: admin, member
 - PUT: admin, member
 - GET: admin, member
 - DELETE: admin, member
 
-v1/checkpoint/all
+v1.0alpha/dataset/all
 - GET: admin, member
 
-v1/request_result
+v1.0alpha/checkpoint
+- POST: admin, member
+- PUT: admin, member
 - GET: admin, member
 - DELETE: admin, member
 
-v1/request_result/all
+v1.0alpha/checkpoint/all
 - GET: admin, member
 
-v1/audit_log
+v1.0alpha/request_result
+- GET: admin, member
+- DELETE: admin, member
+
+v1.0alpha/request_result/all
 - GET: admin, member
 
-v1/error_log         
+v1.0alpha/audit_log
+- GET: admin, member
+
+v1.0alpha/error_log         
 - GET: admin
 
 
-v1/system_info
+v1.0alpha/system_info
 - GET: admin, member
 
-v1/threading
+v1.0alpha/threading
 - GET: admin, member
 
-v1/power_consumption
+v1.0alpha/power_consumption
 - GET: admin, member
 
-v1/temperature_production
+v1.0alpha/temperature_production
 - GET: admin, member
 
-v1/speed
+v1.0alpha/speed
 - GET: admin, member
 
 
-v1/foreward
+v1.0alpha/foreward
 - GET: admin, member
 
-v1/cluster
+v1.0alpha/cluster
 - POST: admin, member
 - GET : admin, member
 - DELETE: admin, member
 
-v1/cluster/save
+v1.0alpha/cluster/save
 - POST: admin, member
 
-v1/cluster/load
+v1.0alpha/cluster/load
 - POST: admin, member
 
-v1/cluster/set_mode
+v1.0alpha/cluster/set_mode
 - PUT: admin, member
 
-v1/cluster/switch_host
+v1.0alpha/cluster/switch_host
 - PUT: admin, member
 
-v1/cluster/all
+v1.0alpha/cluster/all
 - GET : admin, member
 
-v1/template/upload
+v1.0alpha/template/upload
 - POST: admin, member
 
-v1/template/generate
+v1.0alpha/template/generate
 - POST: admin, member
 
-v1/template
-- GET : admin, member
-- DELETE: admin, member
-
-v1/template/all
-- GET : admin, member
-
-
-
-v1/task/train
-- POST: admin, member
-
-v1/task/request
-- POST: admin, member
-
-v1/task
+v1.0alpha/template
 - GET : admin, member
 - DELETE: admin, member
 
-v1/task/all
+v1.0alpha/template/all
+- GET : admin, member
+
+
+
+v1.0alpha/task/train
+- POST: admin, member
+
+v1.0alpha/task/request
+- POST: admin, member
+
+v1.0alpha/task
+- GET : admin, member
+- DELETE: admin, member
+
+v1.0alpha/task/all
 - GET : admin, member
 
 
