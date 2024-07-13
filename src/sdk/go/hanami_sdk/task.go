@@ -21,34 +21,75 @@
 package hanami_sdk
 
 import (
-    "fmt"
+    "strings"
 )
 
-func CreateTask(address string, token string, name string, taskType string, clusterUuid string, dataSetUuid string) (bool, string) {
-	path := "control/v1.0alpha/task"
-	vars := ""
-	jsonBody := fmt.Sprintf("{\"name\":%s, \"type\":%s, \"cluster_uuid\":%s, \"cluster_uuid\":\"%s\"}", 
-                            name, 
-                            taskType, 
-                            clusterUuid, 
-                            dataSetUuid)
-    return SendPost(address, token, path, vars, jsonBody)
+func convertIO(data []string) map[string]string {
+    valueMap := make(map[string]string)
+
+    for _, val := range data {
+        parts := strings.Split(val, ":")
+        if len(parts) != 2 {
+            break
+        }
+        valueMap[parts[0]] = parts[1]
+    }
+
+    return valueMap
 }
 
-func GetTask(address string, token string, taskId string, clusterUuid string) (bool, string) {
-    path := "control/v1.0alpha/task"
-    vars := fmt.Sprintf("uuid=%s&cluster_uuid=%s", taskId, clusterUuid)
+func CreateTrainTask(address string, 
+                     token string, 
+                     name string, 
+                     clusterUuid string, 
+                     inputs []string, 
+                     outputs []string) (map[string]interface{}, error) {
+	path := "v1.0alpha/task/train"
+    jsonBody := map[string]interface{}{
+        "name": name,
+        "cluster_uuid": clusterUuid,
+        "inputs": convertIO(inputs),
+        "outputs": convertIO(outputs),
+    }
+    return SendPost(address, token, path, jsonBody)
+}
+
+func CreateRequestTask(address string, 
+                       token string, 
+                       name string, 
+                       clusterUuid string, 
+                       inputs []string, 
+                       results []string) (map[string]interface{}, error) {
+    path := "v1.0alpha/task/request"
+    jsonBody := map[string]interface{}{
+        "name": name,
+        "cluster_uuid": clusterUuid,
+        "inputs": convertIO(inputs),
+        "results": convertIO(results),
+    }
+    return SendPost(address, token, path, jsonBody)
+}
+
+func GetTask(address string, token string, taskId string, clusterUuid string) (map[string]interface{}, error) {
+    path := "v1.0alpha/task"
+    vars := map[string]string{ 
+        "uuid": taskId,
+        "cluster_uuid": clusterUuid,
+    }
     return SendGet(address, token, path, vars)
 }
 
-func ListTask(address string, token string, clusterUuid string) (bool, string) {
-    path := "control/v1.0alpha/task/all"
-    vars := fmt.Sprintf("cluster_uuid=%s", clusterUuid)
+func ListTask(address string, token string, clusterUuid string) (map[string]interface{}, error) {
+    path := "v1.0alpha/task/all"
+    vars := map[string]string{ "cluster_uuid": clusterUuid }
     return SendGet(address, token, path, vars)
 }
 
-func DeleteTask(address string, token string, taskId string, clusterUuid string) (bool, string) {
-    path := "control/v1.0alpha/task"
-    vars := fmt.Sprintf("uuid=%s&cluster_uuid=%s", taskId, clusterUuid)
+func DeleteTask(address string, token string, taskUuid string, clusterUuid string) (map[string]interface{}, error) {
+    path := "v1.0alpha/task"
+    vars := map[string]string{ 
+        "uuid": taskUuid,
+        "cluster_uuid": clusterUuid,
+    }
     return SendDelete(address, token, path, vars)
 }

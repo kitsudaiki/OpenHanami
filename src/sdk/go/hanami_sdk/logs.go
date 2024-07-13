@@ -21,22 +21,30 @@
 package hanami_sdk
 
 import (
-    "fmt"
+    "strconv"
 )
 
-func listAuditLogs(address string, token string, userId string, page int) (bool, string) {
-    path := "/control/v1.0alpha/audit_log?";
-    vars := "";
+func listAuditLogs(address string, token string, userId string, page int) (map[string]interface{}, error) {
+    path := "/v1.0alpha/audit_log?";
+    vars := map[string]string{}
     if(userId != "") {
-        vars = fmt.Sprintf("user_id=%s&page=%d", userId, page)
+        vars = map[string]string{ 
+            "user_id": userId,
+            "page": strconv.Itoa(page),
+        }
     } else {
-        vars = fmt.Sprintf("page=%d", page)
+        vars = map[string]string{ 
+            "page": strconv.Itoa(page),
+        }
     }
     return SendGet(address, token, path, vars)
 }
 
-func listErrorLogs(address string, token string, userId string, page int)  (bool, string) {
-    path := "/control/v1.0alpha/error_log";
-    vars := fmt.Sprintf("user_id=%s&page=%d", userId, page)
+func listErrorLogs(address string, token string, userId string, page int)  (map[string]interface{}, error) {
+    path := "/v1.0alpha/error_log";
+    vars := map[string]string{ 
+        "user_id": userId,
+        "page": strconv.Itoa(page),
+    }
     return SendGet(address, token, path, vars)
 }

@@ -28,17 +28,23 @@ import (
     "github.com/kitsudaiki/Hanami"
 )
 
+var hostHeader = []string{
+    "uuid",
+    "type",
+}
+
 var listHostsCmd = &cobra.Command {
     Use:   "list",
     Short: "List all logical hosts.",
     Run:   func(cmd *cobra.Command, args []string) {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
-        success, content := hanami_sdk.ListHosts(address, token)
-        if success {
-            hanamictl_common.ParseList(content)
+        content, err := hanami_sdk.ListHosts(address, token)
+        if err == nil {
+            hanamictl_common.ParseList(content, hostHeader)
         } else {
-            fmt.Println(content)
+            fmt.Println(err)
+            os.Exit(1)
         }
     },
 }

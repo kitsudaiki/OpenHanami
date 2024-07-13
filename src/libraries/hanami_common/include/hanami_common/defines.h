@@ -31,7 +31,7 @@
 #define UUID_REGEX "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
 #define ID_REGEX "[a-zA-Z][a-zA-Z_0-9]*"
 #define ID_EXT_REGEX "[a-zA-Z][a-zA-Z_0-9@]*"
-#define NAME_REGEX "[a-zA-Z][a-zA-Z_0-9 ]*"
+#define NAME_REGEX "[a-zA-Z][a-zA-Z_0-9\\- ]*"
 #define INT_VALUE_REGEX "^-?([0-9]+)$"
 #define FLOAT_VALUE_REGEX "^-?([0-9]+)\\.([0-9]+)$"
 #define IPV4_REGEX "\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b"

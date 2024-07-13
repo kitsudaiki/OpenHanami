@@ -8,6 +8,7 @@ gitIdentityChange.sh
 *.png~
 *.dtmp
 src/cli/hanamictl/hanamictl
+testing/go_cli_api/hanamictl
 testing/ansible_deploy/.vagrant/
 .git-hooks/post-checkout
 .git-hooks/post-commit
@@ -26,3 +27,6 @@ src/sdk/python/sdk_test_env
 *.proto3.pb.go
 src/sdk/python/hanami_sdk/build
 src/sdk/python/hanami_sdk/hanami_sdk.egg-info
+*.tar.gz
+*.tgz
+

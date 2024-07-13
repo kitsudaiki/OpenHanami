@@ -78,6 +78,26 @@ CreateRequestTaskV1M0::CreateRequestTaskV1M0()
 
     registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the new created task.");
 
+    registerOutputField("current_cycle", SAKURA_INT_TYPE)
+        .setComment("Current cycle of the current task.");
+
+    registerOutputField("total_number_of_cycles", SAKURA_INT_TYPE)
+        .setComment("Total number of cycles requred by the task.");
+
+    registerOutputField("state", SAKURA_STRING_TYPE)
+        .setComment("Actual state of the task (queued, active, aborted or finished).");
+
+    registerOutputField("queue_timestamp", SAKURA_STRING_TYPE)
+        .setComment(
+            "Timestamp in UTC when the task entered the queued state, "
+            "which is basicall the timestamp when the task was created");
+
+    registerOutputField("start_timestamp", SAKURA_STRING_TYPE)
+        .setComment("Timestamp in UTC when the task entered the active state.");
+
+    registerOutputField("end_timestamp", SAKURA_STRING_TYPE)
+        .setComment("Timestamp in UTC when the task was finished.");
+
     //----------------------------------------------------------------------------------------------
     //
     //----------------------------------------------------------------------------------------------
@@ -177,6 +197,12 @@ CreateRequestTaskV1M0::runTask(BlossomIO& blossomIO,
     // create output
     blossomIO.output["uuid"] = newTask->uuid.toString();
     blossomIO.output["name"] = name;
+    blossomIO.output["current_cycle"] = newTask->progress.currentCyle;
+    blossomIO.output["total_number_of_cycles"] = newTask->progress.totalNumberOfCycles;
+    blossomIO.output["queue_timestamp"] = serializeTimePoint(newTask->progress.queuedTimeStamp);
+    blossomIO.output["state"] = "queued";
+    blossomIO.output["start_timestamp"] = "-";
+    blossomIO.output["end_timestamp"] = "-";
 
     return true;
 }
@@ -261,11 +287,11 @@ CreateRequestTaskV1M0::createResultTarget(DataSetFileHandle& fileHandle,
     if (targetFilePath.at(targetFilePath.size() - 1) != '/') {
         targetFilePath.append("/");
     }
-    targetFilePath.append(name + "_result_" + datasetUuid);
+    targetFilePath.append(name + datasetUuid);
 
     // create new database-entry
     DataSetTable::DataSetDbEntry dbEntry;
-    dbEntry.name = name + "_result";
+    dbEntry.name = name;
     dbEntry.ownerId = userContext.userId;
     dbEntry.projectId = userContext.projectId;
     dbEntry.uuid = datasetUuid;

@@ -153,8 +153,10 @@ handleClientOutput(Cluster& cluster)
                 DataSetFileHandle* fileHandle = &info->results[name];
                 for (const OutputNeuron& outputNeuron : outputInterface.outputNeurons) {
                     // TODO: handle return value
+                    // std::cout<<outputNeuron.outputVal<<std::endl;
                     appendValueToDataSet(*fileHandle, outputNeuron.outputVal, error);
                 }
+                // std::cout << "-------------------------------------" << std::endl;
             }
         }
     }

@@ -47,6 +47,10 @@ ShowTaskV1M0::ShowTaskV1M0() : Blossom("Show information of a specific task.")
     // output
     //----------------------------------------------------------------------------------------------
 
+    registerOutputField("uuid", SAKURA_STRING_TYPE).setComment("UUID of the task.");
+
+    registerOutputField("name", SAKURA_STRING_TYPE).setComment("Name of the task.");
+
     registerOutputField("current_cycle", SAKURA_INT_TYPE)
         .setComment("Current cycle of the current task.");
 
@@ -109,9 +113,12 @@ ShowTaskV1M0::runTask(BlossomIO& blossomIO,
         return false;
     }
 
-    const TaskProgress progress = cluster->getProgress(taskUuid);
+    const Task* task = cluster->getTask(taskUuid);
+    TaskProgress progress = task->progress;
 
     // get basic information
+    blossomIO.output["uuid"] = taskUuid;
+    blossomIO.output["name"] = task->name;
     blossomIO.output["current_cycle"] = progress.currentCyle;
     blossomIO.output["total_number_of_cycles"] = progress.totalNumberOfCycles;
     blossomIO.output["queue_timestamp"] = serializeTimePoint(progress.queuedTimeStamp);

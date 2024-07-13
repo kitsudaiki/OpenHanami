@@ -337,10 +337,95 @@ jobs:
 
 
 
+  cli_api_tests:
+    name: "CLI-API-Tests"
+    needs: [ unit_tests, memory_leak_tests, functional_tests ]
+    runs-on: ubuntu-latest
+    steps:
+      - 
+        name: Checkout repository
+        run: |
+          # use manually clone, because with the "actions/checkout@v3" action the name of the
+          # branch can not be read by the git commands, which is necessary for the build-script
+          git clone https://github.com/kitsudaiki/${GITHUB_REPOSITORY#*/}.git
+          cd ${GITHUB_REPOSITORY#*/}
+          git checkout ${GITHUB_REF#refs/heads/}
+          git submodule init
+          git submodule update --recursive
+      - 
+        name: Get artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: result
+          path: /tmp/build_result
+      - 
+        name: Install go
+        run: |
+          wget -c https://go.dev/dl/go1.22.5.linux-amd64.tar.gz
+          sudo tar -C /usr/local/ -xzf go1.22.5.linux-amd64.tar.gz
+      - 
+        name: Install protobuf
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y protobuf-compiler golang-goprotobuf-dev
+      - 
+        name: Build local docker-image
+        run: |
+          cd ${GITHUB_REPOSITORY#*/}
+          chmod +x /tmp/build_result/Hanami
+          mkdir -p builds/binaries
+          cp /tmp/build_result/Hanami ./builds/binaries/
+          # IMPORTANT: use the Dockerfile instead of the Earthfile here, 
+          # because the Dockerfile is also used in the final build-process.
+          # So using the Dockerfile here to ensure, the final build after 
+          # merge doesn't fail.
+          docker build -t kitsudaiki/hanami:test .
+      - 
+        name: Download mnist-files
+        run: |
+          cd /tmp/
+          wget https://storage.googleapis.com/cvdf-datasets/mnist/train-images-idx3-ubyte.gz
+          wget https://storage.googleapis.com/cvdf-datasets/mnist/train-labels-idx1-ubyte.gz
+          wget https://storage.googleapis.com/cvdf-datasets/mnist/t10k-images-idx3-ubyte.gz
+          wget https://storage.googleapis.com/cvdf-datasets/mnist/t10k-labels-idx1-ubyte.gz
+          gzip -d train-images-idx3-ubyte.gz
+          gzip -d train-labels-idx1-ubyte.gz
+          gzip -d t10k-images-idx3-ubyte.gz
+          gzip -d t10k-labels-idx1-ubyte.gz
+      - 
+        name: Start Hanami-docker-container
+        run: |
+          cd ${GITHUB_REPOSITORY#*/}
+          sudo cp -r ./example_configs/hanami /etc/
+          docker run -d -v \
+            ./example_configs/hanami:/etc/hanami \
+            -p 127.0.0.1:11418:11418 \
+            --name=hanami \
+            --env HANAMI_ADMIN_USER_ID=asdf \
+            --env HANAMI_ADMIN_USER_NAME=asdf \
+            --env HANAMI_ADMIN_PASSWORD=asdfasdf \
+            kitsudaiki/hanami:test
+      - 
+        name: Sleep for 15 seconds
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '15s'
+      - 
+        name: Run test
+        run: |
+          export PATH=$PATH:/usr/local/go/bin
+          cd ${GITHUB_REPOSITORY#*/}/testing/go_cli_api
+          ./cli_test.sh
+      - 
+        name: Get log of the docker-container, even if the test failed
+        if: always()
+        run: docker logs hanami
+
+
   docker_build:
     name: "Build Docker-images"
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
-    needs: [ sdk_api_tests ]
+    needs: [ sdk_api_tests, cli_api_tests ]
     runs-on: ubuntu-22.04
     strategy:
       fail-fast: false

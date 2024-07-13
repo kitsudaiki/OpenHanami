@@ -23,29 +23,19 @@ package hanami_sdk
 
 import (
     "fmt"
-    "encoding/json"
 )
 
-func parseJson(input string) map[string]interface{} {
-    // parse json and fill into map
-    outputMap := map[string]interface{}{}
-    err := json.Unmarshal([]byte(input), &outputMap)
-    if err != nil {
-        panic(err)
+func RequestToken(address string, user string, pw string) string {
+    path := fmt.Sprintf("v1.0alpha/token")
+    jsonBody := map[string]interface{}{ 
+        "id": user,
+        "password": pw,
     }
 
-    return outputMap
-}
-
-func RequestToken(address string, user string, pw string) string {
-    path := fmt.Sprintf("control/v1.0alpha/token")
-    body := fmt.Sprintf("{\"id\":\"%s\",\"password\":\"%s\"}", user, pw)
-
-    success, content := sendGenericRequest(address, "", "POST", path, body)
-    if success == false {
+    content, err := sendGenericRequest(address, "", "POST", path, &jsonBody)
+    if err != nil {
         return ""
     }
 
-    outputMap := parseJson(content)
-    return  outputMap["token"].(string)
+    return  content["token"].(string)
 }

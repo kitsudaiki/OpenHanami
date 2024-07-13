@@ -24,28 +24,29 @@ import (
     "fmt"
 )
 
-func CreateProject(address string, token string, projectId string, projectName string) (bool, string) {
-    path := "control/v1.0alpha/project"
-    vars := ""
-    jsonBody := fmt.Sprintf("{\"id\":\"%s\",\"name\":\"%s\"}", 
-                            projectId, projectName)
-    return SendPost(address, token, path, vars, jsonBody)
+func CreateProject(address string, token string, projectId string, projectName string) (map[string]interface{}, error) {
+    path := "v1.0alpha/project"
+    jsonBody := map[string]interface{}{
+        "id": projectId,
+        "name": projectName,
+    }
+    return SendPost(address, token, path, jsonBody)
 }
 
-func GetProject(address string, token string, projectId string) (bool, string) {
-    path := "control/v1.0alpha/project"
-    vars := fmt.Sprintf("id=%s", projectId)
+func GetProject(address string, token string, projectId string) (map[string]interface{}, error) {
+    path := "v1.0alpha/project"
+    vars := map[string]string{ "id": projectId }
     return SendGet(address, token, path, vars)
 }
 
-func ListProject(address string, token string) (bool, string) {
-    path := fmt.Sprintf("control/v1.0alpha/project/all")
-    vars := ""
+func ListProject(address string, token string) (map[string]interface{}, error) {
+    path := fmt.Sprintf("v1.0alpha/project/all")
+    vars := map[string]string{}
     return SendGet(address, token, path, vars)
 }
 
-func DeleteProject(address string, token string, projectId string) (bool, string) {
-    path := "control/v1.0alpha/project"
-    vars := fmt.Sprintf("id=%s", projectId)
+func DeleteProject(address string, token string, projectId string) (map[string]interface{}, error) {
+    path := "v1.0alpha/project"
+    vars := map[string]string{ "id": projectId }
     return SendDelete(address, token, path, vars)
 }

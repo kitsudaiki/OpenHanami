@@ -29,10 +29,28 @@ import (
 )
 
 var (
-    template       string
+    templatePath   string
     checkpointName string
     checkpointUuid string
 )
+
+var clusterHeader = []string{
+    "uuid",
+    "name",
+    "visibility",
+    "owner_id",
+    "project_id",
+    "created_at",
+}
+
+var clusterSaveHeader = []string{
+    "uuid",
+    "name",
+}
+
+var clusterRestoreHeader = []string{
+    "uuid",
+}
 
 var createClusterCmd = &cobra.Command {
     Use:   "create -t TEMPLATE_PATH NAME",
@@ -42,12 +60,17 @@ var createClusterCmd = &cobra.Command {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
         clusterName := args[0]
-        success, content := hanami_sdk.CreateCluster(address, token, clusterName, template)
-        if success {
-            hanamictl_common.ParseSingle(content)
-        } else {
-            fmt.Println(content)
+        templateContent, err := os.ReadFile(templatePath)
+        if err != nil {
+            fmt.Println(err)
+            os.Exit(1)
         }
+        content, err := hanami_sdk.CreateCluster(address, token, clusterName, string(templateContent))
+        if err != nil {
+            fmt.Println(err)
+            os.Exit(1)
+        }
+        hanamictl_common.ParseSingle(content, clusterHeader)
     },
 }
 
@@ -59,12 +82,12 @@ var getClusterCmd = &cobra.Command {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
         clusterUuid := args[0]
-        success, content := hanami_sdk.GetCluster(address, token, clusterUuid)
-        if success {
-            hanamictl_common.ParseSingle(content)
-        } else {
-            fmt.Println(content)
+        content, err := hanami_sdk.GetCluster(address, token, clusterUuid)
+        if err != nil {
+            fmt.Println(err)
+            os.Exit(1)
         }
+        hanamictl_common.ParseSingle(content, clusterHeader)
     },
 }
 
@@ -74,12 +97,12 @@ var listClusterCmd = &cobra.Command {
     Run:   func(cmd *cobra.Command, args []string) {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
-        success, content := hanami_sdk.ListCluster(address, token)
-        if success {
-            hanamictl_common.ParseList(content)
-        } else {
-            fmt.Println(content)
+        content, err := hanami_sdk.ListCluster(address, token)
+        if err != nil {
+            fmt.Println(err)
+            os.Exit(1)
         }
+        hanamictl_common.ParseList(content, clusterHeader)
     },
 }
 
@@ -91,12 +114,12 @@ var deleteClusterCmd = &cobra.Command {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
         clusterUuid := args[0]
-        success, content := hanami_sdk.DeleteCluster(address, token, clusterUuid)
-        if success {
-            fmt.Println("successfully deleted cluster '%s'", clusterUuid)
-        } else {
-            fmt.Println(content)
+        _, err := hanami_sdk.DeleteCluster(address, token, clusterUuid)
+        if err != nil {
+            fmt.Println(err)
+            os.Exit(1)
         }
+        fmt.Printf("successfully deleted cluster '%v'\n", clusterUuid)
     },
 }
 
@@ -108,12 +131,12 @@ var saveClusterCmd = &cobra.Command {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
         clusterUuid := args[0]
-        success, content := hanami_sdk.SaveCluster(address, token, clusterUuid, checkpointName)
-        if success {
-            hanamictl_common.ParseSingle(content)
-        } else {
-            fmt.Println(content)
+        content, err := hanami_sdk.SaveCluster(address, token, clusterUuid, checkpointName)
+        if err != nil {
+            fmt.Println(err)
+            os.Exit(1)
         }
+        hanamictl_common.ParseSingle(content, clusterSaveHeader)
     },
 }
 
@@ -125,12 +148,12 @@ var restoreClusterCmd = &cobra.Command {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
         clusterUuid := args[0]
-        success, content := hanami_sdk.RestoreCluster(address, token, clusterUuid, checkpointUuid)
-        if success {
-            hanamictl_common.ParseSingle(content)
-        } else {
-            fmt.Println(content)
+        content, err := hanami_sdk.RestoreCluster(address, token, clusterUuid, checkpointUuid)
+        if err != nil {
+            fmt.Println(err)
+            os.Exit(1)
         }
+        hanamictl_common.ParseSingle(content, clusterRestoreHeader)
     },
 }
 
@@ -145,7 +168,7 @@ func Init_Cluster_Commands(rootCmd *cobra.Command) {
     rootCmd.AddCommand(clusterCmd)
 
     clusterCmd.AddCommand(createClusterCmd)
-    createClusterCmd.Flags().StringVarP(&template, "template", "t", "", "Cluster Template (mandatory)")
+    createClusterCmd.Flags().StringVarP(&templatePath, "template", "t", "", "Cluster Template (mandatory)")
     createClusterCmd.MarkFlagRequired("template")
 
     clusterCmd.AddCommand(getClusterCmd)

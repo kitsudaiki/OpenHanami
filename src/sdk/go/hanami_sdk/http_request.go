@@ -26,46 +26,87 @@ import (
     "io/ioutil"
     "crypto/tls"
     "strings"
+    "encoding/json"
 )
 
-func SendGet(address string, token string, path string, vars string) (bool, string) {
-    return sendRequest(address, token, "GET", path, vars, "")
+type RequestError struct {
+    StatusCode int
+    Err string
 }
 
-func SendPost(address string, token string, path string, vars string, jsonBody string) (bool, string) {
-    return sendRequest(address, token, "POST", path, vars, jsonBody)
+func (r *RequestError) Error() string {
+    return fmt.Sprintf("status %d: err %v", r.StatusCode, r.Err)
 }
 
-func SendPut(address string, token string, path string, vars string, jsonBody string) (bool, string) {
-    return sendRequest(address, token, "PUT", path, vars, jsonBody)
+func SendPost(address string, 
+              token string, 
+              path string, 
+              jsonBody map[string]interface{}) (map[string]interface{}, error) {
+    return sendGenericRequest(address, token, "POST", path, &jsonBody)
 }
 
-func SendDelete(address string, token string, path string, vars string) (bool, string) {
-    return sendRequest(address, token, "DELETE", path, vars, "")
+func SendPut(address string, 
+             token string, 
+             path string, 
+             jsonBody map[string]interface{} ) (map[string]interface{}, error) {
+    return sendGenericRequest(address, token, "PUT", path, &jsonBody)
 }
 
-func sendRequest(address string, token string, requestType string, path string, vars string, jsonBody string) (bool, string) {
-    completePath := path
-    if vars != "" {
-        completePath += fmt.Sprintf("?%s", vars)
+func SendGet(address string, 
+             token string, 
+             path string, 
+             vars map[string]string) (map[string]interface{}, error) {
+    completePath := path + prepareVars(vars)
+    return sendGenericRequest(address, token, "GET", completePath, nil)
+}
+
+func SendDelete(address string, 
+                token string, 
+                path string, 
+                vars map[string]string) (map[string]interface{}, error) {
+    completePath := path + prepareVars(vars)
+    return sendGenericRequest(address, token, "DELETE", completePath, nil)
+}
+
+func prepareVars(vars map[string]string) string {
+    if len(vars) > 0 {
+        var pairs []string
+        for key, value := range vars {
+            pairs = append(pairs, fmt.Sprintf("%s=%s", key, value))
+        }
+        return fmt.Sprintf("?%s", strings.Join(pairs, "&"))
     }
     
-    return sendGenericRequest(address, token, requestType, completePath, jsonBody)
+    return ""
 }
 
-func sendGenericRequest(address string, token string, requestType string, path string, jsonBody string) (bool, string) {
+func sendGenericRequest(address string, 
+                        token string, 
+                        requestType string, 
+                        path string, 
+                        jsonBody *map[string]interface{}) (map[string]interface{}, error) {
+    outputMap := map[string]interface{}{}
+    jsonDataStr := ""
+    if jsonBody != nil {
+        jsonData, err := json.Marshal(jsonBody)
+        if err != nil {
+            return outputMap, err
+        }
+        jsonDataStr = string(jsonData)
+    }
+
     // check if https or not
     if strings.Contains(address, "https") {
         http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
     }
 
     // build uri
-    var reqBody = strings.NewReader(jsonBody)
+    var reqBody = strings.NewReader(jsonDataStr)
     // fmt.Printf("completePath: "+ completePath)
     completePath := fmt.Sprintf("%s/%s", address, path)
     req, err := http.NewRequest(requestType, completePath, reqBody)
     if err != nil {
-        panic(err)
+        return outputMap, err
     }
 
     // add token to header
@@ -76,19 +117,30 @@ func sendGenericRequest(address string, token string, requestType string, path s
     // run request
     resp, err := http.DefaultClient.Do(req)
     if err != nil {
-        panic(err)
+        return outputMap, err
     }
     defer resp.Body.Close()
 
     // read data from response and convert into string
     bodyBytes, err := ioutil.ReadAll(resp.Body)
     if err != nil {
-        return false, ""
+        return outputMap, err
     }
     bodyString := string(bodyBytes)
 
     // fmt.Printf("bodyString: " + bodyString + "\n")
+    if resp.StatusCode != http.StatusOK {
+        return outputMap, &RequestError{
+            StatusCode: resp.StatusCode,
+            Err:        bodyString,
+        }
+    }
 
-    var ok = resp.StatusCode == http.StatusOK
-    return ok, bodyString
+    // parse result
+    err = json.Unmarshal([]byte(bodyString), &outputMap)
+    if err != nil {
+        return outputMap, nil
+    }
+
+    return outputMap, nil
 }

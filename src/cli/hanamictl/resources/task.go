@@ -31,23 +31,53 @@ import (
 var (
     taskName    string
     clusterUuid string
-    datasetUuid string
-    taskType    string
+    inputData   []string
+    outputData  []string
 )
 
-var createTaskCmd = &cobra.Command {
-    Use:   "create TASK_ID",
-    Short: "Create a new task.",
+var taskHeader = []string{
+    "uuid",
+    "state",
+    "current_cycle",
+    "total_number_of_cycles",
+    "queue_timestamp",
+    "start_timestamp",
+    "end_timestamp",
+}
+
+var createTrainTaskCmd = &cobra.Command {
+    Use:   "train -i BRICK_NAME:DATASET_UUID -c CLUSTER_UUID TASK_NAME",
+    Short: "Create a new train task.",
     Args:  cobra.ExactArgs(1),
     Run:   func(cmd *cobra.Command, args []string) {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
         taskName := args[0]
-        success, content := hanami_sdk.CreateTask(address, token, taskName, taskType, clusterUuid, datasetUuid)
-        if success {
-            hanamictl_common.ParseSingle(content)
+        content, err := hanami_sdk.CreateTrainTask(address, token, taskName, clusterUuid, inputData, outputData)
+        if err == nil {
+            hanamictl_common.ParseSingle(content, taskHeader)
         } else {
-            fmt.Println(content)
+            fmt.Println(err)
+            os.Exit(1)
+        }
+    },
+}
+
+
+var createRequestTaskCmd = &cobra.Command {
+    Use:   "request -i BRICK_NAME:DATASET_UUID -c CLUSTER_UUID TASK_NAME",
+    Short: "Create a new request task.",
+    Args:  cobra.ExactArgs(1),
+    Run:   func(cmd *cobra.Command, args []string) {
+        token := Login()
+        address := os.Getenv("HANAMI_ADDRESS")
+        taskName := args[0]
+        content, err := hanami_sdk.CreateRequestTask(address, token, taskName, clusterUuid, inputData, outputData)
+        if err == nil {
+            hanamictl_common.ParseSingle(content, taskHeader)
+        } else {
+            fmt.Println(err)
+            os.Exit(1)
         }
     },
 }
@@ -60,11 +90,12 @@ var getTaskCmd = &cobra.Command {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
         taskId := args[0]
-        success, content := hanami_sdk.GetTask(address, token, taskId, clusterUuid)
-        if success {
-            hanamictl_common.ParseSingle(content)
+        content, err := hanami_sdk.GetTask(address, token, taskId, clusterUuid)
+        if err == nil {
+            hanamictl_common.ParseSingle(content, taskHeader)
         } else {
-            fmt.Println(content)
+            fmt.Println(err)
+            os.Exit(1)
         }
     },
 }
@@ -75,11 +106,12 @@ var listTaskCmd = &cobra.Command {
     Run:   func(cmd *cobra.Command, args []string) {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
-        success, content := hanami_sdk.ListTask(address, token, clusterUuid)
-        if success {
-            hanamictl_common.ParseList(content)
+        content, err := hanami_sdk.ListTask(address, token, clusterUuid)
+        if err == nil {
+            hanamictl_common.ParseList(content, taskHeader)
         } else {
-            fmt.Println(content)
+            fmt.Println(err)
+            os.Exit(1)
         }
     },
 }
@@ -91,12 +123,13 @@ var deleteTaskCmd = &cobra.Command {
     Run:   func(cmd *cobra.Command, args []string) {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
-        taskId := args[0]
-        success, content := hanami_sdk.DeleteTask(address, token, taskId, clusterUuid)
-        if success {
-            fmt.Println("successfully deleted task '%s'", taskId)
+        taskUuid := args[0]
+        _, err := hanami_sdk.DeleteTask(address, token, taskUuid, clusterUuid)
+        if err == nil {
+            fmt.Printf("successfully deleted task '%v'\n", taskUuid)
         } else {
-            fmt.Println(content)
+            fmt.Println(err)
+            os.Exit(1)
         }
     },
 }
@@ -108,16 +141,34 @@ var taskCmd = &cobra.Command {
 }
 
 
+var createTaskCmd = &cobra.Command {
+    Use:   "create",
+    Short: "Create new task.",
+}
+
+
 func Init_Task_Commands(rootCmd *cobra.Command) {
     rootCmd.AddCommand(taskCmd)
 
     taskCmd.AddCommand(createTaskCmd)
-    createTaskCmd.Flags().StringVarP(&clusterUuid, "cluster", "c", "", "Cluster UUID (mandatory)")
-    createTaskCmd.Flags().StringVarP(&clusterUuid, "dataset", "d", "", "Data-Set UUID (mandatory)")
-    createTaskCmd.Flags().StringVarP(&clusterUuid, "type", "t", "", "Task type (mandatory)")
-    createTaskCmd.MarkFlagRequired("cluster")
-    createTaskCmd.MarkFlagRequired("dataset")
-    createTaskCmd.MarkFlagRequired("type")
+
+    createTaskCmd.AddCommand(createTrainTaskCmd)
+    createTrainTaskCmd.Flags().StringSliceVarP(&inputData, "input", "i", []string{}, "Cluster input, which are paris of '-i <BRICK_NAME>:<DATASET_UUID>' (mandatory)")
+    createTrainTaskCmd.Flags().StringSliceVarP(&outputData, "output", "o", []string{}, "Cluster outputs, which are paris of '-o <BRICK_NAME>:<DATASET_UUID>' (mandatory)")
+    createTrainTaskCmd.Flags().StringVarP(&clusterUuid, "cluster", "c", "", "Cluster UUID (mandatory)")    
+    createTrainTaskCmd.MarkFlagRequired("cluster")
+    createTrainTaskCmd.MarkFlagRequired("input")
+    createTrainTaskCmd.MarkFlagRequired("output")
+
+
+    createTaskCmd.AddCommand(createRequestTaskCmd)
+    createRequestTaskCmd.Flags().StringSliceVarP(&inputData, "input", "i", []string{}, "Cluster input, which are paris of '-i <BRICK_NAME>:<DATASET_UUID>' (mandatory)")
+    createRequestTaskCmd.Flags().StringSliceVarP(&outputData, "result", "r", []string{}, "Cluster result, which are paris of '-o <BRICK_NAME>:<DATASET_NAME>' (mandatory)")
+    createRequestTaskCmd.Flags().StringVarP(&clusterUuid, "cluster", "c", "", "Cluster UUID (mandatory)")
+    createRequestTaskCmd.MarkFlagRequired("cluster")
+    createRequestTaskCmd.MarkFlagRequired("input")
+    createRequestTaskCmd.MarkFlagRequired("result")
+
 
     taskCmd.AddCommand(getTaskCmd)
     getTaskCmd.Flags().StringVarP(&clusterUuid, "cluster", "c", "", "Cluster UUID (mandatory)")

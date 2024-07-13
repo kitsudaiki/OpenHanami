@@ -28,6 +28,14 @@ import (
     "github.com/kitsudaiki/Hanami"
 )
 
+var checkpointHeader = []string{
+    "uuid",
+    "name",
+    "visibility",
+    "owner_id",
+    "project_id",
+    "created_at",
+}
 
 var getCheckpointCmd = &cobra.Command {
     Use:   "get CHECKPOINT_UUID",
@@ -37,12 +45,12 @@ var getCheckpointCmd = &cobra.Command {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
         checkpointUuid := args[0]
-        success, content := hanami_sdk.GetCheckpoint(address, token, checkpointUuid)
-        if success {
-            hanamictl_common.ParseSingle(content)
-        } else {
-            fmt.Println(content)
+        content, err := hanami_sdk.GetCheckpoint(address, token, checkpointUuid)
+        if err != nil {
+            fmt.Println(err)
+            os.Exit(1)
         }
+        hanamictl_common.ParseSingle(content, checkpointHeader)
     },
 }
 
@@ -52,12 +60,12 @@ var listCheckpointCmd = &cobra.Command {
     Run:   func(cmd *cobra.Command, args []string) {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
-        success, content := hanami_sdk.ListCheckpoint(address, token)
-        if success {
-            hanamictl_common.ParseList(content)
-        } else {
-            fmt.Println(content)
+        content, err := hanami_sdk.ListCheckpoint(address, token)
+        if err != nil {
+            fmt.Println(err)
+            os.Exit(1)
         }
+        hanamictl_common.ParseList(content, checkpointHeader)
     },
 }
 
@@ -69,12 +77,12 @@ var deleteCheckpointCmd = &cobra.Command {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
         checkpointUuid := args[0]
-        success, content := hanami_sdk.DeleteCheckpoint(address, token, checkpointUuid)
-        if success {
-            fmt.Println("successfully deleted checkpoint '%s'", checkpointUuid)
-        } else {
-            fmt.Println(content)
+        _, err := hanami_sdk.DeleteCheckpoint(address, token, checkpointUuid)
+        if err != nil {
+            fmt.Println(err)
+            os.Exit(1)
         }
+        fmt.Printf("successfully deleted checkpoint '%v'\n", checkpointUuid)
     },
 }
 

@@ -32,6 +32,13 @@ var (
     projectName    string
 )
 
+var projectHeader = []string{
+    "id",
+    "name",
+    "creator_id",
+    "created_at",
+}
+
 var createProjectCmd = &cobra.Command {
     Use:   "create PROJECT_ID",
     Short: "Create a new project.",
@@ -40,11 +47,12 @@ var createProjectCmd = &cobra.Command {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
         projectId := args[0]
-        success, content := hanami_sdk.CreateProject(address, token, projectId, projectName)
-        if success {
-            hanamictl_common.ParseSingle(content)
+        content, err := hanami_sdk.CreateProject(address, token, projectId, projectName)
+        if err == nil {
+            hanamictl_common.ParseSingle(content, projectHeader)
         } else {
-            fmt.Println(content)
+            fmt.Println(err)
+            os.Exit(1)
         }
     },
 }
@@ -57,11 +65,12 @@ var getProjectCmd = &cobra.Command {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
         projectId := args[0]
-        success, content := hanami_sdk.GetProject(address, token, projectId)
-        if success {
-            hanamictl_common.ParseSingle(content)
+        content, err := hanami_sdk.GetProject(address, token, projectId)
+        if err == nil {
+            hanamictl_common.ParseSingle(content, projectHeader)
         } else {
-            fmt.Println(content)
+            fmt.Println(err)
+            os.Exit(1)
         }
     },
 }
@@ -72,11 +81,12 @@ var listProjectCmd = &cobra.Command {
     Run:   func(cmd *cobra.Command, args []string) {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
-        success, content := hanami_sdk.ListProject(address, token)
-        if success {
-            hanamictl_common.ParseList(content)
+        content, err := hanami_sdk.ListProject(address, token)
+        if err == nil {
+            hanamictl_common.ParseList(content, projectHeader)
         } else {
-            fmt.Println(content)
+            fmt.Println(err)
+            os.Exit(1)
         }
     },
 }
@@ -89,11 +99,12 @@ var deleteProjectCmd = &cobra.Command {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
         projectId := args[0]
-        success, content := hanami_sdk.DeleteProject(address, token, projectId)
-        if success {
-            fmt.Println("successfully deleted project '%s'", projectId)
+        _, err := hanami_sdk.DeleteProject(address, token, projectId)
+        if err == nil {
+            fmt.Printf("successfully deleted project '%v'\n", projectId)
         } else {
-            fmt.Println(content)
+            fmt.Println(err)
+            os.Exit(1)
         }
     },
 }
