@@ -22,9 +22,10 @@
 
 #include "physical_host.h"
 
-#include <core/cuda_functions.h>
 #include <core/processing/cpu/cpu_host.h>
+#include <core/processing/cuda/cuda_functions.h>
 #include <core/processing/cuda/cuda_host.h>
+#include <core/processing/cuda/info.h>
 #include <hanami_hardware/host.h>
 
 PhysicalHost::PhysicalHost() {}
@@ -44,10 +45,12 @@ PhysicalHost::init(Hanami::ErrorContainer& error)
 
     // identify and init cuda gpu's
     // IMPORTANT: these are initialized first, because they also need memory on the host
-    // TODO: re-enable gpu-support
-    /*const uint32_t numberOfCudaGpus = getNumberOfDevices_CUDA();
-    for (uint32_t i = 0; i < numberOfCudaGpus; i++) {
-        CudaHost* newHost = new CudaHost(i);
+    // TODO:enable gpu init here again
+    /*std::vector<GpuInfo> gpuInfos;
+    getGpuInfos(gpuInfos);
+    for (const GpuInfo& gpuInfo : gpuInfos) {
+        std::cout << gpuInfo.toJson().dump(4) << std::endl;
+        CudaHost* newHost = new CudaHost(gpuInfo.deviceId);
         newHost->startThread();
         m_cudaHosts.push_back(newHost);
     }*/

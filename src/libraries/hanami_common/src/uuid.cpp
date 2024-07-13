@@ -1,5 +1,5 @@
 /**
- * @file        uuid.h
+ * @file        uuid.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,25 +20,40 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_UUID_H
-#define HANAMI_UUID_H
-
+#include <hanami_common/uuid.h>
 #include <stdint.h>
+#include <uuid/uuid.h>
 
+#include <regex>
 #include <string>
 
-#include "defines.h"
+/**
+ * @brief check if an id is an uuid
+ *
+ * @param id id to check
+ *
+ * @return true, if id is an uuid, else false
+ */
+bool
+isUuid(const std::string& id)
+{
+    const std::regex uuidRegex(UUID_REGEX);
+    return regex_match(id, uuidRegex);
+}
 
-struct UUID {
-    char uuid[37];
-    uint8_t padding[3];
+/**
+ * @brief generate a new uuid with external library
+ *
+ * @return new uuid
+ */
+const UUID
+generateUuid()
+{
+    uuid_t binaryUuid;
+    UUID result;
 
-    const std::string toString() const { return std::string(uuid, 37 - 1); }
-};
-static_assert(sizeof(UUID) == 40);
+    uuid_generate_random(binaryUuid);
+    uuid_unparse_lower(binaryUuid, result.uuid);
 
-bool isUuid(const std::string& id);
-
-const UUID generateUuid();
-
-#endif  // HANAMI_UUID_H
+    return result;
+}

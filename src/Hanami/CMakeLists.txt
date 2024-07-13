@@ -80,7 +80,7 @@ set(SOURCES
     src/core/cluster/states/task_handle_state.h
     src/core/cluster/states/train_forward_state.h
     src/core/cluster/task.h
-    src/core/cuda_functions.h
+    src/core/processing/cuda/cuda_functions.h
     src/core/io/checkpoint/buffer/buffer_io.h
     src/core/io/checkpoint/disc/checkpoint_io.h
     src/core/io/checkpoint/io_interface.h
@@ -93,6 +93,7 @@ set(SOURCES
     src/core/processing/cpu/reduction.h
     src/core/processing/cpu/worker_thread.h
     src/core/processing/cuda/cuda_host.h
+    src/core/processing/cuda/info.h
     src/core/processing/logical_host.h
     src/core/processing/physical_host.h
     src/core/routing_functions.h
@@ -183,6 +184,7 @@ set(SOURCES
     src/core/processing/cpu/cpu_host.cpp
     src/core/processing/cpu/worker_thread.cpp
     src/core/processing/cuda/cuda_host.cpp
+    src/core/processing/cuda/info.cpp
     src/core/processing/logical_host.cpp
     src/core/processing/physical_host.cpp
     src/core/temp_file_handler.cpp
@@ -206,8 +208,8 @@ set(SOURCES
 add_executable(Hanami
     ${SOURCES}
     src/main.cpp
-    # ${CUDA_OBJECTS}
-    )
+    ${CUDA_OUTPUT_OBJ}
+)
 add_executable(Hanami_unittests
     ${SOURCES}
     tests/unit_tests/core/cluster_test.cpp
@@ -231,8 +233,11 @@ add_executable(Hanami_unittests
     tests/unit_tests/database/users_table_test.cpp
     tests/unit_tests/database/users_table_test.h
     tests/unit_tests/main.cpp
-    # ${CUDA_OBJECTS}
-    )
+    ${CUDA_IO_OBJ}
+    ${CUDA_PROCESSING_OBJ}
+    ${CUDA_BACKPROPAGATION_OBJ}
+    ${CUDA_REDUCTION_OBJ}
+)
 
 # Including directories
 include_directories(
@@ -318,9 +323,10 @@ set(PROTO_FILE ../libraries/hanami_messages/protobuffers)
 set(PROTO_OUTPUT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(PROTO_OUTPUT_HEADER ${PROTO_OUTPUT_DIR}/${PROTO_FILE}/hanami_messages.proto3.pb.h)
 set(PROTO_OUTPUT_SOURCE ${PROTO_OUTPUT_DIR}/${PROTO_FILE}/hanami_messages.proto3.pb.cc)
-# set(CUDA_SOURCES src/core/processing/cuda/gpu_kernel.cu)
-# get_filename_component(CUDA_SRC_NAME ${CUDA_SOURCES} NAME_WE)
-# set(CUDA_OUTPUT_OBJ ${CMAKE_CURRENT_BINARY_DIR}/${CUDA_SRC_NAME}.o)
+set(CUDA_IO_OBJ ${CMAKE_CURRENT_BINARY_DIR}/cuda_io.o)
+set(CUDA_PROCESSING_OBJ ${CMAKE_CURRENT_BINARY_DIR}/processing.o)
+set(CUDA_BACKPROPAGATION_OBJ ${CMAKE_CURRENT_BINARY_DIR}/backpropagation.o)
+set(CUDA_REDUCTION_OBJ ${CMAKE_CURRENT_BINARY_DIR}/reduction.o)
 
 # Generate C++ headers and sources from the .proto file
 add_custom_command(
@@ -331,32 +337,81 @@ add_custom_command(
         --cpp_out=${PROTO_OUTPUT_DIR}/${PROTO_FILE}
         --proto_path=${CMAKE_CURRENT_SOURCE_DIR}/${PROTO_FILE}
         ${CMAKE_CURRENT_SOURCE_DIR}/${PROTO_FILE}/hanami_messages.proto3
-    # COMMAND nvcc
-    #     -O3
-    #     -c
-    #     -I${CMAKE_CURRENT_SOURCE_DIR}/../libraries/hanami_common/include
-    #     -o ${CUDA_OUTPUT_OBJ}
-    #     ${CMAKE_CURRENT_SOURCE_DIR}/${CUDA_SOURCES}
     DEPENDS
         ${CMAKE_CURRENT_SOURCE_DIR}/${PROTO_FILE}/hanami_messages.proto3
 )
+
+add_custom_command(
+    OUTPUT
+        ${CUDA_IO_OBJ}
+        ${CUDA_PROCESSING_OBJ}
+        ${CUDA_BACKPROPAGATION_OBJ}
+        ${CUDA_REDUCTION_OBJ}
+    COMMAND nvcc
+        -O3
+        -c
+        -I${CMAKE_CURRENT_SOURCE_DIR}/../libraries/hanami_common/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/processing/cuda/processing.cu
+        -o ${CUDA_PROCESSING_OBJ}
+    COMMAND nvcc
+        -O3
+        -c
+        -I${CMAKE_CURRENT_SOURCE_DIR}/../libraries/hanami_common/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/processing/cuda/backpropagation.cu
+        -o ${CUDA_BACKPROPAGATION_OBJ}
+
+    COMMAND nvcc
+        -O3
+        -c
+        -I${CMAKE_CURRENT_SOURCE_DIR}/../libraries/hanami_common/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/processing/cuda/reduction.cu
+        -o ${CUDA_REDUCTION_OBJ}
+
+    COMMAND nvcc
+        -O3
+        -c
+        -I${CMAKE_CURRENT_SOURCE_DIR}/../libraries/hanami_common/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/processing/cuda/cuda_io.cu
+        -o ${CUDA_IO_OBJ}
+
+    DEPENDS
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/processing/cuda/cuda_io.cu
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/processing/cuda/processing.cu
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/processing/cuda/backpropagation.cu
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/processing/cuda/reduction.cu
+)
+
 
 # Add dependencies on the targets representing the generated files
 add_custom_target(generate_protobuf_files DEPENDS
     ${PROTO_OUTPUT_HEADER}
     ${PROTO_OUTPUT_SOURCE}
-    # ${CUDA_SOURCES}
 )
 add_dependencies(Hanami generate_protobuf_files)
+add_custom_target(compile_cuda_kernel DEPENDS
+    ${CUDA_IO_OBJ}
+    ${CUDA_PROCESSING_OBJ}
+    ${CUDA_BACKPROPAGATION_OBJ}
+    ${CUDA_REDUCTION_OBJ}
+)
+add_dependencies(Hanami compile_cuda_kernel)
+
 target_sources(Hanami PRIVATE
     ${PROTO_OUTPUT_HEADER}
     ${PROTO_OUTPUT_SOURCE}
-    # ${CUDA_SOURCES}
+    ${CUDA_IO_OBJ}
+    ${CUDA_PROCESSING_OBJ}
+    ${CUDA_BACKPROPAGATION_OBJ}
+    ${CUDA_REDUCTION_OBJ}
 )
 add_dependencies(Hanami_unittests generate_protobuf_files)
+add_dependencies(Hanami_unittests compile_cuda_kernel)
 target_sources(Hanami_unittests PRIVATE
     ${PROTO_OUTPUT_HEADER}
     ${PROTO_OUTPUT_SOURCE}
-    # ${CUDA_SOURCES}
+    ${CUDA_IO_OBJ}
+    ${CUDA_PROCESSING_OBJ}
+    ${CUDA_BACKPROPAGATION_OBJ}
+    ${CUDA_REDUCTION_OBJ}
 )
 

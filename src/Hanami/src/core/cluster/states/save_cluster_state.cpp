@@ -34,7 +34,7 @@
 #include <hanami_crypto/hashes.h>
 #include <hanami_root.h>
 
-extern "C" void copyFromGpu_CUDA(CudaPointerHandle* gpuPointer,
+extern "C" void copyFromGpu_CUDA(CudaClusterPointer* gpuPointer,
                                  NeuronBlock* neuronBlocks,
                                  const uint32_t numberOfNeuronBlocks,
                                  SynapseBlock* synapseBlocks,

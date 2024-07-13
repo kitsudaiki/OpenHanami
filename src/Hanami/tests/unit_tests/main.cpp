@@ -20,6 +20,8 @@
  *      limitations under the License.
  */
 
+#include <hanami_common/logger.h>
+
 #include "core/cluster_test.h"
 #include "core/dataset_io_test.h"
 #include "database/audit_log_table_test.h"

@@ -26,6 +26,7 @@
 #include <hanami_common/logger.h>
 #include <hanami_common/structs.h>
 #include <hanami_common/threading/thread.h>
+#include <hanami_common/upload_file_handle.h>
 #include <hanami_messages.proto3.pb.h>
 
 #include <boost/asio/ip/tcp.hpp>

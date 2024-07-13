@@ -25,16 +25,13 @@
 
 #include <stdint.h>
 
+#include <cstring>
 #include <string>
 
-#include "buffer/bit_buffer.h"
-#include "buffer/data_buffer.h"
+#include "defines.h"
 #include "enums.h"
-#include "files/binary_file.h"
-#include "logger.h"
 
 #define UNINTI_POINT_32 0x0FFFFFFF
-#define TRANSFER_SEGMENT_SIZE (128 * 1024)
 
 namespace Hanami
 {
@@ -156,75 +153,6 @@ struct Position {
                + " ]";
     }
 };
-
-//==================================================================================================
-
-struct UploadFileHandle {
-    Hanami::UserContext userContext;
-    Hanami::BinaryFile* file = nullptr;
-    Hanami::BitBuffer* bitBuffer = nullptr;
-    uint64_t timeoutCounter = 0;
-    bool lock = false;
-
-    UploadFileHandle() {}
-
-    UploadFileHandle(const UploadFileHandle& other)
-    {
-        userContext = other.userContext;
-        file = other.file;
-        bitBuffer = other.bitBuffer;
-    }
-
-    ~UploadFileHandle()
-    {
-        if (file != nullptr) {
-            delete file;
-        }
-        if (bitBuffer != nullptr) {
-            delete bitBuffer;
-        }
-    }
-
-    UploadFileHandle& operator=(const UploadFileHandle& other)
-    {
-        userContext = other.userContext;
-        file = other.file;
-        bitBuffer = other.bitBuffer;
-        return *this;
-    }
-
-    /**
-     * @brief add data to the buffer of the file-handle
-     *
-     * @param pos byte-postion where to add data to the buffer
-     * @param data data to write
-     * @param size number of byte to write
-     * @param errorMessage reference for error-output
-     *
-     * @return true, if successful, else false
-     */
-    bool addDataToPos(const uint64_t pos,
-                      const void* data,
-                      const uint64_t size,
-                      std::string& errorMessage)
-    {
-        Hanami::ErrorContainer error;
-
-        // write data to file
-        if (file->writeDataIntoFile(data, pos, size, error) == false) {
-            LOG_ERROR(error);
-            errorMessage = "Failed to write data to disc";
-            return false;
-        }
-
-        // update progress in bit-buffer
-        bitBuffer->set(pos / TRANSFER_SEGMENT_SIZE, true);
-
-        return true;
-    }
-};
-
-//==================================================================================================
 
 }  // namespace Hanami
 
