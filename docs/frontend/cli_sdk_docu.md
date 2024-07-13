@@ -1,19 +1,29 @@
-# SDK-library
+# CLI-SDK-Docu
 
-The SDK-library privides functions to interact with the API of the backend. At the moment 2 versions are provided:
-
-- `Python`
-- (`Go`)
-- (`Javascript`)
+The CLI and the SDK-library provides functions to interact with the API of the backend. 
 
 !!! info
 
-    This documentation is not automatically generated from the source-code. So if you find outdated or broken function in this documentation, then please create an issue on github or fix this by yourself and create a pull-request.
+    If you find any mistakes or mismatches in this documentation, then please create an issue on github, or fix it by yourself and create a pull request on github. 
+    
+## Installation / Compile
 
-## Installation
+=== "CLI"
 
+    ```bash
+    # go into the cli-source-directory
+    cd src/cli/hanamictl/
 
-=== "Python"
+    # build protobuf-messages
+    pushd ../sdk/go/hanami_sdk 
+    protoc --go_out=. --proto_path ../../../libraries/hanami_messages/protobuffers hanami_messages.proto3
+    popd
+
+    # build cli-tool
+    go build .
+    ```
+
+=== "Python-SDK"
 
     ```bash
     # clone repository
@@ -32,7 +42,7 @@ The SDK-library privides functions to interact with the API of the backend. At t
 
 Each of the used HTTP-error codes results in a different exception. For the available error-code / exceptions of each of the endpoints, look into the [REST-API documenation](https://docs.hanami-ai.com/api/rest_api_documentation/)
 
-=== "Python"
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import hanami_exceptions
@@ -63,7 +73,18 @@ In case the server use self-signed certificates for its https-connection, the ss
 
 For each of the following actions, the user must request an access-token at the beginning. This token is a jwt-token with basic information of the user. The token is only valid for a certain amount of time until it expires, based on the configuration of the server.
 
-=== "Python"
+=== "CLI"
+
+    In case of the cli, the address and login credentials only have to be set via environment variables
+
+    ```bash
+    export HANAMI_ADDRESS=http://127.0.0.1:11418
+    export HANAMI_USER=asdf
+    export HANAMI_PW=asdfasdf
+    ```
+
+
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import hanami_token
@@ -89,7 +110,26 @@ Non-admin user need to be assigned to a project for logical separation.
 
 Create new empty project.
 
-=== "Python"
+=== "CLI"
+
+    ```bash
+    hanamictl project create -n <NAME> <PROJECT_ID>
+    ```
+
+    example:
+
+    ```bash
+    hanamictl project create -n "cli test project" cli_test_project
+
+    +------------+---------------------+
+    | ID         | cli_test_project    |
+    | NAME       | cli test project    |
+    | CREATOR ID | asdf                |
+    | CREATED AT | 2024-07-12 20:52:21 |
+    +------------+---------------------+
+    ```
+
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import project
@@ -116,7 +156,26 @@ Create new empty project.
 
 Get information about a project.
 
-=== "Python"
+=== "CLI"
+
+    ```bash
+    hanamictl project get <PROJECT_ID>
+    ```
+
+    example:
+    
+    ```bash
+    hanamictl project get cli_test_project
+
+    +------------+---------------------+
+    | ID         | cli_test_project    |
+    | NAME       | cli test project    |
+    | CREATOR ID | asdf                |
+    | CREATED AT | 2024-07-12 20:52:21 |
+    +------------+---------------------+
+    ```
+
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import project
@@ -142,7 +201,25 @@ Get information about a project.
 
 List all projects.
 
-=== "Python"
+=== "CLI"
+
+    ```bash
+    hanamictl project list
+    ```
+
+    example:
+
+    ```bash
+    hanamictl project list
+
+    +------------------+------------------+------------+---------------------+
+    |        ID        |       NAME       | CREATOR ID |     CREATED AT      |
+    +------------------+------------------+------------+---------------------+
+    | cli_test_project | cli test project | asdf       | 2024-07-12 20:52:21 |
+    +------------------+------------------+------------+---------------------+
+    ```
+
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import project
@@ -180,7 +257,21 @@ Delete a project.
 
     At the moment there is no check, if there still exist resources within this project.
 
-=== "Python"
+=== "CLI"
+
+    ```bash
+    hanamictl project delete <PROJECT_ID>
+    ```
+
+    example:
+
+    ```bash
+    hanamictl project delete cli_test_project
+
+    successfully deleted project 'cli_test_project'
+    ```
+
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import project
@@ -207,7 +298,32 @@ Create a new user.
 
 If the `is_admin` is set to true, the user becomes a global admin. 
 
-=== "Python"
+=== "CLI"
+
+    ```bash
+    ./hanamictl user create -n <NAME> <USER_ID>
+
+    (the cli will request the password for the new user after enter this command)
+    ```
+
+    example:
+
+    ```bash
+    ./hanamictl user create -n "cli test user" -p "asdfasdfasdf" cli_test_user
+    Enter Password: 
+    Enter Password again:
+
+    +------------+---------------------+
+    | ID         | cli_test_user       |
+    | NAME       | cli test user       |
+    | IS ADMIN   | false               |
+    | PROJECTS   | []                  |
+    | CREATOR ID | asdf                |
+    | CREATED AT | 2024-07-12 20:52:21 |
+    +------------+---------------------+
+    ```
+
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import user
@@ -238,7 +354,28 @@ If the `is_admin` is set to true, the user becomes a global admin.
 
 Get information about a specific user.
 
-=== "Python"
+=== "CLI"
+
+    ```bash
+    hanamictl user get <USER_ID>
+    ```
+
+    example:
+
+    ```bash
+    hanamictl user get cli_test_user
+
+    +------------+---------------------+
+    | ID         | cli_test_user       |
+    | NAME       | cli test user       |
+    | IS ADMIN   | false               |
+    | PROJECTS   | []                  |
+    | CREATOR ID | asdf                |
+    | CREATED AT | 2024-07-12 20:52:21 |
+    +------------+---------------------+
+    ```
+
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import user
@@ -266,7 +403,25 @@ Get information about a specific user.
 
 List all user.
 
-=== "Python"
+=== "CLI"
+
+    ```bash
+    hanamictl user list
+    ```
+
+    example:
+
+    ```bash
+    hanamictl user list
+
+    |      ID       |     NAME      | IS ADMIN | PROJECTS | CREATOR ID  |     CREATED AT      |
+    +---------------+---------------+----------+----------+-------------+---------------------+
+    | asdf          | asdf          | true     | []       | HANAMI_INIT | 2024-06-26 16:57:35 |
+    | cli_test_user | cli test user | false    | []       | asdf        | 2024-07-12 20:52:21 |
+    +---------------+---------------+----------+----------+-------------+---------------------+
+    ```
+
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import user
@@ -315,7 +470,21 @@ Delete a user from the backend.
 
     A user can not be deleted by himself.
 
-=== "Python"
+=== "CLI"
+
+    ```bash
+    hanamictl user delete cli_test_user
+    ```
+
+    example:
+
+    ```bash
+    hanamictl user delete cli_test_user
+
+    successfully deleted project 'cli_test_project'
+    ```
+
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import user
@@ -337,7 +506,17 @@ The `role` is uses be the policy-file of the Hanami-instance restrict access to 
 
 If `is_project_admin` is set to true, the user can access all resources of all users within the project.
 
-=== "Python"
+=== "CLI"
+
+    ```bash
+    ```
+
+    example:
+
+    ```bash
+    ```
+
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import user
@@ -363,7 +542,13 @@ If `is_project_admin` is set to true, the user can access all resources of all u
 
 Unassign a project from a user.
 
-=== "Python"
+=== "CLI"
+
+    ```bash
+
+    ```
+
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import user
@@ -381,7 +566,13 @@ Unassign a project from a user.
 
 List projects only of the current user, which are enabled by the current token.
 
-=== "Python"
+=== "CLI"
+
+    ```bash
+
+    ```
+
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import user
@@ -398,7 +589,13 @@ List projects only of the current user, which are enabled by the current token.
 
 Switch to another project with the current user.
 
-=== "Python"
+=== "CLI"
+
+    ```bash
+
+    ```
+
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import user
@@ -425,7 +622,32 @@ These are files of the official mnist-dataset, which can be uploaded and which a
 
     Because of a lack of validation at the moment, it is easy to break the backend with unexpected input.
 
-=== "Python"
+=== "CLI"
+
+    ```bash
+    hanamictl dataset create mnist -i <PATH_TO_INTPU_FILE> -l <PATH_TO_LABEL_FILE> <NAME>
+    ```
+
+    example:
+
+    ```bash
+    hanamictl dataset create mnist -i /tmp/train-images-idx3-ubyte -l /tmp/train-labels-idx1-ubyte cli_test_dataset
+
+    +-------------------+-----------------------------------------------------------------------------------------------+
+    | UUID              | 146bacb3-b5bf-485b-a2e8-d1812b57eb63                                                          |
+    | NAME              | cli_test_dataset                                                                              |
+    | VERSION           | v1.alpha                                                                                      |
+    | NUMBER OF COLUMNS | 794                                                                                           |
+    | NUMBER OF ROWS    | 60000                                                                                         |
+    | DESCRIPTION       | {"label":{"end_column":794,"start_column":784},"picture":{"end_column":784,"start_column":0}} |
+    | VISIBILITY        | private                                                                                       |
+    | OWNER ID          | asdf                                                                                          |
+    | PROJECT ID        | admin                                                                                         |
+    | CREATED AT        | <nil>                                                                                         |
+    +-------------------+-----------------------------------------------------------------------------------------------+
+    ```
+
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import dataset
@@ -451,7 +673,17 @@ These are files of the official mnist-dataset, which can be uploaded and which a
 
     Because of a lack of validation at the moment, it is easy to break the backend with unexpected input.
 
-=== "Python"
+=== "CLI"
+
+    ```bash
+    ```
+
+    example:
+
+    ```bash
+    ```
+
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import dataset
@@ -474,7 +706,32 @@ These are files of the official mnist-dataset, which can be uploaded and which a
 
 Get information about a specific dataset.
 
-=== "Python"
+=== "CLI"
+
+    ```bash
+    hanamictl dataset get <DATASET_UUID>
+    ```
+
+    example:
+
+    ```bash
+    hanamictl dataset get 146bacb3-b5bf-485b-a2e8-d1812b57eb63
+
+    +-------------------+-----------------------------------------------------------------------------------------------+
+    | UUID              | 146bacb3-b5bf-485b-a2e8-d1812b57eb63                                                          |
+    | NAME              | cli_test_dataset                                                                              |
+    | VERSION           | v1.alpha                                                                                      |
+    | NUMBER OF COLUMNS | 794                                                                                           |
+    | NUMBER OF ROWS    | 60000                                                                                         |
+    | DESCRIPTION       | {"label":{"end_column":794,"start_column":784},"picture":{"end_column":784,"start_column":0}} |
+    | VISIBILITY        | private                                                                                       |
+    | OWNER ID          | asdf                                                                                          |
+    | PROJECT ID        | admin                                                                                         |
+    | CREATED AT        | <nil>                                                                                         |
+    +-------------------+-----------------------------------------------------------------------------------------------+
+    ```
+
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import dataset
@@ -507,7 +764,27 @@ Get information about a specific dataset.
 
 List all visible datasets.
 
-=== "Python"
+=== "CLI"
+
+    ```bash
+    hanamictl dataset list
+    ```
+
+    example:
+
+    ```bash
+    hanamictl dataset list
+
+    +--------------------------------------+------------------------+------------+----------+------------+---------------------+
+    |                 UUID                 |          NAME          | VISIBILITY | OWNER ID | PROJECT ID |     CREATED AT      |
+    +--------------------------------------+------------------------+------------+----------+------------+---------------------+
+    | 140356ef-aebc-4069-9ef8-1c0e6d13d85f | cli_test_dataset_train | private    | asdf     | admin      | 2024-07-12 20:46:02 |
+    | 8d7ec569-fca7-4ca7-85f6-519ad05472ad | cli_test_dataset_req   | private    | asdf     | admin      | 2024-07-12 20:46:02 |
+    | 146bacb3-b5bf-485b-a2e8-d1812b57eb63 | cli_test_dataset       | private    | asdf     | admin      | 2024-07-12 20:52:21 |
+    +--------------------------------------+------------------------+------------+----------+------------+---------------------+
+    ```
+
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import dataset
@@ -547,7 +824,21 @@ List all visible datasets.
 
 Delete a dataset.
 
-=== "Python"
+=== "CLI"
+
+    ```bash
+    hanamictl dataset delete <DATASET_UUID>
+    ```
+
+    example:
+
+    ```bash
+    hanamictl dataset delete 146bacb3-b5bf-485b-a2e8-d1812b57eb63
+
+    successfully deleted dataset '146bacb3-b5bf-485b-a2e8-d1812b57eb63'
+    ```
+
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import dataset
@@ -561,6 +852,52 @@ Delete a dataset.
     dataset.delete_dataset(token, address, dataset_uuid)
     ```
 
+
+### Check MNIST Dataset Result
+
+Checks a request-result against a dataset to compare who much of the output of the network was correct. The output gives the percentage of the correct output-values. It is primary used for automatic testing.
+
+=== "CLI"
+
+    ```bash
+    hanamictl dataset check -r <REFERENCE_DATASET_UUID> <COMPARE_DATASET_UUID>
+    ```
+
+    example:
+
+    ```bash
+    hanamictl dataset check -r 6f2bbcd2-7081-4b08-ae1d-16e6cd6f54c4 d40c0c06-bd28-49a4-b872-6a70c4750bb9
+
+    +----------+-------------------+
+    | ACCURACY | 91.22999572753906 |
+    +----------+-------------------+
+    ```
+
+=== "Python-SDK"
+
+    ```python
+    from hanami_sdk import request_result
+
+    address = "http://127.0.0.1:11418"
+    task_uuid = "c7f7e274-5d7d-4696-8591-18441cb1b685"
+    request_dataset_uuid = "d40c0c06-bd28-49a4-b872-6a70c4750bb9"
+
+    # request a token for a user, who has admin-permissions
+    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+
+    result = request_result.check_against_dataset(token, 
+                                                  address, 
+                                                  task_uuid, 
+                                                  request_dataset_uuid)
+
+    # example-content of result:
+    #
+    # {
+    #     "accuracy": 93.40999603271484
+    # }
+    ```
+
+
 ## Cluster
 
 Cluster containing the neural network.
@@ -569,7 +906,28 @@ Cluster containing the neural network.
 
 To initialize a new cluster, a cluster-templated is used, which describes the basic structure of the network (see documentation of the [cluster-templates](https://docs.hanami-ai.com/api/cluster_template/))
 
-=== "Python"
+=== "CLI"
+
+    ```bash
+    hanamictl cluster create -t <PATH_TO_TEMPLATE> <NAME>
+    ```
+
+    example:
+
+    ```bash
+    hanamictl cluster create -t ./cluster_template cli_test_cluster
+
+    +------------+--------------------------------------+
+    | UUID       | 12959485-51a7-45bc-84dd-aad1c9bfd510 |
+    | NAME       | cli_test_cluster                     |
+    | VISIBILITY | private                              |
+    | OWNER ID   | asdf                                 |
+    | PROJECT ID | admin                                |
+    | CREATED AT | 2024-07-13 21:45:56                  |
+    +------------+--------------------------------------+
+    ```
+
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import cluster
@@ -578,15 +936,25 @@ To initialize a new cluster, a cluster-templated is used, which describes the ba
     cluster_name = "test_cluster"
     cluster_template = \
         "version: 1\n" \
+        "settings:\n" \
+        "    neuron_cooldown: 10000000.0\n" \
+        "    refractory_time: 1\n" \
+        "    max_connection_distance: 1\n" \
+        "    enable_reduction: false\n" \
         "bricks:\n" \
         "    1,1,1\n" \
-        "        input: test_input\n" \
-        "        number_of_neurons: 784\n" \
         "    2,1,1\n" \
-        "        number_of_neurons: 400\n" \
         "    3,1,1\n" \
-        "        output: test_output\n" \
-        "        number_of_neurons: 10"
+        "    \n" \
+        "inputs:\n" \
+        "    picture:\n" \
+        "        target: 1,1,1\n" \
+        "        number_of_inputs: 784\n" \
+        "\n" \
+        "outputs:\n" \
+        "    label:\n" \
+        "        target: 3,1,1\n" \
+        "        number_of_outputs: 10\n"
 
     # request a token for a user, who has admin-permissions
     # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
@@ -612,7 +980,28 @@ Get information of a specific cluster.
 !!! info
     It is basically the same output like coming from the create command and contains only the data stored in the database. Information about the cluster itself, like number of neurons, amount of used memory and so on are still missing in this output currently.
 
-=== "Python"
+=== "CLI"
+
+    ```bash
+    hanamictl cluster get <CLUSTER_UUID>
+    ```
+
+    example:
+
+    ```bash
+    hanamictl cluster get 12959485-51a7-45bc-84dd-aad1c9bfd510
+
+    +------------+--------------------------------------+
+    | UUID       | 12959485-51a7-45bc-84dd-aad1c9bfd510 |
+    | NAME       | cli_test_cluster                     |
+    | VISIBILITY | private                              |
+    | OWNER ID   | asdf                                 |
+    | PROJECT ID | admin                                |
+    | CREATED AT | 2024-07-13 21:45:56                  |
+    +------------+--------------------------------------+
+    ```
+
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import cluster
@@ -641,7 +1030,25 @@ Get information of a specific cluster.
 
 List all visible cluster.
 
-=== "Python"
+=== "CLI"
+
+    ```bash
+    hanamictl cluster list
+    ```
+
+    example:
+
+    ```bash
+    hanamictl cluster list
+
+    +--------------------------------------+------------------+------------+----------+------------+---------------------+
+    |                 UUID                 |       NAME       | VISIBILITY | OWNER ID | PROJECT ID |     CREATED AT      |
+    +--------------------------------------+------------------+------------+----------+------------+---------------------+
+    | 12959485-51a7-45bc-84dd-aad1c9bfd510 | cli_test_cluster | private    | asdf     | admin      | 2024-07-13 21:45:56 |
+    +--------------------------------------+------------------+------------+----------+------------+---------------------+
+    ```
+
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import cluster
@@ -680,7 +1087,21 @@ List all visible cluster.
 
 Delete a cluster from a backend.
 
-=== "Python"
+=== "CLI"
+
+    ```bash
+    hanamictl cluster delete <CLUSTER_UUID>
+    ```
+
+    example:
+
+    ```bash
+    hanamictl cluster delete 12959485-51a7-45bc-84dd-aad1c9bfd510
+
+    successfully deleted cluster '12959485-51a7-45bc-84dd-aad1c9bfd510'
+    ```
+
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import cluster
@@ -699,7 +1120,24 @@ Delete a cluster from a backend.
 
 Save the state of the cluster by creating a checkpoint, which is stored on the server.
 
-=== "Python"
+=== "CLI"
+
+    ```bash
+    hanamictl cluster save -n <NAME> <CLUSTER_UUID>
+    ```
+
+    example:
+
+    ```bash
+    hanamictl cluster save -n cli_test_checkpoint d28d72f0-f95f-42bd-b14d-b7e12d3b9d82
+
+    +------------+--------------------------------------+
+    | UUID       | d28d72f0-f95f-42bd-b14d-b7e12d3b9d82 |
+    | NAME       | cli_test_checkpoint                  |
+    +------------+--------------------------------------+
+    ```
+
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import cluster
@@ -724,7 +1162,23 @@ Save the state of the cluster by creating a checkpoint, which is stored on the s
 
 Reset a cluster to the state, which is stored in a specific checkpoint.
 
-=== "Python"
+=== "CLI"
+
+    ```bash
+    hanamictl cluster restore -c <CHECKPOINT_UUID> <CLUSTER_UUID>
+    ```
+
+    example:
+
+    ```bash
+    hanamictl cluster restore -c d28d72f0-f95f-42bd-b14d-b7e12d3b9d82 cc6120c7-cc31-4f17-baee-c6c606f00512
+
+    +------------+--------------------------------------+
+    | UUID       | 6e7a911e-5f81-4ffb-9de0-2b6717b1be52 |
+    +------------+--------------------------------------+
+    ```
+
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import cluster
@@ -752,9 +1206,13 @@ Each CPU and GPU is handled as its logical host. Cluster and be moved between th
 
 !!! warning
 
-    Only supported for 1 cpu currently. Support for NUMA-architecture comes in the future. Multiple gpu's are theoretically supported, but this case was not tested currently.
+    GPU-support is not available at the moment and multi CPU is also still not supported, so this function is basically not avaiable in the current state
 
-=== "Python"
+=== "CLI"
+
+    (Not implemented by the CLI)
+
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import cluster
@@ -787,7 +1245,29 @@ Tasks are asynchronous actions, which are placed within a queue of the cluster, 
 
 Create a new task to train the cluster with the data of a dataset, which was uploaded before.
 
-=== "Python"
+=== "CLI"
+
+    ```bash
+    hanamictl task create train -j -i <INPUT_BRICK_NAME>:<INPUT_DATASET_UUID> -o <LABEL_BRICK_NAME>:<LABEL_DATASET_UUID> -c <CLUSTER_UUID> <TASK_NAME>
+    ```
+
+    example:
+
+    ```bash
+    hanamictl task create train -j -i picture:b03d1682-8f5b-48cb-bff5-08b67e8de6fe -o label:b833ddbe-55db-49d5-97b7-771293505493 -c 9f86921d-9a7c-44a2-836c-1683928d9354 cli_train_test_task
+
+    +------------------------+--------------------------------------+
+    | UUID                   | 2e28e3bb-af45-4fbc-8ce3-c0c9a8e704bc |
+    | STATE                  | active                               |
+    | CURRENT CYCLE          | 171                                  |
+    | TOTAL NUMBER OF CYCLES | 60000                                |
+    | QUEUE TIMESTAMP        | 2024-07-13 22:21:13                  |
+    | START TIMESTAMP        | 2024-07-13 22:21:13                  |
+    | END TIMESTAMP          | -                                    |
+    +------------------------+--------------------------------------+
+    ```
+
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import task
@@ -829,9 +1309,31 @@ Create a new task to train the cluster with the data of a dataset, which was upl
 
 ### Create Request-Task
 
-Create a new task to request information from a trained cluster. As input the data of a dataset are used, which had to be uplaoded first. The output is written into a [request-result](https://docs.hanami-ai.com/api/sdk_library/#request-result). This output has the same UUID and name, like the original task.
+Create a new task to request information from a trained cluster. As input the data of a dataset are used, which had to be uplaoded first. 
 
-=== "Python"
+=== "CLI"
+
+    ```bash
+    hanamictl task create request -j -i <INPUT_BRICK_NAME>:<INPUT_DATASET_UUID> -r <OUTPUT_BRICK_NAME>:<OUTPUT_DATASET_NAME> -c <CLUSTER_UUID> <TASK_NAME>
+    ```
+
+    example:
+
+    ```bash
+    hanamictl task create train -j -i picture:b03d1682-8f5b-48cb-bff5-08b67e8de6fe -r label:output_dataset -c 9f86921d-9a7c-44a2-836c-1683928d9354 cli_train_test_task
+
+    +------------------------+--------------------------------------+
+    | UUID                   | ec964017-ee19-4775-8fff-4f3fb3640361 |
+    | STATE                  | finished                             |
+    | CURRENT CYCLE          | 10000                                |
+    | TOTAL NUMBER OF CYCLES | 10000                                |
+    | QUEUE TIMESTAMP        | 2024-07-13 22:21:23                  |
+    | START TIMESTAMP        | 2024-07-13 22:21:23                  |
+    | END TIMESTAMP          | 2024-07-13 22:21:23                  |
+    +------------------------+--------------------------------------+
+    ```
+
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import task
@@ -874,7 +1376,29 @@ Create a new task to request information from a trained cluster. As input the da
 
 ### Get Task
 
-=== "Python"
+=== "CLI"
+
+    ```bash
+    hanamictl task get -c <CLUSTER_UUID> <TASK_UUID>
+    ```
+
+    example:
+
+    ```bash
+    hanamictl task get -c 9f86921d-9a7c-44a2-836c-1683928d93542e28e3bb-af45-4fbc-8ce3-c0c9a8e704bc
+
+    +------------------------+--------------------------------------+
+    | UUID                   | 2e28e3bb-af45-4fbc-8ce3-c0c9a8e704bc |
+    | STATE                  | finished                             |
+    | CURRENT CYCLE          | 60000                                |
+    | TOTAL NUMBER OF CYCLES | 60000                                |
+    | QUEUE TIMESTAMP        | 2024-07-13 22:21:13                  |
+    | START TIMESTAMP        | 2024-07-13 22:21:13                  |
+    | END TIMESTAMP          | 2024-07-13 22:21:21                  |
+    +------------------------+--------------------------------------+
+    ```
+
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import task
@@ -903,7 +1427,26 @@ Create a new task to request information from a trained cluster. As input the da
 
 List all tasks for a cluster, together with their progress.
 
-=== "Python"
+=== "CLI"
+
+    ```bash
+    hanamictl task list -c <CLUSTER_UUID>
+    ```
+
+    example:
+
+    ```bash
+    ./hanamictl task list -c 49d50999-c47f-48cb-906b-211218f897e4
+
+    +--------------------------------------+----------+
+    |                 UUID                 |  STATE   |
+    +--------------------------------------+----------+
+    | 97bdb8e7-c23f-41dc-af92-5cb77e2843a4 | active   |
+    | efb1eb3b-a3fd-4dca-9cfa-84d728dc69eb | finished |
+    +--------------------------------------+----------+
+    ```
+
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import task
@@ -945,7 +1488,21 @@ List all tasks for a cluster, together with their progress.
 
 Delete a task from a cluster. In this task was a request and produced a request-result, this result will not be deleted.
 
-=== "Python"
+=== "CLI"
+
+    ```bash
+    hanamictl task delete -c <CLUSTER_UUID> <TASK_UUID>
+    ```
+
+    example:
+
+    ```bash
+    hanamictl task delete -c 49d50999-c47f-48cb-906b-211218f897e4 ddbf5bc1-3487-4755-8651-a96842ccec12
+
+    successfully deleted task 'ddbf5bc1-3487-4755-8651-a96842ccec12'
+    ```
+
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import task
@@ -975,7 +1532,11 @@ It is possible to directly connect via websocket to the cluster on the server to
 
 ### direct train
 
-=== "Python"
+=== "CLI"
+
+    (Not supported by the CLI)
+
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import direct_io
@@ -1011,7 +1572,11 @@ It is possible to directly connect via websocket to the cluster on the server to
 
 ### direct request
 
-=== "Python"
+=== "CLI"
+
+    (Not supported by the CLI)
+
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import direct_io
@@ -1047,141 +1612,6 @@ It is possible to directly connect via websocket to the cluster on the server to
     ```
 
 
-## Request-Result
-
-Outputs, which are produced by a request-task, are automatically stored at the end of the task as request-result under the same UUID and name, like the task, which produced the result.
-
-### Get Request-Result
-
-Get the result of a request-task with all of the resulting values.
-
-=== "Python"
-
-    ```python
-    from hanami_sdk import request_result
-
-    address = "http://127.0.0.1:11418"
-    task_uuid = "c7f7e274-5d7d-4696-8591-18441cb1b685"
-
-    # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
-
-    result = request_result.get_request_result(token, address, task_uuid)
-
-    # example-content of result:
-    #
-    # {
-    #     "name": "test_task",
-    #     "owner_id": "asdf",
-    #     "project_id": "admin",
-    #     "uuid": "d40c0c06-bd28-49a4-b872-6a70c4750bb9",
-    #     "visibility": "private",
-    #     "data": [
-    #         1,
-    #         2,
-    #         8,
-    #         4,
-    #         5,
-    #         6,
-    #         7,
-    #         8,
-    #         9,
-    #         0,
-    #         1,
-    #         2,
-    #         3,
-    #         4,
-    #         5,
-    #         6
-    #     ]
-    # }
-    ```
-
-### List Request-Result
-
-List all visible request-results.
-
-=== "Python"
-
-    ```python
-    from hanami_sdk import request_result
-
-    address = "http://127.0.0.1:11418"
-
-    # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
-
-    result = request_result.list_request_results(token, address)
-
-    # example-content of result:
-    #
-    # {
-    #     "body": [
-    #         [
-    #             "d40c0c06-bd28-49a4-b872-6a70c4750bb9",
-    #             "admin",
-    #             "asdf",
-    #             "private",
-    #             "test_task"
-    #         ]
-    #     ],
-    #     "header": [
-    #         "uuid",
-    #         "project_id",
-    #         "owner_id",
-    #         "visibility",
-    #         "name"
-    #     ]
-    # }
-    ```
-
-### Delete Request-Result
-
-Delete a request-result.
-
-=== "Python"
-
-    ```python
-    from hanami_sdk import request_result
-
-    address = "http://127.0.0.1:11418"
-    task_uuid = "c7f7e274-5d7d-4696-8591-18441cb1b685"
-
-    # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
-
-    request_result.delete_request_result(token, address, task_uuid)
-    ```
-
-### Check Dataset
-
-Checks a request-result against a dataset to compare who much of the output of the network was correct. The output gives the percentage of the correct output-values.
-
-=== "Python"
-
-    ```python
-    from hanami_sdk import request_result
-
-    address = "http://127.0.0.1:11418"
-    task_uuid = "c7f7e274-5d7d-4696-8591-18441cb1b685"
-    request_dataset_uuid = "d40c0c06-bd28-49a4-b872-6a70c4750bb9"
-
-    # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
-
-    result = request_result.check_against_dataset(token, 
-                                                  address, 
-                                                  task_uuid, 
-                                                  request_dataset_uuid)
-
-    # example-content of result:
-    #
-    # {
-    #     "accuracy": 93.40999603271484
-    # }
-    ```
-
-
 ## Checkpoint
 
 Checkpoints are a copy of the current state of a cluster. It can be used as backup to restore an older state a cluster.
@@ -1194,7 +1624,25 @@ Checkpoints are a copy of the current state of a cluster. It can be used as back
 
 List all visible checkpoints.
 
-=== "Python"
+=== "CLI"
+
+    ```bash
+    hanamictl checkpoint list
+    ```
+
+    example:
+
+    ```bash
+    hanamictl checkpoint list
+
+    +--------------------------------------+---------------------+------------+----------+------------+---------------------+
+    |                 UUID                 |        NAME         | VISIBILITY | OWNER ID | PROJECT ID |     CREATED AT      |
+    +--------------------------------------+---------------------+------------+----------+------------+---------------------+
+    | 9303816f-e575-410b-a75d-8444ff3ac303 | cli_test_checkpoint | private    | asdf     | admin      | 2024-07-12 20:46:50 |
+    +--------------------------------------+---------------------+------------+----------+------------+---------------------+
+    ```
+
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import checkpoint
@@ -1232,7 +1680,21 @@ List all visible checkpoints.
 
 Delete a checkpoint from the backend.
 
-=== "Python"
+=== "CLI"
+
+    ```bash
+    hanamictl checkpoint delete <CHECKPOINT_UUID>
+    ```
+
+    example:
+
+    ```bash
+    hanamictl checkpoint delete 84eaae8e-aeae-4db4-840e-ca38f4461ec7
+
+    successfully deleted checkpoint '84eaae8e-aeae-4db4-840e-ca38f4461ec7'
+    ```
+
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import checkpoint
@@ -1254,7 +1716,25 @@ Delete a checkpoint from the backend.
 
 Each CPU and GPU is handled as its own logical host to have more control over the exact location of the data. These logical hosts can be listed with this endpoint.
 
-=== "Python"
+=== "CLI"
+
+    ```bash
+    hanamictl host list 
+    ```
+
+    example:
+
+    ```bash
+    hanamictl host list 
+
+    +--------------------------------------+------+
+    |                 UUID                 | TYPE |
+    +--------------------------------------+------+
+    | e82a8848-e23c-4c60-9017-d98414cf3c0d | cpu  |
+    +--------------------------------------+------+
+    ```
+
+=== "Python-SDK"
 
     ```python
     from hanami_sdk import hosts

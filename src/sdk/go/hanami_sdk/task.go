@@ -85,10 +85,10 @@ func ListTask(address string, token string, clusterUuid string) (map[string]inte
     return SendGet(address, token, path, vars)
 }
 
-func DeleteTask(address string, token string, taskId string, clusterUuid string) (map[string]interface{}, error) {
+func DeleteTask(address string, token string, taskUuid string, clusterUuid string) (map[string]interface{}, error) {
     path := "v1.0alpha/task"
     vars := map[string]string{ 
-        "uuid": taskId,
+        "uuid": taskUuid,
         "cluster_uuid": clusterUuid,
     }
     return SendDelete(address, token, path, vars)

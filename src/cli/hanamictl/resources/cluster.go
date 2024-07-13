@@ -43,6 +43,15 @@ var clusterHeader = []string{
     "created_at",
 }
 
+var clusterSaveHeader = []string{
+    "uuid",
+    "name",
+}
+
+var clusterRestoreHeader = []string{
+    "uuid",
+}
+
 var createClusterCmd = &cobra.Command {
     Use:   "create -t TEMPLATE_PATH NAME",
     Short: "Create a new cluster.",
@@ -127,7 +136,7 @@ var saveClusterCmd = &cobra.Command {
             fmt.Println(err)
             os.Exit(1)
         }
-        hanamictl_common.ParseSingle(content, clusterHeader)
+        hanamictl_common.ParseSingle(content, clusterSaveHeader)
     },
 }
 
@@ -144,7 +153,7 @@ var restoreClusterCmd = &cobra.Command {
             fmt.Println(err)
             os.Exit(1)
         }
-        hanamictl_common.ParseSingle(content, clusterHeader)
+        hanamictl_common.ParseSingle(content, clusterRestoreHeader)
     },
 }
 

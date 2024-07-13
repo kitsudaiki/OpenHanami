@@ -25,10 +25,9 @@ nav:
     - home/CHANGELOG.md
   - Frontend:
     - frontend/rest_api_documentation.md
-    - frontend/sdk_library.md
+    - frontend/cli_sdk_docu.md
     - frontend/cluster_templates/cluster_template.md
     - frontend/websockets/websocket_workflow.md
-    - frontend/cli_client.md
     - frontend/dashboard/dashboard.md
   - Backend:
     - backend/development.md

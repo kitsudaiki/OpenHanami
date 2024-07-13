@@ -88,7 +88,7 @@ DeleteTaskV1M0::runTask(BlossomIO& blossomIO,
 
     // delete task
     if (cluster->removeTask(taskUuid) == false) {
-        status.errorMessage = "Task with UUID '" + clusterUuid + "'not found in "
+        status.errorMessage = "Task with UUID '" + taskUuid + "'not found in "
                               "Cluster with UUID '" + clusterUuid;
         status.statusCode = NOT_FOUND_RTYPE;
         LOG_DEBUG(status.errorMessage);

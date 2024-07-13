@@ -123,10 +123,10 @@ var deleteTaskCmd = &cobra.Command {
     Run:   func(cmd *cobra.Command, args []string) {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
-        taskId := args[0]
-        _, err := hanami_sdk.DeleteTask(address, token, taskId, clusterUuid)
+        taskUuid := args[0]
+        _, err := hanami_sdk.DeleteTask(address, token, taskUuid, clusterUuid)
         if err == nil {
-            fmt.Printf("successfully deleted task '%v'\n", taskId)
+            fmt.Printf("successfully deleted task '%v'\n", taskUuid)
         } else {
             fmt.Println(err)
             os.Exit(1)

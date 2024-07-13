@@ -9,6 +9,7 @@ export train_labels=/tmp/train-labels-idx1-ubyte
 export request_inputs=/tmp/t10k-images-idx3-ubyte
 export request_labels=/tmp/t10k-labels-idx1-ubyte
 
+
 # build protobuffer for go sdk
 pushd ../../src/sdk/go/hanami_sdk 
 protoc --go_out=. --proto_path ../../../libraries/hanami_messages/protobuffers hanami_messages.proto3
@@ -98,22 +99,26 @@ echo "Checkpoint-UUID: $checkpoint_uuid"
 ./hanamictl cluster delete $cluster_uuid
 cluster_uuid=$(./hanamictl cluster create -j -t ./cluster_template cli_test_cluster | jq -r '.uuid')
 echo "new Cluster-UUID: $cluster_uuid"
-checkpoint_uuid=$(./hanamictl cluster restore -j -c $checkpoint_uuid $cluster_uuid | jq -r '.uuid')
+./hanamictl cluster restore -c $checkpoint_uuid $cluster_uuid
 
 # request test
-task_uuid=$(./hanamictl task create request -j -i picture:$request_dataset_uuid -r label:cli_test_output -c $cluster_uuid cli_request_test_task | jq -r '.uuid')
-echo "Request-Task-UUID: $task_uuid"
+req_task_uuid=$(./hanamictl task create request -j -i picture:$request_dataset_uuid -r label:cli_test_output -c $cluster_uuid cli_request_test_task | jq -r '.uuid')
+echo "Request-Task-UUID: $req_task_uuid"
+
+./hanamictl task list -c $cluster_uuid 
+echo "$taskUuid"
+./hanamictl task delete -c $cluster_uuid $task_uuid
 
 while true; do
-    ./hanamictl task get -c $cluster_uuid $task_uuid
-    state=$(./hanamictl task get -j -c $cluster_uuid $task_uuid | jq -r '.state')
+    ./hanamictl task get -c $cluster_uuid $req_task_uuid
+    state=$(./hanamictl task get -j -c $cluster_uuid $req_task_uuid | jq -r '.state')
     if [[ "$state" == *"finished"* ]]; then
         echo "Process finished. Exiting loop."
         break
     fi
     sleep 1
 done
-./hanamictl task get -c $cluster_uuid $task_uuid
+./hanamictl task get -c $cluster_uuid $req_task_uuid
 
 ./hanamictl dataset list
 
