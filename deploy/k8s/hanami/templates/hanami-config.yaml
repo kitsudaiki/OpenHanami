@@ -15,6 +15,9 @@ data:
     tempfile_location = "/etc/hanami/data/tempfiles"
     tempfile_timeout = 10
 
+    [processing]
+    use_of_free_memory = {{ .Values.use_of_free_memory }}
+
     [auth]
     policies = "/etc/hanami/policies"
     token_key_path = "/etc/hanami/token_key"
