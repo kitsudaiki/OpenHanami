@@ -82,7 +82,7 @@ ClusterParserInterface::parse(ClusterMeta* result,
 {
     output = result;
 
-    output->bricks.clear();
+    output->hexagons.clear();
     output->inputs.clear();
     output->outputs.clear();
 
@@ -177,17 +177,17 @@ ClusterParserInterface::error(const Hanami::location& location, const std::strin
 }
 
 /**
- * @brief Get brick-id at a specific position
+ * @brief Get hexagon-id at a specific position
  *
  * @param position requested postion
  *
- * @return id of the brick, which belongs to the given position, else UNINTI_POINT_32
+ * @return id of the hexagon, which belongs to the given position, else UNINTI_POINT_32
  */
 uint32_t
-ClusterParserInterface::getBrickId(const Position& position)
+ClusterParserInterface::getHexagonId(const Position& position)
 {
-    for (uint32_t i = 0; i < output->bricks.size(); i++) {
-        if (position == output->bricks[i].position) {
+    for (uint32_t i = 0; i < output->hexagons.size(); i++) {
+        if (position == output->hexagons[i].position) {
             return i;
         }
     }

@@ -48,8 +48,8 @@ TrainForward_State::processEvent()
     Task* actualTask = m_cluster->getCurrentTask();
     TrainInfo* info = &std::get<TrainInfo>(actualTask->info);
 
-    for (auto& [brickName, input] : info->inputs) {
-        InputInterface* inputInterface = &m_cluster->inputInterfaces[brickName];
+    for (auto& [hexagonName, input] : info->inputs) {
+        InputInterface* inputInterface = &m_cluster->inputInterfaces[hexagonName];
         if (getDataFromDataSet(inputInterface->ioBuffer, input, info->currentCycle, error) != OK) {
             return false;
         }
@@ -60,8 +60,8 @@ TrainForward_State::processEvent()
         }
     }
 
-    for (auto& [brickName, output] : info->outputs) {
-        OutputInterface* outputInterface = &m_cluster->outputInterfaces[brickName];
+    for (auto& [hexagonName, output] : info->outputs) {
+        OutputInterface* outputInterface = &m_cluster->outputInterfaces[hexagonName];
         if (getDataFromDataSet(outputInterface->ioBuffer, output, info->currentCycle, error) != OK)
         {
             return false;

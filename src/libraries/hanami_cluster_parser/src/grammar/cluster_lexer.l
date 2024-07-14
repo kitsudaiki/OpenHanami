@@ -66,7 +66,7 @@ blank [ \t]
 "version:1"               return Hanami::ClusterParser::make_VERSION_1 (clusterloc);
 "version: 1"              return Hanami::ClusterParser::make_VERSION_1 (clusterloc);
 "settings"                return Hanami::ClusterParser::make_SETTINGS (clusterloc);
-"bricks"                  return Hanami::ClusterParser::make_BRICKS (clusterloc);
+"hexagons"                  return Hanami::ClusterParser::make_HEXAGONS (clusterloc);
 "inputs"                  return Hanami::ClusterParser::make_INPUTS (clusterloc);
 "outputs"                 return Hanami::ClusterParser::make_OUTPUTS (clusterloc);
 "number_of_neurons"       return Hanami::ClusterParser::make_NUM_NEURONS (clusterloc);

@@ -10,19 +10,19 @@
 
 `Synapses` are the connetions between the nodes. They are not static and can be create, destroyed and modified.
 
-### **Brick**
+### **Hexagon**
 
-A `Brick` consist of multiple nodes, which are connected by synapses ot nodes in other bricks. There are basically 3 types:
+A `Hexagon` consist of multiple nodes, which are connected by synapses ot nodes in other hexagons. There are basically 3 types:
 
-1. `Input-Bricks`
+1. `Input-Hexagons`
 
-2. `Output-Bricks`
+2. `Output-Hexagons`
 
-3. `Core-Bricks`
+3. `Core-Hexagons`
 
 ### **Cluster**
 
-`Cluster` are again a collection of multiple `Bricks`
+`Cluster` are again a collection of multiple `Hexagons`
 
 ### **Data-Set**
 
@@ -48,7 +48,7 @@ In `Request-Tasks` only the input-data are provided for the network in order to 
 
 ### **Cluster-Template**
 
-`Cluster-Templates` are a custom-formated string, which defines the structure of the `Cluster`. Basically it describes the sizes and order of the bricks. See the docu of the [cluster-templates](/frontend/cluster_templates/cluster_template).
+`Cluster-Templates` are a custom-formated string, which defines the structure of the `Cluster`. Basically it describes the sizes and order of the hexagons. See the docu of the [cluster-templates](/frontend/cluster_templates/cluster_template).
 
 ### **Request-Result**
 

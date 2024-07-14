@@ -119,7 +119,7 @@ See basic explanation of the [templates](/Inner_Workings/3_kyouko/#templates)
 
     ```
     version: 1      
-    bricks:
+    hexagons:
         1,1,1
             input: test_input
             number_of_neurons: 20

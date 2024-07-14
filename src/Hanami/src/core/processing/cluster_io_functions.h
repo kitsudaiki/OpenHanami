@@ -33,15 +33,15 @@
 #include <iostream>
 
 /**
- * @brief processNeuronsOfInputBrickBackward
+ * @brief processNeuronsOfInputHexagonBackward
  *
- * @param brick
+ * @param hexagon
  * @param inputValues
  * @param neuronBlocks
  */
 template <bool doTrain>
 inline void
-processNeuronsOfInputBrick(Cluster& cluster, InputInterface* inputInterface, Brick* brick)
+processNeuronsOfInputHexagon(Cluster& cluster, InputInterface* inputInterface, Hexagon* hexagon)
 {
     Neuron* neuron = nullptr;
     NeuronBlock* block = nullptr;
@@ -49,8 +49,8 @@ processNeuronsOfInputBrick(Cluster& cluster, InputInterface* inputInterface, Bri
     uint16_t blockId = 0;
     uint8_t neuronId = 0;
 
-    // iterate over all neurons within the brick
-    for (NeuronBlock& neuronBlock : brick->neuronBlocks) {
+    // iterate over all neurons within the hexagon
+    for (NeuronBlock& neuronBlock : hexagon->neuronBlocks) {
         for (neuronId = 0; neuronId < NEURONS_PER_NEURONBLOCK; ++neuronId) {
             if (counter >= inputInterface->inputNeurons.size()) {
                 return;
@@ -62,7 +62,7 @@ processNeuronsOfInputBrick(Cluster& cluster, InputInterface* inputInterface, Bri
             if constexpr (doTrain) {
                 if (neuron->active != 0 && neuron->inUse == 0) {
                     SourceLocationPtr originLocation;
-                    originLocation.brickId = brick->header.brickId;
+                    originLocation.hexagonId = hexagon->header.hexagonId;
                     originLocation.blockId = blockId;
                     originLocation.neuronId = neuronId;
                     createNewSection(cluster,
@@ -86,31 +86,31 @@ sigmoidDerivative(const float x)
 }
 
 /**
- * @brief processNeuronsOfOutputBrick
- * @param bricks
+ * @brief processNeuronsOfOutputHexagon
+ * @param hexagons
  * @param outputInterface
  * @param neuronBlocks
- * @param brickId
+ * @param hexagonId
  * @param randomSeed
  */
 template <bool doTrain>
 inline void
-processNeuronsOfOutputBrick(std::vector<Brick>& bricks,
-                            OutputInterface* outputInterface,
-                            const uint32_t brickId,
-                            uint32_t randomSeed)
+processNeuronsOfOutputHexagon(std::vector<Hexagon>& hexagons,
+                              OutputInterface* outputInterface,
+                              const uint32_t hexagonId,
+                              uint32_t randomSeed)
 {
     Neuron* neuron = nullptr;
     NeuronBlock* block = nullptr;
-    Brick* brick = nullptr;
+    Hexagon* hexagon = nullptr;
     OutputNeuron* out = nullptr;
     OutputTargetLocationPtr* target = nullptr;
     uint32_t neuronBlockId = 0;
     float weightSum = 0.0f;
     bool found = false;
 
-    brick = &bricks[brickId];
-    for (NeuronBlock& block : brick->neuronBlocks) {
+    hexagon = &hexagons[hexagonId];
+    for (NeuronBlock& block : hexagon->neuronBlocks) {
         for (uint64_t j = 0; j < NEURONS_PER_NEURONBLOCK; ++j) {
             neuron = &block.neurons[j];
             neuron->potential = 1.0f / (1.0f + exp(-1.0f * neuron->input));
@@ -120,7 +120,7 @@ processNeuronsOfOutputBrick(std::vector<Brick>& bricks,
 
     for (uint64_t i = 0; i < outputInterface->outputNeurons.size(); ++i) {
         out = &outputInterface->outputNeurons[i];
-        brick = &bricks[outputInterface->targetBrickId];
+        hexagon = &hexagons[outputInterface->targetHexagonId];
         weightSum = 0.0f;
 
         for (uint8_t j = 0; j < NUMBER_OF_OUTPUT_CONNECTIONS; ++j) {
@@ -133,11 +133,11 @@ processNeuronsOfOutputBrick(std::vector<Brick>& bricks,
                     && randomSeed % 50 == 0)
                 {
                     randomSeed = Hanami::pcg_hash(randomSeed);
-                    const uint32_t blockId = randomSeed % brick->neuronBlocks.size();
+                    const uint32_t blockId = randomSeed % hexagon->neuronBlocks.size();
                     randomSeed = Hanami::pcg_hash(randomSeed);
                     const uint16_t neuronId = randomSeed % NEURONS_PER_NEURONBLOCK;
                     const float potential
-                        = brick->neuronBlocks[blockId].neurons[neuronId].potential;
+                        = hexagon->neuronBlocks[blockId].neurons[neuronId].potential;
 
                     if (potential != 0.5f) {
                         target->blockId = blockId;
@@ -157,7 +157,7 @@ processNeuronsOfOutputBrick(std::vector<Brick>& bricks,
                 continue;
             }
 
-            neuron = &brick->neuronBlocks[target->blockId].neurons[target->neuronId];
+            neuron = &hexagon->neuronBlocks[target->blockId].neurons[target->neuronId];
             weightSum += neuron->potential * target->connectionWeight;
         }
 
@@ -173,7 +173,7 @@ processNeuronsOfOutputBrick(std::vector<Brick>& bricks,
 /**
  * @brief backpropagateOutput
  *
- * @param brick
+ * @param hexagon
  * @param neuronBlocks
  * @param tempNeuronBlocks
  * @param outputValues
@@ -183,13 +183,13 @@ processNeuronsOfOutputBrick(std::vector<Brick>& bricks,
  * @return
  */
 inline bool
-backpropagateOutput(std::vector<Brick>& bricks,
+backpropagateOutput(std::vector<Hexagon>& hexagons,
                     OutputInterface* outputInterface,
                     const ClusterSettings* settings,
-                    const uint32_t brickId)
+                    const uint32_t hexagonId)
 {
     Neuron* neuron = nullptr;
-    Brick* brick = nullptr;
+    Hexagon* hexagon = nullptr;
     OutputNeuron* out = nullptr;
     OutputTargetLocationPtr* target = nullptr;
     float totalDelta = 0.0f;
@@ -201,7 +201,7 @@ backpropagateOutput(std::vector<Brick>& bricks,
 
     for (i = 0; i < outputInterface->outputNeurons.size(); ++i) {
         out = &outputInterface->outputNeurons[i];
-        brick = &bricks[outputInterface->targetBrickId];
+        hexagon = &hexagons[outputInterface->targetHexagonId];
         delta = out->outputVal - out->exprectedVal;
         update = delta * sigmoidDerivative(out->outputVal);
 
@@ -212,7 +212,7 @@ backpropagateOutput(std::vector<Brick>& bricks,
                 continue;
             }
 
-            neuron = &brick->neuronBlocks[target->blockId].neurons[target->neuronId];
+            neuron = &hexagon->neuronBlocks[target->blockId].neurons[target->neuronId];
             neuron->delta += update * target->connectionWeight;
             target->connectionWeight -= update * learnValue * neuron->potential;
 
@@ -220,10 +220,10 @@ backpropagateOutput(std::vector<Brick>& bricks,
         }
     }
 
-    brick = &bricks[brickId];
-    for (i = 0; i < brick->neuronBlocks.size(); ++i) {
+    hexagon = &hexagons[hexagonId];
+    for (i = 0; i < hexagon->neuronBlocks.size(); ++i) {
         for (j = 0; j < NEURONS_PER_NEURONBLOCK; ++j) {
-            neuron = &brick->neuronBlocks[i].neurons[j];
+            neuron = &hexagon->neuronBlocks[i].neurons[j];
             neuron->delta *= sigmoidDerivative(neuron->potential);
         }
     }

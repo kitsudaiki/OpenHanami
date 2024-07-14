@@ -85,7 +85,7 @@ LogicalHost::run()
             // handle type of processing
             if (cluster->mode == ClusterProcessingMode::TRAIN_FORWARD_MODE) {
                 trainClusterForward(cluster);
-                // processNeuronsOfOutputBrick<true>();
+                // processNeuronsOfOutputHexagon<true>();
             }
             else if (cluster->mode == ClusterProcessingMode::TRAIN_BACKWARD_MODE) {
                 // backpropagateOutput(*cluster);
@@ -93,7 +93,7 @@ LogicalHost::run()
             }
             else {
                 requestCluster(cluster);
-                // processNeuronsOfOutputBrick<false>(*cluster);
+                // processNeuronsOfOutputHexagon<false>(*cluster);
                 handleClientOutput(*cluster);
             }
             cluster->updateClusterState();

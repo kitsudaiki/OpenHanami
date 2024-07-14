@@ -61,14 +61,14 @@ CpuHost::addClusterToHost(Cluster* cluster)
     if (cluster->mode == ClusterProcessingMode::TRAIN_BACKWARD_MODE) {
         WorkerTask task;
         task.cluster = cluster;
-        task.brickId = cluster->bricks.size() - 1;
+        task.hexagonId = cluster->hexagons.size() - 1;
         task.blockId = UNINIT_STATE_16;
         addWorkerTaskToQueue(task);
     }
     else {
         WorkerTask task;
         task.cluster = cluster;
-        task.brickId = 0;
+        task.hexagonId = 0;
         task.blockId = UNINIT_STATE_16;
         addWorkerTaskToQueue(task);
     }
@@ -153,8 +153,8 @@ CpuHost::moveCluster(Cluster* cluster)
     SynapseBlock tempBlock;
 
     // copy synapse-blocks from the old host to this one here
-    for (Brick& brick : cluster->bricks) {
-        for (ConnectionBlock& block : brick.connectionBlocks) {
+    for (Hexagon& hexagon : cluster->hexagons) {
+        for (ConnectionBlock& block : hexagon.connectionBlocks) {
             if (block.targetSynapseBlockPos != UNINIT_STATE_64) {
                 tempBlock = cpuSynapseBlocks[block.targetSynapseBlockPos];
                 originHost->synapseBlocks.deleteItem(block.targetSynapseBlockPos);
@@ -189,8 +189,8 @@ CpuHost::syncWithHost(Cluster*)
 void
 CpuHost::removeCluster(Cluster* cluster)
 {
-    for (Brick& brick : cluster->bricks) {
-        for (ConnectionBlock& block : brick.connectionBlocks) {
+    for (Hexagon& hexagon : cluster->hexagons) {
+        for (ConnectionBlock& block : hexagon.connectionBlocks) {
             if (block.targetSynapseBlockPos != UNINIT_STATE_64) {
                 synapseBlocks.deleteItem(block.targetSynapseBlockPos);
             }

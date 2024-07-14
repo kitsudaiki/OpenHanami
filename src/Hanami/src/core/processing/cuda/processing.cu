@@ -246,7 +246,7 @@ processSynapses(NeuronBlock* neuronBlocks,
  * @param clusterSettings pointer to cluster-settings in gpu-memory
  * @param neuronBlockPos position-offset within the neuron-block-buffer
  * @param dimY number of connections-blocks in y-direction
- * @param isOutputBrick true, if current brick is an output-brick
+ * @param isOutputHexagon true, if current hexagon is an output-hexagon
  */
 template <bool doTrain>
 __global__ void
@@ -255,7 +255,7 @@ processNeurons(NeuronBlock* neuronBlocks,
                ConnectionBlock* connectionBlocks,
                ClusterSettings* clusterSettings,
                const uint32_t dimY,
-               const bool isOutputBrick)
+               const bool isOutputHexagon)
 {
     // init shared memory
     __shared__ float localInputs[64];
@@ -283,7 +283,7 @@ processNeurons(NeuronBlock* neuronBlocks,
     }
 
     // process neuron-content
-    if(isOutputBrick == false)
+    if(isOutputHexagon == false)
     {
         neuron->potential /= clusterSettings->neuronCooldown;
         neuron->refractoryTime = neuron->refractoryTime >> 1;
@@ -309,11 +309,11 @@ processNeurons(NeuronBlock* neuronBlocks,
 }
 
 /**
- * @brief process all normal- and output-bricks and train them, if wanted.
+ * @brief process all normal- and output-hexagons and train them, if wanted.
  *
  * @param gpuPointer handle with all gpu-pointer of the cluster
- * @param bricks pointer to local bricks
- * @param numberOfBricks number of bricks
+ * @param hexagons pointer to local hexagons
+ * @param numberOfHexagons number of hexagons
  * @param neuronBlocks pointer to local neuron-block
  * @param numberOfNeuronBlocks number of neuron-blokcs
  * @param doTrain true to run a taining-process
@@ -321,67 +321,67 @@ processNeurons(NeuronBlock* neuronBlocks,
 extern "C"
 void
 processing_CUDA(CudaClusterPointer* gpuPointer,
-                std::vector<Brick>& bricks,
+                std::vector<Hexagon>& hexagons,
                 const bool doTrain)
 {
     cudaSetDevice(gpuPointer->deviceId);
     uint32_t randomeSeed = rand();
 
-    // process bricks on gpu
-    for (uint32_t brickId = 0; brickId < bricks.size(); ++brickId)
+    // process hexagons on gpu
+    for (uint32_t hexagonId = 0; hexagonId < hexagons.size(); ++hexagonId)
     {
-        Brick* brick = &bricks[brickId];
-        if (brick->header.isInputBrick) {
+        Hexagon* hexagon = &hexagons[hexagonId];
+        if (hexagon->header.isInputHexagon) {
             continue;
         }
 
         // copy necessary data from host to gpu
-        cudaMemcpy(gpuPointer->brickPointer[brickId].neuronBlocks,
-                   &brick->neuronBlocks[0],
-                   brick->neuronBlocks.size() * sizeof(NeuronBlock),
+        cudaMemcpy(gpuPointer->hexagonPointer[hexagonId].neuronBlocks,
+                   &hexagon->neuronBlocks[0],
+                   hexagon->neuronBlocks.size() * sizeof(NeuronBlock),
                    cudaMemcpyHostToDevice);
 
         if (doTrain)
         {
-            processSynapses<true><<<brick->header.dimX * brick->header.dimY, 64>>>(
-                gpuPointer->brickPointer[brickId].neuronBlocks,
+            processSynapses<true><<<hexagon->header.dimX * hexagon->header.dimY, 64>>>(
+                gpuPointer->hexagonPointer[hexagonId].neuronBlocks,
                 gpuPointer->synapseBlocks,
-                gpuPointer->brickPointer[brickId].connectionBlocks,
+                gpuPointer->hexagonPointer[hexagonId].connectionBlocks,
                 gpuPointer->clusterSettings,
-                randomeSeed + brickId,
-                brick->header.dimY);
+                randomeSeed + hexagonId,
+                hexagon->header.dimY);
 
-            processNeurons<true><<<brick->header.dimX, 64>>>(
-                gpuPointer->brickPointer[brickId].neuronBlocks,
+            processNeurons<true><<<hexagon->header.dimX, 64>>>(
+                gpuPointer->hexagonPointer[hexagonId].neuronBlocks,
                 gpuPointer->synapseBlocks,
-                gpuPointer->brickPointer[brickId].connectionBlocks,
+                gpuPointer->hexagonPointer[hexagonId].connectionBlocks,
                 gpuPointer->clusterSettings,
-                brick->header.dimY,
-                brick->header.isOutputBrick);
+                hexagon->header.dimY,
+                hexagon->header.isOutputHexagon);
         }
         else
         {
-            processSynapses<false><<<brick->header.dimX * brick->header.dimY, 64>>>(
-                gpuPointer->brickPointer[brickId].neuronBlocks,
+            processSynapses<false><<<hexagon->header.dimX * hexagon->header.dimY, 64>>>(
+                gpuPointer->hexagonPointer[hexagonId].neuronBlocks,
                 gpuPointer->synapseBlocks,
-                gpuPointer->brickPointer[brickId].connectionBlocks,
+                gpuPointer->hexagonPointer[hexagonId].connectionBlocks,
                 gpuPointer->clusterSettings,
-                randomeSeed + brickId,
-                brick->header.dimY);
+                randomeSeed + hexagonId,
+                hexagon->header.dimY);
 
-            processNeurons<false><<<brick->header.dimX, 64>>>(
-                gpuPointer->brickPointer[brickId].neuronBlocks,
+            processNeurons<false><<<hexagon->header.dimX, 64>>>(
+                gpuPointer->hexagonPointer[hexagonId].neuronBlocks,
                 gpuPointer->synapseBlocks,
-                gpuPointer->brickPointer[brickId].connectionBlocks,
+                gpuPointer->hexagonPointer[hexagonId].connectionBlocks,
                 gpuPointer->clusterSettings,
-                brick->header.dimY,
-                brick->header.isOutputBrick);
+                hexagon->header.dimY,
+                hexagon->header.isOutputHexagon);
         }
 
         // copy resulting data back to host
-        cudaMemcpy(&brick->neuronBlocks[0],
-                   gpuPointer->brickPointer[brickId].neuronBlocks,
-                   brick->neuronBlocks.size() * sizeof(NeuronBlock),
+        cudaMemcpy(&hexagon->neuronBlocks[0],
+                   gpuPointer->hexagonPointer[hexagonId].neuronBlocks,
+                   hexagon->neuronBlocks.size() * sizeof(NeuronBlock),
                    cudaMemcpyDeviceToHost);
     }
 }

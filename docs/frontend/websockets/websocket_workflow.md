@@ -65,11 +65,11 @@ Steps:
 
 3. The data-transfer over the websocket after this is done with [protobuf-messages](https://github.com/kitsudaiki/Hanami/blob/develop/src/libraries/hanami_messages/protobuffers/hanami_messages.proto3) with the `ClusterIO_Message`-message:
 
-    - **brickName**: name of the input-brick, where the data have to be applied
+    - **hexagonName**: name of the input-hexagon, where the data have to be applied
     - **isLast**: set to true, to say the backend, that this was the last message, so the backend starts to process the cluster
     - **processType**: `REQUEST_TYPE` or `TRAIN_TYPE` based of the type of the action
     - **numberOfValues**: number of input-values in the message
-    - **values**: list of float-values to apply to the brick
+    - **values**: list of float-values to apply to the hexagon
 
     The response is the same type, which is coming from the backend in case of a request-task.
 

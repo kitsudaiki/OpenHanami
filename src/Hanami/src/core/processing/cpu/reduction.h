@@ -69,22 +69,25 @@ reduceSection(SynapseSection* section)
 /**
  * @brief backpropagate connections
  *
- * @param brick pointer to current brick
+ * @param hexagon pointer to current hexagon
  * @param neuronBlocks pointer to neuron-blocks
  * @param synapseBlocks pointer to synapse-blocks
- * @param blockId id of the current block within the brick
+ * @param blockId id of the current block within the hexagon
  */
 inline void
-reduceConnections(Brick* brick, Brick* bricks, SynapseBlock* synapseBlocks, const uint32_t blockId)
+reduceConnections(Hexagon* hexagon,
+                  Hexagon* hexagons,
+                  SynapseBlock* synapseBlocks,
+                  const uint32_t blockId)
 {
     SynapseConnection* connection = nullptr;
     Neuron* sourceNeuron = nullptr;
     NeuronBlock* sourceNeuronBlock = nullptr;
-    Brick* sourceBrick = nullptr;
+    Hexagon* sourceHexagon = nullptr;
     ConnectionBlock* connectionBlock = nullptr;
     SynapseSection* synapseSection = nullptr;
-    const uint32_t dimY = brick->header.dimY;
-    const uint32_t dimX = brick->header.dimX;
+    const uint32_t dimY = hexagon->header.dimY;
+    const uint32_t dimX = hexagon->header.dimX;
     uint32_t c = 0;
     uint32_t i = 0;
 
@@ -93,7 +96,7 @@ reduceConnections(Brick* brick, Brick* bricks, SynapseBlock* synapseBlocks, cons
     }
 
     for (c = blockId * dimY; c < (blockId * dimY) + dimY; ++c) {
-        connectionBlock = &brick->connectionBlocks[c];
+        connectionBlock = &hexagon->connectionBlocks[c];
 
         for (i = 0; i < NUMBER_OF_SYNAPSESECTION; ++i) {
             connection = &connectionBlock->connections[i];
@@ -102,8 +105,8 @@ reduceConnections(Brick* brick, Brick* bricks, SynapseBlock* synapseBlocks, cons
             }
 
             synapseSection = &synapseBlocks[connectionBlock->targetSynapseBlockPos].sections[i];
-            sourceBrick = &bricks[connection->origin.brickId];
-            sourceNeuronBlock = &sourceBrick->neuronBlocks[connection->origin.blockId];
+            sourceHexagon = &hexagons[connection->origin.hexagonId];
+            sourceNeuronBlock = &sourceHexagon->neuronBlocks[connection->origin.blockId];
             sourceNeuron = &sourceNeuronBlock->neurons[connection->origin.neuronId];
 
             // if section is complete empty, then erase it
@@ -124,16 +127,16 @@ reduceConnections(Brick* brick, Brick* bricks, SynapseBlock* synapseBlocks, cons
  * @brief reduce all synapses within the cluster and delete them, if the reach a deletion-border
  */
 inline void
-reduceCluster(Cluster& cluster, const uint32_t brickId, const uint32_t blockId)
+reduceCluster(Cluster& cluster, const uint32_t hexagonId, const uint32_t blockId)
 {
-    Brick* brick = &cluster.bricks[brickId];
-    if (brick->header.isInputBrick) {
+    Hexagon* hexagon = &cluster.hexagons[hexagonId];
+    if (hexagon->header.isInputHexagon) {
         return;
     }
 
     SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(cluster.attachedHost->synapseBlocks);
-    const uint32_t numberOfBricks = cluster.bricks.size();
-    reduceConnections(brick, &cluster.bricks[0], synapseBlocks, blockId);
+    const uint32_t numberOfHexagons = cluster.hexagons.size();
+    reduceConnections(hexagon, &cluster.hexagons[0], synapseBlocks, blockId);
 }
 
 #endif  // HANAMI_CORE_REDUCTION_H

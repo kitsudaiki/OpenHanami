@@ -61,7 +61,7 @@ initNewCluster(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta, const s
 {
     initializeHeader(cluster, uuid);
     initializeSettings(cluster, clusterMeta);
-    initializeBricks(cluster, clusterMeta);
+    initializeHexagons(cluster, clusterMeta);
     initializeInputs(cluster, clusterMeta);
     initializeOutputs(cluster, clusterMeta);
 
@@ -119,16 +119,16 @@ initializeInputs(Cluster* cluster, const ClusterMeta& clusterMeta)
             = (inputMeta.numberOfInputs / NEURONS_PER_NEURONBLOCK) + 1;
 
         InputInterface inputInterface;
-        inputInterface.targetBrickId = inputMeta.targetBrickId;
+        inputInterface.targetHexagonId = inputMeta.targetHexagonId;
         inputInterface.name = inputMeta.name;
         inputInterface.inputNeurons.resize(inputMeta.numberOfInputs);
         inputInterface.ioBuffer.resize(inputMeta.numberOfInputs);
 
         cluster->inputInterfaces.try_emplace(inputMeta.name, inputInterface);
 
-        cluster->bricks[inputInterface.targetBrickId].header.isInputBrick = true;
-        cluster->bricks[inputInterface.targetBrickId].neuronBlocks.resize(numberOfNeuronBlocks);
-        cluster->bricks[inputInterface.targetBrickId].inputInterface
+        cluster->hexagons[inputInterface.targetHexagonId].header.isInputHexagon = true;
+        cluster->hexagons[inputInterface.targetHexagonId].neuronBlocks.resize(numberOfNeuronBlocks);
+        cluster->hexagons[inputInterface.targetHexagonId].inputInterface
             = &cluster->inputInterfaces[inputMeta.name];
     }
 }
@@ -143,61 +143,61 @@ initializeOutputs(Cluster* cluster, const ClusterMeta& clusterMeta)
 {
     for (const OutputMeta& outputMeta : clusterMeta.outputs) {
         OutputInterface outputInterface;
-        outputInterface.targetBrickId = outputMeta.targetBrickId;
+        outputInterface.targetHexagonId = outputMeta.targetHexagonId;
         outputInterface.name = outputMeta.name;
         outputInterface.outputNeurons.resize(outputMeta.numberOfOutputs);
         outputInterface.ioBuffer.resize(outputMeta.numberOfOutputs);
 
         cluster->outputInterfaces.try_emplace(outputMeta.name, outputInterface);
 
-        cluster->bricks[outputInterface.targetBrickId].header.isOutputBrick = true;
-        cluster->bricks[outputInterface.targetBrickId].outputInterface
+        cluster->hexagons[outputInterface.targetHexagonId].header.isOutputHexagon = true;
+        cluster->hexagons[outputInterface.targetHexagonId].outputInterface
             = &cluster->outputInterfaces[outputMeta.name];
     }
 }
 
 /**
- * @brief init all bricks
+ * @brief init all hexagons
  *
- * @param metaBase json with all brick-definitions
+ * @param metaBase json with all hexagon-definitions
  */
 void
-initializeBricks(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta)
+initializeHexagons(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta)
 {
-    cluster->bricks.resize(clusterMeta.bricks.size());
+    cluster->hexagons.resize(clusterMeta.hexagons.size());
 
-    for (uint32_t i = 0; i < clusterMeta.bricks.size(); i++) {
-        Brick* newBrick = &cluster->bricks[i];
-        newBrick->cluster = cluster;
-        newBrick->header.brickId = i;
-        newBrick->header.brickPos = clusterMeta.bricks.at(i).position;
-        std::fill_n(newBrick->neighbors, 12, UNINIT_STATE_32);
+    for (uint32_t i = 0; i < clusterMeta.hexagons.size(); i++) {
+        Hexagon* newHexagon = &cluster->hexagons[i];
+        newHexagon->cluster = cluster;
+        newHexagon->header.hexagonId = i;
+        newHexagon->header.hexagonPos = clusterMeta.hexagons.at(i).position;
+        std::fill_n(newHexagon->neighbors, 12, UNINIT_STATE_32);
     }
 
-    connectAllBricks(cluster);
-    initializeTargetBrickList(cluster);
+    connectAllHexagons(cluster);
+    initializeTargetHexagonList(cluster);
 
     return;
 }
 
 /**
- * @brief connect a single side of a specific brick
+ * @brief connect a single side of a specific hexagon
  *
- * @param sourceBrick pointer to the brick
- * @param side side of the brick to connect
+ * @param sourceHexagon pointer to the hexagon
+ * @param side side of the hexagon to connect
  */
 void
-connectBrick(Cluster* cluster, Brick& sourceBrick, const uint8_t side)
+connectHexagon(Cluster* cluster, Hexagon& sourceHexagon, const uint8_t side)
 {
-    const Hanami::Position next = getNeighborPos(sourceBrick.header.brickPos, side);
+    const Hanami::Position next = getNeighborPos(sourceHexagon.header.hexagonPos, side);
     // debug-output
     // std::cout<<next.x<<" : "<<next.y<<" : "<<next.z<<std::endl;
 
     if (next.isValid()) {
-        for (Brick& targetBrick : cluster->bricks) {
-            if (targetBrick.header.brickPos == next) {
-                sourceBrick.neighbors[side] = targetBrick.header.brickId;
-                targetBrick.neighbors[11 - side] = sourceBrick.header.brickId;
+        for (Hexagon& targetHexagon : cluster->hexagons) {
+            if (targetHexagon.header.hexagonPos == next) {
+                sourceHexagon.neighbors[side] = targetHexagon.header.hexagonId;
+                targetHexagon.neighbors[11 - side] = sourceHexagon.header.hexagonId;
             }
         }
     }
@@ -207,68 +207,68 @@ connectBrick(Cluster* cluster, Brick& sourceBrick, const uint8_t side)
  * @brief connect all breaks of the cluster
  */
 void
-connectAllBricks(Cluster* cluster)
+connectAllHexagons(Cluster* cluster)
 {
-    for (Brick& sourceBrick : cluster->bricks) {
+    for (Hexagon& sourceHexagon : cluster->hexagons) {
         for (uint8_t side = 0; side < 12; side++) {
-            connectBrick(cluster, sourceBrick, side);
+            connectHexagon(cluster, sourceHexagon, side);
         }
     }
 }
 
 /**
- * @brief get next possible brick
+ * @brief get next possible hexagon
  *
- * @param currentBrick actual brick
+ * @param currentHexagon actual hexagon
  * @param maxPathLength maximum path length left
  *
- * @return last brick-id of the gone path
+ * @return last hexagon-id of the gone path
  */
 uint32_t
-goToNextInitBrick(Cluster* cluster, Brick& currentBrick, uint32_t& maxPathLength)
+goToNextInitHexagon(Cluster* cluster, Hexagon& currentHexagon, uint32_t& maxPathLength)
 {
     // check path-length to not go too far
     maxPathLength--;
     if (maxPathLength == 0) {
-        return currentBrick.header.brickId;
+        return currentHexagon.header.hexagonId;
     }
 
     // check based on the chance, if you go to the next, or not
     const float chanceForNext = 0.0f;  // TODO: make hard-coded value configurable
     if (1000.0f * chanceForNext > (rand() % 1000)) {
-        return currentBrick.header.brickId;
+        return currentHexagon.header.hexagonId;
     }
 
-    // get a random possible next brick
+    // get a random possible next hexagon
     const uint8_t possibleNextSides[7] = {9, 3, 1, 4, 11, 5, 2};
     const uint8_t startSide = possibleNextSides[rand() % 7];
     for (uint32_t i = 0; i < 7; i++) {
         const uint8_t side = possibleNextSides[(i + startSide) % 7];
-        const uint32_t nextBrickId = currentBrick.neighbors[side];
-        if (nextBrickId != UNINIT_STATE_32) {
-            return goToNextInitBrick(cluster, cluster->bricks[nextBrickId], maxPathLength);
+        const uint32_t nextHexagonId = currentHexagon.neighbors[side];
+        if (nextHexagonId != UNINIT_STATE_32) {
+            return goToNextInitHexagon(cluster, cluster->hexagons[nextHexagonId], maxPathLength);
         }
     }
 
-    // if no further next brick was found, the give back tha actual one as end of the path
-    return currentBrick.header.brickId;
+    // if no further next hexagon was found, the give back tha actual one as end of the path
+    return currentHexagon.header.hexagonId;
 }
 
 /**
- * @brief init target-brick-list of all bricks
+ * @brief init target-hexagon-list of all hexagons
  */
 void
-initializeTargetBrickList(Cluster* cluster)
+initializeTargetHexagonList(Cluster* cluster)
 {
-    for (Brick& baseBrick : cluster->bricks) {
+    for (Hexagon& baseHexagon : cluster->hexagons) {
         for (uint32_t counter = 0; counter < NUMBER_OF_POSSIBLE_NEXT; counter++) {
             uint32_t maxPathLength = cluster->clusterHeader.settings.maxConnectionDistance + 1;
-            const uint32_t brickId = goToNextInitBrick(cluster, baseBrick, maxPathLength);
-            if (baseBrick.header.brickId != brickId) {
-                baseBrick.possibleBrickTargetIds[counter] = brickId;
+            const uint32_t hexagonId = goToNextInitHexagon(cluster, baseHexagon, maxPathLength);
+            if (baseHexagon.header.hexagonId != hexagonId) {
+                baseHexagon.possibleHexagonTargetIds[counter] = hexagonId;
             }
             else {
-                baseBrick.possibleBrickTargetIds[counter] = UNINIT_STATE_32;
+                baseHexagon.possibleHexagonTargetIds[counter] = UNINIT_STATE_32;
             }
         }
     }

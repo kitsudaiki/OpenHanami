@@ -46,7 +46,7 @@ var taskHeader = []string{
 }
 
 var createTrainTaskCmd = &cobra.Command {
-    Use:   "train -i BRICK_NAME:DATASET_UUID -c CLUSTER_UUID TASK_NAME",
+    Use:   "train -i HEXAGON_NAME:DATASET_UUID -c CLUSTER_UUID TASK_NAME",
     Short: "Create a new train task.",
     Args:  cobra.ExactArgs(1),
     Run:   func(cmd *cobra.Command, args []string) {
@@ -65,7 +65,7 @@ var createTrainTaskCmd = &cobra.Command {
 
 
 var createRequestTaskCmd = &cobra.Command {
-    Use:   "request -i BRICK_NAME:DATASET_UUID -c CLUSTER_UUID TASK_NAME",
+    Use:   "request -i HEXAGON_NAME:DATASET_UUID -c CLUSTER_UUID TASK_NAME",
     Short: "Create a new request task.",
     Args:  cobra.ExactArgs(1),
     Run:   func(cmd *cobra.Command, args []string) {
@@ -153,8 +153,8 @@ func Init_Task_Commands(rootCmd *cobra.Command) {
     taskCmd.AddCommand(createTaskCmd)
 
     createTaskCmd.AddCommand(createTrainTaskCmd)
-    createTrainTaskCmd.Flags().StringSliceVarP(&inputData, "input", "i", []string{}, "Cluster input, which are paris of '-i <BRICK_NAME>:<DATASET_UUID>' (mandatory)")
-    createTrainTaskCmd.Flags().StringSliceVarP(&outputData, "output", "o", []string{}, "Cluster outputs, which are paris of '-o <BRICK_NAME>:<DATASET_UUID>' (mandatory)")
+    createTrainTaskCmd.Flags().StringSliceVarP(&inputData, "input", "i", []string{}, "Cluster input, which are paris of '-i <HEXAGON_NAME>:<DATASET_UUID>' (mandatory)")
+    createTrainTaskCmd.Flags().StringSliceVarP(&outputData, "output", "o", []string{}, "Cluster outputs, which are paris of '-o <HEXAGON_NAME>:<DATASET_UUID>' (mandatory)")
     createTrainTaskCmd.Flags().StringVarP(&clusterUuid, "cluster", "c", "", "Cluster UUID (mandatory)")    
     createTrainTaskCmd.MarkFlagRequired("cluster")
     createTrainTaskCmd.MarkFlagRequired("input")
@@ -162,8 +162,8 @@ func Init_Task_Commands(rootCmd *cobra.Command) {
 
 
     createTaskCmd.AddCommand(createRequestTaskCmd)
-    createRequestTaskCmd.Flags().StringSliceVarP(&inputData, "input", "i", []string{}, "Cluster input, which are paris of '-i <BRICK_NAME>:<DATASET_UUID>' (mandatory)")
-    createRequestTaskCmd.Flags().StringSliceVarP(&outputData, "result", "r", []string{}, "Cluster result, which are paris of '-o <BRICK_NAME>:<DATASET_NAME>' (mandatory)")
+    createRequestTaskCmd.Flags().StringSliceVarP(&inputData, "input", "i", []string{}, "Cluster input, which are paris of '-i <HEXAGON_NAME>:<DATASET_UUID>' (mandatory)")
+    createRequestTaskCmd.Flags().StringSliceVarP(&outputData, "result", "r", []string{}, "Cluster result, which are paris of '-o <HEXAGON_NAME>:<DATASET_NAME>' (mandatory)")
     createRequestTaskCmd.Flags().StringVarP(&clusterUuid, "cluster", "c", "", "Cluster UUID (mandatory)")
     createRequestTaskCmd.MarkFlagRequired("cluster")
     createRequestTaskCmd.MarkFlagRequired("input")

@@ -39,10 +39,10 @@ class WorkerThread : public Hanami::Thread
 
    private:
     void processClusterForward(Cluster& cluster,
-                               const uint32_t brickId,
+                               const uint32_t hexagonId,
                                const uint32_t blockId,
                                const bool doTrain);
-    void processClusterBackward(Cluster& cluster, const uint32_t brickId, const uint32_t blockId);
+    void processClusterBackward(Cluster& cluster, const uint32_t hexagonId, const uint32_t blockId);
 
     void handleTask(const CpuHost::WorkerTask task);
     void handleTrainForwardTask(CpuHost::WorkerTask task);

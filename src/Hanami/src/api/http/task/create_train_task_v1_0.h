@@ -42,7 +42,7 @@ class CreateTrainTaskV1M0 : public Blossom
    private:
     ReturnStatus fillTaskIo(DataSetFileHandle& taskIo,
                             const Hanami::UserContext& userContext,
-                            const std::string& brickName,
+                            const std::string& hexagonName,
                             const std::string& settings,
                             BlossomStatus& status,
                             Hanami::ErrorContainer& error);

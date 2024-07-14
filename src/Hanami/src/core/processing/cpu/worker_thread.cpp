@@ -96,16 +96,16 @@ WorkerThread::handleTask(const CpuHost::WorkerTask task)
 void
 WorkerThread::handleTrainForwardTask(CpuHost::WorkerTask task)
 {
-    Brick* brick = &task.cluster->bricks[task.brickId];
+    Hexagon* hexagon = &task.cluster->hexagons[task.hexagonId];
     if (task.blockId == UNINIT_STATE_16) {
         // handle input-interface
-        if (brick->inputInterface != nullptr) {
-            WorkerThread::handleInputForward(*task.cluster, brick->inputInterface, true);
+        if (hexagon->inputInterface != nullptr) {
+            WorkerThread::handleInputForward(*task.cluster, hexagon->inputInterface, true);
         }
 
         // handle special-case that there are no neuron-blocks to process
-        if (brick->neuronBlocks.size() == 0) {
-            if (task.brickId == task.cluster->bricks.size() - 1) {
+        if (hexagon->neuronBlocks.size() == 0) {
+            if (task.hexagonId == task.cluster->hexagons.size() - 1) {
                 updateCluster(*task.cluster);
                 task.cluster->updateClusterState();
                 return;
@@ -113,17 +113,17 @@ WorkerThread::handleTrainForwardTask(CpuHost::WorkerTask task)
 
             CpuHost::WorkerTask newTask;
             newTask.cluster = task.cluster;
-            newTask.brickId = task.brickId + 1;
+            newTask.hexagonId = task.hexagonId + 1;
             newTask.blockId = UNINIT_STATE_16;
             m_host->addWorkerTaskToQueue(newTask);
             return;
         }
 
         // share neuron-blocks to process
-        for (uint32_t i = 0; i < brick->neuronBlocks.size(); i++) {
+        for (uint32_t i = 0; i < hexagon->neuronBlocks.size(); i++) {
             CpuHost::WorkerTask newTask;
             newTask.cluster = task.cluster;
-            newTask.brickId = task.brickId;
+            newTask.hexagonId = task.hexagonId;
             newTask.blockId = i;
             m_host->addWorkerTaskToQueue(newTask);
         }
@@ -131,21 +131,23 @@ WorkerThread::handleTrainForwardTask(CpuHost::WorkerTask task)
     }
 
     // run backpropation
-    processClusterForward(*task.cluster, task.brickId, task.blockId, true);
-    if (task.cluster->incrementAndCompare(task.cluster->bricks[task.brickId].neuronBlocks.size())) {
-        if (brick->outputInterface != nullptr) {
-            processNeuronsOfOutputBrick<true>(
-                task.cluster->bricks, brick->outputInterface, task.brickId, rand());
+    processClusterForward(*task.cluster, task.hexagonId, task.blockId, true);
+    if (task.cluster->incrementAndCompare(
+            task.cluster->hexagons[task.hexagonId].neuronBlocks.size()))
+    {
+        if (hexagon->outputInterface != nullptr) {
+            processNeuronsOfOutputHexagon<true>(
+                task.cluster->hexagons, hexagon->outputInterface, task.hexagonId, rand());
         }
 
-        if (task.brickId == task.cluster->bricks.size() - 1) {
+        if (task.hexagonId == task.cluster->hexagons.size() - 1) {
             updateCluster(*task.cluster);
             task.cluster->updateClusterState();
         }
         else {
             CpuHost::WorkerTask newTask;
             newTask.cluster = task.cluster;
-            newTask.brickId = task.brickId + 1;
+            newTask.hexagonId = task.hexagonId + 1;
             newTask.blockId = UNINIT_STATE_16;
             m_host->addWorkerTaskToQueue(newTask);
         }
@@ -161,36 +163,36 @@ void
 WorkerThread::handleTrainBackwardTask(CpuHost::WorkerTask task)
 {
     if (task.blockId == UNINIT_STATE_16) {
-        Brick* brick = &task.cluster->bricks[task.brickId];
+        Hexagon* hexagon = &task.cluster->hexagons[task.hexagonId];
 
         // handle output-interface
-        if (brick->outputInterface != nullptr) {
-            backpropagateOutput(task.cluster->bricks,
-                                brick->outputInterface,
+        if (hexagon->outputInterface != nullptr) {
+            backpropagateOutput(task.cluster->hexagons,
+                                hexagon->outputInterface,
                                 &task.cluster->clusterHeader.settings,
-                                task.brickId);
+                                task.hexagonId);
         }
 
         // handle special-case that there are no neuron-blocks to process
-        if (brick->neuronBlocks.size() == 0) {
-            if (task.brickId == 0) {
+        if (hexagon->neuronBlocks.size() == 0) {
+            if (task.hexagonId == 0) {
                 task.cluster->updateClusterState();
                 return;
             }
 
             CpuHost::WorkerTask newTask;
             newTask.cluster = task.cluster;
-            newTask.brickId = task.brickId - 1;
+            newTask.hexagonId = task.hexagonId - 1;
             newTask.blockId = UNINIT_STATE_16;
             m_host->addWorkerTaskToQueue(newTask);
             return;
         }
 
         // share neuron-blocks to process
-        for (uint32_t i = 0; i < brick->neuronBlocks.size(); i++) {
+        for (uint32_t i = 0; i < hexagon->neuronBlocks.size(); i++) {
             CpuHost::WorkerTask newTask;
             newTask.cluster = task.cluster;
-            newTask.brickId = task.brickId;
+            newTask.hexagonId = task.hexagonId;
             newTask.blockId = i;
             m_host->addWorkerTaskToQueue(newTask);
         }
@@ -198,15 +200,17 @@ WorkerThread::handleTrainBackwardTask(CpuHost::WorkerTask task)
     }
 
     // run backpropation
-    processClusterBackward(*task.cluster, task.brickId, task.blockId);
-    if (task.cluster->incrementAndCompare(task.cluster->bricks[task.brickId].neuronBlocks.size())) {
-        if (task.brickId == 0) {
+    processClusterBackward(*task.cluster, task.hexagonId, task.blockId);
+    if (task.cluster->incrementAndCompare(
+            task.cluster->hexagons[task.hexagonId].neuronBlocks.size()))
+    {
+        if (task.hexagonId == 0) {
             task.cluster->updateClusterState();
         }
         else {
             CpuHost::WorkerTask newTask;
             newTask.cluster = task.cluster;
-            newTask.brickId = task.brickId - 1;
+            newTask.hexagonId = task.hexagonId - 1;
             newTask.blockId = UNINIT_STATE_16;
             m_host->addWorkerTaskToQueue(newTask);
         }
@@ -221,13 +225,13 @@ WorkerThread::handleTrainBackwardTask(CpuHost::WorkerTask task)
 void
 WorkerThread::handleReductionTask(const CpuHost::WorkerTask task)
 {
-    /*reduceCluster(*task.cluster, task.brickId, task.blockId);
-    if (task.cluster->incrementAndCompare(task.cluster->bricks[task.brickId].neuronBlocks.size())) {
-        if (task.brickId == task.cluster->bricks.size() - 1) {
-            task.cluster->updateClusterState();
+    /*reduceCluster(*task.cluster, task.hexagonId, task.blockId);
+    if
+    (task.cluster->incrementAndCompare(task.cluster->hexagons[task.hexagonId].neuronBlocks.size()))
+    { if (task.hexagonId == task.cluster->hexagons.size() - 1) { task.cluster->updateClusterState();
         }
         else {
-            m_host->addBrickToTaskQueue(task.cluster, task.brickId + 1);
+            m_host->addHexagonToTaskQueue(task.cluster, task.hexagonId + 1);
             return;
         }
     }*/
@@ -241,34 +245,34 @@ WorkerThread::handleReductionTask(const CpuHost::WorkerTask task)
 void
 WorkerThread::handleProcessTask(const CpuHost::WorkerTask task)
 {
-    Brick* brick = &task.cluster->bricks[task.brickId];
+    Hexagon* hexagon = &task.cluster->hexagons[task.hexagonId];
 
     if (task.blockId == UNINIT_STATE_16) {
         // handle input-interface
-        if (brick->inputInterface != nullptr) {
-            WorkerThread::handleInputForward(*task.cluster, brick->inputInterface, true);
+        if (hexagon->inputInterface != nullptr) {
+            WorkerThread::handleInputForward(*task.cluster, hexagon->inputInterface, true);
         }
 
         // handle special-case that there are no neuron-blocks to process
-        if (brick->neuronBlocks.size() == 0) {
-            if (task.brickId == task.cluster->bricks.size() - 1) {
+        if (hexagon->neuronBlocks.size() == 0) {
+            if (task.hexagonId == task.cluster->hexagons.size() - 1) {
                 task.cluster->updateClusterState();
                 return;
             }
 
             CpuHost::WorkerTask newTask;
             newTask.cluster = task.cluster;
-            newTask.brickId = task.brickId + 1;
+            newTask.hexagonId = task.hexagonId + 1;
             newTask.blockId = UNINIT_STATE_16;
             m_host->addWorkerTaskToQueue(newTask);
             return;
         }
 
         // share neuron-blocks to process
-        for (uint32_t i = 0; i < brick->neuronBlocks.size(); i++) {
+        for (uint32_t i = 0; i < hexagon->neuronBlocks.size(); i++) {
             CpuHost::WorkerTask newTask;
             newTask.cluster = task.cluster;
-            newTask.brickId = task.brickId;
+            newTask.hexagonId = task.hexagonId;
             newTask.blockId = i;
             m_host->addWorkerTaskToQueue(newTask);
         }
@@ -276,21 +280,23 @@ WorkerThread::handleProcessTask(const CpuHost::WorkerTask task)
     }
 
     // run backpropation
-    processClusterForward(*task.cluster, task.brickId, task.blockId, true);
-    if (task.cluster->incrementAndCompare(task.cluster->bricks[task.brickId].neuronBlocks.size())) {
-        if (brick->outputInterface != nullptr) {
-            processNeuronsOfOutputBrick<false>(
-                task.cluster->bricks, brick->outputInterface, task.brickId, rand());
+    processClusterForward(*task.cluster, task.hexagonId, task.blockId, true);
+    if (task.cluster->incrementAndCompare(
+            task.cluster->hexagons[task.hexagonId].neuronBlocks.size()))
+    {
+        if (hexagon->outputInterface != nullptr) {
+            processNeuronsOfOutputHexagon<false>(
+                task.cluster->hexagons, hexagon->outputInterface, task.hexagonId, rand());
         }
 
-        if (task.brickId == task.cluster->bricks.size() - 1) {
+        if (task.hexagonId == task.cluster->hexagons.size() - 1) {
             handleClientOutput(*task.cluster);
             task.cluster->updateClusterState();
         }
         else {
             CpuHost::WorkerTask newTask;
             newTask.cluster = task.cluster;
-            newTask.brickId = task.brickId + 1;
+            newTask.hexagonId = task.hexagonId + 1;
             newTask.blockId = UNINIT_STATE_16;
             m_host->addWorkerTaskToQueue(newTask);
         }
@@ -298,7 +304,7 @@ WorkerThread::handleProcessTask(const CpuHost::WorkerTask task)
 }
 
 /**
- * @brief handle input-bricks by applying input-values to the input-neurons
+ * @brief handle input-hexagons by applying input-values to the input-neurons
  *
  * @param cluster pointer to cluster to process
  * @param doTrain true to run trainging-process
@@ -308,19 +314,19 @@ WorkerThread::handleInputForward(Cluster& cluster,
                                  InputInterface* inputInterface,
                                  const bool doTrain)
 {
-    Brick* brick = nullptr;
-    const uint32_t numberOfBricks = cluster.bricks.size();
+    Hexagon* hexagon = nullptr;
+    const uint32_t numberOfHexagons = cluster.hexagons.size();
 
-    // process input-bricks
-    for (uint32_t brickId = 0; brickId < numberOfBricks; ++brickId) {
-        brick = &cluster.bricks[brickId];
+    // process input-hexagons
+    for (uint32_t hexagonId = 0; hexagonId < numberOfHexagons; ++hexagonId) {
+        hexagon = &cluster.hexagons[hexagonId];
 
-        if (brick->header.isInputBrick) {
+        if (hexagon->header.isInputHexagon) {
             if (doTrain) {
-                processNeuronsOfInputBrick<true>(cluster, inputInterface, brick);
+                processNeuronsOfInputHexagon<true>(cluster, inputInterface, hexagon);
             }
             else {
-                processNeuronsOfInputBrick<false>(cluster, inputInterface, brick);
+                processNeuronsOfInputHexagon<false>(cluster, inputInterface, hexagon);
             }
         }
     }
@@ -330,33 +336,33 @@ WorkerThread::handleInputForward(Cluster& cluster,
  * @brief process cluster and train it be creating new synapses
  *
  * @param cluster pointer to cluster to process
- * @param brickId id of the brick to process
- * @param blockId id of the block within the brick
+ * @param hexagonId id of the hexagon to process
+ * @param blockId id of the block within the hexagon
  * @param doTrain true to run trainging-process
  */
 void
 WorkerThread::processClusterForward(Cluster& cluster,
-                                    const uint32_t brickId,
+                                    const uint32_t hexagonId,
                                     const uint32_t blockId,
                                     const bool doTrain)
 {
     Hanami::ErrorContainer error;
-    Brick* brick = &cluster.bricks[brickId];
+    Hexagon* hexagon = &cluster.hexagons[hexagonId];
 
-    if (brick->header.isInputBrick) {
+    if (hexagon->header.isInputHexagon) {
         return;
     }
 
     if (doTrain) {
-        processSynapses<true>(cluster, brick, blockId);
-        if (brick->header.isOutputBrick == false) {
-            processNeurons<true>(cluster, brick, blockId);
+        processSynapses<true>(cluster, hexagon, blockId);
+        if (hexagon->header.isOutputHexagon == false) {
+            processNeurons<true>(cluster, hexagon, blockId);
         }
     }
     else {
-        processSynapses<false>(cluster, brick, blockId);
-        if (brick->header.isOutputBrick == false) {
-            processNeurons<false>(cluster, brick, blockId);
+        processSynapses<false>(cluster, hexagon, blockId);
+        if (hexagon->header.isOutputHexagon == false) {
+            processNeurons<false>(cluster, hexagon, blockId);
         }
     }
 }
@@ -365,21 +371,21 @@ WorkerThread::processClusterForward(Cluster& cluster,
  * @brief run the backpropagation over the core the cluster
  *
  * @param cluster pointer to cluster to process
- * @param brickId id of the brick to process
- * @param blockId id of the block within the brick
+ * @param hexagonId id of the hexagon to process
+ * @param blockId id of the block within the hexagon
  */
 void
 WorkerThread::processClusterBackward(Cluster& cluster,
-                                     const uint32_t brickId,
+                                     const uint32_t hexagonId,
                                      const uint32_t blockId)
 {
     Hanami::ErrorContainer error;
-    Brick* brick = &cluster.bricks[brickId];
-    if (brick->header.isInputBrick) {
+    Hexagon* hexagon = &cluster.hexagons[hexagonId];
+    if (hexagon->header.isInputHexagon) {
         return;
     }
 
     SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(cluster.attachedHost->synapseBlocks);
-    backpropagateNeuron(brick, blockId);
-    backpropagateConnections(brick, &cluster.bricks[0], synapseBlocks, blockId);
+    backpropagateNeuron(hexagon, blockId);
+    backpropagateConnections(hexagon, &cluster.hexagons[0], synapseBlocks, blockId);
 }

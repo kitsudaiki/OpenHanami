@@ -59,15 +59,15 @@ IO_Interface::serialize(const Cluster& cluster, Hanami::ErrorContainer& error)
         return ERROR;
     }
 
-    // write number of bricks to buffer
-    const uint64_t numberOfBricks = cluster.bricks.size();
-    if (addObjectToLocalBuffer(&numberOfBricks, error) == false) {
+    // write number of hexagons to buffer
+    const uint64_t numberOfHexagons = cluster.hexagons.size();
+    if (addObjectToLocalBuffer(&numberOfHexagons, error) == false) {
         return ERROR;
     }
 
-    // write bricks to buffer
-    for (const Brick& brick : cluster.bricks) {
-        const ReturnStatus ret = serialize(brick, error);
+    // write hexagons to buffer
+    for (const Hexagon& hexagon : cluster.hexagons) {
+        const ReturnStatus ret = serialize(hexagon, error);
         if (ret != OK) {
             return ret;
         }
@@ -94,13 +94,13 @@ ReturnStatus
 IO_Interface::deserialize(Cluster& cluster, const uint64_t totalSize, Hanami::ErrorContainer& error)
 {
     uint64_t positionPtr = 0;
-    uint64_t numberOfBricks = 0;
+    uint64_t numberOfHexagons = 0;
     ReturnStatus ret = OK;
 
     initLocalBuffer(totalSize);
 
     // clear old data from the cluster
-    cluster.bricks.clear();
+    cluster.hexagons.clear();
     cluster.inputInterfaces.clear();
     cluster.outputInterfaces.clear();
 
@@ -109,24 +109,24 @@ IO_Interface::deserialize(Cluster& cluster, const uint64_t totalSize, Hanami::Er
     if (ret != OK) {
         return ret;
     }
-    ret = getObjectFromLocalBuffer(positionPtr, &numberOfBricks, error);
+    ret = getObjectFromLocalBuffer(positionPtr, &numberOfHexagons, error);
     if (ret != OK) {
         return ret;
     }
 
-    // read bricks
-    cluster.bricks.resize(numberOfBricks);
-    for (uint64_t i = 0; i < numberOfBricks; i++) {
-        cluster.bricks[i].cluster = &cluster;
-        const ReturnStatus ret = deserialize(cluster.bricks[i], positionPtr, error);
+    // read hexagons
+    cluster.hexagons.resize(numberOfHexagons);
+    for (uint64_t i = 0; i < numberOfHexagons; i++) {
+        cluster.hexagons[i].cluster = &cluster;
+        const ReturnStatus ret = deserialize(cluster.hexagons[i], positionPtr, error);
         if (ret != OK) {
             return ret;
         }
     }
 
     // re-initialize neighbor-list and target-list
-    connectAllBricks(&cluster);
-    initializeTargetBrickList(&cluster);
+    connectAllHexagons(&cluster);
+    initializeTargetHexagonList(&cluster);
 
     return OK;
 }
@@ -160,64 +160,64 @@ IO_Interface::getClusterSize(const Cluster& cluster) const
     size += sizeof(ClusterHeader);
     size += sizeof(uint64_t);
 
-    for (const Brick& brick : cluster.bricks) {
-        size += getBrickSize(brick);
+    for (const Hexagon& hexagon : cluster.hexagons) {
+        size += getHexagonSize(hexagon);
     }
 
     return size;
 }
 
 /**
- * @brief calculate the number of bytes necessary to serialize a specific brick
+ * @brief calculate the number of bytes necessary to serialize a specific hexagon
  *
- * @param brick brick, of which the necessary bytes should be calculated
+ * @param hexagon hexagon, of which the necessary bytes should be calculated
  *
- * @return number of bytes for the brick
+ * @return number of bytes for the hexagon
  */
 uint64_t
-IO_Interface::getBrickSize(const Brick& brick) const
+IO_Interface::getHexagonSize(const Hexagon& hexagon) const
 {
     uint64_t size = 0;
 
-    size += sizeof(BrickEntry);
-    size += brick.neuronBlocks.size() * sizeof(NeuronBlock);
+    size += sizeof(HexagonEntry);
+    size += hexagon.neuronBlocks.size() * sizeof(NeuronBlock);
 
-    const uint64_t numberOfConnections = brick.connectionBlocks.size();
+    const uint64_t numberOfConnections = hexagon.connectionBlocks.size();
     size += numberOfConnections * sizeof(ConnectionBlock);
     size += numberOfConnections * sizeof(SynapseBlock);
 
-    if (brick.inputInterface != nullptr) {
+    if (hexagon.inputInterface != nullptr) {
         size += sizeof(InputEntry);
-        size += brick.inputInterface->inputNeurons.size() * sizeof(InputNeuron);
+        size += hexagon.inputInterface->inputNeurons.size() * sizeof(InputNeuron);
     }
 
-    if (brick.outputInterface != nullptr) {
+    if (hexagon.outputInterface != nullptr) {
         size += sizeof(OutputEntry);
-        size += brick.outputInterface->outputNeurons.size() * sizeof(OutputNeuron);
+        size += hexagon.outputInterface->outputNeurons.size() * sizeof(OutputNeuron);
     }
 
     return size;
 }
 
 /**
- * @brief serialize a single brick
+ * @brief serialize a single hexagon
  *
- * @param brick brick, which should be serialized
+ * @param hexagon hexagon, which should be serialized
  * @param error reference for error-output
  *
  * @return OK-status, if successful, else ERROR-status
  */
 ReturnStatus
-IO_Interface::serialize(const Brick& brick, Hanami::ErrorContainer& error)
+IO_Interface::serialize(const Hexagon& hexagon, Hanami::ErrorContainer& error)
 {
-    // brick-entry
-    BrickEntry brickEntry = createBrickEntry(brick);
-    if (addObjectToLocalBuffer(&brickEntry, error) == false) {
+    // hexagon-entry
+    HexagonEntry hexagonEntry = createHexagonEntry(hexagon);
+    if (addObjectToLocalBuffer(&hexagonEntry, error) == false) {
         return ERROR;
     }
 
     // neuron-blocks
-    for (const NeuronBlock& neuronBlock : brick.neuronBlocks) {
+    for (const NeuronBlock& neuronBlock : hexagon.neuronBlocks) {
         if (addObjectToLocalBuffer(&neuronBlock, error) == false) {
             return ERROR;
         }
@@ -225,8 +225,8 @@ IO_Interface::serialize(const Brick& brick, Hanami::ErrorContainer& error)
 
     // connection-blocks and synapse-blocks
     SynapseBlock* synapseBlocks
-        = Hanami::getItemData<SynapseBlock>(brick.cluster->attachedHost->synapseBlocks);
-    for (const ConnectionBlock& connectionBlock : brick.connectionBlocks) {
+        = Hanami::getItemData<SynapseBlock>(hexagon.cluster->attachedHost->synapseBlocks);
+    for (const ConnectionBlock& connectionBlock : hexagon.connectionBlocks) {
         if (addObjectToLocalBuffer(&connectionBlock, error) == false) {
             return ERROR;
         }
@@ -237,20 +237,20 @@ IO_Interface::serialize(const Brick& brick, Hanami::ErrorContainer& error)
     }
 
     // input
-    if (brick.inputInterface != nullptr) {
+    if (hexagon.inputInterface != nullptr) {
         // create input-entry and write it to the buffer
         InputEntry inputEntry;
-        if (inputEntry.name.setName(brick.inputInterface->name) == false) {
+        if (inputEntry.name.setName(hexagon.inputInterface->name) == false) {
             return INVALID_INPUT;
         }
-        inputEntry.numberOfInputs = brick.inputInterface->inputNeurons.size();
-        inputEntry.targetBrickId = brick.header.brickId;
+        inputEntry.numberOfInputs = hexagon.inputInterface->inputNeurons.size();
+        inputEntry.targetHexagonId = hexagon.header.hexagonId;
         if (addObjectToLocalBuffer(&inputEntry, error) == false) {
             return ERROR;
         }
 
         // write input-neurons to buffer
-        for (const InputNeuron& inputNeuron : brick.inputInterface->inputNeurons) {
+        for (const InputNeuron& inputNeuron : hexagon.inputInterface->inputNeurons) {
             if (addObjectToLocalBuffer(&inputNeuron, error) == false) {
                 return ERROR;
             }
@@ -258,20 +258,20 @@ IO_Interface::serialize(const Brick& brick, Hanami::ErrorContainer& error)
     }
 
     // output
-    if (brick.outputInterface != nullptr) {
+    if (hexagon.outputInterface != nullptr) {
         // create output-entry and write it to the buffer
         OutputEntry outputEntry;
-        if (outputEntry.name.setName(brick.outputInterface->name) == false) {
+        if (outputEntry.name.setName(hexagon.outputInterface->name) == false) {
             return INVALID_INPUT;
         }
-        outputEntry.numberOfOutputs = brick.outputInterface->outputNeurons.size();
-        outputEntry.targetBrickId = brick.header.brickId;
+        outputEntry.numberOfOutputs = hexagon.outputInterface->outputNeurons.size();
+        outputEntry.targetHexagonId = hexagon.header.hexagonId;
         if (addObjectToLocalBuffer(&outputEntry, error) == false) {
             return ERROR;
         }
 
         // write output-neurons to buffer
-        for (const OutputNeuron& outputNeuron : brick.outputInterface->outputNeurons) {
+        for (const OutputNeuron& outputNeuron : hexagon.outputInterface->outputNeurons) {
             if (addObjectToLocalBuffer(&outputNeuron, error) == false) {
                 return ERROR;
             }
@@ -283,64 +283,66 @@ IO_Interface::serialize(const Brick& brick, Hanami::ErrorContainer& error)
 /**
  * @brief IO_Interface::deserialize
  *
- * @param brick target-brick for the deserialied data
+ * @param hexagon target-hexagon for the deserialied data
  * @param positionPtr referece to track current byte-position
  * @param error reference for error-output
  *
  * @return true, if successful, else false
  */
 ReturnStatus
-IO_Interface::deserialize(Brick& brick, uint64_t& positionPtr, Hanami::ErrorContainer& error)
+IO_Interface::deserialize(Hexagon& hexagon, uint64_t& positionPtr, Hanami::ErrorContainer& error)
 {
     const uint64_t positionOffset = positionPtr;
     ReturnStatus ret = OK;
 
-    // brick-entry
-    BrickEntry brickEntry;
-    ret = getObjectFromLocalBuffer(positionPtr, &brickEntry, error);
+    // hexagon-entry
+    HexagonEntry hexagonEntry;
+    ret = getObjectFromLocalBuffer(positionPtr, &hexagonEntry, error);
     if (ret != OK) {
         return ret;
     }
-    if (checkBrickEntry(brickEntry) == false) {
-        error.addMessage("Input-data invalid: Brick-check failed.");
+    if (checkHexagonEntry(hexagonEntry) == false) {
+        error.addMessage("Input-data invalid: Hexagon-check failed.");
         return INVALID_INPUT;
     }
 
-    brick.header = brickEntry.header;
+    hexagon.header = hexagonEntry.header;
 
-    if (brickEntry.neuronBlocksPos != 0) {
+    if (hexagonEntry.neuronBlocksPos != 0) {
         // check current position
-        if (positionPtr - positionOffset != brickEntry.neuronBlocksPos) {
+        if (positionPtr - positionOffset != hexagonEntry.neuronBlocksPos) {
             error.addMessage("Input-data invalid");
             return INVALID_INPUT;
         }
 
         // neuron-blocks
-        brick.neuronBlocks.clear();
-        const uint64_t numberOfNeuronBlocks = brickEntry.numberOfNeuronBytes / sizeof(NeuronBlock);
-        brick.neuronBlocks.resize(numberOfNeuronBlocks);
+        hexagon.neuronBlocks.clear();
+        const uint64_t numberOfNeuronBlocks
+            = hexagonEntry.numberOfNeuronBytes / sizeof(NeuronBlock);
+        hexagon.neuronBlocks.resize(numberOfNeuronBlocks);
         for (uint64_t i = 0; i < numberOfNeuronBlocks; i++) {
-            ret = getObjectFromLocalBuffer(positionPtr, &brick.neuronBlocks[i], error);
+            ret = getObjectFromLocalBuffer(positionPtr, &hexagon.neuronBlocks[i], error);
             if (ret != OK) {
                 return ret;
             }
         }
     }
 
-    if (brickEntry.connectionBlocksPos != 0) {
+    if (hexagonEntry.connectionBlocksPos != 0) {
         // check current position
-        if (positionPtr - positionOffset != brickEntry.connectionBlocksPos) {
+        if (positionPtr - positionOffset != hexagonEntry.connectionBlocksPos) {
             error.addMessage("Input-data invalid");
             return INVALID_INPUT;
         }
 
         // connection-blocks and synapse-blocks
-        deleteConnections(brick);
+        deleteConnections(hexagon);
         const uint64_t numberOfConnectionBlocks
-            = brickEntry.numberOfConnectionBytes / (sizeof(ConnectionBlock) + sizeof(SynapseBlock));
-        brick.connectionBlocks.resize(numberOfConnectionBlocks);
+            = hexagonEntry.numberOfConnectionBytes
+              / (sizeof(ConnectionBlock) + sizeof(SynapseBlock));
+        hexagon.connectionBlocks.resize(numberOfConnectionBlocks);
         for (uint64_t i = 0; i < numberOfConnectionBlocks; i++) {
-            ret = getObjectFromLocalBuffer(positionPtr, &brick.connectionBlocks[i], error);
+            ret = getObjectFromLocalBuffer(positionPtr, &hexagon.connectionBlocks[i], error);
             if (ret != OK) {
                 return ret;
             }
@@ -350,18 +352,18 @@ IO_Interface::deserialize(Brick& brick, uint64_t& positionPtr, Hanami::ErrorCont
                 return ret;
             }
             const uint64_t newTargetPosition
-                = brick.cluster->attachedHost->synapseBlocks.addNewItem(synapseBlock);
+                = hexagon.cluster->attachedHost->synapseBlocks.addNewItem(synapseBlock);
             if (newTargetPosition == UNINIT_STATE_64) {
                 return ERROR;
             }
-            brick.connectionBlocks[i].targetSynapseBlockPos = newTargetPosition;
+            hexagon.connectionBlocks[i].targetSynapseBlockPos = newTargetPosition;
         }
     }
 
     // input
-    if (brickEntry.inputInterfacesPos != 0) {
+    if (hexagonEntry.inputInterfacesPos != 0) {
         // check current position
-        if (positionPtr - positionOffset != brickEntry.inputInterfacesPos) {
+        if (positionPtr - positionOffset != hexagonEntry.inputInterfacesPos) {
             error.addMessage("Input-data invalid");
             return INVALID_INPUT;
         }
@@ -374,7 +376,7 @@ IO_Interface::deserialize(Brick& brick, uint64_t& positionPtr, Hanami::ErrorCont
 
         InputInterface inputIf;
         inputIf.name = inputEntry.name.getName();
-        inputIf.targetBrickId = brick.header.brickId;
+        inputIf.targetHexagonId = hexagon.header.hexagonId;
 
         inputIf.inputNeurons.resize(inputEntry.numberOfInputs);
         inputIf.ioBuffer.resize(inputEntry.numberOfInputs);
@@ -385,19 +387,19 @@ IO_Interface::deserialize(Brick& brick, uint64_t& positionPtr, Hanami::ErrorCont
             }
         }
 
-        auto ret = brick.cluster->inputInterfaces.try_emplace(inputIf.name, inputIf);
+        auto ret = hexagon.cluster->inputInterfaces.try_emplace(inputIf.name, inputIf);
         if (ret.second == false) {
             error.addMessage("Input-data invalid");
             return INVALID_INPUT;
         }
 
-        brick.inputInterface = &brick.cluster->inputInterfaces[inputIf.name];
+        hexagon.inputInterface = &hexagon.cluster->inputInterfaces[inputIf.name];
     }
 
     // output
-    if (brickEntry.outputsInterfacesPos != 0) {
+    if (hexagonEntry.outputsInterfacesPos != 0) {
         // check current position
-        if (positionPtr - positionOffset != brickEntry.outputsInterfacesPos) {
+        if (positionPtr - positionOffset != hexagonEntry.outputsInterfacesPos) {
             error.addMessage("Input-data invalid");
             return INVALID_INPUT;
         }
@@ -410,7 +412,7 @@ IO_Interface::deserialize(Brick& brick, uint64_t& positionPtr, Hanami::ErrorCont
 
         OutputInterface outputIf;
         outputIf.name = outputEntry.name.getName();
-        outputIf.targetBrickId = brick.header.brickId;
+        outputIf.targetHexagonId = hexagon.header.hexagonId;
 
         outputIf.outputNeurons.resize(outputEntry.numberOfOutputs);
         outputIf.ioBuffer.resize(outputEntry.numberOfOutputs);
@@ -421,17 +423,17 @@ IO_Interface::deserialize(Brick& brick, uint64_t& positionPtr, Hanami::ErrorCont
             }
         }
 
-        auto ret = brick.cluster->outputInterfaces.try_emplace(outputIf.name, outputIf);
+        auto ret = hexagon.cluster->outputInterfaces.try_emplace(outputIf.name, outputIf);
         if (ret.second == false) {
             error.addMessage("Input-data invalid");
             return INVALID_INPUT;
         }
 
-        brick.outputInterface = &brick.cluster->outputInterfaces[outputIf.name];
+        hexagon.outputInterface = &hexagon.cluster->outputInterfaces[outputIf.name];
     }
 
     // check current position
-    if (positionPtr - positionOffset != brickEntry.brickSize) {
+    if (positionPtr - positionOffset != hexagonEntry.hexagonSize) {
         error.addMessage("Input-data invalid");
         return INVALID_INPUT;
     }
@@ -440,95 +442,96 @@ IO_Interface::deserialize(Brick& brick, uint64_t& positionPtr, Hanami::ErrorCont
 }
 
 /**
- * @brief check byte-ranges within the read brick-entry to prevent broken input from
+ * @brief check byte-ranges within the read hexagon-entry to prevent broken input from
  *        crashing the program
  *
- * @param brickEntry brick-entry to check
+ * @param hexagonEntry hexagon-entry to check
  *
  * @return true, if all is valid, else false
  */
 bool
-IO_Interface::checkBrickEntry(const BrickEntry& brickEntry)
+IO_Interface::checkHexagonEntry(const HexagonEntry& hexagonEntry)
 {
     // check order
-    if (brickEntry.neuronBlocksPos != 0 && brickEntry.neuronBlocksPos < sizeof(BrickEntry)) {
+    if (hexagonEntry.neuronBlocksPos != 0 && hexagonEntry.neuronBlocksPos < sizeof(HexagonEntry)) {
         return false;
     }
-    if (brickEntry.connectionBlocksPos != 0
-        && brickEntry.connectionBlocksPos < brickEntry.neuronBlocksPos)
+    if (hexagonEntry.connectionBlocksPos != 0
+        && hexagonEntry.connectionBlocksPos < hexagonEntry.neuronBlocksPos)
     {
         return false;
     }
-    if (brickEntry.connectionBlocksPos == 0
-        && brickEntry.inputInterfacesPos < brickEntry.connectionBlocksPos)
+    if (hexagonEntry.connectionBlocksPos == 0
+        && hexagonEntry.inputInterfacesPos < hexagonEntry.connectionBlocksPos)
     {
         return false;
     }
-    if (brickEntry.connectionBlocksPos == 0
-        && brickEntry.outputsInterfacesPos < brickEntry.connectionBlocksPos)
+    if (hexagonEntry.connectionBlocksPos == 0
+        && hexagonEntry.outputsInterfacesPos < hexagonEntry.connectionBlocksPos)
     {
         return false;
     }
 
-    // check against total brick size
-    if (brickEntry.neuronBlocksPos >= brickEntry.brickSize) {
+    // check against total hexagon size
+    if (hexagonEntry.neuronBlocksPos >= hexagonEntry.hexagonSize) {
         return false;
     }
-    if (brickEntry.connectionBlocksPos >= brickEntry.brickSize) {
+    if (hexagonEntry.connectionBlocksPos >= hexagonEntry.hexagonSize) {
         return false;
     }
-    if (brickEntry.inputInterfacesPos >= brickEntry.brickSize) {
+    if (hexagonEntry.inputInterfacesPos >= hexagonEntry.hexagonSize) {
         return false;
     }
-    if (brickEntry.outputsInterfacesPos >= brickEntry.brickSize) {
+    if (hexagonEntry.outputsInterfacesPos >= hexagonEntry.hexagonSize) {
         return false;
     }
 
     // check positions
-    if (brickEntry.inputInterfacesPos == 0
-        && brickEntry.neuronBlocksPos + brickEntry.numberOfNeuronBytes
-               != brickEntry.connectionBlocksPos)
+    if (hexagonEntry.inputInterfacesPos == 0
+        && hexagonEntry.neuronBlocksPos + hexagonEntry.numberOfNeuronBytes
+               != hexagonEntry.connectionBlocksPos)
     {
         return false;
     }
-    if (brickEntry.connectionBlocksPos + brickEntry.numberOfConnectionBytes
-            != brickEntry.inputInterfacesPos
-        && brickEntry.connectionBlocksPos + brickEntry.numberOfConnectionBytes
-               != brickEntry.outputsInterfacesPos
-        && brickEntry.connectionBlocksPos + brickEntry.numberOfConnectionBytes
-               != brickEntry.brickSize)
+    if (hexagonEntry.connectionBlocksPos + hexagonEntry.numberOfConnectionBytes
+            != hexagonEntry.inputInterfacesPos
+        && hexagonEntry.connectionBlocksPos + hexagonEntry.numberOfConnectionBytes
+               != hexagonEntry.outputsInterfacesPos
+        && hexagonEntry.connectionBlocksPos + hexagonEntry.numberOfConnectionBytes
+               != hexagonEntry.hexagonSize)
     {
         return false;
     }
 
     // check sizes compared to the object-types
-    if (brickEntry.numberOfNeuronBytes % sizeof(NeuronBlock) != 0) {
+    if (hexagonEntry.numberOfNeuronBytes % sizeof(NeuronBlock) != 0) {
         return false;
     }
-    if (brickEntry.numberOfConnectionBytes % (sizeof(ConnectionBlock) + sizeof(SynapseBlock)) != 0)
+    if (hexagonEntry.numberOfConnectionBytes % (sizeof(ConnectionBlock) + sizeof(SynapseBlock))
+        != 0)
     {
         return false;
     }
 
-    if (brickEntry.inputInterfacesPos > 0
-        && (brickEntry.brickSize - brickEntry.inputInterfacesPos - sizeof(InputEntry))
+    if (hexagonEntry.inputInterfacesPos > 0
+        && (hexagonEntry.hexagonSize - hexagonEntry.inputInterfacesPos - sizeof(InputEntry))
                    % sizeof(InputNeuron)
                != 0)
     {
         return false;
     }
-    if (brickEntry.outputsInterfacesPos > 0
-        && (brickEntry.brickSize - brickEntry.outputsInterfacesPos - sizeof(OutputEntry))
+    if (hexagonEntry.outputsInterfacesPos > 0
+        && (hexagonEntry.hexagonSize - hexagonEntry.outputsInterfacesPos - sizeof(OutputEntry))
                    % sizeof(OutputNeuron)
                != 0)
     {
         return false;
     }
 
-    // check size against dimentsions in brick-header
+    // check size against dimentsions in hexagon-header
     const uint64_t numberOfConnectionBlocks
-        = brickEntry.numberOfConnectionBytes / (sizeof(ConnectionBlock) + sizeof(SynapseBlock));
-    if (numberOfConnectionBlocks != brickEntry.header.dimX * brickEntry.header.dimY) {
+        = hexagonEntry.numberOfConnectionBytes / (sizeof(ConnectionBlock) + sizeof(SynapseBlock));
+    if (numberOfConnectionBlocks != hexagonEntry.header.dimX * hexagonEntry.header.dimY) {
         return false;
     }
 
@@ -536,66 +539,66 @@ IO_Interface::checkBrickEntry(const BrickEntry& brickEntry)
 }
 
 /**
- * @brief create a new brick-entry for a brick
+ * @brief create a new hexagon-entry for a hexagon
  *
- * @param brick brick for which a new entry should be created
+ * @param hexagon hexagon for which a new entry should be created
  *
- * @return new created brick-entry
+ * @return new created hexagon-entry
  */
-IO_Interface::BrickEntry
-IO_Interface::createBrickEntry(const Brick& brick)
+IO_Interface::HexagonEntry
+IO_Interface::createHexagonEntry(const Hexagon& hexagon)
 {
-    BrickEntry brickEntry;
+    HexagonEntry hexagonEntry;
 
-    const uint64_t brickSize = getBrickSize(brick);
+    const uint64_t hexagonSize = getHexagonSize(hexagon);
     uint64_t posCounter = 0;
 
-    brickEntry.header = brick.header;
-    brickEntry.brickSize = brickSize;
-    posCounter += sizeof(BrickEntry);
+    hexagonEntry.header = hexagon.header;
+    hexagonEntry.hexagonSize = hexagonSize;
+    posCounter += sizeof(HexagonEntry);
 
-    if (brick.neuronBlocks.size() > 0) {
-        brickEntry.neuronBlocksPos = posCounter;
-        brickEntry.numberOfNeuronBytes = brick.neuronBlocks.size() * sizeof(NeuronBlock);
-        posCounter += brickEntry.numberOfNeuronBytes;
+    if (hexagon.neuronBlocks.size() > 0) {
+        hexagonEntry.neuronBlocksPos = posCounter;
+        hexagonEntry.numberOfNeuronBytes = hexagon.neuronBlocks.size() * sizeof(NeuronBlock);
+        posCounter += hexagonEntry.numberOfNeuronBytes;
     }
 
-    if (brick.connectionBlocks.size() > 0) {
-        brickEntry.connectionBlocksPos = posCounter;
-        brickEntry.numberOfConnectionBytes
-            = brick.connectionBlocks.size() * (sizeof(ConnectionBlock) + sizeof(SynapseBlock));
-        posCounter += brickEntry.numberOfConnectionBytes;
+    if (hexagon.connectionBlocks.size() > 0) {
+        hexagonEntry.connectionBlocksPos = posCounter;
+        hexagonEntry.numberOfConnectionBytes
+            = hexagon.connectionBlocks.size() * (sizeof(ConnectionBlock) + sizeof(SynapseBlock));
+        posCounter += hexagonEntry.numberOfConnectionBytes;
     }
 
-    if (brick.inputInterface != nullptr) {
-        brickEntry.inputInterfacesPos = posCounter;
-        brickEntry.numberOfInputsBytes
+    if (hexagon.inputInterface != nullptr) {
+        hexagonEntry.inputInterfacesPos = posCounter;
+        hexagonEntry.numberOfInputsBytes
             = sizeof(InputEntry)
-              + (brick.inputInterface->inputNeurons.size() * sizeof(InputNeuron));
+              + (hexagon.inputInterface->inputNeurons.size() * sizeof(InputNeuron));
     }
 
-    if (brick.outputInterface != nullptr) {
-        brickEntry.outputsInterfacesPos = posCounter;
-        brickEntry.numberOfOutputBytes
+    if (hexagon.outputInterface != nullptr) {
+        hexagonEntry.outputsInterfacesPos = posCounter;
+        hexagonEntry.numberOfOutputBytes
             = sizeof(OutputEntry)
-              + (brick.outputInterface->outputNeurons.size() * sizeof(OutputNeuron));
+              + (hexagon.outputInterface->outputNeurons.size() * sizeof(OutputNeuron));
     }
 
-    return brickEntry;
+    return hexagonEntry;
 }
 
 /**
- * @brief delete all connection-blocks and linked synapse-blocks of a brick to clear the content
+ * @brief delete all connection-blocks and linked synapse-blocks of a hexagon to clear the content
  *        before reading new data into it
  *
- * @param brick reference to the brick to clear
+ * @param hexagon reference to the hexagon to clear
  */
 void
-IO_Interface::deleteConnections(Brick& brick)
+IO_Interface::deleteConnections(Hexagon& hexagon)
 {
-    for (const ConnectionBlock& connectionBlock : brick.connectionBlocks) {
-        brick.cluster->attachedHost->synapseBlocks.deleteItem(
+    for (const ConnectionBlock& connectionBlock : hexagon.connectionBlocks) {
+        hexagon.cluster->attachedHost->synapseBlocks.deleteItem(
             connectionBlock.targetSynapseBlockPos);
     }
-    brick.connectionBlocks.clear();
+    hexagon.connectionBlocks.clear();
 }

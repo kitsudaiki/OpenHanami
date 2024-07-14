@@ -57,7 +57,7 @@ cluster_template = \
     "    refractory_time: 1\n" \
     "    max_connection_distance: 1\n" \
     "    enable_reduction: false\n" \
-    "bricks:\n" \
+    "hexagons:\n" \
     "    1,1,1\n" \
     "    2,1,1\n" \
     "    3,1,1\n" \

@@ -182,7 +182,7 @@ struct SourceLocationPtr {
     // HINT (kitsudaiki): not initialized here, because they are used in shared memory in cuda
     //                    which doesn't support initializing of the values, when defining the
     //                    shared-memory-object
-    uint32_t brickId;
+    uint32_t hexagonId;
     uint16_t blockId;
     uint8_t neuronId;
     bool isInput;
@@ -248,7 +248,7 @@ static_assert(sizeof(InputNeuron) == 8);
 
 struct OutputInterface {
     std::string name = "";
-    uint32_t targetBrickId = UNINIT_STATE_32;
+    uint32_t targetHexagonId = UNINIT_STATE_32;
     std::vector<OutputNeuron> outputNeurons;
     std::vector<float> ioBuffer;
 };
@@ -257,7 +257,7 @@ struct OutputInterface {
 
 struct InputInterface {
     std::string name = "";
-    uint32_t targetBrickId = UNINIT_STATE_32;
+    uint32_t targetHexagonId = UNINIT_STATE_32;
     std::vector<InputNeuron> inputNeurons;
     std::vector<float> ioBuffer;
 };
@@ -273,7 +273,7 @@ struct SynapseConnection {
 
     SynapseConnection()
     {
-        origin.brickId = UNINIT_STATE_32;
+        origin.hexagonId = UNINIT_STATE_32;
         origin.blockId = UNINIT_STATE_16;
         origin.neuronId = UNINIT_STATE_8;
         origin.isInput = false;
@@ -293,7 +293,7 @@ static_assert(sizeof(ConnectionBlock) == 1544);
 
 //==================================================================================================
 
-struct CudaBrickPointer {
+struct CudaHexagonPointer {
     NeuronBlock* neuronBlocks = nullptr;
     ConnectionBlock* connectionBlocks = nullptr;
 };
@@ -305,30 +305,30 @@ struct CudaClusterPointer {
     ClusterSettings* clusterSettings = nullptr;
     SynapseBlock* synapseBlocks = nullptr;
 
-    std::vector<CudaBrickPointer> brickPointer;
+    std::vector<CudaHexagonPointer> hexagonPointer;
 };
 
 //==================================================================================================
 
-struct BrickHeader {
+struct HexagonHeader {
    public:
-    uint32_t brickId = UNINIT_STATE_32;
-    bool isInputBrick = false;
-    bool isOutputBrick = false;
+    uint32_t hexagonId = UNINIT_STATE_32;
+    bool isInputHexagon = false;
+    bool isOutputHexagon = false;
     uint8_t padding1[2];
     uint32_t dimX = 0;
     uint32_t dimY = 0;
-    Hanami::Position brickPos;
+    Hanami::Position hexagonPos;
 
-    bool operator==(BrickHeader& rhs)
+    bool operator==(HexagonHeader& rhs)
     {
-        if (brickId != rhs.brickId) {
+        if (hexagonId != rhs.hexagonId) {
             return false;
         }
-        if (isInputBrick != rhs.isInputBrick) {
+        if (isInputHexagon != rhs.isInputHexagon) {
             return false;
         }
-        if (isOutputBrick != rhs.isOutputBrick) {
+        if (isOutputHexagon != rhs.isOutputHexagon) {
             return false;
         }
         if (dimX != rhs.dimX) {
@@ -337,21 +337,21 @@ struct BrickHeader {
         if (dimY != rhs.dimY) {
             return false;
         }
-        if (brickPos != rhs.brickPos) {
+        if (hexagonPos != rhs.hexagonPos) {
             return false;
         }
 
         return true;
     }
 };
-static_assert(sizeof(BrickHeader) == 32);
+static_assert(sizeof(HexagonHeader) == 32);
 
 //==================================================================================================
 
-class Brick
+class Hexagon
 {
    public:
-    BrickHeader header;
+    HexagonHeader header;
 
     Cluster* cluster = nullptr;
     InputInterface* inputInterface = nullptr;
@@ -361,19 +361,19 @@ class Brick
     std::vector<NeuronBlock> neuronBlocks;
 
     bool wasResized = false;
-    uint32_t possibleBrickTargetIds[NUMBER_OF_POSSIBLE_NEXT];
+    uint32_t possibleHexagonTargetIds[NUMBER_OF_POSSIBLE_NEXT];
     uint32_t neighbors[12];
 
-    Brick() { std::fill_n(neighbors, 12, UNINIT_STATE_32); }
-    ~Brick(){};
+    Hexagon() { std::fill_n(neighbors, 12, UNINIT_STATE_32); }
+    ~Hexagon(){};
 
-    Brick& operator=(const Brick&) = delete;
+    Hexagon& operator=(const Hexagon&) = delete;
 };
 
 //==================================================================================================
 
 struct SourceLocation {
-    Brick* brick = nullptr;
+    Hexagon* hexagon = nullptr;
     NeuronBlock* neuronBlock = nullptr;
     Neuron* neuron = nullptr;
 };
@@ -381,15 +381,15 @@ struct SourceLocation {
 /**
  * @brief getSourceNeuron
  * @param location
- * @param bricks
+ * @param hexagons
  * @return
  */
 inline SourceLocation
-getSourceNeuron(const SourceLocationPtr& location, Brick* bricks)
+getSourceNeuron(const SourceLocationPtr& location, Hexagon* hexagons)
 {
     SourceLocation sourceLoc;
-    sourceLoc.brick = &bricks[location.brickId];
-    sourceLoc.neuronBlock = &sourceLoc.brick->neuronBlocks[location.blockId];
+    sourceLoc.hexagon = &hexagons[location.hexagonId];
+    sourceLoc.neuronBlock = &sourceLoc.hexagon->neuronBlocks[location.blockId];
     sourceLoc.neuron = &sourceLoc.neuronBlock->neurons[location.neuronId];
 
     return sourceLoc;

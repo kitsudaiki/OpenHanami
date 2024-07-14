@@ -31,28 +31,28 @@
 #include <hanami_root.h>
 
 /**
- * @brief search for an empty target-connection within a target-brick
+ * @brief search for an empty target-connection within a target-hexagon
  *
- * @param targetBrick target-brick where to search
+ * @param targetHexagon target-hexagon where to search
  * @param synapseBlockBuffer synapse-block-buffer to allocate new block,
  *                           if search-process was successful
  *
  * @return found empty connection, if seccessfule, else nullptr
  */
 inline SynapseConnection*
-searchTargetInBrick(Brick* targetBrick, ItemBuffer& synapseBlockBuffer)
+searchTargetInHexagon(Hexagon* targetHexagon, ItemBuffer& synapseBlockBuffer)
 {
     uint64_t i = 0;
     uint64_t j = 0;
 
-    const uint64_t numberOfConnectionsBlocks = targetBrick->connectionBlocks.size();
+    const uint64_t numberOfConnectionsBlocks = targetHexagon->connectionBlocks.size();
     if (numberOfConnectionsBlocks == 0) {
         return nullptr;
     }
 
     uint64_t pos = rand() % numberOfConnectionsBlocks;
     for (i = 0; i < numberOfConnectionsBlocks; ++i) {
-        ConnectionBlock* connectionBlock = &targetBrick->connectionBlocks[pos];
+        ConnectionBlock* connectionBlock = &targetHexagon->connectionBlocks[pos];
 
         for (j = 0; j < NUMBER_OF_SYNAPSESECTION; ++j) {
             if (connectionBlock->connections[j].origin.blockId == UNINIT_STATE_16) {
@@ -74,46 +74,46 @@ searchTargetInBrick(Brick* targetBrick, ItemBuffer& synapseBlockBuffer)
 }
 
 /**
- * @brief resize the number of connection-blocks of a brick
+ * @brief resize the number of connection-blocks of a hexagon
  *
- * @param targetBrick brick to resize
+ * @param targetHexagon hexagon to resize
  */
 inline void
-resizeConnections(Brick* targetBrick)
+resizeConnections(Hexagon* targetHexagon)
 {
-    const uint32_t dimXold = targetBrick->header.dimX;
-    const uint32_t dimYold = targetBrick->header.dimY;
+    const uint32_t dimXold = targetHexagon->header.dimX;
+    const uint32_t dimYold = targetHexagon->header.dimY;
     int32_t x, y = 0;
 
-    targetBrick->header.dimX++;
-    targetBrick->header.dimY++;
+    targetHexagon->header.dimX++;
+    targetHexagon->header.dimY++;
 
     // resize list
-    targetBrick->connectionBlocks.resize(targetBrick->header.dimX * targetBrick->header.dimY);
+    targetHexagon->connectionBlocks.resize(targetHexagon->header.dimX * targetHexagon->header.dimY);
 
     // if there was no scaling in x-dimension, then no re-ordering necessary
-    if (targetBrick->header.dimX == dimXold) {
+    if (targetHexagon->header.dimX == dimXold) {
         return;
     }
 
     LOG_DEBUG("resized connection-Block: " + std::to_string(dimXold) + ":" + std::to_string(dimYold)
-              + " -> " + std::to_string(targetBrick->header.dimX) + ":"
-              + std::to_string(targetBrick->header.dimY));
+              + " -> " + std::to_string(targetHexagon->header.dimX) + ":"
+              + std::to_string(targetHexagon->header.dimY));
     uint32_t newPos = 0;
     uint32_t oldPos = 0;
 
     // update content of list for the new size
     for (y = dimYold - 1; y >= 1; --y) {
         for (x = dimXold - 1; x >= 0; --x) {
-            newPos = (y * targetBrick->header.dimX) + x;
+            newPos = (y * targetHexagon->header.dimX) + x;
             oldPos = (y * dimXold) + x;
 
-            targetBrick->connectionBlocks[newPos] = targetBrick->connectionBlocks[oldPos];
-            targetBrick->connectionBlocks[oldPos] = ConnectionBlock();
+            targetHexagon->connectionBlocks[newPos] = targetHexagon->connectionBlocks[oldPos];
+            targetHexagon->connectionBlocks[oldPos] = ConnectionBlock();
         }
     }
 
-    targetBrick->neuronBlocks.resize(targetBrick->header.dimX);
+    targetHexagon->neuronBlocks.resize(targetHexagon->header.dimX);
 }
 
 /**
@@ -135,29 +135,29 @@ createNewSection(Cluster& cluster,
                  ItemBuffer& synapseBlockBuffer)
 {
     // get origin object
-    SourceLocation sourceLoc = getSourceNeuron(sourceLocPtr, &cluster.bricks[0]);
-    if (sourceLoc.brick->header.isOutputBrick) {
+    SourceLocation sourceLoc = getSourceNeuron(sourceLocPtr, &cluster.hexagons[0]);
+    if (sourceLoc.hexagon->header.isOutputHexagon) {
         return false;
     }
 
     // get target objects
-    const uint32_t targetBrickId
-        = sourceLoc.brick->possibleBrickTargetIds[rand() % NUMBER_OF_POSSIBLE_NEXT];
-    Brick* targetBrick = &cluster.bricks[targetBrickId];
+    const uint32_t targetHexagonId
+        = sourceLoc.hexagon->possibleHexagonTargetIds[rand() % NUMBER_OF_POSSIBLE_NEXT];
+    Hexagon* targetHexagon = &cluster.hexagons[targetHexagonId];
 
     // get target-connection
-    SynapseConnection* targetConnection = searchTargetInBrick(targetBrick, synapseBlockBuffer);
+    SynapseConnection* targetConnection = searchTargetInHexagon(targetHexagon, synapseBlockBuffer);
     if (targetConnection == nullptr) {
-        resizeConnections(targetBrick);
-        targetConnection = searchTargetInBrick(targetBrick, synapseBlockBuffer);
-        targetBrick->wasResized = true;
+        resizeConnections(targetHexagon);
+        targetConnection = searchTargetInHexagon(targetHexagon, synapseBlockBuffer);
+        targetHexagon->wasResized = true;
     }
 
     // initialize new connection
     targetConnection->origin = sourceLocPtr;
     targetConnection->lowerBound = lowerBound;
     targetConnection->potentialRange = potentialRange;
-    targetConnection->origin.isInput = sourceLoc.brick->header.isInputBrick;
+    targetConnection->origin.isInput = sourceLoc.hexagon->header.isInputHexagon;
     sourceLoc.neuron->inUse = 1;
 
     return true;
@@ -177,18 +177,18 @@ updateCluster(Cluster& cluster)
 {
     NeuronBlock* neuronBlock = nullptr;
     Neuron* neuron = nullptr;
-    Brick* brick = nullptr;
+    Hexagon* hexagon = nullptr;
     bool found = false;
-    uint32_t brickId = 0;
+    uint32_t hexagonId = 0;
     uint16_t blockId = 0;
     uint8_t sourceId = 0;
 
     // iterate over all neurons and add new synapse-section, if required
-    for (brickId = 0; brickId < cluster.bricks.size(); ++brickId) {
-        brick = &cluster.bricks[brickId];
+    for (hexagonId = 0; hexagonId < cluster.hexagons.size(); ++hexagonId) {
+        hexagon = &cluster.hexagons[hexagonId];
 
-        for (blockId = 0; blockId < brick->neuronBlocks.size(); ++blockId) {
-            neuronBlock = &brick->neuronBlocks[blockId];
+        for (blockId = 0; blockId < hexagon->neuronBlocks.size(); ++blockId) {
+            neuronBlock = &hexagon->neuronBlocks[blockId];
 
             for (sourceId = 0; sourceId < NEURONS_PER_NEURONBLOCK; ++sourceId) {
                 neuron = &neuronBlock->neurons[sourceId];
@@ -196,7 +196,7 @@ updateCluster(Cluster& cluster)
                 if (neuron->isNew > 0) {
                     found = true;
                     SourceLocationPtr originLocation;
-                    originLocation.brickId = brickId;
+                    originLocation.hexagonId = hexagonId;
                     originLocation.blockId = blockId;
                     originLocation.neuronId = sourceId;
 

@@ -40,14 +40,14 @@ bool initNewCluster(Cluster* cluster,
 void initializeHeader(Cluster* cluster, const std::string& uuid);
 void initializeSettings(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta);
 
-void initializeBricks(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta);
-void initializeTargetBrickList(Cluster* cluster);
+void initializeHexagons(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta);
+void initializeTargetHexagonList(Cluster* cluster);
 void initializeOutputNeurons(Cluster* cluster);
 void initializeInputs(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta);
 void initializeOutputs(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta);
 
-void connectBrick(Cluster* cluster, Brick& sourceBrick, const uint8_t side);
-void connectAllBricks(Cluster* cluster);
-uint32_t goToNextInitBrick(Cluster* cluster, Brick& currentBrick, uint32_t& maxPathLength);
+void connectHexagon(Cluster* cluster, Hexagon& sourceHexagon, const uint8_t side);
+void connectAllHexagons(Cluster* cluster);
+uint32_t goToNextInitHexagon(Cluster* cluster, Hexagon& currentHexagon, uint32_t& maxPathLength);
 
 #endif  // HANAMI_CLUSTERINIT_H
