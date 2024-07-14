@@ -16,7 +16,7 @@ data:
     tempfile_timeout = 10
 
     [processing]
-    use_of_free_memory = {{ .Values.use_of_free_memory }}
+    use_of_free_memory = {{ .Values.processing.use_of_free_memory }}
 
     [auth]
     policies = "/etc/hanami/policies"
