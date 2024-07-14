@@ -46,7 +46,7 @@ class ClusterParserInterface
     void scan_end();
     bool parse(ClusterMeta* result, const std::string& inputString, ErrorContainer& error);
     const std::string removeQuotes(const std::string& input);
-    uint32_t getBrickId(const Position& position);
+    uint32_t getHexagonId(const Position& position);
 
     // Error handling.
     void error(const Hanami::location& location, const std::string& message);

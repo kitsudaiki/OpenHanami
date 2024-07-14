@@ -941,7 +941,7 @@ To initialize a new cluster, a cluster-templated is used, which describes the ba
         "    refractory_time: 1\n" \
         "    max_connection_distance: 1\n" \
         "    enable_reduction: false\n" \
-        "bricks:\n" \
+        "hexagons:\n" \
         "    1,1,1\n" \
         "    2,1,1\n" \
         "    3,1,1\n" \
@@ -1248,7 +1248,7 @@ Create a new task to train the cluster with the data of a dataset, which was upl
 === "CLI"
 
     ```bash
-    hanamictl task create train -j -i <INPUT_BRICK_NAME>:<INPUT_DATASET_UUID> -o <LABEL_BRICK_NAME>:<LABEL_DATASET_UUID> -c <CLUSTER_UUID> <TASK_NAME>
+    hanamictl task create train -j -i <INPUT_HEXAGON_NAME>:<INPUT_DATASET_UUID> -o <LABEL_HEXAGON_NAME>:<LABEL_DATASET_UUID> -c <CLUSTER_UUID> <TASK_NAME>
     ```
 
     example:
@@ -1283,7 +1283,7 @@ Create a new task to train the cluster with the data of a dataset, which was upl
     }
 
     # inputs and outputs are maps with key-value-pairs, 
-    # where the key is the name of the brick of the matching 
+    # where the key is the name of the hexagon of the matching 
     # field within the dataset and the value is the UUID of 
     # the used dataset for the input- and output-data
 
@@ -1314,7 +1314,7 @@ Create a new task to request information from a trained cluster. As input the da
 === "CLI"
 
     ```bash
-    hanamictl task create request -j -i <INPUT_BRICK_NAME>:<INPUT_DATASET_UUID> -r <OUTPUT_BRICK_NAME>:<OUTPUT_DATASET_NAME> -c <CLUSTER_UUID> <TASK_NAME>
+    hanamictl task create request -j -i <INPUT_HEXAGON_NAME>:<INPUT_DATASET_UUID> -r <OUTPUT_HEXAGON_NAME>:<OUTPUT_DATASET_NAME> -c <CLUSTER_UUID> <TASK_NAME>
     ```
 
     example:
@@ -1350,7 +1350,7 @@ Create a new task to request information from a trained cluster. As input the da
     }
 
     # inputs and results are maps with key-value-pairs, 
-    # where the key is the name of the brick of the matching 
+    # where the key is the name of the hexagon of the matching 
     # field within the dataset and the value is the UUID of 
     # the used dataset for the input- and output-data
 
@@ -1555,7 +1555,7 @@ It is possible to directly connect via websocket to the cluster on the server to
         # this websocket can be used for multiple request
         ws = await cluster.switch_to_direct_mode(token, address, cluster_uuid)
 
-        # names "test_input" and "test_output" are the names of the bricks within the cluster
+        # names "test_input" and "test_output" are the names of the hexagons within the cluster
         # for the mapping of the input-data
         # if the last argument is set to "True", it says that there are no more data to 
         # apply to the cluster and that the train-process can start
@@ -1594,7 +1594,7 @@ It is possible to directly connect via websocket to the cluster on the server to
         # this websocket can be used for multiple request
         ws = await cluster.switch_to_direct_mode(token, address, cluster_uuid)
 
-        # names "test_input" is the names of the bricks within the cluster
+        # names "test_input" is the names of the hexagons within the cluster
         # for the mapping of the input-data
         # if the last argument is set to "True", it says that there are no more data to 
         # apply to the cluster and that the train-process can start

@@ -49,18 +49,18 @@ class IO_Interface
     struct InputEntry {
         Hanami::NameEntry name;
         uint32_t numberOfInputs = 0;
-        uint32_t targetBrickId = UNINIT_STATE_32;
+        uint32_t targetHexagonId = UNINIT_STATE_32;
     };
 
     struct OutputEntry {
         Hanami::NameEntry name;
         uint32_t numberOfOutputs = 0;
-        uint32_t targetBrickId = UNINIT_STATE_32;
+        uint32_t targetHexagonId = UNINIT_STATE_32;
     };
 
-    struct BrickEntry {
-        BrickHeader header;
-        uint64_t brickSize = 0;
+    struct HexagonEntry {
+        HexagonHeader header;
+        uint64_t hexagonSize = 0;
 
         uint64_t neuronBlocksPos = 0;
         uint64_t numberOfNeuronBytes = 0;
@@ -170,15 +170,17 @@ class IO_Interface
     virtual bool readToLocalBuffer(LocalBuffer& localBuffer, Hanami::ErrorContainer& error) = 0;
 
     uint64_t getClusterSize(const Cluster& cluster) const;
-    uint64_t getBrickSize(const Brick& brick) const;
+    uint64_t getHexagonSize(const Hexagon& hexagon) const;
 
-    ReturnStatus serialize(const Brick& brick, Hanami::ErrorContainer& error);
-    ReturnStatus deserialize(Brick& brick, uint64_t& positionPtr, Hanami::ErrorContainer& error);
+    ReturnStatus serialize(const Hexagon& hexagon, Hanami::ErrorContainer& error);
+    ReturnStatus deserialize(Hexagon& hexagon,
+                             uint64_t& positionPtr,
+                             Hanami::ErrorContainer& error);
 
-    bool checkBrickEntry(const BrickEntry& brickEntry);
-    BrickEntry createBrickEntry(const Brick& brick);
+    bool checkHexagonEntry(const HexagonEntry& hexagonEntry);
+    HexagonEntry createHexagonEntry(const Hexagon& hexagon);
 
-    void deleteConnections(Brick& brick);
+    void deleteConnections(Hexagon& hexagon);
     void initLocalBuffer(const uint64_t totalSize);
 
     LocalBuffer m_localBuffer;

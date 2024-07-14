@@ -114,7 +114,7 @@ CudaHost::moveCluster(Cluster* cluster)
 
     // sync data from gpu to host, in order to have a consistent state
     copyFromGpu_CUDA(&cluster->gpuPointer,
-                     cluster->bricks,
+                     cluster->hexagons,
                      getItemData<SynapseBlock>(synapseBlocks),
                      synapseBlocks.metaData->itemCapacity);
 
@@ -123,8 +123,8 @@ CudaHost::moveCluster(Cluster* cluster)
     SynapseBlock tempBlock;
 
     // copy synapse-blocks from the old host to this one here
-    for (uint64_t i = 0; i < cluster->bricks.size(); i++) {
-        for (ConnectionBlock& block : cluster->bricks[i].connectionBlocks) {
+    for (uint64_t i = 0; i < cluster->hexagons.size(); i++) {
+        for (ConnectionBlock& block : cluster->hexagons[i].connectionBlocks) {
             if (block.targetSynapseBlockPos != UNINIT_STATE_64) {
                 tempBlock = cpuSynapseBlocks[block.targetSynapseBlockPos];
                 originHost->synapseBlocks.deleteItem(block.targetSynapseBlockPos);
@@ -142,7 +142,7 @@ CudaHost::moveCluster(Cluster* cluster)
     cluster->gpuPointer.deviceId = m_localId;
     copyToDevice_CUDA(&cluster->gpuPointer,
                       &cluster->clusterHeader.settings,
-                      cluster->bricks,
+                      cluster->hexagons,
                       getItemData<SynapseBlock>(synapseBlocks),
                       synapseBlocks.metaData->itemCapacity);
 
@@ -161,7 +161,7 @@ CudaHost::syncWithHost(Cluster* cluster)
     const std::lock_guard<std::mutex> lock(m_cudaMutex);
 
     copyFromGpu_CUDA(&cluster->gpuPointer,
-                     cluster->bricks,
+                     cluster->hexagons,
                      getItemData<SynapseBlock>(synapseBlocks),
                      synapseBlocks.metaData->itemCapacity);
 }
@@ -177,8 +177,8 @@ CudaHost::removeCluster(Cluster* cluster)
     const std::lock_guard<std::mutex> lock(m_cudaMutex);
 
     // remove synapse-blocks
-    for (uint64_t i = 0; i < cluster->bricks.size(); i++) {
-        for (ConnectionBlock& block : cluster->bricks[i].connectionBlocks) {
+    for (uint64_t i = 0; i < cluster->hexagons.size(); i++) {
+        for (ConnectionBlock& block : cluster->hexagons[i].connectionBlocks) {
             if (block.targetSynapseBlockPos != UNINIT_STATE_64) {
                 synapseBlocks.deleteItem(block.targetSynapseBlockPos);
             }
@@ -201,29 +201,29 @@ CudaHost::trainClusterForward(Cluster* cluster)
 
     Hanami::ErrorContainer error;
 
-    /* // process input-bricks
-     for (uint32_t brickId = 0; brickId < cluster->bricks.size(); ++brickId) {
-         Brick* brick = &cluster->bricks[brickId];
-         if (brick->isInputBrick == false) {
+    /* // process input-hexagons
+     for (uint32_t hexagonId = 0; hexagonId < cluster->hexagons.size(); ++hexagonId) {
+         Hexagon* hexagon = &cluster->hexagons[hexagonId];
+         if (hexagon->isInputHexagon == false) {
              continue;
          }
 
-         processNeuronsOfInputBrickBackward<true>(
-             brick, cluster->inputValues, &cluster->neuronBlocks);
+         processNeuronsOfInputHexagonBackward<true>(
+             hexagon, cluster->inputValues, &cluster->neuronBlocks);
      }
 
-     // process all bricks on cpu
+     // process all hexagons on cpu
      processing_CUDA(&cluster->gpuPointer,
-                     &cluster->bricks[0],
-                     cluster->bricks.size(),
+                     &cluster->hexagons[0],
+                     cluster->hexagons.size(),
                      &cluster->neuronBlocks,
                      cluster->numberOfNeuronBlocks,
                      true);
 
-     // process output-bricks
-     for (uint32_t brickId = 0; brickId < cluster->bricks.size(); ++brickId) {
-         Brick* brick = &cluster->bricks[brickId];
-         if (brick->isOutputBrick == false) {
+     // process output-hexagons
+     for (uint32_t hexagonId = 0; hexagonId < cluster->hexagons.size(); ++hexagonId) {
+         Hexagon* hexagon = &cluster->hexagons[hexagonId];
+         if (hexagon->isOutputHexagon == false) {
              continue;
          }
      }
@@ -233,8 +233,8 @@ CudaHost::trainClusterForward(Cluster* cluster)
          update_CUDA(&cluster->gpuPointer,
                      &cluster->neuronBlocks,
                      cluster->numberOfNeuronBlocks,
-                     &cluster->bricks[0],
-                     cluster->bricks.size());
+                     &cluster->hexagons[0],
+                     cluster->hexagons.size());
      }*/
 }
 
@@ -250,11 +250,11 @@ CudaHost::trainClusterBackward(Cluster* cluster)
 
     Hanami::ErrorContainer error;
 
-    // process output-bricks on cpu
-    for (uint32_t brickId = 0; brickId < cluster->bricks.size(); ++brickId) {
-        Brick* brick = &cluster->bricks[brickId];
-        if (brick->header.isOutputBrick) {
-            /*if (backpropagateOutput(&cluster->bricks[0],
+    // process output-hexagons on cpu
+    for (uint32_t hexagonId = 0; hexagonId < cluster->hexagons.size(); ++hexagonId) {
+        Hexagon* hexagon = &cluster->hexagons[hexagonId];
+        if (hexagon->header.isOutputHexagon) {
+            /*if (backpropagateOutput(&cluster->hexagons[0],
                                     &cluster->outputNeurons[0],
                                     &cluster->neuronBlocks,
                                     &cluster->tempNeuronBlocks,
@@ -268,10 +268,10 @@ CudaHost::trainClusterBackward(Cluster* cluster)
         }
     }
 
-    // backpropagation over all bricks on gpu
+    // backpropagation over all hexagons on gpu
     /*backpropagation_CUDA(&cluster->gpuPointer,
-                         &cluster->bricks[0],
-                         cluster->bricks.size(),
+                         &cluster->hexagons[0],
+                         cluster->hexagons.size(),
                          &cluster->neuronBlocks,
                          &cluster->tempNeuronBlocks,
                          cluster->numberOfNeuronBlocks);
@@ -280,16 +280,16 @@ CudaHost::trainClusterBackward(Cluster* cluster)
     if (cluster->clusterHeader.settings.enableReduction) {
         if (reductionCounter == 100) {
             reduction_CUDA(&cluster->gpuPointer,
-                           &cluster->bricks[0],
-                           cluster->bricks.size(),
+                           &cluster->hexagons[0],
+                           cluster->hexagons.size(),
                            &cluster->neuronBlocks,
                            cluster->numberOfNeuronBlocks);
             if (updateCluster(*cluster)) {
                 update_CUDA(&cluster->gpuPointer,
                             &cluster->neuronBlocks,
                             cluster->numberOfNeuronBlocks,
-                            &cluster->bricks[0],
-                            cluster->bricks.size());
+                            &cluster->hexagons[0],
+                            cluster->hexagons.size());
             }
             reductionCounter = 0;
         }
@@ -309,34 +309,34 @@ CudaHost::requestCluster(Cluster* cluster)
 
     Hanami::ErrorContainer error;
 
-    // process input-bricks
-    /*for (uint32_t brickId = 0; brickId < cluster->bricks.size(); ++brickId) {
-        Brick* brick = &cluster->bricks[brickId];
-        if (brick->header.isInputBrick == false) {
+    // process input-hexagons
+    /*for (uint32_t hexagonId = 0; hexagonId < cluster->hexagons.size(); ++hexagonId) {
+        Hexagon* hexagon = &cluster->hexagons[hexagonId];
+        if (hexagon->header.isInputHexagon == false) {
             continue;
         }
 
-        processNeuronsOfInputBrickBackward<false>(
-            brick, cluster->inputValues, &cluster->neuronBlocks);
+        processNeuronsOfInputHexagonBackward<false>(
+            hexagon, cluster->inputValues, &cluster->neuronBlocks);
     }
 
-    // process all bricks on gpu
+    // process all hexagons on gpu
     processing_CUDA(&cluster->gpuPointer,
-                    &cluster->bricks[0],
-                    cluster->bricks.size(),
+                    &cluster->hexagons[0],
+                    cluster->hexagons.size(),
                     &cluster->neuronBlocks,
                     cluster->numberOfNeuronBlocks,
                     false);*/
 
-    // process output-bricks
-    for (uint32_t brickId = 0; brickId < cluster->bricks.size(); ++brickId) {
-        Brick* brick = &cluster->bricks[brickId];
-        if (brick->header.isOutputBrick == false) {
+    // process output-hexagons
+    for (uint32_t hexagonId = 0; hexagonId < cluster->hexagons.size(); ++hexagonId) {
+        Hexagon* hexagon = &cluster->hexagons[hexagonId];
+        if (hexagon->header.isOutputHexagon == false) {
             continue;
         }
         /*for (uint32_t blockId = 0; blockId < cluster->numberOfNeuronBlocks; ++blockId) {
-            processNeuronsOfOutputBrick(
-                brick, cluster->outputValues, &cluster->neuronBlocks, blockId);
+            processNeuronsOfOutputHexagon(
+                hexagon, cluster->outputValues, &cluster->neuronBlocks, blockId);
         }*/
     }
 }

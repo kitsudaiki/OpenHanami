@@ -53,21 +53,22 @@ CreateRequestTaskV1M0::CreateRequestTaskV1M0()
 
     registerInputField("inputs", SAKURA_MAP_TYPE)
         .setComment(
-            "key-value list with the names of the input-bricks as key and the dataset-UUID, which "
+            "key-value list with the names of the input-hexagons as key and the dataset-UUID, "
+            "which "
             "should be used for the input, as value.");
 
     registerInputField("results", SAKURA_MAP_TYPE)
         .setComment(
-            "key-value list with the names of the ouput-bricks as key and the name for the "
+            "key-value list with the names of the ouput-hexagons as key and the name for the "
             "resulting dataset of this output as value.");
 
     /*inputs: {
-        test_brick: asfd,
-        test_brick2: asdf2
+        test_hexagon: asfd,
+        test_hexagon2: asdf2
     },
     results: {
-        test_brick_out: dataset_uuid,
-        test_brick_out2: poi2
+        test_hexagon_out: dataset_uuid,
+        test_hexagon_out2: poi2
     }*/
 
     //----------------------------------------------------------------------------------------------
@@ -157,25 +158,26 @@ CreateRequestTaskV1M0::runTask(BlossomIO& blossomIO,
     u_int64_t numberOfCycles = std::numeric_limits<uint64_t>::max();
 
     // prepare input
-    for (const auto& [brickName, datasetUuid] : inputs.items()) {
+    for (const auto& [hexagonName, datasetUuid] : inputs.items()) {
         DataSetFileHandle fileHandle;
-        if (fillTaskIo(fileHandle, userContext, brickName, datasetUuid, status, error) != OK) {
+        if (fillTaskIo(fileHandle, userContext, hexagonName, datasetUuid, status, error) != OK) {
             return false;
         }
         if (numberOfCycles > fileHandle.header.numberOfRows) {
             numberOfCycles = fileHandle.header.numberOfRows;
         }
-        info->inputs.try_emplace(brickName, std::move(fileHandle));
+        info->inputs.try_emplace(hexagonName, std::move(fileHandle));
     }
 
-    for (auto& [brickName, file_handle] : info->inputs) {
+    for (auto& [hexagonName, file_handle] : info->inputs) {
         file_handle.readSelector.endRow = numberOfCycles;
     }
 
     // prepare result
     const json results = blossomIO.input["results"];
-    for (const auto& [brickName, name] : results.items()) {
-        const uint64_t numberOfOutputs = cluster->outputInterfaces[brickName].outputNeurons.size();
+    for (const auto& [hexagonName, name] : results.items()) {
+        const uint64_t numberOfOutputs
+            = cluster->outputInterfaces[hexagonName].outputNeurons.size();
 
         DataSetFileHandle fileHandle;
         const std::string datasetUuid = newTask->uuid.toString();
@@ -185,7 +187,7 @@ CreateRequestTaskV1M0::runTask(BlossomIO& blossomIO,
         {
             return false;
         }
-        info->results.try_emplace(brickName, std::move(fileHandle));
+        info->results.try_emplace(hexagonName, std::move(fileHandle));
     }
 
     // set number of cycles
@@ -221,7 +223,7 @@ CreateRequestTaskV1M0::runTask(BlossomIO& blossomIO,
 ReturnStatus
 CreateRequestTaskV1M0::fillTaskIo(DataSetFileHandle& fileHandle,
                                   const Hanami::UserContext& userContext,
-                                  const std::string& brickName,
+                                  const std::string& hexagonName,
                                   const std::string& datasetUuid,
                                   BlossomStatus& status,
                                   Hanami::ErrorContainer& error)
@@ -246,14 +248,14 @@ CreateRequestTaskV1M0::fillTaskIo(DataSetFileHandle& fileHandle,
         status.statusCode = NOT_FOUND_RTYPE;
     }
 
-    if (fileHandle.description.contains(brickName) == false) {
-        status.errorMessage = "Dataset has no input for brick names '" + brickName + "'";
+    if (fileHandle.description.contains(hexagonName) == false) {
+        status.errorMessage = "Dataset has no input for hexagon names '" + hexagonName + "'";
         status.statusCode = NOT_FOUND_RTYPE;
         return INVALID_INPUT;
     }
 
-    fileHandle.readSelector.startColumn = fileHandle.description[brickName]["start_column"];
-    fileHandle.readSelector.endColumn = fileHandle.description[brickName]["end_column"];
+    fileHandle.readSelector.startColumn = fileHandle.description[hexagonName]["start_column"];
+    fileHandle.readSelector.endColumn = fileHandle.description[hexagonName]["end_column"];
 
     return ret;
 }

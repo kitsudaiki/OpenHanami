@@ -75,7 +75,7 @@ YY_DECL;
     LINEBREAK "linebreak"
     VERSION_1 "version1"
     SETTINGS "settings"
-    BRICKS "bricks"
+    HEXAGONS "hexagons"
     INPUTS "inputs"
     OUTPUTS "outputs"
     NUM_NEURONS "number_of_neurons"
@@ -96,7 +96,7 @@ YY_DECL;
 %token <double> FLOAT "float"
 
 %type  <Position> position
-%type  <Hanami::BrickMeta> brick
+%type  <Hanami::HexagonMeta> hexagon
 %type  <Hanami::InputMeta> input
 %type  <Hanami::OutputMeta> output
 
@@ -108,29 +108,29 @@ YY_DECL;
 // version: 1
 // settings:
 //
-// bricks:
+// hexagons:
 //     1,1,1
 //     2,1,1
 //     3,1,1
 //
 // inputs:
-//     "input_brick":
+//     "input_hexagon":
 //         target: 1,1,1
 //         number_of_inputs: 20
 //
 // outputs:
-//     "output_brick":
+//     "output_hexagon":
 //         target: 3,1,1
 //         number_of_outputs: 5
 //
 
 startpoint:
-    "version 1" "settings" ":" settings "bricks" ":" bricks "inputs" ":" inputs "outputs" ":" outputs
+    "version 1" "settings" ":" settings "hexagons" ":" hexagons "inputs" ":" inputs "outputs" ":" outputs
     {
         driver.output->version = 1;
     }
 |
-    "version1" "settings" ":" settings "bricks" ":" bricks "inputs" ":" inputs "outputs" ":" outputs
+    "version1" "settings" ":" settings "hexagons" ":" hexagons "inputs" ":" inputs "outputs" ":" outputs
     {
         driver.output->version = 1;
     }
@@ -189,24 +189,24 @@ setting:
         driver.output->enableReduction = false;
     }
 
-bricks:
-    bricks brick
+hexagons:
+    hexagons hexagon
     {
-        driver.output->bricks.push_back($2);
+        driver.output->hexagons.push_back($2);
     }
 |
-    brick
+    hexagon
     {
-        driver.output->bricks.push_back($1);
+        driver.output->hexagons.push_back($1);
     }
 
-brick:
+hexagon:
     position
     {
         const Hanami::Position pos = $1;
-        const uint32_t brickId = driver.getBrickId(pos);
-        if(brickId != UNINTI_POINT_32) {
-            driver.error(yyla.location, "Brick with the position " + pos.toString() + " already exist.");
+        const uint32_t hexagonId = driver.getHexagonId(pos);
+        if(hexagonId != UNINTI_POINT_32) {
+            driver.error(yyla.location, "Hexagon with the position " + pos.toString() + " already exist.");
             return 1;
         }
         $$.position = $1;
@@ -227,9 +227,9 @@ input:
     "identifier" ":" "target" ":" position "number_of_inputs" ":" "number"
     {
         const Hanami::Position pos = $5;
-        const uint32_t brickId = driver.getBrickId($5);
-        if(brickId == UNINTI_POINT_32) {
-            driver.error(yyla.location, "Brick with the position " + pos.toString() + " doesn't exist.");
+        const uint32_t hexagonId = driver.getHexagonId($5);
+        if(hexagonId == UNINTI_POINT_32) {
+            driver.error(yyla.location, "Hexagon with the position " + pos.toString() + " doesn't exist.");
             return 1;
         }
         if($1.size() > 255) {
@@ -237,7 +237,7 @@ input:
             return 1;
         }
         $$.name = $1;
-        $$.targetBrickId = brickId;
+        $$.targetHexagonId = hexagonId;
         $$.numberOfInputs = $8;
     }
 
@@ -256,9 +256,9 @@ output:
     "identifier" ":" "target" ":" position "number_of_outputs" ":" "number"
     {
         const Hanami::Position pos = $5;
-        const uint32_t brickId = driver.getBrickId($5);
-        if(brickId == UNINTI_POINT_32) {
-            driver.error(yyla.location, "Brick with the position " + pos.toString() + " doesn't exist.");
+        const uint32_t hexagonId = driver.getHexagonId($5);
+        if(hexagonId == UNINTI_POINT_32) {
+            driver.error(yyla.location, "Hexagon with the position " + pos.toString() + " doesn't exist.");
             return 1;
         }
         if($1.size() > 255) {
@@ -266,7 +266,7 @@ output:
             return 1;
         }
         $$.name = $1;
-        $$.targetBrickId = brickId;
+        $$.targetHexagonId = hexagonId;
         $$.numberOfOutputs = $8;
     }
 

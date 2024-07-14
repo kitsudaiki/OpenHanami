@@ -27,25 +27,26 @@
 
 extern "C" void copyToDevice_CUDA(CudaClusterPointer* gpuPointer,
                                   ClusterSettings* clusterSettings,
-                                  const std::vector<Brick>& bricks,
+                                  const std::vector<Hexagon>& hexagons,
                                   SynapseBlock* synapseBlocks,
                                   const uint32_t numberOfSynapseBlocks);
 
 extern "C" void removeFromDevice_CUDA(CudaClusterPointer* gpuPointer);
 
 extern "C" void copyFromGpu_CUDA(CudaClusterPointer* gpuPointer,
-                                 std::vector<Brick>& bricks,
+                                 std::vector<Hexagon>& hexagons,
                                  SynapseBlock* synapseBlocks,
                                  const uint32_t numberOfSynapseBlocks);
 
-extern "C" void update_CUDA(CudaClusterPointer* gpuPointer, Brick& brick);
+extern "C" void update_CUDA(CudaClusterPointer* gpuPointer, Hexagon& hexagon);
 
 extern "C" void processing_CUDA(CudaClusterPointer* gpuPointer,
-                                std::vector<Brick>& bricks,
+                                std::vector<Hexagon>& hexagons,
                                 const bool doTrain);
 
-extern "C" void backpropagation_CUDA(CudaClusterPointer* gpuPointer, std::vector<Brick>& bricks);
+extern "C" void backpropagation_CUDA(CudaClusterPointer* gpuPointer,
+                                     std::vector<Hexagon>& hexagons);
 
-extern "C" void reduction_CUDA(CudaClusterPointer* gpuPointer, std::vector<Brick>& bricks);
+extern "C" void reduction_CUDA(CudaClusterPointer* gpuPointer, std::vector<Hexagon>& hexagons);
 
 #endif  // CUDA_FUNCTIONS_H

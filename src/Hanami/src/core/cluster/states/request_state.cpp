@@ -48,8 +48,8 @@ Request_State::processEvent()
     Task* actualTask = m_cluster->getCurrentTask();
     RequestInfo* info = &std::get<RequestInfo>(actualTask->info);
 
-    for (auto& [brickName, input] : info->inputs) {
-        InputInterface* inputInterface = &m_cluster->inputInterfaces[brickName];
+    for (auto& [hexagonName, input] : info->inputs) {
+        InputInterface* inputInterface = &m_cluster->inputInterfaces[hexagonName];
         if (getDataFromDataSet(inputInterface->ioBuffer, input, info->currentCycle, error) != OK) {
             return false;
         }

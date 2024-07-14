@@ -42,7 +42,7 @@ class CreateRequestTaskV1M0 : public Blossom
    private:
     ReturnStatus fillTaskIo(DataSetFileHandle& fileHandle,
                             const Hanami::UserContext& userContext,
-                            const std::string& brickName,
+                            const std::string& hexagonName,
                             const std::string& datasetUuid,
                             BlossomStatus& status,
                             Hanami::ErrorContainer& error);

@@ -16,14 +16,14 @@ from .hanami_messages import proto3_pb2
 
 
 async def send_train_input(ws,
-                           brick_name,
+                           hexagon_name,
                            values,
                            is_input,
                            is_last,
                            verify_connection: bool = True):
 
     cluster_io_msg = proto3_pb2.ClusterIO_Message()
-    cluster_io_msg.bufferName = brick_name
+    cluster_io_msg.bufferName = hexagon_name
     cluster_io_msg.isLast = is_last
     if is_input:
         cluster_io_msg.targetBufferType = proto3_pb2.TargetBufferType.INPUT_BUFFER_TYPE
@@ -36,10 +36,10 @@ async def send_train_input(ws,
     await ws.recv()
 
 
-async def send_request_input(ws, brick_name, values, is_last, verify_connection: bool = True):
+async def send_request_input(ws, hexagon_name, values, is_last, verify_connection: bool = True):
 
     cluster_io_msg = proto3_pb2.ClusterIO_Message()
-    cluster_io_msg.bufferName = brick_name
+    cluster_io_msg.bufferName = hexagon_name
     cluster_io_msg.isLast = is_last
     cluster_io_msg.targetBufferType = proto3_pb2.TargetBufferType.INPUT_BUFFER_TYPE
     cluster_io_msg.processType = proto3_pb2.ClusterProcessType.REQUEST_TYPE

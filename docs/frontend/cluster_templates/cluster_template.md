@@ -2,7 +2,7 @@
 
 ## General 
 
-The cluster-templates are used to define the basic structure of a network. This defined structure is comparable to a plant trellis. It is basically structures in hexagons, which are called bricks.
+The cluster-templates are used to define the basic structure of a network. This defined structure is comparable to a plant trellis. It is basically structures in hexagons, which are called hexagons.
 
 ![step1](cluster_template_general.drawio)
 
@@ -16,7 +16,7 @@ settings:
     max_connection_distance: <MAX_DISTANCE>
     enable_reduction: <ENABLE_REDUCTION>
 
-bricks:
+hexagons:
     <X>,<Y>,<Z>
     <X>,<Y>,<Z>
     ...
@@ -33,7 +33,7 @@ outputs:
         number_of_outputs: <NUMBER_OF_NEURONS>
 ```
 
-In the template the position, type, name and size of the bricks has to be defined. 
+In the template the position, type, name and size of the hexagons has to be defined. 
 
 ### version
 
@@ -53,7 +53,7 @@ The entries within this block are all optional. If not listed, the default is us
 
 - **max_connection_distance**
 
-    Maximum distance in number-of-brick, which a synapses can reach from the source- to the target-neuron. (Default = 1; Minimum = 1)
+    Maximum distance in number-of-hexagon, which a synapses can reach from the source- to the target-neuron. (Default = 1; Minimum = 1)
 
 - **enable_reduction**
 
@@ -61,11 +61,11 @@ The entries within this block are all optional. If not listed, the default is us
 
 ### position
 
-`<X>,<Y>,<Z>` the x-, y- and z-coordinates of the brick. All bricks must be connected by at least one side with another brick.
+`<X>,<Y>,<Z>` the x-, y- and z-coordinates of the hexagon. All hexagons must be connected by at least one side with another hexagon.
 
 ### target
 
-The `target` for inputs and outputs is also a `<X>,<Y>,<Z>` and has to be the same position, like the brick, where this input or output should be connected to.
+The `target` for inputs and outputs is also a `<X>,<Y>,<Z>` and has to be the same position, like the hexagon, where this input or output should be connected to.
 
 ### name
 
@@ -91,23 +91,23 @@ settings:
     max_connection_distance: 1
     enable_reduction: false
     
-bricks:
+hexagons:
     1,1,1
     2,1,1
     3,1,1
 
 inputs:
-    input_brick: 
+    input_hexagon: 
         target: 1,1,1
         number_of_inputs: 20
 
 outputs:
-    output_brick: 
+    output_hexagon: 
         target: 3,1,1
         number_of_outputs: 5
 ```
 
-It defines 3 bricks. It contains an input-brick with the name `test_input` and an output-brick with name `test_output`. Based on their position, they are all in a straight line, like in the image below:
+It defines 3 hexagons. It contains an input-hexagon with the name `test_input` and an output-hexagon with name `test_output`. Based on their position, they are all in a straight line, like in the image below:
 
 ![step1](cluster_template_example.drawio)
 

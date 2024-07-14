@@ -106,48 +106,48 @@ reduceConnections(ConnectionBlock* connectionBlocks,
  *        of the synapses.
  *
  * @param gpuPointer handle with all gpu-pointer of the cluster
- * @param bricks pointer to local bricks
- * @param numberOfBricks number of bricks
+ * @param hexagons pointer to local hexagons
+ * @param numberOfHexagons number of hexagons
  * @param neuronBlocks pointer to local neuron-blocks
  * @param numberOfNeuronBlocks number of neuron-blocks
  */
 extern "C"
 void
 reduction_CUDA(CudaClusterPointer* gpuPointer,
-               std::vector<Brick>& bricks)
+               std::vector<Hexagon>& hexagons)
 {
     cudaSetDevice(gpuPointer->deviceId);
 
 
-    // process all bricks on gpu
-    for (int32_t brickId = bricks.size() - 1; brickId >= 0; --brickId)
+    // process all hexagons on gpu
+    for (int32_t hexagonId = hexagons.size() - 1; hexagonId >= 0; --hexagonId)
     {
-        Brick* brick = &bricks[brickId];
-        if (brick->header.isInputBrick) {
+        Hexagon* hexagon = &hexagons[hexagonId];
+        if (hexagon->header.isInputHexagon) {
             continue;
         }
 
         // copy necessary data from host to gpu
-        cudaMemcpy(gpuPointer->brickPointer[brickId].neuronBlocks,
-                   &brick->neuronBlocks[0],
-                   brick->neuronBlocks.size() * sizeof(NeuronBlock),
+        cudaMemcpy(gpuPointer->hexagonPointer[hexagonId].neuronBlocks,
+                   &hexagon->neuronBlocks[0],
+                   hexagon->neuronBlocks.size() * sizeof(NeuronBlock),
                    cudaMemcpyHostToDevice);
 
-        reduceConnections<<<brick->header.dimX, 64>>>(
-                gpuPointer->brickPointer[brickId].connectionBlocks,
-                gpuPointer->brickPointer[brickId].neuronBlocks,
+        reduceConnections<<<hexagon->header.dimX, 64>>>(
+                gpuPointer->hexagonPointer[hexagonId].connectionBlocks,
+                gpuPointer->hexagonPointer[hexagonId].neuronBlocks,
                 gpuPointer->synapseBlocks);
 
 
-        cudaMemcpy(&brick->connectionBlocks[0],
-                   gpuPointer->brickPointer[brickId].connectionBlocks,
-                   brick->connectionBlocks.size() * sizeof(ConnectionBlock),
+        cudaMemcpy(&hexagon->connectionBlocks[0],
+                   gpuPointer->hexagonPointer[hexagonId].connectionBlocks,
+                   hexagon->connectionBlocks.size() * sizeof(ConnectionBlock),
                    cudaMemcpyDeviceToHost);
 
         // copy neurons back to host
-        cudaMemcpy(&brick->neuronBlocks[0],
-                   gpuPointer->brickPointer[brickId].neuronBlocks,
-                   brick->neuronBlocks.size() * sizeof(NeuronBlock),
+        cudaMemcpy(&hexagon->neuronBlocks[0],
+                   gpuPointer->hexagonPointer[hexagonId].neuronBlocks,
+                   hexagon->neuronBlocks.size() * sizeof(NeuronBlock),
                    cudaMemcpyDeviceToHost);
     }
 

@@ -36,13 +36,13 @@
 /**
  * @brief backpropagate all neurons
  *
- * @param brick pointer to current brick
+ * @param hexagon pointer to current hexagon
  * @param neuronBlocks pointer to neuron-blocks
  * @param synapseBlocks pointer to synapse-blocks
- * @param blockId id of the current block within the brick
+ * @param blockId id of the current block within the hexagon
  */
 inline void
-backpropagateNeuron(Brick* brick, const uint32_t blockId)
+backpropagateNeuron(Hexagon* hexagon, const uint32_t blockId)
 {
     SynapseConnection* scon = nullptr;
     Neuron* targetNeuron = nullptr;
@@ -51,7 +51,7 @@ backpropagateNeuron(Brick* brick, const uint32_t blockId)
     const uint32_t neuronBlockId = blockId;
     uint8_t neuronId = 0;
 
-    targetNeuronBlock = &brick->neuronBlocks[neuronBlockId];
+    targetNeuronBlock = &hexagon->neuronBlocks[neuronBlockId];
 
     for (neuronId = 0; neuronId < NEURONS_PER_NEURONBLOCK; ++neuronId) {
         targetNeuron = &targetNeuronBlock->neurons[neuronId];
@@ -110,26 +110,26 @@ backpropagateSection(SynapseSection* section,
 /**
  * @brief backpropagate connections
  *
- * @param brick pointer to current brick
+ * @param hexagon pointer to current hexagon
  * @param neuronBlocks pointer to neuron-blocks
  * @param synapseBlocks pointer to synapse-blocks
- * @param blockId id of the current block within the brick
+ * @param blockId id of the current block within the hexagon
  */
 inline void
-backpropagateConnections(Brick* brick,
-                         Brick* bricks,
+backpropagateConnections(Hexagon* hexagon,
+                         Hexagon* hexagons,
                          SynapseBlock* synapseBlocks,
                          const uint32_t blockId)
 {
     SynapseConnection* connection = nullptr;
     Neuron* sourceNeuron = nullptr;
-    Brick* sourceBrick = nullptr;
+    Hexagon* sourceHexagon = nullptr;
     NeuronBlock* sourceNeuronBlock = nullptr;
     NeuronBlock* targetNeuronBlock = nullptr;
     ConnectionBlock* connectionBlock = nullptr;
     SynapseSection* synapseSection = nullptr;
-    const uint32_t dimY = brick->header.dimY;
-    const uint32_t dimX = brick->header.dimX;
+    const uint32_t dimY = hexagon->header.dimY;
+    const uint32_t dimX = hexagon->header.dimX;
     SourceLocation sourceLoc;
     uint32_t c = 0;
     uint32_t i = 0;
@@ -139,8 +139,8 @@ backpropagateConnections(Brick* brick,
     }
 
     for (c = blockId * dimY; c < (blockId * dimY) + dimY; ++c) {
-        assert(c < brick->connectionBlocks.size());
-        connectionBlock = &brick->connectionBlocks[c];
+        assert(c < hexagon->connectionBlocks.size());
+        connectionBlock = &hexagon->connectionBlocks[c];
 
         for (i = 0; i < NUMBER_OF_SYNAPSESECTION; ++i) {
             connection = &connectionBlock->connections[i];
@@ -150,9 +150,9 @@ backpropagateConnections(Brick* brick,
             }
 
             synapseSection = &synapseBlocks[connectionBlock->targetSynapseBlockPos].sections[i];
-            sourceLoc = getSourceNeuron(connection->origin, bricks);
+            sourceLoc = getSourceNeuron(connection->origin, hexagons);
 
-            targetNeuronBlock = &brick->neuronBlocks[(c / brick->header.dimY)];
+            targetNeuronBlock = &hexagon->neuronBlocks[(c / hexagon->header.dimY)];
 
             backpropagateSection(synapseSection, connection, targetNeuronBlock, sourceLoc.neuron);
         }

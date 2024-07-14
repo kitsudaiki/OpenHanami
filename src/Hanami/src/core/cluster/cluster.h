@@ -60,7 +60,7 @@ class Cluster
     // cluster-data
     ClusterHeader clusterHeader;
 
-    std::vector<Brick> bricks;
+    std::vector<Hexagon> hexagons;
     std::map<std::string, InputInterface> inputInterfaces;
     std::map<std::string, OutputInterface> outputInterfaces;
 

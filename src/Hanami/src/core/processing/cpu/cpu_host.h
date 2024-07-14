@@ -32,7 +32,7 @@ class CpuHost : public LogicalHost
    public:
     struct WorkerTask {
         Cluster* cluster = nullptr;
-        uint32_t brickId = UNINIT_STATE_32;
+        uint32_t hexagonId = UNINIT_STATE_32;
         uint32_t blockId = UNINIT_STATE_32;
     };
 

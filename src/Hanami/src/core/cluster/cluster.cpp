@@ -163,8 +163,8 @@ countSynapses(const Cluster& cluster)
     uint64_t synapseCounter = 0;
     uint64_t sectionCounter = 0;
 
-    for (const Brick& brick : cluster.bricks) {
-        for (const ConnectionBlock& block : brick.connectionBlocks) {
+    for (const Hexagon& hexagon : cluster.hexagons) {
+        for (const ConnectionBlock& block : hexagon.connectionBlocks) {
             SynapseBlock* synapseBlock = &synapseBlocks[block.targetSynapseBlockPos];
             for (uint32_t i = 0; i < 64; i++) {
                 if (block.connections[i].origin.blockId != UNINIT_STATE_16) {

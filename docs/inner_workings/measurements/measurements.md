@@ -34,7 +34,7 @@ settings:
    refractory_time: 1
    max_connection_distance: 1
    enable_reduction: false
-bricks:
+hexagons:
     1,1,1
         input: test_input
         number_of_neurons: 25
@@ -90,7 +90,7 @@ Training on a CSV-file at the moment looks like this:
 ...
 ```
 
-It maps the inputs of the input-brick on the beginning of the given data and with each cycle it moves one forward. For the output to train it is the same.
+It maps the inputs of the input-hexagon on the beginning of the given data and with each cycle it moves one forward. For the output to train it is the same.
 
 ### Results
 
@@ -172,7 +172,7 @@ Here the used cluster-template for this test:
 version: 1
 settings:
    enable_reduction: false
-bricks:
+hexagons:
     1,1,1
         input: test_input
         number_of_neurons: 784

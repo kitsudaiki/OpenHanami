@@ -162,17 +162,17 @@ synapseProcessingBackward(Cluster& cluster,
 }
 
 /**
- * @brief process all synapes of a brick
+ * @brief process all synapes of a hexagon
  *
- * @param cluster cluster, where the brick belongs to
- * @param brick pointer to current brick
- * @param blockId id of the current block within the brick
+ * @param cluster cluster, where the hexagon belongs to
+ * @param hexagon pointer to current hexagon
+ * @param blockId id of the current block within the hexagon
  */
 template <bool doTrain>
 inline void
-processSynapses(Cluster& cluster, Brick* brick, const uint32_t blockId)
+processSynapses(Cluster& cluster, Hexagon* hexagon, const uint32_t blockId)
 {
-    NeuronBlock* neuronBlocks = &brick->neuronBlocks[0];
+    NeuronBlock* neuronBlocks = &hexagon->neuronBlocks[0];
     SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(cluster.attachedHost->synapseBlocks);
     ClusterSettings* clusterSettings = &cluster.clusterHeader.settings;
     SynapseConnection* scon = nullptr;
@@ -181,10 +181,10 @@ processSynapses(Cluster& cluster, Brick* brick, const uint32_t blockId)
     ConnectionBlock* connectionBlock = nullptr;
     Neuron* sourceNeuron = nullptr;
     SynapseSection* section = nullptr;
-    Brick* sourceBrick = nullptr;
+    Hexagon* sourceHexagon = nullptr;
     uint32_t randomeSeed = rand();
-    const uint32_t dimY = brick->header.dimY;
-    const uint32_t dimX = brick->header.dimX;
+    const uint32_t dimY = hexagon->header.dimY;
+    const uint32_t dimX = hexagon->header.dimX;
     SourceLocation sourceLoc;
     uint32_t c = 0;
     uint32_t i = 0;
@@ -196,8 +196,8 @@ processSynapses(Cluster& cluster, Brick* brick, const uint32_t blockId)
     }
 
     for (c = blockId * dimY; c < (blockId * dimY) + dimY; ++c) {
-        assert(c < brick->connectionBlocks.size());
-        connectionBlock = &brick->connectionBlocks[c];
+        assert(c < hexagon->connectionBlocks.size());
+        connectionBlock = &hexagon->connectionBlocks[c];
 
         for (i = 0; i < NUMBER_OF_SYNAPSESECTION; ++i) {
             scon = &connectionBlock->connections[i];
@@ -206,14 +206,14 @@ processSynapses(Cluster& cluster, Brick* brick, const uint32_t blockId)
             }
 
             inputConnected = scon->origin.isInput;
-            sourceLoc = getSourceNeuron(scon->origin, &cluster.bricks[0]);
+            sourceLoc = getSourceNeuron(scon->origin, &cluster.hexagons[0]);
 
             if (sourceLoc.neuron->active == 0) {
                 continue;
             }
 
             section = &synapseBlocks[connectionBlock->targetSynapseBlockPos].sections[i];
-            targetNeuronBlock = &neuronBlocks[(c / brick->header.dimY)];
+            targetNeuronBlock = &neuronBlocks[(c / hexagon->header.dimY)];
             randomeSeed += (c * NUMBER_OF_SYNAPSESECTION) + i;
 
             synapseProcessingBackward<doTrain>(cluster,
@@ -230,22 +230,22 @@ processSynapses(Cluster& cluster, Brick* brick, const uint32_t blockId)
 }
 
 /**
- * @brief process all neurons of a brick
+ * @brief process all neurons of a hexagon
  *
- * @param cluster cluster, where the brick belongs to
- * @param brick pointer to current brick
- * @param blockId id of the current block within the brick
+ * @param cluster cluster, where the hexagon belongs to
+ * @param hexagon pointer to current hexagon
+ * @param blockId id of the current block within the hexagon
  */
 template <bool doTrain>
 inline void
-processNeurons(Cluster& cluster, Brick* brick, const uint32_t blockId)
+processNeurons(Cluster& cluster, Hexagon* hexagon, const uint32_t blockId)
 {
     ClusterSettings* clusterSettings = &cluster.clusterHeader.settings;
     Neuron* neuron = nullptr;
     NeuronBlock* targetNeuronBlock = nullptr;
     const uint32_t neuronBlockId = blockId;
 
-    targetNeuronBlock = &brick->neuronBlocks[neuronBlockId];
+    targetNeuronBlock = &hexagon->neuronBlocks[neuronBlockId];
     for (uint8_t neuronId = 0; neuronId < NEURONS_PER_NEURONBLOCK; ++neuronId) {
         neuron = &targetNeuronBlock->neurons[neuronId];
         neuron->potential /= clusterSettings->neuronCooldown;
