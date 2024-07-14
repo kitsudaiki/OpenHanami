@@ -67,6 +67,15 @@ registerConfigs()
         .setComment("Number of minutes, until an inactive timefile is removed.")
         .setDefault(10);
 
+    // processing-section
+    const std::string processingGroup = "processing";
+    REGISTER_FLOAT_CONFIG(processingGroup, "use_of_free_memory")
+        .setComment(
+            "Define the percentage allcating free memory on the host (example: 0.5 = 50%). "
+            "Maximum is 90% and will be hard cut, in case a value higher than 0.9 is provided. "
+            "The minimum is 0.1")
+        .setDefault(0.5);
+
     // auth-section
     const std::string authGroup = "auth";
 

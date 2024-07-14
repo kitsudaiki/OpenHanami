@@ -28,6 +28,7 @@
 #include <core/processing/cpu/processing.h>
 #include <core/processing/cpu/reduction.h>
 #include <core/processing/cpu/worker_thread.h>
+#include <hanami_config/config_handler.h>
 #include <hanami_cpu/memory.h>
 #include <hanami_hardware/cpu_core.h>
 #include <hanami_hardware/cpu_package.h>
@@ -92,7 +93,16 @@ void
 CpuHost::initBuffer(const uint32_t id)
 {
     m_totalMemory = getFreeMemory();
-    const uint64_t usedMemory = (m_totalMemory / 100) * 10;  // use 10% for synapse-blocks
+    bool success = false;
+    float memoryUsage = GET_FLOAT_CONFIG("processing", "use_of_free_memory", success);
+    // TODO: handle amound of min and max value by ranges inside of the config-lib
+    if (memoryUsage < 0.1f) {
+        memoryUsage = 0.1f;
+    }
+    if (memoryUsage > 0.9f) {
+        memoryUsage = 0.9f;
+    }
+    const uint64_t usedMemory = static_cast<float>(m_totalMemory) * memoryUsage;
     synapseBlocks.initBuffer<SynapseBlock>(usedMemory / sizeof(SynapseBlock));
     synapseBlocks.deleteAll();
 
