@@ -82,38 +82,24 @@ inline void
 resizeConnections(Hexagon* targetHexagon)
 {
     const uint32_t dimXold = targetHexagon->header.dimX;
-    const uint32_t dimYold = targetHexagon->header.dimY;
-    int32_t x, y = 0;
 
     targetHexagon->header.dimX++;
-    targetHexagon->header.dimY++;
 
     // resize list
-    targetHexagon->connectionBlocks.resize(targetHexagon->header.dimX * targetHexagon->header.dimY);
+    targetHexagon->connectionBlocks.resize(targetHexagon->header.dimX);
 
     // if there was no scaling in x-dimension, then no re-ordering necessary
     if (targetHexagon->header.dimX == dimXold) {
         return;
     }
-
-    LOG_DEBUG("resized connection-Block: " + std::to_string(dimXold) + ":" + std::to_string(dimYold)
-              + " -> " + std::to_string(targetHexagon->header.dimX) + ":"
-              + std::to_string(targetHexagon->header.dimY));
-    uint32_t newPos = 0;
-    uint32_t oldPos = 0;
+    LOG_DEBUG("resized connection-Block: " + std::to_string(dimXold) + " -> "
+              + std::to_string(targetHexagon->header.dimX));
 
     // update content of list for the new size
-    for (y = dimYold - 1; y >= 1; --y) {
-        for (x = dimXold - 1; x >= 0; --x) {
-            newPos = (y * targetHexagon->header.dimX) + x;
-            oldPos = (y * dimXold) + x;
-
-            targetHexagon->connectionBlocks[newPos] = targetHexagon->connectionBlocks[oldPos];
-            targetHexagon->connectionBlocks[oldPos] = ConnectionBlock();
-        }
-    }
+    targetHexagon->connectionBlocks[targetHexagon->header.dimX - 1] = ConnectionBlock();
 
     targetHexagon->neuronBlocks.resize(targetHexagon->header.dimX);
+    targetHexagon->header.numberOfFreeSections += NUMBER_OF_SYNAPSESECTION;
 }
 
 /**
@@ -146,12 +132,20 @@ createNewSection(Cluster& cluster,
     Hexagon* targetHexagon = &cluster.hexagons[targetHexagonId];
 
     // get target-connection
+    if (targetHexagon->header.numberOfFreeSections < NUMBER_OF_SYNAPSESECTION / 2) {
+        resizeConnections(targetHexagon);
+    }
     SynapseConnection* targetConnection = searchTargetInHexagon(targetHexagon, synapseBlockBuffer);
     if (targetConnection == nullptr) {
-        resizeConnections(targetHexagon);
-        targetConnection = searchTargetInHexagon(targetHexagon, synapseBlockBuffer);
-        targetHexagon->wasResized = true;
+        Hanami::ErrorContainer error;
+        error.addMessage("no target-section found, even there should be sill "
+                         + std::to_string(targetHexagon->header.numberOfFreeSections)
+                         + " available");
+        LOG_ERROR(error);
+        return false;
     }
+    targetHexagon->header.numberOfFreeSections--;
+    targetHexagon->wasResized = true;
 
     // initialize new connection
     targetConnection->origin = sourceLocPtr;

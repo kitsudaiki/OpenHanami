@@ -128,34 +128,29 @@ backpropagateConnections(Hexagon* hexagon,
     NeuronBlock* targetNeuronBlock = nullptr;
     ConnectionBlock* connectionBlock = nullptr;
     SynapseSection* synapseSection = nullptr;
-    const uint32_t dimY = hexagon->header.dimY;
     const uint32_t dimX = hexagon->header.dimX;
     SourceLocation sourceLoc;
-    uint32_t c = 0;
-    uint32_t i = 0;
 
     if (blockId >= dimX) {
         return;
     }
 
-    for (c = blockId * dimY; c < (blockId * dimY) + dimY; ++c) {
-        assert(c < hexagon->connectionBlocks.size());
-        connectionBlock = &hexagon->connectionBlocks[c];
+    assert(blockId < hexagon->connectionBlocks.size());
+    connectionBlock = &hexagon->connectionBlocks[blockId];
 
-        for (i = 0; i < NUMBER_OF_SYNAPSESECTION; ++i) {
-            connection = &connectionBlock->connections[i];
+    for (uint32_t i = 0; i < NUMBER_OF_SYNAPSESECTION; ++i) {
+        connection = &connectionBlock->connections[i];
 
-            if (connection->origin.blockId == UNINIT_STATE_16) {
-                continue;
-            }
-
-            synapseSection = &synapseBlocks[connectionBlock->targetSynapseBlockPos].sections[i];
-            sourceLoc = getSourceNeuron(connection->origin, hexagons);
-
-            targetNeuronBlock = &hexagon->neuronBlocks[(c / hexagon->header.dimY)];
-
-            backpropagateSection(synapseSection, connection, targetNeuronBlock, sourceLoc.neuron);
+        if (connection->origin.blockId == UNINIT_STATE_16) {
+            continue;
         }
+
+        synapseSection = &synapseBlocks[connectionBlock->targetSynapseBlockPos].sections[i];
+        sourceLoc = getSourceNeuron(connection->origin, hexagons);
+
+        targetNeuronBlock = &hexagon->neuronBlocks[blockId];
+
+        backpropagateSection(synapseSection, connection, targetNeuronBlock, sourceLoc.neuron);
     }
 }
 

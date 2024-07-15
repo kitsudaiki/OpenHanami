@@ -531,7 +531,7 @@ IO_Interface::checkHexagonEntry(const HexagonEntry& hexagonEntry)
     // check size against dimentsions in hexagon-header
     const uint64_t numberOfConnectionBlocks
         = hexagonEntry.numberOfConnectionBytes / (sizeof(ConnectionBlock) + sizeof(SynapseBlock));
-    if (numberOfConnectionBlocks != hexagonEntry.header.dimX * hexagonEntry.header.dimY) {
+    if (numberOfConnectionBlocks != hexagonEntry.header.dimX) {
         return false;
     }
 

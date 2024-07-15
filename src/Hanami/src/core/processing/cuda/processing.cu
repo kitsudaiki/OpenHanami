@@ -343,38 +343,38 @@ processing_CUDA(CudaClusterPointer* gpuPointer,
 
         if (doTrain)
         {
-            processSynapses<true><<<hexagon->header.dimX * hexagon->header.dimY, 64>>>(
+            processSynapses<true><<<hexagon->header.dimX, 64>>>(
                 gpuPointer->hexagonPointer[hexagonId].neuronBlocks,
                 gpuPointer->synapseBlocks,
                 gpuPointer->hexagonPointer[hexagonId].connectionBlocks,
                 gpuPointer->clusterSettings,
                 randomeSeed + hexagonId,
-                hexagon->header.dimY);
+                42);
 
             processNeurons<true><<<hexagon->header.dimX, 64>>>(
                 gpuPointer->hexagonPointer[hexagonId].neuronBlocks,
                 gpuPointer->synapseBlocks,
                 gpuPointer->hexagonPointer[hexagonId].connectionBlocks,
                 gpuPointer->clusterSettings,
-                hexagon->header.dimY,
+                42,
                 hexagon->header.isOutputHexagon);
         }
         else
         {
-            processSynapses<false><<<hexagon->header.dimX * hexagon->header.dimY, 64>>>(
+            processSynapses<false><<<hexagon->header.dimX, 64>>>(
                 gpuPointer->hexagonPointer[hexagonId].neuronBlocks,
                 gpuPointer->synapseBlocks,
                 gpuPointer->hexagonPointer[hexagonId].connectionBlocks,
                 gpuPointer->clusterSettings,
                 randomeSeed + hexagonId,
-                hexagon->header.dimY);
+                42);
 
             processNeurons<false><<<hexagon->header.dimX, 64>>>(
                 gpuPointer->hexagonPointer[hexagonId].neuronBlocks,
                 gpuPointer->synapseBlocks,
                 gpuPointer->hexagonPointer[hexagonId].connectionBlocks,
                 gpuPointer->clusterSettings,
-                hexagon->header.dimY,
+                42,
                 hexagon->header.isOutputHexagon);
         }
 
