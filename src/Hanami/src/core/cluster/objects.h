@@ -46,9 +46,9 @@ class Cluster;
 #define UNINTI_POINT_32 0x0FFFFFFF
 
 // network-predefines
-#define SYNAPSES_PER_SYNAPSESECTION 64
-#define NUMBER_OF_SYNAPSESECTION 64
-#define NEURONS_PER_NEURONBLOCK 64
+#define SYNAPSES_PER_SYNAPSESECTION 128
+#define NUMBER_OF_SYNAPSESECTION 512
+#define NEURONS_PER_NEURONBLOCK 128
 #define POSSIBLE_NEXT_AXON_STEP 80
 #define NUMBER_OF_POSSIBLE_NEXT 86
 #define NUMBER_OF_OUTPUT_CONNECTIONS 7
@@ -165,7 +165,7 @@ struct SynapseSection {
 
     SynapseSection() { std::fill_n(synapses, SYNAPSES_PER_SYNAPSESECTION, Synapse()); }
 };
-static_assert(sizeof(SynapseSection) == 1024);
+static_assert(sizeof(SynapseSection) == 2048);
 
 //==================================================================================================
 
@@ -174,7 +174,7 @@ struct SynapseBlock {
 
     SynapseBlock() { std::fill_n(sections, NUMBER_OF_SYNAPSESECTION, SynapseSection()); }
 };
-static_assert(sizeof(SynapseBlock) == 64 * 1024);
+static_assert(sizeof(SynapseBlock) == 512 * 2048);
 
 //==================================================================================================
 
@@ -224,7 +224,7 @@ struct NeuronBlock {
 
     NeuronBlock() { std::fill_n(neurons, NEURONS_PER_NEURONBLOCK, Neuron()); }
 };
-static_assert(sizeof(NeuronBlock) == 2048);
+static_assert(sizeof(NeuronBlock) == 4096);
 
 //==================================================================================================
 
@@ -289,7 +289,7 @@ struct ConnectionBlock {
 
     ConnectionBlock() { std::fill_n(connections, NUMBER_OF_SYNAPSESECTION, SynapseConnection()); }
 };
-static_assert(sizeof(ConnectionBlock) == 1544);
+static_assert(sizeof(ConnectionBlock) == 12296);
 
 //==================================================================================================
 
@@ -315,9 +315,9 @@ struct HexagonHeader {
     uint32_t hexagonId = UNINIT_STATE_32;
     bool isInputHexagon = false;
     bool isOutputHexagon = false;
-    uint8_t padding1[2];
+    uint8_t padding[2];
+    uint32_t numberOfFreeSections = 0;
     uint32_t dimX = 0;
-    uint32_t dimY = 0;
     Hanami::Position hexagonPos;
 
     bool operator==(HexagonHeader& rhs)
@@ -332,9 +332,6 @@ struct HexagonHeader {
             return false;
         }
         if (dimX != rhs.dimX) {
-            return false;
-        }
-        if (dimY != rhs.dimY) {
             return false;
         }
         if (hexagonPos != rhs.hexagonPos) {

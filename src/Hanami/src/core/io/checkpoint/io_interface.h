@@ -34,7 +34,7 @@ namespace Hanami
 struct DataBuffer;
 }
 
-#define LOCAL_BUFFER_SIZE 128 * 1024
+#define LOCAL_BUFFER_SIZE 1024 * 4096
 
 class IO_Interface
 {
@@ -95,6 +95,7 @@ class IO_Interface
     template <typename T>
     inline bool addObjectToLocalBuffer(T* data, Hanami::ErrorContainer& error)
     {
+        assert(sizeof(T) < LOCAL_BUFFER_SIZE);
         if (sizeof(T) + m_localBuffer.size > LOCAL_BUFFER_SIZE) {
             if (writeFromLocalBuffer(m_localBuffer, error) == false) {
                 error.addMessage("Failed to write local buffer to target");

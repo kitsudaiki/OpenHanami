@@ -183,11 +183,8 @@ processSynapses(Cluster& cluster, Hexagon* hexagon, const uint32_t blockId)
     SynapseSection* section = nullptr;
     Hexagon* sourceHexagon = nullptr;
     uint32_t randomeSeed = rand();
-    const uint32_t dimY = hexagon->header.dimY;
     const uint32_t dimX = hexagon->header.dimX;
     SourceLocation sourceLoc;
-    uint32_t c = 0;
-    uint32_t i = 0;
 
     bool inputConnected = false;
 
@@ -195,37 +192,35 @@ processSynapses(Cluster& cluster, Hexagon* hexagon, const uint32_t blockId)
         return;
     }
 
-    for (c = blockId * dimY; c < (blockId * dimY) + dimY; ++c) {
-        assert(c < hexagon->connectionBlocks.size());
-        connectionBlock = &hexagon->connectionBlocks[c];
+    assert(blockId < hexagon->connectionBlocks.size());
+    connectionBlock = &hexagon->connectionBlocks[blockId];
 
-        for (i = 0; i < NUMBER_OF_SYNAPSESECTION; ++i) {
-            scon = &connectionBlock->connections[i];
-            if (scon->origin.blockId == UNINIT_STATE_16) {
-                continue;
-            }
-
-            inputConnected = scon->origin.isInput;
-            sourceLoc = getSourceNeuron(scon->origin, &cluster.hexagons[0]);
-
-            if (sourceLoc.neuron->active == 0) {
-                continue;
-            }
-
-            section = &synapseBlocks[connectionBlock->targetSynapseBlockPos].sections[i];
-            targetNeuronBlock = &neuronBlocks[(c / hexagon->header.dimY)];
-            randomeSeed += (c * NUMBER_OF_SYNAPSESECTION) + i;
-
-            synapseProcessingBackward<doTrain>(cluster,
-                                               section,
-                                               scon,
-                                               targetNeuronBlock,
-                                               sourceLoc.neuron,
-                                               scon->origin,
-                                               clusterSettings,
-                                               inputConnected,
-                                               randomeSeed);
+    for (uint32_t i = 0; i < NUMBER_OF_SYNAPSESECTION; ++i) {
+        scon = &connectionBlock->connections[i];
+        if (scon->origin.blockId == UNINIT_STATE_16) {
+            continue;
         }
+
+        inputConnected = scon->origin.isInput;
+        sourceLoc = getSourceNeuron(scon->origin, &cluster.hexagons[0]);
+
+        if (sourceLoc.neuron->active == 0) {
+            continue;
+        }
+
+        section = &synapseBlocks[connectionBlock->targetSynapseBlockPos].sections[i];
+        targetNeuronBlock = &neuronBlocks[blockId];
+        randomeSeed += (blockId * NUMBER_OF_SYNAPSESECTION) + i;
+
+        synapseProcessingBackward<doTrain>(cluster,
+                                           section,
+                                           scon,
+                                           targetNeuronBlock,
+                                           sourceLoc.neuron,
+                                           scon->origin,
+                                           clusterSettings,
+                                           inputConnected,
+                                           randomeSeed);
     }
 }
 

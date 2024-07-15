@@ -173,11 +173,11 @@ backpropagation_CUDA(CudaClusterPointer* gpuPointer,
         backpropagateNeurons<<<hexagon->header.dimX, 64>>>(
                 gpuPointer->hexagonPointer[hexagonId].neuronBlocks);
 
-        backpropagateConnections<<<hexagon->header.dimX * hexagon->header.dimY, 64>>>(
+        backpropagateConnections<<<hexagon->header.dimX, 64>>>(
                 gpuPointer->hexagonPointer[hexagonId].neuronBlocks,
                 gpuPointer->synapseBlocks,
                 gpuPointer->hexagonPointer[hexagonId].connectionBlocks,
-                hexagon->header.dimY);
+                42);
 
         // copy neurons back to host
         cudaMemcpy(&hexagon->neuronBlocks[0],

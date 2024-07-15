@@ -86,39 +86,34 @@ reduceConnections(Hexagon* hexagon,
     Hexagon* sourceHexagon = nullptr;
     ConnectionBlock* connectionBlock = nullptr;
     SynapseSection* synapseSection = nullptr;
-    const uint32_t dimY = hexagon->header.dimY;
     const uint32_t dimX = hexagon->header.dimX;
-    uint32_t c = 0;
-    uint32_t i = 0;
 
     if (blockId >= dimX) {
         return;
     }
 
-    for (c = blockId * dimY; c < (blockId * dimY) + dimY; ++c) {
-        connectionBlock = &hexagon->connectionBlocks[c];
+    connectionBlock = &hexagon->connectionBlocks[blockId];
 
-        for (i = 0; i < NUMBER_OF_SYNAPSESECTION; ++i) {
-            connection = &connectionBlock->connections[i];
-            if (connection->origin.blockId == UNINIT_STATE_16) {
-                continue;
-            }
+    for (uint32_t i = 0; i < NUMBER_OF_SYNAPSESECTION; ++i) {
+        connection = &connectionBlock->connections[i];
+        if (connection->origin.blockId == UNINIT_STATE_16) {
+            continue;
+        }
 
-            synapseSection = &synapseBlocks[connectionBlock->targetSynapseBlockPos].sections[i];
-            sourceHexagon = &hexagons[connection->origin.hexagonId];
-            sourceNeuronBlock = &sourceHexagon->neuronBlocks[connection->origin.blockId];
-            sourceNeuron = &sourceNeuronBlock->neurons[connection->origin.neuronId];
+        synapseSection = &synapseBlocks[connectionBlock->targetSynapseBlockPos].sections[i];
+        sourceHexagon = &hexagons[connection->origin.hexagonId];
+        sourceNeuronBlock = &sourceHexagon->neuronBlocks[connection->origin.blockId];
+        sourceNeuron = &sourceNeuronBlock->neurons[connection->origin.neuronId];
 
-            // if section is complete empty, then erase it
-            if (reduceSection(synapseSection) == false) {
-                // initialize the creation of a new section
-                sourceNeuron->isNew = 1;
-                sourceNeuron->newLowerBound = connection->lowerBound;
+        // if section is complete empty, then erase it
+        if (reduceSection(synapseSection) == false) {
+            // initialize the creation of a new section
+            sourceNeuron->isNew = 1;
+            sourceNeuron->newLowerBound = connection->lowerBound;
 
-                // mark current connection as available again
-                connection->origin.blockId = UNINIT_STATE_16;
-                connection->origin.neuronId = UNINIT_STATE_8;
-            }
+            // mark current connection as available again
+            connection->origin.blockId = UNINIT_STATE_16;
+            connection->origin.neuronId = UNINIT_STATE_8;
         }
     }
 }
