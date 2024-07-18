@@ -68,6 +68,50 @@ jobs:
 
 
 
+  build_helm_package:
+    name: "Build Helm package"
+    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check ]
+    runs-on: ubuntu-latest
+    env:
+      FORCE_COLOR: 1
+    steps:
+      - 
+        name: Set helm-version as environment variable
+        run: |
+          if [[ ${GITHUB_REF#} == refs/tags/* ]]; then \
+              echo "HELM_VERSION=$(echo ${GITHUB_REF#refs/tags/} | sed 's/^v//')" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          else \
+              echo "HELM_VERSION=0.0.0" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          fi
+      - 
+        name: Checkout repository
+        run: |
+          # use manually clone, because with the "actions/checkout@v3" action the name of the
+          # branch can not be read by the git commands, which is necessary for the build-script
+          git clone https://github.com/kitsudaiki/${GITHUB_REPOSITORY#*/}.git
+          cd ${GITHUB_REPOSITORY#*/}
+          git checkout ${GITHUB_REF#refs/heads/}
+      - 
+        name: Compile code
+        run: |
+          cd ${GITHUB_REPOSITORY#*/}/deploy/k8s/hanami
+          helm package --version $HELM_VERSION .
+      - 
+        name: Copy files
+        run: |
+          mkdir /tmp/hanami_helm_build_result
+          cd ${GITHUB_REPOSITORY#*/}
+          cp ./deploy/k8s/hanami/hanami-$HELM_VERSION.tgz /tmp/hanami_helm_build_result/
+      - 
+        name: Create artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hanami_helm_build_result
+          path: /tmp/hanami_helm_build_result
+          retention-days: 1
+
+
+
   build_hanami:
     name: "Compile Hanami"
     needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check ]
@@ -106,6 +150,8 @@ jobs:
           name: Hanami_build_result
           path: /tmp/Hanami_build_result
           retention-days: 1
+
+
 
   build_hanamictl:
     name: "Compile CLI"
@@ -463,6 +509,7 @@ jobs:
         run: docker logs hanami
 
 
+
   docker_build:
     name: "Build Docker-images"
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
@@ -604,7 +651,7 @@ jobs:
   kubernetes_test:
     name: "Integration-Tests (Kubernetes)"
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
-    needs: [ docker_merge ]
+    needs: [ docker_merge, build_helm_package ]
     runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
@@ -624,6 +671,14 @@ jobs:
               echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
           fi
       - 
+        name: Set helm-version as environment variable
+        run: |
+          if [[ ${GITHUB_REF#} == refs/tags/* ]]; then \
+              echo "HELM_VERSION=$(echo ${GITHUB_REF#refs/tags/} | sed 's/^v//')" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          else \
+              echo "HELM_VERSION=0.0.0" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          fi
+      - 
         name: Check docker-tag
         run: echo "Docker-tag=$BRANCH_NAME"
       - 
@@ -636,6 +691,12 @@ jobs:
           git checkout ${GITHUB_REF#refs/heads/}
           git submodule init
           git submodule update --recursive
+      -
+        name: Get helm-chart artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: hanami_helm_build_result
+          path: /tmp/hanami_helm_build_result
       - 
         name: Install dependencies for SDK
         run: |
@@ -666,8 +727,7 @@ jobs:
       -
         name: Install Hanami
         run: |
-          cd ${GITHUB_REPOSITORY#*/}/deploy/k8s
-          helm install --set docker.tag="${{ env.BRANCH_NAME }}" --set user.id=asdf --set user.name="test user" --set user.pw="asdfasdf" --set token.pw="11111111" --set api.domain=local-hanami  hanami ./hanami/
+          helm install --set docker.tag="${{ env.BRANCH_NAME }}" --set user.id=asdf --set user.name="test user" --set user.pw="asdfasdf" --set token.pw="11111111" --set api.domain=local-hanami  hanami /tmp/hanami_helm_build_result/hanami-$HELM_VERSION.tgz
       - 
         name: Sleep for 60 seconds
         uses: jakejarvis/wait-action@master
@@ -896,12 +956,26 @@ jobs:
           else \
               echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
           fi
+      - 
+        name: Set helm-version as environment variable
+        run: |
+          if [[ ${GITHUB_REF#} == refs/tags/* ]]; then \
+              echo "HELM_VERSION=$(echo ${GITHUB_REF#refs/tags/} | sed 's/^v//')" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          else \
+              echo "HELM_VERSION=0.0.0" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          fi
       -
         name: Get artifact
         uses: actions/download-artifact@v4
         with:
           name: hanamictl_build_result
           path: /tmp/hanamictl_build_result
+      -
+        name: Get helm-chart artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: hanami_helm_build_result
+          path: /tmp/hanami_helm_build_result
       - 
         name: Prepare ssh-keys
         run: |
@@ -914,9 +988,15 @@ jobs:
         name: Create remote directory, if not exist
         run: |
           ssh ${{ secrets.SHARE_SSH_ACCESS }} "mkdir -p ~/hanami_file_share/$BRANCH_NAME"
+          ssh ${{ secrets.SHARE_SSH_ACCESS }} "mkdir -p ~/hanami_file_share/$BRANCH_NAME/helm-chart"
+          ssh ${{ secrets.SHARE_SSH_ACCESS }} "mkdir -p ~/hanami_file_share/$BRANCH_NAME/python-package"
+          ssh ${{ secrets.SHARE_SSH_ACCESS }} "mkdir -p ~/hanami_file_share/$BRANCH_NAME/client"
       - 
         name: Upload hanamictl
         run: |
           tar -czvf hanamictl_amd64_$BRANCH_NAME.tar.gz /tmp/hanamictl_build_result/hanamictl
-          scp hanamictl_amd64_$BRANCH_NAME.tar.gz ${{ secrets.SHARE_SSH_ACCESS }}:~/hanami_file_share/$BRANCH_NAME/
-
+          scp hanamictl_amd64_$BRANCH_NAME.tar.gz ${{ secrets.SHARE_SSH_ACCESS }}:~/hanami_file_share/$BRANCH_NAME/client/
+      - 
+        name: Upload helm-chart
+        run: |
+          scp /tmp/hanami_helm_build_result/hanami-$HELM_VERSION.tgz ${{ secrets.SHARE_SSH_ACCESS }}:~/hanami_file_share/$BRANCH_NAME/helm-chart/
