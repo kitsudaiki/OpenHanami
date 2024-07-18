@@ -11,15 +11,15 @@ export request_labels=/tmp/t10k-labels-idx1-ubyte
 
 
 # build protobuffer for go sdk
-pushd ../../src/sdk/go/hanami_sdk 
-protoc --go_out=. --proto_path ../../../libraries/hanami_messages/protobuffers hanami_messages.proto3
-popd
+# pushd ../../src/sdk/go/hanami_sdk 
+# protoc --go_out=. --proto_path ../../../libraries/hanami_messages/protobuffers hanami_messages.proto3
+# popd
 
 # build cli-binarygolangci-lint
-pushd ../../src/cli/hanamictl
-go build .
-popd
-cp ../../src/cli/hanamictl/hanamictl .
+# pushd ../../src/cli/hanamictl
+# go build .
+# popd
+# cp ../../src/cli/hanamictl/hanamictl .
 
 # cleanup before running tests
 ./hanamictl project delete cli_test_project

@@ -68,8 +68,8 @@ jobs:
 
 
 
-  build:
-    name: "Compile code"
+  build_hanami:
+    name: "Compile Hanami"
     needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check ]
     runs-on: ubuntu-latest
     env:
@@ -96,21 +96,61 @@ jobs:
       - 
         name: Copy files
         run: |
-          mkdir /tmp/build_result
+          mkdir /tmp/Hanami_build_result
           cd ${GITHUB_REPOSITORY#*/}
-          cp -r builds/binaries/* /tmp/build_result/
+          cp -r builds/binaries/* /tmp/Hanami_build_result/
       - 
         name: Create artifact
         uses: actions/upload-artifact@v4
         with:
-          name: result
-          path: /tmp/build_result
+          name: Hanami_build_result
+          path: /tmp/Hanami_build_result
+          retention-days: 1
+
+  build_hanamictl:
+    name: "Compile CLI"
+    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check ]
+    runs-on: ubuntu-latest
+    env:
+      FORCE_COLOR: 1
+    steps:
+      - uses: earthly/actions-setup@v1
+        with:
+          version: v0.8.0
+      - 
+        name: Checkout repository
+        run: |
+          # use manually clone, because with the "actions/checkout@v3" action the name of the
+          # branch can not be read by the git commands, which is necessary for the build-script
+          git clone https://github.com/kitsudaiki/${GITHUB_REPOSITORY#*/}.git
+          cd ${GITHUB_REPOSITORY#*/}
+          git checkout ${GITHUB_REF#refs/heads/}
+          git submodule init
+          git submodule update --recursive
+      - 
+        name: Compile code
+        run: |
+          cd ${GITHUB_REPOSITORY#*/}
+          earthly --artifact +compile-cli/tmp/hanamictl ./builds/
+      - 
+        name: Copy files
+        run: |
+          mkdir /tmp/hanamictl_build_result
+          cd ${GITHUB_REPOSITORY#*/}
+          cp -r builds/hanamictl /tmp/hanamictl_build_result/
+      - 
+        name: Create artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hanamictl_build_result
+          path: /tmp/hanamictl_build_result
+          retention-days: 1
 
 
 
   unit_tests:
     name: "Unit-Tests"
-    needs: build
+    needs: build_hanami
     runs-on: ubuntu-latest
     container:
       image: ubuntu:22.04
@@ -124,62 +164,62 @@ jobs:
         name: Get artifact
         uses: actions/download-artifact@v4
         with:
-          name: result
-          path: /tmp/build_result
+          name: Hanami_build_result
+          path: /tmp/Hanami_build_result
       - 
         name: "Check target-directory"
-        run: ls -l /tmp/build_result
+        run: ls -l /tmp/Hanami_build_result
       - 
         name: "Run test: hanami_common"
         run: |
-          chmod +x /tmp/build_result/hanami_common_unit_tests
-          /tmp/build_result/hanami_common_unit_tests
+          chmod +x /tmp/Hanami_build_result/hanami_common_unit_tests
+          /tmp/Hanami_build_result/hanami_common_unit_tests
       - 
         name: "Run test: hanami_config"
         run: |
-          chmod +x /tmp/build_result/hanami_config_unit_tests
-          /tmp/build_result/hanami_config_unit_tests
+          chmod +x /tmp/Hanami_build_result/hanami_config_unit_tests
+          /tmp/Hanami_build_result/hanami_config_unit_tests
       - 
         name: "Run test: hanami_crypto"
         run: |
-          chmod +x /tmp/build_result/hanami_crypto_unit_tests
-          /tmp/build_result/hanami_crypto_unit_tests
+          chmod +x /tmp/Hanami_build_result/hanami_crypto_unit_tests
+          /tmp/Hanami_build_result/hanami_crypto_unit_tests
       - 
         name: "Run test: hanami_ini"
         run: |
-          chmod +x /tmp/build_result/hanami_ini_unit_tests
-          /tmp/build_result/hanami_ini_unit_tests
+          chmod +x /tmp/Hanami_build_result/hanami_ini_unit_tests
+          /tmp/Hanami_build_result/hanami_ini_unit_tests
       - 
         name: "Run test: hanami_sqlite"
         run: |
-          chmod +x /tmp/build_result/hanami_sqlite_unit_tests
-          /tmp/build_result/hanami_sqlite_unit_tests
+          chmod +x /tmp/Hanami_build_result/hanami_sqlite_unit_tests
+          /tmp/Hanami_build_result/hanami_sqlite_unit_tests
       - 
         name: "Run test: hanami_cluster_parser"
         run: |
-          chmod +x /tmp/build_result/hanami_cluster_parser_unit_tests
-          /tmp/build_result/hanami_cluster_parser_unit_tests
+          chmod +x /tmp/Hanami_build_result/hanami_cluster_parser_unit_tests
+          /tmp/Hanami_build_result/hanami_cluster_parser_unit_tests
       - 
         name: "Run test: hanami_policies"
         run: |
-          chmod +x /tmp/build_result/hanami_policies_unit_tests
-          /tmp/build_result/hanami_policies_unit_tests
+          chmod +x /tmp/Hanami_build_result/hanami_policies_unit_tests
+          /tmp/Hanami_build_result/hanami_policies_unit_tests
       - 
         name: "Run test: hanami_args"
         run: |
-          chmod +x  /tmp/build_result/hanami_args_unit_tests
-          /tmp/build_result/hanami_args_unit_tests
+          chmod +x  /tmp/Hanami_build_result/hanami_args_unit_tests
+          /tmp/Hanami_build_result/hanami_args_unit_tests
       - 
         name: "Run test: Hanami"
         run: |
-          chmod +x  /tmp/build_result/Hanami_unittests
-          /tmp/build_result/Hanami_unittests
+          chmod +x  /tmp/Hanami_build_result/Hanami_unittests
+          /tmp/Hanami_build_result/Hanami_unittests
 
 
 
   memory_leak_tests:
     name: "Memory-Leak-Tests"
-    needs: build
+    needs: build_hanami
     runs-on: ubuntu-latest
     container:
       image: ubuntu:22.04
@@ -193,27 +233,27 @@ jobs:
         name: Get artifact
         uses: actions/download-artifact@v4
         with:
-          name: result
-          path: /tmp/build_result
+          name: Hanami_build_result
+          path: /tmp/Hanami_build_result
       - 
         name: "Check target-directory"
-        run: ls -l /tmp/build_result
+        run: ls -l /tmp/Hanami_build_result
       - 
         name: "Run test: hanami_common"
         run: |
-          chmod +x /tmp/build_result/hanami_common_memory_leak_tests
-          /tmp/build_result/hanami_common_memory_leak_tests
+          chmod +x /tmp/Hanami_build_result/hanami_common_memory_leak_tests
+          /tmp/Hanami_build_result/hanami_common_memory_leak_tests
       - 
         name: "Run test: hanami_cluster_parser"
         run: |
-          chmod +x /tmp/build_result/hanami_cluster_parser_memory_leak_tests
-          /tmp/build_result/hanami_cluster_parser_memory_leak_tests
+          chmod +x /tmp/Hanami_build_result/hanami_cluster_parser_memory_leak_tests
+          /tmp/Hanami_build_result/hanami_cluster_parser_memory_leak_tests
 
 
 
   functional_tests:
     name: "Functional-Tests"
-    needs: build
+    needs: build_hanami
     runs-on: ubuntu-latest
     container:
       image: ubuntu:22.04
@@ -227,31 +267,31 @@ jobs:
         name: Get artifact
         uses: actions/download-artifact@v4
         with:
-          name: result
-          path: /tmp/build_result
+          name: Hanami_build_result
+          path: /tmp/Hanami_build_result
       - 
         name: "Check target-directory"
-        run: ls -l /tmp/build_result
+        run: ls -l /tmp/Hanami_build_result
       - 
         name: "Run test: hanami_config"
         run: |
-          chmod +x /tmp/build_result/hanami_config_functional_tests
-          /tmp/build_result/hanami_config_functional_tests
+          chmod +x /tmp/Hanami_build_result/hanami_config_functional_tests
+          /tmp/Hanami_build_result/hanami_config_functional_tests
       # - 
       #  name: "Run test: hanami_obj"
       #   run: |
-      #     chmod +x /tmp/build_result/libraries/hanami_obj/tests/functional_tests/functional_tests
-      #     /tmp/build_result/libraries/hanami_obj/tests/functional_tests/functional_tests
+      #     chmod +x /tmp/Hanami_build_result/libraries/hanami_obj/tests/functional_tests/functional_tests
+      #     /tmp/Hanami_build_result/libraries/hanami_obj/tests/functional_tests/functional_tests
       - 
         name: "Run test: hanami_database"
         run: |
-          chmod +x /tmp/build_result/hanami_database_functional_tests
-          /tmp/build_result/hanami_database_functional_tests
+          chmod +x /tmp/Hanami_build_result/hanami_database_functional_tests
+          /tmp/Hanami_build_result/hanami_database_functional_tests
       # - 
       #  name: "Run test: hanami_network"
       #   run: |
-      #     chmod +x /tmp/build_result/libraries/hanami_network/tests/functional_tests/functional_tests
-      #     /tmp/build_result/libraries/hanami_network/tests/functional_tests/functional_tests
+      #     chmod +x /tmp/Hanami_build_result/libraries/hanami_network/tests/functional_tests/functional_tests
+      #     /tmp/Hanami_build_result/libraries/hanami_network/tests/functional_tests/functional_tests
 
 
 
@@ -274,8 +314,8 @@ jobs:
         name: Get artifact
         uses: actions/download-artifact@v4
         with:
-          name: result
-          path: /tmp/build_result
+          name: Hanami_build_result
+          path: /tmp/Hanami_build_result
       - 
         name: Install dependencies for SDK
         run: |
@@ -287,9 +327,9 @@ jobs:
         name: Build local docker-image
         run: |
           cd ${GITHUB_REPOSITORY#*/}
-          chmod +x /tmp/build_result/Hanami
+          chmod +x /tmp/Hanami_build_result/Hanami
           mkdir -p builds/binaries
-          cp /tmp/build_result/Hanami ./builds/binaries/
+          cp /tmp/Hanami_build_result/Hanami ./builds/binaries/
           # IMPORTANT: use the Dockerfile instead of the Earthfile here, 
           # because the Dockerfile is also used in the final build-process.
           # So using the Dockerfile here to ensure, the final build after 
@@ -339,7 +379,7 @@ jobs:
 
   cli_api_tests:
     name: "CLI-API-Tests"
-    needs: [ unit_tests, memory_leak_tests, functional_tests ]
+    needs: [ build_hanamictl, unit_tests, memory_leak_tests, functional_tests ]
     runs-on: ubuntu-latest
     steps:
       - 
@@ -356,25 +396,26 @@ jobs:
         name: Get artifact
         uses: actions/download-artifact@v4
         with:
-          name: result
-          path: /tmp/build_result
+          name: Hanami_build_result
+          path: /tmp/Hanami_build_result
+      -
+        name: Get artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: hanamictl_build_result
+          path: /tmp/hanamictl_build_result
       - 
-        name: Install go
+        name: Build local docker-image
         run: |
-          wget -c https://go.dev/dl/go1.22.5.linux-amd64.tar.gz
-          sudo tar -C /usr/local/ -xzf go1.22.5.linux-amd64.tar.gz
-      - 
-        name: Install protobuf
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y protobuf-compiler golang-goprotobuf-dev
+          chmod +x /tmp/hanamictl_build_result/hanamictl
+          cp /tmp/hanamictl_build_result/hanamictl ${GITHUB_REPOSITORY#*/}/testing/go_cli_api/
       - 
         name: Build local docker-image
         run: |
           cd ${GITHUB_REPOSITORY#*/}
-          chmod +x /tmp/build_result/Hanami
+          chmod +x /tmp/Hanami_build_result/Hanami
           mkdir -p builds/binaries
-          cp /tmp/build_result/Hanami ./builds/binaries/
+          cp /tmp/Hanami_build_result/Hanami ./builds/binaries/
           # IMPORTANT: use the Dockerfile instead of the Earthfile here, 
           # because the Dockerfile is also used in the final build-process.
           # So using the Dockerfile here to ensure, the final build after 
@@ -774,7 +815,7 @@ jobs:
 
   build_docs:
     name: Build and push docs
-    needs: [ docker_merge ]
+    needs: [ kubernetes_test, ansible_test ]
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
     env:
@@ -799,8 +840,8 @@ jobs:
         name: Get artifact
         uses: actions/download-artifact@v4
         with:
-          name: result
-          path: /tmp/build_result
+          name: Hanami_build_result
+          path: /tmp/Hanami_build_result
       - 
         name: Checkout repository
         run: |
@@ -815,9 +856,9 @@ jobs:
         name: Prepare Binary
         run: |
           cd ${GITHUB_REPOSITORY#*/}
-          chmod +x /tmp/build_result/Hanami
+          chmod +x /tmp/Hanami_build_result/Hanami
           mkdir -p builds/binaries
-          cp /tmp/build_result/Hanami ./builds/binaries/
+          cp /tmp/Hanami_build_result/Hanami ./builds/binaries/
       - 
         name: Generate code-docs
         run: |
@@ -840,14 +881,42 @@ jobs:
 
 
 
-  cleanup:
-    name: Delete build artifacts
-    needs: [ build_docs, kubernetes_test, ansible_test ]
-    if: always()
+  upload_files:
+    name: "Upload files to share"
+    needs: [ kubernetes_test, ansible_test ]
     runs-on: ubuntu-latest
+    env:
+      FORCE_COLOR: 1
     steps:
       - 
-        name: "Delete artifacts"
-        uses: geekyeggo/delete-artifact@v5
+        name: Set branch name as environment variable
+        run: |
+          if [[ ${GITHUB_REF#} == refs/tags/* ]]; then \
+              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/tags/} | sed 's/^v//')" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          else \
+              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          fi
+      -
+        name: Get artifact
+        uses: actions/download-artifact@v4
         with:
-          name: result
+          name: hanamictl_build_result
+          path: /tmp/hanamictl_build_result
+      - 
+        name: Prepare ssh-keys
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SHARE_SSH_PUBLIC_KEY }}" > ~/.ssh/id_rsa.pub
+          echo "${{ secrets.SHARE_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.SHARE_SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/id_rsa
+      -
+        name: Create remote directory, if not exist
+        run: |
+          ssh ${{ secrets.SHARE_SSH_ACCESS }} "mkdir -p ~/hanami_file_share/$BRANCH_NAME"
+      - 
+        name: Upload hanamictl
+        run: |
+          tar -czvf hanamictl_amd64_$BRANCH_NAME.tar.gz /tmp/hanamictl_build_result/hanamictl
+          scp hanamictl_amd64_$BRANCH_NAME.tar.gz ${{ secrets.SHARE_SSH_ACCESS }}:~/hanami_file_share/$BRANCH_NAME/
+
