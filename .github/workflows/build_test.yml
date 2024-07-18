@@ -68,6 +68,59 @@ jobs:
 
 
 
+  build_python_package:
+    name: "Build SDK python-package"
+    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check ]
+    runs-on: ubuntu-latest
+    env:
+      FORCE_COLOR: 1
+    steps:
+      - 
+        name: Set helm-version as environment variable
+        run: |
+          if [[ ${GITHUB_REF#} == refs/tags/* ]]; then \
+              echo "PYTHON_PACKAGE_VERSION=$(echo ${GITHUB_REF#refs/tags/} | sed 's/^v//')" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          else \
+              echo "PYTHON_PACKAGE_VERSION=0.0.0" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          fi
+      - 
+        name: Checkout repository
+        run: |
+          # use manually clone, because with the "actions/checkout@v3" action the name of the
+          # branch can not be read by the git commands, which is necessary for the build-script
+          git clone https://github.com/kitsudaiki/${GITHUB_REPOSITORY#*/}.git
+          cd ${GITHUB_REPOSITORY#*/}
+          git checkout ${GITHUB_REF#refs/heads/}
+      - 
+        name: Install dependencies for SDK
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y protobuf-compiler wget gzip python3 python3-pip
+          sudo pip3 install wheel
+      - 
+        name: Build python package
+        run: |
+          cd ${GITHUB_REPOSITORY#*/}/src/sdk/python/hanami_sdk/hanami_sdk
+          protoc --python_out=. --proto_path ../../../../libraries/hanami_messages/protobuffers  hanami_messages.proto3
+          cd ..
+          python3 setup.py bdist_wheel --universal
+      - 
+        name: Copy files
+        run: |
+          mkdir /tmp/hanami_python_build_result
+          cd ${GITHUB_REPOSITORY#*/}/src/sdk/python/hanami_sdk/dist
+          ls -l
+          cp ./hanami_sdk-$PYTHON_PACKAGE_VERSION-py2.py3-none-any.whl /tmp/hanami_python_build_result/
+      - 
+        name: Create artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hanami_python_build_result
+          path: /tmp/hanami_python_build_result
+          retention-days: 1
+
+
+
   build_helm_package:
     name: "Build Helm package"
     needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check ]
@@ -92,7 +145,7 @@ jobs:
           cd ${GITHUB_REPOSITORY#*/}
           git checkout ${GITHUB_REF#refs/heads/}
       - 
-        name: Compile code
+        name: Build helm chart
         run: |
           cd ${GITHUB_REPOSITORY#*/}/deploy/k8s/hanami
           helm package --version $HELM_VERSION .
@@ -343,9 +396,17 @@ jobs:
 
   sdk_api_tests:
     name: "SDK-API-Tests"
-    needs: [ unit_tests, memory_leak_tests, functional_tests ]
+    needs: [ unit_tests, memory_leak_tests, functional_tests, build_python_package ]
     runs-on: ubuntu-latest
     steps:
+      - 
+        name: Set python-version as environment variable
+        run: |
+          if [[ ${GITHUB_REF#} == refs/tags/* ]]; then \
+              echo "PYTHON_PACKAGE_VERSION=$(echo ${GITHUB_REF#refs/tags/} | sed 's/^v//')" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          else \
+              echo "PYTHON_PACKAGE_VERSION=0.0.0" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          fi
       - 
         name: Checkout repository
         run: |
@@ -360,6 +421,12 @@ jobs:
         name: Get artifact
         uses: actions/download-artifact@v4
         with:
+          name: hanami_python_build_result
+          path: /tmp/hanami_python_build_result
+      - 
+        name: Get artifact
+        uses: actions/download-artifact@v4
+        with:
           name: Hanami_build_result
           path: /tmp/Hanami_build_result
       - 
@@ -367,8 +434,9 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y protobuf-compiler wget gzip python3 python3-pip
-          cd ${GITHUB_REPOSITORY#*/}/src/sdk/python/hanami_sdk
-          pip3 install -U .
+          cd /tmp/hanami_python_build_result
+          ls -l
+          pip3 install -U hanami_sdk-$PYTHON_PACKAGE_VERSION-py2.py3-none-any.whl
       - 
         name: Build local docker-image
         run: |
@@ -415,6 +483,10 @@ jobs:
         name: Run test
         run: |
           cd ${GITHUB_REPOSITORY#*/}/testing/python_sdk_api
+          mkdir -p test_dir
+          cp sdk_api_test.py test_dir/
+          cp test_values.py test_dir/
+          cd test_dir
           /usr/bin/python3 sdk_api_test.py
       - 
         name: Get log of the docker-container, even if the test failed
@@ -671,6 +743,14 @@ jobs:
               echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
           fi
       - 
+        name: Set python-version as environment variable
+        run: |
+          if [[ ${GITHUB_REF#} == refs/tags/* ]]; then \
+              echo "PYTHON_PACKAGE_VERSION=$(echo ${GITHUB_REF#refs/tags/} | sed 's/^v//')" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          else \
+              echo "PYTHON_PACKAGE_VERSION=0.0.0" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          fi
+      - 
         name: Set helm-version as environment variable
         run: |
           if [[ ${GITHUB_REF#} == refs/tags/* ]]; then \
@@ -678,6 +758,20 @@ jobs:
           else \
               echo "HELM_VERSION=0.0.0" | sed 's#/#\-#' >> $GITHUB_ENV; \
           fi
+      - 
+        name: Get artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: hanami_python_build_result
+          path: /tmp/hanami_python_build_result
+      - 
+        name: Install dependencies for SDK
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y protobuf-compiler wget gzip python3 python3-pip
+          cd /tmp/hanami_python_build_result
+          ls -l
+          pip3 install -U hanami_sdk-$PYTHON_PACKAGE_VERSION-py2.py3-none-any.whl
       - 
         name: Check docker-tag
         run: echo "Docker-tag=$BRANCH_NAME"
@@ -739,13 +833,6 @@ jobs:
           ingress_ip=$(kubectl get ingress hanami-ingress -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
           echo "$ingress_ip  local-hanami" | sudo tee -a /etc/hosts
           cat /etc/hosts
-      -
-        name: Install dependencies for SDK
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y protobuf-compiler wget gzip python3 python3-pip
-          cd ${GITHUB_REPOSITORY#*/}/src/sdk/python/hanami_sdk
-          pip3 install -U .
       - 
         name: Download mnist-files
         run: |
@@ -768,6 +855,10 @@ jobs:
         name: Run test
         run: |
           cd ${GITHUB_REPOSITORY#*/}/testing/python_sdk_api
+          mkdir -p test_dir
+          cp sdk_api_test.py test_dir/
+          cp test_values.py test_dir/
+          cd test_dir
           /usr/bin/python3 sdk_api_test.py
 
 
@@ -798,8 +889,30 @@ jobs:
               echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
           fi
       - 
+        name: Set python-version as environment variable
+        run: |
+          if [[ ${GITHUB_REF#} == refs/tags/* ]]; then \
+              echo "PYTHON_PACKAGE_VERSION=$(echo ${GITHUB_REF#refs/tags/} | sed 's/^v//')" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          else \
+              echo "PYTHON_PACKAGE_VERSION=0.0.0" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          fi
+      - 
         name: Check docker-tag
         run: echo "Docker-tag=$BRANCH_NAME"
+      - 
+        name: Get artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: hanami_python_build_result
+          path: /tmp/hanami_python_build_result
+      - 
+        name: Install dependencies for SDK
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y protobuf-compiler wget gzip python3 python3-pip
+          cd /tmp/hanami_python_build_result
+          ls -l
+          pip3 install -U hanami_sdk-$PYTHON_PACKAGE_VERSION-py2.py3-none-any.whl
       - 
         name: Checkout repository
         run: |
@@ -830,13 +943,6 @@ jobs:
         run: |
           echo "127.0.0.1  local-hanami" | sudo tee -a /etc/hosts
           cat /etc/hosts
-      -
-        name: Install dependencies for SDK
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y protobuf-compiler wget gzip python3 python3-pip
-          cd ${GITHUB_REPOSITORY#*/}/src/sdk/python/hanami_sdk
-          pip3 install -U .
       - 
         name: Download mnist-files
         run: |
@@ -863,6 +969,10 @@ jobs:
         name: Run test
         run: |
           cd ${GITHUB_REPOSITORY#*/}/testing/python_sdk_api
+          mkdir -p test_dir
+          cp sdk_api_test.py test_dir/
+          cp test_values.py test_dir/
+          cd test_dir
           /usr/bin/python3 sdk_api_test.py
       - 
         name: Check docker-container
@@ -964,6 +1074,14 @@ jobs:
           else \
               echo "HELM_VERSION=0.0.0" | sed 's#/#\-#' >> $GITHUB_ENV; \
           fi
+      - 
+        name: Set python-version as environment variable
+        run: |
+          if [[ ${GITHUB_REF#} == refs/tags/* ]]; then \
+              echo "PYTHON_PACKAGE_VERSION=$(echo ${GITHUB_REF#refs/tags/} | sed 's/^v//')" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          else \
+              echo "PYTHON_PACKAGE_VERSION=0.0.0" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          fi
       -
         name: Get artifact
         uses: actions/download-artifact@v4
@@ -976,6 +1094,12 @@ jobs:
         with:
           name: hanami_helm_build_result
           path: /tmp/hanami_helm_build_result
+      - 
+        name: Get artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: hanami_python_build_result
+          path: /tmp/hanami_python_build_result
       - 
         name: Prepare ssh-keys
         run: |
@@ -1000,3 +1124,7 @@ jobs:
         name: Upload helm-chart
         run: |
           scp /tmp/hanami_helm_build_result/hanami-$HELM_VERSION.tgz ${{ secrets.SHARE_SSH_ACCESS }}:~/hanami_file_share/$BRANCH_NAME/helm-chart/
+      - 
+        name: Upload pip-package
+        run: |
+          scp /tmp/hanami_python_build_result/hanami_sdk-$PYTHON_PACKAGE_VERSION-py2.py3-none-any.whl ${{ secrets.SHARE_SSH_ACCESS }}:~/hanami_file_share/$BRANCH_NAME/python-package/
