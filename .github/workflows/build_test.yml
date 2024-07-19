@@ -68,8 +68,105 @@ jobs:
 
 
 
-  build:
-    name: "Compile code"
+  build_python_package:
+    name: "Build SDK python-package"
+    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check ]
+    runs-on: ubuntu-latest
+    env:
+      FORCE_COLOR: 1
+    steps:
+      - 
+        name: Set helm-version as environment variable
+        run: |
+          if [[ ${GITHUB_REF#} == refs/tags/* ]]; then \
+              echo "PYTHON_PACKAGE_VERSION=$(echo ${GITHUB_REF#refs/tags/} | sed 's/^v//')" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          else \
+              echo "PYTHON_PACKAGE_VERSION=0.0.0" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          fi
+      - 
+        name: Checkout repository
+        run: |
+          # use manually clone, because with the "actions/checkout@v3" action the name of the
+          # branch can not be read by the git commands, which is necessary for the build-script
+          git clone https://github.com/kitsudaiki/${GITHUB_REPOSITORY#*/}.git
+          cd ${GITHUB_REPOSITORY#*/}
+          git checkout ${GITHUB_REF#refs/heads/}
+      - 
+        name: Install dependencies for SDK
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y protobuf-compiler wget gzip python3 python3-pip
+          sudo pip3 install wheel
+      - 
+        name: Build python package
+        run: |
+          cd ${GITHUB_REPOSITORY#*/}/src/sdk/python/hanami_sdk/hanami_sdk
+          protoc --python_out=. --proto_path ../../../../libraries/hanami_messages/protobuffers  hanami_messages.proto3
+          cd ..
+          python3 setup.py bdist_wheel --universal
+      - 
+        name: Copy files
+        run: |
+          mkdir /tmp/hanami_python_build_result
+          cd ${GITHUB_REPOSITORY#*/}/src/sdk/python/hanami_sdk/dist
+          ls -l
+          cp ./hanami_sdk-$PYTHON_PACKAGE_VERSION-py2.py3-none-any.whl /tmp/hanami_python_build_result/
+      - 
+        name: Create artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hanami_python_build_result
+          path: /tmp/hanami_python_build_result
+          retention-days: 1
+
+
+
+  build_helm_package:
+    name: "Build Helm package"
+    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check ]
+    runs-on: ubuntu-latest
+    env:
+      FORCE_COLOR: 1
+    steps:
+      - 
+        name: Set helm-version as environment variable
+        run: |
+          if [[ ${GITHUB_REF#} == refs/tags/* ]]; then \
+              echo "HELM_VERSION=$(echo ${GITHUB_REF#refs/tags/} | sed 's/^v//')" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          else \
+              echo "HELM_VERSION=0.0.0" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          fi
+      - 
+        name: Checkout repository
+        run: |
+          # use manually clone, because with the "actions/checkout@v3" action the name of the
+          # branch can not be read by the git commands, which is necessary for the build-script
+          git clone https://github.com/kitsudaiki/${GITHUB_REPOSITORY#*/}.git
+          cd ${GITHUB_REPOSITORY#*/}
+          git checkout ${GITHUB_REF#refs/heads/}
+      - 
+        name: Build helm chart
+        run: |
+          cd ${GITHUB_REPOSITORY#*/}/deploy/k8s/hanami
+          helm package --version $HELM_VERSION .
+      - 
+        name: Copy files
+        run: |
+          mkdir /tmp/hanami_helm_build_result
+          cd ${GITHUB_REPOSITORY#*/}
+          cp ./deploy/k8s/hanami/hanami-$HELM_VERSION.tgz /tmp/hanami_helm_build_result/
+      - 
+        name: Create artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hanami_helm_build_result
+          path: /tmp/hanami_helm_build_result
+          retention-days: 1
+
+
+
+  build_hanami:
+    name: "Compile Hanami"
     needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check ]
     runs-on: ubuntu-latest
     env:
@@ -96,21 +193,63 @@ jobs:
       - 
         name: Copy files
         run: |
-          mkdir /tmp/build_result
+          mkdir /tmp/Hanami_build_result
           cd ${GITHUB_REPOSITORY#*/}
-          cp -r builds/binaries/* /tmp/build_result/
+          cp -r builds/binaries/* /tmp/Hanami_build_result/
       - 
         name: Create artifact
         uses: actions/upload-artifact@v4
         with:
-          name: result
-          path: /tmp/build_result
+          name: Hanami_build_result
+          path: /tmp/Hanami_build_result
+          retention-days: 1
+
+
+
+  build_hanamictl:
+    name: "Compile CLI"
+    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check ]
+    runs-on: ubuntu-latest
+    env:
+      FORCE_COLOR: 1
+    steps:
+      - uses: earthly/actions-setup@v1
+        with:
+          version: v0.8.0
+      - 
+        name: Checkout repository
+        run: |
+          # use manually clone, because with the "actions/checkout@v3" action the name of the
+          # branch can not be read by the git commands, which is necessary for the build-script
+          git clone https://github.com/kitsudaiki/${GITHUB_REPOSITORY#*/}.git
+          cd ${GITHUB_REPOSITORY#*/}
+          git checkout ${GITHUB_REF#refs/heads/}
+          git submodule init
+          git submodule update --recursive
+      - 
+        name: Compile code
+        run: |
+          cd ${GITHUB_REPOSITORY#*/}
+          earthly --artifact +compile-cli/tmp/hanamictl ./builds/
+      - 
+        name: Copy files
+        run: |
+          mkdir /tmp/hanamictl_build_result
+          cd ${GITHUB_REPOSITORY#*/}
+          cp -r builds/hanamictl /tmp/hanamictl_build_result/
+      - 
+        name: Create artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hanamictl_build_result
+          path: /tmp/hanamictl_build_result
+          retention-days: 1
 
 
 
   unit_tests:
     name: "Unit-Tests"
-    needs: build
+    needs: build_hanami
     runs-on: ubuntu-latest
     container:
       image: ubuntu:22.04
@@ -124,62 +263,62 @@ jobs:
         name: Get artifact
         uses: actions/download-artifact@v4
         with:
-          name: result
-          path: /tmp/build_result
+          name: Hanami_build_result
+          path: /tmp/Hanami_build_result
       - 
         name: "Check target-directory"
-        run: ls -l /tmp/build_result
+        run: ls -l /tmp/Hanami_build_result
       - 
         name: "Run test: hanami_common"
         run: |
-          chmod +x /tmp/build_result/hanami_common_unit_tests
-          /tmp/build_result/hanami_common_unit_tests
+          chmod +x /tmp/Hanami_build_result/hanami_common_unit_tests
+          /tmp/Hanami_build_result/hanami_common_unit_tests
       - 
         name: "Run test: hanami_config"
         run: |
-          chmod +x /tmp/build_result/hanami_config_unit_tests
-          /tmp/build_result/hanami_config_unit_tests
+          chmod +x /tmp/Hanami_build_result/hanami_config_unit_tests
+          /tmp/Hanami_build_result/hanami_config_unit_tests
       - 
         name: "Run test: hanami_crypto"
         run: |
-          chmod +x /tmp/build_result/hanami_crypto_unit_tests
-          /tmp/build_result/hanami_crypto_unit_tests
+          chmod +x /tmp/Hanami_build_result/hanami_crypto_unit_tests
+          /tmp/Hanami_build_result/hanami_crypto_unit_tests
       - 
         name: "Run test: hanami_ini"
         run: |
-          chmod +x /tmp/build_result/hanami_ini_unit_tests
-          /tmp/build_result/hanami_ini_unit_tests
+          chmod +x /tmp/Hanami_build_result/hanami_ini_unit_tests
+          /tmp/Hanami_build_result/hanami_ini_unit_tests
       - 
         name: "Run test: hanami_sqlite"
         run: |
-          chmod +x /tmp/build_result/hanami_sqlite_unit_tests
-          /tmp/build_result/hanami_sqlite_unit_tests
+          chmod +x /tmp/Hanami_build_result/hanami_sqlite_unit_tests
+          /tmp/Hanami_build_result/hanami_sqlite_unit_tests
       - 
         name: "Run test: hanami_cluster_parser"
         run: |
-          chmod +x /tmp/build_result/hanami_cluster_parser_unit_tests
-          /tmp/build_result/hanami_cluster_parser_unit_tests
+          chmod +x /tmp/Hanami_build_result/hanami_cluster_parser_unit_tests
+          /tmp/Hanami_build_result/hanami_cluster_parser_unit_tests
       - 
         name: "Run test: hanami_policies"
         run: |
-          chmod +x /tmp/build_result/hanami_policies_unit_tests
-          /tmp/build_result/hanami_policies_unit_tests
+          chmod +x /tmp/Hanami_build_result/hanami_policies_unit_tests
+          /tmp/Hanami_build_result/hanami_policies_unit_tests
       - 
         name: "Run test: hanami_args"
         run: |
-          chmod +x  /tmp/build_result/hanami_args_unit_tests
-          /tmp/build_result/hanami_args_unit_tests
+          chmod +x  /tmp/Hanami_build_result/hanami_args_unit_tests
+          /tmp/Hanami_build_result/hanami_args_unit_tests
       - 
         name: "Run test: Hanami"
         run: |
-          chmod +x  /tmp/build_result/Hanami_unittests
-          /tmp/build_result/Hanami_unittests
+          chmod +x  /tmp/Hanami_build_result/Hanami_unittests
+          /tmp/Hanami_build_result/Hanami_unittests
 
 
 
   memory_leak_tests:
     name: "Memory-Leak-Tests"
-    needs: build
+    needs: build_hanami
     runs-on: ubuntu-latest
     container:
       image: ubuntu:22.04
@@ -193,27 +332,27 @@ jobs:
         name: Get artifact
         uses: actions/download-artifact@v4
         with:
-          name: result
-          path: /tmp/build_result
+          name: Hanami_build_result
+          path: /tmp/Hanami_build_result
       - 
         name: "Check target-directory"
-        run: ls -l /tmp/build_result
+        run: ls -l /tmp/Hanami_build_result
       - 
         name: "Run test: hanami_common"
         run: |
-          chmod +x /tmp/build_result/hanami_common_memory_leak_tests
-          /tmp/build_result/hanami_common_memory_leak_tests
+          chmod +x /tmp/Hanami_build_result/hanami_common_memory_leak_tests
+          /tmp/Hanami_build_result/hanami_common_memory_leak_tests
       - 
         name: "Run test: hanami_cluster_parser"
         run: |
-          chmod +x /tmp/build_result/hanami_cluster_parser_memory_leak_tests
-          /tmp/build_result/hanami_cluster_parser_memory_leak_tests
+          chmod +x /tmp/Hanami_build_result/hanami_cluster_parser_memory_leak_tests
+          /tmp/Hanami_build_result/hanami_cluster_parser_memory_leak_tests
 
 
 
   functional_tests:
     name: "Functional-Tests"
-    needs: build
+    needs: build_hanami
     runs-on: ubuntu-latest
     container:
       image: ubuntu:22.04
@@ -227,39 +366,47 @@ jobs:
         name: Get artifact
         uses: actions/download-artifact@v4
         with:
-          name: result
-          path: /tmp/build_result
+          name: Hanami_build_result
+          path: /tmp/Hanami_build_result
       - 
         name: "Check target-directory"
-        run: ls -l /tmp/build_result
+        run: ls -l /tmp/Hanami_build_result
       - 
         name: "Run test: hanami_config"
         run: |
-          chmod +x /tmp/build_result/hanami_config_functional_tests
-          /tmp/build_result/hanami_config_functional_tests
+          chmod +x /tmp/Hanami_build_result/hanami_config_functional_tests
+          /tmp/Hanami_build_result/hanami_config_functional_tests
       # - 
       #  name: "Run test: hanami_obj"
       #   run: |
-      #     chmod +x /tmp/build_result/libraries/hanami_obj/tests/functional_tests/functional_tests
-      #     /tmp/build_result/libraries/hanami_obj/tests/functional_tests/functional_tests
+      #     chmod +x /tmp/Hanami_build_result/libraries/hanami_obj/tests/functional_tests/functional_tests
+      #     /tmp/Hanami_build_result/libraries/hanami_obj/tests/functional_tests/functional_tests
       - 
         name: "Run test: hanami_database"
         run: |
-          chmod +x /tmp/build_result/hanami_database_functional_tests
-          /tmp/build_result/hanami_database_functional_tests
+          chmod +x /tmp/Hanami_build_result/hanami_database_functional_tests
+          /tmp/Hanami_build_result/hanami_database_functional_tests
       # - 
       #  name: "Run test: hanami_network"
       #   run: |
-      #     chmod +x /tmp/build_result/libraries/hanami_network/tests/functional_tests/functional_tests
-      #     /tmp/build_result/libraries/hanami_network/tests/functional_tests/functional_tests
+      #     chmod +x /tmp/Hanami_build_result/libraries/hanami_network/tests/functional_tests/functional_tests
+      #     /tmp/Hanami_build_result/libraries/hanami_network/tests/functional_tests/functional_tests
 
 
 
   sdk_api_tests:
     name: "SDK-API-Tests"
-    needs: [ unit_tests, memory_leak_tests, functional_tests ]
+    needs: [ unit_tests, memory_leak_tests, functional_tests, build_python_package ]
     runs-on: ubuntu-latest
     steps:
+      - 
+        name: Set python-version as environment variable
+        run: |
+          if [[ ${GITHUB_REF#} == refs/tags/* ]]; then \
+              echo "PYTHON_PACKAGE_VERSION=$(echo ${GITHUB_REF#refs/tags/} | sed 's/^v//')" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          else \
+              echo "PYTHON_PACKAGE_VERSION=0.0.0" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          fi
       - 
         name: Checkout repository
         run: |
@@ -274,22 +421,29 @@ jobs:
         name: Get artifact
         uses: actions/download-artifact@v4
         with:
-          name: result
-          path: /tmp/build_result
+          name: hanami_python_build_result
+          path: /tmp/hanami_python_build_result
+      - 
+        name: Get artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Hanami_build_result
+          path: /tmp/Hanami_build_result
       - 
         name: Install dependencies for SDK
         run: |
           sudo apt-get update
           sudo apt-get install -y protobuf-compiler wget gzip python3 python3-pip
-          cd ${GITHUB_REPOSITORY#*/}/src/sdk/python/hanami_sdk
-          pip3 install -U .
+          cd /tmp/hanami_python_build_result
+          ls -l
+          pip3 install -U hanami_sdk-$PYTHON_PACKAGE_VERSION-py2.py3-none-any.whl
       - 
         name: Build local docker-image
         run: |
           cd ${GITHUB_REPOSITORY#*/}
-          chmod +x /tmp/build_result/Hanami
+          chmod +x /tmp/Hanami_build_result/Hanami
           mkdir -p builds/binaries
-          cp /tmp/build_result/Hanami ./builds/binaries/
+          cp /tmp/Hanami_build_result/Hanami ./builds/binaries/
           # IMPORTANT: use the Dockerfile instead of the Earthfile here, 
           # because the Dockerfile is also used in the final build-process.
           # So using the Dockerfile here to ensure, the final build after 
@@ -329,6 +483,10 @@ jobs:
         name: Run test
         run: |
           cd ${GITHUB_REPOSITORY#*/}/testing/python_sdk_api
+          mkdir -p test_dir
+          cp sdk_api_test.py test_dir/
+          cp test_values.py test_dir/
+          cd test_dir
           /usr/bin/python3 sdk_api_test.py
       - 
         name: Get log of the docker-container, even if the test failed
@@ -339,7 +497,7 @@ jobs:
 
   cli_api_tests:
     name: "CLI-API-Tests"
-    needs: [ unit_tests, memory_leak_tests, functional_tests ]
+    needs: [ build_hanamictl, unit_tests, memory_leak_tests, functional_tests ]
     runs-on: ubuntu-latest
     steps:
       - 
@@ -356,25 +514,26 @@ jobs:
         name: Get artifact
         uses: actions/download-artifact@v4
         with:
-          name: result
-          path: /tmp/build_result
+          name: Hanami_build_result
+          path: /tmp/Hanami_build_result
+      -
+        name: Get artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: hanamictl_build_result
+          path: /tmp/hanamictl_build_result
       - 
-        name: Install go
+        name: Build local docker-image
         run: |
-          wget -c https://go.dev/dl/go1.22.5.linux-amd64.tar.gz
-          sudo tar -C /usr/local/ -xzf go1.22.5.linux-amd64.tar.gz
-      - 
-        name: Install protobuf
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y protobuf-compiler golang-goprotobuf-dev
+          chmod +x /tmp/hanamictl_build_result/hanamictl
+          cp /tmp/hanamictl_build_result/hanamictl ${GITHUB_REPOSITORY#*/}/testing/go_cli_api/
       - 
         name: Build local docker-image
         run: |
           cd ${GITHUB_REPOSITORY#*/}
-          chmod +x /tmp/build_result/Hanami
+          chmod +x /tmp/Hanami_build_result/Hanami
           mkdir -p builds/binaries
-          cp /tmp/build_result/Hanami ./builds/binaries/
+          cp /tmp/Hanami_build_result/Hanami ./builds/binaries/
           # IMPORTANT: use the Dockerfile instead of the Earthfile here, 
           # because the Dockerfile is also used in the final build-process.
           # So using the Dockerfile here to ensure, the final build after 
@@ -420,6 +579,7 @@ jobs:
         name: Get log of the docker-container, even if the test failed
         if: always()
         run: docker logs hanami
+
 
 
   docker_build:
@@ -563,7 +723,7 @@ jobs:
   kubernetes_test:
     name: "Integration-Tests (Kubernetes)"
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
-    needs: [ docker_merge ]
+    needs: [ docker_merge, build_helm_package ]
     runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
@@ -583,6 +743,36 @@ jobs:
               echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
           fi
       - 
+        name: Set python-version as environment variable
+        run: |
+          if [[ ${GITHUB_REF#} == refs/tags/* ]]; then \
+              echo "PYTHON_PACKAGE_VERSION=$(echo ${GITHUB_REF#refs/tags/} | sed 's/^v//')" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          else \
+              echo "PYTHON_PACKAGE_VERSION=0.0.0" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          fi
+      - 
+        name: Set helm-version as environment variable
+        run: |
+          if [[ ${GITHUB_REF#} == refs/tags/* ]]; then \
+              echo "HELM_VERSION=$(echo ${GITHUB_REF#refs/tags/} | sed 's/^v//')" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          else \
+              echo "HELM_VERSION=0.0.0" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          fi
+      - 
+        name: Get artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: hanami_python_build_result
+          path: /tmp/hanami_python_build_result
+      - 
+        name: Install dependencies for SDK
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y protobuf-compiler wget gzip python3 python3-pip
+          cd /tmp/hanami_python_build_result
+          ls -l
+          pip3 install -U hanami_sdk-$PYTHON_PACKAGE_VERSION-py2.py3-none-any.whl
+      - 
         name: Check docker-tag
         run: echo "Docker-tag=$BRANCH_NAME"
       - 
@@ -595,6 +785,12 @@ jobs:
           git checkout ${GITHUB_REF#refs/heads/}
           git submodule init
           git submodule update --recursive
+      -
+        name: Get helm-chart artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: hanami_helm_build_result
+          path: /tmp/hanami_helm_build_result
       - 
         name: Install dependencies for SDK
         run: |
@@ -625,8 +821,7 @@ jobs:
       -
         name: Install Hanami
         run: |
-          cd ${GITHUB_REPOSITORY#*/}/deploy/k8s
-          helm install --set docker.tag="${{ env.BRANCH_NAME }}" --set user.id=asdf --set user.name="test user" --set user.pw="asdfasdf" --set token.pw="11111111" --set api.domain=local-hanami  hanami ./hanami/
+          helm install --set docker.tag="${{ env.BRANCH_NAME }}" --set user.id=asdf --set user.name="test user" --set user.pw="asdfasdf" --set token.pw="11111111" --set api.domain=local-hanami  hanami /tmp/hanami_helm_build_result/hanami-$HELM_VERSION.tgz
       - 
         name: Sleep for 60 seconds
         uses: jakejarvis/wait-action@master
@@ -638,13 +833,6 @@ jobs:
           ingress_ip=$(kubectl get ingress hanami-ingress -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
           echo "$ingress_ip  local-hanami" | sudo tee -a /etc/hosts
           cat /etc/hosts
-      -
-        name: Install dependencies for SDK
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y protobuf-compiler wget gzip python3 python3-pip
-          cd ${GITHUB_REPOSITORY#*/}/src/sdk/python/hanami_sdk
-          pip3 install -U .
       - 
         name: Download mnist-files
         run: |
@@ -667,6 +855,10 @@ jobs:
         name: Run test
         run: |
           cd ${GITHUB_REPOSITORY#*/}/testing/python_sdk_api
+          mkdir -p test_dir
+          cp sdk_api_test.py test_dir/
+          cp test_values.py test_dir/
+          cd test_dir
           /usr/bin/python3 sdk_api_test.py
 
 
@@ -697,8 +889,30 @@ jobs:
               echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
           fi
       - 
+        name: Set python-version as environment variable
+        run: |
+          if [[ ${GITHUB_REF#} == refs/tags/* ]]; then \
+              echo "PYTHON_PACKAGE_VERSION=$(echo ${GITHUB_REF#refs/tags/} | sed 's/^v//')" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          else \
+              echo "PYTHON_PACKAGE_VERSION=0.0.0" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          fi
+      - 
         name: Check docker-tag
         run: echo "Docker-tag=$BRANCH_NAME"
+      - 
+        name: Get artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: hanami_python_build_result
+          path: /tmp/hanami_python_build_result
+      - 
+        name: Install dependencies for SDK
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y protobuf-compiler wget gzip python3 python3-pip
+          cd /tmp/hanami_python_build_result
+          ls -l
+          pip3 install -U hanami_sdk-$PYTHON_PACKAGE_VERSION-py2.py3-none-any.whl
       - 
         name: Checkout repository
         run: |
@@ -729,13 +943,6 @@ jobs:
         run: |
           echo "127.0.0.1  local-hanami" | sudo tee -a /etc/hosts
           cat /etc/hosts
-      -
-        name: Install dependencies for SDK
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y protobuf-compiler wget gzip python3 python3-pip
-          cd ${GITHUB_REPOSITORY#*/}/src/sdk/python/hanami_sdk
-          pip3 install -U .
       - 
         name: Download mnist-files
         run: |
@@ -762,6 +969,10 @@ jobs:
         name: Run test
         run: |
           cd ${GITHUB_REPOSITORY#*/}/testing/python_sdk_api
+          mkdir -p test_dir
+          cp sdk_api_test.py test_dir/
+          cp test_values.py test_dir/
+          cd test_dir
           /usr/bin/python3 sdk_api_test.py
       - 
         name: Check docker-container
@@ -774,7 +985,7 @@ jobs:
 
   build_docs:
     name: Build and push docs
-    needs: [ docker_merge ]
+    needs: [ kubernetes_test, ansible_test ]
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
     env:
@@ -799,8 +1010,8 @@ jobs:
         name: Get artifact
         uses: actions/download-artifact@v4
         with:
-          name: result
-          path: /tmp/build_result
+          name: Hanami_build_result
+          path: /tmp/Hanami_build_result
       - 
         name: Checkout repository
         run: |
@@ -815,9 +1026,9 @@ jobs:
         name: Prepare Binary
         run: |
           cd ${GITHUB_REPOSITORY#*/}
-          chmod +x /tmp/build_result/Hanami
+          chmod +x /tmp/Hanami_build_result/Hanami
           mkdir -p builds/binaries
-          cp /tmp/build_result/Hanami ./builds/binaries/
+          cp /tmp/Hanami_build_result/Hanami ./builds/binaries/
       - 
         name: Generate code-docs
         run: |
@@ -840,14 +1051,80 @@ jobs:
 
 
 
-  cleanup:
-    name: Delete build artifacts
-    needs: [ build_docs, kubernetes_test, ansible_test ]
-    if: always()
+  upload_files:
+    name: "Upload files to share"
+    needs: [ kubernetes_test, ansible_test ]
     runs-on: ubuntu-latest
+    env:
+      FORCE_COLOR: 1
     steps:
       - 
-        name: "Delete artifacts"
-        uses: geekyeggo/delete-artifact@v5
+        name: Set branch name as environment variable
+        run: |
+          if [[ ${GITHUB_REF#} == refs/tags/* ]]; then \
+              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/tags/} | sed 's/^v//')" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          else \
+              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          fi
+      - 
+        name: Set helm-version as environment variable
+        run: |
+          if [[ ${GITHUB_REF#} == refs/tags/* ]]; then \
+              echo "HELM_VERSION=$(echo ${GITHUB_REF#refs/tags/} | sed 's/^v//')" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          else \
+              echo "HELM_VERSION=0.0.0" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          fi
+      - 
+        name: Set python-version as environment variable
+        run: |
+          if [[ ${GITHUB_REF#} == refs/tags/* ]]; then \
+              echo "PYTHON_PACKAGE_VERSION=$(echo ${GITHUB_REF#refs/tags/} | sed 's/^v//')" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          else \
+              echo "PYTHON_PACKAGE_VERSION=0.0.0" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          fi
+      -
+        name: Get artifact
+        uses: actions/download-artifact@v4
         with:
-          name: result
+          name: hanamictl_build_result
+          path: /tmp/hanamictl_build_result
+      -
+        name: Get helm-chart artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: hanami_helm_build_result
+          path: /tmp/hanami_helm_build_result
+      - 
+        name: Get artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: hanami_python_build_result
+          path: /tmp/hanami_python_build_result
+      - 
+        name: Prepare ssh-keys
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SHARE_SSH_PUBLIC_KEY }}" > ~/.ssh/id_rsa.pub
+          echo "${{ secrets.SHARE_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.SHARE_SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/id_rsa
+      -
+        name: Create remote directory, if not exist
+        run: |
+          ssh ${{ secrets.SHARE_SSH_ACCESS }} "mkdir -p ~/hanami_file_share/$BRANCH_NAME"
+          ssh ${{ secrets.SHARE_SSH_ACCESS }} "mkdir -p ~/hanami_file_share/$BRANCH_NAME/helm-chart"
+          ssh ${{ secrets.SHARE_SSH_ACCESS }} "mkdir -p ~/hanami_file_share/$BRANCH_NAME/python-package"
+          ssh ${{ secrets.SHARE_SSH_ACCESS }} "mkdir -p ~/hanami_file_share/$BRANCH_NAME/client"
+      - 
+        name: Upload hanamictl
+        run: |
+          tar -czvf hanamictl_amd64_$BRANCH_NAME.tar.gz /tmp/hanamictl_build_result/hanamictl
+          scp hanamictl_amd64_$BRANCH_NAME.tar.gz ${{ secrets.SHARE_SSH_ACCESS }}:~/hanami_file_share/$BRANCH_NAME/client/
+      - 
+        name: Upload helm-chart
+        run: |
+          scp /tmp/hanami_helm_build_result/hanami-$HELM_VERSION.tgz ${{ secrets.SHARE_SSH_ACCESS }}:~/hanami_file_share/$BRANCH_NAME/helm-chart/
+      - 
+        name: Upload pip-package
+        run: |
+          scp /tmp/hanami_python_build_result/hanami_sdk-$PYTHON_PACKAGE_VERSION-py2.py3-none-any.whl ${{ secrets.SHARE_SSH_ACCESS }}:~/hanami_file_share/$BRANCH_NAME/python-package/

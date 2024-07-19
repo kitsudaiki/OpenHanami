@@ -1,6 +1,9 @@
 from setuptools import setup
 from setuptools.command.install import install
 from subprocess import check_call
+import os
+
+version = os.getenv('PYTHON_PACKAGE_VERSION', '0.0.0')
 
 
 class GenerateProtobufMessages(install):
@@ -18,7 +21,7 @@ class GenerateProtobufMessages(install):
 
 setup(
     name='hanami_sdk',
-    version='0.4.0b0',
+    version=version,
     description='SDK library for Hanami',
     url='https://github.com/kitsudaiki/Hanami',
     author='Tobias Anker',
@@ -27,7 +30,7 @@ setup(
     packages=['hanami_sdk', 'hanami_sdk.hanami_messages'],
     install_requires=['jsonschema==3.2.0',
                       'protobuf==3.19.6',
-                      'requests==2.31.0',
+                      'requests==2.32.0',
                       'simplejson==3.17.6',
                       'websockets==12.0'],
     cmdclass={
