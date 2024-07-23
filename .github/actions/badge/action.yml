@@ -1,0 +1,26 @@
+name: Regular badging sequence
+description: Publishes a badge based on the job status
+inputs:
+  category:
+    description: The subfolder where to group the badges
+    required: true
+  badges:
+    description: A json object of label => status for all badges
+    required: true
+  github_token:
+    description: The token to use to publish the changes
+    required: true
+runs:
+  using: composite
+  steps:
+    - run: |
+        python ./.github/actions/badge/generate_badges.py ${{ inputs.category }} '${{ inputs.badges }}'
+      shell: bash
+    - uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ inputs.github_token }}
+        publish_branch: badges
+        publish_dir: ./badges
+        keep_files: true
+        user_name: "github-actions[bot]"
+        user_email: "github-actions[bot]@users.noreply.github.com"

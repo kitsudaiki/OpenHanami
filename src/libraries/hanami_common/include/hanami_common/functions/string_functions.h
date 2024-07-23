@@ -23,6 +23,8 @@
 #ifndef STRING_FUNCTIONS_H
 #define STRING_FUNCTIONS_H
 
+#include <stdint.h>
+
 #include <algorithm>
 #include <iostream>
 #include <sstream>

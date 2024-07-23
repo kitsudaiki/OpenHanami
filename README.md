@@ -1,6 +1,6 @@
 # Hanami
 
-![Github workfloat status](https://img.shields.io/github/actions/workflow/status/kitsudaiki/Hanami/build_test.yml?branch=develop&style=flat-square&label=build%20and%20test)
+![Github workflow status](https://img.shields.io/github/actions/workflow/status/kitsudaiki/Hanami/build_test.yml?branch=develop&style=flat-square&label=build%20and%20test)
 ![GitHub release](https://img.shields.io/github/v/release/kitsudaiki/Hanami?include_prereleases&label=version&style=flat-square)
 ![GitHub](https://img.shields.io/github/license/kitsudaiki/Hanami-AI?style=flat-square)
 ![Platform](https://img.shields.io/badge/Platform-Linux--x64|arm64-lightgrey?style=flat-square)
@@ -14,6 +14,43 @@
 ## Intro
 
 Hanami contains in its core a custom concept for neural networks, which are very flexible in their behavior and structure, which is packed in an as-a-Service backend. The backend is completely written from scratch in C++.
+
+## Compiler
+
+| C++ Compiler | 
+| --- |
+| [![ubuntu-2204_clang-13][img_ubuntu-2204_clang-13]][Workflow] |
+| [![ubuntu-2204_clang-14][img_ubuntu-2204_clang-14]][Workflow] |
+| [![ubuntu-2204_clang-15][img_ubuntu-2204_clang-15]][Workflow] |
+| [![ubuntu-2404_clang-15][img_ubuntu-2404_clang-15]][Workflow] |
+| [![ubuntu-2404_clang-16][img_ubuntu-2404_clang-16]][Workflow] |
+| [![ubuntu-2404_clang-17][img_ubuntu-2404_clang-17]][Workflow] |
+| [![ubuntu-2404_clang-18][img_ubuntu-2404_clang-18]][Workflow] |
+| [![ubuntu-2204_gcc-10][img_ubuntu-2204_gcc-10]][Workflow] |
+| [![ubuntu-2204_gcc-11][img_ubuntu-2204_gcc-11]][Workflow] |
+| [![ubuntu-2204_gcc-12][img_ubuntu-2204_gcc-12]][Workflow] |
+| [![ubuntu-2404_gcc-12][img_ubuntu-2404_gcc-12]][Workflow] |
+| [![ubuntu-2404_gcc-13][img_ubuntu-2404_gcc-13]][Workflow] |
+| [![ubuntu-2404_gcc-14][img_ubuntu-2404_gcc-14]][Workflow] |
+
+
+[img_ubuntu-2204_clang-13]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami/badges/compiler/ubuntu-2204_clang-13/shields.json&style=flat-square
+[img_ubuntu-2204_clang-14]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami/badges/compiler/ubuntu-2204_clang-14/shields.json&style=flat-square
+[img_ubuntu-2204_clang-15]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami/badges/compiler/ubuntu-2204_clang-15/shields.json&style=flat-square
+[img_ubuntu-2404_clang-15]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami/badges/compiler/ubuntu-2404_clang-15/shields.json&style=flat-square
+[img_ubuntu-2404_clang-16]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami/badges/compiler/ubuntu-2404_clang-16/shields.json&style=flat-square
+[img_ubuntu-2404_clang-17]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami/badges/compiler/ubuntu-2404_clang-17/shields.json&style=flat-square
+[img_ubuntu-2404_clang-18]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami/badges/compiler/ubuntu-2404_clang-18/shields.json&style=flat-square
+[img_ubuntu-2204_gcc-10]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami/badges/compiler/ubuntu-2204_gcc-10/shields.json&style=flat-square
+[img_ubuntu-2204_gcc-11]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami/badges/compiler/ubuntu-2204_gcc-11/shields.json&style=flat-square
+[img_ubuntu-2204_gcc-12]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami/badges/compiler/ubuntu-2204_gcc-12/shields.json&style=flat-square
+[img_ubuntu-2404_gcc-12]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami/badges/compiler/ubuntu-2404_gcc-12/shields.json&style=flat-square
+[img_ubuntu-2404_gcc-13]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami/badges/compiler/ubuntu-2404_gcc-13/shields.json&style=flat-square
+[img_ubuntu-2404_gcc-14]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami/badges/compiler/ubuntu-2404_gcc-14/shields.json&style=flat-square
+
+[Workflow]: https://github.com/kitsudaiki/Hanami/actions/workflows/build_test.yml 
+
+
 
 ## Initial goal
 
