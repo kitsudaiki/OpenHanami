@@ -258,7 +258,7 @@ jobs:
         name: Install dependencies
         run: |
           apt-get update
-          apt-get install -y openssl libuuid1 libcrypto++8 libsqlite3-0 libprotobuf23 libboost1.74 libcudart11.0
+          apt-get install -y openssl libuuid1 libcrypto++8 libsqlite3-0 libprotobuf23 libboost1.74
       - 
         name: Get artifact
         uses: actions/download-artifact@v4
@@ -327,7 +327,7 @@ jobs:
         name: Install dependencies
         run: |
           apt-get update
-          apt-get install -y openssl libuuid1 libcrypto++8 libsqlite3-0 libprotobuf23 libboost1.74 libcudart11.0
+          apt-get install -y openssl libuuid1 libcrypto++8 libsqlite3-0 libprotobuf23 libboost1.74
       - 
         name: Get artifact
         uses: actions/download-artifact@v4
@@ -361,7 +361,7 @@ jobs:
         name: Install dependencies
         run: |
           apt-get update
-          apt-get install -y openssl libuuid1 libcrypto++8 libsqlite3-0 libprotobuf23 libboost1.74 libcudart11.0
+          apt-get install -y openssl libuuid1 libcrypto++8 libsqlite3-0 libprotobuf23 libboost1.74
       - 
         name: Get artifact
         uses: actions/download-artifact@v4

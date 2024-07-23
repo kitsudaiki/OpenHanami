@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
-project(Hanami CXX CUDA)
+project(Hanami CXX)
+
+# see https://github.com/kitsudaiki/Hanami/issues/377
+# project(Hanami CXX CUDA)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -208,7 +211,8 @@ set(SOURCES
 add_executable(Hanami
     ${SOURCES}
     src/main.cpp
-    ${CUDA_OUTPUT_OBJ}
+    # see https://github.com/kitsudaiki/Hanami/issues/377
+    # ${CUDA_OUTPUT_OBJ}
 )
 add_executable(Hanami_unittests
     ${SOURCES}
@@ -233,10 +237,11 @@ add_executable(Hanami_unittests
     tests/unit_tests/database/users_table_test.cpp
     tests/unit_tests/database/users_table_test.h
     tests/unit_tests/main.cpp
-    ${CUDA_IO_OBJ}
-    ${CUDA_PROCESSING_OBJ}
-    ${CUDA_BACKPROPAGATION_OBJ}
-    ${CUDA_REDUCTION_OBJ}
+    # see https://github.com/kitsudaiki/Hanami/issues/377
+    # ${CUDA_IO_OBJ}
+    # ${CUDA_PROCESSING_OBJ}
+    # ${CUDA_BACKPROPAGATION_OBJ}
+    # ${CUDA_REDUCTION_OBJ}
 )
 
 # Including directories
@@ -261,14 +266,15 @@ include_directories(
 # Finding required packages or libraries
 find_package(OpenSSL REQUIRED)
 find_package(Threads REQUIRED)
-find_package(CUDA REQUIRED)
-find_library(CUDA_LIB cuda)
-find_library(CUDART_LIB cudart)
 find_library(SSL_LIB ssl)
 find_library(CRYPTO_LIB crypto)
 find_library(SQLITE3_LIB sqlite3)
 find_library(UUID_LIB uuid)
 find_library(PROTOBUF_LIB protobuf)
+# see https://github.com/kitsudaiki/Hanami/issues/377
+# find_package(CUDA REQUIRED)
+# find_library(CUDA_LIB cuda)
+# find_library(CUDART_LIB cudart)
 
 # Linking libraries to the executable
 target_link_libraries(Hanami
@@ -287,8 +293,9 @@ target_link_libraries(Hanami
     ${CRYPTO_LIB}
     ${SQLITE3_LIB}
     ${UUID_LIB}
-    ${CUDA_LIB}
-    ${CUDART_LIB}
+    # see https://github.com/kitsudaiki/Hanami/issues/377
+    # ${CUDA_LIB}
+    # ${CUDART_LIB}
     ${PROTOBUF_LIB}
     Threads::Threads
     OpenSSL::SSL
@@ -309,8 +316,9 @@ target_link_libraries(Hanami_unittests
     ${CRYPTO_LIB}
     ${SQLITE3_LIB}
     ${UUID_LIB}
-    ${CUDA_LIB}
-    ${CUDART_LIB}
+    # see https://github.com/kitsudaiki/Hanami/issues/377
+    # ${CUDA_LIB}
+    # ${CUDART_LIB}
     ${PROTOBUF_LIB}
     Threads::Threads
     OpenSSL::SSL
@@ -323,10 +331,11 @@ set(PROTO_FILE ../libraries/hanami_messages/protobuffers)
 set(PROTO_OUTPUT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(PROTO_OUTPUT_HEADER ${PROTO_OUTPUT_DIR}/${PROTO_FILE}/hanami_messages.proto3.pb.h)
 set(PROTO_OUTPUT_SOURCE ${PROTO_OUTPUT_DIR}/${PROTO_FILE}/hanami_messages.proto3.pb.cc)
-set(CUDA_IO_OBJ ${CMAKE_CURRENT_BINARY_DIR}/cuda_io.o)
-set(CUDA_PROCESSING_OBJ ${CMAKE_CURRENT_BINARY_DIR}/processing.o)
-set(CUDA_BACKPROPAGATION_OBJ ${CMAKE_CURRENT_BINARY_DIR}/backpropagation.o)
-set(CUDA_REDUCTION_OBJ ${CMAKE_CURRENT_BINARY_DIR}/reduction.o)
+# see https://github.com/kitsudaiki/Hanami/issues/377
+# set(CUDA_IO_OBJ ${CMAKE_CURRENT_BINARY_DIR}/cuda_io.o)
+# set(CUDA_PROCESSING_OBJ ${CMAKE_CURRENT_BINARY_DIR}/processing.o)
+# set(CUDA_BACKPROPAGATION_OBJ ${CMAKE_CURRENT_BINARY_DIR}/backpropagation.o)
+# set(CUDA_REDUCTION_OBJ ${CMAKE_CURRENT_BINARY_DIR}/reduction.o)
 
 # Generate C++ headers and sources from the .proto file
 add_custom_command(
@@ -341,45 +350,46 @@ add_custom_command(
         ${CMAKE_CURRENT_SOURCE_DIR}/${PROTO_FILE}/hanami_messages.proto3
 )
 
-add_custom_command(
-    OUTPUT
-        ${CUDA_IO_OBJ}
-        ${CUDA_PROCESSING_OBJ}
-        ${CUDA_BACKPROPAGATION_OBJ}
-        ${CUDA_REDUCTION_OBJ}
-    COMMAND nvcc
-        -O3
-        -c
-        -I${CMAKE_CURRENT_SOURCE_DIR}/../libraries/hanami_common/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/processing/cuda/processing.cu
-        -o ${CUDA_PROCESSING_OBJ}
-    COMMAND nvcc
-        -O3
-        -c
-        -I${CMAKE_CURRENT_SOURCE_DIR}/../libraries/hanami_common/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/processing/cuda/backpropagation.cu
-        -o ${CUDA_BACKPROPAGATION_OBJ}
+# see https://github.com/kitsudaiki/Hanami/issues/377
+#add_custom_command(
+#    OUTPUT
+#        ${CUDA_IO_OBJ}
+#        ${CUDA_PROCESSING_OBJ}
+#        ${CUDA_BACKPROPAGATION_OBJ}
+#        ${CUDA_REDUCTION_OBJ}
+#    COMMAND nvcc
+#        -O3
+#        -c
+#        -I${CMAKE_CURRENT_SOURCE_DIR}/../libraries/hanami_common/include
+#        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/processing/cuda/processing.cu
+#        -o ${CUDA_PROCESSING_OBJ}
+#    COMMAND nvcc
+#        -O3
+#        -c
+#        -I${CMAKE_CURRENT_SOURCE_DIR}/../libraries/hanami_common/include
+#        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/processing/cuda/backpropagation.cu
+#        -o ${CUDA_BACKPROPAGATION_OBJ}
 
-    COMMAND nvcc
-        -O3
-        -c
-        -I${CMAKE_CURRENT_SOURCE_DIR}/../libraries/hanami_common/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/processing/cuda/reduction.cu
-        -o ${CUDA_REDUCTION_OBJ}
+#    COMMAND nvcc
+#        -O3
+#        -c
+#        -I${CMAKE_CURRENT_SOURCE_DIR}/../libraries/hanami_common/include
+#        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/processing/cuda/reduction.cu
+#        -o ${CUDA_REDUCTION_OBJ}
 
-    COMMAND nvcc
-        -O3
-        -c
-        -I${CMAKE_CURRENT_SOURCE_DIR}/../libraries/hanami_common/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/processing/cuda/cuda_io.cu
-        -o ${CUDA_IO_OBJ}
+#    COMMAND nvcc
+#        -O3
+#        -c
+#        -I${CMAKE_CURRENT_SOURCE_DIR}/../libraries/hanami_common/include
+#        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/processing/cuda/cuda_io.cu
+#        -o ${CUDA_IO_OBJ}
 
-    DEPENDS
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/processing/cuda/cuda_io.cu
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/processing/cuda/processing.cu
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/processing/cuda/backpropagation.cu
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/processing/cuda/reduction.cu
-)
+#    DEPENDS
+#        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/processing/cuda/cuda_io.cu
+#        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/processing/cuda/processing.cu
+#        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/processing/cuda/backpropagation.cu
+#        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/processing/cuda/reduction.cu
+#)
 
 
 # Add dependencies on the targets representing the generated files
@@ -387,31 +397,35 @@ add_custom_target(generate_protobuf_files DEPENDS
     ${PROTO_OUTPUT_HEADER}
     ${PROTO_OUTPUT_SOURCE}
 )
-add_dependencies(Hanami generate_protobuf_files)
-add_custom_target(compile_cuda_kernel DEPENDS
-    ${CUDA_IO_OBJ}
-    ${CUDA_PROCESSING_OBJ}
-    ${CUDA_BACKPROPAGATION_OBJ}
-    ${CUDA_REDUCTION_OBJ}
-)
-add_dependencies(Hanami compile_cuda_kernel)
+# see https://github.com/kitsudaiki/Hanami/issues/377
+# add_dependencies(Hanami generate_protobuf_files)
+# add_custom_target(compile_cuda_kernel DEPENDS
+#     ${CUDA_IO_OBJ}
+#     ${CUDA_PROCESSING_OBJ}
+#     ${CUDA_BACKPROPAGATION_OBJ}
+# #     ${CUDA_REDUCTION_OBJ}
+# )
+# add_dependencies(Hanami compile_cuda_kernel)
 
 target_sources(Hanami PRIVATE
     ${PROTO_OUTPUT_HEADER}
     ${PROTO_OUTPUT_SOURCE}
-    ${CUDA_IO_OBJ}
-    ${CUDA_PROCESSING_OBJ}
-    ${CUDA_BACKPROPAGATION_OBJ}
-    ${CUDA_REDUCTION_OBJ}
+    # see https://github.com/kitsudaiki/Hanami/issues/377
+    # ${CUDA_IO_OBJ}
+    # ${CUDA_PROCESSING_OBJ}
+    # ${CUDA_BACKPROPAGATION_OBJ}
+    # ${CUDA_REDUCTION_OBJ}
 )
+# see https://github.com/kitsudaiki/Hanami/issues/377
+# add_dependencies(Hanami_unittests compile_cuda_kernel)
 add_dependencies(Hanami_unittests generate_protobuf_files)
-add_dependencies(Hanami_unittests compile_cuda_kernel)
 target_sources(Hanami_unittests PRIVATE
     ${PROTO_OUTPUT_HEADER}
     ${PROTO_OUTPUT_SOURCE}
-    ${CUDA_IO_OBJ}
-    ${CUDA_PROCESSING_OBJ}
-    ${CUDA_BACKPROPAGATION_OBJ}
-    ${CUDA_REDUCTION_OBJ}
+    # see https://github.com/kitsudaiki/Hanami/issues/377
+    # ${CUDA_IO_OBJ}
+    # ${CUDA_PROCESSING_OBJ}
+    # ${CUDA_BACKPROPAGATION_OBJ}
+    # ${CUDA_REDUCTION_OBJ}
 )
 

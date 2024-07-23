@@ -18,7 +18,7 @@ Hanami contains in its core a custom concept for neural networks, which are very
 ## Initial goal
 
 I started this project without a specific use-case in mind. The only goal was to create a neural network, which is much more dynamic, compared to other classical networks, in regard of learning behavior and structure. It should behave more like the human brain. So it was basically a private research project.
-But it also shouldn't be only a simple PoC. I also wanted a good performance, so I written it in C++, optimized the data-structure many time and added multi-threading and CUDA-support.
+But it also shouldn't be only a simple PoC. I also wanted a good performance, so I written it in C++, optimized the data-structure many time and added multi-threading.
 Mostly it was tested so far with the MNIST-test, because this is the Hello-world of neural networks, but also other little constructed examples.
 
 Despite the missing goal of the concept, this entire project was and still is a very good base for me to improve my developer skills and learn new technologies.
@@ -62,8 +62,8 @@ Like already written above, it is still a prototype. There are still many missin
 
 - **Parallelism**
 
-    The processing structure works also for multiple threads, which can work at the same time on the same network, and also works on GPU. 
-    For the gpu only CUDA is supported at the moment. With the next version it is also planned to port the CUDA-kernel to OpenCL. OpenCL was already supported in the past, but in the recent developing-process replaced by CUDA, because it was easier to keep up-to-date with the fast changing data-structures, than OpenCL.
+    The processing structure works also for multiple threads, which can work at the same time on the same network. (GPU-support with cuda is disabled at the moment for various reasons). 
+<!--     For the gpu only CUDA is supported at the moment. With the next version it is also planned to port the CUDA-kernel to OpenCL. OpenCL was already supported in the past, but in the recent developing-process replaced by CUDA, because it was easier to keep up-to-date with the fast changing data-structures, than OpenCL. -->
 
 - **Usable performance**
 
@@ -166,7 +166,7 @@ If you need help to setup things, have a question or something like this, feel f
 **Required packages for development:**
 
 ```
-sudo apt-get install -y git ssh gcc g++ clang-15 clang-format-15 make cmake bison flex libssl-dev libcrypto++-dev libboost1.74-dev uuid-dev  libsqlite3-dev protobuf-compiler nvidia-cuda-toolkit
+sudo apt-get install -y git ssh gcc g++ clang-15 clang-format-15 make cmake bison flex libssl-dev libcrypto++-dev libboost-dev uuid-dev  libsqlite3-dev protobuf-compiler
 ```
 
 **Clone repo with:**

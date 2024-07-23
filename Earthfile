@@ -69,8 +69,6 @@ ansible-lint:
 prepare-build-dependencies:
     RUN apt-get update && \
         apt-get install -y clang-15 \
-                           gcc \
-                           g++ \
                            make \
                            cmake \
                            bison \
@@ -79,12 +77,13 @@ prepare-build-dependencies:
                            ssh \
                            libssl-dev \
                            libcrypto++-dev \
-                           libboost1.74-dev \
+                           libboost-dev \
                            nlohmann-json3-dev \
                            uuid-dev  \
                            libsqlite3-dev \
                            protobuf-compiler \
-                           nvidia-cuda-toolkit \
+                           # https://github.com/kitsudaiki/Hanami/issues/377
+                           # nvidia-cuda-toolkit \
                            nano && \
         ln -s /usr/bin/clang++-15 /usr/bin/clang++ && \
         ln -s /usr/bin/clang-15 /usr/bin/clang

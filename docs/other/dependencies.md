@@ -20,9 +20,8 @@ Installed packages under the actual used Ubuntu 23.04
 | uuid-dev  | Generate UUID's within the code |
 | libsqlite3-dev | Library to interact with the SQLite3 databases |
 | protobuf-compiler | Convert protobuf-files into source-code |
-| gcc | C-compiler |
-| g++  | C++-compiler |
-| nvidia-cuda-toolkit | Libraries and compiler for the CUDA-Kernel |
+<!-- | nvidia-cuda-toolkit | Libraries and compiler for the CUDA-Kernel |
+ -->
 
 ### Submodules
 
@@ -41,9 +40,9 @@ Installed packages under the actual used Ubuntu 23.04
 | libsqlite3-0  | Library to interact with the SQLite3 databases | 
 | libprotobuf23 | Runtime-library for protobuffers | 
 | libboost1.74 | Provides the Beast-library of Boost, which is used for the REST-API within Hanami |
-| libcudart11.0 | Runtime-library for CUDA | 
 | nlohmann-json3-dev | Json-parser |
-
+<!-- | libcudart11.0 | Runtime-library for CUDA | 
+ -->
 ### Python-SDK
 
 see [requirements.txt](https://github.com/kitsudaiki/Hanami/blob/develop/src/sdk/python/hanami_sdk/requirements.txt)
