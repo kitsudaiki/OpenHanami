@@ -22,7 +22,7 @@
 
 #include "info.h"
 
-#include <cuda_runtime_api.h>
+// #include <cuda_runtime_api.h>
 #include <math.h>
 
 #include <chrono>
@@ -69,7 +69,8 @@ getCudaCoresPerSM(const uint32_t major, const uint32_t minor)
 void
 getGpuInfos(std::vector<GpuInfo>& results)
 {
-    int deviceCount;
+    // see https://github.com/kitsudaiki/Hanami/issues/377
+    /*int deviceCount;
     cudaError_t cudaResult = cudaGetDeviceCount(&deviceCount);
     if (cudaResult != cudaSuccess || deviceCount <= 0) {
         return;
@@ -93,5 +94,5 @@ getGpuInfos(std::vector<GpuInfo>& results)
         info.sizeOfSharedMemPerBlock = deviceProp.sharedMemPerBlock;
 
         results.push_back(info);
-    }
+    }*/
 }

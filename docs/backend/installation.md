@@ -2,7 +2,7 @@
 
 !!! warning
 
-    The installation process is also very basic at the moment. So for example only self-signed certificates are used at the moment. Because of this the given SDK also has a problem to connect correctly to these installation currently. Also CUDA-gpu's are not useable in the docker-installations here now. 
+    The installation process is also very basic at the moment. So for example only self-signed certificates are used at the moment. Because of this the given SDK also has a problem to connect correctly to these installation currently. 
 
 ## On Kubernetes
 

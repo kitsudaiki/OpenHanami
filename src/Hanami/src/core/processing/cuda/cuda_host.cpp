@@ -113,10 +113,11 @@ CudaHost::moveCluster(Cluster* cluster)
     const std::lock_guard<std::mutex> lock(m_cudaMutex);
 
     // sync data from gpu to host, in order to have a consistent state
-    copyFromGpu_CUDA(&cluster->gpuPointer,
-                     cluster->hexagons,
-                     getItemData<SynapseBlock>(synapseBlocks),
-                     synapseBlocks.metaData->itemCapacity);
+    // see https://github.com/kitsudaiki/Hanami/issues/377
+    // copyFromGpu_CUDA(&cluster->gpuPointer,
+    //                  cluster->hexagons,
+    //                  getItemData<SynapseBlock>(synapseBlocks),
+    //                  synapseBlocks.metaData->itemCapacity);
 
     LogicalHost* originHost = cluster->attachedHost;
     SynapseBlock* cpuSynapseBlocks = Hanami::getItemData<SynapseBlock>(synapseBlocks);
@@ -140,11 +141,12 @@ CudaHost::moveCluster(Cluster* cluster)
 
     // update data on gpu
     cluster->gpuPointer.deviceId = m_localId;
-    copyToDevice_CUDA(&cluster->gpuPointer,
-                      &cluster->clusterHeader.settings,
-                      cluster->hexagons,
-                      getItemData<SynapseBlock>(synapseBlocks),
-                      synapseBlocks.metaData->itemCapacity);
+    // see https://github.com/kitsudaiki/Hanami/issues/377
+    // copyToDevice_CUDA(&cluster->gpuPointer,
+    //                   &cluster->clusterHeader.settings,
+    //                   cluster->hexagons,
+    //                   getItemData<SynapseBlock>(synapseBlocks),
+    //                   synapseBlocks.metaData->itemCapacity);
 
     cluster->attachedHost = this;
 
@@ -160,10 +162,11 @@ CudaHost::syncWithHost(Cluster* cluster)
 {
     const std::lock_guard<std::mutex> lock(m_cudaMutex);
 
-    copyFromGpu_CUDA(&cluster->gpuPointer,
-                     cluster->hexagons,
-                     getItemData<SynapseBlock>(synapseBlocks),
-                     synapseBlocks.metaData->itemCapacity);
+    // see https://github.com/kitsudaiki/Hanami/issues/377
+    // copyFromGpu_CUDA(&cluster->gpuPointer,
+    //                  cluster->hexagons,
+    //                  getItemData<SynapseBlock>(synapseBlocks),
+    //                  synapseBlocks.metaData->itemCapacity);
 }
 
 /**
@@ -186,6 +189,7 @@ CudaHost::removeCluster(Cluster* cluster)
     }
 
     // remove other data of the cluster, which are no synapse-blocks, from gpu
+    // see https://github.com/kitsudaiki/Hanami/issues/377
     // removeFromDevice_CUDA(&cluster->gpuPointer);
 }
 
@@ -201,6 +205,7 @@ CudaHost::trainClusterForward(Cluster* cluster)
 
     Hanami::ErrorContainer error;
 
+    // see https://github.com/kitsudaiki/Hanami/issues/377
     /* // process input-hexagons
      for (uint32_t hexagonId = 0; hexagonId < cluster->hexagons.size(); ++hexagonId) {
          Hexagon* hexagon = &cluster->hexagons[hexagonId];
@@ -254,6 +259,7 @@ CudaHost::trainClusterBackward(Cluster* cluster)
     for (uint32_t hexagonId = 0; hexagonId < cluster->hexagons.size(); ++hexagonId) {
         Hexagon* hexagon = &cluster->hexagons[hexagonId];
         if (hexagon->header.isOutputHexagon) {
+            // see https://github.com/kitsudaiki/Hanami/issues/377
             /*if (backpropagateOutput(&cluster->hexagons[0],
                                     &cluster->outputNeurons[0],
                                     &cluster->neuronBlocks,
@@ -268,6 +274,7 @@ CudaHost::trainClusterBackward(Cluster* cluster)
         }
     }
 
+    // see https://github.com/kitsudaiki/Hanami/issues/377
     // backpropagation over all hexagons on gpu
     /*backpropagation_CUDA(&cluster->gpuPointer,
                          &cluster->hexagons[0],
@@ -309,6 +316,7 @@ CudaHost::requestCluster(Cluster* cluster)
 
     Hanami::ErrorContainer error;
 
+    // see https://github.com/kitsudaiki/Hanami/issues/377
     // process input-hexagons
     /*for (uint32_t hexagonId = 0; hexagonId < cluster->hexagons.size(); ++hexagonId) {
         Hexagon* hexagon = &cluster->hexagons[hexagonId];
@@ -334,6 +342,7 @@ CudaHost::requestCluster(Cluster* cluster)
         if (hexagon->header.isOutputHexagon == false) {
             continue;
         }
+        // see https://github.com/kitsudaiki/Hanami/issues/377
         /*for (uint32_t blockId = 0; blockId < cluster->numberOfNeuronBlocks; ++blockId) {
             processNeuronsOfOutputHexagon(
                 hexagon, cluster->outputValues, &cluster->neuronBlocks, blockId);

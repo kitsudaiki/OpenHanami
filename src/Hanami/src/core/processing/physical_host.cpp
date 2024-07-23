@@ -46,6 +46,7 @@ PhysicalHost::init(Hanami::ErrorContainer& error)
     // identify and init cuda gpu's
     // IMPORTANT: these are initialized first, because they also need memory on the host
     // TODO:enable gpu init here again
+    // see https://github.com/kitsudaiki/Hanami/issues/377
     /*std::vector<GpuInfo> gpuInfos;
     getGpuInfos(gpuInfos);
     for (const GpuInfo& gpuInfo : gpuInfos) {
@@ -107,6 +108,7 @@ PhysicalHost::getHost(const std::string& uuid) const
     }
 
     // TODO: re-enable gpu-support
+    // see https://github.com/kitsudaiki/Hanami/issues/377
     // check cuda gpu
     /*for (LogicalHost* host : m_cudaHosts) {
         if (host->getUuid() == uuid) {

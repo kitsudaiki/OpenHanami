@@ -17,7 +17,7 @@ This document should help to setup a local environment for development.
 - Install dependencies
 
     ```
-    apt-get install gcc g++ clang-15 clang-format-15 make bison flex libssl-dev libcrypto++-dev libboost1.74-dev uuid-dev libsqlite3-dev protobuf-compiler nvidia-cuda-toolkit
+    apt-get install gcc g++ clang-15 clang-format-15 make bison flex libssl-dev libcrypto++-dev libboost1.74-dev uuid-dev libsqlite3-dev protobuf-compiler
     ```
 
 - Install `cmake`
