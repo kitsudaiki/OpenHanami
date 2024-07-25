@@ -17,21 +17,21 @@ Hanami contains in its core a custom concept for neural networks, which are very
 
 ## Compiler
 
-| C++ Compiler | 
-| --- |
-| [![ubuntu-2204_clang-13][img_ubuntu-2204_clang-13]][Workflow] |
-| [![ubuntu-2204_clang-14][img_ubuntu-2204_clang-14]][Workflow] |
-| [![ubuntu-2204_clang-15][img_ubuntu-2204_clang-15]][Workflow] |
-| [![ubuntu-2404_clang-15][img_ubuntu-2404_clang-15]][Workflow] |
-| [![ubuntu-2404_clang-16][img_ubuntu-2404_clang-16]][Workflow] |
-| [![ubuntu-2404_clang-17][img_ubuntu-2404_clang-17]][Workflow] |
-| [![ubuntu-2404_clang-18][img_ubuntu-2404_clang-18]][Workflow] |
-| [![ubuntu-2204_gcc-10][img_ubuntu-2204_gcc-10]][Workflow] |
-| [![ubuntu-2204_gcc-11][img_ubuntu-2204_gcc-11]][Workflow] |
-| [![ubuntu-2204_gcc-12][img_ubuntu-2204_gcc-12]][Workflow] |
-| [![ubuntu-2404_gcc-12][img_ubuntu-2404_gcc-12]][Workflow] |
-| [![ubuntu-2404_gcc-13][img_ubuntu-2404_gcc-13]][Workflow] |
-| [![ubuntu-2404_gcc-14][img_ubuntu-2404_gcc-14]][Workflow] |
+| C++ Compiler (Hanami) | Python-Version (SDK) | 
+| --- | --- |
+| [![ubuntu-2204_clang-13][img_ubuntu-2204_clang-13]][Workflow] | [![python-3_9][img_python-3_9]][Workflow] |
+| [![ubuntu-2204_clang-14][img_ubuntu-2204_clang-14]][Workflow] | [![python-3_10][img_python-3_10]][Workflow] |
+| [![ubuntu-2204_clang-15][img_ubuntu-2204_clang-15]][Workflow] | [![python-3_11][img_python-3_11]][Workflow] |
+| [![ubuntu-2404_clang-15][img_ubuntu-2404_clang-15]][Workflow] | [![python-3_12][img_python-3_12]][Workflow] |
+| [![ubuntu-2404_clang-16][img_ubuntu-2404_clang-16]][Workflow] |   |
+| [![ubuntu-2404_clang-17][img_ubuntu-2404_clang-17]][Workflow] |   |
+| [![ubuntu-2404_clang-18][img_ubuntu-2404_clang-18]][Workflow] |   |
+| [![ubuntu-2204_gcc-10][img_ubuntu-2204_gcc-10]][Workflow] |   |
+| [![ubuntu-2204_gcc-11][img_ubuntu-2204_gcc-11]][Workflow] |   |
+| [![ubuntu-2204_gcc-12][img_ubuntu-2204_gcc-12]][Workflow] |   |
+| [![ubuntu-2404_gcc-12][img_ubuntu-2404_gcc-12]][Workflow] |   |
+| [![ubuntu-2404_gcc-13][img_ubuntu-2404_gcc-13]][Workflow] |   |
+| [![ubuntu-2404_gcc-14][img_ubuntu-2404_gcc-14]][Workflow] |   |
 
 
 [img_ubuntu-2204_clang-13]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami/badges/compiler/ubuntu-2204_clang-13/shields.json&style=flat-square
@@ -47,6 +47,11 @@ Hanami contains in its core a custom concept for neural networks, which are very
 [img_ubuntu-2404_gcc-12]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami/badges/compiler/ubuntu-2404_gcc-12/shields.json&style=flat-square
 [img_ubuntu-2404_gcc-13]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami/badges/compiler/ubuntu-2404_gcc-13/shields.json&style=flat-square
 [img_ubuntu-2404_gcc-14]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami/badges/compiler/ubuntu-2404_gcc-14/shields.json&style=flat-square
+
+[img_python-3_9]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami/badges/python_version/python-3_9/shields.json&style=flat-square
+[img_python-3_10]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami/badges/python_version/python-3_10/shields.json&style=flat-square
+[img_python-3_11]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami/badges/python_version/python-3_11/shields.json&style=flat-square
+[img_python-3_12]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami/badges/python_version/python-3_12/shields.json&style=flat-square
 
 [Workflow]: https://github.com/kitsudaiki/Hanami/actions/workflows/build_test.yml 
 

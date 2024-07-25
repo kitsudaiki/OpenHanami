@@ -15,6 +15,12 @@ def main():
         path = f"./badges/{category}/{e}"
         if not os.path.exists(path):
             os.makedirs(path)
+
+        e = e.replace("ubuntu-2204_clang-", "Ubuntu 22.04 Clang ")
+        e = e.replace("ubuntu-2404_clang-", "Ubuntu 24.04 Clang ")
+        e = e.replace("ubuntu-2204_gcc-", "Ubuntu 22.04 G++ ")
+        e = e.replace("ubuntu-2404_gcc-", "Ubuntu 24.04 G++ ")
+        e = e.replace("python-3_", "Python 3.")
         
         ok = state == "success"
         data = {
