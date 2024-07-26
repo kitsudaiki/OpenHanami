@@ -21,6 +21,7 @@ def main():
         e = e.replace("ubuntu-2204_gcc-", "Ubuntu 22.04 G++ ")
         e = e.replace("ubuntu-2404_gcc-", "Ubuntu 24.04 G++ ")
         e = e.replace("python-3_", "Python 3.")
+        e = e.replace("kubernetes-1_", "Kubernetes 1.")
         
         ok = state == "success"
         data = {

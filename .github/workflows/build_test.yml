@@ -86,7 +86,7 @@ jobs:
       - 
         name: Checkout repository
         run: |
-          # use manually clone, because with the "actions/checkout@v3" action the name of the
+          # use manually clone, because with the "actions/checkout@v4" action the name of the
           # branch can not be read by the git commands, which is necessary for the build-script
           git clone https://github.com/kitsudaiki/${GITHUB_REPOSITORY#*/}.git
           cd ${GITHUB_REPOSITORY#*/}
@@ -139,7 +139,7 @@ jobs:
       - 
         name: Checkout repository
         run: |
-          # use manually clone, because with the "actions/checkout@v3" action the name of the
+          # use manually clone, because with the "actions/checkout@v4" action the name of the
           # branch can not be read by the git commands, which is necessary for the build-script
           git clone https://github.com/kitsudaiki/${GITHUB_REPOSITORY#*/}.git
           cd ${GITHUB_REPOSITORY#*/}
@@ -178,7 +178,7 @@ jobs:
       - 
         name: Checkout repository
         run: |
-          # use manually clone, because with the "actions/checkout@v3" action the name of the
+          # use manually clone, because with the "actions/checkout@v4" action the name of the
           # branch can not be read by the git commands, which is necessary for the build-script
           git clone https://github.com/kitsudaiki/${GITHUB_REPOSITORY#*/}.git
           cd ${GITHUB_REPOSITORY#*/}
@@ -219,7 +219,7 @@ jobs:
       - 
         name: Checkout repository
         run: |
-          # use manually clone, because with the "actions/checkout@v3" action the name of the
+          # use manually clone, because with the "actions/checkout@v4" action the name of the
           # branch can not be read by the git commands, which is necessary for the build-script
           git clone https://github.com/kitsudaiki/${GITHUB_REPOSITORY#*/}.git
           cd ${GITHUB_REPOSITORY#*/}
@@ -289,7 +289,7 @@ jobs:
       - 
         name: Checkout repository
         run: |
-          # use manually clone, because with the "actions/checkout@v3" action the name of the
+          # use manually clone, because with the "actions/checkout@v4" action the name of the
           # branch can not be read by the git commands, which is necessary for the build-script
           git clone https://github.com/kitsudaiki/${GITHUB_REPOSITORY#*/}.git
           cd ${GITHUB_REPOSITORY#*/}
@@ -349,25 +349,6 @@ jobs:
         if: ${{ always() }}
         run: echo "${{ matrix.compiler.tag }}=${{ job.status }}" >> $GITHUB_OUTPUT
 
-
-
-  compiler-badge-upload:
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' && always() }}
-    needs: [ compiler_test ]
-    runs-on: ubuntu-22.04
-    name: Publish badges
-    steps:
-      - 
-        name: Checkout repository
-        uses: actions/checkout@v3
-      - 
-        name: Publish Badges
-        uses: ./.github/actions/badge
-        with:
-          category: compiler
-          badges: ${{ toJson(needs.compiler_test.outputs) }}
-          github_token: ${{ secrets.BADGES_PUSH_TOKEN }}
-    
 
 
   unit_tests:
@@ -533,7 +514,7 @@ jobs:
       - 
         name: Checkout repository
         run: |
-          # use manually clone, because with the "actions/checkout@v3" action the name of the
+          # use manually clone, because with the "actions/checkout@v4" action the name of the
           # branch can not be read by the git commands, which is necessary for the build-script
           git clone https://github.com/kitsudaiki/${GITHUB_REPOSITORY#*/}.git
           cd ${GITHUB_REPOSITORY#*/}
@@ -626,7 +607,7 @@ jobs:
       - 
         name: Checkout repository
         run: |
-          # use manually clone, because with the "actions/checkout@v3" action the name of the
+          # use manually clone, because with the "actions/checkout@v4" action the name of the
           # branch can not be read by the git commands, which is necessary for the build-script
           git clone https://github.com/kitsudaiki/${GITHUB_REPOSITORY#*/}.git
           cd ${GITHUB_REPOSITORY#*/}
@@ -735,7 +716,7 @@ jobs:
       - 
         name: Checkout repository
         run: |
-          # use manually clone, because with the "actions/checkout@v3" action the name of the
+          # use manually clone, because with the "actions/checkout@v4" action the name of the
           # branch can not be read by the git commands, which is necessary for the build-script
           git clone https://github.com/kitsudaiki/${GITHUB_REPOSITORY#*/}.git
           cd ${GITHUB_REPOSITORY#*/}
@@ -828,25 +809,6 @@ jobs:
         id: status
         if: ${{ always() }}
         run: echo "${{ matrix.python_version.tag }}=${{ job.status }}" >> $GITHUB_OUTPUT
-
-
-
-  python-badge-upload:
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' && always() }}
-    needs: [ python_version_test ]
-    runs-on: ubuntu-22.04
-    name: Publish badges
-    steps:
-      - 
-        name: Checkout repository
-        uses: actions/checkout@v3
-      - 
-        name: Publish Badges
-        uses: ./.github/actions/badge
-        with:
-          category: python_version
-          badges: ${{ toJson(needs.python_version_test.outputs) }}
-          github_token: ${{ secrets.BADGES_PUSH_TOKEN }}
     
 
 
@@ -874,7 +836,7 @@ jobs:
       - 
         name: Checkout repository
         run: |
-          # use manually clone, because with the "actions/checkout@v3" action the name of the
+          # use manually clone, because with the "actions/checkout@v4" action the name of the
           # branch can not be read by the git commands, which is necessary for the build-script
           git clone https://github.com/kitsudaiki/${GITHUB_REPOSITORY#*/}.git
           cd ${GITHUB_REPOSITORY#*/}
@@ -989,16 +951,25 @@ jobs:
 
 
   kubernetes_test:
-    name: "Integration-Tests (Kubernetes)"
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
     needs: [ docker_merge ]
     runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       matrix:
-        platform:
-          - linux/amd64
-          - linux/arm64
+        kubernetes_version:
+          - { tag: "kubernetes-1_26", name: "Kubernetes 1.26", version: "1.26.15"}
+          - { tag: "kubernetes-1_27", name: "Kubernetes 1.27", version: "1.27.15"}
+          - { tag: "kubernetes-1_28", name: "Kubernetes 1.28", version: "1.28.11"}
+          - { tag: "kubernetes-1_29", name: "Kubernetes 1.29", version: "1.29.6"}
+          - { tag: "kubernetes-1_30", name: "Kubernetes 1.30", version: "1.30.2"}
+    name: "${{ matrix.kubernetes_version.name }}"
+    outputs:
+      kubernetes-1_26: ${{ steps.status.outputs.kubernetes-1_26 }}
+      kubernetes-1_27: ${{ steps.status.outputs.kubernetes-1_27 }}
+      kubernetes-1_28: ${{ steps.status.outputs.kubernetes-1_28 }}
+      kubernetes-1_29: ${{ steps.status.outputs.kubernetes-1_29 }}
+      kubernetes-1_30: ${{ steps.status.outputs.kubernetes-1_30 }}
     env:
       KUBECONFIG: /etc/rancher/k3s/k3s.yaml
     steps:
@@ -1046,7 +1017,7 @@ jobs:
       - 
         name: Checkout repository
         run: |
-          # use manually clone, because with the "actions/checkout@v3" action the name of the
+          # use manually clone, because with the "actions/checkout@v4" action the name of the
           # branch can not be read by the git commands, which is necessary for the build-script
           git clone https://github.com/kitsudaiki/${GITHUB_REPOSITORY#*/}.git
           cd ${GITHUB_REPOSITORY#*/}
@@ -1067,7 +1038,7 @@ jobs:
       -
         name: Install k3s
         run: |
-          sudo curl -sfL https://get.k3s.io | sh -
+          sudo curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=v${{ matrix.kubernetes_version.version }}+k3s1  sh -
       - 
         name: Sleep for 60 seconds
         uses: jakejarvis/wait-action@master
@@ -1128,7 +1099,43 @@ jobs:
           cp test_values.py test_dir/
           cd test_dir
           /usr/bin/python3 sdk_api_test.py
+      - name: Update Result
+        id: status
+        if: ${{ always() }}
+        run: echo "${{ matrix.kubernetes_version.tag }}=${{ job.status }}" >> $GITHUB_OUTPUT
 
+
+
+  badge-upload:
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' && always() }}
+    needs: [ kubernetes_test, python_version_test, compiler_test ]
+    runs-on: ubuntu-22.04
+    name: Publish badges
+    steps:
+      - 
+        name: Checkout repository
+        uses: actions/checkout@v4
+      - 
+        name: Publish Compiler Badges
+        uses: ./.github/actions/badge
+        with:
+          category: compiler
+          badges: ${{ toJson(needs.compiler_test.outputs) }}
+          github_token: ${{ secrets.BADGES_PUSH_TOKEN }}
+      - 
+        name: Publish Python Badges
+        uses: ./.github/actions/badge
+        with:
+          category: python_version
+          badges: ${{ toJson(needs.python_version_test.outputs) }}
+          github_token: ${{ secrets.BADGES_PUSH_TOKEN }}
+      - 
+        name: Publish Kubernetes Badges
+        uses: ./.github/actions/badge
+        with:
+          category: kubernetes_version
+          badges: ${{ toJson(needs.kubernetes_test.outputs) }}
+          github_token: ${{ secrets.BADGES_PUSH_TOKEN }}
 
 
   ansible_test:
@@ -1136,12 +1143,12 @@ jobs:
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
     needs: [ docker_merge ]
     runs-on: ubuntu-22.04
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - linux/amd64
-          - linux/arm64
+    # strategy:
+    #   fail-fast: false
+    #   matrix:
+    #     platform:
+    #       - linux/amd64
+    #       - linux/arm64
     env:
       ADMIN_USER_ID: "asdf"
       ADMIN_USER_NAME: "test-user"
@@ -1184,7 +1191,7 @@ jobs:
       - 
         name: Checkout repository
         run: |
-          # use manually clone, because with the "actions/checkout@v3" action the name of the
+          # use manually clone, because with the "actions/checkout@v4" action the name of the
           # branch can not be read by the git commands, which is necessary for the build-script
           git clone https://github.com/kitsudaiki/${GITHUB_REPOSITORY#*/}.git
           cd ${GITHUB_REPOSITORY#*/}
@@ -1283,7 +1290,7 @@ jobs:
       - 
         name: Checkout repository
         run: |
-          # use manually clone, because with the "actions/checkout@v3" action the name of the
+          # use manually clone, because with the "actions/checkout@v4" action the name of the
           # branch can not be read by the git commands, which is necessary for the build-script
           git clone https://github.com/kitsudaiki/${GITHUB_REPOSITORY#*/}.git
           cd ${GITHUB_REPOSITORY#*/}
