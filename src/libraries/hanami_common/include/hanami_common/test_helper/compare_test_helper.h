@@ -23,6 +23,8 @@
 #ifndef COMPARE_TEST_HELPER_H
 #define COMPARE_TEST_HELPER_H
 
+#include <stdint.h>
+
 #include <iostream>
 #include <string>
 

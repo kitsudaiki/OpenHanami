@@ -51,7 +51,7 @@ HttpProcessing::processRequest(http::request<http::string_body>& httpRequest,
 
     // collect and prepare relevant data
     const http::verb messageType = httpRequest.method();
-    std::string path = httpRequest.target().to_string();
+    std::string path = std::string(httpRequest.target());
     std::string payload = "{}";
 
     // Request path must be absolute and not contain "..".
@@ -80,7 +80,7 @@ HttpProcessing::processRequest(http::request<http::string_body>& httpRequest,
     // get token from request-header
     std::string token = "";
     if (httpRequest.count("X-Auth-Token") > 0) {
-        token = httpRequest.at("X-Auth-Token").to_string();
+        token = std::string(httpRequest.at("X-Auth-Token"));
     }
 
     // handle control-messages

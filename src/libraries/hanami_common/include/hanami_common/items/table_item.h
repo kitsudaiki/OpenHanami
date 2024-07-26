@@ -23,6 +23,8 @@
 #ifndef TABLE_ITEM_H
 #define TABLE_ITEM_H
 
+#include <stdint.h>
+
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <vector>

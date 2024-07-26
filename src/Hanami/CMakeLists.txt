@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Setting the compiler
-set(CMAKE_CXX_COMPILER "clang++-15")
+# set(CMAKE_CXX_COMPILER "clang++-15")
 
 # Adding source files
 set(SOURCES
