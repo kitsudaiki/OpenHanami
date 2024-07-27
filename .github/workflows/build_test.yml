@@ -62,15 +62,34 @@ jobs:
         with:
           version: v0.8.0
       - uses: actions/checkout@v4
-      - 
+      -
         name: Run check
         run: earthly --ci +flake8
 
 
 
+  check-for-executables:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      -
+        name: Run binary files check script
+        run: |
+          git ls-tree -r HEAD --name-only | while read filename; do
+            # Check if the file is a binary
+            if [[ $(file -b --mime-encoding "$filename") == binary ]] && file -b "$filename" | grep -q "executable"; then
+              echo "Binary file found: $filename"
+              exit 1
+            fi
+          done
+          exit 0
+
+
+
   build_python_package:
     name: "Build SDK python-package"
-    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check ]
+    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check, check-for-executables ]
     runs-on: ubuntu-latest
     env:
       FORCE_COLOR: 1
@@ -123,7 +142,7 @@ jobs:
 
   build_helm_package:
     name: "Build Helm package"
-    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check ]
+    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check, check-for-executables ]
     runs-on: ubuntu-latest
     env:
       FORCE_COLOR: 1
@@ -167,7 +186,7 @@ jobs:
 
   build_hanami:
     name: "Compile Hanami"
-    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check ]
+    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check, check-for-executables ]
     runs-on: ubuntu-latest
     env:
       FORCE_COLOR: 1
@@ -208,7 +227,7 @@ jobs:
 
   build_hanamictl:
     name: "Compile CLI"
-    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check ]
+    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check, check-for-executables ]
     runs-on: ubuntu-latest
     env:
       FORCE_COLOR: 1
@@ -248,7 +267,7 @@ jobs:
 
   compiler_test:
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
-    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check ]
+    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check, check-for-executables  ]
     strategy:
       fail-fast: false
       matrix:
