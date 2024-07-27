@@ -10,16 +10,24 @@ inputs:
   github_token:
     description: The token to use to publish the changes
     required: true
+  branch_name:
+    description: Name of the branch to publish
+    required: true
 runs:
   using: composite
   steps:
-    - run: |
+    - 
+      name: Generate json with badges-information
+      run: |
         python ./.github/actions/badge/generate_badges.py ${{ inputs.category }} '${{ inputs.badges }}'
       shell: bash
-    - uses: peaceiris/actions-gh-pages@v4
+    - 
+      name: Push json-files to badges-repo
+      uses: peaceiris/actions-gh-pages@v4
       with:
-        github_token: ${{ inputs.github_token }}
-        publish_branch: badges
+        personal_token: ${{ inputs.github_token }}
+        external_repository: kitsudaiki/Hanami-badges
+        publish_branch: ${{ inputs.branch_name }}
         publish_dir: ./badges
         keep_files: true
         user_name: "github-actions[bot]"

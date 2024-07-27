@@ -1132,13 +1132,21 @@ jobs:
     name: Publish badges
     steps:
       - 
+        name: Set branch name as environment variable
+        run: |
+          if [[ ${GITHUB_REF#} == refs/tags/* ]]; then \
+              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/tags/} | sed 's/^v//')" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          else \
+              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
+          fi
+      - 
         name: Checkout repository
         uses: actions/checkout@v4
       - 
         name: Publish Compiler Badges
         uses: ./.github/actions/badge
         with:
-          category: compiler
+          category: compiler_version
           badges: ${{ toJson(needs.compiler_test.outputs) }}
           github_token: ${{ secrets.BADGES_PUSH_TOKEN }}
       - 
@@ -1148,6 +1156,7 @@ jobs:
           category: python_version
           badges: ${{ toJson(needs.python_version_test.outputs) }}
           github_token: ${{ secrets.BADGES_PUSH_TOKEN }}
+          branch_name: ${{ env.BRANCH_NAME }}
       - 
         name: Publish Kubernetes Badges
         uses: ./.github/actions/badge
