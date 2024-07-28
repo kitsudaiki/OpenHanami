@@ -4,6 +4,8 @@
 ![GitHub release](https://img.shields.io/github/v/release/kitsudaiki/Hanami?include_prereleases&label=version&style=flat-square)
 ![GitHub](https://img.shields.io/github/license/kitsudaiki/Hanami-AI?style=flat-square)
 ![Platform](https://img.shields.io/badge/Platform-Linux--x64|arm64-lightgrey?style=flat-square)
+![CodeQL](https://img.shields.io/github/actions/workflow/status/kitsudaiki/Hanami/codeql.yml?branch=develop&style=flat-square&label=CodeQL)
+![OpenSSF Scorecard](https://img.shields.io/ossf-scorecard/github.com/kitsudaiki/Hanami?branch=develop&style=flat-square&label=OpenSSF-Scorecard)
 
 <p align="center">
   <img src="assets/hanami-logo-with-text.png" width="500" height="594" />
