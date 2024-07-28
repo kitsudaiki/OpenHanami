@@ -54,7 +54,7 @@
     state: started
     pull: true
     detach: true
-    command: "Hanami"
+    command: "hanami"
     env:
       HANAMI_ADMIN_USER_ID: "{{ lookup('env', 'ADMIN_USER_ID') }}"
       HANAMI_ADMIN_USER_NAME: "{{ lookup('env', 'ADMIN_USER_NAME') }}"
