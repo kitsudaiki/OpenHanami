@@ -77,7 +77,7 @@ jobs:
 
 
   check-for-executables:
-    name: "Search binary executables"
+    name: "Detect binary executables"
     runs-on: ubuntu-latest
     steps:
       - 
@@ -96,6 +96,7 @@ jobs:
           exit 0
 
 
+
   commit-lint:
     name: "Lint commits"
     runs-on: ubuntu-latest
@@ -108,9 +109,26 @@ jobs:
         uses: wagoid/commitlint-github-action@v6
 
 
+
+  detect-sectets:
+    name: "Detect secrets"
+    runs-on: ubuntu-latest
+    env:
+      FORCE_COLOR: 1
+    steps:
+      - uses: earthly/actions-setup@v1
+        with:
+          version: v0.8.0
+      - uses: actions/checkout@v4
+      -
+        name: Run check
+        run: earthly --ci +secret-scan
+    
+
+
   build_python_package:
     name: "Build SDK python-package"
-    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check, check-for-executables, commit-lint ]
+    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check, check-for-executables, commit-lint, detect-sectets ]
     runs-on: ubuntu-latest
     env:
       FORCE_COLOR: 1
@@ -163,7 +181,7 @@ jobs:
 
   build_helm_package:
     name: "Build Helm package"
-    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check, check-for-executables, commit-lint ]
+    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check, check-for-executables, commit-lint, detect-sectets ]
     runs-on: ubuntu-latest
     env:
       FORCE_COLOR: 1
@@ -207,7 +225,7 @@ jobs:
 
   build_hanami:
     name: "Compile Hanami"
-    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check, check-for-executables, commit-lint ]
+    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check, check-for-executables, commit-lint, detect-sectets ]
     runs-on: ubuntu-latest
     env:
       FORCE_COLOR: 1
@@ -248,7 +266,7 @@ jobs:
 
   build_hanamictl:
     name: "Compile CLI"
-    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check, check-for-executables, commit-lint ]
+    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check, check-for-executables, commit-lint, detect-sectets ]
     runs-on: ubuntu-latest
     env:
       FORCE_COLOR: 1
@@ -288,7 +306,7 @@ jobs:
 
   compiler_test:
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
-    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check, check-for-executables, commit-lint  ]
+    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check, check-for-executables, commit-lint, detect-sectets  ]
     strategy:
       fail-fast: false
       matrix:
