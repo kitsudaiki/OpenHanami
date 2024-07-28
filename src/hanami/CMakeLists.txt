@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
-project(Hanami CXX)
+project(hanami CXX)
 
 # see https://github.com/kitsudaiki/Hanami/issues/377
-# project(Hanami CXX CUDA)
+# project(hanami CXX CUDA)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -208,13 +208,13 @@ set(SOURCES
 )
 
 # Adding the executable
-add_executable(Hanami
+add_executable(hanami
     ${SOURCES}
     src/main.cpp
     # see https://github.com/kitsudaiki/Hanami/issues/377
     # ${CUDA_OUTPUT_OBJ}
 )
-add_executable(Hanami_unittests
+add_executable(hanami_unittests
     ${SOURCES}
     tests/unit_tests/core/cluster_test.cpp
     tests/unit_tests/core/cluster_test.h
@@ -277,7 +277,7 @@ find_library(PROTOBUF_LIB protobuf)
 # find_library(CUDART_LIB cudart)
 
 # Linking libraries to the executable
-target_link_libraries(Hanami
+target_link_libraries(hanami
     hanami_cpu
     hanami_hardware
     hanami_common
@@ -300,7 +300,7 @@ target_link_libraries(Hanami
     Threads::Threads
     OpenSSL::SSL
 )
-target_link_libraries(Hanami_unittests
+target_link_libraries(hanami_unittests
     hanami_cpu
     hanami_hardware
     hanami_common
@@ -398,16 +398,16 @@ add_custom_target(generate_protobuf_files DEPENDS
     ${PROTO_OUTPUT_SOURCE}
 )
 # see https://github.com/kitsudaiki/Hanami/issues/377
-# add_dependencies(Hanami generate_protobuf_files)
+# add_dependencies(hanami generate_protobuf_files)
 # add_custom_target(compile_cuda_kernel DEPENDS
 #     ${CUDA_IO_OBJ}
 #     ${CUDA_PROCESSING_OBJ}
 #     ${CUDA_BACKPROPAGATION_OBJ}
 # #     ${CUDA_REDUCTION_OBJ}
 # )
-# add_dependencies(Hanami compile_cuda_kernel)
+# add_dependencies(hanami compile_cuda_kernel)
 
-target_sources(Hanami PRIVATE
+target_sources(hanami PRIVATE
     ${PROTO_OUTPUT_HEADER}
     ${PROTO_OUTPUT_SOURCE}
     # see https://github.com/kitsudaiki/Hanami/issues/377
@@ -417,9 +417,9 @@ target_sources(Hanami PRIVATE
     # ${CUDA_REDUCTION_OBJ}
 )
 # see https://github.com/kitsudaiki/Hanami/issues/377
-# add_dependencies(Hanami_unittests compile_cuda_kernel)
-add_dependencies(Hanami_unittests generate_protobuf_files)
-target_sources(Hanami_unittests PRIVATE
+# add_dependencies(hanami_unittests compile_cuda_kernel)
+add_dependencies(hanami_unittests generate_protobuf_files)
+target_sources(hanami_unittests PRIVATE
     ${PROTO_OUTPUT_HEADER}
     ${PROTO_OUTPUT_SOURCE}
     # see https://github.com/kitsudaiki/Hanami/issues/377

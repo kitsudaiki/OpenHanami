@@ -7,6 +7,6 @@ RUN apt-get update && \
     apt-get clean autoclean &&\
     apt-get autoremove --yes
 
-# Hanami
-COPY ./builds/binaries/Hanami /usr/bin/Hanami
-CMD Hanami
+# hanami
+COPY ./builds/binaries/hanami /usr/bin/hanami
+CMD hanami
