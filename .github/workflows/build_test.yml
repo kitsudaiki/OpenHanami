@@ -928,14 +928,14 @@ jobs:
         name: Check location
         run: |
           pwd
-          cd hanami
+          cd Hanami
           ls -l
       - 
         name: Build and push by digest
         id: build
         uses: docker/build-push-action@v5
         with:
-          context: ./hanami
+          context: ./Hanami
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=image,name=${{ env.REGISTRY_IMAGE }},push-by-digest=true,name-canonical=true,push=true
