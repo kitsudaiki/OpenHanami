@@ -1,11 +1,12 @@
 # Hanami
 
-![Github workflow status](https://img.shields.io/github/actions/workflow/status/kitsudaiki/Hanami/build_test.yml?branch=develop&style=flat-square&label=build%20and%20test)
-![GitHub release](https://img.shields.io/github/v/release/kitsudaiki/Hanami?include_prereleases&label=version&style=flat-square)
-![GitHub](https://img.shields.io/github/license/kitsudaiki/Hanami-AI?style=flat-square)
+![GitHub release](https://img.shields.io/github/v/release/kitsudaiki/Hanami?include_prereleases&label=Version&style=flat-square)
+![GitHub](https://img.shields.io/github/license/kitsudaiki/Hanami?style=flat-square)
 ![Platform](https://img.shields.io/badge/Platform-Linux--x64|arm64-lightgrey?style=flat-square)
-![CodeQL](https://img.shields.io/github/actions/workflow/status/kitsudaiki/Hanami/codeql.yml?branch=develop&style=flat-square&label=CodeQL)
-![OpenSSF Scorecard](https://img.shields.io/ossf-scorecard/github.com/kitsudaiki/Hanami?branch=develop&style=flat-square&label=OpenSSF-Scorecard)
+
+[![Github workflow status](https://img.shields.io/github/actions/workflow/status/kitsudaiki/Hanami/build_test.yml?branch=develop&style=flat-square&label=Build%20and%20Test)](https://github.com/kitsudaiki/Hanami/actions/workflows/build_test.yml)
+[![CodeQL](https://img.shields.io/github/actions/workflow/status/kitsudaiki/Hanami/codeql.yml?branch=develop&style=flat-square&label=CodeQL)](https://github.com/kitsudaiki/Hanami/actions/workflows/codeql.yml)
+[![OpenSSF Scorecard](https://img.shields.io/ossf-scorecard/github.com/kitsudaiki/Hanami?branch=develop&style=flat-square&label=OpenSSF-Scorecard)](https://scorecard.dev/viewer/?uri=github.com/kitsudaiki/Hanami)
 
 <p align="center">
   <img src="assets/hanami-logo-with-text.png" width="500" height="594" />
