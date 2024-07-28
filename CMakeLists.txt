@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(Hanami VERSION 0.3.3 LANGUAGES C CXX)
+project(hanami VERSION 0.3.3 LANGUAGES C CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -9,4 +9,4 @@ set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -gdwarf-4")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -gdwarf-4")
 
 add_subdirectory(src/libraries)
-add_subdirectory(src/Hanami)
+add_subdirectory(src/hanami)

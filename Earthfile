@@ -28,7 +28,7 @@ cppcheck:
     COPY src src
     RUN rm -rf \
           src/libraries/hanami_messages/protobuffers/hanami_messages.proto3.pb.h
-    RUN cppcheck --error-exitcode=1 src/Hanami
+    RUN cppcheck --error-exitcode=1 src/hanami
     RUN cppcheck --error-exitcode=1 src/libraries
 
 clang-format:
@@ -101,9 +101,9 @@ compile-code:
     FROM +prepare-build-dependencies
     RUN cmake -DCMAKE_BUILD_TYPE=Release -Drun_tests=ON  .
     RUN make -j8
-    RUN mkdir /tmp/Hanami && \
-        find src -type f -executable -exec cp {} /tmp/Hanami \;
-    SAVE ARTIFACT /tmp/Hanami /tmp/Hanami
+    RUN mkdir /tmp/hanami && \
+        find src -type f -executable -exec cp {} /tmp/hanami \;
+    SAVE ARTIFACT /tmp/hanami /tmp/hanami
 
 
 compile-cli:
@@ -127,10 +127,10 @@ build-image:
         apt-get clean autoclean && \
         apt-get autoremove --yes
 
-    COPY ./builds/binaries/Hanami  /usr/bin/Hanami
+    COPY ./builds/binaries/hanami  /usr/bin/hanami
 
-    # run Hanami
-    ENTRYPOINT ["/usr/bin/Hanami"]
+    # run hanami
+    ENTRYPOINT ["/usr/bin/hanami"]
 
     SAVE IMAGE "$image_name"
 
@@ -138,11 +138,11 @@ build-image:
 generate-code-docu:
     RUN apt-get update && \
         apt-get install -y openssl libuuid1 libcrypto++8 libsqlite3-0 libprotobuf23 libboost1.74 libcudart11.0
-    COPY ./builds/binaries/Hanami /usr/bin/Hanami
-    RUN /usr/bin/Hanami --generate_docu
-    SAVE ARTIFACT open_api_docu.json /tmp/Hanami_docs/open_api_docu.json
-    SAVE ARTIFACT config.md /tmp/Hanami_docs/config.md
-    SAVE ARTIFACT db.md /tmp/Hanami_docs/db.md
+    COPY ./builds/binaries/hanami /usr/bin/hanami
+    RUN /usr/bin/hanami --generate_docu
+    SAVE ARTIFACT open_api_docu.json /tmp/hanami_docs/open_api_docu.json
+    SAVE ARTIFACT config.md /tmp/hanami_docs/config.md
+    SAVE ARTIFACT db.md /tmp/hanami_docs/db.md
 
 
 generate-docs:

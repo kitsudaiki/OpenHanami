@@ -224,7 +224,7 @@ jobs:
 
 
   build_hanami:
-    name: "Compile Hanami"
+    name: "Compile hanami"
     needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check, check-for-executables, commit-lint, detect-sectets ]
     runs-on: ubuntu-latest
     env:
@@ -247,7 +247,7 @@ jobs:
         name: Compile code
         run: |
           cd ${GITHUB_REPOSITORY#*/}
-          earthly --artifact +compile-code/tmp/Hanami ./builds/binaries
+          earthly --artifact +compile-code/tmp/hanami ./builds/binaries
       - 
         name: Copy files
         run: |
@@ -401,7 +401,7 @@ jobs:
         name: Run basic test
         run: |
           cd ${GITHUB_REPOSITORY#*/} 
-          ./src/Hanami/Hanami_unittests
+          ./src/hanami/hanami_unittests
       - name: Update Result
         id: status
         if: ${{ always() }}
@@ -473,8 +473,8 @@ jobs:
       - 
         name: "Run test: Hanami"
         run: |
-          chmod +x  /tmp/Hanami_build_result/Hanami_unittests
-          /tmp/Hanami_build_result/Hanami_unittests
+          chmod +x  /tmp/Hanami_build_result/hanami_unittests
+          /tmp/Hanami_build_result/hanami_unittests
 
 
 
@@ -603,9 +603,9 @@ jobs:
         name: Build local docker-image
         run: |
           cd ${GITHUB_REPOSITORY#*/}
-          chmod +x /tmp/Hanami_build_result/Hanami
+          chmod +x /tmp/Hanami_build_result/hanami
           mkdir -p builds/binaries
-          cp /tmp/Hanami_build_result/Hanami ./builds/binaries/
+          cp /tmp/Hanami_build_result/hanami ./builds/binaries/
           # IMPORTANT: use the Dockerfile instead of the Earthfile here, 
           # because the Dockerfile is also used in the final build-process.
           # So using the Dockerfile here to ensure, the final build after 
@@ -624,7 +624,7 @@ jobs:
           gzip -d t10k-images-idx3-ubyte.gz
           gzip -d t10k-labels-idx1-ubyte.gz
       - 
-        name: Start Hanami-docker-container
+        name: Start hanami-docker-container
         run: |
           cd ${GITHUB_REPOSITORY#*/}
           sudo cp -r ./example_configs/hanami /etc/
@@ -693,9 +693,9 @@ jobs:
         name: Build local docker-image
         run: |
           cd ${GITHUB_REPOSITORY#*/}
-          chmod +x /tmp/Hanami_build_result/Hanami
+          chmod +x /tmp/Hanami_build_result/hanami
           mkdir -p builds/binaries
-          cp /tmp/Hanami_build_result/Hanami ./builds/binaries/
+          cp /tmp/Hanami_build_result/hanami ./builds/binaries/
           # IMPORTANT: use the Dockerfile instead of the Earthfile here, 
           # because the Dockerfile is also used in the final build-process.
           # So using the Dockerfile here to ensure, the final build after 
@@ -714,7 +714,7 @@ jobs:
           gzip -d t10k-images-idx3-ubyte.gz
           gzip -d t10k-labels-idx1-ubyte.gz
       - 
-        name: Start Hanami-docker-container
+        name: Start hanami-docker-container
         run: |
           cd ${GITHUB_REPOSITORY#*/}
           sudo cp -r ./example_configs/hanami /etc/
@@ -816,9 +816,9 @@ jobs:
         name: Build local docker-image
         run: |
           cd ${GITHUB_REPOSITORY#*/}
-          chmod +x /tmp/Hanami_build_result/Hanami
+          chmod +x /tmp/Hanami_build_result/hanami
           mkdir -p builds/binaries
-          cp /tmp/Hanami_build_result/Hanami ./builds/binaries/
+          cp /tmp/Hanami_build_result/hanami ./builds/binaries/
           # IMPORTANT: use the Dockerfile instead of the Earthfile here, 
           # because the Dockerfile is also used in the final build-process.
           # So using the Dockerfile here to ensure, the final build after 
@@ -837,7 +837,7 @@ jobs:
           gzip -d t10k-images-idx3-ubyte.gz
           gzip -d t10k-labels-idx1-ubyte.gz
       - 
-        name: Start Hanami-docker-container
+        name: Start hanami-docker-container
         run: |
           cd ${GITHUB_REPOSITORY#*/}
           sudo cp -r ./example_configs/hanami /etc/
@@ -905,7 +905,7 @@ jobs:
         name: Compile code
         run: |
           cd ${GITHUB_REPOSITORY#*/}
-          earthly --artifact +compile-code/tmp/Hanami ./builds/binaries
+          earthly --artifact +compile-code/tmp/hanami ./builds/binaries
       - 
         name: Docker meta
         id: meta
@@ -928,14 +928,14 @@ jobs:
         name: Check location
         run: |
           pwd
-          cd Hanami
+          cd hanami
           ls -l
       - 
         name: Build and push by digest
         id: build
         uses: docker/build-push-action@v5
         with:
-          context: ./Hanami
+          context: ./hanami
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=image,name=${{ env.REGISTRY_IMAGE }},push-by-digest=true,name-canonical=true,push=true
@@ -1116,7 +1116,7 @@ jobs:
         run: |
           kubectl label nodes --all hanami-node=true
       -
-        name: Install Hanami
+        name: Install hanami
         run: |
           helm install --set docker.tag="${{ env.BRANCH_NAME }}" --set user.id=asdf --set user.name="test user" --set user.pw="asdfasdf" --set token.pw="11111111" --set api.domain=local-hanami  hanami /tmp/hanami_helm_build_result/hanami-$HELM_VERSION.tgz
       - 
@@ -1274,7 +1274,7 @@ jobs:
           sudo pip3 install -U ansible requests==2.31.0
           sudo pip3 list
       - 
-        name: Install Hanami via Ansible
+        name: Install hanami via Ansible
         run: |
           cd ${GITHUB_REPOSITORY#*/}/deploy/ansible/
           ansible-playbook --connection=local -e "hanami_docker_tag=$BRANCH_NAME" -i hanami/inventory.yml hanami/deploy.yml -vvv
@@ -1324,7 +1324,7 @@ jobs:
         if: success() || failure()
         run: |
           docker ps -a
-          docker logs Hanami
+          docker logs hanami
 
 
 
@@ -1371,14 +1371,14 @@ jobs:
         name: Prepare Binary
         run: |
           cd ${GITHUB_REPOSITORY#*/}
-          chmod +x /tmp/Hanami_build_result/Hanami
+          chmod +x /tmp/Hanami_build_result/hanami
           mkdir -p builds/binaries
-          cp /tmp/Hanami_build_result/Hanami ./builds/binaries/
+          cp /tmp/Hanami_build_result/hanami ./builds/binaries/
       - 
         name: Generate code-docs
         run: |
           cd ${GITHUB_REPOSITORY#*/}
-          earthly --artifact +generate-code-docu/tmp/Hanami_docs ./builds/docs
+          earthly --artifact +generate-code-docu/tmp/hanami_docs ./builds/docs
       - 
         name: Build docs
         run: |
