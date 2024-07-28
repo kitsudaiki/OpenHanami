@@ -1188,6 +1188,7 @@ jobs:
           category: compiler_version
           badges: ${{ toJson(needs.compiler_test.outputs) }}
           github_token: ${{ secrets.BADGES_PUSH_TOKEN }}
+          branch_name: ${{ env.BRANCH_NAME }}
       - 
         name: Publish Python Badges
         uses: ./.github/actions/badge
@@ -1203,6 +1204,8 @@ jobs:
           category: kubernetes_version
           badges: ${{ toJson(needs.kubernetes_test.outputs) }}
           github_token: ${{ secrets.BADGES_PUSH_TOKEN }}
+          branch_name: ${{ env.BRANCH_NAME }}
+
 
 
   ansible_test:
