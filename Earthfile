@@ -65,6 +65,13 @@ ansible-lint:
     COPY .ansible-lint .ansible-lint
     RUN ansible-lint deploy/ansible/hanami
 
+secret-scan:
+    RUN apt-get update && \
+        apt-get install -y python3 python3-pip git
+    RUN pip3 install detect-secrets
+    COPY . .
+    RUN git ls-files -z | xargs -0 detect-secrets-hook --baseline .secrets.baseline
+
 
 prepare-build-dependencies:
     RUN apt-get update && \
