@@ -2,6 +2,10 @@ name: build-and-test
 
 on: [push]
 
+permissions:
+  contents: read
+  pull-requests: read
+
 env:
   REGISTRY_IMAGE: kitsudaiki/hanami
   REGISTRY_DOCS_IMAGE: kitsudaiki/hanami_docs
@@ -9,6 +13,7 @@ env:
 jobs:
 
   clang-format-check:
+    name: "Check clang-format"
     runs-on: ubuntu-latest
     env:
       FORCE_COLOR: 1
@@ -24,6 +29,7 @@ jobs:
 
 
   cpp-check:
+    name: "Run cpp-check"
     runs-on: ubuntu-latest
     env:
       FORCE_COLOR: 1
@@ -39,6 +45,7 @@ jobs:
 
 
   ansible-lint:
+    name: "Lint ansible playbook"
     runs-on: ubuntu-latest
     env:
       FORCE_COLOR: 1
@@ -54,6 +61,7 @@ jobs:
 
 
   flake8-check:
+    name: "flake8 check"
     runs-on: ubuntu-latest
     env:
       FORCE_COLOR: 1
@@ -69,10 +77,12 @@ jobs:
 
 
   check-for-executables:
+    name: "Search binary executables"
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
+      - 
+        name: checkout code
+        uses: actions/checkout@v4
       -
         name: Run binary files check script
         run: |
@@ -86,10 +96,21 @@ jobs:
           exit 0
 
 
+  commit-lint:
+    name: "Lint commits"
+    runs-on: ubuntu-latest
+    steps:
+      - 
+        name: checkout code
+        uses: actions/checkout@v4
+      - 
+        name: lint commits
+        uses: wagoid/commitlint-github-action@v6
+
 
   build_python_package:
     name: "Build SDK python-package"
-    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check, check-for-executables ]
+    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check, check-for-executables, commit-lint ]
     runs-on: ubuntu-latest
     env:
       FORCE_COLOR: 1
@@ -142,7 +163,7 @@ jobs:
 
   build_helm_package:
     name: "Build Helm package"
-    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check, check-for-executables ]
+    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check, check-for-executables, commit-lint ]
     runs-on: ubuntu-latest
     env:
       FORCE_COLOR: 1
@@ -186,7 +207,7 @@ jobs:
 
   build_hanami:
     name: "Compile Hanami"
-    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check, check-for-executables ]
+    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check, check-for-executables, commit-lint ]
     runs-on: ubuntu-latest
     env:
       FORCE_COLOR: 1
@@ -227,7 +248,7 @@ jobs:
 
   build_hanamictl:
     name: "Compile CLI"
-    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check, check-for-executables ]
+    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check, check-for-executables, commit-lint ]
     runs-on: ubuntu-latest
     env:
       FORCE_COLOR: 1
@@ -267,7 +288,7 @@ jobs:
 
   compiler_test:
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
-    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check, check-for-executables  ]
+    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check, check-for-executables, commit-lint  ]
     strategy:
       fail-fast: false
       matrix:
