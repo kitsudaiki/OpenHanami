@@ -49,7 +49,7 @@
 - name: Create Hanami docker-container
   become: true
   community.docker.docker_container:
-    name: Hanami
+    name: hanami
     image: kitsudaiki/hanami:{{ hanami_docker_tag }}
     state: started
     pull: true
