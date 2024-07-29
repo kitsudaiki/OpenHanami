@@ -11,6 +11,11 @@
 #
 name: "CodeQL"
 
+permissions:
+  contents: read
+  security-events: write
+  pull-requests: read
+  
 on:
   push:
     branches: [ "develop", "v*" ]
