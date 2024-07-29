@@ -795,7 +795,7 @@ jobs:
           path: /tmp/Hanami_build_result
       - 
         name: Install python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@39cd14951b08e74b54015e9e001cdefcf80e669f
         with:
           python-version: "${{ matrix.python_version.version }}"
       - 

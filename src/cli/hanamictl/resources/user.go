@@ -24,7 +24,6 @@ import (
     "fmt"
     "strings"
     "syscall"
-    "errors"
     "os"
     "hanamictl/common"
     "github.com/spf13/cobra"
@@ -58,10 +57,30 @@ var createUserCmd = &cobra.Command {
         var pw string
         var err error
         if len(password) == 0 {
-            pw, err = getPassword()
-            if err == nil {
-                fmt.Printf("error: %s\n", err)
+            fmt.Print("Enter Password: ")
+            bytePassword1, err := term.ReadPassword(int(syscall.Stdin))
+            if err != nil {
+                fmt.Println("Failed to read password input")
+                os.Exit(1)
             }
+            password1 := strings.TrimSpace(string(bytePassword1))
+            
+            fmt.Print("\n")
+            fmt.Print("Enter Password again: ")
+            bytePassword2, err := term.ReadPassword(int(syscall.Stdin))
+            if err != nil {
+                fmt.Println("Failed to read password input")
+                os.Exit(1)
+            }
+            password2 := strings.TrimSpace(string(bytePassword2))
+            
+            fmt.Print("\n")
+            if password1 != password2 {
+                fmt.Println("Mismatch between the two entered passwords")
+                os.Exit(1)
+            }
+
+            pw = password1
         } else {
             pw = password
         }
@@ -129,33 +148,6 @@ var deleteUserCmd = &cobra.Command {
 var userCmd = &cobra.Command {
     Use:   "user",
     Short: "Manage user.",
-}
-
-
-func getPassword() (string, error) {
-    fmt.Print("Enter Password: ")
-    bytePassword1, err := term.ReadPassword(int(syscall.Stdin))
-    if err != nil {
-        return "", errors.New("Failed to read input")
-    }
-
-    password1 := strings.TrimSpace(string(bytePassword1))
-
-    fmt.Print("\n")
-    fmt.Print("Enter Password again: ")
-    bytePassword2, err := term.ReadPassword(int(syscall.Stdin))
-    if err != nil {
-        return "", errors.New("Failed to read input")
-    }
-
-    password2 := strings.TrimSpace(string(bytePassword2))
-    
-    fmt.Print("\n")
-    if password1 != password2 {
-        return "", errors.New("Mismatch between the two entered passwords")
-    }
-
-    return password1, nil
 }
 
 
