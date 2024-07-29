@@ -67,7 +67,7 @@ var createUserCmd = &cobra.Command {
         }
         userId := args[0]
 
-        content, err := hanami_sdk.CreateUser(address, token, userId, userName, pw, isAdmin)
+        content, err := hanami_sdk.CreateUser(address, token, userId, userName, pw, isAdmin, hanamictl_common.DisableTlsVerification)
         if err != nil {
             fmt.Println(err)
             os.Exit(1)
@@ -84,7 +84,7 @@ var getUserCmd = &cobra.Command {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
         userId := args[0]
-        content, err := hanami_sdk.GetUser(address, token, userId)
+        content, err := hanami_sdk.GetUser(address, token, userId, hanamictl_common.DisableTlsVerification)
         if err != nil {
             fmt.Println(err)
             os.Exit(1)
@@ -99,7 +99,7 @@ var listUserCmd = &cobra.Command {
     Run:   func(cmd *cobra.Command, args []string) {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
-        content, err := hanami_sdk.ListUser(address, token)
+        content, err := hanami_sdk.ListUser(address, token, hanamictl_common.DisableTlsVerification)
         if err != nil {
             fmt.Println(err)
             os.Exit(1)
@@ -116,7 +116,7 @@ var deleteUserCmd = &cobra.Command {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
         userId := args[0]
-        _, err := hanami_sdk.DeleteUser(address, token, userId)
+        _, err := hanami_sdk.DeleteUser(address, token, userId, hanamictl_common.DisableTlsVerification)
         if err != nil {
             fmt.Println(err)
             os.Exit(1)
@@ -136,7 +136,7 @@ func getPassword() (string, error) {
     fmt.Print("Enter Password: ")
     bytePassword1, err := term.ReadPassword(int(syscall.Stdin))
     if err != nil {
-        return "", err
+        return "", errors.New("Failed to read input")
     }
 
     password1 := strings.TrimSpace(string(bytePassword1))
@@ -145,7 +145,7 @@ func getPassword() (string, error) {
     fmt.Print("Enter Password again: ")
     bytePassword2, err := term.ReadPassword(int(syscall.Stdin))
     if err != nil {
-        return "", err
+        return "", errors.New("Failed to read input")
     }
 
     password2 := strings.TrimSpace(string(bytePassword2))

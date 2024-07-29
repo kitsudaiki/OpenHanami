@@ -173,8 +173,8 @@ updateCluster(Cluster& cluster)
     Neuron* neuron = nullptr;
     Hexagon* hexagon = nullptr;
     bool found = false;
-    uint32_t hexagonId = 0;
-    uint16_t blockId = 0;
+    uint64_t hexagonId = 0;
+    uint64_t blockId = 0;
     uint8_t sourceId = 0;
 
     // iterate over all neurons and add new synapse-section, if required

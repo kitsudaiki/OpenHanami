@@ -24,21 +24,21 @@ import (
     "fmt"
 )
 
-func GetCheckpoint(address string, token string, checkpointUuid string) (map[string]interface{}, error) {
+func GetCheckpoint(address string, token string, checkpointUuid string, skipTlsVerification bool) (map[string]interface{}, error) {
     path := "v1.0alpha/checkpoint"
     vars := map[string]string{ "uuid": checkpointUuid }
-    return SendGet(address, token, path, vars)
+    return SendGet(address, token, path, vars, skipTlsVerification)
 }
 
-func ListCheckpoint(address string, token string) (map[string]interface{}, error) {
+func ListCheckpoint(address string, token string, skipTlsVerification bool) (map[string]interface{}, error) {
     path := fmt.Sprintf("v1.0alpha/checkpoint/all")
     vars := map[string]string{}
-    return SendGet(address, token, path, vars)
+    return SendGet(address, token, path, vars, skipTlsVerification)
 }
 
-func DeleteCheckpoint(address string, token string, checkpointUuid string) (map[string]interface{}, error) {
+func DeleteCheckpoint(address string, token string, checkpointUuid string, skipTlsVerification bool) (map[string]interface{}, error) {
     path := "v1.0alpha/checkpoint"
     vars := map[string]string{ "uuid": checkpointUuid }
-    return SendDelete(address, token, path, vars)
+    return SendDelete(address, token, path, vars, skipTlsVerification)
 }
  

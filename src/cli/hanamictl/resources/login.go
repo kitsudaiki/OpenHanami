@@ -22,6 +22,7 @@ package hanami_resources
 
 import (
     "os"
+    "hanamictl/common"
     "github.com/kitsudaiki/Hanami"
 )
 
@@ -41,5 +42,5 @@ func Login() string {
     	panic("HANAMI_ADDRESS is not set")
     }
     
-    return hanami_sdk.RequestToken(address, user, pw)
+    return hanami_sdk.RequestToken(address, user, pw, hanamictl_common.DisableTlsVerification)
 }

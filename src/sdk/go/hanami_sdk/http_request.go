@@ -41,31 +41,35 @@ func (r *RequestError) Error() string {
 func SendPost(address string, 
               token string, 
               path string, 
-              jsonBody map[string]interface{}) (map[string]interface{}, error) {
-    return sendGenericRequest(address, token, "POST", path, &jsonBody)
+              jsonBody map[string]interface{},
+              skipTlsVerification bool) (map[string]interface{}, error) {
+    return sendGenericRequest(address, token, "POST", path, &jsonBody, skipTlsVerification)
 }
 
 func SendPut(address string, 
              token string, 
              path string, 
-             jsonBody map[string]interface{} ) (map[string]interface{}, error) {
-    return sendGenericRequest(address, token, "PUT", path, &jsonBody)
+             jsonBody map[string]interface{},
+             skipTlsVerification bool) (map[string]interface{}, error) {
+    return sendGenericRequest(address, token, "PUT", path, &jsonBody, skipTlsVerification)
 }
 
 func SendGet(address string, 
              token string, 
              path string, 
-             vars map[string]string) (map[string]interface{}, error) {
+             vars map[string]string,
+             skipTlsVerification bool) (map[string]interface{}, error) {
     completePath := path + prepareVars(vars)
-    return sendGenericRequest(address, token, "GET", completePath, nil)
+    return sendGenericRequest(address, token, "GET", completePath, nil, skipTlsVerification)
 }
 
 func SendDelete(address string, 
                 token string, 
                 path string, 
-                vars map[string]string) (map[string]interface{}, error) {
+                vars map[string]string,
+                skipTlsVerification bool) (map[string]interface{}, error) {
     completePath := path + prepareVars(vars)
-    return sendGenericRequest(address, token, "DELETE", completePath, nil)
+    return sendGenericRequest(address, token, "DELETE", completePath, nil, skipTlsVerification)
 }
 
 func prepareVars(vars map[string]string) string {
@@ -84,7 +88,8 @@ func sendGenericRequest(address string,
                         token string, 
                         requestType string, 
                         path string, 
-                        jsonBody *map[string]interface{}) (map[string]interface{}, error) {
+                        jsonBody *map[string]interface{},
+                        skipTlsVerification bool) (map[string]interface{}, error) {
     outputMap := map[string]interface{}{}
     jsonDataStr := ""
     if jsonBody != nil {
@@ -97,7 +102,7 @@ func sendGenericRequest(address string,
 
     // check if https or not
     if strings.Contains(address, "https") {
-        http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+        http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: skipTlsVerification}
     }
 
     // build uri

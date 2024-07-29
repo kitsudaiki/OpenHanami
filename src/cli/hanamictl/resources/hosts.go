@@ -39,7 +39,7 @@ var listHostsCmd = &cobra.Command {
     Run:   func(cmd *cobra.Command, args []string) {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
-        content, err := hanami_sdk.ListHosts(address, token)
+        content, err := hanami_sdk.ListHosts(address, token, hanamictl_common.DisableTlsVerification)
         if err == nil {
             hanamictl_common.ParseList(content, hostHeader)
         } else {

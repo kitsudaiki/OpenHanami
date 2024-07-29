@@ -24,7 +24,7 @@ import (
     "strconv"
 )
 
-func listAuditLogs(address string, token string, userId string, page int) (map[string]interface{}, error) {
+func listAuditLogs(address string, token string, userId string, page int, skipTlsVerification bool) (map[string]interface{}, error) {
     path := "/v1.0alpha/audit_log?";
     vars := map[string]string{}
     if(userId != "") {
@@ -37,14 +37,14 @@ func listAuditLogs(address string, token string, userId string, page int) (map[s
             "page": strconv.Itoa(page),
         }
     }
-    return SendGet(address, token, path, vars)
+    return SendGet(address, token, path, vars, skipTlsVerification)
 }
 
-func listErrorLogs(address string, token string, userId string, page int)  (map[string]interface{}, error) {
+func listErrorLogs(address string, token string, userId string, page int, skipTlsVerification bool)  (map[string]interface{}, error) {
     path := "/v1.0alpha/error_log";
     vars := map[string]string{ 
         "user_id": userId,
         "page": strconv.Itoa(page),
     }
-    return SendGet(address, token, path, vars)
+    return SendGet(address, token, path, vars, skipTlsVerification)
 }

@@ -25,14 +25,14 @@ import (
     "fmt"
 )
 
-func RequestToken(address string, user string, pw string) string {
+func RequestToken(address string, user string, pw string, skipTlsVerification bool) string {
     path := fmt.Sprintf("v1.0alpha/token")
     jsonBody := map[string]interface{}{ 
         "id": user,
         "password": pw,
     }
 
-    content, err := sendGenericRequest(address, "", "POST", path, &jsonBody)
+    content, err := sendGenericRequest(address, "", "POST", path, &jsonBody, skipTlsVerification)
     if err != nil {
         return ""
     }

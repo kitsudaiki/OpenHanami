@@ -31,6 +31,7 @@ import (
 )
 
 var PrintAsJson bool = false
+var DisableTlsVerification bool = false
 
 func ParseSingle(input map[string]interface{} , outputFields []string) {
 	if PrintAsJson {
