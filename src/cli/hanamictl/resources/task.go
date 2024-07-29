@@ -53,7 +53,7 @@ var createTrainTaskCmd = &cobra.Command {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
         taskName := args[0]
-        content, err := hanami_sdk.CreateTrainTask(address, token, taskName, clusterUuid, inputData, outputData)
+        content, err := hanami_sdk.CreateTrainTask(address, token, taskName, clusterUuid, inputData, outputData, hanamictl_common.DisableTlsVerification)
         if err == nil {
             hanamictl_common.ParseSingle(content, taskHeader)
         } else {
@@ -72,7 +72,7 @@ var createRequestTaskCmd = &cobra.Command {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
         taskName := args[0]
-        content, err := hanami_sdk.CreateRequestTask(address, token, taskName, clusterUuid, inputData, outputData)
+        content, err := hanami_sdk.CreateRequestTask(address, token, taskName, clusterUuid, inputData, outputData, hanamictl_common.DisableTlsVerification)
         if err == nil {
             hanamictl_common.ParseSingle(content, taskHeader)
         } else {
@@ -90,7 +90,7 @@ var getTaskCmd = &cobra.Command {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
         taskId := args[0]
-        content, err := hanami_sdk.GetTask(address, token, taskId, clusterUuid)
+        content, err := hanami_sdk.GetTask(address, token, taskId, clusterUuid, hanamictl_common.DisableTlsVerification)
         if err == nil {
             hanamictl_common.ParseSingle(content, taskHeader)
         } else {
@@ -106,7 +106,7 @@ var listTaskCmd = &cobra.Command {
     Run:   func(cmd *cobra.Command, args []string) {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
-        content, err := hanami_sdk.ListTask(address, token, clusterUuid)
+        content, err := hanami_sdk.ListTask(address, token, clusterUuid, hanamictl_common.DisableTlsVerification)
         if err == nil {
             hanamictl_common.ParseList(content, taskHeader)
         } else {
@@ -124,7 +124,7 @@ var deleteTaskCmd = &cobra.Command {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
         taskUuid := args[0]
-        _, err := hanami_sdk.DeleteTask(address, token, taskUuid, clusterUuid)
+        _, err := hanami_sdk.DeleteTask(address, token, taskUuid, clusterUuid, hanamictl_common.DisableTlsVerification)
         if err == nil {
             fmt.Printf("successfully deleted task '%v'\n", taskUuid)
         } else {

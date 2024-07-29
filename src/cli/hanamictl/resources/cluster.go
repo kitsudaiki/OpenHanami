@@ -65,7 +65,7 @@ var createClusterCmd = &cobra.Command {
             fmt.Println(err)
             os.Exit(1)
         }
-        content, err := hanami_sdk.CreateCluster(address, token, clusterName, string(templateContent))
+        content, err := hanami_sdk.CreateCluster(address, token, clusterName, string(templateContent), hanamictl_common.DisableTlsVerification)
         if err != nil {
             fmt.Println(err)
             os.Exit(1)
@@ -82,7 +82,7 @@ var getClusterCmd = &cobra.Command {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
         clusterUuid := args[0]
-        content, err := hanami_sdk.GetCluster(address, token, clusterUuid)
+        content, err := hanami_sdk.GetCluster(address, token, clusterUuid, hanamictl_common.DisableTlsVerification)
         if err != nil {
             fmt.Println(err)
             os.Exit(1)
@@ -97,7 +97,7 @@ var listClusterCmd = &cobra.Command {
     Run:   func(cmd *cobra.Command, args []string) {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
-        content, err := hanami_sdk.ListCluster(address, token)
+        content, err := hanami_sdk.ListCluster(address, token, hanamictl_common.DisableTlsVerification)
         if err != nil {
             fmt.Println(err)
             os.Exit(1)
@@ -114,7 +114,7 @@ var deleteClusterCmd = &cobra.Command {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
         clusterUuid := args[0]
-        _, err := hanami_sdk.DeleteCluster(address, token, clusterUuid)
+        _, err := hanami_sdk.DeleteCluster(address, token, clusterUuid, hanamictl_common.DisableTlsVerification)
         if err != nil {
             fmt.Println(err)
             os.Exit(1)
@@ -131,7 +131,7 @@ var saveClusterCmd = &cobra.Command {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
         clusterUuid := args[0]
-        content, err := hanami_sdk.SaveCluster(address, token, clusterUuid, checkpointName)
+        content, err := hanami_sdk.SaveCluster(address, token, clusterUuid, checkpointName, hanamictl_common.DisableTlsVerification)
         if err != nil {
             fmt.Println(err)
             os.Exit(1)
@@ -148,7 +148,7 @@ var restoreClusterCmd = &cobra.Command {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
         clusterUuid := args[0]
-        content, err := hanami_sdk.RestoreCluster(address, token, clusterUuid, checkpointUuid)
+        content, err := hanami_sdk.RestoreCluster(address, token, clusterUuid, checkpointUuid, hanamictl_common.DisableTlsVerification)
         if err != nil {
             fmt.Println(err)
             os.Exit(1)

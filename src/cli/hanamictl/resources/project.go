@@ -47,7 +47,7 @@ var createProjectCmd = &cobra.Command {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
         projectId := args[0]
-        content, err := hanami_sdk.CreateProject(address, token, projectId, projectName)
+        content, err := hanami_sdk.CreateProject(address, token, projectId, projectName, hanamictl_common.DisableTlsVerification)
         if err == nil {
             hanamictl_common.ParseSingle(content, projectHeader)
         } else {
@@ -65,7 +65,7 @@ var getProjectCmd = &cobra.Command {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
         projectId := args[0]
-        content, err := hanami_sdk.GetProject(address, token, projectId)
+        content, err := hanami_sdk.GetProject(address, token, projectId, hanamictl_common.DisableTlsVerification)
         if err == nil {
             hanamictl_common.ParseSingle(content, projectHeader)
         } else {
@@ -81,7 +81,7 @@ var listProjectCmd = &cobra.Command {
     Run:   func(cmd *cobra.Command, args []string) {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
-        content, err := hanami_sdk.ListProject(address, token)
+        content, err := hanami_sdk.ListProject(address, token, hanamictl_common.DisableTlsVerification)
         if err == nil {
             hanamictl_common.ParseList(content, projectHeader)
         } else {
@@ -99,7 +99,7 @@ var deleteProjectCmd = &cobra.Command {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
         projectId := args[0]
-        _, err := hanami_sdk.DeleteProject(address, token, projectId)
+        _, err := hanami_sdk.DeleteProject(address, token, projectId, hanamictl_common.DisableTlsVerification)
         if err == nil {
             fmt.Printf("successfully deleted project '%v'\n", projectId)
         } else {

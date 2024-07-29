@@ -25,47 +25,47 @@ import (
     "fmt"
 )
 
-func CreateCluster(address string, token string, name string, template string) (map[string]interface{}, error) {
+func CreateCluster(address string, token string, name string, template string, skipTlsVerification bool) (map[string]interface{}, error) {
     path := "v1.0alpha/cluster"
     jsonBody := map[string]interface{}{ 
         "name": name,
         "template": b64.StdEncoding.EncodeToString([]byte(template)),
     }
-    return SendPost(address, token, path, jsonBody)
+    return SendPost(address, token, path, jsonBody, skipTlsVerification)
 }
 
-func GetCluster(address string, token string, clusterUuid string) (map[string]interface{}, error) {
+func GetCluster(address string, token string, clusterUuid string, skipTlsVerification bool) (map[string]interface{}, error) {
     path := "v1.0alpha/cluster"
     vars := map[string]string{ "uuid": clusterUuid }
-    return SendGet(address, token, path, vars)
+    return SendGet(address, token, path, vars, skipTlsVerification)
 }
 
-func ListCluster(address string, token string) (map[string]interface{}, error) {
+func ListCluster(address string, token string, skipTlsVerification bool) (map[string]interface{}, error) {
     path := fmt.Sprintf("v1.0alpha/cluster/all")
     vars := map[string]string{}
-    return SendGet(address, token, path, vars)
+    return SendGet(address, token, path, vars, skipTlsVerification)
 }
 
-func DeleteCluster(address string, token string, clusterUuid string) (map[string]interface{}, error) {
+func DeleteCluster(address string, token string, clusterUuid string, skipTlsVerification bool) (map[string]interface{}, error) {
     path := "v1.0alpha/cluster"
     vars := map[string]string{ "uuid": clusterUuid }
-    return SendDelete(address, token, path, vars)
+    return SendDelete(address, token, path, vars, skipTlsVerification)
 }
  
-func SaveCluster(address string, token string, clusterUuid string, checkpointName string) (map[string]interface{}, error) {
+func SaveCluster(address string, token string, clusterUuid string, checkpointName string, skipTlsVerification bool) (map[string]interface{}, error) {
     path := "v1.0alpha/cluster/save"
     jsonBody := map[string]interface{}{ 
         "name": checkpointName,
         "cluster_uuid": clusterUuid,
     }
-    return SendPost(address, token, path, jsonBody)
+    return SendPost(address, token, path, jsonBody, skipTlsVerification)
 }
 
-func RestoreCluster(address string, token string, clusterUuid string, checkpointUuid string) (map[string]interface{}, error) {
+func RestoreCluster(address string, token string, clusterUuid string, checkpointUuid string, skipTlsVerification bool) (map[string]interface{}, error) {
     path := "v1.0alpha/cluster/load"
     jsonBody := map[string]interface{}{ 
         "checkpoint_uuid": checkpointUuid,
         "cluster_uuid": clusterUuid,
     }
-    return SendPost(address, token, path, jsonBody)
+    return SendPost(address, token, path, jsonBody, skipTlsVerification)
 }

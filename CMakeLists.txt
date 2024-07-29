@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(hanami VERSION 0.3.3 LANGUAGES C CXX)
+project(Hanami VERSION 0.3.3 LANGUAGES C CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 

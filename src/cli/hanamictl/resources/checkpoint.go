@@ -45,7 +45,7 @@ var getCheckpointCmd = &cobra.Command {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
         checkpointUuid := args[0]
-        content, err := hanami_sdk.GetCheckpoint(address, token, checkpointUuid)
+        content, err := hanami_sdk.GetCheckpoint(address, token, checkpointUuid, hanamictl_common.DisableTlsVerification)
         if err != nil {
             fmt.Println(err)
             os.Exit(1)
@@ -60,7 +60,7 @@ var listCheckpointCmd = &cobra.Command {
     Run:   func(cmd *cobra.Command, args []string) {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
-        content, err := hanami_sdk.ListCheckpoint(address, token)
+        content, err := hanami_sdk.ListCheckpoint(address, token, hanamictl_common.DisableTlsVerification)
         if err != nil {
             fmt.Println(err)
             os.Exit(1)
@@ -77,7 +77,7 @@ var deleteCheckpointCmd = &cobra.Command {
         token := Login()
         address := os.Getenv("HANAMI_ADDRESS")
         checkpointUuid := args[0]
-        _, err := hanami_sdk.DeleteCheckpoint(address, token, checkpointUuid)
+        _, err := hanami_sdk.DeleteCheckpoint(address, token, checkpointUuid, hanamictl_common.DisableTlsVerification)
         if err != nil {
             fmt.Println(err)
             os.Exit(1)

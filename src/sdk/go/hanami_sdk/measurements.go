@@ -20,20 +20,20 @@
 
 package hanami_sdk
 
-func getPowerData(address string, token string) (map[string]interface{}, error) {
+func getPowerData(address string, token string, skipTlsVerification bool) (map[string]interface{}, error) {
     path := "/v1.0alpha/power_consumption";
     vars := map[string]string{}
-    return SendGet(address, token, path, vars)
+    return SendGet(address, token, path, vars, skipTlsVerification)
 }
 
-func getTemperatureData_request(address string, token string) (map[string]interface{}, error) {
+func getTemperatureData_request(address string, token string, skipTlsVerification bool) (map[string]interface{}, error) {
     path := "/v1.0alpha/temperature_production";
     vars := map[string]string{}
-    return SendGet(address, token, path, vars)
+    return SendGet(address, token, path, vars, skipTlsVerification)
 }
 
-func getSpeedData_request(address string, token string) (map[string]interface{}, error) {
+func getSpeedData_request(address string, token string, skipTlsVerification bool) (map[string]interface{}, error) {
     path := "/v1.0alpha/speed";
     vars := map[string]string{}
-    return SendGet(address, token, path, vars)
+    return SendGet(address, token, path, vars, skipTlsVerification)
 }

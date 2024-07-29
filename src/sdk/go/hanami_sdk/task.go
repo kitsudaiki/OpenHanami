@@ -43,7 +43,8 @@ func CreateTrainTask(address string,
                      name string, 
                      clusterUuid string, 
                      inputs []string, 
-                     outputs []string) (map[string]interface{}, error) {
+                     outputs []string, 
+                     skipTlsVerification bool) (map[string]interface{}, error) {
 	path := "v1.0alpha/task/train"
     jsonBody := map[string]interface{}{
         "name": name,
@@ -51,7 +52,7 @@ func CreateTrainTask(address string,
         "inputs": convertIO(inputs),
         "outputs": convertIO(outputs),
     }
-    return SendPost(address, token, path, jsonBody)
+    return SendPost(address, token, path, jsonBody, skipTlsVerification)
 }
 
 func CreateRequestTask(address string, 
@@ -59,7 +60,8 @@ func CreateRequestTask(address string,
                        name string, 
                        clusterUuid string, 
                        inputs []string, 
-                       results []string) (map[string]interface{}, error) {
+                       results []string, 
+                       skipTlsVerification bool) (map[string]interface{}, error) {
     path := "v1.0alpha/task/request"
     jsonBody := map[string]interface{}{
         "name": name,
@@ -67,29 +69,29 @@ func CreateRequestTask(address string,
         "inputs": convertIO(inputs),
         "results": convertIO(results),
     }
-    return SendPost(address, token, path, jsonBody)
+    return SendPost(address, token, path, jsonBody, skipTlsVerification)
 }
 
-func GetTask(address string, token string, taskId string, clusterUuid string) (map[string]interface{}, error) {
+func GetTask(address string, token string, taskId string, clusterUuid string, skipTlsVerification bool) (map[string]interface{}, error) {
     path := "v1.0alpha/task"
     vars := map[string]string{ 
         "uuid": taskId,
         "cluster_uuid": clusterUuid,
     }
-    return SendGet(address, token, path, vars)
+    return SendGet(address, token, path, vars, skipTlsVerification)
 }
 
-func ListTask(address string, token string, clusterUuid string) (map[string]interface{}, error) {
+func ListTask(address string, token string, clusterUuid string, skipTlsVerification bool) (map[string]interface{}, error) {
     path := "v1.0alpha/task/all"
     vars := map[string]string{ "cluster_uuid": clusterUuid }
-    return SendGet(address, token, path, vars)
+    return SendGet(address, token, path, vars, skipTlsVerification)
 }
 
-func DeleteTask(address string, token string, taskUuid string, clusterUuid string) (map[string]interface{}, error) {
+func DeleteTask(address string, token string, taskUuid string, clusterUuid string, skipTlsVerification bool) (map[string]interface{}, error) {
     path := "v1.0alpha/task"
     vars := map[string]string{ 
         "uuid": taskUuid,
         "cluster_uuid": clusterUuid,
     }
-    return SendDelete(address, token, path, vars)
+    return SendDelete(address, token, path, vars, skipTlsVerification)
 }

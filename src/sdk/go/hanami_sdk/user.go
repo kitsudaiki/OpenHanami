@@ -24,7 +24,7 @@ import (
     "fmt"
 )
 
-func CreateUser(address string, token string, userId string, userName string, pw string, is_admin bool) (map[string]interface{}, error) {
+func CreateUser(address string, token string, userId string, userName string, pw string, is_admin bool, skipTlsVerification bool) (map[string]interface{}, error) {
     path := "v1.0alpha/user"
     jsonBody := map[string]interface{}{ 
         "id": userId,
@@ -32,23 +32,23 @@ func CreateUser(address string, token string, userId string, userName string, pw
         "password": pw,
         "is_admin": is_admin,
     }
-    return SendPost(address, token, path, jsonBody)
+    return SendPost(address, token, path, jsonBody, skipTlsVerification)
 }
 
-func GetUser(address string, token string, userId string) (map[string]interface{}, error) {
+func GetUser(address string, token string, userId string, skipTlsVerification bool) (map[string]interface{}, error) {
     path := "v1.0alpha/user"
     vars := map[string]string{ "id": userId }
-    return SendGet(address, token, path, vars)
+    return SendGet(address, token, path, vars, skipTlsVerification)
 }
 
-func ListUser(address string, token string) (map[string]interface{}, error) {
+func ListUser(address string, token string, skipTlsVerification bool) (map[string]interface{}, error) {
     path := fmt.Sprintf("v1.0alpha/user/all")
     vars := map[string]string{}
-    return SendGet(address, token, path, vars)
+    return SendGet(address, token, path, vars, skipTlsVerification)
 }
 
-func DeleteUser(address string, token string, userId string) (map[string]interface{}, error) {
+func DeleteUser(address string, token string, userId string, skipTlsVerification bool) (map[string]interface{}, error) {
     path := "v1.0alpha/user"
     vars := map[string]string{ "id": userId }
-    return SendDelete(address, token, path, vars)
+    return SendDelete(address, token, path, vars, skipTlsVerification)
 }

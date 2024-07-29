@@ -31,7 +31,8 @@ import (
 var rootCmd = &cobra.Command{Use: "hanamictl"}
 
 func init() {
-    rootCmd.PersistentFlags().BoolVarP(&hanamictl_common.PrintAsJson, "json_output", "j", false, "return output as json")
+    rootCmd.PersistentFlags().BoolVarP(&hanamictl_common.PrintAsJson, "json_output", "j", false, "Return output as json")
+    rootCmd.PersistentFlags().BoolVar(&hanamictl_common.DisableTlsVerification, "insecure", false, "Disable the TLS-verification")
 
     hanami_resources.Init_User_Commands(rootCmd);
     hanami_resources.Init_Project_Commands(rootCmd);

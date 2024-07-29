@@ -35,38 +35,38 @@ import (
 
 const chunkSize = 128 * 1024 // 128 KiB
 
-func GetDataset(address string, token string, datasetUuid string) (map[string]interface{}, error) {
+func GetDataset(address string, token string, datasetUuid string, skipTlsVerification bool) (map[string]interface{}, error) {
     path := "v1.0alpha/dataset"
     vars := map[string]string{ "uuid": datasetUuid }
-    return SendGet(address, token, path, vars)
+    return SendGet(address, token, path, vars, skipTlsVerification)
 }
 
-func ListDataset(address string, token string) (map[string]interface{}, error) {
+func ListDataset(address string, token string, skipTlsVerification bool) (map[string]interface{}, error) {
     path := fmt.Sprintf("v1.0alpha/dataset/all")
     vars := map[string]string{}
-    return SendGet(address, token, path, vars)
+    return SendGet(address, token, path, vars, skipTlsVerification)
 }
 
-func DeleteDataset(address string, token string, datasetUuid string) (map[string]interface{}, error){
+func DeleteDataset(address string, token string, datasetUuid string, skipTlsVerification bool) (map[string]interface{}, error){
     path := "v1.0alpha/dataset"
     vars := map[string]string{ "uuid": datasetUuid }
-    return SendDelete(address, token, path, vars)
+    return SendDelete(address, token, path, vars, skipTlsVerification)
 }
  
-func CheckDataset(address string, token string, datasetUuid string, resultDatasetUuid string) (map[string]interface{}, error){
+func CheckDataset(address string, token string, datasetUuid string, resultDatasetUuid string, skipTlsVerification bool) (map[string]interface{}, error){
     path := "v1.0alpha/dataset/check"
     vars := map[string]string{ 
         "dataset_uuid": datasetUuid,
         "result_uuid": resultDatasetUuid,
     }
-    return SendGet(address, token, path, vars)
+    return SendGet(address, token, path, vars, skipTlsVerification)
 }
 
-func waitUntilUploadComplete(token string, address string, uuid string) error {
+func waitUntilUploadComplete(token string, address string, uuid string, skipTlsVerification bool) error {
     for true {
         path := fmt.Sprintf("v1.0alpha/dataset/progress")
         vars := map[string]string{ "uuid": uuid }
-        content, err := SendGet(address, token, path, vars)
+        content, err := SendGet(address, token, path, vars, skipTlsVerification)
         if err != nil {
             return err
         }
@@ -178,7 +178,7 @@ func sendFile(token string, address string, datasetUuid string, fileUuid string,
     return nil
 }
 
-func UploadMnistFiles(address string, token string, name string, inputFilePath string, labelFilePath string) (string, error) {
+func UploadMnistFiles(address string, token string, name string, inputFilePath string, labelFilePath string, skipTlsVerification bool) (string, error) {
     // Open the binary input-file
     inputFile, err := os.Open(inputFilePath)
     if err != nil {
@@ -209,7 +209,7 @@ func UploadMnistFiles(address string, token string, name string, inputFilePath s
         "input_data_size": inputFileInfo.Size(),
         "label_data_size": labelFileInfo.Size(),
     }
-    datasetInfo, err := SendPost(address, token, path, jsonBody)
+    datasetInfo, err := SendPost(address, token, path, jsonBody, skipTlsVerification)
     if err != nil {
         return "", err
     }
@@ -229,7 +229,7 @@ func UploadMnistFiles(address string, token string, name string, inputFilePath s
         return "", err
     }
 
-    err = waitUntilUploadComplete(token, address, uuid)
+    err = waitUntilUploadComplete(token, address, uuid, skipTlsVerification)
     if err != nil {
         return "", err
     }
@@ -240,7 +240,7 @@ func UploadMnistFiles(address string, token string, name string, inputFilePath s
         "uuid_input_file": inputFileUuid,
         "uuid_label_file": labelFileUuid,
     }
-    _, err = SendPut(address, token, path, jsonBody)
+    _, err = SendPut(address, token, path, jsonBody, skipTlsVerification)
     if err != nil {
         return "", err
     }
@@ -248,7 +248,7 @@ func UploadMnistFiles(address string, token string, name string, inputFilePath s
     return uuid, nil
 }
 
-func UploadCsvFiles(address string, token string, name string, inputFilePath string) (string, error) {
+func UploadCsvFiles(address string, token string, name string, inputFilePath string, skipTlsVerification bool) (string, error) {
     // Open the binary input-file
     inputFile, err := os.Open(inputFilePath)
     if err != nil {
@@ -266,7 +266,7 @@ func UploadCsvFiles(address string, token string, name string, inputFilePath str
         "name": name,
         "input_data_size": inputFileInfo.Size(),
     }
-    datasetInfo, err := SendPost(address, token, path, jsonBody)
+    datasetInfo, err := SendPost(address, token, path, jsonBody, skipTlsVerification)
     if err != nil {
         return "", err
     }
@@ -280,7 +280,7 @@ func UploadCsvFiles(address string, token string, name string, inputFilePath str
         return "", err
     }
 
-    err = waitUntilUploadComplete(token, address, uuid)
+    err = waitUntilUploadComplete(token, address, uuid, skipTlsVerification)
     if err != nil {
         return "", err
     }
@@ -290,7 +290,7 @@ func UploadCsvFiles(address string, token string, name string, inputFilePath str
         "uuid": uuid,
         "uuid_input_file": inputFileUuid,
     }
-    _, err = SendPut(address, token, path, jsonBody)
+    _, err = SendPut(address, token, path, jsonBody, skipTlsVerification)
     if err != nil {
         return "", err
     }
