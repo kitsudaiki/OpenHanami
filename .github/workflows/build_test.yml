@@ -902,11 +902,6 @@ jobs:
           git submodule init
           git submodule update --recursive
       - 
-        name: Compile code
-        run: |
-          cd ${GITHUB_REPOSITORY#*/}
-          earthly --artifact +compile-code/tmp/hanami ./builds/binaries
-      - 
         name: Docker meta
         id: meta
         uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81
