@@ -1,4 +1,36 @@
-FROM ubuntu:22.04@sha256:0eb0f877e1c869a300c442c41120e778db7161419244ee5cbc6fa5f134e74736
+FROM ubuntu:22.04 AS builder
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+WORKDIR /app
+
+RUN apt-get update && \
+        apt-get install -y clang-15 \
+                           make \
+                           cmake \
+                           bison \
+                           flex \
+                           git \
+                           ssh \
+                           libssl-dev \
+                           libcrypto++-dev \
+                           libboost-dev \
+                           nlohmann-json3-dev \
+                           uuid-dev  \
+                           libsqlite3-dev \
+                           protobuf-compiler && \
+        ln -s /usr/bin/clang++-15 /usr/bin/clang++ && \
+        ln -s /usr/bin/clang-15 /usr/bin/clang
+
+COPY . .
+
+RUN cmake -DCMAKE_BUILD_TYPE=Release .
+RUN make -j8
+RUN mkdir -p /app/ && \
+    find src -type f -executable -exec cp {} /app/ \;
+
+
+FROM ubuntu:22.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -8,5 +40,5 @@ RUN apt-get update && \
     apt-get autoremove --yes
 
 # hanami
-COPY ./builds/binaries/hanami /usr/bin/hanami
+COPY --from=builder /app/hanami /usr/bin/hanami
 CMD hanami
