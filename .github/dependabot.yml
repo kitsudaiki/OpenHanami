@@ -13,13 +13,13 @@ updates:
     commit-message:
       prefix: "chore(deps)"
     open-pull-requests-limit: 10
-    rebase-strategy: "auto" 
+    rebase-strategy: "auto"
     assignees:
       - "kitsudaiki"
 
 
   - package-ecosystem: gomod 
-      directory: "/" 
+    directory: "/"
     schedule:
       interval: daily
       time: "12:00"
