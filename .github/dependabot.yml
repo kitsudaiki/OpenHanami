@@ -16,7 +16,11 @@ updates:
     rebase-strategy: "auto"
     assignees:
       - "kitsudaiki"
-
+    ignore:
+      - dependency-name: 'protobuf'
+        # Must be pinned to a maximum of version 3.20.1
+        # see https://github.com/protocolbuffers/protobuf/issues/10051
+        versions: '> 3.20.1'
 
   - package-ecosystem: gomod 
     directory: "/src/cli/hanamictl/"
