@@ -18,9 +18,9 @@ updates:
       - "kitsudaiki"
     ignore:
       - dependency-name: 'protobuf'
-        # Must be pinned to a maximum of version 3.20.1
+        # Must be pinned to a maximum of version 3.20.3
         # see https://github.com/protocolbuffers/protobuf/issues/10051
-        versions: '> 3.20.1'
+        versions: '> 3.20.3'
 
   - package-ecosystem: gomod 
     directory: "/src/cli/hanamictl/"
