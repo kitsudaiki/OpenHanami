@@ -29,7 +29,7 @@ setup(
     license='Apache 2.0',
     packages=['hanami_sdk', 'hanami_sdk.hanami_messages'],
     install_requires=['jsonschema==4.23.0',
-                      'protobuf==5.27.2',
+                      'protobuf==3.20.1',
                       'requests==2.32.3',
                       'simplejson==3.19.2',
                       'websockets==12.0'],
