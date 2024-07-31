@@ -7,7 +7,7 @@ replace github.com/kitsudaiki/Hanami => ../../sdk/go/hanami_sdk
 require (
 	github.com/kitsudaiki/Hanami v0.3.1-0.20230916184520-abb03e487e58
 	github.com/olekukonko/tablewriter v0.0.5
-	github.com/spf13/cobra v1.7.0
+	github.com/spf13/cobra v1.8.1
 	golang.org/x/term v0.12.0
 )
 
