@@ -33,15 +33,15 @@ set(SOURCES
     src/api/http/cluster/set_cluster_mode_v1_0.h
     src/api/http/cluster/show_cluster_v1_0.h
     src/api/http/cluster/switch_hosts_v1_0.h
-    src/api/http/data_files/check_dataset_v1_0.h
-    src/api/http/data_files/csv/create_csv_dataset_v1_0.h
-    src/api/http/data_files/csv/finalize_csv_dataset_v1_0.h
-    src/api/http/data_files/delete_dataset_v1_0.h
-    src/api/http/data_files/get_dataset_v1_0.h
-    src/api/http/data_files/get_progress_dataset_v1_0.h
-    src/api/http/data_files/list_dataset_v1_0.h
-    src/api/http/data_files/mnist/create_mnist_dataset_v1_0.h
-    src/api/http/data_files/mnist/finalize_mnist_dataset_v1_0.h
+    src/api/http/dataset/check_dataset_v1_0.h
+    src/api/http/dataset/csv/create_csv_dataset_v1_0.h
+    src/api/http/dataset/csv/finalize_csv_dataset_v1_0.h
+    src/api/http/dataset/delete_dataset_v1_0.h
+    src/api/http/dataset/get_dataset_v1_0.h
+    src/api/http/dataset/get_progress_dataset_v1_0.h
+    src/api/http/dataset/list_dataset_v1_0.h
+    src/api/http/dataset/mnist/create_mnist_dataset_v1_0.h
+    src/api/http/dataset/mnist/finalize_mnist_dataset_v1_0.h
     src/api/http/endpoint_init.h
     src/api/http/hosts/list_hosts_v1_0.h
     src/api/http/logs/get_audit_log_v1_0.h
@@ -134,15 +134,15 @@ set(SOURCES
     src/api/http/cluster/set_cluster_mode_v1_0.cpp
     src/api/http/cluster/show_cluster_v1_0.cpp
     src/api/http/cluster/switch_hosts_v1_0.cpp
-    src/api/http/data_files/check_dataset_v1_0.cpp
-    src/api/http/data_files/csv/create_csv_dataset_v1_0.cpp
-    src/api/http/data_files/csv/finalize_csv_dataset_v1_0.cpp
-    src/api/http/data_files/delete_dataset_v1_0.cpp
-    src/api/http/data_files/get_dataset_v1_0.cpp
-    src/api/http/data_files/get_progress_dataset_v1_0.cpp
-    src/api/http/data_files/list_dataset_v1_0.cpp
-    src/api/http/data_files/mnist/create_mnist_dataset_v1_0.cpp
-    src/api/http/data_files/mnist/finalize_mnist_dataset_v1_0.cpp
+    src/api/http/dataset/check_dataset_v1_0.cpp
+    src/api/http/dataset/csv/create_csv_dataset_v1_0.cpp
+    src/api/http/dataset/csv/finalize_csv_dataset_v1_0.cpp
+    src/api/http/dataset/delete_dataset_v1_0.cpp
+    src/api/http/dataset/get_dataset_v1_0.cpp
+    src/api/http/dataset/get_progress_dataset_v1_0.cpp
+    src/api/http/dataset/list_dataset_v1_0.cpp
+    src/api/http/dataset/mnist/create_mnist_dataset_v1_0.cpp
+    src/api/http/dataset/mnist/finalize_mnist_dataset_v1_0.cpp
     src/api/http/endpoint_init.cpp
     src/api/http/hosts/list_hosts_v1_0.cpp
     src/api/http/logs/get_audit_log_v1_0.cpp
