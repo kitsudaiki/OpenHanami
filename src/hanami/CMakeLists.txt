@@ -37,6 +37,7 @@ set(SOURCES
     src/api/http/dataset/csv/create_csv_dataset_v1_0.h
     src/api/http/dataset/csv/finalize_csv_dataset_v1_0.h
     src/api/http/dataset/delete_dataset_v1_0.h
+    src/api/http/dataset/download_dataset_content_v1_0.h
     src/api/http/dataset/get_dataset_v1_0.h
     src/api/http/dataset/get_progress_dataset_v1_0.h
     src/api/http/dataset/list_dataset_v1_0.h
@@ -83,7 +84,6 @@ set(SOURCES
     src/core/cluster/states/task_handle_state.h
     src/core/cluster/states/train_forward_state.h
     src/core/cluster/task.h
-    src/core/processing/cuda/cuda_functions.h
     src/core/io/checkpoint/buffer/buffer_io.h
     src/core/io/checkpoint/disc/checkpoint_io.h
     src/core/io/checkpoint/io_interface.h
@@ -95,6 +95,7 @@ set(SOURCES
     src/core/processing/cpu/processing.h
     src/core/processing/cpu/reduction.h
     src/core/processing/cpu/worker_thread.h
+    src/core/processing/cuda/cuda_functions.h
     src/core/processing/cuda/cuda_host.h
     src/core/processing/cuda/info.h
     src/core/processing/logical_host.h
@@ -138,6 +139,7 @@ set(SOURCES
     src/api/http/dataset/csv/create_csv_dataset_v1_0.cpp
     src/api/http/dataset/csv/finalize_csv_dataset_v1_0.cpp
     src/api/http/dataset/delete_dataset_v1_0.cpp
+    src/api/http/dataset/download_dataset_content_v1_0.cpp
     src/api/http/dataset/get_dataset_v1_0.cpp
     src/api/http/dataset/get_progress_dataset_v1_0.cpp
     src/api/http/dataset/list_dataset_v1_0.cpp

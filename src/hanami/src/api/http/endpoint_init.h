@@ -43,6 +43,7 @@
 #include <api/http/dataset/csv/create_csv_dataset_v1_0.h>
 #include <api/http/dataset/csv/finalize_csv_dataset_v1_0.h>
 #include <api/http/dataset/delete_dataset_v1_0.h>
+#include <api/http/dataset/download_dataset_content_v1_0.h>
 #include <api/http/dataset/get_dataset_v1_0.h>
 #include <api/http/dataset/get_progress_dataset_v1_0.h>
 #include <api/http/dataset/list_dataset_v1_0.h>

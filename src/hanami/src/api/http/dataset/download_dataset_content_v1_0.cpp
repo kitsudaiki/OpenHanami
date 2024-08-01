@@ -1,5 +1,5 @@
 /**
- * @file        check_dataset_v1_0.cpp
+ * @file        download_dataset_content_v1_0.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,14 +20,14 @@
  *      limitations under the License.
  */
 
-#include "check_dataset_v1_0.h"
+#include "download_dataset_content_v1_0.h"
 
 #include <core/io/data_set/dataset_file_io.h>
 #include <database/dataset_table.h>
 #include <hanami_config/config_handler.h>
 #include <hanami_root.h>
 
-CheckMnistDataSetV1M0::CheckMnistDataSetV1M0()
+DownloadDatasetContentV1M0::DownloadDatasetContentV1M0()
     : Blossom("Compare a list of values with a dataset to check accuracy.")
 {
     errorCodes.push_back(NOT_FOUND_RTYPE);
@@ -36,95 +36,98 @@ CheckMnistDataSetV1M0::CheckMnistDataSetV1M0()
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("result_uuid", SAKURA_STRING_TYPE)
-        .setComment("UUID of the dataset to compare to.")
+    registerInputField("dataset_uuid", SAKURA_STRING_TYPE)
+        .setComment("UUID of the dataset of which the content was requested.")
         .setRegex(UUID_REGEX);
 
-    registerInputField("dataset_uuid", SAKURA_STRING_TYPE)
-        .setComment("UUID of the dataset with the results, which should be checked.")
-        .setRegex(UUID_REGEX);
+    registerInputField("column_name", SAKURA_STRING_TYPE)
+        .setComment("Name of the column to read from the dataset.")
+        .setRegex(NAME_REGEX);
+
+    registerInputField("row_offset", SAKURA_INT_TYPE)
+        .setComment("The row number where to start read of the data.")
+        .setLimit(0, 1000000000)
+        .setDefault(0);
+
+    registerInputField("number_of_rows", SAKURA_INT_TYPE)
+        .setComment("Number of rows to read from the dataset starting by the offset.")
+        .setLimit(1, 10000)
+        .setDefault(1);
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("accuracy", SAKURA_FLOAT_TYPE)
-        .setComment("Correctness of the values compared to the dataset.");
+    registerOutputField("data", SAKURA_ARRAY_TYPE).setComment("Read content for the dataset.");
 
     //----------------------------------------------------------------------------------------------
     //
     //----------------------------------------------------------------------------------------------
 }
-
 /**
  * @brief runTask
  */
 bool
-CheckMnistDataSetV1M0::runTask(BlossomIO& blossomIO,
-                               const json& context,
-                               BlossomStatus& status,
-                               Hanami::ErrorContainer& error)
+DownloadDatasetContentV1M0::runTask(BlossomIO& blossomIO,
+                                    const json& context,
+                                    BlossomStatus& status,
+                                    Hanami::ErrorContainer& error)
 {
-    const std::string resultUuid = blossomIO.input["result_uuid"];
     const std::string datasetUuid = blossomIO.input["dataset_uuid"];
+    const std::string columnName = blossomIO.input["column_name"];
+    const uint64_t rowOffset = blossomIO.input["row_offset"];
+    const uint64_t numberOfRows = blossomIO.input["number_of_rows"];
     const Hanami::UserContext userContext = convertContext(context);
 
     DataSetFileHandle datasetFileHandle;
-    DataSetFileHandle resultFileHandle;
 
     // open files
     ReturnStatus ret = getFileHandle(datasetFileHandle, datasetUuid, userContext, status, error);
     if (ret != OK) {
         return false;
     }
-    ret = getFileHandle(resultFileHandle, resultUuid, userContext, status, error);
-    if (ret != OK) {
+
+    // check if requested column even exist in dataset
+    if (datasetFileHandle.description.contains(columnName) == false) {
+        status.errorMessage = "Column with name '" + columnName
+                              + "' was not found in dataset with UUID '" + datasetUuid + "'";
+        status.statusCode = NOT_FOUND_RTYPE;
         return false;
     }
 
     // set file-selectors
-    resultFileHandle.readSelector.endColumn = 10;
-    resultFileHandle.readSelector.endRow = 10000;
-    datasetFileHandle.readSelector.startColumn = 784;
-    datasetFileHandle.readSelector.endColumn = 794;
-    datasetFileHandle.readSelector.endRow = 10000;
+    const json range = datasetFileHandle.description[columnName];
+    datasetFileHandle.readSelector.startColumn = range["start_column"];
+    datasetFileHandle.readSelector.endColumn = range["end_column"];
+    datasetFileHandle.readSelector.startRow = rowOffset;
+    datasetFileHandle.readSelector.endRow = rowOffset + numberOfRows;
 
     // init buffer for output
-    std::vector<float> datasetOutput(10, 0.0f);
-    std::vector<float> resultOutput(10, 0.0f);
-
-    float accuracy = 0.0f;
+    const uint64_t numberOfColumns
+        = datasetFileHandle.readSelector.endColumn - datasetFileHandle.readSelector.startColumn;
+    std::vector<float> datasetOutput(numberOfColumns, 0.0f);
+    blossomIO.output["data"] = json::array();
 
     // check files
-    for (uint64_t row = 0; row < 10000; row++) {
+    for (uint64_t row = datasetFileHandle.readSelector.startRow;
+         row < datasetFileHandle.readSelector.endRow;
+         row++)
+    {
         if (getDataFromDataSet(datasetOutput, datasetFileHandle, row, error) != OK) {
             status.statusCode = INVALID_INPUT;
             status.errorMessage
-                = "Dataset with UUID '" + datasetUuid + "' is invalid and can not be compared";
-            error.addMessage(status.errorMessage);
-            return false;
-        }
-        if (getDataFromDataSet(resultOutput, resultFileHandle, row, error) != OK) {
-            status.statusCode = INVALID_INPUT;
-            status.errorMessage = "Dataset with result with UUID '" + resultUuid
-                                  + "' is invalid and can not be checked";
+                = "Dataset with UUID '" + datasetUuid + "' is invalid and can not be read.";
             error.addMessage(status.errorMessage);
             return false;
         }
 
-        bool allCorrect = true;
-        for (uint64_t i = 0; i < 10; i++) {
-            if (datasetOutput[i] != resultOutput[i]) {
-                allCorrect = false;
-            }
+        // convert values into output
+        json rowData = json::array();
+        for (const float val : datasetOutput) {
+            rowData.push_back(val);
         }
-
-        if (allCorrect) {
-            accuracy += 1.0f;
-        }
+        blossomIO.output["data"].push_back(row);
     }
-
-    blossomIO.output["accuracy"] = (100.0f / 10000.0f) * accuracy;
 
     return true;
 }
@@ -139,11 +142,11 @@ CheckMnistDataSetV1M0::runTask(BlossomIO& blossomIO,
  * @return
  */
 ReturnStatus
-CheckMnistDataSetV1M0::getFileHandle(DataSetFileHandle& fileHandle,
-                                     const std::string uuid,
-                                     const Hanami::UserContext userContext,
-                                     BlossomStatus& status,
-                                     Hanami::ErrorContainer& error)
+DownloadDatasetContentV1M0::getFileHandle(DataSetFileHandle& fileHandle,
+                                          const std::string uuid,
+                                          const Hanami::UserContext userContext,
+                                          BlossomStatus& status,
+                                          Hanami::ErrorContainer& error)
 {
     json dbOutput;
     ReturnStatus ret
