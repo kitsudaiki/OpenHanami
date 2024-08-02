@@ -21,131 +21,110 @@
 package hanami_sdk
 
 import (
-    "fmt"
-    "net/http"
-    "io/ioutil"
-    "crypto/tls"
-    "strings"
-    "encoding/json"
+	"crypto/tls"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"strings"
 )
 
 type RequestError struct {
-    StatusCode int
-    Err string
+	StatusCode int
+	Err        string
 }
 
 func (r *RequestError) Error() string {
-    return fmt.Sprintf("status %d: err %v", r.StatusCode, r.Err)
+	return fmt.Sprintf("status %d: err %v", r.StatusCode, r.Err)
 }
 
-func SendPost(address string, 
-              token string, 
-              path string, 
-              jsonBody map[string]interface{},
-              skipTlsVerification bool) (map[string]interface{}, error) {
-    return sendGenericRequest(address, token, "POST", path, &jsonBody, skipTlsVerification)
+func SendPost(address, token, path string, jsonBody map[string]interface{}, skipTlsVerification bool) (map[string]interface{}, error) {
+	return sendGenericRequest(address, token, "POST", path, &jsonBody, skipTlsVerification)
 }
 
-func SendPut(address string, 
-             token string, 
-             path string, 
-             jsonBody map[string]interface{},
-             skipTlsVerification bool) (map[string]interface{}, error) {
-    return sendGenericRequest(address, token, "PUT", path, &jsonBody, skipTlsVerification)
+func SendPut(address, token, path string, jsonBody map[string]interface{}, skipTlsVerification bool) (map[string]interface{}, error) {
+	return sendGenericRequest(address, token, "PUT", path, &jsonBody, skipTlsVerification)
 }
 
-func SendGet(address string, 
-             token string, 
-             path string, 
-             vars map[string]string,
-             skipTlsVerification bool) (map[string]interface{}, error) {
-    completePath := path + prepareVars(vars)
-    return sendGenericRequest(address, token, "GET", completePath, nil, skipTlsVerification)
+func SendGet(address, token, path string, vars map[string]string, skipTlsVerification bool) (map[string]interface{}, error) {
+	completePath := path + prepareVars(vars)
+	return sendGenericRequest(address, token, "GET", completePath, nil, skipTlsVerification)
 }
 
-func SendDelete(address string, 
-                token string, 
-                path string, 
-                vars map[string]string,
-                skipTlsVerification bool) (map[string]interface{}, error) {
-    completePath := path + prepareVars(vars)
-    return sendGenericRequest(address, token, "DELETE", completePath, nil, skipTlsVerification)
+func SendDelete(address, token, path string, vars map[string]string, skipTlsVerification bool) (map[string]interface{}, error) {
+	completePath := path + prepareVars(vars)
+	return sendGenericRequest(address, token, "DELETE", completePath, nil, skipTlsVerification)
 }
 
 func prepareVars(vars map[string]string) string {
-    if len(vars) > 0 {
-        var pairs []string
-        for key, value := range vars {
-            pairs = append(pairs, fmt.Sprintf("%s=%s", key, value))
-        }
-        return fmt.Sprintf("?%s", strings.Join(pairs, "&"))
-    }
-    
-    return ""
+	if len(vars) > 0 {
+		var pairs []string
+		for key, value := range vars {
+			pairs = append(pairs, fmt.Sprintf("%s=%s", key, value))
+		}
+		return fmt.Sprintf("?%s", strings.Join(pairs, "&"))
+	}
+
+	return ""
 }
 
-func sendGenericRequest(address string, 
-                        token string, 
-                        requestType string, 
-                        path string, 
-                        jsonBody *map[string]interface{},
-                        skipTlsVerification bool) (map[string]interface{}, error) {
-    outputMap := map[string]interface{}{}
-    jsonDataStr := ""
-    if jsonBody != nil {
-        jsonData, err := json.Marshal(jsonBody)
-        if err != nil {
-            return outputMap, err
-        }
-        jsonDataStr = string(jsonData)
-    }
+func sendGenericRequest(address, token, requestType, path string, jsonBody *map[string]interface{}, skipTlsVerification bool) (map[string]interface{}, error) {
+	outputMap := map[string]interface{}{}
+	jsonDataStr := ""
+	if jsonBody != nil {
+		jsonData, err := json.Marshal(jsonBody)
+		if err != nil {
+			return outputMap, err
+		}
+		jsonDataStr = string(jsonData)
+	}
 
-    // check if https or not
-    if strings.Contains(address, "https") {
-        http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: skipTlsVerification}
-    }
+	// check if https or not
+	if strings.Contains(address, "https") {
+		http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: skipTlsVerification}
+	}
 
-    // build uri
-    var reqBody = strings.NewReader(jsonDataStr)
-    // fmt.Printf("completePath: "+ completePath)
-    completePath := fmt.Sprintf("%s/%s", address, path)
-    req, err := http.NewRequest(requestType, completePath, reqBody)
-    if err != nil {
-        return outputMap, err
-    }
+	// build uri
+	var reqBody = strings.NewReader(jsonDataStr)
+	// fmt.Printf("completePath: "+ completePath)
+	completePath := fmt.Sprintf("%s/%s", address, path)
+	req, err := http.NewRequest(requestType, completePath, reqBody)
+	if err != nil {
+		return outputMap, err
+	}
 
-    // add token to header
-    if token != "" {
-        req.Header.Set("X-Auth-Token", token)
-    }
+	// add token to header
+	if token != "" {
+		req.Header.Set("X-Auth-Token", token)
+	}
 
-    // run request
-    resp, err := http.DefaultClient.Do(req)
-    if err != nil {
-        return outputMap, err
-    }
-    defer resp.Body.Close()
+	// run request
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return outputMap, err
+	}
+	defer resp.Body.Close()
 
-    // read data from response and convert into string
-    bodyBytes, err := ioutil.ReadAll(resp.Body)
-    if err != nil {
-        return outputMap, err
-    }
-    bodyString := string(bodyBytes)
+	// read data from response and convert into string
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return outputMap, err
+	}
+	bodyString := string(bodyBytes)
 
-    // fmt.Printf("bodyString: " + bodyString + "\n")
-    if resp.StatusCode != http.StatusOK {
-        return outputMap, &RequestError{
-            StatusCode: resp.StatusCode,
-            Err:        bodyString,
-        }
-    }
+	// fmt.Printf("bodyString: " + bodyString + "\n")
+	if resp.StatusCode != http.StatusOK {
+		return outputMap, &RequestError{
+			StatusCode: resp.StatusCode,
+			Err:        bodyString,
+		}
+	}
 
-    // parse result
-    err = json.Unmarshal([]byte(bodyString), &outputMap)
-    if err != nil {
-        return outputMap, nil
-    }
+	// parse result
+	err = json.Unmarshal([]byte(bodyString), &outputMap)
+	if err != nil {
+		return outputMap, nil
+	}
 
-    return outputMap, nil
+	return outputMap, nil
 }

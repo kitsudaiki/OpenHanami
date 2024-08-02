@@ -21,31 +21,32 @@
 package main
 
 import (
-    "fmt"
-    "github.com/spf13/cobra"
-    "os"
-    "hanamictl/resources"
-    "hanamictl/common"
+	"fmt"
+	hanamictl_common "hanamictl/common"
+	hanami_resources "hanamictl/resources"
+	"os"
+
+	"github.com/spf13/cobra"
 )
 
 var rootCmd = &cobra.Command{Use: "hanamictl"}
 
 func init() {
-    rootCmd.PersistentFlags().BoolVarP(&hanamictl_common.PrintAsJson, "json_output", "j", false, "Return output as json")
-    rootCmd.PersistentFlags().BoolVar(&hanamictl_common.DisableTlsVerification, "insecure", false, "Disable the TLS-verification")
+	rootCmd.PersistentFlags().BoolVarP(&hanamictl_common.PrintAsJson, "json_output", "j", false, "Return output as json")
+	rootCmd.PersistentFlags().BoolVar(&hanamictl_common.DisableTlsVerification, "insecure", false, "Disable the TLS-verification")
 
-    hanami_resources.Init_User_Commands(rootCmd);
-    hanami_resources.Init_Project_Commands(rootCmd);
-    hanami_resources.Init_Checkpoint_Commands(rootCmd);
-    hanami_resources.Init_Task_Commands(rootCmd);
-    hanami_resources.Init_Cluster_Commands(rootCmd);
-    hanami_resources.Init_Dataset_Commands(rootCmd);
-    hanami_resources.Init_Host_Commands(rootCmd)
+	hanami_resources.Init_User_Commands(rootCmd)
+	hanami_resources.Init_Project_Commands(rootCmd)
+	hanami_resources.Init_Checkpoint_Commands(rootCmd)
+	hanami_resources.Init_Task_Commands(rootCmd)
+	hanami_resources.Init_Cluster_Commands(rootCmd)
+	hanami_resources.Init_Dataset_Commands(rootCmd)
+	hanami_resources.Init_Host_Commands(rootCmd)
 }
 
 func main() {
-    if err := rootCmd.Execute(); err != nil {
-        fmt.Println(err)
-        os.Exit(1)
-    }
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }

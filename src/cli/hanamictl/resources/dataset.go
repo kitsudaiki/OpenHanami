@@ -21,16 +21,17 @@
 package hanami_resources
 
 import (
-    "fmt"
-    "os"
-    "hanamictl/common"
-    "github.com/spf13/cobra"
-    "github.com/kitsudaiki/Hanami"
+	"fmt"
+	hanamictl_common "hanamictl/common"
+	"os"
+
+	hanami_sdk "github.com/kitsudaiki/Hanami"
+	"github.com/spf13/cobra"
 )
 
 var (
-	inputFilePath string
-	labelFilePath string
+	inputFilePath        string
+	labelFilePath        string
 	referenceDatasetUuid string
 )
 
@@ -44,7 +45,7 @@ var datasetHeader = []string{
 	"visibility",
 	"owner_id",
 	"project_id",
-    "created_at",
+	"created_at",
 }
 
 var datasetCheckHeader = []string{
@@ -60,17 +61,17 @@ var createMnistDatasetCmd = &cobra.Command{
 		address := os.Getenv("HANAMI_ADDRESS")
 		datasetName := args[0]
 		uuid, err := hanami_sdk.UploadMnistFiles(address, token, datasetName, inputFilePath, labelFilePath, hanamictl_common.DisableTlsVerification)
-        if err != nil {
-            fmt.Println(err)
-            os.Exit(1)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
 		}
 
 		content, err := hanami_sdk.GetDataset(address, token, uuid, hanamictl_common.DisableTlsVerification)
-        if err == nil {
+		if err == nil {
 			hanamictl_common.ParseSingle(content, datasetHeader)
 		} else {
-            fmt.Println(err)
-            os.Exit(1)
+			fmt.Println(err)
+			os.Exit(1)
 		}
 	},
 }
@@ -84,17 +85,17 @@ var createCsvDatasetCmd = &cobra.Command{
 		address := os.Getenv("HANAMI_ADDRESS")
 		datasetName := args[0]
 		uuid, err := hanami_sdk.UploadCsvFiles(address, token, datasetName, inputFilePath, hanamictl_common.DisableTlsVerification)
-        if err != nil {
-            fmt.Println(err)
-            os.Exit(1)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
 		}
 
 		content, err := hanami_sdk.GetDataset(address, token, uuid, hanamictl_common.DisableTlsVerification)
-        if err == nil {
+		if err == nil {
 			hanamictl_common.ParseSingle(content, datasetHeader)
 		} else {
-            fmt.Println(err)
-            os.Exit(1)
+			fmt.Println(err)
+			os.Exit(1)
 		}
 	},
 }
@@ -108,11 +109,11 @@ var checkDatasetCmd = &cobra.Command{
 		address := os.Getenv("HANAMI_ADDRESS")
 		datasetUuid := args[0]
 		content, err := hanami_sdk.CheckDataset(address, token, referenceDatasetUuid, datasetUuid, hanamictl_common.DisableTlsVerification)
-        if err == nil {
+		if err == nil {
 			hanamictl_common.ParseSingle(content, datasetCheckHeader)
 		} else {
-            fmt.Println(err)
-            os.Exit(1)
+			fmt.Println(err)
+			os.Exit(1)
 		}
 	},
 }
@@ -126,11 +127,11 @@ var getDatasetCmd = &cobra.Command{
 		address := os.Getenv("HANAMI_ADDRESS")
 		datasetUuid := args[0]
 		content, err := hanami_sdk.GetDataset(address, token, datasetUuid, hanamictl_common.DisableTlsVerification)
-        if err == nil {
+		if err == nil {
 			hanamictl_common.ParseSingle(content, datasetHeader)
 		} else {
-            fmt.Println(err)
-            os.Exit(1)
+			fmt.Println(err)
+			os.Exit(1)
 		}
 	},
 }
@@ -142,11 +143,11 @@ var listDatasetCmd = &cobra.Command{
 		token := Login()
 		address := os.Getenv("HANAMI_ADDRESS")
 		content, err := hanami_sdk.ListDataset(address, token, hanamictl_common.DisableTlsVerification)
-        if err == nil {
+		if err == nil {
 			hanamictl_common.ParseList(content, datasetHeader)
 		} else {
-            fmt.Println(err)
-            os.Exit(1)
+			fmt.Println(err)
+			os.Exit(1)
 		}
 	},
 }
@@ -160,11 +161,11 @@ var deleteDatasetCmd = &cobra.Command{
 		address := os.Getenv("HANAMI_ADDRESS")
 		datasetUuid := args[0]
 		_, err := hanami_sdk.DeleteDataset(address, token, datasetUuid, hanamictl_common.DisableTlsVerification)
-        if err == nil {
-        	fmt.Printf("successfully deleted dataset '%v'\n", datasetUuid)
+		if err == nil {
+			fmt.Printf("successfully deleted dataset '%v'\n", datasetUuid)
 		} else {
-            fmt.Println(err)
-            os.Exit(1)
+			fmt.Println(err)
+			os.Exit(1)
 		}
 	},
 }

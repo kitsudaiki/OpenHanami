@@ -21,41 +21,42 @@
 package hanami_resources
 
 import (
-    "fmt"
-    "os"
-    "hanamictl/common"
-    "github.com/spf13/cobra"
-    "github.com/kitsudaiki/Hanami"
+	"fmt"
+	hanamictl_common "hanamictl/common"
+	"os"
+
+	hanami_sdk "github.com/kitsudaiki/Hanami"
+	"github.com/spf13/cobra"
 )
 
 var hostHeader = []string{
-    "uuid",
-    "type",
+	"uuid",
+	"type",
 }
 
-var listHostsCmd = &cobra.Command {
-    Use:   "list",
-    Short: "List all logical hosts.",
-    Run:   func(cmd *cobra.Command, args []string) {
-        token := Login()
-        address := os.Getenv("HANAMI_ADDRESS")
-        content, err := hanami_sdk.ListHosts(address, token, hanamictl_common.DisableTlsVerification)
-        if err == nil {
-            hanamictl_common.ParseList(content, hostHeader)
-        } else {
-            fmt.Println(err)
-            os.Exit(1)
-        }
-    },
+var listHostsCmd = &cobra.Command{
+	Use:   "list",
+	Short: "List all logical hosts.",
+	Run: func(cmd *cobra.Command, args []string) {
+		token := Login()
+		address := os.Getenv("HANAMI_ADDRESS")
+		content, err := hanami_sdk.ListHosts(address, token, hanamictl_common.DisableTlsVerification)
+		if err == nil {
+			hanamictl_common.ParseList(content, hostHeader)
+		} else {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+	},
 }
 
-var hostsCmd = &cobra.Command {
-    Use:   "host",
-    Short: "Manage hosts.",
+var hostsCmd = &cobra.Command{
+	Use:   "host",
+	Short: "Manage hosts.",
 }
 
 func Init_Host_Commands(rootCmd *cobra.Command) {
-    rootCmd.AddCommand(hostsCmd)
+	rootCmd.AddCommand(hostsCmd)
 
-    hostsCmd.AddCommand(listHostsCmd)
+	hostsCmd.AddCommand(listHostsCmd)
 }

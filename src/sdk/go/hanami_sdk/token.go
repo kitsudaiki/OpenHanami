@@ -18,24 +18,19 @@
  *      limitations under the License.
  */
 
-
 package hanami_sdk
 
-import (
-    "fmt"
-)
+func RequestToken(address, user, pw string, skipTlsVerification bool) string {
+	path := "v1.0alpha/token"
+	jsonBody := map[string]interface{}{
+		"id":       user,
+		"password": pw,
+	}
 
-func RequestToken(address string, user string, pw string, skipTlsVerification bool) string {
-    path := fmt.Sprintf("v1.0alpha/token")
-    jsonBody := map[string]interface{}{ 
-        "id": user,
-        "password": pw,
-    }
+	content, err := sendGenericRequest(address, "", "POST", path, &jsonBody, skipTlsVerification)
+	if err != nil {
+		return ""
+	}
 
-    content, err := sendGenericRequest(address, "", "POST", path, &jsonBody, skipTlsVerification)
-    if err != nil {
-        return ""
-    }
-
-    return  content["token"].(string)
+	return content["token"].(string)
 }

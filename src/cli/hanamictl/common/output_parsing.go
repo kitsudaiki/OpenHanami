@@ -33,7 +33,7 @@ import (
 var PrintAsJson bool = false
 var DisableTlsVerification bool = false
 
-func ParseSingle(input map[string]interface{} , outputFields []string) {
+func ParseSingle(input map[string]interface{}, outputFields []string) {
 	if PrintAsJson {
 		jsonData, _ := json.MarshalIndent(input, "", "    ")
 		fmt.Println(string(jsonData))
