@@ -111,7 +111,7 @@ var checkDatasetCmd = &cobra.Command{
 		token := Login()
 		address := os.Getenv("HANAMI_ADDRESS")
 		datasetUuid := args[0]
-		content, err := hanami_sdk.CheckDataset(address, token, referenceDatasetUuid, datasetUuid, hanamictl_common.DisableTlsVerification)
+		content, err := hanami_sdk.CheckDataset(address, token, datasetUuid, referenceDatasetUuid, hanamictl_common.DisableTlsVerification)
 		if err == nil {
 			hanamictl_common.PrintSingle(content, datasetCheckHeader)
 		} else {

@@ -855,7 +855,7 @@ Delete a dataset.
 
 ### Check MNIST Dataset Result
 
-Checks a request-result against a dataset to compare who much of the output of the network was correct. The output gives the percentage of the correct output-values. It is primary used for automatic testing.
+Checks a resulting dataset from an MNIST-test against a reference-dataset to compare how much of the output of the network was correct. The output gives the percentage of the correct output-values. It is primary used for automatic testing.
 
 === "CLI"
 
@@ -879,16 +879,16 @@ Checks a request-result against a dataset to compare who much of the output of t
     from hanami_sdk import request_result
 
     address = "http://127.0.0.1:11418"
-    task_uuid = "c7f7e274-5d7d-4696-8591-18441cb1b685"
-    request_dataset_uuid = "d40c0c06-bd28-49a4-b872-6a70c4750bb9"
+    reference_dataset_uuid = "c7f7e274-5d7d-4696-8591-18441cb1b685"
+    dataset_uuid = "d40c0c06-bd28-49a4-b872-6a70c4750bb9"
 
     # request a token for a user, who has admin-permissions
     # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
 
-    result = request_result.check_against_dataset(token, 
-                                                  address, 
-                                                  task_uuid, 
-                                                  request_dataset_uuid)
+    result = request_result.check_mnist_dataset(token, 
+                                                address, 
+                                                dataset_uuid, 
+                                                reference_dataset_uuid)
 
     # example-content of result:
     #

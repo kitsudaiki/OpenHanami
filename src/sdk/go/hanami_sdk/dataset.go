@@ -52,11 +52,11 @@ func DeleteDataset(address, token, datasetUuid string, skipTlsVerification bool)
 	return SendDelete(address, token, path, vars, skipTlsVerification)
 }
 
-func CheckDataset(address, token, datasetUuid, resultDatasetUuid string, skipTlsVerification bool) (map[string]interface{}, error) {
+func CheckDataset(address, token, uuid, referenceDatasetUuid string, skipTlsVerification bool) (map[string]interface{}, error) {
 	path := "v1.0alpha/dataset/check"
 	vars := map[string]interface{}{
-		"dataset_uuid": datasetUuid,
-		"result_uuid":  resultDatasetUuid,
+		"uuid":           uuid,
+		"reference_uuid": referenceDatasetUuid,
 	}
 	return SendGet(address, token, path, vars, skipTlsVerification)
 }

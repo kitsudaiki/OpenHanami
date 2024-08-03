@@ -36,11 +36,11 @@ CheckMnistDataSetV1M0::CheckMnistDataSetV1M0()
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("result_uuid", SAKURA_STRING_TYPE)
+    registerInputField("reference_uuid", SAKURA_STRING_TYPE)
         .setComment("UUID of the dataset to compare to.")
         .setRegex(UUID_REGEX);
 
-    registerInputField("dataset_uuid", SAKURA_STRING_TYPE)
+    registerInputField("uuid", SAKURA_STRING_TYPE)
         .setComment("UUID of the dataset with the results, which should be checked.")
         .setRegex(UUID_REGEX);
 
@@ -65,29 +65,30 @@ CheckMnistDataSetV1M0::runTask(BlossomIO& blossomIO,
                                BlossomStatus& status,
                                Hanami::ErrorContainer& error)
 {
-    const std::string resultUuid = blossomIO.input["result_uuid"];
-    const std::string datasetUuid = blossomIO.input["dataset_uuid"];
+    const std::string referenceUuid = blossomIO.input["reference_uuid"];
+    const std::string datasetUuid = blossomIO.input["uuid"];
     const Hanami::UserContext userContext = convertContext(context);
 
+    DataSetFileHandle referenceFileHandle;
     DataSetFileHandle datasetFileHandle;
-    DataSetFileHandle resultFileHandle;
 
     // open files
-    ReturnStatus ret = getFileHandle(datasetFileHandle, datasetUuid, userContext, status, error);
+    ReturnStatus ret
+        = getFileHandle(referenceFileHandle, referenceUuid, userContext, status, error);
     if (ret != OK) {
         return false;
     }
-    ret = getFileHandle(resultFileHandle, resultUuid, userContext, status, error);
+    ret = getFileHandle(datasetFileHandle, datasetUuid, userContext, status, error);
     if (ret != OK) {
         return false;
     }
 
     // set file-selectors
-    resultFileHandle.readSelector.endColumn = 10;
-    resultFileHandle.readSelector.endRow = 10000;
-    datasetFileHandle.readSelector.startColumn = 784;
-    datasetFileHandle.readSelector.endColumn = 794;
+    datasetFileHandle.readSelector.endColumn = 10;
     datasetFileHandle.readSelector.endRow = 10000;
+    referenceFileHandle.readSelector.startColumn = 784;
+    referenceFileHandle.readSelector.endColumn = 794;
+    referenceFileHandle.readSelector.endRow = 10000;
 
     // init buffer for output
     std::vector<float> datasetOutput(10, 0.0f);
@@ -97,16 +98,16 @@ CheckMnistDataSetV1M0::runTask(BlossomIO& blossomIO,
 
     // check files
     for (uint64_t row = 0; row < 10000; row++) {
-        if (getDataFromDataSet(datasetOutput, datasetFileHandle, row, error) != OK) {
+        if (getDataFromDataSet(datasetOutput, referenceFileHandle, row, error) != OK) {
             status.statusCode = INVALID_INPUT;
             status.errorMessage
                 = "Dataset with UUID '" + datasetUuid + "' is invalid and can not be compared";
             error.addMessage(status.errorMessage);
             return false;
         }
-        if (getDataFromDataSet(resultOutput, resultFileHandle, row, error) != OK) {
+        if (getDataFromDataSet(resultOutput, datasetFileHandle, row, error) != OK) {
             status.statusCode = INVALID_INPUT;
-            status.errorMessage = "Dataset with result with UUID '" + resultUuid
+            status.errorMessage = "Dataset with result with UUID '" + referenceUuid
                                   + "' is invalid and can not be checked";
             error.addMessage(status.errorMessage);
             return false;

@@ -50,8 +50,6 @@ sendClusterOutputMessage(const Cluster* cluster)
         for (uint64_t outputNeuronId = 0; outputNeuronId < outputInterface.outputNeurons.size();
              outputNeuronId++)
         {
-            std::cout << "out: " << outputInterface.outputNeurons[outputNeuronId].outputVal
-                      << std::endl;
             msg.add_values(outputInterface.outputNeurons[outputNeuronId].outputVal);
         }
 
