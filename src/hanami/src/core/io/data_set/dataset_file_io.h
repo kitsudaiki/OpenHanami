@@ -137,7 +137,8 @@ struct DataSetFileHandle {
     DataSetHeader header;
     json description;
     Hanami::BinaryFile* targetFile = nullptr;
-    Hanami::DataBuffer rwBuffer;
+    Hanami::DataBuffer writeBuffer;
+    Hanami::DataBuffer readBuffer;
     DataSetSelector readSelector;
     int64_t bufferStartRow = -1;
     int64_t bufferEndRow = -1;
@@ -173,8 +174,10 @@ struct DataSetFileHandle {
         targetFile = otherObf.targetFile;
         otherObf.targetFile = nullptr;
 
-        rwBuffer = otherObf.rwBuffer;
-        otherObf.rwBuffer.data = nullptr;
+        readBuffer = otherObf.readBuffer;
+        otherObf.readBuffer.data = nullptr;
+        writeBuffer = otherObf.writeBuffer;
+        otherObf.writeBuffer.data = nullptr;
 
         readSelector = otherObf.readSelector;
 
@@ -191,8 +194,10 @@ struct DataSetFileHandle {
         targetFile = otherObf.targetFile;
         otherObf.targetFile = nullptr;
 
-        rwBuffer = otherObf.rwBuffer;
-        otherObf.rwBuffer.data = nullptr;
+        readBuffer = otherObf.readBuffer;
+        otherObf.readBuffer.data = nullptr;
+        writeBuffer = otherObf.writeBuffer;
+        otherObf.writeBuffer.data = nullptr;
 
         readSelector = otherObf.readSelector;
 
@@ -206,12 +211,18 @@ struct DataSetFileHandle {
 
     bool initReadWriteBuffer(const uint64_t sizeMiB)
     {
-        if (Hanami::reset_DataBuffer(rwBuffer, Hanami::calcBytesToBlocks(sizeMiB * 1024 * 1024))
+        if (Hanami::reset_DataBuffer(readBuffer, Hanami::calcBytesToBlocks(sizeMiB * 1024 * 1024))
             == false)
         {
             return false;
         }
-        rwBuffer.usedBufferSize = 0;
+        readBuffer.usedBufferSize = 0;
+        if (Hanami::reset_DataBuffer(writeBuffer, Hanami::calcBytesToBlocks(sizeMiB * 1024 * 1024))
+            == false)
+        {
+            return false;
+        }
+        writeBuffer.usedBufferSize = 0;
         return true;
     }
 
@@ -232,14 +243,16 @@ struct DataSetFileHandle {
         if (targetFile == nullptr) {
             return true;
         }
-        if (rwBuffer.usedBufferSize > 0) {
-            if (_appendToDataSetFile(*this, rwBuffer.data, rwBuffer.usedBufferSize, error) != OK) {
+        if (writeBuffer.usedBufferSize > 0) {
+            if (_appendToDataSetFile(*this, writeBuffer.data, writeBuffer.usedBufferSize, error)
+                != OK)
+            {
                 error.addMessage(
                     "Failed write remaining write-buffer-data into data-set file while closing");
                 return false;
             }
         }
-        rwBuffer.usedBufferSize = 0;
+        writeBuffer.usedBufferSize = 0;
         return true;
     }
 };
@@ -287,7 +300,7 @@ template <typename IN_T, typename OUT_T>
 void
 _convert(std::vector<OUT_T>& result, const DataSetFileHandle& fileHandle, const uint64_t byteOffset)
 {
-    const IN_T* data = static_cast<const IN_T*>(fileHandle.rwBuffer.data);
+    const IN_T* data = static_cast<const IN_T*>(fileHandle.readBuffer.data);
     uint64_t counter = 0;
     for (uint64_t x = fileHandle.readSelector.startColumn; x < fileHandle.readSelector.endColumn;
          x++)

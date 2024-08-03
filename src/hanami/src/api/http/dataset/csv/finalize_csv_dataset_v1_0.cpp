@@ -167,8 +167,6 @@ FinalizeCsvDataSetV1M0::convertCsvData(const std::string& filePath,
                                     inputBuffer.usedBufferSize);
 
     // buffer for values to reduce write-access to file
-    const uint32_t segmentSize = 10000000;
-    std::vector<float> cluster(segmentSize, 0.0f);
     std::vector<float> lineBuffer;
     DataSetFileHandle fileHandle;
 

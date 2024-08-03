@@ -49,14 +49,20 @@ Request_State::processEvent()
     RequestInfo* info = &std::get<RequestInfo>(actualTask->info);
 
     for (auto& [hexagonName, input] : info->inputs) {
-        InputInterface* inputInterface = &m_cluster->inputInterfaces[hexagonName];
-        if (getDataFromDataSet(inputInterface->ioBuffer, input, info->currentCycle, error) != OK) {
-            return false;
-        }
         uint64_t counter = 0;
-        for (const float val : inputInterface->ioBuffer) {
-            inputInterface->inputNeurons[counter].value = val;
-            counter++;
+        InputInterface* inputInterface = &m_cluster->inputInterfaces[hexagonName];
+        inputInterface->ioBuffer.resize(inputInterface->inputNeurons.size()
+                                        - (info->timeLength - 1));
+        for (uint64_t t = 0; t < info->timeLength; ++t) {
+            if (getDataFromDataSet(inputInterface->ioBuffer, input, info->currentCycle + t, error)
+                != OK)
+            {
+                return false;
+            }
+            for (const float val : inputInterface->ioBuffer) {
+                inputInterface->inputNeurons[counter].value = val;
+                counter++;
+            }
         }
     }
 

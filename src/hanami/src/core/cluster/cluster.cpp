@@ -193,7 +193,8 @@ Cluster::updateClusterState()
 {
     std::lock_guard<std::mutex> guard(m_clusterStateLock);
 
-    enableCreation = false;
+    // TODO (kitsudaiki): check why this flag behave a bit strange
+    // enableCreation = false;
 
     // trigger next lerning phase, if already in phase 1
     if (mode == ClusterProcessingMode::TRAIN_FORWARD_MODE) {

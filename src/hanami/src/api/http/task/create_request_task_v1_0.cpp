@@ -62,6 +62,12 @@ CreateRequestTaskV1M0::CreateRequestTaskV1M0()
             "key-value list with the names of the ouput-hexagons as key and the name for the "
             "resulting dataset of this output as value.");
 
+    registerInputField("time_length", SAKURA_INT_TYPE)
+        .setComment("Timeseries length to allow multiple inputs in one cycle")
+        .setDefault(1)
+        .setLimit(1, 1000)
+        .setRequired(false);
+
     /*inputs: {
         test_hexagon: asfd,
         test_hexagon2: asdf2
@@ -117,6 +123,7 @@ CreateRequestTaskV1M0::runTask(BlossomIO& blossomIO,
     const std::string clusterUuid = blossomIO.input["cluster_uuid"];
     const Hanami::UserContext userContext = convertContext(context);
     const json inputs = blossomIO.input["inputs"];
+    const uint64_t timeLength = blossomIO.input["time_length"];
 
     // check if user exist within the table
     json getResult;
@@ -191,7 +198,9 @@ CreateRequestTaskV1M0::runTask(BlossomIO& blossomIO,
     }
 
     // set number of cycles
-    info->numberOfCycles = numberOfCycles;
+    info->numberOfCycles = numberOfCycles - (timeLength - 1);
+    ;
+    info->timeLength = timeLength;
     newTask->progress.totalNumberOfCycles = numberOfCycles;
 
     cluster->stateMachine->goToNextState(PROCESS_TASK);

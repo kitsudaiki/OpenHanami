@@ -33,6 +33,7 @@ var (
 	clusterUuid string
 	inputData   []string
 	outputData  []string
+	timeLength  int
 )
 
 var taskHeader = []string{
@@ -53,7 +54,7 @@ var createTrainTaskCmd = &cobra.Command{
 		token := Login()
 		address := os.Getenv("HANAMI_ADDRESS")
 		taskName := args[0]
-		content, err := hanami_sdk.CreateTrainTask(address, token, taskName, clusterUuid, inputData, outputData, hanamictl_common.DisableTlsVerification)
+		content, err := hanami_sdk.CreateTrainTask(address, token, taskName, clusterUuid, inputData, outputData, timeLength, hanamictl_common.DisableTlsVerification)
 		if err == nil {
 			hanamictl_common.PrintSingle(content, taskHeader)
 		} else {
@@ -71,7 +72,7 @@ var createRequestTaskCmd = &cobra.Command{
 		token := Login()
 		address := os.Getenv("HANAMI_ADDRESS")
 		taskName := args[0]
-		content, err := hanami_sdk.CreateRequestTask(address, token, taskName, clusterUuid, inputData, outputData, hanamictl_common.DisableTlsVerification)
+		content, err := hanami_sdk.CreateRequestTask(address, token, taskName, clusterUuid, inputData, outputData, timeLength, hanamictl_common.DisableTlsVerification)
 		if err == nil {
 			hanamictl_common.PrintSingle(content, taskHeader)
 		} else {
@@ -151,6 +152,7 @@ func Init_Task_Commands(rootCmd *cobra.Command) {
 	createTaskCmd.AddCommand(createTrainTaskCmd)
 	createTrainTaskCmd.Flags().StringSliceVarP(&inputData, "input", "i", []string{}, "Cluster input, which are paris of '-i <HEXAGON_NAME>:<DATASET_UUID>' (mandatory)")
 	createTrainTaskCmd.Flags().StringSliceVarP(&outputData, "output", "o", []string{}, "Cluster outputs, which are paris of '-o <HEXAGON_NAME>:<DATASET_UUID>' (mandatory)")
+	createTrainTaskCmd.Flags().IntVarP(&timeLength, "time", "t", 1, "Length of a time-series for the input")
 	createTrainTaskCmd.Flags().StringVarP(&clusterUuid, "cluster", "c", "", "Cluster UUID (mandatory)")
 	createTrainTaskCmd.MarkFlagRequired("cluster")
 	createTrainTaskCmd.MarkFlagRequired("input")
@@ -159,6 +161,7 @@ func Init_Task_Commands(rootCmd *cobra.Command) {
 	createTaskCmd.AddCommand(createRequestTaskCmd)
 	createRequestTaskCmd.Flags().StringSliceVarP(&inputData, "input", "i", []string{}, "Cluster input, which are paris of '-i <HEXAGON_NAME>:<DATASET_UUID>' (mandatory)")
 	createRequestTaskCmd.Flags().StringSliceVarP(&outputData, "result", "r", []string{}, "Cluster result, which are paris of '-o <HEXAGON_NAME>:<DATASET_NAME>' (mandatory)")
+	createRequestTaskCmd.Flags().IntVarP(&timeLength, "time", "t", 1, "Length of a time-series for the input")
 	createRequestTaskCmd.Flags().StringVarP(&clusterUuid, "cluster", "c", "", "Cluster UUID (mandatory)")
 	createRequestTaskCmd.MarkFlagRequired("cluster")
 	createRequestTaskCmd.MarkFlagRequired("input")
