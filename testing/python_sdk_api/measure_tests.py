@@ -1,22 +1,23 @@
 #!python3
 
+import matplotlib
 import matplotlib.pyplot as plt
 from hanami_sdk import hanami_token
 from hanami_sdk import cluster
 from hanami_sdk import dataset
-from hanami_sdk import request_result
 from hanami_sdk import task
 import json
 import time
 import configparser
 
+matplotlib.use('Qt5Agg')
 
 def delete_all_cluster():
     result = cluster.list_clusters(token, address, False)
     body = json.loads(result)["body"]
 
     for entry in body:
-        cluster.delete_cluster(token, address, entry[0], False)
+        cluster.delete_cluster(token, address, entry[1], False)
 
 
 def delete_all_datasets():
@@ -24,16 +25,7 @@ def delete_all_datasets():
     body = json.loads(result)["body"]
 
     for entry in body:
-        dataset.delete_dataset(token, address, entry[0], False)
-
-
-def delete_all_results():
-    result = request_result.list_request_results(token, address, False)
-    print(result)
-    body = json.loads(result)["body"]
-
-    for entry in body:
-        request_result.delete_request_result(token, address, entry[0], False)
+        dataset.delete_dataset(token, address, entry[1], False)
 
 
 config = configparser.ConfigParser()
@@ -49,8 +41,8 @@ request_inputs = "/home/neptune/Schreibtisch/Projekte/Hanami/testing/python_sdk_
 cluster_template = \
     "version: 1\n" \
     "settings:\n" \
-    "   neuron_cooldown: 100000000000.5\n" \
-    "   refractory_time: 1\n" \
+    "   neuron_cooldown: 1.1\n" \
+    "   refractory_time: 20\n" \
     "   max_connection_distance: 1\n" \
     "   enable_reduction: false\n" \
     "hexagons:\n" \
@@ -61,12 +53,12 @@ cluster_template = \
     "inputs:\n" \
     "    test_input:\n" \
     "        target: 1,1,1\n" \
-    "        number_of_inputs: 25\n" \
+    "        number_of_inputs: 20\n" \
     "\n" \
     "outputs:\n" \
     "    test_output:\n" \
     "        target: 3,1,1\n" \
-    "        number_of_outputs: 5\n"
+    "        number_of_outputs: 1\n"
 
 cluster_name = "test_cluster"
 generic_task_name = "test_task"
@@ -78,7 +70,6 @@ token = hanami_token.request_token(address, test_user_id, test_user_pw)
 
 
 
-delete_all_results()
 delete_all_datasets()
 delete_all_cluster()
 
@@ -91,25 +82,41 @@ request_dataset_uuid = dataset.upload_csv_files(
     token, address, request_dataset_name, request_inputs)
 
 
+inputs = {
+    "test_input": train_dataset_uuid
+}
+
+outputs = {
+    "test_output": train_dataset_uuid
+}
+
+
 # train
 for i in range(0, 100):
     print("poi: ", i)
-    result = task.create_task(token, address, generic_task_name,
-                              "train", cluster_uuid, train_dataset_uuid)
+    result = task.create_train_task(token, address, generic_task_name, cluster_uuid, inputs, outputs, 20)
     task_uuid = json.loads(result)["uuid"]
     finished = False
     while not finished:
         result = task.get_task(token, address, task_uuid, cluster_uuid)
         finished = json.loads(result)["state"] == "finished"
-        print(result)
+        # print(result)
         print("wait for finish train-task")
         time.sleep(0.2)
     result = task.delete_task(token, address, task_uuid, cluster_uuid)
 
 
+inputs = {
+    "test_input": request_dataset_uuid
+}
+
+results = {
+    "test_output": "test_output"
+}
+
+
 # test
-result = task.create_task(token, address, generic_task_name, "request",
-                          cluster_uuid, request_dataset_uuid)
+result = task.create_request_task(token, address, generic_task_name, cluster_uuid, inputs, results, 20)
 task_uuid = json.loads(result)["uuid"]
 
 finished = False
@@ -119,27 +126,33 @@ while not finished:
     print(result)
     print("wait for finish request-task")
     time.sleep(0.2)
-result = task.delete_task(token, address, task_uuid, cluster_uuid)
+# result = task.delete_task(token, address, task_uuid, cluster_uuid)
 
+result = dataset.download_dataset_content(
+        token, address, task_uuid, "test_output", 1700, 0, False)
 
-result = request_result.get_request_result(token, address, task_uuid)
 data = json.loads(result)["data"]
+flattened_list = [item for sublist in data for item in sublist]
 
-dataset.delete_dataset(token, address, train_dataset_uuid)
-dataset.delete_dataset(token, address, request_dataset_uuid)
-cluster.delete_cluster(token, address, cluster_uuid)
+# Output the flattened list
+print(flattened_list)
+# print(json.dumps(json.loads(result), indent=4))
+
+# dataset.delete_dataset(token, address, train_dataset_uuid)
+# dataset.delete_dataset(token, address, request_dataset_uuid)
+# cluster.delete_cluster(token, address, cluster_uuid)
 
 
-# Open the file in write mode
+# # Open the file in write mode
 with open("out.txt", 'w') as file:
     # Write each value from the array to a new line
-    for value in data:
+    for value in flattened_list:
         file.write(str(value) + '\n')
 
 
 plt.rcParams["figure.figsize"] = [10, 5]
 plt.rcParams["figure.autolayout"] = True
 
-plt.plot(data, color="red")
+plt.plot(flattened_list, color="red")
 
 plt.show()

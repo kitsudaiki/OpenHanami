@@ -62,6 +62,12 @@ CreateTrainTaskV1M0::CreateTrainTaskV1M0()
             "which "
             "should be used for the expected output, as value.");
 
+    registerInputField("time_length", SAKURA_INT_TYPE)
+        .setComment("Timeseries length to allow multiple inputs in one cycle")
+        .setDefault(1)
+        .setLimit(1, 1000)
+        .setRequired(false);
+
     /*"inputs": {
         "test_hexagon": "asfd",
         "test_hexagon2": "asdf2"
@@ -118,6 +124,7 @@ CreateTrainTaskV1M0::runTask(BlossomIO& blossomIO,
     const Hanami::UserContext userContext = convertContext(context);
     const json inputs = blossomIO.input["inputs"];
     const json outputs = blossomIO.input["outputs"];
+    const uint64_t timeLength = blossomIO.input["time_length"];
 
     // check if user exist within the table
     ClusterTable::ClusterDbEntry getResult;
@@ -191,7 +198,8 @@ CreateTrainTaskV1M0::runTask(BlossomIO& blossomIO,
 
     // set number of cycles
     newTask->progress.totalNumberOfCycles = numberOfCycles;
-    info->numberOfCycles = numberOfCycles;
+    info->numberOfCycles = numberOfCycles - (timeLength - 1);
+    info->timeLength = timeLength;
 
     cluster->stateMachine->goToNextState(PROCESS_TASK);
 

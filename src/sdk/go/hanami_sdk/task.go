@@ -38,24 +38,26 @@ func convertIO(data []string) map[string]string {
 	return valueMap
 }
 
-func CreateTrainTask(address, token, name, clusterUuid string, inputs, outputs []string, skipTlsVerification bool) (map[string]interface{}, error) {
+func CreateTrainTask(address, token, name, clusterUuid string, inputs, outputs []string, timeLenght int, skipTlsVerification bool) (map[string]interface{}, error) {
 	path := "v1.0alpha/task/train"
 	jsonBody := map[string]interface{}{
 		"name":         name,
 		"cluster_uuid": clusterUuid,
 		"inputs":       convertIO(inputs),
 		"outputs":      convertIO(outputs),
+		"time_length":  timeLenght,
 	}
 	return SendPost(address, token, path, jsonBody, skipTlsVerification)
 }
 
-func CreateRequestTask(address, token, name, clusterUuid string, inputs, results []string, skipTlsVerification bool) (map[string]interface{}, error) {
+func CreateRequestTask(address, token, name, clusterUuid string, inputs, results []string, timeLenght int, skipTlsVerification bool) (map[string]interface{}, error) {
 	path := "v1.0alpha/task/request"
 	jsonBody := map[string]interface{}{
 		"name":         name,
 		"cluster_uuid": clusterUuid,
 		"inputs":       convertIO(inputs),
 		"results":      convertIO(results),
+		"time_length":  timeLenght,
 	}
 	return SendPost(address, token, path, jsonBody, skipTlsVerification)
 }

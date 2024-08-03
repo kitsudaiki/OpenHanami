@@ -246,7 +246,7 @@ async def test_direct_io(token, address, cluster_uuid):
 
     cluster.switch_to_task_mode(token, address, cluster_uuid, False)
     print(output_values)
-    # assert list(output_values).index(max(output_values)) == 5
+    assert list(output_values).index(max(output_values)) == 5
 
 
 def test_workflow():
@@ -278,7 +278,7 @@ def test_workflow():
 
     for i in range(0, 1):
         result = task.create_train_task(
-            token, address, generic_task_name, cluster_uuid, inputs, outputs, False)
+            token, address, generic_task_name, cluster_uuid, inputs, outputs, 1, False)
         task_uuid = json.loads(result)["uuid"]
 
         finished = False
@@ -322,7 +322,7 @@ def test_workflow():
     }
 
     result = task.create_request_task(
-        token, address, generic_task_name, cluster_uuid, inputs, results, False)
+        token, address, generic_task_name, cluster_uuid, inputs, results, 1, False)
     task_uuid = json.loads(result)["uuid"]
 
     finished = False
@@ -358,8 +358,8 @@ def test_workflow():
     asyncio.run(test_direct_io(token, address, cluster_uuid))
 
     # cleanup
-    dataset.delete_dataset(token, address, train_dataset_uuid, False)
-    dataset.delete_dataset(token, address, request_dataset_uuid, False)
+    # dataset.delete_dataset(token, address, train_dataset_uuid, False)
+    # dataset.delete_dataset(token, address, request_dataset_uuid, False)
     cluster.delete_cluster(token, address, cluster_uuid, False)
 
 

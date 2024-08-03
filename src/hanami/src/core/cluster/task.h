@@ -61,6 +61,7 @@ struct TrainInfo {
     std::map<std::string, DataSetFileHandle> outputs;
     uint64_t numberOfCycles = 0;
     uint64_t currentCycle = 0;
+    uint64_t timeLength = 1;
     TrainInfo() {}
 
     TrainInfo(TrainInfo&& otherObf)
@@ -87,6 +88,7 @@ struct RequestInfo {
     std::map<std::string, DataSetFileHandle> results;
     uint64_t numberOfCycles = 0;
     uint64_t currentCycle = 0;
+    uint64_t timeLength = 1;
     RequestInfo() {}
 
     RequestInfo(RequestInfo&& otherObf)

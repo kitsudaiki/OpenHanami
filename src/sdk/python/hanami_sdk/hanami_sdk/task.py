@@ -22,13 +22,15 @@ def create_train_task(token: str,
                       cluster_uuid: str,
                       inputs: dict,
                       outputs: dict,
+                      timeLength: int = 1,
                       verify_connection: bool = True) -> str:
     path = "/v1.0alpha/task/train"
     json_body = {
         "name": name,
         "cluster_uuid": cluster_uuid,
         "inputs": inputs,
-        "outputs": outputs
+        "outputs": outputs,
+        "time_length": timeLength
     }
     body_str = json.dumps(json_body)
     return hanami_request.send_post_request(token,
@@ -44,13 +46,15 @@ def create_request_task(token: str,
                         cluster_uuid: str,
                         inputs: dict,
                         results: dict,
+                        timeLength: int = 1,
                         verify_connection: bool = True) -> str:
     path = "/v1.0alpha/task/request"
     json_body = {
         "name": name,
         "cluster_uuid": cluster_uuid,
         "inputs": inputs,
-        "results": results
+        "results": results,
+        "time_length": timeLength
     }
     body_str = json.dumps(json_body)
     return hanami_request.send_post_request(token,
