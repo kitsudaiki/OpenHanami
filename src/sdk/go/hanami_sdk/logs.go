@@ -26,14 +26,14 @@ import (
 
 func listAuditLogs(address, token, userId string, page int, skipTlsVerification bool) (map[string]interface{}, error) {
 	path := "/v1.0alpha/audit_log?"
-	var vars map[string]string
+	var vars map[string]interface{}
 	if userId != "" {
-		vars = map[string]string{
+		vars = map[string]interface{}{
 			"user_id": userId,
 			"page":    strconv.Itoa(page),
 		}
 	} else {
-		vars = map[string]string{
+		vars = map[string]interface{}{
 			"page": strconv.Itoa(page),
 		}
 	}
@@ -42,7 +42,7 @@ func listAuditLogs(address, token, userId string, page int, skipTlsVerification 
 
 func listErrorLogs(address, token, userId string, page int, skipTlsVerification bool) (map[string]interface{}, error) {
 	path := "/v1.0alpha/error_log"
-	vars := map[string]string{
+	vars := map[string]interface{}{
 		"user_id": userId,
 		"page":    strconv.Itoa(page),
 	}

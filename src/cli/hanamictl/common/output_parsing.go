@@ -25,6 +25,7 @@ import (
 	"fmt"
 	"os"
 	"reflect"
+	"strconv"
 	"strings"
 
 	"github.com/olekukonko/tablewriter"
@@ -33,7 +34,7 @@ import (
 var PrintAsJson bool = false
 var DisableTlsVerification bool = false
 
-func ParseSingle(input map[string]interface{}, outputFields []string) {
+func PrintSingle(input map[string]interface{}, outputFields []string) {
 	if PrintAsJson {
 		jsonData, _ := json.MarshalIndent(input, "", "    ")
 		fmt.Println(string(jsonData))
@@ -73,7 +74,7 @@ func searchInHeader(headerArray []interface{}, name string) int {
 	return -1
 }
 
-func ParseList(input map[string]interface{}, outputFields []string) {
+func PrintList(input map[string]interface{}, outputFields []string) {
 	if PrintAsJson {
 		jsonData, _ := json.MarshalIndent(input, "", "    ")
 		fmt.Println(string(jsonData))
@@ -110,6 +111,38 @@ func ParseList(input map[string]interface{}, outputFields []string) {
 				str := fmt.Sprintf("%v", val)
 				lineData = append(lineData, str)
 			}
+		}
+		table.Append(lineData)
+	}
+
+	table.SetRowLine(false)
+	table.SetAlignment(tablewriter.ALIGN_LEFT)
+	table.Render()
+}
+
+func PrintValueList(data []interface{}, offset int) {
+	if PrintAsJson {
+		jsonData, _ := json.MarshalIndent(data, "", "    ")
+		fmt.Println(string(jsonData))
+		return
+	}
+
+	table := tablewriter.NewWriter(os.Stdout)
+
+	// fill and add table header
+	headerData := []string{}
+	headerData = append(headerData, "")
+	for i := range len(data) {
+		headerData = append(headerData, strconv.Itoa(i))
+	}
+	table.SetHeader(headerData)
+
+	// fill and add body to table
+	for i, line := range data {
+		lineData := []string{}
+		lineData = append(lineData, fmt.Sprintf("%d", (offset+i)))
+		for _, val := range line.([]interface{}) {
+			lineData = append(lineData, fmt.Sprintf("%f", val))
 		}
 		table.Append(lineData)
 	}

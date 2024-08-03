@@ -92,7 +92,7 @@ var createUserCmd = &cobra.Command{
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		hanamictl_common.ParseSingle(content, userHeader)
+		hanamictl_common.PrintSingle(content, userHeader)
 	},
 }
 
@@ -109,7 +109,7 @@ var getUserCmd = &cobra.Command{
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		hanamictl_common.ParseSingle(content, userHeader)
+		hanamictl_common.PrintSingle(content, userHeader)
 	},
 }
 
@@ -124,7 +124,7 @@ var listUserCmd = &cobra.Command{
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		hanamictl_common.ParseList(content, userHeader)
+		hanamictl_common.PrintList(content, userHeader)
 	},
 }
 

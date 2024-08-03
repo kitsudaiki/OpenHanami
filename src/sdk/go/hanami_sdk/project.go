@@ -31,18 +31,18 @@ func CreateProject(address, token, projectId, projectName string, skipTlsVerific
 
 func GetProject(address, token, projectId string, skipTlsVerification bool) (map[string]interface{}, error) {
 	path := "v1.0alpha/project"
-	vars := map[string]string{"id": projectId}
+	vars := map[string]interface{}{"id": projectId}
 	return SendGet(address, token, path, vars, skipTlsVerification)
 }
 
 func ListProject(address, token string, skipTlsVerification bool) (map[string]interface{}, error) {
 	path := "v1.0alpha/project/all"
-	vars := map[string]string{}
+	vars := map[string]interface{}{}
 	return SendGet(address, token, path, vars, skipTlsVerification)
 }
 
 func DeleteProject(address, token, projectId string, skipTlsVerification bool) (map[string]interface{}, error) {
 	path := "v1.0alpha/project"
-	vars := map[string]string{"id": projectId}
+	vars := map[string]interface{}{"id": projectId}
 	return SendDelete(address, token, path, vars, skipTlsVerification)
 }

@@ -50,7 +50,7 @@ var createProjectCmd = &cobra.Command{
 		projectId := args[0]
 		content, err := hanami_sdk.CreateProject(address, token, projectId, projectName, hanamictl_common.DisableTlsVerification)
 		if err == nil {
-			hanamictl_common.ParseSingle(content, projectHeader)
+			hanamictl_common.PrintSingle(content, projectHeader)
 		} else {
 			fmt.Println(err)
 			os.Exit(1)
@@ -68,7 +68,7 @@ var getProjectCmd = &cobra.Command{
 		projectId := args[0]
 		content, err := hanami_sdk.GetProject(address, token, projectId, hanamictl_common.DisableTlsVerification)
 		if err == nil {
-			hanamictl_common.ParseSingle(content, projectHeader)
+			hanamictl_common.PrintSingle(content, projectHeader)
 		} else {
 			fmt.Println(err)
 			os.Exit(1)
@@ -84,7 +84,7 @@ var listProjectCmd = &cobra.Command{
 		address := os.Getenv("HANAMI_ADDRESS")
 		content, err := hanami_sdk.ListProject(address, token, hanamictl_common.DisableTlsVerification)
 		if err == nil {
-			hanamictl_common.ParseList(content, projectHeader)
+			hanamictl_common.PrintList(content, projectHeader)
 		} else {
 			fmt.Println(err)
 			os.Exit(1)

@@ -22,18 +22,18 @@ package hanami_sdk
 
 func getPowerData(address, token string, skipTlsVerification bool) (map[string]interface{}, error) {
 	path := "/v1.0alpha/power_consumption"
-	vars := map[string]string{}
+	vars := map[string]interface{}{}
 	return SendGet(address, token, path, vars, skipTlsVerification)
 }
 
 func getTemperatureData_request(address, token string, skipTlsVerification bool) (map[string]interface{}, error) {
 	path := "/v1.0alpha/temperature_production"
-	vars := map[string]string{}
+	vars := map[string]interface{}{}
 	return SendGet(address, token, path, vars, skipTlsVerification)
 }
 
 func getSpeedData_request(address, token string, skipTlsVerification bool) (map[string]interface{}, error) {
 	path := "/v1.0alpha/speed"
-	vars := map[string]string{}
+	vars := map[string]interface{}{}
 	return SendGet(address, token, path, vars, skipTlsVerification)
 }

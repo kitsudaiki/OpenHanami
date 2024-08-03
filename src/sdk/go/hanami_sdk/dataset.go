@@ -36,27 +36,38 @@ const chunkSize = 128 * 1024 // 128 KiB
 
 func GetDataset(address, token, datasetUuid string, skipTlsVerification bool) (map[string]interface{}, error) {
 	path := "v1.0alpha/dataset"
-	vars := map[string]string{"uuid": datasetUuid}
+	vars := map[string]interface{}{"uuid": datasetUuid}
 	return SendGet(address, token, path, vars, skipTlsVerification)
 }
 
 func ListDataset(address, token string, skipTlsVerification bool) (map[string]interface{}, error) {
 	path := "v1.0alpha/dataset/all"
-	vars := map[string]string{}
+	vars := map[string]interface{}{}
 	return SendGet(address, token, path, vars, skipTlsVerification)
 }
 
 func DeleteDataset(address, token, datasetUuid string, skipTlsVerification bool) (map[string]interface{}, error) {
 	path := "v1.0alpha/dataset"
-	vars := map[string]string{"uuid": datasetUuid}
+	vars := map[string]interface{}{"uuid": datasetUuid}
 	return SendDelete(address, token, path, vars, skipTlsVerification)
 }
 
 func CheckDataset(address, token, datasetUuid, resultDatasetUuid string, skipTlsVerification bool) (map[string]interface{}, error) {
 	path := "v1.0alpha/dataset/check"
-	vars := map[string]string{
+	vars := map[string]interface{}{
 		"dataset_uuid": datasetUuid,
 		"result_uuid":  resultDatasetUuid,
+	}
+	return SendGet(address, token, path, vars, skipTlsVerification)
+}
+
+func DownloadDatasetContent(address, token, datasetUuid, columnName string, numberOfRows, rowOffset int, skipTlsVerification bool) (map[string]interface{}, error) {
+	path := "v1.0alpha/dataset/content"
+	vars := map[string]interface{}{
+		"uuid":           datasetUuid,
+		"column_name":    columnName,
+		"number_of_rows": numberOfRows,
+		"row_offset":     rowOffset,
 	}
 	return SendGet(address, token, path, vars, skipTlsVerification)
 }
@@ -64,7 +75,7 @@ func CheckDataset(address, token, datasetUuid, resultDatasetUuid string, skipTls
 func waitUntilUploadComplete(token, address, uuid string, skipTlsVerification bool) error {
 	for {
 		path := "v1.0alpha/dataset/progress"
-		vars := map[string]string{"uuid": uuid}
+		vars := map[string]interface{}{"uuid": uuid}
 		content, err := SendGet(address, token, path, vars, skipTlsVerification)
 		if err != nil {
 			return err

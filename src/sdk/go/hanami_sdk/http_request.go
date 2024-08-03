@@ -46,21 +46,27 @@ func SendPut(address, token, path string, jsonBody map[string]interface{}, skipT
 	return sendGenericRequest(address, token, "PUT", path, &jsonBody, skipTlsVerification)
 }
 
-func SendGet(address, token, path string, vars map[string]string, skipTlsVerification bool) (map[string]interface{}, error) {
+func SendGet(address, token, path string, vars map[string]interface{}, skipTlsVerification bool) (map[string]interface{}, error) {
 	completePath := path + prepareVars(vars)
 	return sendGenericRequest(address, token, "GET", completePath, nil, skipTlsVerification)
 }
 
-func SendDelete(address, token, path string, vars map[string]string, skipTlsVerification bool) (map[string]interface{}, error) {
+func SendDelete(address, token, path string, vars map[string]interface{}, skipTlsVerification bool) (map[string]interface{}, error) {
 	completePath := path + prepareVars(vars)
 	return sendGenericRequest(address, token, "DELETE", completePath, nil, skipTlsVerification)
 }
 
-func prepareVars(vars map[string]string) string {
+func prepareVars(vars map[string]interface{}) string {
 	if len(vars) > 0 {
 		var pairs []string
 		for key, value := range vars {
-			pairs = append(pairs, fmt.Sprintf("%s=%s", key, value))
+			if strVal, ok := value.(string); ok {
+				pairs = append(pairs, fmt.Sprintf("%s=%s", key, strVal))
+			} else {
+				str := fmt.Sprintf("%v", value)
+				pairs = append(pairs, fmt.Sprintf("%s=%s", key, str))
+			}
+
 		}
 		return fmt.Sprintf("?%s", strings.Join(pairs, "&"))
 	}
@@ -86,8 +92,9 @@ func sendGenericRequest(address, token, requestType, path string, jsonBody *map[
 
 	// build uri
 	var reqBody = strings.NewReader(jsonDataStr)
-	// fmt.Printf("completePath: "+ completePath)
 	completePath := fmt.Sprintf("%s/%s", address, path)
+	// fmt.Println("completePath: " + completePath)
+	// fmt.Println("request-body: " + jsonDataStr)
 	req, err := http.NewRequest(requestType, completePath, reqBody)
 	if err != nil {
 		return outputMap, err
@@ -112,7 +119,7 @@ func sendGenericRequest(address, token, requestType, path string, jsonBody *map[
 	}
 	bodyString := string(bodyBytes)
 
-	// fmt.Printf("bodyString: " + bodyString + "\n")
+	//fmt.Printf("bodyString: " + bodyString + "\n")
 	if resp.StatusCode != http.StatusOK {
 		return outputMap, &RequestError{
 			StatusCode: resp.StatusCode,

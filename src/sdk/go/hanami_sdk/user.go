@@ -33,18 +33,18 @@ func CreateUser(address, token, userId, userName, pw string, is_admin, skipTlsVe
 
 func GetUser(address, token, userId string, skipTlsVerification bool) (map[string]interface{}, error) {
 	path := "v1.0alpha/user"
-	vars := map[string]string{"id": userId}
+	vars := map[string]interface{}{"id": userId}
 	return SendGet(address, token, path, vars, skipTlsVerification)
 }
 
 func ListUser(address, token string, skipTlsVerification bool) (map[string]interface{}, error) {
 	path := "v1.0alpha/user/all"
-	vars := map[string]string{}
+	vars := map[string]interface{}{}
 	return SendGet(address, token, path, vars, skipTlsVerification)
 }
 
 func DeleteUser(address, token, userId string, skipTlsVerification bool) (map[string]interface{}, error) {
 	path := "v1.0alpha/user"
-	vars := map[string]string{"id": userId}
+	vars := map[string]interface{}{"id": userId}
 	return SendDelete(address, token, path, vars, skipTlsVerification)
 }

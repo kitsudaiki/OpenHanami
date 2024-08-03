@@ -35,19 +35,19 @@ func CreateCluster(address, token, name, template string, skipTlsVerification bo
 
 func GetCluster(address, token, clusterUuid string, skipTlsVerification bool) (map[string]interface{}, error) {
 	path := "v1.0alpha/cluster"
-	vars := map[string]string{"uuid": clusterUuid}
+	vars := map[string]interface{}{"uuid": clusterUuid}
 	return SendGet(address, token, path, vars, skipTlsVerification)
 }
 
 func ListCluster(address, token string, skipTlsVerification bool) (map[string]interface{}, error) {
 	path := "v1.0alpha/cluster/all"
-	vars := map[string]string{}
+	vars := map[string]interface{}{}
 	return SendGet(address, token, path, vars, skipTlsVerification)
 }
 
 func DeleteCluster(address, token, clusterUuid string, skipTlsVerification bool) (map[string]interface{}, error) {
 	path := "v1.0alpha/cluster"
-	vars := map[string]string{"uuid": clusterUuid}
+	vars := map[string]interface{}{"uuid": clusterUuid}
 	return SendDelete(address, token, path, vars, skipTlsVerification)
 }
 

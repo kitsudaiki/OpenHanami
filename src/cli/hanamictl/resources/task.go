@@ -55,7 +55,7 @@ var createTrainTaskCmd = &cobra.Command{
 		taskName := args[0]
 		content, err := hanami_sdk.CreateTrainTask(address, token, taskName, clusterUuid, inputData, outputData, hanamictl_common.DisableTlsVerification)
 		if err == nil {
-			hanamictl_common.ParseSingle(content, taskHeader)
+			hanamictl_common.PrintSingle(content, taskHeader)
 		} else {
 			fmt.Println(err)
 			os.Exit(1)
@@ -73,7 +73,7 @@ var createRequestTaskCmd = &cobra.Command{
 		taskName := args[0]
 		content, err := hanami_sdk.CreateRequestTask(address, token, taskName, clusterUuid, inputData, outputData, hanamictl_common.DisableTlsVerification)
 		if err == nil {
-			hanamictl_common.ParseSingle(content, taskHeader)
+			hanamictl_common.PrintSingle(content, taskHeader)
 		} else {
 			fmt.Println(err)
 			os.Exit(1)
@@ -91,7 +91,7 @@ var getTaskCmd = &cobra.Command{
 		taskId := args[0]
 		content, err := hanami_sdk.GetTask(address, token, taskId, clusterUuid, hanamictl_common.DisableTlsVerification)
 		if err == nil {
-			hanamictl_common.ParseSingle(content, taskHeader)
+			hanamictl_common.PrintSingle(content, taskHeader)
 		} else {
 			fmt.Println(err)
 			os.Exit(1)
@@ -107,7 +107,7 @@ var listTaskCmd = &cobra.Command{
 		address := os.Getenv("HANAMI_ADDRESS")
 		content, err := hanami_sdk.ListTask(address, token, clusterUuid, hanamictl_common.DisableTlsVerification)
 		if err == nil {
-			hanamictl_common.ParseList(content, taskHeader)
+			hanamictl_common.PrintList(content, taskHeader)
 		} else {
 			fmt.Println(err)
 			os.Exit(1)

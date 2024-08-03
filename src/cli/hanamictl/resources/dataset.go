@@ -30,6 +30,9 @@ import (
 )
 
 var (
+	columnName           string
+	rowOffset            int
+	numberOfRows         int
 	inputFilePath        string
 	labelFilePath        string
 	referenceDatasetUuid string
@@ -68,7 +71,7 @@ var createMnistDatasetCmd = &cobra.Command{
 
 		content, err := hanami_sdk.GetDataset(address, token, uuid, hanamictl_common.DisableTlsVerification)
 		if err == nil {
-			hanamictl_common.ParseSingle(content, datasetHeader)
+			hanamictl_common.PrintSingle(content, datasetHeader)
 		} else {
 			fmt.Println(err)
 			os.Exit(1)
@@ -92,7 +95,7 @@ var createCsvDatasetCmd = &cobra.Command{
 
 		content, err := hanami_sdk.GetDataset(address, token, uuid, hanamictl_common.DisableTlsVerification)
 		if err == nil {
-			hanamictl_common.ParseSingle(content, datasetHeader)
+			hanamictl_common.PrintSingle(content, datasetHeader)
 		} else {
 			fmt.Println(err)
 			os.Exit(1)
@@ -110,7 +113,7 @@ var checkDatasetCmd = &cobra.Command{
 		datasetUuid := args[0]
 		content, err := hanami_sdk.CheckDataset(address, token, referenceDatasetUuid, datasetUuid, hanamictl_common.DisableTlsVerification)
 		if err == nil {
-			hanamictl_common.ParseSingle(content, datasetCheckHeader)
+			hanamictl_common.PrintSingle(content, datasetCheckHeader)
 		} else {
 			fmt.Println(err)
 			os.Exit(1)
@@ -128,7 +131,7 @@ var getDatasetCmd = &cobra.Command{
 		datasetUuid := args[0]
 		content, err := hanami_sdk.GetDataset(address, token, datasetUuid, hanamictl_common.DisableTlsVerification)
 		if err == nil {
-			hanamictl_common.ParseSingle(content, datasetHeader)
+			hanamictl_common.PrintSingle(content, datasetHeader)
 		} else {
 			fmt.Println(err)
 			os.Exit(1)
@@ -144,7 +147,7 @@ var listDatasetCmd = &cobra.Command{
 		address := os.Getenv("HANAMI_ADDRESS")
 		content, err := hanami_sdk.ListDataset(address, token, hanamictl_common.DisableTlsVerification)
 		if err == nil {
-			hanamictl_common.ParseList(content, datasetHeader)
+			hanamictl_common.PrintList(content, datasetHeader)
 		} else {
 			fmt.Println(err)
 			os.Exit(1)
@@ -170,6 +173,25 @@ var deleteDatasetCmd = &cobra.Command{
 	},
 }
 
+var downloadDatasetContentCmd = &cobra.Command{
+	Use:   "content -c COLUMN_NAME -o ROW_OFFSET -n NUMBER_OF_ROWS DATASET_UUID",
+	Short: "Download content of a specific dataset.",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		token := Login()
+		address := os.Getenv("HANAMI_ADDRESS")
+		datasetUuid := args[0]
+		content, err := hanami_sdk.DownloadDatasetContent(address, token, datasetUuid, columnName, numberOfRows, rowOffset, hanamictl_common.DisableTlsVerification)
+		if err == nil {
+			data := content["data"].([]interface{})
+			hanamictl_common.PrintValueList(data, numberOfRows)
+		} else {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+	},
+}
+
 var datasetCmd = &cobra.Command{
 	Use:   "dataset",
 	Short: "Manage dataset.",
@@ -186,18 +208,25 @@ func Init_Dataset_Commands(rootCmd *cobra.Command) {
 	datasetCmd.AddCommand(createDatasetCmd)
 
 	createDatasetCmd.AddCommand(createMnistDatasetCmd)
-	createMnistDatasetCmd.Flags().StringVarP(&inputFilePath, "inputFilePath", "i", "", "Path to file with input-data (mandatory)")
-	createMnistDatasetCmd.Flags().StringVarP(&labelFilePath, "labelFilePath", "l", "", "Path to file with label-data (mandatory)")
-	createMnistDatasetCmd.MarkFlagRequired("inputFilePath")
-	createMnistDatasetCmd.MarkFlagRequired("labelFilePath")
+	createMnistDatasetCmd.Flags().StringVarP(&inputFilePath, "input", "i", "", "Path to file with input-data (mandatory)")
+	createMnistDatasetCmd.Flags().StringVarP(&labelFilePath, "label", "l", "", "Path to file with label-data (mandatory)")
+	createMnistDatasetCmd.MarkFlagRequired("input")
+	createMnistDatasetCmd.MarkFlagRequired("label")
 
 	createDatasetCmd.AddCommand(createCsvDatasetCmd)
-	createCsvDatasetCmd.Flags().StringVarP(&inputFilePath, "inputFilePath", "i", "", "Path to file with input-data (mandatory)")
-	createCsvDatasetCmd.MarkFlagRequired("inputFilePath")
+	createCsvDatasetCmd.Flags().StringVarP(&inputFilePath, "input", "i", "", "Path to file with input-data (mandatory)")
+	createCsvDatasetCmd.MarkFlagRequired("input")
 
 	datasetCmd.AddCommand(checkDatasetCmd)
 	checkDatasetCmd.Flags().StringVarP(&referenceDatasetUuid, "reference", "r", "", "UUID of the dataset, which works as reference (mandatory)")
 	checkDatasetCmd.MarkFlagRequired("reference")
+
+	datasetCmd.AddCommand(downloadDatasetContentCmd)
+	downloadDatasetContentCmd.Flags().StringVarP(&columnName, "column", "c", "", "Name of column to download (mandatory)")
+	downloadDatasetContentCmd.Flags().IntVarP(&rowOffset, "offset", "o", 0, "Number of rows to offset (mandatory)")
+	downloadDatasetContentCmd.Flags().IntVarP(&numberOfRows, "rows", "n", 1, "Number of rows to download (mandatory)")
+	downloadDatasetContentCmd.MarkFlagRequired("column")
+	downloadDatasetContentCmd.MarkFlagRequired("rows")
 
 	datasetCmd.AddCommand(getDatasetCmd)
 

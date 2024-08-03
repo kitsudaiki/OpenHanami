@@ -51,7 +51,7 @@ var getCheckpointCmd = &cobra.Command{
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		hanamictl_common.ParseSingle(content, checkpointHeader)
+		hanamictl_common.PrintSingle(content, checkpointHeader)
 	},
 }
 
@@ -66,7 +66,7 @@ var listCheckpointCmd = &cobra.Command{
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		hanamictl_common.ParseList(content, checkpointHeader)
+		hanamictl_common.PrintList(content, checkpointHeader)
 	},
 }
 

@@ -71,7 +71,7 @@ var createClusterCmd = &cobra.Command{
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		hanamictl_common.ParseSingle(content, clusterHeader)
+		hanamictl_common.PrintSingle(content, clusterHeader)
 	},
 }
 
@@ -88,7 +88,7 @@ var getClusterCmd = &cobra.Command{
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		hanamictl_common.ParseSingle(content, clusterHeader)
+		hanamictl_common.PrintSingle(content, clusterHeader)
 	},
 }
 
@@ -103,7 +103,7 @@ var listClusterCmd = &cobra.Command{
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		hanamictl_common.ParseList(content, clusterHeader)
+		hanamictl_common.PrintList(content, clusterHeader)
 	},
 }
 
@@ -137,7 +137,7 @@ var saveClusterCmd = &cobra.Command{
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		hanamictl_common.ParseSingle(content, clusterSaveHeader)
+		hanamictl_common.PrintSingle(content, clusterSaveHeader)
 	},
 }
 
@@ -154,7 +154,7 @@ var restoreClusterCmd = &cobra.Command{
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		hanamictl_common.ParseSingle(content, clusterRestoreHeader)
+		hanamictl_common.PrintSingle(content, clusterRestoreHeader)
 	},
 }
 

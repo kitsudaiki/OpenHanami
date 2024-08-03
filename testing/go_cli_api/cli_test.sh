@@ -130,6 +130,12 @@ echo "Result-Dataset-UUID: $result_uuid"
 
 ./hanamictl dataset check --insecure -r $request_dataset_uuid $result_uuid
 
+./hanamictl dataset check --insecure -r $request_dataset_uuid $result_uuid
+
+content=$(./hanamictl dataset content --insecure -j -c cli_test_output -o 100 -n 10 $result_uuid | jq -r 'length')
+if [[ "$content" != 10 ]]; then
+    echo "content as length of $content instead of 10"
+fi
 
 # clear all test-resources
 ./hanamictl checkpoint delete --insecure $checkpoint_uuid

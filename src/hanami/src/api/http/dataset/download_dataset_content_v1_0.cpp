@@ -36,7 +36,7 @@ DownloadDatasetContentV1M0::DownloadDatasetContentV1M0()
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("dataset_uuid", SAKURA_STRING_TYPE)
+    registerInputField("uuid", SAKURA_STRING_TYPE)
         .setComment("UUID of the dataset of which the content was requested.")
         .setRegex(UUID_REGEX);
 
@@ -73,7 +73,7 @@ DownloadDatasetContentV1M0::runTask(BlossomIO& blossomIO,
                                     BlossomStatus& status,
                                     Hanami::ErrorContainer& error)
 {
-    const std::string datasetUuid = blossomIO.input["dataset_uuid"];
+    const std::string datasetUuid = blossomIO.input["uuid"];
     const std::string columnName = blossomIO.input["column_name"];
     const uint64_t rowOffset = blossomIO.input["row_offset"];
     const uint64_t numberOfRows = blossomIO.input["number_of_rows"];
@@ -109,11 +109,11 @@ DownloadDatasetContentV1M0::runTask(BlossomIO& blossomIO,
     blossomIO.output["data"] = json::array();
 
     // check files
-    for (uint64_t row = datasetFileHandle.readSelector.startRow;
-         row < datasetFileHandle.readSelector.endRow;
-         row++)
+    for (uint64_t rowNumber = datasetFileHandle.readSelector.startRow;
+         rowNumber < datasetFileHandle.readSelector.endRow;
+         rowNumber++)
     {
-        if (getDataFromDataSet(datasetOutput, datasetFileHandle, row, error) != OK) {
+        if (getDataFromDataSet(datasetOutput, datasetFileHandle, rowNumber, error) != OK) {
             status.statusCode = INVALID_INPUT;
             status.errorMessage
                 = "Dataset with UUID '" + datasetUuid + "' is invalid and can not be read.";
@@ -126,7 +126,7 @@ DownloadDatasetContentV1M0::runTask(BlossomIO& blossomIO,
         for (const float val : datasetOutput) {
             rowData.push_back(val);
         }
-        blossomIO.output["data"].push_back(row);
+        blossomIO.output["data"].push_back(rowData);
     }
 
     return true;

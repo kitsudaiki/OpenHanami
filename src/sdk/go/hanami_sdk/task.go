@@ -62,7 +62,7 @@ func CreateRequestTask(address, token, name, clusterUuid string, inputs, results
 
 func GetTask(address, token, taskId, clusterUuid string, skipTlsVerification bool) (map[string]interface{}, error) {
 	path := "v1.0alpha/task"
-	vars := map[string]string{
+	vars := map[string]interface{}{
 		"uuid":         taskId,
 		"cluster_uuid": clusterUuid,
 	}
@@ -71,13 +71,13 @@ func GetTask(address, token, taskId, clusterUuid string, skipTlsVerification boo
 
 func ListTask(address, token, clusterUuid string, skipTlsVerification bool) (map[string]interface{}, error) {
 	path := "v1.0alpha/task/all"
-	vars := map[string]string{"cluster_uuid": clusterUuid}
+	vars := map[string]interface{}{"cluster_uuid": clusterUuid}
 	return SendGet(address, token, path, vars, skipTlsVerification)
 }
 
 func DeleteTask(address, token, taskUuid, clusterUuid string, skipTlsVerification bool) (map[string]interface{}, error) {
 	path := "v1.0alpha/task"
-	vars := map[string]string{
+	vars := map[string]interface{}{
 		"uuid":         taskUuid,
 		"cluster_uuid": clusterUuid,
 	}
