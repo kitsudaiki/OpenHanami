@@ -184,7 +184,7 @@ var downloadDatasetContentCmd = &cobra.Command{
 		content, err := hanami_sdk.DownloadDatasetContent(address, token, datasetUuid, columnName, numberOfRows, rowOffset, hanamictl_common.DisableTlsVerification)
 		if err == nil {
 			data := content["data"].([]interface{})
-			hanamictl_common.PrintValueList(data, numberOfRows)
+			hanamictl_common.PrintValueList(data, rowOffset)
 		} else {
 			fmt.Println(err)
 			os.Exit(1)

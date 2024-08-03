@@ -44,6 +44,7 @@ class CheckMnistDataSetV1M0 : public Blossom
                                const Hanami::UserContext userContext,
                                BlossomStatus& status,
                                Hanami::ErrorContainer& error);
+    void setHighest(std::vector<float>& values);
 };
 
 #endif  // HANAMI_CHECKDATASET_H

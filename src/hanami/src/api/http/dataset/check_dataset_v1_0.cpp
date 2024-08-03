@@ -91,21 +91,21 @@ CheckMnistDataSetV1M0::runTask(BlossomIO& blossomIO,
     referenceFileHandle.readSelector.endRow = 10000;
 
     // init buffer for output
+    std::vector<float> referenceDatasetOutput(10, 0.0f);
     std::vector<float> datasetOutput(10, 0.0f);
-    std::vector<float> resultOutput(10, 0.0f);
 
     float accuracy = 0.0f;
 
     // check files
     for (uint64_t row = 0; row < 10000; row++) {
-        if (getDataFromDataSet(datasetOutput, referenceFileHandle, row, error) != OK) {
+        if (getDataFromDataSet(referenceDatasetOutput, referenceFileHandle, row, error) != OK) {
             status.statusCode = INVALID_INPUT;
             status.errorMessage
                 = "Dataset with UUID '" + datasetUuid + "' is invalid and can not be compared";
             error.addMessage(status.errorMessage);
             return false;
         }
-        if (getDataFromDataSet(resultOutput, datasetFileHandle, row, error) != OK) {
+        if (getDataFromDataSet(datasetOutput, datasetFileHandle, row, error) != OK) {
             status.statusCode = INVALID_INPUT;
             status.errorMessage = "Dataset with result with UUID '" + referenceUuid
                                   + "' is invalid and can not be checked";
@@ -114,8 +114,9 @@ CheckMnistDataSetV1M0::runTask(BlossomIO& blossomIO,
         }
 
         bool allCorrect = true;
+        setHighest(datasetOutput);
         for (uint64_t i = 0; i < 10; i++) {
-            if (datasetOutput[i] != resultOutput[i]) {
+            if (referenceDatasetOutput[i] != datasetOutput[i]) {
                 allCorrect = false;
             }
         }
@@ -128,6 +129,30 @@ CheckMnistDataSetV1M0::runTask(BlossomIO& blossomIO,
     blossomIO.output["accuracy"] = (100.0f / 10000.0f) * accuracy;
 
     return true;
+}
+
+/**
+ * @brief set highest output to 1 and other to 0
+ *
+ * @param outputInterface interface to process
+ */
+void
+CheckMnistDataSetV1M0::setHighest(std::vector<float>& values)
+{
+    float hightest = -0.1f;
+    uint32_t hightestPos = 0;
+    float value = 0.0f;
+
+    for (uint32_t outputNeuronId = 0; outputNeuronId < values.size(); outputNeuronId++) {
+        value = values[outputNeuronId];
+
+        if (value > hightest) {
+            hightest = value;
+            hightestPos = outputNeuronId;
+        }
+        values[outputNeuronId] = 0.0f;
+    }
+    values[hightestPos] = 1.0f;
 }
 
 /**
