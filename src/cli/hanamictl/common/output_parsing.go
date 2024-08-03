@@ -132,7 +132,7 @@ func PrintValueList(data []interface{}, offset int) {
 	// fill and add table header
 	headerData := []string{}
 	headerData = append(headerData, "")
-	for i := range len(data) {
+	for i := range len(data[0].([]interface{})) {
 		headerData = append(headerData, strconv.Itoa(i))
 	}
 	table.SetHeader(headerData)

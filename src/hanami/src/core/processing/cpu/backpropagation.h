@@ -82,7 +82,7 @@ backpropagateSection(SynapseSection* section,
     uint8_t pos = 0;
     Synapse* synapse;
     Neuron* targetNeuron = nullptr;
-    constexpr float trainValue = 0.05f;
+    constexpr float trainValue = 0.1f;
     float delta = 0.0f;
     uint8_t active = 0;
 

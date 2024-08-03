@@ -71,31 +71,34 @@ appendToDataSet(DataSetFileHandle& fileHandle,
                 Hanami::ErrorContainer& error)
 {
     // check if new data still fit into the write-buffer
-    if (fileHandle.rwBuffer.usedBufferSize + inputSize > fileHandle.rwBuffer.totalBufferSize) {
+    if (fileHandle.writeBuffer.usedBufferSize + inputSize > fileHandle.writeBuffer.totalBufferSize)
+    {
         // write data from write-buffer into file, if exist
-        if (fileHandle.rwBuffer.usedBufferSize > 0) {
-            ReturnStatus ret = _appendToDataSetFile(
-                fileHandle, fileHandle.rwBuffer.data, fileHandle.rwBuffer.usedBufferSize, error);
+        if (fileHandle.writeBuffer.usedBufferSize > 0) {
+            ReturnStatus ret = _appendToDataSetFile(fileHandle,
+                                                    fileHandle.writeBuffer.data,
+                                                    fileHandle.writeBuffer.usedBufferSize,
+                                                    error);
             if (ret != OK) {
                 return ret;
             }
-            fileHandle.rwBuffer.usedBufferSize = 0;
+            fileHandle.writeBuffer.usedBufferSize = 0;
         }
 
         // check if the new data even fit into the complete write-buffer
-        if (inputSize > fileHandle.rwBuffer.totalBufferSize) {
+        if (inputSize > fileHandle.writeBuffer.totalBufferSize) {
             ReturnStatus ret = _appendToDataSetFile(fileHandle, input, inputSize, error);
             if (ret != OK) {
                 return ret;
             }
-            fileHandle.rwBuffer.usedBufferSize = 0;
+            fileHandle.writeBuffer.usedBufferSize = 0;
         }
         else {
-            Hanami::addData_DataBuffer(fileHandle.rwBuffer, input, inputSize);
+            Hanami::addData_DataBuffer(fileHandle.writeBuffer, input, inputSize);
         }
     }
     else {
-        Hanami::addData_DataBuffer(fileHandle.rwBuffer, input, inputSize);
+        Hanami::addData_DataBuffer(fileHandle.writeBuffer, input, inputSize);
     }
 
     return OK;
@@ -288,14 +291,14 @@ _fillDataSetReadBuffer(DataSetFileHandle& fileHandle,
     const uint64_t byteOffset
         = sizeof(DataSetHeader) + fileHandle.header.descriptionSize + (newStartRow * rowByteCount);
 
-    uint64_t numberOfRowsForBuffer = fileHandle.rwBuffer.totalBufferSize / rowByteCount;
+    uint64_t numberOfRowsForBuffer = fileHandle.readBuffer.totalBufferSize / rowByteCount;
     if (numberOfRowsForBuffer > fileHandle.readSelector.endRow - newStartRow) {
         numberOfRowsForBuffer = fileHandle.readSelector.endRow - newStartRow;
     }
-    fileHandle.rwBuffer.usedBufferSize = numberOfRowsForBuffer * rowByteCount;
+    fileHandle.readBuffer.usedBufferSize = numberOfRowsForBuffer * rowByteCount;
 
     if (fileHandle.targetFile->readDataFromFile(
-            fileHandle.rwBuffer.data, byteOffset, fileHandle.rwBuffer.usedBufferSize, error)
+            fileHandle.readBuffer.data, byteOffset, fileHandle.readBuffer.usedBufferSize, error)
         == false)
     {
         error.addMessage("Failed to read data of dataset-file '" + fileHandle.targetFile->filePath
