@@ -342,12 +342,18 @@ def test_workflow():
     time.sleep(1)
     # check request-result
     result = dataset.check_mnist_dataset(
-        token, address, request_dataset_uuid, task_uuid, False)
+        token, address, task_uuid, request_dataset_uuid, False)
     accuracy = json.loads(result)["accuracy"]
     print("=======================================")
     print("test-result: " + str(accuracy))
     print("=======================================")
     assert accuracy > 80.0
+
+    # download part of the resulting dataset
+    result = dataset.download_dataset_content(
+        token, address, task_uuid, "test_output", 10, 100, False)
+    data = json.loads(result)["data"]
+    assert len(data[0]) == 10
 
     asyncio.run(test_direct_io(token, address, cluster_uuid))
 

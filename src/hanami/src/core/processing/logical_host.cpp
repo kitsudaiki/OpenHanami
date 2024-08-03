@@ -106,32 +106,6 @@ LogicalHost::run()
 }
 
 /**
- * @brief set highest output to 1 and other to 0
- *
- * @param outputInterface interface to process
- */
-void
-setHighest(OutputInterface& outputInterface)
-{
-    float hightest = -0.1f;
-    uint32_t hightestPos = 0;
-    float value = 0.0f;
-
-    for (uint32_t outputNeuronId = 0; outputNeuronId < outputInterface.outputNeurons.size();
-         outputNeuronId++)
-    {
-        value = outputInterface.outputNeurons[outputNeuronId].outputVal;
-
-        if (value > hightest) {
-            hightest = value;
-            hightestPos = outputNeuronId;
-        }
-        outputInterface.outputNeurons[outputNeuronId].outputVal = 0.0f;
-    }
-    outputInterface.outputNeurons[hightestPos].outputVal = 1.0f;
-}
-
-/**
  * @brief in case of a request-task the output is either written into a request-result in case of a
  *        task or is send via websocket to a client in case of direct-io
  *
@@ -149,7 +123,6 @@ handleClientOutput(Cluster& cluster)
             RequestInfo* info = &std::get<RequestInfo>(actualTask->info);
 
             for (auto& [name, outputInterface] : cluster.outputInterfaces) {
-                setHighest(outputInterface);
                 DataSetFileHandle* fileHandle = &info->results[name];
                 for (const OutputNeuron& outputNeuron : outputInterface.outputNeurons) {
                     // TODO: handle return value

@@ -20,12 +20,8 @@
 
 package hanami_sdk
 
-import (
-    "fmt"
-)
-
-func ListHosts(address string, token string, skipTlsVerification bool) (map[string]interface{}, error) {
-    path := fmt.Sprintf("v1.0alpha/host/all")
-    vars := map[string]string{}
-    return SendGet(address, token, path, vars, skipTlsVerification)
+func ListHosts(address, token string, skipTlsVerification bool) (map[string]interface{}, error) {
+	path := "v1.0alpha/host/all"
+	vars := map[string]interface{}{}
+	return SendGet(address, token, path, vars, skipTlsVerification)
 }

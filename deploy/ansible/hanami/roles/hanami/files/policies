@@ -48,6 +48,9 @@ v1.0alpha/dataset/check
 v1.0alpha/dataset/progress
 - GET: admin, member
 
+v1.0alpha/dataset/content
+- GET: admin, member
+
 v1.0alpha/dataset
 - POST: admin, member
 - PUT: admin, member

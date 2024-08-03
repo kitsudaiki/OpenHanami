@@ -855,7 +855,7 @@ Delete a dataset.
 
 ### Check MNIST Dataset Result
 
-Checks a request-result against a dataset to compare who much of the output of the network was correct. The output gives the percentage of the correct output-values. It is primary used for automatic testing.
+Checks a resulting dataset from an MNIST-test against a reference-dataset to compare how much of the output of the network was correct. The output gives the percentage of the correct output-values. It is primary used for automatic testing.
 
 === "CLI"
 
@@ -879,22 +879,108 @@ Checks a request-result against a dataset to compare who much of the output of t
     from hanami_sdk import request_result
 
     address = "http://127.0.0.1:11418"
-    task_uuid = "c7f7e274-5d7d-4696-8591-18441cb1b685"
-    request_dataset_uuid = "d40c0c06-bd28-49a4-b872-6a70c4750bb9"
+    reference_dataset_uuid = "c7f7e274-5d7d-4696-8591-18441cb1b685"
+    dataset_uuid = "d40c0c06-bd28-49a4-b872-6a70c4750bb9"
 
     # request a token for a user, who has admin-permissions
     # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
 
-    result = request_result.check_against_dataset(token, 
-                                                  address, 
-                                                  task_uuid, 
-                                                  request_dataset_uuid)
+    result = request_result.check_mnist_dataset(token, 
+                                                address, 
+                                                dataset_uuid, 
+                                                reference_dataset_uuid)
 
     # example-content of result:
     #
     # {
     #     "accuracy": 93.40999603271484
     # }
+    ```
+
+
+### Download Dataset content
+
+At the moment it is not possible to download complete datasets via websocket, like it is done for the upload. For now there is only an endpoint to request a slice of a dataset.
+
+=== "CLI"
+
+    ```bash
+    hanamictl dataset content -c <COLUMN_NAME>  -n <NUMBER_OF_ROWS> -o <ROW_OFFSET>  <DATASET_UUID>
+    ```
+
+    example:
+
+    ```bash
+    hanamictl dataset content -c test_output -o 100 -n 10 718566ed-b8a7-4d69-8cf5-d3eb7d75e30b
+
+    +-----+----------+----------+----------+----------+----------+----------+----------+----------+----------+----------+
+    |     |    0     |    1     |    2     |    3     |    4     |    5     |    6     |    7     |    8     |    9     |
+    +-----+----------+----------+----------+----------+----------+----------+----------+----------+----------+----------+
+    | 100 | 0.016387 | 0.002124 | 0.010096 | 0.000188 | 0.017916 | 0.001169 | 0.964437 | 0.003989 | 0.002181 | 0.228054 |
+    | 101 | 0.916684 | 0.002899 | 0.003278 | 0.000233 | 0.000781 | 0.026245 | 0.001160 | 0.004049 | 0.021715 | 0.001850 |
+    | 102 | 0.001839 | 0.000525 | 0.000984 | 0.017098 | 0.001073 | 0.912213 | 0.000645 | 0.027830 | 0.022612 | 0.016936 |
+    | 103 | 0.001453 | 0.000520 | 0.001891 | 0.000291 | 0.978680 | 0.002586 | 0.001325 | 0.008534 | 0.000475 | 0.003352 |
+    | 104 | 0.002475 | 0.000776 | 0.002657 | 0.085600 | 0.004949 | 0.008605 | 0.001795 | 0.008018 | 0.000428 | 0.842937 |
+    | 105 | 0.002862 | 0.002042 | 0.000669 | 0.000687 | 0.038985 | 0.004651 | 0.001625 | 0.014875 | 0.005904 | 0.969930 |
+    | 106 | 0.005426 | 0.003454 | 0.940081 | 0.012480 | 0.002740 | 0.002005 | 0.007840 | 0.002082 | 0.001886 | 0.000216 |
+    | 107 | 0.005302 | 0.903132 | 0.005140 | 0.005941 | 0.000177 | 0.009913 | 0.002384 | 0.002448 | 0.130046 | 0.003401 |
+    | 108 | 0.000278 | 0.000692 | 0.000237 | 0.010781 | 0.005375 | 0.037098 | 0.007750 | 0.012575 | 0.004456 | 0.901723 |
+    | 109 | 0.002321 | 0.000556 | 0.001553 | 0.000226 | 0.858400 | 0.002418 | 0.006818 | 0.017290 | 0.001165 | 0.016600 |
+    +-----+----------+----------+----------+----------+----------+----------+----------+----------+----------+----------+
+    ```
+
+    (first column of the table is the row-counter starting by the defined row-offset)
+
+=== "Python-SDK"
+
+    ```python
+    from hanami_sdk import request_result
+
+    address = "http://127.0.0.1:11418"
+    dataset_uuid = "d40c0c06-bd28-49a4-b872-6a70c4750bb9"
+    column_name = "test_output"
+
+    # request a token for a user, who has admin-permissions
+    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+
+    result = dataset.download_dataset_content(token, 
+                                              address, 
+                                              dataset_uuid, 
+                                              column_name, 
+                                              2,    # number of rows
+                                              100)  # offset
+
+    # example-content of result:
+    #
+    # {
+    #     "data": [
+    #         [
+    #             0.0035933551844209433,
+    #             0.0016254606889560819,
+    #             0.024600498378276825,
+    #             0.002956731477752328,
+    #             0.002234742045402527,
+    #             0.0011109848273918033,
+    #             0.8660337328910828,
+    #             0.00447552977129817,
+    #             0.04139076545834541,
+    #             0.0272488035261631
+    #         ],
+    #         [
+    #             0.8367037773132324,
+    #             0.002998552517965436,
+    #             0.0006984848878346384,
+    #             0.008744454011321068,
+    #             0.00039861834375187755,
+    #             0.013055858202278614,
+    #             0.00038920185761526227,
+    #             0.003807016182690859,
+    #             0.005977323278784752,
+    #             0.004582217428833246
+    #         ]
+    #     ]
+    # }
+
     ```
 
 

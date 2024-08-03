@@ -21,77 +21,65 @@
 package hanami_sdk
 
 import (
-    "strings"
+	"strings"
 )
 
 func convertIO(data []string) map[string]string {
-    valueMap := make(map[string]string)
+	valueMap := make(map[string]string)
 
-    for _, val := range data {
-        parts := strings.Split(val, ":")
-        if len(parts) != 2 {
-            break
-        }
-        valueMap[parts[0]] = parts[1]
-    }
+	for _, val := range data {
+		parts := strings.Split(val, ":")
+		if len(parts) != 2 {
+			break
+		}
+		valueMap[parts[0]] = parts[1]
+	}
 
-    return valueMap
+	return valueMap
 }
 
-func CreateTrainTask(address string, 
-                     token string, 
-                     name string, 
-                     clusterUuid string, 
-                     inputs []string, 
-                     outputs []string, 
-                     skipTlsVerification bool) (map[string]interface{}, error) {
+func CreateTrainTask(address, token, name, clusterUuid string, inputs, outputs []string, skipTlsVerification bool) (map[string]interface{}, error) {
 	path := "v1.0alpha/task/train"
-    jsonBody := map[string]interface{}{
-        "name": name,
-        "cluster_uuid": clusterUuid,
-        "inputs": convertIO(inputs),
-        "outputs": convertIO(outputs),
-    }
-    return SendPost(address, token, path, jsonBody, skipTlsVerification)
+	jsonBody := map[string]interface{}{
+		"name":         name,
+		"cluster_uuid": clusterUuid,
+		"inputs":       convertIO(inputs),
+		"outputs":      convertIO(outputs),
+	}
+	return SendPost(address, token, path, jsonBody, skipTlsVerification)
 }
 
-func CreateRequestTask(address string, 
-                       token string, 
-                       name string, 
-                       clusterUuid string, 
-                       inputs []string, 
-                       results []string, 
-                       skipTlsVerification bool) (map[string]interface{}, error) {
-    path := "v1.0alpha/task/request"
-    jsonBody := map[string]interface{}{
-        "name": name,
-        "cluster_uuid": clusterUuid,
-        "inputs": convertIO(inputs),
-        "results": convertIO(results),
-    }
-    return SendPost(address, token, path, jsonBody, skipTlsVerification)
+func CreateRequestTask(address, token, name, clusterUuid string, inputs, results []string, skipTlsVerification bool) (map[string]interface{}, error) {
+	path := "v1.0alpha/task/request"
+	jsonBody := map[string]interface{}{
+		"name":         name,
+		"cluster_uuid": clusterUuid,
+		"inputs":       convertIO(inputs),
+		"results":      convertIO(results),
+	}
+	return SendPost(address, token, path, jsonBody, skipTlsVerification)
 }
 
-func GetTask(address string, token string, taskId string, clusterUuid string, skipTlsVerification bool) (map[string]interface{}, error) {
-    path := "v1.0alpha/task"
-    vars := map[string]string{ 
-        "uuid": taskId,
-        "cluster_uuid": clusterUuid,
-    }
-    return SendGet(address, token, path, vars, skipTlsVerification)
+func GetTask(address, token, taskId, clusterUuid string, skipTlsVerification bool) (map[string]interface{}, error) {
+	path := "v1.0alpha/task"
+	vars := map[string]interface{}{
+		"uuid":         taskId,
+		"cluster_uuid": clusterUuid,
+	}
+	return SendGet(address, token, path, vars, skipTlsVerification)
 }
 
-func ListTask(address string, token string, clusterUuid string, skipTlsVerification bool) (map[string]interface{}, error) {
-    path := "v1.0alpha/task/all"
-    vars := map[string]string{ "cluster_uuid": clusterUuid }
-    return SendGet(address, token, path, vars, skipTlsVerification)
+func ListTask(address, token, clusterUuid string, skipTlsVerification bool) (map[string]interface{}, error) {
+	path := "v1.0alpha/task/all"
+	vars := map[string]interface{}{"cluster_uuid": clusterUuid}
+	return SendGet(address, token, path, vars, skipTlsVerification)
 }
 
-func DeleteTask(address string, token string, taskUuid string, clusterUuid string, skipTlsVerification bool) (map[string]interface{}, error) {
-    path := "v1.0alpha/task"
-    vars := map[string]string{ 
-        "uuid": taskUuid,
-        "cluster_uuid": clusterUuid,
-    }
-    return SendDelete(address, token, path, vars, skipTlsVerification)
+func DeleteTask(address, token, taskUuid, clusterUuid string, skipTlsVerification bool) (map[string]interface{}, error) {
+	path := "v1.0alpha/task"
+	vars := map[string]interface{}{
+		"uuid":         taskUuid,
+		"cluster_uuid": clusterUuid,
+	}
+	return SendDelete(address, token, path, vars, skipTlsVerification)
 }

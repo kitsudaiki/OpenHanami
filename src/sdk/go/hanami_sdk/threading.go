@@ -20,11 +20,8 @@
 
 package hanami_sdk
 
-import (
-)
-
-func GetThreadMapping(address string, token string, skipTlsVerification bool) (map[string]interface{}, error) {
-    path := "v1.0alpha/threading"
-    vars := map[string]string{}
-    return SendGet(address, token, path, vars, skipTlsVerification)
+func GetThreadMapping(address, token string, skipTlsVerification bool) (map[string]interface{}, error) {
+	path := "v1.0alpha/threading"
+	vars := map[string]interface{}{}
+	return SendGet(address, token, path, vars, skipTlsVerification)
 }

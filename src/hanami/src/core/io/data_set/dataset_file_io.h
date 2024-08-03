@@ -340,7 +340,7 @@ getDataFromDataSet(std::vector<T>& result,
     }
 
     // check if requested row is in selected range
-    if (row >= (fileHandle.readSelector.endRow - fileHandle.readSelector.startRow)) {
+    if (row >= (fileHandle.readSelector.endRow) || row < (fileHandle.readSelector.startRow)) {
         return INVALID_INPUT;
     }
 

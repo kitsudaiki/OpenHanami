@@ -20,33 +20,29 @@
 
 package hanami_sdk
 
-import (
-    "fmt"
-)
-
-func CreateProject(address string, token string, projectId string, projectName string, skipTlsVerification bool) (map[string]interface{}, error) {
-    path := "v1.0alpha/project"
-    jsonBody := map[string]interface{}{
-        "id": projectId,
-        "name": projectName,
-    }
-    return SendPost(address, token, path, jsonBody, skipTlsVerification)
+func CreateProject(address, token, projectId, projectName string, skipTlsVerification bool) (map[string]interface{}, error) {
+	path := "v1.0alpha/project"
+	jsonBody := map[string]interface{}{
+		"id":   projectId,
+		"name": projectName,
+	}
+	return SendPost(address, token, path, jsonBody, skipTlsVerification)
 }
 
-func GetProject(address string, token string, projectId string, skipTlsVerification bool) (map[string]interface{}, error) {
-    path := "v1.0alpha/project"
-    vars := map[string]string{ "id": projectId }
-    return SendGet(address, token, path, vars, skipTlsVerification)
+func GetProject(address, token, projectId string, skipTlsVerification bool) (map[string]interface{}, error) {
+	path := "v1.0alpha/project"
+	vars := map[string]interface{}{"id": projectId}
+	return SendGet(address, token, path, vars, skipTlsVerification)
 }
 
-func ListProject(address string, token string, skipTlsVerification bool) (map[string]interface{}, error) {
-    path := fmt.Sprintf("v1.0alpha/project/all")
-    vars := map[string]string{}
-    return SendGet(address, token, path, vars, skipTlsVerification)
+func ListProject(address, token string, skipTlsVerification bool) (map[string]interface{}, error) {
+	path := "v1.0alpha/project/all"
+	vars := map[string]interface{}{}
+	return SendGet(address, token, path, vars, skipTlsVerification)
 }
 
-func DeleteProject(address string, token string, projectId string, skipTlsVerification bool) (map[string]interface{}, error) {
-    path := "v1.0alpha/project"
-    vars := map[string]string{ "id": projectId }
-    return SendDelete(address, token, path, vars, skipTlsVerification)
+func DeleteProject(address, token, projectId string, skipTlsVerification bool) (map[string]interface{}, error) {
+	path := "v1.0alpha/project"
+	vars := map[string]interface{}{"id": projectId}
+	return SendDelete(address, token, path, vars, skipTlsVerification)
 }

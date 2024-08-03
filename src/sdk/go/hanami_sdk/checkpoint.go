@@ -20,25 +20,20 @@
 
 package hanami_sdk
 
-import (
-    "fmt"
-)
-
 func GetCheckpoint(address string, token string, checkpointUuid string, skipTlsVerification bool) (map[string]interface{}, error) {
-    path := "v1.0alpha/checkpoint"
-    vars := map[string]string{ "uuid": checkpointUuid }
-    return SendGet(address, token, path, vars, skipTlsVerification)
+	path := "v1.0alpha/checkpoint"
+	vars := map[string]interface{}{"uuid": checkpointUuid}
+	return SendGet(address, token, path, vars, skipTlsVerification)
 }
 
 func ListCheckpoint(address string, token string, skipTlsVerification bool) (map[string]interface{}, error) {
-    path := fmt.Sprintf("v1.0alpha/checkpoint/all")
-    vars := map[string]string{}
-    return SendGet(address, token, path, vars, skipTlsVerification)
+	path := "v1.0alpha/checkpoint/all"
+	vars := map[string]interface{}{}
+	return SendGet(address, token, path, vars, skipTlsVerification)
 }
 
 func DeleteCheckpoint(address string, token string, checkpointUuid string, skipTlsVerification bool) (map[string]interface{}, error) {
-    path := "v1.0alpha/checkpoint"
-    vars := map[string]string{ "uuid": checkpointUuid }
-    return SendDelete(address, token, path, vars, skipTlsVerification)
+	path := "v1.0alpha/checkpoint"
+	vars := map[string]interface{}{"uuid": checkpointUuid}
+	return SendDelete(address, token, path, vars, skipTlsVerification)
 }
- 

@@ -21,30 +21,30 @@
 package hanami_sdk
 
 import (
-    "strconv"
+	"strconv"
 )
 
-func listAuditLogs(address string, token string, userId string, page int, skipTlsVerification bool) (map[string]interface{}, error) {
-    path := "/v1.0alpha/audit_log?";
-    vars := map[string]string{}
-    if(userId != "") {
-        vars = map[string]string{ 
-            "user_id": userId,
-            "page": strconv.Itoa(page),
-        }
-    } else {
-        vars = map[string]string{ 
-            "page": strconv.Itoa(page),
-        }
-    }
-    return SendGet(address, token, path, vars, skipTlsVerification)
+func listAuditLogs(address, token, userId string, page int, skipTlsVerification bool) (map[string]interface{}, error) {
+	path := "/v1.0alpha/audit_log?"
+	var vars map[string]interface{}
+	if userId != "" {
+		vars = map[string]interface{}{
+			"user_id": userId,
+			"page":    strconv.Itoa(page),
+		}
+	} else {
+		vars = map[string]interface{}{
+			"page": strconv.Itoa(page),
+		}
+	}
+	return SendGet(address, token, path, vars, skipTlsVerification)
 }
 
-func listErrorLogs(address string, token string, userId string, page int, skipTlsVerification bool)  (map[string]interface{}, error) {
-    path := "/v1.0alpha/error_log";
-    vars := map[string]string{ 
-        "user_id": userId,
-        "page": strconv.Itoa(page),
-    }
-    return SendGet(address, token, path, vars, skipTlsVerification)
+func listErrorLogs(address, token, userId string, page int, skipTlsVerification bool) (map[string]interface{}, error) {
+	path := "/v1.0alpha/error_log"
+	vars := map[string]interface{}{
+		"user_id": userId,
+		"page":    strconv.Itoa(page),
+	}
+	return SendGet(address, token, path, vars, skipTlsVerification)
 }

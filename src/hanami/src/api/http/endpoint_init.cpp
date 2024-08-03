@@ -64,6 +64,8 @@ initV1M0alphaEndpoints()
     httpProcessing->addEndpoint(
         version + "/dataset/progress", GET_TYPE, group, new GetProgressDataSetV1M0());
     httpProcessing->addEndpoint(version + "/dataset", GET_TYPE, group, new GetDataSetV1M0());
+    httpProcessing->addEndpoint(
+        version + "/dataset/content", GET_TYPE, group, new DownloadDatasetContentV1M0());
     httpProcessing->addEndpoint(version + "/dataset", DELETE_TYPE, group, new DeleteDataSetV1M0());
     httpProcessing->addEndpoint(version + "/dataset/all", GET_TYPE, group, new ListDataSetV1M0());
 

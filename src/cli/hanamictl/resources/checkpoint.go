@@ -21,84 +21,83 @@
 package hanami_resources
 
 import (
-    "fmt"
-    "os"
-    "hanamictl/common"
-    "github.com/spf13/cobra"
-    "github.com/kitsudaiki/Hanami"
+	"fmt"
+	hanamictl_common "hanamictl/common"
+	"os"
+
+	hanami_sdk "github.com/kitsudaiki/Hanami"
+	"github.com/spf13/cobra"
 )
 
 var checkpointHeader = []string{
-    "uuid",
-    "name",
-    "visibility",
-    "owner_id",
-    "project_id",
-    "created_at",
+	"uuid",
+	"name",
+	"visibility",
+	"owner_id",
+	"project_id",
+	"created_at",
 }
 
-var getCheckpointCmd = &cobra.Command {
-    Use:   "get CHECKPOINT_UUID",
-    Short: "Get information of a specific checkpoint.",
-    Args:  cobra.ExactArgs(1),
-    Run:   func(cmd *cobra.Command, args []string) {
-        token := Login()
-        address := os.Getenv("HANAMI_ADDRESS")
-        checkpointUuid := args[0]
-        content, err := hanami_sdk.GetCheckpoint(address, token, checkpointUuid, hanamictl_common.DisableTlsVerification)
-        if err != nil {
-            fmt.Println(err)
-            os.Exit(1)
-        }
-        hanamictl_common.ParseSingle(content, checkpointHeader)
-    },
+var getCheckpointCmd = &cobra.Command{
+	Use:   "get CHECKPOINT_UUID",
+	Short: "Get information of a specific checkpoint.",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		token := Login()
+		address := os.Getenv("HANAMI_ADDRESS")
+		checkpointUuid := args[0]
+		content, err := hanami_sdk.GetCheckpoint(address, token, checkpointUuid, hanamictl_common.DisableTlsVerification)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		hanamictl_common.PrintSingle(content, checkpointHeader)
+	},
 }
 
-var listCheckpointCmd = &cobra.Command {
-    Use:   "list",
-    Short: "List all checkpoint.",
-    Run:   func(cmd *cobra.Command, args []string) {
-        token := Login()
-        address := os.Getenv("HANAMI_ADDRESS")
-        content, err := hanami_sdk.ListCheckpoint(address, token, hanamictl_common.DisableTlsVerification)
-        if err != nil {
-            fmt.Println(err)
-            os.Exit(1)
-        }
-        hanamictl_common.ParseList(content, checkpointHeader)
-    },
+var listCheckpointCmd = &cobra.Command{
+	Use:   "list",
+	Short: "List all checkpoint.",
+	Run: func(cmd *cobra.Command, args []string) {
+		token := Login()
+		address := os.Getenv("HANAMI_ADDRESS")
+		content, err := hanami_sdk.ListCheckpoint(address, token, hanamictl_common.DisableTlsVerification)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		hanamictl_common.PrintList(content, checkpointHeader)
+	},
 }
 
-var deleteCheckpointCmd = &cobra.Command {
-    Use:   "delete CHECKPOINT_UUID",
-    Short: "Delete a specific checkpoint from the backend.",
-    Args:  cobra.ExactArgs(1),
-    Run:   func(cmd *cobra.Command, args []string) {
-        token := Login()
-        address := os.Getenv("HANAMI_ADDRESS")
-        checkpointUuid := args[0]
-        _, err := hanami_sdk.DeleteCheckpoint(address, token, checkpointUuid, hanamictl_common.DisableTlsVerification)
-        if err != nil {
-            fmt.Println(err)
-            os.Exit(1)
-        }
-        fmt.Printf("successfully deleted checkpoint '%v'\n", checkpointUuid)
-    },
+var deleteCheckpointCmd = &cobra.Command{
+	Use:   "delete CHECKPOINT_UUID",
+	Short: "Delete a specific checkpoint from the backend.",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		token := Login()
+		address := os.Getenv("HANAMI_ADDRESS")
+		checkpointUuid := args[0]
+		_, err := hanami_sdk.DeleteCheckpoint(address, token, checkpointUuid, hanamictl_common.DisableTlsVerification)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		fmt.Printf("successfully deleted checkpoint '%v'\n", checkpointUuid)
+	},
 }
 
-
-var checkpointCmd = &cobra.Command {
-    Use:   "checkpoint",
-    Short: "Manage checkpoint.",
+var checkpointCmd = &cobra.Command{
+	Use:   "checkpoint",
+	Short: "Manage checkpoint.",
 }
-
 
 func Init_Checkpoint_Commands(rootCmd *cobra.Command) {
-    rootCmd.AddCommand(checkpointCmd)
+	rootCmd.AddCommand(checkpointCmd)
 
-    checkpointCmd.AddCommand(getCheckpointCmd)
+	checkpointCmd.AddCommand(getCheckpointCmd)
 
-    checkpointCmd.AddCommand(listCheckpointCmd)
+	checkpointCmd.AddCommand(listCheckpointCmd)
 
-    checkpointCmd.AddCommand(deleteCheckpointCmd)
+	checkpointCmd.AddCommand(deleteCheckpointCmd)
 }

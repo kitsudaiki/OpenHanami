@@ -21,168 +21,166 @@
 package hanami_resources
 
 import (
-    "fmt"
-    "os"
-    "hanamictl/common"
-    "github.com/spf13/cobra"
-    "github.com/kitsudaiki/Hanami"
+	"fmt"
+	hanamictl_common "hanamictl/common"
+	"os"
+
+	hanami_sdk "github.com/kitsudaiki/Hanami"
+	"github.com/spf13/cobra"
 )
 
 var (
-    templatePath   string
-    checkpointName string
-    checkpointUuid string
+	templatePath   string
+	checkpointName string
+	checkpointUuid string
 )
 
 var clusterHeader = []string{
-    "uuid",
-    "name",
-    "visibility",
-    "owner_id",
-    "project_id",
-    "created_at",
+	"uuid",
+	"name",
+	"visibility",
+	"owner_id",
+	"project_id",
+	"created_at",
 }
 
 var clusterSaveHeader = []string{
-    "uuid",
-    "name",
+	"uuid",
+	"name",
 }
 
 var clusterRestoreHeader = []string{
-    "uuid",
+	"uuid",
 }
 
-var createClusterCmd = &cobra.Command {
-    Use:   "create -t TEMPLATE_PATH NAME",
-    Short: "Create a new cluster.",
-    Args:  cobra.ExactArgs(1),
-    Run:   func(cmd *cobra.Command, args []string) {
-        token := Login()
-        address := os.Getenv("HANAMI_ADDRESS")
-        clusterName := args[0]
-        templateContent, err := os.ReadFile(templatePath)
-        if err != nil {
-            fmt.Println(err)
-            os.Exit(1)
-        }
-        content, err := hanami_sdk.CreateCluster(address, token, clusterName, string(templateContent), hanamictl_common.DisableTlsVerification)
-        if err != nil {
-            fmt.Println(err)
-            os.Exit(1)
-        }
-        hanamictl_common.ParseSingle(content, clusterHeader)
-    },
+var createClusterCmd = &cobra.Command{
+	Use:   "create -t TEMPLATE_PATH NAME",
+	Short: "Create a new cluster.",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		token := Login()
+		address := os.Getenv("HANAMI_ADDRESS")
+		clusterName := args[0]
+		templateContent, err := os.ReadFile(templatePath)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		content, err := hanami_sdk.CreateCluster(address, token, clusterName, string(templateContent), hanamictl_common.DisableTlsVerification)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		hanamictl_common.PrintSingle(content, clusterHeader)
+	},
 }
 
-var getClusterCmd = &cobra.Command {
-    Use:   "get CLUSTER_UUID",
-    Short: "Get information of a specific cluster.",
-    Args:  cobra.ExactArgs(1),
-    Run:   func(cmd *cobra.Command, args []string) {
-        token := Login()
-        address := os.Getenv("HANAMI_ADDRESS")
-        clusterUuid := args[0]
-        content, err := hanami_sdk.GetCluster(address, token, clusterUuid, hanamictl_common.DisableTlsVerification)
-        if err != nil {
-            fmt.Println(err)
-            os.Exit(1)
-        }
-        hanamictl_common.ParseSingle(content, clusterHeader)
-    },
+var getClusterCmd = &cobra.Command{
+	Use:   "get CLUSTER_UUID",
+	Short: "Get information of a specific cluster.",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		token := Login()
+		address := os.Getenv("HANAMI_ADDRESS")
+		clusterUuid := args[0]
+		content, err := hanami_sdk.GetCluster(address, token, clusterUuid, hanamictl_common.DisableTlsVerification)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		hanamictl_common.PrintSingle(content, clusterHeader)
+	},
 }
 
-var listClusterCmd = &cobra.Command {
-    Use:   "list",
-    Short: "List all cluster.",
-    Run:   func(cmd *cobra.Command, args []string) {
-        token := Login()
-        address := os.Getenv("HANAMI_ADDRESS")
-        content, err := hanami_sdk.ListCluster(address, token, hanamictl_common.DisableTlsVerification)
-        if err != nil {
-            fmt.Println(err)
-            os.Exit(1)
-        }
-        hanamictl_common.ParseList(content, clusterHeader)
-    },
+var listClusterCmd = &cobra.Command{
+	Use:   "list",
+	Short: "List all cluster.",
+	Run: func(cmd *cobra.Command, args []string) {
+		token := Login()
+		address := os.Getenv("HANAMI_ADDRESS")
+		content, err := hanami_sdk.ListCluster(address, token, hanamictl_common.DisableTlsVerification)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		hanamictl_common.PrintList(content, clusterHeader)
+	},
 }
 
-var deleteClusterCmd = &cobra.Command {
-    Use:   "delete CLUSTER_UUID",
-    Short: "Delete a specific cluster from the backend.",
-    Args:  cobra.ExactArgs(1),
-    Run:   func(cmd *cobra.Command, args []string) {
-        token := Login()
-        address := os.Getenv("HANAMI_ADDRESS")
-        clusterUuid := args[0]
-        _, err := hanami_sdk.DeleteCluster(address, token, clusterUuid, hanamictl_common.DisableTlsVerification)
-        if err != nil {
-            fmt.Println(err)
-            os.Exit(1)
-        }
-        fmt.Printf("successfully deleted cluster '%v'\n", clusterUuid)
-    },
+var deleteClusterCmd = &cobra.Command{
+	Use:   "delete CLUSTER_UUID",
+	Short: "Delete a specific cluster from the backend.",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		token := Login()
+		address := os.Getenv("HANAMI_ADDRESS")
+		clusterUuid := args[0]
+		_, err := hanami_sdk.DeleteCluster(address, token, clusterUuid, hanamictl_common.DisableTlsVerification)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		fmt.Printf("successfully deleted cluster '%v'\n", clusterUuid)
+	},
 }
 
-var saveClusterCmd = &cobra.Command {
-    Use:   "save -n CHECKPOINT_NAME CLUSTER_UUID",
-    Short: "Save cluster as checkpoint.",
-    Args:  cobra.ExactArgs(1),
-    Run:   func(cmd *cobra.Command, args []string) {
-        token := Login()
-        address := os.Getenv("HANAMI_ADDRESS")
-        clusterUuid := args[0]
-        content, err := hanami_sdk.SaveCluster(address, token, clusterUuid, checkpointName, hanamictl_common.DisableTlsVerification)
-        if err != nil {
-            fmt.Println(err)
-            os.Exit(1)
-        }
-        hanamictl_common.ParseSingle(content, clusterSaveHeader)
-    },
+var saveClusterCmd = &cobra.Command{
+	Use:   "save -n CHECKPOINT_NAME CLUSTER_UUID",
+	Short: "Save cluster as checkpoint.",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		token := Login()
+		address := os.Getenv("HANAMI_ADDRESS")
+		clusterUuid := args[0]
+		content, err := hanami_sdk.SaveCluster(address, token, clusterUuid, checkpointName, hanamictl_common.DisableTlsVerification)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		hanamictl_common.PrintSingle(content, clusterSaveHeader)
+	},
 }
 
-var restoreClusterCmd = &cobra.Command {
-    Use:   "restore -c CHECKPOINT_UUID CLUSTER_UUID",
-    Short: "Restore cluster from checkpoint.",
-    Args:  cobra.ExactArgs(1),
-    Run:   func(cmd *cobra.Command, args []string) {
-        token := Login()
-        address := os.Getenv("HANAMI_ADDRESS")
-        clusterUuid := args[0]
-        content, err := hanami_sdk.RestoreCluster(address, token, clusterUuid, checkpointUuid, hanamictl_common.DisableTlsVerification)
-        if err != nil {
-            fmt.Println(err)
-            os.Exit(1)
-        }
-        hanamictl_common.ParseSingle(content, clusterRestoreHeader)
-    },
+var restoreClusterCmd = &cobra.Command{
+	Use:   "restore -c CHECKPOINT_UUID CLUSTER_UUID",
+	Short: "Restore cluster from checkpoint.",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		token := Login()
+		address := os.Getenv("HANAMI_ADDRESS")
+		clusterUuid := args[0]
+		content, err := hanami_sdk.RestoreCluster(address, token, clusterUuid, checkpointUuid, hanamictl_common.DisableTlsVerification)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		hanamictl_common.PrintSingle(content, clusterRestoreHeader)
+	},
 }
 
-
-var clusterCmd = &cobra.Command {
-    Use:   "cluster",
-    Short: "Manage cluster.",
+var clusterCmd = &cobra.Command{
+	Use:   "cluster",
+	Short: "Manage cluster.",
 }
-
 
 func Init_Cluster_Commands(rootCmd *cobra.Command) {
-    rootCmd.AddCommand(clusterCmd)
+	rootCmd.AddCommand(clusterCmd)
 
-    clusterCmd.AddCommand(createClusterCmd)
-    createClusterCmd.Flags().StringVarP(&templatePath, "template", "t", "", "Cluster Template (mandatory)")
-    createClusterCmd.MarkFlagRequired("template")
+	clusterCmd.AddCommand(createClusterCmd)
+	createClusterCmd.Flags().StringVarP(&templatePath, "template", "t", "", "Cluster Template (mandatory)")
+	createClusterCmd.MarkFlagRequired("template")
 
-    clusterCmd.AddCommand(getClusterCmd)
+	clusterCmd.AddCommand(getClusterCmd)
 
-    clusterCmd.AddCommand(listClusterCmd)
+	clusterCmd.AddCommand(listClusterCmd)
 
-    clusterCmd.AddCommand(deleteClusterCmd)
+	clusterCmd.AddCommand(deleteClusterCmd)
 
-    clusterCmd.AddCommand(saveClusterCmd)
-    saveClusterCmd.Flags().StringVarP(&checkpointName, "name", "n", "", "Checkpoint name (mandatory)")
-    saveClusterCmd.MarkFlagRequired("name")
+	clusterCmd.AddCommand(saveClusterCmd)
+	saveClusterCmd.Flags().StringVarP(&checkpointName, "name", "n", "", "Checkpoint name (mandatory)")
+	saveClusterCmd.MarkFlagRequired("name")
 
-    clusterCmd.AddCommand(restoreClusterCmd)
-    restoreClusterCmd.Flags().StringVarP(&checkpointUuid, "checkpoint", "c", "", "Checkpoint UUID (mandatory)")
-    restoreClusterCmd.MarkFlagRequired("checkpoint")
+	clusterCmd.AddCommand(restoreClusterCmd)
+	restoreClusterCmd.Flags().StringVarP(&checkpointUuid, "checkpoint", "c", "", "Checkpoint UUID (mandatory)")
+	restoreClusterCmd.MarkFlagRequired("checkpoint")
 }
-

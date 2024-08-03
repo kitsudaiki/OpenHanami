@@ -21,153 +21,152 @@
 package hanami_resources
 
 import (
-    "fmt"
-    "strings"
-    "syscall"
-    "os"
-    "hanamictl/common"
-    "github.com/spf13/cobra"
-    "github.com/kitsudaiki/Hanami"
+	"fmt"
+	hanamictl_common "hanamictl/common"
+	"os"
+	"strings"
+	"syscall"
 
-    "golang.org/x/term"
+	hanami_sdk "github.com/kitsudaiki/Hanami"
+	"github.com/spf13/cobra"
+
+	"golang.org/x/term"
 )
 
 var (
-    userName    string
-    password    string
-    isAdmin     bool
+	userName string
+	password string
+	isAdmin  bool
 )
 
 var userHeader = []string{
-    "id",
-    "name",
-    "is_admin",
-    "projects",
-    "creator_id",
-    "created_at",
+	"id",
+	"name",
+	"is_admin",
+	"projects",
+	"creator_id",
+	"created_at",
 }
 
-var createUserCmd = &cobra.Command {
-    Use:   "create USER_ID",
-    Short: "Create a new user.",
-    Args:  cobra.ExactArgs(1),
-    Run:   func(cmd *cobra.Command, args []string) {
-        token := Login()
-        address := os.Getenv("HANAMI_ADDRESS")
-        var pw string
-        var err error
-        if len(password) == 0 {
-            fmt.Print("Enter Password: ")
-            bytePassword1, err := term.ReadPassword(int(syscall.Stdin))
-            if err != nil {
-                fmt.Println("Failed to read password input")
-                os.Exit(1)
-            }
-            password1 := strings.TrimSpace(string(bytePassword1))
-            
-            fmt.Print("\n")
-            fmt.Print("Enter Password again: ")
-            bytePassword2, err := term.ReadPassword(int(syscall.Stdin))
-            if err != nil {
-                fmt.Println("Failed to read password input")
-                os.Exit(1)
-            }
-            password2 := strings.TrimSpace(string(bytePassword2))
-            
-            fmt.Print("\n")
-            if password1 != password2 {
-                fmt.Println("Mismatch between the two entered passwords")
-                os.Exit(1)
-            }
+var createUserCmd = &cobra.Command{
+	Use:   "create USER_ID",
+	Short: "Create a new user.",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		token := Login()
+		address := os.Getenv("HANAMI_ADDRESS")
+		var pw string
+		var err error
+		if len(password) == 0 {
+			fmt.Print("Enter Password: ")
+			bytePassword1, err := term.ReadPassword(int(syscall.Stdin))
+			if err != nil {
+				fmt.Println("Failed to read password input")
+				os.Exit(1)
+			}
+			password1 := strings.TrimSpace(string(bytePassword1))
 
-            pw = password1
-        } else {
-            pw = password
-        }
-        userId := args[0]
+			fmt.Print("\n")
+			fmt.Print("Enter Password again: ")
+			bytePassword2, err := term.ReadPassword(int(syscall.Stdin))
+			if err != nil {
+				fmt.Println("Failed to read password input")
+				os.Exit(1)
+			}
+			password2 := strings.TrimSpace(string(bytePassword2))
 
-        content, err := hanami_sdk.CreateUser(address, token, userId, userName, pw, isAdmin, hanamictl_common.DisableTlsVerification)
-        if err != nil {
-            fmt.Println(err)
-            os.Exit(1)
-        }
-        hanamictl_common.ParseSingle(content, userHeader)
-    },
+			fmt.Print("\n")
+			if password1 != password2 {
+				fmt.Println("Mismatch between the two entered passwords")
+				os.Exit(1)
+			}
+
+			pw = password1
+		} else {
+			pw = password
+		}
+		userId := args[0]
+
+		content, err := hanami_sdk.CreateUser(address, token, userId, userName, pw, isAdmin, hanamictl_common.DisableTlsVerification)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		hanamictl_common.PrintSingle(content, userHeader)
+	},
 }
 
-var getUserCmd = &cobra.Command {
-    Use:   "get USER_ID",
-    Short: "Get information of a specific user.",
-    Args:  cobra.ExactArgs(1),
-    Run:   func(cmd *cobra.Command, args []string) {
-        token := Login()
-        address := os.Getenv("HANAMI_ADDRESS")
-        userId := args[0]
-        content, err := hanami_sdk.GetUser(address, token, userId, hanamictl_common.DisableTlsVerification)
-        if err != nil {
-            fmt.Println(err)
-            os.Exit(1)
-        }
-        hanamictl_common.ParseSingle(content, userHeader)
-    },
+var getUserCmd = &cobra.Command{
+	Use:   "get USER_ID",
+	Short: "Get information of a specific user.",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		token := Login()
+		address := os.Getenv("HANAMI_ADDRESS")
+		userId := args[0]
+		content, err := hanami_sdk.GetUser(address, token, userId, hanamictl_common.DisableTlsVerification)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		hanamictl_common.PrintSingle(content, userHeader)
+	},
 }
 
-var listUserCmd = &cobra.Command {
-    Use:   "list",
-    Short: "List all user.",
-    Run:   func(cmd *cobra.Command, args []string) {
-        token := Login()
-        address := os.Getenv("HANAMI_ADDRESS")
-        content, err := hanami_sdk.ListUser(address, token, hanamictl_common.DisableTlsVerification)
-        if err != nil {
-            fmt.Println(err)
-            os.Exit(1)
-        }
-        hanamictl_common.ParseList(content, userHeader)
-    },
+var listUserCmd = &cobra.Command{
+	Use:   "list",
+	Short: "List all user.",
+	Run: func(cmd *cobra.Command, args []string) {
+		token := Login()
+		address := os.Getenv("HANAMI_ADDRESS")
+		content, err := hanami_sdk.ListUser(address, token, hanamictl_common.DisableTlsVerification)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		hanamictl_common.PrintList(content, userHeader)
+	},
 }
 
-var deleteUserCmd = &cobra.Command {
-    Use:   "delete USER_ID",
-    Short: "Delete a specific user from the backend.",
-    Args:  cobra.ExactArgs(1),
-    Run:   func(cmd *cobra.Command, args []string) {
-        token := Login()
-        address := os.Getenv("HANAMI_ADDRESS")
-        userId := args[0]
-        _, err := hanami_sdk.DeleteUser(address, token, userId, hanamictl_common.DisableTlsVerification)
-        if err != nil {
-            fmt.Println(err)
-            os.Exit(1)
-        }
-        fmt.Printf("successfully deleted user '%v'\n", userId)
-    },
+var deleteUserCmd = &cobra.Command{
+	Use:   "delete USER_ID",
+	Short: "Delete a specific user from the backend.",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		token := Login()
+		address := os.Getenv("HANAMI_ADDRESS")
+		userId := args[0]
+		_, err := hanami_sdk.DeleteUser(address, token, userId, hanamictl_common.DisableTlsVerification)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		fmt.Printf("successfully deleted user '%v'\n", userId)
+	},
 }
 
-
-var userCmd = &cobra.Command {
-    Use:   "user",
-    Short: "Manage user.",
+var userCmd = &cobra.Command{
+	Use:   "user",
+	Short: "Manage user.",
 }
-
 
 func Init_User_Commands(rootCmd *cobra.Command) {
-    rootCmd.AddCommand(userCmd)
+	rootCmd.AddCommand(userCmd)
 
-    passwordFlagText := "Password for the new user. " + 
-        "If not given by this flag, the password will be automatically requested after entering the command. " +
-        "This flag is quite unsave, because this way the password is visible in the command-line and " +
-        "printed into the history. So this flag should be only used for automated testing, " +
-        "but NEVER in a productive environment."
-    userCmd.AddCommand(createUserCmd)
-    createUserCmd.Flags().StringVarP(&userName, "name", "n", "", "User name (mandatory)")
-    createUserCmd.Flags().StringVarP(&password, "password", "p", "", passwordFlagText)
-    createUserCmd.Flags().BoolVar(&isAdmin, "is_admin", false, "Set user as admin (default: false)")
-    createUserCmd.MarkFlagRequired("name")
+	passwordFlagText := "Password for the new user. " +
+		"If not given by this flag, the password will be automatically requested after entering the command. " +
+		"This flag is quite unsave, because this way the password is visible in the command-line and " +
+		"printed into the history. So this flag should be only used for automated testing, " +
+		"but NEVER in a productive environment."
+	userCmd.AddCommand(createUserCmd)
+	createUserCmd.Flags().StringVarP(&userName, "name", "n", "", "User name (mandatory)")
+	createUserCmd.Flags().StringVarP(&password, "password", "p", "", passwordFlagText)
+	createUserCmd.Flags().BoolVar(&isAdmin, "is_admin", false, "Set user as admin (default: false)")
+	createUserCmd.MarkFlagRequired("name")
 
-    userCmd.AddCommand(getUserCmd)
+	userCmd.AddCommand(getUserCmd)
 
-    userCmd.AddCommand(listUserCmd)
+	userCmd.AddCommand(listUserCmd)
 
-    userCmd.AddCommand(deleteUserCmd)
+	userCmd.AddCommand(deleteUserCmd)
 }

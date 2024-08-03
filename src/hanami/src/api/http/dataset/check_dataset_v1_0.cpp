@@ -24,10 +24,6 @@
 
 #include <core/io/data_set/dataset_file_io.h>
 #include <database/dataset_table.h>
-#include <hanami_common/buffer/data_buffer.h>
-#include <hanami_common/files/binary_file.h>
-#include <hanami_common/files/text_file.h>
-#include <hanami_common/functions/file_functions.h>
 #include <hanami_config/config_handler.h>
 #include <hanami_root.h>
 
@@ -40,11 +36,11 @@ CheckMnistDataSetV1M0::CheckMnistDataSetV1M0()
     // input
     //----------------------------------------------------------------------------------------------
 
-    registerInputField("result_uuid", SAKURA_STRING_TYPE)
+    registerInputField("reference_uuid", SAKURA_STRING_TYPE)
         .setComment("UUID of the dataset to compare to.")
         .setRegex(UUID_REGEX);
 
-    registerInputField("dataset_uuid", SAKURA_STRING_TYPE)
+    registerInputField("uuid", SAKURA_STRING_TYPE)
         .setComment("UUID of the dataset with the results, which should be checked.")
         .setRegex(UUID_REGEX);
 
@@ -69,56 +65,58 @@ CheckMnistDataSetV1M0::runTask(BlossomIO& blossomIO,
                                BlossomStatus& status,
                                Hanami::ErrorContainer& error)
 {
-    const std::string resultUuid = blossomIO.input["result_uuid"];
-    const std::string datasetUuid = blossomIO.input["dataset_uuid"];
+    const std::string referenceUuid = blossomIO.input["reference_uuid"];
+    const std::string datasetUuid = blossomIO.input["uuid"];
     const Hanami::UserContext userContext = convertContext(context);
 
+    DataSetFileHandle referenceFileHandle;
     DataSetFileHandle datasetFileHandle;
-    DataSetFileHandle resultFileHandle;
 
     // open files
-    ReturnStatus ret = getFileHandle(datasetFileHandle, datasetUuid, userContext, status, error);
+    ReturnStatus ret
+        = getFileHandle(referenceFileHandle, referenceUuid, userContext, status, error);
     if (ret != OK) {
         return false;
     }
-    ret = getFileHandle(resultFileHandle, resultUuid, userContext, status, error);
+    ret = getFileHandle(datasetFileHandle, datasetUuid, userContext, status, error);
     if (ret != OK) {
         return false;
     }
 
     // set file-selectors
-    resultFileHandle.readSelector.endColumn = 10;
-    resultFileHandle.readSelector.endRow = 10000;
-    datasetFileHandle.readSelector.startColumn = 784;
-    datasetFileHandle.readSelector.endColumn = 794;
+    datasetFileHandle.readSelector.endColumn = 10;
     datasetFileHandle.readSelector.endRow = 10000;
+    referenceFileHandle.readSelector.startColumn = 784;
+    referenceFileHandle.readSelector.endColumn = 794;
+    referenceFileHandle.readSelector.endRow = 10000;
 
     // init buffer for output
+    std::vector<float> referenceDatasetOutput(10, 0.0f);
     std::vector<float> datasetOutput(10, 0.0f);
-    std::vector<float> resultOutput(10, 0.0f);
 
     float accuracy = 0.0f;
 
     // check files
     for (uint64_t row = 0; row < 10000; row++) {
-        if (getDataFromDataSet(datasetOutput, datasetFileHandle, row, error) != OK) {
+        if (getDataFromDataSet(referenceDatasetOutput, referenceFileHandle, row, error) != OK) {
             status.statusCode = INVALID_INPUT;
             status.errorMessage
                 = "Dataset with UUID '" + datasetUuid + "' is invalid and can not be compared";
             error.addMessage(status.errorMessage);
             return false;
         }
-        if (getDataFromDataSet(resultOutput, resultFileHandle, row, error) != OK) {
+        if (getDataFromDataSet(datasetOutput, datasetFileHandle, row, error) != OK) {
             status.statusCode = INVALID_INPUT;
-            status.errorMessage = "Dataset with result with UUID '" + resultUuid
+            status.errorMessage = "Dataset with result with UUID '" + referenceUuid
                                   + "' is invalid and can not be checked";
             error.addMessage(status.errorMessage);
             return false;
         }
 
         bool allCorrect = true;
+        setHighest(datasetOutput);
         for (uint64_t i = 0; i < 10; i++) {
-            if (datasetOutput[i] != resultOutput[i]) {
+            if (referenceDatasetOutput[i] != datasetOutput[i]) {
                 allCorrect = false;
             }
         }
@@ -131,6 +129,30 @@ CheckMnistDataSetV1M0::runTask(BlossomIO& blossomIO,
     blossomIO.output["accuracy"] = (100.0f / 10000.0f) * accuracy;
 
     return true;
+}
+
+/**
+ * @brief set highest output to 1 and other to 0
+ *
+ * @param outputInterface interface to process
+ */
+void
+CheckMnistDataSetV1M0::setHighest(std::vector<float>& values)
+{
+    float hightest = -0.1f;
+    uint32_t hightestPos = 0;
+    float value = 0.0f;
+
+    for (uint32_t outputNeuronId = 0; outputNeuronId < values.size(); outputNeuronId++) {
+        value = values[outputNeuronId];
+
+        if (value > hightest) {
+            hightest = value;
+            hightestPos = outputNeuronId;
+        }
+        values[outputNeuronId] = 0.0f;
+    }
+    values[hightestPos] = 1.0f;
 }
 
 /**
