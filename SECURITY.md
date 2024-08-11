@@ -4,7 +4,7 @@ The current state of the project is still far away from a productive state. Ther
 
 But if you are interested in this project and find some critical security vulnerabilities, then please report them to
 
-**[tobias.anker@kitsunemimi.moe](mailto:tobias.anker@kitsunemimi.moe)**. 
+**[tobias.anker@kitsunemimi.moe](mailto:tobias.anker@kitsunemimi.moe)**
 
 so I can keep track of them and try to fix them as fast as possible.
 
