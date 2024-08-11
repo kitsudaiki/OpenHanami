@@ -160,6 +160,7 @@ generate-docs:
 
     COPY mkdocs.yml .
     COPY CHANGELOG.md .
+    COPY ROADMAP.md .
     COPY LICENSE .
     COPY docs docs
     COPY ./builds/docs/db.md docs/backend/db.md

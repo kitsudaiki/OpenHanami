@@ -736,6 +736,13 @@ jobs:
         run: |
           export PATH=$PATH:/usr/local/go/bin
           cd ${GITHUB_REPOSITORY#*/}/testing/go_cli_api
+          export HANAMI_ADDRESS=http://127.0.0.1:11418
+          export HANAMI_USER=asdf
+          export HANAMI_PW=asdfasdf
+          export train_inputs=/tmp/train-images-idx3-ubyte
+          export train_labels=/tmp/train-labels-idx1-ubyte
+          export request_inputs=/tmp/t10k-images-idx3-ubyte
+          export request_labels=/tmp/t10k-labels-idx1-ubyte
           ./cli_test.sh
       - 
         name: Get log of the docker-container, even if the test failed
@@ -1458,7 +1465,8 @@ jobs:
       - 
         name: Upload hanamictl
         run: |
-          tar -czvf hanamictl_amd64_$BRANCH_NAME.tar.gz /tmp/hanamictl_build_result/hanamictl
+          cd /tmp/hanamictl_build_result
+          tar -czvf hanamictl_amd64_$BRANCH_NAME.tar.gz hanamictl
           scp hanamictl_amd64_$BRANCH_NAME.tar.gz ${{ secrets.SHARE_SSH_ACCESS }}:~/hanami_file_share/$BRANCH_NAME/client/
       - 
         name: Upload helm-chart

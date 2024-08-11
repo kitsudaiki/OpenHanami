@@ -4,19 +4,19 @@
 
     This documentation here is the archived version of the old readme-file of this library and is NOT up-to-date, but maybe it is still useful for some references.
 
-
 ## Description
 
-This library provides a simple and minimal wavefront obj-parser and creator to generate the content of such files.
+This library provides a simple and minimal wavefront obj-parser and creator to generate the content
+of such files.
 
 Supported functions:
 
-- vertex `v`
-- normals `vn`
-- textures `vt`
-- points `p`
-- lines `l`
-- faces `f`
+-   vertex `v`
+-   normals `vn`
+-   textures `vt`
+-   points `p`
+-   lines `l`
+-   faces `f`
 
 ## Usage by example
 
@@ -79,4 +79,3 @@ ret = Hanami::convertToString(output_string, parsedItem);
 // output_string contains the now the string, which is generated from the parsedItem-object
 
 ```
-

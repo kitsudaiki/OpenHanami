@@ -4,16 +4,16 @@
 
     This documentation here is the archived version of the old readme-file of this library and is NOT up-to-date, but maybe it is still useful for some references.
 
-
 ## Description
 
-Wrapper-library for crypto-operation from other external libraries, to simplify the usage of basic operation.
+Wrapper-library for crypto-operation from other external libraries, to simplify the usage of basic
+operation.
 
 Actual support for:
 
-- base64 encode-decode
-- AES-256-CBC encryption
-- Sha256 
+-   base64 encode-decode
+-   AES-256-CBC encryption
+-   Sha256
 
 ## Usage
 
@@ -39,10 +39,11 @@ Hanami::decodeBase64(decodedStr, encodedStr);
 // if the input was not a valid string, decodeBase64 return false
 ```
 
-
 ### AES-encryption
 
-HINT: Actual only AES-CBC with 256-bit AES-key. Will be replaced by AES-XTS in the new future, but XTS was not supported in the version of the crpyto++ library, which I had when creating this library here.
+HINT: Actual only AES-CBC with 256-bit AES-key. Will be replaced by AES-XTS in the new future, but
+XTS was not supported in the version of the crpyto++ library, which I had when creating this library
+here.
 
 Example for AES-CBC encyption and decryption:
 
@@ -69,8 +70,8 @@ std::string decryptionResult;
 Hanami::decrypt_AES_256_CBC(decryptionResult, encryptionResult, key, error);
 ```
 
-Both functions return `false`, if something went wrong. In this case the error-message can be converted to string with `error.toString()`.
-
+Both functions return `false`, if something went wrong. In this case the error-message can be
+converted to string with `error.toString()`.
 
 ### Sha256
 

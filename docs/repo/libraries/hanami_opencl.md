@@ -4,30 +4,35 @@
 
     This documentation here is the archived version of the old readme-file of this library and is NOT up-to-date, but maybe it is still useful for some references.
 
-
 ## Description
 
-This is a simple wrapper-library for opencl. It provides some basic commenly used functionalities and abstract them to a very simple structure, which comes with some restrictions, but make it fast and easy to write a program with opencl support. The basic feature set provides the following functions:
+This is a simple wrapper-library for opencl. It provides some basic commenly used functionalities
+and abstract them to a very simple structure, which comes with some restrictions, but make it fast
+and easy to write a program with opencl support. The basic feature set provides the following
+functions:
 
-- init device
-- copy data to device
-- run kernel
-- copy data from device
-- close device
-- get work-item information from device
-- get memory information from device
+-   init device
+-   copy data to device
+-   run kernel
+-   copy data from device
+-   close device
+-   get work-item information from device
+-   get memory information from device
 
 These abstractions have some restrictions like for example the follwing:
 
-- all copy-transfers are always blocking
-- always the whole buffer is copied to or from device. copy only parts of the buffer is not supported
-- only one device handable at the moment or more precisely the first one, which is found on the system.
+-   all copy-transfers are always blocking
+-   always the whole buffer is copied to or from device. copy only parts of the buffer is not
+    supported
+-   only one device handable at the moment or more precisely the first one, which is found on the
+    system.
 
-To avoid restrictions for special cases, all opencl-objects are public and so normal opencl-operations can also performed without the abstracted functions of this library.
+To avoid restrictions for special cases, all opencl-objects are public and so normal
+opencl-operations can also performed without the abstracted functions of this library.
 
 ## Usage
 
-Here only an example kernel code to 
+Here only an example kernel code to
 
 ```cpp
 const std::string kernelCode =
@@ -45,15 +50,16 @@ const std::string kernelCode =
     "}\n";
 ```
 
-The copy process for the library from host to device copies always at first the buffer and then the number of elements of this buffer. So they are always pairwise in the arguments of the kernel-function.
-
+The copy process for the library from host to device copies always at first the buffer and then the
+number of elements of this buffer. So they are always pairwise in the arguments of the
+kernel-function.
 
 ```cpp
 #include <hanami_opencl/gpu_handler.h>
 #include <hanami_opencl/gpu_interface.h>
 #include <hanami_common/logger.h>
 
-// Optional  initialize the logger. This here initalize a console logger, 
+// Optional  initialize the logger. This here initalize a console logger,
 // which prints all error- and info-messages on the consol
 Hanami::initConsoleLogger(true);
 Hanami::ErrorContainer error;
@@ -62,7 +68,7 @@ Hanami::ErrorContainer error;
 // init opencl-class of this library
 Hanami::GpuHandler oclHandler;
 oclHandler.initDevice(error)
-// the GpuHandler collect all devices of the host and stores them 
+// the GpuHandler collect all devices of the host and stores them
 // into oclHandler.m_interfaces
 
 // get for example the first device
@@ -87,8 +93,8 @@ data.addBuffer("buffer x",     // <-- self-defined id for the buffer
                                //     but the kernel will be slower.
                                //     So keep the tradeoff in mind!
 data.addBuffer("buffer y",
-               N, 
-               sizeof(float), 
+               N,
+               sizeof(float),
                false);
 // in the same style, there are multiple input- and output-buffer possible
 
@@ -99,7 +105,8 @@ for(uint32_t i = 0; i < N; i++) {
 }
 ```
 
-Init worker-sizes. Tehre are two fields: number of work-groups and threads per work-group. Normally this are global and local work-items in opencl, but I wanted it a little bit more like in CUDA.
+Init worker-sizes. Tehre are two fields: number of work-groups and threads per work-group. Normally
+this are global and local work-items in opencl, but I wanted it a little bit more like in CUDA.
 
 ```cpp
 data.numberOfWg.x = N / 512;
@@ -112,7 +119,7 @@ In the main-part copy the data to the device and process them on the device.
 ```cpp
 bool ret = false;
 
-// copy the data of OpenClData-object, which was initialized in the snipped before 
+// copy the data of OpenClData-object, which was initialized in the snipped before
 ret = ocl->initCopyToDevice(data, error);
 
 // add kernel-code with name to device
@@ -136,7 +143,8 @@ ret = ocl->copyFromDevice(data, "buffer y", error);
 float* outputValues = static_cast<float*>(data.getBufferData("buffer y"));
 ```
 
-Maybe you want to make more then one run. So you can update all buffer on the device, which are NOT defined as output-buffer.
+Maybe you want to make more then one run. So you can update all buffer on the device, which are NOT
+defined as output-buffer.
 
 ```cpp
 bool ret = false;
@@ -157,7 +165,8 @@ ret = ocl->copyFromDevice(data);
 float* outputValues = static_cast<float*>(data.getBufferData("buffer y"));
 ```
 
-It is also possible to get some basic information from these opencl-wrapper-class. These getter are restricted for the available memory on the device and the maximum sizes of the worker-groups. 
+It is also possible to get some basic information from these opencl-wrapper-class. These getter are
+restricted for the available memory on the device and the maximum sizes of the worker-groups.
 
 ```cpp
 // getter for memory
@@ -171,7 +180,8 @@ uint64_t maxWorkItemDimension = ocl->getMaxWorkItemDimension();
 WorkerDim dim = ocl->getMaxWorkItemSize();
 ```
 
-If you need other information, which are not covered by this few getter here, you can perform normal operations on the device-objects. For example like this:
+If you need other information, which are not covered by this few getter here, you can perform normal
+operations on the device-objects. For example like this:
 
 ```cpp
 cl_ulong size = 0;

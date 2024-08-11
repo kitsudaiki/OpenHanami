@@ -23,14 +23,15 @@ nav:
     - index.md
     - home/license.md
     - home/CHANGELOG.md
+    - home/ROADMAP.md
   - Frontend:
+    - frontend/example_workflow.md
     - frontend/rest_api_documentation.md
     - frontend/cli_sdk_docu.md
     - frontend/cluster_templates/cluster_template.md
     - frontend/websockets/websocket_workflow.md
     - frontend/dashboard/dashboard.md
   - Backend:
-    - backend/development.md
     - backend/installation.md
     - backend/config.md
     - backend/db.md
@@ -41,21 +42,24 @@ nav:
     - inner_workings/monitoring/monitoring.md
     - inner_workings/storage.md
     - inner_workings/user_and_projects.md
-  - Other:
-    - other/dependencies.md
-    - other/code_styling.md
-    - other/git_workflow.md
-    - other/glossar.md
+  - Development:
+    - repo/repo_structure.md
+    - repo/build_guide.md
+    - repo/development.md
+    - repo/dependencies.md
+    - repo/code_styling.md
+    - repo/git_workflow.md
+    - repo/glossar.md
     - Libraries (Archive):
-      - other/libraries/hanami_args.md
-      - other/libraries/hanami_common.md
-      - other/libraries/hanami_config.md
-      - other/libraries/hanami_cpu.md
-      - other/libraries/hanami_crypto.md
-      - other/libraries/hanami_ini.md
-      - other/libraries/hanami_obj.md
-      - other/libraries/hanami_opencl.md
-      - other/libraries/hanami_sqlite.md
+      - repo/libraries/hanami_args.md
+      - repo/libraries/hanami_common.md
+      - repo/libraries/hanami_config.md
+      - repo/libraries/hanami_cpu.md
+      - repo/libraries/hanami_crypto.md
+      - repo/libraries/hanami_ini.md
+      - repo/libraries/hanami_obj.md
+      - repo/libraries/hanami_opencl.md
+      - repo/libraries/hanami_sqlite.md
 
 plugins:
     - swagger-ui-tag

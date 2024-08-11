@@ -1,11 +1,11 @@
 # CLI-SDK-Docu
 
-The CLI and the SDK-library provides functions to interact with the API of the backend. 
+The CLI and the SDK-library provides functions to interact with the API of the backend.
 
 !!! info
 
-    If you find any mistakes or mismatches in this documentation, then please create an issue on github, or fix it by yourself and create a pull request on github. 
-    
+    If you find any mistakes or mismatches in this documentation, then please create an issue on github, or fix it by yourself and create a pull request on github.
+
 ## Installation / Compile
 
 === "CLI"
@@ -15,7 +15,7 @@ The CLI and the SDK-library provides functions to interact with the API of the b
     cd src/cli/hanamictl/
 
     # build protobuf-messages
-    pushd ../sdk/go/hanami_sdk 
+    pushd ../sdk/go/hanami_sdk
     protoc --go_out=. --proto_path ../../../libraries/hanami_messages/protobuffers hanami_messages.proto3
     popd
 
@@ -40,7 +40,9 @@ The CLI and the SDK-library provides functions to interact with the API of the b
 
 ## Exceptions
 
-Each of the used HTTP-error codes results in a different exception. For the available error-code / exceptions of each of the endpoints, look into the [REST-API documenation](https://docs.hanami-ai.com/api/rest_api_documentation/)
+Each of the used HTTP-error codes results in a different exception. For the available error-code /
+exceptions of each of the endpoints, look into the
+[REST-API documenation](https://docs.hanami-ai.com/api/rest_api_documentation/)
 
 === "Python-SDK"
 
@@ -67,11 +69,15 @@ Each of the used HTTP-error codes results in a different exception. For the avai
 
 ## For insecure connections
 
-In case the server use self-signed certificates for its https-connection, the ssl verification can be disabled. Each functions has a paramater `verify_connection`, wich is per default `True`. This validation can be disabled by adding `,verify_connection=False` to the end of a function-call.
+In case the server use self-signed certificates for its https-connection, the ssl verification can
+be disabled. Each functions has a paramater `verify_connection`, wich is per default `True`. This
+validation can be disabled by adding `,verify_connection=False` to the end of a function-call.
 
 ## Request Token
 
-For each of the following actions, the user must request an access-token at the beginning. This token is a jwt-token with basic information of the user. The token is only valid for a certain amount of time until it expires, based on the configuration of the server.
+For each of the following actions, the user must request an access-token at the beginning. This
+token is a jwt-token with basic information of the user. The token is only valid for a certain
+amount of time until it expires, based on the configuration of the server.
 
 === "CLI"
 
@@ -82,7 +88,6 @@ For each of the following actions, the user must request an access-token at the 
     export HANAMI_USER=asdf
     export HANAMI_PW=asdfasdf
     ```
-
 
 === "Python-SDK"
 
@@ -96,7 +101,6 @@ For each of the following actions, the user must request an access-token at the 
     token = hanami_token.request_token(address, test_user, test_pw)
 
     ```
-
 
 ## Project
 
@@ -163,7 +167,7 @@ Get information about a project.
     ```
 
     example:
-    
+
     ```bash
     hanamictl project get cli_test_project
 
@@ -285,7 +289,6 @@ Delete a project.
     project.delete_project(token, address, projet_id)
     ```
 
-
 ## User
 
 !!! info
@@ -296,7 +299,7 @@ Delete a project.
 
 Create a new user.
 
-If the `is_admin` is set to true, the user becomes a global admin. 
+If the `is_admin` is set to true, the user becomes a global admin.
 
 === "CLI"
 
@@ -310,7 +313,7 @@ If the `is_admin` is set to true, the user becomes a global admin.
 
     ```bash
     ./hanamictl user create -n "cli test user" -p "asdfasdfasdf" cli_test_user
-    Enter Password: 
+    Enter Password:
     Enter Password again:
 
     +------------+---------------------+
@@ -502,9 +505,11 @@ Delete a user from the backend.
 
 Assigne a project to a normal user.
 
-The `role` is uses be the policy-file of the Hanami-instance restrict access to specific API-endpoints. Per default there exist `admin` and `member` as roles.
+The `role` is uses be the policy-file of the Hanami-instance restrict access to specific
+API-endpoints. Per default there exist `admin` and `member` as roles.
 
-If `is_project_admin` is set to true, the user can access all resources of all users within the project.
+If `is_project_admin` is set to true, the user can access all resources of all users within the
+project.
 
 === "CLI"
 
@@ -530,11 +535,11 @@ If `is_project_admin` is set to true, the user can access all resources of all u
     # request a token for a user, who has admin-permissions
     # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
 
-    result = add_roject_to_user(token, 
-                                address, 
-                                user_id, 
-                                project_id, 
-                                role, 
+    result = add_roject_to_user(token,
+                                address,
+                                user_id,
+                                project_id,
+                                role,
                                 is_project_admin)
     ```
 
@@ -609,14 +614,15 @@ Switch to another project with the current user.
     result = switch_project(token, address, project_id)
     ```
 
-
 ## Data-Set
 
 Datasets are a bunch of train- or test-data, which can be uploaded to the server.
 
 ### Upload MNIST-Data-Set
 
-These are files of the official mnist-dataset, which can be uploaded and which are primary used for testing currently. Each dataset of this type requires the file-path to the local input- and label-file of the same dataset. 
+These are files of the official mnist-dataset, which can be uploaded and which are primary used for
+testing currently. Each dataset of this type requires the file-path to the local input- and
+label-file of the same dataset.
 
 !!! warning
 
@@ -625,7 +631,7 @@ These are files of the official mnist-dataset, which can be uploaded and which a
 === "CLI"
 
     ```bash
-    hanamictl dataset create mnist -i <PATH_TO_INTPU_FILE> -l <PATH_TO_LABEL_FILE> <NAME>
+    hanamictl dataset create mnist -i <PATH_TO_INPUT_FILE> -l <PATH_TO_LABEL_FILE> <NAME>
     ```
 
     example:
@@ -636,7 +642,7 @@ These are files of the official mnist-dataset, which can be uploaded and which a
     +-------------------+-----------------------------------------------------------------------------------------------+
     | UUID              | 146bacb3-b5bf-485b-a2e8-d1812b57eb63                                                          |
     | NAME              | cli_test_dataset                                                                              |
-    | VERSION           | v1.alpha                                                                                      |
+    | VERSION           | v1.0alpha                                                                                     |
     | NUMBER OF COLUMNS | 794                                                                                           |
     | NUMBER OF ROWS    | 60000                                                                                         |
     | DESCRIPTION       | {"label":{"end_column":794,"start_column":784},"picture":{"end_column":784,"start_column":0}} |
@@ -676,11 +682,26 @@ These are files of the official mnist-dataset, which can be uploaded and which a
 === "CLI"
 
     ```bash
+    hanamictl dataset create csv -i <PATH_TO_INPUT_FILE> <NAME>
     ```
 
     example:
 
     ```bash
+    hanamictl dataset create csv -i /tmp/test.csv test_csv
+
+    +-------------------+--------------------------------------------------------------------------------------------------+
+    | UUID              | 0923f01b-90ff-4323-9c18-fcfb655985d4                                                             |
+    | NAME              | test_csv                                                                                         |
+    | VERSION           | v1.0alpha                                                                                        |
+    | NUMBER OF COLUMNS | 2                                                                                                |
+    | NUMBER OF ROWS    | 1723                                                                                             |
+    | DESCRIPTION       | {"test_input":{"end_column":1,"start_column":0},"test_output":{"end_column":2,"start_column":1}} |
+    | VISIBILITY        | private                                                                                          |
+    | OWNER ID          | asdf                                                                                             |
+    | PROJECT ID        | admin                                                                                            |
+    | CREATED AT        | <nil>                                                                                            |
+    +-------------------+--------------------------------------------------------------------------------------------------+
     ```
 
 === "Python-SDK"
@@ -720,7 +741,7 @@ Get information about a specific dataset.
     +-------------------+-----------------------------------------------------------------------------------------------+
     | UUID              | 146bacb3-b5bf-485b-a2e8-d1812b57eb63                                                          |
     | NAME              | cli_test_dataset                                                                              |
-    | VERSION           | v1.alpha                                                                                      |
+    | VERSION           | v1.0alpha                                                                                     |
     | NUMBER OF COLUMNS | 794                                                                                           |
     | NUMBER OF ROWS    | 60000                                                                                         |
     | DESCRIPTION       | {"label":{"end_column":794,"start_column":784},"picture":{"end_column":784,"start_column":0}} |
@@ -852,10 +873,11 @@ Delete a dataset.
     dataset.delete_dataset(token, address, dataset_uuid)
     ```
 
-
 ### Check MNIST Dataset Result
 
-Checks a resulting dataset from an MNIST-test against a reference-dataset to compare how much of the output of the network was correct. The output gives the percentage of the correct output-values. It is primary used for automatic testing.
+Checks a resulting dataset from an MNIST-test against a reference-dataset to compare how much of the
+output of the network was correct. The output gives the percentage of the correct output-values. It
+is primary used for automatic testing.
 
 === "CLI"
 
@@ -885,9 +907,9 @@ Checks a resulting dataset from an MNIST-test against a reference-dataset to com
     # request a token for a user, who has admin-permissions
     # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
 
-    result = request_result.check_mnist_dataset(token, 
-                                                address, 
-                                                dataset_uuid, 
+    result = request_result.check_mnist_dataset(token,
+                                                address,
+                                                dataset_uuid,
                                                 reference_dataset_uuid)
 
     # example-content of result:
@@ -897,10 +919,10 @@ Checks a resulting dataset from an MNIST-test against a reference-dataset to com
     # }
     ```
 
-
 ### Download Dataset content
 
-At the moment it is not possible to download complete datasets via websocket, like it is done for the upload. For now there is only an endpoint to request a slice of a dataset.
+At the moment it is not possible to download complete datasets via websocket, like it is done for
+the upload. For now there is only an endpoint to request a slice of a dataset.
 
 === "CLI"
 
@@ -943,10 +965,10 @@ At the moment it is not possible to download complete datasets via websocket, li
     # request a token for a user, who has admin-permissions
     # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
 
-    result = dataset.download_dataset_content(token, 
-                                              address, 
-                                              dataset_uuid, 
-                                              column_name, 
+    result = dataset.download_dataset_content(token,
+                                              address,
+                                              dataset_uuid,
+                                              column_name,
                                               2,    # number of rows
                                               100)  # offset
 
@@ -983,14 +1005,15 @@ At the moment it is not possible to download complete datasets via websocket, li
 
     ```
 
-
 ## Cluster
 
 Cluster containing the neural network.
 
 ### Create Cluster
 
-To initialize a new cluster, a cluster-templated is used, which describes the basic structure of the network (see documentation of the [cluster-templates](https://docs.hanami-ai.com/api/cluster_template/))
+To initialize a new cluster, a cluster-templated is used, which describes the basic structure of the
+network (see documentation of the
+[cluster-templates](https://docs.hanami-ai.com/api/cluster_template/))
 
 === "CLI"
 
@@ -1058,13 +1081,13 @@ To initialize a new cluster, a cluster-templated is used, which describes the ba
     # }
     ```
 
-
 ### Get Cluster
 
-Get information of a specific cluster. 
+Get information of a specific cluster.
 
-!!! info
-    It is basically the same output like coming from the create command and contains only the data stored in the database. Information about the cluster itself, like number of neurons, amount of used memory and so on are still missing in this output currently.
+!!! info It is basically the same output like coming from the create command and contains only the
+data stored in the database. Information about the cluster itself, like number of neurons, amount of
+used memory and so on are still missing in this output currently.
 
 === "CLI"
 
@@ -1092,7 +1115,7 @@ Get information of a specific cluster.
     ```python
     from hanami_sdk import cluster
 
-    address = "http://127.0.0.1:11418" 
+    address = "http://127.0.0.1:11418"
     cluster_uuid = "d94f2b53-f404-4215-9a33-63c4a03e3202"
 
     # request a token for a user, who has admin-permissions
@@ -1110,7 +1133,6 @@ Get information of a specific cluster.
     #     "visibility": "private"
     # }
     ```
-
 
 ### List Cluster
 
@@ -1145,7 +1167,7 @@ List all visible cluster.
     # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
 
     result = cluster.list_clusters(token, address)
-        
+
     # example-content of result:
     #
     # {
@@ -1167,7 +1189,6 @@ List all visible cluster.
     #     ]
     # }
     ```
-
 
 ### Delete Cluster
 
@@ -1200,7 +1221,6 @@ Delete a cluster from a backend.
 
     cluster.delete_cluster(token, address, cluster_uuid)
     ```
-
 
 ### Create Checkpoint of Cluster
 
@@ -1285,10 +1305,11 @@ Reset a cluster to the state, which is stored in a specific checkpoint.
     # }
     ```
 
-
 ### Switch Host
 
-Each CPU and GPU is handled as its logical host. Cluster and be moved between them. To list avaialble hosts there is the [list-hosts endpoint](https://docs.hanami-ai.com/api/sdk_library/#list-hosts).
+Each CPU and GPU is handled as its logical host. Cluster and be moved between them. To list
+avaialble hosts there is the
+[list-hosts endpoint](https://docs.hanami-ai.com/api/sdk_library/#list-hosts).
 
 !!! warning
 
@@ -1325,7 +1346,8 @@ Each CPU and GPU is handled as its logical host. Cluster and be moved between th
 
 ## Task
 
-Tasks are asynchronous actions, which are placed within a queue of the cluster, which should be affected by the task. They are processed one after another. 
+Tasks are asynchronous actions, which are placed within a queue of the cluster, which should be
+affected by the task. They are processed one after another.
 
 ### Create Train-Task
 
@@ -1368,18 +1390,18 @@ Create a new task to train the cluster with the data of a dataset, which was upl
         "label": "6f2bbcd2-7081-4b08-ae1d-16e6cd6f54c4"
     }
 
-    # inputs and outputs are maps with key-value-pairs, 
-    # where the key is the name of the hexagon of the matching 
-    # field within the dataset and the value is the UUID of 
+    # inputs and outputs are maps with key-value-pairs,
+    # where the key is the name of the hexagon of the matching
+    # field within the dataset and the value is the UUID of
     # the used dataset for the input- and output-data
 
     # request a token for a user, who has admin-permissions
     # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
 
-    result = task.create_train_task(token, 
-                                    address, 
-                                    task_name, 
-                                    cluster_uuid, 
+    result = task.create_train_task(token,
+                                    address,
+                                    task_name,
+                                    cluster_uuid,
                                     inputs,
                                     outputs)
     task_uuid = json.loads(result)["uuid"]
@@ -1395,7 +1417,8 @@ Create a new task to train the cluster with the data of a dataset, which was upl
 
 ### Create Request-Task
 
-Create a new task to request information from a trained cluster. As input the data of a dataset are used, which had to be uplaoded first. 
+Create a new task to request information from a trained cluster. As input the data of a dataset are
+used, which had to be uplaoded first.
 
 === "CLI"
 
@@ -1435,18 +1458,18 @@ Create a new task to request information from a trained cluster. As input the da
         "label": "test_output"
     }
 
-    # inputs and results are maps with key-value-pairs, 
-    # where the key is the name of the hexagon of the matching 
-    # field within the dataset and the value is the UUID of 
+    # inputs and results are maps with key-value-pairs,
+    # where the key is the name of the hexagon of the matching
+    # field within the dataset and the value is the UUID of
     # the used dataset for the input- and output-data
 
     # request a token for a user, who has admin-permissions
     # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
 
-    result = task.create_request_task(token, 
-                                      address, 
-                                      task_name, 
-                                      cluster_uuid, 
+    result = task.create_request_task(token,
+                                      address,
+                                      task_name,
+                                      cluster_uuid,
                                       inputs,
                                       results)
     task_uuid = json.loads(result)["uuid"]
@@ -1569,10 +1592,10 @@ List all tasks for a cluster, together with their progress.
     # }
     ```
 
-
 ### Delete Task
 
-Delete a task from a cluster. In this task was a request and produced a request-result, this result will not be deleted.
+Delete a task from a cluster. In this task was a request and produced a request-result, this result
+will not be deleted.
 
 === "CLI"
 
@@ -1603,10 +1626,10 @@ Delete a task from a cluster. In this task was a request and produced a request-
     task.delete_task(token, address, task_uuid, cluster_uuid)
     ```
 
-
 ## Direct-IO
 
-It is possible to directly connect via websocket to the cluster on the server to make single requests much faster, because it doesn't use the REST-API. It is an alternative to the tasks. 
+It is possible to directly connect via websocket to the cluster on the server to make single
+requests much faster, because it doesn't use the REST-API. It is an alternative to the tasks.
 
 !!! info
 
@@ -1643,7 +1666,7 @@ It is possible to directly connect via websocket to the cluster on the server to
 
         # names "test_input" and "test_output" are the names of the hexagons within the cluster
         # for the mapping of the input-data
-        # if the last argument is set to "True", it says that there are no more data to 
+        # if the last argument is set to "True", it says that there are no more data to
         # apply to the cluster and that the train-process can start
         await direct_io.send_train_input(ws, "test_input", input_values, False)
         await direct_io.send_train_input(ws, "test_output", exprected_values, True)
@@ -1682,7 +1705,7 @@ It is possible to directly connect via websocket to the cluster on the server to
 
         # names "test_input" is the names of the hexagons within the cluster
         # for the mapping of the input-data
-        # if the last argument is set to "True", it says that there are no more data to 
+        # if the last argument is set to "True", it says that there are no more data to
         # apply to the cluster and that the train-process can start
         output_values = await direct_io.send_request_input(ws, "test_input", input_values, True)
 
@@ -1697,14 +1720,14 @@ It is possible to directly connect via websocket to the cluster on the server to
     asyncio.run(main())
     ```
 
-
 ## Checkpoint
 
-Checkpoints are a copy of the current state of a cluster. It can be used as backup to restore an older state a cluster.
+Checkpoints are a copy of the current state of a cluster. It can be used as backup to restore an
+older state a cluster.
 
 !!! info
 
-    It is possible to apply a checkpoint to any cluster, but at the moment it is not possible to directly create a new cluster out of a checkpoint. 
+    It is possible to apply a checkpoint to any cluster, but at the moment it is not possible to directly create a new cluster out of a checkpoint.
 
 ### List Checkpoints
 
@@ -1795,23 +1818,23 @@ Delete a checkpoint from the backend.
 
     ```
 
-
 ## Hosts
 
 ### List Hosts
 
-Each CPU and GPU is handled as its own logical host to have more control over the exact location of the data. These logical hosts can be listed with this endpoint.
+Each CPU and GPU is handled as its own logical host to have more control over the exact location of
+the data. These logical hosts can be listed with this endpoint.
 
 === "CLI"
 
     ```bash
-    hanamictl host list 
+    hanamictl host list
     ```
 
     example:
 
     ```bash
-    hanamictl host list 
+    hanamictl host list
 
     +--------------------------------------+------+
     |                 UUID                 | TYPE |

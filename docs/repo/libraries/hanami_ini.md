@@ -4,22 +4,24 @@
 
     This documentation here is the archived version of the old readme-file of this library and is NOT up-to-date, but maybe it is still useful for some references.
 
-
 ## Description
 
-This library provides the functionality to parse and handle the content of ini-files. It only converts string, but doesn't read files from the storage.
+This library provides the functionality to parse and handle the content of ini-files. It only
+converts string, but doesn't read files from the storage.
 
 ## Usage
 
 **Header-file:** `hanami_ini/ini_item.h`
 
-The `IniItem`-class is the handler for the ini-file-content. The functions in the header should be really self-explaned, if something is unclear, see the following example or the comments in the cpp-file.
+The `IniItem`-class is the handler for the ini-file-content. The functions in the header should be
+really self-explaned, if something is unclear, see the following example or the comments in the
+cpp-file.
 
 ```cpp
 #include <hanami_ini/ini_item.h>
 #include <hanami_common/logger.h>
 
-// short test-string for demonstration. 
+// short test-string for demonstration.
 const std::string testString(
                 "[DEFAULT]\n"
                 "key = asdf.asdf\n"
@@ -66,8 +68,7 @@ object.removeGroup("group");
 // convert back into an ini-file-string
 std::string output = object.toString();
 // output-variable would contain the same like the inital parsed testString
-// but with some additional double quotes at the strin-values and maybe another 
+// but with some additional double quotes at the strin-values and maybe another
 // order of the groups and keys inside the groups
 
 ```
-

@@ -4,7 +4,6 @@
 
     This documentation here is the archived version of the old readme-file of this library and is NOT up-to-date, but maybe it is still useful for some references.
 
-
 ## Description
 
 Simple wrapper for Sqlite3-database. Primary for easier handling the output of SELECT-queries.
