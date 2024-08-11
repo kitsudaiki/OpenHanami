@@ -22,10 +22,12 @@ package hanami_sdk
 
 import (
 	"bufio"
+	"crypto/tls"
 	"encoding/json"
 	"io"
 	"net/url"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/golang/protobuf/proto"
@@ -100,7 +102,7 @@ func parseJson2(input string) map[string]interface{} {
 	return outputMap
 }
 
-func sendFile(token, address, fileUuid string, file *os.File) error {
+func sendFile(token, address, fileUuid string, file *os.File, skipTlsVerification bool) error {
 	parsedURL, err := url.Parse(address)
 	if err != nil {
 		return err
@@ -110,7 +112,14 @@ func sendFile(token, address, fileUuid string, file *os.File) error {
 	reader := bufio.NewReader(file)
 
 	// Create a connection to the server
-	conn, _, err := websocket.DefaultDialer.Dial("ws://"+host, nil)
+	dialer := *websocket.DefaultDialer
+	prefix := "ws"
+	if strings.Contains(address, "https") {
+		dialer.TLSClientConfig = &tls.Config{InsecureSkipVerify: skipTlsVerification}
+		prefix = "wss"
+	}
+
+	conn, _, err := dialer.Dial(prefix+"://"+host, nil)
 	if err != nil {
 		return err
 	}
@@ -225,12 +234,12 @@ func UploadMnistFiles(address, token, name, inputFilePath, labelFilePath string,
 	labelFileUuid := datasetInfo["uuid_label_file"].(string)
 
 	// send data
-	err = sendFile(token, address, inputFileUuid, inputFile)
+	err = sendFile(token, address, inputFileUuid, inputFile, skipTlsVerification)
 	if err != nil {
 		return "", err
 	}
 
-	err = sendFile(token, address, labelFileUuid, labelFile)
+	err = sendFile(token, address, labelFileUuid, labelFile, skipTlsVerification)
 	if err != nil {
 		return "", err
 	}
@@ -281,7 +290,7 @@ func UploadCsvFiles(address, token, name, inputFilePath string, skipTlsVerificat
 	inputFileUuid := datasetInfo["uuid_input_file"].(string)
 
 	// send data
-	err = sendFile(token, address, inputFileUuid, inputFile)
+	err = sendFile(token, address, inputFileUuid, inputFile, skipTlsVerification)
 	if err != nil {
 		return "", err
 	}
