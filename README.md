@@ -25,7 +25,7 @@ resource-consumption for big amounts of inputs and users.
 
 ## Supported Environment
 
-| Backend                                       | Python-SDK                                | Deployment                                          |
+| Backend                                       | SDK                                | Deployment                                          |
 | ------------------------------------------------------------- | ------------------------------------------- | --------------------------------------------------- |
 | [![ubuntu-2204_clang-13][img_ubuntu-2204_clang-13]][Workflow] | [![python-3_9][img_python-3_9]][Workflow]   | [![kubernetes-1_26][img_kubernetes-1_26]][Workflow] |
 | [![ubuntu-2204_clang-14][img_ubuntu-2204_clang-14]][Workflow] | [![python-3_10][img_python-3_10]][Workflow] | [![kubernetes-1_27][img_kubernetes-1_27]][Workflow] |
@@ -212,7 +212,7 @@ resource-consumption for big amounts of inputs and users.
 
 ## Known disadvantages
 
-The concept is not perfekt and also has some disadvantages, which are the result of the architecture
+The concept is not perfect and also has some disadvantages, which are the result of the architecture
 itself:
 
 -   Very inefficient for binary input, where inputs of single nodes of the network can only be 0 or
