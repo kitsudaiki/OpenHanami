@@ -93,11 +93,10 @@ Cluster::getUuid()
 }
 
 /**
- * @brief init the cluster
+ * @brief init new cluster
  *
- * @param parsedContent TODO
- * @param segmentTemplates TODO
- * @param uuid UUID of the new cluster
+ * @param clusterTemplate meta-data read from a cluster-template
+ * @param uuid uuid of the cluster
  *
  * @return true, if successful, else false
  */
@@ -153,36 +152,6 @@ Cluster::setClusterState(const std::string& newState)
     }
 
     return false;
-}
-
-void
-countSynapses(const Cluster& cluster)
-{
-    SynapseBlock* synapseBlocks
-        = Hanami::getItemData<SynapseBlock>(cluster.attachedHost->synapseBlocks);
-    uint64_t synapseCounter = 0;
-    uint64_t sectionCounter = 0;
-
-    for (const Hexagon& hexagon : cluster.hexagons) {
-        for (const ConnectionBlock& block : hexagon.connectionBlocks) {
-            SynapseBlock* synapseBlock = &synapseBlocks[block.targetSynapseBlockPos];
-            for (uint32_t i = 0; i < 64; i++) {
-                if (block.connections[i].origin.blockId != UNINIT_STATE_16) {
-                    sectionCounter++;
-                    for (uint32_t j = 0; j < 64; j++) {
-                        Synapse* synpase = &synapseBlock->sections[i].synapses[j];
-                        if (synpase->targetNeuronId != UNINIT_STATE_8) {
-                            synapseCounter++;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    std::cout << "section-counter: " << sectionCounter << std::endl;
-
-    std::cout << "synpase-counter: " << synapseCounter << std::endl;
 }
 
 /**

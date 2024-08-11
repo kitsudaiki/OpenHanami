@@ -43,7 +43,7 @@ TempFileHandler::~TempFileHandler() {}
  * @param userContext user-context for database-access
  * @param error reference for error-output
  *
- * @return true, if successful, else false
+ * @return OK if found, INVALID_INPUT if not found, ERROR in case of internal error
  */
 ReturnStatus
 TempFileHandler::initNewFile(std::string& uuid,

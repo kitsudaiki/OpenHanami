@@ -83,6 +83,7 @@ createNewSynapse(NeuronBlock* block,
  * @param sourceNeuron pointer to source-neuron, which had triggered the section
  * @param originLocation location of the source-neuron to mark updates
  * @param clusterSettings pointer to cluster-settings
+ * @param inputConnected true, if source-neuron belongs to an input-hexagon
  * @param randomSeed reference to the current seed of the randomizer
  */
 template <bool doTrain>

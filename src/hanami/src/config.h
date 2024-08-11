@@ -69,6 +69,7 @@ registerConfigs()
 
     // processing-section
     const std::string processingGroup = "processing";
+
     REGISTER_FLOAT_CONFIG(processingGroup, "use_of_free_memory")
         .setComment(
             "Define the percentage allcating free memory on the host (example: 0.5 = 50%). "

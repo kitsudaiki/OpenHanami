@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_LANG_BLOSSOM_H
-#define HANAMI_LANG_BLOSSOM_H
+#ifndef HANAMI_BLOSSOM_H
+#define HANAMI_BLOSSOM_H
 
 #include <hanami_common/functions/time_functions.h>
 #include <hanami_common/logger.h>
@@ -194,4 +194,4 @@ class Blossom
     void createError(const BlossomIO& blossomIO, Hanami::ErrorContainer& error);
 };
 
-#endif  // HANAMI_LANG_BLOSSOM_H
+#endif  // HANAMI_BLOSSOM_H

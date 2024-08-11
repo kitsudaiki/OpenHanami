@@ -16,7 +16,6 @@ add_library(hanami_cluster_parser STATIC
 target_include_directories(hanami_cluster_parser PUBLIC
     include/
     src/
-    ../../third-party-libs/json/include
     ../hanami_common/include
 )
 

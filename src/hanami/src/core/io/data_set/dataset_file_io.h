@@ -103,7 +103,7 @@ struct DataSetHeader {
     const char typeIdentifier[8] = "hanami";
     const char fileIdentifier[32] = "data-set";
     const char version[8] = "v1";
-    const char minorVersion[8] = "alpha";
+    const char minorVersion[8] = "0alpha";
 
     DataSetType dataType = UNDEFINED_TYPE;
     uint8_t typeSize = 1;

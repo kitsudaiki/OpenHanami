@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef TORIIGATEWAY_HTTP_SERVER_H
-#define TORIIGATEWAY_HTTP_SERVER_H
+#ifndef HANAMI_HTTP_SERVER_H
+#define HANAMI_HTTP_SERVER_H
 
 #include <hanami_common/logger.h>
 #include <hanami_common/threading/thread.h>
@@ -65,4 +65,4 @@ class HttpServer : public Hanami::Thread
     std::mutex m_queueMutex;
 };
 
-#endif  // TORIIGATEWAY_HTTP_SERVER_H
+#endif  // HANAMI_HTTP_SERVER_H

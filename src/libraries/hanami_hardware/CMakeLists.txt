@@ -28,7 +28,6 @@ target_include_directories(hanami_hardware PUBLIC
     src/
     ../hanami_common/include
     ../hanami_cpu/include
-    ../../third-party-libs/json/include
 )
 
 target_link_libraries(hanami_hardware PUBLIC

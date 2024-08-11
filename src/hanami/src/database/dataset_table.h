@@ -44,6 +44,7 @@ class DataSetTable : public HanamiSqlTable
         std::string visibility = "";
         std::string name = "";
         std::string location = "";
+        std::string createdAt = "";
     };
 
     ~DataSetTable();

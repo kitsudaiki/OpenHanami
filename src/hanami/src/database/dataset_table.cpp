@@ -104,6 +104,7 @@ DataSetTable::getDataSet(DataSetDbEntry& result,
     result.uuid = jsonRet["uuid"];
     result.visibility = jsonRet["visibility"];
     result.location = jsonRet["location"];
+    result.createdAt = jsonRet["created_at"];
 
     return OK;
 }

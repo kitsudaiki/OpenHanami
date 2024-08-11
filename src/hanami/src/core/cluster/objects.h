@@ -39,7 +39,6 @@ class Cluster;
 // const predefined values
 #define UNINIT_STATE_64 0xFFFFFFFFFFFFFFFF
 #define UNINIT_STATE_32 0xFFFFFFFF
-#define UNINIT_STATE_24 0xFFFFFF
 #define UNINIT_STATE_16 0xFFFF
 #define UNINIT_STATE_8 0xFF
 
@@ -311,7 +310,6 @@ struct CudaClusterPointer {
 //==================================================================================================
 
 struct HexagonHeader {
-   public:
     uint32_t hexagonId = UNINIT_STATE_32;
     bool isInputHexagon = false;
     bool isOutputHexagon = false;
@@ -345,9 +343,7 @@ static_assert(sizeof(HexagonHeader) == 32);
 
 //==================================================================================================
 
-class Hexagon
-{
-   public:
+struct Hexagon {
     HexagonHeader header;
 
     Cluster* cluster = nullptr;

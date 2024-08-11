@@ -16,7 +16,6 @@ add_library(hanami_policies STATIC
 target_include_directories(hanami_policies PUBLIC
     include/
     src/
-    ../../third-party-libs/json/include
     ../hanami_common/include
 )
 

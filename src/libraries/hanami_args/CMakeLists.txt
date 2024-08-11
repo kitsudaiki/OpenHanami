@@ -13,7 +13,6 @@ target_include_directories(hanami_args PUBLIC
     include/
     src/
     ../hanami_common/include
-    ../../third-party-libs/json/include
 )
 
 target_link_libraries(hanami_args PUBLIC

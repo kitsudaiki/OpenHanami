@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef TORIIGATEWAY_STRING_FUNCTIONS_H
-#define TORIIGATEWAY_STRING_FUNCTIONS_H
+#ifndef HANAMI_STRING_FUNCTIONS_H
+#define HANAMI_STRING_FUNCTIONS_H
 
 #include <api/endpoint_processing/blossom.h>
 #include <hanami_common/functions/string_functions.h>
@@ -154,4 +154,4 @@ cutPath(std::string& path, const std::string& cut)
     return false;
 }
 
-#endif  // TORIIGATEWAY_STRING_FUNCTIONS_H
+#endif  // HANAMI_STRING_FUNCTIONS_H

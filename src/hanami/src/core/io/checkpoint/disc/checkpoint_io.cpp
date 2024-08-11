@@ -34,7 +34,7 @@ struct CheckpointHeader {
     const char typeIdentifier[8] = "hanami";
     const char fileIdentifier[32] = "checkpoint";
     const char version[8] = "v1";
-    const char minorVersion[8] = "alpha";
+    const char minorVersion[8] = "0alpha";
 
     uint8_t padding1[4040];
 };

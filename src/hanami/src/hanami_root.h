@@ -25,6 +25,7 @@
 
 #include <cryptopp/secblock.h>
 #include <hanami_common/buffer/item_buffer.h>
+#include <hanami_common/logger.h>
 
 class WebSocketServer;
 class HttpServer;
