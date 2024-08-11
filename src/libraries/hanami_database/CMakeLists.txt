@@ -16,7 +16,6 @@ target_include_directories(hanami_database PUBLIC
     src/
     ../hanami_common/include
     ../hanami_sqlite/include
-    ../../third-party-libs/json/include
 )
 
 target_link_libraries(hanami_database PUBLIC

@@ -2,7 +2,8 @@
 
 ![GitHub release](https://img.shields.io/github/v/release/kitsudaiki/Hanami?include_prereleases&label=Version&style=flat-square)
 ![GitHub](https://img.shields.io/github/license/kitsudaiki/Hanami?style=flat-square)
-![Platform](https://img.shields.io/badge/Platform-Linux--x64|arm64-lightgrey?style=flat-square)
+![Platform](https://img.shields.io/badge/Platform-Linux-blue?style=flat-square)
+![Architecture](https://img.shields.io/badge/Architecture-amd64%20%2B%20arm64-blue?style=flat-square)
 
 [![Github workflow status](https://img.shields.io/github/actions/workflow/status/kitsudaiki/Hanami/build_test.yml?branch=develop&style=flat-square&label=Build%20and%20Test)](https://github.com/kitsudaiki/Hanami/actions/workflows/build_test.yml)
 [![CodeQL](https://img.shields.io/github/actions/workflow/status/kitsudaiki/Hanami/codeql.yml?branch=develop&style=flat-square&label=CodeQL)](https://github.com/kitsudaiki/Hanami/actions/workflows/codeql.yml)
@@ -12,137 +13,140 @@
   <img src="assets/hanami-logo-with-text.png" width="500" height="594" />
 </p>
 
-# **IMPORTANT: This project is still an experimental prototype and NOT ready for any productive usage.** 
+# **IMPORTANT: This project is still an experimental prototype and NOT ready for any productive usage. There are still many missing tests, input-validations and so on. Beside this there is also still quite a lot of evaluation and improving of the current features necessary.**
 
 ## Intro
 
-Hanami contains in its core a custom concept for neural networks, which are very flexible in their behavior and structure, which is packed in an as-a-Service backend. The backend is completely written from scratch in C++.
+Hanami contains an experimental artificial neural network, which can work on unnormalized
+input-data, like sensor measurement data. It provides an as-a-Service architecture within a cloud
+native environment and multi-tenancy. The goal behind Hanami is not to get a higher accuracy than classical neural
+networks like Tensorflow, but to be more flexible and easier to use and more efficient in
+resource-consumption for big amounts of inputs and users.
 
 ## Supported Environment
 
-| C++ Compiler (Hanami) | Python (SDK) | Kubernetes (Rollout)
-| --- | --- | --- |
-| [![ubuntu-2204_clang-13][img_ubuntu-2204_clang-13]][Workflow] | [![python-3_9][img_python-3_9]][Workflow] | [![kubernetes-1_26][img_kubernetes-1_26]][Workflow] |
+| Backend                                       | Python-SDK                                | Deployment                                          |
+| ------------------------------------------------------------- | ------------------------------------------- | --------------------------------------------------- |
+| [![ubuntu-2204_clang-13][img_ubuntu-2204_clang-13]][Workflow] | [![python-3_9][img_python-3_9]][Workflow]   | [![kubernetes-1_26][img_kubernetes-1_26]][Workflow] |
 | [![ubuntu-2204_clang-14][img_ubuntu-2204_clang-14]][Workflow] | [![python-3_10][img_python-3_10]][Workflow] | [![kubernetes-1_27][img_kubernetes-1_27]][Workflow] |
 | [![ubuntu-2204_clang-15][img_ubuntu-2204_clang-15]][Workflow] | [![python-3_11][img_python-3_11]][Workflow] | [![kubernetes-1_28][img_kubernetes-1_28]][Workflow] |
 | [![ubuntu-2404_clang-15][img_ubuntu-2404_clang-15]][Workflow] | [![python-3_12][img_python-3_12]][Workflow] | [![kubernetes-1_29][img_kubernetes-1_29]][Workflow] |
-| [![ubuntu-2404_clang-16][img_ubuntu-2404_clang-16]][Workflow] |   | [![kubernetes-1_30][img_kubernetes-1_30]][Workflow] |
-| [![ubuntu-2404_clang-17][img_ubuntu-2404_clang-17]][Workflow] |   |   |
-| [![ubuntu-2404_clang-18][img_ubuntu-2404_clang-18]][Workflow] |   |   |
-| [![ubuntu-2204_gcc-10][img_ubuntu-2204_gcc-10]][Workflow] |   |   |
-| [![ubuntu-2204_gcc-11][img_ubuntu-2204_gcc-11]][Workflow] |   |   |
-| [![ubuntu-2204_gcc-12][img_ubuntu-2204_gcc-12]][Workflow] |   |   |
-| [![ubuntu-2404_gcc-12][img_ubuntu-2404_gcc-12]][Workflow] |   |   |
-| [![ubuntu-2404_gcc-13][img_ubuntu-2404_gcc-13]][Workflow] |   |   |
-| [![ubuntu-2404_gcc-14][img_ubuntu-2404_gcc-14]][Workflow] |   |   |
+| [![ubuntu-2404_clang-16][img_ubuntu-2404_clang-16]][Workflow] |                                             | [![kubernetes-1_30][img_kubernetes-1_30]][Workflow] |
+| [![ubuntu-2404_clang-17][img_ubuntu-2404_clang-17]][Workflow] |                                             |                                                     |
+| [![ubuntu-2404_clang-18][img_ubuntu-2404_clang-18]][Workflow] |                                             |                                                     |
+| [![ubuntu-2204_gcc-10][img_ubuntu-2204_gcc-10]][Workflow]     |                                             |                                                     |
+| [![ubuntu-2204_gcc-11][img_ubuntu-2204_gcc-11]][Workflow]     |                                             |                                                     |
+| [![ubuntu-2204_gcc-12][img_ubuntu-2204_gcc-12]][Workflow]     |                                             |                                                     |
+| [![ubuntu-2404_gcc-12][img_ubuntu-2404_gcc-12]][Workflow]     |                                             |                                                     |
+| [![ubuntu-2404_gcc-13][img_ubuntu-2404_gcc-13]][Workflow]     |                                             |                                                     |
+| [![ubuntu-2404_gcc-14][img_ubuntu-2404_gcc-14]][Workflow]     |                                             |                                                     |
 
-
-[img_ubuntu-2204_clang-13]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2204_clang-13/shields.json&style=flat-square
-[img_ubuntu-2204_clang-14]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2204_clang-14/shields.json&style=flat-square
-[img_ubuntu-2204_clang-15]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2204_clang-15/shields.json&style=flat-square
-[img_ubuntu-2404_clang-15]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2404_clang-15/shields.json&style=flat-square
-[img_ubuntu-2404_clang-16]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2404_clang-16/shields.json&style=flat-square
-[img_ubuntu-2404_clang-17]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2404_clang-17/shields.json&style=flat-square
-[img_ubuntu-2404_clang-18]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2404_clang-18/shields.json&style=flat-square
-[img_ubuntu-2204_gcc-10]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2204_gcc-10/shields.json&style=flat-square
-[img_ubuntu-2204_gcc-11]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2204_gcc-11/shields.json&style=flat-square
-[img_ubuntu-2204_gcc-12]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2204_gcc-12/shields.json&style=flat-square
-[img_ubuntu-2404_gcc-12]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2404_gcc-12/shields.json&style=flat-square
-[img_ubuntu-2404_gcc-13]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2404_gcc-13/shields.json&style=flat-square
-[img_ubuntu-2404_gcc-14]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2404_gcc-14/shields.json&style=flat-square
-
-[img_python-3_9]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/python_version/python-3_9/shields.json&style=flat-square
-[img_python-3_10]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/python_version/python-3_10/shields.json&style=flat-square
-[img_python-3_11]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/python_version/python-3_11/shields.json&style=flat-square
-[img_python-3_12]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/python_version/python-3_12/shields.json&style=flat-square
-
-[img_kubernetes-1_26]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/kubernetes_version/kubernetes-1_26/shields.json&style=flat-square
-[img_kubernetes-1_27]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/kubernetes_version/kubernetes-1_27/shields.json&style=flat-square
-[img_kubernetes-1_28]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/kubernetes_version/kubernetes-1_28/shields.json&style=flat-square
-[img_kubernetes-1_29]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/kubernetes_version/kubernetes-1_29/shields.json&style=flat-square
-[img_kubernetes-1_30]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/kubernetes_version/kubernetes-1_30/shields.json&style=flat-square
-
-[Workflow]: https://github.com/kitsudaiki/Hanami/actions/workflows/build_test.yml 
-
-
-
-## Initial goal
-
-I started this project without a specific use-case in mind. The only goal was to create a neural network, which is much more dynamic, compared to other classical networks, in regard of learning behavior and structure. It should behave more like the human brain. So it was basically a private research project.
-But it also shouldn't be only a simple PoC. I also wanted a good performance, so I written it in C++, optimized the data-structure many time and added multi-threading.
-Mostly it was tested so far with the MNIST-test, because this is the Hello-world of neural networks, but also other little constructed examples.
-
-Despite the missing goal of the concept, this entire project was and still is a very good base for me to improve my developer skills and learn new technologies.
-
-## Current state of the project
-
-Like already written above, it is still a prototype. There are still many missing tests, input-validations, comments and so on. This project is currently only written by a single person beside a 40h/week job. 
+[img_ubuntu-2204_clang-13]:
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2204_clang-13/shields.json&style=flat-square
+[img_ubuntu-2204_clang-14]:
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2204_clang-14/shields.json&style=flat-square
+[img_ubuntu-2204_clang-15]:
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2204_clang-15/shields.json&style=flat-square
+[img_ubuntu-2404_clang-15]:
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2404_clang-15/shields.json&style=flat-square
+[img_ubuntu-2404_clang-16]:
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2404_clang-16/shields.json&style=flat-square
+[img_ubuntu-2404_clang-17]:
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2404_clang-17/shields.json&style=flat-square
+[img_ubuntu-2404_clang-18]:
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2404_clang-18/shields.json&style=flat-square
+[img_ubuntu-2204_gcc-10]:
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2204_gcc-10/shields.json&style=flat-square
+[img_ubuntu-2204_gcc-11]:
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2204_gcc-11/shields.json&style=flat-square
+[img_ubuntu-2204_gcc-12]:
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2204_gcc-12/shields.json&style=flat-square
+[img_ubuntu-2404_gcc-12]:
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2404_gcc-12/shields.json&style=flat-square
+[img_ubuntu-2404_gcc-13]:
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2404_gcc-13/shields.json&style=flat-square
+[img_ubuntu-2404_gcc-14]:
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2404_gcc-14/shields.json&style=flat-square
+[img_python-3_9]:
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/python_version/python-3_9/shields.json&style=flat-square
+[img_python-3_10]:
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/python_version/python-3_10/shields.json&style=flat-square
+[img_python-3_11]:
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/python_version/python-3_11/shields.json&style=flat-square
+[img_python-3_12]:
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/python_version/python-3_12/shields.json&style=flat-square
+[img_kubernetes-1_26]:
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/kubernetes_version/kubernetes-1_26/shields.json&style=flat-square
+[img_kubernetes-1_27]:
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/kubernetes_version/kubernetes-1_27/shields.json&style=flat-square
+[img_kubernetes-1_28]:
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/kubernetes_version/kubernetes-1_28/shields.json&style=flat-square
+[img_kubernetes-1_29]:
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/kubernetes_version/kubernetes-1_29/shields.json&style=flat-square
+[img_kubernetes-1_30]:
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/kubernetes_version/kubernetes-1_30/shields.json&style=flat-square
+[Workflow]: https://github.com/kitsudaiki/Hanami/actions/workflows/build_test.yml
 
 ## Current prototypically implemented features
 
-- **Growing neural network**:
+-   **Growing neural network**:
 
-    The neural network, which is the core of the project, growth over time while learning new things by creating new synapses to other nodes, if the input requires this. A resize of the network is also quite linear in complexity.
+    The neural network, which is the core of the project, growth over time while learning new things
+    by creating new synapses to other nodes, if the input requires this. A resize of the network is
+    also quite linear in complexity.
 
-- **Reduction-Process**
+-   **No normalization of input**
 
-    The concept of a growing network has the result, that there is basically nearly no limit in size, even if the growth-rate slows down over time. To limit the growth-rate even more, it is possible to enable a reduction-process, which removes synapses again, which were to inactive to reach the threshold to be marked as persistent.
+    The input of the network is not restricted to range of 0.0 - 1.0 . Every value, as long it is a
+    positive value, can be inserted. Also if there is a single broken value in the input-data, which
+    is million times higher, than the rest of the input-values, it has nearly no effect on the rest
+    of the already trained data. Thanks to the reduction-process, all synapses, which are only the
+    result of this single input, are removed again from the network.
 
-    See [measurement-examples](https://docs.hanami-ai.com/inner_workings/measurements/measurements/#reduction_1)
+-   **Parallelism**
 
-- **No normalization of input**
+    The processing structure works also for multiple threads, which can work at the same time on the
+    same network. (GPU-support with CUDA is disabled at the moment for various reasons).
 
-    The input of the network is not restricted to range of 0.0 - 1.0 . Every value, as long it is a positive value, can be inserted. Also if there is a single broken value in the input-data, which is million times higher, than the rest of the input-values, it has nearly no effect on the rest of the already trained data. Thanks to the reduction-process, all synapses, which are only the result of this single input, are removed again from the network.
+-   **Usable performance**
 
-- **Spiking neural network**
+    The 60.000 training pictures of the MNIST handwritten letters can be trained on CPU in about 3
+    seconds for the first epoch, without any batch-processing of the input-data and results in an
+    accuracy of 93-94 % after this time.
 
-    The concept also supports a special version of working as a spiking neural network. This is optional for a created network and basically has the result, that an input is impaced by an older input, based on the time how long ago this input happened.
+-   **Generated OpenAPI-Documentation**
 
-    See [short explanation](https://docs.hanami-ai.com/inner_workings/core/core/#spiking-neural-network) and  [measurement-examples](https://docs.hanami-ai.com/inner_workings/measurements/measurements)
-
-- **No strict layer structure**
-
-    The base of a new neural network is defined by a cluster-template. In these templates the structure of the network in planed in hexagons, indeed of layer. When a node tries to create a new synapse, the location of the target-node depends on the location of the source-node within these hexagons. The target is random and the probability depends on the distance to the source. This way it is possible to break the static layer structure. 
-    But when defining a line of hexagons and allow nodes only to connect to the nodes of the next hexagon, a classical layer-structure can still be enforced. 
-
-    See [short explanation](https://docs.hanami-ai.com/inner_workings/core/core/#no-strict-layer-structure) and  [measurement-examples](https://docs.hanami-ai.com/inner_workings/measurements/measurements)
-
-- **3-dimensional networks**
-
-    It is basically possible to define 3-dimensional networks. This was only added, because the human brain is also a 3D-object. This feature exist in the [cluster-templates](https://docs.hanami-ai.com/frontend/cluster_templates/cluster_template/), but was never tested until now. Maybe in bigger tests in the future this feature could become useful to better mix information with each other. 
-
-- **Parallelism**
-
-    The processing structure works also for multiple threads, which can work at the same time on the same network. (GPU-support with cuda is disabled at the moment for various reasons). 
-<!--     For the gpu only CUDA is supported at the moment. With the next version it is also planned to port the CUDA-kernel to OpenCL. OpenCL was already supported in the past, but in the recent developing-process replaced by CUDA, because it was easier to keep up-to-date with the fast changing data-structures, than OpenCL. -->
-
-- **Usable performance**
-
-    The 60.000 training pictures of the MNIST handwritten letters can be trained on CPU in about 4 seconds for the first epoch, without any batch-processing of the input-data and results in an accuracy of 93-94 % after this time.
-
-- **Generated OpenAPI-Documentation**
-
-    The OpenAPI-documentation is generated directly from the code. So changing the settings of a single endpoint in the code automatically results in changes of the resulting documentation, to make sure, that code and documentation are in sync.
+    The OpenAPI-documentation is generated directly from the code. So changing the settings of a
+    single endpoint in the code automatically results in changes of the resulting documentation, to
+    make sure, that code and documentation are in sync.
 
     See [OpenAPI-docu](https://docs.hanami-ai.com/frontend/rest_api_documentation/)
 
-- **Multi-user and multi-project**
+-   **Multi-user and multi-project**
 
-    The projects supports multiple user and multiple projects with different roles (member, project-admin and admin) and also managing the access to single api-endpoints via policy-file. Each user can login by username and password and gets an JWT-token to access the user- and project-specific resources.
+    The projects supports multiple user and multiple projects with different roles (member,
+    project-admin and admin) and also managing the access to single api-endpoints via policy-file.
+    Each user can login by username and password and gets an JWT-token to access the user- and
+    project-specific resources.
 
     See [Authentication-docu](https://docs.hanami-ai.com/inner_workings/user_and_projects/)
 
-- **Efficient resource-usage**
+-   **Efficient resource-usage**
 
-    1. The concept of the neural network results in the effect, that only necessary synapses of an active node of the network is processed, based on the input. So if only very few input-nodes get data pushed in, there is less processing-time necessary to process the network. 
+    1. The concept of the neural network results in the effect, that only necessary synapses of an
+       active node of the network is processed, based on the input. So if only very few input-nodes
+       get data pushed in, there is less processing-time necessary to process the network.
 
-    2. Because of the multi-user support, multiple networks of multiple users can be processed on the same physical host and share the RAM, CPU-cores and even the GPU, without spliting them via virtual machines or vCPUs.
+    2. Because of the multi-user support, multiple networks of multiple users can be processed on
+       the same physical host and share the RAM, CPU-cores and even the GPU, without splitting them
+       via virtual machines or vCPUs.
 
-    3. Capability to regulate the cpu-frequence and measure power-consumption. (disabled currently)
+    3. Capability to regulate the cpu-frequencey and measure power-consumption. (disabled currently)
 
-        See [Monitoring-docu](https://docs.hanami-ai.com/inner_workings/monitoring/monitoring/#controlling-cpu-frequency)
+        See
+        [Monitoring-docu](https://docs.hanami-ai.com/inner_workings/monitoring/monitoring/#controlling-cpu-frequency)
 
-- **Network-input**
+-   **Network-input**
 
     There are 2-variants, how it interact with the neural networks:
 
@@ -150,144 +154,135 @@ Like already written above, it is still a prototype. There are still many missin
 
         See [OpenAPI-docu](https://docs.hanami-ai.com/frontend/rest_api_documentation/)
 
-    2. Directly communicate with the neural network via websocket. In this case not a whole dataset is push through the synapse, but instead only a single network-input is send. The call is blocking, until the network returns the output, which gives more control.
+    2. Directly communicate with the neural network via websocket. In this case not a whole dataset
+       is push through the synapse, but instead only a single network-input is send. The call is
+       blocking, until the network returns the output, which gives more control.
 
         See [Websocket-docu](https://docs.hanami-ai.com/frontend/websockets/websocket_workflow/)
 
-- **Remote-connection**
-
-    1. SDK (Python, Go, Javascript)
-
-        The SDK for the project was implemented in Python, Go and Javascript. Most the the endpoints are covered by all 3 of them. The one with the most features is the Python-version. It is also the only one with the feature of direct communication with the network and is also the one used by the test-script, which tests all important endpoints.
-
-        See [SDK-docu](https://docs.hanami-ai.com/frontend/sdk_library/)
-
-    2. CLI (Go)
-
-        A first basic CLI-client also exist, which supports most the endpoints and is written in Go. In my opinion Go is really good for this, because of its standard library and because the binary are mostly statically linked, which results in less dependencies on the host, where it should be executed. Also I wanted to get some pracitcal experience to learn Go. The client uses the Go-version of the SDK.
-
-        See [CLI-docu](https://docs.hanami-ai.com/frontend/cli_client/)
-
-    3. Dashboard (HTML + Javascript + CSS)
-
-        As a PoC a first dashboard was created, without any framework. At the moment it is not really maintained, because of a lack of available time and uses the Javascript-version of the SDK. The main motivation for thsi dashboard was to learn basics of web-development and because a visual output simply looks better for showing this project to someone.
-
-        See [Dashboard-docu](https://docs.hanami-ai.com/frontend/dashboard/dashboard/)
-
-- **Installation on Kubernetes and with Ansible**
+-   **Installation on Kubernetes and with Ansible**
 
     The backend can be basically deployed on kubernetes via Helm-chart or plain via Ansible.
 
     See [Installation-docu](https://docs.hanami-ai.com/backend/installation/)
 
-## Known disadvantages (so far)
+## Further experimental features
 
-- Very inefficient for binary input, where inputs of single nodes of the network can only be 0 or 1, without values in between
+-   **No strict layer structure**
 
-- A single synapse needs more memory than in a classical network. The hope is, in bigger tests, it becomes much more efficient compared to fully meshed layered networks.
+    The base of a new neural network is defined by a cluster-template. In these templates the
+    structure of the network in planed in hexagons, indeed of layer. When a node tries to create a
+    new synapse, the location of the target-node depends on the location of the source-node within
+    these hexagons. The target is random and the probability depends on the distance to the source.
+    This way it is possible to break the static layer structure. But when defining a line of
+    hexagons and allow nodes only to connect to the nodes of the next hexagon, a classical
+    layer-structure can still be enforced.
 
-- few inputs, but many outputs brings bad results. There ideas, hob to fix this issue, but these are not implemented and tested, if they are a good fix for this issue.
+    See
+    [short explanation](https://docs.hanami-ai.com/inner_workings/core/core/#no-strict-layer-structure)
+    and [measurement-examples](https://docs.hanami-ai.com/inner_workings/measurements/measurements)
 
-## Possible use-case (maybe)
+-   **Reduction-Process**
 
-Because the normalization of input is not necessary, together with the good performance of training single inputs (based on the benchmark) and the direct interaction remotely over websockets, could make this project useful for processing measurement-data of sensors of different machines, especially for new sensors, where the exact maximum output-values are unknown. So continuous training of the network right from the beginning would be possible, without collecting a bunch of data at first.
+    The concept of a growing network has the result, that there is basically nearly no limit in
+    size, even if the growth-rate slows down over time. To limit the growth-rate even more, it is
+    possible to enable a reduction-process, which removes synapses again, which were to inactive to
+    reach the threshold to be marked as persistent.
 
-## Summary important links
+    See
+    [measurement-examples](https://docs.hanami-ai.com/inner_workings/measurements/measurements/#reduction_1)
 
-https://docs.hanami-ai.com
+-   **Spiking neural network**
 
-- [Development-Guide](https://docs.hanami-ai.com/backend/development/)
+    The concept also supports a special version of working as a spiking neural network. This is
+    optional for a created network and basically has the result, that an input is impacted by an
+    older input, based on the time how long ago this input happened.
 
-- [Automatic generated OpenAPI documentation](https://docs.hanami-ai.com/frontend/rest_api_documentation/)
+    See
+    [short explanation](https://docs.hanami-ai.com/inner_workings/core/core/#spiking-neural-network)
+    and [measurement-examples](https://docs.hanami-ai.com/inner_workings/measurements/measurements)
 
-- [SDK documentation](https://docs.hanami-ai.com/frontend/sdk_library/)
+-   **3-dimensional networks**
 
-- [Installation-Guide](https://docs.hanami-ai.com/backend/installation/)
+    It is basically possible to define 3-dimensional networks. This was only added, because the
+    human brain is also a 3D-object. This feature exist in the
+    [cluster-templates](https://docs.hanami-ai.com/frontend/cluster_templates/cluster_template/),
+    but was never tested until now. Maybe in bigger tests in the future this feature could become
+    useful to better mix information with each other.
 
-- [Dependency-Overview](https://docs.hanami-ai.com/other/dependencies/)
+## Known disadvantages
 
-If you need help to setup things, have a question or something like this, feel free to contact me by eMail or use the `Question`-template in the issues.
+The concept is not perfekt and also has some disadvantages, which are the result of the architecture
+itself:
 
-## Issue-Overview
+-   Very inefficient for binary input, where inputs of single nodes of the network can only be 0 or
+    1, without values in between
 
-[Hanami-Project](https://github.com/users/kitsudaiki/projects/9/views/4)
+-   A single synapse needs more memory than in a classical network. The hope is, in bigger tests, it
+    becomes much more efficient compared to fully meshed layered networks.
 
-## This repository
+## Getting started
 
-**Required packages for development:**
+-   [Example-Workflow](https://docs.hanami-ai.com/frontend/example_workflow/)
 
-```
-sudo apt-get install -y git ssh gcc g++ clang-15 clang-format-15 make cmake bison flex libssl-dev libcrypto++-dev libboost-dev uuid-dev  libsqlite3-dev protobuf-compiler
-```
+-   [Installation-Guide](https://docs.hanami-ai.com/backend/installation/)
 
-**Clone repo with:**
+-   [SDK and CLI documentation](https://docs.hanami-ai.com/frontend/cli_sdk_docu/)
 
-```
-git clone --recurse-submodules https://github.com/kitsudaiki/Hanami.git
-cd Hanami
+-   [Automatic generated OpenAPI documentation](https://docs.hanami-ai.com/frontend/rest_api_documentation/)
 
-# load pre-commit hook
-git config core.hooksPath .git-hooks
-```
+## Development
 
-**In case the repo was cloned without submodules initially:**
+-   [How to build](https://docs.hanami-ai.com/repo/build_guide/)
 
-```
-git submodule init
-git submodule update --recursive
-```
+-   [Development-Guide](https://docs.hanami-ai.com/repo/development/)
 
-**Mkdocs and plugins:**
+-   [Contributing guide](https://github.com/kitsudaiki/Hanami/blob/develop/CONTRIBUTING.md)
 
-```
-pip3 install mkdocs-material mkdocs-swagger-ui-tag mkdocs-drawio-exporter
-```
+-   [Dependency-Overview](https://docs.hanami-ai.com/repo/dependencies/)
 
-(to build the documentation `Draw.io` also has to be installed on the system)
+## Pre-build objects
 
-## Build
+All objects are automatically build and uploaded by the
+[CI-pipeline](https://github.com/kitsudaiki/Hanami/actions/workflows/build_test.yml) for each merge
+on `develop`-branch and for each tag.
 
-For the build of the docker-images, [earthly](https://github.com/earthly/earthly) is used.
+-   [Docker-images](https://hub.docker.com/repository/docker/kitsudaiki/hanami/tags)
 
-### Build Hanami
+-   [client, SDK and helm-chart](https://files.hanami-ai.com/)
 
-The code can be build as image like this:
+## Currently disabled features
 
-```
-earthly +image --image_name=<DOCKER_IMAGE_NAME>
-```
+There are some features, which existed in the past, were disabled temporary and will be
+added/enabled again in the near future:
 
-Example:
+1. Dashboard
 
-```
-earthly +image --image_name=hanami:test
-```
+    As a PoC a first dashboard was created, without any framework. It is planned to refactor this
+    old version in `v0.9.0` and re-write it again with Typescript and some additional frameworks.
+    Until then, it is temporary disabled, because it would current cost too much time to keep this
+    unused and prototypical version up-to-data. As reference see the example-workflow of the
+    PoC-dashboard: [Dashboard-docu](https://docs.hanami-ai.com/frontend/dashboard/dashboard/)
 
-### Build Hanami-docs
+2. Regulation of CPU-speed
 
-The documenation can be build as image like this:
+    Also in older version there also was the function available to regulate the speed of the CPU
+    based on the workload. The dashboard was used to visualize the CPU metrics like the speed. Since
+    the dashboard was disabled, there is at the moment not feedback available, so for usability
+    reasons the feature was not further maintained and disabled for now. It is planned again for
+    version `v0.8.0`.
 
-```
-earthly +docs --image_name=<DOCKER_IMAGE_NAME>
-```
+3. GPU-support
 
-Example:
+    There already were some attempts in the past to add GPU-support with CUDA and OpenCL in the
+    past. Some version like 0.4.0 also had a working version implemented. The problem was
+    disappointing performance and some restrictions for the CPU-version too. There will be some
+    further attempts in the future, to fix this issue and bring GPU support back into the project,
+    but because there is no definite solution now, it is unknown when this happens.
 
-```
-earthly +docs --image_name=hanami_docs:test
-```
+## Roadmap
 
-The documentation listen on port 8000 within the docker-container. So the port has to be forwarded into the container:
-
-```
-docker run -p 127.0.0.1:8080:8000 hanami_docs:test
-```
-
-After this within the browser the addess `127.0.0.1:8080` can be entered to call the documenation within the browser.
-
-## Contributing
-
-If you want to help the project by contributing things, you can check the [Contributing guide](https://github.com/kitsudaiki/Hanami/blob/develop/CONTRIBUTING.md).
+see [Roadmap](https://github.com/kitsudaiki/Hanami/blob/develop/ROADMAP.md)
 
 ## Author
 
@@ -297,4 +292,5 @@ eMail: tobias.anker@kitsunemimi.moe
 
 ## License
 
-The complete project is under [Apache 2 license](https://github.com/kitsudaiki/Hanami/blob/develop/LICENSE).
+The complete project is under
+[Apache 2 license](https://github.com/kitsudaiki/Hanami/blob/develop/LICENSE).

@@ -1,13 +1,13 @@
 #!/bin/bash
 
-export HANAMI_ADDRESS=http://127.0.0.1:11418
-export HANAMI_USER=asdf
-export HANAMI_PW=asdfasdf
+# export HANAMI_ADDRESS=http://127.0.0.1:11418
+# export HANAMI_USER=asdf
+# export HANAMI_PW=asdfasdf
 
-export train_inputs=/tmp/train-images-idx3-ubyte
-export train_labels=/tmp/train-labels-idx1-ubyte
-export request_inputs=/tmp/t10k-images-idx3-ubyte
-export request_labels=/tmp/t10k-labels-idx1-ubyte
+# export train_inputs=/tmp/train-images-idx3-ubyte
+# export train_labels=/tmp/train-labels-idx1-ubyte
+# export request_inputs=/tmp/t10k-images-idx3-ubyte
+# export request_labels=/tmp/t10k-labels-idx1-ubyte
 
 
 # build protobuffer for go sdk
@@ -127,8 +127,6 @@ result_uuid=$(./hanamictl dataset list --insecure -j | jq -r '.body[] | select(.
 echo "Result-Dataset-UUID: $result_uuid"
 
 ./hanamictl dataset get --insecure $result_uuid
-
-./hanamictl dataset check --insecure -r $request_dataset_uuid $result_uuid
 
 ./hanamictl dataset check --insecure -r $request_dataset_uuid $result_uuid
 

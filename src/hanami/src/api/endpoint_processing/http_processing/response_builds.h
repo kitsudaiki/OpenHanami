@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef TORIIGATEWAY_RESPONSE_BUILDS_H
-#define TORIIGATEWAY_RESPONSE_BUILDS_H
+#ifndef HANAMI_RESPONSE_BUILDS_H
+#define HANAMI_RESPONSE_BUILDS_H
 
 #include <hanami_common/enums.h>
 #include <hanami_common/logger.h>
@@ -36,11 +36,6 @@ namespace http = beast::http;      // from <boost/beast/http.hpp>
 namespace net = boost::asio;       // from <boost/asio.hpp>
 using tcp = boost::asio::ip::tcp;  // from <boost/asio/ip/tcp.hpp>
 
-/**
- * @brief success_ResponseBuild
- * @param httpResp
- * @param message
- */
 bool
 success_ResponseBuild(http::response<http::dynamic_body>& httpResp, const std::string& message)
 {
@@ -50,11 +45,6 @@ success_ResponseBuild(http::response<http::dynamic_body>& httpResp, const std::s
     return true;
 }
 
-/**
- * @brief invalid_ResponseBuild
- * @param httpResp
- * @param message
- */
 bool
 invalid_ResponseBuild(http::response<http::dynamic_body>& httpResp, Hanami::ErrorContainer& error)
 {
@@ -64,11 +54,6 @@ invalid_ResponseBuild(http::response<http::dynamic_body>& httpResp, Hanami::Erro
     return false;
 }
 
-/**
- * @brief internalError_ResponseBuild
- * @param httpResp
- * @param message
- */
 bool
 internalError_ResponseBuild(http::response<http::dynamic_body>& httpResp,
                             const std::string& userId,
@@ -82,12 +67,6 @@ internalError_ResponseBuild(http::response<http::dynamic_body>& httpResp,
     return false;
 }
 
-/**
- * @brief genericError_ResponseBuild
- * @param httpResp
- * @param type
- * @param message
- */
 bool
 genericError_ResponseBuild(http::response<http::dynamic_body>& httpResp,
                            const HttpResponseTypes type,
@@ -99,4 +78,4 @@ genericError_ResponseBuild(http::response<http::dynamic_body>& httpResp,
     return false;
 }
 
-#endif  // TORIIGATEWAY_RESPONSE_BUILDS_H
+#endif  // HANAMI_RESPONSE_BUILDS_H

@@ -1,47 +1,103 @@
 # Changelog
 
-## [Unreleased]
+## v0.5.0
+
+**Release-Date**: 2024-08-11
 
 ### BREAKING-CHANGES
 
+#### API-breaking
+
+- tasks were updated to a more generic way
+- request-results were removed from the databases and api, because results are now also stored as data-sets again
+- renamed REST-API endpoints after removing the dashboard, because there is no separation between dashboard and commands anymore
+- added version-numbers to the REST-API endpoints
+
+#### Checkpoint-Breaking
+
 - number of neurons per brick now grows dynamically and doesn't have to be defined in the cluster-templates anymore
-- cluster-templates were modified
 - changed output-bricks to modifiy the size of the output-brick independently from the number of output-neurons
 - updated buffer in clusters to remove the old byte-arrays
 - new implementation for the checkpoints for the new data-structure of the clusters and for more and better error-handling
-- new implementation for the data-sets for a more generic handling of data and read-function to allow get specific sections from the data-set file
+- header of checkpoint-files was changed from 512 byte to 4096 byte to have more space for additional configs
+
+#### Dataset-Breaking
+
+- new implementation for the datasets for a more generic handling of data and read-function to allow get specific sections from the data-set file
+- header of dataset--files was changed from 512 byte to 4096 byte to have more space for additional configs
+
+#### Template-Breaking
+
+- cluster-templates were modified for the new dynamic neuron-allocation and the new output
+- renamed bricks into hexagons
+
+#### Database-Breaking
+
 - database-tables now have a `created_at`-timestamp for the entry
 - entries of the database-tables are now deleted anymore, but instead are only marked as deleted with a `deleted_at`-timestamp
-- request-results were removed from the databases and api, because results are now also stored as data-sets again
 
 ### Added
 
+- added base64-type database-entries to easier store and get more complex strings from the database
+- added documentation of the CLI-commands
+- added function to download content of datasets
+- added flag to the CLI to get every output as json-string
+- added flag to the CLI to disable the TLS-check, when necessary
 - database-tables now have proper functions to add and get structs from/to the database instead of only json-objects, which makes the code more explizit
+- added new approach for time-series for input-data of csv-files
 - added unit-tests for:
     - clusters
     - ckeckpoint create and restore
     - data-sets read and write
     - all database-tables
-- added base64-type database-entries to easier store and get more complex strings from the database
+- improved CI-pipeline:
+    - added commit-linter
+    - added check for binary executables within the commited code
+    - added secret-scan
+    - build, use and upload helm-package
+    - build, use and upload python-package of sdk
+    - build, use and upload client
+    - added CLI tests
+    - automatic versioning of python- and helm-package
+    - added compile-tests for different C++ compiler
+    - added sdk-api-test with different Python versions
+    - added integration-tests with different Kubernetes versions
+    - added CodeQL-check as additional workflow
+    - added OpenSSF-checks as additional workflow 
+- added dependabot-bot to repository
 
 ### Changed
 
+- datasets are now streamed internally and not fully loaded into the memory anymore, when creating a task, which is a massive reductions in the memory-consumption
 - the registration of new endpoints within the code were updated by removing old leftovers
 - the registration of new database-columns within the code were updated to look like the style of config-registrations and so on
 - internal handling of tasks was updated for cleaner code
 - endpoint to list projects of a user, were moved within the code
+- renamed src-subdirectory `Hanami` to `hanami` to be more consistent to the rest
+- split CUDA-kernel into multiple files
+- replace the json submodule by the apt-package
 
 ### Fixed
 
+- fixed build of ARM64 docker-images, where were completely broken...
+- fixed compiling of the C++ code under Ubuntu 24.04
 - fixed csv-upload in python-sdk-lib
+- fixed a value-limitation of 16bit, where it was not necessary
+- fixed multiple commands within the CLI while adding automatic tests to the CI-pipeline
+- fixed security-issues found by the new added CodeQL:
+    - tls-check in CLI is not disabled be default anymore
+    - fixed clear-text-logging of the password-input in the CLI
+    - fixed a range-check in a for-loop within the backend
 
 ### Removed
 
 - the `common`-directory in Hanami was removed and most of the functions were moved to the `hanami_common`-lib
+- disabled CUDA-kernel, because at the moment it doesn't brings a performance increasement, but only slows down the development (will be added in the future again, after finding a better use-case for the GPU)
+- disabled dashboard and moved it to the archive subdirectory (will be added in the future again, after a complete refactoring of the code)
+- removed old OpenCL-kernel
 
 
-
-## 0.4.1
+## v0.4.1
 
 **Release-Date**: 2024-03-25
 
@@ -52,7 +108,7 @@
     - added automatic build and push of amd64 and arm64 docker-images to docker hub
     - added automatic build and push for the documentation to docker hub
     - added SDK-API-Test
-    - added integration-tests for kubernetes- and ansible-setup with amd64 and arm64 docker-images
+    - added integration-tests for kubernetes- and ansible-setup with amd64 docker-images
     - added flake8 to lint python-code
     - added ansible-lint to lint ansible-code
 

@@ -4,11 +4,9 @@
 
     This documentation here is the archived version of the old readme-file of this library and is NOT up-to-date, but maybe it is still useful for some references.
 
-
 ## Description
 
 This library provides a simple interface for reading config files.
-
 
 ## Usage by example
 

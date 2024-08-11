@@ -7,7 +7,6 @@ add_executable(hanami_config_functional_tests
 target_include_directories(hanami_config_functional_tests PRIVATE
     ../../include/
     ../../src/
-    ../../../../third-party-libs/json/include
 )
 
 target_link_libraries(hanami_config_functional_tests PRIVATE

@@ -45,7 +45,7 @@ HttpProcessing::processRequest(http::request<http::string_body>& httpRequest,
     // build default-header for response
     httpResponse.version(httpRequest.version());
     httpResponse.keep_alive(false);
-    httpResponse.set(http::field::server, "ToriiGateway");
+    httpResponse.set(http::field::server, "Hanami");
     httpResponse.result(http::status::ok);
     httpResponse.set(http::field::content_type, "text/plain");
 

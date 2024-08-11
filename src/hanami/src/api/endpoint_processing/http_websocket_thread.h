@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef TORIIGATEWAY_HTTP_THREAD_H
-#define TORIIGATEWAY_HTTP_THREAD_H
+#ifndef HANAMI_HTTP_THREAD_H
+#define HANAMI_HTTP_THREAD_H
 
 #include <hanami_common/logger.h>
 #include <hanami_common/structs.h>
@@ -86,4 +86,4 @@ class HttpWebsocketThread : public Hanami::Thread
     bool m_clientInit = false;
 };
 
-#endif  // TORIIGATEWAY_HTTP_THREAD_H
+#endif  // HANAMI_HTTP_THREAD_H

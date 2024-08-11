@@ -41,7 +41,6 @@ add_executable(hanami_common_unit_tests
 target_include_directories(hanami_common_unit_tests PRIVATE
     ../../include/
     ../../src/
-    ../../../../third-party-libs/json/include
 )
 
 target_link_libraries(hanami_common_unit_tests PRIVATE

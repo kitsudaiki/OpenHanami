@@ -37,8 +37,6 @@
  * @brief backpropagate all neurons
  *
  * @param hexagon pointer to current hexagon
- * @param neuronBlocks pointer to neuron-blocks
- * @param synapseBlocks pointer to synapse-blocks
  * @param blockId id of the current block within the hexagon
  */
 inline void
@@ -70,7 +68,6 @@ backpropagateNeuron(Hexagon* hexagon, const uint32_t blockId)
  * @param connection current connection related to the synapse-section
  * @param targetTempBlock temp-value-block of the target neuron-block
  * @param sourceNeuron source-neuron, which triggered the section
- * @param sourceTempNeuron temp-balue block of the source-neuron
  */
 inline void
 backpropagateSection(SynapseSection* section,
@@ -111,7 +108,7 @@ backpropagateSection(SynapseSection* section,
  * @brief backpropagate connections
  *
  * @param hexagon pointer to current hexagon
- * @param neuronBlocks pointer to neuron-blocks
+ * @param hexagons pointer to list of all hexagons
  * @param synapseBlocks pointer to synapse-blocks
  * @param blockId id of the current block within the hexagon
  */

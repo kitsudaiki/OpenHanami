@@ -14,7 +14,6 @@ This example should show, how the parser is used and what is possible.
 
 HINT: The flags `--help` and `-h` for the help-output are hard coded and don't have to be set.
 
-
 ```cpp
 #include <hanami_args/arg_parser.h>
 #include <hanami_common/logger/logger.h>
@@ -63,7 +62,7 @@ int main(int argc, char *argv[])
 
     // parse incoming arguments
     bool ret = parser.parse(argc, argv, error);
-    if(ret == false) 
+    if(ret == false)
     {
         LOG_ERROR(error);
         return 1;
@@ -99,7 +98,8 @@ int main(int argc, char *argv[])
 
 ```
 
-If the tool would called `cli_test` the command `cli_test --help` would produce the following output:
+If the tool would called `cli_test` the command `cli_test --help` would produce the following
+output:
 
 ```
 command: cli_test [options] --source ... <mode> <destination>
@@ -132,7 +132,7 @@ Required:
 If this example is called with a string `asdf` for the flag `-i`, the error-message looks like this:
 
 ```
-ERROR: argument has the false type: 
+ERROR: argument has the false type:
     required type: number
     identifier: -i
     given value: asdf

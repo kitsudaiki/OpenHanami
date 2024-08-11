@@ -68,7 +68,6 @@ add_library(hanami_common STATIC
 include_directories(
     include/
     src/
-    ../../third-party-libs/json/include
 )
 
 if(run_tests)

@@ -7,9 +7,6 @@ project(hanami CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Setting the compiler
-# set(CMAKE_CXX_COMPILER "clang++-15")
-
 # Adding source files
 set(SOURCES
     src/api/endpoint_processing/blossom.h
@@ -216,35 +213,37 @@ add_executable(hanami
     # see https://github.com/kitsudaiki/Hanami/issues/377
     # ${CUDA_OUTPUT_OBJ}
 )
-add_executable(hanami_unittests
-    ${SOURCES}
-    tests/unit_tests/core/cluster_test.cpp
-    tests/unit_tests/core/cluster_test.h
-    tests/unit_tests/core/dataset_io_test.cpp
-    tests/unit_tests/core/dataset_io_test.h
-    tests/unit_tests/database/audit_log_table_test.cpp
-    tests/unit_tests/database/audit_log_table_test.h
-    tests/unit_tests/database/checkpoint_table_test.cpp
-    tests/unit_tests/database/checkpoint_table_test.h
-    tests/unit_tests/database/cluster_table_test.cpp
-    tests/unit_tests/database/cluster_table_test.h
-    tests/unit_tests/database/dataset_table_test.cpp
-    tests/unit_tests/database/dataset_table_test.h
-    tests/unit_tests/database/error_log_table_test.cpp
-    tests/unit_tests/database/error_log_table_test.h
-    tests/unit_tests/database/projects_table_test.cpp
-    tests/unit_tests/database/projects_table_test.h
-    tests/unit_tests/database/tempfile_table_test.cpp
-    tests/unit_tests/database/tempfile_table_test.h
-    tests/unit_tests/database/users_table_test.cpp
-    tests/unit_tests/database/users_table_test.h
-    tests/unit_tests/main.cpp
-    # see https://github.com/kitsudaiki/Hanami/issues/377
-    # ${CUDA_IO_OBJ}
-    # ${CUDA_PROCESSING_OBJ}
-    # ${CUDA_BACKPROPAGATION_OBJ}
-    # ${CUDA_REDUCTION_OBJ}
-)
+if(run_tests)
+    add_executable(hanami_unittests
+        ${SOURCES}
+        tests/unit_tests/core/cluster_test.cpp
+        tests/unit_tests/core/cluster_test.h
+        tests/unit_tests/core/dataset_io_test.cpp
+        tests/unit_tests/core/dataset_io_test.h
+        tests/unit_tests/database/audit_log_table_test.cpp
+        tests/unit_tests/database/audit_log_table_test.h
+        tests/unit_tests/database/checkpoint_table_test.cpp
+        tests/unit_tests/database/checkpoint_table_test.h
+        tests/unit_tests/database/cluster_table_test.cpp
+        tests/unit_tests/database/cluster_table_test.h
+        tests/unit_tests/database/dataset_table_test.cpp
+        tests/unit_tests/database/dataset_table_test.h
+        tests/unit_tests/database/error_log_table_test.cpp
+        tests/unit_tests/database/error_log_table_test.h
+        tests/unit_tests/database/projects_table_test.cpp
+        tests/unit_tests/database/projects_table_test.h
+        tests/unit_tests/database/tempfile_table_test.cpp
+        tests/unit_tests/database/tempfile_table_test.h
+        tests/unit_tests/database/users_table_test.cpp
+        tests/unit_tests/database/users_table_test.h
+        tests/unit_tests/main.cpp
+        # see https://github.com/kitsudaiki/Hanami/issues/377
+        # ${CUDA_IO_OBJ}
+        # ${CUDA_PROCESSING_OBJ}
+        # ${CUDA_BACKPROPAGATION_OBJ}
+        # ${CUDA_REDUCTION_OBJ}
+    )
+endif()
 
 # Including directories
 include_directories(
@@ -302,29 +301,31 @@ target_link_libraries(hanami
     Threads::Threads
     OpenSSL::SSL
 )
-target_link_libraries(hanami_unittests
-    hanami_cpu
-    hanami_hardware
-    hanami_common
-    hanami_ini
-    hanami_config
-    hanami_sqlite
-    hanami_database
-    hanami_crypto
-    hanami_args
-    hanami_policies
-    hanami_cluster_parser
-    ${SSL_LIB}
-    ${CRYPTO_LIB}
-    ${SQLITE3_LIB}
-    ${UUID_LIB}
-    # see https://github.com/kitsudaiki/Hanami/issues/377
-    # ${CUDA_LIB}
-    # ${CUDART_LIB}
-    ${PROTOBUF_LIB}
-    Threads::Threads
-    OpenSSL::SSL
-)
+if(run_tests)
+    target_link_libraries(hanami_unittests
+        hanami_cpu
+        hanami_hardware
+        hanami_common
+        hanami_ini
+        hanami_config
+        hanami_sqlite
+        hanami_database
+        hanami_crypto
+        hanami_args
+        hanami_policies
+        hanami_cluster_parser
+        ${SSL_LIB}
+        ${CRYPTO_LIB}
+        ${SQLITE3_LIB}
+        ${UUID_LIB}
+        # see https://github.com/kitsudaiki/Hanami/issues/377
+        # ${CUDA_LIB}
+        # ${CUDART_LIB}
+        ${PROTOBUF_LIB}
+        Threads::Threads
+        OpenSSL::SSL
+    )
+endif()
 
 # Set the path to your .proto file
 set(PROTO_FILE ../libraries/hanami_messages/protobuffers)
@@ -418,16 +419,18 @@ target_sources(hanami PRIVATE
     # ${CUDA_BACKPROPAGATION_OBJ}
     # ${CUDA_REDUCTION_OBJ}
 )
-# see https://github.com/kitsudaiki/Hanami/issues/377
-# add_dependencies(hanami_unittests compile_cuda_kernel)
-add_dependencies(hanami_unittests generate_protobuf_files)
-target_sources(hanami_unittests PRIVATE
-    ${PROTO_OUTPUT_HEADER}
-    ${PROTO_OUTPUT_SOURCE}
+if(run_tests)
     # see https://github.com/kitsudaiki/Hanami/issues/377
-    # ${CUDA_IO_OBJ}
-    # ${CUDA_PROCESSING_OBJ}
-    # ${CUDA_BACKPROPAGATION_OBJ}
-    # ${CUDA_REDUCTION_OBJ}
-)
+    # add_dependencies(hanami_unittests compile_cuda_kernel)
+    add_dependencies(hanami_unittests generate_protobuf_files)
+    target_sources(hanami_unittests PRIVATE
+        ${PROTO_OUTPUT_HEADER}
+        ${PROTO_OUTPUT_SOURCE}
+        # see https://github.com/kitsudaiki/Hanami/issues/377
+        # ${CUDA_IO_OBJ}
+        # ${CUDA_PROCESSING_OBJ}
+        # ${CUDA_BACKPROPAGATION_OBJ}
+        # ${CUDA_REDUCTION_OBJ}
+    )
+endif()
 

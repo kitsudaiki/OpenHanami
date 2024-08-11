@@ -6,21 +6,28 @@
 
 ## Description
 
-This library contains some functions, I need for my other projects. There are functions for memory-handling, thread-handling, data representation and testing.
+This library contains some functions, I need for my other projects. There are functions for
+memory-handling, thread-handling, data representation and testing.
 
 ### Content Overview
 
 #### Data-Items
 
-*include-file:* `hanami_common/common_items/data_items.h`
+_include-file:_ `hanami_common/common_items/data_items.h`
 
-These are classes for data-representation and comparable to the dict-objects of python. The data-items were originally the core data handling structure inside libKitsunemimiJson for representing json-trees. Thats why the string output of these items still have json-format. The table-items are for table styled output of information. Internally it use the data-items.
+These are classes for data-representation and comparable to the dict-objects of python. The
+data-items were originally the core data handling structure inside libKitsunemimiJson for
+representing json-trees. Thats why the string output of these items still have json-format. The
+table-items are for table styled output of information. Internally it use the data-items.
 
 #### Tables
 
-*include-file:* `hanami_common/common_items/table_item.h`
+_include-file:_ `hanami_common/common_items/table_item.h`
 
-This is for printing tables. Internally it use the data-items for handling the content. For example you could parse the json-formated content of an http message via libKitsunemimiJson, use the the resulting data-item-tree together with a header definition and print is as table. The results looks for example like this:
+This is for printing tables. Internally it use the data-items for handling the content. For example
+you could parse the json-formated content of an http message via libKitsunemimiJson, use the the
+resulting data-item-tree together with a header definition and print is as table. The results looks
+for example like this:
 
 ```
 +-----------------+---------+
@@ -38,112 +45,136 @@ This is for printing tables. Internally it use the data-items for handling the c
 
 #### Data buffer
 
-*include-file:* `hanami_common/buffer/data_buffer.h`
+_include-file:_ `hanami_common/buffer/data_buffer.h`
 
-This is a simple buffer for binary-data. The primary advantage is the easier resizing when adding new data. Internally it uses alligned memory, because this is necessary for the direct read- and write-operations of the libKitsunemimiPersistence.
+This is a simple buffer for binary-data. The primary advantage is the easier resizing when adding
+new data. Internally it uses alligned memory, because this is necessary for the direct read- and
+write-operations of the libKitsunemimiPersistence.
 
 #### Item buffer
 
-*include-file:* `hanami_common/buffer/item_buffer.h`
+_include-file:_ `hanami_common/buffer/item_buffer.h`
 
-Buffer to store objects based on the data-buffer. It handles deleted objects inside of the buffer in a linked list to fast reallocate deleted objects at any position of the buffer. 
+Buffer to store objects based on the data-buffer. It handles deleted objects inside of the buffer in
+a linked list to fast reallocate deleted objects at any position of the buffer.
 
 #### Ring buffer
 
-*include-file:* `hanami_common/buffer/ring_buffer.h`
+_include-file:_ `hanami_common/buffer/ring_buffer.h`
 
-Ring buffer to fast continuously read and write data. Its actually used as buffer for incoming messages in the network library libKitsunemimiNetwork for fast message-caching.
+Ring buffer to fast continuously read and write data. Its actually used as buffer for incoming
+messages in the network library libKitsunemimiNetwork for fast message-caching.
 
 #### Stack buffer
 
-*include-file:* `hanami_common/buffer/stack_buffer.h`
+_include-file:_ `hanami_common/buffer/stack_buffer.h`
 
 Stack of multiple data-buffer together with a reserve-class to avoid unnecessary memory allocation.
 
 #### Threads
 
-*include-file:* `hanami_common/threading/thread.h`
+_include-file:_ `hanami_common/threading/thread.h`
 
-This class is only a collection of some thread-function like blocking and so on which I often use. This makes the creation of threads more easy for me. Additionally this class provides the ability to bind a new one of this thread to a specific cpu-thread.
+This class is only a collection of some thread-function like blocking and so on which I often use.
+This makes the creation of threads more easy for me. Additionally this class provides the ability to
+bind a new one of this thread to a specific cpu-thread.
 
 #### Barrier
 
-*include-file:* `hanami_common/threading/barrier.h`
+_include-file:_ `hanami_common/threading/barrier.h`
 
-This class can block a number of threads and release automatically, if all have reached the barrier. To avoid dead-lock, they can also released manually.
+This class can block a number of threads and release automatically, if all have reached the barrier.
+To avoid dead-lock, they can also released manually.
 
 #### Tests
 
-*include-file:* `hanami_common/test_helper/compare_test_helper.h`, `hanami_common/test_helper/speed_test_helper.h` and `hanami_common/test_helper/memory_leak_test_helper.h`
+_include-file:_ `hanami_common/test_helper/compare_test_helper.h`,
+`hanami_common/test_helper/speed_test_helper.h` and
+`hanami_common/test_helper/memory_leak_test_helper.h`
 
-These are little test-helper classes which provides basic functionallity for unit-, benchmark-, and memory-leak-tests.
+These are little test-helper classes which provides basic functionallity for unit-, benchmark-, and
+memory-leak-tests.
 
 #### Statemachine
 
-*include-file:* `hanami_common/statemachine.h`
+_include-file:_ `hanami_common/statemachine.h`
 
-It's only a simple statemachine in the moment. Basically its only to change the state and check the current state. It doesn't trigger any events after changing the state.
+It's only a simple statemachine in the moment. Basically its only to change the state and check the
+current state. It doesn't trigger any events after changing the state.
 
 #### Progress-Bar
 
-*include-file:* `hanami_common/progress_bar.h`
+_include-file:_ `hanami_common/progress_bar.h`
 
 Simple progress-bar for cli-output.
 
 #### Common methods
 
-*include-file:* `hanami_common/common_methods/string_methods.h`, `hanami_common/common_methods/vector_methods.h` and `hanami_common/common_methods/file_methods.h`
+_include-file:_ `hanami_common/common_methods/string_methods.h`,
+`hanami_common/common_methods/vector_methods.h` and `hanami_common/common_methods/file_methods.h`
 
-These contains some commonly used mehtods for strings, vectors and objects, like for example replace substrings within a string.
+These contains some commonly used mehtods for strings, vectors and objects, like for example replace
+substrings within a string.
 
 #### binary-files
 
-*include-file:* `hanami_common/files/binary_file.h`
+_include-file:_ `hanami_common/files/binary_file.h`
 
-These are some functions to map the data-buffer of hanami_common to the storage to persist the data of the buffer and restore them. The functions use direct read- and write-oberations to make things faster, but this requires more custom control.
+These are some functions to map the data-buffer of hanami_common to the storage to persist the data
+of the buffer and restore them. The functions use direct read- and write-oberations to make things
+faster, but this requires more custom control.
 
 #### text-files
 
-*include-file:* `hanami_common/files/text_file.h`
+_include-file:_ `hanami_common/files/text_file.h`
 
-Methods to read text files, write text files, append new text to an existing text-file, replace a line within an existing text-file identified by a line number and repace content within an existing text-file identified by matching the old content.
+Methods to read text files, write text files, append new text to an existing text-file, replace a
+line within an existing text-file identified by a line number and repace content within an existing
+text-file identified by matching the old content.
 
 #### log-writer
 
-*include-file:* `hanami_common/logger.h`
+_include-file:_ `hanami_common/logger.h`
 
-Its a simple and really easy to use logger to wirte messages with timestamps to a log-file. 
-
+Its a simple and really easy to use logger to wirte messages with timestamps to a log-file.
 
 ## Common Information aboud my projects
 
-Here some common information about my projects and my code-styling. It's not complete and a bit short. I will write a styling-guide for my projects, where I will write this a bit longer with more explanation, why I make it like this.
+Here some common information about my projects and my code-styling. It's not complete and a bit
+short. I will write a styling-guide for my projects, where I will write this a bit longer with more
+explanation, why I make it like this.
 
 ## Usage
 
-Its a shord overview of the most important functions of the library. If even with this something is unclear, than please write me a mail or an issue.
+Its a shord overview of the most important functions of the library. If even with this something is
+unclear, than please write me a mail or an issue.
 
 ### Common items
 
-Here is a short documentation of the functions of the items. It doesn't descibe all functions, because the most should be self explaining in the header-files, like remove, add and so on. 
+Here is a short documentation of the functions of the items. It doesn't descibe all functions,
+because the most should be self explaining in the header-files, like remove, add and so on.
 
 #### data-items
 
 There exist three different items which all inherit the `DataItem` for generic access:
 
-- `DataValue`
-    - simple value-item
-    - can be string, int-value or float-value
-- `DataMap`
-    - This is a map-object for key-value-pair with a string as identifier and a DataItem-pointer as value
-    - data can be added with the `insert`-method
-- `DataArray`
-    - It's a internally a vector of Dataitem-pointer
-    - data can be added with the `append`-method
+-   `DataValue`
+    -   simple value-item
+    -   can be string, int-value or float-value
+-   `DataMap`
+    -   This is a map-object for key-value-pair with a string as identifier and a DataItem-pointer
+        as value
+    -   data can be added with the `insert`-method
+-   `DataArray`
+    -   It's a internally a vector of Dataitem-pointer
+    -   data can be added with the `append`-method
 
-IMPORTANT: all getter here only return a pointer to the internal object. If you want a copy, you have to use the `copy`-method of the objects to recursivly the data-item-tree behind the pointer.
+IMPORTANT: all getter here only return a pointer to the internal object. If you want a copy, you
+have to use the `copy`-method of the objects to recursivly the data-item-tree behind the pointer.
 
-To see all offered possebilities, which are provided by the data-items, please see the header-file `common_items/data_items.h`. There is nearly all self-explaining, because there are basically only getter and setter. So the following is only a minimal example:
+To see all offered possebilities, which are provided by the data-items, please see the header-file
+`common_items/data_items.h`. There is nearly all self-explaining, because there are basically only
+getter and setter. So the following is only a minimal example:
 
 ```cpp
 #include <hanami_common/common_items/data_items.h>
@@ -212,9 +243,12 @@ This is for printing informations as table on the commandline in form of this ex
 +-----------------+---------+
 ```
 
-Its primary to print informations coming from a REST-API response in form a json. So it can be filled manually or with content which was parsed with libKitsunemimiJson (coming soon open-source). If the content of a cell of the table contains a string with line breaks, its shown as multiple lines line in the last row of the example.
+Its primary to print informations coming from a REST-API response in form a json. So it can be
+filled manually or with content which was parsed with libKitsunemimiJson (coming soon open-source).
+If the content of a cell of the table contains a string with line breaks, its shown as multiple
+lines line in the last row of the example.
 
-- manual filling of the table:
+-   manual filling of the table:
 
 ```cpp
 #include <hanami_common/common_items/table_item.h>
@@ -234,7 +268,7 @@ testItem.addRow(std::vector<std::string>{"asdf", "qwert"});
 // convert to string
 std::string output = testItem.toString();
 /**
-here ouput has nwo the content: 
+here ouput has nwo the content:
 
 "+-----------------+---------+\n"
 "| Name of column1 | column2 |\n"
@@ -247,7 +281,7 @@ here ouput has nwo the content:
 
 ```
 
-- fill with predefined informations:
+-   fill with predefined informations:
 
 ```cpp
 #include <hanami_common/common_items/table_item.h>
@@ -290,7 +324,7 @@ TableItem testItem(&body, &header);
 
 std::string output = testItem.toString();
 /**
-here ouput has now the content: 
+here ouput has now the content:
 
 "+-----------------+---------+\n"
 "| Name of column1 | column2 |\n"
@@ -303,9 +337,14 @@ here ouput has now the content:
 
 ```
 
-The width of a column is per default limited to 500 characters. Its possible to modify this, by calling the toString-methods with a value. For example `testItem.toString(10)` to limit the width of a column to 10 characters. If the content of a cell of the table is longer than this value, line breaks will be added and write it in multiple lines.
+The width of a column is per default limited to 500 characters. Its possible to modify this, by
+calling the toString-methods with a value. For example `testItem.toString(10)` to limit the width of
+a column to 10 characters. If the content of a cell of the table is longer than this value, line
+breaks will be added and write it in multiple lines.
 
-It is also possible to convert it into a vertical table. The it is returned a table with two columns. The left is the header in vertical form and the right column is the first row of the table in vertical form. It makes tables with only one row better readable. Example:
+It is also possible to convert it into a vertical table. The it is returned a table with two
+columns. The left is the header in vertical form and the right column is the first row of the table
+in vertical form. It makes tables with only one row better readable. Example:
 
 ```cpp
 TableItem testItem();
@@ -323,7 +362,7 @@ TableItem testItem();
 std::string output = testItem.toString(100, true);
 /**
 first argument it the maximum size of the column and the secont is the alternative vertical mode
-here ouput has now the content: 
+here ouput has now the content:
 
 "+-----------------+----------------+\n"
 "| Name of column1 | this is a test |\n"
@@ -336,10 +375,15 @@ One the first row is used here for the output
 
 ```
 
-
 ### Data Buffer
 
-The data-buffer is only a struct with some external functions for easier byte-buffer-handling. The internal byte-array is a alligned memory with a size of a multiple of the defined block-size. This is necessary for direct read- and write-operations to the storage. Beside this, the struct contains the current size of the buffer in number of bytes and number of allocated blocks. It is possible to use the `data` as mormal byte-array for read and write operations or use the `addData_DataBuffer` and `getBlock_DataBuffer` for access. The `addData` allocates automatically the required number of block, if the buffer is not big enough. 
+The data-buffer is only a struct with some external functions for easier byte-buffer-handling. The
+internal byte-array is a alligned memory with a size of a multiple of the defined block-size. This
+is necessary for direct read- and write-operations to the storage. Beside this, the struct contains
+the current size of the buffer in number of bytes and number of allocated blocks. It is possible to
+use the `data` as mormal byte-array for read and write operations or use the `addData_DataBuffer`
+and `getBlock_DataBuffer` for access. The `addData` allocates automatically the required number of
+block, if the buffer is not big enough.
 
 ```cpp
 #include <hanami_common/buffer/data_buffer.h>
@@ -373,7 +417,7 @@ success = reset_DataBuffer(&testBuffer, 10);
 
 The usage can be explained with the following examples:
 
-- This is the basic look of a new class, which should run in a separate thread:
+-   This is the basic look of a new class, which should run in a separate thread:
 
 ```cpp
 // demo_thead.h
@@ -381,14 +425,14 @@ The usage can be explained with the following examples:
 #include <hanami_common/thread.h>
 
 
-class DemoThread 
+class DemoThread
     : public Hanami::Thread
 {
 
 public:
     DemoThread() : Hanami::Thread("DemoThread");
     // each thread is given a name
-    
+
     void run()
     {
         while(!m_abort)
@@ -402,7 +446,7 @@ public:
 }
 ```
 
-- It can be called like this for example:
+-   It can be called like this for example:
 
 ```cpp
 #include <hanami_common/demo_thead.h>
@@ -433,9 +477,13 @@ int main()
 
 ### Compare Tests
 
-For using the unit-tests your test-class have to inherit the class `Hanami::CompareTestHelper` and give the header fo the constructur a name for the test as string. Inside the single tests you can than call the two macros `TEST_EQUAL(<VARIABLE_TO_CHECK> , <EXPECTED_VALUE);` and `TEST_NOT_EQUAL(<VARIABLE_TO_CHECK> , <NOT_EXPECTED_VALUE);`. First is successful when equal and second one is successful, when unequal. 
+For using the unit-tests your test-class have to inherit the class `Hanami::CompareTestHelper` and
+give the header fo the constructur a name for the test as string. Inside the single tests you can
+than call the two macros `TEST_EQUAL(<VARIABLE_TO_CHECK> , <EXPECTED_VALUE);` and
+`TEST_NOT_EQUAL(<VARIABLE_TO_CHECK> , <NOT_EXPECTED_VALUE);`. First is successful when equal and
+second one is successful, when unequal.
 
-- After a success the result would look like this:
+-   After a success the result would look like this:
 
 ```cpp
 ------------------------------
@@ -446,7 +494,7 @@ tests failed: <number of failed tests>
 ------------------------------
 ```
 
-- When a test failed, the output looks like this:
+-   When a test failed, the output looks like this:
 
 ```cpp
 Error in Unit-Test
@@ -458,18 +506,19 @@ Error in Unit-Test
    Is-Value: "<Value of the tested variable>"
 ```
 
-HINT: this output is only as intelligent as `std::cout`, so for example if you test an `uint8_t`-value, then cast it to int at first, to see the is-value in the error-output. 
+HINT: this output is only as intelligent as `std::cout`, so for example if you test an
+`uint8_t`-value, then cast it to int at first, to see the is-value in the error-output.
 
 Example:
 
-- Header-file:
+-   Header-file:
 
 ```cpp
 // demo_test.h
 
 #include <hanami_common/test_helper/compare_test_helper.h>
 
-class Demo_Test 
+class Demo_Test
     : public Hanami::CompareTestHelper    // <-- connect with unit-tests
 {
 public:
@@ -480,12 +529,12 @@ private:
 };
 ```
 
-- Source-file:
+-   Source-file:
 
 ```cpp
 #include "demo_test.h"
 
-Demo_Test::Demo_Test() 
+Demo_Test::Demo_Test()
     : Hanami::CompareTestHelper("Demo_Test")    // <-- give the unit-test a name
 {
     some_test();    // <-- call the test-method
@@ -500,7 +549,7 @@ DataBuffer_Test::some_test()
     int answerForAll = 42;
 
     // compare two values
-    // first the is-value 
+    // first the is-value
     // second the should-value
     TEST_EQUAL(answerForAll, 42);   // <-- single test
 
@@ -522,12 +571,18 @@ tests failed: 0
 
 For more examples you could also use the tests in the test-directory of this repository.
 
-
 ### Memory-Leak Tests
 
-The memory-leak-tests can check, if there are some delete-calls are missing inside your code. The test-structure is really similar to the compare-tests. For using the memory-leak-tests your test-class have to inherit the class `Hanami::MemoryLeakTestHelpter` and give the header fo the constructur a name for the test as string. Inside the single tests you can than call the two macros `REINIT_TEST();` and `CHECK_MEMORY();`. The first one has to be called every time at the beginning of a test-case, after all required data-structures for the test are initialized. The other has to be called at the end of the test-case. If there were some memory-leaks since the REINIT_TEST-call, a error-message is printed.
+The memory-leak-tests can check, if there are some delete-calls are missing inside your code. The
+test-structure is really similar to the compare-tests. For using the memory-leak-tests your
+test-class have to inherit the class `Hanami::MemoryLeakTestHelpter` and give the header fo the
+constructur a name for the test as string. Inside the single tests you can than call the two macros
+`REINIT_TEST();` and `CHECK_MEMORY();`. The first one has to be called every time at the beginning
+of a test-case, after all required data-structures for the test are initialized. The other has to be
+called at the end of the test-case. If there were some memory-leaks since the REINIT_TEST-call, a
+error-message is printed.
 
-- After a success the result would look like this:
+-   After a success the result would look like this:
 
 ```cpp
 ------------------------------
@@ -538,7 +593,7 @@ tests failed: <number of failed tests>
 ------------------------------
 ```
 
-- When a test failed, the output looks like this:
+-   When a test failed, the output looks like this:
 
 ```cpp
 Memory-leak detected
@@ -550,14 +605,14 @@ Memory-leak detected
 
 Example:
 
-- Header-file:
+-   Header-file:
 
 ```cpp
 // demo_test.h
 
 #include <hanami_common/test_helper/memory_leak_test_helper.h>
 
-class Demo_Test 
+class Demo_Test
     : public Hanami::MemoryLeakTestHelpter    // <-- connect with memory-leak-tests
 {
 public:
@@ -568,12 +623,12 @@ private:
 };
 ```
 
-- Source-file:
+-   Source-file:
 
 ```cpp
 #include "demo_test.h"
 
-Demo_Test::Demo_Test() 
+Demo_Test::Demo_Test()
     : Hanami::MemoryLeakTestHelpter("Demo_Test")    // <-- give the memory-leak-test a name
 {
     some_test();    // <-- call the test-method
@@ -609,11 +664,10 @@ tests failed: 0
 
 For more examples you could also use the tests in the test-directory of this repository.
 
-
 ### Statemachine
 
-This is really a ultra simple statemachine, so the few functions can easily explained by the following example.
-
+This is really a ultra simple statemachine, so the few functions can easily explained by the
+following example.
 
 ```cpp
 
@@ -658,7 +712,8 @@ const std::string stateName = statemachine.getCurrentStateName();
 
 ```
 
-In the future there also should be triggered events after a state-change. Also failed states should be added ans so on.
+In the future there also should be triggered events after a state-change. Also failed states should
+be added ans so on.
 
 ### Progress-Bar
 
@@ -674,7 +729,7 @@ ProgressBar* progressBar = new ProgressBar();
 while(true)
 {
     // updateProgress return true, if the progress reached 1.0 or more
-    // this function updates the progress-bar on the terminal and alway 
+    // this function updates the progress-bar on the terminal and alway
     // requires absolut values and not a diff to the last value
     if(progressBar->updateProgress(progress)) {
         break;
@@ -695,15 +750,16 @@ Example-output:
 
 ### Common methods
 
-This is really minimalistic at the moment, because here are only two methods now, but there will coming more.
+This is really minimalistic at the moment, because here are only two methods now, but there will
+coming more.
 
 #### string methods
 
 Following functions are supported:
 
-- split string at a specific character into a vector of strings 
-- split them into a list of substring, where each substring has a maximum size
-- replace a substring within a string
+-   split string at a specific character into a vector of strings
+-   split them into a list of substring, where each substring has a maximum size
+-   replace a substring within a string
 
 Example:
 
@@ -768,16 +824,22 @@ removeEmptyStrings(&testVector);
 
 **Header-file:** `hanami_common/files/binary_file.h`
 
-This file contains the class for read and write of binary-files. It use the data-buffer of hanami_common as cache for all operations. The operations using posix-method with direct-flag to skip the page-chache of the linux-kernel. This makes operations with big block a bit faster because the data are less often copied. This has the result, that all read and write operations are synchronized.
+This file contains the class for read and write of binary-files. It use the data-buffer of
+hanami_common as cache for all operations. The operations using posix-method with direct-flag to
+skip the page-chache of the linux-kernel. This makes operations with big block a bit faster because
+the data are less often copied. This has the result, that all read and write operations are
+synchronized.
 
-This results in the requirement, that segments to read from storage or write to storage should be as big as possible or else the latency makes the whole thing very very slow. The class should be run in an extra thread, with handle all operations and makes the whole sync asynchon again.
+This results in the requirement, that segments to read from storage or write to storage should be as
+big as possible or else the latency makes the whole thing very very slow. The class should be run in
+an extra thread, with handle all operations and makes the whole sync asynchon again.
 
 There are only 4 operations at the moment:
 
-- allocate more memory on the storage to make the file bigger
-- read the current size of the file from the storage (for the case you open an existing file)
-- wirte data from the buffer to the file
-- read data from the file into the buffer
+-   allocate more memory on the storage to make the file bigger
+-   read the current size of the file from the storage (for the case you open an existing file)
+-   wirte data from the buffer to the file
+-   read data from the file into the buffer
 
 All operations return only a bool-value, which say if it was successful or not.
 
@@ -799,7 +861,7 @@ buffer.addData(&testvalue);
 BinaryFile binaryFile(m_filePath);
 
 // allocate 4 x 4 KiB (4 blocks)
-binaryFile.allocateStorage(4,       // <-- number blocks 
+binaryFile.allocateStorage(4,       // <-- number blocks
                            4096);   // <-- size of a single block
 
 // write data to the storage
@@ -822,9 +884,14 @@ binaryFile.closeFile()
 
 **Header-file:** `hanami_common/files/text_file.h`
 
-Every action open and close the text-file. With this I don't need to handle an additional object-instance and operations on a text-file are really rare compared to working on a binary-file, so the addional time consumption for open and close the file has no special meaning for the performance.
+Every action open and close the text-file. With this I don't need to handle an additional
+object-instance and operations on a text-file are really rare compared to working on a binary-file,
+so the addional time consumption for open and close the file has no special meaning for the
+performance.
 
-All methods return a pair of bool-value as first element and a string-value as second element. The bool-value says, if the call was successful or not. When successful, the string-value contains the result, or if not successful, the string contains an error-message.
+All methods return a pair of bool-value as first element and a string-value as second element. The
+bool-value says, if the call was successful or not. When successful, the string-value contains the
+result, or if not successful, the string contains an error-message.
 
 Little example:
 
@@ -841,12 +908,12 @@ std::pair<bool, std::string> ret;
 ErrorContainer error;
 
 // write text to file
-bool writeResult = writeFile(filePath, 
-                             content, 
+bool writeResult = writeFile(filePath,
+                             content,
                              error,
-                             false);        // <-- force-flag, 
+                             false);        // <-- force-flag,
                                             //     with false it fails if file already existing
-                                  
+
 // add new text to the file
 bool appendResult = appendText(filePath,
                                "\nand a third line",
@@ -866,10 +933,14 @@ std::pair<bool, std::string> readResult = readFile(filePath, error);
 
 **Header-file:** `hanami_common/logger.h`
 
-Its a simple class to write log-messages together with a timestamp one after another to a log-file. It only has to be initialized at the beginning of the program and can be used at every point in the same code. When want to add an entry to the log, you don't need to check, if the logger is initialized.
+Its a simple class to write log-messages together with a timestamp one after another to a log-file.
+It only has to be initialized at the beginning of the program and can be used at every point in the
+same code. When want to add an entry to the log, you don't need to check, if the logger is
+initialized.
 
-IMPORTANT: Adding entries to the log is thread-save, but initializing and closing the logger is NOT. This is normally no problem, but I only mention it, to be sure that you know this. It is not save to init or close the logger, while other threads with log-calls are running!
-
+IMPORTANT: Adding entries to the log is thread-save, but initializing and closing the logger is NOT.
+This is normally no problem, but I only mention it, to be sure that you know this. It is not save to
+init or close the logger, while other threads with log-calls are running!
 
 Initializing at the anytime somewhere in your code.
 
@@ -892,7 +963,9 @@ Hanami::Persistence::initConsoleLogger(true);
 
 ```
 
-Using the logger somewhere else in your code. You only need to import the header and then call the log-methods. Like already mentioned, there is no check necessary, if the logger is initialized or not. See following example: 
+Using the logger somewhere else in your code. You only need to import the header and then call the
+log-methods. Like already mentioned, there is no check necessary, if the logger is initialized or
+not. See following example:
 
 ```cpp
 #include <hanami_common/logger.h>
@@ -911,15 +984,15 @@ LOG_ERROR("error-message");
 /**
 The log-file would look like this:
 
-2019-9-7 22:54:1 ERROR: 
+2019-9-7 22:54:1 ERROR:
 +---------------------+------------+
 | Error-Message Nr. 0 | some error |
 +---------------------+------------+
 | Possible Solution   | do nothing |
-+---------------------+------------+ 
-2019-9-7 22:54:1 WARNING: warning-message 
-2019-9-7 22:54:1 DEBUG: debug-message     
-2019-9-7 22:54:1 INFO: info-message  
++---------------------+------------+
+2019-9-7 22:54:1 WARNING: warning-message
+2019-9-7 22:54:1 DEBUG: debug-message
+2019-9-7 22:54:1 INFO: info-message
 */
 
 ```

@@ -18,7 +18,6 @@ target_include_directories(hanami_crypto PUBLIC
     include/
     src/
     ../hanami_common/include
-    ../../third-party-libs/json/include
 )
 
 target_link_libraries(hanami_crypto PUBLIC

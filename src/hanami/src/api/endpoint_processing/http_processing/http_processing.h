@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef TORIIGATEWAY_HTTP_PROCESSING_H
-#define TORIIGATEWAY_HTTP_PROCESSING_H
+#ifndef HANAMI_HTTP_PROCESSING_H
+#define HANAMI_HTTP_PROCESSING_H
 
 #include <api/endpoint_processing/blossom.h>
 #include <hanami_common/logger.h>
@@ -93,4 +93,4 @@ class HttpProcessing
     const std::string convertType(const HttpRequestType type);
 };
 
-#endif  // TORIIGATEWAY_HTTP_PROCESSING_H
+#endif  // HANAMI_HTTP_PROCESSING_H

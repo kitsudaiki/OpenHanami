@@ -31,8 +31,6 @@ class Cluster;
 
 using Hanami::ClusterMeta;
 
-bool reinitPointer(Cluster* cluster, const uint64_t numberOfBytes);
-
 bool initNewCluster(Cluster* cluster,
                     const Hanami::ClusterMeta& clusterMeta,
                     const std::string& uuid);

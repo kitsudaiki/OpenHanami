@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_LANG_RUNTIME_VALIDATION_H
-#define HANAMI_LANG_RUNTIME_VALIDATION_H
+#ifndef HANAMI_RUNTIME_VALIDATION_H
+#define HANAMI_RUNTIME_VALIDATION_H
 
 #include <api/endpoint_processing/blossom.h>
 #include <hanami_common/logger.h>
@@ -35,4 +35,4 @@ bool checkBlossomValues(const std::map<std::string, FieldDef>& defs,
 
 bool checkType(const json& item, const FieldType fieldType);
 
-#endif  // HANAMI_LANG_RUNTIME_VALIDATION_H
+#endif  // HANAMI_RUNTIME_VALIDATION_H

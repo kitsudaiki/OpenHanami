@@ -64,6 +64,9 @@ GetDataSetV1M0::GetDataSetV1M0() : Blossom("Get information of a specific datase
 
     registerOutputField("number_of_columns", SAKURA_INT_TYPE).setComment("Number of columns.");
 
+    registerOutputField("created_at", SAKURA_STRING_TYPE)
+        .setComment("Timestamp, when dataset was created.");
+
     //----------------------------------------------------------------------------------------------
     //
     //----------------------------------------------------------------------------------------------
@@ -114,6 +117,7 @@ GetDataSetV1M0::runTask(BlossomIO& blossomIO,
                                   + std::string(fileHandle.header.minorVersion);
     blossomIO.output["number_of_rows"] = fileHandle.header.numberOfRows;
     blossomIO.output["number_of_columns"] = fileHandle.header.numberOfColumns;
+    blossomIO.output["created_at"] = entry.createdAt;
 
     return true;
 }

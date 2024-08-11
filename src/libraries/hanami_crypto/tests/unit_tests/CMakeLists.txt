@@ -9,7 +9,6 @@ add_executable(hanami_crypto_unit_tests
 )
 
 target_include_directories(hanami_crypto_unit_tests PRIVATE
-    ../../../../third-party-libs/json/include
     ../../../hanami_common/include
     ../../include
     ../../src

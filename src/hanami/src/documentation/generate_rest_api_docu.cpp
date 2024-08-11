@@ -43,8 +43,9 @@ std::map<HttpResponseTypes, std::string> responseMessage = {
 };
 
 /**
- * @brief createMdDocumentation
- * @param docu
+ * @brief generate OpenAPI-documentation from source
+ *
+ * @param docu reference to the resulting documenation-output
  */
 void
 createOpenApiDocumentation(std::string& docu)
@@ -70,16 +71,17 @@ createOpenApiDocumentation(std::string& docu)
     result["license"] = license;
 
     json paths;
-    generateEndpointDocu_openapi(paths);
+    generateEndpointDocu(paths);
     result["paths"] = paths;
 
     docu = result.dump(4, ' ');
 }
 
 /**
- * @brief addErrorCodes
- * @param responses
- * @param allowedErrorCodes
+ * @brief convert responses of endpoints to open-API-json and add it to the output
+ *
+ * @param responses reference to the output
+ * @param blossom pointer to the endpoints to read the reponses of the endpoint
  */
 void
 addResponsess(json& responses, Blossom* blossom)
@@ -90,7 +92,7 @@ addResponsess(json& responses, Blossom* blossom)
     json jsonApplication;
     json schema;
     schema["type"] = "object";
-    createBodyParams_openapi(schema, blossom->getOutputValidationMap(), false);
+    createBodyParams(schema, blossom->getOutputValidationMap(), false);
     jsonApplication["schema"] = schema;
     content["application/json"] = jsonApplication;
     resp200["content"] = content;
@@ -111,8 +113,9 @@ addResponsess(json& responses, Blossom* blossom)
 }
 
 /**
- * @brief addTokenRequirement
- * @param parameters
+ * @brief add token-requirement to documeation, if endpoint requires a token for access
+ *
+ * @param parameters reference to the output
  */
 void
 addTokenRequirement(json& parameters)
@@ -131,13 +134,13 @@ addTokenRequirement(json& parameters)
 }
 
 /**
- * @brief createQueryParams_openapi
- * @param schema
- * @param defMap
- * @param isRequest
+ * @brief convert query-parameters
+ *
+ * @param parameters reference to the output of the parameters
+ * @param defMap map with all field to ducument
  */
 void
-createQueryParams_openapi(json& parameters, const std::map<std::string, FieldDef>* defMap)
+createQueryParams(json& parameters, const std::map<std::string, FieldDef>* defMap)
 {
     for (const auto& [field, fieldDef] : *defMap) {
         const FieldType fieldType = fieldDef.fieldType;
@@ -228,9 +231,7 @@ createQueryParams_openapi(json& parameters, const std::map<std::string, FieldDef
  * @param isRequest true to say that the actual field is a request-field
  */
 void
-createBodyParams_openapi(json& schema,
-                         const std::map<std::string, FieldDef>* defMap,
-                         const bool isRequest)
+createBodyParams(json& schema, const std::map<std::string, FieldDef>* defMap, const bool isRequest)
 {
     std::vector<std::string> requiredFields;
 
@@ -343,12 +344,12 @@ createBodyParams_openapi(json& schema,
 }
 
 /**
- * @brief generate documentation for the endpoints
+ * @brief generate docu of all endpoints
  *
- * @param docu reference to the complete document
+ * @param result reference for the output
  */
 void
-generateEndpointDocu_openapi(json& result)
+generateEndpointDocu(json& result)
 {
     HttpProcessing* httpProcessing = HanamiRoot::httpServer->httpProcessing;
     for (const auto& [endpointPath, httpDef] : httpProcessing->endpointRules) {
@@ -385,7 +386,7 @@ generateEndpointDocu_openapi(json& result)
                 json jsonApplication;
                 json schema;
                 schema["type"] = "object";
-                createBodyParams_openapi(schema, blossom->getInputValidationMap(), true);
+                createBodyParams(schema, blossom->getInputValidationMap(), true);
                 jsonApplication["schema"] = schema;
                 content["application/json"] = jsonApplication;
                 requestBody["content"] = content;
@@ -393,7 +394,7 @@ generateEndpointDocu_openapi(json& result)
             }
 
             if (type == GET_TYPE || type == DELETE_TYPE) {
-                createQueryParams_openapi(parameters, blossom->getInputValidationMap());
+                createQueryParams(parameters, blossom->getInputValidationMap());
             }
 
             if (parameters.is_null() == false) {

@@ -31,9 +31,11 @@
 #include <hanami_root.h>
 
 /**
- * @brief getNumberOfNeuronSections
- * @param numberOfNeurons
- * @return
+ * @brief calculate the number of blocks for a specific number of neurons
+ *
+ * @param numberOfNeurons number of neurons
+ *
+ * @return number of neuron-blocks
  */
 uint32_t
 calcNumberOfNeuronBlocks(const uint32_t numberOfNeurons)
@@ -50,8 +52,7 @@ calcNumberOfNeuronBlocks(const uint32_t numberOfNeurons)
  * @brief initalize new cluster
  *
  * @param cluster pointer to the uninitionalized cluster
- * @param parsedContent parsed json with the information of the cluster
- * @param segmentTemplates TODO
+ * @param clusterMeta parsed data from the cluster-template
  * @param uuid uuid for the new cluster
  *
  * @return true, if successful, else false
@@ -69,19 +70,10 @@ initNewCluster(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta, const s
 }
 
 /**
- * @brief DynamicSegment::reinitPointer
- * @return
- */
-bool
-reinitPointer(Cluster* cluster, const uint64_t numberOfBytes)
-{
-    return true;
-}
-
-/**
- * @brief initializeHeader
- * @param cluster
- * @param uuid
+ * @brief create a new header for a cluster
+ *
+ * @param cluster pointer to cluster
+ * @param uuid uuid of the cluster
  */
 void
 initializeHeader(Cluster* cluster, const std::string& uuid)
@@ -91,11 +83,10 @@ initializeHeader(Cluster* cluster, const std::string& uuid)
 }
 
 /**
- * @brief init sttings-block for the cluster
+ * @brief initialize settings block of a cluster
  *
- * @param parsedContent json-object with the cluster-description
- *
- * @return settings-object
+ * @param cluster pointer to cluster
+ * @param clusterMeta meta-data of cluster-template with the new cluster-settings
  */
 void
 initializeSettings(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta)
@@ -107,9 +98,10 @@ initializeSettings(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta)
 }
 
 /**
- * @brief initializeInputs
- * @param cluster
- * @param clusterMeta
+ * @brief initialize input-neurons of a cluster
+ *
+ * @param cluster pointer to cluster
+ * @param clusterMeta meta-data of cluster-template with information
  */
 void
 initializeInputs(Cluster* cluster, const ClusterMeta& clusterMeta)
@@ -134,9 +126,10 @@ initializeInputs(Cluster* cluster, const ClusterMeta& clusterMeta)
 }
 
 /**
- * @brief initializeOutputs
- * @param cluster
- * @param clusterMeta
+ * @brief initialize output-neurons of a cluster
+ *
+ * @param cluster pointer to cluster
+ * @param clusterMeta meta-data of cluster-template with information
  */
 void
 initializeOutputs(Cluster* cluster, const ClusterMeta& clusterMeta)
@@ -159,7 +152,8 @@ initializeOutputs(Cluster* cluster, const ClusterMeta& clusterMeta)
 /**
  * @brief init all hexagons
  *
- * @param metaBase json with all hexagon-definitions
+ * @param cluster pointer to cluster
+ * @param clusterMeta meta-data of cluster-template with the new cluster-settings
  */
 void
 initializeHexagons(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta)
@@ -181,8 +175,9 @@ initializeHexagons(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta)
 }
 
 /**
- * @brief connect a single side of a specific hexagon
+ * @brief connect a single side of a specific hexagon of a cluster
  *
+ * @param cluster pointer to cluster
  * @param sourceHexagon pointer to the hexagon
  * @param side side of the hexagon to connect
  */
@@ -219,6 +214,7 @@ connectAllHexagons(Cluster* cluster)
 /**
  * @brief get next possible hexagon
  *
+ * @param cluster pointer to cluster
  * @param currentHexagon actual hexagon
  * @param maxPathLength maximum path length left
  *
@@ -256,6 +252,8 @@ goToNextInitHexagon(Cluster* cluster, Hexagon& currentHexagon, uint32_t& maxPath
 
 /**
  * @brief init target-hexagon-list of all hexagons
+ *
+ * @param cluster pointer to cluster
  */
 void
 initializeTargetHexagonList(Cluster* cluster)

@@ -29,27 +29,20 @@
  * @brief register all available arguments for the CLI input
  *
  * @param argparser reference to predefined argument-parser
- *
- * @return false, if registering argument failed, else true
  */
-bool
+void
 registerArguments(Hanami::ArgParser* argparser)
 {
-    // config-flag
     argparser->registerString("config", 'c').setHelpText("absolute path to config-file");
 
-    // debug-flag
     argparser->registerPlain("debug", 'd').setHelpText("enable debug-mode");
 
-    // generate_docu-flag
     argparser->registerPlain("generate_docu", 'g')
         .setHelpText(
             "generate documenation of the current state of: \n"
             "- REST-API as OpenAPI json-document\n"
             "- default-configurations as md-document\n"
             "- database-schemas as md-document");
-
-    return true;
 }
 
 #endif  // HANAMI_ARGS_H

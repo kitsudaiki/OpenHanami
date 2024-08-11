@@ -41,4 +41,4 @@ RUN apt-get update && \
 
 # hanami
 COPY --from=builder /app/hanami /usr/bin/hanami
-CMD hanami
+CMD [ "hanami" ]

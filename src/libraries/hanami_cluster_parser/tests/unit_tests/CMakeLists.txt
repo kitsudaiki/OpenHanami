@@ -7,7 +7,6 @@ add_executable(hanami_cluster_parser_unit_tests
 target_include_directories(hanami_cluster_parser_unit_tests PRIVATE
     ../../include/
     ../../src/
-    ../../../../third-party-libs/json/include
 )
 
 target_link_libraries(hanami_cluster_parser_unit_tests PRIVATE

@@ -14,7 +14,6 @@ target_include_directories(hanami_config PUBLIC
     src/
     ../hanami_common/include
     ../hanami_ini/include
-    ../../third-party-libs/json/include
 )
 
 target_link_libraries(hanami_config PUBLIC
