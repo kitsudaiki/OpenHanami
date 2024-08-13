@@ -26,7 +26,6 @@
 #include <api/websocket/cluster_io.h>
 #include <core/cluster/cluster.h>
 #include <core/cluster/objects.h>
-#include <core/processing/cluster_io_functions.h>
 #include <core/processing/cluster_resize.h>
 #include <hanami_crypto/hashes.h>
 #include <hanami_root.h>
@@ -37,15 +36,13 @@
 /**
  * @brief initialize a new synpase
  *
- * @param block source-neuron-block, which is only used to hold the randamo-value
  * @param synapse pointer to the synapse, which should be (re-) initialized
  * @param clusterSettings pointer to the cluster-settings
  * @param remainingW new weight for the synapse
  * @param randomSeed reference to the current seed of the randomizer
  */
 inline void
-createNewSynapse(NeuronBlock* block,
-                 Synapse* synapse,
+createNewSynapse(Synapse* synapse,
                  const ClusterSettings* clusterSettings,
                  const float remainingW,
                  uint32_t& randomSeed)
@@ -119,8 +116,7 @@ synapseProcessingBackward(Cluster& cluster,
             if (isAbleToCreate) {
                 // create new synapse if necesarry and training is active
                 if (synapse->targetNeuronId == UNINIT_STATE_8) {
-                    createNewSynapse(
-                        targetNeuronBlock, synapse, clusterSettings, potential, randomSeed);
+                    createNewSynapse(synapse, clusterSettings, potential, randomSeed);
                     cluster.enableCreation = true;
                 }
             }
@@ -265,6 +261,137 @@ processNeurons(Cluster& cluster, Hexagon* hexagon, const uint32_t blockId)
             neuron->potentialRange = std::numeric_limits<float>::max();
         }
     }
+}
+
+/**
+ * @brief process input-neurons
+ *
+ * @param cluster reference to current cluster
+ * @param inputInterface pointer to connected input-interface
+ * @param hexagon pointer to current hexagon
+ */
+template <bool doTrain>
+inline void
+processNeuronsOfInputHexagon(Cluster& cluster, InputInterface* inputInterface, Hexagon* hexagon)
+{
+    Neuron* neuron = nullptr;
+    NeuronBlock* block = nullptr;
+    uint32_t counter = 0;
+    uint16_t blockId = 0;
+    uint8_t neuronId = 0;
+
+    // iterate over all neurons within the hexagon
+    for (NeuronBlock& neuronBlock : hexagon->neuronBlocks) {
+        for (neuronId = 0; neuronId < NEURONS_PER_NEURONBLOCK; ++neuronId) {
+            if (counter >= inputInterface->inputNeurons.size()) {
+                return;
+            }
+            neuron = &neuronBlock.neurons[neuronId];
+            neuron->potential = inputInterface->inputNeurons[counter].value;
+            neuron->active = neuron->potential > 0.0f;
+
+            if constexpr (doTrain) {
+                if (neuron->active != 0 && neuron->inUse == 0) {
+                    SourceLocationPtr originLocation;
+                    originLocation.hexagonId = hexagon->header.hexagonId;
+                    originLocation.blockId = blockId;
+                    originLocation.neuronId = neuronId;
+                    createNewSection(cluster,
+                                     originLocation,
+                                     0.0f,
+                                     std::numeric_limits<float>::max(),
+                                     cluster.attachedHost->synapseBlocks);
+                }
+            }
+            counter++;
+        }
+        blockId++;
+    }
+}
+
+/**
+ * @brief process output-nodes
+ *
+ * @param hexagons list of all hexagons
+ * @param outputInterface connected output-interface
+ * @param hexagonId current hexagon-id
+ * @param randomSeed current seed for random-generation
+ */
+template <bool doTrain>
+inline void
+processNeuronsOfOutputHexagon(std::vector<Hexagon>& hexagons,
+                              OutputInterface* outputInterface,
+                              const uint32_t hexagonId,
+                              uint32_t randomSeed)
+{
+    Neuron* neuron = nullptr;
+    NeuronBlock* block = nullptr;
+    Hexagon* hexagon = nullptr;
+    OutputNeuron* out = nullptr;
+    OutputTargetLocationPtr* target = nullptr;
+    uint32_t neuronBlockId = 0;
+    float weightSum = 0.0f;
+    bool found = false;
+
+    hexagon = &hexagons[hexagonId];
+    for (NeuronBlock& block : hexagon->neuronBlocks) {
+        for (uint64_t j = 0; j < NEURONS_PER_NEURONBLOCK; ++j) {
+            neuron = &block.neurons[j];
+            neuron->potential = 1.0f / (1.0f + exp(-1.0f * neuron->input));
+            neuron->input = 0.0f;
+        }
+    }
+
+    for (uint64_t i = 0; i < outputInterface->outputNeurons.size(); ++i) {
+        out = &outputInterface->outputNeurons[i];
+        hexagon = &hexagons[outputInterface->targetHexagonId];
+        weightSum = 0.0f;
+
+        for (uint8_t j = 0; j < NUMBER_OF_OUTPUT_CONNECTIONS; ++j) {
+            target = &out->targets[j];
+
+            if constexpr (doTrain) {
+                found = false;
+                randomSeed = Hanami::pcg_hash(randomSeed);
+                if (found == false && target->blockId == UNINIT_STATE_16 && out->exprectedVal > 0.0
+                    && randomSeed % 50 == 0)
+                {
+                    randomSeed = Hanami::pcg_hash(randomSeed);
+                    const uint32_t blockId = randomSeed % hexagon->neuronBlocks.size();
+                    randomSeed = Hanami::pcg_hash(randomSeed);
+                    const uint16_t neuronId = randomSeed % NEURONS_PER_NEURONBLOCK;
+                    const float potential
+                        = hexagon->neuronBlocks[blockId].neurons[neuronId].potential;
+
+                    if (potential != 0.5f) {
+                        target->blockId = blockId;
+                        target->neuronId = neuronId;
+                        randomSeed = Hanami::pcg_hash(randomSeed);
+                        target->connectionWeight = ((float)randomSeed / (float)RAND_MAX);
+                        found = true;
+
+                        if (potential < 0.5f) {
+                            target->connectionWeight *= -1.0f;
+                        }
+                    }
+                }
+            }
+
+            if (target->blockId == UNINIT_STATE_16) {
+                continue;
+            }
+
+            neuron = &hexagon->neuronBlocks[target->blockId].neurons[target->neuronId];
+            weightSum += neuron->potential * target->connectionWeight;
+        }
+
+        out->outputVal = 0.0f;
+        if (weightSum != 0.0f) {
+            out->outputVal = 1.0f / (1.0f + exp(-1.0f * weightSum));
+        }
+        // std::cout << out->outputVal << " : " << out->exprectedVal << std::endl;
+    }
+    // std::cout << "-------------------------------------" << std::endl;
 }
 
 #endif  // HANAMI_CORE_PROCESSING_H

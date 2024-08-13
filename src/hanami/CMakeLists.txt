@@ -85,7 +85,6 @@ set(SOURCES
     src/core/io/checkpoint/disc/checkpoint_io.h
     src/core/io/checkpoint/io_interface.h
     src/core/io/data_set/dataset_file_io.h
-    src/core/processing/cluster_io_functions.h
     src/core/processing/cluster_resize.h
     src/core/processing/cpu/backpropagation.h
     src/core/processing/cpu/cpu_host.h

@@ -25,7 +25,7 @@
 #include <api/websocket/cluster_io.h>
 #include <core/cluster/cluster.h>
 #include <core/cluster/objects.h>
-#include <core/processing/cluster_io_functions.h>
+#include <core/processing/cpu/processing.h>
 #include <hanami_common/buffer/item_buffer.h>
 
 /**
