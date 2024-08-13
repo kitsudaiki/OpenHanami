@@ -22,7 +22,6 @@
 
 #include "cuda_host.h"
 
-#include <core/processing/cluster_io_functions.h>
 #include <core/processing/cluster_resize.h>
 #include <core/processing/cuda/cuda_functions.h>
 

@@ -25,7 +25,6 @@
 
 #include <core/cluster/cluster.h>
 #include <core/cluster/objects.h>
-#include <core/processing/cluster_io_functions.h>
 #include <core/processing/cpu/cpu_host.h>
 #include <core/processing/logical_host.h>
 #include <hanami_root.h>
@@ -149,6 +148,73 @@ backpropagateConnections(Hexagon* hexagon,
 
         backpropagateSection(synapseSection, connection, targetNeuronBlock, sourceLoc.neuron);
     }
+}
+
+// Derivative of the activation function
+inline float
+sigmoidDerivative(const float x)
+{
+    return x * (1 - x);
+}
+
+/**
+ * @brief backpropagate output-nodes
+ *
+ * @param hexagons list of all hexagons
+ * @param outputInterface pointer ot the connected output-interface
+ * @param settings pointer cluster-settings
+ * @param hexagonId current hexagon-id
+ *
+ * @return always true
+ */
+inline bool
+backpropagateOutput(std::vector<Hexagon>& hexagons,
+                    OutputInterface* outputInterface,
+                    const ClusterSettings* settings,
+                    const uint32_t hexagonId)
+{
+    Neuron* neuron = nullptr;
+    Hexagon* hexagon = nullptr;
+    OutputNeuron* out = nullptr;
+    OutputTargetLocationPtr* target = nullptr;
+    float totalDelta = 0.0f;
+    float learnValue = 0.1f;
+    float delta = 0.0f;
+    float update = 0.0f;
+    uint64_t i = 0;
+    uint64_t j = 0;
+
+    for (i = 0; i < outputInterface->outputNeurons.size(); ++i) {
+        out = &outputInterface->outputNeurons[i];
+        hexagon = &hexagons[outputInterface->targetHexagonId];
+        delta = out->outputVal - out->exprectedVal;
+        update = delta * sigmoidDerivative(out->outputVal);
+
+        for (j = 0; j < NUMBER_OF_OUTPUT_CONNECTIONS; ++j) {
+            target = &out->targets[j];
+
+            if (target->blockId == UNINIT_STATE_16) {
+                continue;
+            }
+
+            neuron = &hexagon->neuronBlocks[target->blockId].neurons[target->neuronId];
+            neuron->delta += update * target->connectionWeight;
+            target->connectionWeight -= update * learnValue * neuron->potential;
+
+            totalDelta += abs(delta);
+        }
+    }
+
+    hexagon = &hexagons[hexagonId];
+    for (i = 0; i < hexagon->neuronBlocks.size(); ++i) {
+        for (j = 0; j < NEURONS_PER_NEURONBLOCK; ++j) {
+            neuron = &hexagon->neuronBlocks[i].neurons[j];
+            neuron->delta *= sigmoidDerivative(neuron->potential);
+        }
+    }
+
+    return true;
+    // return totalDelta > settings->backpropagationBorder;
 }
 
 #endif  // HANAMI_CORE_BACKPROPAGATION_H

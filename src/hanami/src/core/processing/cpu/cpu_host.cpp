@@ -22,7 +22,6 @@
 
 #include "cpu_host.h"
 
-#include <core/processing/cluster_io_functions.h>
 #include <core/processing/cluster_resize.h>
 #include <core/processing/cpu/backpropagation.h>
 #include <core/processing/cpu/processing.h>
