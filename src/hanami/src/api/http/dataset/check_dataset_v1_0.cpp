@@ -61,13 +61,12 @@ CheckMnistDataSetV1M0::CheckMnistDataSetV1M0()
  */
 bool
 CheckMnistDataSetV1M0::runTask(BlossomIO& blossomIO,
-                               const json& context,
+                               const Hanami::UserContext& userContext,
                                BlossomStatus& status,
                                Hanami::ErrorContainer& error)
 {
     const std::string referenceUuid = blossomIO.input["reference_uuid"];
     const std::string datasetUuid = blossomIO.input["uuid"];
-    const Hanami::UserContext userContext = convertContext(context);
 
     DataSetFileHandle referenceFileHandle;
     DataSetFileHandle datasetFileHandle;

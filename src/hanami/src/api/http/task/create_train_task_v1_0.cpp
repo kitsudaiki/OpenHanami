@@ -115,13 +115,12 @@ CreateTrainTaskV1M0::CreateTrainTaskV1M0()
  */
 bool
 CreateTrainTaskV1M0::runTask(BlossomIO& blossomIO,
-                             const json& context,
+                             const Hanami::UserContext& userContext,
                              BlossomStatus& status,
                              Hanami::ErrorContainer& error)
 {
     const std::string taskName = blossomIO.input["name"];
     const std::string clusterUuid = blossomIO.input["cluster_uuid"];
-    const Hanami::UserContext userContext = convertContext(context);
     const json inputs = blossomIO.input["inputs"];
     const json outputs = blossomIO.input["outputs"];
     const uint64_t timeLength = blossomIO.input["time_length"];

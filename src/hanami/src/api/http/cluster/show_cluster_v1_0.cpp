@@ -67,11 +67,10 @@ ShowClusterV1M0::ShowClusterV1M0() : Blossom("Show information of a specific clu
  */
 bool
 ShowClusterV1M0::runTask(BlossomIO& blossomIO,
-                         const json& context,
+                         const Hanami::UserContext& userContext,
                          BlossomStatus& status,
                          Hanami::ErrorContainer& error)
 {
-    const Hanami::UserContext userContext = convertContext(context);
     const std::string clusterUuid = blossomIO.input["uuid"];
 
     // get data from table

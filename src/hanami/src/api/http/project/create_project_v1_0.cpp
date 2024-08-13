@@ -73,12 +73,12 @@ CreateProjectV1M0::CreateProjectV1M0() : Blossom("Register a new project within 
  */
 bool
 CreateProjectV1M0::runTask(BlossomIO& blossomIO,
-                           const json& context,
+                           const Hanami::UserContext& userContext,
                            BlossomStatus& status,
                            Hanami::ErrorContainer& error)
 {
     // check if admin
-    if (context["is_admin"] == false) {
+    if (userContext.isAdmin == false) {
         status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
@@ -86,7 +86,7 @@ CreateProjectV1M0::runTask(BlossomIO& blossomIO,
     // get information from request
     const std::string projectId = blossomIO.input["id"];
     const std::string projectName = blossomIO.input["name"];
-    const std::string creatorId = context["id"];
+    const std::string creatorId = userContext.userId;
 
     // convert values
     ProjectTable::ProjectDbEntry dbEntry;

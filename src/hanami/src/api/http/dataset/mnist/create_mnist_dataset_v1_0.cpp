@@ -81,7 +81,7 @@ CreateMnistDataSetV1M0::CreateMnistDataSetV1M0() : Blossom("Init new mnist-file 
 
 bool
 CreateMnistDataSetV1M0::runTask(BlossomIO& blossomIO,
-                                const json& context,
+                                const Hanami::UserContext& userContext,
                                 BlossomStatus& status,
                                 Hanami::ErrorContainer& error)
 {
@@ -89,7 +89,6 @@ CreateMnistDataSetV1M0::runTask(BlossomIO& blossomIO,
     const long inputDataSize = blossomIO.input["input_data_size"];
     const long labelDataSize = blossomIO.input["label_data_size"];
     const std::string uuid = generateUuid().toString();
-    const Hanami::UserContext userContext = convertContext(context);
 
     // get directory to store data from config
     bool success = false;

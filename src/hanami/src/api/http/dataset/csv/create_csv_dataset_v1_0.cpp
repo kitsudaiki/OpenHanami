@@ -75,14 +75,13 @@ CreateCsvDataSetV1M0::CreateCsvDataSetV1M0() : Blossom("Init new csv-file datase
 
 bool
 CreateCsvDataSetV1M0::runTask(BlossomIO& blossomIO,
-                              const json& context,
+                              const Hanami::UserContext& userContext,
                               BlossomStatus& status,
                               Hanami::ErrorContainer& error)
 {
     const std::string name = blossomIO.input["name"];
     const long inputDataSize = blossomIO.input["input_data_size"];
     const std::string uuid = generateUuid().toString();
-    const Hanami::UserContext userContext = convertContext(context);
 
     // get directory to store data from config
     bool success = false;

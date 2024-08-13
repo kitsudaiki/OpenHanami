@@ -48,12 +48,11 @@ DeleteCheckpointV1M0::DeleteCheckpointV1M0() : Blossom("Delete a result-set from
  */
 bool
 DeleteCheckpointV1M0::runTask(BlossomIO& blossomIO,
-                              const json& context,
+                              const Hanami::UserContext& userContext,
                               BlossomStatus& status,
                               Hanami::ErrorContainer& error)
 {
     const std::string checkpointUuid = blossomIO.input["uuid"];
-    const Hanami::UserContext userContext = convertContext(context);
 
     // get location from database
     CheckpointTable::CheckpointDbEntry result;

@@ -47,7 +47,7 @@ GetThreadMappingV1M0::GetThreadMappingV1M0()
  */
 bool
 GetThreadMappingV1M0::runTask(BlossomIO& blossomIO,
-                              const json&,
+                              const Hanami::UserContext&,
                               BlossomStatus&,
                               Hanami::ErrorContainer&)
 {

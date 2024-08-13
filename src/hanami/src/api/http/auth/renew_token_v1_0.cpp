@@ -97,11 +97,10 @@ chooseProject(json& tokenUserData,
  */
 bool
 RenewTokenV1M0::runTask(BlossomIO& blossomIO,
-                        const json& context,
+                        const Hanami::UserContext& userContext,
                         BlossomStatus& status,
                         Hanami::ErrorContainer& error)
 {
-    const Hanami::UserContext userContext = convertContext(context);
     const std::string projectId = blossomIO.input["project_id"];
 
     // get data from table

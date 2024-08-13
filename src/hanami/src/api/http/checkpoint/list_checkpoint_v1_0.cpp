@@ -56,12 +56,10 @@ ListCheckpointV1M0::ListCheckpointV1M0() : Blossom("List checkpoints of all visi
  */
 bool
 ListCheckpointV1M0::runTask(BlossomIO& blossomIO,
-                            const json& context,
+                            const Hanami::UserContext& userContext,
                             BlossomStatus& status,
                             Hanami::ErrorContainer& error)
 {
-    const Hanami::UserContext userContext = convertContext(context);
-
     // get data from table
     Hanami::TableItem table;
     if (CheckpointTable::getInstance()->getAllCheckpoint(table, userContext, false, error) == false)

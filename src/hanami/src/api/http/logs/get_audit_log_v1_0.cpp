@@ -74,11 +74,10 @@ GetAuditLogV1M0::GetAuditLogV1M0() : Blossom("Get audit-log of a user.")
  */
 bool
 GetAuditLogV1M0::runTask(BlossomIO& blossomIO,
-                         const json& context,
+                         const Hanami::UserContext& userContext,
                          BlossomStatus& status,
                          Hanami::ErrorContainer& error)
 {
-    const Hanami::UserContext userContext = convertContext(context);
     const uint64_t page = blossomIO.input["page"];
 
     std::string userId = "";

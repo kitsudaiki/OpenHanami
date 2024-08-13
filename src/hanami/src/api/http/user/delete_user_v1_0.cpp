@@ -52,18 +52,18 @@ DeleteUserV1M0::DeleteUserV1M0() : Blossom("Delete a specific user from the data
  */
 bool
 DeleteUserV1M0::runTask(BlossomIO& blossomIO,
-                        const json& context,
+                        const Hanami::UserContext& userContext,
                         BlossomStatus& status,
                         Hanami::ErrorContainer& error)
 {
     // check if admin
-    if (context["is_admin"] == false) {
+    if (userContext.isAdmin == false) {
         status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
 
     // get information from request
-    const std::string deleterId = context["id"];
+    const std::string deleterId = userContext.userId;
     const std::string userId = blossomIO.input["id"];
 
     // prevent user from deleting himself

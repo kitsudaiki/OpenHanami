@@ -61,12 +61,12 @@ ListUsersV1M0::ListUsersV1M0() : Blossom("Get information of all registered user
  */
 bool
 ListUsersV1M0::runTask(BlossomIO& blossomIO,
-                       const json& context,
+                       const Hanami::UserContext& userContext,
                        BlossomStatus& status,
                        Hanami::ErrorContainer& error)
 {
     // check if admin
-    if (context["is_admin"] == false) {
+    if (userContext.isAdmin == false) {
         status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }

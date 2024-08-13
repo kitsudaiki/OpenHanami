@@ -77,13 +77,12 @@ CreateClusterV1M0::CreateClusterV1M0() : Blossom("Create new cluster.")
  */
 bool
 CreateClusterV1M0::runTask(BlossomIO& blossomIO,
-                           const json& context,
+                           const Hanami::UserContext& userContext,
                            BlossomStatus& status,
                            Hanami::ErrorContainer& error)
 {
     const std::string clusterName = blossomIO.input["name"];
     const std::string base64Template = blossomIO.input["template"];
-    const Hanami::UserContext userContext = convertContext(context);
 
     // check if cluster-name already exist within the table
     ReturnStatus ret

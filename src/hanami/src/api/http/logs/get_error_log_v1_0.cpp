@@ -74,11 +74,10 @@ GetErrorLogV1M0::GetErrorLogV1M0()
  */
 bool
 GetErrorLogV1M0::runTask(BlossomIO& blossomIO,
-                         const json& context,
+                         const Hanami::UserContext& userContext,
                          BlossomStatus& status,
                          Hanami::ErrorContainer& error)
 {
-    const Hanami::UserContext userContext = convertContext(context);
     const uint64_t page = blossomIO.input["page"];
 
     // check that the user is an admin

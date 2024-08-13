@@ -47,7 +47,7 @@ GetSystemInfoV1M0::GetSystemInfoV1M0()
  */
 bool
 GetSystemInfoV1M0::runTask(BlossomIO& blossomIO,
-                           const json&,
+                           const Hanami::UserContext&,
                            BlossomStatus&,
                            Hanami::ErrorContainer&)
 {

@@ -114,7 +114,7 @@ Blossom::fillDefaultValues(json& values)
  * @brief execute blossom
  *
  * @param blossomIO leaf-object for values-handling while processing
- * @param context const-map with global accasible values
+ * @param userContext const-map with global accasible values
  * @param status reference for status-output
  * @param error reference for error-output
  *
@@ -122,7 +122,7 @@ Blossom::fillDefaultValues(json& values)
  */
 bool
 Blossom::growBlossom(BlossomIO& blossomIO,
-                     const json& context,
+                     const Hanami::UserContext& userContext,
                      BlossomStatus& status,
                      Hanami::ErrorContainer& error)
 {
@@ -144,7 +144,7 @@ Blossom::growBlossom(BlossomIO& blossomIO,
     }
 
     // handle result
-    if (runTask(blossomIO, context, status, error) == false) {
+    if (runTask(blossomIO, userContext, status, error) == false) {
         if (status.statusCode == INTERNAL_SERVER_ERROR_RTYPE) {
             createError(blossomIO, error);
         }

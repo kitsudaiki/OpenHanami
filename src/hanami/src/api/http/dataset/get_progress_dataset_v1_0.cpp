@@ -59,12 +59,11 @@ GetProgressDataSetV1M0::GetProgressDataSetV1M0()
  */
 bool
 GetProgressDataSetV1M0::runTask(BlossomIO& blossomIO,
-                                const json& context,
+                                const Hanami::UserContext& userContext,
                                 BlossomStatus& status,
                                 Hanami::ErrorContainer& error)
 {
     const std::string datasetUuid = blossomIO.input["uuid"];
-    const Hanami::UserContext userContext = convertContext(context);
 
     json databaseOutput;
     ReturnStatus ret = DataSetTable::getInstance()->getDataSet(

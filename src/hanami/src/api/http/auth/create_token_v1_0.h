@@ -32,7 +32,7 @@ class CreateTokenV1M0 : public Blossom
 
    protected:
     bool runTask(BlossomIO& blossomIO,
-                 const json&,
+                 const Hanami::UserContext&,
                  BlossomStatus& status,
                  Hanami::ErrorContainer& error);
 };

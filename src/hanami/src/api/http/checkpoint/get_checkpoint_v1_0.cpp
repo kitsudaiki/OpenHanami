@@ -57,12 +57,11 @@ GetCheckpointV1M0::GetCheckpointV1M0() : Blossom("Get checkpoint of a cluster.")
  */
 bool
 GetCheckpointV1M0::runTask(BlossomIO& blossomIO,
-                           const json& context,
+                           const Hanami::UserContext& userContext,
                            BlossomStatus& status,
                            Hanami::ErrorContainer& error)
 {
     const std::string checkpointUuid = blossomIO.input["uuid"];
-    const Hanami::UserContext userContext = convertContext(context);
 
     // get checkpoint-info from database
     const ReturnStatus ret = CheckpointTable::getInstance()->getCheckpoint(

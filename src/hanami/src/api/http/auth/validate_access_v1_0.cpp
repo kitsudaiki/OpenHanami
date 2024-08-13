@@ -91,7 +91,7 @@ ValidateAccessV1M0::ValidateAccessV1M0()
  */
 bool
 ValidateAccessV1M0::runTask(BlossomIO& blossomIO,
-                            const json&,
+                            const Hanami::UserContext&,
                             BlossomStatus& status,
                             Hanami::ErrorContainer& error)
 {

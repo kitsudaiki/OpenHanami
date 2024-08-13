@@ -73,14 +73,13 @@ SetClusterModeV1M0::SetClusterModeV1M0() : Blossom("Set mode of the cluster.")
  */
 bool
 SetClusterModeV1M0::runTask(BlossomIO& blossomIO,
-                            const json& context,
+                            const Hanami::UserContext& userContext,
                             BlossomStatus& status,
                             Hanami::ErrorContainer& error)
 {
     const std::string clusterUuid = blossomIO.input["uuid"];
     // const std::string connectionUuid = blossomIO.input["connection_uuid"];
     const std::string newState = blossomIO.input["new_state"];
-    const Hanami::UserContext userContext = convertContext(context);
 
     // get data from table
     json clusterResult;

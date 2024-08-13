@@ -69,14 +69,13 @@ FinalizeMnistDataSetV1M0::FinalizeMnistDataSetV1M0()
  */
 bool
 FinalizeMnistDataSetV1M0::runTask(BlossomIO& blossomIO,
-                                  const json& context,
+                                  const Hanami::UserContext& userContext,
                                   BlossomStatus& status,
                                   Hanami::ErrorContainer& error)
 {
     const std::string uuid = blossomIO.input["uuid"];
     const std::string inputUuid = blossomIO.input["uuid_input_file"];
     const std::string labelUuid = blossomIO.input["uuid_label_file"];
-    const Hanami::UserContext userContext = convertContext(context);
 
     // get location from database
     DataSetTable::DataSetDbEntry result;

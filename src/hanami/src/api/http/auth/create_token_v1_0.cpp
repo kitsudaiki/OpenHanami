@@ -74,7 +74,7 @@ CreateTokenV1M0::CreateTokenV1M0()
  */
 bool
 CreateTokenV1M0::runTask(BlossomIO& blossomIO,
-                         const json&,
+                         const Hanami::UserContext&,
                          BlossomStatus& status,
                          Hanami::ErrorContainer& error)
 {
