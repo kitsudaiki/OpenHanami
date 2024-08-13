@@ -64,11 +64,10 @@ ListUserProjectsV1M0::ListUserProjectsV1M0()
  */
 bool
 ListUserProjectsV1M0::runTask(BlossomIO& blossomIO,
-                              const json& context,
+                              const Hanami::UserContext& userContext,
                               BlossomStatus& status,
                               Hanami::ErrorContainer& error)
 {
-    const Hanami::UserContext userContext = convertContext(context);
     std::string userId = blossomIO.input["user_id"];
 
     // only admin is allowed to request the project-list of other users

@@ -115,13 +115,12 @@ CreateRequestTaskV1M0::CreateRequestTaskV1M0()
  */
 bool
 CreateRequestTaskV1M0::runTask(BlossomIO& blossomIO,
-                               const json& context,
+                               const Hanami::UserContext& userContext,
                                BlossomStatus& status,
                                Hanami::ErrorContainer& error)
 {
     const std::string name = blossomIO.input["name"];
     const std::string clusterUuid = blossomIO.input["cluster_uuid"];
-    const Hanami::UserContext userContext = convertContext(context);
     const json inputs = blossomIO.input["inputs"];
     const uint64_t timeLength = blossomIO.input["time_length"];
 

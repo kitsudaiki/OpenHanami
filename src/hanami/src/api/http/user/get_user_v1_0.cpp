@@ -74,12 +74,12 @@ GetUserV1M0::GetUserV1M0() : Blossom("Show information of a specific user.")
  */
 bool
 GetUserV1M0::runTask(BlossomIO& blossomIO,
-                     const json& context,
+                     const Hanami::UserContext& userContext,
                      BlossomStatus& status,
                      Hanami::ErrorContainer& error)
 {
     // check if admin
-    if (context["is_admin"] == false) {
+    if (userContext.isAdmin == false) {
         status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }

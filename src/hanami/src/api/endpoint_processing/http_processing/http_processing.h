@@ -68,7 +68,7 @@ class HttpProcessing
     bool triggerBlossom(json& result,
                         const std::string& id,
                         const HttpRequestType type,
-                        const json& context,
+                        const Hanami::UserContext& userContext,
                         const json& initialValues,
                         BlossomStatus& status,
                         Hanami::ErrorContainer& error);

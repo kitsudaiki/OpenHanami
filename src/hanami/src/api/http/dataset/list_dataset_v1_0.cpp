@@ -56,12 +56,10 @@ ListDataSetV1M0::ListDataSetV1M0() : Blossom("List all visible datasets.")
  */
 bool
 ListDataSetV1M0::runTask(BlossomIO& blossomIO,
-                         const json& context,
+                         const Hanami::UserContext& userContext,
                          BlossomStatus& status,
                          Hanami::ErrorContainer& error)
 {
-    const Hanami::UserContext userContext = convertContext(context);
-
     // get data from table
     Hanami::TableItem table;
     if (DataSetTable::getInstance()->getAllDataSet(table, userContext, error) == false) {

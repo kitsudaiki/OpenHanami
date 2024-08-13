@@ -78,11 +78,10 @@ SwitchHostsV1M0::SwitchHostsV1M0()
  */
 bool
 SwitchHostsV1M0::runTask(BlossomIO& blossomIO,
-                         const json& context,
+                         const Hanami::UserContext& userContext,
                          BlossomStatus& status,
                          Hanami::ErrorContainer& error)
 {
-    const Hanami::UserContext userContext = convertContext(context);
     const std::string clusterUuid = blossomIO.input["cluster_uuid"];
     const std::string hostUuid = blossomIO.input["host_uuid"];
 

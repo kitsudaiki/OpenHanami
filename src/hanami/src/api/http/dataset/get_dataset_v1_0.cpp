@@ -77,12 +77,11 @@ GetDataSetV1M0::GetDataSetV1M0() : Blossom("Get information of a specific datase
  */
 bool
 GetDataSetV1M0::runTask(BlossomIO& blossomIO,
-                        const json& context,
+                        const Hanami::UserContext& userContext,
                         BlossomStatus& status,
                         Hanami::ErrorContainer& error)
 {
     const std::string datasetUuid = blossomIO.input["uuid"];
-    const Hanami::UserContext userContext = convertContext(context);
 
     // get data-set information from database
     DataSetTable::DataSetDbEntry entry;

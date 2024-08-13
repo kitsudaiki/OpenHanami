@@ -81,19 +81,19 @@ RemoveProjectFromUserV1M0::RemoveProjectFromUserV1M0()
  */
 bool
 RemoveProjectFromUserV1M0::runTask(BlossomIO& blossomIO,
-                                   const json& context,
+                                   const Hanami::UserContext& userContext,
                                    BlossomStatus& status,
                                    Hanami::ErrorContainer& error)
 {
     // check if admin
-    if (context["is_admin"] == false) {
+    if (userContext.isAdmin == false) {
         status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
 
     const std::string userId = blossomIO.input["id"];
     const std::string projectId = blossomIO.input["project_id"];
-    const std::string creatorId = context["id"];
+    const std::string creatorId = userContext.userId;
 
     // check if user already exist within the table
     UserTable::UserDbEntry getResult;

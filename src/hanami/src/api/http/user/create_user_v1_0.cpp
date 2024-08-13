@@ -88,18 +88,18 @@ CreateUserV1M0::CreateUserV1M0() : Blossom("Register a new user within Misaki.")
  */
 bool
 CreateUserV1M0::runTask(BlossomIO& blossomIO,
-                        const json& context,
+                        const Hanami::UserContext& userContext,
                         BlossomStatus& status,
                         Hanami::ErrorContainer& error)
 {
     // check if admin
-    if (context["is_admin"] == false) {
+    if (userContext.isAdmin == false) {
         status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }
 
     const std::string newUserId = blossomIO.input["id"];
-    const std::string creatorId = context["id"];
+    const std::string creatorId = userContext.userId;
 
     // genreate hash from password and random salt
     std::string pwHash;

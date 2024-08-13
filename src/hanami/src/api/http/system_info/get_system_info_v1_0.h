@@ -31,7 +31,10 @@ class GetSystemInfoV1M0 : public Blossom
     GetSystemInfoV1M0();
 
    protected:
-    bool runTask(BlossomIO& blossomIO, const json&, BlossomStatus&, Hanami::ErrorContainer&);
+    bool runTask(BlossomIO& blossomIO,
+                 const Hanami::UserContext&,
+                 BlossomStatus&,
+                 Hanami::ErrorContainer&);
 };
 
 #endif  // AZUKIHEART_GETSYSTEMINFO_H

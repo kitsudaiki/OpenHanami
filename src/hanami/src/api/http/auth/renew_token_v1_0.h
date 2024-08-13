@@ -32,7 +32,7 @@ class RenewTokenV1M0 : public Blossom
 
    protected:
     bool runTask(BlossomIO& blossomIO,
-                 const json& context,
+                 const Hanami::UserContext& context,
                  BlossomStatus& status,
                  Hanami::ErrorContainer& error);
 };

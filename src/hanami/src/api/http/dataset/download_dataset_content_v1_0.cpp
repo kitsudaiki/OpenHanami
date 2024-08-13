@@ -69,7 +69,7 @@ DownloadDatasetContentV1M0::DownloadDatasetContentV1M0()
  */
 bool
 DownloadDatasetContentV1M0::runTask(BlossomIO& blossomIO,
-                                    const json& context,
+                                    const Hanami::UserContext& userContext,
                                     BlossomStatus& status,
                                     Hanami::ErrorContainer& error)
 {
@@ -77,7 +77,6 @@ DownloadDatasetContentV1M0::runTask(BlossomIO& blossomIO,
     const std::string columnName = blossomIO.input["column_name"];
     const uint64_t rowOffset = blossomIO.input["row_offset"];
     const uint64_t numberOfRows = blossomIO.input["number_of_rows"];
-    const Hanami::UserContext userContext = convertContext(context);
 
     DataSetFileHandle datasetFileHandle;
 

@@ -67,13 +67,12 @@ FinalizeCsvDataSetV1M0::FinalizeCsvDataSetV1M0()
  */
 bool
 FinalizeCsvDataSetV1M0::runTask(BlossomIO& blossomIO,
-                                const json& context,
+                                const Hanami::UserContext& userContext,
                                 BlossomStatus& status,
                                 Hanami::ErrorContainer& error)
 {
     const std::string uuid = blossomIO.input["uuid"];
     const std::string inputUuid = blossomIO.input["uuid_input_file"];
-    const Hanami::UserContext userContext = convertContext(context);
 
     // get location from database
     DataSetTable::DataSetDbEntry result;

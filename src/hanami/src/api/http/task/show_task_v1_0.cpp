@@ -81,13 +81,12 @@ ShowTaskV1M0::ShowTaskV1M0() : Blossom("Show information of a specific task.")
  */
 bool
 ShowTaskV1M0::runTask(BlossomIO& blossomIO,
-                      const json& context,
+                      const Hanami::UserContext& userContext,
                       BlossomStatus& status,
                       Hanami::ErrorContainer& error)
 {
     const std::string clusterUuid = blossomIO.input["cluster_uuid"];
     const std::string taskUuid = blossomIO.input["uuid"];
-    const Hanami::UserContext userContext = convertContext(context);
 
     // check if user exist within the table
     json getResult;

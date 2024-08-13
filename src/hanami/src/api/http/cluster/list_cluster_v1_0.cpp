@@ -56,12 +56,10 @@ ListClusterV1M0::ListClusterV1M0() : Blossom("List all visible clusters.")
  */
 bool
 ListClusterV1M0::runTask(BlossomIO& blossomIO,
-                         const json& context,
+                         const Hanami::UserContext& userContext,
                          BlossomStatus& status,
                          Hanami::ErrorContainer& error)
 {
-    const Hanami::UserContext userContext = convertContext(context);
-
     // get data from table
     Hanami::TableItem table;
     if (ClusterTable::getInstance()->getAllCluster(table, userContext, error) == false) {

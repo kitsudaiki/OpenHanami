@@ -52,12 +52,10 @@ ListHostsV1M0::ListHostsV1M0() : Blossom("List all logical hosts.")
  */
 bool
 ListHostsV1M0::runTask(BlossomIO& blossomIO,
-                       const json& context,
+                       const Hanami::UserContext& userContext,
                        BlossomStatus& status,
                        Hanami::ErrorContainer& error)
 {
-    const Hanami::UserContext userContext = convertContext(context);
-
     // prepare header
     json header = json::array();
     header.push_back("uuid");

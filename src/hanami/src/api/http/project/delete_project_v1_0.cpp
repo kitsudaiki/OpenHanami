@@ -52,12 +52,12 @@ DeleteProjectV1M0::DeleteProjectV1M0() : Blossom("Delete a specific user from th
  */
 bool
 DeleteProjectV1M0::runTask(BlossomIO& blossomIO,
-                           const json& context,
+                           const Hanami::UserContext& userContext,
                            BlossomStatus& status,
                            Hanami::ErrorContainer& error)
 {
     // check if admin
-    if (context["is_admin"] == false) {
+    if (userContext.isAdmin == false) {
         status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }

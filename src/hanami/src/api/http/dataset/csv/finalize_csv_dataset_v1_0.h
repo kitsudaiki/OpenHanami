@@ -35,7 +35,7 @@ class FinalizeCsvDataSetV1M0 : public Blossom
 
    protected:
     bool runTask(BlossomIO& blossomIO,
-                 const json& context,
+                 const Hanami::UserContext& userContext,
                  BlossomStatus& status,
                  Hanami::ErrorContainer& error);
 

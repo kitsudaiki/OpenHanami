@@ -68,13 +68,12 @@ SaveClusterV1M0::SaveClusterV1M0() : Blossom("Save a cluster.")
  */
 bool
 SaveClusterV1M0::runTask(BlossomIO& blossomIO,
-                         const json& context,
+                         const Hanami::UserContext& userContext,
                          BlossomStatus& status,
                          Hanami::ErrorContainer& error)
 {
     const std::string clusterUuid = blossomIO.input["cluster_uuid"];
     const std::string name = blossomIO.input["name"];
-    const Hanami::UserContext userContext = convertContext(context);
 
     // get data from table
     json clusterResult;

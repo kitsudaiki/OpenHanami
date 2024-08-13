@@ -165,7 +165,7 @@ class Blossom
 
    protected:
     virtual bool runTask(BlossomIO& blossomIO,
-                         const json& context,
+                         const Hanami::UserContext& userContext,
                          BlossomStatus& status,
                          Hanami::ErrorContainer& error)
         = 0;
@@ -183,7 +183,7 @@ class Blossom
     std::map<std::string, FieldDef> m_outputValidationMap;
 
     bool growBlossom(BlossomIO& blossomIO,
-                     const json& context,
+                     const Hanami::UserContext& userContext,
                      BlossomStatus& status,
                      Hanami::ErrorContainer& error);
     bool validateFieldsCompleteness(const json& input,

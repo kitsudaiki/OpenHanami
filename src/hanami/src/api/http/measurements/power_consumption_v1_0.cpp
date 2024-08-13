@@ -43,7 +43,7 @@ PowerConsumptionV1M0::PowerConsumptionV1M0() : Blossom("Request the power-measur
  */
 bool
 PowerConsumptionV1M0::runTask(BlossomIO& blossomIO,
-                              const json&,
+                              const Hanami::UserContext&,
                               BlossomStatus&,
                               Hanami::ErrorContainer&)
 {

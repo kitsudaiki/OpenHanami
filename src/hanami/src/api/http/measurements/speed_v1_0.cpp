@@ -43,7 +43,10 @@ SpeedV1M0::SpeedV1M0() : Blossom("Request the speed of the CPU")
  * @brief runTask
  */
 bool
-SpeedV1M0::runTask(BlossomIO& blossomIO, const json&, BlossomStatus&, Hanami::ErrorContainer&)
+SpeedV1M0::runTask(BlossomIO& blossomIO,
+                   const Hanami::UserContext&,
+                   BlossomStatus&,
+                   Hanami::ErrorContainer&)
 {
     blossomIO.output["current_speed"] = SpeedMeasuring::getInstance()->getJson();
 

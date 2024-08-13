@@ -58,12 +58,12 @@ ListProjectsV1M0::ListProjectsV1M0() : Blossom("Get information of all registere
  */
 bool
 ListProjectsV1M0::runTask(BlossomIO& blossomIO,
-                          const json& context,
+                          const Hanami::UserContext& userContext,
                           BlossomStatus& status,
                           Hanami::ErrorContainer& error)
 {
     // check if admin
-    if (context["is_admin"] == false) {
+    if (userContext.isAdmin == false) {
         status.statusCode = UNAUTHORIZED_RTYPE;
         return false;
     }

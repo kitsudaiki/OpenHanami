@@ -54,11 +54,10 @@ DeleteTaskV1M0::DeleteTaskV1M0()
  */
 bool
 DeleteTaskV1M0::runTask(BlossomIO& blossomIO,
-                        const json& context,
+                        const Hanami::UserContext& userContext,
                         BlossomStatus& status,
                         Hanami::ErrorContainer& error)
 {
-    const Hanami::UserContext userContext = convertContext(context);
     const std::string taskUuid = blossomIO.input["uuid"];
     const std::string clusterUuid = blossomIO.input["cluster_uuid"];
 

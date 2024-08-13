@@ -68,11 +68,10 @@ ListTaskV1M0::ListTaskV1M0() : Blossom("List all visible tasks of a specific clu
  */
 bool
 ListTaskV1M0::runTask(BlossomIO& blossomIO,
-                      const json& context,
+                      const Hanami::UserContext& userContext,
                       BlossomStatus& status,
                       Hanami::ErrorContainer& error)
 {
-    const Hanami::UserContext userContext = convertContext(context);
     const std::string clusterUuid = blossomIO.input["cluster_uuid"];
 
     // check if user exist within the table

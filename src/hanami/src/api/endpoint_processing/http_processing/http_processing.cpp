@@ -151,7 +151,7 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
             if (triggerBlossom(result,
                                tokenEndpointPath,
                                POST_TYPE,
-                               json::object(),
+                               Hanami::UserContext(),
                                inputValuesJson,
                                status,
                                error)
@@ -172,7 +172,7 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
         if (triggerBlossom(tokenData,
                            authEndpointPath,
                            GET_TYPE,
-                           json::object(),
+                           Hanami::UserContext(),
                            tokenInputValues,
                            status,
                            error)
@@ -202,10 +202,11 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
         }
 
         // make real request
+        const Hanami::UserContext userContext = convertContext(tokenData);
         if (triggerBlossom(result,
                            hanamiRequest.targetEndpoint,
                            hanamiRequest.httpType,
-                           tokenData,
+                           userContext,
                            inputValuesJson,
                            status,
                            error)
@@ -249,7 +250,7 @@ bool
 HttpProcessing::triggerBlossom(json& result,
                                const std::string& id,
                                const HttpRequestType type,
-                               const json& context,
+                               const Hanami::UserContext& userContext,
                                const json& initialValues,
                                BlossomStatus& status,
                                Hanami::ErrorContainer& error)
@@ -289,7 +290,7 @@ HttpProcessing::triggerBlossom(json& result,
     }
 
     // process blossom
-    if (blossom->growBlossom(blossomIO, context, status, error) == false) {
+    if (blossom->growBlossom(blossomIO, userContext, status, error) == false) {
         return false;
     }
 

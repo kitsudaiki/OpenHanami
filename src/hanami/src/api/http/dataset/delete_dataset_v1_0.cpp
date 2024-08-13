@@ -48,12 +48,11 @@ DeleteDataSetV1M0::DeleteDataSetV1M0() : Blossom("Delete a speific dataset.")
  */
 bool
 DeleteDataSetV1M0::runTask(BlossomIO& blossomIO,
-                           const json& context,
+                           const Hanami::UserContext& userContext,
                            BlossomStatus& status,
                            Hanami::ErrorContainer& error)
 {
     const std::string dataUuid = blossomIO.input["uuid"];
-    const Hanami::UserContext userContext = convertContext(context);
 
     // get location from database
     DataSetTable::DataSetDbEntry result;
