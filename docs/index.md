@@ -10,20 +10,23 @@
 
 ## Intro
 
-Hanami contains an experimental artificial neural network, which can work on unnormalized
-input-data, like sensor measurement data. It provides an as-a-Service architecture within a cloud
-native environment and multi-tenancy. The goal behind Hanami is not to get a higher accuracy than classical neural
-networks like Tensorflow, but to be more flexible and easier to use and more efficient in
-resource-consumption for big amounts of inputs and users.
-
+Hanami contains in its core a custom experimental artificial neural network, which can work on
+unnormalized and unfiltered input-data, like sensor measurement data. The network growth over time
+by creating new nodes and connections between the nodes while learning new data. The base concept
+was created by myself and the code was written from scratch without any frameworks. The goal behind
+Hanami is to create something unique, which works more like the human brain. It wasn't targeted to
+get a higher accuracy than classical artificial neural networks like Tensorflow, but to be more
+flexible and easier to use and more efficient in resource-consumption for big amounts of inputs and
+users. Additionally it also provides an as-a-Service architecture within a cloud native environment
+and multi-tenancy.
 
 ## Current prototypically implemented features
 
 -   **Growing neural network**:
 
-    The neural network, which is the core of the project, growth over time while learning new things
-    by creating new synapses to other nodes, if the input requires this. A resize of the network is
-    also quite linear in complexity.
+    The artificial neural network, which is the core of the project, growth over time while learning
+    new things by creating new nodes and connections between the nodes based on the given input. A
+    resize of the network is also quite linear in complexity.
 
 -   **No normalization of input**
 
@@ -84,7 +87,7 @@ resource-consumption for big amounts of inputs and users.
 
     The 60.000 training pictures of the MNIST handwritten letters can be trained on CPU in about 3
     seconds for the first epoch, without any batch-processing of the input-data and results in an
-    accuracy of 93-94 % after this time.
+    accuracy of 91-93 % after this time.
 
 -   **Generated OpenAPI-Documentation**
 
