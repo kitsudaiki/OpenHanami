@@ -1056,14 +1056,10 @@ network (see documentation of the
         "    3,1,1\n" \
         "    \n" \
         "inputs:\n" \
-        "    picture:\n" \
-        "        target: 1,1,1\n" \
-        "        number_of_inputs: 784\n" \
+        "    picture: 1,1,1\n" \
         "\n" \
         "outputs:\n" \
-        "    label:\n" \
-        "        target: 3,1,1\n" \
-        "        number_of_outputs: 10\n"
+        "    label: 3,1,1\n" \
 
     # request a token for a user, who has admin-permissions
     # see: https://docs.hanami-ai.com/api/sdk_library/#request-token

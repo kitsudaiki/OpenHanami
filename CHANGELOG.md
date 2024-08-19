@@ -1,5 +1,21 @@
 # Changelog
 
+## [Unreleased]
+
+### BREAKING-CHANGES
+
+#### Template-Breaking
+
+- removed `target`-keyword from cluster-templates
+- removed number of nodes from inputs and outputs from the cluster-templates
+
+### Changed
+
+- number of input- and output-neurons now scales with the given data, so defining them hard inside of the cluster-template is not longer necessary
+- moved converting user-context from the endpoints to a central position to avoid unnecessary redundant code
+- moved cluster io-functions internally into the processing and backpropagarion files for the cpu-code
+
+
 ## v0.5.0
 
 **Release-Date**: 2024-08-11

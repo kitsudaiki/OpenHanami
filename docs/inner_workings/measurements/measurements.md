@@ -28,21 +28,22 @@ To define the cluster the following cluster-template was used:
 ```
 version: 1
 settings:
-   neuron_cooldown: 100000000000.0
-   refractory_time: 1
-   max_connection_distance: 1
-   enable_reduction: false
+    neuron_cooldown: 100000000000.0
+    refractory_time: 1
+    max_connection_distance: 1
+    enable_reduction: false
+
 hexagons:
     1,1,1
-        input: test_input
-        number_of_neurons: 25
     2,1,1
-        number_of_neurons: 128
     3,1,1
-        number_of_neurons: 128
     4,1,1
-        output: test_output
-        number_of_neurons: 5
+
+inputs:
+    test_input: 1,1,1
+
+outputs:
+    test_output: 4,1,1
 ```
 
 #### Data-processing
@@ -177,16 +178,21 @@ Here the used cluster-template for this test:
 ```
 version: 1
 settings:
-   enable_reduction: false
+    neuron_cooldown: 100000000000.0
+    refractory_time: 1
+    max_connection_distance: 1
+    enable_reduction: false
+
 hexagons:
     1,1,1
-        input: test_input
-        number_of_neurons: 784
     2,1,1
-        number_of_neurons: 400
     3,1,1
-        output: test_output
-        number_of_neurons: 10
+
+inputs:
+    test_input: 1,1,1
+
+outputs:
+    test_output: 3,1,1
 ```
 
 ### Reduction
