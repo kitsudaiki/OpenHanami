@@ -51,8 +51,6 @@ TrainForward_State::processEvent()
     for (auto& [hexagonName, input] : info->inputs) {
         uint64_t counter = 0;
         InputInterface* inputInterface = &m_cluster->inputInterfaces[hexagonName];
-        inputInterface->ioBuffer.resize(inputInterface->inputNeurons.size()
-                                        - (info->timeLength - 1));
         for (uint64_t t = 0; t < info->timeLength; ++t) {
             if (getDataFromDataSet(inputInterface->ioBuffer, input, info->currentCycle + t, error)
                 != OK)

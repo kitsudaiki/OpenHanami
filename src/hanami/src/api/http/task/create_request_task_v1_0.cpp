@@ -172,6 +172,17 @@ CreateRequestTaskV1M0::runTask(BlossomIO& blossomIO,
         if (numberOfCycles > fileHandle.header.numberOfRows) {
             numberOfCycles = fileHandle.header.numberOfRows;
         }
+
+        // resize number of inputs and size of io-buffer for the given data
+        InputInterface* inputInterface = &cluster->inputInterfaces[hexagonName];
+        const uint64_t numberOfColumns
+            = fileHandle.readSelector.endColumn - fileHandle.readSelector.startColumn;
+        if (inputInterface->inputNeurons.size() < numberOfColumns) {
+            inputInterface->inputNeurons.resize(numberOfColumns);
+        }
+        inputInterface->ioBuffer.resize(inputInterface->inputNeurons.size()
+                                        - (info->timeLength - 1));
+
         info->inputs.try_emplace(hexagonName, std::move(fileHandle));
     }
 

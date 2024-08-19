@@ -199,6 +199,11 @@ recvClusterInputMessage(Cluster* cluster, const void* data, const uint64_t dataS
         }
 
         InputInterface* inputInterface = &it->second;
+        if (inputInterface->inputNeurons.size() < msg.numberofvalues()) {
+            inputInterface->inputNeurons.resize(msg.numberofvalues());
+        }
+        inputInterface->ioBuffer.resize(msg.numberofvalues());
+
         for (uint64_t i = 0; i < msg.numberofvalues(); i++) {
             inputInterface->inputNeurons[i].value = msg.values(i);
         }
@@ -214,6 +219,11 @@ recvClusterInputMessage(Cluster* cluster, const void* data, const uint64_t dataS
         }
 
         OutputInterface* outputInterface = &it->second;
+        if (outputInterface->outputNeurons.size() < msg.numberofvalues()) {
+            outputInterface->outputNeurons.resize(msg.numberofvalues());
+        }
+        outputInterface->ioBuffer.resize(msg.numberofvalues());
+
         for (uint64_t i = 0; i < msg.numberofvalues(); i++) {
             outputInterface->outputNeurons[i].exprectedVal = msg.values(i);
         }
