@@ -187,7 +187,7 @@ uint32_t
 ClusterParserInterface::getHexagonId(const Position& position)
 {
     for (uint32_t i = 0; i < output->hexagons.size(); i++) {
-        if (position == output->hexagons[i].position) {
+        if (position == output->hexagons[i]) {
             return i;
         }
     }

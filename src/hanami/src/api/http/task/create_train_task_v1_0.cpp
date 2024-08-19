@@ -173,6 +173,22 @@ CreateTrainTaskV1M0::runTask(BlossomIO& blossomIO,
         if (numberOfCycles > fileHandle.header.numberOfRows) {
             numberOfCycles = fileHandle.header.numberOfRows;
         }
+
+        // resize number of inputs and size of io-buffer for the given data
+        InputInterface* inputInterface = &cluster->inputInterfaces[hexagonName];
+        const uint64_t numberOfColumns
+            = fileHandle.readSelector.endColumn - fileHandle.readSelector.startColumn;
+        if (inputInterface->inputNeurons.size() < numberOfColumns) {
+            inputInterface->inputNeurons.resize(numberOfColumns);
+        }
+        inputInterface->ioBuffer.resize(inputInterface->inputNeurons.size()
+                                        - (info->timeLength - 1));
+
+        // resize the input-hexagon
+        const uint32_t numberOfNeuronBlocks = (numberOfColumns / NEURONS_PER_NEURONBLOCK) + 1;
+        cluster->hexagons[inputInterface->targetHexagonId].neuronBlocks.resize(
+            numberOfNeuronBlocks);
+
         info->inputs.try_emplace(hexagonName, std::move(fileHandle));
     }
 
@@ -185,9 +201,21 @@ CreateTrainTaskV1M0::runTask(BlossomIO& blossomIO,
         if (numberOfCycles > fileHandle.header.numberOfRows) {
             numberOfCycles = fileHandle.header.numberOfRows;
         }
+
+        // resize number of output and size of io-buffer for the given data
+        OutputInterface* outputInterface = &cluster->outputInterfaces[hexagonName];
+        const uint64_t numberOfColumns
+            = fileHandle.readSelector.endColumn - fileHandle.readSelector.startColumn;
+        if (outputInterface->outputNeurons.size() < numberOfColumns) {
+            outputInterface->outputNeurons.resize(numberOfColumns);
+        }
+        outputInterface->ioBuffer.resize(outputInterface->outputNeurons.size()
+                                         - (info->timeLength - 1));
+
         info->outputs.try_emplace(hexagonName, std::move(fileHandle));
     }
 
+    // dataset with the lowest amount of rows defines the number of cycles
     for (auto& [hexagonName, file_handle] : info->inputs) {
         file_handle.readSelector.endRow = numberOfCycles;
     }

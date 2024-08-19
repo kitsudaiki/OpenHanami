@@ -78,10 +78,6 @@ YY_DECL;
     HEXAGONS "hexagons"
     INPUTS "inputs"
     OUTPUTS "outputs"
-    NUM_NEURONS "number_of_neurons"
-    NUM_INPUTS "number_of_inputs"
-    NUM_OUTPUTS "number_of_outputs"
-    TARGET "target"
     COOLDOWN "neuron_cooldown"
     MAX_DISTANCE "max_connection_distance"
     REFRACTORY_TIME "refractory_time"
@@ -96,7 +92,7 @@ YY_DECL;
 %token <double> FLOAT "float"
 
 %type  <Position> position
-%type  <Hanami::HexagonMeta> hexagon
+%type  <Position> hexagon
 %type  <Hanami::InputMeta> input
 %type  <Hanami::OutputMeta> output
 
@@ -114,14 +110,10 @@ YY_DECL;
 //     3,1,1
 //
 // inputs:
-//     "input_hexagon":
-//         target: 1,1,1
-//         number_of_inputs: 20
+//     "input_hexagon": 1,1,1
 //
 // outputs:
-//     "output_hexagon":
-//         target: 3,1,1
-//         number_of_outputs: 5
+//     "output_hexagon": 3,1,1
 //
 
 startpoint:
@@ -209,7 +201,7 @@ hexagon:
             driver.error(yyla.location, "Hexagon with the position " + pos.toString() + " already exist.");
             return 1;
         }
-        $$.position = $1;
+        $$ = $1;
     }
 
 inputs:
@@ -224,21 +216,20 @@ inputs:
     }
 
 input:
-    "identifier" ":" "target" ":" position "number_of_inputs" ":" "number"
+    "identifier" ":" position
     {
-        const Hanami::Position pos = $5;
-        const uint32_t hexagonId = driver.getHexagonId($5);
+        const Hanami::Position pos = $3;
+        const uint32_t hexagonId = driver.getHexagonId(pos);
         if(hexagonId == UNINTI_POINT_32) {
             driver.error(yyla.location, "Hexagon with the position " + pos.toString() + " doesn't exist.");
             return 1;
         }
-        if($1.size() > 255) {
-            driver.error(yyla.location, "Name '" + $1 + "' is longer than 255 characters.");
+        if($1.size() >= 255) {
+            driver.error(yyla.location, "Name '" + $1 + "' is longer than 254 characters.");
             return 1;
         }
         $$.name = $1;
         $$.targetHexagonId = hexagonId;
-        $$.numberOfInputs = $8;
     }
 
 outputs:
@@ -253,21 +244,20 @@ outputs:
     }
 
 output:
-    "identifier" ":" "target" ":" position "number_of_outputs" ":" "number"
+    "identifier" ":" position
     {
-        const Hanami::Position pos = $5;
-        const uint32_t hexagonId = driver.getHexagonId($5);
+        const Hanami::Position pos = $3;
+        const uint32_t hexagonId = driver.getHexagonId(pos);
         if(hexagonId == UNINTI_POINT_32) {
             driver.error(yyla.location, "Hexagon with the position " + pos.toString() + " doesn't exist.");
             return 1;
         }
-        if($1.size() > 255) {
-            driver.error(yyla.location, "Name '" + $1 + "' is longer than 255 characters.");
+        if($1.size() >= 255) {
+            driver.error(yyla.location, "Name '" + $1 + "' is longer than 254 characters.");
             return 1;
         }
         $$.name = $1;
         $$.targetHexagonId = hexagonId;
-        $$.numberOfOutputs = $8;
     }
 
 position:

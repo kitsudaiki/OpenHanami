@@ -63,14 +63,10 @@ cluster_template = \
     "    3,1,1\n" \
     "    \n" \
     "inputs:\n" \
-    "    picture:\n" \
-    "        target: 1,1,1\n" \
-    "        number_of_inputs: 784\n" \
+    "    picture: 1,1,1\n" \
     "\n" \
     "outputs:\n" \
-    "    label:\n" \
-    "        target: 3,1,1\n" \
-    "        number_of_outputs: 10\n"
+    "    label: 3,1,1\n" \
 
 user_id = "tsugumi"
 user_name = "Tsugumi"

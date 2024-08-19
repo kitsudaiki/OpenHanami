@@ -24,17 +24,13 @@ hexagons:
     <X>,<Y>,<Z>
 
 inputs:
-    <NAME>:
-        target: <X>,<Y>,<Z>
-        number_of_inputs: <NUMBER_OF_NEURONS>
+    <NAME>: <X>,<Y>,<Z>
 
 outputs:
-    <NAME>:
-        target: <X>,<Y>,<Z>
-        number_of_outputs: <NUMBER_OF_NEURONS>
+    <NAME>: <X>,<Y>,<Z>
 ```
 
-In the template the position, type, name and size of the hexagons has to be defined.
+In the template the position, type and name of the hexagons has to be defined. The size of the input and output is defined by the given data when starting a training.
 
 ### version
 
@@ -71,16 +67,12 @@ least one side with another hexagon.
 
 ### target
 
-The `target` for inputs and outputs is also a `<X>,<Y>,<Z>` and has to be the same position, like
+Inputs and outputs is also a `<X>,<Y>,<Z>` and has to be the same position, like
 the hexagon, where this input or output should be connected to.
 
 ### name
 
 `<NAME>` of this input and output for identification to be able to add input- and output-values.
-
-### size
-
-`<NUMBER_OF_NEURONS>` has to be replace by the number inputs and outputs.
 
 !!! info
 
@@ -104,14 +96,10 @@ hexagons:
     3,1,1
 
 inputs:
-    input_hexagon:
-        target: 1,1,1
-        number_of_inputs: 20
+    input_hexagon: 1,1,1
 
 outputs:
-    output_hexagon:
-        target: 3,1,1
-        number_of_outputs: 5
+    output_hexagon: 3,1,1
 ```
 
 It defines 3 hexagons. It contains an input-hexagon with the name `test_input` and an output-hexagon

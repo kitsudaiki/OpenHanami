@@ -58,14 +58,10 @@ Cluster_Init_Test::initTest()
           "    3,1,1\n"
           "\n"
           "inputs:\n"
-          "    input_hexagon: \n"
-          "        target: 1,1,1\n"
-          "        number_of_inputs: 20\n"
+          "    input_hexagon: 1,1,1\n"
           "\n"
           "outputs:\n"
-          "    output_hexagon: \n"
-          "        target: 3,1,1\n"
-          "        number_of_outputs: 5\n"
+          "    output_hexagon: 3,1,1\n"
           "\n";
 }
 
@@ -201,12 +197,10 @@ Cluster_Init_Test::createCluster_test()
     // test input-interfaces
     TEST_EQUAL(newCluster.inputInterfaces.size(), 1);
     TEST_EQUAL(newCluster.inputInterfaces.begin()->second.targetHexagonId, 0);
-    TEST_EQUAL(newCluster.inputInterfaces.begin()->second.inputNeurons.size(), 20);
 
     // test output-interfaces
     TEST_EQUAL(newCluster.outputInterfaces.size(), 1);
     TEST_EQUAL(newCluster.outputInterfaces.begin()->second.targetHexagonId, 2);
-    TEST_EQUAL(newCluster.outputInterfaces.begin()->second.outputNeurons.size(), 5);
 }
 
 /**

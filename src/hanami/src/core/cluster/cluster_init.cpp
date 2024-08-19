@@ -107,19 +107,13 @@ void
 initializeInputs(Cluster* cluster, const ClusterMeta& clusterMeta)
 {
     for (const InputMeta& inputMeta : clusterMeta.inputs) {
-        const uint32_t numberOfNeuronBlocks
-            = (inputMeta.numberOfInputs / NEURONS_PER_NEURONBLOCK) + 1;
-
         InputInterface inputInterface;
         inputInterface.targetHexagonId = inputMeta.targetHexagonId;
         inputInterface.name = inputMeta.name;
-        inputInterface.inputNeurons.resize(inputMeta.numberOfInputs);
-        inputInterface.ioBuffer.resize(inputMeta.numberOfInputs);
 
         cluster->inputInterfaces.try_emplace(inputMeta.name, inputInterface);
 
         cluster->hexagons[inputInterface.targetHexagonId].header.isInputHexagon = true;
-        cluster->hexagons[inputInterface.targetHexagonId].neuronBlocks.resize(numberOfNeuronBlocks);
         cluster->hexagons[inputInterface.targetHexagonId].inputInterface
             = &cluster->inputInterfaces[inputMeta.name];
     }
@@ -138,8 +132,6 @@ initializeOutputs(Cluster* cluster, const ClusterMeta& clusterMeta)
         OutputInterface outputInterface;
         outputInterface.targetHexagonId = outputMeta.targetHexagonId;
         outputInterface.name = outputMeta.name;
-        outputInterface.outputNeurons.resize(outputMeta.numberOfOutputs);
-        outputInterface.ioBuffer.resize(outputMeta.numberOfOutputs);
 
         cluster->outputInterfaces.try_emplace(outputMeta.name, outputInterface);
 
@@ -164,7 +156,7 @@ initializeHexagons(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta)
         Hexagon* newHexagon = &cluster->hexagons[i];
         newHexagon->cluster = cluster;
         newHexagon->header.hexagonId = i;
-        newHexagon->header.hexagonPos = clusterMeta.hexagons.at(i).position;
+        newHexagon->header.hexagonPos = clusterMeta.hexagons.at(i);
         std::fill_n(newHexagon->neighbors, 12, UNINIT_STATE_32);
     }
 

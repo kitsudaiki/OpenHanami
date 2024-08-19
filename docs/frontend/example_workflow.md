@@ -127,14 +127,10 @@ and the MNIST-dataset, which is also used for automated testing within the proje
         3,1,1
 
     inputs:
-        picture:
-            target: 1,1,1
-            number_of_inputs: 784
+        picture: 1,1,1
 
     outputs:
-        label:
-            target: 3,1,1
-            number_of_outputs: 10
+        label: 3,1,1
     ```
 
     !!! info

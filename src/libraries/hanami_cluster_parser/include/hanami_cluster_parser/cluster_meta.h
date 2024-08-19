@@ -35,20 +35,14 @@
 namespace Hanami
 {
 
-struct HexagonMeta {
-    Hanami::Position position;
-};
-
 struct InputMeta {
     std::string name = "";
     uint32_t targetHexagonId = UNINTI_POINT_32;
-    uint64_t numberOfInputs = 0;
 };
 
 struct OutputMeta {
     std::string name = "";
     uint32_t targetHexagonId = UNINTI_POINT_32;
-    uint64_t numberOfOutputs = 0;
 };
 
 struct ClusterMeta {
@@ -58,7 +52,7 @@ struct ClusterMeta {
     uint32_t maxConnectionDistance = 1;
     bool enableReduction = false;
 
-    std::vector<HexagonMeta> hexagons;
+    std::vector<Hanami::Position> hexagons;
     std::vector<InputMeta> inputs;
     std::vector<OutputMeta> outputs;
 };
