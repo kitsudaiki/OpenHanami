@@ -53,14 +53,10 @@ Cluster_ParseString_Test::parseString_test()
         "    3,1,1\n"
         "\n"
         "inputs:\n"
-        "    input_hexagon: \n"
-        "        target: 1,1,1\n"
-        "        number_of_inputs: 20\n"
+        "    input_hexagon: 1,1,1\n"
         "\n"
         "outputs:\n"
-        "    output_hexagon: \n"
-        "        target: 3,1,1\n"
-        "        number_of_outputs: 5\n"
+        "    output_hexagon: 3,1,1\n"
         "\n");
 
     ClusterMeta result;
