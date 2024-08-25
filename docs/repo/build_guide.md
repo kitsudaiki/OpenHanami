@@ -69,13 +69,13 @@ Run `docker build -t <DOCKER_IMAGE_NAME> .`
 -   The code can be build as image like this:
 
     ```bash
-    earthly +image --image_name=<DOCKER_IMAGE_NAME>
+    earthly +build-image --image_name=<DOCKER_IMAGE_NAME>
     ```
 
     !!! example
 
         ```bash
-        earthly +image --image_name=hanami:test
+        earthly +build-image --image_name=hanami:test
         ```
 
 ## Build CLI-client
@@ -144,7 +144,7 @@ It is possible, that the check fails, even if there are no (new) secrets in the 
 -   The documenation can be build as image like this:
 
     ```bash
-    earthly +docs --image_name=<DOCKER_IMAGE_NAME>
+    earthly +build-docs --image_name=<DOCKER_IMAGE_NAME>
     ```
 
     !!! example

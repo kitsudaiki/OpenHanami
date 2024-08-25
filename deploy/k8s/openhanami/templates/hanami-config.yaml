@@ -6,21 +6,21 @@ data:
     [DEFAULT]
     debug = True
     log_path = "/var/log"
-    database = "/etc/hanami/data/hanami_db"
+    database = "/etc/openhanami/data/hanami_db"
     use_cuda = false
 
     [storage]
-    dataset_location = "/etc/hanami/data/datasets"
-    checkpoint_location = "/etc/hanami/data/checkpoints"
-    tempfile_location = "/etc/hanami/data/tempfiles"
+    dataset_location = "/etc/openhanami/data/datasets"
+    checkpoint_location = "/etc/openhanami/data/checkpoints"
+    tempfile_location = "/etc/openhanami/data/tempfiles"
     tempfile_timeout = 10
 
     [processing]
     use_of_free_memory = {{ .Values.processing.use_of_free_memory }}
 
     [auth]
-    policies = "/etc/hanami/policies"
-    token_key_path = "/etc/hanami/token_key"
+    policies = "/etc/openhanami/policies"
+    token_key_path = "/etc/openhanami/token_key"
     token_expire_time = {{ .Values.token.expire_time }}
 
     [http]

@@ -1,7 +1,7 @@
 # OpenHanami
 
-![GitHub release](https://img.shields.io/github/v/release/kitsudaiki/OpenHanami?include_prereleases&label=Version&style=flat-square)
-![GitHub](https://img.shields.io/github/license/kitsudaiki/OpenHanami?style=flat-square)
+![Latest Release](https://img.shields.io/github/v/release/kitsudaiki/OpenHanami?include_prereleases&label=Version&style=flat-square)
+![License](https://img.shields.io/github/license/kitsudaiki/OpenHanami?style=flat-square)
 ![Platform](https://img.shields.io/badge/Platform-Linux-blue?style=flat-square)
 ![Architecture](https://img.shields.io/badge/Architecture-amd64%20%2B%20arm64-blue?style=flat-square)
 

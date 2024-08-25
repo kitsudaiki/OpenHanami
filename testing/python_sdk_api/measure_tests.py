@@ -29,7 +29,7 @@ def delete_all_datasets():
 
 
 config = configparser.ConfigParser()
-config.read('/etc/hanami/hanami_testing.conf')
+config.read('/etc/openhanami/hanami_testing.conf')
 
 address = config["connection"]["address"]
 test_user_id = config["connection"]["test_user"]

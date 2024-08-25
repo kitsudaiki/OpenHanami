@@ -44,24 +44,24 @@ registerConfigs()
 
     REGISTER_STRING_CONFIG(defaultGroup, "database")
         .setComment("Path to the sqlite3 database-file for all local sql-tables of hanami.")
-        .setDefault("/etc/hanami/hanami_db");
+        .setDefault("/etc/openhanami/hanami_db");
 
     // storage-section
     const std::string storageGroup = "storage";
 
     REGISTER_STRING_CONFIG(storageGroup, "dataset_location")
         .setComment("Local storage location, where all uploaded dataset should be written into.")
-        .setDefault("/etc/hanami/datasets");
+        .setDefault("/etc/openhanami/datasets");
 
     REGISTER_STRING_CONFIG(storageGroup, "checkpoint_location")
         .setComment("Local storage location, where all uploaded dataset should be written into.")
-        .setDefault("/etc/hanami/checkpoints");
+        .setDefault("/etc/openhanami/checkpoints");
 
     REGISTER_STRING_CONFIG(storageGroup, "tempfile_location")
         .setComment(
             "Local storage location, where all temporary files for upload and download should be "
             "cached.")
-        .setDefault("/etc/hanami/tempfiles");
+        .setDefault("/etc/openhanami/tempfiles");
 
     REGISTER_INT_CONFIG(storageGroup, "tempfile_timeout")
         .setComment("Number of minutes, until an inactive timefile is removed.")
@@ -90,7 +90,7 @@ registerConfigs()
 
     REGISTER_STRING_CONFIG(authGroup, "policies")
         .setComment("Local path to the file with the endpoint-policies.")
-        .setDefault("/etc/hanami/policies");
+        .setDefault("/etc/openhanami/policies");
 
     // http-section
     const std::string httpGroup = "http";

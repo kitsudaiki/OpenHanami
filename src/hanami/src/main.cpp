@@ -129,7 +129,7 @@ main(int argc, char* argv[])
     // init and check config-file
     std::string configPath = argParser.getStringValue("config");
     if (configPath == "") {
-        configPath = "/etc/hanami/hanami.conf";
+        configPath = "/etc/openhanami/hanami.conf";
     }
     if (INIT_CONFIG(configPath, error) == false) {
         LOG_ERROR(error);

@@ -39,7 +39,7 @@ import sys
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 config = configparser.ConfigParser()
-config.read('/etc/hanami/hanami_testing.conf')
+config.read('/etc/openhanami/hanami_testing.conf')
 
 address = config["connection"]["address"]
 test_user_id = config["connection"]["test_user"]

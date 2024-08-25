@@ -2,7 +2,7 @@
 - name: Create base-directory
   become: true
   file:
-    path: /etc/hanami
+    path: /etc/openhanami
     state: directory
     mode: "0777"
 
@@ -30,13 +30,13 @@
 - name: Copy policies
   copy:
     src: policies
-    dest: /etc/hanami/policies
+    dest: /etc/openhanami/policies
     mode: "0777"
 
 - name: Create hanami-config from template
   template:
     src: hanami.conf.j2
-    dest: /etc/hanami/hanami.conf
+    dest: /etc/openhanami/hanami.conf
     mode: "0777"
 
 - name: Create a token-file
@@ -46,7 +46,7 @@
     mode: "0600"
 
 
-- name: Create OpenHanami docker-container
+- name: Create hanami docker-container
   become: true
   community.docker.docker_container:
     name: hanami
@@ -62,8 +62,8 @@
     ports:
       - "11418:11418"
     mounts:
-      - source: /etc/hanami
-        target: /etc/hanami
+      - source: /etc/openhanami
+        target: /etc/openhanami
         type: bind
         read_only: false
       - source: "{{ hanami_log_dir }}"

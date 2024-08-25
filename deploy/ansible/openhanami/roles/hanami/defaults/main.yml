@@ -1,0 +1,16 @@
+---
+hanami_debug: true
+
+hanami_docker_tag: "develop"
+hanami_listen_address: "0.0.0.0"
+hanami_log_dir: "/var/log/hanami"
+
+hanami_dataset_location: "/etc/openhanami/datasets"
+hanami_checkpoint_location: "/etc/openhanami/checkpoints"
+hanami_tempfile_location: "/etc/openhanami/tempfiles"
+
+hanami_use_of_free_memory: 0.5
+
+hanami_token_key_path: "/etc/openhanami/token_key"
+hanami_ssl_cert_path: "/etc/openhanami/cert.pem"
+hanami_ssl_key_path: "/etc/openhanami/key.pem"

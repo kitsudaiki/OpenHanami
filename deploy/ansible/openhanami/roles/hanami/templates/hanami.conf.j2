@@ -1,7 +1,7 @@
 [DEFAULT] 
 debug = {{hanami_debug}} 
 log_path = {{hanami_log_dir}} 
-database = "/etc/hanami/hanami_db" 
+database = "/etc/openhanami/hanami_db" 
 socket_path = "/tmp/hanami"
 
 [storage] 
@@ -14,7 +14,7 @@ tempfile_timeout = 10
 use_of_free_memory = {{hanami_use_of_free_memory}}
 
 [auth] 
-policies = "/etc/hanami/policies" 
+policies = "/etc/openhanami/policies" 
 token_key_path = {{hanami_token_key_path}} 
 token_expire_time = 3600
 

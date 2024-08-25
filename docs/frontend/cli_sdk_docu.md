@@ -770,7 +770,7 @@ Get information about a specific dataset.
     # {
     #     "inputs": 784,
     #     "lines": 60000,
-    #     "location": "/etc/hanami/datasets/6f2bbcd2-7081-4b08-ae1d-16e6cd6f54c4_mnist_asdf",
+    #     "location": "/etc/openhanami/datasets/6f2bbcd2-7081-4b08-ae1d-16e6cd6f54c4_mnist_asdf",
     #     "name": "train_test_dataset",
     #     "outputs": 10,
     #     "owner_id": "asdf",

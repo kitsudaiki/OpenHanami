@@ -116,8 +116,8 @@ helm install \
     --set user.pw=PASSWORD  \
     --set token.pw=TOKEN_KEY  \
     --set api.domain=DOMAIN_NAME  \
-    hanami \
-    hanami-x.y.z.tgz
+    openhanami \
+    openhanami-x.y.z.tgz
 ```
 
 The `--set`-flag defining the login-information for the initial admin-user of the instance:
@@ -204,7 +204,7 @@ system.
 
     !!! note
 
-        Persistent data of hanami (checkpoints and so on) within the pod are mounted into the host directory `/etc/hanami_data`, in case you want to save or delete them.
+        Persistent data of hanami (checkpoints and so on) within the pod are mounted into the host directory `/etc/openhanami_data`, in case you want to save or delete them.
 
 ## With Ansible
 
@@ -256,7 +256,7 @@ Run in the root of the repository:
 ```bash
 cd deploy/ansible/
 
-ansible-playbook --connection=local -i hanami/inventory.yml hanami/deploy.yml
+ansible-playbook --connection=local -i openhanami/inventory.yml openhanami/deploy.yml
 ```
 
 The resulting setup will listen on `0.0.0.0` and port `443` and `80`.
