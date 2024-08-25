@@ -11,4 +11,4 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: hanami-sc
   hostPath:
-    path: /etc/hanami_data/
+    path: /etc/openhanami_data/

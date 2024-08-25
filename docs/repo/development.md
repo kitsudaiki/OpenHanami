@@ -23,12 +23,12 @@ This document should help to setup a local environment for development.
     directory
 
     ```bash
-    sudo cp -r ./Hanami/example_configs/hanami
+    sudo cp -r ./Hanami/example_configs/openhanami
 
-    sudo chown -R $(id -u):$(id -g) /etc/hanami
+    sudo chown -R $(id -u):$(id -g) /etc/openhanami
     ```
 
--   In file `/etc/hanami/hanami_testing.conf` update the path to the 4 MNIST files, so they point to
+-   In file `/etc/openhanami/hanami_testing.conf` update the path to the 4 MNIST files, so they point to
     the MNIST-files, which you downloaded eralier.
 
 ## Run project locally for testing
@@ -45,11 +45,11 @@ This document should help to setup a local environment for development.
     ```
 
     These are the default testing-configs, to match with the test-confic
-    `/etc/hanami/hanami_testing.conf`.
+    `/etc/openhanami/hanami_testing.conf`.
 
 -   Exectute the binary without any flags. It uses by default the config of
-    `/etc/hanami/hanami.conf` and the values of the example-config are enough for testing. The
-    SQLite-database-file `/etc/hanami/hanami_db` is automatically created by the initial start.
+    `/etc/openhanami/hanami.conf` and the values of the example-config are enough for testing. The
+    SQLite-database-file `/etc/openhanami/hanami_db` is automatically created by the initial start.
 
 ## Testing
 
@@ -68,7 +68,7 @@ API.
 
 -   go into the test-directory
 
-    `cd Hanami/testing/python_sdk_api`
+    `cd OpenHanami/testing/python_sdk_api`
 
 -   create and prepare python-env and install packages
 
@@ -77,7 +77,7 @@ API.
 
     source hanami_env/bin/activate
 
-    cd Hanami/src/sdk/python/hanami_sdk
+    cd OpenHanami/src/sdk/python/hanami_sdk
 
     pip3 install -r requirements.txt
     ```
@@ -85,7 +85,7 @@ API.
 -   build proto-buffer messages
 
     ```bash
-    cd Hanami/src/sdk/python/hanami_sdk/hanami_sdk
+    cd OpenHanami/src/sdk/python/hanami_sdk/hanami_sdk
 
     protoc --python_out=. --proto_path ../../../../libraries/hanami_messages/protobuffers  hanami_messages.proto3
     ```
@@ -93,7 +93,7 @@ API.
 -   run tests
 
     ```bash
-    cd Hanami/testing/python_sdk_api
+    cd OpenHanami/testing/python_sdk_api
 
     ./sdk_api_test.py
     ```
@@ -113,7 +113,7 @@ API.
 -   go to the location
 
     ```
-    cd Hanami/testing/go_cli_api
+    cd OpenHanami/testing/go_cli_api
     ```
 
 -   export environment-variables

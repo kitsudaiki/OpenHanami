@@ -12,16 +12,6 @@ local-setup:
     RUN git config --local core.hooksPath .githooks
 
 
-image:
-    BUILD +compile-code
-    BUILD +build-image
-
-docs:
-    BUILD +compile-code
-    BUILD +generate-code-docu
-    BUILD +build-docs
-
-
 cppcheck:
     RUN apt-get update && \
         apt-get install -y cppcheck
@@ -63,7 +53,7 @@ ansible-lint:
     RUN pip3 install ansible-lint
     COPY deploy deploy
     COPY .ansible-lint .ansible-lint
-    RUN ansible-lint deploy/ansible/hanami
+    RUN ansible-lint deploy/ansible/openhanami
 
 secret-scan:
     RUN apt-get update && \
@@ -104,6 +94,7 @@ compile-code:
     RUN mkdir /tmp/hanami && \
         find src -type f -executable -exec cp {} /tmp/hanami \;
     SAVE ARTIFACT /tmp/hanami /tmp/hanami
+    SAVE ARTIFACT /tmp/hanami AS LOCAL hanami
 
 
 compile-cli:
@@ -125,9 +116,10 @@ build-image:
     RUN apt-get update && \
         apt-get install -y openssl libuuid1 libcrypto++8 libsqlite3-0 libprotobuf23 libboost1.74 libcudart11.0 && \
         apt-get clean autoclean && \
-        apt-get autoremove --yes
+        apt-get autoremove --yes && \
+        chmod +x /usr/bin/hanami
 
-    COPY ./builds/binaries/hanami  /usr/bin/hanami
+    COPY +compile-code/hanami/hanami /usr/bin/
 
     # run hanami
     ENTRYPOINT ["/usr/bin/hanami"]
@@ -135,17 +127,14 @@ build-image:
     SAVE IMAGE "$image_name"
 
 
-generate-code-docu:
+generate-docs:
+    COPY +compile-code/hanami/hanami /tmp/
+
     RUN apt-get update && \
         apt-get install -y openssl libuuid1 libcrypto++8 libsqlite3-0 libprotobuf23 libboost1.74 libcudart11.0
-    COPY ./builds/binaries/hanami /usr/bin/hanami
-    RUN /usr/bin/hanami --generate_docu
-    SAVE ARTIFACT open_api_docu.json /tmp/hanami_docs/open_api_docu.json
-    SAVE ARTIFACT config.md /tmp/hanami_docs/config.md
-    SAVE ARTIFACT db.md /tmp/hanami_docs/db.md
+    RUN chmod +x /tmp/hanami
+    RUN /tmp/hanami --generate_docu
 
-
-generate-docs:
     RUN apt-get update && \
         apt-get install -y python3 \
                            python3-pip \
@@ -163,9 +152,9 @@ generate-docs:
     COPY ROADMAP.md .
     COPY LICENSE .
     COPY docs docs
-    COPY ./builds/docs/db.md docs/backend/db.md
-    COPY ./builds/docs/config.md docs/backend/config.md
-    COPY ./builds/docs/open_api_docu.json docs/frontend/open_api_docu.json
+    RUN cp ./db.md docs/backend/
+    RUN cp ./config.md docs/backend/
+    RUN cp ./open_api_docu.json docs/frontend/
 
     RUN mkdocs build --clean
 
@@ -178,9 +167,9 @@ build-docs:
     RUN apt-get update && \
         apt-get install -y python3
 
-    COPY +generate-docs/site /hanami_docs
+    COPY +generate-docs/site /openhanami_docs
 
-    WORKDIR /hanami_docs
+    WORKDIR /openhanami_docs
 
     CMD python3 -m http.server 8000
 

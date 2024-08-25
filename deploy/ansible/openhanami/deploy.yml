@@ -1,5 +1,5 @@
 ---
-- name: Install hanami
+- name: Install OpenHanami
   hosts: all
   roles:
     - hanami

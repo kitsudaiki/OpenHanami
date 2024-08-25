@@ -45,15 +45,15 @@ spec:
           value: {{ .Values.user.pw }}
         volumeMounts:
         - name: data-volume
-          mountPath: /etc/hanami/data/
+          mountPath: /etc/openhanami/data/
         - name: hanami-config
-          mountPath: /etc/hanami/hanami.conf
+          mountPath: /etc/openhanami/hanami.conf
           subPath: hanami.conf
         - name: policies-config
-          mountPath: /etc/hanami/policies
+          mountPath: /etc/openhanami/policies
           subPath: policies
         - name: token-key
-          mountPath: /etc/hanami/token_key
+          mountPath: /etc/openhanami/token_key
           subPath: token_key
         - name: hanami-sockets-volume
           mountPath: /tmp/hanami
