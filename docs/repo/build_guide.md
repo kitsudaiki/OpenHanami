@@ -82,17 +82,18 @@ Run `docker build -t <DOCKER_IMAGE_NAME> .`
 
 -   Install [earthly](https://github.com/earthly/earthly)
 
-- build protobuf-messages within the hanami_sdk directory
+-   build protobuf-messages within the hanami_sdk directory
 
     ```bash
     earthly --artifact +compile-cli/tmp/hanamictl ./builds/
     ```
 
--  then you have a new local directory `builds`, where the resulting binary of the build-process is placed into
+-   then you have a new local directory `builds`, where the resulting binary of the build-process is
+    placed into
 
 ## Build python-SDK as package
 
-- install packages
+-   install packages
 
     ```bash
     sudo apt-get update
@@ -100,7 +101,7 @@ Run `docker build -t <DOCKER_IMAGE_NAME> .`
     sudo pip3 install wheel
     ```
 
-- build protobuf-messages and package
+-   build protobuf-messages and package
 
     ```bash
     cd ./src/sdk/python/hanami_sdk/hanami_sdk
@@ -111,33 +112,37 @@ Run `docker build -t <DOCKER_IMAGE_NAME> .`
 
 ## Prechecks
 
-There are a bunch of pre-checks at the beginning of the CI-pipeline, which can fail and where it is useful to be able to run the same tests locally for debugging. Nearly all of them use [earthly](https://github.com/earthly/earthly)
+There are a bunch of pre-checks at the beginning of the CI-pipeline, which can fail and where it is
+useful to be able to run the same tests locally for debugging. Nearly all of them use
+[earthly](https://github.com/earthly/earthly)
 
 ### Flake8-check
 
-- run `earthly --ci +flake8`
+-   run `earthly --ci +flake8`
 
 ### Secret-scan
 
-- run `earthly --ci +secret-scan`
+-   run `earthly --ci +secret-scan`
 
-It is possible, that the check fails, even if there are no (new) secrets in the code and fails, because of some other code-movements. The check compares all to the `.secrets.baseline`-file, where also line-numbers are marked. To update the file to get the test green again:
+It is possible, that the check fails, even if there are no (new) secrets in the code and fails,
+because of some other code-movements. The check compares all to the `.secrets.baseline`-file, where
+also line-numbers are marked. To update the file to get the test green again:
 
-- install [detect-secrets](https://github.com/Yelp/detect-secrets)
+-   install [detect-secrets](https://github.com/Yelp/detect-secrets)
 
-- update file with `detect-secrets scan > .secrets.baseline`
+-   update file with `detect-secrets scan > .secrets.baseline`
 
 ### Ansible-lint
 
-- run `earthly --ci +ansible-lint`
+-   run `earthly --ci +ansible-lint`
 
 ### Cpp-check
 
-- run `earthly --ci +cppcheck`
+-   run `earthly --ci +cppcheck`
 
 ### Clang-format check
 
-- run `earthly --ci +clang-format`
+-   run `earthly --ci +clang-format`
 
 ## Build docs
 

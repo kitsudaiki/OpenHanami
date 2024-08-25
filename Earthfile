@@ -21,6 +21,7 @@ cppcheck:
     RUN cppcheck --error-exitcode=1 src/hanami
     RUN cppcheck --error-exitcode=1 src/libraries
 
+
 clang-format:
     RUN apt-get update && \
         apt-get install -y clang-format-15
@@ -36,6 +37,7 @@ clang-format:
                   exit 1; \
               fi; done
 
+
 flake8:
     RUN apt-get update && \
         apt-get install -y python3 python3-pip
@@ -47,6 +49,7 @@ flake8:
     RUN flake8 testing/python_sdk_api/sdk_api_test.py
     RUN flake8 src/sdk/python
 
+
 ansible-lint:
     RUN apt-get update && \
         apt-get install -y python3 python3-pip
@@ -54,6 +57,7 @@ ansible-lint:
     COPY deploy deploy
     COPY .ansible-lint .ansible-lint
     RUN ansible-lint deploy/ansible/openhanami
+
 
 secret-scan:
     RUN apt-get update && \
@@ -87,16 +91,6 @@ prepare-build-dependencies:
     COPY . .
 
 
-compile-code:
-    FROM +prepare-build-dependencies
-    RUN cmake -DCMAKE_BUILD_TYPE=Release -Drun_tests=ON  .
-    RUN make -j8
-    RUN mkdir /tmp/hanami && \
-        find src -type f -executable -exec cp {} /tmp/hanami \;
-    SAVE ARTIFACT /tmp/hanami /tmp/hanami
-    SAVE ARTIFACT /tmp/hanami AS LOCAL hanami
-
-
 compile-cli:
     RUN apt-get update && \
         apt-get install -y wget protobuf-compiler golang-goprotobuf-dev && \
@@ -108,6 +102,16 @@ compile-cli:
     RUN cd src/cli/hanamictl && \
         /usr/local/go/bin/go build .
     SAVE ARTIFACT ./src/cli/hanamictl/hanamictl /tmp/hanamictl
+
+
+compile-code:
+    FROM +prepare-build-dependencies
+    RUN cmake -DCMAKE_BUILD_TYPE=Release -Drun_tests=ON  .
+    RUN make -j8
+    RUN mkdir /tmp/hanami && \
+        find src -type f -executable -exec cp {} /tmp/hanami \;
+    SAVE ARTIFACT /tmp/hanami /tmp/hanami
+    SAVE ARTIFACT /tmp/hanami AS LOCAL hanami
 
 
 build-image:

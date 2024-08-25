@@ -8,13 +8,13 @@
 
 For the installation on a kubernetes `helm` is used.
 
-| Supported versions                                          |
+| Supported versions                                  |
 | --------------------------------------------------- |
 | [![kubernetes-1_26][img_kubernetes-1_26]][Workflow] |
 | [![kubernetes-1_27][img_kubernetes-1_27]][Workflow] |
 | [![kubernetes-1_28][img_kubernetes-1_28]][Workflow] |
 | [![kubernetes-1_29][img_kubernetes-1_29]][Workflow] |
-| [![kubernetes-1_30][img_kubernetes-1_30]][Workflow] |                                                   |
+| [![kubernetes-1_30][img_kubernetes-1_30]][Workflow] |
 
 [img_kubernetes-1_26]:
     https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/OpenHanami-badges/develop/kubernetes_version/kubernetes-1_26/shields.json&style=flat-square

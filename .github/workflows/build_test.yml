@@ -7,7 +7,7 @@ permissions:
   pull-requests: read
 
 env:
-  REGISTRY_IMAGE: kitsudaiki/hanami
+  REGISTRY_HANAMI_IMAGE: kitsudaiki/hanami
   REGISTRY_DOCS_IMAGE: kitsudaiki/openhanami_docs
 
 jobs:
@@ -913,7 +913,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81
         with:
-          images: ${{ env.REGISTRY_IMAGE }}
+          images: ${{ env.REGISTRY_HANAMI_IMAGE }}
       - 
         name: Set up QEMU
         uses: docker/setup-qemu-action@49b3bc8e6bdd4a60e6116a5414239cba5943d3cf
@@ -940,7 +940,7 @@ jobs:
           context: ./OpenHanami
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
-          outputs: type=image,name=${{ env.REGISTRY_IMAGE }},push-by-digest=true,name-canonical=true,push=true
+          outputs: type=image,name=${{ env.REGISTRY_HANAMI_IMAGE }},push-by-digest=true,name-canonical=true,push=true
       - 
         name: Export digest
         run: |
@@ -990,7 +990,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81
         with:
-          images: ${{ env.REGISTRY_IMAGE }}
+          images: ${{ env.REGISTRY_HANAMI_IMAGE }}
       - 
         name: Login to Docker Hub
         uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567
@@ -1001,12 +1001,12 @@ jobs:
         name: Create manifest list and push
         working-directory: /tmp/digests
         run: |
-          docker buildx imagetools create -t ${{ env.REGISTRY_IMAGE }}:${{ env.BRANCH_NAME }} \
-            $(printf '${{ env.REGISTRY_IMAGE }}@sha256:%s ' *)          
+          docker buildx imagetools create -t ${{ env.REGISTRY_HANAMI_IMAGE }}:${{ env.BRANCH_NAME }} \
+            $(printf '${{ env.REGISTRY_HANAMI_IMAGE }}@sha256:%s ' *)          
       - 
         name: Inspect image
         run: |
-          docker buildx imagetools inspect ${{ env.REGISTRY_IMAGE }}:${{ env.BRANCH_NAME }}
+          docker buildx imagetools inspect ${{ env.REGISTRY_HANAMI_IMAGE }}:${{ env.BRANCH_NAME }}
 
 
 
