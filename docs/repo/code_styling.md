@@ -28,7 +28,7 @@ sudo apt-get install clang-format-15
 Load pre-commit hook
 
 ```
-cd Hanami
+cd OpenHanami
 git config core.hooksPath .git-hooks
 ```
 

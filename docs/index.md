@@ -1,7 +1,7 @@
-# Hanami
+# OpenHanami
 
 <p align="center">
-  <img src="img/hanami-logo-with-text.jpg" width="500" height="594" />
+  <img src="img/hanami-logo-with-text.png" width="500" height="594" />
 </p>
 
 !!! danger "IMPORTANT"
@@ -10,11 +10,11 @@
 
 ## Intro
 
-Hanami contains in its core a custom experimental artificial neural network, which can work on
+OpenHanami contains in its core a custom experimental artificial neural network, which can work on
 unnormalized and unfiltered input-data, like sensor measurement data. The network growth over time
 by creating new nodes and connections between the nodes while learning new data. The base concept
 was created by myself and the code was written from scratch without any frameworks. The goal behind
-Hanami is to create something unique, which works more like the human brain. It wasn't targeted to
+OpenHanami is to create something unique, which works more like the human brain. It wasn't targeted to
 get a higher accuracy than classical artificial neural networks like Tensorflow, but to be more
 flexible and easier to use and more efficient in resource-consumption for big amounts of inputs and
 users. Additionally it also provides an as-a-Service architecture within a cloud native environment
@@ -176,7 +176,7 @@ itself:
 
     [:octicons-arrow-right-24: Development-Guide](/repo/development/)
 
-    [:octicons-arrow-right-24: Contributing guide](https://github.com/kitsudaiki/Hanami/blob/develop/CONTRIBUTING.md)
+    [:octicons-arrow-right-24: Contributing guide](https://github.com/kitsudaiki/OpenHanami/blob/develop/CONTRIBUTING.md)
 
     [:octicons-arrow-right-24: Dependency-Overview](/repo/dependencies/)
 
@@ -185,7 +185,7 @@ itself:
     ***
 
     All objects are automatically build and uploaded by the
-    [CI-pipeline](https://github.com/kitsudaiki/Hanami/actions/workflows/build_test.yml) for each
+    [CI-pipeline](https://github.com/kitsudaiki/OpenHanami/actions/workflows/build_test.yml) for each
     merge on `develop`-branch and for each tag.
 
     [:octicons-arrow-right-24: Docker-images](https://hub.docker.com/repository/docker/kitsudaiki/hanami/tags)
@@ -238,4 +238,4 @@ eMail: tobias.anker@kitsunemimi.moe
 ## License
 
 The complete project is under
-[Apache 2 license](https://github.com/kitsudaiki/Hanami/blob/develop/LICENSE).
+[Apache 2 license](https://github.com/kitsudaiki/OpenHanami/blob/develop/LICENSE).

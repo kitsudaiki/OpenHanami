@@ -46,7 +46,7 @@
     mode: "0600"
 
 
-- name: Create Hanami docker-container
+- name: Create OpenHanami docker-container
   become: true
   community.docker.docker_container:
     name: hanami

@@ -25,7 +25,7 @@ import (
 	hanamictl_common "hanamictl/common"
 	"os"
 
-	hanami_sdk "github.com/kitsudaiki/Hanami"
+	hanami_sdk "github.com/kitsudaiki/OpenHanami"
 	"github.com/spf13/cobra"
 )
 

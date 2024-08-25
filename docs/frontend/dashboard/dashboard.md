@@ -2,7 +2,7 @@
 
 ## General
 
-The dashboard is one way to interact with Hanami.
+The dashboard is one way to interact with hanami.
 
 !!! warning
 

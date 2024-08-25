@@ -4,7 +4,7 @@ Additionally to the REST-API there is a websocket connection available. This is 
 and for the direct interaction with cluster in the backend.
 
 As reference-implementation you can look into the python-version of the
-[hanami_sdk](https://github.com/kitsudaiki/Hanami/tree/develop/src/sdk/python/hanami_sdk/hanami_sdk).
+[hanami_sdk](https://github.com/kitsudaiki/OpenHanami/tree/develop/src/sdk/python/hanami_sdk/hanami_sdk).
 
 ## File-upload of Datasets
 
@@ -39,7 +39,7 @@ Steps:
     files have to be uploaded, there are 2 websockets necessary, one for each file.
 
 3. The data-transfer over the websocket after this is done with
-   [protobuf-messages](https://github.com/kitsudaiki/Hanami/blob/develop/src/libraries/hanami_messages/protobuffers/hanami_messages.proto3)
+   [protobuf-messages](https://github.com/kitsudaiki/OpenHanami/blob/develop/src/libraries/hanami_messages/protobuffers/hanami_messages.proto3)
    with the `FileUpload_Message`-message:
 
     - **position**: Byte-position within the temporary file
@@ -75,7 +75,7 @@ Steps:
    success = 1.
 
 3. The data-transfer over the websocket after this is done with
-   [protobuf-messages](https://github.com/kitsudaiki/Hanami/blob/develop/src/libraries/hanami_messages/protobuffers/hanami_messages.proto3)
+   [protobuf-messages](https://github.com/kitsudaiki/OpenHanami/blob/develop/src/libraries/hanami_messages/protobuffers/hanami_messages.proto3)
    with the `ClusterIO_Message`-message:
 
     - **hexagonName**: name of the input-hexagon, where the data have to be applied

@@ -27,14 +27,14 @@ The CLI and the SDK-library provides functions to interact with the API of the b
 
     ```bash
     # clone repository
-    git clone https://github.com/kitsudaiki/Hanami.git
+    git clone https://github.com/kitsudaiki/OpenHanami.git
 
     # create python-env (optional)
     python3 -m venv hanami_sdk_env
     source hanami_sdk_env/bin/activate
 
     # install sdk
-    cd Hanami/src/sdk/python/hanami_sdk
+    cd OpenHanami/src/sdk/python/hanami_sdk
     pip3 install -U .
     ```
 
@@ -505,7 +505,7 @@ Delete a user from the backend.
 
 Assigne a project to a normal user.
 
-The `role` is uses be the policy-file of the Hanami-instance restrict access to specific
+The `role` is uses be the policy-file of the OpenHanami-instance restrict access to specific
 API-endpoints. Per default there exist `admin` and `member` as roles.
 
 If `is_project_admin` is set to true, the user can access all resources of all users within the
