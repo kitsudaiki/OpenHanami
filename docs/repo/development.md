@@ -23,13 +23,13 @@ This document should help to setup a local environment for development.
     directory
 
     ```bash
-    sudo cp -r ./Hanami/example_configs/openhanami
+    sudo cp -r ./OpenHanami/example_configs/openhanami
 
     sudo chown -R $(id -u):$(id -g) /etc/openhanami
     ```
 
--   In file `/etc/openhanami/hanami_testing.conf` update the path to the 4 MNIST files, so they point to
-    the MNIST-files, which you downloaded eralier.
+-   In file `/etc/openhanami/hanami_testing.conf` update the path to the 4 MNIST files, so they
+    point to the MNIST-files, which you downloaded eralier.
 
 ## Run project locally for testing
 

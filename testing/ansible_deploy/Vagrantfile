@@ -5,16 +5,16 @@ TOKEN_KEY = ENV['TOKEN_KEY']
 
 Vagrant.configure("2") do |config|
   config.vm.provider "virtualbox" do |vbox|
-    vbox.name = "hanami-test"
+    vbox.name = "openhanami-test"
     vbox.memory = 4096
     vbox.cpus = 4
   end
   config.vm.box = "ubuntu/jammy64"
-  config.vm.hostname = "hanami-test"
+  config.vm.hostname = "openhanami-test"
   config.vm.network "private_network", type: "dhcp"
 
   config.vm.provision "ansible" do |ansible|
-    ansible.playbook = "hanami-playbook/deploy.yml"
+    ansible.playbook = "openhanami-playbook/deploy.yml"
     # ansible.verbose = "v"
     ansible.extra_vars = {
       env: ADMIN_USER_ID,

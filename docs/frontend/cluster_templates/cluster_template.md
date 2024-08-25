@@ -30,7 +30,8 @@ outputs:
     <NAME>: <X>,<Y>,<Z>
 ```
 
-In the template the position, type and name of the hexagons has to be defined. The size of the input and output is defined by the given data when starting a training.
+In the template the position, type and name of the hexagons has to be defined. The size of the input
+and output is defined by the given data when starting a training.
 
 ### version
 
@@ -67,8 +68,8 @@ least one side with another hexagon.
 
 ### target
 
-Inputs and outputs is also a `<X>,<Y>,<Z>` and has to be the same position, like
-the hexagon, where this input or output should be connected to.
+Inputs and outputs is also a `<X>,<Y>,<Z>` and has to be the same position, like the hexagon, where
+this input or output should be connected to.
 
 ### name
 

@@ -1,7 +1,10 @@
 # Example-Workflow
 
 This chapter shows an example workflow for the current state of the project by using the CLI-client
-and the MNIST-dataset, which is also used for automated testing within the project. Beside this example-workflow it is also possible to use CSV-files instead of the MNIST-datasets, or interact directly with the neural network via the python-version of the SDK. See for further information the [CLI and SDK documentation](/frontend/cli_sdk_docu/)
+and the MNIST-dataset, which is also used for automated testing within the project. Beside this
+example-workflow it is also possible to use CSV-files instead of the MNIST-datasets, or interact
+directly with the neural network via the python-version of the SDK. See for further information the
+[CLI and SDK documentation](/frontend/cli_sdk_docu/)
 
 ## Preparation
 
@@ -206,7 +209,7 @@ and the MNIST-dataset, which is also used for automated testing within the proje
     !!! info
 
         With the python-SDK it is also possible to interact directly with the cluster. See [direct-IO](/frontend/cli_sdk_docu/#direct-io)
-        
+
 -   create task to test the cluster
 
     ```bash

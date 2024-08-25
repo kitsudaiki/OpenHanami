@@ -67,8 +67,9 @@ The o utput are similar to the input.
 
 ![Workflow-library](Kyouko_output_segment.drawio)
 
-The single outputs are connected with multiple neurons of the related output-hexagon without order. Additionally they normalize the outgoing values to the range of 0.0-1.0 with the help of the classical
-sigmoid function:
+The single outputs are connected with multiple neurons of the related output-hexagon without order.
+Additionally they normalize the outgoing values to the range of 0.0-1.0 with the help of the
+classical sigmoid function:
 
 ![Workflow-library](output_segment_function.jpg)
 
