@@ -17,16 +17,16 @@ For the installation on a kubernetes `helm` is used.
 | [![kubernetes-1_30][img_kubernetes-1_30]][Workflow] |                                                   |
 
 [img_kubernetes-1_26]:
-    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/kubernetes_version/kubernetes-1_26/shields.json&style=flat-square
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/OpenHanami-badges/develop/kubernetes_version/kubernetes-1_26/shields.json&style=flat-square
 [img_kubernetes-1_27]:
-    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/kubernetes_version/kubernetes-1_27/shields.json&style=flat-square
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/OpenHanami-badges/develop/kubernetes_version/kubernetes-1_27/shields.json&style=flat-square
 [img_kubernetes-1_28]:
-    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/kubernetes_version/kubernetes-1_28/shields.json&style=flat-square
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/OpenHanami-badges/develop/kubernetes_version/kubernetes-1_28/shields.json&style=flat-square
 [img_kubernetes-1_29]:
-    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/kubernetes_version/kubernetes-1_29/shields.json&style=flat-square
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/OpenHanami-badges/develop/kubernetes_version/kubernetes-1_29/shields.json&style=flat-square
 [img_kubernetes-1_30]:
-    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/kubernetes_version/kubernetes-1_30/shields.json&style=flat-square
-[Workflow]: https://github.com/kitsudaiki/Hanami/actions/workflows/build_test.yml
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/OpenHanami-badges/develop/kubernetes_version/kubernetes-1_30/shields.json&style=flat-square
+[Workflow]: https://github.com/kitsudaiki/OpenHanami/actions/workflows/build_test.yml
 
 ### Requirements
 
@@ -71,7 +71,7 @@ For the installation on a kubernetes `helm` is used.
 
     !!! info
 
-        At the moment Hanami is only a single-node application. This will change in the near future, but at the moment it doesn't make sense to label more than one node.
+        At the moment OpenHanami is only a single-node application. This will change in the near future, but at the moment it doesn't make sense to label more than one node.
 
 <!-- 3. If measuring of the cpu power consumption should be available, then the following requirements must be fulfilled on the hosts of the kubernetes-deployment:
 
@@ -89,9 +89,9 @@ For the installation on a kubernetes `helm` is used.
 **From repository**
 
 ```bash
-git clone https://github.com/kitsudaiki/Hanami.git
+git clone https://github.com/kitsudaiki/OpenHanami.git
 
-cd Hanami/deploy/k8s
+cd OpenHanami/deploy/k8s
 
 helm install \
     --set docker.tag=DOCKER_IMAGE_TAG \
@@ -100,8 +100,8 @@ helm install \
     --set user.pw=PASSWORD  \
     --set token.pw=TOKEN_KEY  \
     --set api.domain=DOMAIN_NAME  \
-    hanami \
-    ./hanami/
+    openhanami \
+    ./openhanami/
 ```
 
 **From pre-build**
@@ -282,5 +282,5 @@ cd testing/ansible_deploy
 vagrant up
 ```
 
-It will create a virtualbox-VM with ubuntu 22.04 and automatically deploy Hanami with the
+It will create a virtualbox-VM with ubuntu 22.04 and automatically deploy OpenHanami with the
 ansible-playbook.

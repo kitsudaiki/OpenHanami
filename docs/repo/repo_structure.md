@@ -17,7 +17,7 @@ it easier for a new person to understand the code.
     ├── src
     │   ├── archive
     │   │   ├── frontend
-    │   │   │   └── Hanami-Dashboard
+    │   │   │   └── OpenHanami-Dashboard
     │   │   ├── libraries
     │   │   │   ├── hanami_network
     │   │   │   ├── hanami_obj

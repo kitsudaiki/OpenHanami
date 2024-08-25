@@ -1,9 +1,9 @@
-site_name: Hanami
+site_name: OpenHanami
 site_author: Tobias Anker
-site_url: https://docs.hanami-ai.com
+site_url: https://docs.openhanami.com
 
-repo_name: kitsudaiki/Hanami
-repo_url: https://github.com/kitsudaiki/Hanami
+repo_name: kitsudaiki/OpenHanami
+repo_url: https://github.com/kitsudaiki/OpenHanami
 
 theme:
   name: material

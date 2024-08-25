@@ -35,8 +35,8 @@ address = config["connection"]["address"]
 test_user_id = config["connection"]["test_user"]
 test_user_pw = config["connection"]["test_pw"]
 
-train_inputs = "/home/neptune/Schreibtisch/Projekte/Hanami/testing/python_sdk_api/train.csv"
-request_inputs = "/home/neptune/Schreibtisch/Projekte/Hanami/testing/python_sdk_api/test.csv"
+train_inputs = "/home/neptune/Schreibtisch/Projekte/OpenHanami/testing/python_sdk_api/train.csv"
+request_inputs = "/home/neptune/Schreibtisch/Projekte/OpenHanami/testing/python_sdk_api/test.csv"
 
 cluster_template = \
     "version: 1\n" \

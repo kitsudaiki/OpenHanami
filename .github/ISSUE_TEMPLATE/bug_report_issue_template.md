@@ -3,7 +3,7 @@ name: Bug Report
 about: Report bugs and problems
 title: '[BUG]: '
 labels: Bug, New issue
-projects: Hanami
+projects: OpenHanami
 assignees: kitsudaiki
 ---
 
@@ -33,7 +33,7 @@ Example: steps to reproduce the behavior:
 
 <!--
 Example:
-- Hanami: Commit 2ff09fd
+- OpenHanami: Commit 2ff09fd
 - OS: Ubuntu 22.04
 - Kubernetes: 1.28.2
 -->

@@ -1,4 +1,4 @@
-# Contributing to Hanami
+# Contributing to OpenHanami
 
 Any constructive and motivating input is welcome. I want to make contributing to this project as easy and transparent as possible, whether it's:
 
@@ -27,9 +27,9 @@ Typo's, broken-links in documentation and other similar small fixes don't requir
 
 ## Any contributions you make will be under the Apache 2 License
 
-In short, when you submit code changes, your submissions are understood to be under the same [Apache 2 License](https://github.com/kitsudaiki/Hanami/blob/develop/LICENSE) that covers the project. Feel free to contact the maintainers by eMail or `Question`-issue, if that's a concern.
+In short, when you submit code changes, your submissions are understood to be under the same [Apache 2 License](https://github.com/kitsudaiki/OpenHanami/blob/develop/LICENSE) that covers the project. Feel free to contact the maintainers by eMail or `Question`-issue, if that's a concern.
 
-## Report bugs using Github's [issues](https://github.com/kitsudaiki/Hanami/issues)
+## Report bugs using Github's [issues](https://github.com/kitsudaiki/OpenHanami/issues)
 
 GitHub issues are used to track public bugs. Report a bug by opening a new issue with the `Bug Report` template.
 
@@ -47,5 +47,5 @@ Please follow the [Code Styling Guide](https://docs.hanami-ai.com/repo/code_styl
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under its [Apache 2 License](https://github.com/kitsudaiki/Hanami/blob/develop/LICENSE)
+By contributing, you agree that your contributions will be licensed under its [Apache 2 License](https://github.com/kitsudaiki/OpenHanami/blob/develop/LICENSE)
 

@@ -89,7 +89,7 @@ prepare-build-dependencies:
                            uuid-dev  \
                            libsqlite3-dev \
                            protobuf-compiler \
-                           # https://github.com/kitsudaiki/Hanami/issues/377
+                           # https://github.com/kitsudaiki/OpenHanami/issues/377
                            # nvidia-cuda-toolkit \
                            nano && \
         ln -s /usr/bin/clang++-15 /usr/bin/clang++ && \

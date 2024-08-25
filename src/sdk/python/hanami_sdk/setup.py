@@ -22,8 +22,8 @@ class GenerateProtobufMessages(install):
 setup(
     name='hanami_sdk',
     version=version,
-    description='SDK library for Hanami',
-    url='https://github.com/kitsudaiki/Hanami',
+    description='SDK library for OpenHanami',
+    url='https://github.com/kitsudaiki/OpenHanami',
     author='Tobias Anker',
     author_email='tobias.anker@kitsunemimi.moe',
     license='Apache 2.0',

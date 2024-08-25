@@ -1,13 +1,13 @@
-# Hanami
+# OpenHanami
 
-![GitHub release](https://img.shields.io/github/v/release/kitsudaiki/Hanami?include_prereleases&label=Version&style=flat-square)
-![GitHub](https://img.shields.io/github/license/kitsudaiki/Hanami?style=flat-square)
+![GitHub release](https://img.shields.io/github/v/release/kitsudaiki/OpenHanami?include_prereleases&label=Version&style=flat-square)
+![GitHub](https://img.shields.io/github/license/kitsudaiki/OpenHanami?style=flat-square)
 ![Platform](https://img.shields.io/badge/Platform-Linux-blue?style=flat-square)
 ![Architecture](https://img.shields.io/badge/Architecture-amd64%20%2B%20arm64-blue?style=flat-square)
 
-[![Github workflow status](https://img.shields.io/github/actions/workflow/status/kitsudaiki/Hanami/build_test.yml?branch=develop&style=flat-square&label=Build%20and%20Test)](https://github.com/kitsudaiki/Hanami/actions/workflows/build_test.yml)
-[![CodeQL](https://img.shields.io/github/actions/workflow/status/kitsudaiki/Hanami/codeql.yml?branch=develop&style=flat-square&label=CodeQL)](https://github.com/kitsudaiki/Hanami/actions/workflows/codeql.yml)
-[![OpenSSF Scorecard](https://img.shields.io/ossf-scorecard/github.com/kitsudaiki/Hanami?branch=develop&style=flat-square&label=OpenSSF-Scorecard)](https://scorecard.dev/viewer/?uri=github.com/kitsudaiki/Hanami)
+[![Github workflow status](https://img.shields.io/github/actions/workflow/status/kitsudaiki/OpenHanami/build_test.yml?branch=develop&style=flat-square&label=Build%20and%20Test)](https://github.com/kitsudaiki/OpenHanami/actions/workflows/build_test.yml)
+[![CodeQL](https://img.shields.io/github/actions/workflow/status/kitsudaiki/OpenHanami/codeql.yml?branch=develop&style=flat-square&label=CodeQL)](https://github.com/kitsudaiki/OpenHanami/actions/workflows/codeql.yml)
+[![OpenSSF Scorecard](https://img.shields.io/ossf-scorecard/github.com/kitsudaiki/OpenHanami?branch=develop&style=flat-square&label=OpenSSF-Scorecard)](https://scorecard.dev/viewer/?uri=github.com/kitsudaiki/OpenHanami)
 
 <p align="center">
   <img src="assets/hanami-logo-with-text.png" width="500" height="594" />
@@ -17,11 +17,11 @@
 
 ## Intro
 
-Hanami contains in its core a custom experimental artificial neural network, which can work on
+OpenHanami contains in its core a custom experimental artificial neural network, which can work on
 unnormalized and unfiltered input-data, like sensor measurement data. The network growth over time
 by creating new nodes and connections between the nodes while learning new data. The base concept
 was created by myself and the code was written from scratch without any frameworks. The goal behind
-Hanami is to create something unique, which works more like the human brain. It wasn't targeted to
+OpenHanami is to create something unique, which works more like the human brain. It wasn't targeted to
 get a higher accuracy than classical artificial neural networks like Tensorflow, but to be more
 flexible and easier to use and more efficient in resource-consumption for big amounts of inputs and
 users. Additionally it also provides an as-a-Service architecture within a cloud native environment
@@ -46,50 +46,50 @@ and multi-tenancy.
 | [![ubuntu-2404_gcc-14][img_ubuntu-2404_gcc-14]][Workflow]     |                                             |                                                     |
 
 [img_ubuntu-2204_clang-13]:
-    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2204_clang-13/shields.json&style=flat-square
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/OpenHanami-badges/develop/compiler_version/ubuntu-2204_clang-13/shields.json&style=flat-square
 [img_ubuntu-2204_clang-14]:
-    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2204_clang-14/shields.json&style=flat-square
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/OpenHanami-badges/develop/compiler_version/ubuntu-2204_clang-14/shields.json&style=flat-square
 [img_ubuntu-2204_clang-15]:
-    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2204_clang-15/shields.json&style=flat-square
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/OpenHanami-badges/develop/compiler_version/ubuntu-2204_clang-15/shields.json&style=flat-square
 [img_ubuntu-2404_clang-15]:
-    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2404_clang-15/shields.json&style=flat-square
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/OpenHanami-badges/develop/compiler_version/ubuntu-2404_clang-15/shields.json&style=flat-square
 [img_ubuntu-2404_clang-16]:
-    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2404_clang-16/shields.json&style=flat-square
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/OpenHanami-badges/develop/compiler_version/ubuntu-2404_clang-16/shields.json&style=flat-square
 [img_ubuntu-2404_clang-17]:
-    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2404_clang-17/shields.json&style=flat-square
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/OpenHanami-badges/develop/compiler_version/ubuntu-2404_clang-17/shields.json&style=flat-square
 [img_ubuntu-2404_clang-18]:
-    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2404_clang-18/shields.json&style=flat-square
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/OpenHanami-badges/develop/compiler_version/ubuntu-2404_clang-18/shields.json&style=flat-square
 [img_ubuntu-2204_gcc-10]:
-    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2204_gcc-10/shields.json&style=flat-square
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/OpenHanami-badges/develop/compiler_version/ubuntu-2204_gcc-10/shields.json&style=flat-square
 [img_ubuntu-2204_gcc-11]:
-    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2204_gcc-11/shields.json&style=flat-square
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/OpenHanami-badges/develop/compiler_version/ubuntu-2204_gcc-11/shields.json&style=flat-square
 [img_ubuntu-2204_gcc-12]:
-    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2204_gcc-12/shields.json&style=flat-square
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/OpenHanami-badges/develop/compiler_version/ubuntu-2204_gcc-12/shields.json&style=flat-square
 [img_ubuntu-2404_gcc-12]:
-    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2404_gcc-12/shields.json&style=flat-square
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/OpenHanami-badges/develop/compiler_version/ubuntu-2404_gcc-12/shields.json&style=flat-square
 [img_ubuntu-2404_gcc-13]:
-    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2404_gcc-13/shields.json&style=flat-square
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/OpenHanami-badges/develop/compiler_version/ubuntu-2404_gcc-13/shields.json&style=flat-square
 [img_ubuntu-2404_gcc-14]:
-    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/compiler_version/ubuntu-2404_gcc-14/shields.json&style=flat-square
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/OpenHanami-badges/develop/compiler_version/ubuntu-2404_gcc-14/shields.json&style=flat-square
 [img_python-3_9]:
-    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/python_version/python-3_9/shields.json&style=flat-square
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/OpenHanami-badges/develop/python_version/python-3_9/shields.json&style=flat-square
 [img_python-3_10]:
-    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/python_version/python-3_10/shields.json&style=flat-square
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/OpenHanami-badges/develop/python_version/python-3_10/shields.json&style=flat-square
 [img_python-3_11]:
-    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/python_version/python-3_11/shields.json&style=flat-square
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/OpenHanami-badges/develop/python_version/python-3_11/shields.json&style=flat-square
 [img_python-3_12]:
-    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/python_version/python-3_12/shields.json&style=flat-square
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/OpenHanami-badges/develop/python_version/python-3_12/shields.json&style=flat-square
 [img_kubernetes-1_26]:
-    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/kubernetes_version/kubernetes-1_26/shields.json&style=flat-square
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/OpenHanami-badges/develop/kubernetes_version/kubernetes-1_26/shields.json&style=flat-square
 [img_kubernetes-1_27]:
-    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/kubernetes_version/kubernetes-1_27/shields.json&style=flat-square
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/OpenHanami-badges/develop/kubernetes_version/kubernetes-1_27/shields.json&style=flat-square
 [img_kubernetes-1_28]:
-    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/kubernetes_version/kubernetes-1_28/shields.json&style=flat-square
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/OpenHanami-badges/develop/kubernetes_version/kubernetes-1_28/shields.json&style=flat-square
 [img_kubernetes-1_29]:
-    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/kubernetes_version/kubernetes-1_29/shields.json&style=flat-square
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/OpenHanami-badges/develop/kubernetes_version/kubernetes-1_29/shields.json&style=flat-square
 [img_kubernetes-1_30]:
-    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/Hanami-badges/develop/kubernetes_version/kubernetes-1_30/shields.json&style=flat-square
-[Workflow]: https://github.com/kitsudaiki/Hanami/actions/workflows/build_test.yml
+    https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kitsudaiki/OpenHanami-badges/develop/kubernetes_version/kubernetes-1_30/shields.json&style=flat-square
+[Workflow]: https://github.com/kitsudaiki/OpenHanami/actions/workflows/build_test.yml
 
 ## Current prototypically implemented features
 
@@ -241,14 +241,14 @@ itself:
 
 -   [Development-Guide](https://docs.hanami-ai.com/repo/development/)
 
--   [Contributing guide](https://github.com/kitsudaiki/Hanami/blob/develop/CONTRIBUTING.md)
+-   [Contributing guide](https://github.com/kitsudaiki/OpenHanami/blob/develop/CONTRIBUTING.md)
 
 -   [Dependency-Overview](https://docs.hanami-ai.com/repo/dependencies/)
 
 ## Pre-build objects
 
 All objects are automatically build and uploaded by the
-[CI-pipeline](https://github.com/kitsudaiki/Hanami/actions/workflows/build_test.yml) for each merge
+[CI-pipeline](https://github.com/kitsudaiki/OpenHanami/actions/workflows/build_test.yml) for each merge
 on `develop`-branch and for each tag.
 
 -   [Docker-images](https://hub.docker.com/repository/docker/kitsudaiki/hanami/tags)
@@ -286,7 +286,7 @@ added/enabled again in the near future:
 
 ## Roadmap
 
-see [Roadmap](https://github.com/kitsudaiki/Hanami/blob/develop/ROADMAP.md)
+see [Roadmap](https://github.com/kitsudaiki/OpenHanami/blob/develop/ROADMAP.md)
 
 ## Author
 
@@ -297,4 +297,4 @@ eMail: tobias.anker@kitsunemimi.moe
 ## License
 
 The complete project is under
-[Apache 2 license](https://github.com/kitsudaiki/Hanami/blob/develop/LICENSE).
+[Apache 2 license](https://github.com/kitsudaiki/OpenHanami/blob/develop/LICENSE).

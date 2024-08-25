@@ -8,7 +8,7 @@ permissions:
 
 env:
   REGISTRY_IMAGE: kitsudaiki/hanami
-  REGISTRY_DOCS_IMAGE: kitsudaiki/hanami_docs
+  REGISTRY_DOCS_IMAGE: kitsudaiki/openhanami_docs
 
 jobs:
 
@@ -471,7 +471,7 @@ jobs:
           chmod +x  /tmp/Hanami_build_result/hanami_args_unit_tests
           /tmp/Hanami_build_result/hanami_args_unit_tests
       - 
-        name: "Run test: Hanami"
+        name: "Run test: hanami"
         run: |
           chmod +x  /tmp/Hanami_build_result/hanami_unittests
           /tmp/Hanami_build_result/hanami_unittests
@@ -930,14 +930,14 @@ jobs:
         name: Check location
         run: |
           pwd
-          cd Hanami
+          cd OpenHanami
           ls -l
       - 
         name: Build and push by digest
         id: build
         uses: docker/build-push-action@5176d81f87c23d6fc96624dfdbcd9f3830bbe445
         with:
-          context: ./Hanami
+          context: ./OpenHanami
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=image,name=${{ env.REGISTRY_IMAGE }},push-by-digest=true,name-canonical=true,push=true

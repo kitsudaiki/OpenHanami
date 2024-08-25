@@ -16,13 +16,13 @@
 -   Clone repository with submodules
 
     ```bash
-    git clone --recurse-submodules https://github.com/kitsudaiki/Hanami.git
+    git clone --recurse-submodules https://github.com/kitsudaiki/OpenHanami.git
     ```
 
 -   In case the repo was cloned without submodules initially:
 
     ```bash
-    cd Hanami
+    cd OpenHanami
 
     git submodule init
     git submodule update --recursive
@@ -33,7 +33,7 @@
 -   Compile hanami
 
     ```bash
-    cd Hanami
+    cd OpenHanami
     mkdir build
     cd build
 
@@ -184,8 +184,8 @@ It is possible, that the check fails, even if there are no (new) secrets in the 
 -   checkout repository and run the local server
 
     ```bash
-    git clone --recurse-submodules https://github.com/kitsudaiki/Hanami.git
-    cd Hanami
+    git clone --recurse-submodules https://github.com/kitsudaiki/OpenHanami.git
+    cd OpenHanami
 
     mkdocs serve
     ```

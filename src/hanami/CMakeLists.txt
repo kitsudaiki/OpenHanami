@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 project(hanami CXX)
 
-# see https://github.com/kitsudaiki/Hanami/issues/377
+# see https://github.com/kitsudaiki/OpenHanami/issues/377
 # project(hanami CXX CUDA)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -209,7 +209,7 @@ set(SOURCES
 add_executable(hanami
     ${SOURCES}
     src/main.cpp
-    # see https://github.com/kitsudaiki/Hanami/issues/377
+    # see https://github.com/kitsudaiki/OpenHanami/issues/377
     # ${CUDA_OUTPUT_OBJ}
 )
 if(run_tests)
@@ -236,7 +236,7 @@ if(run_tests)
         tests/unit_tests/database/users_table_test.cpp
         tests/unit_tests/database/users_table_test.h
         tests/unit_tests/main.cpp
-        # see https://github.com/kitsudaiki/Hanami/issues/377
+        # see https://github.com/kitsudaiki/OpenHanami/issues/377
         # ${CUDA_IO_OBJ}
         # ${CUDA_PROCESSING_OBJ}
         # ${CUDA_BACKPROPAGATION_OBJ}
@@ -271,7 +271,7 @@ find_library(CRYPTO_LIB crypto)
 find_library(SQLITE3_LIB sqlite3)
 find_library(UUID_LIB uuid)
 find_library(PROTOBUF_LIB protobuf)
-# see https://github.com/kitsudaiki/Hanami/issues/377
+# see https://github.com/kitsudaiki/OpenHanami/issues/377
 # find_package(CUDA REQUIRED)
 # find_library(CUDA_LIB cuda)
 # find_library(CUDART_LIB cudart)
@@ -293,7 +293,7 @@ target_link_libraries(hanami
     ${CRYPTO_LIB}
     ${SQLITE3_LIB}
     ${UUID_LIB}
-    # see https://github.com/kitsudaiki/Hanami/issues/377
+    # see https://github.com/kitsudaiki/OpenHanami/issues/377
     # ${CUDA_LIB}
     # ${CUDART_LIB}
     ${PROTOBUF_LIB}
@@ -317,7 +317,7 @@ if(run_tests)
         ${CRYPTO_LIB}
         ${SQLITE3_LIB}
         ${UUID_LIB}
-        # see https://github.com/kitsudaiki/Hanami/issues/377
+        # see https://github.com/kitsudaiki/OpenHanami/issues/377
         # ${CUDA_LIB}
         # ${CUDART_LIB}
         ${PROTOBUF_LIB}
@@ -333,7 +333,7 @@ set(PROTO_FILE ../libraries/hanami_messages/protobuffers)
 set(PROTO_OUTPUT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(PROTO_OUTPUT_HEADER ${PROTO_OUTPUT_DIR}/${PROTO_FILE}/hanami_messages.proto3.pb.h)
 set(PROTO_OUTPUT_SOURCE ${PROTO_OUTPUT_DIR}/${PROTO_FILE}/hanami_messages.proto3.pb.cc)
-# see https://github.com/kitsudaiki/Hanami/issues/377
+# see https://github.com/kitsudaiki/OpenHanami/issues/377
 # set(CUDA_IO_OBJ ${CMAKE_CURRENT_BINARY_DIR}/cuda_io.o)
 # set(CUDA_PROCESSING_OBJ ${CMAKE_CURRENT_BINARY_DIR}/processing.o)
 # set(CUDA_BACKPROPAGATION_OBJ ${CMAKE_CURRENT_BINARY_DIR}/backpropagation.o)
@@ -352,7 +352,7 @@ add_custom_command(
         ${CMAKE_CURRENT_SOURCE_DIR}/${PROTO_FILE}/hanami_messages.proto3
 )
 
-# see https://github.com/kitsudaiki/Hanami/issues/377
+# see https://github.com/kitsudaiki/OpenHanami/issues/377
 #add_custom_command(
 #    OUTPUT
 #        ${CUDA_IO_OBJ}
@@ -399,7 +399,7 @@ add_custom_target(generate_protobuf_files DEPENDS
     ${PROTO_OUTPUT_HEADER}
     ${PROTO_OUTPUT_SOURCE}
 )
-# see https://github.com/kitsudaiki/Hanami/issues/377
+# see https://github.com/kitsudaiki/OpenHanami/issues/377
 # add_dependencies(hanami generate_protobuf_files)
 # add_custom_target(compile_cuda_kernel DEPENDS
 #     ${CUDA_IO_OBJ}
@@ -412,20 +412,20 @@ add_custom_target(generate_protobuf_files DEPENDS
 target_sources(hanami PRIVATE
     ${PROTO_OUTPUT_HEADER}
     ${PROTO_OUTPUT_SOURCE}
-    # see https://github.com/kitsudaiki/Hanami/issues/377
+    # see https://github.com/kitsudaiki/OpenHanami/issues/377
     # ${CUDA_IO_OBJ}
     # ${CUDA_PROCESSING_OBJ}
     # ${CUDA_BACKPROPAGATION_OBJ}
     # ${CUDA_REDUCTION_OBJ}
 )
 if(run_tests)
-    # see https://github.com/kitsudaiki/Hanami/issues/377
+    # see https://github.com/kitsudaiki/OpenHanami/issues/377
     # add_dependencies(hanami_unittests compile_cuda_kernel)
     add_dependencies(hanami_unittests generate_protobuf_files)
     target_sources(hanami_unittests PRIVATE
         ${PROTO_OUTPUT_HEADER}
         ${PROTO_OUTPUT_SOURCE}
-        # see https://github.com/kitsudaiki/Hanami/issues/377
+        # see https://github.com/kitsudaiki/OpenHanami/issues/377
         # ${CUDA_IO_OBJ}
         # ${CUDA_PROCESSING_OBJ}
         # ${CUDA_BACKPROPAGATION_OBJ}

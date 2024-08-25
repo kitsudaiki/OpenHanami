@@ -1,4 +1,4 @@
-module github.com/kitsudaki/Hanami
+module github.com/kitsudaki/OpenHanami
 
 go 1.22.5
 
