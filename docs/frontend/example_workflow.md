@@ -29,7 +29,7 @@ directly with the neural network via the python-version of the SDK. See for furt
     ```
 
 -   Download the pre-build binary of the CLI-client from the
-    [file-share](https://files.hanami-ai.com/)
+    [file-share](https://files.openhanami.com/)
 
     !!! info
 

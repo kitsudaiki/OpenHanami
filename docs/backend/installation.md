@@ -106,7 +106,7 @@ helm install \
 
 **From pre-build**
 
-Download the helm-chart from the [file-share](https://files.hanami-ai.com/)
+Download the helm-chart from the [file-share](https://files.openhanami.com/)
 
 ```bash
 helm install \

@@ -17,7 +17,7 @@ Github is used to host code, to track issues and feature requests, as well as ac
 Pull requests are the best way to propose changes to the codebase. Any pull request is welcome. Please use the following workflow:
 
 1. Search for an existing issue or create an issue first and ask, if this issue is valid to be implemented
-2. Fork the repo and create your branch from `develop`. Based on the type of the related issue name the branch `feature/...`, `qa/...` or `fix/..`. For naming of the branches and styling of the commit messages see also the [documentation](https://docs.hanami-ai.com/repo/git_workflow/)
+2. Fork the repo and create your branch from `develop`. Based on the type of the related issue name the branch `feature/...`, `qa/...` or `fix/..`. For naming of the branches and styling of the commit messages see also the [documentation](https://docs.openhanami.com/repo/git_workflow/)
 3. Handle all `Acceptance Criteria` of the feature- of qa-issue
 4. Write tests if required.
 5. Make sure the ci-pipeline is green
@@ -39,11 +39,11 @@ Open an issue with the `Feature`-template, where you describes the feature you w
 
 ## Developtment documentation
 
-To setup a local environment to work on the code, see the [deveolper documentation](https://docs.hanami-ai.com/repo/development/) and [build documentation](https://docs.hanami-ai.com/repo/build_guide/)
+To setup a local environment to work on the code, see the [deveolper documentation](https://docs.openhanami.com/repo/development/) and [build documentation](https://docs.openhanami.com/repo/build_guide/)
 
 ## Use a consistent coding style
 
-Please follow the [Code Styling Guide](https://docs.hanami-ai.com/repo/code_styling/) as good as possible. If you see any improvements, like feature which makes the code cleaner or something like this, then please open a `Quality Assurance` issue and describe what could/should be changed.
+Please follow the [Code Styling Guide](https://docs.openhanami.com/repo/code_styling/) as good as possible. If you see any improvements, like feature which makes the code cleaner or something like this, then please open a `Quality Assurance` issue and describe what could/should be changed.
 
 ## License
 
