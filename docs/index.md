@@ -1,3 +1,7 @@
+!!! info
+
+    This is the documentation of the develop-branch.
+
 # OpenHanami
 
 <p align="center">
@@ -44,7 +48,7 @@ and multi-tenancy.
     reach the threshold to be marked as persistent.
 
     See
-    [measurement-examples](https://docs.hanami-ai.com/inner_workings/measurements/measurements/#reduction_1)
+    [measurement-examples](https://docs.openhanami.com/inner_workings/measurements/measurements/#reduction_1)
 
 -   **Spiking neural network**
 
@@ -53,8 +57,8 @@ and multi-tenancy.
     older input, based on the time how long ago this input happened.
 
     See
-    [short explanation](https://docs.hanami-ai.com/inner_workings/core/core/#spiking-neural-network)
-    and [measurement-examples](https://docs.hanami-ai.com/inner_workings/measurements/measurements)
+    [short explanation](https://docs.openhanami.com/inner_workings/core/core/#spiking-neural-network)
+    and [measurement-examples](https://docs.openhanami.com/inner_workings/measurements/measurements)
 
 -   **No strict layer structure**
 
@@ -67,14 +71,14 @@ and multi-tenancy.
     layer-structure can still be enforced.
 
     See
-    [short explanation](https://docs.hanami-ai.com/inner_workings/core/core/#no-strict-layer-structure)
-    and [measurement-examples](https://docs.hanami-ai.com/inner_workings/measurements/measurements)
+    [short explanation](https://docs.openhanami.com/inner_workings/core/core/#no-strict-layer-structure)
+    and [measurement-examples](https://docs.openhanami.com/inner_workings/measurements/measurements)
 
 -   **3-dimensional networks**
 
     It is basically possible to define 3-dimensional networks. This was only added, because the
     human brain is also a 3D-object. This feature exist in the
-    [cluster-templates](https://docs.hanami-ai.com/frontend/cluster_templates/cluster_template/),
+    [cluster-templates](https://docs.openhanami.com/frontend/cluster_templates/cluster_template/),
     but was never tested until now. Maybe in bigger tests in the future this feature could become
     useful to better mix information with each other.
 
@@ -95,7 +99,7 @@ and multi-tenancy.
     single endpoint in the code automatically results in changes of the resulting documentation, to
     make sure, that code and documentation are in sync.
 
-    See [OpenAPI-docu](https://docs.hanami-ai.com/frontend/rest_api_documentation/)
+    See [OpenAPI-docu](https://docs.openhanami.com/frontend/rest_api_documentation/)
 
 -   **Multi-user and multi-project**
 
@@ -104,7 +108,7 @@ and multi-tenancy.
     Each user can login by username and password and gets an JWT-token to access the user- and
     project-specific resources.
 
-    See [Authentication-docu](https://docs.hanami-ai.com/inner_workings/user_and_projects/)
+    See [Authentication-docu](https://docs.openhanami.com/inner_workings/user_and_projects/)
 
 -   **Efficient resource-usage**
 
@@ -119,7 +123,7 @@ and multi-tenancy.
     3. Capability to regulate the cpu-frequencey and measure power-consumption. (disabled currently)
 
         See
-        [Monitoring-docu](https://docs.hanami-ai.com/inner_workings/monitoring/monitoring/#controlling-cpu-frequency)
+        [Monitoring-docu](https://docs.openhanami.com/inner_workings/monitoring/monitoring/#controlling-cpu-frequency)
 
 -   **Network-input**
 
@@ -127,19 +131,19 @@ and multi-tenancy.
 
     1. Uploading the dataset and starting an asynchronous task based on this dataset over the API
 
-        See [OpenAPI-docu](https://docs.hanami-ai.com/frontend/rest_api_documentation/)
+        See [OpenAPI-docu](https://docs.openhanami.com/frontend/rest_api_documentation/)
 
     2. Directly communicate with the neural network via websocket. In this case not a whole dataset
        is push through the synapse, but instead only a single network-input is send. The call is
        blocking, until the network returns the output, which gives more control.
 
-        See [Websocket-docu](https://docs.hanami-ai.com/frontend/websockets/websocket_workflow/)
+        See [Websocket-docu](https://docs.openhanami.com/frontend/websockets/websocket_workflow/)
 
 -   **Installation on Kubernetes and with Ansible**
 
     The backend can be basically deployed on kubernetes via Helm-chart or plain via Ansible.
 
-    See [Installation-docu](https://docs.hanami-ai.com/backend/installation/)
+    See [Installation-docu](https://docs.openhanami.com/backend/installation/)
 
 ## Known disadvantages
 
@@ -190,7 +194,7 @@ itself:
 
     [:octicons-arrow-right-24: Docker-images](https://hub.docker.com/repository/docker/kitsudaiki/hanami/tags)
 
-    [:octicons-arrow-right-24: client, SDK and helm-chart](https://files.hanami-ai.com/)
+    [:octicons-arrow-right-24: client, SDK and helm-chart](https://files.openhanami.com/)
 
 -   :octicons-milestone-24:{ .lg .middle } **Roadmap**
 
@@ -211,7 +215,7 @@ added/enabled again in the near future:
     old version in `v0.9.0` and re-write it again with Typescript and some additional frameworks.
     Until then, it is temporary disabled, because it would current cost too much time to keep this
     unused and prototypical version up-to-data. As reference see the example-workflow of the
-    PoC-dashboard: [Dashboard-docu](https://docs.hanami-ai.com/frontend/dashboard/dashboard/)
+    PoC-dashboard: [Dashboard-docu](https://docs.openhanami.com/frontend/dashboard/dashboard/)
 
 2. Regulation of CPU-speed
 

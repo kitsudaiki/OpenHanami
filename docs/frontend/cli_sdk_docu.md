@@ -42,7 +42,7 @@ The CLI and the SDK-library provides functions to interact with the API of the b
 
 Each of the used HTTP-error codes results in a different exception. For the available error-code /
 exceptions of each of the endpoints, look into the
-[REST-API documenation](https://docs.hanami-ai.com/api/rest_api_documentation/)
+[REST-API documenation](https://docs.openhanami.com/api/rest_api_documentation/)
 
 === "Python-SDK"
 
@@ -143,7 +143,7 @@ Create new empty project.
     project_name = "Test Project"
 
     # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+    # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
     result = project.create_project(token, address, projet_id, project_name)
 
@@ -188,7 +188,7 @@ Get information about a project.
     project_id = "test_project"
 
     # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+    # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
     result = project.get_project(token, address, projet_id)
 
@@ -231,7 +231,7 @@ List all projects.
     address = "http://127.0.0.1:11418"
 
     # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+    # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
     result = project.list_projects(token, address)
 
@@ -284,7 +284,7 @@ Delete a project.
     project_id = "test_project"
 
     # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+    # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
     project.delete_project(token, address, projet_id)
     ```
@@ -338,7 +338,7 @@ If the `is_admin` is set to true, the user becomes a global admin.
     is_admin = True
 
     # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+    # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
     result = user.create_user(token, address, new_id, new_user, new_pw, is_admin)
 
@@ -387,7 +387,7 @@ Get information about a specific user.
     user_id = "new_user"
 
     # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+    # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
     result = user.get_user(token, address, user_id)
 
@@ -432,7 +432,7 @@ List all user.
     address = "http://127.0.0.1:11418"
 
     # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+    # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
     result = user.list_users(token, address)
 
@@ -496,7 +496,7 @@ Delete a user from the backend.
     user_id = "new_user"
 
     # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+    # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
     user.delete_user(token, address, user_id)
     ```
@@ -533,7 +533,7 @@ project.
     is_project_admin = True
 
     # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+    # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
     result = add_roject_to_user(token,
                                 address,
@@ -562,7 +562,7 @@ Unassign a project from a user.
     user_id = "new_user"
 
     # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+    # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
     result = remove_project_fromUser(token, address, user_id, project_id)
     ```
@@ -585,7 +585,7 @@ List projects only of the current user, which are enabled by the current token.
     address = "http://127.0.0.1:11418"
 
     # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+    # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
     result = list_projects_of_user(token, address)
     ```
@@ -609,7 +609,7 @@ Switch to another project with the current user.
     project_id = "test_project"
 
     # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+    # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
     result = switch_project(token, address, project_id)
     ```
@@ -664,7 +664,7 @@ label-file of the same dataset.
     train_labels = "/tmp/mnist/train-labels.idx1-ubyte"
 
     # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+    # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
     dataset_uuid = dataset.upload_mnist_files(token, address, train_dataset_name, train_inputs, train_labels)
 
@@ -714,7 +714,7 @@ label-file of the same dataset.
     train_inputs = "/tmp/csv/test-file.csv"
 
     # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+    # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
     dataset_uuid = dataset.upload_csv_files(token, address, train_dataset_name, train_inputs)
 
@@ -761,7 +761,7 @@ Get information about a specific dataset.
     dataset_uuid = "6f2bbcd2-7081-4b08-ae1d-16e6cd6f54c4"
 
     # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+    # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
     result = dataset.get_dataset(token, address, dataset_uuid)
 
@@ -813,7 +813,7 @@ List all visible datasets.
     address = "http://127.0.0.1:11418"
 
     # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+    # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
     result = dataset.list_datasets(token, address)
 
@@ -868,7 +868,7 @@ Delete a dataset.
     dataset_uuid = "6f2bbcd2-7081-4b08-ae1d-16e6cd6f54c4"
 
     # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+    # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
     dataset.delete_dataset(token, address, dataset_uuid)
     ```
@@ -905,7 +905,7 @@ is primary used for automatic testing.
     dataset_uuid = "d40c0c06-bd28-49a4-b872-6a70c4750bb9"
 
     # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+    # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
     result = request_result.check_mnist_dataset(token,
                                                 address,
@@ -963,7 +963,7 @@ the upload. For now there is only an endpoint to request a slice of a dataset.
     column_name = "test_output"
 
     # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+    # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
     result = dataset.download_dataset_content(token,
                                               address,
@@ -1013,7 +1013,7 @@ Cluster containing the neural network.
 
 To initialize a new cluster, a cluster-templated is used, which describes the basic structure of the
 network (see documentation of the
-[cluster-templates](https://docs.hanami-ai.com/api/cluster_template/))
+[cluster-templates](https://docs.openhanami.com/api/cluster_template/))
 
 === "CLI"
 
@@ -1062,7 +1062,7 @@ network (see documentation of the
         "    label: 3,1,1\n" \
 
     # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+    # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
     result = cluster.create_cluster(token, address, cluster_name, cluster_template)
 
@@ -1115,7 +1115,7 @@ used memory and so on are still missing in this output currently.
     cluster_uuid = "d94f2b53-f404-4215-9a33-63c4a03e3202"
 
     # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+    # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
     result = cluster.get_cluster(token, address, cluster_uuid)
 
@@ -1160,7 +1160,7 @@ List all visible cluster.
     address = "http://127.0.0.1:11418"
 
     # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+    # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
     result = cluster.list_clusters(token, address)
 
@@ -1213,7 +1213,7 @@ Delete a cluster from a backend.
     cluster_uuid = "d94f2b53-f404-4215-9a33-63c4a03e3202"
 
     # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+    # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
     cluster.delete_cluster(token, address, cluster_uuid)
     ```
@@ -1248,7 +1248,7 @@ Save the state of the cluster by creating a checkpoint, which is stored on the s
     checkpoint_name = "test_checkpoint"
 
     # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+    # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
     result = cluster.save_cluster(token, address, checkpoint_name, cluster_uuid)
 
@@ -1290,7 +1290,7 @@ Reset a cluster to the state, which is stored in a specific checkpoint.
     cluster_uuid = "d94f2b53-f404-4215-9a33-63c4a03e3202"
 
     # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+    # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
     result = cluster.restore_cluster(token, address, checkpoint_uuid, cluster_uuid)
 
@@ -1305,7 +1305,7 @@ Reset a cluster to the state, which is stored in a specific checkpoint.
 
 Each CPU and GPU is handled as its logical host. Cluster and be moved between them. To list
 avaialble hosts there is the
-[list-hosts endpoint](https://docs.hanami-ai.com/api/sdk_library/#list-hosts).
+[list-hosts endpoint](https://docs.openhanami.com/api/sdk_library/#list-hosts).
 
 !!! warning
 
@@ -1325,7 +1325,7 @@ avaialble hosts there is the
     cluster_uuid = "d94f2b53-f404-4215-9a33-63c4a03e3202"
 
     # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+    # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
     result = cluster.switch_host(token, address, cluster_uuid, host_uuid)
 
@@ -1392,7 +1392,7 @@ Create a new task to train the cluster with the data of a dataset, which was upl
     # the used dataset for the input- and output-data
 
     # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+    # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
     result = task.create_train_task(token,
                                     address,
@@ -1460,7 +1460,7 @@ used, which had to be uplaoded first.
     # the used dataset for the input- and output-data
 
     # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+    # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
     result = task.create_request_task(token,
                                       address,
@@ -1513,7 +1513,7 @@ used, which had to be uplaoded first.
     task_uuid = "c7f7e274-5d7d-4696-8591-18441cb1b685"
 
     # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+    # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
     result = task.get_task(token, address, task_uuid, cluster_uuid)
 
@@ -1560,7 +1560,7 @@ List all tasks for a cluster, together with their progress.
     cluster_uuid = "9f86921d-9a7c-44a2-836c-1683928d9354"
 
     # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+    # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
     result = task.list_tasks(token, address, cluster_uuid)
 
@@ -1617,7 +1617,7 @@ will not be deleted.
     task_uuid = "c7f7e274-5d7d-4696-8591-18441cb1b685"
 
     # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+    # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
     task.delete_task(token, address, task_uuid, cluster_uuid)
     ```
@@ -1654,7 +1654,7 @@ requests much faster, because it doesn't use the REST-API. It is an alternative 
         exprected_values = [1.0, 0.0]
 
         # request a token for a user, who has admin-permissions
-        # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+        # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
         # initial request of a websocket connection to a specific cluster
         # this websocket can be used for multiple request
@@ -1693,7 +1693,7 @@ requests much faster, because it doesn't use the REST-API. It is an alternative 
         input_values = [0.0, 2.0, 0.0, 10.0, 0.5]
 
         # request a token for a user, who has admin-permissions
-        # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+        # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
         # initial request of a websocket connection to a specific cluster
         # this websocket can be used for multiple request
@@ -1755,7 +1755,7 @@ List all visible checkpoints.
     address = "http://127.0.0.1:11418"
 
     # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+    # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
     result = checkpoint.list_checkpoints(token, address)
 
@@ -1808,7 +1808,7 @@ Delete a checkpoint from the backend.
     checkpoint_uuid = "cc6120c7-cc31-4f17-baee-c6c606f00512"
 
     # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+    # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
     checkpoint.delete_checkpoint(token, address, checkpoint_uuid)
 
@@ -1847,7 +1847,7 @@ the data. These logical hosts can be listed with this endpoint.
     address = "http://127.0.0.1:11418"
 
     # request a token for a user, who has admin-permissions
-    # see: https://docs.hanami-ai.com/api/sdk_library/#request-token
+    # see: https://docs.openhanami.com/api/sdk_library/#request-token
 
     result = hosts.list_hosts(token, address)
 
