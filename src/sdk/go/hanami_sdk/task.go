@@ -20,43 +20,56 @@
 
 package hanami_sdk
 
-import (
-	"strings"
-)
-
-func convertIO(data []string) map[string]string {
-	valueMap := make(map[string]string)
-
-	for _, val := range data {
-		parts := strings.Split(val, ":")
-		if len(parts) != 2 {
-			break
-		}
-		valueMap[parts[0]] = parts[1]
-	}
-
-	return valueMap
+type TaskInput struct {
+	HexagonName        string `json:"hexagon_name"`
+	DatasetColumnName  string `json:"dataset_column"`
+	DatasetUuid        string `json:"dataset_uuid"`
 }
 
-func CreateTrainTask(address, token, name, clusterUuid string, inputs, outputs []string, timeLenght int, skipTlsVerification bool) (map[string]interface{}, error) {
+type TaskResult struct {
+	HexagonName        string `json:"hexagon_name"`
+	DatasetColumnName  string `json:"dataset_column"`
+}
+
+func CreateTrainTask(address, token, name, clusterUuid string, inputs, outputs []TaskInput, timeLenght int, skipTlsVerification bool) (map[string]interface{}, error) {
+    var inputArray []interface{}
+    for _, input := range inputs {
+        inputArray = append(inputArray, input)
+    }
+
+    var outputArray []interface{}
+    for _, output := range outputs {
+        outputArray = append(outputArray, output)
+    }
+
 	path := "v1.0alpha/task/train"
 	jsonBody := map[string]interface{}{
 		"name":         name,
 		"cluster_uuid": clusterUuid,
-		"inputs":       convertIO(inputs),
-		"outputs":      convertIO(outputs),
+		"inputs":       inputArray,
+		"outputs":      outputArray,
 		"time_length":  timeLenght,
 	}
 	return SendPost(address, token, path, jsonBody, skipTlsVerification)
 }
 
-func CreateRequestTask(address, token, name, clusterUuid string, inputs, results []string, timeLenght int, skipTlsVerification bool) (map[string]interface{}, error) {
+func CreateRequestTask(address, token, name, clusterUuid string, inputs []TaskInput, results []TaskResult, timeLenght int, skipTlsVerification bool) (map[string]interface{}, error) {
+	var inputArray []interface{}
+    for _, input := range inputs {
+        inputArray = append(inputArray, input)
+    }
+
+    var resultArray []interface{}
+    for _, result := range results {
+        resultArray = append(resultArray, result)
+    }
+
 	path := "v1.0alpha/task/request"
 	jsonBody := map[string]interface{}{
 		"name":         name,
 		"cluster_uuid": clusterUuid,
-		"inputs":       convertIO(inputs),
-		"results":      convertIO(results),
+		"inputs":       inputArray,
+		"results":      resultArray,
 		"time_length":  timeLenght,
 	}
 	return SendPost(address, token, path, jsonBody, skipTlsVerification)

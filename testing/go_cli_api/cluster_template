@@ -10,7 +10,7 @@ hexagons:
     3,1,1
     
 inputs:
-    picture: 1,1,1
+    picture_hex: 1,1,1
 
 outputs:
-    label: 3,1,1
+    label_hex: 3,1,1

@@ -4,14 +4,14 @@
 # export HANAMI_USER=asdf
 # export HANAMI_PW=asdfasdf
 
-# export train_inputs=/tmp/train-images-idx3-ubyte
-# export train_labels=/tmp/train-labels-idx1-ubyte
-# export request_inputs=/tmp/t10k-images-idx3-ubyte
-# export request_labels=/tmp/t10k-labels-idx1-ubyte
+# export train_inputs=/home/neptune/Schreibtisch/mnist/train-images.idx3-ubyte
+# export train_labels=/home/neptune/Schreibtisch/mnist/train-labels.idx1-ubyte
+# export request_inputs=/home/neptune/Schreibtisch/mnist/t10k-images.idx3-ubyte
+# export request_labels=/home/neptune/Schreibtisch/mnist/t10k-labels.idx1-ubyte
 
 
 # build protobuffer for go sdk
-# pushd ../../src/sdk/go/hanami_sdk 
+# pushd ../../src/sdk/go/hanami_sdk
 # protoc --go_out=. --proto_path ../../../libraries/hanami_messages/protobuffers hanami_messages.proto3
 # popd
 
@@ -74,7 +74,8 @@ echo "Cluster-UUID: $cluster_uuid"
 
 
 # train test
-task_uuid=$(./hanamictl task create train --insecure -j -i picture:$train_dataset_uuid -o label:$train_dataset_uuid -c $cluster_uuid cli_train_test_task | jq -r '.uuid')
+echo "./hanamictl task create train --insecure -j -i $train_dataset_uuid:picture:picture_hex -o $train_dataset_uuid:label:label_hex -c $cluster_uuid cli_train_test_task"
+task_uuid=$(./hanamictl task create train --insecure -j -i $train_dataset_uuid:picture:picture_hex -o $train_dataset_uuid:label:label_hex -c $cluster_uuid cli_train_test_task | jq -r '.uuid')
 echo "Train-Task-UUID: $task_uuid"
 
 while true; do
@@ -102,7 +103,8 @@ echo "new Cluster-UUID: $cluster_uuid"
 ./hanamictl cluster restore --insecure -c $checkpoint_uuid $cluster_uuid
 
 # request test
-req_task_uuid=$(./hanamictl task create request --insecure -j -i picture:$request_dataset_uuid -r label:cli_test_output -c $cluster_uuid cli_request_test_task | jq -r '.uuid')
+echo "./hanamictl task create request --insecure -j -i $request_dataset_uuid:picture:picture_hex -r label_hex:cli_test_output -c $cluster_uuid cli_request_test_task"
+req_task_uuid=$(./hanamictl task create request --insecure -j -i $request_dataset_uuid:picture:picture_hex -r label_hex:cli_test_output -c $cluster_uuid cli_request_test_task | jq -r '.uuid')
 echo "Request-Task-UUID: $req_task_uuid"
 
 ./hanamictl task list --insecure -c $cluster_uuid 
@@ -123,7 +125,7 @@ done
 ./hanamictl dataset list --insecure
 
 
-result_uuid=$(./hanamictl dataset list --insecure -j | jq -r '.body[] | select(.[-1] == "cli_test_output") | .[1]')
+result_uuid=$(./hanamictl dataset list --insecure -j | jq -r '.body[] | select(.[-1] == "cli_request_test_task") | .[1]')
 echo "Result-Dataset-UUID: $result_uuid"
 
 ./hanamictl dataset get --insecure $result_uuid

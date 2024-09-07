@@ -73,7 +73,7 @@ directly with the neural network via the python-version of the SDK. See for furt
           | VERSION           | v1.alpha                                                                                      |
           | NUMBER OF COLUMNS | 794                                                                                           |
           | NUMBER OF ROWS    | 60000                                                                                         |
-          | DESCRIPTION       | {"label":{"end_column":794,"start_column":784},"picture":{"end_column":784,"start_column":0}} |
+          | DESCRIPTION       | {"label":{"column_end":794,"column_start":784},"picture":{"column_end":784,"column_start":0}} |
           | VISIBILITY        | private                                                                                       |
           | OWNER ID          | asdf                                                                                          |
           | PROJECT ID        | admin                                                                                         |
@@ -87,7 +87,7 @@ directly with the neural network via the python-version of the SDK. See for furt
           | VERSION           | v1.alpha                                                                                      |
           | NUMBER OF COLUMNS | 794                                                                                           |
           | NUMBER OF ROWS    | 10000                                                                                         |
-          | DESCRIPTION       | {"label":{"end_column":794,"start_column":784},"picture":{"end_column":784,"start_column":0}} |
+          | DESCRIPTION       | {"label":{"column_end":794,"column_start":784},"picture":{"column_end":784,"column_start":0}} |
           | VISIBILITY        | private                                                                                       |
           | OWNER ID          | asdf                                                                                          |
           | PROJECT ID        | admin                                                                                         |
@@ -130,10 +130,10 @@ directly with the neural network via the python-version of the SDK. See for furt
         3,1,1
 
     inputs:
-        picture: 1,1,1
+        picture_hexagon: 1,1,1
 
     outputs:
-        label: 3,1,1
+        label_hexagon: 3,1,1
     ```
 
     !!! info
@@ -163,7 +163,11 @@ directly with the neural network via the python-version of the SDK. See for furt
 -   create task to train the cluster
 
     ```bash
-    ./hanamictl task create train --insecure -i picture:<UUID_OF_THE_TRAIN_DATASET> -o label:<UUID_OF_THE_TRAIN_DATASET> -c <UUID_OF_THE_CLUSTER> train_task
+    ./hanamictl task create train --insecure \
+    -i <UUID_OF_THE_TRAIN_DATASET>:picture:picture_hexagon \
+    -o <UUID_OF_THE_TRAIN_DATASET>:label:label_hexagon \
+    -c <UUID_OF_THE_CLUSTER> \
+    train_task
     ```
 
     !!! info
@@ -173,7 +177,12 @@ directly with the neural network via the python-version of the SDK. See for furt
     !!! example
 
           ```bash
-          ./hanamictl task create train --insecure -i picture:423ba6da-ca2a-4603-81bb-300326a10176 -o label:423ba6da-ca2a-4603-81bb-300326a10176 -c c495c0dd-2b4e-4a95-b533-fb9eb19c4ce4 train_task
+          ./hanamictl task create train --insecure \
+          -i 423ba6da-ca2a-4603-81bb-300326a10176:picture:picture_hexagon \
+          -o 423ba6da-ca2a-4603-81bb-300326a10176:label:label_hexagon \
+          -c c495c0dd-2b4e-4a95-b533-fb9eb19c4ce4 \
+          train_task
+
           +------------------------+--------------------------------------+
           | UUID                   | ae28638c-6856-439e-af3b-71ae509363e9 |
           | STATE                  | queued                               |
@@ -213,7 +222,11 @@ directly with the neural network via the python-version of the SDK. See for furt
 -   create task to test the cluster
 
     ```bash
-    ./hanamictl task create request --insecure -i picture:<UUID_OF_THE_TEST_DATASET> -r label:test_output -c <UUID_OF_THE_CLUSTER> test_task
+    ./hanamictl task create request --insecure \
+    -i <UUID_OF_THE_TEST_DATASET>:picture:picture_hexagon \
+    -r label_hexagon:test_output \
+    -c <UUID_OF_THE_CLUSTER> \
+    test_task
     ```
 
     It will create a new dataset with name `test_output` where the output of the task is written
@@ -222,7 +235,12 @@ directly with the neural network via the python-version of the SDK. See for furt
     !!! example
 
           ```bash
-          ./hanamictl task create request --insecure -i picture:a42dce48-d4b6-40f9-a8d8-0c22d48e2a4d -r label:test_output -c c495c0dd-2b4e-4a95-b533-fb9eb19c4ce4 test_task
+          ./hanamictl task create request --insecure \
+          -i a42dce48-d4b6-40f9-a8d8-0c22d48e2a4d:picture:picture_hexagon \
+          -r label_hexagon:test_output \
+          -c c495c0dd-2b4e-4a95-b533-fb9eb19c4ce4 \
+          test_task
+          
           +------------------------+--------------------------------------+
           | UUID                   | 36f70489-c71c-48d7-9e08-a766507df5de |
           | STATE                  | queued                               |

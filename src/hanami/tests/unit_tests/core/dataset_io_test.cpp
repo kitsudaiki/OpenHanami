@@ -108,8 +108,8 @@ DataSetIO_Test::read_test()
 
     std::vector<float> output(3, 0.0f);
     DataSetSelector selector;
-    selector.startColumn = 1;
-    selector.endColumn = 3;
+    selector.columnStart = 1;
+    selector.columnEnd = 3;
     selector.endRow = 3;
     fileHandle.readSelector = selector;
 
