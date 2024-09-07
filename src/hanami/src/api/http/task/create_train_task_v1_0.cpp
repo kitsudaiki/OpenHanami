@@ -50,13 +50,13 @@ CreateTrainTaskV1M0::CreateTrainTaskV1M0()
         .setComment("UUID of the cluster, which should process the request")
         .setRegex(UUID_REGEX);
 
-    registerInputField("inputs", SAKURA_MAP_TYPE)
+    registerInputField("inputs", SAKURA_ARRAY_TYPE)
         .setComment(
             "key-value list with the names of the input-hexagons as key and the dataset-UUID, "
             "which "
             "should be used for the input, as value.");
 
-    registerInputField("outputs", SAKURA_MAP_TYPE)
+    registerInputField("outputs", SAKURA_ARRAY_TYPE)
         .setComment(
             "key-value list with the names of the output-hexagons as key and the dataset-UUID, "
             "which "
@@ -68,14 +68,20 @@ CreateTrainTaskV1M0::CreateTrainTaskV1M0()
         .setLimit(1, 1000)
         .setRequired(false);
 
-    /*"inputs": {
-        "test_hexagon": "asfd",
-        "test_hexagon2": "asdf2"
-    },
-    "outputs": {
-        "test_hexagon3": "asfd",
-        "test_hexagon4": "asdf2"
-    }*/
+    /*"inputs": [
+        {
+            "dataset_uuid": "asfd",
+            "dataset_column": "asdf2",
+            "hexagon": "asdf3"
+        }
+    ],
+    "outputs": [
+        {
+            "dataset_uuid": "asfd",
+            "dataset_column": "asdf2",
+            "hexagon": "asdf3"
+        }
+    ]*/
 
     //----------------------------------------------------------------------------------------------
     // output
@@ -162,13 +168,35 @@ CreateTrainTaskV1M0::runTask(BlossomIO& blossomIO,
     newTask->progress.queuedTimeStamp = std::chrono::system_clock::now();
     newTask->info = TrainInfo();
     TrainInfo* info = &std::get<TrainInfo>(newTask->info);
-    u_int64_t numberOfCycles = std::numeric_limits<uint64_t>::max();
+    uint64_t numberOfCycles = std::numeric_limits<uint64_t>::max();
 
     // prepare inputs
-    for (const auto& [hexagonName, datasetUuid] : inputs.items()) {
-        DataSetFileHandle fileHandle;
-        if (fillTaskIo(fileHandle, userContext, hexagonName, datasetUuid, status, error) != OK) {
+    for (const json& item : inputs) {
+        if (item.contains("hexagon_name") == false) {
+            status.statusCode = BAD_REQUEST_RTYPE;
+            status.errorMessage.append("'hexagon_name' is missing");
             return false;
+        }
+        if (item.contains("dataset_uuid") == false) {
+            status.statusCode = BAD_REQUEST_RTYPE;
+            status.errorMessage.append("'dataset_uuid' is missing");
+            return false;
+        }
+        if (item.contains("dataset_column") == false) {
+            status.statusCode = BAD_REQUEST_RTYPE;
+            status.errorMessage.append("'dataset_column' is missing");
+            return false;
+        }
+
+        const std::string hexagonName = item["hexagon_name"];
+        const std::string datasetUuid = item["dataset_uuid"];
+        const std::string columnName = item["dataset_column"];
+        DataSetFileHandle fileHandle;
+
+        const ReturnStatus ret
+            = fillTaskIo(fileHandle, userContext, columnName, datasetUuid, status, error);
+        if (ret != OK) {
+            return ret;
         }
         if (numberOfCycles > fileHandle.header.numberOfRows) {
             numberOfCycles = fileHandle.header.numberOfRows;
@@ -177,7 +205,7 @@ CreateTrainTaskV1M0::runTask(BlossomIO& blossomIO,
         // resize number of inputs and size of io-buffer for the given data
         InputInterface* inputInterface = &cluster->inputInterfaces[hexagonName];
         const uint64_t numberOfColumns
-            = fileHandle.readSelector.endColumn - fileHandle.readSelector.startColumn;
+            = fileHandle.readSelector.columnEnd - fileHandle.readSelector.columnStart;
         if (inputInterface->inputNeurons.size() < numberOfColumns) {
             inputInterface->inputNeurons.resize(numberOfColumns);
         }
@@ -193,9 +221,31 @@ CreateTrainTaskV1M0::runTask(BlossomIO& blossomIO,
     }
 
     // prepare outputs
-    for (const auto& [hexagonName, datasetUuid] : outputs.items()) {
+    for (const json& item : outputs) {
+        if (item.contains("hexagon_name") == false) {
+            status.statusCode = BAD_REQUEST_RTYPE;
+            status.errorMessage.append("'hexagon_name' is missing");
+            return false;
+        }
+        if (item.contains("dataset_uuid") == false) {
+            status.statusCode = BAD_REQUEST_RTYPE;
+            status.errorMessage.append("'dataset_uuid' is missing");
+            return false;
+        }
+        if (item.contains("dataset_column") == false) {
+            status.statusCode = BAD_REQUEST_RTYPE;
+            status.errorMessage.append("'dataset_column' is missing");
+            return false;
+        }
+
+        const std::string hexagonName = item["hexagon_name"];
+        const std::string datasetUuid = item["dataset_uuid"];
+        const std::string columnName = item["dataset_column"];
         DataSetFileHandle fileHandle;
-        if (fillTaskIo(fileHandle, userContext, hexagonName, datasetUuid, status, error) != OK) {
+
+        const ReturnStatus ret
+            = fillTaskIo(fileHandle, userContext, columnName, datasetUuid, status, error);
+        if (ret != OK) {
             return false;
         }
         if (numberOfCycles > fileHandle.header.numberOfRows) {
@@ -205,7 +255,7 @@ CreateTrainTaskV1M0::runTask(BlossomIO& blossomIO,
         // resize number of output and size of io-buffer for the given data
         OutputInterface* outputInterface = &cluster->outputInterfaces[hexagonName];
         const uint64_t numberOfColumns
-            = fileHandle.readSelector.endColumn - fileHandle.readSelector.startColumn;
+            = fileHandle.readSelector.columnEnd - fileHandle.readSelector.columnStart;
         if (outputInterface->outputNeurons.size() < numberOfColumns) {
             outputInterface->outputNeurons.resize(numberOfColumns);
         }
@@ -257,7 +307,7 @@ CreateTrainTaskV1M0::runTask(BlossomIO& blossomIO,
 ReturnStatus
 CreateTrainTaskV1M0::fillTaskIo(DataSetFileHandle& fileHandle,
                                 const Hanami::UserContext& userContext,
-                                const std::string& hexagonName,
+                                const std::string& columnName,
                                 const std::string& datasetUuid,
                                 BlossomStatus& status,
                                 Hanami::ErrorContainer& error)
@@ -282,14 +332,14 @@ CreateTrainTaskV1M0::fillTaskIo(DataSetFileHandle& fileHandle,
         status.statusCode = NOT_FOUND_RTYPE;
     }
 
-    if (fileHandle.description.contains(hexagonName) == false) {
-        status.errorMessage = "Dataset has no input for hexagon names '" + hexagonName + "'";
+    if (fileHandle.description.contains(columnName) == false) {
+        status.errorMessage = "Dataset has no input for columsn with name '" + columnName + "'";
         status.statusCode = NOT_FOUND_RTYPE;
         return INVALID_INPUT;
     }
 
-    fileHandle.readSelector.startColumn = fileHandle.description[hexagonName]["start_column"];
-    fileHandle.readSelector.endColumn = fileHandle.description[hexagonName]["end_column"];
+    fileHandle.readSelector.columnStart = fileHandle.description[columnName]["column_start"];
+    fileHandle.readSelector.columnEnd = fileHandle.description[columnName]["column_end"];
 
     return ret;
 }

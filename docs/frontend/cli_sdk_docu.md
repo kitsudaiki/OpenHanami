@@ -645,7 +645,7 @@ label-file of the same dataset.
     | VERSION           | v1.0alpha                                                                                     |
     | NUMBER OF COLUMNS | 794                                                                                           |
     | NUMBER OF ROWS    | 60000                                                                                         |
-    | DESCRIPTION       | {"label":{"end_column":794,"start_column":784},"picture":{"end_column":784,"start_column":0}} |
+    | DESCRIPTION       | {"label":{"column_end":794,"column_start":784},"picture":{"column_end":784,"column_start":0}} |
     | VISIBILITY        | private                                                                                       |
     | OWNER ID          | asdf                                                                                          |
     | PROJECT ID        | admin                                                                                         |
@@ -696,7 +696,7 @@ label-file of the same dataset.
     | VERSION           | v1.0alpha                                                                                        |
     | NUMBER OF COLUMNS | 2                                                                                                |
     | NUMBER OF ROWS    | 1723                                                                                             |
-    | DESCRIPTION       | {"test_input":{"end_column":1,"start_column":0},"test_output":{"end_column":2,"start_column":1}} |
+    | DESCRIPTION       | {"test_input":{"column_end":1,"column_start":0},"test_output":{"column_end":2,"column_start":1}} |
     | VISIBILITY        | private                                                                                          |
     | OWNER ID          | asdf                                                                                             |
     | PROJECT ID        | admin                                                                                            |
@@ -744,7 +744,7 @@ Get information about a specific dataset.
     | VERSION           | v1.0alpha                                                                                     |
     | NUMBER OF COLUMNS | 794                                                                                           |
     | NUMBER OF ROWS    | 60000                                                                                         |
-    | DESCRIPTION       | {"label":{"end_column":794,"start_column":784},"picture":{"end_column":784,"start_column":0}} |
+    | DESCRIPTION       | {"label":{"column_end":794,"column_start":784},"picture":{"column_end":784,"column_start":0}} |
     | VISIBILITY        | private                                                                                       |
     | OWNER ID          | asdf                                                                                          |
     | PROJECT ID        | admin                                                                                         |
@@ -1352,13 +1352,21 @@ Create a new task to train the cluster with the data of a dataset, which was upl
 === "CLI"
 
     ```bash
-    hanamictl task create train -j -i <INPUT_HEXAGON_NAME>:<INPUT_DATASET_UUID> -o <LABEL_HEXAGON_NAME>:<LABEL_DATASET_UUID> -c <CLUSTER_UUID> <TASK_NAME>
+    hanamictl task create train -j \
+    -i <INPUT_DATASET_UUID>:<INPUT_DATASET_COLUMN_NAME>:<INPUT_HEXAGON_NAME> \
+    -o <LABEL_DATASET_UUID>:<LABEL_DATASET_COLUMN_NAME>:<LABEL_HEXAGON_NAME> \
+    -c <CLUSTER_UUID> \
+    <TASK_NAME>
     ```
 
     example:
 
     ```bash
-    hanamictl task create train -j -i picture:b03d1682-8f5b-48cb-bff5-08b67e8de6fe -o label:b833ddbe-55db-49d5-97b7-771293505493 -c 9f86921d-9a7c-44a2-836c-1683928d9354 cli_train_test_task
+    hanamictl task create train -j \
+    -i b03d1682-8f5b-48cb-bff5-08b67e8de6fe:picture:picture_hexagon \
+    -o b833ddbe-55db-49d5-97b7-771293505493:label:label_hexagon \
+    -c 9f86921d-9a7c-44a2-836c-1683928d9354 \
+    cli_train_test_task
 
     +------------------------+--------------------------------------+
     | UUID                   | 2e28e3bb-af45-4fbc-8ce3-c0c9a8e704bc |
@@ -1379,12 +1387,22 @@ Create a new task to train the cluster with the data of a dataset, which was upl
     address = "http://127.0.0.1:11418"
     task_name = "test_task"
     cluster_uuid = "9f86921d-9a7c-44a2-836c-1683928d9354"
-    inputs = {
-        "picture": "6f2bbcd2-7081-4b08-ae1d-16e6cd6f54c4"
-    }
-    outputs = {
-        "label": "6f2bbcd2-7081-4b08-ae1d-16e6cd6f54c4"
-    }
+    inputs = [
+        {
+            "dataset_uuid": "6f2bbcd2-7081-4b08-ae1d-16e6cd6f54c4",
+            "dataset_column": "picture",
+            "hexagon_name": "picture_hex"
+        }
+    ]
+
+    outputs = [
+        {
+            "dataset_uuid": "6f2bbcd2-7081-4b08-ae1d-16e6cd6f54c4",
+            "dataset_column": "label",
+            "hexagon_name": "label_hex"
+        }
+    ]
+
 
     # inputs and outputs are maps with key-value-pairs,
     # where the key is the name of the hexagon of the matching
@@ -1419,13 +1437,21 @@ used, which had to be uplaoded first.
 === "CLI"
 
     ```bash
-    hanamictl task create request -j -i <INPUT_HEXAGON_NAME>:<INPUT_DATASET_UUID> -r <OUTPUT_HEXAGON_NAME>:<OUTPUT_DATASET_NAME> -c <CLUSTER_UUID> <TASK_NAME>
+    hanamictl task create request -j \
+    -i <INPUT_DATASET_UUID>:<INPUT_DATASET_COLUMN_NAME>:<INPUT_HEXAGON_NAME> \
+    -r <OUTPUT_HEXAGON_NAME>:<OUTPUT_DATASET_COLUMN_NAME> \
+    -c <CLUSTER_UUID> \
+    <TASK_NAME>
     ```
 
     example:
 
     ```bash
-    hanamictl task create train -j -i picture:b03d1682-8f5b-48cb-bff5-08b67e8de6fe -r label:output_dataset -c 9f86921d-9a7c-44a2-836c-1683928d9354 cli_train_test_task
+    hanamictl task create train -j \
+    -i b03d1682-8f5b-48cb-bff5-08b67e8de6fe:picture:picture_hexagon \
+    -r label_hexagon:output_data \
+    -c 9f86921d-9a7c-44a2-836c-1683928d9354 \
+    cli_train_test_task
 
     +------------------------+--------------------------------------+
     | UUID                   | ec964017-ee19-4775-8fff-4f3fb3640361 |
@@ -1446,13 +1472,21 @@ used, which had to be uplaoded first.
     address = "http://127.0.0.1:11418"
     task_name = "test_task"
     cluster_uuid = "9f86921d-9a7c-44a2-836c-1683928d9354"
-    inputs = {
-        "picture": "6f2bbcd2-7081-4b08-ae1d-16e6cd6f54c4"
-    }
+    inputs = [
+        {
+            "dataset_uuid": "6f2bbcd2-7081-4b08-ae1d-16e6cd6f54c4",
+            "dataset_column": "picture",
+            "hexagon_name": "picture_hex"
+        }
+    ]
 
-    results = {
-        "label": "test_output"
-    }
+    results = [
+        {
+            "dataset_column": "test_output",
+            "hexagon_name": "label_hex"
+        }
+    ]
+
 
     # inputs and results are maps with key-value-pairs,
     # where the key is the name of the hexagon of the matching

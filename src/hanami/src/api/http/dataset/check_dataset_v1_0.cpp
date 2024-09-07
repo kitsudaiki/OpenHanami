@@ -83,10 +83,10 @@ CheckMnistDataSetV1M0::runTask(BlossomIO& blossomIO,
     }
 
     // set file-selectors
-    datasetFileHandle.readSelector.endColumn = 10;
+    datasetFileHandle.readSelector.columnEnd = 10;
     datasetFileHandle.readSelector.endRow = 10000;
-    referenceFileHandle.readSelector.startColumn = 784;
-    referenceFileHandle.readSelector.endColumn = 794;
+    referenceFileHandle.readSelector.columnStart = 784;
+    referenceFileHandle.readSelector.columnEnd = 794;
     referenceFileHandle.readSelector.endRow = 10000;
 
     // init buffer for output

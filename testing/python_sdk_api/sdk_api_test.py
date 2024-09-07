@@ -63,10 +63,10 @@ cluster_template = \
     "    3,1,1\n" \
     "    \n" \
     "inputs:\n" \
-    "    picture: 1,1,1\n" \
+    "    picture_hex: 1,1,1\n" \
     "\n" \
     "outputs:\n" \
-    "    label: 3,1,1\n" \
+    "    label_hex: 3,1,1\n" \
 
 user_id = "tsugumi"
 user_name = "Tsugumi"
@@ -221,19 +221,19 @@ async def test_direct_io(token, address, cluster_uuid):
     ws = await cluster.switch_to_direct_mode(token, address, cluster_uuid, False)
     for i in range(0, 100):
         await direct_io.send_train_input(ws,
-                                         "picture",
+                                         "picture_hex",
                                          test_values.get_direct_io_test_intput(),
                                          True,
                                          False,
                                          False)
         await direct_io.send_train_input(ws,
-                                         "label",
+                                         "label_hex",
                                          test_values.get_direct_io_test_output(),
                                          False,
                                          True,
                                          False)
     output_values = await direct_io.send_request_input(ws,
-                                                       "picture",
+                                                       "picture_hex",
                                                        test_values.get_direct_io_test_intput(),
                                                        True,
                                                        False)
@@ -264,13 +264,21 @@ def test_workflow():
         cluster.switch_host(token, address, cluster_uuid, target_host_uuid, False)
 
     # run training
-    inputs = {
-        "picture": train_dataset_uuid
-    }
+    inputs = [
+        {
+            "dataset_uuid": train_dataset_uuid,
+            "dataset_column": "picture",
+            "hexagon_name": "picture_hex"
+        }
+    ]
 
-    outputs = {
-        "label": train_dataset_uuid
-    }
+    outputs = [
+        {
+            "dataset_uuid": train_dataset_uuid,
+            "dataset_column": "label",
+            "hexagon_name": "label_hex"
+        }
+    ]
 
     for i in range(0, 1):
         result = task.create_train_task(
@@ -309,13 +317,20 @@ def test_workflow():
         pass
 
     # run testing
-    inputs = {
-        "picture": request_dataset_uuid
-    }
+    inputs = [
+        {
+            "dataset_uuid": request_dataset_uuid,
+            "dataset_column": "picture",
+            "hexagon_name": "picture_hex"
+        }
+    ]
 
-    results = {
-        "label": "test_output"
-    }
+    results = [
+        {
+            "dataset_column": "test_output",
+            "hexagon_name": "label_hex"
+        }
+    ]
 
     result = task.create_request_task(
         token, address, generic_task_name, cluster_uuid, inputs, results, 1, False)

@@ -194,8 +194,8 @@ FinalizeCsvDataSetV1M0::convertCsvData(const std::string& filePath,
             uint64_t counter = 0;
             for (const std::string& colName : lineContent) {
                 json inputDescrEntry;
-                inputDescrEntry["start_column"] = counter;
-                inputDescrEntry["end_column"] = counter + 1;
+                inputDescrEntry["column_start"] = counter;
+                inputDescrEntry["column_end"] = counter + 1;
                 description[colName] = inputDescrEntry;
                 counter++;
             }

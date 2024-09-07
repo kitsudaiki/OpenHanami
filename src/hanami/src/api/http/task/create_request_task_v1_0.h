@@ -42,18 +42,18 @@ class CreateRequestTaskV1M0 : public Blossom
    private:
     ReturnStatus fillTaskIo(DataSetFileHandle& fileHandle,
                             const Hanami::UserContext& userContext,
-                            const std::string& hexagonName,
+                            const std::string& columnName,
                             const std::string& datasetUuid,
                             BlossomStatus& status,
                             Hanami::ErrorContainer& error);
 
-    ReturnStatus createResultTarget(DataSetFileHandle& fileHandle,
-                                    const std::string& datasetUuid,
-                                    const std::string& name,
-                                    const Hanami::UserContext& userContext,
-                                    const uint64_t numberOfOutputs,
-                                    BlossomStatus& status,
-                                    Hanami::ErrorContainer& error);
+    ReturnStatus createResultDataset(Cluster* cluster,
+                                     Task* task,
+                                     const std::string& datasetName,
+                                     const json& resultMetaData,
+                                     const Hanami::UserContext& userContext,
+                                     BlossomStatus& status,
+                                     Hanami::ErrorContainer& error);
 };
 
 #endif  // CREATEREQUESTTASK_H

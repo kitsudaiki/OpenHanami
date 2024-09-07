@@ -54,6 +54,13 @@ ReturnStatus initNewDataSetFile(DataSetFileHandle& result,
                                 const uint64_t numberOfColumns,
                                 Hanami::ErrorContainer& error);
 
+ReturnStatus initNewDataSetFile(const std::string& filePath,
+                                const std::string& name,
+                                const json& description,
+                                const DataSetType type,
+                                const uint64_t numberOfColumns,
+                                Hanami::ErrorContainer& error);
+
 ReturnStatus appendToDataSet(DataSetFileHandle& fileHandle,
                              const void* input,
                              const uint64_t inputSize,
@@ -75,8 +82,8 @@ ReturnStatus _fillDataSetReadBuffer(DataSetFileHandle& fileHandle,
 struct DataSetSelector {
     uint64_t startRow = 0;
     uint64_t endRow = 0;
-    uint64_t startColumn = 0;
-    uint64_t endColumn = 0;
+    uint64_t columnStart = 0;
+    uint64_t columnEnd = 0;
 
     DataSetSelector() {}
 
@@ -85,15 +92,15 @@ struct DataSetSelector {
         if (input.contains("start_row")) {
             startRow = input["start_row"];
         }
-        if (input.contains("start_column")) {
-            startColumn = input["start_column"];
+        if (input.contains("column_start")) {
+            columnStart = input["column_start"];
         }
 
-        if (input.contains("end_column") == false) {
+        if (input.contains("column_end") == false) {
             return INVALID_INPUT;
         }
 
-        endColumn = input["end_column"];
+        columnEnd = input["column_end"];
 
         return OK;
     }
@@ -302,7 +309,7 @@ _convert(std::vector<OUT_T>& result, const DataSetFileHandle& fileHandle, const 
 {
     const IN_T* data = static_cast<const IN_T*>(fileHandle.readBuffer.data);
     uint64_t counter = 0;
-    for (uint64_t x = fileHandle.readSelector.startColumn; x < fileHandle.readSelector.endColumn;
+    for (uint64_t x = fileHandle.readSelector.columnStart; x < fileHandle.readSelector.columnEnd;
          x++)
     {
         result[counter] = static_cast<OUT_T>(data[(byteOffset / sizeof(IN_T)) + x]);
@@ -341,8 +348,8 @@ getDataFromDataSet(std::vector<T>& result,
     }
 
     // check ranges
-    if (fileHandle.readSelector.endColumn > fileHandle.header.numberOfColumns
-        || fileHandle.readSelector.startColumn > fileHandle.header.numberOfColumns)
+    if (fileHandle.readSelector.columnEnd > fileHandle.header.numberOfColumns
+        || fileHandle.readSelector.columnStart > fileHandle.header.numberOfColumns)
     {
         return INVALID_INPUT;
     }
@@ -358,7 +365,7 @@ getDataFromDataSet(std::vector<T>& result,
     }
 
     // check if given buffer is big enough
-    if (result.size() < fileHandle.readSelector.endColumn - fileHandle.readSelector.startColumn) {
+    if (result.size() < fileHandle.readSelector.columnEnd - fileHandle.readSelector.columnStart) {
         return INVALID_INPUT;
     }
 

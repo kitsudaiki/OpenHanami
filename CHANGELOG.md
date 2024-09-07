@@ -4,6 +4,10 @@
 
 ### BREAKING-CHANGES
 
+#### API-Breaking
+
+- the input definition for the tasks was changes to removed the naming restriction between dataset-column and hexagon-name
+
 #### Template-Breaking
 
 - removed `target`-keyword from cluster-templates

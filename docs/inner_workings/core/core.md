@@ -24,7 +24,7 @@ There are different types of hexagons: input, output and internal (hidden). At t
 creating a new cluster, there are no neurons (nodes) or connections between the neurons defined.
 Everything is created at runtime while training the cluster. While this happens, the hexagons are
 working like a plant trellis for the connections. The hexagon-structure was introduced as based for
-the experimental [layer-less](inner_workings/core/core/#no-strict-layer-structure) structure.
+the experimental [layer-less](/inner_workings/core/core/#no-strict-layer-structure) structure.
 
 !!! info
 
@@ -301,9 +301,13 @@ neurons within another hexagon, to avoid race-conditions.
 
 There are some even more experimental optional features, which can be enabled. They can be defined
 in the [cluster-templates](/frontend/cluster_templates/cluster_template/). There are also a few
-[measurement-examples](/inner_workings/measurements/measurements/#reduction_1).
+[measurement-examples](/inner_workings/measurements/measurements).
 
 ### Reduction
+
+!!! info
+
+    The reduction-process is currently disables, because of changes in the growing process.
 
 The reduction-process should limit the size of the neural network, by deleting nearly never used
 synapses again, which were not capable of reaching the necessary threshold to be persistent.

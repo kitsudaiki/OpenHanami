@@ -1,5 +1,9 @@
 # Optional features and Measurements
 
+!!! info
+
+    The following tests were made with version 0.4.0 and not repeated with newer versions so far, even the cluster-templates of the examples were updated here. So the results can differ in there current state. Test tests here will be repeated in the near future. 
+
 These are some measurements, which were done with the program on version 0.4.0, to get a basic
 overview of the capabilities and limitations so far.
 

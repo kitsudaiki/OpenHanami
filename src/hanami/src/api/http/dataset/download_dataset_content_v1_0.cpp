@@ -96,14 +96,14 @@ DownloadDatasetContentV1M0::runTask(BlossomIO& blossomIO,
 
     // set file-selectors
     const json range = datasetFileHandle.description[columnName];
-    datasetFileHandle.readSelector.startColumn = range["start_column"];
-    datasetFileHandle.readSelector.endColumn = range["end_column"];
+    datasetFileHandle.readSelector.columnStart = range["column_start"];
+    datasetFileHandle.readSelector.columnEnd = range["column_end"];
     datasetFileHandle.readSelector.startRow = rowOffset;
     datasetFileHandle.readSelector.endRow = rowOffset + numberOfRows;
 
     // init buffer for output
     const uint64_t numberOfColumns
-        = datasetFileHandle.readSelector.endColumn - datasetFileHandle.readSelector.startColumn;
+        = datasetFileHandle.readSelector.columnEnd - datasetFileHandle.readSelector.columnStart;
     std::vector<float> datasetOutput(numberOfColumns, 0.0f);
     blossomIO.output["data"] = json::array();
 

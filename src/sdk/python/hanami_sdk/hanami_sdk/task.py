@@ -20,8 +20,8 @@ def create_train_task(token: str,
                       address: str,
                       name: str,
                       cluster_uuid: str,
-                      inputs: dict,
-                      outputs: dict,
+                      inputs: list,
+                      outputs: list,
                       timeLength: int = 1,
                       verify_connection: bool = True) -> str:
     path = "/v1.0alpha/task/train"
@@ -44,8 +44,8 @@ def create_request_task(token: str,
                         address: str,
                         name: str,
                         cluster_uuid: str,
-                        inputs: dict,
-                        results: dict,
+                        inputs: list,
+                        results: list,
                         timeLength: int = 1,
                         verify_connection: bool = True) -> str:
     path = "/v1.0alpha/task/request"

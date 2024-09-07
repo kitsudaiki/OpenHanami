@@ -269,6 +269,85 @@ initNewDataSetFile(DataSetFileHandle& result,
 }
 
 /**
+ * @brief create a new data-set file
+ *
+ * @param filePath path on the local disc, where the file should be created
+ * @param name name of the new data-set
+ * @param description description of the content
+ * @param type tpe of the new data-set
+ * @param numberOfColumns maximum number of columns, which should be stored by the data-set
+ * @param error reference for error-output
+ *
+ * @return OK, INVALID_INPUT or ERROR
+ */
+ReturnStatus
+initNewDataSetFile(const std::string& filePath,
+                   const std::string& name,
+                   const json& description,
+                   const DataSetType type,
+                   const uint64_t numberOfColumns,
+                   Hanami::ErrorContainer& error)
+{
+    if (type == UNDEFINED_TYPE) {
+        return INVALID_INPUT;
+    }
+
+    // check source
+    if (std::filesystem::exists(filePath) == true) {
+        error.addMessage("Data-set file '" + filePath + "' already exist.");
+        return INVALID_INPUT;
+    }
+
+    DataSetHeader header;
+    Hanami::BinaryFile targetFile(filePath);
+
+    const std::string descriptionStr = description.dump();
+    header.descriptionSize = descriptionStr.size();
+
+    // open file
+    if (targetFile.isOpen() == false) {
+        error.addMessage("Failed to open data-set file '" + filePath + "'.");
+        return ERROR;
+    }
+
+    // allocate initaial storage for the header
+    if (targetFile.allocateStorage(sizeof(DataSetHeader) + header.descriptionSize, error) == false)
+    {
+        error.addMessage("Failed to allocate storage in file '" + filePath
+                         + "' for the data-set header");
+        return ERROR;
+    }
+
+    // set name in header
+    if (header.name.setName(name) == false) {
+        error.addMessage("New data-set name '" + name + "' is invalid");
+        return INVALID_INPUT;
+    }
+
+    // write description to target
+    if (targetFile.writeDataIntoFile(
+            descriptionStr.c_str(), sizeof(DataSetHeader), header.descriptionSize, error)
+        == false)
+    {
+        error.addMessage("Failed to write dataset-description to disc");
+        return ERROR;
+    }
+
+    // write header to target
+    header.dataType = type;
+    header.numberOfColumns = numberOfColumns;
+    header.typeSize = type;
+    header.fileSize = targetFile.fileSize;
+
+    if (targetFile.writeDataIntoFile(&header, 0, sizeof(DataSetHeader), error) == false) {
+        error.addMessage("Failed to update data-set header in file");
+        return ERROR;
+    }
+
+    return OK;
+}
+
+/**
  * @brief fill the read-buffer of the file-handle with a new chunk of data from the file
  *
  * @param fileHandle handle of the data-set file, where the new data should be read

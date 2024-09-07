@@ -51,13 +51,13 @@ CreateRequestTaskV1M0::CreateRequestTaskV1M0()
         .setComment("UUID of the cluster, which should process the request")
         .setRegex(UUID_REGEX);
 
-    registerInputField("inputs", SAKURA_MAP_TYPE)
+    registerInputField("inputs", SAKURA_ARRAY_TYPE)
         .setComment(
             "key-value list with the names of the input-hexagons as key and the dataset-UUID, "
             "which "
             "should be used for the input, as value.");
 
-    registerInputField("results", SAKURA_MAP_TYPE)
+    registerInputField("results", SAKURA_ARRAY_TYPE)
         .setComment(
             "key-value list with the names of the ouput-hexagons as key and the name for the "
             "resulting dataset of this output as value.");
@@ -68,14 +68,19 @@ CreateRequestTaskV1M0::CreateRequestTaskV1M0()
         .setLimit(1, 1000)
         .setRequired(false);
 
-    /*inputs: {
-        test_hexagon: asfd,
-        test_hexagon2: asdf2
-    },
-    results: {
-        test_hexagon_out: dataset_uuid,
-        test_hexagon_out2: poi2
-    }*/
+    /*inputs": [
+        {
+            "dataset_uuid": "asfd",
+            "dataset_column": "asdf2",
+            "hexagon": "asdf3"
+        }
+    ],
+    results: [
+        {
+            "dataset_column": "asdf2",
+            "hexagon": "asdf3"
+        }
+    ]*/
 
     //----------------------------------------------------------------------------------------------
     // output
@@ -119,9 +124,10 @@ CreateRequestTaskV1M0::runTask(BlossomIO& blossomIO,
                                BlossomStatus& status,
                                Hanami::ErrorContainer& error)
 {
-    const std::string name = blossomIO.input["name"];
+    const std::string taskName = blossomIO.input["name"];
     const std::string clusterUuid = blossomIO.input["cluster_uuid"];
     const json inputs = blossomIO.input["inputs"];
+    const json results = blossomIO.input["results"];
     const uint64_t timeLength = blossomIO.input["time_length"];
 
     // check if user exist within the table
@@ -154,19 +160,39 @@ CreateRequestTaskV1M0::runTask(BlossomIO& blossomIO,
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
-    newTask->name = name;
+    newTask->name = taskName;
     newTask->userId = userContext.userId;
     newTask->projectId = userContext.projectId;
     newTask->type = REQUEST_TASK;
     newTask->progress.queuedTimeStamp = std::chrono::system_clock::now();
     newTask->info = RequestInfo();
-    RequestInfo* info = &std::get<RequestInfo>(newTask->info);
+    RequestInfo* taskInfo = &std::get<RequestInfo>(newTask->info);
     u_int64_t numberOfCycles = std::numeric_limits<uint64_t>::max();
 
     // prepare input
-    for (const auto& [hexagonName, datasetUuid] : inputs.items()) {
+    for (const json& item : inputs) {
+        if (item.contains("hexagon_name") == false) {
+            status.statusCode = BAD_REQUEST_RTYPE;
+            status.errorMessage.append("'hexagon_name' is missing");
+            return false;
+        }
+        if (item.contains("dataset_uuid") == false) {
+            status.statusCode = BAD_REQUEST_RTYPE;
+            status.errorMessage.append("'dataset_uuid' is missing");
+            return false;
+        }
+        if (item.contains("dataset_column") == false) {
+            status.statusCode = BAD_REQUEST_RTYPE;
+            status.errorMessage.append("'dataset_column' is missing");
+            return false;
+        }
+
+        const std::string hexagonName = item["hexagon_name"];
+        const std::string datasetUuid = item["dataset_uuid"];
+        const std::string columnName = item["dataset_column"];
         DataSetFileHandle fileHandle;
-        if (fillTaskIo(fileHandle, userContext, hexagonName, datasetUuid, status, error) != OK) {
+
+        if (fillTaskIo(fileHandle, userContext, columnName, datasetUuid, status, error) != OK) {
             return false;
         }
         if (numberOfCycles > fileHandle.header.numberOfRows) {
@@ -176,48 +202,36 @@ CreateRequestTaskV1M0::runTask(BlossomIO& blossomIO,
         // resize number of inputs and size of io-buffer for the given data
         InputInterface* inputInterface = &cluster->inputInterfaces[hexagonName];
         const uint64_t numberOfColumns
-            = fileHandle.readSelector.endColumn - fileHandle.readSelector.startColumn;
+            = fileHandle.readSelector.columnEnd - fileHandle.readSelector.columnStart;
         if (inputInterface->inputNeurons.size() < numberOfColumns) {
             inputInterface->inputNeurons.resize(numberOfColumns);
         }
         inputInterface->ioBuffer.resize(inputInterface->inputNeurons.size()
-                                        - (info->timeLength - 1));
+                                        - (taskInfo->timeLength - 1));
 
-        info->inputs.try_emplace(hexagonName, std::move(fileHandle));
+        taskInfo->inputs.try_emplace(hexagonName, std::move(fileHandle));
     }
 
-    for (auto& [hexagonName, file_handle] : info->inputs) {
+    for (auto& [hexagonName, file_handle] : taskInfo->inputs) {
         file_handle.readSelector.endRow = numberOfCycles;
     }
 
-    // prepare result
-    const json results = blossomIO.input["results"];
-    for (const auto& [hexagonName, name] : results.items()) {
-        const uint64_t numberOfOutputs
-            = cluster->outputInterfaces[hexagonName].outputNeurons.size();
-
-        DataSetFileHandle fileHandle;
-        const std::string datasetUuid = newTask->uuid.toString();
-        if (createResultTarget(
-                fileHandle, datasetUuid, name, userContext, numberOfOutputs, status, error)
-            != OK)
-        {
-            return false;
-        }
-        info->results.try_emplace(hexagonName, std::move(fileHandle));
+    // prepare result-dataset
+    if (createResultDataset(cluster, newTask, taskName, results, userContext, status, error) != OK)
+    {
+        return false;
     }
 
     // set number of cycles
-    info->numberOfCycles = numberOfCycles - (timeLength - 1);
-    ;
-    info->timeLength = timeLength;
+    taskInfo->numberOfCycles = numberOfCycles - (timeLength - 1);
+    taskInfo->timeLength = timeLength;
     newTask->progress.totalNumberOfCycles = numberOfCycles;
 
     cluster->stateMachine->goToNextState(PROCESS_TASK);
 
     // create output
     blossomIO.output["uuid"] = newTask->uuid.toString();
-    blossomIO.output["name"] = name;
+    blossomIO.output["name"] = taskName;
     blossomIO.output["current_cycle"] = newTask->progress.currentCyle;
     blossomIO.output["total_number_of_cycles"] = newTask->progress.totalNumberOfCycles;
     blossomIO.output["queue_timestamp"] = serializeTimePoint(newTask->progress.queuedTimeStamp);
@@ -229,20 +243,127 @@ CreateRequestTaskV1M0::runTask(BlossomIO& blossomIO,
 }
 
 /**
- * @brief CreateTrainTask::fillTaskIo
+ * @brief CreateRequestTaskV1M0::createResultDataset
  *
- * @param taskIo
+ * @param cluster
+ * @param task
+ * @param datasetName
+ * @param resultMetaData
  * @param userContext
- * @param settings
- * @param status reference to return status of the request
- * @param error reference for error-output
+ * @param status
+ * @param error
  *
- * @return OK, INVALID_INPUT or ERROR
+ * @return
+ */
+ReturnStatus
+CreateRequestTaskV1M0::createResultDataset(Cluster* cluster,
+                                           Task* task,
+                                           const std::string& datasetName,
+                                           const json& resultMetaData,
+                                           const Hanami::UserContext& userContext,
+                                           BlossomStatus& status,
+                                           Hanami::ErrorContainer& error)
+{
+    const std::string datasetUuid = task->uuid.toString();
+    RequestInfo* taskInfo = &std::get<RequestInfo>(task->info);
+
+    bool success = false;
+    std::string targetFilePath = GET_STRING_CONFIG("storage", "dataset_location", success);
+    if (success == false) {
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        error.addMessage("file-location to store dataset is missing in the config");
+        return ERROR;
+    }
+
+    if (targetFilePath.at(targetFilePath.size() - 1) != '/') {
+        targetFilePath.append("/");
+    }
+    targetFilePath.append(datasetName + datasetUuid);
+
+    // create new database-entry
+    DataSetTable::DataSetDbEntry dbEntry;
+    dbEntry.name = datasetName;
+    dbEntry.ownerId = userContext.userId;
+    dbEntry.projectId = userContext.projectId;
+    dbEntry.uuid = datasetUuid;
+    dbEntry.visibility = "private";
+    dbEntry.location = targetFilePath;
+
+    // update database
+    if (DataSetTable::getInstance()->addDataSet(dbEntry, userContext, error) != OK) {
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        return ERROR;
+    }
+
+    // create description for new dataset
+    json description;
+    uint64_t totalNumberOfOutputs = 0;
+    for (const json& item : resultMetaData) {
+        if (item.contains("hexagon_name") == false) {
+            status.statusCode = BAD_REQUEST_RTYPE;
+            status.errorMessage.append("'hexagon_name' is missing");
+            return INVALID_INPUT;
+        }
+        if (item.contains("dataset_column") == false) {
+            status.statusCode = BAD_REQUEST_RTYPE;
+            status.errorMessage.append("'dataset_column' is missing");
+            return INVALID_INPUT;
+        }
+
+        const std::string hexagonName = item["hexagon_name"];
+        const std::string columnName = item["dataset_column"];
+        const uint64_t numberOfOutputs
+            = cluster->outputInterfaces[hexagonName].outputNeurons.size();
+        totalNumberOfOutputs += numberOfOutputs;
+
+        // prepare description of the dataset
+        json descriptionEntry;
+        descriptionEntry["column_start"] = 0;
+        descriptionEntry["column_end"] = numberOfOutputs;
+        description[columnName] = descriptionEntry;
+    }
+
+    // initialize dataset-file
+    ReturnStatus ret = initNewDataSetFile(
+        targetFilePath, datasetName, description, FLOAT_TYPE, totalNumberOfOutputs, error);
+    if (ret == INVALID_INPUT) {
+        status.errorMessage = "Data-set with uuid '" + datasetUuid + "' not found";
+        status.statusCode = NOT_FOUND_RTYPE;
+    }
+
+    // prepare io-buffer
+    for (const json& item : resultMetaData) {
+        const std::string hexagonName = item["hexagon_name"];
+        const std::string columnName = item["dataset_column"];
+        DataSetFileHandle fileHandle;
+
+        const ReturnStatus ret
+            = fillTaskIo(fileHandle, userContext, columnName, datasetUuid, status, error);
+        if (ret != OK) {
+            return ret;
+        }
+
+        taskInfo->results.try_emplace(hexagonName, std::move(fileHandle));
+    }
+
+    return OK;
+}
+
+/**
+ * @brief CreateRequestTaskV1M0::fillTaskIo
+ * @param fileHandle
+ * @param userContext
+ * @param columnName
+ * @param datasetUuid
+ * @param status
+ * @param error
+ *
+ * @return
  */
 ReturnStatus
 CreateRequestTaskV1M0::fillTaskIo(DataSetFileHandle& fileHandle,
                                   const Hanami::UserContext& userContext,
-                                  const std::string& hexagonName,
+                                  const std::string& columnName,
                                   const std::string& datasetUuid,
                                   BlossomStatus& status,
                                   Hanami::ErrorContainer& error)
@@ -267,78 +388,14 @@ CreateRequestTaskV1M0::fillTaskIo(DataSetFileHandle& fileHandle,
         status.statusCode = NOT_FOUND_RTYPE;
     }
 
-    if (fileHandle.description.contains(hexagonName) == false) {
-        status.errorMessage = "Dataset has no input for hexagon names '" + hexagonName + "'";
+    if (fileHandle.description.contains(columnName) == false) {
+        status.errorMessage = "Dataset doesn't contain column with name '" + columnName + "'";
         status.statusCode = NOT_FOUND_RTYPE;
         return INVALID_INPUT;
     }
 
-    fileHandle.readSelector.startColumn = fileHandle.description[hexagonName]["start_column"];
-    fileHandle.readSelector.endColumn = fileHandle.description[hexagonName]["end_column"];
+    fileHandle.readSelector.columnStart = fileHandle.description[columnName]["column_start"];
+    fileHandle.readSelector.columnEnd = fileHandle.description[columnName]["column_end"];
 
     return ret;
-}
-
-/**
- * @brief CreateRequestTask::createResultTarget
- * @param datasetUuid
- * @param name
- * @param userContext
- * @param status
- * @param error
- * @return
- */
-ReturnStatus
-CreateRequestTaskV1M0::createResultTarget(DataSetFileHandle& fileHandle,
-                                          const std::string& datasetUuid,
-                                          const std::string& name,
-                                          const Hanami::UserContext& userContext,
-                                          const uint64_t numberOfOutputs,
-                                          BlossomStatus& status,
-                                          Hanami::ErrorContainer& error)
-{
-    bool success = false;
-    std::string targetFilePath = GET_STRING_CONFIG("storage", "dataset_location", success);
-    if (success == false) {
-        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMessage("file-location to store dataset is missing in the config");
-        return ERROR;
-    }
-
-    if (targetFilePath.at(targetFilePath.size() - 1) != '/') {
-        targetFilePath.append("/");
-    }
-    targetFilePath.append(name + datasetUuid);
-
-    // create new database-entry
-    DataSetTable::DataSetDbEntry dbEntry;
-    dbEntry.name = name;
-    dbEntry.ownerId = userContext.userId;
-    dbEntry.projectId = userContext.projectId;
-    dbEntry.uuid = datasetUuid;
-    dbEntry.visibility = "private";
-    dbEntry.location = targetFilePath;
-
-    // update database
-    if (DataSetTable::getInstance()->addDataSet(dbEntry, userContext, error) != OK) {
-        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        return ERROR;
-    }
-
-    // prepare description of the dataset
-    json description;
-    json descriptionEntry;
-    descriptionEntry["start_column"] = 0;
-    descriptionEntry["end_column"] = numberOfOutputs;
-    description[name] = descriptionEntry;
-
-    // initialize dataset-file
-    ReturnStatus ret = initNewDataSetFile(
-        fileHandle, targetFilePath, name, description, FLOAT_TYPE, numberOfOutputs, error);
-    if (ret == INVALID_INPUT) {
-        status.errorMessage = "Data-set with uuid '" + datasetUuid + "' not found";
-        status.statusCode = NOT_FOUND_RTYPE;
-    }
-
-    return OK;
 }
