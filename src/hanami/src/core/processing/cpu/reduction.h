@@ -93,6 +93,7 @@ reduceConnections(Hexagon* hexagon,
     }
 
     connectionBlock = &hexagon->connectionBlocks[blockId];
+    const uint64_t synapseBlockLink = hexagon->synapseBlockLinks[blockId];
 
     for (uint32_t i = 0; i < NUMBER_OF_SYNAPSESECTION; ++i) {
         connection = &connectionBlock->connections[i];
@@ -100,7 +101,7 @@ reduceConnections(Hexagon* hexagon,
             continue;
         }
 
-        synapseSection = &synapseBlocks[connectionBlock->targetSynapseBlockPos].sections[i];
+        synapseSection = &synapseBlocks[synapseBlockLink].sections[i];
         sourceHexagon = &hexagons[connection->origin.hexagonId];
         sourceNeuronBlock = &sourceHexagon->neuronBlocks[connection->origin.blockId];
         sourceNeuron = &sourceNeuronBlock->neurons[connection->origin.neuronId];

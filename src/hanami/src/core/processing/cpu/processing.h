@@ -191,6 +191,7 @@ processSynapses(Cluster& cluster, Hexagon* hexagon, const uint32_t blockId)
 
     assert(blockId < hexagon->connectionBlocks.size());
     connectionBlock = &hexagon->connectionBlocks[blockId];
+    const uint64_t synapseBlockLink = hexagon->synapseBlockLinks[blockId];
 
     for (uint32_t i = 0; i < NUMBER_OF_SYNAPSESECTION; ++i) {
         scon = &connectionBlock->connections[i];
@@ -205,7 +206,7 @@ processSynapses(Cluster& cluster, Hexagon* hexagon, const uint32_t blockId)
             continue;
         }
 
-        section = &synapseBlocks[connectionBlock->targetSynapseBlockPos].sections[i];
+        section = &synapseBlocks[synapseBlockLink].sections[i];
         targetNeuronBlock = &neuronBlocks[blockId];
         randomeSeed += (blockId * NUMBER_OF_SYNAPSESECTION) + i;
 

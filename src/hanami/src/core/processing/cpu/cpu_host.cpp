@@ -163,16 +163,17 @@ CpuHost::moveCluster(Cluster* cluster)
 
     // copy synapse-blocks from the old host to this one here
     for (Hexagon& hexagon : cluster->hexagons) {
-        for (ConnectionBlock& block : hexagon.connectionBlocks) {
-            if (block.targetSynapseBlockPos != UNINIT_STATE_64) {
-                tempBlock = cpuSynapseBlocks[block.targetSynapseBlockPos];
-                originHost->synapseBlocks.deleteItem(block.targetSynapseBlockPos);
+        for (uint64_t pos = 0; pos < hexagon.synapseBlockLinks.size(); pos++) {
+            const uint64_t synapseSectionPos = hexagon.synapseBlockLinks[pos];
+            if (synapseSectionPos != UNINIT_STATE_64) {
+                tempBlock = cpuSynapseBlocks[synapseSectionPos];
+                originHost->synapseBlocks.deleteItem(synapseSectionPos);
                 const uint64_t newPos = synapseBlocks.addNewItem(tempBlock);
                 // TODO: make roll-back possible in error-case
                 if (newPos == UNINIT_STATE_64) {
                     return false;
                 }
-                block.targetSynapseBlockPos = newPos;
+                hexagon.synapseBlockLinks[pos] = newPos;
             }
         }
     }
@@ -199,9 +200,9 @@ void
 CpuHost::removeCluster(Cluster* cluster)
 {
     for (Hexagon& hexagon : cluster->hexagons) {
-        for (ConnectionBlock& block : hexagon.connectionBlocks) {
-            if (block.targetSynapseBlockPos != UNINIT_STATE_64) {
-                synapseBlocks.deleteItem(block.targetSynapseBlockPos);
+        for (uint64_t synapseBlockLink : hexagon.synapseBlockLinks) {
+            if (synapseBlockLink != UNINIT_STATE_64) {
+                synapseBlocks.deleteItem(synapseBlockLink);
             }
         }
     }

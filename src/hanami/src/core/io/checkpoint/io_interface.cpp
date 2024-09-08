@@ -226,11 +226,14 @@ IO_Interface::serialize(const Hexagon& hexagon, Hanami::ErrorContainer& error)
     // connection-blocks and synapse-blocks
     SynapseBlock* synapseBlocks
         = Hanami::getItemData<SynapseBlock>(hexagon.cluster->attachedHost->synapseBlocks);
-    for (const ConnectionBlock& connectionBlock : hexagon.connectionBlocks) {
-        if (addObjectToLocalBuffer(&connectionBlock, error) == false) {
+
+    for (uint64_t pos = 0; pos < hexagon.connectionBlocks.size(); pos++) {
+        const ConnectionBlock* connectionBlock = &hexagon.connectionBlocks[pos];
+        const uint64_t synapseSectionPos = hexagon.synapseBlockLinks[pos];
+        if (addObjectToLocalBuffer(connectionBlock, error) == false) {
             return ERROR;
         }
-        SynapseBlock* synapseBlock = &synapseBlocks[connectionBlock.targetSynapseBlockPos];
+        SynapseBlock* synapseBlock = &synapseBlocks[synapseSectionPos];
         if (addObjectToLocalBuffer(synapseBlock, error) == false) {
             return ERROR;
         }
@@ -341,6 +344,7 @@ IO_Interface::deserialize(Hexagon& hexagon, uint64_t& positionPtr, Hanami::Error
             = hexagonEntry.numberOfConnectionBytes
               / (sizeof(ConnectionBlock) + sizeof(SynapseBlock));
         hexagon.connectionBlocks.resize(numberOfConnectionBlocks);
+        hexagon.synapseBlockLinks.resize(numberOfConnectionBlocks);
         for (uint64_t i = 0; i < numberOfConnectionBlocks; i++) {
             ret = getObjectFromLocalBuffer(positionPtr, &hexagon.connectionBlocks[i], error);
             if (ret != OK) {
@@ -356,7 +360,7 @@ IO_Interface::deserialize(Hexagon& hexagon, uint64_t& positionPtr, Hanami::Error
             if (newTargetPosition == UNINIT_STATE_64) {
                 return ERROR;
             }
-            hexagon.connectionBlocks[i].targetSynapseBlockPos = newTargetPosition;
+            hexagon.synapseBlockLinks[i] = newTargetPosition;
         }
     }
 
@@ -596,9 +600,9 @@ IO_Interface::createHexagonEntry(const Hexagon& hexagon)
 void
 IO_Interface::deleteConnections(Hexagon& hexagon)
 {
-    for (const ConnectionBlock& connectionBlock : hexagon.connectionBlocks) {
-        hexagon.cluster->attachedHost->synapseBlocks.deleteItem(
-            connectionBlock.targetSynapseBlockPos);
+    for (const uint64_t synpaseBlockPos : hexagon.synapseBlockLinks) {
+        hexagon.cluster->attachedHost->synapseBlocks.deleteItem(synpaseBlockPos);
     }
     hexagon.connectionBlocks.clear();
+    hexagon.synapseBlockLinks.clear();
 }

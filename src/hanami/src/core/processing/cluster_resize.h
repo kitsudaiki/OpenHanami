@@ -53,16 +53,19 @@ searchTargetInHexagon(Hexagon* targetHexagon, ItemBuffer& synapseBlockBuffer)
     uint64_t pos = rand() % numberOfConnectionsBlocks;
     for (i = 0; i < numberOfConnectionsBlocks; ++i) {
         ConnectionBlock* connectionBlock = &targetHexagon->connectionBlocks[pos];
+        uint64_t synapseSectionPos = targetHexagon->synapseBlockLinks[pos];
 
         for (j = 0; j < NUMBER_OF_SYNAPSESECTION; ++j) {
             if (connectionBlock->connections[j].origin.blockId == UNINIT_STATE_16) {
                 // initialize a synapse-block if necessary
-                if (connectionBlock->targetSynapseBlockPos == UNINIT_STATE_64) {
+                if (synapseSectionPos == UNINIT_STATE_64) {
                     SynapseBlock block;
-                    connectionBlock->targetSynapseBlockPos = synapseBlockBuffer.addNewItem(block);
-                    if (connectionBlock->targetSynapseBlockPos == UNINIT_STATE_64) {
+                    synapseSectionPos = synapseBlockBuffer.addNewItem(block);
+                    if (synapseSectionPos == UNINIT_STATE_64) {
                         return nullptr;
                     }
+
+                    targetHexagon->synapseBlockLinks[pos] = synapseSectionPos;
                 }
                 return &connectionBlock->connections[j];
             }
@@ -87,6 +90,7 @@ resizeConnections(Hexagon* targetHexagon)
 
     // resize list
     targetHexagon->connectionBlocks.resize(targetHexagon->header.dimX);
+    targetHexagon->synapseBlockLinks.resize(targetHexagon->header.dimX);
 
     // if there was no scaling in x-dimension, then no re-ordering necessary
     if (targetHexagon->header.dimX == dimXold) {
@@ -97,6 +101,7 @@ resizeConnections(Hexagon* targetHexagon)
 
     // update content of list for the new size
     targetHexagon->connectionBlocks[targetHexagon->header.dimX - 1] = ConnectionBlock();
+    targetHexagon->synapseBlockLinks[targetHexagon->header.dimX - 1] = UNINIT_STATE_64;
 
     targetHexagon->neuronBlocks.resize(targetHexagon->header.dimX);
     targetHexagon->header.numberOfFreeSections += NUMBER_OF_SYNAPSESECTION;

@@ -133,6 +133,7 @@ backpropagateConnections(Hexagon* hexagon,
 
     assert(blockId < hexagon->connectionBlocks.size());
     connectionBlock = &hexagon->connectionBlocks[blockId];
+    const uint64_t synapseBlockLink = hexagon->synapseBlockLinks[blockId];
 
     for (uint32_t i = 0; i < NUMBER_OF_SYNAPSESECTION; ++i) {
         connection = &connectionBlock->connections[i];
@@ -141,7 +142,7 @@ backpropagateConnections(Hexagon* hexagon,
             continue;
         }
 
-        synapseSection = &synapseBlocks[connectionBlock->targetSynapseBlockPos].sections[i];
+        synapseSection = &synapseBlocks[synapseBlockLink].sections[i];
         sourceLoc = getSourceNeuron(connection->origin, hexagons);
 
         targetNeuronBlock = &hexagon->neuronBlocks[blockId];

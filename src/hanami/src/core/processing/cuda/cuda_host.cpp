@@ -122,18 +122,19 @@ CudaHost::moveCluster(Cluster* cluster)
     SynapseBlock* cpuSynapseBlocks = Hanami::getItemData<SynapseBlock>(synapseBlocks);
     SynapseBlock tempBlock;
 
-    // copy synapse-blocks from the old host to this one here
+    // copy synapse-blocks from the old host to this one
     for (uint64_t i = 0; i < cluster->hexagons.size(); i++) {
-        for (ConnectionBlock& block : cluster->hexagons[i].connectionBlocks) {
-            if (block.targetSynapseBlockPos != UNINIT_STATE_64) {
-                tempBlock = cpuSynapseBlocks[block.targetSynapseBlockPos];
-                originHost->synapseBlocks.deleteItem(block.targetSynapseBlockPos);
+        for (uint64_t pos = 0; pos < cluster->hexagons[i].synapseBlockLinks.size(); pos++) {
+            const uint64_t synapseSectionPos = cluster->hexagons[i].synapseBlockLinks[pos];
+            if (synapseSectionPos != UNINIT_STATE_64) {
+                tempBlock = cpuSynapseBlocks[synapseSectionPos];
+                originHost->synapseBlocks.deleteItem(synapseSectionPos);
                 const uint64_t newPos = synapseBlocks.addNewItem(tempBlock);
                 // TODO: make roll-back possible in error-case
                 if (newPos == UNINIT_STATE_64) {
                     return false;
                 }
-                block.targetSynapseBlockPos = newPos;
+                cluster->hexagons[i].synapseBlockLinks[pos] = newPos;
             }
         }
     }
@@ -180,9 +181,9 @@ CudaHost::removeCluster(Cluster* cluster)
 
     // remove synapse-blocks
     for (uint64_t i = 0; i < cluster->hexagons.size(); i++) {
-        for (ConnectionBlock& block : cluster->hexagons[i].connectionBlocks) {
-            if (block.targetSynapseBlockPos != UNINIT_STATE_64) {
-                synapseBlocks.deleteItem(block.targetSynapseBlockPos);
+        for (uint64_t& link : cluster->hexagons[i].synapseBlockLinks) {
+            if (link != UNINIT_STATE_64) {
+                synapseBlocks.deleteItem(link);
             }
         }
     }

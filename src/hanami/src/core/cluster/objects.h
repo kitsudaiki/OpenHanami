@@ -284,11 +284,10 @@ static_assert(sizeof(SynapseConnection) == 24);
 
 struct ConnectionBlock {
     SynapseConnection connections[NUMBER_OF_SYNAPSESECTION];
-    uint64_t targetSynapseBlockPos = UNINIT_STATE_64;
 
     ConnectionBlock() { std::fill_n(connections, NUMBER_OF_SYNAPSESECTION, SynapseConnection()); }
 };
-static_assert(sizeof(ConnectionBlock) == 12296);
+static_assert(sizeof(ConnectionBlock) == 12288);
 
 //==================================================================================================
 
@@ -352,6 +351,7 @@ struct Hexagon {
 
     std::vector<ConnectionBlock> connectionBlocks;
     std::vector<NeuronBlock> neuronBlocks;
+    std::vector<uint64_t> synapseBlockLinks;
 
     bool wasResized = false;
     uint32_t possibleHexagonTargetIds[NUMBER_OF_POSSIBLE_NEXT];
