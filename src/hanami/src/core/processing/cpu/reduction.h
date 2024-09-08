@@ -80,7 +80,7 @@ reduceConnections(Hexagon* hexagon,
                   SynapseBlock* synapseBlocks,
                   const uint32_t blockId)
 {
-    SynapseConnection* connection = nullptr;
+    Connection* connection = nullptr;
     Neuron* sourceNeuron = nullptr;
     NeuronBlock* sourceNeuronBlock = nullptr;
     Hexagon* sourceHexagon = nullptr;

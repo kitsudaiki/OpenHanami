@@ -54,7 +54,7 @@ class Cluster;
 
 //==================================================================================================
 
-enum ClusterProcessingMode {
+enum ClusterProcessingMode : uint8_t {
     NORMAL_MODE = 0,
     TRAIN_FORWARD_MODE = 1,
     TRAIN_BACKWARD_MODE = 2,
@@ -263,14 +263,16 @@ struct InputInterface {
 
 //==================================================================================================
 
-struct SynapseConnection {
+struct Connection {
     SourceLocationPtr origin;
     float lowerBound = 0.0f;
     float potentialRange = std::numeric_limits<float>::max();
     float tollerance = 0.49f;
-    uint8_t padding[4];
+    float splitValue = 0.0;
+    float input = 0.0f;
+    float delta = 0.0f;
 
-    SynapseConnection()
+    Connection()
     {
         origin.hexagonId = UNINIT_STATE_32;
         origin.blockId = UNINIT_STATE_16;
@@ -278,16 +280,16 @@ struct SynapseConnection {
         origin.isInput = false;
     }
 };
-static_assert(sizeof(SynapseConnection) == 24);
+static_assert(sizeof(Connection) == 32);
 
 //==================================================================================================
 
 struct ConnectionBlock {
-    SynapseConnection connections[NUMBER_OF_SYNAPSESECTION];
+    Connection connections[NUMBER_OF_SYNAPSESECTION];
 
-    ConnectionBlock() { std::fill_n(connections, NUMBER_OF_SYNAPSESECTION, SynapseConnection()); }
+    ConnectionBlock() { std::fill_n(connections, NUMBER_OF_SYNAPSESECTION, Connection()); }
 };
-static_assert(sizeof(ConnectionBlock) == 12288);
+static_assert(sizeof(ConnectionBlock) == 4 * 4096);
 
 //==================================================================================================
 

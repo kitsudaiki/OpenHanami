@@ -41,7 +41,7 @@
 inline void
 backpropagateNeuron(Hexagon* hexagon, const uint32_t blockId)
 {
-    SynapseConnection* scon = nullptr;
+    Connection* scon = nullptr;
     Neuron* targetNeuron = nullptr;
     NeuronBlock* targetNeuronBlock = nullptr;
     float delta = 0.0f;
@@ -70,7 +70,7 @@ backpropagateNeuron(Hexagon* hexagon, const uint32_t blockId)
  */
 inline void
 backpropagateSection(SynapseSection* section,
-                     SynapseConnection* connection,
+                     Connection* connection,
                      NeuronBlock* targetBlock,
                      Neuron* sourceNeuron)
 {
@@ -117,7 +117,7 @@ backpropagateConnections(Hexagon* hexagon,
                          SynapseBlock* synapseBlocks,
                          const uint32_t blockId)
 {
-    SynapseConnection* connection = nullptr;
+    Connection* connection = nullptr;
     Neuron* sourceNeuron = nullptr;
     Hexagon* sourceHexagon = nullptr;
     NeuronBlock* sourceNeuronBlock = nullptr;
@@ -216,6 +216,27 @@ backpropagateOutput(std::vector<Hexagon>& hexagons,
 
     return true;
     // return totalDelta > settings->backpropagationBorder;
+}
+
+/**
+ * @brief run the backpropagation over the core the cluster
+ *
+ * @param cluster pointer to cluster to process
+ * @param hexagonId id of the hexagon to process
+ * @param blockId id of the block within the hexagon
+ */
+inline void
+processClusterBackward(Cluster& cluster, const uint32_t hexagonId, const uint32_t blockId)
+{
+    Hanami::ErrorContainer error;
+    Hexagon* hexagon = &cluster.hexagons[hexagonId];
+    if (hexagon->header.isInputHexagon) {
+        return;
+    }
+
+    SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(cluster.attachedHost->synapseBlocks);
+    backpropagateNeuron(hexagon, blockId);
+    backpropagateConnections(hexagon, &cluster.hexagons[0], synapseBlocks, blockId);
 }
 
 #endif  // HANAMI_CORE_BACKPROPAGATION_H

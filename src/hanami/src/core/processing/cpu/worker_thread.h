@@ -38,19 +38,11 @@ class WorkerThread : public Hanami::Thread
     void run();
 
    private:
-    void processClusterForward(Cluster& cluster,
-                               const uint32_t hexagonId,
-                               const uint32_t blockId,
-                               const bool doTrain);
-    void processClusterBackward(Cluster& cluster, const uint32_t hexagonId, const uint32_t blockId);
-
-    void handleTask(const CpuHost::WorkerTask task);
+    void handleTask(const CpuHost::WorkerTask& task);
     void handleTrainForwardTask(CpuHost::WorkerTask task);
     void handleTrainBackwardTask(CpuHost::WorkerTask task);
     void handleReductionTask(const CpuHost::WorkerTask task);
     void handleProcessTask(const CpuHost::WorkerTask task);
-
-    void handleInputForward(Cluster& cluster, InputInterface* inputInterface, const bool doTrain);
 
     CpuHost* m_host = nullptr;
     uint32_t m_inactiveCounter = 0;

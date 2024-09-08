@@ -71,7 +71,7 @@ WorkerThread::run()
  * @param task task to handle
  */
 void
-WorkerThread::handleTask(const CpuHost::WorkerTask task)
+WorkerThread::handleTask(const CpuHost::WorkerTask& task)
 {
     if (task.cluster->mode == ClusterProcessingMode::TRAIN_FORWARD_MODE) {
         handleTrainForwardTask(task);
@@ -99,17 +99,19 @@ WorkerThread::handleTrainForwardTask(CpuHost::WorkerTask task)
     if (task.blockId == UNINIT_STATE_16) {
         // handle input-interface
         if (hexagon->inputInterface != nullptr) {
-            WorkerThread::handleInputForward(*task.cluster, hexagon->inputInterface, true);
+            handleInputForward(*task.cluster, hexagon->inputInterface, true);
         }
 
         // handle special-case that there are no neuron-blocks to process
         if (hexagon->neuronBlocks.size() == 0) {
+            // in case of the last hexagon
             if (task.hexagonId == task.cluster->hexagons.size() - 1) {
                 updateCluster(*task.cluster);
                 task.cluster->updateClusterState();
                 return;
             }
 
+            // in case of a normal hexagon
             CpuHost::WorkerTask newTask;
             newTask.cluster = task.cluster;
             newTask.hexagonId = task.hexagonId + 1;
@@ -249,7 +251,7 @@ WorkerThread::handleProcessTask(const CpuHost::WorkerTask task)
     if (task.blockId == UNINIT_STATE_16) {
         // handle input-interface
         if (hexagon->inputInterface != nullptr) {
-            WorkerThread::handleInputForward(*task.cluster, hexagon->inputInterface, true);
+            handleInputForward(*task.cluster, hexagon->inputInterface, true);
         }
 
         // handle special-case that there are no neuron-blocks to process
@@ -300,91 +302,4 @@ WorkerThread::handleProcessTask(const CpuHost::WorkerTask task)
             m_host->addWorkerTaskToQueue(newTask);
         }
     }
-}
-
-/**
- * @brief handle input-hexagons by applying input-values to the input-neurons
- *
- * @param cluster pointer to cluster to process
- * @param doTrain true to run trainging-process
- */
-void
-WorkerThread::handleInputForward(Cluster& cluster,
-                                 InputInterface* inputInterface,
-                                 const bool doTrain)
-{
-    Hexagon* hexagon = nullptr;
-    const uint32_t numberOfHexagons = cluster.hexagons.size();
-
-    // process input-hexagons
-    for (uint32_t hexagonId = 0; hexagonId < numberOfHexagons; ++hexagonId) {
-        hexagon = &cluster.hexagons[hexagonId];
-
-        if (hexagon->header.isInputHexagon) {
-            if (doTrain) {
-                processNeuronsOfInputHexagon<true>(cluster, inputInterface, hexagon);
-            }
-            else {
-                processNeuronsOfInputHexagon<false>(cluster, inputInterface, hexagon);
-            }
-        }
-    }
-}
-
-/**
- * @brief process cluster and train it be creating new synapses
- *
- * @param cluster pointer to cluster to process
- * @param hexagonId id of the hexagon to process
- * @param blockId id of the block within the hexagon
- * @param doTrain true to run trainging-process
- */
-void
-WorkerThread::processClusterForward(Cluster& cluster,
-                                    const uint32_t hexagonId,
-                                    const uint32_t blockId,
-                                    const bool doTrain)
-{
-    Hanami::ErrorContainer error;
-    Hexagon* hexagon = &cluster.hexagons[hexagonId];
-
-    if (hexagon->header.isInputHexagon) {
-        return;
-    }
-
-    if (doTrain) {
-        processSynapses<true>(cluster, hexagon, blockId);
-        if (hexagon->header.isOutputHexagon == false) {
-            processNeurons<true>(cluster, hexagon, blockId);
-        }
-    }
-    else {
-        processSynapses<false>(cluster, hexagon, blockId);
-        if (hexagon->header.isOutputHexagon == false) {
-            processNeurons<false>(cluster, hexagon, blockId);
-        }
-    }
-}
-
-/**
- * @brief run the backpropagation over the core the cluster
- *
- * @param cluster pointer to cluster to process
- * @param hexagonId id of the hexagon to process
- * @param blockId id of the block within the hexagon
- */
-void
-WorkerThread::processClusterBackward(Cluster& cluster,
-                                     const uint32_t hexagonId,
-                                     const uint32_t blockId)
-{
-    Hanami::ErrorContainer error;
-    Hexagon* hexagon = &cluster.hexagons[hexagonId];
-    if (hexagon->header.isInputHexagon) {
-        return;
-    }
-
-    SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(cluster.attachedHost->synapseBlocks);
-    backpropagateNeuron(hexagon, blockId);
-    backpropagateConnections(hexagon, &cluster.hexagons[0], synapseBlocks, blockId);
 }

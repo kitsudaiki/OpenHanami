@@ -87,7 +87,7 @@ template <bool doTrain>
 inline void
 synapseProcessingBackward(Cluster& cluster,
                           SynapseSection* synapseSection,
-                          SynapseConnection* connection,
+                          Connection* connection,
                           NeuronBlock* targetNeuronBlock,
                           Neuron* sourceNeuron,
                           const SourceLocationPtr originLocation,
@@ -172,7 +172,7 @@ processSynapses(Cluster& cluster, Hexagon* hexagon, const uint32_t blockId)
     NeuronBlock* neuronBlocks = &hexagon->neuronBlocks[0];
     SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(cluster.attachedHost->synapseBlocks);
     ClusterSettings* clusterSettings = &cluster.clusterHeader.settings;
-    SynapseConnection* scon = nullptr;
+    Connection* scon = nullptr;
     NeuronBlock* sourceNeuronBlock = nullptr;
     NeuronBlock* targetNeuronBlock = nullptr;
     ConnectionBlock* connectionBlock = nullptr;
@@ -393,6 +393,68 @@ processNeuronsOfOutputHexagon(std::vector<Hexagon>& hexagons,
         // std::cout << out->outputVal << " : " << out->exprectedVal << std::endl;
     }
     // std::cout << "-------------------------------------" << std::endl;
+}
+
+/**
+ * @brief process cluster and train it be creating new synapses
+ *
+ * @param cluster pointer to cluster to process
+ * @param hexagonId id of the hexagon to process
+ * @param blockId id of the block within the hexagon
+ * @param doTrain true to run trainging-process
+ */
+inline void
+processClusterForward(Cluster& cluster,
+                      const uint32_t hexagonId,
+                      const uint32_t blockId,
+                      const bool doTrain)
+{
+    Hanami::ErrorContainer error;
+    Hexagon* hexagon = &cluster.hexagons[hexagonId];
+
+    if (hexagon->header.isInputHexagon) {
+        return;
+    }
+
+    if (doTrain) {
+        processSynapses<true>(cluster, hexagon, blockId);
+        if (hexagon->header.isOutputHexagon == false) {
+            processNeurons<true>(cluster, hexagon, blockId);
+        }
+    }
+    else {
+        processSynapses<false>(cluster, hexagon, blockId);
+        if (hexagon->header.isOutputHexagon == false) {
+            processNeurons<false>(cluster, hexagon, blockId);
+        }
+    }
+}
+
+/**
+ * @brief handle input-hexagons by applying input-values to the input-neurons
+ *
+ * @param cluster pointer to cluster to process
+ * @param doTrain true to run trainging-process
+ */
+inline void
+handleInputForward(Cluster& cluster, InputInterface* inputInterface, const bool doTrain)
+{
+    Hexagon* hexagon = nullptr;
+    const uint32_t numberOfHexagons = cluster.hexagons.size();
+
+    // process input-hexagons
+    for (uint32_t hexagonId = 0; hexagonId < numberOfHexagons; ++hexagonId) {
+        hexagon = &cluster.hexagons[hexagonId];
+
+        if (hexagon->header.isInputHexagon) {
+            if (doTrain) {
+                processNeuronsOfInputHexagon<true>(cluster, inputInterface, hexagon);
+            }
+            else {
+                processNeuronsOfInputHexagon<false>(cluster, inputInterface, hexagon);
+            }
+        }
+    }
 }
 
 #endif  // HANAMI_CORE_PROCESSING_H

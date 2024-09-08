@@ -35,6 +35,7 @@ class CpuHost : public LogicalHost
         uint32_t hexagonId = UNINIT_STATE_32;
         uint32_t blockId = UNINIT_STATE_32;
     };
+    static_assert(sizeof(WorkerTask) == 16);
 
     CpuHost(const uint32_t localId);
     ~CpuHost();

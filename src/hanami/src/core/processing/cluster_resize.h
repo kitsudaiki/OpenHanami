@@ -39,7 +39,7 @@
  *
  * @return found empty connection, if seccessfule, else nullptr
  */
-inline SynapseConnection*
+inline Connection*
 searchTargetInHexagon(Hexagon* targetHexagon, ItemBuffer& synapseBlockBuffer)
 {
     uint64_t i = 0;
@@ -140,7 +140,7 @@ createNewSection(Cluster& cluster,
     if (targetHexagon->header.numberOfFreeSections < NUMBER_OF_SYNAPSESECTION / 2) {
         resizeConnections(targetHexagon);
     }
-    SynapseConnection* targetConnection = searchTargetInHexagon(targetHexagon, synapseBlockBuffer);
+    Connection* targetConnection = searchTargetInHexagon(targetHexagon, synapseBlockBuffer);
     if (targetConnection == nullptr) {
         Hanami::ErrorContainer error;
         error.addMessage("no target-section found, even there should be sill "
