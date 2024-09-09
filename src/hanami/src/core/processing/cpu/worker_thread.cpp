@@ -120,6 +120,8 @@ WorkerThread::handleTrainForwardTask(CpuHost::WorkerTask task)
             return;
         }
 
+        handleConnectionBlocksForward(*task.cluster, hexagon);
+
         // share neuron-blocks to process
         for (uint32_t i = 0; i < hexagon->neuronBlocks.size(); i++) {
             CpuHost::WorkerTask newTask;
@@ -196,6 +198,7 @@ WorkerThread::handleTrainBackwardTask(CpuHost::WorkerTask task)
             newTask.blockId = i;
             m_host->addWorkerTaskToQueue(newTask);
         }
+
         return;
     }
 
@@ -204,6 +207,8 @@ WorkerThread::handleTrainBackwardTask(CpuHost::WorkerTask task)
     if (task.cluster->incrementAndCompare(
             task.cluster->hexagons[task.hexagonId].neuronBlocks.size()))
     {
+        handleConnectionBlocksBackward(*task.cluster, &task.cluster->hexagons[task.hexagonId]);
+
         if (task.hexagonId == 0) {
             task.cluster->updateClusterState();
         }
@@ -267,6 +272,8 @@ WorkerThread::handleProcessTask(const CpuHost::WorkerTask task)
             m_host->addWorkerTaskToQueue(newTask);
             return;
         }
+
+        handleConnectionBlocksForward(*task.cluster, hexagon);
 
         // share neuron-blocks to process
         for (uint32_t i = 0; i < hexagon->neuronBlocks.size(); i++) {

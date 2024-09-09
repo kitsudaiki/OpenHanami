@@ -95,7 +95,7 @@ synapseProcessingBackward(Cluster& cluster,
                           const bool inputConnected,
                           uint32_t& randomSeed)
 {
-    float potential = sourceNeuron->potential - connection->lowerBound;
+    float potential = connection->potential - connection->lowerBound;
     float val = 0.0f;
     uint8_t pos = 0;
     Synapse* synapse = nullptr;
@@ -452,6 +452,37 @@ handleInputForward(Cluster& cluster, InputInterface* inputInterface, const bool 
             else {
                 processNeuronsOfInputHexagon<false>(cluster, inputInterface, hexagon);
             }
+        }
+    }
+}
+
+/**
+ * @brief handleConnectionBlocksForward
+ * @param cluster
+ * @param hexagon
+ */
+inline void
+handleConnectionBlocksForward(Cluster& cluster, Hexagon* hexagon)
+{
+    NeuronBlock* neuronBlocks = &hexagon->neuronBlocks[0];
+    Connection* connection = nullptr;
+    ConnectionBlock* connectionBlock = nullptr;
+    SourceLocation sourceLoc;
+
+    for (uint64_t blockId = 0; blockId < hexagon->connectionBlocks.size(); ++blockId) {
+        connectionBlock = &hexagon->connectionBlocks[blockId];
+        const uint64_t synapseBlockLink = hexagon->synapseBlockLinks[blockId];
+
+        for (uint32_t i = 0; i < NUMBER_OF_SYNAPSESECTION; ++i) {
+            connection = &connectionBlock->connections[i];
+            if (connection->origin.blockId == UNINIT_STATE_16) {
+                continue;
+            }
+
+            // inputConnected = scon->origin.isInput;
+            sourceLoc = getSourceNeuron(connection->origin, &cluster.hexagons[0]);
+            connection->potential
+                = static_cast<float>(sourceLoc.neuron->active) * sourceLoc.neuron->potential;
         }
     }
 }

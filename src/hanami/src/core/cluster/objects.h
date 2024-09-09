@@ -269,7 +269,7 @@ struct Connection {
     float potentialRange = std::numeric_limits<float>::max();
     float tollerance = 0.49f;
     float splitValue = 0.0;
-    float input = 0.0f;
+    float potential = 0.0f;
     float delta = 0.0f;
 
     Connection()
