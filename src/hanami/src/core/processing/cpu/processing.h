@@ -169,16 +169,13 @@ template <bool doTrain>
 inline void
 processSynapses(Cluster& cluster, Hexagon* hexagon, const uint32_t blockId)
 {
-    NeuronBlock* neuronBlocks = &hexagon->neuronBlocks[0];
     SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(cluster.attachedHost->synapseBlocks);
+    SynapseBlock* synapseBlock = nullptr;
     ClusterSettings* clusterSettings = &cluster.clusterHeader.settings;
     Connection* scon = nullptr;
-    NeuronBlock* sourceNeuronBlock = nullptr;
     NeuronBlock* targetNeuronBlock = nullptr;
     ConnectionBlock* connectionBlock = nullptr;
-    Neuron* sourceNeuron = nullptr;
     SynapseSection* section = nullptr;
-    Hexagon* sourceHexagon = nullptr;
     uint32_t randomeSeed = rand();
     const uint32_t dimX = hexagon->header.dimX;
     SourceLocation sourceLoc;
@@ -191,7 +188,10 @@ processSynapses(Cluster& cluster, Hexagon* hexagon, const uint32_t blockId)
 
     assert(blockId < hexagon->connectionBlocks.size());
     connectionBlock = &hexagon->connectionBlocks[blockId];
+    targetNeuronBlock = &hexagon->neuronBlocks[blockId];
+
     const uint64_t synapseBlockLink = hexagon->synapseBlockLinks[blockId];
+    synapseBlock = &synapseBlocks[synapseBlockLink];
 
     for (uint32_t i = 0; i < NUMBER_OF_SYNAPSESECTION; ++i) {
         scon = &connectionBlock->connections[i];
@@ -206,8 +206,7 @@ processSynapses(Cluster& cluster, Hexagon* hexagon, const uint32_t blockId)
             continue;
         }
 
-        section = &synapseBlocks[synapseBlockLink].sections[i];
-        targetNeuronBlock = &neuronBlocks[blockId];
+        section = &synapseBlock->sections[i];
         randomeSeed += (blockId * NUMBER_OF_SYNAPSESECTION) + i;
 
         synapseProcessingBackward<doTrain>(cluster,

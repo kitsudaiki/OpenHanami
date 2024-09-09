@@ -118,14 +118,12 @@ backpropagateConnections(Hexagon* hexagon,
                          const uint32_t blockId)
 {
     Connection* connection = nullptr;
-    Neuron* sourceNeuron = nullptr;
-    Hexagon* sourceHexagon = nullptr;
-    NeuronBlock* sourceNeuronBlock = nullptr;
     NeuronBlock* targetNeuronBlock = nullptr;
     ConnectionBlock* connectionBlock = nullptr;
     SynapseSection* synapseSection = nullptr;
     const uint32_t dimX = hexagon->header.dimX;
     SourceLocation sourceLoc;
+    SynapseBlock* synapseBlock = nullptr;
 
     if (blockId >= dimX) {
         return;
@@ -133,7 +131,10 @@ backpropagateConnections(Hexagon* hexagon,
 
     assert(blockId < hexagon->connectionBlocks.size());
     connectionBlock = &hexagon->connectionBlocks[blockId];
+    targetNeuronBlock = &hexagon->neuronBlocks[blockId];
+
     const uint64_t synapseBlockLink = hexagon->synapseBlockLinks[blockId];
+    synapseBlock = &synapseBlocks[synapseBlockLink];
 
     for (uint32_t i = 0; i < NUMBER_OF_SYNAPSESECTION; ++i) {
         connection = &connectionBlock->connections[i];
@@ -142,10 +143,8 @@ backpropagateConnections(Hexagon* hexagon,
             continue;
         }
 
-        synapseSection = &synapseBlocks[synapseBlockLink].sections[i];
+        synapseSection = &synapseBlock->sections[i];
         sourceLoc = getSourceNeuron(connection->origin, hexagons);
-
-        targetNeuronBlock = &hexagon->neuronBlocks[blockId];
 
         backpropagateSection(synapseSection, connection, targetNeuronBlock, sourceLoc.neuron);
     }
@@ -171,8 +170,7 @@ sigmoidDerivative(const float x)
 inline bool
 backpropagateOutput(std::vector<Hexagon>& hexagons,
                     OutputInterface* outputInterface,
-                    const ClusterSettings* settings,
-                    const uint32_t hexagonId)
+                    const ClusterSettings* settings)
 {
     Neuron* neuron = nullptr;
     Hexagon* hexagon = nullptr;
@@ -185,9 +183,17 @@ backpropagateOutput(std::vector<Hexagon>& hexagons,
     uint64_t i = 0;
     uint64_t j = 0;
 
+    hexagon = &hexagons[outputInterface->targetHexagonId];
+
+    for (i = 0; i < hexagon->neuronBlocks.size(); ++i) {
+        for (j = 0; j < NEURONS_PER_NEURONBLOCK; ++j) {
+            neuron = &hexagon->neuronBlocks[i].neurons[j];
+            neuron->delta = 0.0f;
+        }
+    }
+
     for (i = 0; i < outputInterface->outputNeurons.size(); ++i) {
         out = &outputInterface->outputNeurons[i];
-        hexagon = &hexagons[outputInterface->targetHexagonId];
         delta = out->outputVal - out->exprectedVal;
         update = delta * sigmoidDerivative(out->outputVal);
 
@@ -206,7 +212,6 @@ backpropagateOutput(std::vector<Hexagon>& hexagons,
         }
     }
 
-    hexagon = &hexagons[hexagonId];
     for (i = 0; i < hexagon->neuronBlocks.size(); ++i) {
         for (j = 0; j < NEURONS_PER_NEURONBLOCK; ++j) {
             neuron = &hexagon->neuronBlocks[i].neurons[j];

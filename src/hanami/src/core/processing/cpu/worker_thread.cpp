@@ -170,8 +170,7 @@ WorkerThread::handleTrainBackwardTask(CpuHost::WorkerTask task)
         if (hexagon->outputInterface != nullptr) {
             backpropagateOutput(task.cluster->hexagons,
                                 hexagon->outputInterface,
-                                &task.cluster->clusterHeader.settings,
-                                task.hexagonId);
+                                &task.cluster->clusterHeader.settings);
         }
 
         // handle special-case that there are no neuron-blocks to process
