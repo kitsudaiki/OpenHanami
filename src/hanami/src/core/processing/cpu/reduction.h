@@ -108,10 +108,6 @@ reduceConnections(Hexagon* hexagon,
 
         // if section is complete empty, then erase it
         if (reduceSection(synapseSection) == false) {
-            // initialize the creation of a new section
-            sourceNeuron->isNew = 1;
-            sourceNeuron->newLowerBound = connection->lowerBound;
-
             // mark current connection as available again
             connection->origin.blockId = UNINIT_STATE_16;
             connection->origin.neuronId = UNINIT_STATE_8;

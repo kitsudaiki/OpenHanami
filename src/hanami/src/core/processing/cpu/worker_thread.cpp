@@ -99,14 +99,13 @@ WorkerThread::handleTrainForwardTask(CpuHost::WorkerTask task)
     if (task.blockId == UNINIT_STATE_16) {
         // handle input-interface
         if (hexagon->inputInterface != nullptr) {
-            handleInputForward(*task.cluster, hexagon->inputInterface, true);
+            processInput(*task.cluster, hexagon, true);
         }
 
         // handle special-case that there are no neuron-blocks to process
         if (hexagon->neuronBlocks.size() == 0) {
             // in case of the last hexagon
             if (task.hexagonId == task.cluster->hexagons.size() - 1) {
-                updateCluster(*task.cluster);
                 task.cluster->updateClusterState();
                 return;
             }
@@ -120,7 +119,7 @@ WorkerThread::handleTrainForwardTask(CpuHost::WorkerTask task)
             return;
         }
 
-        handleConnectionBlocksForward(*task.cluster, hexagon);
+        processConnectionBlocksForward(*task.cluster, hexagon);
 
         // share neuron-blocks to process
         for (uint32_t i = 0; i < hexagon->neuronBlocks.size(); i++) {
@@ -139,12 +138,11 @@ WorkerThread::handleTrainForwardTask(CpuHost::WorkerTask task)
             task.cluster->hexagons[task.hexagonId].neuronBlocks.size()))
     {
         if (hexagon->outputInterface != nullptr) {
-            processNeuronsOfOutputHexagon<true>(
-                task.cluster->hexagons, hexagon->outputInterface, task.hexagonId, rand());
+            processNeuronsOfOutputHexagon<true>(hexagon, rand());
         }
 
         if (task.hexagonId == task.cluster->hexagons.size() - 1) {
-            updateCluster(*task.cluster);
+            updateCluster(*task.cluster, hexagon);
             task.cluster->updateClusterState();
         }
         else {
@@ -170,9 +168,7 @@ WorkerThread::handleTrainBackwardTask(CpuHost::WorkerTask task)
 
         // handle output-interface
         if (hexagon->outputInterface != nullptr) {
-            backpropagateOutput(task.cluster->hexagons,
-                                hexagon->outputInterface,
-                                &task.cluster->clusterHeader.settings);
+            backpropagateOutput(hexagon);
         }
 
         // handle special-case that there are no neuron-blocks to process
@@ -207,7 +203,7 @@ WorkerThread::handleTrainBackwardTask(CpuHost::WorkerTask task)
     if (task.cluster->incrementAndCompare(
             task.cluster->hexagons[task.hexagonId].neuronBlocks.size()))
     {
-        handleConnectionBlocksBackward(*task.cluster, &task.cluster->hexagons[task.hexagonId]);
+        processConnectionBlocksBackward(*task.cluster, &task.cluster->hexagons[task.hexagonId]);
 
         if (task.hexagonId == 0) {
             task.cluster->updateClusterState();
@@ -253,9 +249,8 @@ WorkerThread::handleProcessTask(const CpuHost::WorkerTask task)
     Hexagon* hexagon = &task.cluster->hexagons[task.hexagonId];
 
     if (task.blockId == UNINIT_STATE_16) {
-        // handle input-interface
         if (hexagon->inputInterface != nullptr) {
-            handleInputForward(*task.cluster, hexagon->inputInterface, true);
+            processInput(*task.cluster, hexagon, true);
         }
 
         // handle special-case that there are no neuron-blocks to process
@@ -273,7 +268,7 @@ WorkerThread::handleProcessTask(const CpuHost::WorkerTask task)
             return;
         }
 
-        handleConnectionBlocksForward(*task.cluster, hexagon);
+        processConnectionBlocksForward(*task.cluster, hexagon);
 
         // share neuron-blocks to process
         for (uint32_t i = 0; i < hexagon->neuronBlocks.size(); i++) {
@@ -292,8 +287,7 @@ WorkerThread::handleProcessTask(const CpuHost::WorkerTask task)
             task.cluster->hexagons[task.hexagonId].neuronBlocks.size()))
     {
         if (hexagon->outputInterface != nullptr) {
-            processNeuronsOfOutputHexagon<false>(
-                task.cluster->hexagons, hexagon->outputInterface, task.hexagonId, rand());
+            processNeuronsOfOutputHexagon<false>(hexagon, rand());
         }
 
         if (task.hexagonId == task.cluster->hexagons.size() - 1) {

@@ -208,11 +208,9 @@ struct Neuron {
 
     uint8_t refractoryTime = 1;
     uint8_t active = 0;
-
-    float newLowerBound = 0.0f;
-    float potentialRange = 0.0f;
-    uint8_t isNew = 0;
     uint8_t inUse = 0;
+
+    uint8_t padding[13];
 };
 static_assert(sizeof(Neuron) == 32);
 

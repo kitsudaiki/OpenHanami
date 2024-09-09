@@ -47,9 +47,9 @@ createNewSynapse(Synapse* synapse,
                  const float remainingW,
                  uint32_t& randomSeed)
 {
-    const float randMax = static_cast<float>(RAND_MAX);
+    constexpr float randMax = static_cast<float>(RAND_MAX);
+    constexpr float sigNeg = 0.5f;
     uint32_t signRand = 0;
-    const float sigNeg = 0.5f;
 
     // set activation-border
     synapse->border = remainingW;
@@ -77,10 +77,7 @@ createNewSynapse(Synapse* synapse,
  * @param synapseSection current synapse-section to process
  * @param connection pointer to the connection-object, which is related to the section
  * @param targetNeuronBlock neuron-block, which is the target for all synapses in the section
- * @param sourceNeuron pointer to source-neuron, which had triggered the section
- * @param originLocation location of the source-neuron to mark updates
  * @param clusterSettings pointer to cluster-settings
- * @param inputConnected true, if source-neuron belongs to an input-hexagon
  * @param randomSeed reference to the current seed of the randomizer
  */
 template <bool doTrain>
@@ -89,10 +86,7 @@ synapseProcessingBackward(Cluster& cluster,
                           SynapseSection* synapseSection,
                           Connection* connection,
                           NeuronBlock* targetNeuronBlock,
-                          Neuron* sourceNeuron,
-                          const SourceLocationPtr originLocation,
                           ClusterSettings* clusterSettings,
-                          const bool inputConnected,
                           uint32_t& randomSeed)
 {
     float potential = connection->potential - connection->lowerBound;
@@ -100,9 +94,8 @@ synapseProcessingBackward(Cluster& cluster,
     uint8_t pos = 0;
     Synapse* synapse = nullptr;
     Neuron* targetNeuron = nullptr;
-    bool condition = false;
     float halfPotential = 0.0f;
-    const bool isAbleToCreate = inputConnected || cluster.enableCreation;
+    const bool isAbleToCreate = connection->origin.isInput || cluster.enableCreation;
 
     if (potential > connection->potentialRange) {
         potential = connection->potentialRange;
@@ -148,12 +141,8 @@ synapseProcessingBackward(Cluster& cluster,
     }
 
     if constexpr (doTrain) {
-        sourceNeuron->isNew = false;
         if (potential > 0.00001f && isAbleToCreate) {
-            sourceNeuron->isNew = true;
-            sourceNeuron->newLowerBound = connection->lowerBound + halfPotential;
-            sourceNeuron->potentialRange = connection->potentialRange - halfPotential;
-            connection->potentialRange = halfPotential;
+            connection->splitValue = halfPotential;
         }
     }
 }
@@ -171,53 +160,30 @@ processSynapses(Cluster& cluster, Hexagon* hexagon, const uint32_t blockId)
 {
     SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(cluster.attachedHost->synapseBlocks);
     SynapseBlock* synapseBlock = nullptr;
-    ClusterSettings* clusterSettings = &cluster.clusterHeader.settings;
-    Connection* scon = nullptr;
-    NeuronBlock* targetNeuronBlock = nullptr;
-    ConnectionBlock* connectionBlock = nullptr;
     SynapseSection* section = nullptr;
+    NeuronBlock* neuronBlock = nullptr;
+    ConnectionBlock* connectionBlock = nullptr;
+    Connection* connection = nullptr;
+    ClusterSettings* clusterSettings = &cluster.clusterHeader.settings;
     uint32_t randomeSeed = rand();
-    const uint32_t dimX = hexagon->header.dimX;
-    SourceLocation sourceLoc;
 
-    bool inputConnected = false;
-
-    if (blockId >= dimX) {
+    if (blockId >= hexagon->header.dimX) {
         return;
     }
 
-    assert(blockId < hexagon->connectionBlocks.size());
     connectionBlock = &hexagon->connectionBlocks[blockId];
-    targetNeuronBlock = &hexagon->neuronBlocks[blockId];
-
-    const uint64_t synapseBlockLink = hexagon->synapseBlockLinks[blockId];
-    synapseBlock = &synapseBlocks[synapseBlockLink];
+    neuronBlock = &hexagon->neuronBlocks[blockId];
+    synapseBlock = &synapseBlocks[hexagon->synapseBlockLinks[blockId]];
 
     for (uint32_t i = 0; i < NUMBER_OF_SYNAPSESECTION; ++i) {
-        scon = &connectionBlock->connections[i];
-        if (scon->origin.blockId == UNINIT_STATE_16) {
-            continue;
+        connection = &connectionBlock->connections[i];
+        if (connection->origin.blockId != UNINIT_STATE_16 && connection->potential > 0.0f) {
+            randomeSeed += (blockId * NUMBER_OF_SYNAPSESECTION) + i;
+            section = &synapseBlock->sections[i];
+
+            synapseProcessingBackward<doTrain>(
+                cluster, section, connection, neuronBlock, clusterSettings, randomeSeed);
         }
-
-        inputConnected = scon->origin.isInput;
-        sourceLoc = getSourceNeuron(scon->origin, &cluster.hexagons[0]);
-
-        if (sourceLoc.neuron->active == 0) {
-            continue;
-        }
-
-        section = &synapseBlock->sections[i];
-        randomeSeed += (blockId * NUMBER_OF_SYNAPSESECTION) + i;
-
-        synapseProcessingBackward<doTrain>(cluster,
-                                           section,
-                                           scon,
-                                           targetNeuronBlock,
-                                           sourceLoc.neuron,
-                                           scon->origin,
-                                           clusterSettings,
-                                           inputConnected,
-                                           randomeSeed);
     }
 }
 
@@ -233,13 +199,12 @@ inline void
 processNeurons(Cluster& cluster, Hexagon* hexagon, const uint32_t blockId)
 {
     ClusterSettings* clusterSettings = &cluster.clusterHeader.settings;
+    NeuronBlock* neuronBlock = nullptr;
     Neuron* neuron = nullptr;
-    NeuronBlock* targetNeuronBlock = nullptr;
-    const uint32_t neuronBlockId = blockId;
 
-    targetNeuronBlock = &hexagon->neuronBlocks[neuronBlockId];
+    neuronBlock = &hexagon->neuronBlocks[blockId];
     for (uint8_t neuronId = 0; neuronId < NEURONS_PER_NEURONBLOCK; ++neuronId) {
-        neuron = &targetNeuronBlock->neurons[neuronId];
+        neuron = &neuronBlock->neurons[neuronId];
         neuron->potential /= clusterSettings->neuronCooldown;
         neuron->refractoryTime = neuron->refractoryTime >> 1;
 
@@ -256,9 +221,9 @@ processNeurons(Cluster& cluster, Hexagon* hexagon, const uint32_t blockId)
 
         if constexpr (doTrain) {
             neuron->delta = 0.0f;
-            neuron->isNew = neuron->active != 0 && neuron->inUse == 0;
-            neuron->newLowerBound = 0.0f;
-            neuron->potentialRange = std::numeric_limits<float>::max();
+            if (neuron->active != 0 && neuron->inUse == 0) {
+                createNewSection(cluster, hexagon, neuron, blockId, neuronId);
+            }
         }
     }
 }
@@ -275,7 +240,6 @@ inline void
 processNeuronsOfInputHexagon(Cluster& cluster, InputInterface* inputInterface, Hexagon* hexagon)
 {
     Neuron* neuron = nullptr;
-    NeuronBlock* block = nullptr;
     uint32_t counter = 0;
     uint16_t blockId = 0;
     uint8_t neuronId = 0;
@@ -292,15 +256,7 @@ processNeuronsOfInputHexagon(Cluster& cluster, InputInterface* inputInterface, H
 
             if constexpr (doTrain) {
                 if (neuron->active != 0 && neuron->inUse == 0) {
-                    SourceLocationPtr originLocation;
-                    originLocation.hexagonId = hexagon->header.hexagonId;
-                    originLocation.blockId = blockId;
-                    originLocation.neuronId = neuronId;
-                    createNewSection(cluster,
-                                     originLocation,
-                                     0.0f,
-                                     std::numeric_limits<float>::max(),
-                                     cluster.attachedHost->synapseBlocks);
+                    createNewSection(cluster, hexagon, neuron, blockId, neuronId);
                 }
             }
             counter++;
@@ -312,48 +268,36 @@ processNeuronsOfInputHexagon(Cluster& cluster, InputInterface* inputInterface, H
 /**
  * @brief process output-nodes
  *
- * @param hexagons list of all hexagons
- * @param outputInterface connected output-interface
- * @param hexagonId current hexagon-id
+ * @param hexagon current hexagon
  * @param randomSeed current seed for random-generation
  */
 template <bool doTrain>
 inline void
-processNeuronsOfOutputHexagon(std::vector<Hexagon>& hexagons,
-                              OutputInterface* outputInterface,
-                              const uint32_t hexagonId,
-                              uint32_t randomSeed)
+processNeuronsOfOutputHexagon(Hexagon* hexagon, uint32_t randomSeed)
 {
     Neuron* neuron = nullptr;
-    NeuronBlock* block = nullptr;
-    Hexagon* hexagon = nullptr;
-    OutputNeuron* out = nullptr;
     OutputTargetLocationPtr* target = nullptr;
-    uint32_t neuronBlockId = 0;
     float weightSum = 0.0f;
     bool found = false;
 
-    hexagon = &hexagons[hexagonId];
-    for (NeuronBlock& block : hexagon->neuronBlocks) {
+    for (NeuronBlock& neuronBlock : hexagon->neuronBlocks) {
         for (uint64_t j = 0; j < NEURONS_PER_NEURONBLOCK; ++j) {
-            neuron = &block.neurons[j];
+            neuron = &neuronBlock.neurons[j];
             neuron->potential = 1.0f / (1.0f + exp(-1.0f * neuron->input));
             neuron->input = 0.0f;
         }
     }
 
-    for (uint64_t i = 0; i < outputInterface->outputNeurons.size(); ++i) {
-        out = &outputInterface->outputNeurons[i];
-        hexagon = &hexagons[outputInterface->targetHexagonId];
+    for (OutputNeuron& out : hexagon->outputInterface->outputNeurons) {
         weightSum = 0.0f;
 
         for (uint8_t j = 0; j < NUMBER_OF_OUTPUT_CONNECTIONS; ++j) {
-            target = &out->targets[j];
+            target = &out.targets[j];
 
             if constexpr (doTrain) {
                 found = false;
                 randomSeed = Hanami::pcg_hash(randomSeed);
-                if (found == false && target->blockId == UNINIT_STATE_16 && out->exprectedVal > 0.0
+                if (found == false && target->blockId == UNINIT_STATE_16 && out.exprectedVal > 0.0
                     && randomSeed % 50 == 0)
                 {
                     randomSeed = Hanami::pcg_hash(randomSeed);
@@ -385,9 +329,9 @@ processNeuronsOfOutputHexagon(std::vector<Hexagon>& hexagons,
             weightSum += neuron->potential * target->connectionWeight;
         }
 
-        out->outputVal = 0.0f;
+        out.outputVal = 0.0f;
         if (weightSum != 0.0f) {
-            out->outputVal = 1.0f / (1.0f + exp(-1.0f * weightSum));
+            out.outputVal = 1.0f / (1.0f + exp(-1.0f * weightSum));
         }
         // std::cout << out->outputVal << " : " << out->exprectedVal << std::endl;
     }
@@ -408,7 +352,6 @@ processClusterForward(Cluster& cluster,
                       const uint32_t blockId,
                       const bool doTrain)
 {
-    Hanami::ErrorContainer error;
     Hexagon* hexagon = &cluster.hexagons[hexagonId];
 
     if (hexagon->header.isInputHexagon) {
@@ -436,23 +379,15 @@ processClusterForward(Cluster& cluster,
  * @param doTrain true to run trainging-process
  */
 inline void
-handleInputForward(Cluster& cluster, InputInterface* inputInterface, const bool doTrain)
+processInput(Cluster& cluster, Hexagon* hexagon, const bool doTrain)
 {
-    Hexagon* hexagon = nullptr;
-    const uint32_t numberOfHexagons = cluster.hexagons.size();
+    assert(hexagon->inputInterface != nullptr);
 
-    // process input-hexagons
-    for (uint32_t hexagonId = 0; hexagonId < numberOfHexagons; ++hexagonId) {
-        hexagon = &cluster.hexagons[hexagonId];
-
-        if (hexagon->header.isInputHexagon) {
-            if (doTrain) {
-                processNeuronsOfInputHexagon<true>(cluster, inputInterface, hexagon);
-            }
-            else {
-                processNeuronsOfInputHexagon<false>(cluster, inputInterface, hexagon);
-            }
-        }
+    if (doTrain) {
+        processNeuronsOfInputHexagon<true>(cluster, hexagon->inputInterface, hexagon);
+    }
+    else {
+        processNeuronsOfInputHexagon<false>(cluster, hexagon->inputInterface, hexagon);
     }
 }
 
@@ -462,19 +397,14 @@ handleInputForward(Cluster& cluster, InputInterface* inputInterface, const bool 
  * @param hexagon
  */
 inline void
-handleConnectionBlocksForward(Cluster& cluster, Hexagon* hexagon)
+processConnectionBlocksForward(Cluster& cluster, Hexagon* hexagon)
 {
-    NeuronBlock* neuronBlocks = &hexagon->neuronBlocks[0];
     Connection* connection = nullptr;
-    ConnectionBlock* connectionBlock = nullptr;
     SourceLocation sourceLoc;
 
-    for (uint64_t blockId = 0; blockId < hexagon->connectionBlocks.size(); ++blockId) {
-        connectionBlock = &hexagon->connectionBlocks[blockId];
-        const uint64_t synapseBlockLink = hexagon->synapseBlockLinks[blockId];
-
+    for (ConnectionBlock& connectionBlock : hexagon->connectionBlocks) {
         for (uint32_t i = 0; i < NUMBER_OF_SYNAPSESECTION; ++i) {
-            connection = &connectionBlock->connections[i];
+            connection = &connectionBlock.connections[i];
             if (connection->origin.blockId == UNINIT_STATE_16) {
                 continue;
             }
