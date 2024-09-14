@@ -33,7 +33,7 @@
  *
  * @param localId identifier starting with 0 within the physical host and with the type of host
  */
-LogicalHost::LogicalHost(const uint32_t localId) : Hanami::Thread("ProcessingUnit")
+LogicalHost::LogicalHost(const uint32_t localId)
 {
     m_localId = localId;
     m_uuid = generateUuid().toString();
@@ -72,37 +72,47 @@ LogicalHost::getTotalMemory()
 }
 
 /**
- * @brief run loop to process all scheduled cluster
+ * @brief re-activate all blocked threads
  */
 void
-LogicalHost::run()
+LogicalHost::continueAllThreads()
 {
-    Cluster* cluster = nullptr;
-
-    while (m_abort == false) {
-        cluster = getClusterFromQueue();
-        if (cluster != nullptr) {
-            // handle type of processing
-            if (cluster->mode == ClusterProcessingMode::TRAIN_FORWARD_MODE) {
-                trainClusterForward(cluster);
-                // processNeuronsOfOutputHexagon<true>();
-            }
-            else if (cluster->mode == ClusterProcessingMode::TRAIN_BACKWARD_MODE) {
-                // backpropagateOutput(*cluster);
-                trainClusterBackward(cluster);
-            }
-            else {
-                requestCluster(cluster);
-                // processNeuronsOfOutputHexagon<false>(*cluster);
-                handleClientOutput(*cluster);
-            }
-            cluster->updateClusterState();
-        }
-        else {
-            // if no segments are available then sleep
-            sleepThread(1000);
-        }
+    for (WorkerThread* worker : m_workerThreads) {
+        worker->continueThread();
     }
+}
+
+/**
+ * @brief get next cluster in the queue
+ *
+ * @return nullptr, if queue is empty, else next cluster in queue
+ */
+const Hanami::WorkerTask
+LogicalHost::getWorkerTaskFromQueue()
+{
+    Hanami::WorkerTask result;
+    const std::lock_guard<std::mutex> lock(m_queue_lock);
+
+    if (m_workerTaskQueue.size() > 0) {
+        result = m_workerTaskQueue.front();
+        m_workerTaskQueue.pop_front();
+    }
+
+    return result;
+}
+
+/**
+ * @brief add cluster to queue
+ *
+ * @param cluster cluster to add to queue
+ */
+void
+LogicalHost::addWorkerTaskToQueue(const Hanami::WorkerTask task)
+{
+    const std::lock_guard<std::mutex> lock(m_queue_lock);
+
+    m_workerTaskQueue.push_back(task);
+    continueAllThreads();
 }
 
 /**

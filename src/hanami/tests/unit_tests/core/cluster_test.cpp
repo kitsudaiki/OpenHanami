@@ -244,6 +244,8 @@ Cluster_Init_Test::serialize_test()
         TEST_EQUAL(success, true);
         TEST_EQUAL(copyCluster.hexagons[i].connectionBlocks.size(),
                    baseCluster.hexagons[i].connectionBlocks.size());
+        TEST_EQUAL(copyCluster.hexagons[i].synapseBlockLinks.size(),
+                   baseCluster.hexagons[i].synapseBlockLinks.size());
         TEST_EQUAL(copyCluster.hexagons[i].neuronBlocks.size(),
                    baseCluster.hexagons[i].neuronBlocks.size());
     }

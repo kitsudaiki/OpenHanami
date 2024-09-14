@@ -41,7 +41,7 @@
 inline void
 backpropagateNeuron(Hexagon* hexagon, const uint32_t blockId)
 {
-    SynapseConnection* scon = nullptr;
+    Connection* scon = nullptr;
     Neuron* targetNeuron = nullptr;
     NeuronBlock* targetNeuronBlock = nullptr;
     float delta = 0.0f;
@@ -69,12 +69,9 @@ backpropagateNeuron(Hexagon* hexagon, const uint32_t blockId)
  * @param sourceNeuron source-neuron, which triggered the section
  */
 inline void
-backpropagateSection(SynapseSection* section,
-                     SynapseConnection* connection,
-                     NeuronBlock* targetBlock,
-                     Neuron* sourceNeuron)
+backpropagateSection(SynapseSection* section, Connection* connection, NeuronBlock* targetBlock)
 {
-    float potential = sourceNeuron->potential - connection->lowerBound;
+    float potential = connection->potential - connection->lowerBound;
     uint8_t pos = 0;
     Synapse* synapse;
     Neuron* targetNeuron = nullptr;
@@ -97,7 +94,7 @@ backpropagateSection(SynapseSection* section,
 
         delta = targetNeuron->delta * synapse->weight;
         synapse->weight -= trainValue * targetNeuron->delta;
-        sourceNeuron->delta += delta;
+        connection->delta += delta;
 
         potential -= synapse->border;
     }
@@ -107,32 +104,26 @@ backpropagateSection(SynapseSection* section,
  * @brief backpropagate connections
  *
  * @param hexagon pointer to current hexagon
- * @param hexagons pointer to list of all hexagons
  * @param synapseBlocks pointer to synapse-blocks
  * @param blockId id of the current block within the hexagon
  */
 inline void
-backpropagateConnections(Hexagon* hexagon,
-                         Hexagon* hexagons,
-                         SynapseBlock* synapseBlocks,
-                         const uint32_t blockId)
+backpropagateConnections(Hexagon* hexagon, SynapseBlock* synapseBlocks, const uint32_t blockId)
 {
-    SynapseConnection* connection = nullptr;
-    Neuron* sourceNeuron = nullptr;
-    Hexagon* sourceHexagon = nullptr;
-    NeuronBlock* sourceNeuronBlock = nullptr;
-    NeuronBlock* targetNeuronBlock = nullptr;
+    Connection* connection = nullptr;
+    NeuronBlock* neuronBlock = nullptr;
     ConnectionBlock* connectionBlock = nullptr;
     SynapseSection* synapseSection = nullptr;
-    const uint32_t dimX = hexagon->header.dimX;
-    SourceLocation sourceLoc;
+    SynapseBlock* synapseBlock = nullptr;
 
-    if (blockId >= dimX) {
+    if (blockId >= hexagon->header.dimX) {
         return;
     }
+    const uint64_t synapseBlockLink = hexagon->synapseBlockLinks[blockId];
 
-    assert(blockId < hexagon->connectionBlocks.size());
     connectionBlock = &hexagon->connectionBlocks[blockId];
+    neuronBlock = &hexagon->neuronBlocks[blockId];
+    synapseBlock = &synapseBlocks[synapseBlockLink];
 
     for (uint32_t i = 0; i < NUMBER_OF_SYNAPSESECTION; ++i) {
         connection = &connectionBlock->connections[i];
@@ -141,12 +132,9 @@ backpropagateConnections(Hexagon* hexagon,
             continue;
         }
 
-        synapseSection = &synapseBlocks[connectionBlock->targetSynapseBlockPos].sections[i];
-        sourceLoc = getSourceNeuron(connection->origin, hexagons);
+        synapseSection = &synapseBlock->sections[i];
 
-        targetNeuronBlock = &hexagon->neuronBlocks[blockId];
-
-        backpropagateSection(synapseSection, connection, targetNeuronBlock, sourceLoc.neuron);
+        backpropagateSection(synapseSection, connection, neuronBlock);
     }
 }
 
@@ -160,21 +148,14 @@ sigmoidDerivative(const float x)
 /**
  * @brief backpropagate output-nodes
  *
- * @param hexagons list of all hexagons
- * @param outputInterface pointer ot the connected output-interface
- * @param settings pointer cluster-settings
- * @param hexagonId current hexagon-id
+ * @param hexagon pointer to current hexagon
  *
  * @return always true
  */
 inline bool
-backpropagateOutput(std::vector<Hexagon>& hexagons,
-                    OutputInterface* outputInterface,
-                    const ClusterSettings* settings,
-                    const uint32_t hexagonId)
+backpropagateOutput(Hexagon* hexagon)
 {
     Neuron* neuron = nullptr;
-    Hexagon* hexagon = nullptr;
     OutputNeuron* out = nullptr;
     OutputTargetLocationPtr* target = nullptr;
     float totalDelta = 0.0f;
@@ -184,9 +165,18 @@ backpropagateOutput(std::vector<Hexagon>& hexagons,
     uint64_t i = 0;
     uint64_t j = 0;
 
+    OutputInterface* outputInterface = hexagon->outputInterface;
+    assert(outputInterface != nullptr);
+
+    for (i = 0; i < hexagon->neuronBlocks.size(); ++i) {
+        for (j = 0; j < NEURONS_PER_NEURONBLOCK; ++j) {
+            neuron = &hexagon->neuronBlocks[i].neurons[j];
+            neuron->delta = 0.0f;
+        }
+    }
+
     for (i = 0; i < outputInterface->outputNeurons.size(); ++i) {
         out = &outputInterface->outputNeurons[i];
-        hexagon = &hexagons[outputInterface->targetHexagonId];
         delta = out->outputVal - out->exprectedVal;
         update = delta * sigmoidDerivative(out->outputVal);
 
@@ -205,7 +195,6 @@ backpropagateOutput(std::vector<Hexagon>& hexagons,
         }
     }
 
-    hexagon = &hexagons[hexagonId];
     for (i = 0; i < hexagon->neuronBlocks.size(); ++i) {
         for (j = 0; j < NEURONS_PER_NEURONBLOCK; ++j) {
             neuron = &hexagon->neuronBlocks[i].neurons[j];
@@ -215,6 +204,59 @@ backpropagateOutput(std::vector<Hexagon>& hexagons,
 
     return true;
     // return totalDelta > settings->backpropagationBorder;
+}
+
+/**
+ * @brief run the backpropagation over the core the cluster
+ *
+ * @param cluster pointer to cluster to process
+ * @param hexagonId id of the hexagon to process
+ * @param blockId id of the block within the hexagon
+ */
+inline void
+processClusterBackward(Cluster& cluster, const uint32_t hexagonId, const uint32_t blockId)
+{
+    Hanami::ErrorContainer error;
+    Hexagon* hexagon = &cluster.hexagons[hexagonId];
+    if (hexagon->header.isInputHexagon) {
+        return;
+    }
+
+    SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(cluster.attachedHost->synapseBlocks);
+    backpropagateNeuron(hexagon, blockId);
+    backpropagateConnections(hexagon, synapseBlocks, blockId);
+}
+
+/**
+ * @brief handleConnectionBlocksForward
+ * @param cluster
+ * @param hexagon
+ */
+inline void
+processConnectionBlocksBackward(Cluster& cluster, Hexagon* hexagon)
+{
+    NeuronBlock* neuronBlocks = &hexagon->neuronBlocks[0];
+    Connection* connection = nullptr;
+    ConnectionBlock* connectionBlock = nullptr;
+    SourceLocation sourceLoc;
+
+    for (uint64_t blockId = 0; blockId < hexagon->connectionBlocks.size(); ++blockId) {
+        connectionBlock = &hexagon->connectionBlocks[blockId];
+        const uint64_t synapseBlockLink = hexagon->synapseBlockLinks[blockId];
+
+        for (uint32_t i = 0; i < NUMBER_OF_SYNAPSESECTION; ++i) {
+            connection = &connectionBlock->connections[i];
+            if (connection->origin.blockId == UNINIT_STATE_16) {
+                connection->delta = 0.0f;
+                continue;
+            }
+
+            // inputConnected = scon->origin.isInput;
+            sourceLoc = getSourceNeuron(connection->origin, &cluster.hexagons[0]);
+            sourceLoc.neuron->delta += connection->delta;
+            connection->delta = 0.0f;
+        }
+    }
 }
 
 #endif  // HANAMI_CORE_BACKPROPAGATION_H

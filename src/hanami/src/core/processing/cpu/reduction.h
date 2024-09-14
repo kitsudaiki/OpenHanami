@@ -80,7 +80,7 @@ reduceConnections(Hexagon* hexagon,
                   SynapseBlock* synapseBlocks,
                   const uint32_t blockId)
 {
-    SynapseConnection* connection = nullptr;
+    Connection* connection = nullptr;
     Neuron* sourceNeuron = nullptr;
     NeuronBlock* sourceNeuronBlock = nullptr;
     Hexagon* sourceHexagon = nullptr;
@@ -93,6 +93,7 @@ reduceConnections(Hexagon* hexagon,
     }
 
     connectionBlock = &hexagon->connectionBlocks[blockId];
+    const uint64_t synapseBlockLink = hexagon->synapseBlockLinks[blockId];
 
     for (uint32_t i = 0; i < NUMBER_OF_SYNAPSESECTION; ++i) {
         connection = &connectionBlock->connections[i];
@@ -100,17 +101,13 @@ reduceConnections(Hexagon* hexagon,
             continue;
         }
 
-        synapseSection = &synapseBlocks[connectionBlock->targetSynapseBlockPos].sections[i];
+        synapseSection = &synapseBlocks[synapseBlockLink].sections[i];
         sourceHexagon = &hexagons[connection->origin.hexagonId];
         sourceNeuronBlock = &sourceHexagon->neuronBlocks[connection->origin.blockId];
         sourceNeuron = &sourceNeuronBlock->neurons[connection->origin.neuronId];
 
         // if section is complete empty, then erase it
         if (reduceSection(synapseSection) == false) {
-            // initialize the creation of a new section
-            sourceNeuron->isNew = 1;
-            sourceNeuron->newLowerBound = connection->lowerBound;
-
             // mark current connection as available again
             connection->origin.blockId = UNINIT_STATE_16;
             connection->origin.neuronId = UNINIT_STATE_8;

@@ -24,9 +24,9 @@
 
 #include <core/processing/cluster_resize.h>
 #include <core/processing/cpu/backpropagation.h>
+#include <core/processing/cpu/cpu_worker_thread.h>
 #include <core/processing/cpu/processing.h>
 #include <core/processing/cpu/reduction.h>
-#include <core/processing/cpu/worker_thread.h>
 #include <hanami_config/config_handler.h>
 #include <hanami_cpu/memory.h>
 #include <hanami_hardware/cpu_core.h>
@@ -42,7 +42,7 @@
 CpuHost::CpuHost(const uint32_t localId) : LogicalHost(localId)
 {
     m_hostType = CPU_HOST_TYPE;
-    initBuffer(localId);
+    initBuffer();
     initWorkerThreads();
 }
 
@@ -59,14 +59,14 @@ void
 CpuHost::addClusterToHost(Cluster* cluster)
 {
     if (cluster->mode == ClusterProcessingMode::TRAIN_BACKWARD_MODE) {
-        WorkerTask task;
+        Hanami::WorkerTask task;
         task.cluster = cluster;
         task.hexagonId = cluster->hexagons.size() - 1;
         task.blockId = UNINIT_STATE_16;
         addWorkerTaskToQueue(task);
     }
     else {
-        WorkerTask task;
+        Hanami::WorkerTask task;
         task.cluster = cluster;
         task.hexagonId = 0;
         task.blockId = UNINIT_STATE_16;
@@ -75,21 +75,12 @@ CpuHost::addClusterToHost(Cluster* cluster)
 }
 
 /**
- * @brief not implemented in this case
- */
-Cluster*
-CpuHost::getClusterFromQueue()
-{
-    return nullptr;
-}
-
-/**
  * @brief initialize synpase-block-buffer based on the avaialble size of memory
  *
  * @param id local device-id
  */
 void
-CpuHost::initBuffer(const uint32_t id)
+CpuHost::initBuffer()
 {
     m_totalMemory = getFreeMemory();
     bool success = false;
@@ -105,8 +96,8 @@ CpuHost::initBuffer(const uint32_t id)
     synapseBlocks.initBuffer<SynapseBlock>(usedMemory / sizeof(SynapseBlock));
     synapseBlocks.deleteAll();
 
-    LOG_INFO("Initialized number of syanpse-blocks on cpu-device with id '" + std::to_string(id)
-             + "': " + std::to_string(synapseBlocks.metaData->itemCapacity));
+    LOG_INFO("Initialized number of syanpse-blocks on cpu-device: "
+             + std::to_string(synapseBlocks.metaData->itemCapacity));
 }
 
 /**
@@ -123,7 +114,7 @@ CpuHost::initWorkerThreads()
              threadId++)
         {
             CpuThread* thread = package->cpuCores.at(coreId)->cpuThreads.at(threadId);
-            WorkerThread* newUnit = new WorkerThread(this);
+            CpuWorkerThread* newUnit = new CpuWorkerThread(this);
             m_workerThreads.push_back(newUnit);
             newUnit->startThread();
             newUnit->bindThreadToCore(thread->threadId);
@@ -134,17 +125,6 @@ CpuHost::initWorkerThreads()
     LOG_INFO("Initialized " + std::to_string(threadCounter) + " worker-threads");
 
     return true;
-}
-
-/**
- * @brief re-activate all blocked threads
- */
-void
-CpuHost::continueAllThreads()
-{
-    for (WorkerThread* worker : m_workerThreads) {
-        worker->continueThread();
-    }
 }
 
 /**
@@ -163,16 +143,17 @@ CpuHost::moveCluster(Cluster* cluster)
 
     // copy synapse-blocks from the old host to this one here
     for (Hexagon& hexagon : cluster->hexagons) {
-        for (ConnectionBlock& block : hexagon.connectionBlocks) {
-            if (block.targetSynapseBlockPos != UNINIT_STATE_64) {
-                tempBlock = cpuSynapseBlocks[block.targetSynapseBlockPos];
-                originHost->synapseBlocks.deleteItem(block.targetSynapseBlockPos);
+        for (uint64_t pos = 0; pos < hexagon.synapseBlockLinks.size(); pos++) {
+            const uint64_t synapseSectionPos = hexagon.synapseBlockLinks[pos];
+            if (synapseSectionPos != UNINIT_STATE_64) {
+                tempBlock = cpuSynapseBlocks[synapseSectionPos];
+                originHost->synapseBlocks.deleteItem(synapseSectionPos);
                 const uint64_t newPos = synapseBlocks.addNewItem(tempBlock);
                 // TODO: make roll-back possible in error-case
                 if (newPos == UNINIT_STATE_64) {
                     return false;
                 }
-                block.targetSynapseBlockPos = newPos;
+                hexagon.synapseBlockLinks[pos] = newPos;
             }
         }
     }
@@ -188,6 +169,7 @@ CpuHost::moveCluster(Cluster* cluster)
 void
 CpuHost::syncWithHost(Cluster*)
 {
+    return;
 }
 
 /**
@@ -199,67 +181,10 @@ void
 CpuHost::removeCluster(Cluster* cluster)
 {
     for (Hexagon& hexagon : cluster->hexagons) {
-        for (ConnectionBlock& block : hexagon.connectionBlocks) {
-            if (block.targetSynapseBlockPos != UNINIT_STATE_64) {
-                synapseBlocks.deleteItem(block.targetSynapseBlockPos);
+        for (uint64_t synapseBlockLink : hexagon.synapseBlockLinks) {
+            if (synapseBlockLink != UNINIT_STATE_64) {
+                synapseBlocks.deleteItem(synapseBlockLink);
             }
         }
     }
-}
-
-/**
- * @brief empty in this case, because this is done by the worker-threads
- */
-void
-CpuHost::trainClusterForward(Cluster*)
-{
-}
-
-/**
- * @brief empty in this case, because this is done by the worker-threads
- */
-void
-CpuHost::trainClusterBackward(Cluster*)
-{
-}
-
-/**
- * @brief empty in this case, because this is done by the worker-threads
- */
-void
-CpuHost::requestCluster(Cluster*)
-{
-}
-
-/**
- * @brief add cluster to queue
- *
- * @param cluster cluster to add to queue
- */
-void
-CpuHost::addWorkerTaskToQueue(const WorkerTask task)
-{
-    const std::lock_guard<std::mutex> lock(m_queue_lock);
-
-    m_workerTaskQueue.push_back(task);
-    continueAllThreads();
-}
-
-/**
- * @brief get next cluster in the queue
- *
- * @return nullptr, if queue is empty, else next cluster in queue
- */
-const CpuHost::WorkerTask
-CpuHost::getWorkerTaskFromQueue()
-{
-    WorkerTask result;
-    const std::lock_guard<std::mutex> lock(m_queue_lock);
-
-    if (m_workerTaskQueue.size() > 0) {
-        result = m_workerTaskQueue.front();
-        m_workerTaskQueue.pop_front();
-    }
-
-    return result;
 }

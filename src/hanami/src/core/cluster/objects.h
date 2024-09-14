@@ -54,7 +54,7 @@ class Cluster;
 
 //==================================================================================================
 
-enum ClusterProcessingMode {
+enum ClusterProcessingMode : uint8_t {
     NORMAL_MODE = 0,
     TRAIN_FORWARD_MODE = 1,
     TRAIN_BACKWARD_MODE = 2,
@@ -208,11 +208,9 @@ struct Neuron {
 
     uint8_t refractoryTime = 1;
     uint8_t active = 0;
-
-    float newLowerBound = 0.0f;
-    float potentialRange = 0.0f;
-    uint8_t isNew = 0;
     uint8_t inUse = 0;
+
+    uint8_t padding[13];
 };
 static_assert(sizeof(Neuron) == 32);
 
@@ -263,14 +261,16 @@ struct InputInterface {
 
 //==================================================================================================
 
-struct SynapseConnection {
+struct Connection {
     SourceLocationPtr origin;
     float lowerBound = 0.0f;
     float potentialRange = std::numeric_limits<float>::max();
     float tollerance = 0.49f;
-    uint8_t padding[4];
+    float splitValue = 0.0;
+    float potential = 0.0f;
+    float delta = 0.0f;
 
-    SynapseConnection()
+    Connection()
     {
         origin.hexagonId = UNINIT_STATE_32;
         origin.blockId = UNINIT_STATE_16;
@@ -278,17 +278,16 @@ struct SynapseConnection {
         origin.isInput = false;
     }
 };
-static_assert(sizeof(SynapseConnection) == 24);
+static_assert(sizeof(Connection) == 32);
 
 //==================================================================================================
 
 struct ConnectionBlock {
-    SynapseConnection connections[NUMBER_OF_SYNAPSESECTION];
-    uint64_t targetSynapseBlockPos = UNINIT_STATE_64;
+    Connection connections[NUMBER_OF_SYNAPSESECTION];
 
-    ConnectionBlock() { std::fill_n(connections, NUMBER_OF_SYNAPSESECTION, SynapseConnection()); }
+    ConnectionBlock() { std::fill_n(connections, NUMBER_OF_SYNAPSESECTION, Connection()); }
 };
-static_assert(sizeof(ConnectionBlock) == 12296);
+static_assert(sizeof(ConnectionBlock) == 4 * 4096);
 
 //==================================================================================================
 
@@ -352,6 +351,7 @@ struct Hexagon {
 
     std::vector<ConnectionBlock> connectionBlocks;
     std::vector<NeuronBlock> neuronBlocks;
+    std::vector<uint64_t> synapseBlockLinks;
 
     bool wasResized = false;
     uint32_t possibleHexagonTargetIds[NUMBER_OF_POSSIBLE_NEXT];

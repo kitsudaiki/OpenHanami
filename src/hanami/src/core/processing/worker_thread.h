@@ -23,36 +23,34 @@
 #ifndef WORKERTHREAD_H
 #define WORKERTHREAD_H
 
-#include <core/processing/cpu/cpu_host.h>
+#include <hanami_common/defines.h>
+#include <hanami_common/structs.h>
 #include <hanami_common/threading/thread.h>
 
+class LogicalHost;
 class Cluster;
 
 class WorkerThread : public Hanami::Thread
 {
    public:
-    WorkerThread(CpuHost* host);
+    WorkerThread();
     ~WorkerThread();
 
    protected:
     void run();
 
+    LogicalHost* m_host = nullptr;
+
+    void addWorkerTaskToQueue(const Hanami::WorkerTask task);
+
    private:
-    void processClusterForward(Cluster& cluster,
-                               const uint32_t hexagonId,
-                               const uint32_t blockId,
-                               const bool doTrain);
-    void processClusterBackward(Cluster& cluster, const uint32_t hexagonId, const uint32_t blockId);
+    void handleTask(const Hanami::WorkerTask& task);
+    virtual void handleTrainForwardTask(Hanami::WorkerTask task) = 0;
+    virtual void handleTrainBackwardTask(Hanami::WorkerTask task) = 0;
+    ;
+    virtual void handleReductionTask(const Hanami::WorkerTask task) = 0;
+    virtual void handleProcessTask(const Hanami::WorkerTask task) = 0;
 
-    void handleTask(const CpuHost::WorkerTask task);
-    void handleTrainForwardTask(CpuHost::WorkerTask task);
-    void handleTrainBackwardTask(CpuHost::WorkerTask task);
-    void handleReductionTask(const CpuHost::WorkerTask task);
-    void handleProcessTask(const CpuHost::WorkerTask task);
-
-    void handleInputForward(Cluster& cluster, InputInterface* inputInterface, const bool doTrain);
-
-    CpuHost* m_host = nullptr;
     uint32_t m_inactiveCounter = 0;
 };
 

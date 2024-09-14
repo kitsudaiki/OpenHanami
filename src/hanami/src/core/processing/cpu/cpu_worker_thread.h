@@ -1,5 +1,5 @@
 /**
- * @file        cuda_host.h
+ * @file        cpu_worker_thread.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,35 +20,25 @@
  *      limitations under the License.
  */
 
-#ifndef CUDAHOST_H
-#define CUDAHOST_H
+#ifndef CPUWORKERTHREAD_H
+#define CPUWORKERTHREAD_H
 
-#include <core/processing/logical_host.h>
+#include <core/processing/worker_thread.h>
 
-#include <mutex>
+class Cluster;
+class CpuHost;
 
-class CudaHost : public LogicalHost
+class CpuWorkerThread : public WorkerThread
 {
    public:
-    CudaHost(const uint32_t localId);
-    ~CudaHost();
-
-    void addClusterToHost(Cluster* cluster);
-
-    bool moveCluster(Cluster* cluster);
-    void syncWithHost(Cluster* cluster);
-    void removeCluster(Cluster* cluster);
-
-    std::mutex cudaMutex;
-
-   protected:
-    bool initWorkerThreads();
+    CpuWorkerThread(CpuHost* host);
+    ~CpuWorkerThread();
 
    private:
-    void initBuffer();
-
-    std::atomic_flag m_queue_lock = ATOMIC_FLAG_INIT;
-    std::deque<Cluster*> m_clusterQueue;
+    void handleTrainForwardTask(Hanami::WorkerTask task);
+    void handleTrainBackwardTask(Hanami::WorkerTask task);
+    void handleReductionTask(const Hanami::WorkerTask task);
+    void handleProcessTask(const Hanami::WorkerTask task);
 };
 
-#endif  // CUDAHOST_H
+#endif  // CPUWORKERTHREAD_H

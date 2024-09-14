@@ -39,7 +39,7 @@
  *
  * @return found empty connection, if seccessfule, else nullptr
  */
-inline SynapseConnection*
+inline Connection*
 searchTargetInHexagon(Hexagon* targetHexagon, ItemBuffer& synapseBlockBuffer)
 {
     uint64_t i = 0;
@@ -53,16 +53,19 @@ searchTargetInHexagon(Hexagon* targetHexagon, ItemBuffer& synapseBlockBuffer)
     uint64_t pos = rand() % numberOfConnectionsBlocks;
     for (i = 0; i < numberOfConnectionsBlocks; ++i) {
         ConnectionBlock* connectionBlock = &targetHexagon->connectionBlocks[pos];
+        uint64_t synapseSectionPos = targetHexagon->synapseBlockLinks[pos];
 
         for (j = 0; j < NUMBER_OF_SYNAPSESECTION; ++j) {
             if (connectionBlock->connections[j].origin.blockId == UNINIT_STATE_16) {
                 // initialize a synapse-block if necessary
-                if (connectionBlock->targetSynapseBlockPos == UNINIT_STATE_64) {
+                if (synapseSectionPos == UNINIT_STATE_64) {
                     SynapseBlock block;
-                    connectionBlock->targetSynapseBlockPos = synapseBlockBuffer.addNewItem(block);
-                    if (connectionBlock->targetSynapseBlockPos == UNINIT_STATE_64) {
+                    synapseSectionPos = synapseBlockBuffer.addNewItem(block);
+                    if (synapseSectionPos == UNINIT_STATE_64) {
                         return nullptr;
                     }
+
+                    targetHexagon->synapseBlockLinks[pos] = synapseSectionPos;
                 }
                 return &connectionBlock->connections[j];
             }
@@ -87,6 +90,7 @@ resizeConnections(Hexagon* targetHexagon)
 
     // resize list
     targetHexagon->connectionBlocks.resize(targetHexagon->header.dimX);
+    targetHexagon->synapseBlockLinks.resize(targetHexagon->header.dimX);
 
     // if there was no scaling in x-dimension, then no re-ordering necessary
     if (targetHexagon->header.dimX == dimXold) {
@@ -97,6 +101,7 @@ resizeConnections(Hexagon* targetHexagon)
 
     // update content of list for the new size
     targetHexagon->connectionBlocks[targetHexagon->header.dimX - 1] = ConnectionBlock();
+    targetHexagon->synapseBlockLinks[targetHexagon->header.dimX - 1] = UNINIT_STATE_64;
 
     targetHexagon->neuronBlocks.resize(targetHexagon->header.dimX);
     targetHexagon->header.numberOfFreeSections += NUMBER_OF_SYNAPSESECTION;
@@ -114,14 +119,12 @@ resizeConnections(Hexagon* targetHexagon)
  * @return true, if successful, else false
  */
 inline bool
-createNewSection(Cluster& cluster,
-                 const SourceLocationPtr& sourceLocPtr,
-                 const float lowerBound,
-                 const float potentialRange,
-                 ItemBuffer& synapseBlockBuffer)
+createNewSection(Cluster& cluster, Connection* sourceConnection)
 {
+    ItemBuffer* synapseBlockBuffer = &cluster.attachedHost->synapseBlocks;
+
     // get origin object
-    SourceLocation sourceLoc = getSourceNeuron(sourceLocPtr, &cluster.hexagons[0]);
+    SourceLocation sourceLoc = getSourceNeuron(sourceConnection->origin, &cluster.hexagons[0]);
     if (sourceLoc.hexagon->header.isOutputHexagon) {
         return false;
     }
@@ -135,7 +138,7 @@ createNewSection(Cluster& cluster,
     if (targetHexagon->header.numberOfFreeSections < NUMBER_OF_SYNAPSESECTION / 2) {
         resizeConnections(targetHexagon);
     }
-    SynapseConnection* targetConnection = searchTargetInHexagon(targetHexagon, synapseBlockBuffer);
+    Connection* targetConnection = searchTargetInHexagon(targetHexagon, *synapseBlockBuffer);
     if (targetConnection == nullptr) {
         Hanami::ErrorContainer error;
         error.addMessage("no target-section found, even there should be sill "
@@ -148,11 +151,64 @@ createNewSection(Cluster& cluster,
     targetHexagon->wasResized = true;
 
     // initialize new connection
-    targetConnection->origin = sourceLocPtr;
-    targetConnection->lowerBound = lowerBound;
-    targetConnection->potentialRange = potentialRange;
-    targetConnection->origin.isInput = sourceLoc.hexagon->header.isInputHexagon;
-    sourceLoc.neuron->inUse = 1;
+    targetConnection->origin = sourceConnection->origin;
+    targetConnection->lowerBound = sourceConnection->lowerBound + sourceConnection->splitValue;
+    targetConnection->potentialRange
+        = sourceConnection->potentialRange - sourceConnection->splitValue;
+    sourceConnection->potentialRange = sourceConnection->splitValue;
+    sourceConnection->splitValue = 0.0f;
+
+    return true;
+}
+
+/**
+ * @brief createNewSection
+ * @param cluster
+ * @param hexagon
+ * @param neuron
+ * @param blockId
+ * @param neuronId
+ * @return
+ */
+inline bool
+createNewSection(Cluster& cluster,
+                 Hexagon* hexagon,
+                 Neuron* neuron,
+                 const uint16_t blockId,
+                 const uint8_t neuronId)
+{
+    ItemBuffer* synapseBlockBuffer = &cluster.attachedHost->synapseBlocks;
+
+    // get target objects
+    const uint32_t targetHexagonId
+        = hexagon->possibleHexagonTargetIds[rand() % NUMBER_OF_POSSIBLE_NEXT];
+    Hexagon* targetHexagon = &cluster.hexagons[targetHexagonId];
+
+    // get target-connection
+    if (targetHexagon->header.numberOfFreeSections < NUMBER_OF_SYNAPSESECTION / 2) {
+        resizeConnections(targetHexagon);
+    }
+    Connection* targetConnection = searchTargetInHexagon(targetHexagon, *synapseBlockBuffer);
+    if (targetConnection == nullptr) {
+        Hanami::ErrorContainer error;
+        error.addMessage("no target-section found, even there should be sill "
+                         + std::to_string(targetHexagon->header.numberOfFreeSections)
+                         + " available");
+        LOG_ERROR(error);
+        return false;
+    }
+    targetHexagon->header.numberOfFreeSections--;
+    targetHexagon->wasResized = true;
+
+    // initialize new connection
+    targetConnection->origin.blockId = blockId;
+    targetConnection->origin.neuronId = neuronId;
+    targetConnection->origin.hexagonId = hexagon->header.hexagonId;
+    targetConnection->origin.isInput = hexagon->inputInterface != nullptr;
+    targetConnection->lowerBound = 0.0f;
+    targetConnection->potentialRange = std::numeric_limits<float>::max();
+
+    neuron->inUse = 1;
 
     return true;
 }
@@ -167,43 +223,26 @@ createNewSection(Cluster& cluster,
  *         transfers to the gpu
  */
 inline bool
-updateCluster(Cluster& cluster)
+updateCluster(Cluster& cluster, Hexagon* hexagon)
 {
-    NeuronBlock* neuronBlock = nullptr;
-    Neuron* neuron = nullptr;
-    Hexagon* hexagon = nullptr;
+    ConnectionBlock* connectionBlock = nullptr;
+    Connection* connection = nullptr;
     bool found = false;
     uint64_t hexagonId = 0;
     uint64_t blockId = 0;
     uint8_t sourceId = 0;
 
-    // iterate over all neurons and add new synapse-section, if required
-    for (hexagonId = 0; hexagonId < cluster.hexagons.size(); ++hexagonId) {
-        hexagon = &cluster.hexagons[hexagonId];
+    for (blockId = 0; blockId < hexagon->connectionBlocks.size(); ++blockId) {
+        connectionBlock = &hexagon->connectionBlocks[blockId];
 
-        for (blockId = 0; blockId < hexagon->neuronBlocks.size(); ++blockId) {
-            neuronBlock = &hexagon->neuronBlocks[blockId];
+        for (sourceId = 0; sourceId < NEURONS_PER_NEURONBLOCK; ++sourceId) {
+            connection = &connectionBlock->connections[sourceId];
 
-            for (sourceId = 0; sourceId < NEURONS_PER_NEURONBLOCK; ++sourceId) {
-                neuron = &neuronBlock->neurons[sourceId];
-
-                if (neuron->isNew > 0) {
-                    found = true;
-                    SourceLocationPtr originLocation;
-                    originLocation.hexagonId = hexagonId;
-                    originLocation.blockId = blockId;
-                    originLocation.neuronId = sourceId;
-
-                    createNewSection(cluster,
-                                     originLocation,
-                                     neuron->newLowerBound,
-                                     neuron->potentialRange,
-                                     cluster.attachedHost->synapseBlocks);
-
-                    neuron->newLowerBound = 0.0f;
-                    neuron->isNew = 0;
-                }
+            if (connection->splitValue > 0.0f) {
+                found = true;
+                createNewSection(cluster, connection);
             }
+            connection->splitValue = 0.0f;
         }
     }
     return found;

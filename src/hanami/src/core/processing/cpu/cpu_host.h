@@ -23,44 +23,28 @@
 #ifndef CPUHOST_H
 #define CPUHOST_H
 
+#include <core/processing/cpu/cpu_worker_thread.h>
 #include <core/processing/logical_host.h>
 
-class WorkerThread;
+class CpuWorkerThread;
 
 class CpuHost : public LogicalHost
 {
    public:
-    struct WorkerTask {
-        Cluster* cluster = nullptr;
-        uint32_t hexagonId = UNINIT_STATE_32;
-        uint32_t blockId = UNINIT_STATE_32;
-    };
-
     CpuHost(const uint32_t localId);
     ~CpuHost();
 
     void addClusterToHost(Cluster* cluster);
-    Cluster* getClusterFromQueue();
 
     bool moveCluster(Cluster* cluster);
     void syncWithHost(Cluster*);
     void removeCluster(Cluster* cluster);
 
-    void addWorkerTaskToQueue(const WorkerTask task);
-    const WorkerTask getWorkerTaskFromQueue();
-
-   private:
-    void trainClusterForward(Cluster* cluster);
-    void trainClusterBackward(Cluster* cluster);
-    void requestCluster(Cluster* cluster);
-    void initBuffer(const uint32_t id);
+   protected:
     bool initWorkerThreads();
 
-    void continueAllThreads();
-
-    std::vector<WorkerThread*> m_workerThreads;
-    std::deque<WorkerTask> m_workerTaskQueue;
-    std::mutex m_queue_lock;
+   private:
+    void initBuffer();
 };
 
 #endif  // CPUHOST_H
