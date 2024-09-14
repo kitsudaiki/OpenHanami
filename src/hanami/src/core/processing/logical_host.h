@@ -24,9 +24,9 @@
 #define LOGICALHOST_H
 
 #include <core/cluster/cluster.h>
+#include <core/processing/worker_thread.h>
 #include <hanami_common/buffer/item_buffer.h>
 #include <hanami_common/logger.h>
-#include <hanami_common/threading/thread.h>
 #include <stdint.h>
 
 #include <atomic>
@@ -37,7 +37,7 @@ class Cluster;
 
 void handleClientOutput(Cluster& cluster);
 
-class LogicalHost : public Hanami::Thread
+class LogicalHost
 {
    public:
     enum HostType {
@@ -50,7 +50,6 @@ class LogicalHost : public Hanami::Thread
     virtual ~LogicalHost();
 
     virtual void addClusterToHost(Cluster* cluster) = 0;
-    virtual Cluster* getClusterFromQueue() = 0;
 
     HostType getHostType() const;
     const std::string getUuid() const;
@@ -62,8 +61,11 @@ class LogicalHost : public Hanami::Thread
 
     Hanami::ItemBuffer synapseBlocks;
 
+    void addWorkerTaskToQueue(const Hanami::WorkerTask task);
+    const Hanami::WorkerTask getWorkerTaskFromQueue();
+
    protected:
-    void run();
+    void continueAllThreads();
 
     uint64_t reductionCounter = 0;
 
@@ -72,10 +74,9 @@ class LogicalHost : public Hanami::Thread
     uint32_t m_localId = 0;
     uint64_t m_totalMemory = 0;
 
-   private:
-    virtual void trainClusterForward(Cluster* cluster) = 0;
-    virtual void trainClusterBackward(Cluster* cluster) = 0;
-    virtual void requestCluster(Cluster* cluster) = 0;
+    std::vector<WorkerThread*> m_workerThreads;
+    std::deque<Hanami::WorkerTask> m_workerTaskQueue;
+    std::mutex m_queue_lock;
 };
 
 #endif  // LOGICALHOST_H

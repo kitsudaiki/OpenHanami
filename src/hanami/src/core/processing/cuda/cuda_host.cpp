@@ -33,7 +33,9 @@
 CudaHost::CudaHost(const uint32_t localId) : LogicalHost(localId)
 {
     m_hostType = CUDA_HOST_TYPE;
-    initBuffer(localId);
+
+    initBuffer();
+    initWorkerThreads();
 }
 
 /**
@@ -57,46 +59,22 @@ CudaHost::addClusterToHost(Cluster* cluster)
 }
 
 /**
- * @brief get next cluster in the queue
- *
- * @return nullptr, if queue is empty, else next cluster in queue
- */
-Cluster*
-CudaHost::getClusterFromQueue()
-{
-    Cluster* result = nullptr;
-
-    while (m_queue_lock.test_and_set(std::memory_order_acquire)) {
-        asm("");
-    }
-
-    if (m_clusterQueue.size() > 0) {
-        result = m_clusterQueue.front();
-        m_clusterQueue.pop_front();
-    }
-
-    m_queue_lock.clear(std::memory_order_release);
-
-    return result;
-}
-
-/**
  * @brief initialize synpase-block-buffer based on the avaialble size of memory
  *
  * @param id local device-id
  */
 void
-CudaHost::initBuffer(const uint32_t id)
+CudaHost::initBuffer()
 {
-    const std::lock_guard<std::mutex> lock(m_cudaMutex);
+    const std::lock_guard<std::mutex> lock(cudaMutex);
 
     // m_totalMemory = getAvailableMemory_CUDA(id);
     const uint64_t usedMemory = (m_totalMemory / 100) * 10;  // use 30% for synapse-blocks
     synapseBlocks.initBuffer<SynapseBlock>(usedMemory / sizeof(SynapseBlock));
     synapseBlocks.deleteAll();
 
-    LOG_INFO("Initialized number of syanpse-blocks on gpu-device with id '" + std::to_string(id)
-             + "': " + std::to_string(synapseBlocks.metaData->itemCapacity));
+    LOG_INFO("Initialized number of syanpse-blocks on gpu-device: "
+             + std::to_string(synapseBlocks.metaData->itemCapacity));
 }
 
 /**
@@ -109,7 +87,7 @@ CudaHost::initBuffer(const uint32_t id)
 bool
 CudaHost::moveCluster(Cluster* cluster)
 {
-    const std::lock_guard<std::mutex> lock(m_cudaMutex);
+    const std::lock_guard<std::mutex> lock(cudaMutex);
 
     // sync data from gpu to host, in order to have a consistent state
     // see https://github.com/kitsudaiki/Hanami/issues/377
@@ -160,7 +138,7 @@ CudaHost::moveCluster(Cluster* cluster)
 void
 CudaHost::syncWithHost(Cluster* cluster)
 {
-    const std::lock_guard<std::mutex> lock(m_cudaMutex);
+    const std::lock_guard<std::mutex> lock(cudaMutex);
 
     // see https://github.com/kitsudaiki/Hanami/issues/377
     // copyFromGpu_CUDA(&cluster->gpuPointer,
@@ -177,7 +155,7 @@ CudaHost::syncWithHost(Cluster* cluster)
 void
 CudaHost::removeCluster(Cluster* cluster)
 {
-    const std::lock_guard<std::mutex> lock(m_cudaMutex);
+    const std::lock_guard<std::mutex> lock(cudaMutex);
 
     // remove synapse-blocks
     for (uint64_t i = 0; i < cluster->hexagons.size(); i++) {
@@ -193,159 +171,8 @@ CudaHost::removeCluster(Cluster* cluster)
     // removeFromDevice_CUDA(&cluster->gpuPointer);
 }
 
-/**
- * @brief run forward-propagation on a cluster
- *
- * @param cluster cluster to process
- */
-void
-CudaHost::trainClusterForward(Cluster* cluster)
+bool
+CudaHost::initWorkerThreads()
 {
-    const std::lock_guard<std::mutex> lock(m_cudaMutex);
-
-    Hanami::ErrorContainer error;
-
-    // see https://github.com/kitsudaiki/Hanami/issues/377
-    /* // process input-hexagons
-     for (uint32_t hexagonId = 0; hexagonId < cluster->hexagons.size(); ++hexagonId) {
-         Hexagon* hexagon = &cluster->hexagons[hexagonId];
-         if (hexagon->isInputHexagon == false) {
-             continue;
-         }
-
-         processNeuronsOfInputHexagonBackward<true>(
-             hexagon, cluster->inputValues, &cluster->neuronBlocks);
-     }
-
-     // process all hexagons on cpu
-     processing_CUDA(&cluster->gpuPointer,
-                     &cluster->hexagons[0],
-                     cluster->hexagons.size(),
-                     &cluster->neuronBlocks,
-                     cluster->numberOfNeuronBlocks,
-                     true);
-
-     // process output-hexagons
-     for (uint32_t hexagonId = 0; hexagonId < cluster->hexagons.size(); ++hexagonId) {
-         Hexagon* hexagon = &cluster->hexagons[hexagonId];
-         if (hexagon->isOutputHexagon == false) {
-             continue;
-         }
-     }
-
-     // update cluster
-     if (updateCluster(*cluster)) {
-         update_CUDA(&cluster->gpuPointer,
-                     &cluster->neuronBlocks,
-                     cluster->numberOfNeuronBlocks,
-                     &cluster->hexagons[0],
-                     cluster->hexagons.size());
-     }*/
-}
-
-/**
- * @brief run back-propagation on a cluster
- *
- * @param cluster cluster to process
- */
-void
-CudaHost::trainClusterBackward(Cluster* cluster)
-{
-    const std::lock_guard<std::mutex> lock(m_cudaMutex);
-
-    Hanami::ErrorContainer error;
-
-    // process output-hexagons on cpu
-    for (uint32_t hexagonId = 0; hexagonId < cluster->hexagons.size(); ++hexagonId) {
-        Hexagon* hexagon = &cluster->hexagons[hexagonId];
-        if (hexagon->header.isOutputHexagon) {
-            // see https://github.com/kitsudaiki/Hanami/issues/377
-            /*if (backpropagateOutput(&cluster->hexagons[0],
-                                    &cluster->outputNeurons[0],
-                                    &cluster->neuronBlocks,
-                                    &cluster->tempNeuronBlocks,
-                                    cluster->outputValues,
-                                    cluster->expectedValues,
-                                    &cluster->clusterHeader.settings)
-                == false)
-            {
-                return;
-            }*/
-        }
-    }
-
-    // see https://github.com/kitsudaiki/Hanami/issues/377
-    // backpropagation over all hexagons on gpu
-    /*backpropagation_CUDA(&cluster->gpuPointer,
-                         &cluster->hexagons[0],
-                         cluster->hexagons.size(),
-                         &cluster->neuronBlocks,
-                         &cluster->tempNeuronBlocks,
-                         cluster->numberOfNeuronBlocks);
-
-    // run reduction-process if enabled
-    if (cluster->clusterHeader.settings.enableReduction) {
-        if (reductionCounter == 100) {
-            reduction_CUDA(&cluster->gpuPointer,
-                           &cluster->hexagons[0],
-                           cluster->hexagons.size(),
-                           &cluster->neuronBlocks,
-                           cluster->numberOfNeuronBlocks);
-            if (updateCluster(*cluster)) {
-                update_CUDA(&cluster->gpuPointer,
-                            &cluster->neuronBlocks,
-                            cluster->numberOfNeuronBlocks,
-                            &cluster->hexagons[0],
-                            cluster->hexagons.size());
-            }
-            reductionCounter = 0;
-        }
-        reductionCounter++;
-    }*/
-}
-
-/**
- * @brief process segments
- *
- * @param cluster cluster to process
- */
-void
-CudaHost::requestCluster(Cluster* cluster)
-{
-    const std::lock_guard<std::mutex> lock(m_cudaMutex);
-
-    Hanami::ErrorContainer error;
-
-    // see https://github.com/kitsudaiki/Hanami/issues/377
-    // process input-hexagons
-    /*for (uint32_t hexagonId = 0; hexagonId < cluster->hexagons.size(); ++hexagonId) {
-        Hexagon* hexagon = &cluster->hexagons[hexagonId];
-        if (hexagon->header.isInputHexagon == false) {
-            continue;
-        }
-
-        processNeuronsOfInputHexagonBackward<false>(
-            hexagon, cluster->inputValues, &cluster->neuronBlocks);
-    }
-
-    // process all hexagons on gpu
-    processing_CUDA(&cluster->gpuPointer,
-                    &cluster->hexagons[0],
-                    cluster->hexagons.size(),
-                    &cluster->neuronBlocks,
-                    cluster->numberOfNeuronBlocks,
-                    false);*/
-
-    // process output-hexagons
-    for (uint32_t hexagonId = 0; hexagonId < cluster->hexagons.size(); ++hexagonId) {
-        Hexagon* hexagon = &cluster->hexagons[hexagonId];
-        if (hexagon->header.isOutputHexagon == false) {
-            continue;
-        }
-        // see https://github.com/kitsudaiki/Hanami/issues/377
-        /*for (uint32_t blockId = 0; blockId < cluster->numberOfNeuronBlocks; ++blockId) {
-            processNeuronsOfOutputHexagon(
-                hexagon, cluster->outputValues, &cluster->neuronBlocks, blockId);
-        }*/
-    }
+    return true;
 }

@@ -88,14 +88,16 @@ set(SOURCES
     src/core/processing/cluster_resize.h
     src/core/processing/cpu/backpropagation.h
     src/core/processing/cpu/cpu_host.h
+    src/core/processing/cpu/cpu_worker_thread.h
     src/core/processing/cpu/processing.h
     src/core/processing/cpu/reduction.h
-    src/core/processing/cpu/worker_thread.h
     src/core/processing/cuda/cuda_functions.h
     src/core/processing/cuda/cuda_host.h
+    src/core/processing/cuda/cuda_worker_thread.h
     src/core/processing/cuda/info.h
     src/core/processing/logical_host.h
     src/core/processing/physical_host.h
+    src/core/processing/worker_thread.h
     src/core/routing_functions.h
     src/core/temp_file_handler.h
     src/core/thread_binder.h
@@ -183,11 +185,13 @@ set(SOURCES
     src/core/io/checkpoint/io_interface.cpp
     src/core/io/data_set/dataset_file_io.cpp
     src/core/processing/cpu/cpu_host.cpp
-    src/core/processing/cpu/worker_thread.cpp
+    src/core/processing/cpu/cpu_worker_thread.cpp
     src/core/processing/cuda/cuda_host.cpp
+    src/core/processing/cuda/cuda_worker_thread.cpp
     src/core/processing/cuda/info.cpp
     src/core/processing/logical_host.cpp
     src/core/processing/physical_host.cpp
+    src/core/processing/worker_thread.cpp
     src/core/temp_file_handler.cpp
     src/core/thread_binder.cpp
     src/database/audit_log_table.cpp

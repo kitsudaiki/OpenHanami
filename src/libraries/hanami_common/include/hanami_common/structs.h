@@ -33,6 +33,8 @@
 
 #define UNINTI_POINT_32 0x0FFFFFFF
 
+class Cluster;
+
 namespace Hanami
 {
 
@@ -153,6 +155,17 @@ struct Position {
                + " ]";
     }
 };
+
+//==================================================================================================
+
+struct WorkerTask {
+    Cluster* cluster = nullptr;
+    uint32_t hexagonId = UNINIT_STATE_32;
+    uint32_t blockId = UNINIT_STATE_32;
+};
+static_assert(sizeof(WorkerTask) == 16);
+
+//==================================================================================================
 
 }  // namespace Hanami
 

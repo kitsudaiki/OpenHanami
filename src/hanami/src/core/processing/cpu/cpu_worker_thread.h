@@ -1,5 +1,5 @@
 /**
- * @file        worker_thread.h
+ * @file        cpu_worker_thread.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,32 +20,25 @@
  *      limitations under the License.
  */
 
-#ifndef WORKERTHREAD_H
-#define WORKERTHREAD_H
+#ifndef CPUWORKERTHREAD_H
+#define CPUWORKERTHREAD_H
 
-#include <core/processing/cpu/cpu_host.h>
-#include <hanami_common/threading/thread.h>
+#include <core/processing/worker_thread.h>
 
 class Cluster;
+class CpuHost;
 
-class WorkerThread : public Hanami::Thread
+class CpuWorkerThread : public WorkerThread
 {
    public:
-    WorkerThread(CpuHost* host);
-    ~WorkerThread();
-
-   protected:
-    void run();
+    CpuWorkerThread(CpuHost* host);
+    ~CpuWorkerThread();
 
    private:
-    void handleTask(const CpuHost::WorkerTask& task);
-    void handleTrainForwardTask(CpuHost::WorkerTask task);
-    void handleTrainBackwardTask(CpuHost::WorkerTask task);
-    void handleReductionTask(const CpuHost::WorkerTask task);
-    void handleProcessTask(const CpuHost::WorkerTask task);
-
-    CpuHost* m_host = nullptr;
-    uint32_t m_inactiveCounter = 0;
+    void handleTrainForwardTask(Hanami::WorkerTask task);
+    void handleTrainBackwardTask(Hanami::WorkerTask task);
+    void handleReductionTask(const Hanami::WorkerTask task);
+    void handleProcessTask(const Hanami::WorkerTask task);
 };
 
-#endif  // WORKERTHREAD_H
+#endif  // CPUWORKERTHREAD_H
