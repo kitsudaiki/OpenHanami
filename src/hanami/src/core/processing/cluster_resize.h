@@ -40,7 +40,7 @@
  * @return found empty connection, if seccessfule, else nullptr
  */
 inline Connection*
-searchTargetInHexagon(Hexagon* targetHexagon, ItemBuffer& synapseBlockBuffer)
+searchTargetInHexagon(Hexagon* targetHexagon, ItemBuffer<SynapseBlock>& synapseBlockBuffer)
 {
     uint64_t i = 0;
     uint64_t j = 0;
@@ -121,7 +121,7 @@ resizeConnections(Hexagon* targetHexagon)
 inline bool
 createNewSection(Cluster& cluster, Connection* sourceConnection)
 {
-    ItemBuffer* synapseBlockBuffer = &cluster.attachedHost->synapseBlocks;
+    ItemBuffer<SynapseBlock>* synapseBlockBuffer = &cluster.attachedHost->synapseBlocks;
 
     // get origin object
     SourceLocation sourceLoc = getSourceNeuron(sourceConnection->origin, &cluster.hexagons[0]);
@@ -177,7 +177,7 @@ createNewSection(Cluster& cluster,
                  const uint16_t blockId,
                  const uint8_t neuronId)
 {
-    ItemBuffer* synapseBlockBuffer = &cluster.attachedHost->synapseBlocks;
+    ItemBuffer<SynapseBlock>* synapseBlockBuffer = &cluster.attachedHost->synapseBlocks;
 
     // get target objects
     const uint32_t targetHexagonId

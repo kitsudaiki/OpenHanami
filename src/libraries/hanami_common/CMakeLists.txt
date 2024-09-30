@@ -38,7 +38,6 @@ add_library(hanami_common STATIC
     include/hanami_common/threading/thread.h
     include/hanami_common/threading/thread_handler.h
     include/hanami_common/upload_file_handle.h
-    src/buffer/item_buffer.cpp
     src/buffer/stack_buffer_reserve.cpp
     src/files/binary_file.cpp
     src/files/binary_file_direct.cpp
