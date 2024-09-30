@@ -24,7 +24,6 @@ class ItemBuffer_Test : public Hanami::CompareTestHelper
     void deleteItem_test();
     void deleteAll_test();
     void addNewItem_test();
-    void backup_restore_test();
 };
 
 }  // namespace Hanami

@@ -97,7 +97,7 @@ CpuHost::initBuffer()
     synapseBlocks.deleteAll();
 
     LOG_INFO("Initialized number of syanpse-blocks on cpu-device: "
-             + std::to_string(synapseBlocks.metaData->itemCapacity));
+             + std::to_string(synapseBlocks.metaData.itemCapacity));
 }
 
 /**

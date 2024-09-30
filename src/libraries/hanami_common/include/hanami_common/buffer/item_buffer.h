@@ -45,38 +45,81 @@ class ItemBuffer
     };
 
     T* items = nullptr;
-    MetaData* metaData = nullptr;
+    MetaData metaData;
     DataBuffer buffer = DataBuffer(1);
 
     ItemBuffer(){};
     ~ItemBuffer(){};
 
     /**
-     * @brief initialize a new item-buffer based on the payload of an old one
+     * @brief initialize buffer by allocating memory and init with default-items
      *
-     * @param data pointer to the data to import
-     * @param dataSize number of bytes of data
+     * @param numberOfItems number of items to preallocate
      *
-     * @return true, if successful, else false if input is invalid
+     * @return true, if successful, else false
      */
-    bool initBuffer(const void* data, const uint64_t dataSize)
+    bool initBuffer(const uint64_t numberOfItems)
     {
-        // precheck
-        if (dataSize == 0 || data == nullptr) {
+        // allocate memory
+        const bool ret = _initDataBlocks(numberOfItems, sizeof(T));
+        if (ret == false) {
             return false;
         }
 
-        // allocate blocks in buffer and fill with old data
-        Hanami::allocateBlocks_DataBuffer(buffer, calcBytesToBlocks(dataSize));
-        buffer.usedBufferSize = dataSize;
-        memcpy(buffer.data, data, dataSize);
+        // set links to 0
+        m_links.resize(numberOfItems, 0);
+        std::fill(m_links.begin(), m_links.end(), undefinedPos);
 
-        // init pointer
-        metaData = static_cast<MetaData*>(buffer.data);
-        uint8_t* u8Data = static_cast<uint8_t*>(buffer.data);
-        items = reinterpret_cast<T*>(&u8Data[sizeof(MetaData)]);
+        // init buffer with default-itemes
+        const T newItem = T();
+        std::fill_n(items, numberOfItems, newItem);
+
+        // update metadata
+        metaData.numberOfItems = numberOfItems;
 
         return true;
+    }
+
+    /**
+     * @brief add a new items at an empty position inside of the buffer
+     *
+     * @param item new item to write into the buffer
+     *
+     * @return position inside of the buffer, where the new item was added, if successful, or
+     *         2^64-1 if the buffer is already full
+     */
+    uint64_t addNewItem(const T& item)
+    {
+        while (m_lock.test_and_set(std::memory_order_acquire)) {
+            asm("");
+        }
+
+        // precheck
+        if (metaData.itemSize == 0) {
+            m_lock.clear(std::memory_order_release);
+            return undefinedPos;
+        }
+
+        // precheck
+        if (metaData.numberOfItems >= metaData.itemCapacity) {
+            m_lock.clear(std::memory_order_release);
+            return undefinedPos;
+        }
+
+        // get item-position inside of the buffer
+        const uint64_t position = _reuseItemPosition();
+        if (position == undefinedPos) {
+            m_lock.clear(std::memory_order_release);
+            return position;
+        }
+
+        // write new item at the position
+        T* array = static_cast<T*>(items);
+        array[position] = item;
+
+        m_lock.clear(std::memory_order_release);
+
+        return position;
     }
 
     /**
@@ -84,11 +127,7 @@ class ItemBuffer
      */
     void deleteAll()
     {
-        if (metaData == nullptr) {
-            return;
-        }
-
-        for (uint64_t i = 0; i < metaData->itemCapacity; i++) {
+        for (uint64_t i = 0; i < metaData.itemCapacity; i++) {
             deleteItem(i);
         }
     }
@@ -103,7 +142,7 @@ class ItemBuffer
     bool deleteItem(const uint64_t itemPos)
     {
         // precheck
-        if (metaData == nullptr || metaData->itemSize == 0 || itemPos >= metaData->itemCapacity) {
+        if (metaData.itemSize == 0 || itemPos >= metaData.itemCapacity) {
             return false;
         }
 
@@ -111,7 +150,7 @@ class ItemBuffer
             asm("");
         }
 
-        if (metaData->numberOfItems == 0) {
+        if (metaData.numberOfItems == 0) {
             m_lock.clear(std::memory_order_release);
             return true;
         }
@@ -128,18 +167,18 @@ class ItemBuffer
         items[itemPos] = T();
 
         // update the old last empty block
-        const uint64_t lastEmptyBlock = metaData->lastEmptyBlock & undefinedPos;
+        const uint64_t lastEmptyBlock = metaData.lastEmptyBlock & undefinedPos;
         if (lastEmptyBlock != undefinedPos) {
             m_links[lastEmptyBlock] = deleteMarker | itemPos;
         }
 
         // update metadata
-        metaData->lastEmptyBlock = itemPos;
-        if (metaData->firstEmptyBlock == undefinedPos) {
-            metaData->firstEmptyBlock = itemPos;
+        metaData.lastEmptyBlock = itemPos;
+        if (metaData.firstEmptyBlock == undefinedPos) {
+            metaData.firstEmptyBlock = itemPos;
         }
 
-        metaData->numberOfItems--;
+        metaData.numberOfItems--;
 
         m_lock.clear(std::memory_order_release);
 
@@ -170,14 +209,12 @@ class ItemBuffer
         buffer.usedBufferSize = requiredBytes;
 
         // init metadata object
-        metaData = static_cast<MetaData*>(buffer.data);
-        metaData[0] = MetaData();
-        metaData->itemSize = itemSize;
-        metaData->itemCapacity = numberOfItems;
+        metaData = MetaData();
+        metaData.itemSize = itemSize;
+        metaData.itemCapacity = numberOfItems;
 
         // init pointer
-        uint8_t* u8Data = static_cast<uint8_t*>(buffer.data);
-        items = reinterpret_cast<T*>(&u8Data[sizeof(MetaData)]);
+        items = static_cast<T*>(buffer.data);
 
         return true;
     }
@@ -190,93 +227,22 @@ class ItemBuffer
     uint64_t _reuseItemPosition()
     {
         // get byte-position of free space, if exist
-        const uint64_t selectedPosition = metaData->firstEmptyBlock;
+        const uint64_t selectedPosition = metaData.firstEmptyBlock;
         if (selectedPosition == undefinedPos) {
             return undefinedPos;
         }
 
         // update metadata
-        metaData->firstEmptyBlock = m_links[selectedPosition] & undefinedPos;
+        metaData.firstEmptyBlock = m_links[selectedPosition] & undefinedPos;
         m_links[selectedPosition] = undefinedPos;
-        metaData->numberOfItems++;
+        metaData.numberOfItems++;
 
         // reset pointer, if no more free spaces exist
-        if (metaData->firstEmptyBlock == undefinedPos) {
-            metaData->lastEmptyBlock = undefinedPos;
+        if (metaData.firstEmptyBlock == undefinedPos) {
+            metaData.lastEmptyBlock = undefinedPos;
         }
 
         return selectedPosition;
-    }
-
-    /**
-     * @brief initialize buffer by allocating memory and init with default-items
-     *
-     * @param numberOfItems number of items to preallocate
-     *
-     * @return true, if successful, else false
-     */
-    bool initBuffer(const uint64_t numberOfItems)
-    {
-        // allocate memory
-        const bool ret = _initDataBlocks(numberOfItems, sizeof(T));
-        if (ret == false) {
-            return false;
-        }
-
-        // set links to 0
-        m_links.resize(numberOfItems, 0);
-        std::fill(m_links.begin(), m_links.end(), undefinedPos);
-
-        // init buffer with default-itemes
-        const T newItem = T();
-        std::fill_n(items, numberOfItems, newItem);
-
-        // update metadata
-        metaData->numberOfItems = numberOfItems;
-
-        return true;
-    }
-
-    /**
-     * @brief add a new items at an empty position inside of the buffer
-     *
-     * @param item new item to write into the buffer
-     *
-     * @return position inside of the buffer, where the new item was added, if successful, or
-     *         2^64-1 if the buffer is already full
-     */
-    uint64_t addNewItem(const T& item)
-    {
-        while (m_lock.test_and_set(std::memory_order_acquire)) {
-            asm("");
-        }
-
-        // precheck
-        if (metaData->itemSize == 0) {
-            m_lock.clear(std::memory_order_release);
-            return undefinedPos;
-        }
-
-        // precheck
-        if (metaData->numberOfItems >= metaData->itemCapacity) {
-            m_lock.clear(std::memory_order_release);
-            return undefinedPos;
-        }
-
-        // get item-position inside of the buffer
-        const uint64_t position = _reuseItemPosition();
-        if (position == undefinedPos) {
-            m_lock.clear(std::memory_order_release);
-            return position;
-        }
-
-        // write new item at the position
-        T* array = static_cast<T*>(items);
-        array[position] = item;
-
-        m_lock.clear(std::memory_order_release);
-
-        return position;
     }
 
    private:
