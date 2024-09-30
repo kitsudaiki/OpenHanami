@@ -209,42 +209,6 @@ class ItemBuffer
     }
 
     /**
-     * @brief try to reuse a deleted position in the buffer
-     *
-     * @return id of the new section, else 0x7FFFFFFFFFFFFFFF if allocation failed
-     */
-    uint64_t _reserveDynamicItem()
-    {
-        while (m_lock.test_and_set(std::memory_order_acquire)) {
-            asm("");
-        }
-
-        // try to reuse item
-        const uint64_t reusePos = _reuseItemPosition();
-        if (reusePos != undefinedPos) {
-            m_lock.clear(std::memory_order_release);
-            return reusePos;
-        }
-
-        // calculate size information
-        const uint64_t numberOfBlocks = buffer.numberOfBlocks;
-        const uint64_t itemBytes = (metaData->itemCapacity + 1) * metaData->itemSize;
-        const uint64_t newNumberOfBlocks = calcBytesToBlocks(itemBytes);
-
-        // allocate a new block, if necessary
-        if (numberOfBlocks < newNumberOfBlocks) {
-            Hanami::allocateBlocks_DataBuffer(buffer, newNumberOfBlocks - numberOfBlocks);
-        }
-
-        metaData->itemCapacity++;
-        const uint64_t ret = metaData->itemCapacity - 1;
-
-        m_lock.clear(std::memory_order_release);
-
-        return ret;
-    }
-
-    /**
      * @brief initialize buffer by allocating memory and init with default-items
      *
      * @param numberOfItems number of items to preallocate
@@ -283,25 +247,34 @@ class ItemBuffer
      */
     uint64_t addNewItem(const T& item)
     {
+        while (m_lock.test_and_set(std::memory_order_acquire)) {
+            asm("");
+        }
+
         // precheck
         if (metaData->itemSize == 0) {
+            m_lock.clear(std::memory_order_release);
             return undefinedPos;
         }
 
         // precheck
         if (metaData->numberOfItems >= metaData->itemCapacity) {
+            m_lock.clear(std::memory_order_release);
             return undefinedPos;
         }
 
         // get item-position inside of the buffer
-        const uint64_t position = _reserveDynamicItem();
+        const uint64_t position = _reuseItemPosition();
         if (position == undefinedPos) {
+            m_lock.clear(std::memory_order_release);
             return position;
         }
 
         // write new item at the position
         T* array = static_cast<T*>(items);
         array[position] = item;
+
+        m_lock.clear(std::memory_order_release);
 
         return position;
     }
