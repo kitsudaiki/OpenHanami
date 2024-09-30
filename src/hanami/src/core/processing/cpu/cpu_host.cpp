@@ -93,7 +93,7 @@ CpuHost::initBuffer()
         memoryUsage = 0.9f;
     }
     const uint64_t usedMemory = static_cast<float>(m_totalMemory) * memoryUsage;
-    synapseBlocks.initBuffer<SynapseBlock>(usedMemory / sizeof(SynapseBlock));
+    synapseBlocks.initBuffer(usedMemory / sizeof(SynapseBlock));
     synapseBlocks.deleteAll();
 
     LOG_INFO("Initialized number of syanpse-blocks on cpu-device: "

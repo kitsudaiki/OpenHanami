@@ -14,7 +14,6 @@ namespace Hanami
 {
 
 struct TestStruct {
-    uint8_t itemStatus = ItemBuffer::ACTIVE_SECTION;
     uint8_t a = 0;
     uint8_t b = 0;
     uint64_t c = 0;
@@ -35,16 +34,16 @@ ItemBuffer_Test::ItemBuffer_Test() : Hanami::CompareTestHelper("ItemBuffer_Test"
 void
 ItemBuffer_Test::initBuffer_test()
 {
-    ItemBuffer testBuffer;
+    ItemBuffer<TestStruct> testBuffer;
 
     // init buffer
-    TEST_EQUAL(testBuffer.initBuffer<TestStruct>(42000, 10000), true);
+    TEST_EQUAL(testBuffer.initBuffer(42000), true);
     TEST_EQUAL(testBuffer.metaData->itemSize, sizeof(TestStruct));
     TEST_EQUAL(testBuffer.metaData->itemCapacity, 42000);
     TEST_EQUAL(testBuffer.metaData->numberOfItems, 42000);
 
     // test override of an already initialized buffer
-    TEST_EQUAL(testBuffer.initBuffer<TestStruct>(43000, 10000), true);
+    TEST_EQUAL(testBuffer.initBuffer(43000), true);
     TEST_EQUAL(testBuffer.metaData->itemSize, sizeof(TestStruct));
     TEST_EQUAL(testBuffer.metaData->itemCapacity, 43000);
     TEST_EQUAL(testBuffer.metaData->numberOfItems, 43000);
@@ -57,13 +56,13 @@ void
 ItemBuffer_Test::deleteItem_test()
 {
     // prepare item-buffer
-    ItemBuffer testBuffer;
+    ItemBuffer<TestStruct> testBuffer;
 
     // check failing delete in not initialized buffer
     TEST_EQUAL(testBuffer.deleteItem(42), false);
 
     // init test-buffer
-    testBuffer.initBuffer<TestStruct>(42000, 10000);
+    testBuffer.initBuffer(42000);
 
     // delete items from test-buffer
     TEST_EQUAL(testBuffer.deleteItem(42), true);
@@ -80,8 +79,8 @@ void
 ItemBuffer_Test::deleteAll_test()
 {
     // prepare item-buffer
-    ItemBuffer testBuffer;
-    testBuffer.initBuffer<TestStruct>(42000, 10000);
+    ItemBuffer<TestStruct> testBuffer;
+    testBuffer.initBuffer(42000);
 
     // delete all items and check buffer-values
     testBuffer.deleteAll();
@@ -97,8 +96,8 @@ void
 ItemBuffer_Test::addNewItem_test()
 {
     // prepare item-buffer
-    ItemBuffer testBuffer;
-    testBuffer.initBuffer<TestStruct>(42000, 10000);
+    ItemBuffer<TestStruct> testBuffer;
+    testBuffer.initBuffer(42000);
     testBuffer.deleteItem(42);
     testBuffer.deleteItem(43);
     testBuffer.deleteItem(44);
@@ -116,7 +115,7 @@ ItemBuffer_Test::addNewItem_test()
     TEST_EQUAL(testBuffer.metaData->itemCapacity, 42000);
     TEST_EQUAL(testBuffer.addNewItem(testStruct), 43);
     TEST_EQUAL(testBuffer.addNewItem(testStruct), 44);
-    TEST_EQUAL(testBuffer.addNewItem(testStruct), 0xFFFFFFFFFFFFFFFF);
+    TEST_EQUAL(testBuffer.addNewItem(testStruct), undefinedPos);
 
     // check if delete and reuse still works, after the complete buffer was filled
     TEST_EQUAL(testBuffer.deleteItem(42), true);
@@ -136,8 +135,8 @@ void
 ItemBuffer_Test::backup_restore_test()
 {
     // prepare item-buffer
-    ItemBuffer testBufferBase;
-    testBufferBase.initBuffer<TestStruct>(42000, 10000);
+    ItemBuffer<TestStruct> testBufferBase;
+    testBufferBase.initBuffer(42000);
     testBufferBase.deleteItem(42);
     testBufferBase.deleteItem(43);
     testBufferBase.deleteItem(44);
@@ -154,7 +153,7 @@ ItemBuffer_Test::backup_restore_test()
     testStruct.c = 1111;
     testBufferBase.addNewItem(testStruct);
 
-    ItemBuffer restoredBuffer;
+    ItemBuffer<TestStruct> restoredBuffer;
     TEST_EQUAL(
         restoredBuffer.initBuffer(testBufferBase.buffer.data, testBufferBase.buffer.usedBufferSize),
         true);
@@ -162,12 +161,9 @@ ItemBuffer_Test::backup_restore_test()
     // test metadata of restored buffer
     TEST_EQUAL(testBufferBase.metaData->itemSize, restoredBuffer.metaData->itemSize);
     TEST_EQUAL(testBufferBase.metaData->itemCapacity, restoredBuffer.metaData->itemCapacity);
-    TEST_EQUAL(testBufferBase.metaData->staticSize, restoredBuffer.metaData->staticSize);
     TEST_EQUAL(testBufferBase.metaData->numberOfItems, restoredBuffer.metaData->numberOfItems);
-    TEST_EQUAL(testBufferBase.metaData->bytePositionOfFirstEmptyBlock,
-               restoredBuffer.metaData->bytePositionOfFirstEmptyBlock);
-    TEST_EQUAL(testBufferBase.metaData->bytePositionOfLastEmptyBlock,
-               restoredBuffer.metaData->bytePositionOfLastEmptyBlock);
+    TEST_EQUAL(testBufferBase.metaData->firstEmptyBlock, restoredBuffer.metaData->firstEmptyBlock);
+    TEST_EQUAL(testBufferBase.metaData->lastEmptyBlock, restoredBuffer.metaData->lastEmptyBlock);
 
     // check content of restored buffer
     TestStruct* structs = getItemData<TestStruct>(restoredBuffer);

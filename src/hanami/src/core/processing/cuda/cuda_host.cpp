@@ -70,7 +70,7 @@ CudaHost::initBuffer()
 
     // m_totalMemory = getAvailableMemory_CUDA(id);
     const uint64_t usedMemory = (m_totalMemory / 100) * 10;  // use 30% for synapse-blocks
-    synapseBlocks.initBuffer<SynapseBlock>(usedMemory / sizeof(SynapseBlock));
+    synapseBlocks.initBuffer(usedMemory / sizeof(SynapseBlock));
     synapseBlocks.deleteAll();
 
     LOG_INFO("Initialized number of syanpse-blocks on gpu-device: "

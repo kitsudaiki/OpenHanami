@@ -59,7 +59,7 @@ class LogicalHost
     virtual void syncWithHost(Cluster* cluster) = 0;
     virtual void removeCluster(Cluster* cluster) = 0;
 
-    Hanami::ItemBuffer synapseBlocks;
+    Hanami::ItemBuffer<SynapseBlock> synapseBlocks;
 
     void addWorkerTaskToQueue(const Hanami::WorkerTask task);
     const Hanami::WorkerTask getWorkerTaskFromQueue();

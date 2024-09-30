@@ -26,8 +26,8 @@ ItemBuffer_Test::create_delete_test()
 {
     REINIT_TEST();
 
-    ItemBuffer* testBuffer = new ItemBuffer();
-    testBuffer->initBuffer<float>(42);
+    ItemBuffer<float>* testBuffer = new ItemBuffer<float>();
+    testBuffer->initBuffer(42);
     delete testBuffer;
 
     CHECK_MEMORY();

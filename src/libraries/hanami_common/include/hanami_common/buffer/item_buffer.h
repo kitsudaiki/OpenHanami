@@ -1,4 +1,4 @@
-﻿/**
+/**
  *  @file       item_buffer.h
  *
  *  @author     Tobias Anker <tobias.anker@kitsunemimi.moe>
@@ -25,40 +25,224 @@
 
 #include <hanami_common/buffer/data_buffer.h>
 
-#define ITEM_BUFFER_UNDEFINE_POS 0xFFFFFFFFFFFFFFFF
+#include <vector>
 
 namespace Hanami
 {
+constexpr uint64_t deleteMarker = 0x8000000000000000;
+constexpr uint64_t undefinedPos = 0x7FFFFFFFFFFFFFFF;
 
-class ItemBuffer;
 template <typename T>
-inline T* getItemData(ItemBuffer& itembuffer);
-
 class ItemBuffer
 {
    public:
-    enum SectionStatus {
-        UNDEFINED_SECTION = 0,
-        ACTIVE_SECTION = 1,
-        DELETED_SECTION = 2,
-    };
-
     struct MetaData {
         uint32_t itemSize = 0;
         uint64_t itemCapacity = 0;
-        uint64_t staticSize = 0;
         uint64_t numberOfItems = 0;
-        uint64_t bytePositionOfFirstEmptyBlock = ITEM_BUFFER_UNDEFINE_POS;
-        uint64_t bytePositionOfLastEmptyBlock = ITEM_BUFFER_UNDEFINE_POS;
+        uint64_t firstEmptyBlock = undefinedPos;
+        uint64_t lastEmptyBlock = undefinedPos;
     };
 
-    void* staticData = nullptr;
-    void* itemData = nullptr;
+    T* items = nullptr;
     MetaData* metaData = nullptr;
     DataBuffer buffer = DataBuffer(1);
 
-    ItemBuffer();
-    ~ItemBuffer();
+    ItemBuffer(){};
+    ~ItemBuffer(){};
+
+    /**
+     * @brief initialize a new item-buffer based on the payload of an old one
+     *
+     * @param data pointer to the data to import
+     * @param dataSize number of bytes of data
+     *
+     * @return true, if successful, else false if input is invalid
+     */
+    bool initBuffer(const void* data, const uint64_t dataSize)
+    {
+        // precheck
+        if (dataSize == 0 || data == nullptr) {
+            return false;
+        }
+
+        // allocate blocks in buffer and fill with old data
+        Hanami::allocateBlocks_DataBuffer(buffer, calcBytesToBlocks(dataSize));
+        buffer.usedBufferSize = dataSize;
+        memcpy(buffer.data, data, dataSize);
+
+        // init pointer
+        metaData = static_cast<MetaData*>(buffer.data);
+        uint8_t* u8Data = static_cast<uint8_t*>(buffer.data);
+        items = reinterpret_cast<T*>(&u8Data[sizeof(MetaData)]);
+
+        return true;
+    }
+
+    /**
+     * @brief delete all items for the buffer
+     */
+    void deleteAll()
+    {
+        if (metaData == nullptr) {
+            return;
+        }
+
+        for (uint64_t i = 0; i < metaData->itemCapacity; i++) {
+            deleteItem(i);
+        }
+    }
+
+    /**
+     * @brief delete a specific item from the buffer by replacing it with a placeholder-item
+     *
+     * @param itemPos position of the item to delete
+     *
+     * @return false if buffer is invalid or position already deleted, else true
+     */
+    bool deleteItem(const uint64_t itemPos)
+    {
+        // precheck
+        if (metaData == nullptr || metaData->itemSize == 0 || itemPos >= metaData->itemCapacity) {
+            return false;
+        }
+
+        while (m_lock.test_and_set(std::memory_order_acquire)) {
+            asm("");
+        }
+
+        if (metaData->numberOfItems == 0) {
+            m_lock.clear(std::memory_order_release);
+            return true;
+        }
+
+        // check if current position is already deleted
+        const uint64_t link = m_links[itemPos];
+        if ((link & deleteMarker) != 0) {
+            m_lock.clear(std::memory_order_release);
+            return false;
+        }
+
+        // delete current position
+        m_links[itemPos] = deleteMarker | undefinedPos;
+        items[itemPos] = T();
+
+        // update the old last empty block
+        const uint64_t lastEmptyBlock = metaData->lastEmptyBlock & undefinedPos;
+        if (lastEmptyBlock != undefinedPos) {
+            m_links[lastEmptyBlock] = deleteMarker | itemPos;
+        }
+
+        // update metadata
+        metaData->lastEmptyBlock = itemPos;
+        if (metaData->firstEmptyBlock == undefinedPos) {
+            metaData->firstEmptyBlock = itemPos;
+        }
+
+        metaData->numberOfItems--;
+
+        m_lock.clear(std::memory_order_release);
+
+        return true;
+    }
+
+    /**
+     * @brief initialize the item-list
+     *
+     * @param numberOfItems number of items to allocate
+     * @param itemSize size of a single item
+     *
+     * @return false if values are invalid, else true
+     */
+    bool _initDataBlocks(const uint64_t numberOfItems, const uint32_t itemSize)
+    {
+        // precheck
+        if (itemSize == 0) {
+            return false;
+        }
+
+        const uint64_t itemBytes = numberOfItems * itemSize;
+        const uint64_t requiredBytes = itemBytes + sizeof(MetaData);
+        const uint64_t requiredNumberOfBlocks = calcBytesToBlocks(requiredBytes);
+
+        // allocate blocks in buffer
+        Hanami::allocateBlocks_DataBuffer(buffer, requiredNumberOfBlocks);
+        buffer.usedBufferSize = requiredBytes;
+
+        // init metadata object
+        metaData = static_cast<MetaData*>(buffer.data);
+        metaData[0] = MetaData();
+        metaData->itemSize = itemSize;
+        metaData->itemCapacity = numberOfItems;
+
+        // init pointer
+        uint8_t* u8Data = static_cast<uint8_t*>(buffer.data);
+        items = reinterpret_cast<T*>(&u8Data[sizeof(MetaData)]);
+
+        return true;
+    }
+
+    /**
+     * @brief try to reuse a deleted buffer cluster
+     *
+     * @return item-position in the buffer, else UNINIT_STATE_32 if no empty space in buffer exist
+     */
+    uint64_t _reuseItemPosition()
+    {
+        // get byte-position of free space, if exist
+        const uint64_t selectedPosition = metaData->firstEmptyBlock;
+        if (selectedPosition == undefinedPos) {
+            return undefinedPos;
+        }
+
+        // update metadata
+        metaData->firstEmptyBlock = m_links[selectedPosition] & undefinedPos;
+        m_links[selectedPosition] = undefinedPos;
+        metaData->numberOfItems++;
+
+        // reset pointer, if no more free spaces exist
+        if (metaData->firstEmptyBlock == undefinedPos) {
+            metaData->lastEmptyBlock = undefinedPos;
+        }
+
+        return selectedPosition;
+    }
+
+    /**
+     * @brief try to reuse a deleted position in the buffer
+     *
+     * @return id of the new section, else 0x7FFFFFFFFFFFFFFF if allocation failed
+     */
+    uint64_t _reserveDynamicItem()
+    {
+        while (m_lock.test_and_set(std::memory_order_acquire)) {
+            asm("");
+        }
+
+        // try to reuse item
+        const uint64_t reusePos = _reuseItemPosition();
+        if (reusePos != undefinedPos) {
+            m_lock.clear(std::memory_order_release);
+            return reusePos;
+        }
+
+        // calculate size information
+        const uint64_t numberOfBlocks = buffer.numberOfBlocks;
+        const uint64_t itemBytes = (metaData->itemCapacity + 1) * metaData->itemSize;
+        const uint64_t newNumberOfBlocks = calcBytesToBlocks(itemBytes);
+
+        // allocate a new block, if necessary
+        if (numberOfBlocks < newNumberOfBlocks) {
+            Hanami::allocateBlocks_DataBuffer(buffer, newNumberOfBlocks - numberOfBlocks);
+        }
+
+        metaData->itemCapacity++;
+        const uint64_t ret = metaData->itemCapacity - 1;
+
+        m_lock.clear(std::memory_order_release);
+
+        return ret;
+    }
 
     /**
      * @brief initialize buffer by allocating memory and init with default-items
@@ -67,25 +251,27 @@ class ItemBuffer
      *
      * @return true, if successful, else false
      */
-    template <typename T>
-    bool initBuffer(const uint64_t numberOfItems, const uint64_t staticSize = 0)
+    bool initBuffer(const uint64_t numberOfItems)
     {
         // allocate memory
-        const bool ret = initDataBlocks(numberOfItems, sizeof(T), staticSize);
+        const bool ret = _initDataBlocks(numberOfItems, sizeof(T));
         if (ret == false) {
             return false;
         }
 
+        // set links to 0
+        m_links.resize(numberOfItems, 0);
+        std::fill(m_links.begin(), m_links.end(), undefinedPos);
+
         // init buffer with default-itemes
-        T* items = static_cast<T*>(itemData);
-        T newItem = T();
+        const T newItem = T();
         std::fill_n(items, numberOfItems, newItem);
+
+        // update metadata
         metaData->numberOfItems = numberOfItems;
 
         return true;
     }
-
-    bool initBuffer(const void* data, const uint64_t dataSize);
 
     /**
      * @brief add a new items at an empty position inside of the buffer
@@ -95,47 +281,34 @@ class ItemBuffer
      * @return position inside of the buffer, where the new item was added, if successful, or
      *         2^64-1 if the buffer is already full
      */
-    template <typename T>
     uint64_t addNewItem(const T& item)
     {
         // precheck
         if (metaData->itemSize == 0) {
-            return ITEM_BUFFER_UNDEFINE_POS;
+            return undefinedPos;
         }
-
-        // init invalid default-value
-        uint64_t position = ITEM_BUFFER_UNDEFINE_POS;
 
         // precheck
         if (metaData->numberOfItems >= metaData->itemCapacity) {
-            return position;
+            return undefinedPos;
         }
 
         // get item-position inside of the buffer
-        position = reserveDynamicItem();
-        if (position == ITEM_BUFFER_UNDEFINE_POS) {
+        const uint64_t position = _reserveDynamicItem();
+        if (position == undefinedPos) {
             return position;
         }
 
         // write new item at the position
-        T* array = static_cast<T*>(itemData);
+        T* array = static_cast<T*>(items);
         array[position] = item;
 
         return position;
     }
 
-    bool deleteItem(const uint64_t itemPos);
-    void deleteAll();
-
    private:
     std::atomic_flag m_lock = ATOMIC_FLAG_INIT;
-
-    bool initDataBlocks(const uint64_t numberOfItems,
-                        const uint32_t itemSize,
-                        const uint64_t staticSize);
-
-    uint64_t reuseItemPosition();
-    uint64_t reserveDynamicItem();
+    std::vector<uint64_t> m_links;
 };
 
 /**
@@ -147,9 +320,9 @@ class ItemBuffer
  */
 template <typename T>
 inline T*
-getItemData(ItemBuffer& itembuffer)
+getItemData(ItemBuffer<T>& itembuffer)
 {
-    return static_cast<T*>(itembuffer.itemData);
+    return static_cast<T*>(itembuffer.items);
 }
 
 }  // namespace Hanami
