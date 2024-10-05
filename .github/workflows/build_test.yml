@@ -47,19 +47,19 @@ jobs:
 
 
 
-  ansible-lint:
-    name: "Lint ansible playbook"
-    runs-on: ubuntu-latest
-    env:
-      FORCE_COLOR: 1
-    steps:
-      - uses: earthly/actions-setup@43211c7a0eae5344d6d79fb4aaf209c8f8866203
-        with:
-          version: v0.8.0
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
-      - 
-        name: Run check
-        run: earthly --ci +ansible-lint
+  # ansible-lint:
+  #   name: "Lint ansible playbook"
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     FORCE_COLOR: 1
+  #   steps:
+  #     - uses: earthly/actions-setup@43211c7a0eae5344d6d79fb4aaf209c8f8866203
+  #       with:
+  #         version: v0.8.0
+  #     - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
+  #     - 
+  #       name: Run check
+  #       run: earthly --ci +ansible-lint
 
 
 
@@ -131,7 +131,7 @@ jobs:
 
   build_python_package:
     name: "Build SDK python-package"
-    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check, check-for-executables, commit-lint, detect-sectets ]
+    needs: [ cpp-check, clang-format-check, flake8-check, check-for-executables, commit-lint, detect-sectets ]
     runs-on: ubuntu-latest
     env:
       FORCE_COLOR: 1
@@ -184,7 +184,7 @@ jobs:
 
   build_helm_package:
     name: "Build Helm package"
-    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check, check-for-executables, commit-lint, detect-sectets ]
+    needs: [ cpp-check, clang-format-check, flake8-check, check-for-executables, commit-lint, detect-sectets ]
     runs-on: ubuntu-latest
     env:
       FORCE_COLOR: 1
@@ -228,7 +228,7 @@ jobs:
 
   build_hanami:
     name: "Compile hanami (debug)"
-    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check, check-for-executables, commit-lint, detect-sectets ]
+    needs: [ cpp-check, clang-format-check, flake8-check, check-for-executables, commit-lint, detect-sectets ]
     runs-on: ubuntu-latest
     env:
       FORCE_COLOR: 1
@@ -269,7 +269,7 @@ jobs:
 
   build_hanamictl:
     name: "Compile CLI"
-    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check, check-for-executables, commit-lint, detect-sectets ]
+    needs: [ cpp-check, clang-format-check, flake8-check, check-for-executables, commit-lint, detect-sectets ]
     runs-on: ubuntu-latest
     env:
       FORCE_COLOR: 1
@@ -309,7 +309,7 @@ jobs:
 
   compiler_test:
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
-    needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check, check-for-executables, commit-lint, detect-sectets  ]
+    needs: [ cpp-check, clang-format-check, flake8-check, check-for-executables, commit-lint, detect-sectets  ]
     strategy:
       fail-fast: false
       matrix:
@@ -1143,126 +1143,6 @@ jobs:
 
 
 
-  ansible_test:
-    name: "Integration-Tests (Ansible)"
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
-    needs: [ docker_merge ]
-    runs-on: ubuntu-22.04
-    # strategy:
-    #   fail-fast: false
-    #   matrix:
-    #     platform:
-    #       - linux/amd64
-    #       - linux/arm64
-    env:
-      ADMIN_USER_ID: "asdf"
-      ADMIN_USER_NAME: "test-user"
-      ADMIN_PASSWORD: "asdfasdf"
-      TOKEN_KEY: "111111111"
-    steps:
-      - 
-        name: Set branch name as environment variable
-        run: |
-          if [[ ${GITHUB_REF#} == refs/tags/* ]]; then \
-              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/tags/} | sed 's/^v//')" | sed 's#/#\-#' >> $GITHUB_ENV; \
-          else \
-              echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" | sed 's#/#\-#' >> $GITHUB_ENV; \
-          fi
-      - 
-        name: Set python-version as environment variable
-        run: |
-          if [[ ${GITHUB_REF#} == refs/tags/* ]]; then \
-              echo "PYTHON_PACKAGE_VERSION=$(echo ${GITHUB_REF#refs/tags/} | sed 's/^v//')" | sed 's#/#\-#' >> $GITHUB_ENV; \
-          else \
-              echo "PYTHON_PACKAGE_VERSION=0.0.0" | sed 's#/#\-#' >> $GITHUB_ENV; \
-          fi
-      - 
-        name: Check docker-tag
-        run: echo "Docker-tag=$BRANCH_NAME"
-      - 
-        name: Get artifact
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16
-        with:
-          name: hanami_python_build_result
-          path: /tmp/hanami_python_build_result
-      - 
-        name: Install dependencies for SDK
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y protobuf-compiler wget gzip python3 python3-pip
-          cd /tmp/hanami_python_build_result
-          ls -l
-          pip3 install -U hanami_sdk-$PYTHON_PACKAGE_VERSION-py2.py3-none-any.whl
-      - 
-        name: Checkout repository
-        run: |
-          # use manually clone, because with the "actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332" action the name of the
-          # branch can not be read by the git commands, which is necessary for the build-script
-          git clone https://github.com/kitsudaiki/${GITHUB_REPOSITORY#*/}.git
-          cd ${GITHUB_REPOSITORY#*/}
-          git checkout ${GITHUB_REF#refs/heads/}
-          git submodule init
-          git submodule update --recursive
-      -
-        name: Install Ansible
-        run: |
-          sudo pip3 install -U ansible requests==2.31.0
-          sudo pip3 list
-      - 
-        name: Install hanami via Ansible
-        run: |
-          cd ${GITHUB_REPOSITORY#*/}/deploy/ansible/
-          ansible-playbook --connection=local -e "hanami_docker_tag=$BRANCH_NAME" -i openhanami/inventory.yml openhanami/deploy.yml -vvv
-      -
-        name: Sleep for 60 seconds
-        uses: jakejarvis/wait-action@919fc193e07906705e5b7a50f90ea9e74d20b2b0
-        with:
-          time: '60s'
-      -
-        name: Update hosts-file
-        run: |
-          echo "127.0.0.1  local-hanami" | sudo tee -a /etc/hosts
-          cat /etc/hosts
-      - 
-        name: Download mnist-files
-        run: |
-          cd /tmp/
-          wget https://storage.googleapis.com/cvdf-datasets/mnist/train-images-idx3-ubyte.gz
-          wget https://storage.googleapis.com/cvdf-datasets/mnist/train-labels-idx1-ubyte.gz
-          wget https://storage.googleapis.com/cvdf-datasets/mnist/t10k-images-idx3-ubyte.gz
-          wget https://storage.googleapis.com/cvdf-datasets/mnist/t10k-labels-idx1-ubyte.gz
-          gzip -d train-images-idx3-ubyte.gz
-          gzip -d train-labels-idx1-ubyte.gz
-          gzip -d t10k-images-idx3-ubyte.gz
-          gzip -d t10k-labels-idx1-ubyte.gz
-      - 
-        name: Prepare test-config
-        run: |
-          cd ${GITHUB_REPOSITORY#*/}
-          sudo cp -r ./example_configs/openhanami /etc/
-          sudo sed -i 's/address = http:\/\/127\.0\.0\.1:11418/address = https:\/\/local-hanami/g' /etc/openhanami/hanami_testing.conf
-      - 
-        name: Check docker-container
-        if: success() || failure()
-        run: docker ps -a
-      - 
-        name: Run test
-        run: |
-          cd ${GITHUB_REPOSITORY#*/}/testing/python_sdk_api
-          mkdir -p test_dir
-          cp sdk_api_test.py test_dir/
-          cp test_values.py test_dir/
-          cd test_dir
-          /usr/bin/python3 sdk_api_test.py
-      - 
-        name: Check docker-container
-        if: success() || failure()
-        run: |
-          docker ps -a
-          docker logs hanami
-
-
-
   badge-upload:
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' && always() }}
     needs: [ kubernetes_test, python_version_test, compiler_test ]
@@ -1309,7 +1189,7 @@ jobs:
 
   build_docs:
     name: Build and push docs
-    needs: [ kubernetes_test, ansible_test ]
+    needs: [ kubernetes_test ]
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
     env:
@@ -1365,7 +1245,7 @@ jobs:
 
   upload_files:
     name: "Upload files to share"
-    needs: [ kubernetes_test, ansible_test ]
+    needs: [ kubernetes_test ]
     runs-on: ubuntu-latest
     env:
       FORCE_COLOR: 1

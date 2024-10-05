@@ -31,6 +31,10 @@
 
 - fixed memory violations found by the new added ASan-memory-check
 
+### Removed
+
+- the ansible-playbook was moved ot the archive and removed from the documentation and CI
+
 
 ## v0.5.0
 
