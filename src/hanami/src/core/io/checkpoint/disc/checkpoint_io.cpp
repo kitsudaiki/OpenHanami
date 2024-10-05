@@ -51,8 +51,10 @@ CheckpointIO::CheckpointIO() : IO_Interface() {}
 CheckpointIO::~CheckpointIO()
 {
     ErrorContainer error;
-    m_checkpointFile->closeFile(error);
-    delete m_checkpointFile;
+    if (m_checkpointFile != nullptr) {
+        m_checkpointFile->closeFile(error);
+        delete m_checkpointFile;
+    }
 }
 
 /**

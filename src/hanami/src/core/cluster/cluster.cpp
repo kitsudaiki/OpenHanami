@@ -63,7 +63,11 @@ Cluster::Cluster(LogicalHost* host, const void* data, const uint64_t dataSize)
 /**
  * @brief destructor
  */
-Cluster::~Cluster() { attachedHost->removeCluster(this); }
+Cluster::~Cluster()
+{
+    attachedHost->removeCluster(this);
+    delete stateMachine;
+}
 
 /**
  * @brief Cluster::incrementAndCompare

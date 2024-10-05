@@ -53,7 +53,7 @@ class HanamiRoot
     static Hanami::GpuInterface* gpuInterface;
     static HttpServer* httpServer;
     static HanamiRoot* root;
-    static CryptoPP::SecByteBlock tokenKey;
+    static std::string tokenKey;
     static PhysicalHost* physicalHost;
 
    private:

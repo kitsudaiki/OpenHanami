@@ -43,8 +43,8 @@ Symmetric_Encryption_Test::encrypt_decrypt_AES_256()
 
     const std::string testData = "this is a test-string";
     CryptoPP::SecByteBlock key((unsigned char*)"asdf", 4);
-    std::string encryptionResult;
-    std::string decryptionResult;
+    std::string encryptionResult = "";
+    std::string decryptionResult = "";
 
     TEST_EQUAL(encrypt_AES_256_CBC(encryptionResult, testData, key, error), true);
     TEST_EQUAL(decrypt_AES_256_CBC(decryptionResult, encryptionResult, key, error), true);
