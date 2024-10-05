@@ -7,62 +7,59 @@ it easier for a new person to understand the code.
 
     .
     ├── deploy
-    │   ├── ansible
-    │   └── k8s
+    │   └── k8s
     │
     ├── docs
     │
     ├── example_configs
     │
     ├── src
-    │   ├── archive
-    │   │   ├── frontend
-    │   │   │   └── OpenHanami-Dashboard
-    │   │   ├── libraries
-    │   │   │   ├── hanami_network
-    │   │   │   ├── hanami_obj
-    │   │   │   └── hanami_opencl
-    │   │   └── sdk
-    │   │       └── javascript
+    │   ├── archive
+    │   │   ├── frontend
+    │   │   │   └── OpenHanami-Dashboard
+    │   │   ├── libraries
+    │   │   │   ├── hanami_network
+    │   │   │   ├── hanami_obj
+    │   │   │   └── hanami_opencl
+    │   │   └── sdk
+    │   │       └── javascript
     │   │
-    │   ├── cli
-    │   │   └── hanamictl
-    │   │       ├── common
-    │   │       └── resources
+    │   ├── cli
+    │   │   └── hanamictl
+    │   │       ├── common
+    │   │       └── resources
     │   │
-    │   ├── hanami
-    │   │   └── (see below)
+    │   ├── hanami
+    │   │   └── (see below)
     │   │
-    │   ├── libraries
-    │   │   ├── hanami_args
-    │   │   ├── hanami_cluster_parser
-    │   │   ├── hanami_common
-    │   │   ├── hanami_config
-    │   │   ├── hanami_cpu
-    │   │   ├── hanami_crypto
-    │   │   ├── hanami_database
-    │   │   ├── hanami_hardware
-    │   │   ├── hanami_ini
-    │   │   ├── hanami_messages
-    │   │   ├── hanami_policies
-    │   │   └── hanami_sqlite
+    │   ├── libraries
+    │   │   ├── hanami_args
+    │   │   ├── hanami_cluster_parser
+    │   │   ├── hanami_common
+    │   │   ├── hanami_config
+    │   │   ├── hanami_cpu
+    │   │   ├── hanami_crypto
+    │   │   ├── hanami_database
+    │   │   ├── hanami_hardware
+    │   │   ├── hanami_ini
+    │   │   ├── hanami_messages
+    │   │   ├── hanami_policies
+    │   │   └── hanami_sqlite
     │   │
-    │   ├── sdk
-    │   │   ├── go
-    │   │   └── python
+    │   ├── sdk
+    │   │   ├── go
+    │   │   └── python
     │   │
-    │   └── third-party-libs
-    │       └── jwt-cpp
+    │   └── third-party-libs
+    │       └── jwt-cpp
     │
     └── testing
-        ├── ansible_deploy
         ├── go_cli_api
         └── python_sdk_api
 
 -   **deploy**
 
-    Contains the helm-chart doploying hanami on kubernetes and the ansible-playbook for a bare-metal
-    installation.
+    Contains the helm-chart doploying hanami on kubernetes.
 
 -   **docs**
 
@@ -161,32 +158,32 @@ it easier for a new person to understand the code.
     └── src
         └── hanami
             ├── src
-            │   ├── api
-            │   │   ├── endpoint_processing
-            │   │   ├── http
-            │   │   │   ├── auth
-            │   │   │   ├── checkpoint
-            │   │   │   ├── cluster
-            │   │   │   ├── dataset
-            │   │   │   ├── hosts
-            │   │   │   ├── logs
-            │   │   │   ├── measurements
-            │   │   │   ├── project
-            │   │   │   ├── system_info
-            │   │   │   ├── task
-            │   │   │   ├── threading
-            │   │   │   └── user
-            │   │   └── websocket
-            │   ├── core
-            │   │   ├── cluster
-            │   │   ├── io
-            │   │   │   ├── checkpoint
-            │   │   │   └── data_set
-            │   │   └── processing
-            │   │       ├── cpu
-            │   │       └── cuda
-            │   ├── database
-            │   └── documentation
+            │   ├── api
+            │   │   ├── endpoint_processing
+            │   │   ├── http
+            │   │   │   ├── auth
+            │   │   │   ├── checkpoint
+            │   │   │   ├── cluster
+            │   │   │   ├── dataset
+            │   │   │   ├── hosts
+            │   │   │   ├── logs
+            │   │   │   ├── measurements
+            │   │   │   ├── project
+            │   │   │   ├── system_info
+            │   │   │   ├── task
+            │   │   │   ├── threading
+            │   │   │   └── user
+            │   │   └── websocket
+            │   ├── core
+            │   │   ├── cluster
+            │   │   ├── io
+            │   │   │   ├── checkpoint
+            │   │   │   └── data_set
+            │   │   └── processing
+            │   │       ├── cpu
+            │   │       └── cuda
+            │   ├── database
+            │   └── documentation
             └── tests
 
 -   **api**

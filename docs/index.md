@@ -139,9 +139,9 @@ and multi-tenancy.
 
         See [Websocket-docu](https://docs.openhanami.com/frontend/websockets/websocket_workflow/)
 
--   **Installation on Kubernetes and with Ansible**
+-   **Installation on Kubernetes**
 
-    The backend can be basically deployed on kubernetes via Helm-chart or plain via Ansible.
+    The backend can be basically deployed on kubernetes via Helm-chart.
 
     See [Installation-docu](https://docs.openhanami.com/backend/installation/)
 
