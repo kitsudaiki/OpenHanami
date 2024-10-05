@@ -113,6 +113,14 @@ compile-code:
     SAVE ARTIFACT /tmp/hanami /tmp/hanami
     SAVE ARTIFACT /tmp/hanami AS LOCAL hanami
 
+compile-code-debug:
+    FROM +prepare-build-dependencies
+    RUN cmake -DCMAKE_BUILD_TYPE=Debug -Drun_tests=ON  .
+    RUN make -j8
+    RUN mkdir /tmp/hanami && \
+        find src -type f -executable -exec cp {} /tmp/hanami \;
+    SAVE ARTIFACT /tmp/hanami /tmp/hanami
+    SAVE ARTIFACT /tmp/hanami AS LOCAL hanami
 
 build-image:
     ARG image_name
