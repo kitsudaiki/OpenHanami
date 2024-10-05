@@ -9,6 +9,9 @@ permissions:
 env:
   REGISTRY_HANAMI_IMAGE: kitsudaiki/hanami
   REGISTRY_DOCS_IMAGE: kitsudaiki/openhanami_docs
+  HANAMI_ADMIN_USER_ID: asdf
+  HANAMI_ADMIN_USER_NAME: asdf
+  HANAMI_ADMIN_PASSWORD: asdfasdf
 
 jobs:
 
@@ -224,7 +227,7 @@ jobs:
 
 
   build_hanami:
-    name: "Compile hanami"
+    name: "Compile hanami (debug)"
     needs: [ cpp-check, clang-format-check, ansible-lint, flake8-check, check-for-executables, commit-lint, detect-sectets ]
     runs-on: ubuntu-latest
     env:
@@ -244,22 +247,22 @@ jobs:
           git submodule init
           git submodule update --recursive
       - 
-        name: Compile code
+        name: Compile code (Debug)
         run: |
           cd ${GITHUB_REPOSITORY#*/}
-          earthly --artifact +compile-code/tmp/hanami ./builds/binaries
+          earthly --artifact +compile-code-debug/tmp/hanami ./builds/binaries
       - 
         name: Copy files
         run: |
-          mkdir /tmp/Hanami_build_result
+          mkdir /tmp/Hanami_debug_build_result
           cd ${GITHUB_REPOSITORY#*/}
-          cp -r builds/binaries/* /tmp/Hanami_build_result/
+          cp -r builds/binaries/* /tmp/Hanami_debug_build_result/
       - 
         name: Create artifact
         uses: actions/upload-artifact@0b2256b8c012f0828dc542b3febcab082c67f72b
         with:
-          name: Hanami_build_result
-          path: /tmp/Hanami_build_result
+          name: Hanami_debug_build_result
+          path: /tmp/Hanami_debug_build_result
           retention-days: 1
 
 
@@ -425,56 +428,56 @@ jobs:
         name: Get artifact
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16
         with:
-          name: Hanami_build_result
-          path: /tmp/Hanami_build_result
+          name: Hanami_debug_build_result
+          path: /tmp/Hanami_debug_build_result
       - 
         name: "Check target-directory"
-        run: ls -l /tmp/Hanami_build_result
+        run: ls -l /tmp/Hanami_debug_build_result
       - 
         name: "Run test: hanami_common"
         run: |
-          chmod +x /tmp/Hanami_build_result/hanami_common_unit_tests
-          /tmp/Hanami_build_result/hanami_common_unit_tests
+          chmod +x /tmp/Hanami_debug_build_result/hanami_common_unit_tests
+          /tmp/Hanami_debug_build_result/hanami_common_unit_tests
       - 
         name: "Run test: hanami_config"
         run: |
-          chmod +x /tmp/Hanami_build_result/hanami_config_unit_tests
-          /tmp/Hanami_build_result/hanami_config_unit_tests
+          chmod +x /tmp/Hanami_debug_build_result/hanami_config_unit_tests
+          /tmp/Hanami_debug_build_result/hanami_config_unit_tests
       - 
         name: "Run test: hanami_crypto"
         run: |
-          chmod +x /tmp/Hanami_build_result/hanami_crypto_unit_tests
-          /tmp/Hanami_build_result/hanami_crypto_unit_tests
+          chmod +x /tmp/Hanami_debug_build_result/hanami_crypto_unit_tests
+          /tmp/Hanami_debug_build_result/hanami_crypto_unit_tests
       - 
         name: "Run test: hanami_ini"
         run: |
-          chmod +x /tmp/Hanami_build_result/hanami_ini_unit_tests
-          /tmp/Hanami_build_result/hanami_ini_unit_tests
+          chmod +x /tmp/Hanami_debug_build_result/hanami_ini_unit_tests
+          /tmp/Hanami_debug_build_result/hanami_ini_unit_tests
       - 
         name: "Run test: hanami_sqlite"
         run: |
-          chmod +x /tmp/Hanami_build_result/hanami_sqlite_unit_tests
-          /tmp/Hanami_build_result/hanami_sqlite_unit_tests
+          chmod +x /tmp/Hanami_debug_build_result/hanami_sqlite_unit_tests
+          /tmp/Hanami_debug_build_result/hanami_sqlite_unit_tests
       - 
         name: "Run test: hanami_cluster_parser"
         run: |
-          chmod +x /tmp/Hanami_build_result/hanami_cluster_parser_unit_tests
-          /tmp/Hanami_build_result/hanami_cluster_parser_unit_tests
+          chmod +x /tmp/Hanami_debug_build_result/hanami_cluster_parser_unit_tests
+          /tmp/Hanami_debug_build_result/hanami_cluster_parser_unit_tests
       - 
         name: "Run test: hanami_policies"
         run: |
-          chmod +x /tmp/Hanami_build_result/hanami_policies_unit_tests
-          /tmp/Hanami_build_result/hanami_policies_unit_tests
+          chmod +x /tmp/Hanami_debug_build_result/hanami_policies_unit_tests
+          /tmp/Hanami_debug_build_result/hanami_policies_unit_tests
       - 
         name: "Run test: hanami_args"
         run: |
-          chmod +x  /tmp/Hanami_build_result/hanami_args_unit_tests
-          /tmp/Hanami_build_result/hanami_args_unit_tests
+          chmod +x  /tmp/Hanami_debug_build_result/hanami_args_unit_tests
+          /tmp/Hanami_debug_build_result/hanami_args_unit_tests
       - 
         name: "Run test: hanami"
         run: |
-          chmod +x  /tmp/Hanami_build_result/hanami_unittests
-          /tmp/Hanami_build_result/hanami_unittests
+          chmod +x  /tmp/Hanami_debug_build_result/hanami_unittests
+          /tmp/Hanami_debug_build_result/hanami_unittests
 
 
 
@@ -494,21 +497,21 @@ jobs:
         name: Get artifact
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16
         with:
-          name: Hanami_build_result
-          path: /tmp/Hanami_build_result
+          name: Hanami_debug_build_result
+          path: /tmp/Hanami_debug_build_result
       - 
         name: "Check target-directory"
-        run: ls -l /tmp/Hanami_build_result
+        run: ls -l /tmp/Hanami_debug_build_result
       - 
         name: "Run test: hanami_common"
         run: |
-          chmod +x /tmp/Hanami_build_result/hanami_common_memory_leak_tests
-          /tmp/Hanami_build_result/hanami_common_memory_leak_tests
+          chmod +x /tmp/Hanami_debug_build_result/hanami_common_memory_leak_tests
+          /tmp/Hanami_debug_build_result/hanami_common_memory_leak_tests
       - 
         name: "Run test: hanami_cluster_parser"
         run: |
-          chmod +x /tmp/Hanami_build_result/hanami_cluster_parser_memory_leak_tests
-          /tmp/Hanami_build_result/hanami_cluster_parser_memory_leak_tests
+          chmod +x /tmp/Hanami_debug_build_result/hanami_cluster_parser_memory_leak_tests
+          /tmp/Hanami_debug_build_result/hanami_cluster_parser_memory_leak_tests
 
 
 
@@ -528,39 +531,44 @@ jobs:
         name: Get artifact
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16
         with:
-          name: Hanami_build_result
-          path: /tmp/Hanami_build_result
+          name: Hanami_debug_build_result
+          path: /tmp/Hanami_debug_build_result
       - 
         name: "Check target-directory"
-        run: ls -l /tmp/Hanami_build_result
+        run: ls -l /tmp/Hanami_debug_build_result
       - 
         name: "Run test: hanami_config"
         run: |
-          chmod +x /tmp/Hanami_build_result/hanami_config_functional_tests
-          /tmp/Hanami_build_result/hanami_config_functional_tests
+          chmod +x /tmp/Hanami_debug_build_result/hanami_config_functional_tests
+          /tmp/Hanami_debug_build_result/hanami_config_functional_tests
       # - 
       #  name: "Run test: hanami_obj"
       #   run: |
-      #     chmod +x /tmp/Hanami_build_result/libraries/hanami_obj/tests/functional_tests/functional_tests
-      #     /tmp/Hanami_build_result/libraries/hanami_obj/tests/functional_tests/functional_tests
+      #     chmod +x /tmp/Hanami_debug_build_result/libraries/hanami_obj/tests/functional_tests/functional_tests
+      #     /tmp/Hanami_debug_build_result/libraries/hanami_obj/tests/functional_tests/functional_tests
       - 
         name: "Run test: hanami_database"
         run: |
-          chmod +x /tmp/Hanami_build_result/hanami_database_functional_tests
-          /tmp/Hanami_build_result/hanami_database_functional_tests
+          chmod +x /tmp/Hanami_debug_build_result/hanami_database_functional_tests
+          /tmp/Hanami_debug_build_result/hanami_database_functional_tests
       # - 
       #  name: "Run test: hanami_network"
       #   run: |
-      #     chmod +x /tmp/Hanami_build_result/libraries/hanami_network/tests/functional_tests/functional_tests
-      #     /tmp/Hanami_build_result/libraries/hanami_network/tests/functional_tests/functional_tests
+      #     chmod +x /tmp/Hanami_debug_build_result/libraries/hanami_network/tests/functional_tests/functional_tests
+      #     /tmp/Hanami_debug_build_result/libraries/hanami_network/tests/functional_tests/functional_tests
 
 
 
   sdk_api_tests:
     name: "SDK-API-Tests"
     needs: [ unit_tests, memory_leak_tests, functional_tests ]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
+      - 
+        name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openssl libuuid1 libcrypto++8 libsqlite3-0 libprotobuf23 libboost1.74
       - 
         name: Set python-version as environment variable
         run: |
@@ -589,8 +597,8 @@ jobs:
         name: Get artifact
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16
         with:
-          name: Hanami_build_result
-          path: /tmp/Hanami_build_result
+          name: Hanami_debug_build_result
+          path: /tmp/Hanami_debug_build_result
       - 
         name: Install dependencies for SDK
         run: |
@@ -599,18 +607,6 @@ jobs:
           cd /tmp/hanami_python_build_result
           ls -l
           pip3 install -U hanami_sdk-$PYTHON_PACKAGE_VERSION-py2.py3-none-any.whl
-      - 
-        name: Build local docker-image
-        run: |
-          cd ${GITHUB_REPOSITORY#*/}
-          chmod +x /tmp/Hanami_build_result/hanami
-          mkdir -p builds/binaries
-          cp /tmp/Hanami_build_result/hanami ./builds/binaries/
-          # IMPORTANT: use the Dockerfile instead of the Earthfile here, 
-          # because the Dockerfile is also used in the final build-process.
-          # So using the Dockerfile here to ensure, the final build after 
-          # merge doesn't fail.
-          docker build -t kitsudaiki/hanami:test .
       - 
         name: Download mnist-files
         run: |
@@ -624,18 +620,16 @@ jobs:
           gzip -d t10k-images-idx3-ubyte.gz
           gzip -d t10k-labels-idx1-ubyte.gz
       - 
-        name: Start hanami-docker-container
+        name: run Hanami in backgroupd
         run: |
           cd ${GITHUB_REPOSITORY#*/}
-          sudo cp -r ./example_configs/openhanami /etc/
-          docker run -d -v \
-            ./example_configs/openhanami:/etc/openhanami \
-            -p 127.0.0.1:11418:11418 \
-            --name=hanami \
-            --env HANAMI_ADMIN_USER_ID=asdf \
-            --env HANAMI_ADMIN_USER_NAME=asdf \
-            --env HANAMI_ADMIN_PASSWORD=asdfasdf \
-            kitsudaiki/hanami:test
+          chmod +x /tmp/Hanami_debug_build_result/hanami
+          mkdir -p builds/binaries
+          sudo cp -r ./example_configs/openhanami /etc/openhanami
+          sudo chmod 777 -R /etc/openhanami
+          /tmp/Hanami_debug_build_result/hanami &
+          # BINARY_PID=$!
+          # trap "kill $BINARY_PID" EXIT
       - 
         name: Sleep for 15 seconds
         uses: jakejarvis/wait-action@919fc193e07906705e5b7a50f90ea9e74d20b2b0
@@ -650,18 +644,19 @@ jobs:
           cp test_values.py test_dir/
           cd test_dir
           /usr/bin/python3 sdk_api_test.py
-      - 
-        name: Get log of the docker-container, even if the test failed
-        if: always()
-        run: docker logs hanami
 
 
 
   cli_api_tests:
     name: "CLI-API-Tests"
     needs: [ unit_tests, memory_leak_tests, functional_tests ]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
+      - 
+        name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openssl libuuid1 libcrypto++8 libsqlite3-0 libprotobuf23 libboost1.74
       - 
         name: Checkout repository
         run: |
@@ -676,8 +671,8 @@ jobs:
         name: Get artifact
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16
         with:
-          name: Hanami_build_result
-          path: /tmp/Hanami_build_result
+          name: Hanami_debug_build_result
+          path: /tmp/Hanami_debug_build_result
       -
         name: Get artifact
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16
@@ -689,18 +684,6 @@ jobs:
         run: |
           chmod +x /tmp/hanamictl_build_result/hanamictl
           cp /tmp/hanamictl_build_result/hanamictl ${GITHUB_REPOSITORY#*/}/testing/go_cli_api/
-      - 
-        name: Build local docker-image
-        run: |
-          cd ${GITHUB_REPOSITORY#*/}
-          chmod +x /tmp/Hanami_build_result/hanami
-          mkdir -p builds/binaries
-          cp /tmp/Hanami_build_result/hanami ./builds/binaries/
-          # IMPORTANT: use the Dockerfile instead of the Earthfile here, 
-          # because the Dockerfile is also used in the final build-process.
-          # So using the Dockerfile here to ensure, the final build after 
-          # merge doesn't fail.
-          docker build -t kitsudaiki/hanami:test .
       - 
         name: Download mnist-files
         run: |
@@ -714,18 +697,16 @@ jobs:
           gzip -d t10k-images-idx3-ubyte.gz
           gzip -d t10k-labels-idx1-ubyte.gz
       - 
-        name: Start hanami-docker-container
+        name: run Hanami in backgroupd
         run: |
           cd ${GITHUB_REPOSITORY#*/}
-          sudo cp -r ./example_configs/openhanami /etc/
-          docker run -d -v \
-            ./example_configs/openhanami:/etc/openhanami \
-            -p 127.0.0.1:11418:11418 \
-            --name=hanami \
-            --env HANAMI_ADMIN_USER_ID=asdf \
-            --env HANAMI_ADMIN_USER_NAME=asdf \
-            --env HANAMI_ADMIN_PASSWORD=asdfasdf \
-            kitsudaiki/hanami:test
+          chmod +x /tmp/Hanami_debug_build_result/hanami
+          mkdir -p builds/binaries
+          sudo cp -r ./example_configs/openhanami /etc/openhanami
+          sudo chmod 777 -R /etc/openhanami
+          /tmp/Hanami_debug_build_result/hanami &
+          # BINARY_PID=$!
+          # trap "kill $BINARY_PID" EXIT
       - 
         name: Sleep for 15 seconds
         uses: jakejarvis/wait-action@919fc193e07906705e5b7a50f90ea9e74d20b2b0
@@ -744,10 +725,6 @@ jobs:
           export request_inputs=/tmp/t10k-images-idx3-ubyte
           export request_labels=/tmp/t10k-labels-idx1-ubyte
           ./cli_test.sh
-      - 
-        name: Get log of the docker-container, even if the test failed
-        if: always()
-        run: docker logs hanami
 
 
 
@@ -798,8 +775,8 @@ jobs:
         name: Get artifact
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16
         with:
-          name: Hanami_build_result
-          path: /tmp/Hanami_build_result
+          name: Hanami_debug_build_result
+          path: /tmp/Hanami_debug_build_result
       - 
         name: Install python
         uses: actions/setup-python@39cd14951b08e74b54015e9e001cdefcf80e669f
@@ -823,9 +800,9 @@ jobs:
         name: Build local docker-image
         run: |
           cd ${GITHUB_REPOSITORY#*/}
-          chmod +x /tmp/Hanami_build_result/hanami
+          chmod +x /tmp/Hanami_debug_build_result/hanami
           mkdir -p builds/binaries
-          cp /tmp/Hanami_build_result/hanami ./builds/binaries/
+          cp /tmp/Hanami_debug_build_result/hanami ./builds/binaries/
           # IMPORTANT: use the Dockerfile instead of the Earthfile here, 
           # because the Dockerfile is also used in the final build-process.
           # So using the Dockerfile here to ensure, the final build after 
@@ -1357,8 +1334,8 @@ jobs:
         name: Get artifact
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16
         with:
-          name: Hanami_build_result
-          path: /tmp/Hanami_build_result
+          name: Hanami_debug_build_result
+          path: /tmp/Hanami_debug_build_result
       - 
         name: Checkout repository
         run: |

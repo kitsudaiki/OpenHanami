@@ -8,6 +8,10 @@
 
 - the input definition for the tasks was changes to removed the naming restriction between dataset-column and hexagon-name
 
+#### Checkpoint-breaking
+
+- the synapse-block-links were moved into its own vector for cleaner separation and better sizes of the objects within the memory
+
 #### Template-Breaking
 
 - removed `target`-keyword from cluster-templates
@@ -19,6 +23,13 @@
 - number of input- and output-neurons now scales with the given data, so defining them hard inside of the cluster-template is not longer necessary
 - moved converting user-context from the endpoints to a central position to avoid unnecessary redundant code
 - moved cluster io-functions internally into the processing and backpropagarion files for the cpu-code
+- item-buffer was internally changed to be more compatible for further attempts of GPU-support
+- made internal processing more generic, to have the same worker-workflow for all coming backends
+- use debug builds with ASan-check for tests of the CI (unit-, functional-, memory-leak-, sdk-api- and cli-api-tests)
+
+### Fixed
+
+- fixed memory violations found by the new added ASan-memory-check
 
 
 ## v0.5.0

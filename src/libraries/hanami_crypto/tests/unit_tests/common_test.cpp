@@ -60,7 +60,7 @@ void
 Common_Test::encodeBase64_test()
 {
     std::string output = "";
-    std::string input = "asdfasdfasdf123a";
+    std::string input = "";
 
     output = "";
     input = "asdfasdfasdf123a";

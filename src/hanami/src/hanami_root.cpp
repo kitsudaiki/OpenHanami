@@ -53,7 +53,7 @@ Hanami::GpuInterface* HanamiRoot::gpuInterface = nullptr;
 HanamiRoot* HanamiRoot::root = nullptr;
 PhysicalHost* HanamiRoot::physicalHost = nullptr;
 HttpServer* HanamiRoot::httpServer = nullptr;
-CryptoPP::SecByteBlock HanamiRoot::tokenKey{};
+std::string HanamiRoot::tokenKey{};
 
 /**
  * @brief constructor
@@ -369,8 +369,7 @@ HanamiRoot::initJwt(Hanami::ErrorContainer& error)
     }
 
     // init jwt for token create and sign
-    tokenKey
-        = CryptoPP::SecByteBlock((unsigned char*)tokenKeyString.c_str(), tokenKeyString.size());
+    tokenKey = tokenKeyString;
 
     return true;
 }

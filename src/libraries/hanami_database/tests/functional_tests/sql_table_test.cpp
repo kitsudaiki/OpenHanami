@@ -20,6 +20,8 @@ SqlTable_Test::SqlTable_Test() : Hanami::CompareTestHelper("SqlTable_Test")
     update_test();
     delete_test();
     getNumberOfRows_test();
+
+    delete m_table;
 }
 
 /**
