@@ -20,8 +20,10 @@
  *      limitations under the License.
  */
 
+// #include <cuda_runtime_api.h>
 #include <stdint.h>
 
+#include <iostream>
 #include <nlohmann/json.hpp>
 #include <string>
 

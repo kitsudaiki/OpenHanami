@@ -56,18 +56,20 @@ BufferIO::writeClusterIntoBuffer(Hanami::DataBuffer& target,
  *
  * @param cluster target-cluster
  * @param input input-buffer with the data for the target
- * @return return-status based on the result of the process
+ * @param host initial host to attach the hexagons. if nullptr, use the first cpu-host
+ * @param reference to error-output
  *
  * @return return-status based on the result of the process
  */
 ReturnStatus
 BufferIO::readClusterFromBuffer(Cluster& cluster,
                                 Hanami::DataBuffer& input,
+                                LogicalHost* host,
                                 Hanami::ErrorContainer& error)
 {
     m_buffer = &input;
 
-    return deserialize(cluster, m_buffer->usedBufferSize, error);
+    return deserialize(cluster, m_buffer->usedBufferSize, host, error);
 }
 
 /**

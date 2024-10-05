@@ -28,6 +28,7 @@
 #include <core/processing/cpu/cpu_host.h>
 #include <core/processing/cuda/cuda_host.h>
 #include <core/processing/logical_host.h>
+#include <core/processing/physical_host.h>
 #include <hanami_root.h>
 
 /**
@@ -77,33 +78,33 @@ searchTargetInHexagon(Hexagon* targetHexagon, ItemBuffer<SynapseBlock>& synapseB
 }
 
 /**
- * @brief resize the number of connection-blocks of a hexagon
+ * @brief resize the number of blocks of a hexagon
  *
  * @param targetHexagon hexagon to resize
  */
 inline void
-resizeConnections(Hexagon* targetHexagon)
+resizeBlocks(Hexagon* targetHexagon)
 {
-    const uint32_t dimXold = targetHexagon->header.dimX;
+    const uint32_t dimXold = targetHexagon->header.numberOfBlocks;
 
-    targetHexagon->header.dimX++;
+    targetHexagon->header.numberOfBlocks++;
 
     // resize list
-    targetHexagon->connectionBlocks.resize(targetHexagon->header.dimX);
-    targetHexagon->synapseBlockLinks.resize(targetHexagon->header.dimX);
+    targetHexagon->connectionBlocks.resize(targetHexagon->header.numberOfBlocks);
+    targetHexagon->synapseBlockLinks.resize(targetHexagon->header.numberOfBlocks);
 
     // if there was no scaling in x-dimension, then no re-ordering necessary
-    if (targetHexagon->header.dimX == dimXold) {
+    if (targetHexagon->header.numberOfBlocks == dimXold) {
         return;
     }
     LOG_DEBUG("resized connection-Block: " + std::to_string(dimXold) + " -> "
-              + std::to_string(targetHexagon->header.dimX));
+              + std::to_string(targetHexagon->header.numberOfBlocks));
 
     // update content of list for the new size
-    targetHexagon->connectionBlocks[targetHexagon->header.dimX - 1] = ConnectionBlock();
-    targetHexagon->synapseBlockLinks[targetHexagon->header.dimX - 1] = UNINIT_STATE_64;
+    targetHexagon->connectionBlocks[targetHexagon->header.numberOfBlocks - 1] = ConnectionBlock();
+    targetHexagon->synapseBlockLinks[targetHexagon->header.numberOfBlocks - 1] = UNINIT_STATE_64;
 
-    targetHexagon->neuronBlocks.resize(targetHexagon->header.dimX);
+    targetHexagon->neuronBlocks.resize(targetHexagon->header.numberOfBlocks);
     targetHexagon->header.numberOfFreeSections += NUMBER_OF_SYNAPSESECTION;
 }
 
@@ -121,8 +122,6 @@ resizeConnections(Hexagon* targetHexagon)
 inline bool
 createNewSection(Cluster& cluster, Connection* sourceConnection)
 {
-    ItemBuffer<SynapseBlock>* synapseBlockBuffer = &cluster.attachedHost->synapseBlocks;
-
     // get origin object
     SourceLocation sourceLoc = getSourceNeuron(sourceConnection->origin, &cluster.hexagons[0]);
     if (sourceLoc.hexagon->header.isOutputHexagon) {
@@ -133,10 +132,11 @@ createNewSection(Cluster& cluster, Connection* sourceConnection)
     const uint32_t targetHexagonId
         = sourceLoc.hexagon->possibleHexagonTargetIds[rand() % NUMBER_OF_POSSIBLE_NEXT];
     Hexagon* targetHexagon = &cluster.hexagons[targetHexagonId];
+    ItemBuffer<SynapseBlock>* synapseBlockBuffer = &targetHexagon->attachedHost->synapseBlocks;
 
     // get target-connection
     if (targetHexagon->header.numberOfFreeSections < NUMBER_OF_SYNAPSESECTION / 2) {
-        resizeConnections(targetHexagon);
+        resizeBlocks(targetHexagon);
     }
     Connection* targetConnection = searchTargetInHexagon(targetHexagon, *synapseBlockBuffer);
     if (targetConnection == nullptr) {
@@ -177,7 +177,7 @@ createNewSection(Cluster& cluster,
                  const uint16_t blockId,
                  const uint8_t neuronId)
 {
-    ItemBuffer<SynapseBlock>* synapseBlockBuffer = &cluster.attachedHost->synapseBlocks;
+    ItemBuffer<SynapseBlock>* synapseBlockBuffer = &hexagon->attachedHost->synapseBlocks;
 
     // get target objects
     const uint32_t targetHexagonId
@@ -186,7 +186,7 @@ createNewSection(Cluster& cluster,
 
     // get target-connection
     if (targetHexagon->header.numberOfFreeSections < NUMBER_OF_SYNAPSESECTION / 2) {
-        resizeConnections(targetHexagon);
+        resizeBlocks(targetHexagon);
     }
     Connection* targetConnection = searchTargetInHexagon(targetHexagon, *synapseBlockBuffer);
     if (targetConnection == nullptr) {

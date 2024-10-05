@@ -141,6 +141,7 @@ def switch_host(token: str,
     json_body = {
         "cluster_uuid": cluster_uuid,
         "host_uuid": host_uuid,
+        "hexagon_id": 1,
     }
     body_str = json.dumps(json_body)
     return hanami_request.send_put_request(token,

@@ -44,6 +44,10 @@ SwitchHostsV1M0::SwitchHostsV1M0()
         .setComment("UUID of the cluster to move.")
         .setRegex(UUID_REGEX);
 
+    registerInputField("hexagon_id", SAKURA_INT_TYPE)
+        .setComment("ID of the hexagon within the cluster.")
+        .setLimit(0, 1000000000);
+
     registerInputField("host_uuid", SAKURA_STRING_TYPE)
         .setComment("UUID of the target-host where the cluster should moved to.")
         .setRegex(UUID_REGEX);
@@ -84,6 +88,7 @@ SwitchHostsV1M0::runTask(BlossomIO& blossomIO,
 {
     const std::string clusterUuid = blossomIO.input["cluster_uuid"];
     const std::string hostUuid = blossomIO.input["host_uuid"];
+    const uint64_t hexagonId = blossomIO.input["hexagon_id"];
 
     // get data from table
     json clusterResult;
@@ -118,8 +123,18 @@ SwitchHostsV1M0::runTask(BlossomIO& blossomIO,
         return false;
     }
 
+    // check if hexagon-id even exist within the cluster
+    if (cluster->hexagons.size() <= hexagonId) {
+        status.errorMessage = "Cluster with UUID '" + clusterUuid
+                              + "' does not contain a hexagon with ID '" + std::to_string(hexagonId)
+                              + "'";
+        status.statusCode = NOT_FOUND_RTYPE;
+        LOG_DEBUG(status.errorMessage);
+        return false;
+    }
+
     // move cluster to another host
-    if (targetHost->moveCluster(cluster) == false) {
+    if (targetHost->moveHexagon(&cluster->hexagons[hexagonId]) == false) {
         status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
         error.addMessage("Failed to move cluster with UUID '" + clusterUuid
                          + "' to host with UUID '" + hostUuid + "'");

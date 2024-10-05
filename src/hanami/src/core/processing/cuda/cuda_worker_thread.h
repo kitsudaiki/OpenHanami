@@ -28,21 +28,18 @@
 
 class Cluster;
 
-class CudaWorkerThread : public Hanami::Thread
+class CudaWorkerThread : public WorkerThread
 {
    public:
     CudaWorkerThread(CudaHost* host);
     ~CudaWorkerThread();
 
-   protected:
-    void run();
-
    private:
-    void trainClusterForward(Cluster* cluster);
-    void trainClusterBackward(Cluster* cluster);
-    void requestCluster(Cluster* cluster);
-
-    CudaHost* m_host = nullptr;
+    CudaHost* m_cudaHost = nullptr;
+    void handleTrainForwardTask(Hanami::WorkerTask task);
+    void handleTrainBackwardTask(Hanami::WorkerTask task);
+    void handleReductionTask(const Hanami::WorkerTask task);
+    void handleProcessTask(const Hanami::WorkerTask task);
 };
 
 #endif  // CUDAWORKERTHREAD_H

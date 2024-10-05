@@ -77,8 +77,7 @@ TrainForward_State::processEvent()
         }
     }
 
-    m_cluster->mode = ClusterProcessingMode::TRAIN_FORWARD_MODE;
-    m_cluster->startForwardCycle();
+    m_cluster->startForwardCycle(false);
 
     return true;
 }

@@ -98,8 +98,8 @@ Cluster_Init_Test::createCluster_test()
     TEST_EQUAL(success, true);
 
     // create new cluster
-    Cluster newCluster(m_logicalHost);
-    success = newCluster.init(parsedCluster, uuid);
+    Cluster newCluster;
+    success = newCluster.init(parsedCluster, uuid, m_logicalHost);
     TEST_EQUAL(success, true);
 
     // test uuid
@@ -219,8 +219,8 @@ Cluster_Init_Test::serialize_test()
     assert(success);
 
     // create new cluster
-    Cluster baseCluster(m_logicalHost);
-    assert(baseCluster.init(parsedCluster, uuid));
+    Cluster baseCluster;
+    assert(baseCluster.init(parsedCluster, uuid, m_logicalHost));
 
     // write cluster into a test-buffer
     BufferIO bufferIo;
@@ -228,8 +228,8 @@ Cluster_Init_Test::serialize_test()
     TEST_EQUAL(bufferIo.writeClusterIntoBuffer(buffer, baseCluster, error), OK);
 
     // read cluster from the test-buffer again
-    Cluster copyCluster(m_logicalHost);
-    TEST_EQUAL(bufferIo.readClusterFromBuffer(copyCluster, buffer, error), OK);
+    Cluster copyCluster;
+    TEST_EQUAL(bufferIo.readClusterFromBuffer(copyCluster, buffer, m_logicalHost, error), OK);
 
     // check cluster itself
     success = copyCluster.clusterHeader == baseCluster.clusterHeader;

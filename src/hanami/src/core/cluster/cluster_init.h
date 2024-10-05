@@ -33,12 +33,15 @@ using Hanami::ClusterMeta;
 
 bool initNewCluster(Cluster* cluster,
                     const Hanami::ClusterMeta& clusterMeta,
-                    const std::string& uuid);
+                    const std::string& uuid,
+                    LogicalHost* host);
 
 void initializeHeader(Cluster* cluster, const std::string& uuid);
 void initializeSettings(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta);
 
-void initializeHexagons(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta);
+void initializeHexagons(Cluster* cluster,
+                        const Hanami::ClusterMeta& clusterMeta,
+                        LogicalHost* host);
 void initializeTargetHexagonList(Cluster* cluster);
 void initializeOutputNeurons(Cluster* cluster);
 void initializeInputs(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta);

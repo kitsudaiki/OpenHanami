@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file        gpu_kernel.cu
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
@@ -26,7 +26,33 @@
 
 #include <cuda_runtime_api.h>
 
+#include "error_handling.h"
 #include "../../cluster/objects.h"
+
+/**
+ * @brief initDevice_CUDA
+ * @param hostSynapseBlocks
+ * @param numberOfSynapseBlocks
+ * @return
+ */
+extern "C"
+SynapseBlock*
+initDevice_CUDA(SynapseBlock* hostSynapseBlocks,
+                const uint32_t numberOfSynapseBlocks)
+{
+    SynapseBlock* deviceSynapseBlocks = nullptr;
+
+    cudaMalloc(&deviceSynapseBlocks,
+               numberOfSynapseBlocks * sizeof(SynapseBlock));
+    cudaMemcpy(deviceSynapseBlocks,
+               hostSynapseBlocks,
+               numberOfSynapseBlocks * sizeof(SynapseBlock),
+               cudaMemcpyHostToDevice);
+
+    CHECK_LAST_CUDA_ERROR();
+
+    return deviceSynapseBlocks;
+}
 
 /**
  * @brief initial copy of data from the host to the gpu
@@ -43,46 +69,53 @@
  */
 extern "C"
 void
-copyToDevice_CUDA(CudaClusterPointer* gpuPointer,
-                  ClusterSettings* clusterSettings,
-                  const std::vector<Hexagon> &hexagons,
-                  SynapseBlock* synapseBlocks,
-                  const uint32_t numberOfSynapseBlocks)
+initHexagonOnDevice_CUDA(Hexagon* hexagon,
+                         ClusterSettings* clusterSettings,
+                         SynapseBlock* hostSynapseBlocks,
+                         SynapseBlock* deviceSynapseBlocks)
 {
-    cudaSetDevice(gpuPointer->deviceId);
+    cudaSetDevice(hexagon->cudaPointer.deviceId);
 
-    // allocate memory on gpu
-    cudaMalloc(&gpuPointer->clusterSettings, 1                     * sizeof(ClusterSettings));
-    cudaMalloc(&gpuPointer->synapseBlocks,   numberOfSynapseBlocks * sizeof(SynapseBlock));
+    // copy settings to gpu
+    cudaMalloc(&hexagon->cudaPointer.clusterSettings, 1 * sizeof(ClusterSettings));
+    cudaMemcpy(hexagon->cudaPointer.clusterSettings,
+               clusterSettings,
+               1 * sizeof(ClusterSettings),
+               cudaMemcpyHostToDevice);
 
-    // copy data from host into the allocated memory
-    cudaMemcpy(gpuPointer->clusterSettings, clusterSettings,  1                     * sizeof(ClusterSettings), cudaMemcpyHostToDevice);
-    cudaMemcpy(gpuPointer->synapseBlocks,   synapseBlocks,    numberOfSynapseBlocks * sizeof(SynapseBlock),    cudaMemcpyHostToDevice);
+    if(hexagon->neuronBlocks.size() > 0) {
+        cudaMalloc(&hexagon->cudaPointer.neuronBlocks,
+                   hexagon->neuronBlocks.size() * sizeof(NeuronBlock));
 
-    // initialize connection-blocks all all hexagons
-    gpuPointer->hexagonPointer.resize(hexagons.size());
-    for (uint32_t hexagonId = 0; hexagonId < hexagons.size(); ++hexagonId) {
-        CudaHexagonPointer* cudaHexagonPointer = &gpuPointer->hexagonPointer[hexagonId];
-        const Hexagon* hexagon = &hexagons[hexagonId];
+        cudaMemcpy(hexagon->cudaPointer.neuronBlocks,
+                   &hexagon->neuronBlocks[0],
+                   hexagon->neuronBlocks.size() * sizeof(NeuronBlock),
+                   cudaMemcpyHostToDevice);
+    }
 
-        if(hexagon->neuronBlocks.size() > 0) {
-            cudaMalloc(&cudaHexagonPointer->neuronBlocks,
-                       hexagon->neuronBlocks.size() * sizeof(NeuronBlock));
+    if(hexagon->connectionBlocks.size() > 0) {
+        cudaMalloc(&hexagon->cudaPointer.connectionBlocks,
+                   hexagon->connectionBlocks.size() * sizeof(ConnectionBlock));
+        cudaMemcpy(hexagon->cudaPointer.connectionBlocks,
+                   &hexagon->connectionBlocks[0],
+                   hexagon->connectionBlocks.size() * sizeof(ConnectionBlock),
+                   cudaMemcpyHostToDevice);
+    }
 
-            cudaMemcpy(cudaHexagonPointer->neuronBlocks,
-                       &hexagon->neuronBlocks[0],
-                       hexagon->neuronBlocks.size() * sizeof(NeuronBlock),
-                       cudaMemcpyHostToDevice);
-        }
+    if(hexagon->synapseBlockLinks.size() > 0) {
+        cudaMalloc(&hexagon->cudaPointer.synapseBlockLinks,
+                   hexagon->synapseBlockLinks.size() * sizeof(uint64_t));
+        cudaMemcpy(hexagon->cudaPointer.synapseBlockLinks,
+                   &hexagon->synapseBlockLinks[0],
+                   hexagon->synapseBlockLinks.size() * sizeof(uint64_t),
+                   cudaMemcpyHostToDevice);
+    }
 
-        if(hexagon->connectionBlocks.size() > 0) {
-            cudaMalloc(&cudaHexagonPointer->connectionBlocks,
-                       hexagon->connectionBlocks.size() * sizeof(ConnectionBlock));
-            cudaMemcpy(cudaHexagonPointer->connectionBlocks,
-                       &hexagon->connectionBlocks[0],
-                       hexagon->connectionBlocks.size() * sizeof(ConnectionBlock),
-                       cudaMemcpyHostToDevice);
-        }
+    for(const uint64_t link : hexagon->synapseBlockLinks) {
+        cudaMemcpy(&deviceSynapseBlocks[link],
+                   &hostSynapseBlocks[link],
+                   sizeof(SynapseBlock),
+                   cudaMemcpyHostToDevice);
     }
 }
 
@@ -93,28 +126,33 @@ copyToDevice_CUDA(CudaClusterPointer* gpuPointer,
  */
 extern "C"
 void
-removeFromDevice_CUDA(CudaClusterPointer* gpuPointer)
+removeFromDevice_CUDA(Hexagon* hexagon,
+                      SynapseBlock* deviceSynapseBlocks)
 {
-    cudaSetDevice(gpuPointer->deviceId);
+    cudaSetDevice(hexagon->cudaPointer.deviceId);
 
-    cudaFree(gpuPointer->clusterSettings);
-    cudaFree(gpuPointer->synapseBlocks);
+    cudaFree(hexagon->cudaPointer.clusterSettings);
 
-    for (uint32_t hexagonId = 0; hexagonId < gpuPointer->hexagonPointer.size(); ++hexagonId)
+    if (hexagon->cudaPointer.neuronBlocks != nullptr)
     {
-        CudaHexagonPointer* cudaHexagonPointer = &gpuPointer->hexagonPointer[hexagonId];
+        cudaFree(hexagon->cudaPointer.neuronBlocks);
+        hexagon->cudaPointer.neuronBlocks = nullptr;
+    }
 
-        if (cudaHexagonPointer->neuronBlocks != nullptr)
-        {
-            cudaFree(cudaHexagonPointer->neuronBlocks);
-            cudaHexagonPointer->neuronBlocks = nullptr;
-        }
+    if (hexagon->cudaPointer.connectionBlocks != nullptr)
+    {
+        cudaFree(hexagon->cudaPointer.connectionBlocks);
+        hexagon->cudaPointer.connectionBlocks = nullptr;
+    }
 
-        if (cudaHexagonPointer->connectionBlocks != nullptr)
-        {
-            cudaFree(cudaHexagonPointer->connectionBlocks);
-            cudaHexagonPointer->connectionBlocks = nullptr;
-        }
+    if (hexagon->cudaPointer.synapseBlockLinks != nullptr)
+    {
+        cudaFree(hexagon->cudaPointer.synapseBlockLinks);
+        hexagon->cudaPointer.synapseBlockLinks = nullptr;
+    }
+
+    for(const uint64_t link : hexagon->synapseBlockLinks) {
+        cudaFree(&deviceSynapseBlocks[link]);
     }
 }
 
@@ -129,28 +167,33 @@ removeFromDevice_CUDA(CudaClusterPointer* gpuPointer)
  */
 extern "C"
 void
-copyFromGpu_CUDA(CudaClusterPointer* gpuPointer,
-                 SynapseBlock* synapseBlocks,
-                 const uint32_t numberOfSynapseBlocks,
-                 std::vector<Hexagon> &hexagons)
+copyFromGpu_CUDA(Hexagon* hexagon,
+                 SynapseBlock* hostSynapseBlocks,
+                 SynapseBlock* deviceSynapseBlocks)
 {
-    cudaSetDevice(gpuPointer->deviceId);
+    cudaSetDevice(hexagon->cudaPointer.deviceId);
 
-    for (uint32_t hexagonId = 0; hexagonId < gpuPointer->hexagonPointer.size(); ++hexagonId)
-    {
-        CudaHexagonPointer* cudaHexagonPointer = &gpuPointer->hexagonPointer[hexagonId];
-        Hexagon* hexagon = &hexagons[hexagonId];
+    cudaMemcpy(&hexagon->neuronBlocks[0],
+               hexagon->cudaPointer.neuronBlocks,
+               hexagon->neuronBlocks.size() * sizeof(NeuronBlock),
+               cudaMemcpyDeviceToHost);
 
-        cudaMemcpy(&hexagon->neuronBlocks[0],
-                   cudaHexagonPointer->neuronBlocks,
-                   hexagon->neuronBlocks.size() * sizeof(NeuronBlock),
+    cudaMemcpy(&hexagon->connectionBlocks[0],
+               hexagon->cudaPointer.connectionBlocks,
+               hexagon->connectionBlocks.size() * sizeof(ConnectionBlock),
+               cudaMemcpyDeviceToHost);
+
+    cudaMemcpy(&hexagon->synapseBlockLinks[0],
+               hexagon->cudaPointer.synapseBlockLinks,
+               hexagon->synapseBlockLinks.size() * sizeof(uint64_t),
+               cudaMemcpyDeviceToHost);
+
+    for(const uint64_t link : hexagon->synapseBlockLinks) {
+        cudaMemcpy(&hostSynapseBlocks[link],
+                   &deviceSynapseBlocks[link],
+                   sizeof(SynapseBlock),
                    cudaMemcpyDeviceToHost);
     }
-
-    cudaMemcpy(synapseBlocks,
-               gpuPointer->synapseBlocks,
-               numberOfSynapseBlocks * sizeof(SynapseBlock),
-               cudaMemcpyDeviceToHost);
 }
 
 /**
@@ -164,30 +207,38 @@ copyFromGpu_CUDA(CudaClusterPointer* gpuPointer,
  */
 extern "C"
 void
-update_CUDA(CudaClusterPointer* gpuPointer,
-            std::vector<Hexagon>& hexagons,
-            const uint64_t hexagonId)
+update_CUDA(Hexagon* hexagon,
+            SynapseBlock* deviceSynapseBlocks)
 {
-    cudaSetDevice(gpuPointer->deviceId);
+    cudaSetDevice(hexagon->cudaPointer.deviceId);
 
-    Hexagon* hexagon = &hexagons[hexagonId];
+    removeFromDevice_CUDA(hexagon, deviceSynapseBlocks);
 
-    if (hexagon->wasResized) {
-        // free old connection-block-memory on gpu, if exist
-        if (gpuPointer->hexagonPointer[hexagonId].connectionBlocks != nullptr)
-        {
-            cudaFree(gpuPointer->hexagonPointer[hexagonId].connectionBlocks);
-            gpuPointer->hexagonPointer[hexagonId].connectionBlocks = nullptr;
-        }
+    // allocate to resized memory for the connectionblocks on gpu
+    cudaMalloc(&hexagon->cudaPointer.connectionBlocks,
+               hexagon->connectionBlocks.size() * sizeof(ConnectionBlock));
 
-        // allocate to resized memory for the connectionblocks on gpu
-        cudaMalloc(&gpuPointer->hexagonPointer[hexagonId].connectionBlocks,
-                   hexagon->connectionBlocks.size() * sizeof(ConnectionBlock));
-    }
-
-    cudaMemcpy(gpuPointer->hexagonPointer[hexagonId].connectionBlocks,
+    cudaMemcpy(hexagon->cudaPointer.connectionBlocks,
                &hexagon->connectionBlocks[0],
                hexagon->connectionBlocks.size() * sizeof(ConnectionBlock),
+               cudaMemcpyHostToDevice);
+
+    // allocate to resized memory for the neuronBlocks on gpu
+    cudaMalloc(&hexagon->cudaPointer.neuronBlocks,
+               hexagon->neuronBlocks.size() * sizeof(ConnectionBlock));
+
+    cudaMemcpy(hexagon->cudaPointer.neuronBlocks,
+               &hexagon->neuronBlocks[0],
+               hexagon->neuronBlocks.size() * sizeof(ConnectionBlock),
+               cudaMemcpyHostToDevice);
+
+    // allocate to resized memory for the synapseBlockLinks on gpu
+    cudaMalloc(&hexagon->cudaPointer.synapseBlockLinks,
+               hexagon->synapseBlockLinks.size() * sizeof(ConnectionBlock));
+
+    cudaMemcpy(hexagon->cudaPointer.synapseBlockLinks,
+               &hexagon->synapseBlockLinks[0],
+               hexagon->synapseBlockLinks.size() * sizeof(ConnectionBlock),
                cudaMemcpyHostToDevice);
 
     hexagon->wasResized = false;

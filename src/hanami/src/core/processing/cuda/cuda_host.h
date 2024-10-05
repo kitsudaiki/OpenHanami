@@ -23,6 +23,7 @@
 #ifndef CUDAHOST_H
 #define CUDAHOST_H
 
+#include <core/processing/cuda/info.h>
 #include <core/processing/logical_host.h>
 
 #include <mutex>
@@ -30,16 +31,15 @@
 class CudaHost : public LogicalHost
 {
    public:
-    CudaHost(const uint32_t localId);
+    CudaHost(const uint32_t localId, const GpuInfo& gpuInfo);
     ~CudaHost();
 
-    void addClusterToHost(Cluster* cluster);
-
-    bool moveCluster(Cluster* cluster);
-    void syncWithHost(Cluster* cluster);
-    void removeCluster(Cluster* cluster);
+    bool moveHexagon(Hexagon* hexagon);
+    void syncWithHost(Hexagon* hexagon);
+    void removeHexagon(Hexagon* hexagon);
 
     std::mutex cudaMutex;
+    SynapseBlock* deviceSynapseBlocks = nullptr;
 
    protected:
     bool initWorkerThreads();
@@ -47,6 +47,7 @@ class CudaHost : public LogicalHost
    private:
     void initBuffer();
 
+    GpuInfo m_gpuInfo;
     std::atomic_flag m_queue_lock = ATOMIC_FLAG_INIT;
     std::deque<Cluster*> m_clusterQueue;
 };

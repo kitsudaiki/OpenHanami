@@ -158,7 +158,7 @@ template <bool doTrain>
 inline void
 processSynapses(Cluster& cluster, Hexagon* hexagon, const uint32_t blockId)
 {
-    SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(cluster.attachedHost->synapseBlocks);
+    SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(hexagon->attachedHost->synapseBlocks);
     SynapseBlock* synapseBlock = nullptr;
     SynapseSection* section = nullptr;
     NeuronBlock* neuronBlock = nullptr;
@@ -167,7 +167,7 @@ processSynapses(Cluster& cluster, Hexagon* hexagon, const uint32_t blockId)
     ClusterSettings* clusterSettings = &cluster.clusterHeader.settings;
     uint32_t randomeSeed = rand();
 
-    if (blockId >= hexagon->header.dimX) {
+    if (blockId >= hexagon->header.numberOfBlocks) {
         return;
     }
 

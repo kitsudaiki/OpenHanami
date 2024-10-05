@@ -38,10 +38,7 @@
 __global__ void
 backpropagateNeurons(NeuronBlock* neuronBlocks)
 {
-    __shared__ float localDelta[64];
-
-    const uint64_t neuronBlockId = blockIdx.x;
-    NeuronBlock* targetNeuronBlock = &neuronBlocks[neuronBlockId];
+    NeuronBlock* targetNeuronBlock = &neuronBlocks[blockIdx.x];
     Neuron* targetNeuron = &targetNeuronBlock->neurons[threadIdx.x];
 
     if (targetNeuron->active) {
@@ -60,16 +57,15 @@ backpropagateNeurons(NeuronBlock* neuronBlocks)
  */
 __device__ __forceinline__ void
 backpropagateNeuron(SynapseSection* section,
-                    SynapseConnection* connection,
-                    NeuronBlock* targetBlock,
-                    Neuron* sourceNeuron)
+                    Connection* connection,
+                    NeuronBlock* targetBlock)
 {
-    __shared__ float localDelta[64];
-    __shared__ float localTotalDeltas[64];
-    __shared__ float localPotential[64];
+    __shared__ float localDelta[NUMBER_OF_SYNAPSESECTION];
+    __shared__ float localTotalDeltas[NUMBER_OF_SYNAPSESECTION];
+    __shared__ float localPotential[NUMBER_OF_SYNAPSESECTION];
 
     // init values
-    localPotential[threadIdx.x] = sourceNeuron->potential - connection->lowerBound;
+    localPotential[threadIdx.x] = connection->potential - connection->lowerBound;
     Synapse* synapse = nullptr;
     Neuron* targetNeuron = nullptr;
     constexpr float trainValue = 0.05f;
@@ -99,8 +95,6 @@ backpropagateNeuron(SynapseSection* section,
             localPotential[threadIdx.x] -= synapse->border;
         }
     }
-
-    sourceNeuron->delta += localTotalDeltas[threadIdx.x];
 }
 
 /**
@@ -115,26 +109,20 @@ backpropagateNeuron(SynapseSection* section,
  */
 __global__ void
 backpropagateConnections(NeuronBlock* neuronBlocks,
-                         SynapseBlock* synapseBlocks,
                          ConnectionBlock* connectionBlocks,
-                         const uint32_t dimY)
+                         uint64_t* synapseBlockLinks,
+                         SynapseBlock* synapseBlocks)
 {
+    // init global pointers
+    NeuronBlock* targetNeuronBlock = &neuronBlocks[blockIdx.x];
     ConnectionBlock* connectionBlock = &connectionBlocks[blockIdx.x];
-    SynapseConnection* connection = &connectionBlock->connections[threadIdx.x];
+    SynapseBlock* synapseBlock = &synapseBlocks[synapseBlockLinks[blockIdx.x]];
+    Connection* connection = &connectionBlock->connections[threadIdx.x];
 
-    if (connection->origin.blockId != UNINIT_STATE_16) {
-        SynapseSection* synapseSection = &synapseBlocks[connectionBlock->targetSynapseBlockPos].sections[threadIdx.x];
-
-        NeuronBlock* sourceNeuronBlock = &neuronBlocks[connection->origin.blockId];
-        Neuron* sourceNeuron = &sourceNeuronBlock->neurons[connection->origin.neuronId];
-
-        const uint64_t neuronBlockId = (blockIdx.x / dimY);
-        NeuronBlock* targetNeuronBlock = &neuronBlocks[neuronBlockId];
-
-        backpropagateNeuron(synapseSection,
+    if (connection->origin.blockId != UNINIT_STATE_16 && connection->potential > 0.0f) {
+        backpropagateNeuron(&synapseBlock->sections[threadIdx.x],
                             connection,
-                            targetNeuronBlock,
-                            sourceNeuron);
+                            targetNeuronBlock);
     }
 }
 
@@ -151,38 +139,33 @@ backpropagateConnections(NeuronBlock* neuronBlocks,
  */
 extern "C"
 void
-backpropagation_CUDA(CudaClusterPointer* gpuPointer,
-                     std::vector<Hexagon>& hexagons)
+backpropagation_CUDA(Hexagon* hexagon,
+                     SynapseBlock* synapseBlocks)
 {
-    cudaSetDevice(gpuPointer->deviceId);
+    cudaSetDevice(hexagon->cudaPointer.deviceId);
 
-    // process all hexagons on gpu
-    for (int32_t hexagonId = hexagons.size() - 1; hexagonId >= 0; --hexagonId)
-    {
-        Hexagon* hexagon = &hexagons[hexagonId];
-        if (hexagon->header.isInputHexagon) {
-            continue;
-        }
-
-        // copy necessary data from host to gpu
-        cudaMemcpy(gpuPointer->hexagonPointer[hexagonId].neuronBlocks,
-                   &hexagon->neuronBlocks[0],
-                   hexagon->neuronBlocks.size() * sizeof(NeuronBlock),
-                   cudaMemcpyHostToDevice);
-
-        backpropagateNeurons<<<hexagon->header.dimX, 64>>>(
-                gpuPointer->hexagonPointer[hexagonId].neuronBlocks);
-
-        backpropagateConnections<<<hexagon->header.dimX, 64>>>(
-                gpuPointer->hexagonPointer[hexagonId].neuronBlocks,
-                gpuPointer->synapseBlocks,
-                gpuPointer->hexagonPointer[hexagonId].connectionBlocks,
-                42);
-
-        // copy neurons back to host
-        cudaMemcpy(&hexagon->neuronBlocks[0],
-                   gpuPointer->hexagonPointer[hexagonId].neuronBlocks,
-                   hexagon->neuronBlocks.size() * sizeof(NeuronBlock),
-                   cudaMemcpyDeviceToHost);
+    if (hexagon->header.isInputHexagon) {
+        return;
     }
+
+    // copy necessary data from host to gpu
+    cudaMemcpy(hexagon->cudaPointer.neuronBlocks,
+               &hexagon->neuronBlocks[0],
+               hexagon->neuronBlocks.size() * sizeof(NeuronBlock),
+               cudaMemcpyHostToDevice);
+
+    backpropagateNeurons<<<hexagon->header.numberOfBlocks, NEURONS_PER_NEURONBLOCK>>>(
+            hexagon->cudaPointer.neuronBlocks);
+
+    backpropagateConnections<<<hexagon->header.numberOfBlocks, NUMBER_OF_SYNAPSESECTION>>>(
+            hexagon->cudaPointer.neuronBlocks,
+            hexagon->cudaPointer.connectionBlocks,
+            hexagon->cudaPointer.synapseBlockLinks,
+            synapseBlocks);
+
+    // copy neurons back to host
+    cudaMemcpy(&hexagon->connectionBlocks[0],
+               hexagon->cudaPointer.connectionBlocks,
+               hexagon->connectionBlocks.size() * sizeof(ConnectionBlock),
+               cudaMemcpyDeviceToHost);
 }

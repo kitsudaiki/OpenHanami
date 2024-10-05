@@ -81,6 +81,7 @@ class IO_Interface
     ReturnStatus serialize(const Cluster& cluster, Hanami::ErrorContainer& error);
     ReturnStatus deserialize(Cluster& cluster,
                              const uint64_t totalSize,
+                             LogicalHost* host,
                              Hanami::ErrorContainer& error);
 
    private:

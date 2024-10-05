@@ -29,12 +29,13 @@
 #include <core/processing/cpu/cpu_host.h>
 #include <core/processing/cuda/cuda_host.h>
 #include <core/processing/logical_host.h>
+#include <core/processing/physical_host.h>
 #include <database/checkpoint_table.h>
 #include <hanami_common/files/binary_file.h>
 #include <hanami_crypto/hashes.h>
 #include <hanami_root.h>
 
-extern "C" void copyFromGpu_CUDA(CudaClusterPointer* gpuPointer,
+extern "C" void copyFromGpu_CUDA(Hexagon* hexagon,
                                  NeuronBlock* neuronBlocks,
                                  const uint32_t numberOfNeuronBlocks,
                                  SynapseBlock* synapseBlocks,
@@ -132,7 +133,9 @@ SaveCluster_State::saveClusterToCheckpoint(Task* currentTask, Hanami::ErrorConta
     }
 
     // write data of cluster to disc
-    m_cluster->attachedHost->syncWithHost(m_cluster);
+    for (Hexagon& hexagon : m_cluster->hexagons) {
+        hexagon.attachedHost->syncWithHost(&hexagon);
+    }
     if (m_clusterIO.writeClusterToFile(*m_cluster, targetFilePath, error) != OK) {
         return false;
     }

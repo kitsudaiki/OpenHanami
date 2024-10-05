@@ -25,28 +25,26 @@
 
 #include <core/cluster/objects.h>
 
-extern "C" void copyToDevice_CUDA(CudaClusterPointer* gpuPointer,
-                                  ClusterSettings* clusterSettings,
-                                  const std::vector<Hexagon>& hexagons,
-                                  SynapseBlock* synapseBlocks,
-                                  const uint32_t numberOfSynapseBlocks);
+extern "C" SynapseBlock* initDevice_CUDA(SynapseBlock* hostSynapseBlocks,
+                                         const uint32_t numberOfSynapseBlocks);
 
-extern "C" void removeFromDevice_CUDA(CudaClusterPointer* gpuPointer);
+extern "C" void initHexagonOnDevice_CUDA(Hexagon* hexagon,
+                                         ClusterSettings* clusterSettings,
+                                         SynapseBlock* hostSynapseBlocks,
+                                         SynapseBlock* deviceSynapseBlocks);
 
-extern "C" void copyFromGpu_CUDA(CudaClusterPointer* gpuPointer,
-                                 std::vector<Hexagon>& hexagons,
+extern "C" void removeFromDevice_CUDA(Hexagon* hexagon);
+
+extern "C" void copyFromGpu_CUDA(Hexagon* hexagon,
                                  SynapseBlock* synapseBlocks,
-                                 const uint32_t numberOfSynapseBlocks);
+                                 SynapseBlock* deviceSynapseBlocks);
 
-extern "C" void update_CUDA(CudaClusterPointer* gpuPointer, Hexagon& hexagon);
+extern "C" void update_CUDA(Hexagon* hexagon, SynapseBlock* deviceSynapseBlocks);
 
-extern "C" void processing_CUDA(CudaClusterPointer* gpuPointer,
-                                std::vector<Hexagon>& hexagons,
-                                const bool doTrain);
+extern "C" void processing_CUDA(Hexagon* hexagon, SynapseBlock* synapseBlocks, const bool doTrain);
 
-extern "C" void backpropagation_CUDA(CudaClusterPointer* gpuPointer,
-                                     std::vector<Hexagon>& hexagons);
+extern "C" void backpropagation_CUDA(Hexagon* hexagon, SynapseBlock* synapseBlocks);
 
-extern "C" void reduction_CUDA(CudaClusterPointer* gpuPointer, std::vector<Hexagon>& hexagons);
+extern "C" void reduction_CUDA(Hexagon* hexagon);
 
 #endif  // CUDA_FUNCTIONS_H

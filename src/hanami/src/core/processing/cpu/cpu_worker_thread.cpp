@@ -60,7 +60,7 @@ CpuWorkerThread::handleTrainForwardTask(WorkerTask task)
         if (hexagon->neuronBlocks.size() == 0) {
             // in case of the last hexagon
             if (task.hexagonId == task.cluster->hexagons.size() - 1) {
-                task.cluster->updateClusterState();
+                task.cluster->updateClusterState(task);
                 return;
             }
 
@@ -69,7 +69,8 @@ CpuWorkerThread::handleTrainForwardTask(WorkerTask task)
             newTask.cluster = task.cluster;
             newTask.hexagonId = task.hexagonId + 1;
             newTask.blockId = UNINIT_STATE_16;
-            m_host->addWorkerTaskToQueue(newTask);
+            newTask.mode = task.mode;
+            task.cluster->hexagons[newTask.hexagonId].attachedHost->addWorkerTaskToQueue(newTask);
             return;
         }
 
@@ -81,6 +82,7 @@ CpuWorkerThread::handleTrainForwardTask(WorkerTask task)
             newTask.cluster = task.cluster;
             newTask.hexagonId = task.hexagonId;
             newTask.blockId = i;
+            newTask.mode = task.mode;
             m_host->addWorkerTaskToQueue(newTask);
         }
         return;
@@ -97,14 +99,15 @@ CpuWorkerThread::handleTrainForwardTask(WorkerTask task)
 
         if (task.hexagonId == task.cluster->hexagons.size() - 1) {
             updateCluster(*task.cluster, hexagon);
-            task.cluster->updateClusterState();
+            task.cluster->updateClusterState(task);
         }
         else {
             WorkerTask newTask;
             newTask.cluster = task.cluster;
             newTask.hexagonId = task.hexagonId + 1;
             newTask.blockId = UNINIT_STATE_16;
-            m_host->addWorkerTaskToQueue(newTask);
+            newTask.mode = task.mode;
+            task.cluster->hexagons[newTask.hexagonId].attachedHost->addWorkerTaskToQueue(newTask);
         }
     }
 }
@@ -128,7 +131,7 @@ CpuWorkerThread::handleTrainBackwardTask(WorkerTask task)
         // handle special-case that there are no neuron-blocks to process
         if (hexagon->neuronBlocks.size() == 0) {
             if (task.hexagonId == 0) {
-                task.cluster->updateClusterState();
+                task.cluster->updateClusterState(task);
                 return;
             }
 
@@ -136,7 +139,8 @@ CpuWorkerThread::handleTrainBackwardTask(WorkerTask task)
             newTask.cluster = task.cluster;
             newTask.hexagonId = task.hexagonId - 1;
             newTask.blockId = UNINIT_STATE_16;
-            m_host->addWorkerTaskToQueue(newTask);
+            newTask.mode = task.mode;
+            task.cluster->hexagons[newTask.hexagonId].attachedHost->addWorkerTaskToQueue(newTask);
             return;
         }
 
@@ -146,6 +150,7 @@ CpuWorkerThread::handleTrainBackwardTask(WorkerTask task)
             newTask.cluster = task.cluster;
             newTask.hexagonId = task.hexagonId;
             newTask.blockId = i;
+            newTask.mode = task.mode;
             m_host->addWorkerTaskToQueue(newTask);
         }
 
@@ -160,14 +165,15 @@ CpuWorkerThread::handleTrainBackwardTask(WorkerTask task)
         processConnectionBlocksBackward(*task.cluster, &task.cluster->hexagons[task.hexagonId]);
 
         if (task.hexagonId == 0) {
-            task.cluster->updateClusterState();
+            task.cluster->updateClusterState(task);
         }
         else {
             WorkerTask newTask;
             newTask.cluster = task.cluster;
             newTask.hexagonId = task.hexagonId - 1;
             newTask.blockId = UNINIT_STATE_16;
-            m_host->addWorkerTaskToQueue(newTask);
+            newTask.mode = task.mode;
+            task.cluster->hexagons[newTask.hexagonId].attachedHost->addWorkerTaskToQueue(newTask);
         }
     }
 }
@@ -190,7 +196,7 @@ CpuWorkerThread::handleProcessTask(const WorkerTask task)
         // handle special-case that there are no neuron-blocks to process
         if (hexagon->neuronBlocks.size() == 0) {
             if (task.hexagonId == task.cluster->hexagons.size() - 1) {
-                task.cluster->updateClusterState();
+                task.cluster->updateClusterState(task);
                 return;
             }
 
@@ -198,7 +204,8 @@ CpuWorkerThread::handleProcessTask(const WorkerTask task)
             newTask.cluster = task.cluster;
             newTask.hexagonId = task.hexagonId + 1;
             newTask.blockId = UNINIT_STATE_16;
-            m_host->addWorkerTaskToQueue(newTask);
+            newTask.mode = task.mode;
+            task.cluster->hexagons[newTask.hexagonId].attachedHost->addWorkerTaskToQueue(newTask);
             return;
         }
 
@@ -210,13 +217,14 @@ CpuWorkerThread::handleProcessTask(const WorkerTask task)
             newTask.cluster = task.cluster;
             newTask.hexagonId = task.hexagonId;
             newTask.blockId = i;
+            newTask.mode = task.mode;
             m_host->addWorkerTaskToQueue(newTask);
         }
         return;
     }
 
     // run backpropation
-    processClusterForward(*task.cluster, task.hexagonId, task.blockId, true);
+    processClusterForward(*task.cluster, task.hexagonId, task.blockId, false);
     if (task.cluster->incrementAndCompare(
             task.cluster->hexagons[task.hexagonId].neuronBlocks.size()))
     {
@@ -226,14 +234,15 @@ CpuWorkerThread::handleProcessTask(const WorkerTask task)
 
         if (task.hexagonId == task.cluster->hexagons.size() - 1) {
             handleClientOutput(*task.cluster);
-            task.cluster->updateClusterState();
+            task.cluster->updateClusterState(task);
         }
         else {
             WorkerTask newTask;
             newTask.cluster = task.cluster;
             newTask.hexagonId = task.hexagonId + 1;
             newTask.blockId = UNINIT_STATE_16;
-            m_host->addWorkerTaskToQueue(newTask);
+            newTask.mode = task.mode;
+            task.cluster->hexagons[newTask.hexagonId].attachedHost->addWorkerTaskToQueue(newTask);
         }
     }
 }

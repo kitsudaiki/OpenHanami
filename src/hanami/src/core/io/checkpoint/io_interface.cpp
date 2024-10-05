@@ -25,6 +25,8 @@
 #include <core/cluster/cluster.h>
 #include <core/cluster/cluster_init.h>
 #include <core/processing/logical_host.h>
+#include <core/processing/physical_host.h>
+#include <hanami_root.h>
 
 /**
  * @brief constructor
@@ -86,12 +88,16 @@ IO_Interface::serialize(const Cluster& cluster, Hanami::ErrorContainer& error)
  *
  * @param cluster target cluster-object
  * @param totalSize total number of bytes to initialize the local buffer
+ * @param host initial host to attach the hexagons. if nullptr, use the first cpu-host
  * @param error reference for error-output
  *
  * @return return-status based on the result of the process
  */
 ReturnStatus
-IO_Interface::deserialize(Cluster& cluster, const uint64_t totalSize, Hanami::ErrorContainer& error)
+IO_Interface::deserialize(Cluster& cluster,
+                          const uint64_t totalSize,
+                          LogicalHost* host,
+                          Hanami::ErrorContainer& error)
 {
     uint64_t positionPtr = 0;
     uint64_t numberOfHexagons = 0;
@@ -118,6 +124,12 @@ IO_Interface::deserialize(Cluster& cluster, const uint64_t totalSize, Hanami::Er
     cluster.hexagons.resize(numberOfHexagons);
     for (uint64_t i = 0; i < numberOfHexagons; i++) {
         cluster.hexagons[i].cluster = &cluster;
+        if (host != nullptr) {
+            cluster.hexagons[i].attachedHost = host;
+        }
+        else {
+            cluster.hexagons[i].attachedHost = HanamiRoot::physicalHost->getFirstHost();
+        }
         const ReturnStatus ret = deserialize(cluster.hexagons[i], positionPtr, error);
         if (ret != OK) {
             return ret;
@@ -225,7 +237,7 @@ IO_Interface::serialize(const Hexagon& hexagon, Hanami::ErrorContainer& error)
 
     // connection-blocks and synapse-blocks
     SynapseBlock* synapseBlocks
-        = Hanami::getItemData<SynapseBlock>(hexagon.cluster->attachedHost->synapseBlocks);
+        = Hanami::getItemData<SynapseBlock>(hexagon.attachedHost->synapseBlocks);
 
     for (uint64_t pos = 0; pos < hexagon.connectionBlocks.size(); pos++) {
         const ConnectionBlock* connectionBlock = &hexagon.connectionBlocks[pos];
@@ -356,7 +368,7 @@ IO_Interface::deserialize(Hexagon& hexagon, uint64_t& positionPtr, Hanami::Error
                 return ret;
             }
             const uint64_t newTargetPosition
-                = hexagon.cluster->attachedHost->synapseBlocks.addNewItem(synapseBlock);
+                = hexagon.attachedHost->synapseBlocks.addNewItem(synapseBlock);
             if (newTargetPosition == UNINIT_STATE_64) {
                 return ERROR;
             }
@@ -535,7 +547,7 @@ IO_Interface::checkHexagonEntry(const HexagonEntry& hexagonEntry)
     // check size against dimentsions in hexagon-header
     const uint64_t numberOfConnectionBlocks
         = hexagonEntry.numberOfConnectionBytes / (sizeof(ConnectionBlock) + sizeof(SynapseBlock));
-    if (numberOfConnectionBlocks != hexagonEntry.header.dimX) {
+    if (numberOfConnectionBlocks != hexagonEntry.header.numberOfBlocks) {
         return false;
     }
 
@@ -601,7 +613,7 @@ void
 IO_Interface::deleteConnections(Hexagon& hexagon)
 {
     for (const uint64_t synpaseBlockPos : hexagon.synapseBlockLinks) {
-        hexagon.cluster->attachedHost->synapseBlocks.deleteItem(synpaseBlockPos);
+        hexagon.attachedHost->synapseBlocks.deleteItem(synpaseBlockPos);
     }
     hexagon.connectionBlocks.clear();
     hexagon.synapseBlockLinks.clear();

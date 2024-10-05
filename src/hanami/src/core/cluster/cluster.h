@@ -43,15 +43,12 @@ class Statemachine;
 class Cluster
 {
    public:
-    Cluster(LogicalHost* host);
-    Cluster(LogicalHost* host, const void* data, const uint64_t dataSize);
+    Cluster();
+    Cluster(const void* data, const uint64_t dataSize);
     ~Cluster();
 
     // processing
-    CudaClusterPointer gpuPointer;
-    LogicalHost* attachedHost;
     uint32_t reductionCounter = 0;
-    ClusterProcessingMode mode = NORMAL_MODE;
     HttpWebsocketThread* msgClient = nullptr;
     Hanami::Statemachine* stateMachine = nullptr;
     TaskHandle_State* taskHandleState = nullptr;
@@ -66,7 +63,9 @@ class Cluster
 
     // meta
     const std::string getUuid();
-    bool init(const Hanami::ClusterMeta& clusterTemplate, const std::string& uuid);
+    bool init(const Hanami::ClusterMeta& clusterTemplate,
+              const std::string& uuid,
+              LogicalHost* host = nullptr);
 
     // tasks
     Task* addNewTask();
@@ -76,12 +75,12 @@ class Cluster
     bool removeTask(const std::string& taskUuid);
     bool isFinish(const std::string& taskUuid);
     void getAllProgress(std::map<std::string, TaskProgress>& result);
-    void updateClusterState();
+    void updateClusterState(const Hanami::WorkerTask& task);
     TaskType finishTask();
 
     // states
     bool goToNextState(const uint32_t nextStateId);
-    void startForwardCycle();
+    void startForwardCycle(const bool runNormalMode);
     void startBackwardCycle();
     void startReductionCycle();
     bool setClusterState(const std::string& newState);

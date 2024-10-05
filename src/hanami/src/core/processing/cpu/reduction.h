@@ -86,7 +86,7 @@ reduceConnections(Hexagon* hexagon,
     Hexagon* sourceHexagon = nullptr;
     ConnectionBlock* connectionBlock = nullptr;
     SynapseSection* synapseSection = nullptr;
-    const uint32_t dimX = hexagon->header.dimX;
+    const uint32_t dimX = hexagon->header.numberOfBlocks;
 
     if (blockId >= dimX) {
         return;
@@ -126,7 +126,7 @@ reduceCluster(Cluster& cluster, const uint32_t hexagonId, const uint32_t blockId
         return;
     }
 
-    SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(cluster.attachedHost->synapseBlocks);
+    SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(hexagon->attachedHost->synapseBlocks);
     const uint32_t numberOfHexagons = cluster.hexagons.size();
     reduceConnections(hexagon, &cluster.hexagons[0], synapseBlocks, blockId);
 }

@@ -35,6 +35,7 @@
 #include <vector>
 
 class Cluster;
+class LogicalHost;
 
 // const predefined values
 #define UNINIT_STATE_64 0xFFFFFFFFFFFFFFFF
@@ -51,15 +52,6 @@ class Cluster;
 #define POSSIBLE_NEXT_AXON_STEP 80
 #define NUMBER_OF_POSSIBLE_NEXT 86
 #define NUMBER_OF_OUTPUT_CONNECTIONS 7
-
-//==================================================================================================
-
-enum ClusterProcessingMode : uint8_t {
-    NORMAL_MODE = 0,
-    TRAIN_FORWARD_MODE = 1,
-    TRAIN_BACKWARD_MODE = 2,
-    REDUCTION_MODE = 3,
-};
 
 //==================================================================================================
 
@@ -292,18 +284,13 @@ static_assert(sizeof(ConnectionBlock) == 4 * 4096);
 //==================================================================================================
 
 struct CudaHexagonPointer {
+    uint32_t deviceId = 0;
+
     NeuronBlock* neuronBlocks = nullptr;
     ConnectionBlock* connectionBlocks = nullptr;
-};
+    uint64_t* synapseBlockLinks = nullptr;
 
-//==================================================================================================
-
-struct CudaClusterPointer {
-    uint32_t deviceId = 0;
     ClusterSettings* clusterSettings = nullptr;
-    SynapseBlock* synapseBlocks = nullptr;
-
-    std::vector<CudaHexagonPointer> hexagonPointer;
 };
 
 //==================================================================================================
@@ -314,7 +301,7 @@ struct HexagonHeader {
     bool isOutputHexagon = false;
     uint8_t padding[2];
     uint32_t numberOfFreeSections = 0;
-    uint32_t dimX = 0;
+    uint32_t numberOfBlocks = 0;
     Hanami::Position hexagonPos;
 
     bool operator==(HexagonHeader& rhs)
@@ -328,7 +315,7 @@ struct HexagonHeader {
         if (isOutputHexagon != rhs.isOutputHexagon) {
             return false;
         }
-        if (dimX != rhs.dimX) {
+        if (numberOfBlocks != rhs.numberOfBlocks) {
             return false;
         }
         if (hexagonPos != rhs.hexagonPos) {
@@ -348,6 +335,9 @@ struct Hexagon {
     Cluster* cluster = nullptr;
     InputInterface* inputInterface = nullptr;
     OutputInterface* outputInterface = nullptr;
+    LogicalHost* attachedHost;
+
+    CudaHexagonPointer cudaPointer;
 
     std::vector<ConnectionBlock> connectionBlocks;
     std::vector<NeuronBlock> neuronBlocks;

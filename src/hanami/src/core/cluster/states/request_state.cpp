@@ -64,8 +64,7 @@ Request_State::processEvent()
         }
     }
 
-    m_cluster->mode = ClusterProcessingMode::NORMAL_MODE;
-    m_cluster->startForwardCycle();
+    m_cluster->startForwardCycle(true);
 
     return true;
 }

@@ -49,15 +49,13 @@ class LogicalHost
     LogicalHost(const uint32_t localId);
     virtual ~LogicalHost();
 
-    virtual void addClusterToHost(Cluster* cluster) = 0;
-
     HostType getHostType() const;
     const std::string getUuid() const;
     uint64_t getTotalMemory();
 
-    virtual bool moveCluster(Cluster* cluster) = 0;
-    virtual void syncWithHost(Cluster* cluster) = 0;
-    virtual void removeCluster(Cluster* cluster) = 0;
+    virtual bool moveHexagon(Hexagon* hexagon) = 0;
+    virtual void removeHexagon(Hexagon* hexagon) = 0;
+    virtual void syncWithHost(Hexagon* hexagon) = 0;
 
     Hanami::ItemBuffer<SynapseBlock> synapseBlocks;
 
