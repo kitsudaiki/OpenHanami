@@ -22,14 +22,23 @@
 
 #include "cuda_worker_thread.h"
 
+#include <core/cluster/objects.h>
+#include <core/processing/cluster_resize.h>
+#include <core/processing/cpu/backpropagation.h>
+#include <core/processing/cpu/processing.h>
+#include <core/processing/cpu/reduction.h>
+#include <core/processing/cuda/cuda_functions.h>
+#include <core/processing/logical_host.h>
+
 /**
  * @brief constructor
  *
  * @param host pointer to related cuda-host, which holds the task-queue for the worker
  */
-CudaWorkerThread::CudaWorkerThread(CudaHost* host) : Hanami::Thread("WorkerThread")
+CudaWorkerThread::CudaWorkerThread(CudaHost* host) : WorkerThread()
 {
     m_host = host;
+    m_cudaHost = host;
 }
 
 /**
@@ -38,191 +47,162 @@ CudaWorkerThread::CudaWorkerThread(CudaHost* host) : Hanami::Thread("WorkerThrea
 CudaWorkerThread::~CudaWorkerThread() {}
 
 /**
- * @brief rum worker-thread and get tasks for the task-queue of the connected cpu-host
+ * @brief handle trainging task
+ *
+ * @param task task to handle
  */
 void
-CudaWorkerThread::run()
+CudaWorkerThread::handleTrainForwardTask(Hanami::WorkerTask task)
 {
-    Cluster* cluster = nullptr;
+    Hexagon* hexagon = &task.cluster->hexagons[task.hexagonId];
 
-    while (m_abort == false) {
-        if (cluster != nullptr) {
-            // handle type of processing
-            if (cluster->mode == ClusterProcessingMode::TRAIN_FORWARD_MODE) {
-                trainClusterForward(cluster);
-                // processNeuronsOfOutputHexagon<true>();
-            }
-            else if (cluster->mode == ClusterProcessingMode::TRAIN_BACKWARD_MODE) {
-                // backpropagateOutput(*cluster);
-                trainClusterBackward(cluster);
-            }
-            else {
-                requestCluster(cluster);
-                // processNeuronsOfOutputHexagon<false>(*cluster);
-                handleClientOutput(*cluster);
-            }
-            cluster->updateClusterState();
+    // handle special-case that there are no neuron-blocks to process
+    if (hexagon->neuronBlocks.size() == 0) {
+        // in case of the last hexagon
+        if (task.hexagonId == task.cluster->hexagons.size() - 1) {
+            task.cluster->updateClusterState(task);
+            return;
+        }
+
+        // in case of a normal hexagon
+        WorkerTask newTask;
+        newTask.cluster = task.cluster;
+        newTask.hexagonId = task.hexagonId + 1;
+        newTask.blockId = UNINIT_STATE_16;
+        newTask.mode = task.mode;
+        task.cluster->hexagons[newTask.hexagonId].attachedHost->addWorkerTaskToQueue(newTask);
+        return;
+    }
+
+    processConnectionBlocksForward(*task.cluster, hexagon);
+    // processing_CUDA(hexagon, m_cudaHost->deviceSynapseBlocks, true);
+
+    if (task.cluster->incrementAndCompare(
+            task.cluster->hexagons[task.hexagonId].neuronBlocks.size()))
+    {
+        if (hexagon->outputInterface != nullptr) {
+            processNeuronsOfOutputHexagon<true>(hexagon, rand());
+        }
+
+        if (task.hexagonId == task.cluster->hexagons.size() - 1) {
+            updateCluster(*task.cluster, hexagon);
+            task.cluster->updateClusterState(task);
         }
         else {
-            // if no segments are available then sleep
-            sleepThread(1000);
+            WorkerTask newTask;
+            newTask.cluster = task.cluster;
+            newTask.hexagonId = task.hexagonId + 1;
+            newTask.blockId = UNINIT_STATE_16;
+            newTask.mode = task.mode;
+            task.cluster->hexagons[newTask.hexagonId].attachedHost->addWorkerTaskToQueue(newTask);
         }
     }
 }
 
 /**
- * @brief run forward-propagation on a cluster
+ * @brief handle backpropagation task
  *
- * @param cluster cluster to process
+ * @param task task to handle
  */
 void
-CudaWorkerThread::trainClusterForward(Cluster* cluster)
+CudaWorkerThread::handleTrainBackwardTask(Hanami::WorkerTask task)
 {
-    const std::lock_guard<std::mutex> lock(m_host->cudaMutex);
+    Hexagon* hexagon = &task.cluster->hexagons[task.hexagonId];
 
-    Hanami::ErrorContainer error;
+    // handle output-interface
+    if (hexagon->outputInterface != nullptr) {
+        backpropagateOutput(hexagon);
+    }
 
-    // see https://github.com/kitsudaiki/Hanami/issues/377
-    /* // process input-hexagons
-     for (uint32_t hexagonId = 0; hexagonId < cluster->hexagons.size(); ++hexagonId) {
-         Hexagon* hexagon = &cluster->hexagons[hexagonId];
-         if (hexagon->isInputHexagon == false) {
-             continue;
-         }
+    // handle special-case that there are no neuron-blocks to process
+    if (hexagon->neuronBlocks.size() == 0) {
+        if (task.hexagonId == 0) {
+            task.cluster->updateClusterState(task);
+            return;
+        }
 
-         processNeuronsOfInputHexagonBackward<true>(
-             hexagon, cluster->inputValues, &cluster->neuronBlocks);
-     }
+        WorkerTask newTask;
+        newTask.cluster = task.cluster;
+        newTask.hexagonId = task.hexagonId - 1;
+        newTask.blockId = UNINIT_STATE_16;
+        newTask.mode = task.mode;
+        task.cluster->hexagons[newTask.hexagonId].attachedHost->addWorkerTaskToQueue(newTask);
+        return;
+    }
 
-     // process all hexagons on cpu
-     processing_CUDA(&cluster->gpuPointer,
-                     &cluster->hexagons[0],
-                     cluster->hexagons.size(),
-                     &cluster->neuronBlocks,
-                     cluster->numberOfNeuronBlocks,
-                     true);
+    // backpropagation_CUDA(hexagon, m_cudaHost->deviceSynapseBlocks);
 
-     // process output-hexagons
-     for (uint32_t hexagonId = 0; hexagonId < cluster->hexagons.size(); ++hexagonId) {
-         Hexagon* hexagon = &cluster->hexagons[hexagonId];
-         if (hexagon->isOutputHexagon == false) {
-             continue;
-         }
-     }
+    if (task.cluster->incrementAndCompare(
+            task.cluster->hexagons[task.hexagonId].neuronBlocks.size()))
+    {
+        processConnectionBlocksBackward(*task.cluster, &task.cluster->hexagons[task.hexagonId]);
 
-     // update cluster
-     if (updateCluster(*cluster)) {
-         update_CUDA(&cluster->gpuPointer,
-                     &cluster->neuronBlocks,
-                     cluster->numberOfNeuronBlocks,
-                     &cluster->hexagons[0],
-                     cluster->hexagons.size());
-     }*/
+        if (task.hexagonId == 0) {
+            task.cluster->updateClusterState(task);
+        }
+        else {
+            WorkerTask newTask;
+            newTask.cluster = task.cluster;
+            newTask.hexagonId = task.hexagonId - 1;
+            newTask.blockId = UNINIT_STATE_16;
+            newTask.mode = task.mode;
+            task.cluster->hexagons[newTask.hexagonId].attachedHost->addWorkerTaskToQueue(newTask);
+        }
+    }
 }
 
 /**
- * @brief run back-propagation on a cluster
+ * @brief handle process task
  *
- * @param cluster cluster to process
+ * @param task task to handle
  */
 void
-CudaWorkerThread::trainClusterBackward(Cluster* cluster)
+CudaWorkerThread::handleProcessTask(const Hanami::WorkerTask task)
 {
-    const std::lock_guard<std::mutex> lock(m_host->cudaMutex);
+    Hexagon* hexagon = &task.cluster->hexagons[task.hexagonId];
 
-    Hanami::ErrorContainer error;
-
-    // process output-hexagons on cpu
-    for (uint32_t hexagonId = 0; hexagonId < cluster->hexagons.size(); ++hexagonId) {
-        Hexagon* hexagon = &cluster->hexagons[hexagonId];
-        if (hexagon->header.isOutputHexagon) {
-            // see https://github.com/kitsudaiki/Hanami/issues/377
-            /*if (backpropagateOutput(&cluster->hexagons[0],
-                                    &cluster->outputNeurons[0],
-                                    &cluster->neuronBlocks,
-                                    &cluster->tempNeuronBlocks,
-                                    cluster->outputValues,
-                                    cluster->expectedValues,
-                                    &cluster->clusterHeader.settings)
-                == false)
-            {
-                return;
-            }*/
+    // handle special-case that there are no neuron-blocks to process
+    if (hexagon->neuronBlocks.size() == 0) {
+        if (task.hexagonId == task.cluster->hexagons.size() - 1) {
+            task.cluster->updateClusterState(task);
+            return;
         }
+
+        WorkerTask newTask;
+        newTask.cluster = task.cluster;
+        newTask.hexagonId = task.hexagonId + 1;
+        newTask.blockId = UNINIT_STATE_16;
+        newTask.mode = task.mode;
+        task.cluster->hexagons[newTask.hexagonId].attachedHost->addWorkerTaskToQueue(newTask);
+        return;
     }
 
-    // see https://github.com/kitsudaiki/Hanami/issues/377
-    // backpropagation over all hexagons on gpu
-    /*backpropagation_CUDA(&cluster->gpuPointer,
-                         &cluster->hexagons[0],
-                         cluster->hexagons.size(),
-                         &cluster->neuronBlocks,
-                         &cluster->tempNeuronBlocks,
-                         cluster->numberOfNeuronBlocks);
+    processConnectionBlocksForward(*task.cluster, hexagon);
+    // processing_CUDA(hexagon, m_cudaHost->deviceSynapseBlocks, false);
 
-    // run reduction-process if enabled
-    if (cluster->clusterHeader.settings.enableReduction) {
-        if (reductionCounter == 100) {
-            reduction_CUDA(&cluster->gpuPointer,
-                           &cluster->hexagons[0],
-                           cluster->hexagons.size(),
-                           &cluster->neuronBlocks,
-                           cluster->numberOfNeuronBlocks);
-            if (updateCluster(*cluster)) {
-                update_CUDA(&cluster->gpuPointer,
-                            &cluster->neuronBlocks,
-                            cluster->numberOfNeuronBlocks,
-                            &cluster->hexagons[0],
-                            cluster->hexagons.size());
-            }
-            reductionCounter = 0;
+    if (task.cluster->incrementAndCompare(
+            task.cluster->hexagons[task.hexagonId].neuronBlocks.size()))
+    {
+        if (hexagon->outputInterface != nullptr) {
+            processNeuronsOfOutputHexagon<false>(hexagon, rand());
         }
-        reductionCounter++;
-    }*/
+
+        if (task.hexagonId == task.cluster->hexagons.size() - 1) {
+            handleClientOutput(*task.cluster);
+            task.cluster->updateClusterState(task);
+        }
+        else {
+            WorkerTask newTask;
+            newTask.cluster = task.cluster;
+            newTask.hexagonId = task.hexagonId + 1;
+            newTask.blockId = UNINIT_STATE_16;
+            newTask.mode = task.mode;
+            task.cluster->hexagons[newTask.hexagonId].attachedHost->addWorkerTaskToQueue(newTask);
+        }
+    }
 }
 
-/**
- * @brief process segments
- *
- * @param cluster cluster to process
- */
 void
-CudaWorkerThread::requestCluster(Cluster* cluster)
+CudaWorkerThread::handleReductionTask(const Hanami::WorkerTask task)
 {
-    const std::lock_guard<std::mutex> lock(m_host->cudaMutex);
-
-    Hanami::ErrorContainer error;
-
-    // see https://github.com/kitsudaiki/Hanami/issues/377
-    // process input-hexagons
-    /*for (uint32_t hexagonId = 0; hexagonId < cluster->hexagons.size(); ++hexagonId) {
-        Hexagon* hexagon = &cluster->hexagons[hexagonId];
-        if (hexagon->header.isInputHexagon == false) {
-            continue;
-        }
-
-        processNeuronsOfInputHexagonBackward<false>(
-            hexagon, cluster->inputValues, &cluster->neuronBlocks);
-    }
-
-    // process all hexagons on gpu
-    processing_CUDA(&cluster->gpuPointer,
-                    &cluster->hexagons[0],
-                    cluster->hexagons.size(),
-                    &cluster->neuronBlocks,
-                    cluster->numberOfNeuronBlocks,
-                    false);*/
-
-    // process output-hexagons
-    for (uint32_t hexagonId = 0; hexagonId < cluster->hexagons.size(); ++hexagonId) {
-        Hexagon* hexagon = &cluster->hexagons[hexagonId];
-        if (hexagon->header.isOutputHexagon == false) {
-            continue;
-        }
-        // see https://github.com/kitsudaiki/Hanami/issues/377
-        /*for (uint32_t blockId = 0; blockId < cluster->numberOfNeuronBlocks; ++blockId) {
-            processNeuronsOfOutputHexagon(
-                hexagon, cluster->outputValues, &cluster->neuronBlocks, blockId);
-        }*/
-    }
 }

@@ -61,8 +61,7 @@ uint32_t pcg_hash(const uint32_t input)
  * @param randomValues pointer to the buffer with all randow-values
  */
 __device__ __forceinline__ void
-createNewSynapse(NeuronBlock* block,
-                 Synapse* synapse,
+createNewSynapse(Synapse* synapse,
                  const ClusterSettings* clusterSettings,
                  const float remainingW,
                  uint32_t& randomSeed)
@@ -105,24 +104,19 @@ createNewSynapse(NeuronBlock* block,
 template <bool doTrain>
 __device__ __forceinline__ void
 synapseProcessingBackward(SynapseSection* synapseSection,
-                          SynapseConnection* connection,
+                          Connection* connection,
                           NeuronBlock* targetNeuronBlock,
-                          Neuron* sourceNeuron,
-                          const SourceLocationPtr originLocation,
                           ClusterSettings* clusterSettings,
-                          const bool inputConnected,
                           uint32_t& randomSeed)
 {
     __shared__ float localPotential[64];
-    localPotential[threadIdx.x] = sourceNeuron->potential - connection->lowerBound;
+    localPotential[threadIdx.x] = connection->potential - connection->lowerBound;
 
     float val = 0.0f;
     uint8_t pos = 0;
     Synapse* synapse = nullptr;
-    Neuron* targetNeuron = nullptr;
-    bool condition = false;
     float halfPotential = 0.0f;
-    const bool isAbleToCreate = inputConnected || clusterSettings->enableCreation;
+    const bool isAbleToCreate = connection->origin.isInput || clusterSettings->enableCreation;
 
     //for(uint32_t i = 0; i < SYNAPSES_PER_SYNAPSESECTION; ++i) {
     //    synapseSection->synapses[i].tempValue = 0.0f;
@@ -135,8 +129,7 @@ synapseProcessingBackward(SynapseSection* synapseSection,
         if constexpr (doTrain) {
             // create new synapse if necesarry and training is active
             if (synapse->targetNeuronId == UNINIT_STATE_8) {
-                createNewSynapse(targetNeuronBlock,
-                                 synapse,
+                createNewSynapse(synapse,
                                  clusterSettings,
                                  localPotential[threadIdx.x],
                                  randomSeed);
@@ -156,7 +149,6 @@ synapseProcessingBackward(SynapseSection* synapseSection,
 
         if (synapse->targetNeuronId != UNINIT_STATE_8) {
             // update target-neuron
-            targetNeuron = &targetNeuronBlock->neurons[synapse->targetNeuronId];
             val = synapse->weight;
             if (localPotential[threadIdx.x] < synapse->border) {
                 val *= ((1.0f / synapse->border) * localPotential[threadIdx.x]);
@@ -171,14 +163,9 @@ synapseProcessingBackward(SynapseSection* synapseSection,
         ++pos;
     }
 
-    // mark source-neuron for updates, if necessary and training is active
     if constexpr (doTrain) {
-        sourceNeuron->isNew = false;
         if (localPotential[threadIdx.x] > 0.00001f && isAbleToCreate) {
-            sourceNeuron->isNew = true;
-            sourceNeuron->newLowerBound = connection->lowerBound + halfPotential;
-            sourceNeuron->potentialRange = connection->potentialRange - halfPotential;
-            connection->potentialRange = halfPotential;
+            connection->splitValue = halfPotential;
         }
     }
 }
@@ -197,43 +184,26 @@ synapseProcessingBackward(SynapseSection* synapseSection,
 template <bool doTrain>
 __global__ void
 processSynapses(NeuronBlock* neuronBlocks,
-                SynapseBlock* synapseBlocks,
                 ConnectionBlock* connectionBlocks,
+                uint64_t* synapseBlockLinks,
+                SynapseBlock* synapseBlocks,
                 ClusterSettings* clusterSettings,
-                uint32_t randomeSeed,
-                const uint32_t dimY)
+                uint32_t randomeSeed)
 {
-    SynapseBlock* synapseBlock = nullptr;
     randomeSeed += (blockIdx.x * blockDim.x) + threadIdx.x;
-    const uint64_t tid = threadIdx.x;
-    const uint64_t neuronBlockId = (blockIdx.x / dimY);
 
-    // process synapses
+    // init global pointers
+    NeuronBlock* targetNeuronBlock = &neuronBlocks[blockIdx.x];
     ConnectionBlock* connectionBlock = &connectionBlocks[blockIdx.x];
-    SynapseConnection* scon = &connectionBlock->connections[tid];
+    SynapseBlock* synapseBlock = &synapseBlocks[synapseBlockLinks[blockIdx.x]];
+    Connection* connection = &connectionBlock->connections[threadIdx.x];
 
-    if (connectionBlock->targetSynapseBlockPos != UNINIT_STATE_64) {
-        synapseBlock =  &synapseBlocks[connectionBlock->targetSynapseBlockPos];
-
-        if (scon->origin.blockId != UNINIT_STATE_16) {
-            NeuronBlock* sourceNeuronBlock = &neuronBlocks[scon->origin.blockId];
-            Neuron* sourceNeuron = &sourceNeuronBlock->neurons[scon->origin.neuronId];
-            bool inputConnected = scon->origin.isInput;
-
-            if (sourceNeuron->active != 0) {
-                SynapseSection* synapseSection = &synapseBlock->sections[tid];
-                NeuronBlock* targetNeuronBlock = &neuronBlocks[neuronBlockId];
-
-                synapseProcessingBackward<doTrain>(synapseSection,
-                                                   scon,
-                                                   targetNeuronBlock,
-                                                   sourceNeuron,
-                                                   scon->origin,
-                                                   clusterSettings,
-                                                   inputConnected,
-                                                   randomeSeed);
-            }
-        }
+    if (connection->origin.blockId != UNINIT_STATE_16 && connection->potential > 0.0f) {
+        synapseProcessingBackward<doTrain>(&synapseBlock->sections[threadIdx.x],
+                                           connection,
+                                           targetNeuronBlock,
+                                           clusterSettings,
+                                           randomeSeed);
     }
 }
 
@@ -251,10 +221,9 @@ processSynapses(NeuronBlock* neuronBlocks,
 template <bool doTrain>
 __global__ void
 processNeurons(NeuronBlock* neuronBlocks,
+               uint64_t* synapseBlockLinks,
                SynapseBlock* synapseBlocks,
-               ConnectionBlock* connectionBlocks,
                ClusterSettings* clusterSettings,
-               const uint32_t dimY,
                const bool isOutputHexagon)
 {
     // init shared memory
@@ -262,25 +231,17 @@ processNeurons(NeuronBlock* neuronBlocks,
     localInputs[threadIdx.x] = 0.0f;
 
     // init global pointers
-    const uint64_t neuronBlockId = blockIdx.x;
-    NeuronBlock* targetNeuronBlock = &neuronBlocks[neuronBlockId];
-    Neuron* neuron = &targetNeuronBlock->neurons[threadIdx.x];
-    ConnectionBlock* connectionBlock = nullptr;
-    SynapseBlock* synapseBlock = nullptr;
-
-    neuron->input = 0.0f;
+    NeuronBlock* targetNeuronBlock = &neuronBlocks[blockIdx.x];
+    SynapseBlock* synapseBlock = &synapseBlocks[synapseBlockLinks[blockIdx.x]];
 
     // copy input-values of all releaded synpase-blocks into the neurons
-    for (int c = blockIdx.x * dimY; c < (blockIdx.x * dimY) + dimY; ++c) {
-        connectionBlock = &connectionBlocks[c];
-        if (connectionBlock->targetSynapseBlockPos != UNINIT_STATE_64) {
-            synapseBlock =  &synapseBlocks[connectionBlock->targetSynapseBlockPos];
-            for (uint32_t i = 0; i < NUMBER_OF_SYNAPSESECTION; ++i) {
-                neuron->input += synapseBlock->sections[i].synapses[threadIdx.x].tempValue;
-                synapseBlock->sections[i].synapses[threadIdx.x].tempValue = 0.0f;
-            }
-        }
+    for (uint32_t i = 0; i < NUMBER_OF_SYNAPSESECTION; ++i) {
+        localInputs[threadIdx.x] += synapseBlock->sections[i].synapses[threadIdx.x].tempValue;
+        synapseBlock->sections[i].synapses[threadIdx.x].tempValue = 0.0f;
     }
+
+    Neuron* neuron = &targetNeuronBlock->neurons[threadIdx.x];
+    neuron->input = localInputs[threadIdx.x];
 
     // process neuron-content
     if(isOutputHexagon == false)
@@ -298,13 +259,6 @@ processNeurons(NeuronBlock* neuronBlocks,
         neuron->potential = static_cast<float>(neuron->active) * neuron->potential;
         neuron->input = 0.0f;
         neuron->potential = log2(neuron->potential + 1.0f);
-
-        if constexpr (doTrain) {
-            neuron->delta = 0.0f;
-            neuron->isNew = neuron->active != 0 && neuron->inUse == 0;
-            neuron->newLowerBound = 0.0f;
-            neuron->potentialRange = FLT_MAX;
-        }
     }
 }
 
@@ -320,68 +274,61 @@ processNeurons(NeuronBlock* neuronBlocks,
  */
 extern "C"
 void
-processing_CUDA(CudaClusterPointer* gpuPointer,
-                std::vector<Hexagon>& hexagons,
+processing_CUDA(Hexagon* hexagon,
+                SynapseBlock* synapseBlocks,
                 const bool doTrain)
 {
-    cudaSetDevice(gpuPointer->deviceId);
+    cudaSetDevice(hexagon->cudaPointer.deviceId);
     uint32_t randomeSeed = rand();
 
-    // process hexagons on gpu
-    for (uint32_t hexagonId = 0; hexagonId < hexagons.size(); ++hexagonId)
-    {
-        Hexagon* hexagon = &hexagons[hexagonId];
-        if (hexagon->header.isInputHexagon) {
-            continue;
-        }
-
-        // copy necessary data from host to gpu
-        cudaMemcpy(gpuPointer->hexagonPointer[hexagonId].neuronBlocks,
-                   &hexagon->neuronBlocks[0],
-                   hexagon->neuronBlocks.size() * sizeof(NeuronBlock),
-                   cudaMemcpyHostToDevice);
-
-        if (doTrain)
-        {
-            processSynapses<true><<<hexagon->header.dimX, 64>>>(
-                gpuPointer->hexagonPointer[hexagonId].neuronBlocks,
-                gpuPointer->synapseBlocks,
-                gpuPointer->hexagonPointer[hexagonId].connectionBlocks,
-                gpuPointer->clusterSettings,
-                randomeSeed + hexagonId,
-                42);
-
-            processNeurons<true><<<hexagon->header.dimX, 64>>>(
-                gpuPointer->hexagonPointer[hexagonId].neuronBlocks,
-                gpuPointer->synapseBlocks,
-                gpuPointer->hexagonPointer[hexagonId].connectionBlocks,
-                gpuPointer->clusterSettings,
-                42,
-                hexagon->header.isOutputHexagon);
-        }
-        else
-        {
-            processSynapses<false><<<hexagon->header.dimX, 64>>>(
-                gpuPointer->hexagonPointer[hexagonId].neuronBlocks,
-                gpuPointer->synapseBlocks,
-                gpuPointer->hexagonPointer[hexagonId].connectionBlocks,
-                gpuPointer->clusterSettings,
-                randomeSeed + hexagonId,
-                42);
-
-            processNeurons<false><<<hexagon->header.dimX, 64>>>(
-                gpuPointer->hexagonPointer[hexagonId].neuronBlocks,
-                gpuPointer->synapseBlocks,
-                gpuPointer->hexagonPointer[hexagonId].connectionBlocks,
-                gpuPointer->clusterSettings,
-                42,
-                hexagon->header.isOutputHexagon);
-        }
-
-        // copy resulting data back to host
-        cudaMemcpy(&hexagon->neuronBlocks[0],
-                   gpuPointer->hexagonPointer[hexagonId].neuronBlocks,
-                   hexagon->neuronBlocks.size() * sizeof(NeuronBlock),
-                   cudaMemcpyDeviceToHost);
+    if (hexagon->header.isInputHexagon) {
+        return;
     }
+
+    // copy necessary data from host to gpu
+    cudaMemcpy(hexagon->cudaPointer.connectionBlocks,
+               &hexagon->connectionBlocks[0],
+               hexagon->connectionBlocks.size() * sizeof(ConnectionBlock),
+               cudaMemcpyHostToDevice);
+
+    if (doTrain)
+    {
+        processSynapses<true><<<hexagon->header.numberOfBlocks, NUMBER_OF_SYNAPSESECTION>>>(
+            hexagon->cudaPointer.neuronBlocks,
+            hexagon->cudaPointer.connectionBlocks,
+            hexagon->cudaPointer.synapseBlockLinks,
+            synapseBlocks,
+            hexagon->cudaPointer.clusterSettings,
+            randomeSeed + hexagon->header.hexagonId);
+
+        processNeurons<true><<<hexagon->header.numberOfBlocks, NEURONS_PER_NEURONBLOCK>>>(
+            hexagon->cudaPointer.neuronBlocks,
+            hexagon->cudaPointer.synapseBlockLinks,
+            synapseBlocks,
+            hexagon->cudaPointer.clusterSettings,
+            hexagon->header.isOutputHexagon);
+    }
+    else
+    {
+        processSynapses<false><<<hexagon->header.numberOfBlocks, NUMBER_OF_SYNAPSESECTION>>>(
+            hexagon->cudaPointer.neuronBlocks,
+            hexagon->cudaPointer.connectionBlocks,
+            hexagon->cudaPointer.synapseBlockLinks,
+            synapseBlocks,
+            hexagon->cudaPointer.clusterSettings,
+            randomeSeed + hexagon->header.hexagonId);
+
+        processNeurons<false><<<hexagon->header.numberOfBlocks, NEURONS_PER_NEURONBLOCK>>>(
+            hexagon->cudaPointer.neuronBlocks,
+            hexagon->cudaPointer.synapseBlockLinks,
+            synapseBlocks,
+            hexagon->cudaPointer.clusterSettings,
+            hexagon->header.isOutputHexagon);
+    }
+
+    // copy resulting data back to host
+    cudaMemcpy(&hexagon->neuronBlocks[0],
+               hexagon->cudaPointer.neuronBlocks,
+               hexagon->neuronBlocks.size() * sizeof(NeuronBlock),
+               cudaMemcpyDeviceToHost);
 }

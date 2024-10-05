@@ -162,8 +162,10 @@ struct WorkerTask {
     Cluster* cluster = nullptr;
     uint32_t hexagonId = UNINIT_STATE_32;
     uint32_t blockId = UNINIT_STATE_32;
+    ClusterProcessingMode mode = ClusterProcessingMode::TRAIN_BACKWARD_MODE;
+    uint8_t padding[7];
 };
-static_assert(sizeof(WorkerTask) == 16);
+static_assert(sizeof(WorkerTask) == 24);
 
 //==================================================================================================
 

@@ -25,7 +25,6 @@
 #include <core/processing/cpu/cpu_host.h>
 #include <core/processing/cuda/cuda_functions.h>
 #include <core/processing/cuda/cuda_host.h>
-#include <core/processing/cuda/info.h>
 #include <hanami_hardware/host.h>
 
 PhysicalHost::PhysicalHost() {}
@@ -46,13 +45,12 @@ PhysicalHost::init(Hanami::ErrorContainer& error)
     // identify and init cuda gpu's
     // IMPORTANT: these are initialized first, because they also need memory on the host
     // TODO:enable gpu init here again
-    // see https://github.com/kitsudaiki/Hanami/issues/377
+    // related issue: https://github.com/kitsudaiki/Hanami/issues/325
     /*std::vector<GpuInfo> gpuInfos;
     getGpuInfos(gpuInfos);
     for (const GpuInfo& gpuInfo : gpuInfos) {
         std::cout << gpuInfo.toJson().dump(4) << std::endl;
-        CudaHost* newHost = new CudaHost(gpuInfo.deviceId);
-        newHost->startThread();
+        CudaHost* newHost = new CudaHost(gpuInfo.deviceId, gpuInfo);
         m_cudaHosts.push_back(newHost);
     }*/
 
@@ -107,14 +105,12 @@ PhysicalHost::getHost(const std::string& uuid) const
         }
     }
 
-    // TODO: re-enable gpu-support
-    // see https://github.com/kitsudaiki/Hanami/issues/377
     // check cuda gpu
-    /*for (LogicalHost* host : m_cudaHosts) {
+    for (LogicalHost* host : m_cudaHosts) {
         if (host->getUuid() == uuid) {
             return host;
         }
-    }*/
+    }
 
     return nullptr;
 }

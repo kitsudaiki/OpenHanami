@@ -143,16 +143,8 @@ CreateClusterV1M0::runTask(BlossomIO& blossomIO,
 
     const std::string uuid = blossomIO.output["uuid"];
 
-    // get initial logical host
-    LogicalHost* host = HanamiRoot::physicalHost->getFirstHost();
-    if (host == nullptr) {
-        error.addMessage("No logical host found for new cluster.");
-        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
-        return false;
-    }
-
     // create new cluster
-    Cluster* newCluster = new Cluster(host);
+    Cluster* newCluster = new Cluster();
     if (newCluster->clusterHeader.name.setName(clusterName) == false) {
         error.addMessage("New cluster-name '" + clusterName
                          + "' too long, even this should be avoided by the API.");

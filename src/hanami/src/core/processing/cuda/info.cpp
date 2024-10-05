@@ -22,7 +22,6 @@
 
 #include "info.h"
 
-// #include <cuda_runtime_api.h>
 #include <math.h>
 
 #include <chrono>
@@ -69,30 +68,29 @@ getCudaCoresPerSM(const uint32_t major, const uint32_t minor)
 void
 getGpuInfos(std::vector<GpuInfo>& results)
 {
-    // see https://github.com/kitsudaiki/Hanami/issues/377
-    /*int deviceCount;
-    cudaError_t cudaResult = cudaGetDeviceCount(&deviceCount);
-    if (cudaResult != cudaSuccess || deviceCount <= 0) {
-        return;
-    }
+    //    int deviceCount;
+    //    cudaError_t cudaResult = cudaGetDeviceCount(&deviceCount);
+    //    if (cudaResult != cudaSuccess || deviceCount <= 0) {
+    //        return;
+    //    }
 
-    for (uint64_t deviceId = 0; deviceId < deviceCount; deviceId++) {
-        GpuInfo info;
-        cudaSetDevice(deviceId);
-        cudaMemGetInfo(&info.freeMemory, &info.totalMemory);
+    //    for (uint64_t deviceId = 0; deviceId < deviceCount; deviceId++) {
+    //        GpuInfo info;
+    //        cudaSetDevice(deviceId);
+    //        cudaMemGetInfo(&info.freeMemory, &info.totalMemory);
 
-        cudaDeviceProp deviceProp;
-        cudaGetDeviceProperties(&deviceProp, deviceId);
-        info.deviceId = deviceId;
-        info.name = std::string(deviceProp.name);
-        if (info.name.size() > 256) {
-            info.name = "";
-        }
-        info.numberOfCoresPerSM = getCudaCoresPerSM(deviceProp.major, deviceProp.minor);
-        info.numberOfCudaCores = info.numberOfCoresPerSM * deviceProp.multiProcessorCount;
-        info.maxNumberOfThreadsPerBlock = deviceProp.maxThreadsPerBlock;
-        info.sizeOfSharedMemPerBlock = deviceProp.sharedMemPerBlock;
+    //        cudaDeviceProp deviceProp;
+    //        cudaGetDeviceProperties(&deviceProp, deviceId);
+    //        info.deviceId = deviceId;
+    //        info.name = std::string(deviceProp.name);
+    //        if (info.name.size() > 256) {
+    //            info.name = "";
+    //        }
+    //        info.numberOfCoresPerSM = getCudaCoresPerSM(deviceProp.major, deviceProp.minor);
+    //        info.numberOfCudaCores = info.numberOfCoresPerSM * deviceProp.multiProcessorCount;
+    //        info.maxNumberOfThreadsPerBlock = deviceProp.maxThreadsPerBlock;
+    //        info.sizeOfSharedMemPerBlock = deviceProp.sharedMemPerBlock;
 
-        results.push_back(info);
-    }*/
+    //        results.push_back(info);
+    //    }
 }

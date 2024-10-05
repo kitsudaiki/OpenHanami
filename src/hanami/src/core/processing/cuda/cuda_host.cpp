@@ -24,15 +24,18 @@
 
 #include <core/processing/cluster_resize.h>
 #include <core/processing/cuda/cuda_functions.h>
+#include <core/processing/cuda/cuda_worker_thread.h>
 
 /**
  * @brief constructor
  *
  * @param localId identifier starting with 0 within the physical host and with the type of host
  */
-CudaHost::CudaHost(const uint32_t localId) : LogicalHost(localId)
+CudaHost::CudaHost(const uint32_t localId, const GpuInfo& gpuInfo) : LogicalHost(localId)
 {
     m_hostType = CUDA_HOST_TYPE;
+    m_gpuInfo = gpuInfo;
+    m_totalMemory = gpuInfo.freeMemory;
 
     initBuffer();
     initWorkerThreads();
@@ -42,21 +45,6 @@ CudaHost::CudaHost(const uint32_t localId) : LogicalHost(localId)
  * @brief destructor
  */
 CudaHost::~CudaHost() {}
-
-/**
- * @brief add cluster to queue
- *
- * @param cluster cluster to add to queue
- */
-void
-CudaHost::addClusterToHost(Cluster* cluster)
-{
-    while (m_queue_lock.test_and_set(std::memory_order_acquire)) {
-        asm("");
-    }
-    m_clusterQueue.push_back(cluster);
-    m_queue_lock.clear(std::memory_order_release);
-}
 
 /**
  * @brief initialize synpase-block-buffer based on the avaialble size of memory
@@ -69,9 +57,13 @@ CudaHost::initBuffer()
     const std::lock_guard<std::mutex> lock(cudaMutex);
 
     // m_totalMemory = getAvailableMemory_CUDA(id);
-    const uint64_t usedMemory = (m_totalMemory / 100) * 10;  // use 30% for synapse-blocks
+    const uint64_t usedMemory = (m_totalMemory / 100) * 80;  // use 80% for synapse-blocks
     synapseBlocks.initBuffer(usedMemory / sizeof(SynapseBlock));
     synapseBlocks.deleteAll();
+    // SynapseBlock* cpuSynapseBlocks = Hanami::getItemData<SynapseBlock>(synapseBlocks);
+
+    // deviceSynapseBlocks = initDevice_CUDA(cpuSynapseBlocks,
+    // synapseBlocks.metaData.numberOfItems);
 
     LOG_INFO("Initialized number of syanpse-blocks on gpu-device: "
              + std::to_string(synapseBlocks.metaData.itemCapacity));
@@ -85,48 +77,39 @@ CudaHost::initBuffer()
  * @return true, if successful, else false
  */
 bool
-CudaHost::moveCluster(Cluster* cluster)
+CudaHost::moveHexagon(Hexagon* hexagon)
 {
     const std::lock_guard<std::mutex> lock(cudaMutex);
 
     // sync data from gpu to host, in order to have a consistent state
-    // see https://github.com/kitsudaiki/Hanami/issues/377
-    // copyFromGpu_CUDA(&cluster->gpuPointer,
-    //                  cluster->hexagons,
-    //                  getItemData<SynapseBlock>(synapseBlocks),
-    //                  synapseBlocks.metaData->itemCapacity);
 
-    LogicalHost* originHost = cluster->attachedHost;
-    SynapseBlock* cpuSynapseBlocks = Hanami::getItemData<SynapseBlock>(synapseBlocks);
+    LogicalHost* originHost = hexagon->attachedHost;
+    SynapseBlock* cpuSynapseBlocks = Hanami::getItemData<SynapseBlock>(originHost->synapseBlocks);
     SynapseBlock tempBlock;
 
     // copy synapse-blocks from the old host to this one
-    for (uint64_t i = 0; i < cluster->hexagons.size(); i++) {
-        for (uint64_t pos = 0; pos < cluster->hexagons[i].synapseBlockLinks.size(); pos++) {
-            const uint64_t synapseSectionPos = cluster->hexagons[i].synapseBlockLinks[pos];
-            if (synapseSectionPos != UNINIT_STATE_64) {
-                tempBlock = cpuSynapseBlocks[synapseSectionPos];
-                originHost->synapseBlocks.deleteItem(synapseSectionPos);
-                const uint64_t newPos = synapseBlocks.addNewItem(tempBlock);
-                // TODO: make roll-back possible in error-case
-                if (newPos == UNINIT_STATE_64) {
-                    return false;
-                }
-                cluster->hexagons[i].synapseBlockLinks[pos] = newPos;
+    for (uint64_t i = 0; i < hexagon->synapseBlockLinks.size(); ++i) {
+        const uint64_t link = hexagon->synapseBlockLinks[i];
+        if (link != UNINIT_STATE_64) {
+            tempBlock = cpuSynapseBlocks[link];
+            originHost->synapseBlocks.deleteItem(link);
+            const uint64_t newPos = synapseBlocks.addNewItem(tempBlock);
+            // TODO: make roll-back possible in error-case
+            if (newPos == UNINIT_STATE_64) {
+                return false;
             }
+            hexagon->synapseBlockLinks[i] = newPos;
         }
     }
 
     // update data on gpu
-    cluster->gpuPointer.deviceId = m_localId;
-    // see https://github.com/kitsudaiki/Hanami/issues/377
-    // copyToDevice_CUDA(&cluster->gpuPointer,
-    //                   &cluster->clusterHeader.settings,
-    //                   cluster->hexagons,
-    //                   getItemData<SynapseBlock>(synapseBlocks),
-    //                   synapseBlocks.metaData->itemCapacity);
+    hexagon->cudaPointer.deviceId = m_localId;
+    // initHexagonOnDevice_CUDA(hexagon,
+    //                          &hexagon->cluster->clusterHeader.settings,
+    //                          getItemData<SynapseBlock>(synapseBlocks),
+    //                          deviceSynapseBlocks);
 
-    cluster->attachedHost = this;
+    hexagon->attachedHost = this;
 
     return true;
 }
@@ -136,15 +119,12 @@ CudaHost::moveCluster(Cluster* cluster)
  * @param cluster cluster to sync
  */
 void
-CudaHost::syncWithHost(Cluster* cluster)
+CudaHost::syncWithHost(Hexagon* hexagon)
 {
     const std::lock_guard<std::mutex> lock(cudaMutex);
 
-    // see https://github.com/kitsudaiki/Hanami/issues/377
-    // copyFromGpu_CUDA(&cluster->gpuPointer,
-    //                  cluster->hexagons,
-    //                  getItemData<SynapseBlock>(synapseBlocks),
-    //                  synapseBlocks.metaData->itemCapacity);
+    // SynapseBlock* hostSynapseBlocks = getItemData<SynapseBlock>(synapseBlocks);
+    // copyFromGpu_CUDA(hexagon, hostSynapseBlocks, deviceSynapseBlocks);
 }
 
 /**
@@ -153,26 +133,30 @@ CudaHost::syncWithHost(Cluster* cluster)
  * @param cluster cluster to remove
  */
 void
-CudaHost::removeCluster(Cluster* cluster)
+CudaHost::removeHexagon(Hexagon* hexagon)
 {
     const std::lock_guard<std::mutex> lock(cudaMutex);
 
     // remove synapse-blocks
-    for (uint64_t i = 0; i < cluster->hexagons.size(); i++) {
-        for (uint64_t& link : cluster->hexagons[i].synapseBlockLinks) {
-            if (link != UNINIT_STATE_64) {
-                synapseBlocks.deleteItem(link);
-            }
+    for (uint64_t& link : hexagon->synapseBlockLinks) {
+        if (link != UNINIT_STATE_64) {
+            synapseBlocks.deleteItem(link);
         }
     }
 
     // remove other data of the cluster, which are no synapse-blocks, from gpu
-    // see https://github.com/kitsudaiki/Hanami/issues/377
-    // removeFromDevice_CUDA(&cluster->gpuPointer);
+    // removeFromDevice_CUDA(hexagon);
 }
 
 bool
 CudaHost::initWorkerThreads()
 {
+    CudaWorkerThread* newUnit = new CudaWorkerThread(this);
+    m_workerThreads.push_back(newUnit);
+    newUnit->startThread();
+    newUnit->bindThreadToCore(0);
+
+    LOG_INFO("Initialized " + std::to_string(1) + " cuda worker-threads");
+
     return true;
 }

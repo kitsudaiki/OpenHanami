@@ -43,6 +43,7 @@ class CheckpointIO : public IO_Interface
                                     Hanami::ErrorContainer& error);
     ReturnStatus restoreClusterFromFile(Cluster& cluster,
                                         const std::string& fileLocation,
+                                        LogicalHost* host,
                                         Hanami::ErrorContainer& error);
 
    private:

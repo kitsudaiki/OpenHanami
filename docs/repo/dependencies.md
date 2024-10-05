@@ -4,21 +4,21 @@
 
 ### Build hanami
 
-| apt-package        | Purpose                                                                              |
-| ------------------ | ------------------------------------------------------------------------------------ |
-| clang-15           | C++-compiler                                                                         |
-| clang-format-15    | Helper for styling the source-code                                                   |
-| make               | Build-Tool                                                                           |
-| cmake              | Tool to genereate make-file for the code.                                            |
-| bison              | Parser-Generator                                                                     |
-| flex               | Lexxer for the Parser-Generator                                                      |
-| libssl-dev         | ssl-library for TCS-encryption of network-connections                                |
-| libcrypto++-dev    | HMAC, SHA256 and other crypto related operations                                     |
-| libboost1.74-dev   | Provides the Beast-library of Boost, which is used for the REST-API within the Torii |
-| uuid-dev           | Generate UUID's within the code                                                      |
-| libsqlite3-dev     | Library to interact with the SQLite3 databases                                       |
-| protobuf-compiler  | Convert protobuf-files into source-code                                              |
-| nlohmann-json3-dev | Json-parser                                                                          |
+| apt-package         | Purpose                                                                              |
+| ------------------- | ------------------------------------------------------------------------------------ |
+| clang-15            | C++-compiler                                                                         |
+| clang-format-15     | Helper for styling the source-code                                                   |
+| make                | Build-Tool                                                                           |
+| cmake               | Tool to genereate make-file for the code.                                            |
+| bison               | Parser-Generator                                                                     |
+| flex                | Lexxer for the Parser-Generator                                                      |
+| libssl-dev          | ssl-library for TCS-encryption of network-connections                                |
+| libcrypto++-dev     | HMAC, SHA256 and other crypto related operations                                     |
+| libboost1.74-dev    | Provides the Beast-library of Boost, which is used for the REST-API within the Torii |
+| uuid-dev            | Generate UUID's within the code                                                      |
+| libsqlite3-dev      | Library to interact with the SQLite3 databases                                       |
+| protobuf-compiler   | Convert protobuf-files into source-code                                              |
+| nlohmann-json3-dev  | Json-parser                                                                          |
 
 ### Submodules
 

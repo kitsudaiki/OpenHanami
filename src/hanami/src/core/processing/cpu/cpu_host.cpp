@@ -42,6 +42,7 @@
 CpuHost::CpuHost(const uint32_t localId) : LogicalHost(localId)
 {
     m_hostType = CPU_HOST_TYPE;
+
     initBuffer();
     initWorkerThreads();
 }
@@ -50,29 +51,6 @@ CpuHost::CpuHost(const uint32_t localId) : LogicalHost(localId)
  * @brief destructor
  */
 CpuHost::~CpuHost() {}
-
-/**
- * @brief CpuHost::addClusterToHost
- * @param cluster
- */
-void
-CpuHost::addClusterToHost(Cluster* cluster)
-{
-    if (cluster->mode == ClusterProcessingMode::TRAIN_BACKWARD_MODE) {
-        Hanami::WorkerTask task;
-        task.cluster = cluster;
-        task.hexagonId = cluster->hexagons.size() - 1;
-        task.blockId = UNINIT_STATE_16;
-        addWorkerTaskToQueue(task);
-    }
-    else {
-        Hanami::WorkerTask task;
-        task.cluster = cluster;
-        task.hexagonId = 0;
-        task.blockId = UNINIT_STATE_16;
-        addWorkerTaskToQueue(task);
-    }
-}
 
 /**
  * @brief initialize synpase-block-buffer based on the avaialble size of memory
@@ -122,7 +100,7 @@ CpuHost::initWorkerThreads()
         }
     }
 
-    LOG_INFO("Initialized " + std::to_string(threadCounter) + " worker-threads");
+    LOG_INFO("Initialized " + std::to_string(threadCounter) + " cpu worker-threads");
 
     return true;
 }
@@ -130,35 +108,33 @@ CpuHost::initWorkerThreads()
 /**
  * @brief move the data of a cluster to this host
  *
- * @param cluster cluster to move
+ * @param hexagon hexagon to move to the host
  *
  * @return true, if successful, else false
  */
 bool
-CpuHost::moveCluster(Cluster* cluster)
+CpuHost::moveHexagon(Hexagon* hexagon)
 {
-    LogicalHost* originHost = cluster->attachedHost;
-    SynapseBlock* cpuSynapseBlocks = Hanami::getItemData<SynapseBlock>(synapseBlocks);
-    SynapseBlock tempBlock;
+    LogicalHost* sourceHost = hexagon->attachedHost;
+    SynapseBlock* targetSynapseBlocks = Hanami::getItemData<SynapseBlock>(synapseBlocks);
+    SynapseBlock tempSynapseBlock;
 
     // copy synapse-blocks from the old host to this one here
-    for (Hexagon& hexagon : cluster->hexagons) {
-        for (uint64_t pos = 0; pos < hexagon.synapseBlockLinks.size(); pos++) {
-            const uint64_t synapseSectionPos = hexagon.synapseBlockLinks[pos];
-            if (synapseSectionPos != UNINIT_STATE_64) {
-                tempBlock = cpuSynapseBlocks[synapseSectionPos];
-                originHost->synapseBlocks.deleteItem(synapseSectionPos);
-                const uint64_t newPos = synapseBlocks.addNewItem(tempBlock);
-                // TODO: make roll-back possible in error-case
-                if (newPos == UNINIT_STATE_64) {
-                    return false;
-                }
-                hexagon.synapseBlockLinks[pos] = newPos;
+    for (uint64_t pos = 0; pos < hexagon->synapseBlockLinks.size(); pos++) {
+        const uint64_t synapseSectionPos = hexagon->synapseBlockLinks[pos];
+        if (synapseSectionPos != UNINIT_STATE_64) {
+            tempSynapseBlock = targetSynapseBlocks[synapseSectionPos];
+            sourceHost->synapseBlocks.deleteItem(synapseSectionPos);
+            const uint64_t newPos = synapseBlocks.addNewItem(tempSynapseBlock);
+            // TODO: make roll-back possible in error-case
+            if (newPos == UNINIT_STATE_64) {
+                return false;
             }
+            hexagon->synapseBlockLinks[pos] = newPos;
         }
     }
 
-    cluster->attachedHost = this;
+    hexagon->attachedHost = this;
 
     return true;
 }
@@ -167,7 +143,7 @@ CpuHost::moveCluster(Cluster* cluster)
  * @brief empty function in this case
  */
 void
-CpuHost::syncWithHost(Cluster*)
+CpuHost::syncWithHost(Hexagon*)
 {
     return;
 }
@@ -175,16 +151,14 @@ CpuHost::syncWithHost(Cluster*)
 /**
  * @brief remove synpase-blocks of a cluster from the host-buffer
  *
- * @param cluster cluster to clear
+ * @param hexagon hexagon to remove from host
  */
 void
-CpuHost::removeCluster(Cluster* cluster)
+CpuHost::removeHexagon(Hexagon* hexagon)
 {
-    for (Hexagon& hexagon : cluster->hexagons) {
-        for (uint64_t synapseBlockLink : hexagon.synapseBlockLinks) {
-            if (synapseBlockLink != UNINIT_STATE_64) {
-                synapseBlocks.deleteItem(synapseBlockLink);
-            }
+    for (uint64_t synapseBlockLink : hexagon->synapseBlockLinks) {
+        if (synapseBlockLink != UNINIT_STATE_64) {
+            synapseBlocks.deleteItem(synapseBlockLink);
         }
     }
 }

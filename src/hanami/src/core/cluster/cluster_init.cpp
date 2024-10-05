@@ -25,6 +25,7 @@
 #include <core/cluster/cluster.h>
 #include <core/cluster/cluster_init.h>
 #include <core/cluster/objects.h>
+#include <core/processing/physical_host.h>
 #include <core/routing_functions.h>
 #include <hanami_common/logger.h>
 #include <hanami_config/config_handler.h>
@@ -54,15 +55,19 @@ calcNumberOfNeuronBlocks(const uint32_t numberOfNeurons)
  * @param cluster pointer to the uninitionalized cluster
  * @param clusterMeta parsed data from the cluster-template
  * @param uuid uuid for the new cluster
+ * @param host initial host to attach the hexagons. if nullptr, use the first cpu-host
  *
  * @return true, if successful, else false
  */
 bool
-initNewCluster(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta, const std::string& uuid)
+initNewCluster(Cluster* cluster,
+               const Hanami::ClusterMeta& clusterMeta,
+               const std::string& uuid,
+               LogicalHost* host)
 {
     initializeHeader(cluster, uuid);
     initializeSettings(cluster, clusterMeta);
-    initializeHexagons(cluster, clusterMeta);
+    initializeHexagons(cluster, clusterMeta, host);
     initializeInputs(cluster, clusterMeta);
     initializeOutputs(cluster, clusterMeta);
 
@@ -146,9 +151,10 @@ initializeOutputs(Cluster* cluster, const ClusterMeta& clusterMeta)
  *
  * @param cluster pointer to cluster
  * @param clusterMeta meta-data of cluster-template with the new cluster-settings
+ * @param host initial host to attach the hexagons. if nullptr, use the first cpu-host
  */
 void
-initializeHexagons(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta)
+initializeHexagons(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta, LogicalHost* host)
 {
     cluster->hexagons.resize(clusterMeta.hexagons.size());
 
@@ -157,6 +163,12 @@ initializeHexagons(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta)
         newHexagon->cluster = cluster;
         newHexagon->header.hexagonId = i;
         newHexagon->header.hexagonPos = clusterMeta.hexagons.at(i);
+        if (host != nullptr) {
+            newHexagon->attachedHost = host;
+        }
+        else {
+            newHexagon->attachedHost = HanamiRoot::physicalHost->getFirstHost();
+        }
         std::fill_n(newHexagon->neighbors, 12, UNINIT_STATE_32);
     }
 

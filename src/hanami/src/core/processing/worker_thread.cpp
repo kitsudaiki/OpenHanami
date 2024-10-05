@@ -37,13 +37,13 @@ WorkerThread::~WorkerThread() {}
 void
 WorkerThread::handleTask(const Hanami::WorkerTask& task)
 {
-    if (task.cluster->mode == ClusterProcessingMode::TRAIN_FORWARD_MODE) {
+    if (task.mode == ClusterProcessingMode::TRAIN_FORWARD_MODE) {
         handleTrainForwardTask(task);
     }
-    else if (task.cluster->mode == ClusterProcessingMode::TRAIN_BACKWARD_MODE) {
+    else if (task.mode == ClusterProcessingMode::TRAIN_BACKWARD_MODE) {
         handleTrainBackwardTask(task);
     }
-    else if (task.cluster->mode == ClusterProcessingMode::REDUCTION_MODE) {
+    else if (task.mode == ClusterProcessingMode::REDUCTION_MODE) {
         handleReductionTask(task);
     }
     else {

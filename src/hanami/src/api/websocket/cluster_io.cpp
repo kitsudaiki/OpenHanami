@@ -236,17 +236,8 @@ recvClusterInputMessage(Cluster* cluster, const void* data, const uint64_t dataS
     }
 
     if (msg.islast()) {
-        // start request
-        if (msg.processtype() == ClusterProcessType::REQUEST_TYPE) {
-            cluster->mode = ClusterProcessingMode::NORMAL_MODE;
-            cluster->startForwardCycle();
-        }
-
-        // start train
-        if (msg.processtype() == ClusterProcessType::TRAIN_TYPE) {
-            cluster->mode = ClusterProcessingMode::TRAIN_FORWARD_MODE;
-            cluster->startForwardCycle();
-        }
+        const bool runNormalMode = msg.processtype() == ClusterProcessType::REQUEST_TYPE;
+        cluster->startForwardCycle(runNormalMode);
     }
     else {
         sendInputAckMessage(cluster);

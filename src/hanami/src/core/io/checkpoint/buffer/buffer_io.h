@@ -37,6 +37,7 @@ class BufferIO : public IO_Interface
                                         Hanami::ErrorContainer& error);
     ReturnStatus readClusterFromBuffer(Cluster& cluster,
                                        Hanami::DataBuffer& input,
+                                       LogicalHost* host,
                                        Hanami::ErrorContainer& error);
 
    private:

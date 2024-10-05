@@ -36,9 +36,8 @@
 /**
  * @brief constructor
  */
-Cluster::Cluster(LogicalHost* host)
+Cluster::Cluster()
 {
-    attachedHost = host;
     stateMachine = new Hanami::Statemachine();
     taskHandleState = new TaskHandle_State(this);
 
@@ -53,10 +52,8 @@ Cluster::Cluster(LogicalHost* host)
  * @param data pointer to data with checkpoint
  * @param dataSize size of checkpoint in number of bytes
  */
-Cluster::Cluster(LogicalHost* host, const void* data, const uint64_t dataSize)
+Cluster::Cluster(const void* data, const uint64_t dataSize)
 {
-    attachedHost = host;
-
     m_counter.store(0, std::memory_order_relaxed);
 }
 
@@ -65,7 +62,9 @@ Cluster::Cluster(LogicalHost* host, const void* data, const uint64_t dataSize)
  */
 Cluster::~Cluster()
 {
-    attachedHost->removeCluster(this);
+    for (Hexagon& hexagon : hexagons) {
+        hexagon.attachedHost->removeHexagon(&hexagon);
+    }
     delete stateMachine;
 }
 
@@ -101,22 +100,34 @@ Cluster::getUuid()
  *
  * @param clusterTemplate meta-data read from a cluster-template
  * @param uuid uuid of the cluster
+ * @param host initial host to attach the hexagons. if nullptr, use the first cpu-host (default:
+ * nullptr)
  *
  * @return true, if successful, else false
  */
 bool
-Cluster::init(const Hanami::ClusterMeta& clusterTemplate, const std::string& uuid)
+Cluster::init(const Hanami::ClusterMeta& clusterTemplate,
+              const std::string& uuid,
+              LogicalHost* host)
 {
-    return initNewCluster(this, clusterTemplate, uuid);
+    return initNewCluster(this, clusterTemplate, uuid, host);
 }
 
 /**
  * @brief start a new forward train-cycle
  */
 void
-Cluster::startForwardCycle()
+Cluster::startForwardCycle(const bool runNormalMode)
 {
-    attachedHost->addClusterToHost(this);
+    Hanami::WorkerTask task;
+    task.cluster = this;
+    task.hexagonId = 0;
+    task.blockId = UNINIT_STATE_16;
+    task.mode = ClusterProcessingMode::TRAIN_FORWARD_MODE;
+    if (runNormalMode) {
+        task.mode = ClusterProcessingMode::NORMAL_MODE;
+    }
+    hexagons.front().attachedHost->addWorkerTaskToQueue(task);
 }
 
 /**
@@ -125,7 +136,12 @@ Cluster::startForwardCycle()
 void
 Cluster::startBackwardCycle()
 {
-    attachedHost->addClusterToHost(this);
+    Hanami::WorkerTask task;
+    task.cluster = this;
+    task.hexagonId = hexagons.size() - 1;
+    task.blockId = UNINIT_STATE_16;
+    task.mode = ClusterProcessingMode::TRAIN_BACKWARD_MODE;
+    hexagons.back().attachedHost->addWorkerTaskToQueue(task);
 }
 
 /**
@@ -134,7 +150,7 @@ Cluster::startBackwardCycle()
 void
 Cluster::startReductionCycle()
 {
-    attachedHost->addClusterToHost(this);
+    // attachedHost->addClusterToHost(this);
 }
 
 /**
@@ -162,7 +178,7 @@ Cluster::setClusterState(const std::string& newState)
  * @brief update state of the cluster, which is caled for each finalized cluster
  */
 void
-Cluster::updateClusterState()
+Cluster::updateClusterState(const WorkerTask& task)
 {
     std::lock_guard<std::mutex> guard(m_clusterStateLock);
 
@@ -170,14 +186,12 @@ Cluster::updateClusterState()
     // enableCreation = false;
 
     // trigger next lerning phase, if already in phase 1
-    if (mode == ClusterProcessingMode::TRAIN_FORWARD_MODE) {
-        mode = ClusterProcessingMode::TRAIN_BACKWARD_MODE;
+    if (task.mode == ClusterProcessingMode::TRAIN_FORWARD_MODE) {
         startBackwardCycle();
     }
-    else if (mode == ClusterProcessingMode::TRAIN_BACKWARD_MODE) {
-        reductionCounter++;
+    else if (task.mode == ClusterProcessingMode::TRAIN_BACKWARD_MODE) {
+        // reductionCounter++;
         if (reductionCounter >= 100 && clusterHeader.settings.enableReduction) {
-            mode = ClusterProcessingMode::REDUCTION_MODE;
             startReductionCycle();
             reductionCounter = 0;
         }
@@ -187,11 +201,11 @@ Cluster::updateClusterState()
             goToNextState(NEXT);
         }
     }
-    else if (mode == ClusterProcessingMode::REDUCTION_MODE) {
+    else if (task.mode == ClusterProcessingMode::REDUCTION_MODE) {
         sendClusterTrainEndMessage(this);
         goToNextState(NEXT);
     }
-    else if (mode == ClusterProcessingMode::NORMAL_MODE) {
+    else if (task.mode == ClusterProcessingMode::NORMAL_MODE) {
         sendClusterNormalEndMessage(this);
         goToNextState(NEXT);
     }

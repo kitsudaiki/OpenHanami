@@ -34,11 +34,9 @@ class CpuHost : public LogicalHost
     CpuHost(const uint32_t localId);
     ~CpuHost();
 
-    void addClusterToHost(Cluster* cluster);
-
-    bool moveCluster(Cluster* cluster);
-    void syncWithHost(Cluster*);
-    void removeCluster(Cluster* cluster);
+    bool moveHexagon(Hexagon* hexagon);
+    void syncWithHost(Hexagon*);
+    void removeHexagon(Hexagon* hexagon);
 
    protected:
     bool initWorkerThreads();

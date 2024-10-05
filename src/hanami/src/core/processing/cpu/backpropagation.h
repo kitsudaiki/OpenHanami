@@ -41,16 +41,10 @@
 inline void
 backpropagateNeuron(Hexagon* hexagon, const uint32_t blockId)
 {
-    Connection* scon = nullptr;
     Neuron* targetNeuron = nullptr;
-    NeuronBlock* targetNeuronBlock = nullptr;
-    float delta = 0.0f;
-    const uint32_t neuronBlockId = blockId;
-    uint8_t neuronId = 0;
+    NeuronBlock* targetNeuronBlock = &hexagon->neuronBlocks[blockId];
 
-    targetNeuronBlock = &hexagon->neuronBlocks[neuronBlockId];
-
-    for (neuronId = 0; neuronId < NEURONS_PER_NEURONBLOCK; ++neuronId) {
+    for (uint8_t neuronId = 0; neuronId < NEURONS_PER_NEURONBLOCK; ++neuronId) {
         targetNeuron = &targetNeuronBlock->neurons[neuronId];
 
         if (targetNeuron->active == false) {
@@ -76,8 +70,8 @@ backpropagateSection(SynapseSection* section, Connection* connection, NeuronBloc
     Synapse* synapse;
     Neuron* targetNeuron = nullptr;
     constexpr float trainValue = 0.1f;
-    float delta = 0.0f;
     uint8_t active = 0;
+    float delta = 0.0f;
 
     // iterate over all synapses in the section
     while (pos < SYNAPSES_PER_SYNAPSESECTION && potential > 0.00001f) {
@@ -116,7 +110,7 @@ backpropagateConnections(Hexagon* hexagon, SynapseBlock* synapseBlocks, const ui
     SynapseSection* synapseSection = nullptr;
     SynapseBlock* synapseBlock = nullptr;
 
-    if (blockId >= hexagon->header.dimX) {
+    if (blockId >= hexagon->header.numberOfBlocks) {
         return;
     }
     const uint64_t synapseBlockLink = hexagon->synapseBlockLinks[blockId];
@@ -222,7 +216,7 @@ processClusterBackward(Cluster& cluster, const uint32_t hexagonId, const uint32_
         return;
     }
 
-    SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(cluster.attachedHost->synapseBlocks);
+    SynapseBlock* synapseBlocks = getItemData<SynapseBlock>(hexagon->attachedHost->synapseBlocks);
     backpropagateNeuron(hexagon, blockId);
     backpropagateConnections(hexagon, synapseBlocks, blockId);
 }

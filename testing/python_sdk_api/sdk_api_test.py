@@ -260,7 +260,7 @@ def test_workflow():
     hosts_json = json.loads(result)["body"]
     if len(hosts_json) > 1:
         print("test move cluster to gpu")
-        target_host_uuid = hosts_json[1][1]
+        target_host_uuid = hosts_json[1][0]
         cluster.switch_host(token, address, cluster_uuid, target_host_uuid, False)
 
     # run training

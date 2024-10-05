@@ -76,7 +76,8 @@ RestoreCluster_State::restoreClusterFromCheckpoint(Task* currentTask, Hanami::Er
 {
     const CheckpointRestoreInfo* info = &std::get<CheckpointRestoreInfo>(currentTask->info);
     const std::string location = info->checkpointInfo.location;
-    const ReturnStatus ret = m_clusterIO.restoreClusterFromFile(*m_cluster, location, error);
+    const ReturnStatus ret
+        = m_clusterIO.restoreClusterFromFile(*m_cluster, location, nullptr, error);
     if (ret != OK) {
         return false;
     }

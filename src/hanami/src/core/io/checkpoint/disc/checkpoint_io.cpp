@@ -87,6 +87,7 @@ CheckpointIO::writeClusterToFile(Cluster& cluster,
  *
  * @param cluster reference to cluster, in which the data should be restored
  * @param fileLocation path to the local checkpoint-file
+ * @param host initial host to attach the hexagons. if nullptr, use the first cpu-host
  * @param error reference for error-output
  *
  * @return return-status based on the result of the process
@@ -94,6 +95,7 @@ CheckpointIO::writeClusterToFile(Cluster& cluster,
 ReturnStatus
 CheckpointIO::restoreClusterFromFile(Cluster& cluster,
                                      const std::string& fileLocation,
+                                     LogicalHost* host,
                                      Hanami::ErrorContainer& error)
 {
     // backup the original UUID of the cluster to apply this after reading the checkpoint,
@@ -110,7 +112,7 @@ CheckpointIO::restoreClusterFromFile(Cluster& cluster,
     }
 
     const ReturnStatus ret
-        = deserialize(cluster, m_checkpointFile->fileSize - sizeof(CheckpointHeader), error);
+        = deserialize(cluster, m_checkpointFile->fileSize - sizeof(CheckpointHeader), host, error);
     if (ret != OK) {
         error.addMessage("Failed to read checkpoint");
         return ret;

@@ -83,7 +83,8 @@ prepare-build-dependencies:
                            uuid-dev  \
                            libsqlite3-dev \
                            protobuf-compiler \
-                           # https://github.com/kitsudaiki/OpenHanami/issues/377
+                           # TODO:enable gpu init here again
+                           # related issue: https://github.com/kitsudaiki/Hanami/issues/325
                            # nvidia-cuda-toolkit \
                            nano && \
         ln -s /usr/bin/clang++-15 /usr/bin/clang++ && \
@@ -126,7 +127,7 @@ build-image:
     ARG image_name
 
     RUN apt-get update && \
-        apt-get install -y openssl libuuid1 libcrypto++8 libsqlite3-0 libprotobuf23 libboost1.74 libcudart11.0 && \
+        apt-get install -y openssl libuuid1 libcrypto++8 libsqlite3-0 libprotobuf23 libboost1.74 && \
         apt-get clean autoclean && \
         apt-get autoremove --yes && \
         chmod +x /usr/bin/hanami
@@ -143,7 +144,7 @@ generate-docs:
     COPY +compile-code/hanami/hanami /tmp/
 
     RUN apt-get update && \
-        apt-get install -y openssl libuuid1 libcrypto++8 libsqlite3-0 libprotobuf23 libboost1.74 libcudart11.0
+        apt-get install -y openssl libuuid1 libcrypto++8 libsqlite3-0 libprotobuf23 libboost1.74
     RUN chmod +x /tmp/hanami
     RUN /tmp/hanami --generate_docu
 
