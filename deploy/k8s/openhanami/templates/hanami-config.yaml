@@ -25,7 +25,7 @@ data:
 
     [http]
     enable = True
-    ip = {{ .Values.api.ip }}
-    port = {{ .Values.api.port }}
+    ip = 127.0.0.1
+    port = 11418
 
 kind: ConfigMap
