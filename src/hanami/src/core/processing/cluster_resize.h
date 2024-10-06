@@ -205,6 +205,9 @@ createNewSection(Cluster& cluster,
     targetConnection->origin.neuronId = neuronId;
     targetConnection->origin.hexagonId = hexagon->header.hexagonId;
     targetConnection->origin.isInput = hexagon->inputInterface != nullptr;
+    if (hexagon->header.isBinaryInput) {
+        targetConnection->origin.isInput = 2;
+    }
     targetConnection->lowerBound = 0.0f;
     targetConnection->potentialRange = std::numeric_limits<float>::max();
 

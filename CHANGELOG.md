@@ -17,6 +17,10 @@
 - removed `target`-keyword from cluster-templates
 - removed number of nodes from inputs and outputs from the cluster-templates
 
+### Added
+
+- added new workaround to be able to handle binary input-data
+
 ### Changed
 
 - renamed repo from `Hanami` to `OpenHanami`

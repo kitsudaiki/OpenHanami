@@ -38,6 +38,7 @@ namespace Hanami
 struct InputMeta {
     std::string name = "";
     uint32_t targetHexagonId = UNINTI_POINT_32;
+    bool binary = false;
 };
 
 struct OutputMeta {

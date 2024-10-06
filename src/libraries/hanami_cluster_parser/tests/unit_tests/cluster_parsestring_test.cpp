@@ -51,12 +51,14 @@ Cluster_ParseString_Test::parseString_test()
         "    1,1,1\n"
         "    2,1,1\n"
         "    3,1,1\n"
+        "    4,1,1\n"
         "\n"
         "inputs:\n"
-        "    input_hexagon: 1,1,1\n"
+        "    input_hexagon: 1,1,1 (binary)\n"
+        "    input_hexagon2: 2,1,1\n"
         "\n"
         "outputs:\n"
-        "    output_hexagon: 3,1,1\n"
+        "    output_hexagon: 4,1,1\n"
         "\n");
 
     ClusterMeta result;
@@ -74,7 +76,7 @@ Cluster_ParseString_Test::parseString_test()
     TEST_EQUAL(result.maxConnectionDistance, 1);
     TEST_EQUAL(result.enableReduction, false);
 
-    TEST_EQUAL(result.hexagons.size(), 3);
+    TEST_EQUAL(result.hexagons.size(), 4);
 
     TEST_EQUAL(result.hexagons.at(0).x, 1);
     TEST_EQUAL(result.hexagons.at(0).y, 1);
@@ -88,13 +90,22 @@ Cluster_ParseString_Test::parseString_test()
     TEST_EQUAL(result.hexagons.at(2).y, 1);
     TEST_EQUAL(result.hexagons.at(2).z, 1);
 
-    TEST_EQUAL(result.inputs.size(), 1);
+    TEST_EQUAL(result.hexagons.at(3).x, 4);
+    TEST_EQUAL(result.hexagons.at(3).y, 1);
+    TEST_EQUAL(result.hexagons.at(3).z, 1);
+
+    TEST_EQUAL(result.inputs.size(), 2);
     TEST_EQUAL(result.inputs.at(0).name, "input_hexagon");
     TEST_EQUAL(result.inputs.at(0).targetHexagonId, 0);
+    TEST_EQUAL(result.inputs.at(0).binary, true);
+
+    TEST_EQUAL(result.inputs.at(1).name, "input_hexagon2");
+    TEST_EQUAL(result.inputs.at(1).targetHexagonId, 1);
+    TEST_EQUAL(result.inputs.at(1).binary, false);
 
     TEST_EQUAL(result.outputs.size(), 1);
     TEST_EQUAL(result.outputs.at(0).name, "output_hexagon");
-    TEST_EQUAL(result.outputs.at(0).targetHexagonId, 2);
+    TEST_EQUAL(result.outputs.at(0).targetHexagonId, 3);
 
     input
         = "version: 2\n"  // <-- error (invalid version-number)
