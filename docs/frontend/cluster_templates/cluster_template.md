@@ -25,6 +25,7 @@ hexagons:
 
 inputs:
     <NAME>: <X>,<Y>,<Z>
+    <NAME>: <X>,<Y>,<Z> (binary)
 
 outputs:
     <NAME>: <X>,<Y>,<Z>
@@ -66,6 +67,10 @@ The entries within this block are all optional. If not listed, the default is us
 `<X>,<Y>,<Z>` the x-, y- and z-coordinates of the hexagon. All hexagons must be connected by at
 least one side with another hexagon.
 
+!!! info
+
+    It is theoretically possible to order them 3-dimensional by using different z-values, but this was never tested until now.
+
 ### target
 
 Inputs and outputs is also a `<X>,<Y>,<Z>` and has to be the same position, like the hexagon, where
@@ -75,9 +80,17 @@ this input or output should be connected to.
 
 `<NAME>` of this input and output for identification to be able to add input- and output-values.
 
-!!! info
+### binary input
 
-    It is theoretically possible to order them 3-dimensional by using different z-values, but this was never tested until now.
+For the case that the input-data have only value 0 and 1, a `(binary)` has to be added at the end of the input:
+
+```
+inputs:
+    <NAME>: <X>,<Y>,<Z> (binary)
+```
+
+Otherwise the results for binary input become really bad. Even the input on the hexagon with this flag is not a binary input, all input-values greater than 0 are automatically handled as 1. 
+
 
 ## Simple example
 

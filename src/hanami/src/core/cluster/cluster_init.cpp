@@ -119,6 +119,7 @@ initializeInputs(Cluster* cluster, const ClusterMeta& clusterMeta)
         cluster->inputInterfaces.try_emplace(inputMeta.name, inputInterface);
 
         cluster->hexagons[inputInterface.targetHexagonId].header.isInputHexagon = true;
+        cluster->hexagons[inputInterface.targetHexagonId].header.isBinaryInput = inputMeta.binary;
         cluster->hexagons[inputInterface.targetHexagonId].inputInterface
             = &cluster->inputInterfaces[inputMeta.name];
     }

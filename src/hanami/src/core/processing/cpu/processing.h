@@ -148,6 +148,55 @@ synapseProcessingBackward(Cluster& cluster,
 }
 
 /**
+ * @brief process a single synapse-section as binary, so if input greater 0, the whole section
+ *        is triggered
+ *
+ * @param cluster cluster, where the synapseSection belongs to
+ * @param synapseSection current synapse-section to process
+ * @param connection pointer to the connection-object, which is related to the section
+ * @param targetNeuronBlock neuron-block, which is the target for all synapses in the section
+ * @param clusterSettings pointer to cluster-settings
+ * @param randomSeed reference to the current seed of the randomizer
+ */
+template <bool doTrain>
+inline void
+synapseProcessingBackward_Binary(Cluster& cluster,
+                                 SynapseSection* synapseSection,
+                                 Connection* connection,
+                                 NeuronBlock* targetNeuronBlock,
+                                 ClusterSettings* clusterSettings,
+                                 uint32_t& randomSeed)
+{
+    uint8_t pos = 0;
+    Synapse* synapse = nullptr;
+    Neuron* targetNeuron = nullptr;
+    const bool isAbleToCreate = connection->origin.isInput || cluster.enableCreation;
+
+    // iterate over all synapses in the section
+    while (pos < SYNAPSES_PER_SYNAPSESECTION) {
+        synapse = &synapseSection->synapses[pos];
+
+        if constexpr (doTrain) {
+            if (isAbleToCreate) {
+                // create new synapse if necesarry and training is active
+                if (synapse->targetNeuronId == UNINIT_STATE_8) {
+                    createNewSynapse(synapse, clusterSettings, 0, randomSeed);
+                    cluster.enableCreation = true;
+                }
+            }
+        }
+
+        if (synapse->targetNeuronId != UNINIT_STATE_8) {
+            // update target-neuron
+            targetNeuron = &targetNeuronBlock->neurons[synapse->targetNeuronId];
+            targetNeuron->input += synapse->weight;
+        }
+
+        ++pos;
+    }
+}
+
+/**
  * @brief process all synapes of a hexagon
  *
  * @param cluster cluster, where the hexagon belongs to
@@ -181,8 +230,14 @@ processSynapses(Cluster& cluster, Hexagon* hexagon, const uint32_t blockId)
             randomeSeed += (blockId * NUMBER_OF_SYNAPSESECTION) + i;
             section = &synapseBlock->sections[i];
 
-            synapseProcessingBackward<doTrain>(
-                cluster, section, connection, neuronBlock, clusterSettings, randomeSeed);
+            if (connection->origin.isInput == 2) {
+                synapseProcessingBackward_Binary<doTrain>(
+                    cluster, section, connection, neuronBlock, clusterSettings, randomeSeed);
+            }
+            else {
+                synapseProcessingBackward<doTrain>(
+                    cluster, section, connection, neuronBlock, clusterSettings, randomeSeed);
+            }
         }
     }
 }

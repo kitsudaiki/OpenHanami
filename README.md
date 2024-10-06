@@ -221,9 +221,6 @@ and multi-tenancy.
 The concept is not perfect and also has some disadvantages, which are the result of the architecture
 itself:
 
--   Very inefficient for binary input, where inputs of single nodes of the network can only be 0 or
-    1, without values in between
-
 -   A single synapse needs more memory than in a classical network. The hope is, in bigger tests, it
     becomes much more efficient compared to fully meshed layered networks.
 

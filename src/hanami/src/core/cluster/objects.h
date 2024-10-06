@@ -176,7 +176,7 @@ struct SourceLocationPtr {
     uint32_t hexagonId;
     uint16_t blockId;
     uint8_t neuronId;
-    bool isInput;
+    uint8_t isInput;  // 0=not input ; 1=is input ; 2=is binary input
 };
 static_assert(sizeof(SourceLocationPtr) == 8);
 
@@ -299,7 +299,8 @@ struct HexagonHeader {
     uint32_t hexagonId = UNINIT_STATE_32;
     bool isInputHexagon = false;
     bool isOutputHexagon = false;
-    uint8_t padding[2];
+    bool isBinaryInput = false;
+    uint8_t padding[1];
     uint32_t numberOfFreeSections = 0;
     uint32_t numberOfBlocks = 0;
     Hanami::Position hexagonPos;
