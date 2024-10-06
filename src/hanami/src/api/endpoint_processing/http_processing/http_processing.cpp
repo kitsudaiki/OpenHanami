@@ -22,6 +22,7 @@
 
 #include "http_processing.h"
 
+#include <api/endpoint_processing/auth_check.h>
 #include <api/endpoint_processing/blossom.h>
 #include <api/endpoint_processing/http_processing/response_builds.h>
 #include <api/endpoint_processing/http_processing/string_functions.h>
@@ -134,6 +135,7 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
         // parse input-values
         try {
             inputValuesJson = json::parse(hanamiRequest.inputValues);
+            inputValuesJson.erase("token");
         }
         catch (const json::parse_error& ex) {
             status.statusCode = BAD_REQUEST_RTYPE;
@@ -146,8 +148,6 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
         if (hanamiRequest.targetEndpoint == tokenEndpointPath
             && hanamiRequest.httpType == POST_TYPE)
         {
-            inputValuesJson.erase("token");
-
             if (triggerBlossom(result,
                                tokenEndpointPath,
                                POST_TYPE,
@@ -165,19 +165,15 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
 
         // check authentication
         json tokenData = json::object();
-        json tokenInputValues = json::object();
-        tokenInputValues["token"] = token;
-        tokenInputValues["http_type"] = static_cast<uint32_t>(hanamiRequest.httpType);
-        tokenInputValues["endpoint"] = hanamiRequest.targetEndpoint;
-        if (triggerBlossom(tokenData,
-                           authEndpointPath,
-                           GET_TYPE,
-                           Hanami::UserContext(),
-                           tokenInputValues,
-                           status,
-                           error)
+        std::string errorMessage = "";
+        if (validateToken(tokenData,
+                          token,
+                          hanamiRequest.targetEndpoint,
+                          hanamiRequest.httpType,
+                          errorMessage)
             == false)
         {
+            error.addMessage(errorMessage);
             error.addMessage("Permission-check failed");
             break;
         }
@@ -195,10 +191,6 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
                 status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
                 break;
             }
-        }
-
-        if (hanamiRequest.targetEndpoint != authEndpointPath) {
-            inputValuesJson.erase("token");
         }
 
         // make real request

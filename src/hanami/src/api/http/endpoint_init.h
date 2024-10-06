@@ -27,7 +27,6 @@
 #include <api/endpoint_processing/http_server.h>
 #include <api/http/auth/create_token_v1_0.h>
 #include <api/http/auth/renew_token_v1_0.h>
-#include <api/http/auth/validate_access_v1_0.h>
 #include <api/http/checkpoint/delete_checkpoint_v1_0.h>
 #include <api/http/checkpoint/get_checkpoint_v1_0.h>
 #include <api/http/checkpoint/list_checkpoint_v1_0.h>
@@ -79,7 +78,6 @@
 #include <hanami_config/config_handler.h>
 #include <hanami_root.h>
 
-const std::string authEndpointPath = "v1.0alpha/auth";
 const std::string tokenEndpointPath = "v1.0alpha/token";
 
 void initEndpoints();

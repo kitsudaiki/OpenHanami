@@ -7,6 +7,7 @@
 #### API-Breaking
 
 - the input definition for the tasks was changes to removed the naming restriction between dataset-column and hexagon-name
+- the external REST-API endpoint to validate a token was removed and replaced by an internal function, which is used instead for all incoming api-requests
 
 #### Checkpoint-breaking
 
