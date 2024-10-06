@@ -78,12 +78,15 @@ YY_DECL;
     HEXAGONS "hexagons"
     INPUTS "inputs"
     OUTPUTS "outputs"
+    BINARY_INPUT "binary"
     COOLDOWN "neuron_cooldown"
     MAX_DISTANCE "max_connection_distance"
     REFRACTORY_TIME "refractory_time"
     ENABLE_REDUCTION "enable_reduction"
     BOOL_TRUE  "true"
     BOOL_FALSE "false"
+    OPEN "("
+    CLOSE ")"
 ;
 
 %token <std::string> IDENTIFIER "identifier"
@@ -110,7 +113,7 @@ YY_DECL;
 //     3,1,1
 //
 // inputs:
-//     "input_hexagon": 1,1,1
+//     "input_hexagon": 1,1,1 (binary)
 //
 // outputs:
 //     "output_hexagon": 3,1,1
@@ -216,6 +219,23 @@ inputs:
     }
 
 input:
+    "identifier" ":" position "(" "binary" ")"
+    {
+        const Hanami::Position pos = $3;
+        const uint32_t hexagonId = driver.getHexagonId(pos);
+        if(hexagonId == UNINTI_POINT_32) {
+            driver.error(yyla.location, "Hexagon with the position " + pos.toString() + " doesn't exist.");
+            return 1;
+        }
+        if($1.size() >= 255) {
+            driver.error(yyla.location, "Name '" + $1 + "' is longer than 254 characters.");
+            return 1;
+        }
+        $$.name = $1;
+        $$.targetHexagonId = hexagonId;
+        $$.binary = true;
+    }
+|
     "identifier" ":" position
     {
         const Hanami::Position pos = $3;
