@@ -83,7 +83,6 @@ initV1M0alphaEndpoints()
     group = "Token";
     httpProcessing->addEndpoint(version + "/token", POST_TYPE, group, new CreateTokenV1M0());
     httpProcessing->addEndpoint(version + "/token", PUT_TYPE, group, new RenewTokenV1M0());
-    httpProcessing->addEndpoint(version + "/auth", GET_TYPE, group, new ValidateAccessV1M0());
 
     group = "User";
     httpProcessing->addEndpoint(version + "/user", POST_TYPE, group, new CreateUserV1M0());

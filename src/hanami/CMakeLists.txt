@@ -10,6 +10,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Adding source files
 set(SOURCES
+    src/api/endpoint_processing/auth_check.h
     src/api/endpoint_processing/blossom.h
     src/api/endpoint_processing/http_processing/http_processing.h
     src/api/endpoint_processing/http_processing/response_builds.h
@@ -19,7 +20,6 @@ set(SOURCES
     src/api/endpoint_processing/runtime_validation.h
     src/api/http/auth/create_token_v1_0.h
     src/api/http/auth/renew_token_v1_0.h
-    src/api/http/auth/validate_access_v1_0.h
     src/api/http/checkpoint/delete_checkpoint_v1_0.h
     src/api/http/checkpoint/get_checkpoint_v1_0.h
     src/api/http/checkpoint/list_checkpoint_v1_0.h
@@ -116,6 +116,7 @@ set(SOURCES
     src/database/users_table.h
     src/documentation/generate_rest_api_docu.h
     src/hanami_root.h
+    src/api/endpoint_processing/auth_check.cpp
     src/api/endpoint_processing/blossom.cpp
     src/api/endpoint_processing/http_processing/http_processing.cpp
     src/api/endpoint_processing/http_server.cpp
@@ -123,7 +124,6 @@ set(SOURCES
     src/api/endpoint_processing/runtime_validation.cpp
     src/api/http/auth/create_token_v1_0.cpp
     src/api/http/auth/renew_token_v1_0.cpp
-    src/api/http/auth/validate_access_v1_0.cpp
     src/api/http/checkpoint/delete_checkpoint_v1_0.cpp
     src/api/http/checkpoint/get_checkpoint_v1_0.cpp
     src/api/http/checkpoint/list_checkpoint_v1_0.cpp

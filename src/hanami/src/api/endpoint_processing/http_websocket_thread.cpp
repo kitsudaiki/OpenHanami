@@ -22,6 +22,7 @@
 
 #include "http_websocket_thread.h"
 
+#include <api/endpoint_processing/auth_check.h>
 #include <api/endpoint_processing/blossom.h>
 #include <api/endpoint_processing/http_processing/http_processing.h>
 #include <api/endpoint_processing/http_server.h>
@@ -299,21 +300,13 @@ HttpWebsocketThread::processInitialMessage(const std::string& message, std::stri
     }
     catch (const json::parse_error& ex) {
         errorMessage = "json-parser error: " + std::string(ex.what());
+        return false;
     }
 
     // check authentication
     BlossomStatus status;
     json tokenData = json::object();
-    json tokenInputValues = json::object();
-    tokenInputValues["token"] = content["token"];
-    tokenInputValues["http_type"] = static_cast<uint32_t>(HttpRequestType::GET_TYPE);
-    if (HanamiRoot::httpServer->httpProcessing->triggerBlossom(tokenData,
-                                                               authEndpointPath,
-                                                               GET_TYPE,
-                                                               Hanami::UserContext(),
-                                                               tokenInputValues,
-                                                               status,
-                                                               error)
+    if (validateToken(tokenData, content["token"], "", HttpRequestType::GET_TYPE, errorMessage)
         == false)
     {
         errorMessage = "Token invalid";
