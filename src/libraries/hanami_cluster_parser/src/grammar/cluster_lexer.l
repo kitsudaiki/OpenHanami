@@ -69,6 +69,7 @@ blank [ \t]
 "hexagons"                return Hanami::ClusterParser::make_HEXAGONS (clusterloc);
 "inputs"                  return Hanami::ClusterParser::make_INPUTS (clusterloc);
 "outputs"                 return Hanami::ClusterParser::make_OUTPUTS (clusterloc);
+"axons"                   return Hanami::ClusterParser::make_AXONS (clusterloc);
 "neuron_cooldown"         return Hanami::ClusterParser::make_COOLDOWN (clusterloc);
 "max_connection_distance" return Hanami::ClusterParser::make_MAX_DISTANCE (clusterloc);
 "refractory_time"         return Hanami::ClusterParser::make_REFRACTORY_TIME (clusterloc);
@@ -82,6 +83,7 @@ blank [ \t]
 ":"                       return Hanami::ClusterParser::make_ASSIGN (clusterloc);
 "("                       return Hanami::ClusterParser::make_OPEN (clusterloc);
 ")"                       return Hanami::ClusterParser::make_CLOSE (clusterloc);
+"->"                      return Hanami::ClusterParser::make_ARROW (clusterloc);
 
 \"(\\.|[^"\\])*\" { return Hanami::ClusterParser::make_STRING(yytext, clusterloc); }
 

@@ -96,6 +96,9 @@ Cluster_Init_Test::createCluster_test()
     Hanami::ClusterMeta parsedCluster;
     success = Hanami::parseCluster(&parsedCluster, m_clusterTemplate, error);
     TEST_EQUAL(success, true);
+    if (success == false) {
+        LOG_ERROR(error);
+    }
 
     // create new cluster
     Cluster newCluster;

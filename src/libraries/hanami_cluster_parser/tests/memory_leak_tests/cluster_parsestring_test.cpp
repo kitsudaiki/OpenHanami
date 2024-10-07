@@ -50,13 +50,19 @@ Cluster_ParseString_Test::parseString_test()
         "hexagons:\n"
         "    1,1,1\n"
         "    2,1,1\n"
-        "    3,1,1\n"
+        "    4,1,1\n"
+        "    5,1,1\n"
+        "\n"
+        "axons:\n"
+        "    1,1,1 -> 4,1,1\n"
+        "    2,1,1 -> 4,1,1\n"
         "\n"
         "inputs:\n"
-        "    input_hexagon: 1,1,1\n"
+        "    input_hexagon: 1,1,1 (binary)\n"
+        "    input_hexagon2: 2,1,1\n"
         "\n"
         "outputs:\n"
-        "    output_hexagon: 3,1,1\n"
+        "    output_hexagon: 5,1,1\n"
         "\n");
 
     ClusterMeta result;
