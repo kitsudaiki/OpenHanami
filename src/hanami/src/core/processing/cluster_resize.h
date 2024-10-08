@@ -131,6 +131,9 @@ createNewSection(Cluster& cluster, Connection* sourceConnection)
     // get target objects
     const uint32_t targetHexagonId
         = sourceLoc.hexagon->possibleHexagonTargetIds[rand() % NUMBER_OF_POSSIBLE_NEXT];
+    if (targetHexagonId == UNINIT_STATE_32) {
+        return false;
+    }
     Hexagon* targetHexagon = &cluster.hexagons[targetHexagonId];
     ItemBuffer<SynapseBlock>* synapseBlockBuffer = &targetHexagon->attachedHost->synapseBlocks;
 
@@ -182,6 +185,9 @@ createNewSection(Cluster& cluster,
     // get target objects
     const uint32_t targetHexagonId
         = hexagon->possibleHexagonTargetIds[rand() % NUMBER_OF_POSSIBLE_NEXT];
+    if (targetHexagonId == UNINIT_STATE_32) {
+        return false;
+    }
     Hexagon* targetHexagon = &cluster.hexagons[targetHexagonId];
 
     // get target-connection

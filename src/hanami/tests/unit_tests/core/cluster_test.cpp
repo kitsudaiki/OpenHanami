@@ -54,14 +54,17 @@ Cluster_Init_Test::initTest()
           "\n"
           "hexagons:\n"
           "    1,1,1\n"
-          "    2,1,1\n"
           "    3,1,1\n"
+          "    4,1,1\n"
+          "    \n"
+          "axons:\n"
+          "    1,1,1 -> 3,1,1\n"
           "\n"
           "inputs:\n"
           "    input_hexagon: 1,1,1\n"
           "\n"
           "outputs:\n"
-          "    output_hexagon: 3,1,1\n"
+          "    output_hexagon: 4,1,1\n"
           "\n";
 }
 
@@ -131,7 +134,7 @@ Cluster_Init_Test::createCluster_test()
     TEST_EQUAL(newCluster.hexagons.at(0).neighbors[1], UNINIT_STATE_32);
     TEST_EQUAL(newCluster.hexagons.at(0).neighbors[2], UNINIT_STATE_32);
     TEST_EQUAL(newCluster.hexagons.at(0).neighbors[3], UNINIT_STATE_32);
-    TEST_EQUAL(newCluster.hexagons.at(0).neighbors[4], 1);
+    TEST_EQUAL(newCluster.hexagons.at(0).neighbors[4], UNINIT_STATE_32);
     TEST_EQUAL(newCluster.hexagons.at(0).neighbors[5], UNINIT_STATE_32);
     TEST_EQUAL(newCluster.hexagons.at(0).neighbors[6], UNINIT_STATE_32);
     TEST_EQUAL(newCluster.hexagons.at(0).neighbors[7], UNINIT_STATE_32);
@@ -139,6 +142,7 @@ Cluster_Init_Test::createCluster_test()
     TEST_EQUAL(newCluster.hexagons.at(0).neighbors[9], UNINIT_STATE_32);
     TEST_EQUAL(newCluster.hexagons.at(0).neighbors[10], UNINIT_STATE_32);
     TEST_EQUAL(newCluster.hexagons.at(0).neighbors[11], UNINIT_STATE_32);
+    TEST_EQUAL(newCluster.hexagons.at(0).header.axonTarget, 1);
     success = newCluster.hexagons.at(0).inputInterface != nullptr;
     TEST_EQUAL(success, true);
     success = newCluster.hexagons.at(0).outputInterface == nullptr;
@@ -158,11 +162,12 @@ Cluster_Init_Test::createCluster_test()
     TEST_EQUAL(newCluster.hexagons.at(1).neighbors[4], 2);
     TEST_EQUAL(newCluster.hexagons.at(1).neighbors[5], UNINIT_STATE_32);
     TEST_EQUAL(newCluster.hexagons.at(1).neighbors[6], UNINIT_STATE_32);
-    TEST_EQUAL(newCluster.hexagons.at(1).neighbors[7], 0);
+    TEST_EQUAL(newCluster.hexagons.at(1).neighbors[7], UNINIT_STATE_32);
     TEST_EQUAL(newCluster.hexagons.at(1).neighbors[8], UNINIT_STATE_32);
     TEST_EQUAL(newCluster.hexagons.at(1).neighbors[9], UNINIT_STATE_32);
     TEST_EQUAL(newCluster.hexagons.at(1).neighbors[10], UNINIT_STATE_32);
     TEST_EQUAL(newCluster.hexagons.at(1).neighbors[11], UNINIT_STATE_32);
+    TEST_EQUAL(newCluster.hexagons.at(1).header.axonTarget, 1);
     success = newCluster.hexagons.at(1).inputInterface == nullptr;
     TEST_EQUAL(success, true);
     success = newCluster.hexagons.at(1).outputInterface == nullptr;

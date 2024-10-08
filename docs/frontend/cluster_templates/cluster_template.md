@@ -18,17 +18,20 @@ settings:
     enable_reduction: <ENABLE_REDUCTION>
 
 hexagons:
-    <X>,<Y>,<Z>
-    <X>,<Y>,<Z>
+    X,Y,Z
+    X,Y,Z
     ...
-    <X>,<Y>,<Z>
+    X,Y,Z
+
+axons:
+    X,Y,Z -> X,Y,Z
 
 inputs:
-    <NAME>: <X>,<Y>,<Z>
-    <NAME>: <X>,<Y>,<Z> (binary)
+    <NAME>: X,Y,Z
+    <NAME>: X,Y,Z (binary)
 
 outputs:
-    <NAME>: <X>,<Y>,<Z>
+    <NAME>: X,Y,Z
 ```
 
 In the template the position, type and name of the hexagons has to be defined. The size of the input
@@ -64,7 +67,7 @@ The entries within this block are all optional. If not listed, the default is us
 
 ### position
 
-`<X>,<Y>,<Z>` the x-, y- and z-coordinates of the hexagon. All hexagons must be connected by at
+`X,Y,Z` the x-, y- and z-coordinates of the hexagon. All hexagons must be connected by at
 least one side with another hexagon.
 
 !!! info
@@ -73,7 +76,7 @@ least one side with another hexagon.
 
 ### target
 
-Inputs and outputs is also a `<X>,<Y>,<Z>` and has to be the same position, like the hexagon, where
+Inputs and outputs is also a `X,Y,Z` and has to be the same position, like the hexagon, where
 this input or output should be connected to.
 
 ### name
@@ -86,11 +89,14 @@ For the case that the input-data have only value 0 and 1, a `(binary)` has to be
 
 ```
 inputs:
-    <NAME>: <X>,<Y>,<Z> (binary)
+    <NAME>: X,Y,Z (binary)
 ```
 
 Otherwise the results for binary input become really bad. Even the input on the hexagon with this flag is not a binary input, all input-values greater than 0 are automatically handled as 1. 
 
+### axons (optional)
+
+The `axons`-section is not required and allow to connect any hexagon within the cluster with another one. 
 
 ## Simple example
 
@@ -106,14 +112,17 @@ settings:
 
 hexagons:
     1,1,1
-    2,1,1
     3,1,1
+    4,1,1
+
+axons:
+    1,1,1 -> 3,1,1
 
 inputs:
     input_hexagon: 1,1,1
 
 outputs:
-    output_hexagon: 3,1,1
+    output_hexagon: 4,1,1
 ```
 
 It defines 3 hexagons. It contains an input-hexagon with the name `test_input` and an output-hexagon

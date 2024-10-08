@@ -11,6 +11,7 @@
 
 #### Checkpoint-breaking
 
+- added axons to be able to connect hexagons of the entire cluster with each other
 - the synapse-block-links were moved into its own vector for cleaner separation and better sizes of the objects within the memory
 
 #### Template-Breaking

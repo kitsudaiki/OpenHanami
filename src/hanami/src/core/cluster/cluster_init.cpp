@@ -163,6 +163,7 @@ initializeHexagons(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta, Log
         Hexagon* newHexagon = &cluster->hexagons[i];
         newHexagon->cluster = cluster;
         newHexagon->header.hexagonId = i;
+        newHexagon->header.axonTarget = i;
         newHexagon->header.hexagonPos = clusterMeta.hexagons.at(i);
         if (host != nullptr) {
             newHexagon->attachedHost = host;
@@ -173,10 +174,25 @@ initializeHexagons(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta, Log
         std::fill_n(newHexagon->neighbors, 12, UNINIT_STATE_32);
     }
 
+    updateAxons(cluster, clusterMeta);
     connectAllHexagons(cluster);
     initializeTargetHexagonList(cluster);
 
     return;
+}
+
+/**
+ * @brief update axons of the hexagon
+ *
+ * @param cluster pointer to cluster
+ * @param clusterMeta meta-data of cluster-template with axon-information
+ */
+void
+updateAxons(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta)
+{
+    for (const AxonMeta& axonMeta : clusterMeta.axons) {
+        cluster->hexagons[axonMeta.sourceId].header.axonTarget = axonMeta.targetId;
+    }
 }
 
 /**
@@ -226,18 +242,23 @@ connectAllHexagons(Cluster* cluster)
  * @return last hexagon-id of the gone path
  */
 uint32_t
-goToNextInitHexagon(Cluster* cluster, Hexagon& currentHexagon, uint32_t& maxPathLength)
+goToNextInitHexagon(Cluster* cluster,
+                    Hexagon* currentHexagon,
+                    int32_t& maxPathLength,
+                    const uint32_t sourceHexagonId)
 {
     // check path-length to not go too far
     maxPathLength--;
-    if (maxPathLength == 0) {
-        return currentHexagon.header.hexagonId;
+    if (maxPathLength <= 0 && currentHexagon->header.hexagonId != sourceHexagonId) {
+        return currentHexagon->header.hexagonId;
     }
 
     // check based on the chance, if you go to the next, or not
-    const float chanceForNext = 0.0f;  // TODO: make hard-coded value configurable
-    if (1000.0f * chanceForNext > (rand() % 1000)) {
-        return currentHexagon.header.hexagonId;
+    const float chanceForNext = 0.5f;  // TODO: make hard-coded value configurable
+    if (1000.0f * chanceForNext > (rand() % 1000)
+        && currentHexagon->header.hexagonId != sourceHexagonId)
+    {
+        return currentHexagon->header.hexagonId;
     }
 
     // get a random possible next hexagon
@@ -245,14 +266,15 @@ goToNextInitHexagon(Cluster* cluster, Hexagon& currentHexagon, uint32_t& maxPath
     const uint8_t startSide = possibleNextSides[rand() % 7];
     for (uint32_t i = 0; i < 7; i++) {
         const uint8_t side = possibleNextSides[(i + startSide) % 7];
-        const uint32_t nextHexagonId = currentHexagon.neighbors[side];
+        const uint32_t nextHexagonId = currentHexagon->neighbors[side];
         if (nextHexagonId != UNINIT_STATE_32) {
-            return goToNextInitHexagon(cluster, cluster->hexagons[nextHexagonId], maxPathLength);
+            return goToNextInitHexagon(
+                cluster, &cluster->hexagons[nextHexagonId], maxPathLength, sourceHexagonId);
         }
     }
 
     // if no further next hexagon was found, the give back tha actual one as end of the path
-    return currentHexagon.header.hexagonId;
+    return currentHexagon->header.hexagonId;
 }
 
 /**
@@ -263,15 +285,17 @@ goToNextInitHexagon(Cluster* cluster, Hexagon& currentHexagon, uint32_t& maxPath
 void
 initializeTargetHexagonList(Cluster* cluster)
 {
-    for (Hexagon& baseHexagon : cluster->hexagons) {
+    for (Hexagon& hexagon : cluster->hexagons) {
         for (uint32_t counter = 0; counter < NUMBER_OF_POSSIBLE_NEXT; counter++) {
-            uint32_t maxPathLength = cluster->clusterHeader.settings.maxConnectionDistance + 1;
-            const uint32_t hexagonId = goToNextInitHexagon(cluster, baseHexagon, maxPathLength);
-            if (baseHexagon.header.hexagonId != hexagonId) {
-                baseHexagon.possibleHexagonTargetIds[counter] = hexagonId;
+            int32_t maxPathLength = cluster->clusterHeader.settings.maxConnectionDistance;
+            Hexagon* baseHexagon = &cluster->hexagons[hexagon.header.axonTarget];
+            const uint32_t targetHexagonId = goToNextInitHexagon(
+                cluster, baseHexagon, maxPathLength, hexagon.header.hexagonId);
+            if (hexagon.header.hexagonId != targetHexagonId) {
+                hexagon.possibleHexagonTargetIds[counter] = targetHexagonId;
             }
             else {
-                baseHexagon.possibleHexagonTargetIds[counter] = UNINIT_STATE_32;
+                hexagon.possibleHexagonTargetIds[counter] = UNINIT_STATE_32;
             }
         }
     }
