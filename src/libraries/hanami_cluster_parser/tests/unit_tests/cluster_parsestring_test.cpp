@@ -50,15 +50,19 @@ Cluster_ParseString_Test::parseString_test()
         "hexagons:\n"
         "    1,1,1\n"
         "    2,1,1\n"
-        "    3,1,1\n"
         "    4,1,1\n"
+        "    5,1,1\n"
+        "\n"
+        "axons:\n"
+        "    1,1,1 -> 4,1,1\n"
+        "    2,1,1 -> 4,1,1\n"
         "\n"
         "inputs:\n"
         "    input_hexagon: 1,1,1 (binary)\n"
         "    input_hexagon2: 2,1,1\n"
         "\n"
         "outputs:\n"
-        "    output_hexagon: 4,1,1\n"
+        "    output_hexagon: 5,1,1\n"
         "\n");
 
     ClusterMeta result;
@@ -86,13 +90,20 @@ Cluster_ParseString_Test::parseString_test()
     TEST_EQUAL(result.hexagons.at(1).y, 1);
     TEST_EQUAL(result.hexagons.at(1).z, 1);
 
-    TEST_EQUAL(result.hexagons.at(2).x, 3);
+    TEST_EQUAL(result.hexagons.at(2).x, 4);
     TEST_EQUAL(result.hexagons.at(2).y, 1);
     TEST_EQUAL(result.hexagons.at(2).z, 1);
 
-    TEST_EQUAL(result.hexagons.at(3).x, 4);
+    TEST_EQUAL(result.hexagons.at(3).x, 5);
     TEST_EQUAL(result.hexagons.at(3).y, 1);
     TEST_EQUAL(result.hexagons.at(3).z, 1);
+
+    TEST_EQUAL(result.axons.size(), 2);
+    TEST_EQUAL(result.axons.at(0).sourceId, 0);
+    TEST_EQUAL(result.axons.at(0).targetId, 2);
+    TEST_EQUAL(result.axons.at(1).sourceId, 1);
+    TEST_EQUAL(result.axons.at(1).targetId, 2);
+    ;
 
     TEST_EQUAL(result.inputs.size(), 2);
     TEST_EQUAL(result.inputs.at(0).name, "input_hexagon");
@@ -242,6 +253,34 @@ Cluster_ParseString_Test::parseString_test()
           "    output_hexagon: 3,1,1\n"
           "\n";
 
+    ret = parseCluster(&result, input, error);
+    TEST_EQUAL(ret, false);
+
+    input
+        = "version: 1\n"
+          "settings:\n"
+          "    refractory_time: 1\n"
+          "    neuron_cooldown: 10000000.0\n"
+          "    max_connection_distance: 1\n"
+          "    enable_reduction: false\n"
+          "\n"
+          "hexagons:\n"
+          "    1,1,1\n"
+          "    2,1,1\n"
+          "    4,1,1\n"
+          "    5,1,1\n"
+          "\n"
+          "axons:\n"
+          "    7,1,1 -> 4,1,1\n"  // <-- error (invalid position)
+          "    2,1,1 -> 4,1,1\n"
+          "\n"
+          "inputs:\n"
+          "    input_hexagon: 1,1,1 (binary)\n"
+          "    input_hexagon2: 2,1,1\n"
+          "\n"
+          "outputs:\n"
+          "    output_hexagon: 5,1,1\n"
+          "\n";
     ret = parseCluster(&result, input, error);
     TEST_EQUAL(ret, false);
 };

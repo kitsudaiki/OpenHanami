@@ -46,6 +46,11 @@ struct OutputMeta {
     uint32_t targetHexagonId = UNINTI_POINT_32;
 };
 
+struct AxonMeta {
+    uint32_t sourceId = UNINTI_POINT_32;
+    uint32_t targetId = UNINTI_POINT_32;
+};
+
 struct ClusterMeta {
     uint32_t version = 0;
     float neuronCooldown = 1000000000.f;
@@ -56,6 +61,7 @@ struct ClusterMeta {
     std::vector<Hanami::Position> hexagons;
     std::vector<InputMeta> inputs;
     std::vector<OutputMeta> outputs;
+    std::vector<AxonMeta> axons;
 };
 
 bool parseCluster(ClusterMeta* result, const std::string& input, ErrorContainer& error);

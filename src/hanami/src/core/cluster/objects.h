@@ -61,7 +61,7 @@ struct ClusterSettings {
 
     float neuronCooldown = 1000000000.0f;
     uint32_t refractoryTime = 1;
-    uint32_t maxConnectionDistance = 1;
+    int32_t maxConnectionDistance = 1;
     bool enableReduction = false;
     bool enableCreation = false;
 
@@ -300,7 +300,8 @@ struct HexagonHeader {
     bool isInputHexagon = false;
     bool isOutputHexagon = false;
     bool isBinaryInput = false;
-    uint8_t padding[1];
+    uint8_t padding[5];
+    uint32_t axonTarget = UNINIT_STATE_32;
     uint32_t numberOfFreeSections = 0;
     uint32_t numberOfBlocks = 0;
     Hanami::Position hexagonPos;
@@ -326,7 +327,7 @@ struct HexagonHeader {
         return true;
     }
 };
-static_assert(sizeof(HexagonHeader) == 32);
+static_assert(sizeof(HexagonHeader) == 40);
 
 //==================================================================================================
 

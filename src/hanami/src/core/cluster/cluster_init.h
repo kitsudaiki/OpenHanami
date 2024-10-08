@@ -42,6 +42,7 @@ void initializeSettings(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta
 void initializeHexagons(Cluster* cluster,
                         const Hanami::ClusterMeta& clusterMeta,
                         LogicalHost* host);
+void updateAxons(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta);
 void initializeTargetHexagonList(Cluster* cluster);
 void initializeOutputNeurons(Cluster* cluster);
 void initializeInputs(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta);
@@ -49,6 +50,9 @@ void initializeOutputs(Cluster* cluster, const Hanami::ClusterMeta& clusterMeta)
 
 void connectHexagon(Cluster* cluster, Hexagon& sourceHexagon, const uint8_t side);
 void connectAllHexagons(Cluster* cluster);
-uint32_t goToNextInitHexagon(Cluster* cluster, Hexagon& currentHexagon, uint32_t& maxPathLength);
+uint32_t goToNextInitHexagon(Cluster* cluster,
+                             Hexagon* currentHexagon,
+                             int32_t& maxPathLength,
+                             const uint32_t sourceHexagonId);
 
 #endif  // HANAMI_CLUSTERINIT_H

@@ -78,6 +78,7 @@ YY_DECL;
     HEXAGONS "hexagons"
     INPUTS "inputs"
     OUTPUTS "outputs"
+    AXONS "axons"
     BINARY_INPUT "binary"
     COOLDOWN "neuron_cooldown"
     MAX_DISTANCE "max_connection_distance"
@@ -87,6 +88,7 @@ YY_DECL;
     BOOL_FALSE "false"
     OPEN "("
     CLOSE ")"
+    ARROW "->"
 ;
 
 %token <std::string> IDENTIFIER "identifier"
@@ -98,6 +100,7 @@ YY_DECL;
 %type  <Position> hexagon
 %type  <Hanami::InputMeta> input
 %type  <Hanami::OutputMeta> output
+%type  <Hanami::AxonMeta> axon
 
 %%
 %start startpoint;
@@ -109,17 +112,30 @@ YY_DECL;
 //
 // hexagons:
 //     1,1,1
-//     2,1,1
 //     3,1,1
+//     4,1,1
+//
+// axons:
+//     1,1,1 -> 3,1,1
 //
 // inputs:
 //     "input_hexagon": 1,1,1 (binary)
 //
 // outputs:
-//     "output_hexagon": 3,1,1
+//     "output_hexagon": 4,1,1
 //
 
 startpoint:
+    "version 1" "settings" ":" settings "hexagons" ":" hexagons "axons" ":" axons "inputs" ":" inputs "outputs" ":" outputs
+    {
+        driver.output->version = 1;
+    }
+|
+    "version1" "settings" ":" settings "hexagons" ":" hexagons "axons" ":" axons "inputs" ":" inputs "outputs" ":" outputs
+    {
+        driver.output->version = 1;
+    }
+|
     "version 1" "settings" ":" settings "hexagons" ":" hexagons "inputs" ":" inputs "outputs" ":" outputs
     {
         driver.output->version = 1;
@@ -205,6 +221,43 @@ hexagon:
             return 1;
         }
         $$ = $1;
+    }
+
+axons:
+    axons axon
+    {
+        driver.output->axons.push_back($2);
+    }
+|
+    axon
+    {
+        driver.output->axons.push_back($1);
+    }
+|
+    %empty
+    {}
+
+axon:
+    position "->" position
+    {
+        const Hanami::Position sourcePos = $1;
+        const uint32_t sourceHexagonId = driver.getHexagonId(sourcePos);
+        if(sourceHexagonId == UNINTI_POINT_32) {
+            driver.error(yyla.location, "Source-Hexagon of axon with the position " + sourcePos.toString() + " doesn't exist.");
+            return 1;
+        }
+
+        const Hanami::Position targetPos = $3;
+        const uint32_t targetHexagonId = driver.getHexagonId(targetPos);
+        if(targetHexagonId == UNINTI_POINT_32) {
+            driver.error(yyla.location, "Target-Hexagon of axon with the position " + targetPos.toString() + " doesn't exist.");
+            return 1;
+        }
+
+        AxonMeta axon;
+        axon.sourceId = sourceHexagonId;
+        axon.targetId = targetHexagonId;
+        $$ = axon;
     }
 
 inputs:
