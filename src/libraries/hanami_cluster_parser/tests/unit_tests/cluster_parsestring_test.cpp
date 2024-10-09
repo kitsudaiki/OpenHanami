@@ -50,19 +50,21 @@ Cluster_ParseString_Test::parseString_test()
         "hexagons:\n"
         "    1,1,1\n"
         "    2,1,1\n"
-        "    4,1,1\n"
+        "    3,1,1\n"
         "    5,1,1\n"
+        "    6,1,1\n"
         "\n"
         "axons:\n"
-        "    1,1,1 -> 4,1,1\n"
-        "    2,1,1 -> 4,1,1\n"
+        "    1,1,1 -> 5,1,1\n"
+        "    2,1,1 -> 5,1,1\n"
         "\n"
         "inputs:\n"
         "    input_hexagon: 1,1,1 (binary)\n"
         "    input_hexagon2: 2,1,1\n"
+        "    input_hexagon3: 3,1,1 (match)\n"
         "\n"
         "outputs:\n"
-        "    output_hexagon: 5,1,1\n"
+        "    output_hexagon: 6,1,1\n"
         "\n");
 
     ClusterMeta result;
@@ -80,7 +82,7 @@ Cluster_ParseString_Test::parseString_test()
     TEST_EQUAL(result.maxConnectionDistance, 1);
     TEST_EQUAL(result.enableReduction, false);
 
-    TEST_EQUAL(result.hexagons.size(), 4);
+    TEST_EQUAL(result.hexagons.size(), 5);
 
     TEST_EQUAL(result.hexagons.at(0).x, 1);
     TEST_EQUAL(result.hexagons.at(0).y, 1);
@@ -90,7 +92,7 @@ Cluster_ParseString_Test::parseString_test()
     TEST_EQUAL(result.hexagons.at(1).y, 1);
     TEST_EQUAL(result.hexagons.at(1).z, 1);
 
-    TEST_EQUAL(result.hexagons.at(2).x, 4);
+    TEST_EQUAL(result.hexagons.at(2).x, 3);
     TEST_EQUAL(result.hexagons.at(2).y, 1);
     TEST_EQUAL(result.hexagons.at(2).z, 1);
 
@@ -98,25 +100,35 @@ Cluster_ParseString_Test::parseString_test()
     TEST_EQUAL(result.hexagons.at(3).y, 1);
     TEST_EQUAL(result.hexagons.at(3).z, 1);
 
+    TEST_EQUAL(result.hexagons.at(4).x, 6);
+    TEST_EQUAL(result.hexagons.at(4).y, 1);
+    TEST_EQUAL(result.hexagons.at(4).z, 1);
+
     TEST_EQUAL(result.axons.size(), 2);
     TEST_EQUAL(result.axons.at(0).sourceId, 0);
-    TEST_EQUAL(result.axons.at(0).targetId, 2);
+    TEST_EQUAL(result.axons.at(0).targetId, 3);
     TEST_EQUAL(result.axons.at(1).sourceId, 1);
-    TEST_EQUAL(result.axons.at(1).targetId, 2);
-    ;
+    TEST_EQUAL(result.axons.at(1).targetId, 3);
 
-    TEST_EQUAL(result.inputs.size(), 2);
+    TEST_EQUAL(result.inputs.size(), 3);
     TEST_EQUAL(result.inputs.at(0).name, "input_hexagon");
     TEST_EQUAL(result.inputs.at(0).targetHexagonId, 0);
     TEST_EQUAL(result.inputs.at(0).binary, true);
+    TEST_EQUAL(result.inputs.at(0).match, false);
 
     TEST_EQUAL(result.inputs.at(1).name, "input_hexagon2");
     TEST_EQUAL(result.inputs.at(1).targetHexagonId, 1);
     TEST_EQUAL(result.inputs.at(1).binary, false);
+    TEST_EQUAL(result.inputs.at(1).match, false);
+
+    TEST_EQUAL(result.inputs.at(2).name, "input_hexagon3");
+    TEST_EQUAL(result.inputs.at(2).targetHexagonId, 2);
+    TEST_EQUAL(result.inputs.at(2).binary, false);
+    TEST_EQUAL(result.inputs.at(2).match, true);
 
     TEST_EQUAL(result.outputs.size(), 1);
     TEST_EQUAL(result.outputs.at(0).name, "output_hexagon");
-    TEST_EQUAL(result.outputs.at(0).targetHexagonId, 3);
+    TEST_EQUAL(result.outputs.at(0).targetHexagonId, 4);
 
     input
         = "version: 2\n"  // <-- error (invalid version-number)
