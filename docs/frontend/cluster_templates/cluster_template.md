@@ -29,6 +29,7 @@ axons:
 inputs:
     <NAME>: X,Y,Z
     <NAME>: X,Y,Z (binary)
+    <NAME>: X,Y,Z (match)
 
 outputs:
     <NAME>: X,Y,Z
@@ -83,7 +84,7 @@ this input or output should be connected to.
 
 `<NAME>` of this input and output for identification to be able to add input- and output-values.
 
-### binary input
+### binary input (optional setting)
 
 For the case that the input-data have only value 0 and 1, a `(binary)` has to be added at the end of the input:
 
@@ -93,6 +94,17 @@ inputs:
 ```
 
 Otherwise the results for binary input become really bad. Even the input on the hexagon with this flag is not a binary input, all input-values greater than 0 are automatically handled as 1. 
+
+### matchint input (optional setting)
+
+Use the `(match)` to use the match-mode for inputs.
+
+```
+inputs:
+    <NAME>: X,Y,Z (match)
+```
+
+When this is set, for each input, which is not explizitly learned by the hexgon, a new synapse is created.
 
 ### axons (optional)
 
