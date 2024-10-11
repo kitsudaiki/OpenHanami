@@ -214,6 +214,9 @@ createNewSection(Cluster& cluster,
     if (hexagon->header.isBinaryInput) {
         targetConnection->origin.isInput = 2;
     }
+    if (hexagon->header.isMatchingInput) {
+        targetConnection->origin.isInput = 3;
+    }
     targetConnection->lowerBound = 0.0f;
     targetConnection->potentialRange = std::numeric_limits<float>::max();
 

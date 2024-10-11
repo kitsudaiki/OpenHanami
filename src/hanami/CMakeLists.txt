@@ -227,6 +227,8 @@ if(run_tests)
         tests/unit_tests/core/cluster_test.h
         tests/unit_tests/core/dataset_io_test.cpp
         tests/unit_tests/core/dataset_io_test.h
+        tests/unit_tests/core/processing_test.cpp
+        tests/unit_tests/core/processing_test.h
         tests/unit_tests/database/audit_log_table_test.cpp
         tests/unit_tests/database/audit_log_table_test.h
         tests/unit_tests/database/checkpoint_table_test.cpp

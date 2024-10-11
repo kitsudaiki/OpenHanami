@@ -24,6 +24,7 @@
 
 #include "core/cluster_test.h"
 #include "core/dataset_io_test.h"
+#include "core/processing_test.h"
 #include "database/audit_log_table_test.h"
 #include "database/checkpoint_table_test.h"
 #include "database/cluster_table_test.h"
@@ -40,6 +41,7 @@ main()
 
     Cluster_Init_Test();
     DataSetIO_Test();
+    Processing_Test();
 
     ClusterTable_Test();
     CheckpointTable_Test();

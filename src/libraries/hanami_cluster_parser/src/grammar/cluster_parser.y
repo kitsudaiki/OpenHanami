@@ -80,6 +80,7 @@ YY_DECL;
     OUTPUTS "outputs"
     AXONS "axons"
     BINARY_INPUT "binary"
+    MATCH_INPUT "match"
     COOLDOWN "neuron_cooldown"
     MAX_DISTANCE "max_connection_distance"
     REFRACTORY_TIME "refractory_time"
@@ -261,34 +262,40 @@ axon:
     }
 
 inputs:
+    inputs input "(" "binary" ")"
+    {
+        $2.binary = true;
+        driver.output->inputs.push_back($2);
+    }
+|
+    inputs input "(" "match" ")"
+    {
+        $2.match = true;
+        driver.output->inputs.push_back($2);
+    }
+|
     inputs input
     {
         driver.output->inputs.push_back($2);
+    }
+|
+    input "(" "binary" ")"
+    {
+        $1.binary = true;
+        driver.output->inputs.push_back($1);
+    }
+|
+    input "(" "match" ")"
+    {
+        $1.match = true;
+        driver.output->inputs.push_back($1);
     }
 |
     input
     {
         driver.output->inputs.push_back($1);
     }
-
 input:
-    "identifier" ":" position "(" "binary" ")"
-    {
-        const Hanami::Position pos = $3;
-        const uint32_t hexagonId = driver.getHexagonId(pos);
-        if(hexagonId == UNINTI_POINT_32) {
-            driver.error(yyla.location, "Hexagon with the position " + pos.toString() + " doesn't exist.");
-            return 1;
-        }
-        if($1.size() >= 255) {
-            driver.error(yyla.location, "Name '" + $1 + "' is longer than 254 characters.");
-            return 1;
-        }
-        $$.name = $1;
-        $$.targetHexagonId = hexagonId;
-        $$.binary = true;
-    }
-|
     "identifier" ":" position
     {
         const Hanami::Position pos = $3;

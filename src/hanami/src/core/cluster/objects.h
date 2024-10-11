@@ -176,7 +176,7 @@ struct SourceLocationPtr {
     uint32_t hexagonId;
     uint16_t blockId;
     uint8_t neuronId;
-    uint8_t isInput;  // 0=not input ; 1=is input ; 2=is binary input
+    uint8_t isInput;  // 0=not input ; 1=is input ; 2=is binary input ; 3=is matching
 };
 static_assert(sizeof(SourceLocationPtr) == 8);
 
@@ -300,7 +300,8 @@ struct HexagonHeader {
     bool isInputHexagon = false;
     bool isOutputHexagon = false;
     bool isBinaryInput = false;
-    uint8_t padding[5];
+    bool isMatchingInput = false;
+    uint8_t padding[4];
     uint32_t axonTarget = UNINIT_STATE_32;
     uint32_t numberOfFreeSections = 0;
     uint32_t numberOfBlocks = 0;
