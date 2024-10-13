@@ -33,6 +33,7 @@ spec:
                 - hanami
             topologyKey: kubernetes.io/hostname
       containers:
+
       - name: hanami
         image: {{ .Values.docker.registry }}/hanami:{{ .Values.docker.tag }}
         imagePullPolicy: Always
@@ -57,9 +58,20 @@ spec:
           subPath: token_key
         - name: hanami-sockets-volume
           mountPath: /tmp/hanami
-        ports:
-        - containerPort: {{ .Values.api.port }}
-          name: hanami-port
+
+      - name: tls-termination
+        image: nginx:latest
+        volumeMounts:
+        - name: tls-certs
+          mountPath: /etc/nginx/certs
+        - name: hanami-nginx-config
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+
       volumes:
         - name: hanami-config
           configMap:
@@ -75,3 +87,9 @@ spec:
         - name: data-volume
           persistentVolumeClaim:
             claimName: hanami-pvc
+        - name: tls-certs
+          secret:
+            secretName: hanami-selfsigned-secret
+        - name: hanami-nginx-config
+          configMap:
+            name: hanami-nginx-config

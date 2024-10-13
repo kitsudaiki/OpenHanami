@@ -16,8 +16,6 @@ docker:
 
 api:
   domain: local-hanami
-  port: 11418
-  ip: "0.0.0.0"
 
 processing:
   # use per default 50% of the available memory for pre-allocation

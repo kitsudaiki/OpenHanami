@@ -856,7 +856,7 @@ jobs:
 
   docker_build:
     name: "Build Docker-images"
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
+    # if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
     needs: [ sdk_api_tests, cli_api_tests ]
     runs-on: ubuntu-22.04
     strategy:
@@ -864,7 +864,7 @@ jobs:
       matrix:
         platform:
           - linux/amd64
-          - linux/arm64
+          # - linux/arm64
     steps:
       - 
         name: Prepare
@@ -937,7 +937,7 @@ jobs:
 
   docker_merge:
     name: "Merge and push Docker-image"
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
+    # if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
     runs-on: ubuntu-22.04
     needs: [ docker_build ]
     steps:
@@ -988,7 +988,7 @@ jobs:
 
 
   kubernetes_test:
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
+    # if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' || github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
     needs: [ docker_merge ]
     runs-on: ubuntu-22.04
     strategy:
@@ -1073,18 +1073,51 @@ jobs:
           sudo snap install helm --classic
           sudo snap install kubectl --classic
       -
-        name: Install k3s
+        name: Install k3s without traefik
         run: |
-          sudo curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=v${{ matrix.kubernetes_version.version }}+k3s1  sh -
+          sudo curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--disable traefik" INSTALL_K3S_VERSION=v${{ matrix.kubernetes_version.version }}+k3s1  sh -
       - 
         name: Sleep for 60 seconds
         uses: jakejarvis/wait-action@919fc193e07906705e5b7a50f90ea9e74d20b2b0
         with:
           time: '60s'
       -
-        name: Install cert-manager in kubernetes_test
+        name: Install nginx ingress controller
         run: |
           sudo chmod -R +r /etc/rancher/k3s
+          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.1/deploy/static/provider/baremetal/deploy.yaml
+          sleep 10
+          cat <<EOF > ingress-nginx-controller-loadbalancer.yaml
+          ---
+
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: ingress-nginx-controller-loadbalancer
+            namespace: ingress-nginx
+          spec:
+            selector:
+              app.kubernetes.io/component: controller
+              app.kubernetes.io/instance: ingress-nginx
+              app.kubernetes.io/name: ingress-nginx
+            ports:
+              - name: http
+                port: 80
+                protocol: TCP
+                targetPort: 80
+              - name: https
+                port: 443
+                protocol: TCP
+                targetPort: 443
+            type: LoadBalancer
+          EOF
+          cat ingress-nginx-controller-loadbalancer.yaml
+          kubectl apply -f ingress-nginx-controller-loadbalancer.yaml
+          sleep 10
+      -
+        name: Install cert-manager in kubernetes_test
+        run: |
           export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
           helm repo add jetstack https://charts.jetstack.io
           helm repo update
