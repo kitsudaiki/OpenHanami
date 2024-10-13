@@ -37,10 +37,10 @@ For the installation on a kubernetes `helm` is used.
 
     !!! example
 
-        For fast, easy and minimal installation a `k3s` as single-node installation can be used. Installation with for example:
+        For fast, easy and minimal installation a `k3s` as single-node installation can be used without traefik. Installation with for example:
 
         ```
-        curl -sfL https://get.k3s.io | sh -
+        sudo curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--disable traefik" sh -
 
         export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
         ```
@@ -49,7 +49,42 @@ For the installation on a kubernetes `helm` is used.
 
     [official Installation-Guide](https://helm.sh/docs/intro/install/)
 
-3.  **Cert-Manager**
+3.  **Nginx-ingress-controller** (if not already exist in your kubernetes)
+
+    run: 
+
+    ```
+    kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.1/deploy/static/provider/baremetal/deploy.yaml
+    ```
+
+    and apply file with the content:
+
+    ```
+    ---
+
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: ingress-nginx-controller-loadbalancer
+      namespace: ingress-nginx
+    spec:
+      selector:
+        app.kubernetes.io/component: controller
+        app.kubernetes.io/instance: ingress-nginx
+        app.kubernetes.io/name: ingress-nginx
+      ports:
+        - name: http
+          port: 80
+          protocol: TCP
+          targetPort: 80
+        - name: https
+          port: 443
+          protocol: TCP
+          targetPort: 443
+      type: LoadBalancer
+      ```
+
+4.  **Cert-Manager**
 
     Installation:
 
@@ -60,7 +95,7 @@ For the installation on a kubernetes `helm` is used.
     helm install cert-manager jetstack/cert-manager --namespace cert-manager --set installCRDs=true
     ```
 
-4.  **Node label**
+5.  **Node label**
 
     To all avaialbe nodes, where it is allowed to be deployed, the label `hanami-node` must be
     assigned
