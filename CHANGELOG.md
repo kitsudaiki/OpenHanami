@@ -36,6 +36,7 @@
 ### Fixed
 
 - fixed memory violations found by the new added ASan-memory-check
+- some cases of invalid http-requests had returned an 200 reponse with empty body, which was fixed
 
 ### Removed
 

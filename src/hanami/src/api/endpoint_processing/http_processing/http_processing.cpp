@@ -129,6 +129,8 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
         hanamiRequest.httpType = httpType;
         hanamiRequest.inputValues = inputValues;
         if (parseUri(token, hanamiRequest, uri, status) == false) {
+            status.statusCode = BAD_REQUEST_RTYPE;
+            status.errorMessage = "Failed to pasre uri: " + uri;
             break;
         }
 
@@ -139,8 +141,7 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
         }
         catch (const json::parse_error& ex) {
             status.statusCode = BAD_REQUEST_RTYPE;
-            status.errorMessage = "Failed to pase input-values: " + std::string(ex.what());
-            LOG_DEBUG(status.errorMessage);
+            status.errorMessage = "Failed to pasre input-values: " + std::string(ex.what());
             break;
         }
 
@@ -157,7 +158,10 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
                                error)
                 == false)
             {
-                error.addMessage("Token request failed");
+                if (status.statusCode == OK_RTYPE) {
+                    status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+                    error.addMessage("Mismatch between return-value and status of blossom-output");
+                }
                 break;
             }
             break;
@@ -173,8 +177,8 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
                           errorMessage)
             == false)
         {
-            error.addMessage(errorMessage);
-            error.addMessage("Permission-check failed");
+            status.statusCode = UNAUTHORIZED_RTYPE;
+            status.errorMessage = errorMessage;
             break;
         }
 
@@ -204,7 +208,10 @@ HttpProcessing::processControlRequest(http::response<http::dynamic_body>& httpRe
                            error)
             == false)
         {
-            error.addMessage("Blossom-trigger failed");
+            if (status.statusCode == OK_RTYPE) {
+                status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+                error.addMessage("Mismatch between return-value and status of blossom-output");
+            }
             break;
         }
 
