@@ -156,8 +156,7 @@ jobs:
         name: Install dependencies for SDK
         run: |
           sudo apt-get update
-          sudo apt-get install -y protobuf-compiler wget gzip python3 python3-pip
-          sudo pip3 install wheel
+          sudo apt-get install -y protobuf-compiler wget gzip python3 python3-pip python3-wheel
       - 
         name: Build python package
         run: |
