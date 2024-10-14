@@ -80,8 +80,8 @@ spec:
           configMap:
             name: policies-config
         - name: token-key
-          configMap:
-            name: token-key
+          secret:
+            secretName: token-key
         - name: hanami-sockets-volume
           emptyDir: {}
         - name: data-volume
