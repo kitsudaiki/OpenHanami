@@ -1129,7 +1129,7 @@ jobs:
       -
         name: Install hanami
         run: |
-          helm install --set docker.tag="${{ env.BRANCH_NAME }}" --set user.id=asdf --set user.name="test user" --set user.pw="asdfasdf" --set token.pw="11111111" --set api.domain=local-hanami  openhanami /tmp/hanami_helm_build_result/openhanami-$HELM_VERSION.tgz
+          helm install --set docker.tag="${{ env.BRANCH_NAME }}" --set user.id=asdf --set user.name="test user" --set user.pw="asdfasdf" --set token.pw="this is a test-token" --set api.domain=local-hanami  openhanami /tmp/hanami_helm_build_result/openhanami-$HELM_VERSION.tgz
       - 
         name: Sleep for 60 seconds
         uses: jakejarvis/wait-action@919fc193e07906705e5b7a50f90ea9e74d20b2b0
