@@ -4,4 +4,4 @@ metadata:
   name: token-key
 type: Opaque
 data:
-  token-key: {{ .Values.token.data | b64enc }}
+  token-key: {{ required "token.data is required!" .Values.token.data | b64enc }}
