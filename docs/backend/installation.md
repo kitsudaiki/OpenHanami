@@ -133,7 +133,7 @@ helm install \
     --set user.id=USER_ID  \
     --set user.name=USER_NAME  \
     --set user.passphrase=PASSPHRASE  \
-    --set token.passphrase=TOKEN_KEY  \
+    --set token.data=TOKEN_KEY  \
     --set api.domain=DOMAIN_NAME  \
     openhanami \
     ./openhanami/
@@ -149,7 +149,7 @@ helm install \
     --set user.id=USER_ID  \
     --set user.name=USER_NAME  \
     --set user.passphrase=PASSPHRASE  \
-    --set token.passphrase=TOKEN_KEY  \
+    --set token.data=TOKEN_KEY  \
     --set api.domain=DOMAIN_NAME  \
     openhanami \
     openhanami-x.y.z.tgz
@@ -159,35 +159,41 @@ The `--set`-flag defining the login-information for the initial admin-user of th
 
 -   `USER_ID`
 
+    -   **required**
     -   Identifier for the new user. It is used for login and internal references to the user.
     -   String, which MUST match the regex `[a-zA-Z][a-zA-Z_0-9@]*` with between `4` and `256`
         characters length
 
 -   `USER_NAME`
 
+    -   **required**
     -   Better readable name for the user, which doesn't have to be unique in the system.
     -   String, which MUST match the regex `[a-zA-Z][a-zA-Z_0-9 ]*` with between `4` and `256`
         characters length
 
 -   `PASSPHRASE`
 
+    -   **required**
     -   Passphrase for the initial user
     -   String, with between `8` and `4096` characters length
 
 -   `TOKEN_KEY`
 
+    -   **required**
     -   Key for the JWT-Tokens
     -   String
 
 -   `DOMAIN_NAME`
 
-    -   Domain for https-access. Per default it is `local-hanami`
+    -   Domain for https-access.
     -   String
+    -   default: *local-hanami*
 
 -   `DOCKER_IMAGE_TAG`
     -   Docker-tag used from
         [docker-hub](https://hub.docker.com/repository/docker/kitsudaiki/hanami/tags)
     -   String
+    -   default: *develop*
 
 After a successful installation the `USER_ID` and `PASSPHRASE` have to be used for login to the
 system.

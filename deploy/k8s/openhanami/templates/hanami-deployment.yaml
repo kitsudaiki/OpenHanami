@@ -39,11 +39,11 @@ spec:
         imagePullPolicy: Always
         env:
         - name: HANAMI_ADMIN_USER_ID
-          value: {{ .Values.user.id }}
+          value: {{ required "user.id is required!" .Values.user.id }}
         - name: HANAMI_ADMIN_USER_NAME
-          value: {{ .Values.user.name }}
+          value: {{ required "user.name is required!" .Values.user.name }}
         - name: HANAMI_ADMIN_PASSPHRASE
-          value: {{ .Values.user.passphrase }}
+          value: {{ required "user.passphrase is required!" .Values.user.passphrase }}
         volumeMounts:
         - name: data-volume
           mountPath: /etc/openhanami/data/
