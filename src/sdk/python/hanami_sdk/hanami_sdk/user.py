@@ -14,20 +14,25 @@
 
 from . import hanami_request
 import json
+import base64
 
 
 def create_user(token: str,
                 address: str,
                 user_id: str,
                 user_name: str,
-                passwort: str,
+                passphrase: str,
                 is_admin: bool,
                 verify_connection: bool = True) -> str:
     path = "/v1.0alpha/user"
+
+    passphrase_bytes = passphrase.encode('utf-8')
+    base64_encoded = base64.b64encode(passphrase_bytes)
+
     json_body = {
         "id": user_id,
         "name": user_name,
-        "password": passwort,
+        "passphrase": base64_encoded.decode('utf-8'),
         "is_admin": is_admin,
     }
     body_str = json.dumps(json_body)

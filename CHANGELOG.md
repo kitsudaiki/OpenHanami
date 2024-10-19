@@ -8,6 +8,7 @@
 
 - the input definition for the tasks was changes to removed the naming restriction between dataset-column and hexagon-name
 - the external REST-API endpoint to validate a token was removed and replaced by an internal function, which is used instead for all incoming api-requests
+- changed password to passphrase, which is now required to be base64 encoded
 
 #### Checkpoint-breaking
 
@@ -18,6 +19,10 @@
 
 - removed `target`-keyword from cluster-templates
 - removed number of nodes from inputs and outputs from the cluster-templates
+
+#### Database-Breaking
+
+- the base64-representation of the passphrases is now used for the pw-hash inside the database, which makes all old hashes in the database invalid
 
 ### Added
 

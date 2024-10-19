@@ -20,11 +20,15 @@
 
 package hanami_sdk
 
-func RequestToken(address, user, pw string, skipTlsVerification bool) string {
+import (
+	b64 "encoding/base64"
+)
+
+func RequestToken(address, user, passphrase string, skipTlsVerification bool) string {
 	path := "v1.0alpha/token"
 	jsonBody := map[string]interface{}{
-		"id":       user,
-		"password": pw,
+		"id":         user,
+		"passphrase": b64.StdEncoding.EncodeToString([]byte(passphrase)),
 	}
 
 	content, err := sendGenericRequest(address, "", "POST", path, &jsonBody, skipTlsVerification)

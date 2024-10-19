@@ -40,7 +40,7 @@ directly with the neural network via the python-version of the SDK. See for furt
     ```bash
     export HANAMI_ADDRESS=<ADDRESS_OF_HANAMI_DEPLOYMENT>
     export HANAMI_USER=<USER_ID>
-    export HANAMI_PW=<USER_PASSWORD>
+    export HANAMI_PASSPHRASE=<USER_PASSPHRASE>
     ```
 
     !!! example
@@ -48,7 +48,7 @@ directly with the neural network via the python-version of the SDK. See for furt
           ```bash
           export HANAMI_ADDRESS=https://local-hanami-new
           export HANAMI_USER=asdf
-          export HANAMI_PW=asdfasdf
+          export HANAMI_PASSPHRASE=asdfasdf
           ```
 
 ## Example

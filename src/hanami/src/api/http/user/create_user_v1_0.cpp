@@ -49,9 +49,10 @@ CreateUserV1M0::CreateUserV1M0() : Blossom("Register a new user within Misaki.")
         .setLimit(4, 254)
         .setRegex(NAME_REGEX);
 
-    registerInputField("password", SAKURA_STRING_TYPE)
-        .setComment("Passphrase of the user.")
-        .setLimit(8, 4096);
+    registerInputField("passphrase", SAKURA_STRING_TYPE)
+        .setComment("Passphrase of the user as base64 encoded string.")
+        .setLimit(8, 4096)
+        .setRegex(BASE64_REGEX);
 
     registerInputField("is_admin", SAKURA_BOOL_TYPE)
         .setComment("Set this to 1 to register the new user as admin.")
@@ -101,10 +102,10 @@ CreateUserV1M0::runTask(BlossomIO& blossomIO,
     const std::string newUserId = blossomIO.input["id"];
     const std::string creatorId = userContext.userId;
 
-    // genreate hash from password and random salt
+    // genreate hash from passphrase and random salt
     std::string pwHash;
     const std::string salt = generateUuid().toString();
-    const std::string saltedPw = std::string(blossomIO.input["password"]) + salt;
+    const std::string saltedPw = std::string(blossomIO.input["passphrase"]) + salt;
     Hanami::generate_SHA_256(pwHash, saltedPw);
 
     // convert values

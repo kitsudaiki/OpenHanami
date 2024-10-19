@@ -113,7 +113,7 @@ RenewTokenV1M0::runTask(BlossomIO& blossomIO,
     if (ret == INVALID_INPUT) {
         status.errorMessage
             = "ACCESS DENIED!\n"
-              "User or password is incorrect.";
+              "User or passphrase is incorrect.";
         status.statusCode = UNAUTHORIZED_RTYPE;
         LOG_DEBUG(status.errorMessage);
         return false;

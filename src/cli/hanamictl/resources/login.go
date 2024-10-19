@@ -30,18 +30,18 @@ import (
 func Login() string {
 
 	user := os.Getenv("HANAMI_USER")
-	pw := os.Getenv("HANAMI_PW")
+	passphrase := os.Getenv("HANAMI_PASSPHRASE")
 	address := os.Getenv("HANAMI_ADDRESS")
 
 	if user == "" {
 		panic("HANAMI_USER is not set")
 	}
-	if pw == "" {
-		panic("HANAMI_PW is not set")
+	if passphrase == "" {
+		panic("HANAMI_PASSPHRASE is not set")
 	}
 	if address == "" {
 		panic("HANAMI_ADDRESS is not set")
 	}
 
-	return hanami_sdk.RequestToken(address, user, pw, hanamictl_common.DisableTlsVerification)
+	return hanami_sdk.RequestToken(address, user, passphrase, hanamictl_common.DisableTlsVerification)
 }

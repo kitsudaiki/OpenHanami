@@ -4,4 +4,4 @@ metadata:
   name: token-key
 type: Opaque
 data:
-  token-key: {{ .Values.token.pw | b64enc }}
+  token-key: {{ .Values.token.data | b64enc }}

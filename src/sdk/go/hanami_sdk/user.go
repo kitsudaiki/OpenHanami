@@ -20,13 +20,15 @@
 
 package hanami_sdk
 
-func CreateUser(address, token, userId, userName, pw string, is_admin, skipTlsVerification bool) (map[string]interface{}, error) {
+import b64 "encoding/base64"
+
+func CreateUser(address, token, userId, userName, passphrase string, is_admin, skipTlsVerification bool) (map[string]interface{}, error) {
 	path := "v1.0alpha/user"
 	jsonBody := map[string]interface{}{
-		"id":       userId,
-		"name":     userName,
-		"password": pw,
-		"is_admin": is_admin,
+		"id":         userId,
+		"name":       userName,
+		"passphrase": b64.StdEncoding.EncodeToString([]byte(passphrase)),
+		"is_admin":   is_admin,
 	}
 	return SendPost(address, token, path, jsonBody, skipTlsVerification)
 }

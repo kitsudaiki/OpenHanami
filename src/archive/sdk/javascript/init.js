@@ -14,10 +14,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
  
-function login_request(loginFunc, user, pw)
+function login_request(loginFunc, user, passphrase)
 {
     const path = "/control/v1/token";
-    const reqContent = "{\"id\":\"" + user + "\",\"password\":\"" + pw + "\"}";
+    const reqContent = "{\"id\":\"" + user + "\",\"passphrase\":\"" + passphrase + "\"}";
 
     let loginConnection = new XMLHttpRequest();
     loginConnection.open("POST", path, true);

@@ -86,7 +86,7 @@ amount of time until it expires, based on the configuration of the server.
     ```bash
     export HANAMI_ADDRESS=http://127.0.0.1:11418
     export HANAMI_USER=asdf
-    export HANAMI_PW=asdfasdf
+    export HANAMI_PASSPHRASE=asdfasdf
     ```
 
 === "Python-SDK"
@@ -96,9 +96,9 @@ amount of time until it expires, based on the configuration of the server.
 
     address = "http://127.0.0.1:11418"
     test_user = "asdf"
-    test_pw = "asdfasdf"
+    test_passphrase = "asdfasdf"
 
-    token = hanami_token.request_token(address, test_user, test_pw)
+    token = hanami_token.request_token(address, test_user, test_passphrase)
 
     ```
 
@@ -306,15 +306,15 @@ If the `is_admin` is set to true, the user becomes a global admin.
     ```bash
     ./hanamictl user create -n <NAME> <USER_ID>
 
-    (the cli will request the password for the new user after enter this command)
+    (the cli will request the passphrase for the new user after enter this command)
     ```
 
     example:
 
     ```bash
     ./hanamictl user create -n "cli test user" -p "asdfasdfasdf" cli_test_user
-    Enter Password:
-    Enter Password again:
+    Enter Passphrase:
+    Enter Passphrase again:
 
     +------------+---------------------+
     | ID         | cli_test_user       |

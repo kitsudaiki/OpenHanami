@@ -132,8 +132,8 @@ helm install \
     --set docker.tag=DOCKER_IMAGE_TAG \
     --set user.id=USER_ID  \
     --set user.name=USER_NAME  \
-    --set user.pw=PASSWORD  \
-    --set token.pw=TOKEN_KEY  \
+    --set user.passphrase=PASSPHRASE  \
+    --set token.passphrase=TOKEN_KEY  \
     --set api.domain=DOMAIN_NAME  \
     openhanami \
     ./openhanami/
@@ -148,8 +148,8 @@ helm install \
     --set docker.tag=DOCKER_IMAGE_TAG \
     --set user.id=USER_ID  \
     --set user.name=USER_NAME  \
-    --set user.pw=PASSWORD  \
-    --set token.pw=TOKEN_KEY  \
+    --set user.passphrase=PASSPHRASE  \
+    --set token.passphrase=TOKEN_KEY  \
     --set api.domain=DOMAIN_NAME  \
     openhanami \
     openhanami-x.y.z.tgz
@@ -169,9 +169,9 @@ The `--set`-flag defining the login-information for the initial admin-user of th
     -   String, which MUST match the regex `[a-zA-Z][a-zA-Z_0-9 ]*` with between `4` and `256`
         characters length
 
--   `PASSWORD`
+-   `PASSPHRASE`
 
-    -   Password for the initial user
+    -   Passphrase for the initial user
     -   String, with between `8` and `4096` characters length
 
 -   `TOKEN_KEY`
@@ -189,7 +189,7 @@ The `--set`-flag defining the login-information for the initial admin-user of th
         [docker-hub](https://hub.docker.com/repository/docker/kitsudaiki/hanami/tags)
     -   String
 
-After a successful installation the `USER_ID` and `PASSWORD` have to be used for login to the
+After a successful installation the `USER_ID` and `PASSPHRASE` have to be used for login to the
 system.
 
 ### Using
@@ -235,7 +235,7 @@ system.
           https://local-hanami/
           ```
 
--   login with `USER_ID` and `PASSWORD`
+-   login with `USER_ID` and `PASSPHRASE`
 
     !!! note
 

@@ -42,8 +42,8 @@ spec:
           value: {{ .Values.user.id }}
         - name: HANAMI_ADMIN_USER_NAME
           value: {{ .Values.user.name }}
-        - name: HANAMI_ADMIN_PASSWORD
-          value: {{ .Values.user.pw }}
+        - name: HANAMI_ADMIN_PASSPHRASE
+          value: {{ .Values.user.passphrase }}
         volumeMounts:
         - name: data-volume
           mountPath: /etc/openhanami/data/
