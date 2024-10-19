@@ -33,7 +33,7 @@ config.read('/etc/openhanami/hanami_testing.conf')
 
 address = config["connection"]["address"]
 test_user_id = config["connection"]["test_user"]
-test_user_pw = config["connection"]["test_pw"]
+test_user_pw = config["connection"]["test_passphrase"]
 
 train_inputs = "/home/neptune/Schreibtisch/Projekte/OpenHanami/testing/python_sdk_api/train.csv"
 request_inputs = "/home/neptune/Schreibtisch/Projekte/OpenHanami/testing/python_sdk_api/test.csv"

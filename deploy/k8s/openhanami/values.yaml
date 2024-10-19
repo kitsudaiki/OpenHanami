@@ -4,10 +4,10 @@ replicaCount: 1
 user:
   id: "test_user"
   name: "Test User"
-  pw: "asdfasdf"
+  passphrase: "asdfasdf"
 
 token:
-  pw: "asdf"
+  data: "asdf"
   expire_time: 3600
 
 docker:

@@ -60,7 +60,7 @@ internalError_ResponseBuild(http::response<http::dynamic_body>& httpResp,
                             json& inputValuesJson,
                             Hanami::ErrorContainer& error)
 {
-    inputValuesJson.erase("password");
+    inputValuesJson.erase("passphrase");
     httpResp.result(http::status::internal_server_error);
     httpResp.set(http::field::content_type, "text/plain");
     LOG_ERROR(error, userId, inputValuesJson.dump());

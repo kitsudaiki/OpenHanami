@@ -14,12 +14,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-function createUser_request(outputFunc, userId, name, password, isAdmin, token)
+function createUser_request(outputFunc, userId, name, passphrase, isAdmin, token)
 {
     const path = "/control/v1/user";
     let reqContent = "{\"id\":\"" + userId;
     reqContent += "\",\"name\":\"" + name;
-    reqContent += "\",\"password\":\"" + password;
+    reqContent += "\",\"passphrase\":\"" + passphrase;
     reqContent += "\",\"is_admin\":" + isAdmin + "}";
     createObject_request(outputFunc, path, reqContent, token);
 }

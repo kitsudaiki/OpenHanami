@@ -105,7 +105,7 @@ and multi-tenancy.
 
     The projects supports multiple user and multiple projects with different roles (member,
     project-admin and admin) and also managing the access to single api-endpoints via policy-file.
-    Each user can login by username and password and gets an JWT-token to access the user- and
+    Each user can login by username and passphrase and gets an JWT-token to access the user- and
     project-specific resources.
 
     See [Authentication-docu](https://docs.openhanami.com/inner_workings/user_and_projects/)

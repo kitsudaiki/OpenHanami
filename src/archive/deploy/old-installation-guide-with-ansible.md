@@ -23,9 +23,9 @@ Basic parameter have to be set by environemt-variables:
     -   String, which MUST match the regex `[a-zA-Z][a-zA-Z_0-9 ]*` with between `4` and `256`
         characters length
 
--   `ADMIN_PASSWORD`
+-   `ADMIN_PASSPHRASE`
 
-    -   Password for the initial user
+    -   Passphrase for the initial user
     -   String, with between `8` and `4096` characters length
 
 -   `TOKEN_KEY`
@@ -37,7 +37,7 @@ Basic parameter have to be set by environemt-variables:
     ```bash
     export ADMIN_USER_ID="admin"
     export ADMIN_USER_NAME="admin"
-    export ADMIN_PASSWORD="some_password"
+    export ADMIN_PASSPHRASE="some_passphrase"
     export TOKEN_KEY="random_token_key"
     ```
 

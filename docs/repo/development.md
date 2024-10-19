@@ -41,7 +41,7 @@ This document should help to setup a local environment for development.
     ```bash
     export HANAMI_ADMIN_USER_ID=asdf
     export HANAMI_ADMIN_USER_NAME=asdf
-    export HANAMI_ADMIN_PASSWORD=asdfasdf
+    export HANAMI_ADMIN_PASSPHRASE=asdfasdf
     ```
 
     These are the default testing-configs, to match with the test-confic
@@ -121,7 +121,7 @@ API.
     ```bash
     export HANAMI_ADDRESS=http://127.0.0.1:11418
     export HANAMI_USER=asdf
-    export HANAMI_PW=asdfasdf
+    export HANAMI_PASSPHRASE=asdfasdf
 
     export train_inputs=/tmp/train-images-idx3-ubyte
     export train_labels=/tmp/train-labels-idx1-ubyte

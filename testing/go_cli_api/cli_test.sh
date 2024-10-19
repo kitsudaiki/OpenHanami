@@ -2,7 +2,7 @@
 
 # export HANAMI_ADDRESS=http://127.0.0.1:11418
 # export HANAMI_USER=asdf
-# export HANAMI_PW=asdfasdf
+# export HANAMI_PASSPHRASE=asdfasdf
 
 # export train_inputs=/home/neptune/Schreibtisch/mnist/train-images.idx3-ubyte
 # export train_labels=/home/neptune/Schreibtisch/mnist/train-labels.idx1-ubyte
@@ -36,7 +36,7 @@ echo "project tests"
 ########################
 echo ""
 echo "user tests"
-./hanamictl user create --insecure -n "cli test user" -p "asdfasdfasdf" cli_test_user
+./hanamictl user create --insecure -n "cli test user" -p "asdfasdf" cli_test_user
 ./hanamictl user get --insecure cli_test_user
 ./hanamictl user list --insecure
 ./hanamictl user delete --insecure cli_test_user

@@ -14,16 +14,20 @@
 
 import requests
 from . import hanami_exceptions
+import base64
 
 
 def request_token(address: str,
                   user_id: str,
-                  pw: str,
+                  passphrase: str,
                   verify_connection: bool = True) -> str:
     url = f'{address}/v1.0alpha/token'
+    passphrase_bytes = passphrase.encode('utf-8')
+    base64_encoded = base64.b64encode(passphrase_bytes)
+
     json_body = {
         "id": user_id,
-        "password": pw,
+        "passphrase": base64_encoded.decode('utf-8'),
     }
 
     response = requests.post(url, json=json_body, verify=verify_connection)

@@ -28,15 +28,15 @@ import (
 	"syscall"
 
 	hanami_sdk "github.com/kitsudaiki/OpenHanami"
-	"github.com/spf13/cobra"
 
+	"github.com/spf13/cobra"
 	"golang.org/x/term"
 )
 
 var (
-	userName string
-	password string
-	isAdmin  bool
+	userName   string
+	passphrase string
+	isAdmin    bool
 )
 
 var userHeader = []string{
@@ -55,39 +55,37 @@ var createUserCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		token := Login()
 		address := os.Getenv("HANAMI_ADDRESS")
-		var pw string
+		var passphrase string
 		var err error
-		if len(password) == 0 {
-			fmt.Print("Enter Password: ")
-			bytePassword1, err := term.ReadPassword(int(syscall.Stdin))
+		if len(passphrase) == 0 {
+			fmt.Print("Enter Passphrase: ")
+			bytePassphrase1, err := term.ReadPassword(syscall.Stdin)
 			if err != nil {
-				fmt.Println("Failed to read password input")
+				fmt.Println("Failed to read passphrase input")
 				os.Exit(1)
 			}
-			password1 := strings.TrimSpace(string(bytePassword1))
+			passphrase1 := strings.TrimSpace(string(bytePassphrase1))
 
 			fmt.Print("\n")
-			fmt.Print("Enter Password again: ")
-			bytePassword2, err := term.ReadPassword(int(syscall.Stdin))
+			fmt.Print("Enter Passphrase again: ")
+			bytePassphrase2, err := term.ReadPassword(syscall.Stdin)
 			if err != nil {
-				fmt.Println("Failed to read password input")
+				fmt.Println("Failed to read passphrase input")
 				os.Exit(1)
 			}
-			password2 := strings.TrimSpace(string(bytePassword2))
+			passphrase2 := strings.TrimSpace(string(bytePassphrase2))
 
 			fmt.Print("\n")
-			if password1 != password2 {
-				fmt.Println("Mismatch between the two entered passwords")
+			if passphrase1 != passphrase2 {
+				fmt.Println("Mismatch between the two entered passphrases")
 				os.Exit(1)
 			}
 
-			pw = password1
-		} else {
-			pw = password
+			passphrase = passphrase1
 		}
 		userId := args[0]
 
-		content, err := hanami_sdk.CreateUser(address, token, userId, userName, pw, isAdmin, hanamictl_common.DisableTlsVerification)
+		content, err := hanami_sdk.CreateUser(address, token, userId, userName, passphrase, isAdmin, hanamictl_common.DisableTlsVerification)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
@@ -153,14 +151,14 @@ var userCmd = &cobra.Command{
 func Init_User_Commands(rootCmd *cobra.Command) {
 	rootCmd.AddCommand(userCmd)
 
-	passwordFlagText := "Password for the new user. " +
-		"If not given by this flag, the password will be automatically requested after entering the command. " +
-		"This flag is quite unsave, because this way the password is visible in the command-line and " +
+	passphraseFlagText := "Passphrase for the new user. " +
+		"If not given by this flag, the passphrase will be automatically requested after entering the command. " +
+		"This flag is quite unsave, because this way the passphrase is visible in the command-line and " +
 		"printed into the history. So this flag should be only used for automated testing, " +
 		"but NEVER in a productive environment."
 	userCmd.AddCommand(createUserCmd)
 	createUserCmd.Flags().StringVarP(&userName, "name", "n", "", "User name (mandatory)")
-	createUserCmd.Flags().StringVarP(&password, "password", "p", "", passwordFlagText)
+	createUserCmd.Flags().StringVarP(&passphrase, "passphrase", "p", "", passphraseFlagText)
 	createUserCmd.Flags().BoolVar(&isAdmin, "is_admin", false, "Set user as admin (default: false)")
 	createUserCmd.MarkFlagRequired("name")
 

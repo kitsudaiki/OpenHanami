@@ -60,8 +60,8 @@ var loginModalFunction = function()
     loginButton.onclick = function() 
     {
         const userId = document.getElementById("login_id_field").value;
-        const pw = document.getElementById("login_pw_field").value;
-        login_request(loginFunction, userId, pw);
+        const passphrase = document.getElementById("login_pw_field").value;
+        login_request(loginFunction, userId, passphrase);
     }
 
     modal.style.display = "block";

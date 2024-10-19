@@ -46,9 +46,10 @@ CreateTokenV1M0::CreateTokenV1M0()
         .setRegex(ID_EXT_REGEX)
         .setLimit(4, 254);
 
-    registerInputField("password", SAKURA_STRING_TYPE)
-        .setComment("Passphrase of the user, to verify the access.")
-        .setLimit(8, 4096);
+    registerInputField("passphrase", SAKURA_STRING_TYPE)
+        .setComment("Passphrase of the user to verify the access as base64 encoded string.")
+        .setLimit(8, 4096)
+        .setRegex(BASE64_REGEX);
 
     //----------------------------------------------------------------------------------------------
     // output
@@ -79,7 +80,7 @@ CreateTokenV1M0::runTask(BlossomIO& blossomIO,
                          Hanami::ErrorContainer& error)
 {
     const std::string userId = blossomIO.input["id"];
-    const std::string password = blossomIO.input["password"];
+    const std::string passphrase = blossomIO.input["passphrase"];
 
     // get data from table
     UserTable::UserDbEntry userData;
@@ -91,25 +92,25 @@ CreateTokenV1M0::runTask(BlossomIO& blossomIO,
     if (ret == INVALID_INPUT) {
         status.errorMessage
             = "ACCESS DENIED!\n"
-              "User or password is incorrect.";
+              "User or passphrase is incorrect.";
         status.statusCode = UNAUTHORIZED_RTYPE;
         LOG_DEBUG(status.errorMessage);
         return false;
     }
 
-    // regenerate password-hash for comparism
+    // regenerate passphrase-hash for comparism
     std::string compareHash = "";
-    const std::string saltedPw = password + userData.salt;
+    const std::string saltedPw = passphrase + userData.salt;
     Hanami::generate_SHA_256(compareHash, saltedPw);
 
-    // check password
+    // check passphrase
     const std::string pwHash = userData.pwHash;
     if (pwHash.size() != compareHash.size()
         || memcmp(pwHash.c_str(), compareHash.c_str(), pwHash.size()) != 0)
     {
         status.errorMessage
             = "ACCESS DENIED!\n"
-              "User or password is incorrect.";
+              "User or passphrase is incorrect.";
         status.statusCode = UNAUTHORIZED_RTYPE;
         LOG_DEBUG(status.errorMessage);
         return false;

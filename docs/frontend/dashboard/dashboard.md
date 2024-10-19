@@ -16,7 +16,7 @@ The dashboard is one way to interact with hanami.
 
 Login should quite self-explaining. In case you used the
 [installation-guide](/How_To/1_installation/) you have to use the values of `USER_ID` (NOT the
-`USER_NAME`) and `PASSWORD` for the login.
+`USER_NAME`) and `PASSPHRASE` for the login.
 
 ![step2](img/step2.jpg)
 

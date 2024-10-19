@@ -24,6 +24,7 @@
 #include <hanami_common/functions/string_functions.h>
 #include <hanami_common/functions/time_functions.h>
 #include <hanami_common/items/table_item.h>
+#include <hanami_crypto/common.h>
 #include <hanami_crypto/hashes.h>
 #include <hanami_database/sql_database.h>
 
@@ -112,7 +113,7 @@ UserTable::initNewAdminUser(Hanami::ErrorContainer& error)
 {
     std::string userId = "";
     std::string userName = "";
-    std::string pw = "";
+    std::string passphrase = "";
 
     // check if there is already an admin-user in the databasae
     const ReturnStatus ret = getAllAdminUser(error);
@@ -142,20 +143,24 @@ UserTable::initNewAdminUser(Hanami::ErrorContainer& error)
         return false;
     }
 
-    // get env with new admin-user password
-    if (getEnvVar(pw, "HANAMI_ADMIN_PASSWORD") == false) {
+    // get env with new admin-user passphrase
+    if (getEnvVar(passphrase, "HANAMI_ADMIN_PASSPHRASE") == false) {
         error.addMessage(
-            "environment variable 'HANAMI_ADMIN_PASSWORD' was not set, "
+            "environment variable 'HANAMI_ADMIN_PASSPHRASE' was not set, "
             "but is required to initialize a new admin-user");
         LOG_ERROR(error);
         return false;
     }
 
-    // generate hash from password
+    // convert passphrase to base64
+    std::string passphraseEnc = "";
+    Hanami::encodeBase64(passphraseEnc, passphrase.c_str(), passphrase.size());
+
+    // generate hash from passphrase
     std::string pwHash;
     std::string salt = "";
     Hanami::generate_SHA_256(salt, generateUuid().toString());
-    const std::string saltedPw = pw + salt;
+    const std::string saltedPw = passphraseEnc + salt;
     Hanami::generate_SHA_256(pwHash, saltedPw);
 
     UserDbEntry userData;

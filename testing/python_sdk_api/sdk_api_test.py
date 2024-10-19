@@ -43,7 +43,7 @@ config.read('/etc/openhanami/hanami_testing.conf')
 
 address = config["connection"]["address"]
 test_user_id = config["connection"]["test_user"]
-test_user_pw = config["connection"]["test_pw"]
+test_user_pw = config["connection"]["test_passphrase"]
 
 train_inputs = config["test_data"]["train_inputs"]
 train_labels = config["test_data"]["train_labels"]
@@ -73,7 +73,7 @@ cluster_template = \
 
 user_id = "tsugumi"
 user_name = "Tsugumi"
-password = "new password"
+passphrase = "asdfasdf"
 is_admin = True
 role = "tester"
 projet_id = "test_project"
@@ -162,9 +162,9 @@ def test_project():
 def test_user():
     print("test user")
 
-    user.create_user(token, address, user_id, user_name, password, is_admin, False)
+    user.create_user(token, address, user_id, user_name, passphrase, is_admin, False)
     try:
-        user.create_user(token, address, user_id, user_name, password, is_admin, False)
+        user.create_user(token, address, user_id, user_name, passphrase, is_admin, False)
     except hanami_exceptions.ConflictException:
         pass
     user.list_users(token, address, False)

@@ -54,11 +54,11 @@ limitations under the License. -->
                     <div class="slider round"></div>
                 </label>
                 <br><br>
-                <label class="modal_label" for="pass">Password (8 characters minimum):</label>
-                <input type="password" id="pass1" name="password" minlength="8" required>
+                <label class="modal_label" for="pass">Passphrase (8 characters minimum):</label>
+                <input type="passphrase" id="pass1" name="passphrase" minlength="8" required>
                 <br><br>
-                <label class="modal_label" for="pass">Password repeat:</label>
-                <input type="password" id="pass2" name="password" minlength="8" required>
+                <label class="modal_label" for="pass">Passphrase repeat:</label>
+                <input type="passphrase" id="pass2" name="passphrase" minlength="8" required>
             </div>
             <div id="create_alert_box" class="alert">
                 <span class="closebtn" onclick="clearAlertBox('create');">&times;</span> 
@@ -317,12 +317,12 @@ limitations under the License. -->
         const id = document.getElementById('id_field').value;
         const name = document.getElementById('name_field').value;
         const isAdmin = document.getElementById('isAdmin_field').checked;
-        const password1 = document.getElementById('pass1').value;
-        const password2 = document.getElementById('pass2').value;
+        const passphrase1 = document.getElementById('pass1').value;
+        const passphrase2 = document.getElementById('pass2').value;
 
-        if(password1 != password2) 
+        if(passphrase1 != passphrase2) 
         {
-            showErrorInModal("create", "Passwords are not equal");
+            showErrorInModal("create", "Passphrases are not equal");
             return false;
         }
 
@@ -338,9 +338,9 @@ limitations under the License. -->
             return false;
         }
 
-        if(password1 == "") 
+        if(passphrase1 == "") 
         {
-            showErrorInModal("create", "Password is missing");
+            showErrorInModal("create", "Passphrase is missing");
             return false;
         }
 
@@ -357,7 +357,7 @@ limitations under the License. -->
             }, 
             id, 
             name, 
-            password1, 
+            passphrase1, 
             isAdmin, 
             getAndCheckToken()
         );

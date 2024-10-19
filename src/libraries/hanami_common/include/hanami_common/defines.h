@@ -35,3 +35,4 @@
 #define INT_VALUE_REGEX "^-?([0-9]+)$"
 #define FLOAT_VALUE_REGEX "^-?([0-9]+)\\.([0-9]+)$"
 #define IPV4_REGEX "\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b"
+#define BASE64_REGEX "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
