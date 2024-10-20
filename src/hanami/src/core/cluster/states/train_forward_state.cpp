@@ -23,6 +23,7 @@
 #include "train_forward_state.h"
 
 #include <core/cluster/cluster.h>
+#include <core/cluster/cluster_io_convert.h>
 
 /**
  * @brief constructor
@@ -70,11 +71,7 @@ TrainForward_State::processEvent()
         {
             return false;
         }
-        uint64_t counter = 0;
-        for (const float val : outputInterface->ioBuffer) {
-            outputInterface->outputNeurons[counter].exprectedVal = val;
-            counter++;
-        }
+        convertBufferToExpected(outputInterface);
     }
 
     m_cluster->startForwardCycle(false);

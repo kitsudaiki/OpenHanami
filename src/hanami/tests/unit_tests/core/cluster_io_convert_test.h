@@ -1,5 +1,5 @@
 /**
- * @file        cluster_io.h
+ * @file        cluster_io_convert_test.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,15 +20,21 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_PROTOBUF_MESSAGES_H
-#define HANAMI_PROTOBUF_MESSAGES_H
+#ifndef CLUSTERIOCONVERT_TEST_H
+#define CLUSTERIOCONVERT_TEST_H
 
-#include <core/cluster/cluster.h>
+#include <hanami_common/test_helper/compare_test_helper.h>
 
-bool sendClusterOutputMessage(Cluster* cluster);
-void sendClusterNormalEndMessage(Cluster* cluster);
-void sendClusterTrainEndMessage(Cluster* cluster);
+class ClusterIOConvert_Test : public Hanami::CompareTestHelper
+{
+   public:
+    ClusterIOConvert_Test();
 
-bool recvClusterInputMessage(Cluster* cluster, const void* data, const uint64_t dataSize);
+   private:
+    void convertPlain_test();
+    void convertBool_test();
+    void convertFloat_test();
+    void convertInt_test();
+};
 
-#endif  // HANAMI_PROTOBUF_MESSAGES_H
+#endif  // CLUSTERIOCONVERT_TEST_H

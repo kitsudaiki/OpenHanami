@@ -22,6 +22,7 @@
 
 #include <hanami_common/logger.h>
 
+#include "core/cluster_io_convert_test.h"
 #include "core/cluster_test.h"
 #include "core/dataset_io_test.h"
 #include "core/processing_test.h"
@@ -39,6 +40,7 @@ main()
 {
     Hanami::initConsoleLogger(false);
 
+    ClusterIOConvert_Test();
     Cluster_Init_Test();
     DataSetIO_Test();
     Processing_Test();

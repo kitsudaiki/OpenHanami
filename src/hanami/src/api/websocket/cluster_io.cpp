@@ -24,6 +24,7 @@
 
 #include <../../libraries/hanami_messages/protobuffers/hanami_messages.proto3.pb.h>
 #include <core/cluster/cluster.h>
+#include <core/cluster/cluster_io_convert.h>
 
 /**
  * @brief send output of a cluster as protobuf-message
@@ -31,7 +32,7 @@
  * @param cluster cluster, which output-data should send
  */
 bool
-sendClusterOutputMessage(const Cluster* cluster)
+sendClusterOutputMessage(Cluster* cluster)
 {
     if (cluster->msgClient == nullptr) {
         return false;
@@ -39,18 +40,18 @@ sendClusterOutputMessage(const Cluster* cluster)
 
     uint8_t buffer[TRANSFER_SEGMENT_SIZE];
 
-    for (const auto& [name, outputInterface] : cluster->outputInterfaces) {
+    for (auto& [name, outputInterface] : cluster->outputInterfaces) {
         // build message
         ClusterIO_Message msg;
         msg.set_islast(false);
         msg.set_buffername(name);
         msg.set_processtype(ClusterProcessType::REQUEST_TYPE);
-        msg.set_numberofvalues(outputInterface.outputNeurons.size());
+        msg.set_numberofvalues(outputInterface.ioBuffer.size());
 
-        for (uint64_t outputNeuronId = 0; outputNeuronId < outputInterface.outputNeurons.size();
-             outputNeuronId++)
-        {
-            msg.add_values(outputInterface.outputNeurons[outputNeuronId].outputVal);
+        const uint64_t values = convertOutputToBuffer(&outputInterface);
+
+        for (uint64_t outputNeuronId = 0; outputNeuronId < values; outputNeuronId++) {
+            msg.add_values(outputInterface.ioBuffer[outputNeuronId]);
         }
 
         // serialize message
@@ -219,14 +220,12 @@ recvClusterInputMessage(Cluster* cluster, const void* data, const uint64_t dataS
         }
 
         OutputInterface* outputInterface = &it->second;
-        if (outputInterface->outputNeurons.size() < msg.numberofvalues()) {
-            outputInterface->outputNeurons.resize(msg.numberofvalues());
-        }
-        outputInterface->ioBuffer.resize(msg.numberofvalues());
-
+        outputInterface->initBuffer(msg.numberofvalues());
         for (uint64_t i = 0; i < msg.numberofvalues(); i++) {
-            outputInterface->outputNeurons[i].exprectedVal = msg.values(i);
+            outputInterface->ioBuffer[i] = msg.values(i);
         }
+
+        convertBufferToExpected(outputInterface);
     }
     else {
         Hanami::ErrorContainer error;

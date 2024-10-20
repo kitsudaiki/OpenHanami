@@ -312,8 +312,7 @@ CreateRequestTaskV1M0::createResultDataset(Cluster* cluster,
 
         const std::string hexagonName = item["hexagon_name"];
         const std::string columnName = item["dataset_column"];
-        const uint64_t numberOfOutputs
-            = cluster->outputInterfaces[hexagonName].outputNeurons.size();
+        const uint64_t numberOfOutputs = cluster->outputInterfaces[hexagonName].ioBuffer.size();
         totalNumberOfOutputs += numberOfOutputs;
 
         // prepare description of the dataset

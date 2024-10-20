@@ -240,6 +240,19 @@ struct OutputInterface {
     uint32_t targetHexagonId = UNINIT_STATE_32;
     std::vector<OutputNeuron> outputNeurons;
     std::vector<float> ioBuffer;
+    OutputType type = PLAIN_OUTPUT;
+
+    void initBuffer(uint64_t expectedSize)
+    {
+        ioBuffer.resize(expectedSize);
+        if (type == FLOAT_OUTPUT) {
+            expectedSize *= 32;
+        }
+        if (type == INT_OUTPUT) {
+            expectedSize *= 64;
+        }
+        outputNeurons.resize(expectedSize);
+    }
 };
 
 //==================================================================================================
