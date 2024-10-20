@@ -37,6 +37,7 @@ if(FLEX_EXECUTABLE AND BISON_EXECUTABLE)
     add_custom_command(
         OUTPUT ${FLEX_OUTPUT} ${BISON_OUTPUT}
         COMMAND ${BISON_EXECUTABLE} -d --defines=${CMAKE_CURRENT_BINARY_DIR}/cluster_parser.h -o ${BISON_OUTPUT} ${BISON_INPUT}
+        # COMMAND ${BISON_EXECUTABLE} -Wcounterexamples -d --defines=${CMAKE_CURRENT_BINARY_DIR}/cluster_parser.h -o ${BISON_OUTPUT} ${BISON_INPUT}
         COMMAND ${FLEX_EXECUTABLE} --header-file=${CMAKE_CURRENT_BINARY_DIR}/cluster_lexer.h -o ${FLEX_OUTPUT} ${FLEX_INPUT}
         DEPENDS ${FLEX_INPUT} ${BISON_INPUT}
     )

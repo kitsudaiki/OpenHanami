@@ -35,6 +35,13 @@
 namespace Hanami
 {
 
+enum OutputType {
+    PLAIN_OUTPUT = 0,
+    BOOL_OUTPUT = 1,
+    INT_OUTPUT = 2,
+    FLOAT_OUTPUT = 3,
+};
+
 struct InputMeta {
     std::string name = "";
     uint32_t targetHexagonId = UNINTI_POINT_32;
@@ -45,6 +52,7 @@ struct InputMeta {
 struct OutputMeta {
     std::string name = "";
     uint32_t targetHexagonId = UNINTI_POINT_32;
+    OutputType type = PLAIN_OUTPUT;
 };
 
 struct AxonMeta {

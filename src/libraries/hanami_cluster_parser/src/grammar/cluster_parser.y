@@ -87,6 +87,9 @@ YY_DECL;
     ENABLE_REDUCTION "enable_reduction"
     BOOL_TRUE  "true"
     BOOL_FALSE "false"
+    OUTPUT_BOOL "bool"
+    OUTPUT_INT "int"
+    OUTPUT_FLOAT "float"
     OPEN "("
     CLOSE ")"
     ARROW "->"
@@ -95,7 +98,7 @@ YY_DECL;
 %token <std::string> IDENTIFIER "identifier"
 %token <std::string> STRING "string"
 %token <long> NUMBER "number"
-%token <double> FLOAT "float"
+%token <double> FLOAT_VAL "float_val"
 
 %type  <Position> position
 %type  <Position> hexagon
@@ -123,7 +126,7 @@ YY_DECL;
 //     "input_hexagon": 1,1,1 (binary)
 //
 // outputs:
-//     "output_hexagon": 4,1,1
+//     "output_hexagon": 4,1,1 (float)
 //
 
 startpoint:
@@ -164,7 +167,7 @@ setting:
         driver.output->neuronCooldown = $3;
     }
 |
-    "neuron_cooldown" ":" "float"
+    "neuron_cooldown" ":" "float_val"
     {
         if($3 <= 1.0) {
             driver.error(yyla.location, "neuron_cooldown must be > 1.0");
@@ -234,9 +237,6 @@ axons:
     {
         driver.output->axons.push_back($1);
     }
-|
-    %empty
-    {}
 
 axon:
     position "->" position
@@ -318,10 +318,47 @@ outputs:
         driver.output->outputs.push_back($2);
     }
 |
+    outputs output "(" "bool" ")"
+    {
+        $2.type = BOOL_OUTPUT;
+        driver.output->outputs.push_back($2);
+    }
+|
+    outputs output "(" "int" ")"
+    {
+        $2.type = INT_OUTPUT;
+        driver.output->outputs.push_back($2);
+    }
+|
+    outputs output "(" "float" ")"
+    {
+        $2.type = FLOAT_OUTPUT;
+        driver.output->outputs.push_back($2);
+    }
+|
     output
     {
         driver.output->outputs.push_back($1);
     }
+|
+    output "(" "bool" ")"
+    {
+        $1.type = BOOL_OUTPUT;
+        driver.output->outputs.push_back($1);
+    }
+|
+    output "(" "int" ")"
+    {
+        $1.type = INT_OUTPUT;
+        driver.output->outputs.push_back($1);
+    }
+|
+    output "(" "float" ")"
+    {
+        $1.type = FLOAT_OUTPUT;
+        driver.output->outputs.push_back($1);
+    }
+
 
 output:
     "identifier" ":" position
