@@ -44,6 +44,17 @@ var clusterHeader = []string{
 	"created_at",
 }
 
+var clusterGetHeader = []string{
+	"uuid",
+	"name",
+	"visibility",
+	"owner_id",
+	"number_of_blocks",
+	"number_of_sections",
+	"project_id",
+	"created_at",
+}
+
 var clusterSaveHeader = []string{
 	"uuid",
 	"name",
@@ -88,7 +99,7 @@ var getClusterCmd = &cobra.Command{
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		hanamictl_common.PrintSingle(content, clusterHeader)
+		hanamictl_common.PrintSingle(content, clusterGetHeader)
 	},
 }
 

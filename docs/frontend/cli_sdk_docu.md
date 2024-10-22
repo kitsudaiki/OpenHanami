@@ -1096,14 +1096,16 @@ used memory and so on are still missing in this output currently.
     ```bash
     hanamictl cluster get 12959485-51a7-45bc-84dd-aad1c9bfd510
 
-    +------------+--------------------------------------+
-    | UUID       | 12959485-51a7-45bc-84dd-aad1c9bfd510 |
-    | NAME       | cli_test_cluster                     |
-    | VISIBILITY | private                              |
-    | OWNER ID   | asdf                                 |
-    | PROJECT ID | admin                                |
-    | CREATED AT | 2024-07-13 21:45:56                  |
-    +------------+--------------------------------------+
+    +--------------------+--------------------------------------+
+    | UUID               | 12959485-51a7-45bc-84dd-aad1c9bfd510 |
+    | NAME               | cli_test_cluster                     |
+    | VISIBILITY         | private                              |
+    | OWNER ID           | asdf                                 |
+    | NUMBER OF BLOCKS   | 3                                    |
+    | NUMBER OF SECTIONS | 973                                  |
+    | PROJECT ID         | admin                                |
+    | CREATED AT         | 2024-07-13 21:45:56                  |
+    +--------------------+--------------------------------------+
     ```
 
 === "Python-SDK"
@@ -1125,6 +1127,8 @@ used memory and so on are still missing in this output currently.
     #     "name": "test_cluster",
     #     "owner_id": "asdf",
     #     "project_id": "admin",
+    #     "number_of_blocks": 3,
+    #     "number_of_sections": 973,
     #     "uuid": "d94f2b53-f404-4215-9a33-63c4a03e3202",
     #     "visibility": "private"
     # }

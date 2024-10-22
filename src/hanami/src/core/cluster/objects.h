@@ -345,6 +345,13 @@ static_assert(sizeof(HexagonHeader) == 40);
 
 //==================================================================================================
 
+struct ClusterMetrics {
+    uint64_t numberOfBlocks = 0;
+    uint64_t numberOfSections = 0;
+};
+
+//==================================================================================================
+
 struct Hexagon {
     HexagonHeader header;
 
