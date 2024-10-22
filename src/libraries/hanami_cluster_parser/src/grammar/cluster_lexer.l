@@ -80,6 +80,9 @@ blank [ \t]
 "false"                   return Hanami::ClusterParser::make_BOOL_FALSE (clusterloc);
 "True"                    return Hanami::ClusterParser::make_BOOL_TRUE (clusterloc);
 "False"                   return Hanami::ClusterParser::make_BOOL_FALSE (clusterloc);
+"bool"                    return Hanami::ClusterParser::make_OUTPUT_BOOL (clusterloc);
+"int"                     return Hanami::ClusterParser::make_OUTPUT_INT (clusterloc);
+"float"                   return Hanami::ClusterParser::make_OUTPUT_FLOAT (clusterloc);
 ","                       return Hanami::ClusterParser::make_COMMA (clusterloc);
 ":"                       return Hanami::ClusterParser::make_ASSIGN (clusterloc);
 "("                       return Hanami::ClusterParser::make_OPEN (clusterloc);
@@ -102,7 +105,7 @@ blank [ \t]
 
 {double}	{
     double value = strtod( yytext , NULL );
-    return Hanami::ClusterParser::make_FLOAT(value, clusterloc);
+    return Hanami::ClusterParser::make_FLOAT_VAL(value, clusterloc);
 }
 
 {id}       return Hanami::ClusterParser::make_IDENTIFIER(yytext, clusterloc);

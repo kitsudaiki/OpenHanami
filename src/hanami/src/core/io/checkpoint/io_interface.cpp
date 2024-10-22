@@ -279,7 +279,8 @@ IO_Interface::serialize(const Hexagon& hexagon, Hanami::ErrorContainer& error)
         if (outputEntry.name.setName(hexagon.outputInterface->name) == false) {
             return INVALID_INPUT;
         }
-        outputEntry.numberOfOutputs = hexagon.outputInterface->outputNeurons.size();
+        outputEntry.type = hexagon.outputInterface->type;
+        outputEntry.numberOfOutputs = hexagon.outputInterface->ioBuffer.size();
         outputEntry.targetHexagonId = hexagon.header.hexagonId;
         if (addObjectToLocalBuffer(&outputEntry, error) == false) {
             return ERROR;
@@ -428,10 +429,9 @@ IO_Interface::deserialize(Hexagon& hexagon, uint64_t& positionPtr, Hanami::Error
 
         OutputInterface outputIf;
         outputIf.name = outputEntry.name.getName();
+        outputIf.type = outputEntry.type;
         outputIf.targetHexagonId = hexagon.header.hexagonId;
-
-        outputIf.outputNeurons.resize(outputEntry.numberOfOutputs);
-        outputIf.ioBuffer.resize(outputEntry.numberOfOutputs);
+        outputIf.initBuffer(outputEntry.numberOfOutputs);
         for (OutputNeuron& outputNeuron : outputIf.outputNeurons) {
             ret = getObjectFromLocalBuffer(positionPtr, &outputNeuron, error);
             if (ret != OK) {

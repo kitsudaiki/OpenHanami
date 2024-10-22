@@ -73,6 +73,7 @@ set(SOURCES
     src/core/cluster/cluster.h
     src/core/cluster/cluster_handler.h
     src/core/cluster/cluster_init.h
+    src/core/cluster/cluster_io_convert.h
     src/core/cluster/objects.h
     src/core/cluster/statemachine_init.h
     src/core/cluster/states/cycle_finish_state.h
@@ -175,6 +176,7 @@ set(SOURCES
     src/core/cluster/cluster.cpp
     src/core/cluster/cluster_handler.cpp
     src/core/cluster/cluster_init.cpp
+    src/core/cluster/cluster_io_convert.cpp
     src/core/cluster/statemachine_init.cpp
     src/core/cluster/states/cycle_finish_state.cpp
     src/core/cluster/states/request_state.cpp
@@ -223,6 +225,8 @@ add_executable(hanami
 if(run_tests)
     add_executable(hanami_unittests
         ${SOURCES}
+        tests/unit_tests/core/cluster_io_convert_test.cpp
+        tests/unit_tests/core/cluster_io_convert_test.h
         tests/unit_tests/core/cluster_test.cpp
         tests/unit_tests/core/cluster_test.h
         tests/unit_tests/core/dataset_io_test.cpp

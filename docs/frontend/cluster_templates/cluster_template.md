@@ -33,6 +33,7 @@ inputs:
 
 outputs:
     <NAME>: X,Y,Z
+    <NAME>: X,Y,Z (float)
 ```
 
 In the template the position, type and name of the hexagons has to be defined. The size of the input
@@ -106,9 +107,28 @@ inputs:
 
 When this is set, for each input, which is not explizitly learned by the hexgon, a new synapse is created.
 
-### axons (optional)
+### axons (optional setting)
 
 The `axons`-section is not required and allow to connect any hexagon within the cluster with another one. 
+
+### output-type (optional setting)
+
+Use the `(bool)`, `(float)` or `(int)` to modify the output.
+
+```
+outputs:
+    <NAME>: X,Y,Z (bool)
+    <NAME>: X,Y,Z (float)
+    <NAME>: X,Y,Z (int)
+```
+
+- `(bool)`: outputs can only have value 0 or 1 and nothing between
+- `(float`: 32 outputs internally are combined bitwise to a float-value
+- `(int)`: 64 outputs internally are combined bitwise to a uin64-value
+
+!!! info
+
+    `(bool)` and `(int)` are still converted to a float at the end, before writing into a dataset-file. Will be chanded in the future.
 
 ## Simple example
 

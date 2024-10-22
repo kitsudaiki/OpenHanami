@@ -53,6 +53,7 @@ Cluster_ParseString_Test::parseString_test()
         "    3,1,1\n"
         "    5,1,1\n"
         "    6,1,1\n"
+        "    7,1,1\n"
         "\n"
         "axons:\n"
         "    1,1,1 -> 5,1,1\n"
@@ -65,6 +66,7 @@ Cluster_ParseString_Test::parseString_test()
         "\n"
         "outputs:\n"
         "    output_hexagon: 6,1,1\n"
+        "    output_hexagon2: 7,1,1 (float)\n"
         "\n");
 
     ClusterMeta result;
@@ -82,7 +84,7 @@ Cluster_ParseString_Test::parseString_test()
     TEST_EQUAL(result.maxConnectionDistance, 1);
     TEST_EQUAL(result.enableReduction, false);
 
-    TEST_EQUAL(result.hexagons.size(), 5);
+    TEST_EQUAL(result.hexagons.size(), 6);
 
     TEST_EQUAL(result.hexagons.at(0).x, 1);
     TEST_EQUAL(result.hexagons.at(0).y, 1);
@@ -103,6 +105,10 @@ Cluster_ParseString_Test::parseString_test()
     TEST_EQUAL(result.hexagons.at(4).x, 6);
     TEST_EQUAL(result.hexagons.at(4).y, 1);
     TEST_EQUAL(result.hexagons.at(4).z, 1);
+
+    TEST_EQUAL(result.hexagons.at(5).x, 7);
+    TEST_EQUAL(result.hexagons.at(5).y, 1);
+    TEST_EQUAL(result.hexagons.at(5).z, 1);
 
     TEST_EQUAL(result.axons.size(), 2);
     TEST_EQUAL(result.axons.at(0).sourceId, 0);
@@ -126,9 +132,14 @@ Cluster_ParseString_Test::parseString_test()
     TEST_EQUAL(result.inputs.at(2).binary, false);
     TEST_EQUAL(result.inputs.at(2).match, true);
 
-    TEST_EQUAL(result.outputs.size(), 1);
+    TEST_EQUAL(result.outputs.size(), 2);
     TEST_EQUAL(result.outputs.at(0).name, "output_hexagon");
     TEST_EQUAL(result.outputs.at(0).targetHexagonId, 4);
+    TEST_EQUAL(result.outputs.at(0).type, PLAIN_OUTPUT);
+
+    TEST_EQUAL(result.outputs.at(1).name, "output_hexagon2");
+    TEST_EQUAL(result.outputs.at(1).targetHexagonId, 5);
+    TEST_EQUAL(result.outputs.at(1).type, FLOAT_OUTPUT);
 
     input
         = "version: 2\n"  // <-- error (invalid version-number)
@@ -292,6 +303,38 @@ Cluster_ParseString_Test::parseString_test()
           "\n"
           "outputs:\n"
           "    output_hexagon: 5,1,1\n"
+          "\n";
+    ret = parseCluster(&result, input, error);
+    TEST_EQUAL(ret, false);
+
+    input
+        = "version: 1\n"
+          "settings:\n"
+          "    refractory_time: 1\n"
+          "    neuron_cooldown: 10000000.0\n"
+          "    max_connection_distance: 1\n"
+          "    enable_reduction: false\n"
+          "\n"
+          "hexagons:\n"
+          "    1,1,1\n"
+          "    2,1,1\n"
+          "    3,1,1\n"
+          "    5,1,1\n"
+          "    6,1,1\n"
+          "    7,1,1\n"
+          "\n"
+          "axons:\n"
+          "    1,1,1 -> 5,1,1\n"
+          "    2,1,1 -> 5,1,1\n"
+          "\n"
+          "inputs:\n"
+          "    input_hexagon: 1,1,1 (binary)\n"
+          "    input_hexagon2: 2,1,1\n"
+          "    input_hexagon3: 3,1,1 (match)\n"
+          "\n"
+          "outputs:\n"
+          "    output_hexagon: 6,1,1\n"
+          "    output_hexagon2: 7,1,1 (asdf)\n"  // <-- error (invalid type)
           "\n";
     ret = parseCluster(&result, input, error);
     TEST_EQUAL(ret, false);

@@ -24,6 +24,7 @@
 
 #include <api/websocket/cluster_io.h>
 #include <core/cluster/cluster.h>
+#include <core/cluster/cluster_io_convert.h>
 #include <core/cluster/objects.h>
 #include <core/processing/cpu/processing.h>
 #include <hanami_common/buffer/item_buffer.h>
@@ -128,19 +129,15 @@ handleClientOutput(Cluster& cluster)
     // send output back if a client-connection is set
 
     Task* actualTask = cluster.getCurrentTask();
-    if (actualTask != nullptr) {
-        if (actualTask->type == REQUEST_TASK) {
-            RequestInfo* info = &std::get<RequestInfo>(actualTask->info);
+    if (actualTask != nullptr && actualTask->type == REQUEST_TASK) {
+        RequestInfo* info = &std::get<RequestInfo>(actualTask->info);
 
-            for (auto& [name, outputInterface] : cluster.outputInterfaces) {
-                DataSetFileHandle* fileHandle = &info->results[name];
-                for (const OutputNeuron& outputNeuron : outputInterface.outputNeurons) {
-                    // TODO: handle return value
-                    // std::cout<<outputNeuron.outputVal<<std::endl;
-                    appendValueToDataSet(*fileHandle, outputNeuron.outputVal, error);
-                }
-                // std::cout << "-------------------------------------" << std::endl;
-            }
+        for (auto& [name, outputInterface] : cluster.outputInterfaces) {
+            DataSetFileHandle* fileHandle = &info->results[name];
+            const uint64_t ioBufferSize = convertOutputToBuffer(&outputInterface);
+            // TODO: handle return status
+            appendToDataSet(
+                *fileHandle, &outputInterface.ioBuffer[0], ioBufferSize * sizeof(float), error);
         }
     }
     if (cluster.msgClient != nullptr) {

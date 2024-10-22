@@ -27,6 +27,7 @@
 ### Added
 
 - added new workaround to be able to handle binary input-data
+- added new output-modi to provide more output-options to combine multiple outputs bitwise into a bigger value
 
 ### Changed
 

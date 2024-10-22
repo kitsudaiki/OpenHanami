@@ -255,12 +255,9 @@ CreateTrainTaskV1M0::runTask(BlossomIO& blossomIO,
         // resize number of output and size of io-buffer for the given data
         OutputInterface* outputInterface = &cluster->outputInterfaces[hexagonName];
         const uint64_t numberOfColumns
-            = fileHandle.readSelector.columnEnd - fileHandle.readSelector.columnStart;
-        if (outputInterface->outputNeurons.size() < numberOfColumns) {
-            outputInterface->outputNeurons.resize(numberOfColumns);
-        }
-        outputInterface->ioBuffer.resize(outputInterface->outputNeurons.size()
-                                         - (info->timeLength - 1));
+            = (fileHandle.readSelector.columnEnd - fileHandle.readSelector.columnStart)
+              - (info->timeLength - 1);
+        outputInterface->initBuffer(numberOfColumns);
 
         info->outputs.try_emplace(hexagonName, std::move(fileHandle));
     }

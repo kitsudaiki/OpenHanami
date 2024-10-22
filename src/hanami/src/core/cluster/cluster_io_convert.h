@@ -1,5 +1,5 @@
 /**
- * @file        cluster_io.h
+ * @file        cluster_io_convert.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,15 +20,12 @@
  *      limitations under the License.
  */
 
-#ifndef HANAMI_PROTOBUF_MESSAGES_H
-#define HANAMI_PROTOBUF_MESSAGES_H
+#ifndef CLUSTER_IO_CONVERT_H
+#define CLUSTER_IO_CONVERT_H
 
-#include <core/cluster/cluster.h>
+#include <core/cluster/objects.h>
 
-bool sendClusterOutputMessage(Cluster* cluster);
-void sendClusterNormalEndMessage(Cluster* cluster);
-void sendClusterTrainEndMessage(Cluster* cluster);
+void convertBufferToExpected(OutputInterface* outputInterface);
+uint64_t convertOutputToBuffer(OutputInterface* outputInterface);
 
-bool recvClusterInputMessage(Cluster* cluster, const void* data, const uint64_t dataSize);
-
-#endif  // HANAMI_PROTOBUF_MESSAGES_H
+#endif  // CLUSTER_IO_CONVERT_H

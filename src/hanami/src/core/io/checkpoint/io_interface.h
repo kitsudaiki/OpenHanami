@@ -54,6 +54,7 @@ class IO_Interface
 
     struct OutputEntry {
         Hanami::NameEntry name;
+        OutputType type = PLAIN_OUTPUT;
         uint32_t numberOfOutputs = 0;
         uint32_t targetHexagonId = UNINIT_STATE_32;
     };

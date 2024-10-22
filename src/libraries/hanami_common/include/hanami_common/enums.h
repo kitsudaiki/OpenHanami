@@ -25,6 +25,13 @@
 
 #include <stdint.h>
 
+enum OutputType {
+    PLAIN_OUTPUT = 0,
+    BOOL_OUTPUT = 1,
+    INT_OUTPUT = 2,
+    FLOAT_OUTPUT = 3,
+};
+
 enum ClusterProcessingMode : uint8_t {
     NORMAL_MODE = 0,
     TRAIN_FORWARD_MODE = 1,

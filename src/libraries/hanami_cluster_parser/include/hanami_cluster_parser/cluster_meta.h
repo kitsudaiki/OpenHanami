@@ -45,6 +45,7 @@ struct InputMeta {
 struct OutputMeta {
     std::string name = "";
     uint32_t targetHexagonId = UNINTI_POINT_32;
+    OutputType type = PLAIN_OUTPUT;
 };
 
 struct AxonMeta {

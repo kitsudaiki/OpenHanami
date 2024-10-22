@@ -139,11 +139,12 @@ initializeOutputs(Cluster* cluster, const ClusterMeta& clusterMeta)
         OutputInterface outputInterface;
         outputInterface.targetHexagonId = outputMeta.targetHexagonId;
         outputInterface.name = outputMeta.name;
+        outputInterface.type = outputMeta.type;
 
         cluster->outputInterfaces.try_emplace(outputMeta.name, outputInterface);
 
-        cluster->hexagons[outputInterface.targetHexagonId].header.isOutputHexagon = true;
-        cluster->hexagons[outputInterface.targetHexagonId].outputInterface
+        cluster->hexagons[outputMeta.targetHexagonId].header.isOutputHexagon = true;
+        cluster->hexagons[outputMeta.targetHexagonId].outputInterface
             = &cluster->outputInterfaces[outputMeta.name];
     }
 }
