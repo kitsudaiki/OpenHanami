@@ -56,6 +56,7 @@ class Cluster
 
     // cluster-data
     ClusterHeader clusterHeader;
+    ClusterMetrics metrics;
 
     std::vector<Hexagon> hexagons;
     std::map<std::string, InputInterface> inputInterfaces;

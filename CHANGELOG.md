@@ -28,6 +28,7 @@
 
 - added new workaround to be able to handle binary input-data
 - added new output-modi to provide more output-options to combine multiple outputs bitwise into a bigger value
+- added metrics for number of blocks and number of sections to cluster get output
 
 ### Changed
 

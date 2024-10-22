@@ -22,6 +22,8 @@
 
 #include "show_cluster_v1_0.h"
 
+#include <core/cluster/cluster.h>
+#include <core/cluster/cluster_handler.h>
 #include <database/cluster_table.h>
 #include <hanami_root.h>
 
@@ -57,6 +59,12 @@ ShowClusterV1M0::ShowClusterV1M0() : Blossom("Show information of a specific clu
     registerOutputField("visibility", SAKURA_STRING_TYPE)
         .setComment("Visibility of the cluster (private, shared, public).");
 
+    registerOutputField("number_of_blocks", SAKURA_INT_TYPE)
+        .setComment("Number of blocks in the cluster.");
+
+    registerOutputField("number_of_sections", SAKURA_INT_TYPE)
+        .setComment("Number of synapse-sections in the cluster.");
+
     //----------------------------------------------------------------------------------------------
     //
     //----------------------------------------------------------------------------------------------
@@ -87,6 +95,19 @@ ShowClusterV1M0::runTask(BlossomIO& blossomIO,
         LOG_DEBUG(status.errorMessage);
         return false;
     }
+
+    // get cluster
+    Cluster* cluster = ClusterHandler::getInstance()->getCluster(clusterUuid);
+    if (cluster == nullptr) {
+        status.statusCode = INTERNAL_SERVER_ERROR_RTYPE;
+        error.addMessage("Cluster with UUID '" + clusterUuid
+                         + "'not found even it exists within the database");
+        return false;
+    }
+
+    // add metrics to output
+    blossomIO.output["number_of_blocks"] = cluster->metrics.numberOfBlocks;
+    blossomIO.output["number_of_sections"] = cluster->metrics.numberOfSections;
 
     return true;
 }

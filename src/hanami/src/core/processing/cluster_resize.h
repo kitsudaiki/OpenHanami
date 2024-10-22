@@ -85,26 +85,21 @@ searchTargetInHexagon(Hexagon* targetHexagon, ItemBuffer<SynapseBlock>& synapseB
 inline void
 resizeBlocks(Hexagon* targetHexagon)
 {
-    const uint32_t dimXold = targetHexagon->header.numberOfBlocks;
-
     targetHexagon->header.numberOfBlocks++;
 
     // resize list
     targetHexagon->connectionBlocks.resize(targetHexagon->header.numberOfBlocks);
     targetHexagon->synapseBlockLinks.resize(targetHexagon->header.numberOfBlocks);
+    targetHexagon->neuronBlocks.resize(targetHexagon->header.numberOfBlocks);
+    targetHexagon->cluster->metrics.numberOfBlocks++;
 
-    // if there was no scaling in x-dimension, then no re-ordering necessary
-    if (targetHexagon->header.numberOfBlocks == dimXold) {
-        return;
-    }
-    LOG_DEBUG("resized connection-Block: " + std::to_string(dimXold) + " -> "
-              + std::to_string(targetHexagon->header.numberOfBlocks));
+    LOG_DEBUG("resized blocks to: " + std::to_string(targetHexagon->header.numberOfBlocks));
 
     // update content of list for the new size
     targetHexagon->connectionBlocks[targetHexagon->header.numberOfBlocks - 1] = ConnectionBlock();
     targetHexagon->synapseBlockLinks[targetHexagon->header.numberOfBlocks - 1] = UNINIT_STATE_64;
+    targetHexagon->neuronBlocks[targetHexagon->header.numberOfBlocks - 1] = NeuronBlock();
 
-    targetHexagon->neuronBlocks.resize(targetHexagon->header.numberOfBlocks);
     targetHexagon->header.numberOfFreeSections += NUMBER_OF_SYNAPSESECTION;
 }
 
@@ -152,6 +147,7 @@ createNewSection(Cluster& cluster, Connection* sourceConnection)
     }
     targetHexagon->header.numberOfFreeSections--;
     targetHexagon->wasResized = true;
+    cluster.metrics.numberOfSections++;
 
     // initialize new connection
     targetConnection->origin = sourceConnection->origin;
