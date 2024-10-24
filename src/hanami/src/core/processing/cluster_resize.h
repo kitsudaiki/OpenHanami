@@ -115,7 +115,7 @@ resizeBlocks(Hexagon* targetHexagon)
  * @return true, if successful, else false
  */
 inline bool
-createNewSection(Cluster& cluster, Connection* sourceConnection)
+splitSection(Cluster& cluster, Connection* sourceConnection)
 {
     // get origin object
     SourceLocation sourceLoc = getSourceNeuron(sourceConnection->origin, &cluster.hexagons[0]);
@@ -133,9 +133,6 @@ createNewSection(Cluster& cluster, Connection* sourceConnection)
     ItemBuffer<SynapseBlock>* synapseBlockBuffer = &targetHexagon->attachedHost->synapseBlocks;
 
     // get target-connection
-    if (targetHexagon->header.numberOfFreeSections < NUMBER_OF_SYNAPSESECTION / 2) {
-        resizeBlocks(targetHexagon);
-    }
     Connection* targetConnection = searchTargetInHexagon(targetHexagon, *synapseBlockBuffer);
     if (targetConnection == nullptr) {
         Hanami::ErrorContainer error;
@@ -201,6 +198,7 @@ createNewSection(Cluster& cluster,
     }
     targetHexagon->header.numberOfFreeSections--;
     targetHexagon->wasResized = true;
+    cluster.metrics.numberOfSections++;
 
     // initialize new connection
     targetConnection->origin.blockId = blockId;
@@ -248,9 +246,16 @@ updateCluster(Cluster& cluster, Hexagon* hexagon)
 
             if (connection->splitValue > 0.0f) {
                 found = true;
-                createNewSection(cluster, connection);
+                splitSection(cluster, connection);
             }
             connection->splitValue = 0.0f;
+        }
+
+        // resize if necessary
+        // IMPORTANT: this must be done at the end, because the resize change the target of the
+        // pointer
+        if (hexagon->header.numberOfFreeSections < NUMBER_OF_SYNAPSESECTION / 2) {
+            resizeBlocks(hexagon);
         }
     }
     return found;

@@ -300,6 +300,8 @@ def test_workflow():
                          length=50)
 
         print("\n")
+        result = cluster.get_cluster(token, address, cluster_uuid, False)
+        print(json.dumps(json.loads(result), indent=4))
         result = task.delete_task(token, address, task_uuid, cluster_uuid, False)
 
     # save and reload checkpoint
