@@ -358,20 +358,20 @@ fn finish_train_cycle(_: &Uuid, _: &mut TrainInfo) {}
 /// * `task_info` - Mutable reference to the request information.
 fn finish_request_cycle(task_uuid: &Uuid, model_uuid: &Uuid, task_info: &mut RequestInfo) {
     // get output-values form backend and write them into the dataset
-    match write_output_into_dataset(model_uuid, &mut task_info.results) {
-        Ok(()) => {}
-        Err(AinariError::Unauthorized(msg)) => {
-            let _ = task_table::set_error_state(task_uuid, &msg);
-        }
-        Err(AinariError::InvalidInput(msg)) => {
-            let _ = task_table::set_error_state(task_uuid, &msg);
-        }
-        Err(AinariError::InternalError(msg)) => {
-            log::error!("Error while writing output into dataset: {msg}");
-            let db_msg = "internal error".to_string();
-            let _ = task_table::set_error_state(task_uuid, &db_msg);
-        }
-    }
+    // match write_output_into_dataset(model_uuid, &mut task_info.results) {
+    //     Ok(()) => {}
+    //     Err(AinariError::Unauthorized(msg)) => {
+    //         let _ = task_table::set_error_state(task_uuid, &msg);
+    //     }
+    //     Err(AinariError::InvalidInput(msg)) => {
+    //         let _ = task_table::set_error_state(task_uuid, &msg);
+    //     }
+    //     Err(AinariError::InternalError(msg)) => {
+    //         log::error!("Error while writing output into dataset: {msg}");
+    //         let db_msg = "internal error".to_string();
+    //         let _ = task_table::set_error_state(task_uuid, &db_msg);
+    //     }
+    // }
 }
 
 /// Executes a single training cycle for a task.
@@ -409,57 +409,57 @@ fn run_train_task_cycle(
 
     // push output-values form dataset into the backend
     for (hexagon_name, file_handle) in &mut task_info.outputs {
-        match apply_dataset_to_expected(
-            model_uuid,
-            hexagon_name,
-            file_handle,
-            meta.number_of_finished_cycles,
-            meta.time_length,
-            meta.forecast_length,
-        ) {
-            Ok(()) => {}
-            Err(AinariError::Unauthorized(msg)) => {
-                let _ = task_table::set_error_state(task_uuid, &msg);
-                return;
-            }
-            Err(AinariError::InvalidInput(msg)) => {
-                let _ = task_table::set_error_state(task_uuid, &msg);
-                return;
-            }
-            Err(AinariError::InternalError(msg)) => {
-                log::error!("{msg}");
-                let db_msg = "internal error".to_string();
-                let _ = task_table::set_error_state(task_uuid, &db_msg);
-                return;
-            }
-        }
+        // match apply_dataset_to_expected(
+        //     model_uuid,
+        //     hexagon_name,
+        //     file_handle,
+        //     meta.number_of_finished_cycles,
+        //     meta.time_length,
+        //     meta.forecast_length,
+        // ) {
+        //     Ok(()) => {}
+        //     Err(AinariError::Unauthorized(msg)) => {
+        //         let _ = task_table::set_error_state(task_uuid, &msg);
+        //         return;
+        //     }
+        //     Err(AinariError::InvalidInput(msg)) => {
+        //         let _ = task_table::set_error_state(task_uuid, &msg);
+        //         return;
+        //     }
+        //     Err(AinariError::InternalError(msg)) => {
+        //         log::error!("{msg}");
+        //         let db_msg = "internal error".to_string();
+        //         let _ = task_table::set_error_state(task_uuid, &db_msg);
+        //         return;
+        //     }
+        // }
     }
 
     // push input-values form dataset into the backend
     for (hexagon_name, file_handle) in &mut task_info.inputs {
-        match apply_dataset_to_input(
-            model_uuid,
-            hexagon_name,
-            file_handle,
-            meta,
-            &WorkerTaskType::Train,
-        ) {
-            Ok(()) => {}
-            Err(AinariError::Unauthorized(msg)) => {
-                let _ = task_table::set_error_state(task_uuid, &msg);
-                return;
-            }
-            Err(AinariError::InvalidInput(msg)) => {
-                let _ = task_table::set_error_state(task_uuid, &msg);
-                return;
-            }
-            Err(AinariError::InternalError(msg)) => {
-                log::error!("{msg}");
-                let db_msg = "internal error".to_string();
-                let _ = task_table::set_error_state(task_uuid, &db_msg);
-                return;
-            }
-        }
+        // match apply_dataset_to_input(
+        //     model_uuid,
+        //     hexagon_name,
+        //     file_handle,
+        //     meta,
+        //     &WorkerTaskType::Train,
+        // ) {
+        //     Ok(()) => {}
+        //     Err(AinariError::Unauthorized(msg)) => {
+        //         let _ = task_table::set_error_state(task_uuid, &msg);
+        //         return;
+        //     }
+        //     Err(AinariError::InvalidInput(msg)) => {
+        //         let _ = task_table::set_error_state(task_uuid, &msg);
+        //         return;
+        //     }
+        //     Err(AinariError::InternalError(msg)) => {
+        //         log::error!("{msg}");
+        //         let db_msg = "internal error".to_string();
+        //         let _ = task_table::set_error_state(task_uuid, &db_msg);
+        //         return;
+        //     }
+        // }
     }
 }
 
@@ -498,269 +498,30 @@ fn run_request_task_cycle(
 
     // push input-values form dataset into the backend
     for (hexagon_name, file_handle) in &mut task_info.inputs {
-        match apply_dataset_to_input(
-            model_uuid,
-            hexagon_name,
-            file_handle,
-            meta,
-            &WorkerTaskType::Process,
-        ) {
-            Ok(()) => {}
-            Err(AinariError::Unauthorized(msg)) => {
-                let _ = task_table::set_error_state(task_uuid, &msg);
-                return;
-            }
-            Err(AinariError::InvalidInput(msg)) => {
-                let _ = task_table::set_error_state(task_uuid, &msg);
-                return;
-            }
-            Err(AinariError::InternalError(msg)) => {
-                log::error!("{msg}");
-                let db_msg = "internal error".to_string();
-                let _ = task_table::set_error_state(task_uuid, &db_msg);
-                return;
-            }
-        }
+        // match apply_dataset_to_input(
+        //     model_uuid,
+        //     hexagon_name,
+        //     file_handle,
+        //     meta,
+        //     &WorkerTaskType::Process,
+        // ) {
+        //     Ok(()) => {}
+        //     Err(AinariError::Unauthorized(msg)) => {
+        //         let _ = task_table::set_error_state(task_uuid, &msg);
+        //         return;
+        //     }
+        //     Err(AinariError::InvalidInput(msg)) => {
+        //         let _ = task_table::set_error_state(task_uuid, &msg);
+        //         return;
+        //     }
+        //     Err(AinariError::InternalError(msg)) => {
+        //         log::error!("{msg}");
+        //         let db_msg = "internal error".to_string();
+        //         let _ = task_table::set_error_state(task_uuid, &db_msg);
+        //         return;
+        //     }
+        // }
     }
-}
-
-/// Applies plain input data to a model's input block.
-///
-/// This function takes raw input data and applies it to the specified input block of a model.
-/// It's primarily used for direct input application rather than dataset-based input.
-///
-/// # Arguments
-///
-/// * `model_uuid` - Unique identifier for the model
-/// * `hexagon_name` - Name of the hexagon (input block) to apply data to
-/// * `input_ptr` - Pointer to the input data
-/// * `input_size` - Size of the input data
-/// * `pos_counter` - Position counter for the input data
-/// * `time_length` - Length of time for the input data
-/// * `task_type` - Type of worker task (Train or Process)
-///
-/// # Returns
-///
-/// * `Result<(), AinariError>` - Returns Ok(()) on success, or an AinariError on failure
-pub fn apply_plain_input(
-    model_uuid: &Uuid,
-    hexagon_name: &String,
-    input_ptr: &[f32],
-    input_size: u64,
-    pos_counter: usize,
-    time_length: u64,
-    task_type: &WorkerTaskType,
-) -> Result<(), AinariError> {
-    let model_handler = MODEL_HANDLER.read().expect("mutex poisoned");
-    let input_block_mutex = model_handler.get_input_block(model_uuid, hexagon_name)?;
-
-    let mut input_block = input_block_mutex.lock().expect("mutex poisoned");
-    let allow_creation = *task_type == WorkerTaskType::Train;
-    input_block.apply_input(
-        input_ptr,
-        input_size as usize,
-        pos_counter,
-        time_length as usize,
-        allow_creation,
-    );
-
-    let mut worker_queue = WORKER_QUEUE.lock().expect("mutex poisoned");
-    let cycle_number = 0;
-    let worker_task = WorkerTask {
-        task_type: task_type.clone(),
-        block: Arc::clone(&input_block_mutex) as Arc<Mutex<dyn Block>>,
-        cycle_number,
-    };
-    worker_queue.add(worker_task);
-
-    Ok(())
-}
-
-/// Applies dataset input data to a model's input block.
-///
-/// This function reads input data from a dataset file and applies it to the specified input block
-/// of a model. It processes data for each time point in the specified time length.
-///
-/// # Arguments
-///
-/// * `model_uuid` - Unique identifier for the model
-/// * `hexagon_name` - Name of the hexagon (input block) to apply data to
-/// * `file_handle` - Mutable reference to the dataset file handle
-/// * `meta` - Task-meta construct with cycle-counter and so on
-/// * `task_type` - Type of worker task (Train or Process)
-///
-/// # Returns
-///
-/// * `Result<(), AinariError>` - Returns Ok(()) on success, or an AinariError on failure
-fn apply_dataset_to_input(
-    model_uuid: &Uuid,
-    hexagon_name: &String,
-    file_handle: &mut DataSetFileReadHandle,
-    meta: &TaskMeta,
-    task_type: &WorkerTaskType,
-) -> Result<(), AinariError> {
-    // get input-block
-    let model_handler = MODEL_HANDLER.read().expect("mutex poisoned");
-    let input_block_mutex = model_handler.get_input_block(model_uuid, hexagon_name)?;
-    drop(model_handler);
-
-    let mut input_block = input_block_mutex.lock().expect("mutex poisoned");
-
-    let offset = if meta.forecast_length == 0 {
-        meta.number_of_finished_cycles
-    } else {
-        meta.number_of_finished_cycles * meta.forecast_length
-    };
-
-    // fill input with data from dataset
-    let mut pos_counter: usize = 0;
-    for cycle_internal_time_point in 0..meta.time_length {
-        let row_number = offset + cycle_internal_time_point;
-        let (input_ptr, input_size) = file_handle.get_data_from_file(&row_number)?;
-        let allow_creation = *task_type == WorkerTaskType::Train;
-
-        input_block.apply_input(
-            input_ptr,
-            input_size as usize,
-            pos_counter,
-            meta.time_length as usize,
-            allow_creation,
-        );
-
-        pos_counter += input_size as usize;
-    }
-
-    // add input-block to worker-queue
-    let mut worker_queue = WORKER_QUEUE.lock().expect("mutex poisoned");
-    let worker_task = WorkerTask {
-        task_type: task_type.clone(),
-        block: Arc::clone(&input_block_mutex) as Arc<Mutex<dyn Block>>,
-        cycle_number: meta.task_cycle_counter,
-    };
-    worker_queue.add(worker_task);
-
-    Ok(())
-}
-
-/// Applies expected output data to a model's output buffer.
-///
-/// This function takes raw output data and applies it to the specified output buffer of a model.
-/// It's primarily used for setting expected outputs for training purposes.
-///
-/// # Arguments
-///
-/// * `model_uuid` - Unique identifier for the model
-/// * `hexagon_name` - Name of the hexagon (output buffer) to apply data to
-/// * `input_ptr` - Pointer to the output data
-/// * `input_size` - Size of the output data
-///
-/// # Returns
-///
-/// * `Result<(), AinariError>` - Returns Ok(()) on success, or an AinariError on failure
-pub fn apply_expected(
-    model_uuid: &Uuid,
-    hexagon_name: &String,
-    input_ptr: &[f32],
-    input_size: u64,
-) -> Result<(), AinariError> {
-    let model_handler = MODEL_HANDLER.read().expect("mutex poisoned");
-    let output_buffer_mutex = model_handler.get_output_buffer(model_uuid, hexagon_name)?;
-
-    let mut output_buffer = output_buffer_mutex.lock().expect("mutex poisoned");
-    output_buffer.reset_output();
-    convert_buffer_to_expected(&mut output_buffer, input_ptr, input_size);
-
-    Ok(())
-}
-
-/// Applies dataset output data to a model's output buffer.
-///
-/// This function reads output data from a dataset file and applies it to the specified output buffer
-/// of a model. It gets the data for the last time point in the specified time length.
-///
-/// # Arguments
-///
-/// * `model_uuid` - Unique identifier for the model
-/// * `hexagon_name` - Name of the hexagon (output buffer) to apply data to
-/// * `file_handle` - Mutable reference to the dataset file handle
-/// * `cycle_count` - Current cycle count
-/// * `time_length` - Length of time for the input data
-/// * `forecast_length` - Length of time for the output data
-///
-/// # Returns
-///
-/// * `Result<(), AinariError>` - Returns Ok(()) on success, or an AinariError on failure
-fn apply_dataset_to_expected(
-    model_uuid: &Uuid,
-    hexagon_name: &String,
-    file_handle: &mut DataSetFileReadHandle,
-    cycle_count: u64,
-    time_length: u64,
-    forecast_length: u64,
-) -> Result<(), AinariError> {
-    let model_handler = MODEL_HANDLER.read().expect("mutex poisoned");
-    let output_buffer_mutex = model_handler.get_output_buffer(model_uuid, hexagon_name)?;
-
-    let mut output_buffer = output_buffer_mutex.lock().expect("mutex poisoned");
-    output_buffer.reset_output();
-
-    if forecast_length == 0 {
-        let (input_ptr, input_size) =
-            file_handle.get_data_from_file(&(cycle_count + time_length - 1))?;
-        convert_buffer_to_expected(&mut output_buffer, input_ptr, input_size);
-    } else {
-        // fill input with data from dataset
-        let (_, row_size) = file_handle.get_data_from_file(&(cycle_count + time_length))?;
-        let mut input_buffer = vec![0.0f32; (row_size * forecast_length) as usize];
-        for cycle_internal_time_point in 0..forecast_length {
-            let row_number =
-                (cycle_count * forecast_length) + time_length + cycle_internal_time_point;
-            let (input_ptr, input_size) = file_handle.get_data_from_file(&row_number)?;
-            let start = (cycle_internal_time_point * row_size) as usize;
-            input_buffer[start..start + input_size as usize].copy_from_slice(input_ptr);
-        }
-
-        convert_buffer_to_expected(&mut output_buffer, &input_buffer, input_buffer.len() as u64);
-    }
-
-    Ok(())
-}
-
-/// Writes model output data into a dataset file.
-///
-/// This function reads output data from the model's output buffers and writes it to the specified
-/// dataset file. It processes each hexagon's output data according to the dataset's column description.
-///
-/// # Arguments
-///
-/// * `model_uuid` - Unique identifier for the model
-/// * `file_handle` - Mutable reference to the dataset file handle for writing
-///
-/// # Returns
-///
-/// * `Result<(), AinariError>` - Returns Ok(()) on success, or an AinariError on failure
-fn write_output_into_dataset(
-    model_uuid: &Uuid,
-    file_handle: &mut DataSetFileWriteHandle,
-) -> Result<(), AinariError> {
-    let model_handler = MODEL_HANDLER.read().expect("mutex poisoned");
-
-    // get column-description from the dataset
-    for (hexagon_name, col_get) in &file_handle.header.columns {
-        let size_output = (col_get.end - col_get.start) as usize;
-        let mut output_read = vec![0.0f32; size_output];
-
-        let output_buffer_mutex = model_handler.get_output_buffer(model_uuid, hexagon_name)?;
-
-        let mut output_buffer = output_buffer_mutex.lock().expect("mutex poisoned");
-        convert_output_to_buffer(&mut output_read, &mut output_buffer);
-        output_buffer.reset_output();
-
-        let output_bytes = cast_slice(&output_read);
-        let _ = file_handle.target_file.write_all(output_bytes);
-    }
-
-    Ok(())
 }
 
 /// Handles the task of saving a model checkpoint.
@@ -790,15 +551,15 @@ fn handle_checkpoint_save_task(
 
     {
         let model_handler = MODEL_HANDLER.read().expect("mutex poisoned");
-        match model_handler.create_checkpoint(model_uuid, &local_temp_file_path) {
-            Ok(()) => {}
-            Err(_) => {
-                let _ = fs::remove_file(&local_temp_file_path);
-                let _ = task_table::update_task_state(task_uuid, &TaskState::Error);
-                let _ = task_table::update_task_progress(task_uuid, &1, &1);
-                return;
-            }
-        }
+        // match model_handler.create_checkpoint(model_uuid, &local_temp_file_path) {
+        //     Ok(()) => {}
+        //     Err(_) => {
+        //         let _ = fs::remove_file(&local_temp_file_path);
+        //         let _ = task_table::update_task_state(task_uuid, &TaskState::Error);
+        //         let _ = task_table::update_task_progress(task_uuid, &1, &1);
+        //         return;
+        //     }
+        // }
 
         // Create a single-threaded runtime
         let rt = Builder::new_current_thread()
@@ -903,14 +664,14 @@ fn handle_checkpoint_restore_task(
 
         // restore model from the downloaded and decrypted checkpoint-file
         let mut model_handler = MODEL_HANDLER.write().expect("mutex poisoned");
-        match model_handler.restore_checkpoint(model_uuid, &local_temp_file_path) {
-            Ok(()) => {}
-            Err(_) => {
-                let _ = task_table::update_task_state(task_uuid, &TaskState::Error);
-                let _ = task_table::update_task_progress(task_uuid, &1, &1);
-                return;
-            }
-        }
+        // match model_handler.restore_checkpoint(model_uuid, &local_temp_file_path) {
+        //     Ok(()) => {}
+        //     Err(_) => {
+        //         let _ = task_table::update_task_state(task_uuid, &TaskState::Error);
+        //         let _ = task_table::update_task_progress(task_uuid, &1, &1);
+        //         return;
+        //     }
+        // }
 
         // delete temporary checkpoint-file
         let _ = task_table::update_task_state(task_uuid, &TaskState::Finished);

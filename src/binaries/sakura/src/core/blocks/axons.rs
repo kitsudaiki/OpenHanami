@@ -80,9 +80,9 @@ pub struct AxonSection {
     pub target_block_uuid: Uuid,
 
     /// Position within the target block.
-    pub target_pos: u8,
+    pub target_pos: u16,
     /// Position within the source block.
-    pub source_pos: u8,
+    pub source_pos: u16,
     /// Flag indicating whether the axon section is completed.
     pub done: bool,
 
@@ -134,8 +134,8 @@ impl AxonSection {
             target_hexagon_uuid: Uuid::nil(),
             source_block_uuid: Uuid::nil(),
             target_block_uuid: Uuid::nil(),
-            target_pos: UNINIT_STATE_8,
-            source_pos: UNINIT_STATE_8,
+            target_pos: UNINIT_STATE_16,
+            source_pos: UNINIT_STATE_16,
             source_block: None,
             target_block: None,
             done: false,

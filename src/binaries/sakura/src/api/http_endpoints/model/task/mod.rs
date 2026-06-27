@@ -62,17 +62,19 @@ fn get_current_number_of_open_tasks(model_uuid: &Uuid) -> Result<usize, ErrorRes
         Some(model_handle) => model_handle,
         None => return Err(ErrorResponse::InternalError("".to_string())),
     };
-    let model_interface = if let Some(interface) = &model_handle.model_interface {
-        interface
-    } else {
-        let msg = format!("Model with UUID '{model_uuid}' has not interface on the host.");
-        return Err(ErrorResponse::NotFound(msg));
-    };
+    // let model_interface = if let Some(interface) = &model_handle.model_interface {
+    //     interface
+    // } else {
+    //     let msg = format!("Model with UUID '{model_uuid}' has not interface on the host.");
+    //     return Err(ErrorResponse::NotFound(msg));
+    // };
 
-    Ok(model_interface
-        .lock()
-        .expect("mutex poisoned")
-        .get_number_open_tasks())
+    // Ok(model_interface
+    //     .lock()
+    //     .expect("mutex poisoned")
+    //     .get_number_open_tasks())
+
+    Ok(0)
 }
 
 /// Checks if the task queue quota for a model is exceeded.
@@ -163,42 +165,42 @@ fn add_task_to_model(
     task_type: &TaskType,
     context: &UserContext,
 ) -> Result<(), ErrorResponse> {
-    let model_handler = model_handler::MODEL_HANDLER.read().expect("mutex poisoned");
-    let model_handle = match model_handler.models.get(&task.model_uuid) {
-        Some(model_handle) => model_handle,
-        None => return Err(ErrorResponse::InternalError("".to_string())),
-    };
-    let model_interface = if let Some(interface) = &model_handle.model_interface {
-        interface
-    } else {
-        let msg = format!(
-            "Model with UUID '{}' has not interface on the host.",
-            task.model_uuid
-        );
-        return Err(ErrorResponse::NotFound(msg));
-    };
+    // let model_handler = model_handler::MODEL_HANDLER.read().expect("mutex poisoned");
+    // let model_handle = match model_handler.models.get(&task.model_uuid) {
+    //     Some(model_handle) => model_handle,
+    //     None => return Err(ErrorResponse::InternalError("".to_string())),
+    // };
+    // let model_interface = if let Some(interface) = &model_handle.model_interface {
+    //     interface
+    // } else {
+    //     let msg = format!(
+    //         "Model with UUID '{}' has not interface on the host.",
+    //         task.model_uuid
+    //     );
+    //     return Err(ErrorResponse::NotFound(msg));
+    // };
 
-    task_table::add_new_task(
-        &task.uuid,
-        &task.model_uuid,
-        &task.name,
-        task_type,
-        &task.meta.number_of_epochs,
-        &task.meta.number_of_cycles,
-        context,
-    )
-    .map_err(|e| {
-        log::error!(
-            "Failed to add task with UUID '{}' to database with error: {e}.",
-            task.uuid
-        );
-        ErrorResponse::InternalError("Internal Error".to_string())
-    })?;
+    // task_table::add_new_task(
+    //     &task.uuid,
+    //     &task.model_uuid,
+    //     &task.name,
+    //     task_type,
+    //     &task.meta.number_of_epochs,
+    //     &task.meta.number_of_cycles,
+    //     context,
+    // )
+    // .map_err(|e| {
+    //     log::error!(
+    //         "Failed to add task with UUID '{}' to database with error: {e}.",
+    //         task.uuid
+    //     );
+    //     ErrorResponse::InternalError("Internal Error".to_string())
+    // })?;
 
-    model_interface
-        .lock()
-        .expect("mutex poisoned")
-        .add_task(task);
+    // model_interface
+    //     .lock()
+    //     .expect("mutex poisoned")
+    //     .add_task(task);
 
     Ok(())
 }
@@ -222,13 +224,14 @@ fn handle_output(
 ) -> Result<(Column, u64), ErrorResponse> {
     let model_handler = MODEL_HANDLER.read().expect("mutex poisoned");
 
-    let size = {
-        let output_buffer_mutex = model_handler
-            .get_output_buffer(model_uuid, &output.hexagon)
-            .map_err(map_ainari_error_to_api_response)?;
-        let output_buffer = output_buffer_mutex.lock().expect("mutex poisoned");
-        output_buffer.output_neurons.len() as u64
-    };
+    let size = 0;
+    // let size = {
+    //     let output_buffer_mutex = model_handler
+    //         .get_output_buffer(model_uuid, &output.hexagon)
+    //         .map_err(map_ainari_error_to_api_response)?;
+    //     let output_buffer = output_buffer_mutex.lock().expect("mutex poisoned");
+    //     output_buffer.output_neurons.len() as u64
+    // };
 
     // HINT(kitsudaiki): drop lock here, because otherwise cargo clipply has a problem with the lock
     // in combination with the later coming await-call

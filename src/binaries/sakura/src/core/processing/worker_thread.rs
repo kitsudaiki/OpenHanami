@@ -58,27 +58,27 @@ fn finalize_task(worker_task: &WorkerTask) -> Result<(), AinariError> {
         // Acquire the lock on the task's block
         let mut block = worker_task.block.lock().expect("mutex poisoned");
 
-        // Perform the appropriate finalization based on task type
-        let success = match worker_task.task_type {
-            WorkerTaskType::Train => {
-                block.finalize_train(worker_task.cycle_number)?;
-                true
-            }
-            WorkerTaskType::Process => {
-                block.finalize_process(worker_task.cycle_number)?;
-                true
-            }
-            WorkerTaskType::Backpropagate => {
-                block.finalize_backpropagate(worker_task.cycle_number)?
-            }
-        };
-        // Explicitly drop the lock to allow other threads to access the block
-        drop(block);
+        // // Perform the appropriate finalization based on task type
+        // let success = match worker_task.task_type {
+        //     WorkerTaskType::Train => {
+        //         block.finalize_train(worker_task.cycle_number)?;
+        //         true
+        //     }
+        //     WorkerTaskType::Process => {
+        //         block.finalize_process(worker_task.cycle_number)?;
+        //         true
+        //     }
+        //     WorkerTaskType::Backpropagate => {
+        //         block.finalize_backpropagate(worker_task.cycle_number)?
+        //     }
+        // };
+        // // Explicitly drop the lock to allow other threads to access the block
+        // drop(block);
 
-        // If successful, return immediately
-        if success {
-            return Ok(());
-        }
+        // // If successful, return immediately
+        // if success {
+        //     return Ok(());
+        // }
 
         // Wait before retrying
         thread::sleep(Duration::from_millis(1));
@@ -103,43 +103,35 @@ fn finalize_task(worker_task: &WorkerTask) -> Result<(), AinariError> {
 fn process_task(worker_task: &WorkerTask) -> Result<(), AinariError> {
     // Variable to store the optional finish counter mutex
     // Declare outside the scope to allow access after the block is dropped
-    #[allow(clippy::needless_late_init)]
-    let finish_counter_option;
+    // #[allow(clippy::needless_late_init)]
+    // let finish_counter_option;
 
     // Acquire the lock on the task's block
     {
         let mut block = worker_task.block.lock().expect("mutex poisoned");
 
-        // Perform the appropriate operation based on task type
-        match worker_task.task_type {
-            WorkerTaskType::Train => {
-                // For training tasks, select a random offset within the block dimensions
-                let place_offset = rand::rng().random_range(0..BLOCK_DIM);
-                finish_counter_option = block.train(
-                    place_offset,
-                    Arc::clone(&worker_task.block),
-                    worker_task.cycle_number,
-                )?;
-            }
-            WorkerTaskType::Process => {
-                finish_counter_option = block.process(worker_task.cycle_number)?;
-            }
-            WorkerTaskType::Backpropagate => {
-                finish_counter_option = block.backpropagate(worker_task.cycle_number)?;
-            }
-        }
+        // // Perform the appropriate operation based on task type
+        // match worker_task.task_type {
+        //     WorkerTaskType::Train => {
+        //         // For training tasks, select a random offset within the block dimensions
+        //         let place_offset = rand::rng().random_range(0..BLOCK_DIM);
+        //         finish_counter_option = block.train(
+        //             place_offset,
+        //             Arc::clone(&worker_task.block),
+        //             worker_task.cycle_number,
+        //         )?;
+        //     }
+        //     WorkerTaskType::Process => {
+        //         finish_counter_option = block.process(worker_task.cycle_number)?;
+        //     }
+        //     WorkerTaskType::Backpropagate => {
+        //         finish_counter_option = block.backpropagate(worker_task.cycle_number)?;
+        //     }
+        // }
     }
 
     // Finalize the task
     finalize_task(worker_task)?;
-
-    // Update the finish counter if needed
-    // HINT (kitsudaiki): This can not be done within the blocks, because it would result in a dead-lock
-    //                    when the last input- or output-block tries to trigger the next cycle
-    if let Some(finish_counter_mutex) = finish_counter_option {
-        let mut finish_counter = finish_counter_mutex.lock().expect("mutex poisoned");
-        finish_counter.update(worker_task.cycle_number);
-    }
 
     Ok(())
 }

@@ -67,7 +67,7 @@ pub async fn delete_model_internal(
         .write()
         .expect("mutex poisoned");
     let model_interface = model_handle
-        .get_model_interface(&model_uuid)
+        .get_model(&model_uuid)
         .map_err(map_ainari_error_to_api_response)?;
     drop(model_handle);
 

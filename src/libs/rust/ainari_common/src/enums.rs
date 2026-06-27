@@ -71,6 +71,8 @@ pub enum ObjectType {
     CoreBlock,
     OutputBlock,
     OutputBuffer,
+    TransferBlock,
+    StartEndBlock,
 }
 
 impl ObjectType {
@@ -83,6 +85,8 @@ impl ObjectType {
             ObjectType::CoreBlock => 4,
             ObjectType::OutputBlock => 5,
             ObjectType::OutputBuffer => 6,
+            ObjectType::TransferBlock => 7,
+            ObjectType::StartEndBlock => 8,
         }
     }
 
@@ -95,6 +99,8 @@ impl ObjectType {
             4 => Some(ObjectType::CoreBlock),
             5 => Some(ObjectType::OutputBlock),
             6 => Some(ObjectType::OutputBuffer),
+            6 => Some(ObjectType::TransferBlock),
+            6 => Some(ObjectType::StartEndBlock),
             _ => None,
         }
     }

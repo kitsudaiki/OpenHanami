@@ -19,30 +19,13 @@ use uuid::Uuid;
 use ainari_common::enums::*;
 use ainari_common::error::AinariError;
 
-use crate::core::processing::finish_counter::FinishCounter;
+use crate::core::processing::worker_queue::WorkerTaskType;
 
 use super::axons::*;
 use super::block_io::*;
 
 pub trait Block: Send + Sync + Debug {
-    fn train(
-        &mut self,
-        place_offset: usize,
-        own: Arc<Mutex<dyn Block>>,
-        cycle_number: u64,
-    ) -> Result<Option<Arc<Mutex<FinishCounter>>>, AinariError>;
-    fn process(
-        &mut self,
-        cycle_number: u64,
-    ) -> Result<Option<Arc<Mutex<FinishCounter>>>, AinariError>;
-    fn backpropagate(
-        &mut self,
-        cycle_number: u64,
-    ) -> Result<Option<Arc<Mutex<FinishCounter>>>, AinariError>;
-
-    fn finalize_train(&mut self, cycle_number: u64) -> Result<(), AinariError>;
-    fn finalize_process(&mut self, cycle_number: u64) -> Result<(), AinariError>;
-    fn finalize_backpropagate(&mut self, cycle_number: u64) -> Result<bool, AinariError>;
+    fn process(&mut self, task_type: WorkerTaskType, cycle_number: u64) -> Result<(), AinariError>;
 
     fn get_free_input(&mut self, axon_section: &mut AxonSection) -> bool;
     fn get_uuid(&self) -> Uuid;

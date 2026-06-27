@@ -16,7 +16,6 @@ use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use uuid::Uuid;
 
-use crate::core::blocks::target_search::*;
 use crate::core::model_handler::*;
 use crate::core::processing::worker_queue::*;
 
@@ -66,9 +65,9 @@ pub fn connect_outputs(
     model_uuid: &Uuid,
     source_hexagon_uuid: &Uuid,
     source_block_uuid: &Uuid,
-    source_pos: u8,
+    source_pos: u16,
 ) -> Result<bool, AinariError> {
-    if axon_section.target_pos == UNINIT_STATE_8 {
+    if axon_section.target_pos == UNINIT_STATE_16 {
         // let mut model_handler = MODEL_HANDLER.write().expect("mutex poisoned");
 
         // set source-values for the axon-section
@@ -78,7 +77,8 @@ pub fn connect_outputs(
         axon_section.source_pos = source_pos;
 
         // model_handler.get_target(axon_section);
-        return connect_to_new_target(axon_section);
+        //return connect_to_new_target(axon_section);
+        return Ok(false);
     } else if axon_section.source_block.is_none() || axon_section.target_block.is_none() {
         // Get model handler to fetch block references
         let model_handler = MODEL_HANDLER.read().expect("mutex poisoned");
@@ -125,7 +125,7 @@ pub fn send_forward(
             model_uuid,
             source_hexagon_uuid,
             source_block_uuid,
-            i as u8,
+            i as u16,
         )
         .unwrap_or(true);
 
@@ -161,123 +161,6 @@ pub fn send_forward(
             }
         }
     }
-}
-
-/// Sends input axon sections back to their source blocks for backpropagation.
-///
-/// This function:
-/// 1. Iterates through all input axon sections
-/// 2. Sends each section back to its source block
-/// 3. When all required outputs are collected, schedules a backpropagation task
-///
-/// # Arguments
-///
-/// * `io_buffer` - Mutable reference to the block's IO buffer
-/// * `cycle_number` - Current cycle number for task tracking
-///
-/// # Returns
-///
-/// * `bool` - Returns true if all sections were processed successfully
-pub fn send_backward(io_buffer: &mut BlockIoBuffer, cycle_number: u64) -> bool {
-    for axon_section in io_buffer.input_buffer.iter_mut() {
-        // Get the source block mutex or skip this axon section
-        let source_block_mutex = if let Some(s) = &axon_section.source_block {
-            s
-        } else {
-            continue;
-        };
-
-        // Lock the source block and update its output buffer
-        if let Ok(mut source_block) = source_block_mutex.lock() {
-            let target_bock_io = source_block.get_block_io();
-            target_bock_io.output_buffer[axon_section.source_pos as usize] = axon_section.clone();
-            target_bock_io.output_buffer_counter += 1;
-
-            // Check if all required outputs are collected and schedule a backpropagation task if so
-            if target_bock_io.output_buffer_counter >= target_bock_io.output_buffer.len() as u64 {
-                target_bock_io.output_buffer_counter = 0;
-
-                let worker_task = WorkerTask {
-                    task_type: WorkerTaskType::Backpropagate,
-                    block: Arc::clone(source_block_mutex),
-                    cycle_number,
-                };
-
-                // Add the task to the worker queue
-                let mut worker_queue = WORKER_QUEUE.lock().expect("mutex poisoned");
-                worker_queue.add(worker_task);
-            }
-            axon_section.done = true;
-        }
-    }
-
-    true
-}
-
-/// Sends input axon sections back to their source blocks for backpropagation with retry logic.
-///
-/// This function is similar to `send_backward` but includes retry logic for locked blocks.
-/// It will attempt to lock each source block, and if a lock cannot be obtained, it will
-/// mark the axon section as not done and return false, allowing the caller to retry later.
-///
-/// # Arguments
-///
-/// * `io_buffer` - Mutable reference to the block's IO buffer
-/// * `cycle_number` - Current cycle number for task tracking
-///
-/// # Returns
-///
-/// * `bool` - Returns true if all sections were processed successfully, false if any blocks were locked
-pub fn send_backward_with_retry(io_buffer: &mut BlockIoBuffer, cycle_number: u64) -> bool {
-    for axon_section in io_buffer.input_buffer.iter_mut() {
-        // Skip already processed axon sections
-        if axon_section.done {
-            continue;
-        }
-
-        // Get the source block mutex or skip this axon section
-        let source_block_mutex = if let Some(s) = &axon_section.source_block {
-            s
-        } else {
-            continue;
-        };
-
-        // Attempt to lock the source block non-blockingly
-        if let Ok(mut source_block) = source_block_mutex.try_lock() {
-            let target_bock_io = source_block.get_block_io();
-            let is_done = target_bock_io.output_buffer[axon_section.source_pos as usize].done;
-            target_bock_io.output_buffer[axon_section.source_pos as usize] = axon_section.clone();
-            target_bock_io.output_buffer[axon_section.source_pos as usize].done = is_done;
-            target_bock_io.output_buffer_counter += 1;
-
-            // Check if all required outputs are collected and schedule a backpropagation task if so
-            if target_bock_io.output_buffer_counter >= target_bock_io.output_buffer.len() as u64 {
-                target_bock_io.output_buffer_counter = 0;
-
-                let worker_task = WorkerTask {
-                    task_type: WorkerTaskType::Backpropagate,
-                    block: Arc::clone(source_block_mutex),
-                    cycle_number,
-                };
-
-                // Add the task to the worker queue
-                let mut worker_queue = WORKER_QUEUE.lock().expect("mutex poisoned");
-                worker_queue.add(worker_task);
-            }
-            axon_section.done = true;
-        } else {
-            // Mark as not done if we couldn't get the lock
-            axon_section.done = false;
-            return false;
-        }
-    }
-
-    // Reset the done flags for any remaining axon sections
-    for axon_section in io_buffer.input_buffer.iter_mut() {
-        axon_section.done = false;
-    }
-
-    true
 }
 
 #[cfg(test)]

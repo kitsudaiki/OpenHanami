@@ -22,8 +22,8 @@ use ainari_common::enums::*;
 use ainari_common::error::AinariError;
 
 use crate::core::model_handler::*;
-use crate::core::processing::finish_counter::FinishCounter;
 use crate::core::processing::output_buffer::*;
+use crate::core::processing::worker_queue::WorkerTaskType;
 
 use super::axons::*;
 use super::block_io::*;
@@ -135,21 +135,21 @@ impl OutputBlock {
     /// * `Ok(())` if connection was successful or already established
     /// * `Err(AinariError)` if connection failed
     fn connect_output_buffer(&mut self) -> Result<(), AinariError> {
-        // connect output-buffer if not already done
-        if self.output_buffer.is_none() {
-            let root_handler = MODEL_HANDLER.read().expect("mutex poisoned");
-            let output_buffer_mutex =
-                root_handler.get_output_buffer(&self.model_uuid, &self.output_buffer_name)?;
+        // // connect output-buffer if not already done
+        // if self.output_buffer.is_none() {
+        //     let root_handler = MODEL_HANDLER.read().expect("mutex poisoned");
+        //     let output_buffer_mutex =
+        //         root_handler.get_output_buffer(&self.model_uuid, &self.output_buffer_name)?;
 
-            self.output_buffer = Some(output_buffer_mutex.clone());
-            let mut output_buffer = output_buffer_mutex.lock().expect("mutex poisoned");
-            // after a checkpoint-restore the block must be connected to the buffer again,
-            // but is not allowed to increase the counter further
-            if !self.was_already_connected {
-                output_buffer.number_of_connected_blocks += 1;
-            }
-            self.was_already_connected = true;
-        }
+        //     self.output_buffer = Some(output_buffer_mutex.clone());
+        //     let mut output_buffer = output_buffer_mutex.lock().expect("mutex poisoned");
+        //     // after a checkpoint-restore the block must be connected to the buffer again,
+        //     // but is not allowed to increase the counter further
+        //     if !self.was_already_connected {
+        //         output_buffer.number_of_connected_blocks += 1;
+        //     }
+        //     self.was_already_connected = true;
+        // }
 
         Ok(())
     }
@@ -197,12 +197,7 @@ impl Block for OutputBlock {
     /// * `Ok(Some(finish_counter))` if training is complete and a finish counter is needed
     /// * `Ok(None)` if training is not yet complete
     /// * `Err(AinariError)` if an error occurs during training
-    fn train(
-        &mut self,
-        _: usize,
-        own: Arc<Mutex<dyn Block>>,
-        cycle_number: u64,
-    ) -> Result<Option<Arc<Mutex<FinishCounter>>>, AinariError> {
+    fn process(&mut self, task_type: WorkerTaskType, cycle_number: u64) -> Result<(), AinariError> {
         self.connect_output_buffer()?;
 
         // resize output and wights and get expected values from output-buffer
@@ -222,7 +217,6 @@ impl Block for OutputBlock {
         self.process_block();
 
         // process output-buffer
-        let mut finish_counter_option = None;
         let mut already_done = false;
         if let Some(output_buffer_mutex) = &self.output_buffer {
             let mut output_buffer = output_buffer_mutex.lock().expect("mutex poisoned");
@@ -234,110 +228,105 @@ impl Block for OutputBlock {
                 if output_buffer.update_finish_counter(cycle_number) {
                     output_buffer.finalize_train();
                     output_buffer.backpropagate(cycle_number);
-                    finish_counter_option = Some(output_buffer.finish_counter_mutex.clone());
                     already_done = true;
                 } else {
-                    output_buffer.unfinished_blocks.push(own);
+                    //output_buffer.unfinished_blocks.push(own);
                 }
             } else {
                 already_done = true;
             }
         }
 
-        if already_done {
-            self.backpropagate(cycle_number)?;
-        }
-
-        Ok(finish_counter_option)
+        Ok(())
     }
 
-    /// Processes the block without training, simply computing outputs
-    ///
-    /// # Arguments
-    ///
-    /// * `cycle_number` - The current processing cycle number
-    ///
-    /// # Returns
-    ///
-    /// * `Ok(Some(finish_counter))` if processing is complete and a finish counter is needed
-    /// * `Ok(None)` if processing is not yet complete
-    /// * `Err(AinariError)` if an error occurs during processing
-    fn process(
-        &mut self,
-        cycle_number: u64,
-    ) -> Result<Option<Arc<Mutex<FinishCounter>>>, AinariError> {
-        self.connect_output_buffer()?;
-        self.process_block();
+    // /// Processes the block without training, simply computing outputs
+    // ///
+    // /// # Arguments
+    // ///
+    // /// * `cycle_number` - The current processing cycle number
+    // ///
+    // /// # Returns
+    // ///
+    // /// * `Ok(Some(finish_counter))` if processing is complete and a finish counter is needed
+    // /// * `Ok(None)` if processing is not yet complete
+    // /// * `Err(AinariError)` if an error occurs during processing
+    // fn process(
+    //     &mut self,
+    //     cycle_number: u64,
+    // ) -> Result<Option<Arc<Mutex<FinishCounter>>>, AinariError> {
+    //     self.connect_output_buffer()?;
+    //     self.process_block();
 
-        let mut finish_counter_option = None;
+    //     let mut finish_counter_option = None;
 
-        // process output-buffer
-        if let Some(output_buffer_mutex) = &self.output_buffer {
-            let mut output_buffer = output_buffer_mutex.lock().expect("mutex poisoned");
-            for (i, local_neuron) in self.block_outputs.iter().enumerate() {
-                output_buffer.output_neurons[i].output_value += local_neuron.output_value;
-            }
+    //     // process output-buffer
+    //     if let Some(output_buffer_mutex) = &self.output_buffer {
+    //         let mut output_buffer = output_buffer_mutex.lock().expect("mutex poisoned");
+    //         for (i, local_neuron) in self.block_outputs.iter().enumerate() {
+    //             output_buffer.output_neurons[i].output_value += local_neuron.output_value;
+    //         }
 
-            if output_buffer.update_finish_counter(cycle_number) {
-                output_buffer.finalize_processing();
-                finish_counter_option = Some(output_buffer.finish_counter_mutex.clone());
-            }
-        }
+    //         if output_buffer.update_finish_counter(cycle_number) {
+    //             output_buffer.finalize_processing();
+    //             finish_counter_option = Some(output_buffer.finish_counter_mutex.clone());
+    //         }
+    //     }
 
-        Ok(finish_counter_option)
-    }
+    //     Ok(finish_counter_option)
+    // }
 
-    /// Performs backpropagation to adjust weights based on errors
-    ///
-    /// # Arguments
-    ///
-    /// * `cycle_number` - The current backpropagation cycle number
-    ///
-    /// # Returns
-    ///
-    /// * `Ok(None)` if backpropagation was successful
-    /// * `Err(AinariError)` if an error occurs during backpropagation
-    fn backpropagate(
-        &mut self,
-        cycle_number: u64,
-    ) -> Result<Option<Arc<Mutex<FinishCounter>>>, AinariError> {
-        self.connect_output_buffer()?;
+    // /// Performs backpropagation to adjust weights based on errors
+    // ///
+    // /// # Arguments
+    // ///
+    // /// * `cycle_number` - The current backpropagation cycle number
+    // ///
+    // /// # Returns
+    // ///
+    // /// * `Ok(None)` if backpropagation was successful
+    // /// * `Err(AinariError)` if an error occurs during backpropagation
+    // fn backpropagate(
+    //     &mut self,
+    //     cycle_number: u64,
+    // ) -> Result<Option<Arc<Mutex<FinishCounter>>>, AinariError> {
+    //     self.connect_output_buffer()?;
 
-        // resize output and wights and get expected values from output-buffer
-        if let Some(output_buffer_mutex) = &self.output_buffer {
-            let output_buffer = output_buffer_mutex.lock().expect("mutex poisoned");
-            self.block_outputs
-                .resize_with(output_buffer.output_neurons.len(), OutputNeuron::default);
-            for i in 0..self.block_outputs.len() {
-                self.block_outputs[i].expected_value =
-                    output_buffer.output_neurons[i].expected_value;
-            }
-        } else {
-            // TODO: error
-        }
+    //     // resize output and wights and get expected values from output-buffer
+    //     if let Some(output_buffer_mutex) = &self.output_buffer {
+    //         let output_buffer = output_buffer_mutex.lock().expect("mutex poisoned");
+    //         self.block_outputs
+    //             .resize_with(output_buffer.output_neurons.len(), OutputNeuron::default);
+    //         for i in 0..self.block_outputs.len() {
+    //             self.block_outputs[i].expected_value =
+    //                 output_buffer.output_neurons[i].expected_value;
+    //         }
+    //     } else {
+    //         // TODO: error
+    //     }
 
-        // backpropagate block
-        let input_buffer = &mut self.block_io.input_buffer[0];
-        for (x, axon) in input_buffer.data.axons.iter_mut().enumerate() {
-            axon.delta = 0.0f32;
-            if axon.potential == 0.0f32 {
-                continue;
-            }
+    //     // backpropagate block
+    //     let input_buffer = &mut self.block_io.input_buffer[0];
+    //     for (x, axon) in input_buffer.data.axons.iter_mut().enumerate() {
+    //         axon.delta = 0.0f32;
+    //         if axon.potential == 0.0f32 {
+    //             continue;
+    //         }
 
-            for (y, output_neuron) in self.block_outputs.iter_mut().enumerate() {
-                let weight = &mut self.weights[(y * BLOCK_DIM) + x];
-                let update = output_neuron.expected_value;
-                axon.delta += update * (*weight);
-                *weight -= update * OUTPUT_TRAIN_VALUE * axon.potential;
-            }
+    //         for (y, output_neuron) in self.block_outputs.iter_mut().enumerate() {
+    //             let weight = &mut self.weights[(y * BLOCK_DIM) + x];
+    //             let update = output_neuron.expected_value;
+    //             axon.delta += update * (*weight);
+    //             *weight -= update * OUTPUT_TRAIN_VALUE * axon.potential;
+    //         }
 
-            axon.delta *= axon.potential * (1.0f32 - axon.potential);
-        }
+    //         axon.delta *= axon.potential * (1.0f32 - axon.potential);
+    //     }
 
-        send_backward(&mut self.block_io, cycle_number);
+    //     send_backward(&mut self.block_io, cycle_number);
 
-        Ok(None)
-    }
+    //     Ok(None)
+    // }
 
     /// Attempts to allocate an input connection to this block
     ///
@@ -362,48 +351,48 @@ impl Block for OutputBlock {
         false
     }
 
-    /// Finalizes the training process for this block
-    ///
-    /// # Arguments
-    ///
-    /// * `_` - Unused parameter (reserved for future use)
-    ///
-    /// # Returns
-    ///
-    /// * `Ok(())` if finalization was successful
-    /// * `Err(AinariError)` if an error occurs during finalization
-    fn finalize_train(&mut self, _: u64) -> Result<(), AinariError> {
-        Ok(())
-    }
+    // /// Finalizes the training process for this block
+    // ///
+    // /// # Arguments
+    // ///
+    // /// * `_` - Unused parameter (reserved for future use)
+    // ///
+    // /// # Returns
+    // ///
+    // /// * `Ok(())` if finalization was successful
+    // /// * `Err(AinariError)` if an error occurs during finalization
+    // fn finalize_train(&mut self, _: u64) -> Result<(), AinariError> {
+    //     Ok(())
+    // }
 
-    /// Finalizes the processing of this block
-    ///
-    /// # Arguments
-    ///
-    /// * `_` - Unused parameter (reserved for future use)
-    ///
-    /// # Returns
-    ///
-    /// * `Ok(())` if finalization was successful
-    /// * `Err(AinariError)` if an error occurs during finalization
-    fn finalize_process(&mut self, _: u64) -> Result<(), AinariError> {
-        Ok(())
-    }
+    // /// Finalizes the processing of this block
+    // ///
+    // /// # Arguments
+    // ///
+    // /// * `_` - Unused parameter (reserved for future use)
+    // ///
+    // /// # Returns
+    // ///
+    // /// * `Ok(())` if finalization was successful
+    // /// * `Err(AinariError)` if an error occurs during finalization
+    // fn finalize_process(&mut self, _: u64) -> Result<(), AinariError> {
+    //     Ok(())
+    // }
 
-    /// Finalizes the backpropagation process for this block
-    ///
-    /// # Arguments
-    ///
-    /// * `_` - Unused parameter (reserved for future use)
-    ///
-    /// # Returns
-    ///
-    /// * `Ok(true)` if finalization was successful
-    /// * `Ok(false)` if finalization was not needed
-    /// * `Err(AinariError)` if an error occurs during finalization
-    fn finalize_backpropagate(&mut self, _: u64) -> Result<bool, AinariError> {
-        Ok(true)
-    }
+    // /// Finalizes the backpropagation process for this block
+    // ///
+    // /// # Arguments
+    // ///
+    // /// * `_` - Unused parameter (reserved for future use)
+    // ///
+    // /// # Returns
+    // ///
+    // /// * `Ok(true)` if finalization was successful
+    // /// * `Ok(false)` if finalization was not needed
+    // /// * `Err(AinariError)` if an error occurs during finalization
+    // fn finalize_backpropagate(&mut self, _: u64) -> Result<bool, AinariError> {
+    //     Ok(true)
+    // }
 
     /// Gets the UUID of this block
     ///

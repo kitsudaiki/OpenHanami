@@ -24,8 +24,6 @@ use ainari_common::error::AinariError;
 use ainari_common::functions::*;
 use ainari_model_parser::model_meta_structs::Settings;
 
-use crate::core::processing::finish_counter::FinishCounter;
-
 use super::axons::*;
 use super::block_io::*;
 use super::block_trait::*;
@@ -596,23 +594,7 @@ fn backpropagate_section(
 
 /// Implementation of the Block trait for CoreBlock.
 impl Block for CoreBlock {
-    /// Trains the neural network block.
-    ///
-    /// # Arguments
-    ///
-    /// * `_` - Unused parameter (block index)
-    /// * `_` - Unused parameter (previous block)
-    /// * `_` - Unused parameter (cycle number)
-    ///
-    /// # Returns
-    ///
-    /// Result containing an optional finish counter or an AinariError
-    fn train(
-        &mut self,
-        _: usize,
-        _: Arc<Mutex<dyn Block>>,
-        _: u64,
-    ) -> Result<Option<Arc<Mutex<FinishCounter>>>, AinariError> {
+    fn process(&mut self, task_type: WorkerTaskType, cycle_number: u64) -> Result<(), AinariError> {
         self.check_and_resize_block();
         let number_of_output_blocks = self.block_io.output_buffer.len();
         let mut random_seed = rand::rng().random_range(1..(RAND_MAX - 1)) as u32;
@@ -664,155 +646,155 @@ impl Block for CoreBlock {
 
         self.apply_output();
 
-        Ok(None)
-    }
-
-    /// Processes the neural network block.
-    ///
-    /// # Arguments
-    ///
-    /// * `_` - Unused parameter (cycle number)
-    ///
-    /// # Returns
-    ///
-    /// Result containing an optional finish counter or an AinariError
-    fn process(&mut self, _: u64) -> Result<Option<Arc<Mutex<FinishCounter>>>, AinariError> {
-        self.check_and_resize_block();
-        let number_of_output_blocks = self.block_io.output_buffer.len();
-
-        for (i, conn) in self.connections.iter().enumerate() {
-            if i >= self.synapse_sections.len() {
-                break;
-            }
-            if conn.source_input == UNINIT_STATE_16 {
-                continue;
-            }
-
-            let input_block_id = (conn.source_input / BLOCK_DIM as u16) as usize;
-            let axon_id = (conn.source_input % BLOCK_DIM as u16) as usize;
-            let axon = &self.block_io.input_buffer[input_block_id].data.axons[axon_id];
-            if axon.potential != 0.0f32 {
-                if !conn.used {
-                    continue;
-                }
-                let section = &mut self.synapse_sections[i];
-                process_section(
-                    section,
-                    conn,
-                    &mut self.neurons,
-                    axon,
-                    number_of_output_blocks,
-                );
-            }
-        }
-
-        self.apply_output();
-
-        Ok(None)
-    }
-
-    /// Backpropagates errors through the neural network block.
-    ///
-    /// # Arguments
-    ///
-    /// * `_` - Unused parameter (cycle number)
-    ///
-    /// # Returns
-    ///
-    /// Result containing an optional finish counter or an AinariError
-    fn backpropagate(&mut self, _: u64) -> Result<Option<Arc<Mutex<FinishCounter>>>, AinariError> {
-        // // experimental stuff
-        // for axon_section in self.block_io.input_buffer.iter_mut() {
-        //     for axon in axon_section.axons.iter_mut() {
-        //         axon.delta *= 1.4427f32 * (0.5f32).powf(axon.potential);
-        //     }
-        // }
-        for (i, conn) in self.connections.iter_mut().enumerate() {
-            if i >= self.synapse_sections.len() {
-                break;
-            }
-            if conn.source_input == UNINIT_STATE_16 {
-                continue;
-            }
-
-            let input_block_id = (conn.source_input / BLOCK_DIM as u16) as usize;
-            let axon_id = (conn.source_input % BLOCK_DIM as u16) as usize;
-            let source_axon = &mut self.block_io.input_buffer[input_block_id].data.axons[axon_id];
-            if source_axon.potential > 0.0f32 {
-                let section = &mut self.synapse_sections[i];
-                backpropagate_section(section, conn, source_axon, &self.block_io.output_buffer);
-            }
-        }
-
-        Ok(None)
-    }
-
-    /// Finalizes the training phase of the neural network block.
-    ///
-    /// # Arguments
-    ///
-    /// * `cycle_number` - The current cycle number
-    ///
-    /// # Returns
-    ///
-    /// Result indicating success or an AinariError
-    fn finalize_train(&mut self, cycle_number: u64) -> Result<(), AinariError> {
-        send_forward(
-            &mut self.block_io,
-            WorkerTaskType::Train,
-            cycle_number,
-            &self.model_uuid,
-            &self.hexagon_uuid,
-            &self.uuid,
-        );
-
         Ok(())
     }
 
-    /// Finalizes the processing of this block for a given cycle.
-    ///
-    /// This function connects outputs and sends a forward processing task to the worker.
-    /// It is part of the neural network processing pipeline.
-    ///
-    /// # Arguments
-    ///
-    /// * `cycle_number` - The current cycle number in the processing sequence
-    ///
-    /// # Returns
-    ///
-    /// * `Ok(())` on success
-    /// * `Err(AinariError)` if any operation fails
-    fn finalize_process(&mut self, cycle_number: u64) -> Result<(), AinariError> {
-        send_forward(
-            &mut self.block_io,
-            WorkerTaskType::Process,
-            cycle_number,
-            &self.model_uuid,
-            &self.hexagon_uuid,
-            &self.uuid,
-        );
+    // /// Processes the neural network block.
+    // ///
+    // /// # Arguments
+    // ///
+    // /// * `_` - Unused parameter (cycle number)
+    // ///
+    // /// # Returns
+    // ///
+    // /// Result containing an optional finish counter or an AinariError
+    // fn process(&mut self, _: u64) -> Result<Option<Arc<Mutex<FinishCounter>>>, AinariError> {
+    //     self.check_and_resize_block();
+    //     let number_of_output_blocks = self.block_io.output_buffer.len();
 
-        Ok(())
-    }
+    //     for (i, conn) in self.connections.iter().enumerate() {
+    //         if i >= self.synapse_sections.len() {
+    //             break;
+    //         }
+    //         if conn.source_input == UNINIT_STATE_16 {
+    //             continue;
+    //         }
 
-    /// Finalizes the backpropagation process for a given cycle.
-    ///
-    /// This function sends a backward propagation task with retry mechanism.
-    ///
-    /// # Arguments
-    ///
-    /// * `cycle_number` - The current cycle number in the processing sequence
-    ///
-    /// # Returns
-    ///
-    /// * `Ok(bool)` indicating success of the operation
-    /// * `Err(AinariError)` if any operation fails
-    fn finalize_backpropagate(&mut self, cycle_number: u64) -> Result<bool, AinariError> {
-        // Send backward propagation task with automatic retry
-        let ret = send_backward_with_retry(&mut self.block_io, cycle_number);
+    //         let input_block_id = (conn.source_input / BLOCK_DIM as u16) as usize;
+    //         let axon_id = (conn.source_input % BLOCK_DIM as u16) as usize;
+    //         let axon = &self.block_io.input_buffer[input_block_id].data.axons[axon_id];
+    //         if axon.potential != 0.0f32 {
+    //             if !conn.used {
+    //                 continue;
+    //             }
+    //             let section = &mut self.synapse_sections[i];
+    //             process_section(
+    //                 section,
+    //                 conn,
+    //                 &mut self.neurons,
+    //                 axon,
+    //                 number_of_output_blocks,
+    //             );
+    //         }
+    //     }
 
-        Ok(ret)
-    }
+    //     self.apply_output();
+
+    //     Ok(None)
+    // }
+
+    // /// Backpropagates errors through the neural network block.
+    // ///
+    // /// # Arguments
+    // ///
+    // /// * `_` - Unused parameter (cycle number)
+    // ///
+    // /// # Returns
+    // ///
+    // /// Result containing an optional finish counter or an AinariError
+    // fn backpropagate(&mut self, _: u64) -> Result<Option<Arc<Mutex<FinishCounter>>>, AinariError> {
+    //     // // experimental stuff
+    //     // for axon_section in self.block_io.input_buffer.iter_mut() {
+    //     //     for axon in axon_section.axons.iter_mut() {
+    //     //         axon.delta *= 1.4427f32 * (0.5f32).powf(axon.potential);
+    //     //     }
+    //     // }
+    //     for (i, conn) in self.connections.iter_mut().enumerate() {
+    //         if i >= self.synapse_sections.len() {
+    //             break;
+    //         }
+    //         if conn.source_input == UNINIT_STATE_16 {
+    //             continue;
+    //         }
+
+    //         let input_block_id = (conn.source_input / BLOCK_DIM as u16) as usize;
+    //         let axon_id = (conn.source_input % BLOCK_DIM as u16) as usize;
+    //         let source_axon = &mut self.block_io.input_buffer[input_block_id].data.axons[axon_id];
+    //         if source_axon.potential > 0.0f32 {
+    //             let section = &mut self.synapse_sections[i];
+    //             backpropagate_section(section, conn, source_axon, &self.block_io.output_buffer);
+    //         }
+    //     }
+
+    //     Ok(None)
+    // }
+
+    // /// Finalizes the training phase of the neural network block.
+    // ///
+    // /// # Arguments
+    // ///
+    // /// * `cycle_number` - The current cycle number
+    // ///
+    // /// # Returns
+    // ///
+    // /// Result indicating success or an AinariError
+    // fn finalize_train(&mut self, cycle_number: u64) -> Result<(), AinariError> {
+    //     send_forward(
+    //         &mut self.block_io,
+    //         WorkerTaskType::Train,
+    //         cycle_number,
+    //         &self.model_uuid,
+    //         &self.hexagon_uuid,
+    //         &self.uuid,
+    //     );
+
+    //     Ok(())
+    // }
+
+    // /// Finalizes the processing of this block for a given cycle.
+    // ///
+    // /// This function connects outputs and sends a forward processing task to the worker.
+    // /// It is part of the neural network processing pipeline.
+    // ///
+    // /// # Arguments
+    // ///
+    // /// * `cycle_number` - The current cycle number in the processing sequence
+    // ///
+    // /// # Returns
+    // ///
+    // /// * `Ok(())` on success
+    // /// * `Err(AinariError)` if any operation fails
+    // fn finalize_process(&mut self, cycle_number: u64) -> Result<(), AinariError> {
+    //     send_forward(
+    //         &mut self.block_io,
+    //         WorkerTaskType::Process,
+    //         cycle_number,
+    //         &self.model_uuid,
+    //         &self.hexagon_uuid,
+    //         &self.uuid,
+    //     );
+
+    //     Ok(())
+    // }
+
+    // /// Finalizes the backpropagation process for a given cycle.
+    // ///
+    // /// This function sends a backward propagation task with retry mechanism.
+    // ///
+    // /// # Arguments
+    // ///
+    // /// * `cycle_number` - The current cycle number in the processing sequence
+    // ///
+    // /// # Returns
+    // ///
+    // /// * `Ok(bool)` indicating success of the operation
+    // /// * `Err(AinariError)` if any operation fails
+    // fn finalize_backpropagate(&mut self, cycle_number: u64) -> Result<bool, AinariError> {
+    //     // Send backward propagation task with automatic retry
+    //     let ret = send_backward_with_retry(&mut self.block_io, cycle_number);
+
+    //     Ok(ret)
+    // }
 
     /// Gets a free input slot in the block's input buffer.
     ///

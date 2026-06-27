@@ -52,7 +52,7 @@ pub async fn request_model(
     // get model-interface
     let model_handler = model_handler::MODEL_HANDLER.read().expect("mutex poisoned");
     let model_interface_mutex = model_handler
-        .get_model_interface(&model_uuid)
+        .get_model(&model_uuid)
         .map_err(map_ainari_error_to_api_response)?;
     drop(model_handler);
 

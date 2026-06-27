@@ -31,8 +31,6 @@ pub enum WorkerTaskType {
     Train,
     /// Task for processing input data.
     Process,
-    /// Task for performing backpropagation.
-    Backpropagate,
 }
 
 /// Initializes and returns a new empty `WorkerQueue`.

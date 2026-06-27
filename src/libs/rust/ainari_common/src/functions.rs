@@ -98,6 +98,13 @@ pub fn clear_directory<P: AsRef<Path>>(dir: P) -> std::io::Result<()> {
     Ok(())
 }
 
+pub fn push_chunked<T>(v: &mut Vec<T>, value: T) {
+    if v.len() == v.capacity() {
+        v.reserve(32);
+    }
+    v.push(value);
+}
+
 /// Computes a PCG (Permuted Congruential Generator) hash of the given u32 value.
 ///
 /// This is a fast, non-cryptographic hash function suitable for general-purpose use.
