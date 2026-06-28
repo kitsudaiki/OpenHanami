@@ -12,10 +12,5 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-pub mod blocks;
-pub mod input_group;
-pub mod model_content;
-pub mod model_handler;
-pub mod output_group;
+pub mod model;
 pub mod processing;
-pub mod target_search;

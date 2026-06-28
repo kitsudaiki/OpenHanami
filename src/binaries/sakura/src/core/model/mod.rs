@@ -12,11 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-pub mod axons;
-pub mod block_io;
-pub mod block_trait;
-pub mod core_block;
-pub mod input_block;
-pub mod output_block;
-pub mod start_end_block;
-pub mod transfer_block;
+pub mod blocks;
+
+pub mod model;
+pub mod model_handler;

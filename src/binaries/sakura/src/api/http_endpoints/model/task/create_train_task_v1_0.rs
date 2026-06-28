@@ -146,12 +146,7 @@ pub async fn create_train_task(
             model_uuid: *model_uuid,
             name: body.name.clone(),
             info: TaskVariant::Training(info),
-            meta: TaskMeta::new(
-                number_of_cycles,
-                body.number_of_epochs,
-                time_length,
-                forecast_length,
-            ),
+            meta: TaskMeta::new(number_of_cycles, body.number_of_epochs, forecast_length),
         };
         super::add_task_to_model(task, &task_type, &context)?;
 

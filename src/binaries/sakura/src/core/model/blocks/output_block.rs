@@ -21,13 +21,8 @@ use ainari_common::constants::*;
 use ainari_common::enums::*;
 use ainari_common::error::AinariError;
 
-use crate::core::model_handler::*;
-use crate::core::processing::output_buffer::*;
-use crate::core::processing::worker_queue::WorkerTaskType;
-
-use super::axons::*;
-use super::block_io::*;
-use super::block_trait::*;
+use super::hexagon_block::*;
+use super::*;
 
 // ==================================================================================================
 
@@ -55,43 +50,31 @@ impl OutputNeuron {
 
 /// Represents an output block in the neural network that collects and processes outputs.
 /// This block connects to an output buffer to aggregate results from multiple blocks.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize)]
 pub struct OutputBlock {
-    /// Unique identifier for this block
     pub uuid: Uuid,
-    /// UUID of the hexagon this block belongs to
-    pub hexagon_uuid: Uuid,
-    /// UUID of the model this block belongs to
     pub model_uuid: Uuid,
+    #[serde(skip)]
+    pub parent_block: Arc<Mutex<HexagonBlock>>,
 
-    /// Input/output buffer for this block
+    pub is_processed: bool,
+
     pub block_io: BlockIoBuffer,
 
-    /// Weights used for calculating outputs
     pub weights: Vec<f32>,
-    /// Output values from this block
     pub block_outputs: Vec<OutputNeuron>,
 
-    /// Name of the output buffer this block connects to
-    pub output_buffer_name: String,
-    /// Flag indicating if this block was already connected to its output buffer
     pub was_already_connected: bool,
-
-    /// Reference to the output buffer this block connects to
-    #[serde(skip)]
-    pub output_buffer: Option<Arc<Mutex<OutputBuffer>>>,
 }
 
 impl PartialEq for OutputBlock {
     /// Compares two OutputBlocks for equality by comparing all their fields
     fn eq(&self, other: &Self) -> bool {
         self.uuid == other.uuid
-            && self.hexagon_uuid == other.hexagon_uuid
             && self.model_uuid == other.model_uuid
             && self.block_io == other.block_io
             && self.weights == other.weights
             && self.block_outputs == other.block_outputs
-            && self.output_buffer_name == other.output_buffer_name
             && self.was_already_connected == other.was_already_connected
     }
 }
@@ -104,28 +87,25 @@ impl OutputBlock {
     /// * `hexagon_uuid` - UUID of the hexagon this block belongs to
     /// * `model_uuid` - UUID of the model this block belongs to
     /// * `output_buffer_name` - Name of the output buffer this block should connect to
-    pub fn new(hexagon_uuid: &Uuid, model_uuid: &Uuid, output_buffer_name: &str) -> Self {
-        let mut block = OutputBlock {
+    pub fn new(
+        model_uuid: &Uuid,
+        parent_block: Arc<Mutex<HexagonBlock>>,
+        number_of_inputs: usize,
+    ) -> Self {
+        OutputBlock {
             uuid: Uuid::new_v4(),
-            hexagon_uuid: *hexagon_uuid,
             model_uuid: *model_uuid,
+            parent_block: parent_block,
 
-            block_io: BlockIoBuffer::default(),
+            is_processed: false,
+
+            block_io: BlockIoBuffer::new(number_of_inputs),
 
             weights: Vec::new(),
             block_outputs: Vec::new(),
 
-            output_buffer_name: output_buffer_name.to_owned(),
             was_already_connected: false,
-
-            output_buffer: None,
-        };
-
-        // Initialize input buffer with a default axon section
-        block.block_io.input_buffer.push(AxonSection::default());
-        block.block_io.inputs_in_use = 0;
-
-        block
+        }
     }
 
     /// Connects this block to its output buffer if not already connected
@@ -159,26 +139,78 @@ impl OutputBlock {
     /// Resets all output values, calculates the activation of each input axon,
     /// and computes the weighted sum for each output neuron.
     fn process_block(&mut self) {
-        // reset output-values
-        for output_neuron in self.block_outputs.iter_mut() {
-            output_neuron.output_value = 0.0f32;
-        }
+        // // reset output-values
+        // for output_neuron in self.block_outputs.iter_mut() {
+        //     output_neuron.output_value = 0.0f32;
+        // }
 
-        let input_buffer = &mut self.block_io.input_buffer[0];
-        // calculate block-internal output
-        for (x, axon) in input_buffer.data.axons.iter_mut().enumerate() {
-            if axon.potential == 0.0f32 {
-                continue;
-            }
+        // let input_buffer = &mut self.block_io.input_buffer[0];
+        // // calculate block-internal output
+        // for (x, axon) in input_buffer.data.axons.iter_mut().enumerate() {
+        //     if axon.potential == 0.0f32 {
+        //         continue;
+        //     }
 
-            // Apply sigmoid activation function
-            axon.potential = 1.0f32 / (1.0f32 + (-axon.potential).exp());
-            for (y, output_neuron) in self.block_outputs.iter_mut().enumerate() {
-                // Calculate weighted sum for each output neuron
-                output_neuron.output_value += self.weights[(y * BLOCK_DIM) + x] * axon.potential;
-            }
-        }
+        //     // Apply sigmoid activation function
+        //     axon.potential = 1.0f32 / (1.0f32 + (-axon.potential).exp());
+        //     for (y, output_neuron) in self.block_outputs.iter_mut().enumerate() {
+        //         // Calculate weighted sum for each output neuron
+        //         output_neuron.output_value += self.weights[(y * BLOCK_DIM) + x] * axon.potential;
+        //     }
+        // }
     }
+
+    // /// Finalizes the training process by applying the sigmoid activation function
+    // /// to all output neurons. This transforms the raw output values into probabilities.
+    // pub fn finalize_train(&mut self) {
+    //     for out in self.output_neurons.iter_mut() {
+    //         if out.output_value != 0.0f32 {
+    //             // Apply sigmoid function: 1 / (1 + e^(-x))
+    //             out.output_value = 1.0f32 / (1.0f32 + (-out.output_value).exp());
+    //         }
+    //     }
+
+    //     self.already_finalized = true;
+    // }
+
+    // /// Finalizes the processing by applying the sigmoid activation function
+    // /// and clearing the list of unfinished blocks.
+    // pub fn finalize_processing(&mut self) {
+    //     for out in self.output_neurons.iter_mut() {
+    //         if out.output_value != 0.0f32 {
+    //             // Apply sigmoid function: 1 / (1 + e^(-x))
+    //             out.output_value = 1.0f32 / (1.0f32 + (-out.output_value).exp());
+    //         }
+    //     }
+
+    //     self.already_finalized = true;
+    //     self.unfinished_blocks.clear();
+    // }
+
+    // /// Performs backpropagation by calculating the error for each output neuron
+    // /// and scheduling backpropagation tasks for connected blocks.
+    // pub fn backpropagate(&mut self, cycle_number: u64) {
+    //     // Calculate the error for each output neuron
+    //     for out in self.output_neurons.iter_mut() {
+    //         let delta = out.output_value - out.expected_value;
+    //         // Calculate the gradient for backpropagation
+    //         out.expected_value = delta * out.output_value * (1.0f32 - out.output_value);
+    //     }
+
+    //     // Get the worker queue to schedule backpropagation tasks
+    //     let mut worker_queue = WORKER_QUEUE.lock().expect("mutex poisoned");
+    //     for block in self.unfinished_blocks.iter() {
+    //         // let worker_task = WorkerTask {
+    //         //     task_type: WorkerTaskType::Backpropagate,
+    //         //     block: Arc::clone(block),
+    //         //     cycle_number,
+    //         // };
+
+    //         // Add the task to the worker queue
+    //         // worker_queue.add(worker_task);
+    //     }
+    //     self.unfinished_blocks.clear();
+    // }
 }
 
 // ==================================================================================================
@@ -197,47 +229,54 @@ impl Block for OutputBlock {
     /// * `Ok(Some(finish_counter))` if training is complete and a finish counter is needed
     /// * `Ok(None)` if training is not yet complete
     /// * `Err(AinariError)` if an error occurs during training
-    fn process(&mut self, task_type: WorkerTaskType, cycle_number: u64) -> Result<(), AinariError> {
-        self.connect_output_buffer()?;
+    fn process(&mut self) -> Result<bool, AinariError> {
+        // self.connect_output_buffer()?;
 
-        // resize output and wights and get expected values from output-buffer
-        if let Some(output_buffer_mutex) = &self.output_buffer {
-            let mut rng = rand::rng();
+        // // resize output and wights and get expected values from output-buffer
+        // if let Some(output_buffer_mutex) = &self.output_buffer {
+        //     let mut rng = rand::rng();
 
-            let output_buffer = output_buffer_mutex.lock().expect("mutex poisoned");
-            self.block_outputs
-                .resize_with(output_buffer.output_neurons.len(), OutputNeuron::default);
-            let number_fo_weights = self.block_outputs.len() * BLOCK_DIM;
-            self.weights
-                .resize_with(number_fo_weights, || rng.random_range(-0.5..0.5));
-        } else {
-            // TODO: error handling
+        //     let output_buffer = output_buffer_mutex.lock().expect("mutex poisoned");
+        //     self.block_outputs
+        //         .resize_with(output_buffer.output_neurons.len(), OutputNeuron::default);
+        //     let number_fo_weights = self.block_outputs.len() * BLOCK_DIM;
+        //     self.weights
+        //         .resize_with(number_fo_weights, || rng.random_range(-0.5..0.5));
+        // } else {
+        //     // TODO: error handling
+        // }
+
+        // self.process_block();
+
+        // // process output-buffer
+        // let mut already_done = false;
+        // if let Some(output_buffer_mutex) = &self.output_buffer {
+        //     let mut output_buffer = output_buffer_mutex.lock().expect("mutex poisoned");
+        //     for (i, local_neuron) in self.block_outputs.iter().enumerate() {
+        //         output_buffer.output_neurons[i].output_value += local_neuron.output_value;
+        //     }
+
+        //     if !output_buffer.already_finalized {
+        //         if output_buffer.update_finish_counter(cycle_number) {
+        //             output_buffer.finalize_train();
+        //             output_buffer.backpropagate(cycle_number);
+        //             already_done = true;
+        //         } else {
+        //             //output_buffer.unfinished_blocks.push(own);
+        //         }
+        //     } else {
+        //         already_done = true;
+        //     }
+        // }
+        if !self.is_processed {}
+
+        self.is_processed = true;
+
+        let is_finished = self.block_io.send_forward()?;
+        if is_finished {
+            self.is_processed = false;
         }
-
-        self.process_block();
-
-        // process output-buffer
-        let mut already_done = false;
-        if let Some(output_buffer_mutex) = &self.output_buffer {
-            let mut output_buffer = output_buffer_mutex.lock().expect("mutex poisoned");
-            for (i, local_neuron) in self.block_outputs.iter().enumerate() {
-                output_buffer.output_neurons[i].output_value += local_neuron.output_value;
-            }
-
-            if !output_buffer.already_finalized {
-                if output_buffer.update_finish_counter(cycle_number) {
-                    output_buffer.finalize_train();
-                    output_buffer.backpropagate(cycle_number);
-                    already_done = true;
-                } else {
-                    //output_buffer.unfinished_blocks.push(own);
-                }
-            } else {
-                already_done = true;
-            }
-        }
-
-        Ok(())
+        Ok(is_finished)
     }
 
     // /// Processes the block without training, simply computing outputs
@@ -328,27 +367,21 @@ impl Block for OutputBlock {
     //     Ok(None)
     // }
 
-    /// Attempts to allocate an input connection to this block
+    /// Gets a free input slot in the block's input buffer.
+    ///
+    /// This function allocates an available input slot for an axon section.
+    /// It manages the input buffer and tracks used slots.
     ///
     /// # Arguments
     ///
-    /// * `axon_section` - The axon section to connect
+    /// * `axon_section` - The axon section to be assigned to a free input slot
     ///
     /// # Returns
     ///
-    /// * `true` if the connection was successfully allocated
-    /// * `false` if no inputs are available
-    fn get_free_input(&mut self, axon_section: &mut AxonSection) -> bool {
-        if self.block_io.inputs_in_use == 0 {
-            axon_section.target_block_uuid = self.uuid;
-            axon_section.target_hexagon_uuid = self.hexagon_uuid;
-            axon_section.target_pos = 0;
-            self.block_io.input_buffer[0] = axon_section.clone();
-            self.block_io.inputs_in_use = 1;
-            return true;
-        }
-
-        false
+    /// * `true` if an input slot was successfully allocated
+    /// * `false` if no input slots are available
+    fn get_free_input(&mut self) -> u8 {
+        self.block_io.get_free_input()
     }
 
     // /// Finalizes the training process for this block
@@ -403,21 +436,12 @@ impl Block for OutputBlock {
         self.uuid
     }
 
-    /// Gets the UUID of the hexagon this block belongs to
-    ///
-    /// # Returns
-    ///
-    /// The UUID of the hexagon
-    fn get_hexagon_uud(&self) -> Uuid {
-        self.hexagon_uuid
-    }
-
     /// Gets the UUID of the model this block belongs to
     ///
     /// # Returns
     ///
     /// The UUID of the model
-    fn get_model_uud(&self) -> Uuid {
+    fn get_model_uuid(&self) -> Uuid {
         self.model_uuid
     }
 
@@ -439,13 +463,8 @@ impl Block for OutputBlock {
         ObjectType::OutputBlock
     }
 
-    /// Sets the model UUID for this block
-    ///
-    /// # Arguments
-    ///
-    /// * `new_model_uuid` - The new model UUID
-    fn set_model_uuid(&mut self, new_model_uuid: &Uuid) {
-        self.model_uuid = *new_model_uuid;
+    fn get_parent_block(&self) -> Option<Arc<Mutex<HexagonBlock>>> {
+        Some(self.parent_block.clone())
     }
 
     /// Serializes this block to a byte vector
@@ -459,22 +478,22 @@ impl Block for OutputBlock {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+// #[cfg(test)]
+// mod tests {
+//     use super::*;
 
-    #[test]
-    fn test_serialize_deserialize() {
-        let original = OutputBlock::new(&Uuid::new_v4(), &Uuid::new_v4(), "test");
+//     #[test]
+//     fn test_serialize_deserialize() {
+//         let original = OutputBlock::new(&Uuid::new_v4(), &Uuid::new_v4(), 1);
 
-        let cfg = bincode::config::standard();
-        let serialized: Vec<u8> =
-            bincode::serde::encode_to_vec(&original, cfg).expect("Failed to serialize");
-        let deserialized: OutputBlock = bincode::serde::decode_from_slice(&serialized, cfg)
-            .expect("Failed to deserialize")
-            .0;
-        println!("size: {}", serialized.len());
+//         let cfg = bincode::config::standard();
+//         let serialized: Vec<u8> =
+//             bincode::serde::encode_to_vec(&original, cfg).expect("Failed to serialize");
+//         let deserialized: OutputBlock = bincode::serde::decode_from_slice(&serialized, cfg)
+//             .expect("Failed to deserialize")
+//             .0;
+//         println!("size: {}", serialized.len());
 
-        assert_eq!(original, deserialized);
-    }
-}
+//         assert_eq!(original, deserialized);
+//     }
+// }

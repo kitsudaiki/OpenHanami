@@ -206,6 +206,20 @@ impl DataSetFileReadHandle {
         }
     }
 
+    pub fn get_col_size(&self) -> Result<u64, AinariError> {
+        let column = &self.selected_column;
+        let col_get = match self.header.columns.get(column) {
+            Some(col) => col,
+            _ => {
+                let msg = format!("Column with name '{column}' not found in dataset.");
+                return Err(AinariError::InternalError(msg));
+            }
+        };
+
+        let row_col_size = col_get.end - col_get.start;
+        Ok(row_col_size)
+    }
+
     /// Retrieves data from the read buffer for a specific row and column.
     ///
     /// # Arguments

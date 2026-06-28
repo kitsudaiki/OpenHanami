@@ -62,7 +62,7 @@ pub enum OutputType {
 
 // ==================================================================================================
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub enum ObjectType {
     Unknown,
     ModelMeta,
@@ -72,7 +72,9 @@ pub enum ObjectType {
     OutputBlock,
     OutputBuffer,
     TransferBlock,
-    StartEndBlock,
+    EndBlock,
+    StartBlock,
+    HexagonBlock,
 }
 
 impl ObjectType {
@@ -86,7 +88,9 @@ impl ObjectType {
             ObjectType::OutputBlock => 5,
             ObjectType::OutputBuffer => 6,
             ObjectType::TransferBlock => 7,
-            ObjectType::StartEndBlock => 8,
+            ObjectType::EndBlock => 8,
+            ObjectType::StartBlock => 9,
+            ObjectType::HexagonBlock => 10,
         }
     }
 
@@ -99,8 +103,10 @@ impl ObjectType {
             4 => Some(ObjectType::CoreBlock),
             5 => Some(ObjectType::OutputBlock),
             6 => Some(ObjectType::OutputBuffer),
-            6 => Some(ObjectType::TransferBlock),
-            6 => Some(ObjectType::StartEndBlock),
+            7 => Some(ObjectType::TransferBlock),
+            8 => Some(ObjectType::EndBlock),
+            9 => Some(ObjectType::StartBlock),
+            10 => Some(ObjectType::HexagonBlock),
             _ => None,
         }
     }

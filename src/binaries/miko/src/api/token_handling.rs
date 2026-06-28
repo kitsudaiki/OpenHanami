@@ -32,19 +32,12 @@ use ainari_common::secret::Secret;
 /// additional custom claims specific to our application.
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Claims {
-    /// Unique identifier for the user
     pub user_id: String,
-    /// Unique identifier for the project
     pub project_id: String,
-    /// Flag indicating if the user has admin privileges
     pub is_admin: String,
-    /// Flag indicating if the user has admin privileges for the specific project
     pub is_project_admin: String,
-    /// Expiration time (as UTC timestamp in seconds)
     pub exp: usize,
-    /// Issued at time (as UTC timestamp in seconds)
     pub iat: usize,
-    /// Issuer of the token
     pub iss: String,
 }
 
@@ -63,7 +56,6 @@ pub struct Claims {
 /// * `Ok(UserContext)` - If the token is valid and contains a proper user context
 /// * `Err(String)` - If the token is invalid or expired
 pub fn validate_token(token: &str) -> Result<UserContext, String> {
-    // validate token
     let key = DecodingKey::from_secret(TOKEN_KEY.reveal().as_bytes());
     let validation = Validation::new(Algorithm::HS256);
     match decode::<UserContext>(token, &key, &validation) {

@@ -13,13 +13,11 @@
 // limitations under the License.
 
 use core_affinity;
-use rand::RngExt;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::thread::{self, JoinHandle};
 use std::time::Duration;
 
-use ainari_common::constants::*;
 use ainari_common::error::AinariError;
 
 use super::worker_queue::*;
@@ -40,100 +38,11 @@ pub struct WorkerThread {
     pub running: Arc<AtomicBool>,
 }
 
-/// Attempts to finalize the given worker task after a specified number of retries.
-///
-/// This function tries to finalize the task by calling the appropriate finalization method
-/// based on the task type. It retries the operation up to 1000 times with a 1ms delay between attempts.
-/// If all attempts fail, it logs an error and returns Ok(()) regardless.
-///
-/// # Arguments
-/// * `worker_task` - A reference to the worker task to be finalized
-///
-/// # Returns
-/// * `Result<(), AinariError>` - Ok(()) if finalization succeeds or after all retries,
-///   Err(AinariError) if an error occurs during finalization
-fn finalize_task(worker_task: &WorkerTask) -> Result<(), AinariError> {
-    // Try to finalize the task up to 1000 times
-    for _ in 0..1000 {
-        // Acquire the lock on the task's block
-        let mut block = worker_task.block.lock().expect("mutex poisoned");
+fn process_task(worker_task: &WorkerTask) -> Result<bool, AinariError> {
+    let mut block = worker_task.block.lock().expect("mutex poisoned");
+    let completely_done = block.process()?;
 
-        // // Perform the appropriate finalization based on task type
-        // let success = match worker_task.task_type {
-        //     WorkerTaskType::Train => {
-        //         block.finalize_train(worker_task.cycle_number)?;
-        //         true
-        //     }
-        //     WorkerTaskType::Process => {
-        //         block.finalize_process(worker_task.cycle_number)?;
-        //         true
-        //     }
-        //     WorkerTaskType::Backpropagate => {
-        //         block.finalize_backpropagate(worker_task.cycle_number)?
-        //     }
-        // };
-        // // Explicitly drop the lock to allow other threads to access the block
-        // drop(block);
-
-        // // If successful, return immediately
-        // if success {
-        //     return Ok(());
-        // }
-
-        // Wait before retrying
-        thread::sleep(Duration::from_millis(1));
-    }
-
-    // Log an error if all attempts failed
-    log::error!("Timeout while try to backpropagate");
-    Ok(())
-}
-
-/// Processes a worker task according to its type.
-///
-/// This function handles the execution of the task based on its type (Train, Process, or Backpropagate).
-/// It performs the appropriate operation on the task's block and then finalizes the task.
-/// If the task requires updating a finish counter, it does so after finalization.
-///
-/// # Arguments
-/// * `worker_task` - A reference to the worker task to be processed
-///
-/// # Returns
-/// * `Result<(), AinariError>` - Ok(()) if processing succeeds, Err(AinariError) if an error occurs
-fn process_task(worker_task: &WorkerTask) -> Result<(), AinariError> {
-    // Variable to store the optional finish counter mutex
-    // Declare outside the scope to allow access after the block is dropped
-    // #[allow(clippy::needless_late_init)]
-    // let finish_counter_option;
-
-    // Acquire the lock on the task's block
-    {
-        let mut block = worker_task.block.lock().expect("mutex poisoned");
-
-        // // Perform the appropriate operation based on task type
-        // match worker_task.task_type {
-        //     WorkerTaskType::Train => {
-        //         // For training tasks, select a random offset within the block dimensions
-        //         let place_offset = rand::rng().random_range(0..BLOCK_DIM);
-        //         finish_counter_option = block.train(
-        //             place_offset,
-        //             Arc::clone(&worker_task.block),
-        //             worker_task.cycle_number,
-        //         )?;
-        //     }
-        //     WorkerTaskType::Process => {
-        //         finish_counter_option = block.process(worker_task.cycle_number)?;
-        //     }
-        //     WorkerTaskType::Backpropagate => {
-        //         finish_counter_option = block.backpropagate(worker_task.cycle_number)?;
-        //     }
-        // }
-    }
-
-    // Finalize the task
-    finalize_task(worker_task)?;
-
-    Ok(())
+    Ok(completely_done)
 }
 
 impl WorkerThread {
@@ -172,21 +81,30 @@ impl WorkerThread {
                     drop(worker_queue);
 
                     // Process the task and handle any errors
-                    match process_task(&worker_task) {
-                        Ok(()) => {}
+                    let completely_done = match process_task(&worker_task) {
+                        Ok(completely_done) => completely_done,
                         Err(AinariError::Unauthorized(msg)) => {
                             log::error!("{msg}");
                             // TODO: better error-handling
+                            true
                         }
                         Err(AinariError::InvalidInput(msg)) => {
                             log::error!("{msg}");
                             // TODO: better error-handling
+                            true
                         }
                         Err(AinariError::InternalError(msg)) => {
                             log::error!("{msg}");
                             // TODO: better error-handling
+                            true
                         }
                     };
+
+                    // re-queue task, if not completely done
+                    if !completely_done {
+                        worker_queue = WORKER_QUEUE.lock().expect("mutex poisoned");
+                        worker_queue.add(worker_task);
+                    }
                 } else {
                     drop(worker_queue);
                     // Sleep briefly if there are no tasks to process

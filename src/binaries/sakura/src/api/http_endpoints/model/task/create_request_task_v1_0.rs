@@ -59,7 +59,7 @@ pub async fn create_request_task(
     let task_uuid = Uuid::new_v4();
     let task_type = TaskType::Request;
     let time_length = body.time_length.unwrap_or(1);
-    let mut columns: HashMap<String, Column> = HashMap::new();
+    let columns: HashMap<String, Column> = HashMap::new();
     let mut number_of_cycles = u64::MAX;
 
     if time_length < 1 {
@@ -99,12 +99,7 @@ pub async fn create_request_task(
 
     {
         // prepare outputs for task
-        let mut total_output_size: u64 = 0;
-        for output in &body.results {
-            let (col, size) = super::handle_output(output, &model_uuid, total_output_size)?;
-            columns.insert(output.hexagon.clone(), col);
-            total_output_size += size;
-        }
+        let total_output_size: u64 = super::get_output_size(&model_uuid)?;
 
         // initialize datbase for output
         let (result_file_handle, secret_uuid) = init_output_dataset(
@@ -155,7 +150,7 @@ pub async fn create_request_task(
             model_uuid: *model_uuid,
             name: body.name.clone(),
             info: TaskVariant::Request(Box::new(info)),
-            meta: TaskMeta::new(number_of_cycles, 1, time_length, 0),
+            meta: TaskMeta::new(number_of_cycles, 1, 1),
         };
         super::add_task_to_model(task, &task_type, &context)?;
 

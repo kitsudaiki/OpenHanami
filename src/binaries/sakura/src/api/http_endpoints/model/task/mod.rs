@@ -25,8 +25,8 @@ use std::str::FromStr;
 use uuid::Uuid;
 
 use crate::config;
-use crate::core::model_handler;
-use crate::core::model_handler::*;
+use crate::core::model::model_handler;
+use crate::core::model::model_handler::*;
 use crate::core::processing::tasks::Task;
 use crate::database::task_table;
 
@@ -42,7 +42,7 @@ use ainari_clients::quota::get_quota;
 use ainari_clients::secret::get_secret_payload;
 use ainari_common::config::Endpoint;
 use ainari_common::secret::Secret;
-use ainari_dataset::dataset_io::{Column, DataSetFileReadHandle, read_data_set_file};
+use ainari_dataset::dataset_io::{DataSetFileReadHandle, read_data_set_file};
 use ainari_dataset::file_encryption::decrypt_file;
 
 /// Retrieves the current number of open tasks for a specific model.
@@ -58,23 +58,14 @@ use ainari_dataset::file_encryption::decrypt_file;
 fn get_current_number_of_open_tasks(model_uuid: &Uuid) -> Result<usize, ErrorResponse> {
     // get model-handle
     let model_handler = model_handler::MODEL_HANDLER.read().expect("mutex poisoned");
-    let model_handle = match model_handler.models.get(model_uuid) {
-        Some(model_handle) => model_handle,
-        None => return Err(ErrorResponse::InternalError("".to_string())),
-    };
-    // let model_interface = if let Some(interface) = &model_handle.model_interface {
-    //     interface
-    // } else {
-    //     let msg = format!("Model with UUID '{model_uuid}' has not interface on the host.");
-    //     return Err(ErrorResponse::NotFound(msg));
-    // };
-
-    // Ok(model_interface
-    //     .lock()
-    //     .expect("mutex poisoned")
-    //     .get_number_open_tasks())
-
-    Ok(0)
+    if let Some(model_handle_mutex) = model_handler.models.get(model_uuid) {
+        return Ok(model_handle_mutex
+            .lock()
+            .expect("mutex poisoned")
+            .get_number_open_tasks());
+    } else {
+        return Err(ErrorResponse::InternalError("".to_string()));
+    }
 }
 
 /// Checks if the task queue quota for a model is exceeded.
@@ -165,84 +156,53 @@ fn add_task_to_model(
     task_type: &TaskType,
     context: &UserContext,
 ) -> Result<(), ErrorResponse> {
-    // let model_handler = model_handler::MODEL_HANDLER.read().expect("mutex poisoned");
-    // let model_handle = match model_handler.models.get(&task.model_uuid) {
-    //     Some(model_handle) => model_handle,
-    //     None => return Err(ErrorResponse::InternalError("".to_string())),
-    // };
-    // let model_interface = if let Some(interface) = &model_handle.model_interface {
-    //     interface
-    // } else {
-    //     let msg = format!(
-    //         "Model with UUID '{}' has not interface on the host.",
-    //         task.model_uuid
-    //     );
-    //     return Err(ErrorResponse::NotFound(msg));
-    // };
+    let model_handler = model_handler::MODEL_HANDLER.read().expect("mutex poisoned");
+    if let Some(model_handle_mutex) = model_handler.models.get(&task.model_uuid) {
+        task_table::add_new_task(
+            &task.uuid,
+            &task.model_uuid,
+            &task.name,
+            task_type,
+            &task.meta.number_of_epochs,
+            &task.meta.number_of_cycles,
+            context,
+        )
+        .map_err(|e| {
+            log::error!(
+                "Failed to add task with UUID '{}' to database with error: {e}.",
+                task.uuid
+            );
+            ErrorResponse::InternalError("Internal Error".to_string())
+        })?;
 
-    // task_table::add_new_task(
-    //     &task.uuid,
-    //     &task.model_uuid,
-    //     &task.name,
-    //     task_type,
-    //     &task.meta.number_of_epochs,
-    //     &task.meta.number_of_cycles,
-    //     context,
-    // )
-    // .map_err(|e| {
-    //     log::error!(
-    //         "Failed to add task with UUID '{}' to database with error: {e}.",
-    //         task.uuid
-    //     );
-    //     ErrorResponse::InternalError("Internal Error".to_string())
-    // })?;
+        model_handle_mutex
+            .lock()
+            .expect("mutex poisoned")
+            .add_task(task);
 
-    // model_interface
-    //     .lock()
-    //     .expect("mutex poisoned")
-    //     .add_task(task);
-
-    Ok(())
+        return Ok(());
+    } else {
+        return Err(ErrorResponse::InternalError("".to_string()));
+    }
 }
 
-/// Handles the output data from a task, preparing it for further processing.
-///
-/// This function manages the output buffer from the model and calculates
-/// the column information for the output data.
-///
-/// # Arguments
-/// * `output` - The task output to handle
-/// * `model_uuid` - The UUID of the model
-/// * `total_output_size` - The current total output size
-///
-/// # Returns
-/// * `Result<(Column, u64), ErrorResponse>` - The column information and size
-fn handle_output(
-    output: &TaskDatasetResultLink,
-    model_uuid: &Uuid,
-    total_output_size: u64,
-) -> Result<(Column, u64), ErrorResponse> {
+fn get_output_size(model_uuid: &Uuid) -> Result<u64, ErrorResponse> {
     let model_handler = MODEL_HANDLER.read().expect("mutex poisoned");
+    if let Some(model_handle_mutex) = model_handler.models.get(model_uuid) {
+        let model = model_handle_mutex.lock().expect("mutex poisoned");
+        let end_block_mutex = model.get_end_block();
+        let end_block = end_block_mutex.lock().expect("mutex poisoned");
 
-    let size = 0;
-    // let size = {
-    //     let output_buffer_mutex = model_handler
-    //         .get_output_buffer(model_uuid, &output.hexagon)
-    //         .map_err(map_ainari_error_to_api_response)?;
-    //     let output_buffer = output_buffer_mutex.lock().expect("mutex poisoned");
-    //     output_buffer.output_neurons.len() as u64
-    // };
+        let size = end_block.output_values.len() as u64;
 
-    // HINT(kitsudaiki): drop lock here, because otherwise cargo clipply has a problem with the lock
-    // in combination with the later coming await-call
-    drop(model_handler);
+        // HINT(kitsudaiki): drop lock here, because otherwise cargo clipply has a problem with the lock
+        // in combination with the later coming await-call
+        drop(model);
 
-    let col = Column {
-        start: total_output_size,
-        end: total_output_size + size,
-    };
-
-    Ok((col, size))
+        return Ok(size);
+    } else {
+        return Err(ErrorResponse::InternalError("".to_string()));
+    }
 }
 
 /// Retrieves a secret from the secret service.

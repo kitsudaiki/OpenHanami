@@ -13,6 +13,7 @@
 // limitations under the License.
 
 use bytemuck::cast_slice;
+use core::result::Result;
 use std::collections::HashMap;
 use std::fs;
 use std::io::Write;
@@ -30,12 +31,8 @@ use ainari_dataset::dataset_io::{DataSetFileReadHandle, DataSetFileWriteHandle};
 use ainari_dataset::file_encryption::{decrypt_file, encrypt_file};
 
 use crate::config;
-use crate::core::blocks::block_trait::*;
-use crate::core::model_handler::*;
+use crate::core::model::model::*;
 use crate::database::task_table;
-
-use super::super::processing::output_buffer::*;
-use super::super::processing::worker_queue::*;
 
 /// Represents the information needed for a training task.
 /// Contains input and output dataset handles and a temporary directory path.
@@ -78,39 +75,25 @@ pub struct CheckpointRestoreInfo {
 /// Each variant contains different information relevant to that type of task.
 #[derive(Debug)]
 pub enum TaskVariant {
-    /// Training task variant containing training-specific information.
     Training(TrainInfo),
-    /// Request task variant containing request-specific information.
     Request(Box<RequestInfo>),
-    /// Checkpoint save task variant containing checkpoint save information.
     CheckpointSave(CheckpointSaveInfo),
-    /// Checkpoint restore task variant containing checkpoint restore information.
     CheckpointRestore(CheckpointRestoreInfo),
 }
 
 /// Metadata for tracking the progress and state of a task.
 /// Includes counters for cycles and epochs, timestamps, and completion status.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct TaskMeta {
-    /// Total number of cycles per epoch for this task.
     pub number_of_cycles: u64,
-    /// Total number of epochs for this task.
     pub number_of_epochs: u64,
-    /// Number of cycles completed so far.
     pub number_of_finished_cycles: u64,
-    /// Number of epochs completed so far.
     pub number_of_finished_epochs: u64,
-    /// Time length for the task in input-values.
-    pub time_length: u64,
-    /// Forecast length for the task in input-values.
-    pub forecast_length: u64,
 
-    /// Counter for tracking task cycles across all epochs.
+    // pub forecast_length: u64,
     pub task_cycle_counter: u64,
 
-    /// Flag indicating whether the task is finished.
     pub is_finished: bool,
-    /// Timestamp of the previous update to track progress updates.
     pub prev_timestamp: std::time::Instant,
 }
 
@@ -126,20 +109,13 @@ impl TaskMeta {
     /// # Returns
     ///
     /// A new TaskMeta instance initialized with the given parameters.
-    pub fn new(
-        number_of_cycler_per_epoch: u64,
-        number_of_epochs: u64,
-        time_length: u64,
-        forecast_length: u64,
-    ) -> Self {
+    pub fn new(number_of_cycler_per_epoch: u64, number_of_epochs: u64, _: u64) -> Self {
         Self {
             number_of_cycles: number_of_cycler_per_epoch,
             number_of_epochs,
             number_of_finished_cycles: 0,
             number_of_finished_epochs: 0,
-            time_length,
-            forecast_length,
-
+            // forecast_length,
             task_cycle_counter: 0,
 
             is_finished: false,
@@ -174,15 +150,14 @@ impl Task {
     /// # Returns
     ///
     /// `true` if the task should continue execution, `false` if it should pause or stop.
-    pub fn start_task(&mut self) -> bool {
+    pub fn start_task(
+        &mut self,
+        model_uuid: &Uuid,
+        model: &Arc<Mutex<Model>>,
+    ) -> Result<bool, AinariError> {
         // check if task was aborted
         if task_table::is_aborted(&self.uuid) {
-            return false;
-        }
-
-        {
-            let model_handler = MODEL_HANDLER.read().expect("mutex poisoned");
-            let _ = model_handler.reset_outputs(&self.model_uuid);
+            return Ok(false);
         }
 
         self.meta.prev_timestamp = Instant::now();
@@ -190,30 +165,32 @@ impl Task {
 
         match &mut self.info {
             TaskVariant::Training(task_info) => {
-                run_train_task_cycle(&self.uuid, &self.model_uuid, &mut self.meta, task_info);
-                true
+                run_train_task_cycle(&self.uuid, model_uuid, model, &mut self.meta, task_info)?;
+                Ok(true)
             }
             TaskVariant::Request(task_info) => {
-                run_request_task_cycle(&self.uuid, &self.model_uuid, &mut self.meta, task_info);
-                true
+                run_request_task_cycle(&self.uuid, model_uuid, model, &mut self.meta, task_info)?;
+                Ok(true)
             }
             TaskVariant::CheckpointSave(task_info) => {
                 handle_checkpoint_save_task(
                     &self.uuid,
-                    &self.model_uuid,
+                    model_uuid,
+                    model,
                     &mut self.meta,
                     task_info,
-                );
-                false
+                )?;
+                Ok(false)
             }
             TaskVariant::CheckpointRestore(task_info) => {
                 handle_checkpoint_restore_task(
                     &self.uuid,
-                    &self.model_uuid,
+                    model_uuid,
+                    model,
                     &mut self.meta,
                     task_info,
-                );
-                false
+                )?;
+                Ok(false)
             }
         }
     }
@@ -278,13 +255,13 @@ impl Task {
 
     /// Finishes the current cycle of the task and prepares for the next cycle.
     /// Updates progress in the database and checks for task completion.
-    pub fn finish_cycle(&mut self) {
+    pub fn finish_cycle(&mut self, result_data: &Vec<f32>) {
         match &mut self.info {
             TaskVariant::Training(task_info) => {
                 finish_train_cycle(&self.uuid, task_info);
             }
             TaskVariant::Request(task_info) => {
-                finish_request_cycle(&self.uuid, &self.model_uuid, task_info);
+                finish_request_cycle(&self.uuid, task_info, result_data);
             }
             _ => {
                 return;
@@ -318,17 +295,6 @@ impl Task {
             }
         }
         self.meta.task_cycle_counter += 1;
-
-        // run next-cycle
-        match &mut self.info {
-            TaskVariant::Training(task_info) => {
-                run_train_task_cycle(&self.uuid, &self.model_uuid, &mut self.meta, task_info);
-            }
-            TaskVariant::Request(task_info) => {
-                run_request_task_cycle(&self.uuid, &self.model_uuid, &mut self.meta, task_info);
-            }
-            _ => {}
-        }
     }
 
     /// Checks if the task has been completed.
@@ -356,22 +322,45 @@ fn finish_train_cycle(_: &Uuid, _: &mut TrainInfo) {}
 /// * `task_uuid` - The UUID of the task.
 /// * `model_uuid` - The UUID of the model associated with the task.
 /// * `task_info` - Mutable reference to the request information.
-fn finish_request_cycle(task_uuid: &Uuid, model_uuid: &Uuid, task_info: &mut RequestInfo) {
+fn finish_request_cycle(task_uuid: &Uuid, task_info: &mut RequestInfo, result_data: &Vec<f32>) {
     // get output-values form backend and write them into the dataset
-    // match write_output_into_dataset(model_uuid, &mut task_info.results) {
-    //     Ok(()) => {}
-    //     Err(AinariError::Unauthorized(msg)) => {
-    //         let _ = task_table::set_error_state(task_uuid, &msg);
-    //     }
-    //     Err(AinariError::InvalidInput(msg)) => {
-    //         let _ = task_table::set_error_state(task_uuid, &msg);
-    //     }
-    //     Err(AinariError::InternalError(msg)) => {
-    //         log::error!("Error while writing output into dataset: {msg}");
-    //         let db_msg = "internal error".to_string();
-    //         let _ = task_table::set_error_state(task_uuid, &db_msg);
-    //     }
-    // }
+    match write_output_into_dataset(&mut task_info.results, result_data) {
+        Ok(()) => {}
+        Err(AinariError::Unauthorized(msg)) => {
+            let _ = task_table::set_error_state(task_uuid, &msg);
+        }
+        Err(AinariError::InvalidInput(msg)) => {
+            let _ = task_table::set_error_state(task_uuid, &msg);
+        }
+        Err(AinariError::InternalError(msg)) => {
+            log::error!("Error while writing output into dataset: {msg}");
+            let db_msg = "internal error".to_string();
+            let _ = task_table::set_error_state(task_uuid, &db_msg);
+        }
+    }
+}
+
+/// Writes model output data into a dataset file.
+///
+/// This function reads output data from the model's output buffers and writes it to the specified
+/// dataset file. It processes each hexagon's output data according to the dataset's column description.
+///
+/// # Arguments
+///
+/// * `model_uuid` - Unique identifier for the model
+/// * `file_handle` - Mutable reference to the dataset file handle for writing
+///
+/// # Returns
+///
+/// * `Result<(), AinariError>` - Returns Ok(()) on success, or an AinariError on failure
+fn write_output_into_dataset(
+    file_handle: &mut DataSetFileWriteHandle,
+    result_data: &Vec<f32>,
+) -> Result<(), AinariError> {
+    let output_bytes = cast_slice(&result_data);
+    let _ = file_handle.target_file.write_all(output_bytes);
+    // TODO: error-handling while write_all
+    Ok(())
 }
 
 /// Executes a single training cycle for a task.
@@ -387,10 +376,11 @@ fn finish_request_cycle(task_uuid: &Uuid, model_uuid: &Uuid, task_info: &mut Req
 /// * `task_info` - Mutable reference to training information containing input/output datasets
 fn run_train_task_cycle(
     task_uuid: &Uuid,
-    model_uuid: &Uuid,
+    _: &Uuid,
+    model_mutex: &Arc<Mutex<Model>>,
     meta: &mut TaskMeta,
     task_info: &mut TrainInfo,
-) {
+) -> Result<(), AinariError> {
     // update current state in database at least after 1 second
     let now = Instant::now();
     if now.duration_since(meta.prev_timestamp) >= Duration::from_secs(1) {
@@ -403,64 +393,27 @@ fn run_train_task_cycle(
 
         // check if task was aborted
         if task_table::is_aborted(task_uuid) {
-            return;
+            return Ok(());
         }
     }
 
-    // push output-values form dataset into the backend
-    for (hexagon_name, file_handle) in &mut task_info.outputs {
-        // match apply_dataset_to_expected(
-        //     model_uuid,
-        //     hexagon_name,
-        //     file_handle,
-        //     meta.number_of_finished_cycles,
-        //     meta.time_length,
-        //     meta.forecast_length,
-        // ) {
-        //     Ok(()) => {}
-        //     Err(AinariError::Unauthorized(msg)) => {
-        //         let _ = task_table::set_error_state(task_uuid, &msg);
-        //         return;
-        //     }
-        //     Err(AinariError::InvalidInput(msg)) => {
-        //         let _ = task_table::set_error_state(task_uuid, &msg);
-        //         return;
-        //     }
-        //     Err(AinariError::InternalError(msg)) => {
-        //         log::error!("{msg}");
-        //         let db_msg = "internal error".to_string();
-        //         let _ = task_table::set_error_state(task_uuid, &db_msg);
-        //         return;
-        //     }
-        // }
+    let model = model_mutex.lock().expect("mutex poisoned");
+
+    for (_, file_handle) in task_info.outputs.drain() {
+        let end_block_mutex = model.get_end_block();
+        let mut end_block = end_block_mutex.lock().expect("mutex poisoned");
+        let task_id = 0;
+        end_block.init_new_train_run(task_uuid, task_id, file_handle);
     }
 
-    // push input-values form dataset into the backend
-    for (hexagon_name, file_handle) in &mut task_info.inputs {
-        // match apply_dataset_to_input(
-        //     model_uuid,
-        //     hexagon_name,
-        //     file_handle,
-        //     meta,
-        //     &WorkerTaskType::Train,
-        // ) {
-        //     Ok(()) => {}
-        //     Err(AinariError::Unauthorized(msg)) => {
-        //         let _ = task_table::set_error_state(task_uuid, &msg);
-        //         return;
-        //     }
-        //     Err(AinariError::InvalidInput(msg)) => {
-        //         let _ = task_table::set_error_state(task_uuid, &msg);
-        //         return;
-        //     }
-        //     Err(AinariError::InternalError(msg)) => {
-        //         log::error!("{msg}");
-        //         let db_msg = "internal error".to_string();
-        //         let _ = task_table::set_error_state(task_uuid, &db_msg);
-        //         return;
-        //     }
-        // }
+    for (hexagon_name, file_handle) in task_info.inputs.drain() {
+        let start_block_mutex = model.get_start_block(&hexagon_name)?;
+        let mut start_block = start_block_mutex.lock().expect("mutex poisoned");
+        let task_id = 0u64;
+        start_block.init_new_run(task_uuid, task_id, file_handle);
     }
+
+    Ok(())
 }
 
 /// Executes a single processing cycle for a request task.
@@ -476,10 +429,11 @@ fn run_train_task_cycle(
 /// * `task_info` - Mutable reference to request information containing input datasets
 fn run_request_task_cycle(
     task_uuid: &Uuid,
-    model_uuid: &Uuid,
+    _: &Uuid,
+    model_mutex: &Arc<Mutex<Model>>,
     meta: &mut TaskMeta,
     task_info: &mut RequestInfo,
-) {
+) -> Result<(), AinariError> {
     // update current state in database at least after 1 second
     let now = Instant::now();
     if now.duration_since(meta.prev_timestamp) >= Duration::from_secs(1) {
@@ -492,36 +446,25 @@ fn run_request_task_cycle(
 
         // check if task was aborted
         if task_table::is_aborted(task_uuid) {
-            return;
+            return Ok(());
         }
     }
 
-    // push input-values form dataset into the backend
-    for (hexagon_name, file_handle) in &mut task_info.inputs {
-        // match apply_dataset_to_input(
-        //     model_uuid,
-        //     hexagon_name,
-        //     file_handle,
-        //     meta,
-        //     &WorkerTaskType::Process,
-        // ) {
-        //     Ok(()) => {}
-        //     Err(AinariError::Unauthorized(msg)) => {
-        //         let _ = task_table::set_error_state(task_uuid, &msg);
-        //         return;
-        //     }
-        //     Err(AinariError::InvalidInput(msg)) => {
-        //         let _ = task_table::set_error_state(task_uuid, &msg);
-        //         return;
-        //     }
-        //     Err(AinariError::InternalError(msg)) => {
-        //         log::error!("{msg}");
-        //         let db_msg = "internal error".to_string();
-        //         let _ = task_table::set_error_state(task_uuid, &db_msg);
-        //         return;
-        //     }
-        // }
+    let model = model_mutex.lock().expect("mutex poisoned");
+
+    let end_block_mutex = model.get_end_block();
+    let mut end_block = end_block_mutex.lock().expect("mutex poisoned");
+    let task_id = 0;
+    end_block.init_new_request_run(task_uuid, task_id);
+
+    for (hexagon_name, file_handle) in task_info.inputs.drain() {
+        let start_block_mutex = model.get_start_block(&hexagon_name)?;
+        let mut start_block = start_block_mutex.lock().expect("mutex poisoned");
+        let task_id = 0;
+        start_block.init_new_run(task_uuid, task_id, file_handle);
     }
+
+    Ok(())
 }
 
 /// Handles the task of saving a model checkpoint.
@@ -538,9 +481,10 @@ fn run_request_task_cycle(
 fn handle_checkpoint_save_task(
     task_uuid: &Uuid,
     model_uuid: &Uuid,
+    _: &Arc<Mutex<Model>>,
     _: &mut TaskMeta,
     task_info: &mut CheckpointSaveInfo,
-) {
+) -> Result<(), AinariError> {
     // create file-paths for temporary files
     let local_temp_file_path = format!(
         "{}/{}",
@@ -550,7 +494,6 @@ fn handle_checkpoint_save_task(
     let local_encrypted_temp_file_path = format!("{local_temp_file_path}_encrypted");
 
     {
-        let model_handler = MODEL_HANDLER.read().expect("mutex poisoned");
         // match model_handler.create_checkpoint(model_uuid, &local_temp_file_path) {
         //     Ok(()) => {}
         //     Err(_) => {
@@ -589,7 +532,7 @@ fn handle_checkpoint_save_task(
             Err(_) => {
                 let _ = task_table::update_task_state(task_uuid, &TaskState::Error);
                 let _ = task_table::update_task_progress(task_uuid, &1, &1);
-                return;
+                return Ok(());
             }
         }
 
@@ -599,6 +542,8 @@ fn handle_checkpoint_save_task(
 
     let _ = fs::remove_file(&local_temp_file_path);
     let _ = fs::remove_file(&local_encrypted_temp_file_path);
+
+    Ok(())
 }
 
 /// Handles the task of restoring a model from a checkpoint.
@@ -615,9 +560,10 @@ fn handle_checkpoint_save_task(
 fn handle_checkpoint_restore_task(
     task_uuid: &Uuid,
     model_uuid: &Uuid,
+    _: &Arc<Mutex<Model>>,
     _: &mut TaskMeta,
     task_info: &mut CheckpointRestoreInfo,
-) {
+) -> Result<(), AinariError> {
     // create file-paths for temporary files
     let local_temp_file_path = format!(
         "{}/{}",
@@ -658,12 +604,11 @@ fn handle_checkpoint_restore_task(
                 log::error!("Error in checkpoint-restore-task: {e}");
                 let _ = task_table::update_task_state(task_uuid, &TaskState::Error);
                 let _ = task_table::update_task_progress(task_uuid, &1, &1);
-                return;
+                return Ok(());
             }
         }
 
         // restore model from the downloaded and decrypted checkpoint-file
-        let mut model_handler = MODEL_HANDLER.write().expect("mutex poisoned");
         // match model_handler.restore_checkpoint(model_uuid, &local_temp_file_path) {
         //     Ok(()) => {}
         //     Err(_) => {
@@ -681,6 +626,8 @@ fn handle_checkpoint_restore_task(
     // cleanup temp-files
     let _ = fs::remove_file(&local_temp_file_path);
     let _ = fs::remove_file(&local_encrypted_temp_file_path);
+
+    Ok(())
 }
 
 /// Removes a directory and all its contents from the filesystem.

@@ -18,7 +18,7 @@ use apistos::api_operation;
 use uuid::Uuid;
 use validator::Validate;
 
-use crate::core::model_handler::MODEL_HANDLER;
+use crate::core::model::model_handler::MODEL_HANDLER;
 use crate::database::model_table;
 
 use ainari_api::common_functions::*;

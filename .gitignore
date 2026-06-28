@@ -10,6 +10,7 @@ target
 .vite
 venv
 .venv
+venv2
 .vagrant
 
 temporary_files

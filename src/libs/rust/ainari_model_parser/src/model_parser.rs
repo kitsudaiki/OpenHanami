@@ -21,10 +21,8 @@ use uuid::Uuid;
 
 use super::model_meta_structs::*;
 
-use ainari_common::constants::*;
 use ainari_common::enums::*;
 use ainari_common::error::AinariError;
-use ainari_common::functions::*;
 use ainari_common::objects::*;
 
 /// Parser for Ainari model templates using Pest parser combinator framework.
@@ -242,7 +240,7 @@ fn search_hexagon(
     type_name: &str,
 ) -> Result<Uuid, AinariError> {
     for h in hexagons_meta.values() {
-        if h.positon == *position {
+        if h.position == *position {
             return Ok(h.uuid);
         }
     }
@@ -327,7 +325,6 @@ fn initialize_outputs(parsed_model: &mut ModelMeta) -> Result<(), AinariError> {
 fn initialize_hexagons(parsed_model: &mut ModelMeta) -> Result<(), AinariError> {
     update_axons(parsed_model)?;
     connect_all_hexagons(parsed_model)?;
-    initialize_target_hexagon_list(parsed_model)?;
 
     Ok(())
 }
@@ -381,7 +378,7 @@ fn connect_hexagon(
     let next = get_neighbor_pos(source_pos, side);
     if next.is_valid() {
         for (target_id, hexagon) in hexagon_copy.iter() {
-            let target_pos = &hexagon.positon;
+            let target_pos = &hexagon.position;
             if *target_pos == next {
                 if let Some(source_obj) = parsed_model.hexagons.get_mut(&source_id.clone()) {
                     source_obj.neighbors[side] = *target_id;
@@ -408,7 +405,7 @@ fn connect_hexagon(
 fn connect_all_hexagons(parsed_model: &mut ModelMeta) -> Result<(), AinariError> {
     let hexagon_copy = parsed_model.hexagons.clone();
     for (source_id, source_hexagon) in hexagon_copy.iter() {
-        let source_pos = &source_hexagon.positon;
+        let source_pos = &source_hexagon.position;
         for side in 0..12 {
             connect_hexagon(parsed_model, &hexagon_copy, source_id, source_pos, side)?;
         }
@@ -433,7 +430,8 @@ fn connect_all_hexagons(parsed_model: &mut ModelMeta) -> Result<(), AinariError>
 ///
 /// # Returns
 ///
-/// * `Result<Uuid, AinariError>` - The UUID of the target hexagon or an error if navigation fails
+/// * `Result<Uuid, AinariError>` - The UUID of the target hexagon or an error if navigation fails#
+#[allow(dead_code)]
 fn go_to_next_hexagon(
     hexagons_static_copy: &HashMap<Uuid, HexagonMeta>,
     current_hexagon: &HexagonMeta,
@@ -473,53 +471,6 @@ fn go_to_next_hexagon(
     } else {
         Ok(current_hexagon.uuid)
     }
-}
-
-/// Initializes the list of possible target hexagons for each hexagon in the model.
-///
-/// This function:
-/// 1. For each hexagon, finds possible target hexagons based on its axon_target
-/// 2. Considers the max_connection_distance setting
-/// 3. Gives hexagons with different axon_targets an advantage in selection
-///
-/// # Arguments
-///
-/// * `parsed_model` - A mutable reference to the ModelMeta being initialized
-///
-/// # Returns
-///
-/// * `Result<(), AinariError>` - Ok if initialization succeeds, Err if any step fails
-fn initialize_target_hexagon_list(parsed_model: &mut ModelMeta) -> Result<(), AinariError> {
-    let hexagons_static_copy = parsed_model.hexagons.clone();
-    for (source_uuid, source_hexagon) in parsed_model.hexagons.iter_mut() {
-        for counter in 0..NUMBER_OF_POSSIBLE_NEXT {
-            let mut max_path_length = parsed_model.settings.max_connection_distance as i32;
-
-            // hexagons with a different axon-target have an advantage, so they reduced by one step to be equal to other hexagons
-            if source_uuid != &source_hexagon.axon_target {
-                max_path_length -= 1;
-            }
-
-            let base_hexagon = &hexagons_static_copy
-                .get(&source_hexagon.axon_target)
-                .unwrap();
-            let target_hexagon_id = go_to_next_hexagon(
-                &hexagons_static_copy,
-                base_hexagon,
-                source_uuid,
-                &mut max_path_length,
-            )?;
-
-            // handle result
-            if &target_hexagon_id != source_uuid {
-                source_hexagon.possible_hexagon_target_ids[counter] = target_hexagon_id;
-            } else {
-                source_hexagon.possible_hexagon_target_ids[counter] = Uuid::nil();
-            }
-        }
-    }
-
-    Ok(())
 }
 
 #[cfg(test)]
@@ -611,15 +562,15 @@ mod tests {
                 assert_eq!(parsed.hexagons.len(), 2);
 
                 if let Some(value) = parsed.hexagons.values().next() {
-                    let valid = value.positon == Position { x: 1, y: 2, z: 3 }
-                        || value.positon == Position { x: 4, y: 5, z: 6 };
+                    let valid = value.position == Position { x: 1, y: 2, z: 3 }
+                        || value.position == Position { x: 4, y: 5, z: 6 };
                     assert!(valid);
                 } else {
                     assert_eq!(false, true);
                 }
                 if let Some(value) = parsed.hexagons.values().nth(1) {
-                    let valid = value.positon == Position { x: 1, y: 2, z: 3 }
-                        || value.positon == Position { x: 4, y: 5, z: 6 };
+                    let valid = value.position == Position { x: 1, y: 2, z: 3 }
+                        || value.position == Position { x: 4, y: 5, z: 6 };
                     assert!(valid);
                 } else {
                     assert_eq!(false, true);
@@ -960,13 +911,6 @@ mod tests {
         assert_eq!(parsed_hexagon0.neighbors[11], Uuid::nil());
         assert_eq!(parsed_hexagon0.axon_target, parsed_hexagon1.uuid);
 
-        let mut success = true;
-        for i in 0..NUMBER_OF_POSSIBLE_NEXT {
-            success &= parsed_hexagon0.possible_hexagon_target_ids[i] == parsed_hexagon1.uuid
-                && parsed_hexagon0.possible_hexagon_target_ids[i] != parsed_hexagon0.uuid;
-        }
-        assert!(success);
-
         assert!(!parsed_hexagon1.is_input);
         assert!(!parsed_hexagon1.is_output);
         // test neighbors of hexagon 1
@@ -984,13 +928,6 @@ mod tests {
         assert_eq!(parsed_hexagon1.neighbors[11], Uuid::nil());
         assert_eq!(parsed_hexagon1.axon_target, parsed_hexagon1.uuid);
 
-        let mut success = true;
-        for i in 0..NUMBER_OF_POSSIBLE_NEXT {
-            success &= parsed_hexagon1.possible_hexagon_target_ids[i] == parsed_hexagon2.uuid
-                && parsed_hexagon1.possible_hexagon_target_ids[i] != parsed_hexagon1.uuid;
-        }
-        assert!(success);
-
         assert!(!parsed_hexagon2.is_input);
         assert!(parsed_hexagon2.is_output);
         // test neighbors of hexagon 2
@@ -1006,11 +943,5 @@ mod tests {
         assert_eq!(parsed_hexagon2.neighbors[9], Uuid::nil());
         assert_eq!(parsed_hexagon2.neighbors[10], Uuid::nil());
         assert_eq!(parsed_hexagon2.neighbors[11], Uuid::nil());
-
-        let mut success = true;
-        for i in 0..NUMBER_OF_POSSIBLE_NEXT {
-            success &= parsed_hexagon2.possible_hexagon_target_ids[i] == Uuid::nil();
-        }
-        assert!(success);
     }
 }

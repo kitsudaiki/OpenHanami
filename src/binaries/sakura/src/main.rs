@@ -25,7 +25,7 @@ use std::fs;
 
 use log::LevelFilter;
 
-use core::model_handler::*;
+use core::model::model_handler::*;
 use core::processing::worker_handler;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {

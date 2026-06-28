@@ -12,71 +12,51 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use rand::RngExt;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use uuid::Uuid;
 
-use ainari_common::constants::*;
 use ainari_common::enums::*;
+use ainari_common::error::AinariError;
 use ainari_common::objects::*;
 
 /// Configuration settings for the neural network model
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct Settings {
-    /// Amount of potential reduction in each cycles after a neuron fired
     pub neuron_cooldown: f32,
-    /// Number of cycles a neuron remains unresponsive after firing
     pub refractory_time: u32,
-    /// Maximum number of hexagons for forming connections between neurons
     pub max_connection_distance: u32,
 }
 
 /// Metadata for connections between neurons (axons)
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AxonMeta {
-    /// Starting position of the axon
     pub from: Position,
-    /// Ending position of the axon (target neuron)
     pub to: Position,
 }
 
 /// Metadata for hexagonal neurons in the neural network
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct HexagonMeta {
-    /// Unique identifier for the hexagon
     pub uuid: Uuid,
-    /// Position of the hexagon in the network
-    pub positon: Position,
-    /// Name of the hexagon (can be used for identification)
+    pub position: Position,
     pub name: String,
 
-    /// Flag indicating if this hexagon is an input hexagon
     pub is_input: bool,
-    /// Flag indicating if this hexagon is an output hexagon
     pub is_output: bool,
 
-    /// UUID of the target hexagon this axon connects to
     pub axon_target: Uuid,
 
-    /// List of possible target hexagons for new connections
-    pub possible_hexagon_target_ids: Vec<Uuid>,
-    /// Array of neighboring hexagon UUIDs (12 neighbors in a hexagonal grid)
     pub neighbors: [Uuid; 12],
 }
 
 impl HexagonMeta {
-    /// Creates a new HexagonMeta instance with default values
-    ///
-    /// # Arguments
-    /// * `positon` - The initial position of the hexagon
-    ///
-    /// # Returns
-    /// A new HexagonMeta instance with a generated UUID and default values
-    pub fn new(positon: Position) -> Self {
+    pub fn new(position: Position) -> Self {
         let new_uuid = Uuid::new_v4();
         HexagonMeta {
             uuid: new_uuid,
-            positon,
+            position,
             name: "".to_string(),
 
             axon_target: new_uuid, // Default to its own UUID
@@ -84,24 +64,170 @@ impl HexagonMeta {
             is_input: false,
             is_output: false,
 
-            // Initialize neighbors with nil UUIDs
             neighbors: [Uuid::nil(); 12],
-            // Initialize possible targets with nil UUIDs and size equal to NUMBER_OF_POSSIBLE_NEXT
-            possible_hexagon_target_ids: vec![Uuid::nil(); NUMBER_OF_POSSIBLE_NEXT],
         }
+    }
+
+    pub fn get_neighbor_position(&self, side: usize) -> Position {
+        return get_neighbor_pos(&self.position, side);
+    }
+
+    pub fn get_neighbor_uuid(&self, side: usize) -> Uuid {
+        return self.neighbors[side].clone();
+    }
+}
+
+/// Calculates the position of a neighboring cell in a hexagonal grid.
+///
+/// Given a source position and a side number (0-11), returns the position of the adjacent cell.
+/// The side numbering follows a specific pattern used in hexagonal grid algorithms.
+///
+/// # Arguments
+///
+/// * `source_pos` - The position of the source cell
+/// * `side` - The side number (0-11) indicating which neighbor to get
+///
+/// # Panics
+///
+/// Panics if the side value is out of the valid range (0-11).
+pub fn get_neighbor_pos(source_pos: &Position, side: usize) -> Position {
+    let mut result = Position { x: 0, y: 0, z: 0 };
+
+    match side {
+        0 => {
+            result.x = if source_pos.y % 2 == 0 {
+                source_pos.x - 1
+            } else {
+                source_pos.x
+            };
+            result.y = source_pos.y - 1;
+            result.z = source_pos.z - 1;
+        }
+        1 => {
+            result.x = if source_pos.y % 2 == 0 {
+                source_pos.x
+            } else {
+                source_pos.x + 1
+            };
+            result.y = source_pos.y - 1;
+            result.z = source_pos.z - 1;
+        }
+        2 => {
+            result.x = source_pos.x;
+            result.y = source_pos.y;
+            result.z = source_pos.z - 1;
+        }
+        3 => {
+            result.x = if source_pos.y % 2 == 0 {
+                source_pos.x
+            } else {
+                source_pos.x + 1
+            };
+            result.y = source_pos.y - 1;
+            result.z = source_pos.z;
+        }
+        4 => {
+            result.x = source_pos.x + 1;
+            result.y = source_pos.y;
+            result.z = source_pos.z;
+        }
+        5 => {
+            result.x = if source_pos.y % 2 == 0 {
+                source_pos.x
+            } else {
+                source_pos.x + 1
+            };
+            result.y = source_pos.y + 1;
+            result.z = source_pos.z;
+        }
+        6 => {
+            result.x = if source_pos.y % 2 == 0 {
+                source_pos.x - 1
+            } else {
+                source_pos.x
+            };
+            result.y = source_pos.y - 1;
+            result.z = source_pos.z;
+        }
+        7 => {
+            result.x = source_pos.x - 1;
+            result.y = source_pos.y;
+            result.z = source_pos.z;
+        }
+        8 => {
+            result.x = if source_pos.y % 2 == 0 {
+                source_pos.x - 1
+            } else {
+                source_pos.x
+            };
+            result.y = source_pos.y + 1;
+            result.z = source_pos.z;
+        }
+        9 => {
+            result.x = source_pos.x;
+            result.y = source_pos.y;
+            result.z = source_pos.z + 1;
+        }
+        10 => {
+            result.x = if source_pos.y % 2 == 0 {
+                source_pos.x - 1
+            } else {
+                source_pos.x
+            };
+            result.y = source_pos.y + 1;
+            result.z = source_pos.z + 1;
+        }
+        11 => {
+            result.x = if source_pos.y % 2 == 0 {
+                source_pos.x
+            } else {
+                source_pos.x + 1
+            };
+            result.y = source_pos.y + 1;
+            result.z = source_pos.z + 1;
+        }
+        _ => panic!("Invalid side value: {side}"),
+    }
+
+    result
+}
+
+/// Gets the next five side numbers in a hexagonal grid traversal pattern.
+///
+/// Given a side number (0-11), returns an array of five side numbers that follow
+/// a specific pattern used in hexagonal grid algorithms.
+///
+/// # Arguments
+///
+/// * `side` - The starting side number (0-11)
+///
+/// # Panics
+///
+/// Panics if the side value is out of the valid range (0-11).
+pub fn get_next_sides(side: usize) -> [u8; 5] {
+    match side {
+        0 => [1, 4, 11, 5, 2],
+        1 => [2, 8, 10, 7, 0],
+        2 => [0, 6, 9, 3, 1],
+        3 => [5, 2, 8, 10, 7],
+        4 => [8, 10, 7, 0, 6],
+        5 => [7, 0, 6, 9, 3],
+        6 => [4, 11, 5, 2, 8],
+        7 => [3, 1, 4, 11, 5],
+        8 => [6, 9, 3, 1, 4],
+        9 => [11, 5, 2, 8, 10],
+        10 => [9, 3, 1, 4, 11],
+        11 => [10, 7, 0, 6, 9],
+        _ => panic!("Invalid side value: {side}; This should never happen!"),
     }
 }
 
 /// Metadata for input connections to the neural network
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct InputMeta {
-    /// Unique identifier for the input
     pub uuid: Uuid,
-    /// UUID of the hexagon this input connects to
     pub hexagon_uuid: Uuid,
-    /// Name of the input (can be used for identification)
     pub name: String,
-    /// Position of the input in the network
     pub position: Position,
 }
 
@@ -127,15 +253,10 @@ impl InputMeta {
 /// Metadata for output connections from the neural network
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct OutputMeta {
-    /// Unique identifier for the output
     pub uuid: Uuid,
-    /// UUID of the hexagon this output connects to
     pub hexagon_uuid: Uuid,
-    /// Name of the output (can be used for identification)
     pub name: String,
-    /// Position of the output in the network
     pub position: Position,
-    /// Type of output data this connection produces
     pub output_type: OutputType,
 }
 
@@ -163,20 +284,23 @@ impl OutputMeta {
 /// Metadata for the entire neural network model
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ModelMeta {
-    /// Unique identifier for the model
     pub uuid: Uuid,
-    /// Name of the model
     pub name: String,
-    /// Version number of the model
     pub version: i32,
-    /// Configuration settings for the model
     pub settings: Settings,
-    /// Collection of all hexagons in the model
     pub hexagons: HashMap<Uuid, HexagonMeta>,
-    /// List of all connections between neurons (axons)
     pub axons: Vec<AxonMeta>,
-    /// List of all input connections to the model
     pub inputs: Vec<InputMeta>,
-    /// List of all output connections from the model
     pub outputs: Vec<OutputMeta>,
+}
+
+impl ModelMeta {
+    pub fn get_hexagon_meta(&self, hexagon_uuid: &Uuid) -> Result<&HexagonMeta, AinariError> {
+        if let Some(hexagon_meta) = self.hexagons.get(hexagon_uuid) {
+            return Ok(&hexagon_meta);
+        } else {
+            let msg = format!("Hexagon with uuid '{hexagon_uuid}' not found.");
+            return Err(AinariError::InvalidInput(msg));
+        }
+    }
 }
