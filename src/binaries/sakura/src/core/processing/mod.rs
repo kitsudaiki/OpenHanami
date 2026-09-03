@@ -13,7 +13,6 @@
 // limitations under the License.
 
 pub mod finish_counter;
-pub mod output_buffer;
 pub mod task_queue;
 pub mod tasks;
 pub mod worker_handler;

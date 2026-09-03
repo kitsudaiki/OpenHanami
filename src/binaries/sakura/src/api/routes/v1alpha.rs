@@ -30,32 +30,28 @@ pub fn v1alpha_routes() -> Scope {
         )
         .service(
             scope("/model")
-                .service(
-                    resource("/internal")
-                        .route(post().to(create_model_internal_v1_0::create_model_internal))
-                        .route(get().to(list_model_internal_v1_0::list_model_internal)),
-                )
-                .service(
-                    resource("/{model_uuid}/internal")
-                        .route(get().to(get_model_internal_v1_0::get_model_internal))
-                        .route(delete().to(delete_model_internal_v1_0::delete_model_internal)),
-                )
-                .service(
-                    resource("/{model_uuid}/request")
-                        .route(put().to(request_model_v1_0::request_model)),
-                )
-                .service(
-                    resource("/{model_uuid}/train").route(put().to(train_model_v1_0::train_model)),
-                )
+                // .service(
+                //     resource("/internal")
+                //         .route(post().to(create_model_internal_v1_0::create_model_internal))
+                //         .route(get().to(list_model_internal_v1_0::list_model_internal)),
+                // )
+                // .service(
+                //     resource("/{model_uuid}/internal")
+                //         .route(get().to(get_model_internal_v1_0::get_model_internal))
+                //         .route(delete().to(delete_model_internal_v1_0::delete_model_internal)),
+                // )
+                // .service(
+                //     resource("/{model_uuid}/request")
+                //         .route(put().to(request_model_v1_0::request_model)),
+                // )
+                // .service(
+                //     resource("/{model_uuid}/train").route(put().to(train_model_v1_0::train_model)),
+                // )
                 .service(
                     scope("/{model_uuid}/task")
                         .service(
                             resource("/train")
                                 .route(post().to(create_train_task_v1_0::create_train_task)),
-                        )
-                        .service(
-                            resource("/request")
-                                .route(post().to(create_request_task_v1_0::create_request_task)),
                         )
                         .service(
                             resource("/checkpoint_save")

@@ -15,8 +15,8 @@
 #![forbid(unsafe_code)]
 
 mod api;
-mod config;
 mod core;
+mod config;
 mod database;
 mod hanami_interaction;
 
@@ -25,7 +25,6 @@ use std::fs;
 
 use log::LevelFilter;
 
-use core::model_handler::*;
 use core::processing::worker_handler;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -45,8 +44,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .lock()
         .expect("mutex poisoned");
     drop(worker_handler);
-    let model_data_handler = MODEL_HANDLER.write().expect("mutex poisoned");
-    drop(model_data_handler);
 
     database::init_database()?;
 
