@@ -17,7 +17,7 @@ use tokio::runtime::Builder;
 use tokio::task::LocalSet;
 
 use crate::config;
-use crate::database::model_table;
+use crate::database::instance_table;
 
 use ainari_api::common_functions::convert_uuid;
 use ainari_api_structs::host_structs::UuidList;
@@ -31,7 +31,7 @@ use ainari_common::error::AinariError;
 /// 1. Creates a Tokio runtime for asynchronous operations
 /// 2. Retrieves system endpoints from Miko
 /// 3. Gathers information about the host system
-/// 4. Collects UUIDs of deleted models from the database
+/// 4. Collects UUIDs of deleted instances from the database
 /// 5. Registers the host with Hanami using the collected information
 ///
 /// # Errors
@@ -63,21 +63,21 @@ pub fn register_host() -> Result<(), AinariError> {
 
     log::debug!("read host-name: {host_name}");
 
-    // Retrieve list of deleted models from the database
-    let deleted_models = match model_table::list_deleted_models() {
-        Ok(models) => models,
+    // Retrieve list of deleted instances from the database
+    let deleted_instances = match instance_table::list_deleted_instances() {
+        Ok(instances) => instances,
         Err(e) => {
-            log::error!("Failed to get list of models form database: '{e}'");
+            log::error!("Failed to get list of instances form database: '{e}'");
             return Err(AinariError::InternalError("Internal Error".to_string()));
         }
     };
 
-    // Prepare a list of UUIDs for deleted models
+    // Prepare a list of UUIDs for deleted instances
     let mut resp = UuidList { list: Vec::new() };
 
-    // Convert each model UUID to the required format
-    for model in deleted_models {
-        let uuid = match convert_uuid(&model.uuid) {
+    // Convert each instance UUID to the required format
+    for instance in deleted_instances {
+        let uuid = match convert_uuid(&instance.uuid) {
             Ok(uuid) => uuid,
             Err(e) => {
                 log::error!("Failed to convert UUID: '{e}'");

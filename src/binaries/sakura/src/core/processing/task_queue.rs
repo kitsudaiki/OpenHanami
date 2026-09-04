@@ -27,8 +27,6 @@ use super::tasks::Task;
 /// ordering for task processing.
 #[derive(Default, Debug)]
 pub struct TaskQueue {
-    /// The underlying queue storing tasks wrapped in `Arc<Mutex<Task>>`.
-    /// The `VecDeque` provides efficient push/pop operations from both ends.
     pub queue: VecDeque<Arc<Mutex<Task>>>,
 }
 
@@ -70,10 +68,10 @@ impl TaskQueue {
     /// # Returns
     ///
     /// * `usize` - The number of tasks in the queue
-    pub fn len(&self) -> usize {
+    pub fn get_number_open_tasks(&self) -> usize {
         self.queue.len()
     }
-
+    
     /// Removed all remaining entries from the queue
     pub fn clear(&mut self) {
         self.queue.clear();
@@ -93,6 +91,7 @@ pub fn init_task_queue() -> TaskQueue {
         queue: VecDeque::new(),
     }
 }
+
 #[cfg(test)]
 mod tests {
     use ainari_common::secret::Secret;
@@ -104,12 +103,13 @@ mod tests {
 
     #[test]
     fn test_add_and_get() {
-        let model_uuid = Uuid::new_v4();
+        let instance_uuid = Uuid::new_v4();
         let task_queue: Arc<Mutex<TaskQueue>> = Arc::new(Mutex::new(init_task_queue()));
         let mut queue = task_queue.lock().expect("mutex poisoned");
         let uuid1 = Uuid::new_v4();
         let uuid2 = Uuid::new_v4();
         let secret = Secret::from("asdf");
+        let resource_type = TaskResourceType::Instance;
 
         let info1 = CheckpointSaveInfo {
             onsen_address: "127.0.0.1".to_string(),
@@ -124,14 +124,16 @@ mod tests {
 
         let task1 = Task {
             uuid: uuid1,
-            model_uuid,
+            resouce_uuid: instance_uuid.clone(),
+            resource_type: resource_type.clone(),
             name: "task1".to_string(),
             info: TaskVariant::CheckpointSave(info1),
             meta: TaskMeta::new(1, 1, 1, 0),
         };
         let task2 = Task {
             uuid: uuid2,
-            model_uuid,
+            resouce_uuid: instance_uuid.clone(),
+            resource_type: resource_type.clone(),
             name: "task2".to_string(),
             info: TaskVariant::CheckpointSave(info2),
             meta: TaskMeta::new(1, 1, 1, 0),

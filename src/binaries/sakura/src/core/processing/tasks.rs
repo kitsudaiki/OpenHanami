@@ -32,12 +32,11 @@ use ainari_dataset::file_encryption::{decrypt_file, encrypt_file};
 use crate::config;
 use crate::database::task_table;
 
-use super::super::processing::worker_queue::*;
+use super::super::processing::task_queue::*;
 
-/// Represents the information needed for a training task.
-/// Contains input and output dataset handles and a temporary directory path.
+
 #[derive(Debug)]
-pub struct TrainInfo {
+pub struct CloudHypervisorInstanceCreateInfo {
     pub inputs: HashMap<String, DataSetFileReadHandle>,
     pub outputs: HashMap<String, DataSetFileReadHandle>,
     pub temp_dir: String,
@@ -75,13 +74,8 @@ pub struct CheckpointRestoreInfo {
 /// Each variant contains different information relevant to that type of task.
 #[derive(Debug)]
 pub enum TaskVariant {
-    /// Training task variant containing training-specific information.
-    Training(TrainInfo),
-    /// Request task variant containing request-specific information.
-    Request(Box<RequestInfo>),
-    /// Checkpoint save task variant containing checkpoint save information.
+    CloudHypervisorInstanceCreate(CloudHypervisorInstanceCreateInfo),
     CheckpointSave(CheckpointSaveInfo),
-    /// Checkpoint restore task variant containing checkpoint restore information.
     CheckpointRestore(CheckpointRestoreInfo),
 }
 
@@ -89,25 +83,16 @@ pub enum TaskVariant {
 /// Includes counters for cycles and epochs, timestamps, and completion status.
 #[derive(Debug)]
 pub struct TaskMeta {
-    /// Total number of cycles per epoch for this task.
     pub number_of_cycles: u64,
-    /// Total number of epochs for this task.
     pub number_of_epochs: u64,
-    /// Number of cycles completed so far.
     pub number_of_finished_cycles: u64,
-    /// Number of epochs completed so far.
     pub number_of_finished_epochs: u64,
-    /// Time length for the task in input-values.
     pub time_length: u64,
-    /// Forecast length for the task in input-values.
     pub forecast_length: u64,
 
-    /// Counter for tracking task cycles across all epochs.
     pub task_cycle_counter: u64,
 
-    /// Flag indicating whether the task is finished.
     pub is_finished: bool,
-    /// Timestamp of the previous update to track progress updates.
     pub prev_timestamp: std::time::Instant,
 }
 
@@ -146,22 +131,39 @@ impl TaskMeta {
 }
 
 /// Represents a task that can be executed by the system.
-/// Contains a unique identifier, model identifier, task information, and metadata.
+/// Contains a unique identifier, instance identifier, task information, and metadata.
 #[derive(Debug)]
 pub struct Task {
-    /// Unique identifier for the task.
     pub uuid: Uuid,
-    /// Identifier for the model associated with this task.
-    pub model_uuid: Uuid,
-    /// Human-readable name for the task.
+    pub resouce_uuid: Uuid,
+    pub resource_type: TaskResourceType,
     #[allow(dead_code)]
     pub name: String,
 
-    /// Variant-specific information for this task.
     pub info: TaskVariant,
-    /// Metadata for tracking the progress and state of this task.
     pub meta: TaskMeta,
 }
+
+/// Processes a worker task according to its type.
+///
+/// This function handles the execution of the task based on its type (Train, Process, or Backpropagate).
+/// It performs the appropriate operation on the task's block and then finalizes the task.
+/// If the task requires updating a finish counter, it does so after finalization.
+///
+/// # Arguments
+/// * `task` - A reference to the worker task to be processed
+///
+/// # Returns
+/// * `Result<(), AinariError>` - Ok(()) if processing succeeds, Err(AinariError) if an error occurs
+pub async fn process_task(task: &mut Task) -> Result<(), AinariError> {
+
+    task.start_task().await?;
+
+    task.finalize_task().await?;
+
+    Ok(())
+}
+
 
 impl Task {
     // ==================================================================================================
@@ -171,39 +173,24 @@ impl Task {
     /// # Returns
     ///
     /// `true` if the task should continue execution, `false` if it should pause or stop.
-    pub fn start_task(&mut self) -> bool {
+    pub async fn start_task(&mut self) -> Result<(), AinariError> {
         // check if task was aborted
         if task_table::is_aborted(&self.uuid) {
-            return false;
+            return Ok(());
         }
 
         self.meta.prev_timestamp = Instant::now();
         let _ = task_table::update_task_state(&self.uuid, &TaskState::Active);
 
         match &mut self.info {
-            TaskVariant::Training(task_info) => {
-                true
-            }
-            TaskVariant::Request(task_info) => {
-                true
+            TaskVariant::CloudHypervisorInstanceCreate(task_info) => {
+                Ok(())
             }
             TaskVariant::CheckpointSave(task_info) => {
-                handle_checkpoint_save_task(
-                    &self.uuid,
-                    &self.model_uuid,
-                    &mut self.meta,
-                    task_info,
-                );
-                false
+                Ok(())
             }
             TaskVariant::CheckpointRestore(task_info) => {
-                handle_checkpoint_restore_task(
-                    &self.uuid,
-                    &self.model_uuid,
-                    &mut self.meta,
-                    task_info,
-                );
-                false
+                Ok(())
             }
         }
     }
@@ -211,59 +198,52 @@ impl Task {
     /// Finalizes the task, performing cleanup and updating the task state.
     /// For request tasks, it encrypts and uploads the results.
     /// For training tasks, it cleans up temporary files.
-    pub fn finalize_task(&mut self) {
-        if let TaskVariant::Request(task_info) = &mut self.info {
-            let rt = Builder::new_current_thread()
-                .enable_all() // I/O & timers
-                .build()
-                .expect("failed to build runtime");
+    pub async fn finalize_task(&mut self) -> Result<(), AinariError> {
+        // if let TaskVariant::Request(task_info) = &mut self.info {
+        //     let rt = Builder::new_current_thread()
+        //         .enable_all() // I/O & timers
+        //         .build()
+        //         .expect("failed to build runtime");
 
-            // LocalSet allows spawn_local to work
-            let local = LocalSet::new();
-            let upload_resp = local.block_on(&rt, async {
-                encrypt_file(
-                    &task_info.results.link.local_file_path,
-                    &task_info.results.link.local_encrypted_file_path,
-                    &task_info.output_secret,
-                )
-                .await?;
-                upload_file(
-                    &task_info.results.link.onsen_address,
-                    &task_info.results.link.remote_file_path,
-                    &task_info.results.link.local_encrypted_file_path,
-                )
-                .await
-            });
+        //     // LocalSet allows spawn_local to work
+        //     let local = LocalSet::new();
+        //     let upload_resp = local.block_on(&rt, async {
+        //         encrypt_file(
+        //             &task_info.results.link.local_file_path,
+        //             &task_info.results.link.local_encrypted_file_path,
+        //             &task_info.output_secret,
+        //         )
+        //         .await?;
+        //         upload_file(
+        //             &task_info.results.link.onsen_address,
+        //             &task_info.results.link.remote_file_path,
+        //             &task_info.results.link.local_encrypted_file_path,
+        //         )
+        //         .await
+        //     });
 
-            // delete temp-files
-            remove_dir_all(&task_info.temp_dir);
+        //     // delete temp-files
+        //     remove_dir_all(&task_info.temp_dir);
 
-            // handle result
-            match upload_resp {
-                Ok(()) => {}
-                Err(_) => {
-                    let _ = task_table::update_task_state(&self.uuid, &TaskState::Error);
-                    let _ = task_table::update_task_progress(
-                        &self.uuid,
-                        &(self.meta.number_of_epochs as i64),
-                        &(self.meta.number_of_cycles as i64),
-                    );
-                    return;
-                }
-            }
-        }
+        //     // handle result
+        //     match upload_resp {
+        //         Ok(()) => {}
+        //         Err(_) => {
+        //             let _ = task_table::update_task_state(&self.uuid, &TaskState::Error);
+        //             let _ = task_table::update_task_progress(
+        //                 &self.uuid,
+        //                 &(self.meta.number_of_epochs as i64),
+        //                 &(self.meta.number_of_cycles as i64),
+        //             );
+        //             return;
+        //         }
+        //     }
+        // }
 
-        if let TaskVariant::Training(task_info) = &mut self.info {
-            // delete temp-files
-            remove_dir_all(&task_info.temp_dir);
-        }
 
         let _ = task_table::update_task_state(&self.uuid, &TaskState::Finished);
-        let _ = task_table::update_task_progress(
-            &self.uuid,
-            &(self.meta.number_of_epochs as i64),
-            &(self.meta.number_of_cycles as i64),
-        );
+
+        Ok(())
     }
 
     /// Finishes the current cycle of the task and prepares for the next cycle.
@@ -308,20 +288,20 @@ impl Task {
     }
 }
 
-/// Handles the task of saving a model checkpoint.
+/// Handles the task of saving a instance checkpoint.
 ///
-/// This function creates a checkpoint of the model, encrypts it, and uploads it to the specified
+/// This function creates a checkpoint of the instance, encrypts it, and uploads it to the specified
 /// storage location. It manages temporary files and updates the task state in the database.
 ///
 /// # Arguments
 ///
 /// * `task_uuid` - Unique identifier for the task
-/// * `model_uuid` - Unique identifier for the model
+/// * `instance_uuid` - Unique identifier for the instance
 /// * `_` - Unused TaskMeta parameter (kept for interface consistency)
 /// * `task_info` - Mutable reference to checkpoint save information containing storage details
 fn handle_checkpoint_save_task(
     task_uuid: &Uuid,
-    model_uuid: &Uuid,
+    instance_uuid: &Uuid,
     _: &mut TaskMeta,
     task_info: &mut CheckpointSaveInfo,
 ) {
@@ -329,13 +309,13 @@ fn handle_checkpoint_save_task(
     let local_temp_file_path = format!(
         "{}/{}",
         config::CONFIG.storage.tempfile_location,
-        model_uuid
+        instance_uuid
     );
     let local_encrypted_temp_file_path = format!("{local_temp_file_path}_encrypted");
 
     {
-        // let model_handler = MODEL_HANDLER.read().expect("mutex poisoned");
-        // match model_handler.create_checkpoint(model_uuid, &local_temp_file_path) {
+        // let instance_handler = MODEL_HANDLER.read().expect("mutex poisoned");
+        // match instance_handler.create_checkpoint(instance_uuid, &local_temp_file_path) {
         //     Ok(()) => {}
         //     Err(_) => {
         //         let _ = fs::remove_file(&local_temp_file_path);
@@ -385,20 +365,19 @@ fn handle_checkpoint_save_task(
     let _ = fs::remove_file(&local_encrypted_temp_file_path);
 }
 
-/// Handles the task of restoring a model from a checkpoint.
+/// Handles the task of restoring a instance from a checkpoint.
 ///
-/// This function downloads an encrypted checkpoint file, decrypts it, and restores the model from
+/// This function downloads an encrypted checkpoint file, decrypts it, and restores the instance from
 /// the checkpoint. It manages temporary files and updates the task state in the database.
 ///
 /// # Arguments
 ///
 /// * `task_uuid` - Unique identifier for the task
-/// * `model_uuid` - Unique identifier for the model
+/// * `instance_uuid` - Unique identifier for the instance
 /// * `_` - Unused TaskMeta parameter (kept for interface consistency)
 /// * `task_info` - Mutable reference to checkpoint restore information containing storage details
 fn handle_checkpoint_restore_task(
     task_uuid: &Uuid,
-    model_uuid: &Uuid,
     _: &mut TaskMeta,
     task_info: &mut CheckpointRestoreInfo,
 ) {
@@ -406,7 +385,7 @@ fn handle_checkpoint_restore_task(
     let local_temp_file_path = format!(
         "{}/{}",
         config::CONFIG.storage.tempfile_location,
-        model_uuid
+        Uuid::new_v4()
     );
     let local_encrypted_temp_file_path = format!("{local_temp_file_path}_encrypted");
 
@@ -446,9 +425,9 @@ fn handle_checkpoint_restore_task(
             }
         }
 
-        // // restore model from the downloaded and decrypted checkpoint-file
-        // let mut model_handler = MODEL_HANDLER.write().expect("mutex poisoned");
-        // match model_handler.restore_checkpoint(model_uuid, &local_temp_file_path) {
+        // // restore instance from the downloaded and decrypted checkpoint-file
+        // let mut instance_handler = MODEL_HANDLER.write().expect("mutex poisoned");
+        // match instance_handler.restore_checkpoint(instance_uuid, &local_temp_file_path) {
         //     Ok(()) => {}
         //     Err(_) => {
         //         let _ = task_table::update_task_state(task_uuid, &TaskState::Error);

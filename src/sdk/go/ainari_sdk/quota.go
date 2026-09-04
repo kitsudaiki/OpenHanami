@@ -36,10 +36,10 @@ func ListQuota(context AccessContext) (map[string]interface{}, error) {
 	return SendGet(context, context.MikoAddress, path, vars)
 }
 
-func SetQuota(context AccessContext, userId string, maxModel, maxDataset, maxCheckpoint, maxSecret, maxTaskqueue int) (map[string]interface{}, error) {
+func SetQuota(context AccessContext, userId string, maxInstance, maxDataset, maxCheckpoint, maxSecret, maxTaskqueue int) (map[string]interface{}, error) {
 	path := fmt.Sprintf("v1alpha/quota/%s/admin", userId)
 	jsonBody := map[string]interface{}{
-		"max_model":    maxModel,
+		"max_instance":    maxInstance,
 		"max_dataset":    maxDataset,
 		"max_checkpoint": maxCheckpoint,
 		"max_secret":     maxSecret,

@@ -16,7 +16,7 @@ use apistos::web::{Scope, delete, get, post, resource, scope};
 
 use ainari_api::endpoints::*;
 
-use crate::api::http_endpoints::model::*;
+use crate::api::http_endpoints::instance::*;
 use crate::api::http_endpoints::sakura_host::*;
 
 pub fn v1alpha_routes() -> Scope {
@@ -29,17 +29,17 @@ pub fn v1alpha_routes() -> Scope {
                 .service(resource("").route(get().to(is_ready_v1_0::get_ready_status))),
         )
         .service(
-            scope("/model")
+            scope("/instance")
                 .service(
                     resource("")
-                        .route(post().to(create_model_v1_0::create_model))
-                        .route(get().to(list_model_v1_0::list_model)),
+                        .route(post().to(create_instance_v1_0::create_instance))
+                        .route(get().to(list_instance_v1_0::list_instance)),
                 )
-                .service(resource("/count").route(get().to(get_model_count_v1_0::get_model_count)))
+                .service(resource("/count").route(get().to(get_instance_count_v1_0::get_instance_count)))
                 .service(
-                    resource("/{model_uuid}")
-                        .route(get().to(get_model_v1_0::get_model))
-                        .route(delete().to(delete_model_v1_0::delete_model)),
+                    resource("/{instance_uuid}")
+                        .route(get().to(get_instance_v1_0::get_instance))
+                        .route(delete().to(delete_instance_v1_0::delete_instance)),
                 ),
         )
         .service(

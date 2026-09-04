@@ -21,9 +21,41 @@ use uuid::Uuid;
 use validator::Validate;
 
 #[derive(Serialize, Deserialize, Debug, Clone, JsonSchema, ApiComponent)]
+pub enum TaskResourceType {
+    Instance = 0,
+    Image = 1,
+    Volume = 2,
+}
+
+impl fmt::Display for TaskResourceType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let s = match self {
+            TaskResourceType::Instance => "Instance",
+            TaskResourceType::Image => "Image",
+            TaskResourceType::Volume => "Volume",
+        };
+        write!(f, "{s}")
+    }
+}
+
+impl FromStr for TaskResourceType {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "Instance" => Ok(TaskResourceType::Instance),
+            "Image" => Ok(TaskResourceType::Image),
+            "Volume" => Ok(TaskResourceType::Volume),
+            _ => Err(()),
+        }
+    }
+}
+
+
+#[derive(Serialize, Deserialize, Debug, Clone, JsonSchema, ApiComponent)]
 pub enum TaskType {
-    Train = 0,
-    Request = 1,
+    InstanceCreate = 0,
+    InstanceDelete = 1,
     CheckpointSave = 2,
     CheckpointRestore = 3,
 }
@@ -31,8 +63,8 @@ pub enum TaskType {
 impl fmt::Display for TaskType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let s = match self {
-            TaskType::Train => "TrainTask",
-            TaskType::Request => "RequestTask",
+            TaskType::InstanceCreate => "InstanceCreateTask",
+            TaskType::InstanceDelete => "InstanceDeleteTask",
             TaskType::CheckpointSave => "CheckpointSaveTask",
             TaskType::CheckpointRestore => "CheckpointRestoreTask",
         };
@@ -45,8 +77,8 @@ impl FromStr for TaskType {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "TrainTask" => Ok(TaskType::Train),
-            "RequestTask" => Ok(TaskType::Request),
+            "InstanceCreateTask" => Ok(TaskType::InstanceCreate),
+            "InstanceDeleteTask" => Ok(TaskType::InstanceDelete),
             "CheckpointSaveTask" => Ok(TaskType::CheckpointSave),
             "CheckpointRestoreTask" => Ok(TaskType::CheckpointRestore),
             _ => Err(()),
@@ -173,10 +205,6 @@ pub struct TaskResp {
     pub name: String,
     pub task_type: TaskType,
     pub state: TaskState,
-    pub total_number_of_epochs: i64,
-    pub current_epoch: i64,
-    pub total_number_of_cycles: i64,
-    pub current_cycle: i64,
     pub queued_at: Option<String>,
     pub started_at: Option<String>,
     pub finished_at: Option<String>,
@@ -191,8 +219,6 @@ pub struct TaskBasicResp {
     pub name: String,
     pub task_type: TaskType,
     pub state: TaskState,
-    pub total_number_of_epochs: i64,
-    pub current_epoch: i64,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, JsonSchema, ApiComponent)]

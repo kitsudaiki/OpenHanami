@@ -21,7 +21,7 @@ pub mod dataset_structs;
 pub mod endpoints_structs;
 pub mod file_structs;
 pub mod host_structs;
-pub mod model_structs;
+pub mod instance_structs;
 pub mod project_structs;
 pub mod proxy_structs;
 pub mod quota_structs;

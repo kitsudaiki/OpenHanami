@@ -13,30 +13,30 @@
 // limitations under the License.
 
 pub mod db_handle;
-pub mod model_table;
+pub mod instance_table;
 pub mod task_table;
 
 use std::io;
 
 use ainari_common::enums;
 
-/// Initializes the database by setting up required tables and clearing existing model data.
+/// Initializes the database by setting up required tables and clearing existing instance data.
 ///
 /// This function performs several critical operations:
-/// 1. Initializes the model table in the database.
+/// 1. Initializes the instance table in the database.
 /// 2. Initializes the task table in the database.
-/// 3. Clears all existing model data from the database to ensure consistency after a restart.
+/// 3. Clears all existing instance data from the database to ensure consistency after a restart.
 ///
 /// # Returns
 ///
 /// * `Ok(())` - If all database operations complete successfully.
 /// * `Err(Box<dyn std::error::Error>)` - If any database operation fails.
 pub fn init_database() -> Result<(), Box<dyn std::error::Error>> {
-    // Initialize model-table
-    match model_table::init_model_table() {
-        Ok(_) => log::info!("Initialized model-database-table"),
+    // Initialize instance-table
+    match instance_table::init_instance_table() {
+        Ok(_) => log::info!("Initialized instance-database-table"),
         Err(e) => {
-            log::error!("Failed to initialize model-database-table: {e}");
+            log::error!("Failed to initialize instance-database-table: {e}");
             return Err(e);
         }
     };
@@ -49,13 +49,13 @@ pub fn init_database() -> Result<(), Box<dyn std::error::Error>> {
         }
     };
 
-    // Clear all model from the database. This is necessary because after a restart,
-    // all models are broken and the database doesn't match the real world.
-    // To "fix" this issue, all models have to be removed from the database as well.
-    match model_table::delete_all_model() {
+    // Clear all instance from the database. This is necessary because after a restart,
+    // all instances are broken and the database doesn't match the real world.
+    // To "fix" this issue, all instances have to be removed from the database as well.
+    match instance_table::delete_all_instance() {
         Ok(_) => {}
         Err(enums::DbError::InternalError) => {
-            let msg = "Error while deleting all model from DB".to_string();
+            let msg = "Error while deleting all instance from DB".to_string();
             log::error!("{msg}");
             let error = io::Error::other(msg);
             return Err(Box::new(error));

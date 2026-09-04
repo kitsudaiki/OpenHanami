@@ -14,7 +14,7 @@
 
 pub mod db_handle;
 pub mod host_table;
-pub mod meta_model_table;
+pub mod meta_instance_table;
 
 /// Initializes all database tables required for the application.
 ///
@@ -35,11 +35,11 @@ pub fn init_database() -> Result<(), Box<dyn std::error::Error>> {
         }
     };
 
-    // Initialize meta model table
-    match meta_model_table::init_meta_model_table() {
-        Ok(_) => log::info!("Initialized model-database-table"),
+    // Initialize meta instance table
+    match meta_instance_table::init_meta_instance_table() {
+        Ok(_) => log::info!("Initialized instance-database-table"),
         Err(e) => {
-            log::error!("Failed to initialize model-database-table: {e}");
+            log::error!("Failed to initialize instance-database-table: {e}");
             return Err(e);
         }
     };

@@ -16,8 +16,8 @@ use apistos::web::{Scope, delete, get, post, put, resource, scope};
 
 use ainari_api::endpoints::*;
 
-use crate::api::http_endpoints::model::task::*;
-use crate::api::http_endpoints::model::*;
+use crate::api::http_endpoints::task::*;
+use crate::api::http_endpoints::instance::*;
 
 pub fn v1alpha_routes() -> Scope {
     scope("/v1alpha")
@@ -29,43 +29,36 @@ pub fn v1alpha_routes() -> Scope {
                 .service(resource("").route(get().to(is_ready_v1_0::get_ready_status))),
         )
         .service(
-            scope("/model")
-                // .service(
-                //     resource("/internal")
-                //         .route(post().to(create_model_internal_v1_0::create_model_internal))
-                //         .route(get().to(list_model_internal_v1_0::list_model_internal)),
-                // )
-                // .service(
-                //     resource("/{model_uuid}/internal")
-                //         .route(get().to(get_model_internal_v1_0::get_model_internal))
-                //         .route(delete().to(delete_model_internal_v1_0::delete_model_internal)),
-                // )
-                // .service(
-                //     resource("/{model_uuid}/request")
-                //         .route(put().to(request_model_v1_0::request_model)),
-                // )
-                // .service(
-                //     resource("/{model_uuid}/train").route(put().to(train_model_v1_0::train_model)),
-                // )
+            scope("/instance")
                 .service(
-                    scope("/{model_uuid}/task")
-                        .service(
-                            resource("/train")
-                                .route(post().to(create_train_task_v1_0::create_train_task)),
-                        )
-                        .service(
-                            resource("/checkpoint_save")
-                                .route(post().to(checkpoint_save_task_v1_0::checkpoint_save_task)),
-                        )
-                        .service(resource("/checkpoint_restore").route(
-                            post().to(checkpoint_restore_task_v1_0::checkpoint_restore_task),
-                        ))
-                        .service(resource("/{task_uuid}").route(get().to(get_task_v1_0::get_task)))
-                        .service(
-                            resource("/{task_uuid}/abort")
-                                .route(put().to(abort_task_v1_0::abort_task)),
-                        )
-                        .service(resource("").route(get().to(list_task_v1_0::list_task))),
-                ),
+                    resource("/internal")
+                        .route(post().to(reserve_instance_internal_v1_0::create_instance_internal))
+                        .route(get().to(list_instance_internal_v1_0::list_instance_internal)),
+                )
+                .service(
+                    resource("/{instance_uuid}/internal")
+                        .route(get().to(get_instance_internal_v1_0::get_instance_internal))
+                        .route(delete().to(delete_instance_internal_v1_0::delete_instance_internal)),
+                )
+                .service(
+                    resource("/")
+                        .route(post().to(create_instance_v1_0::create_instance)),
+                )
+                .service(
+                    resource("/checkpoint_save")
+                        .route(post().to(checkpoint_save_v1_0::checkpoint_save_task)),
+                )
+                .service(resource("/checkpoint_restore").route(
+                    post().to(checkpoint_restore_v1_0::checkpoint_restore_task),
+                )),
+        )
+        .service(
+            scope("/task")
+                .service(resource("/{task_uuid}").route(get().to(get_task_v1_0::get_task)))
+                .service(
+                    resource("/{task_uuid}/abort")
+                        .route(put().to(abort_task_v1_0::abort_task)),
+                )
+                .service(resource("").route(get().to(list_task_v1_0::list_task))),
         )
 }

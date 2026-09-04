@@ -36,12 +36,12 @@ pub async fn list_proxy(context: UserContext) -> Result<Json<ProxyListResp>, Err
 
     for proxy in proxys {
         let uuid = convert_uuid(&proxy.uuid)?;
-        let model_uuid = convert_uuid(&proxy.model_uuid)?;
+        let instance_uuid = convert_uuid(&proxy.instance_uuid)?;
         let obj = ProxyBasicResp {
             uuid,
             port: proxy.port as u16,
             target_address: proxy.target_address,
-            model_uuid,
+            instance_uuid,
         };
 
         resp.proxys.push(obj);
