@@ -38,7 +38,6 @@ pub async fn delete_instance_internal(
     instance_uuid: Path<Uuid>,
     context: UserContext,
 ) -> Result<NoContent, ErrorResponse> {
-    
     // delete instance from database
     instance_table::delete_instance(&instance_uuid, &context)
         .map_err(|e| map_db_uuid_get_delete_error("instance", &instance_uuid, e))?;

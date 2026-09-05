@@ -35,11 +35,8 @@ pub struct WorkerHandler {
 }
 
 pub fn add_task_to_queue(task: Task) {
-    let mut worker_handler = WORKER_HANDLER
-        .lock()
-        .expect("mutex poisoned");
+    let mut worker_handler = WORKER_HANDLER.lock().expect("mutex poisoned");
 
-    
     let num: u128 = task.resouce_uuid.as_u128();
     let worker_id = num % worker_handler.worker_threads.len() as u128;
 

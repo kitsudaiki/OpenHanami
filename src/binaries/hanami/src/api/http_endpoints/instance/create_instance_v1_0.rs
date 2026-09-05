@@ -116,7 +116,9 @@ pub async fn create_instance(
         &context,
     )
     .map_err(|e| {
-        log::error!("Failed to add instance with UUID '{instance_uuid}' to database with error: {e}.");
+        log::error!(
+            "Failed to add instance with UUID '{instance_uuid}' to database with error: {e}."
+        );
         ErrorResponse::InternalError("Internal Error".to_string())
     })?;
 
@@ -147,8 +149,8 @@ pub async fn create_instance(
 async fn check_quota(context: &UserContext) -> Result<(), ErrorResponse> {
     // Get the current number of meta_instances for the user from the database
     // This count is used to compare against the user's quota limit
-    let current_number_of_meta_instances =
-        meta_instance_table::count_meta_instances(context).map_err(|e| {
+    let current_number_of_meta_instances = meta_instance_table::count_meta_instances(context)
+        .map_err(|e| {
             log::error!("Failed to count meta_instances in database.: {e}");
             ErrorResponse::InternalError("Internal Error".to_string())
         })?;

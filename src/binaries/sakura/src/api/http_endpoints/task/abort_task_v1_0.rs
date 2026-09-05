@@ -49,9 +49,9 @@ pub async fn abort_task(
     let old_task_data = task_table::get_task(&task_uuid, &instance_uuid, &context)
         .map_err(|e| map_db_uuid_get_delete_error("task", &task_uuid, e))?;
 
-    if old_task_data.task_state == TaskState::Aborted.to_string()
-        || old_task_data.task_state == TaskState::Error.to_string()
-        || old_task_data.task_state == TaskState::Finished.to_string()
+    if old_task_data.task_state == TaskState::Aborted
+        || old_task_data.task_state == TaskState::Error
+        || old_task_data.task_state == TaskState::Finished
     {
         let state_str = old_task_data.task_state.to_string();
         let msg =
@@ -67,15 +67,11 @@ pub async fn abort_task(
     let task_data = task_table::get_task(&task_uuid, &instance_uuid, &context)
         .map_err(|e| map_db_uuid_get_delete_error("task", &task_uuid, e))?;
 
-    // convert enums
-    let task_type = super::convert_task_type(&task_data.task_type)?;
-    let task_state = super::convert_task_state(&task_data.task_state)?;
-
     let resp = TaskResp {
         uuid: task_uuid,
         name: task_data.name,
-        task_type,
-        state: task_state,
+        task_type: task_data.task_type,
+        state: task_data.task_state,
         queued_at: task_data.queued_at,
         started_at: task_data.started_at,
         finished_at: task_data.finished_at,

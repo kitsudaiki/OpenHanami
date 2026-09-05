@@ -218,7 +218,9 @@ pub fn list_meta_instances(context: &UserContext) -> QueryResult<Vec<MetaInstanc
         }
     }
 
-    query.select(MetaInstanceEntry::as_select()).load(&mut *conn)
+    query
+        .select(MetaInstanceEntry::as_select())
+        .load(&mut *conn)
 }
 
 /// Counts the number of meta instances that the user has access to.

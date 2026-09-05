@@ -14,18 +14,17 @@
 
 use rand::RngExt;
 use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{Arc, Mutex};
 use std::thread::{self, JoinHandle};
 use std::time::Duration;
 use tokio::runtime::Builder;
 use tokio::task::LocalSet;
-use std::sync::{Arc, Mutex};
 
 use ainari_common::constants::*;
 use ainari_common::error::AinariError;
 
-use super::tasks::*;
 use super::task_queue::*;
-
+use super::tasks::*;
 
 /// Represents a worker thread that processes tasks from the worker queue.
 ///
@@ -55,13 +54,12 @@ impl WorkerThread {
         // Create an atomic boolean to control the thread's running state
         let running = Arc::new(AtomicBool::new(true));
         let running_clone = Arc::clone(&running);
-        
+
         let queue = Arc::new(Mutex::new(init_task_queue()));
         let queue_clone = Arc::clone(&queue);
 
         // Spawn the worker thread
         let handle = thread::spawn(move || {
-
             log::info!("Started Worker-Thread.");
 
             // Build a single-threaded Tokio runtime specifically for this OS thread

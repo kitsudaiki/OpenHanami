@@ -51,15 +51,11 @@ pub async fn list_task(
     let mut resp = TaskListResp { tasks: Vec::new() };
 
     for task in tasks {
-        let uuid = convert_uuid(&task.uuid)?;
-        let task_type = super::convert_task_type(&task.task_type)?;
-        let task_state = super::convert_task_state(&task.task_state)?;
-
         let obj = TaskBasicResp {
-            uuid,
+            uuid: task.uuid,
             name: task.name,
-            task_type,
-            state: task_state,
+            task_type: task.task_type,
+            state: task.task_state,
         };
 
         resp.tasks.push(obj);

@@ -40,12 +40,13 @@ pub async fn list_instance_internal(
         }
     };
 
-    let mut resp = InstanceListResp { instances: Vec::new() };
+    let mut resp = InstanceListResp {
+        instances: Vec::new(),
+    };
 
     for instance in instances {
-        let uuid = convert_uuid(&instance.uuid)?;
         let obj = InstanceBasicResp {
-            uuid,
+            uuid: instance.uuid,
             name: instance.name,
             proxy_port: 0,
         };

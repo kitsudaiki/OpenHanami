@@ -34,8 +34,8 @@ use ainari_clients::proxy as proxy_clients;
 )]
 pub async fn list_instance(context: UserContext) -> Result<Json<InstanceListResp>, ErrorResponse> {
     // get instances from db
-    let instances =
-        meta_instance_table::list_meta_instances(&context).map_err(|e| map_db_list_error("hosts", e))?;
+    let instances = meta_instance_table::list_meta_instances(&context)
+        .map_err(|e| map_db_list_error("hosts", e))?;
 
     // get endpoints from miko
     let miko_endpoint = &config::CONFIG.miko;
@@ -44,7 +44,9 @@ pub async fn list_instance(context: UserContext) -> Result<Json<InstanceListResp
         .map_err(map_ainari_error_to_api_response)?;
 
     // prepare response
-    let mut resp = InstanceListResp { instances: Vec::new() };
+    let mut resp = InstanceListResp {
+        instances: Vec::new(),
+    };
 
     // fill reponse
     for instance in instances {

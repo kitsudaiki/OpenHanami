@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-pub mod reserve_instance_internal_v1_0;
-pub mod delete_instance_internal_v1_0;
-pub mod get_instance_internal_v1_0;
-pub mod list_instance_internal_v1_0;
 pub mod checkpoint_restore_v1_0;
 pub mod checkpoint_save_v1_0;
 pub mod create_instance_v1_0;
+pub mod delete_instance_internal_v1_0;
+pub mod get_instance_internal_v1_0;
+pub mod list_instance_internal_v1_0;
+pub mod reserve_instance_internal_v1_0;
 
 use std::fs;
 use std::str::FromStr;
@@ -40,9 +40,8 @@ use ainari_clients::onsen_file_transfer::*;
 use ainari_clients::secret::get_secret_payload;
 use ainari_common::config::Endpoint;
 use ainari_common::secret::Secret;
-use ainari_dataset::dataset_io::{ DataSetFileReadHandle, read_data_set_file};
+use ainari_dataset::dataset_io::{DataSetFileReadHandle, read_data_set_file};
 use ainari_dataset::file_encryption::decrypt_file;
-
 
 /// Retrieves a secret from the secret service.
 ///

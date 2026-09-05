@@ -134,7 +134,8 @@ pub async fn list_instance(
         .await;
 
     // Handle the response and return the result
-    let resp: Result<InstanceListResp, AinariError> = handle_response(response, "instance", "").await;
+    let resp: Result<InstanceListResp, AinariError> =
+        handle_response(response, "instance", "").await;
     resp
 }
 

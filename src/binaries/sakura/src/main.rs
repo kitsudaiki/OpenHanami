@@ -15,8 +15,8 @@
 #![forbid(unsafe_code)]
 
 mod api;
-mod core;
 mod config;
+mod core;
 mod database;
 mod hanami_interaction;
 

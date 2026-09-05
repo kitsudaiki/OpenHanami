@@ -77,14 +77,7 @@ pub fn register_host() -> Result<(), AinariError> {
 
     // Convert each instance UUID to the required format
     for instance in deleted_instances {
-        let uuid = match convert_uuid(&instance.uuid) {
-            Ok(uuid) => uuid,
-            Err(e) => {
-                log::error!("Failed to convert UUID: '{e}'");
-                return Err(AinariError::InternalError("Internal Error".to_string()));
-            }
-        };
-        resp.list.push(uuid);
+        resp.list.push(instance.uuid);
     }
 
     // Register the host with Hanami service

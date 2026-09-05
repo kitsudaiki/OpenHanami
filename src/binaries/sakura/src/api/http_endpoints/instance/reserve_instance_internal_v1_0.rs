@@ -45,8 +45,6 @@ pub async fn create_instance_internal(
 
     let instance_uuid = Uuid::new_v4();
 
-
-
     // // add new instance to database
     // match instance_table::add_new_instance(
     //     &instance_uuid,

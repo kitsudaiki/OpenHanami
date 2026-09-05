@@ -34,7 +34,6 @@ use crate::database::task_table;
 
 use super::super::processing::task_queue::*;
 
-
 #[derive(Debug)]
 pub struct CloudHypervisorInstanceCreateInfo {
     pub inputs: HashMap<String, DataSetFileReadHandle>,
@@ -156,14 +155,12 @@ pub struct Task {
 /// # Returns
 /// * `Result<(), AinariError>` - Ok(()) if processing succeeds, Err(AinariError) if an error occurs
 pub async fn process_task(task: &mut Task) -> Result<(), AinariError> {
-
     task.start_task().await?;
 
     task.finalize_task().await?;
 
     Ok(())
 }
-
 
 impl Task {
     // ==================================================================================================
@@ -183,15 +180,9 @@ impl Task {
         let _ = task_table::update_task_state(&self.uuid, &TaskState::Active);
 
         match &mut self.info {
-            TaskVariant::CloudHypervisorInstanceCreate(task_info) => {
-                Ok(())
-            }
-            TaskVariant::CheckpointSave(task_info) => {
-                Ok(())
-            }
-            TaskVariant::CheckpointRestore(task_info) => {
-                Ok(())
-            }
+            TaskVariant::CloudHypervisorInstanceCreate(task_info) => Ok(()),
+            TaskVariant::CheckpointSave(task_info) => Ok(()),
+            TaskVariant::CheckpointRestore(task_info) => Ok(()),
         }
     }
 
@@ -239,7 +230,6 @@ impl Task {
         //         }
         //     }
         // }
-
 
         let _ = task_table::update_task_state(&self.uuid, &TaskState::Finished);
 

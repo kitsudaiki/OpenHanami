@@ -20,6 +20,9 @@ use std::str::FromStr;
 use uuid::Uuid;
 use validator::Validate;
 
+#[cfg(feature = "diesel")]
+use diesel::{AsExpression, FromSqlRow};
+
 #[derive(Serialize, Deserialize, Debug, Clone, JsonSchema, ApiComponent)]
 pub enum TaskResourceType {
     Instance = 0,
@@ -51,13 +54,45 @@ impl FromStr for TaskResourceType {
     }
 }
 
-
-#[derive(Serialize, Deserialize, Debug, Clone, JsonSchema, ApiComponent)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, ApiComponent)]
+#[cfg_attr(feature = "diesel", derive(AsExpression, FromSqlRow))]
+#[cfg_attr(feature = "diesel", diesel(sql_type = diesel::sql_types::Varchar))]
 pub enum TaskType {
     InstanceCreate = 0,
     InstanceDelete = 1,
     CheckpointSave = 2,
     CheckpointRestore = 3,
+}
+
+#[cfg(feature = "diesel")]
+impl diesel::deserialize::FromSql<diesel::sql_types::Varchar, diesel::sqlite::Sqlite> for TaskType {
+    fn from_sql(
+        bytes: <diesel::sqlite::Sqlite as diesel::backend::Backend>::RawValue<'_>,
+    ) -> diesel::deserialize::Result<Self> {
+        let task_type_str = <String as diesel::deserialize::FromSql<
+            diesel::sql_types::Varchar,
+            diesel::sqlite::Sqlite,
+        >>::from_sql(bytes)?;
+
+        std::str::FromStr::from_str(&task_type_str).map_err(|_| {
+            // Diesel expects errors to be boxed, so we cast a String error using .into()
+            format!("Unrecognized task type in database: {}", task_type_str).into()
+        })
+    }
+}
+
+#[cfg(feature = "diesel")]
+impl diesel::serialize::ToSql<diesel::sql_types::Varchar, diesel::sqlite::Sqlite> for TaskType {
+    fn to_sql<'b>(
+        &'b self,
+        out: &mut diesel::serialize::Output<'b, '_, diesel::sqlite::Sqlite>,
+    ) -> diesel::serialize::Result {
+        let task_type_str = self.to_string();
+        out.set_value(task_type_str);
+
+        // Tell Diesel that this value is NOT null
+        Ok(diesel::serialize::IsNull::No)
+    }
 }
 
 impl fmt::Display for TaskType {
@@ -87,6 +122,8 @@ impl FromStr for TaskType {
 }
 
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone, JsonSchema, ApiComponent)]
+#[cfg_attr(feature = "diesel", derive(AsExpression, FromSqlRow))]
+#[cfg_attr(feature = "diesel", diesel(sql_type = diesel::sql_types::Varchar))]
 pub enum TaskState {
     Created = 0,
     Queued = 1,
@@ -94,6 +131,39 @@ pub enum TaskState {
     Aborted = 3,
     Finished = 4,
     Error = 5,
+}
+
+#[cfg(feature = "diesel")]
+impl diesel::deserialize::FromSql<diesel::sql_types::Varchar, diesel::sqlite::Sqlite>
+    for TaskState
+{
+    fn from_sql(
+        bytes: <diesel::sqlite::Sqlite as diesel::backend::Backend>::RawValue<'_>,
+    ) -> diesel::deserialize::Result<Self> {
+        let task_state_str = <String as diesel::deserialize::FromSql<
+            diesel::sql_types::Varchar,
+            diesel::sqlite::Sqlite,
+        >>::from_sql(bytes)?;
+
+        std::str::FromStr::from_str(&task_state_str).map_err(|_| {
+            // Diesel expects errors to be boxed, so we cast a String error using .into()
+            format!("Unrecognized task state in database: {}", task_state_str).into()
+        })
+    }
+}
+
+#[cfg(feature = "diesel")]
+impl diesel::serialize::ToSql<diesel::sql_types::Varchar, diesel::sqlite::Sqlite> for TaskState {
+    fn to_sql<'b>(
+        &'b self,
+        out: &mut diesel::serialize::Output<'b, '_, diesel::sqlite::Sqlite>,
+    ) -> diesel::serialize::Result {
+        let task_state_str = self.to_string();
+        out.set_value(task_state_str);
+
+        // Tell Diesel that this value is NOT null
+        Ok(diesel::serialize::IsNull::No)
+    }
 }
 
 impl fmt::Display for TaskState {

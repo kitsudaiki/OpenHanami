@@ -343,6 +343,7 @@ dependencies = [
  "apistos",
  "apistos-schemars",
  "base64",
+ "diesel",
  "futures",
  "futures-util",
  "log",
@@ -388,10 +389,12 @@ name = "ainari_common"
 version = "0.1.0"
 dependencies = [
  "apistos-schemars",
+ "diesel",
  "hex",
  "serde",
  "serde_json",
  "sha2",
+ "uuid",
  "validator",
 ]
 

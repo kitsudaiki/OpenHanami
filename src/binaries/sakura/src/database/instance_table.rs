@@ -13,15 +13,24 @@
 // limitations under the License.
 
 use chrono::Utc;
+use diesel::backend::Backend;
 use diesel::connection::SimpleConnection;
+use diesel::deserialize::{self, FromSql, FromSqlRow};
+use diesel::expression::AsExpression;
 use diesel::prelude::*;
+use diesel::serialize::{self, Output, ToSql};
+use diesel::sql_types::Varchar;
+use diesel::sqlite::Sqlite;
 use diesel::result::DatabaseErrorKind;
+use std::error::Error;
+use std::str::FromStr;
 use uuid::Uuid;
 
 use crate::database::db_handle;
 
 use ainari_api_structs::user_context::UserContext;
 use ainari_common::enums;
+use ainari_common::objects::DbUuid;
 
 // Define the schema for the instances table
 table! {
@@ -52,15 +61,19 @@ table! {
 #[derive(Insertable, Queryable, Selectable, Debug, PartialEq, Clone)]
 #[diesel(table_name = instances)]
 pub struct InstanceEntry {
-    pub uuid: String,
+    #[diesel(serialize_as = DbUuid, deserialize_as = DbUuid)]
+    pub uuid: Uuid,
     pub name: String,
     pub is_created: bool,
     pub number_of_cores: i64,
     pub size_of_memory: i64,
     pub size_of_disk: i64,
-    pub image_uuid: String,
-    pub seed_uuid: String,
-    pub public_key_uuid: String,
+    #[diesel(serialize_as = DbUuid, deserialize_as = DbUuid)]
+    pub image_uuid: Uuid,
+    #[diesel(serialize_as = DbUuid, deserialize_as = DbUuid)]
+    pub seed_uuid: Uuid,
+    #[diesel(serialize_as = DbUuid, deserialize_as = DbUuid)]
+    pub public_key_uuid: Uuid,
     pub ip_addresses: String,
     pub owner_id: String,
     pub project_id: String,
@@ -84,14 +97,14 @@ pub fn init_instance_table() -> Result<(), Box<dyn std::error::Error>> {
         "CREATE TABLE IF NOT EXISTS instances (
         uuid VARCHAR(40) PRIMARY KEY,
         name VARCHAR(256),
-        is_created -> BOOL
-        number_of_cores -> INTEGER
-        size_of_memory -> INTEGER
-        size_of_disk -> INTEGER
-        image_uuid -> VARCHAR(40)
-        seed_uuid -> VARCHAR(40)
-        public_key_uuid -> VARCHAR(40)
-        ip_addresses -> TEXT
+        is_created BOOL,
+        number_of_cores INTEGER,
+        size_of_memory INTEGER,
+        size_of_disk INTEGER,
+        image_uuid VARCHAR(40),
+        seed_uuid VARCHAR(40),
+        public_key_uuid VARCHAR(40),
+        ip_addresses TEXT,
         owner_id VARCHAR(256),
         project_id VARCHAR(256),
         status VARCHAR(8),
@@ -145,15 +158,15 @@ pub fn add_new_instance(
 
     // Create the new instance entry
     let instance = InstanceEntry {
-        uuid: instance_uuid.to_string().clone(),
+        uuid: instance_uuid.clone(),
         name: instance_name.to_owned(),
         is_created: false,
         number_of_cores: number_of_cores,
         size_of_memory: size_of_memory,
         size_of_disk: size_of_disk,
-        image_uuid: image_uuid.to_string().clone(),
-        seed_uuid: seed_uuid.to_string().clone(),
-        public_key_uuid: public_key_uuid.to_string().clone(),
+        image_uuid: image_uuid.clone(),
+        seed_uuid: seed_uuid.clone(),
+        public_key_uuid: public_key_uuid.clone(),
         ip_addresses: ip_addresses_str,
         owner_id: context.user_id.clone(),
         project_id: context.project_id.clone(),
@@ -167,7 +180,7 @@ pub fn add_new_instance(
     };
 
     // Insert the instance into the database
-    add_instance(&instance)
+    add_instance(instance)
 }
 
 /// Adds a instance entry to the database
@@ -178,7 +191,7 @@ pub fn add_new_instance(
 /// # Returns
 /// * `Ok(usize)` with the number of rows inserted on success
 /// * `Err` with an appropriate error on failure
-pub fn add_instance(instance: &InstanceEntry) -> QueryResult<usize> {
+pub fn add_instance(instance: InstanceEntry) -> QueryResult<usize> {
     let mut conn = db_handle::DB_CONN.lock().expect("mutex poisoned");
     use self::instances::dsl::*;
     diesel::insert_into(instances)
@@ -195,7 +208,10 @@ pub fn add_instance(instance: &InstanceEntry) -> QueryResult<usize> {
 /// # Returns
 /// * `Ok(InstanceEntry)` with the instance on success
 /// * `Err(enums::DbError)` with an appropriate error on failure
-pub fn get_instance(instance_uuid: &Uuid, context: &UserContext) -> Result<InstanceEntry, enums::DbError> {
+pub fn get_instance(
+    instance_uuid: &Uuid,
+    context: &UserContext,
+) -> Result<InstanceEntry, enums::DbError> {
     let mut conn = db_handle::DB_CONN.lock().expect("mutex poisoned");
     use self::instances::dsl::*;
 
@@ -338,7 +354,8 @@ mod tests {
     fn hard_delete_instance(instance_uuid: &Uuid) {
         use self::instances::dsl::*;
         let mut conn = db_handle::DB_CONN.lock().expect("mutex poisoned");
-        let _ = diesel::delete(instances.filter(uuid.eq(instance_uuid.to_string()))).execute(&mut *conn);
+        let _ = diesel::delete(instances.filter(uuid.eq(instance_uuid.to_string())))
+            .execute(&mut *conn);
     }
 
     #[test]
@@ -358,15 +375,15 @@ mod tests {
         };
 
         let instance = InstanceEntry {
-            uuid: uuid1.to_string(),
+            uuid: uuid1.clone(),
             name: "Alice".to_string(),
             is_created: false,
             number_of_cores: 2,
             size_of_memory: 4096,
             size_of_disk: 1024,
-            image_uuid: Uuid::new_v4().to_string(),
-            seed_uuid: Uuid::new_v4().to_string(),
-            public_key_uuid: Uuid::new_v4().to_string(),
+            image_uuid: Uuid::new_v4(),
+            seed_uuid: Uuid::new_v4(),
+            public_key_uuid: Uuid::new_v4(),
             ip_addresses: serde_json::to_string(&vec!["192.168.1.1".to_string()]).unwrap(),
             owner_id: owner_id.clone(),
             project_id: project_id.clone(),
@@ -381,7 +398,7 @@ mod tests {
 
         hard_delete_instance(&uuid1);
 
-        add_instance(&instance).unwrap();
+        add_instance(instance.clone()).unwrap();
         match get_instance(&uuid1, &context) {
             Ok(retrieved_instance) => {
                 assert_eq!(retrieved_instance.uuid, instance.uuid);
@@ -428,15 +445,15 @@ mod tests {
         };
 
         let instance1 = InstanceEntry {
-            uuid: uuid1.to_string(),
+            uuid: uuid1.clone(),
             name: "Alice".to_string(),
             is_created: false,
             number_of_cores: 2,
             size_of_memory: 4096,
             size_of_disk: 1024,
-            image_uuid: Uuid::new_v4().to_string(),
-            seed_uuid: Uuid::new_v4().to_string(),
-            public_key_uuid: Uuid::new_v4().to_string(),
+            image_uuid: Uuid::new_v4(),
+            seed_uuid: Uuid::new_v4(),
+            public_key_uuid: Uuid::new_v4(),
             ip_addresses: serde_json::to_string(&vec!["192.168.1.1".to_string()]).unwrap(),
             owner_id: owner_id.clone(),
             project_id: project_id.clone(),
@@ -450,15 +467,15 @@ mod tests {
         };
 
         let instance2 = InstanceEntry {
-            uuid: uuid2.to_string(),
+            uuid: uuid2.clone(),
             name: "Bob".to_string(),
             is_created: false,
             number_of_cores: 2,
             size_of_memory: 4096,
             size_of_disk: 1024,
-            image_uuid: Uuid::new_v4().to_string(),
-            seed_uuid: Uuid::new_v4().to_string(),
-            public_key_uuid: Uuid::new_v4().to_string(),
+            image_uuid: Uuid::new_v4(),
+            seed_uuid: Uuid::new_v4(),
+            public_key_uuid: Uuid::new_v4(),
             ip_addresses: serde_json::to_string(&vec!["192.168.1.1".to_string()]).unwrap(),
             owner_id: owner_id.clone(),
             project_id: project_id.clone(),
@@ -474,8 +491,8 @@ mod tests {
         hard_delete_instance(&uuid1);
         hard_delete_instance(&uuid2);
 
-        add_instance(&instance1).unwrap();
-        add_instance(&instance2).unwrap();
+        add_instance(instance1).unwrap();
+        add_instance(instance2).unwrap();
         let instances = list_instances(&context).unwrap();
         assert_eq!(instances.len(), 1);
         hard_delete_instance(&uuid1);
@@ -499,15 +516,15 @@ mod tests {
         };
 
         let instance = InstanceEntry {
-            uuid: uuid1.to_string(),
+            uuid: uuid1.clone(),
             name: "Alice".to_string(),
             is_created: false,
             number_of_cores: 2,
             size_of_memory: 4096,
             size_of_disk: 1024,
-            image_uuid: Uuid::new_v4().to_string(),
-            seed_uuid: Uuid::new_v4().to_string(),
-            public_key_uuid: Uuid::new_v4().to_string(),
+            image_uuid: Uuid::new_v4(),
+            seed_uuid: Uuid::new_v4(),
+            public_key_uuid: Uuid::new_v4(),
             ip_addresses: serde_json::to_string(&vec!["192.168.1.1".to_string()]).unwrap(),
             owner_id: owner_id.clone(),
             project_id: project_id.clone(),
@@ -522,12 +539,11 @@ mod tests {
 
         hard_delete_instance(&uuid1);
 
-        add_instance(&instance).unwrap();
+        add_instance(instance).unwrap();
         let _ = delete_instance(&uuid1, &context);
         let result = get_instance(&uuid1, &context);
         assert!(result.is_err());
     }
-
 
     #[test]
     #[serial]
@@ -538,15 +554,15 @@ mod tests {
         let uuid3 = Uuid::new_v4();
 
         let instance1 = InstanceEntry {
-            uuid: uuid1.to_string(),
+            uuid: uuid1.clone(),
             name: "Alice".to_string(),
             is_created: false,
             number_of_cores: 1,
             size_of_memory: 1024,
             size_of_disk: 20480,
-            image_uuid: Uuid::new_v4().to_string(),
-            seed_uuid: Uuid::new_v4().to_string(),
-            public_key_uuid: Uuid::new_v4().to_string(),
+            image_uuid: Uuid::new_v4(),
+            seed_uuid: Uuid::new_v4(),
+            public_key_uuid: Uuid::new_v4(),
             ip_addresses: "[]".to_string(),
             owner_id: "test-user-42".to_string(),
             project_id: "test_permissions_1".to_string(),
@@ -560,15 +576,15 @@ mod tests {
         };
 
         let instance2 = InstanceEntry {
-            uuid: uuid2.to_string(),
+            uuid: uuid2.clone(),
             name: "Bob".to_string(),
             is_created: false,
             number_of_cores: 1,
             size_of_memory: 1024,
             size_of_disk: 20480,
-            image_uuid: Uuid::new_v4().to_string(),
-            seed_uuid: Uuid::new_v4().to_string(),
-            public_key_uuid: Uuid::new_v4().to_string(),
+            image_uuid: Uuid::new_v4(),
+            seed_uuid: Uuid::new_v4(),
+            public_key_uuid: Uuid::new_v4(),
             ip_addresses: "[]".to_string(),
             owner_id: "test-user-43".to_string(),
             project_id: "test_permissions_1".to_string(),
@@ -582,15 +598,15 @@ mod tests {
         };
 
         let instance3 = InstanceEntry {
-            uuid: uuid3.to_string(),
+            uuid: uuid3.clone(),
             name: "Poi".to_string(),
             is_created: false,
             number_of_cores: 1,
             size_of_memory: 1024,
             size_of_disk: 20480,
-            image_uuid: Uuid::new_v4().to_string(),
-            seed_uuid: Uuid::new_v4().to_string(),
-            public_key_uuid: Uuid::new_v4().to_string(),
+            image_uuid: Uuid::new_v4(),
+            seed_uuid: Uuid::new_v4(),
+            public_key_uuid: Uuid::new_v4(),
             ip_addresses: "[]".to_string(),
             owner_id: "test-user-44".to_string(),
             project_id: "test_permissions_2".to_string(),
@@ -607,9 +623,9 @@ mod tests {
         hard_delete_instance(&uuid2);
         hard_delete_instance(&uuid3);
 
-        add_instance(&instance1).unwrap();
-        add_instance(&instance2).unwrap();
-        add_instance(&instance3).unwrap();
+        add_instance(instance1).unwrap();
+        add_instance(instance2).unwrap();
+        add_instance(instance3).unwrap();
 
         // list-test normal user
         let context = UserContext {
@@ -654,7 +670,7 @@ mod tests {
         };
         match get_instance(&uuid1, &context) {
             Ok(retrieved_instance) => {
-                assert_eq!(retrieved_instance.uuid, uuid1.to_string());
+                assert_eq!(retrieved_instance.uuid, uuid1.clone());
             }
             Err(_) => {
                 assert_eq!(true, false);
