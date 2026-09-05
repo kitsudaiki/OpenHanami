@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use chrono::Utc;
+use chrono::{DateTime, Utc};
 use diesel::backend::Backend;
 use diesel::connection::SimpleConnection;
 use diesel::deserialize::{self, FromSql, FromSqlRow};
@@ -30,7 +30,7 @@ use crate::database::db_handle;
 use ainari_api_structs::task_structs::*;
 use ainari_api_structs::user_context::UserContext;
 use ainari_common::enums;
-use ainari_common::objects::DbUuid;
+use ainari_common::objects::{DbDateTime, DbOptDateTime, DbUuid};
 
 table! {
     tasks (uuid) {
@@ -67,14 +67,19 @@ pub struct TaskEntry {
     pub resource_type: String,
     pub task_type: TaskType,
     pub task_state: TaskState,
-    pub queued_at: Option<String>,
-    pub started_at: Option<String>,
-    pub aborted_at: Option<String>,
-    pub finished_at: Option<String>,
+    #[diesel(serialize_as = DbOptDateTime, deserialize_as = DbOptDateTime)]
+    pub queued_at: Option<DateTime<Utc>>,
+    #[diesel(serialize_as = DbOptDateTime, deserialize_as = DbOptDateTime)]
+    pub started_at: Option<DateTime<Utc>>,
+    #[diesel(serialize_as = DbOptDateTime, deserialize_as = DbOptDateTime)]
+    pub aborted_at: Option<DateTime<Utc>>,
+    #[diesel(serialize_as = DbOptDateTime, deserialize_as = DbOptDateTime)]
+    pub finished_at: Option<DateTime<Utc>>,
     pub error_message: Option<String>,
     pub owner_id: String,
     pub project_id: String,
-    pub created_at: String,
+    #[diesel(serialize_as = DbDateTime, deserialize_as = DbDateTime)]
+    pub created_at: DateTime<Utc>,
     pub created_by: String,
 }
 
@@ -148,7 +153,7 @@ pub fn add_new_task(
         error_message: None,
         owner_id: context.user_id.clone(),
         project_id: context.project_id.clone(),
-        created_at: Utc::now().to_rfc3339(),
+        created_at: Utc::now(),
         created_by: context.user_id.clone(),
     };
 
@@ -477,7 +482,7 @@ mod tests {
             error_message: None,
             owner_id: owner_id.clone(),
             project_id: project_id.clone(),
-            created_at: "2025-03-31".to_string(),
+            created_at: Utc::now(),
             created_by: "admin".to_string(),
         };
 
@@ -526,7 +531,7 @@ mod tests {
             error_message: None,
             owner_id: owner_id.clone(),
             project_id: project_id.clone(),
-            created_at: "2025-03-31".to_string(),
+            created_at: Utc::now(),
             created_by: "admin".to_string(),
         };
 
@@ -544,7 +549,7 @@ mod tests {
             error_message: None,
             owner_id: owner_id.clone(),
             project_id: project_id.clone(),
-            created_at: "2025-03-31".to_string(),
+            created_at: Utc::now(),
             created_by: "admin".to_string(),
         };
 
@@ -583,7 +588,7 @@ mod tests {
             error_message: None,
             owner_id: "test-user-42".to_string(),
             project_id: "test_permissions_1".to_string(),
-            created_at: "2025-03-31".to_string(),
+            created_at: Utc::now(),
             created_by: "admin".to_string(),
         };
 
@@ -601,7 +606,7 @@ mod tests {
             error_message: None,
             owner_id: "test-user-43".to_string(),
             project_id: "test_permissions_1".to_string(),
-            created_at: "2025-03-31".to_string(),
+            created_at: Utc::now(),
             created_by: "admin".to_string(),
         };
 
@@ -619,7 +624,7 @@ mod tests {
             error_message: None,
             owner_id: "test-user-44".to_string(),
             project_id: "test_permissions_2".to_string(),
-            created_at: "2025-03-31".to_string(),
+            created_at: Utc::now(),
             created_by: "admin".to_string(),
         };
 
@@ -730,7 +735,7 @@ mod tests {
             error_message: None,
             owner_id: owner_id.clone(),
             project_id: project_id.clone(),
-            created_at: "2025-03-31".to_string(),
+            created_at: Utc::now(),
             created_by: "admin".to_string(),
         };
 
@@ -823,7 +828,7 @@ mod tests {
             error_message: None,
             owner_id: owner_id.clone(),
             project_id: project_id.clone(),
-            created_at: "2025-03-31".to_string(),
+            created_at: Utc::now(),
             created_by: "admin".to_string(),
         };
 
@@ -874,7 +879,7 @@ mod tests {
             error_message: None,
             owner_id: owner_id.clone(),
             project_id: project_id.clone(),
-            created_at: "2025-03-31".to_string(),
+            created_at: Utc::now(),
             created_by: "admin".to_string(),
         };
 
@@ -919,7 +924,7 @@ mod tests {
             error_message: None,
             owner_id: owner_id.clone(),
             project_id: project_id.clone(),
-            created_at: "2025-03-31".to_string(),
+            created_at: Utc::now(),
             created_by: "admin".to_string(),
         };
 

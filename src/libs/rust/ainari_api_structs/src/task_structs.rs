@@ -13,6 +13,7 @@
 // limitations under the License.
 
 use apistos::ApiComponent;
+use chrono::{DateTime, Utc};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::fmt;
@@ -275,11 +276,11 @@ pub struct TaskResp {
     pub name: String,
     pub task_type: TaskType,
     pub state: TaskState,
-    pub queued_at: Option<String>,
-    pub started_at: Option<String>,
-    pub finished_at: Option<String>,
+    pub queued_at: Option<DateTime<Utc>>,
+    pub started_at: Option<DateTime<Utc>>,
+    pub finished_at: Option<DateTime<Utc>>,
     pub error_message: Option<String>,
-    pub created_at: String,
+    pub created_at: DateTime<Utc>,
     pub created_by: String,
 }
 

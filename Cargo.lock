@@ -343,6 +343,7 @@ dependencies = [
  "apistos",
  "apistos-schemars",
  "base64",
+ "chrono",
  "diesel",
  "futures",
  "futures-util",
@@ -389,6 +390,7 @@ name = "ainari_common"
 version = "0.1.0"
 dependencies = [
  "apistos-schemars",
+ "chrono",
  "diesel",
  "hex",
  "serde",
@@ -954,6 +956,7 @@ dependencies = [
  "iana-time-zone",
  "js-sys",
  "num-traits",
+ "serde",
  "wasm-bindgen",
  "windows-link 0.2.0",
 ]

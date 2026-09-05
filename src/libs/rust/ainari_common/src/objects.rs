@@ -12,12 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use chrono::{DateTime, Utc};
 use diesel::backend::Backend;
 use diesel::connection::SimpleConnection;
 use diesel::deserialize::{self, FromSql, FromSqlRow};
 use diesel::expression::AsExpression;
 use diesel::prelude::*;
 use diesel::serialize::{self, Output, ToSql};
+use diesel::sql_types::Nullable;
 use diesel::sql_types::Varchar;
 use diesel::sqlite::Sqlite;
 use serde::{Deserialize, Serialize};
@@ -27,6 +29,8 @@ use std::str::FromStr;
 use uuid::Uuid;
 
 use super::constants::UNINIT_POINT_32;
+
+//===================================================================================================
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 pub struct Position {
@@ -59,6 +63,8 @@ impl fmt::Display for Position {
 #[derive(Debug, Clone, PartialEq, AsExpression, FromSqlRow)]
 #[diesel(sql_type = Varchar)]
 pub struct DbUuid(String);
+
+//===================================================================================================
 
 // ToSql now safely borrows the owned String
 impl<DB: Backend> ToSql<Varchar, DB> for DbUuid
@@ -97,3 +103,104 @@ impl TryFrom<DbUuid> for Uuid {
         Uuid::parse_str(&db_uuid.0)
     }
 }
+
+//===================================================================================================
+
+// The transparent bridge struct for DateTime
+#[derive(Debug, Clone, PartialEq, AsExpression, FromSqlRow)]
+#[diesel(sql_type = Varchar)]
+pub struct DbDateTime(String);
+
+// Tell Diesel how to write to SQLite
+impl<DB: Backend> ToSql<Varchar, DB> for DbDateTime
+where
+    String: ToSql<Varchar, DB>,
+{
+    fn to_sql<'b>(&'b self, out: &mut Output<'b, '_, DB>) -> serialize::Result {
+        self.0.to_sql(out)
+    }
+}
+
+// Tell Diesel how to read from SQLite
+impl<DB: Backend> FromSql<Varchar, DB> for DbDateTime
+where
+    String: FromSql<Varchar, DB>,
+{
+    fn from_sql(bytes: DB::RawValue<'_>) -> deserialize::Result<Self> {
+        let s = String::from_sql(bytes)?;
+        Ok(DbDateTime(s))
+    }
+}
+
+// Convert DateTime<Utc> -> DbDateTime (Writes RFC3339 string)
+impl From<DateTime<Utc>> for DbDateTime {
+    fn from(dt: DateTime<Utc>) -> Self {
+        DbDateTime(dt.to_rfc3339())
+    }
+}
+
+// Convert DbDateTime -> DateTime<Utc> (Reads RFC3339 string)
+impl TryFrom<DbDateTime> for DateTime<Utc> {
+    type Error = chrono::ParseError; // Fulfills Diesel's Error requirement
+
+    fn try_from(db_dt: DbDateTime) -> Result<Self, Self::Error> {
+        // Parse from string, then convert from FixedOffset back to Utc
+        let fixed_dt = DateTime::parse_from_rfc3339(&db_dt.0)?;
+        Ok(fixed_dt.with_timezone(&Utc))
+    }
+}
+
+//===================================================================================================
+
+// Wrap Option<String> directly
+#[derive(Debug, Clone, AsExpression)]
+#[diesel(sql_type = Nullable<Varchar>)]
+pub struct DbOptDateTime(pub Option<String>);
+
+// Implement Queryable INSTEAD of FromSqlRow to fix the conflict!
+impl<DB: Backend> Queryable<Nullable<Varchar>, DB> for DbOptDateTime
+where
+    Option<String>: Queryable<Nullable<Varchar>, DB>,
+{
+    type Row = <Option<String> as Queryable<Nullable<Varchar>, DB>>::Row;
+
+    fn build(row: Self::Row) -> deserialize::Result<Self> {
+        // We let Diesel's built-in Option<String> logic read the row
+        let opt_str = Option::<String>::build(row)?;
+        Ok(DbOptDateTime(opt_str))
+    }
+}
+
+// Explicitly tell Diesel how to write this to SQL
+impl<DB: Backend> ToSql<Nullable<Varchar>, DB> for DbOptDateTime
+where
+    Option<String>: ToSql<Nullable<Varchar>, DB>,
+{
+    fn to_sql<'b>(&'b self, out: &mut Output<'b, '_, DB>) -> serialize::Result {
+        self.0.to_sql(out)
+    }
+}
+
+// Convert Option<DateTime<Utc>> -> DbOptDateTime (When inserting)
+impl From<Option<DateTime<Utc>>> for DbOptDateTime {
+    fn from(opt: Option<DateTime<Utc>>) -> Self {
+        DbOptDateTime(opt.map(|dt| dt.to_rfc3339()))
+    }
+}
+
+// Convert DbOptDateTime -> Option<DateTime<Utc>> (When reading via .first() or .load())
+impl TryFrom<DbOptDateTime> for Option<DateTime<Utc>> {
+    type Error = chrono::ParseError;
+
+    fn try_from(db_opt: DbOptDateTime) -> Result<Self, Self::Error> {
+        match db_opt.0 {
+            Some(s) => {
+                let dt = DateTime::parse_from_rfc3339(&s)?;
+                Ok(Some(dt.with_timezone(&Utc)))
+            }
+            None => Ok(None),
+        }
+    }
+}
+
+//===================================================================================================

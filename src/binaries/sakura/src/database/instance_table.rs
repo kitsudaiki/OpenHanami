@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use chrono::Utc;
+use chrono::{DateTime, Utc};
 use diesel::backend::Backend;
 use diesel::connection::SimpleConnection;
 use diesel::deserialize::{self, FromSql, FromSqlRow};
 use diesel::expression::AsExpression;
 use diesel::prelude::*;
+use diesel::result::DatabaseErrorKind;
 use diesel::serialize::{self, Output, ToSql};
 use diesel::sql_types::Varchar;
 use diesel::sqlite::Sqlite;
-use diesel::result::DatabaseErrorKind;
 use std::error::Error;
 use std::str::FromStr;
 use uuid::Uuid;
@@ -30,7 +30,7 @@ use crate::database::db_handle;
 
 use ainari_api_structs::user_context::UserContext;
 use ainari_common::enums;
-use ainari_common::objects::DbUuid;
+use ainari_common::objects::{DbDateTime, DbOptDateTime, DbUuid};
 
 // Define the schema for the instances table
 table! {
@@ -78,11 +78,14 @@ pub struct InstanceEntry {
     pub owner_id: String,
     pub project_id: String,
     pub status: String,
-    pub created_at: String,
+    #[diesel(serialize_as = DbDateTime, deserialize_as = DbDateTime)]
+    pub created_at: DateTime<Utc>,
     pub created_by: String,
-    pub updated_at: String,
+    #[diesel(serialize_as = DbDateTime, deserialize_as = DbDateTime)]
+    pub updated_at: DateTime<Utc>,
     pub updated_by: String,
-    pub deleted_at: Option<String>,
+    #[diesel(serialize_as = DbOptDateTime, deserialize_as = DbOptDateTime)]
+    pub deleted_at: Option<DateTime<Utc>>,
     pub deleted_by: Option<String>,
 }
 
@@ -171,9 +174,9 @@ pub fn add_new_instance(
         owner_id: context.user_id.clone(),
         project_id: context.project_id.clone(),
         status: "ACTIVE".to_string(),
-        created_at: Utc::now().to_rfc3339(),
+        created_at: Utc::now(),
         created_by: context.user_id.clone(),
-        updated_at: Utc::now().to_rfc3339(),
+        updated_at: Utc::now(),
         updated_by: context.user_id.clone(),
         deleted_at: None,
         deleted_by: None,
@@ -388,9 +391,9 @@ mod tests {
             owner_id: owner_id.clone(),
             project_id: project_id.clone(),
             status: "ACTIVE".to_string(),
-            created_at: Utc::now().to_rfc3339(),
+            created_at: Utc::now(),
             created_by: "admin".to_string(),
-            updated_at: Utc::now().to_rfc3339(),
+            updated_at: Utc::now(),
             updated_by: "admin".to_string(),
             deleted_at: None,
             deleted_by: None,
@@ -458,9 +461,9 @@ mod tests {
             owner_id: owner_id.clone(),
             project_id: project_id.clone(),
             status: "ACTIVE".to_string(),
-            created_at: Utc::now().to_rfc3339(),
+            created_at: Utc::now(),
             created_by: "admin".to_string(),
-            updated_at: Utc::now().to_rfc3339(),
+            updated_at: Utc::now(),
             updated_by: "admin".to_string(),
             deleted_at: None,
             deleted_by: None,
@@ -480,11 +483,11 @@ mod tests {
             owner_id: owner_id.clone(),
             project_id: project_id.clone(),
             status: "DELETED".to_string(),
-            created_at: Utc::now().to_rfc3339(),
+            created_at: Utc::now(),
             created_by: "admin".to_string(),
-            updated_at: Utc::now().to_rfc3339(),
+            updated_at: Utc::now(),
             updated_by: "admin".to_string(),
-            deleted_at: Some(Utc::now().to_rfc3339()),
+            deleted_at: Some(Utc::now()),
             deleted_by: Some("admin".to_string()),
         };
 
@@ -529,9 +532,9 @@ mod tests {
             owner_id: owner_id.clone(),
             project_id: project_id.clone(),
             status: "ACTIVE".to_string(),
-            created_at: Utc::now().to_rfc3339(),
+            created_at: Utc::now(),
             created_by: "admin".to_string(),
-            updated_at: Utc::now().to_rfc3339(),
+            updated_at: Utc::now(),
             updated_by: "admin".to_string(),
             deleted_at: None,
             deleted_by: None,
@@ -567,9 +570,9 @@ mod tests {
             owner_id: "test-user-42".to_string(),
             project_id: "test_permissions_1".to_string(),
             status: "ACTIVE".to_string(),
-            created_at: Utc::now().to_rfc3339(),
+            created_at: Utc::now(),
             created_by: "admin".to_string(),
-            updated_at: Utc::now().to_rfc3339(),
+            updated_at: Utc::now(),
             updated_by: "admin".to_string(),
             deleted_at: None,
             deleted_by: None,
@@ -589,9 +592,9 @@ mod tests {
             owner_id: "test-user-43".to_string(),
             project_id: "test_permissions_1".to_string(),
             status: "ACTIVE".to_string(),
-            created_at: Utc::now().to_rfc3339(),
+            created_at: Utc::now(),
             created_by: "admin".to_string(),
-            updated_at: Utc::now().to_rfc3339(),
+            updated_at: Utc::now(),
             updated_by: "admin".to_string(),
             deleted_at: None,
             deleted_by: None,
@@ -611,9 +614,9 @@ mod tests {
             owner_id: "test-user-44".to_string(),
             project_id: "test_permissions_2".to_string(),
             status: "ACTIVE".to_string(),
-            created_at: Utc::now().to_rfc3339(),
+            created_at: Utc::now(),
             created_by: "admin".to_string(),
-            updated_at: Utc::now().to_rfc3339(),
+            updated_at: Utc::now(),
             updated_by: "admin".to_string(),
             deleted_at: None,
             deleted_by: None,
