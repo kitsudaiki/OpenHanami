@@ -279,7 +279,7 @@ pub struct TaskResp {
     pub queued_at: Option<DateTime<Utc>>,
     pub started_at: Option<DateTime<Utc>>,
     pub finished_at: Option<DateTime<Utc>>,
-    pub error_message: Option<String>,
+    pub messages: Vec<String>,
     pub created_at: DateTime<Utc>,
     pub created_by: String,
 }

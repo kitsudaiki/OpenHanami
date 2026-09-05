@@ -55,7 +55,7 @@ pub async fn get_task(
         queued_at: task_data.queued_at,
         started_at: task_data.started_at,
         finished_at: task_data.finished_at,
-        error_message: task_data.error_message,
+        messages: task_data.messages,
         created_by: task_data.created_by,
         created_at: task_data.created_at,
     };

@@ -16,48 +16,14 @@ pub mod abort_task_v1_0;
 pub mod get_task_v1_0;
 pub mod list_task_v1_0;
 
-use std::str::FromStr;
-
 use crate::core::processing::tasks::Task;
 use crate::core::processing::worker_handler::*;
 use crate::database::task_table;
 
 use ainari_api::errors::ErrorResponse;
-use ainari_api_structs::task_structs::{TaskState, TaskType};
+use ainari_api_structs::task_structs::TaskType;
 use ainari_api_structs::user_context::UserContext;
-use ainari_dataset::dataset_io::{DataSetFileReadHandle, read_data_set_file};
 
-/// Converts a string representation of a task type to its enum variant.
-///
-/// # Arguments
-/// * `task_type` - The string to convert
-///
-/// # Returns
-/// * `Result<TaskType, ErrorResponse>` - The converted task type or an error
-pub fn convert_task_type(task_type: &String) -> Result<TaskType, ErrorResponse> {
-    let converted_task_type = TaskType::from_str(task_type.as_str()).map_err(|_| {
-        log::error!("Failed to convert task-type '{task_type}'");
-        ErrorResponse::InternalError("Internal Error".to_string())
-    })?;
-
-    Ok(converted_task_type)
-}
-
-/// Converts a string representation of a task state to its enum variant.
-///
-/// # Arguments
-/// * `task_state` - The string to convert
-///
-/// # Returns
-/// * `Result<TaskState, ErrorResponse>` - The converted task state or an error
-pub fn convert_task_state(task_state: &String) -> Result<TaskState, ErrorResponse> {
-    let converted_task_state = TaskState::from_str(task_state.as_str()).map_err(|_| {
-        log::error!("Failed to convert task-state '{task_state}'");
-        ErrorResponse::InternalError("Internal Error".to_string())
-    })?;
-
-    Ok(converted_task_state)
-}
 
 /// Adds a new task to a model and stores it in the database.
 ///

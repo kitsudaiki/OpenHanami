@@ -21,6 +21,7 @@ use diesel::prelude::*;
 use diesel::serialize::{self, Output, ToSql};
 use diesel::sql_types::Varchar;
 use diesel::sqlite::Sqlite;
+use diesel::Connection; // Required for .transaction()
 use std::error::Error;
 use std::str::FromStr;
 use uuid::Uuid;
@@ -30,7 +31,7 @@ use crate::database::db_handle;
 use ainari_api_structs::task_structs::*;
 use ainari_api_structs::user_context::UserContext;
 use ainari_common::enums;
-use ainari_common::objects::{DbDateTime, DbOptDateTime, DbUuid};
+use ainari_common::objects::*;
 
 table! {
     tasks (uuid) {
@@ -44,7 +45,7 @@ table! {
         started_at -> Nullable<Varchar>,
         aborted_at -> Nullable<Varchar>,
         finished_at -> Nullable<Varchar>,
-        error_message -> Nullable<Text>,
+        messages -> Text,
         owner_id -> Varchar,
         project_id -> Varchar,
         created_at -> Varchar,
@@ -75,7 +76,8 @@ pub struct TaskEntry {
     pub aborted_at: Option<DateTime<Utc>>,
     #[diesel(serialize_as = DbOptDateTime, deserialize_as = DbOptDateTime)]
     pub finished_at: Option<DateTime<Utc>>,
-    pub error_message: Option<String>,
+    #[diesel(serialize_as = DbVecString, deserialize_as = DbVecString)]
+    pub messages: Vec<String>,
     pub owner_id: String,
     pub project_id: String,
     #[diesel(serialize_as = DbDateTime, deserialize_as = DbDateTime)]
@@ -105,7 +107,7 @@ pub fn init_task_table() -> Result<(), Box<dyn Error>> {
         started_at VARCHAR(64),
         aborted_at VARCHAR(64),
         finished_at VARCHAR(64),
-        error_message TEXT,
+        messages TEXT,
         owner_id VARCHAR(256),
         project_id VARCHAR(256),
         created_at VARCHAR(64),
@@ -150,7 +152,7 @@ pub fn add_new_task(
         started_at: None,
         aborted_at: None,
         finished_at: None,
-        error_message: None,
+        messages: Vec::new(),
         owner_id: context.user_id.clone(),
         project_id: context.project_id.clone(),
         created_at: Utc::now(),
@@ -307,105 +309,101 @@ pub fn update_task_state(task_uuid: &Uuid, new_state: &TaskState) -> Result<(), 
     let mut conn = db_handle::DB_CONN.lock().expect("mutex poisoned");
     use self::tasks::dsl::*;
 
-    // Handle different states with appropriate updates
-    match new_state {
-        TaskState::Created => Ok(()),
-        TaskState::Queued => {
-            // Update task state and set queued_at timestamp
-            match diesel::update(tasks.filter(uuid.eq(task_uuid.to_string())))
-                .set((
-                    task_state.eq(new_state.to_string()),
-                    queued_at.eq(Utc::now().to_rfc3339()),
-                ))
-                .execute(&mut *conn)
-            {
-                Ok(_) => Ok(()),
-                Err(diesel::result::Error::NotFound) => Err(enums::DbError::NotFound),
-                Err(e) => {
-                    log::error!("Database-error: {e:?}");
-                    Err(enums::DbError::InternalError)
-                }
+    // Execute everything inside a transaction
+    let result = conn.transaction::<_, diesel::result::Error, _>(|transaction_conn| {
+        // Pre-calculate target and values to keep the match arms clean
+        let target = tasks.filter(uuid.eq(task_uuid.to_string()));
+        let state_str = new_state.to_string();
+        let now = Utc::now().to_rfc3339();
+
+        // Handle different states with appropriate updates
+        match new_state {
+            TaskState::Created | TaskState::Error => {
+                // No database update required for these states
+                Ok(0)
+            }
+            TaskState::Queued => {
+                diesel::update(target)
+                    .set((
+                        task_state.eq(state_str),
+                        queued_at.eq(now),
+                    ))
+                    .execute(transaction_conn)
+            }
+            TaskState::Active => {
+                diesel::update(target)
+                    .set((
+                        task_state.eq(state_str),
+                        started_at.eq(now),
+                    ))
+                    .execute(transaction_conn)
+            }
+            TaskState::Aborted => {
+                diesel::update(target)
+                    .set((
+                        task_state.eq(state_str),
+                        aborted_at.eq(now),
+                    ))
+                    .execute(transaction_conn)
+            }
+            TaskState::Finished => {
+                diesel::update(target)
+                    .set((
+                        task_state.eq(state_str),
+                        finished_at.eq(now),
+                    ))
+                    .execute(transaction_conn)
             }
         }
-        TaskState::Active => {
-            // Update task state and set started_at timestamp
-            match diesel::update(tasks.filter(uuid.eq(task_uuid.to_string())))
-                .set((
-                    task_state.eq(new_state.to_string()),
-                    started_at.eq(Utc::now().to_rfc3339()),
-                ))
-                .execute(&mut *conn)
-            {
-                Ok(_) => Ok(()),
-                Err(diesel::result::Error::NotFound) => Err(enums::DbError::NotFound),
-                Err(e) => {
-                    log::error!("Database-error: {e:?}");
-                    Err(enums::DbError::InternalError)
-                }
-            }
+    });
+
+    // Handle the result from the transaction once, cleanly
+    match result {
+        Ok(_) => Ok(()),
+        Err(diesel::result::Error::NotFound) => Err(enums::DbError::NotFound),
+        Err(e) => {
+            log::error!("Database-error updating task state: {e:?}");
+            Err(enums::DbError::InternalError)
         }
-        TaskState::Aborted => {
-            // Update task state and set aborted_at timestamp
-            match diesel::update(tasks.filter(uuid.eq(task_uuid.to_string())))
-                .set((
-                    task_state.eq(new_state.to_string()),
-                    aborted_at.eq(Utc::now().to_rfc3339()),
-                ))
-                .execute(&mut *conn)
-            {
-                Ok(_) => Ok(()),
-                Err(diesel::result::Error::NotFound) => Err(enums::DbError::NotFound),
-                Err(e) => {
-                    log::error!("Database-error: {e:?}");
-                    Err(enums::DbError::InternalError)
-                }
-            }
-        }
-        TaskState::Finished => {
-            // Update task state and set finished_at timestamp
-            match diesel::update(tasks.filter(uuid.eq(task_uuid.to_string())))
-                .set((
-                    task_state.eq(new_state.to_string()),
-                    finished_at.eq(Utc::now().to_rfc3339()),
-                ))
-                .execute(&mut *conn)
-            {
-                Ok(_) => Ok(()),
-                Err(diesel::result::Error::NotFound) => Err(enums::DbError::NotFound),
-                Err(e) => {
-                    log::error!("Database-error: {e:?}");
-                    Err(enums::DbError::InternalError)
-                }
-            }
-        }
-        TaskState::Error => Ok(()),
     }
 }
 
-/// Sets an error state for a task in the database.
-///
-/// This function updates a task's state to Error and sets the error message.
-///
-/// # Arguments
-/// * `task_uuid` - UUID of the task to update
-/// * `error_msg` - Error message to store
-///
-/// # Returns
-/// * `Result<(), ()>` - Ok(()) if successful, Err(()) if the task was not found or another error occurred
-pub fn set_error_state(task_uuid: &Uuid, error_msg: &String) -> Result<(), ()> {
+/// Appends a new message to the task's messages list.
+pub fn add_message_to_task(
+    task_uuid: &Uuid,
+    new_message: &str,
+) -> Result<(), enums::DbError> {
     let mut conn = db_handle::DB_CONN.lock().expect("mutex poisoned");
     use self::tasks::dsl::*;
 
-    // Update task state to Error and set the error message
-    match diesel::update(tasks.filter(uuid.eq(task_uuid.to_string())))
-        .set((task_state.eq(TaskState::Error), error_message.eq(error_msg)))
-        .execute(&mut *conn)
-    {
+    // Run inside a transaction so if anything fails, the database remains untouched
+    let result = conn.transaction::<_, diesel::result::Error, _>(|transaction_conn| {
+        
+        // Fetch the current task entry
+        let mut task: TaskEntry = tasks
+            .filter(uuid.eq(task_uuid.to_string()))
+            .first::<TaskEntry>(transaction_conn)?;
+
+        // Append the new message to our native Rust Vec<String>
+        task.messages.push(new_message.to_string());
+
+        // Save only the updated messages column back to the database.
+        // NOTE: Because `serialize_as` applies to the Struct during inserts, 
+        // when updating a single column directly, we must manually wrap it in DbVecString.
+        diesel::update(tasks.filter(uuid.eq(task_uuid.to_string())))
+            .set(messages.eq(DbVecString::from(task.messages)))
+            .execute(transaction_conn)?;
+
+        Ok(())
+    });
+
+    // Handle the result mapping to your custom DbError enum
+    match result {
         Ok(_) => Ok(()),
-        Err(diesel::result::Error::NotFound) => Err(()),
+        Err(diesel::result::Error::NotFound) => Err(enums::DbError::NotFound),
         Err(e) => {
-            log::error!("Database-error: {e:?}");
-            Err(())
+            log::error!("Database-error updating messages: {e:?}");
+            Err(enums::DbError::InternalError)
         }
     }
 }
@@ -479,7 +477,7 @@ mod tests {
             started_at: None,
             aborted_at: None,
             finished_at: None,
-            error_message: None,
+            messages: Vec::new(),
             owner_id: owner_id.clone(),
             project_id: project_id.clone(),
             created_at: Utc::now(),
@@ -528,7 +526,7 @@ mod tests {
             started_at: None,
             aborted_at: None,
             finished_at: None,
-            error_message: None,
+            messages: Vec::new(),
             owner_id: owner_id.clone(),
             project_id: project_id.clone(),
             created_at: Utc::now(),
@@ -546,7 +544,7 @@ mod tests {
             started_at: None,
             aborted_at: None,
             finished_at: None,
-            error_message: None,
+            messages: Vec::new(),
             owner_id: owner_id.clone(),
             project_id: project_id.clone(),
             created_at: Utc::now(),
@@ -585,7 +583,7 @@ mod tests {
             started_at: None,
             aborted_at: None,
             finished_at: None,
-            error_message: None,
+            messages: Vec::new(),
             owner_id: "test-user-42".to_string(),
             project_id: "test_permissions_1".to_string(),
             created_at: Utc::now(),
@@ -603,7 +601,7 @@ mod tests {
             started_at: None,
             aborted_at: None,
             finished_at: None,
-            error_message: None,
+            messages: Vec::new(),
             owner_id: "test-user-43".to_string(),
             project_id: "test_permissions_1".to_string(),
             created_at: Utc::now(),
@@ -621,7 +619,7 @@ mod tests {
             started_at: None,
             aborted_at: None,
             finished_at: None,
-            error_message: None,
+            messages: Vec::new(),
             owner_id: "test-user-44".to_string(),
             project_id: "test_permissions_2".to_string(),
             created_at: Utc::now(),
@@ -732,7 +730,7 @@ mod tests {
             started_at: None,
             aborted_at: None,
             finished_at: None,
-            error_message: None,
+            messages: Vec::new(),
             owner_id: owner_id.clone(),
             project_id: project_id.clone(),
             created_at: Utc::now(),
@@ -825,7 +823,7 @@ mod tests {
             started_at: None,
             aborted_at: None,
             finished_at: None,
-            error_message: None,
+            messages: Vec::new(),
             owner_id: owner_id.clone(),
             project_id: project_id.clone(),
             created_at: Utc::now(),
@@ -848,7 +846,7 @@ mod tests {
 
     #[test]
     #[serial]
-    fn test_set_error_state() {
+    fn test_add_message_to_task() {
         init_task_table().unwrap();
         let uuid1 = Uuid::new_v4();
         let error_msg = "This is an error".to_string();
@@ -876,7 +874,7 @@ mod tests {
             started_at: None,
             aborted_at: None,
             finished_at: None,
-            error_message: None,
+            messages: Vec::new(),
             owner_id: owner_id.clone(),
             project_id: project_id.clone(),
             created_at: Utc::now(),
@@ -889,11 +887,10 @@ mod tests {
 
         update_task_progress(&uuid1, &123, &42).unwrap();
 
-        let _ = set_error_state(&uuid1, &error_msg);
+        let _ = add_message_to_task(&uuid1, &error_msg);
 
         if let Ok(retrieved_task) = get_task(&uuid1, &resource_uuid, &context) {
-            assert_eq!(retrieved_task.task_state, TaskState::Error);
-            assert_eq!(retrieved_task.error_message, Some(error_msg));
+            assert_eq!(retrieved_task.messages, vec![error_msg]);
         };
 
         hard_delete_task(&uuid1);
@@ -921,7 +918,7 @@ mod tests {
             started_at: None,
             aborted_at: None,
             finished_at: None,
-            error_message: None,
+            messages: Vec::new(),
             owner_id: owner_id.clone(),
             project_id: project_id.clone(),
             created_at: Utc::now(),

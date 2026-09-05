@@ -204,3 +204,51 @@ impl TryFrom<DbOptDateTime> for Option<DateTime<Utc>> {
 }
 
 //===================================================================================================
+
+// Wrap a String that will hold our JSON data
+#[derive(Debug, Clone, AsExpression)]
+#[diesel(sql_type = Varchar)]
+pub struct DbVecString(pub String);
+
+// Tell Diesel how to read this from SQL
+impl<DB: Backend> Queryable<Varchar, DB> for DbVecString
+where
+    String: Queryable<Varchar, DB>,
+{
+    type Row = <String as Queryable<Varchar, DB>>::Row;
+
+    fn build(row: Self::Row) -> deserialize::Result<Self> {
+        let s = String::build(row)?;
+        Ok(DbVecString(s))
+    }
+}
+
+// Tell Diesel how to write this to SQL
+impl<DB: Backend> ToSql<Varchar, DB> for DbVecString
+where
+    String: ToSql<Varchar, DB>,
+{
+    fn to_sql<'b>(&'b self, out: &mut Output<'b, '_, DB>) -> serialize::Result {
+        self.0.to_sql(out)
+    }
+}
+
+// Convert Vec<String> -> DbVecString (When inserting)
+impl From<Vec<String>> for DbVecString {
+    fn from(vec: Vec<String>) -> Self {
+        // Serialize the Vec to a JSON string. 
+        // We use .expect() here because serializing a simple Vec<String> will never fail.
+        let json_string = serde_json::to_string(&vec).expect("Failed to serialize Vec<String>");
+        DbVecString(json_string)
+    }
+}
+
+// Convert DbVecString -> Vec<String> (When reading via .first() or .load())
+impl TryFrom<DbVecString> for Vec<String> {
+    type Error = serde_json::Error;
+    
+    fn try_from(db_vec: DbVecString) -> Result<Self, Self::Error> {
+        // Parse the JSON string back into a Vec<String>
+        serde_json::from_str(&db_vec.0)
+    }
+}

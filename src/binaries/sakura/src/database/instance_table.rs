@@ -30,7 +30,7 @@ use crate::database::db_handle;
 
 use ainari_api_structs::user_context::UserContext;
 use ainari_common::enums;
-use ainari_common::objects::{DbDateTime, DbOptDateTime, DbUuid};
+use ainari_common::objects::*;
 
 // Define the schema for the instances table
 table! {
@@ -74,7 +74,8 @@ pub struct InstanceEntry {
     pub seed_uuid: Uuid,
     #[diesel(serialize_as = DbUuid, deserialize_as = DbUuid)]
     pub public_key_uuid: Uuid,
-    pub ip_addresses: String,
+    #[diesel(serialize_as = DbVecString, deserialize_as = DbVecString)]
+    pub ip_addresses: Vec<String>,
     pub owner_id: String,
     pub project_id: String,
     pub status: String,
@@ -148,17 +149,6 @@ pub fn add_new_instance(
     ip_addresses: &Vec<String>,
     context: &UserContext,
 ) -> QueryResult<usize> {
-    // Serialize the input and output vectors to JSON strings
-    let ip_addresses_str = match serde_json::to_string(&ip_addresses) {
-        Ok(ip_addresses_str) => ip_addresses_str,
-        Err(e) => {
-            return Err(diesel::result::Error::DatabaseError(
-                DatabaseErrorKind::SerializationFailure,
-                Box::new(format!("Failed to serialize ip_addresses with error: {e}")),
-            ));
-        }
-    };
-
     // Create the new instance entry
     let instance = InstanceEntry {
         uuid: instance_uuid.clone(),
@@ -170,7 +160,7 @@ pub fn add_new_instance(
         image_uuid: image_uuid.clone(),
         seed_uuid: seed_uuid.clone(),
         public_key_uuid: public_key_uuid.clone(),
-        ip_addresses: ip_addresses_str,
+        ip_addresses: ip_addresses.clone(),
         owner_id: context.user_id.clone(),
         project_id: context.project_id.clone(),
         status: "ACTIVE".to_string(),
@@ -387,7 +377,7 @@ mod tests {
             image_uuid: Uuid::new_v4(),
             seed_uuid: Uuid::new_v4(),
             public_key_uuid: Uuid::new_v4(),
-            ip_addresses: serde_json::to_string(&vec!["192.168.1.1".to_string()]).unwrap(),
+            ip_addresses: vec!["192.168.1.1".to_string()],
             owner_id: owner_id.clone(),
             project_id: project_id.clone(),
             status: "ACTIVE".to_string(),
@@ -457,7 +447,7 @@ mod tests {
             image_uuid: Uuid::new_v4(),
             seed_uuid: Uuid::new_v4(),
             public_key_uuid: Uuid::new_v4(),
-            ip_addresses: serde_json::to_string(&vec!["192.168.1.1".to_string()]).unwrap(),
+            ip_addresses: vec!["192.168.1.1".to_string()],
             owner_id: owner_id.clone(),
             project_id: project_id.clone(),
             status: "ACTIVE".to_string(),
@@ -479,7 +469,7 @@ mod tests {
             image_uuid: Uuid::new_v4(),
             seed_uuid: Uuid::new_v4(),
             public_key_uuid: Uuid::new_v4(),
-            ip_addresses: serde_json::to_string(&vec!["192.168.1.1".to_string()]).unwrap(),
+            ip_addresses: vec!["192.168.1.1".to_string()],
             owner_id: owner_id.clone(),
             project_id: project_id.clone(),
             status: "DELETED".to_string(),
@@ -528,7 +518,7 @@ mod tests {
             image_uuid: Uuid::new_v4(),
             seed_uuid: Uuid::new_v4(),
             public_key_uuid: Uuid::new_v4(),
-            ip_addresses: serde_json::to_string(&vec!["192.168.1.1".to_string()]).unwrap(),
+            ip_addresses: vec!["192.168.1.1".to_string()],
             owner_id: owner_id.clone(),
             project_id: project_id.clone(),
             status: "ACTIVE".to_string(),
@@ -566,7 +556,7 @@ mod tests {
             image_uuid: Uuid::new_v4(),
             seed_uuid: Uuid::new_v4(),
             public_key_uuid: Uuid::new_v4(),
-            ip_addresses: "[]".to_string(),
+            ip_addresses: Vec::new(),
             owner_id: "test-user-42".to_string(),
             project_id: "test_permissions_1".to_string(),
             status: "ACTIVE".to_string(),
@@ -588,7 +578,7 @@ mod tests {
             image_uuid: Uuid::new_v4(),
             seed_uuid: Uuid::new_v4(),
             public_key_uuid: Uuid::new_v4(),
-            ip_addresses: "[]".to_string(),
+            ip_addresses: Vec::new(),
             owner_id: "test-user-43".to_string(),
             project_id: "test_permissions_1".to_string(),
             status: "ACTIVE".to_string(),
@@ -610,7 +600,7 @@ mod tests {
             image_uuid: Uuid::new_v4(),
             seed_uuid: Uuid::new_v4(),
             public_key_uuid: Uuid::new_v4(),
-            ip_addresses: "[]".to_string(),
+            ip_addresses: Vec::new(),
             owner_id: "test-user-44".to_string(),
             project_id: "test_permissions_2".to_string(),
             status: "ACTIVE".to_string(),
