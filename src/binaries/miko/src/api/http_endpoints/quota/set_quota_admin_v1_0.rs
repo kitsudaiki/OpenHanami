@@ -62,6 +62,9 @@ pub async fn set_quota_admin(
     if body.max_network != 0 {
         current_quota.max_network = body.max_network;
     }
+    if body.max_floating_ip != 0 {
+        current_quota.max_floating_ip = body.max_floating_ip;
+    }
     if body.max_taskqueue != 0 {
         current_quota.max_taskqueue = body.max_taskqueue;
     }
@@ -74,6 +77,7 @@ pub async fn set_quota_admin(
         current_quota.max_checkpoint,
         current_quota.max_secret,
         current_quota.max_network,
+        current_quota.max_floating_ip,
         current_quota.max_taskqueue,
         &context,
     )

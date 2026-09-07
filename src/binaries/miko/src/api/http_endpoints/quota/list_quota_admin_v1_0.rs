@@ -45,6 +45,7 @@ pub async fn list_quota_admin(context: UserContext) -> Result<Json<QuotaListResp
             max_checkpoint: quota.max_checkpoint,
             max_secret: quota.max_secret,
             max_network: quota.max_network,
+            max_floating_ip: quota.max_floating_ip,
             max_taskqueue: quota.max_taskqueue,
         };
 

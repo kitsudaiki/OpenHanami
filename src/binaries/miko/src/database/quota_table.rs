@@ -58,6 +58,8 @@ pub struct QuotaEntry {
     pub max_dataset: i32,
     pub max_checkpoint: i32,
     pub max_secret: i32,
+    pub max_network: i32,
+    pub max_floating_ip: i32,
     pub max_taskqueue: i32,
     pub status: String,
     pub created_at: String,
@@ -85,6 +87,8 @@ pub fn init_quota_table() -> Result<(), Box<dyn Error>> {
         max_dataset INTEGER,
         max_checkpoint INTEGER,
         max_secret INTEGER,
+        max_network INTEGER,
+        max_floating_ip INTEGER,
         max_taskqueue INTEGER,
         status VARCHAR(8),
         created_at VARCHAR(64),
@@ -134,7 +138,7 @@ pub fn init_admin_quota() -> Result<(), Box<dyn Error>> {
         }
     };
 
-    add_new_quota(&admin_id, 10, 10, 10, 10, 10, &fake_admin_context)?;
+    add_new_quota(&admin_id, 10, 10, 10, 10, 10, 10, 10, &fake_admin_context)?;
 
     Ok(())
 }
@@ -162,6 +166,8 @@ pub fn add_new_quota(
     max_dataset: i32,
     max_checkpoint: i32,
     max_secret: i32,
+    max_network: i32,
+    max_floating_ip: i32,
     max_taskqueue: i32,
     context: &UserContext,
 ) -> QueryResult<usize> {
@@ -187,6 +193,8 @@ pub fn add_new_quota(
         max_dataset,
         max_checkpoint,
         max_secret,
+        max_network,
+        max_floating_ip,
         max_taskqueue,
         status: "ACTIVE".to_string(),
         created_at: Utc::now().to_rfc3339(),
@@ -300,6 +308,7 @@ pub fn set_quota(
     new_max_checkpoint: i32,
     new_max_secret: i32,
     max_new_network: i32,
+    max_new_floating_ip: i32,
     new_max_taskqueue: i32,
     context: &UserContext,
 ) -> Result<(), enums::DbError> {
@@ -317,6 +326,7 @@ pub fn set_quota(
             max_checkpoint.eq(new_max_checkpoint),
             max_secret.eq(new_max_secret),
             max_network.eq(max_new_network),
+            max_floating_ip.eq(max_new_floating_ip),
             max_taskqueue.eq(new_max_taskqueue),
         ))
         .execute(&mut *conn)
@@ -412,6 +422,8 @@ mod tests {
             max_dataset: 43,
             max_checkpoint: 44,
             max_secret: 45,
+            max_network: 50,
+            max_floating_ip: 51,
             max_taskqueue: 46,
             status: "ACTIVE".to_string(),
             created_at: "2025-03-31".to_string(),
@@ -462,6 +474,8 @@ mod tests {
             max_dataset: 43,
             max_checkpoint: 44,
             max_secret: 45,
+            max_network: 50,
+            max_floating_ip: 51,
             max_taskqueue: 46,
             status: "ACTIVE".to_string(),
             created_at: "2025-03-31".to_string(),
@@ -534,6 +548,8 @@ mod tests {
             max_dataset: 43,
             max_checkpoint: 44,
             max_secret: 45,
+            max_network: 50,
+            max_floating_ip: 51,
             max_taskqueue: 46,
             status: "ACTIVE".to_string(),
             created_at: "2025-03-31".to_string(),
@@ -550,6 +566,8 @@ mod tests {
             max_dataset: 43,
             max_checkpoint: 44,
             max_secret: 45,
+            max_network: 50,
+            max_floating_ip: 51,
             max_taskqueue: 46,
             status: "DELETED".to_string(),
             created_at: "2025-03-31".to_string(),
@@ -593,6 +611,8 @@ mod tests {
             max_dataset: 43,
             max_checkpoint: 44,
             max_secret: 45,
+            max_network: 50,
+            max_floating_ip: 51,
             max_taskqueue: 46,
             status: "ACTIVE".to_string(),
             created_at: "2025-03-31".to_string(),

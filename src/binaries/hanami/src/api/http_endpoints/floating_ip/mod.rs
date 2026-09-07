@@ -12,22 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#![forbid(unsafe_code)]
-
-pub mod auth_structs;
-pub mod checkpoint_structs;
-pub mod common_structs;
-pub mod dataset_structs;
-pub mod endpoints_structs;
-pub mod file_structs;
-pub mod floating_ip_structs;
-pub mod host_structs;
-pub mod instance_structs;
-pub mod network_structs;
-pub mod project_structs;
-pub mod proxy_structs;
-pub mod quota_structs;
-pub mod secret_structs;
-pub mod task_structs;
-pub mod user_context;
-pub mod user_structs;
+pub mod create_floating_ip_v1_0;
+pub mod delete_floating_ip_v1_0;
+pub mod get_floating_ip_v1_0;
+pub mod list_floating_ip_v1_0;

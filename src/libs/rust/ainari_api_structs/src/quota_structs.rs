@@ -24,6 +24,7 @@ pub struct QuotaResp {
     pub max_checkpoint: i32,
     pub max_secret: i32,
     pub max_network: i32,
+    pub max_floating_ip: i32,
     pub max_taskqueue: i32,
     pub created_at: String,
     pub created_by: String,
@@ -38,6 +39,7 @@ pub struct QuotaSetReq {
     pub max_checkpoint: i32,
     pub max_secret: i32,
     pub max_network: i32,
+    pub max_floating_ip: i32,
     pub max_taskqueue: i32,
 }
 
@@ -49,6 +51,7 @@ pub struct QuotaBasicResp {
     pub max_checkpoint: i32,
     pub max_secret: i32,
     pub max_network: i32,
+    pub max_floating_ip: i32,
     pub max_taskqueue: i32,
 }
 

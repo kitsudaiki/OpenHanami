@@ -44,6 +44,7 @@ pub async fn get_quota(context: UserContext) -> Result<Json<QuotaResp>, ErrorRes
         max_checkpoint: quota.max_checkpoint,
         max_secret: quota.max_secret,
         max_network: quota.max_network,
+        max_floating_ip: quota.max_floating_ip,
         max_taskqueue: quota.max_taskqueue,
         created_by: quota.created_by,
         created_at: quota.created_at,

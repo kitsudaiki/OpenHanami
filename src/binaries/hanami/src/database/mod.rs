@@ -13,6 +13,7 @@
 // limitations under the License.
 
 pub mod db_handle;
+pub mod floating_ip_table;
 pub mod host_table;
 pub mod meta_instance_table;
 pub mod network_table;
@@ -50,6 +51,15 @@ pub fn init_database() -> Result<(), Box<dyn std::error::Error>> {
         Ok(_) => log::info!("Initialized network-database-table"),
         Err(e) => {
             log::error!("Failed to initialize network-database-table: {e}");
+            return Err(e);
+        }
+    };
+
+    // Initialize floating-ip table
+    match floating_ip_table::init_floating_ip_table() {
+        Ok(_) => log::info!("Initialized floating-ip-database-table"),
+        Err(e) => {
+            log::error!("Failed to initialize floating-ip-database-table: {e}");
             return Err(e);
         }
     };

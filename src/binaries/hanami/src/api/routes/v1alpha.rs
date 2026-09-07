@@ -16,6 +16,7 @@ use apistos::web::{Scope, delete, get, post, resource, scope};
 
 use ainari_api::endpoints::*;
 
+use crate::api::http_endpoints::floating_ip::*;
 use crate::api::http_endpoints::instance::*;
 use crate::api::http_endpoints::network::*;
 use crate::api::http_endpoints::sakura_host::*;
@@ -56,6 +57,19 @@ pub fn v1alpha_routes() -> Scope {
                     resource("/{network_uuid}")
                         .route(get().to(get_network_v1_0::get_network))
                         .route(delete().to(delete_network_v1_0::delete_network)),
+                ),
+        )
+        .service(
+            scope("/floating_ip")
+                .service(
+                    resource("")
+                        .route(post().to(create_floating_ip_v1_0::create_floating_ip))
+                        .route(get().to(list_floating_ip_v1_0::list_floating_ip)),
+                )
+                .service(
+                    resource("/{floating_ip_uuid}")
+                        .route(get().to(get_floating_ip_v1_0::get_floating_ip))
+                        .route(delete().to(delete_floating_ip_v1_0::delete_floating_ip)),
                 ),
         )
         .service(
