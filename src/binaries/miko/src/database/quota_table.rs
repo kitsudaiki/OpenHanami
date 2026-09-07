@@ -299,6 +299,7 @@ pub fn set_quota(
     new_max_dataset: i32,
     new_max_checkpoint: i32,
     new_max_secret: i32,
+    max_new_network: i32,
     new_max_taskqueue: i32,
     context: &UserContext,
 ) -> Result<(), enums::DbError> {
@@ -315,6 +316,7 @@ pub fn set_quota(
             max_dataset.eq(new_max_dataset),
             max_checkpoint.eq(new_max_checkpoint),
             max_secret.eq(new_max_secret),
+            max_network.eq(max_new_network),
             max_taskqueue.eq(new_max_taskqueue),
         ))
         .execute(&mut *conn)

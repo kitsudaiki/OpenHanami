@@ -49,6 +49,7 @@ pub async fn get_quota_admin(
         max_dataset: quota.max_dataset,
         max_checkpoint: quota.max_checkpoint,
         max_secret: quota.max_secret,
+        max_network: quota.max_network,
         max_taskqueue: quota.max_taskqueue,
         created_by: quota.created_by,
         created_at: quota.created_at,

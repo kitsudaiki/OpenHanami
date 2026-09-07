@@ -13,6 +13,7 @@
 // limitations under the License.
 
 use chrono::{DateTime, Utc};
+use diesel::Connection; // Required for .transaction()
 use diesel::backend::Backend;
 use diesel::connection::SimpleConnection;
 use diesel::deserialize::{self, FromSql, FromSqlRow};
@@ -21,7 +22,6 @@ use diesel::prelude::*;
 use diesel::serialize::{self, Output, ToSql};
 use diesel::sql_types::Varchar;
 use diesel::sqlite::Sqlite;
-use diesel::Connection; // Required for .transaction()
 use std::error::Error;
 use std::str::FromStr;
 use uuid::Uuid;
@@ -322,38 +322,18 @@ pub fn update_task_state(task_uuid: &Uuid, new_state: &TaskState) -> Result<(), 
                 // No database update required for these states
                 Ok(0)
             }
-            TaskState::Queued => {
-                diesel::update(target)
-                    .set((
-                        task_state.eq(state_str),
-                        queued_at.eq(now),
-                    ))
-                    .execute(transaction_conn)
-            }
-            TaskState::Active => {
-                diesel::update(target)
-                    .set((
-                        task_state.eq(state_str),
-                        started_at.eq(now),
-                    ))
-                    .execute(transaction_conn)
-            }
-            TaskState::Aborted => {
-                diesel::update(target)
-                    .set((
-                        task_state.eq(state_str),
-                        aborted_at.eq(now),
-                    ))
-                    .execute(transaction_conn)
-            }
-            TaskState::Finished => {
-                diesel::update(target)
-                    .set((
-                        task_state.eq(state_str),
-                        finished_at.eq(now),
-                    ))
-                    .execute(transaction_conn)
-            }
+            TaskState::Queued => diesel::update(target)
+                .set((task_state.eq(state_str), queued_at.eq(now)))
+                .execute(transaction_conn),
+            TaskState::Active => diesel::update(target)
+                .set((task_state.eq(state_str), started_at.eq(now)))
+                .execute(transaction_conn),
+            TaskState::Aborted => diesel::update(target)
+                .set((task_state.eq(state_str), aborted_at.eq(now)))
+                .execute(transaction_conn),
+            TaskState::Finished => diesel::update(target)
+                .set((task_state.eq(state_str), finished_at.eq(now)))
+                .execute(transaction_conn),
         }
     });
 
@@ -369,16 +349,12 @@ pub fn update_task_state(task_uuid: &Uuid, new_state: &TaskState) -> Result<(), 
 }
 
 /// Appends a new message to the task's messages list.
-pub fn add_message_to_task(
-    task_uuid: &Uuid,
-    new_message: &str,
-) -> Result<(), enums::DbError> {
+pub fn add_message_to_task(task_uuid: &Uuid, new_message: &str) -> Result<(), enums::DbError> {
     let mut conn = db_handle::DB_CONN.lock().expect("mutex poisoned");
     use self::tasks::dsl::*;
 
     // Run inside a transaction so if anything fails, the database remains untouched
     let result = conn.transaction::<_, diesel::result::Error, _>(|transaction_conn| {
-        
         // Fetch the current task entry
         let mut task: TaskEntry = tasks
             .filter(uuid.eq(task_uuid.to_string()))
@@ -388,7 +364,7 @@ pub fn add_message_to_task(
         task.messages.push(new_message.to_string());
 
         // Save only the updated messages column back to the database.
-        // NOTE: Because `serialize_as` applies to the Struct during inserts, 
+        // NOTE: Because `serialize_as` applies to the Struct during inserts,
         // when updating a single column directly, we must manually wrap it in DbVecString.
         diesel::update(tasks.filter(uuid.eq(task_uuid.to_string())))
             .set(messages.eq(DbVecString::from(task.messages)))

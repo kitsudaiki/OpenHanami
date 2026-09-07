@@ -14,18 +14,14 @@
 
 use chrono::{DateTime, Utc};
 use diesel::backend::Backend;
-use diesel::connection::SimpleConnection;
 use diesel::deserialize::{self, FromSql, FromSqlRow};
 use diesel::expression::AsExpression;
 use diesel::prelude::*;
 use diesel::serialize::{self, Output, ToSql};
 use diesel::sql_types::Nullable;
 use diesel::sql_types::Varchar;
-use diesel::sqlite::Sqlite;
 use serde::{Deserialize, Serialize};
-use std::error::Error;
 use std::fmt;
-use std::str::FromStr;
 use uuid::Uuid;
 
 use super::constants::UNINIT_POINT_32;
@@ -236,7 +232,7 @@ where
 // Convert Vec<String> -> DbVecString (When inserting)
 impl From<Vec<String>> for DbVecString {
     fn from(vec: Vec<String>) -> Self {
-        // Serialize the Vec to a JSON string. 
+        // Serialize the Vec to a JSON string.
         // We use .expect() here because serializing a simple Vec<String> will never fail.
         let json_string = serde_json::to_string(&vec).expect("Failed to serialize Vec<String>");
         DbVecString(json_string)
@@ -246,7 +242,7 @@ impl From<Vec<String>> for DbVecString {
 // Convert DbVecString -> Vec<String> (When reading via .first() or .load())
 impl TryFrom<DbVecString> for Vec<String> {
     type Error = serde_json::Error;
-    
+
     fn try_from(db_vec: DbVecString) -> Result<Self, Self::Error> {
         // Parse the JSON string back into a Vec<String>
         serde_json::from_str(&db_vec.0)

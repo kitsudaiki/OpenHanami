@@ -24,7 +24,6 @@ use ainari_api::errors::ErrorResponse;
 use ainari_api_structs::task_structs::TaskType;
 use ainari_api_structs::user_context::UserContext;
 
-
 /// Adds a new task to a model and stores it in the database.
 ///
 /// This function handles both the database storage and the model interface registration

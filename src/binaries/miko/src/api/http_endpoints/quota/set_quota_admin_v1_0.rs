@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use std::env::current_dir;
+
 use actix_web::web::Json;
 use actix_web::web::Path;
 use apistos::api_operation;
@@ -57,6 +59,9 @@ pub async fn set_quota_admin(
     if body.max_secret != 0 {
         current_quota.max_secret = body.max_secret;
     }
+    if body.max_network != 0 {
+        current_quota.max_network = body.max_network;
+    }
     if body.max_taskqueue != 0 {
         current_quota.max_taskqueue = body.max_taskqueue;
     }
@@ -68,6 +73,7 @@ pub async fn set_quota_admin(
         current_quota.max_dataset,
         current_quota.max_checkpoint,
         current_quota.max_secret,
+        current_quota.max_network,
         current_quota.max_taskqueue,
         &context,
     )
@@ -83,6 +89,7 @@ pub async fn set_quota_admin(
         max_dataset: quota.max_dataset,
         max_checkpoint: quota.max_checkpoint,
         max_secret: quota.max_secret,
+        max_network: quota.max_network,
         max_taskqueue: quota.max_taskqueue,
         created_by: quota.created_by,
         created_at: quota.created_at,

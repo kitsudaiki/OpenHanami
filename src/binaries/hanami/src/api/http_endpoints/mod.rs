@@ -13,4 +13,5 @@
 // limitations under the License.
 
 pub mod instance;
+pub mod network;
 pub mod sakura_host;

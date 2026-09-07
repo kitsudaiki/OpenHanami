@@ -15,6 +15,7 @@
 pub mod db_handle;
 pub mod host_table;
 pub mod meta_instance_table;
+pub mod network_table;
 
 /// Initializes all database tables required for the application.
 ///
@@ -40,6 +41,15 @@ pub fn init_database() -> Result<(), Box<dyn std::error::Error>> {
         Ok(_) => log::info!("Initialized instance-database-table"),
         Err(e) => {
             log::error!("Failed to initialize instance-database-table: {e}");
+            return Err(e);
+        }
+    };
+
+    // Initialize network table
+    match network_table::init_network_table() {
+        Ok(_) => log::info!("Initialized network-database-table"),
+        Err(e) => {
+            log::error!("Failed to initialize network-database-table: {e}");
             return Err(e);
         }
     };

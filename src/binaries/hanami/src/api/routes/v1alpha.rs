@@ -17,6 +17,7 @@ use apistos::web::{Scope, delete, get, post, resource, scope};
 use ainari_api::endpoints::*;
 
 use crate::api::http_endpoints::instance::*;
+use crate::api::http_endpoints::network::*;
 use crate::api::http_endpoints::sakura_host::*;
 
 pub fn v1alpha_routes() -> Scope {
@@ -42,6 +43,19 @@ pub fn v1alpha_routes() -> Scope {
                     resource("/{instance_uuid}")
                         .route(get().to(get_instance_v1_0::get_instance))
                         .route(delete().to(delete_instance_v1_0::delete_instance)),
+                ),
+        )
+        .service(
+            scope("/network")
+                .service(
+                    resource("")
+                        .route(post().to(create_network_v1_0::create_network))
+                        .route(get().to(list_network_v1_0::list_network)),
+                )
+                .service(
+                    resource("/{network_uuid}")
+                        .route(get().to(get_network_v1_0::get_network))
+                        .route(delete().to(delete_network_v1_0::delete_network)),
                 ),
         )
         .service(
