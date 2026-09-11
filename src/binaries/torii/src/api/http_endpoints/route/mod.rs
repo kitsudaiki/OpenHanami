@@ -12,30 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod api;
-mod config;
-mod core;
-mod database;
-
-use log::LevelFilter;
-
-use core::proxy_handler::*;
-
-#[actix_web::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    env_logger::init();
-    let enable_debug_log = config::CONFIG.debug;
-    if !enable_debug_log {
-        log::set_max_level(LevelFilter::Info);
-    }
-
-    database::init_database()?;
-
-    let mut proxy_handler = PROXY_HANDLER.write().await;
-    proxy_handler.fill_proxy_handler().await?;
-    drop(proxy_handler);
-
-    api::http_server::run_server().await?;
-
-    Ok(())
-}
+// pub mod delete_route_internal_v1_0;
+// pub mod get_route_internal_v1_0;
+// pub mod list_route_internal_v1_0;
+pub mod set_route_internal_v1_0;

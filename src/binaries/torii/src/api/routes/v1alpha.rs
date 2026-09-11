@@ -17,6 +17,7 @@ use apistos::web::{Scope, delete, get, post, resource, scope};
 use ainari_api::endpoints::*;
 
 use crate::api::http_endpoints::proxy::*;
+use crate::api::http_endpoints::route::*;
 
 pub fn v1alpha_routes() -> Scope {
     scope("/v1alpha")
@@ -39,5 +40,18 @@ pub fn v1alpha_routes() -> Scope {
                     resource("/{proxy_uuid}/internal")
                         .route(delete().to(delete_proxy_internal_v1_0::delete_proxy_internal)),
                 ),
+        )
+        .service(
+            scope("/route")
+                .service(
+                    resource("/internal")
+                        .route(post().to(set_route_internal_v1_0::register_route_internal)),
+                        // .route(get().to(list_proxy_internal_v1_0::list_route_internal)),
+                ),
+                // .service(
+                //     resource("/{route_uuid}/internal")
+                //         .route(get().to(get_route_internal_v1_0::get_route_internal))
+                //         .route(delete().to(delete_route_internal_v1_0::delete_route_internal)),
+                // ),
         )
 }
